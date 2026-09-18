@@ -67,7 +67,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-open MeasureTheory
+open scoped MeasureTheory
 
 section
 
@@ -219,7 +219,7 @@ protected lemma MeasurableSet.imp {p q : α → Prop}
 protected lemma MeasurableSet.iff {p q : α → Prop}
     (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
     MeasurableSet {x | p x ↔ q x} := by
-  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; simp; grind
+  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; grind
   rw [h_eq]
   exact (hs.imp ht).inter (ht.imp hs)
 

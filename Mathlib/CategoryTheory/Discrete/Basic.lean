@@ -285,7 +285,7 @@ def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : 
 /-- We can promote a type-level `Equiv` to
 an equivalence between the corresponding `discrete` categories.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ Discrete J where
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))

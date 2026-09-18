@@ -364,8 +364,7 @@ See `idealOrderIsoENat` for a precise classification of ideals in a DVR. -/
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
   have gen_ne_zero : generator s ≠ 0 := by
-    rw [Ne, ← eq_bot_iff_generator_eq_zero]
-    assumption
+    rwa [Ne, ← eq_bot_iff_generator_eq_zero]
   rcases associated_pow_irreducible gen_ne_zero hirr with ⟨n, u, hnu⟩
   use n
   have : span _ = _ := Ideal.span_singleton_generator s

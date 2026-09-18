@@ -3,7 +3,9 @@ Copyright (c) 2021 Matt Kempster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matt Kempster
 -/
-import Mathlib.Geometry.Euclidean.Triangle
+module
+
+public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Freek № 57: Heron's Formula
@@ -18,14 +20,9 @@ lengths.
 
 -/
 
-
 open Real EuclideanGeometry
 
-open scoped Real EuclideanGeometry
-
 namespace Theorems100
-
-local notation "√" => Real.sqrt
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -35,7 +32,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   We show this by equating this formula to `a * b * sin γ`, where `γ` is the angle opposite
   the side `c`.
 -/
-theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) (h2 : p₃ ≠ p₂) :
+public theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) (h2 : p₃ ≠ p₂) :
     let a := dist p₁ p₂
     let b := dist p₃ p₂
     let c := dist p₁ p₃

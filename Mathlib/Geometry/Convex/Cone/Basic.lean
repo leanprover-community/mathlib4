@@ -697,11 +697,11 @@ def toCone (s : Set M) (hs : Convex 𝕜 s) : ConvexCone 𝕜 M := by
 
 variable {s : Set M} (hs : Convex 𝕜 s) {x : M}
 
-@[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
+@[deprecated ConvexCone.mem_hull_of_convex +typeChanged (since := "2026-03-30")]
 theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, c • y = x := by
   simp only [toCone, ConvexCone.mem_mk, mem_iUnion, mem_smul_set, eq_comm, exists_prop]
 
-@[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
+@[deprecated ConvexCone.mem_hull_of_convex +typeChanged (since := "2026-03-30")]
 theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine hs.mem_toCone.trans ⟨?_, ?_⟩
   · rintro ⟨c, hc, y, hy, rfl⟩
@@ -709,7 +709,7 @@ theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ 
   · rintro ⟨c, hc, hcx⟩
     exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]⟩
 
-@[deprecated ConvexCone.subset_hull (since := "2026-03-30")]
+@[deprecated ConvexCone.subset_hull +typeChanged (since := "2026-03-30")]
 theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
   hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
 

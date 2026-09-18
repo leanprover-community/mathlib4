@@ -33,7 +33,9 @@ open Filter ENNReal
 
 open Function (support)
 
-open Topology NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -56,6 +58,7 @@ section Measurable
 
 variable [MeasurableSpace α]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →ₛ β) α β where
   coe := toFun
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl

@@ -32,7 +32,7 @@ namespace IsSimpleRing
 variable {R}
 
 instance [IsSimpleRing R] : Nontrivial R := by
-  obtain ⟨x, _, hx⟩ := SetLike.exists_of_lt (bot_lt_top : (⊥ : TwoSidedIdeal R) < ⊤)
+  obtain ⟨x, _, hx⟩ := IsConcreteLE.exists_of_lt (bot_lt_top : (⊥ : TwoSidedIdeal R) < ⊤)
   use x, 0, hx
 
 attribute [instance 200] IsSimpleRing.instNontrivial
@@ -53,7 +53,7 @@ instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpl
   .of_eq_bot_or_eq_top <| fun I ↦ by
     rw [or_iff_not_imp_left, ← I.one_mem_iff]
     intro H
-    obtain ⟨x, hx1, hx2 : x ≠ 0⟩ := SetLike.exists_of_lt (bot_lt_iff_ne_bot.mpr H : ⊥ < I)
+    obtain ⟨x, hx1, hx2 : x ≠ 0⟩ := IsConcreteLE.exists_of_lt (bot_lt_iff_ne_bot.mpr H : ⊥ < I)
     simpa [inv_mul_cancel₀ hx2] using I.mul_mem_left x⁻¹ _ hx1
 
 lemma injective_ringHom_or_subsingleton_codomain

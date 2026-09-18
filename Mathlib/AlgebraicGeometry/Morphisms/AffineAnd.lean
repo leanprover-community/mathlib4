@@ -280,7 +280,6 @@ lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{
     HasAffineProperty.eq_targetAffineLocally (P := P')]
   exact targetAffineLocally_affineAnd_le hQQ'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
     (hP : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
     (hQ : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S) (g : R →+* T),

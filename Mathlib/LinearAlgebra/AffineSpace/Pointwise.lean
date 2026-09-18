@@ -18,7 +18,9 @@ This file provides the additive action `AffineSubspace.pointwiseAddAction` in th
 @[expose] public section
 
 
-open Affine Pointwise
+open Pointwise
+
+open scoped Affine
 
 open Set
 

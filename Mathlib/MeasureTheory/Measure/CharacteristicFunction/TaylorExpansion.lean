@@ -31,8 +31,9 @@ characteristic function, Taylor expansion
 public section
 
 
-open ProbabilityTheory Complex Set VectorFourier
-open scoped Nat RealInnerProductSpace Topology
+open Complex Set VectorFourier
+
+open scoped ProbabilityTheory Nat RealInnerProductSpace Topology
 
 namespace MeasureTheory
 
@@ -127,7 +128,6 @@ lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
     (hint : MemLp id 2 (P.map X)) (t : ℝ) :
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
       1 + (P[X] : ℝ) * t * I - (P[X ^ 2] : ℝ) * t ^ 2 / 2 := by
-  have : IsProbabilityMeasure (P.map X) := Measure.isProbabilityMeasure_map hX
   convert! taylorWithinEval_charFun_zero hint t with x
   simp only [Pi.pow_apply, Nat.reduceAdd, Finset.sum_range_succ, Finset.range_one,
     Finset.sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, mul_one,

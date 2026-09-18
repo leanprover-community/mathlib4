@@ -94,7 +94,7 @@ def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
 
 /-- Functorially convert a representation of `G` into a module over `k[G]`. -/
 def toModuleMonoidAlgebra : Rep.{w} k G ⥤ ModuleCat k[G] where
-  obj V := ModuleCat.of _ V.ρ.asModule
+  obj V := ↧V.ρ.asModule
   map f := toModuleMonoidAlgebraMap f
 
 set_option backward.isDefEq.respectTransparency false in

@@ -793,32 +793,6 @@ theorem NormedAlgebra.norm_eq_spectralNorm {L : Type*} [NormedField L] [NormedAl
       spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
       (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
 
-variable (K) in
-/-- Given a nonzero `x : L`, and assuming that `(spectralAlgNorm h_alg hna) 1 ≤ 1`, this is
-  the real-valued function sending `y ∈ L` to the limit of  `(f (y * x^n))/((f x)^n)`,
-  regarded as an algebra norm. -/
-def algNormFromConst {x : L} (hx : x ≠ 0) :
-    AlgebraNorm K L :=
-  have hx' : spectralAlgNorm K L x ≠ 0 :=
-    (map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx
-  { normFromConst hx' spectralAlgNorm_isPowMul with
-    smul' k y := by
-      have h_mul : ∀ y : L, spectralNorm K L (algebraMap K L k * y) =
-          spectralNorm K L (algebraMap K L k) * spectralNorm K L y := fun y ↦ by
-        rw [spectralNorm_extends, ← Algebra.smul_def, ← spectralAlgNorm_def,
-          map_smul_eq_mul _ _ _, spectralAlgNorm_def]
-      have h : spectralNorm K L (algebraMap K L k) =
-        seminormFromConst' x (spectralAlgNorm K L).toRingSeminorm (algebraMap K L k) := by
-          rw [seminormFromConst_apply_of_isMul hx' spectralAlgNorm_isPowMul h_mul]; rfl
-      rw [← @spectralNorm_extends K _ L _ _ k, Algebra.smul_def, h]
-      exact seminormFromConst_isMul_of_isMul hx' spectralAlgNorm_isPowMul h_mul y }
-
-theorem algNormFromConst_def {x y : L}
-    (hx : x ≠ 0) :
-    algNormFromConst K hx y =
-      seminormFromConst ((map_ne_zero_iff_ne_zero (spectralAlgNorm K L)).mpr hx)
-        isPowMul_spectralNorm y := rfl
-
 section CompleteSpace
 
 variable [CompleteSpace K]
@@ -831,7 +805,7 @@ theorem spectralAlgNorm_mul (x y : L) :
   · simp [hx, zero_mul, map_zero]
   · have hx' : spectralAlgNorm K L x ≠ 0 :=
       ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
-    set f : AlgebraNorm K L := algNormFromConst K hx with hf
+    set f : AlgebraNorm K L := algNormFromConst hx' spectralAlgNorm_isPowMul with hf
     have hf_pow : IsPowMul f := seminormFromConst_isPowMul hx' isPowMul_spectralNorm
     rw [← spectralNorm_unique hf_pow, hf]
     exact seminormFromConst_const_mul hx' isPowMul_spectralNorm _

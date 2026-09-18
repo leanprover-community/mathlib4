@@ -21,7 +21,7 @@ public import Mathlib.Data.Vector.Basic
 
 open TopologicalSpace Set Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 

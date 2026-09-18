@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
@@ -20,7 +21,7 @@ public section
 
 open Filter
 
-open Topology
+open scoped Topology
 
 namespace Asymptotics
 

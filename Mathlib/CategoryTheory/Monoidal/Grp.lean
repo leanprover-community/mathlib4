@@ -217,26 +217,14 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
-/-- Transfer `AddGrpObj` along an isomorphism. -/
--- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
-abbrev _root_.CategoryTheory.AddGrpObj.ofIso {G' X : C} [AddGrpObj G'] (e : G' ≅ X) :
-    AddGrpObj X where
-  toAddMonObj := AddMonObj.ofIso e
-  neg := e.inv ≫ AddGrpObj.neg ≫ e.hom
-  left_neg := by simp +instances [AddMonObj.ofIso]
-  right_neg := by simp +instances [AddMonObj.ofIso]
-
 /-- Transfer `GrpObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
+@[to_additive (attr := simps! -isSimp) /-- Transfer `AddGrpObj` along an isomorphism. -/]
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
   left_inv := by simp +instances [MonObj.ofIso]
   right_inv := by simp +instances [MonObj.ofIso]
-
-attribute [to_additive existing] ofIso
 
 @[to_additive]
 instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩

@@ -307,7 +307,7 @@ theorem lift_rank_le_of_injective_injective
   refine _root_.lift_rank_le_of_injective_injectiveₛ i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
+  simp_rw [smul_def, AddMonoidHom.coe_ofClass, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R →+* R'` is a surjective ring homomorphism,
 `j : S →+* S'` is an injective ring homomorphism, such that `R → R' → S'` and `R → S → S'` commute,
@@ -319,7 +319,7 @@ theorem lift_rank_le_of_surjective_injective
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, this]
+  simp only [smul_def, AddMonoidHom.coe_ofClass, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,

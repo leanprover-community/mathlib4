@@ -71,16 +71,14 @@ theorem isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosed
     closed unit ball. So `2 • e - e * e` is in the nonnegative closed unit ball.
     Then using the extremity of `e`, we get `e * e = e` since `e * e` is obviously in the
     nonnegative closed unit ball, and `e = 2⁻¹ • e * e + 2⁻¹ • (2 • e - e * e)`. -/
-    have := calc
-      0 ≤ (e : A⁺¹) * (2 - e) := by
-        have : (e : A⁺¹) ≤ 1 := norm_le_one_iff_of_nonneg _ (by simpa) |>.mp (by simpa [norm_inr])
-        apply Commute.mul_nonneg (by simpa) (by grw [sub_nonneg, this, one_le_two])
-        simp [commute_iff_eq, mul_sub, sub_mul, mul_two, two_mul]
-      _ = (((2 : ℝ) • e - e * e : A) : A⁺¹) := by simp [mul_sub, two_smul, mul_two]
-    refine ⟨h3 _ (Commute.mul_nonneg h1 h1 rfl) ?_ ((2 : ℝ) • e - e * e) this.of_inr ?_
+    have : 0 ≤ (2 : ℝ) • e - e * e := by
+      have : e * e ≤ e := le_of_inr <| by
+        simpa using mul_self_le_of_nonneg_of_norm_le_one h1.inr (by simpa [norm_inr])
+      simpa [two_smul] using le_add_of_nonneg_of_le h1 this
+    refine ⟨h3 _ (Commute.mul_nonneg h1 h1 rfl) ?_ ((2 : ℝ) • e - e * e) this ?_
       ⟨2⁻¹, 2⁻¹, by simp [smul_sub, ← one_div, smul_smul]⟩, h1.isSelfAdjoint⟩
     · grw [norm_mul_le, h2, h2, one_mul]
-    · rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _ this, ← sub_nonneg]
+    · rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _ this.inr, ← sub_nonneg]
       calc 0 ≤ star (1 - e : A⁺¹) * (1 - e) := star_mul_self_nonneg _
         _ = _ := by simp [LE.le.star_eq, h1, mul_sub, sub_mul, two_smul, sub_sub, add_sub]
 

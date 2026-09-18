@@ -26,7 +26,7 @@ open scoped nonZeroDivisors TensorProduct
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime] [J.LiesOver I]
   [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
-  [Localization.AtPrime.IsLiesOverAlgebra I J]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
 
 
 set_option backward.isDefEq.respectTransparency.types false in

@@ -29,8 +29,9 @@ uniform space, uniform continuity, compact space
 
 @[expose] public section
 
-open Topology Filter UniformSpace Set
-open scoped SetRel
+open Filter UniformSpace Set
+
+open scoped Topology SetRel
 
 variable {γ : Type*}
 

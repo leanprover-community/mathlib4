@@ -86,6 +86,7 @@ theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) ℝ≥0∞ where
   coe μ := μ.toOuterMeasure
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
@@ -334,7 +335,7 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
-  LE.le.eventuallyLE (subset_toMeasurable _ _)
+  (subset_toMeasurable ..).eventuallySubset
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
@@ -484,12 +485,14 @@ theorem aemeasurable_pi_iff {g : α → Π a, X a} :
   constructor
   · exact AEMeasurable.eval
   · intro h
-    use fun x a ↦ (h a).mk _ x, measurable_pi_lambda _ fun a ↦ (h a).measurable_mk
+    use fun x a ↦ (h a).mk _ x, .of_eval fun a ↦ (h a).measurable_mk
     exact (eventually_countable_forall.mpr fun a ↦ (h a).ae_eq_mk).mono fun _ h ↦ funext h
 
 @[fun_prop]
-theorem aemeasurable_pi_lambda (f : α → Π a, X a) (hf : ∀ a, AEMeasurable (fun c ↦ f c a) μ) :
+theorem AEMeasurable.of_eval {f : α → Π a, X a} (hf : ∀ a, AEMeasurable (fun c ↦ f c a) μ) :
     AEMeasurable f μ :=
   aemeasurable_pi_iff.mpr hf
+
+@[deprecated (since := "2026-08-20")] alias aemeasurable_pi_lambda := AEMeasurable.of_eval
 
 end

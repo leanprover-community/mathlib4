@@ -33,7 +33,7 @@ namespace Lean.MessageData
 
 The `TraceResult` will be recorded in trace messages directly in [lean4#12698](https://github.com/leanprover/lean4/pull/12698).
 Once that PR is available, callers should prefer `td.result?` over calling this function. -/
-@[deprecated Lean.TraceData.result? (since := "2026-03-23")]
+@[deprecated Lean.TraceData.result? +typeChanged (since := "2026-03-23")]
 def traceResultOf (headerStr : String) : Option TraceResult :=
   if headerStr.startsWith "✅️" then some .success
   else if headerStr.startsWith "❌️" then some .failure
@@ -46,7 +46,7 @@ leaving just the semantic content for comparison across trace runs.
 Trace headers from `withTraceNode` have the form `"{emoji}[{VS16}] {content}"`.
 This strips everything through the first space. Returns the string unchanged if
 no recognized status prefix is present. -/
-@[deprecated Lean.TraceData (since := "2026-03-23")]
+@[deprecated Lean.TraceData +typeChanged (since := "2026-03-23")]
 def stripTraceResultPrefix (s : String) : String :=
   if (traceResultOf s).isNone then s else
     s.toSlice.dropPrefix (!·.isWhitespace) |>.dropPrefix ' ' |>.copy

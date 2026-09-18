@@ -1141,7 +1141,7 @@ def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v
         fiberwiseColimit_map, ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc,
         NatTrans.comp_app, whiskerRight_app, Functor.comp_map, Cat.Hom₂.eqToHom_toNatTrans,
         eqToHom_app, map_id, Category.comp_id, associator_hom_app, colimit.ι_pre_assoc,
-        HasColimit.isoOfNatIso_ι_hom_assoc, Iso.symm_hom, isoWhiskerRight_hom, associator_inv_app,
+        HasColimit.ι_isoOfNatIso_hom_assoc, Iso.symm_hom, isoWhiskerRight_hom, associator_inv_app,
         NatIso.ofComponents_hom_app, Iso.refl_hom, Final.ι_colimitIso_hom, Category.id_comp,
         Final.ι_colimitIso_hom_assoc, colimit.ι_pre]
       have := Functor.congr_obj congr($(α.naturality f).toFunctor) d

@@ -41,7 +41,6 @@ def TensorProduct.toIntegralClosure
     S ⊗[R] integralClosure R B →ₐ[S] integralClosure S (S ⊗[R] B) :=
     (Algebra.TensorProduct.map (.id _ _) (integralClosure R B).val).codRestrict _ fun x ↦ by
   induction x with
-  | zero => simp
   | add x y _ _ => rw [map_add]; exact add_mem ‹_› ‹_›
   | tmul x y =>
     convert!

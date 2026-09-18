@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Lemmas
+public import Mathlib.Basic.ENNReal.Lemmas
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.EMetricSpace.Pi
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs

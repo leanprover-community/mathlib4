@@ -63,7 +63,7 @@ lemma toTopology_inj {x y : X} : toTopology t x = toTopology t y ↔ x = y :=
 @[simp] lemma ofTopology_inj {x y : WithTopology X t} : ofTopology x = ofTopology y ↔ x = y :=
   (ofTopology_injective t).eq_iff
 
-open Topology
+open scoped Topology
 
 lemma isOpen_iff {s : Set (WithTopology X t)} :
     IsOpen s ↔ IsOpen[t] (toTopology t ⁻¹' s) :=

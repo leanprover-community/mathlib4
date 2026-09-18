@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Basic.Denumerable
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Logic.Denumerable
 
 /-!
 # The primitive recursive functions
@@ -363,7 +363,7 @@ theorem left : Primrec₂ fun (a : α) (_ : β) => a :=
 theorem right : Primrec₂ fun (_ : α) (b : β) => b :=
   .snd
 
-theorem natPair : Primrec₂ Nat.pair := by simp [Primrec₂, Primrec]; constructor
+theorem natPair : Primrec₂ Nat.pair := by simpa [Primrec₂, Primrec] using Nat.Primrec.succ
 
 theorem unpaired {f : ℕ → ℕ → α} : Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
   ⟨fun h => by simpa using! h.comp natPair, fun h => h.comp Primrec.unpair⟩

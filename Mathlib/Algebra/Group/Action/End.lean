@@ -190,6 +190,7 @@ lemma MulAction.coe_toPermHom :
     ⇑(MulAction.toPermHom G α) = MulAction.toPerm :=
   rfl
 
+@[to_additive]
 lemma MulAction.toPerm_one :
     (MulAction.toPerm (1 : G)) = (1 : Equiv.Perm α) := by
   aesop
@@ -207,10 +208,6 @@ def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHo
 lemma AddAction.coe_toPermHom :
     ⇑(AddAction.toPermHom G α) = AddAction.toPerm :=
   rfl
-
-theorem AddAction.toPerm_zero :
-    (AddAction.toPerm (0 : G)) = (1 : Equiv.Perm α) := by
-  aesop
 
 end AddGroup
 

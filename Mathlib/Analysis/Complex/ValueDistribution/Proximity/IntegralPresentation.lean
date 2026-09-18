@@ -7,7 +7,7 @@ Authors: Matteo Cipollina, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
-public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
 /-!
 # Integral Presentation of the Proximity Function

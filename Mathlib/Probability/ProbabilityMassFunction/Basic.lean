@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Devon Tuma
 module
 
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
 # Probability mass functions
@@ -48,6 +48,7 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
+@[macro_inline]
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective _ _ h := Subtype.ext h

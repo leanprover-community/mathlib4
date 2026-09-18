@@ -285,7 +285,7 @@ open Algebra
 
 attribute [local instance] Ideal.Quotient.field in
 theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
-    (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
+    (P : Ideal S) [P.LiesOver p] [P.IsPrime] [Algebra.HasSeparableResidueFieldsAt R S p] :
     Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg R := by
   let := Localization.AtPrime.algebraOfLiesOver p P
   have heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
@@ -307,7 +307,7 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     AddSubgroup.subgroupOf_inertia]
 
 lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
-    (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
+    (P : Ideal S) [P.LiesOver p] [P.IsPrime] [Algebra.HasSeparableResidueFieldsAt R S p] :
     (p.primesOver S).ncard * Nat.card (P.inertia G) * P.inertiaDeg R = Nat.card G := by
   rw [mul_assoc, ← card_stabilizer_eq_card_inertia_mul_finrank p P,
     ← IsInvariant.orbit_eq_primesOver R S G p P]
@@ -316,7 +316,7 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
 /-- The cardinality of the inertia group is equal to the ramification index. -/
 lemma card_inertia_eq_ramificationIdxIn [IsDomain R] [IsDomain S] [Module.Finite R S] [Flat R S]
     (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
-    [PerfectField p.ResidueField] :
+    [Algebra.HasSeparableResidueFieldsAt R S p] :
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
   rw [← inertiaDegIn_eq_inertiaDeg p P G] at H
@@ -329,7 +329,7 @@ lemma card_inertia_eq_ramificationIdxIn [IsDomain R] [IsDomain S] [Module.Finite
 inertia degree. -/
 lemma card_stabilizer_eq [IsDomain R] [IsDomain S] [Module.Finite R S] [Flat R S]
     (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
-    [PerfectField p.ResidueField] :
+    [Algebra.HasSeparableResidueFieldsAt R S p] :
     Nat.card (MulAction.stabilizer G P) = p.ramificationIdxIn S * p.inertiaDegIn S := by
   rw [card_stabilizer_eq_card_inertia_mul_finrank p P, card_inertia_eq_ramificationIdxIn p,
     inertiaDegIn_eq_inertiaDeg p P G]

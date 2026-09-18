@@ -113,7 +113,7 @@ lemma Unitary.spectrum_subset_slitPlane_iff_norm_lt_two {u : A} (hu : u ∈ unit
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 lemma IsSelfAdjoint.cfc_arg (u : A) : IsSelfAdjoint (cfc (ofReal ∘ arg : ℂ → ℂ) u) := by
-  simp [isSelfAdjoint_iff, ← cfc_star, Function.comp_def]
+  simp [isSelfAdjoint_iff, ← cfc_star]
 
 /-- The selfadjoint element obtained by taking the argument (using the principal branch and the
 continuous functional calculus) of a unitary whose spectrum does not contain `-1`. This returns
@@ -159,7 +159,7 @@ lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
     rwa [expUnitary_coe, ← CFC.exp_eq_normedSpace_exp (𝕜 := ℂ), ← cfc_comp_smul ..,
       cfc_map_spectrum ..] at this
   conv_rhs => rw [← cfc_id' ℂ (x : A)]
-  refine cfc_congr fun y hy ↦ ?_
+  congr! 1 with y hy
   rw [← x.2.spectrumRestricts.algebraMap_image] at hy
   obtain ⟨y, hy, rfl⟩ := hy
   simp only [coe_algebraMap, smul_eq_mul, mul_comm I, ← exp_eq_exp_ℂ, ofReal_inj]
@@ -175,7 +175,7 @@ lemma expUnitary_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
   rw [expUnitary_coe, argSelfAdjoint_coe, ← CFC.exp_eq_normedSpace_exp (𝕜 := ℂ),
     ← cfc_comp_smul .., ← cfc_comp' ..]
   conv_rhs => rw [← cfc_id' ℂ (u : A)]
-  refine cfc_congr fun y hy ↦ ?_
+  congr! 1 with y hy
   have hy₁ : ‖y‖ = 1 := spectrum.norm_eq_one_of_unitary u.2 hy
   have : I * y.arg = log y :=
     Complex.ext (by simp [log_re, spectrum.norm_eq_one_of_unitary u.2 hy]) (by simp [log_im])

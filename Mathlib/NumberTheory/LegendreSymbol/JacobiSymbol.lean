@@ -91,7 +91,7 @@ def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inherit_doc]
 scoped[NumberTheorySymbols] notation "J(" a " | " b ")" => jacobiSym a b
 
-open NumberTheorySymbols
+open scoped NumberTheorySymbols
 
 /-!
 ### Properties of the Jacobi symbol
@@ -501,7 +501,9 @@ We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -- i.e. needs to be used publicly.
 set_option backward.privateInPublic true
 
-open NumberTheorySymbols jacobiSym
+open jacobiSym
+
+open scoped NumberTheorySymbols
 
 /-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
 `a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/

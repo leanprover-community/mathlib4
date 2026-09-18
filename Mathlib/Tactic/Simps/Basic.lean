@@ -246,8 +246,9 @@ derives two `simp` lemmas:
 * Configuration options can be given using `(config := e)` where `e : Simps.Config`,
   or by specifying options directly, like `-fullyApplied` or `(notRecursive := [])`.
 * `@[simps]` reduces let-expressions where necessary.
-* When option `trace.simps.verbose` is true, `simps` will print the projections it finds and the
-  lemmas it generates. The same can be achieved by using `@[simps?]`.
+* When option `trace.simps` is true, `simps` will print the lemmas it generates.
+  The same can be achieved by using `@[simps?]`.
+  Other available trace options are `trace.simps.verbose` and `trace.simps.debug`
 * Use `@[to_additive (attr := simps)]` to apply both `to_additive` and `simps` to a definition
   This will also generate the additive versions of all `simp` lemmas.
 -/
@@ -330,6 +331,7 @@ Some common uses:
   `initialize_simps_projections` after defining the `DFunLike` instance (or instance that implies
   a `DFunLike` instance).
   ```
+    @[macro_inline]
     instance {mM : Mul M} {mN : Mul N} : FunLike (MulHom M N) M N := ...
     initialize_simps_projections MulHom (toFun → apply)
   ```
@@ -368,6 +370,7 @@ macro "initialize_simps_projections?" rest:simpsProj : command =>
 end Command
 end Lean.Parser
 
+initialize registerTraceClass `simps
 initialize registerTraceClass `simps.verbose
 initialize registerTraceClass `simps.debug
 
@@ -1009,7 +1012,6 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   if (env.find? declName).isSome then -- diverging behavior from Lean 3
     throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n\
       to the environment, but it already exists."
-  trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
   Mathlib.Tactic.warnIfImplicitIllTyped ref declName declType
   prependError "Failed to add projection lemma {declName}:" do
     addDecl <| .thmDecl {
@@ -1017,6 +1019,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       levelParams := univs
       type := declType
       value := declValue }
+  trace[simps] "Adding `{.ofConstName declName}` :{indentExpr declType}"
   inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
@@ -1218,10 +1221,10 @@ open Simps
 /-- `simpsTac` derives `simp` lemmas for all (nested) non-Prop projections of the declaration.
 If `todo` is non-empty, it will generate exactly the names in `todo`.
 If `shortNm` is true, the generated names will only use the last projection name.
-If `trc` is true, trace as if `trace.simps.verbose` is true. -/
+If `trc` is true, trace as if `trace.simps` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
     (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
-  withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
+  withOptions (fun o => if trc then o.set `trace.simps true else o) do
   -- We need access to theorem bodies
   let env ← withoutExporting getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."

@@ -131,7 +131,7 @@ section Cokernel
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
 noncomputable
 def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
-  Cofork.ofπ (P := SemiNormedGrp.of (Y ⧸ NormedAddGroupHom.range f.hom))
+  Cofork.ofπ (P := ↧(Y ⧸ NormedAddGroupHom.range f.hom))
     (ofHom f.hom.range.normedMk)
     (by aesop)
 

@@ -61,7 +61,9 @@ We then use a limit argument to cover the case when either of the sides are `0`.
 @[expose] public section
 
 
-open Set Filter Function Complex Topology
+open Set Filter Function Complex
+
+open scoped Topology
 
 namespace Complex
 namespace HadamardThreeLines
@@ -134,7 +136,7 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
     ‖f z‖ ≤ sSupNormIm f (z.re) := by
   refine le_csSup ?_ ?_
-  · revert hB; gcongr
+  · gconvert hB
     exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (norm ∘ f)
     simp only [mem_preimage, mem_singleton]

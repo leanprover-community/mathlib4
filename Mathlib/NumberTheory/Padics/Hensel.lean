@@ -38,7 +38,7 @@ public section
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 -- We begin with some general lemmas that are used below in the computation.
 theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
@@ -190,8 +190,7 @@ private theorem calc_norm_le_one {n : ℕ} {z : ℤ_[p]} (hz : ih n z) :
       gcongr
       apply hz.2
     _ = ‖F.derivative.aeval a‖ * T ^ 2 ^ n := div_sq_cancel _ _
-    _ ≤ 1 := mul_le_one₀ (PadicInt.norm_le_one _) (T_pow_nonneg _) (le_of_lt (T_pow' hnorm _))
-
+    _ ≤ 1 := by bound [T_pow' hnorm n]
 
 private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
     (hz1 : ‖z1‖ = ‖F.aeval z‖ / ‖F.derivative.aeval a‖) {n} (hz : ih n z) :
@@ -217,7 +216,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   have hdzne' : (↑(F.derivative.aeval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff.2 h)
   obtain ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion z (-z1)
   have : ‖(↑(F.derivative.aeval z) * (↑(F.aeval z) / ↑(F.derivative.aeval z)) : ℚ_[p])‖ ≤ 1 := by
-    simpa using mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
+    rw [norm_mul, PadicInt.padic_norm_e_of_padicInt]; bound
   have : F.derivative.aeval z * -z1 = -F.aeval z := by
     calc
       F.derivative.aeval z * -z1 =

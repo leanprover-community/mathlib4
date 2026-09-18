@@ -267,7 +267,8 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (image_eq_one_of_notMem_mulTSupport hx)
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
-@[to_additive contMDiffAt_of_notMem]
+@[to_additive contMDiffAt_of_notMem /-- `f` is continuously differentiable at each point outside of
+its `tsupport`. -/]
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : ℕ∞ω) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ

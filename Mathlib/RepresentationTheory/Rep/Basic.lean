@@ -28,7 +28,7 @@ open scoped MonoidAlgebra
 
 /-- The category of representations of monoid `G` and their morphisms. -/
 structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `Rep k G` -/
   V : Type w
   [hV1 : AddCommGroup V]
@@ -55,8 +55,6 @@ instance : CoeSort (Rep k G) (Type w) := ⟨Rep.V⟩
 attribute [coe] V
 
 variable (ρ) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of representations associated to a type equipped a representation.
 This is the preferred way to construct a term of `Rep k G`. -/
 abbrev of : Rep.{w} k G := ⟨X, ρ⟩
@@ -70,22 +68,18 @@ lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 /-- The type of morphisms in `Rep.{w} k G`. -/
 @[ext]
 structure Hom where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `G`-equivariant linear map. -/
   hom' : A.ρ.IntertwiningMap B.ρ
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (Rep.{w} k G) where
   Hom A B := Hom A B
   id A := ⟨.id A.ρ⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {A B} in
 /-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/

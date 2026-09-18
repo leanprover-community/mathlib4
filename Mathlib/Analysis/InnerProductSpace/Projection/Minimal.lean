@@ -25,7 +25,9 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
 
-open Topology RCLike Real Filter InnerProductSpace
+open RCLike Real Filter InnerProductSpace
+
+open scoped Topology
 
 /-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
 
@@ -248,7 +250,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
       intro h
       have h : ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0 := by
         rwa [norm_eq_iInf_iff_real_inner_le_zero] at h
-        exacts [K.convex, hv]
+        exact K.convex
       intro w hw
       have le : ⟪u - v, w⟫_ℝ ≤ 0 := by
         let w' := w + v
@@ -276,7 +278,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
         have h₁ := h w' this
         exact le_of_eq h₁
       rwa [norm_eq_iInf_iff_real_inner_le_zero]
-      exacts [Submodule.convex _, hv])
+      exact Submodule.convex _)
 
 /-- Characterization of minimizers in the projection on a subspace.
 Let `u` be a point in an inner product space, and let `K` be a nonempty subspace.
@@ -290,15 +292,9 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
   constructor
   · intro H
     have A : ∀ w ∈ K, re ⟪u - v, w⟫ = 0 := (K'.norm_eq_iInf_iff_real_inner_eq_zero hv).1 H
-    intro w hw
-    apply RCLike.ext
-    · simp [A w hw]
-    · symm
-      calc
-        im (0 : 𝕜) = 0 := im.map_zero
-        _ = re ⟪u - v, (-I : 𝕜) • w⟫ := (A _ (K.smul_mem (-I) hw)).symm
-        _ = re (-I * ⟪u - v, w⟫) := by rw [inner_smul_right]
-        _ = im ⟪u - v, w⟫ := by simp
+    simp_rw [inner_eq_zero_symm, inner_eq_zero_iff_forall_re_inner_smul_left]
+    intro w hw c
+    rw [inner_re_symm, A _ (K.smul_mem c hw)]
   · intro H
     have : ∀ w ∈ K', ⟪u - v, w⟫_ℝ = 0 := by
       intro w hw

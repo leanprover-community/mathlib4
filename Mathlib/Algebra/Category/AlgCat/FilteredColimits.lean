@@ -49,7 +49,7 @@ on the cocone point is induced from the `j`-th inclusion map. -/
 private def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F where
   pt :=
     letI : Algebra R c.pt := algebraOfIsFiltered hc j
-    AlgCat.of R c.pt
+    ↧c.pt
   ι.app k := by
     letI : Algebra R c.pt := algebraOfIsFiltered hc j
     refine AlgCat.ofHom { __ := (c.ι.app k).hom, commutes' r := ?_ }

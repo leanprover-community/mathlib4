@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
@@ -95,12 +96,20 @@ set_option backward.isDefEq.respectTransparency false in
 lemma basis_apply_eq_mkQ {ι : Type*} (b : Basis ι ℤ G) (i : ι) : basis b i = mkQ n (b i) := by
   rw [Basis.apply_eq_iff]; simp [basis, mkQ]
 
-variable [Module.Free ℤ G] [Module.Finite ℤ G]
+/-- The quotient `ModN G n` is a torsion group. -/
+theorem isAddTorsion : IsAddTorsion (ModN G n) := by
+  intro x
+  rw [isOfFinAddOrder_iff_nsmul_eq_zero]
+  refine ⟨n, NeZero.pos _, by simp [← Nat.cast_smul_eq_nsmul (ZMod n)]⟩
 
-instance instModuleFinite : Module.Finite (ZMod n) (ModN G n) :=
-  .of_basis <| basis <| Module.Free.chooseBasis ℤ G
+variable [Module.Finite ℤ G]
 
-instance instFinite : Finite (ModN G n) := Module.finite_of_finite (ZMod n)
+instance instFinite : Finite (ModN G n) :=
+  Module.finite_of_fg_torsion (ModN G n) (isAddTorsion_iff_isTorsion_int.1 isAddTorsion)
+
+instance instModuleFinite : Module.Finite (ZMod n) (ModN G n) := .of_finite
+
+variable [Module.Free ℤ G]
 
 variable (G n)
 @[simp] lemma natCard_eq : Nat.card (ModN G n) = n ^ Module.finrank ℤ G := by

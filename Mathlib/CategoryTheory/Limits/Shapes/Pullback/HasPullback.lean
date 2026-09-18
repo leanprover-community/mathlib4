@@ -5,8 +5,8 @@ Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Ca
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 
 /-!
 # HasPullback
@@ -130,7 +130,6 @@ abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g]
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) :
     ∃ (l : W ⟶ pullback f g), l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k :=
@@ -142,7 +141,6 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
     (w : f ≫ h = g ≫ k := by cat_disch) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pushout.exists_desc {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
     (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k := by cat_disch) :
     ∃ (l : pushout f g ⟶ W), pushout.inl f g ≫ l = h ∧ pushout.inr f g ≫ l = k :=
@@ -239,20 +237,17 @@ theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g]
     (h₁ : pushout.inr _ _ ≫ k = pushout.inr _ _ ≫ l) : k = l :=
   colimit.hom_ext <| PushoutCocone.coequalizer_ext _ h₀ h₁
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushout cocone built from the pushout coprojections is a pushout. -/
 def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr _ _) pushout.condition) :=
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
     (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pullback.lift_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     lift (fst f g) (snd f g) condition = 𝟙 (pullback f g) := by
   apply hom_ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pushout.desc_inl_inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     desc (inl f g) (inr f g) condition = 𝟙 (pushout f g) := by
@@ -279,7 +274,6 @@ abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) 
     [HasPullback (f ≫ i) (g ≫ i)] : pullback f g ⟶ pullback (f ≫ i) (g ≫ i) :=
   pullback.map f g (f ≫ i) (g ≫ i) (𝟙 _) (𝟙 _) i (Category.id_comp _).symm (Category.id_comp _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pullback.map_comp {X Y Z X' Y' Z' X'' Y'' Z'' : C}
     {f : X ⟶ Z} {g : Y ⟶ Z} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'} {f'' : X'' ⟶ Z''} {g'' : Y'' ⟶ Z''}
@@ -291,7 +285,6 @@ lemma pullback.map_comp {X Y Z X' Y' Z' X'' Y'' Z'' : C}
         (by rw [reassoc_of% e₁, e₃, Category.assoc])
         (by rw [reassoc_of% e₂, e₄, Category.assoc]) := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pullback.map_id {X Y Z : C}
     {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] :
@@ -318,7 +311,6 @@ abbrev pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [
     [HasPushout (i ≫ f) (i ≫ g)] : pushout (i ≫ f) (i ≫ g) ⟶ pushout f g :=
   pushout.map (i ≫ f) (i ≫ g) f g (𝟙 _) (𝟙 _) i (Category.comp_id _) (Category.comp_id _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma pushout.map_comp {X Y Z X' Y' Z' X'' Y'' Z'' : C}
     {f : X ⟶ Y} {g : X ⟶ Z} {f' : X' ⟶ Y'} {g' : X' ⟶ Z'} {f'' : X'' ⟶ Y''} {g'' : X'' ⟶ Z''}
@@ -330,13 +322,11 @@ lemma pushout.map_comp {X Y Z X' Y' Z' X'' Y'' Z'' : C}
         (by rw [reassoc_of% e₁, e₃, Category.assoc])
         (by rw [reassoc_of% e₂, e₄, Category.assoc]) := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pushout.map_id {X Y Z : C}
     {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] :
     pushout.map f g f g (𝟙 _) (𝟙 _) (𝟙 _) (by simp) (by simp) = 𝟙 _ := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂]
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) [IsIso i₁] [IsIso i₂] [IsIso i₃] :
@@ -354,7 +344,6 @@ def pullback.congrHom {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y ⟶ Z} (h
     [HasPullback f₁ g₁] [HasPullback f₂ g₂] : pullback f₁ g₁ ≅ pullback f₂ g₂ :=
   asIso <| pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y ⟶ Z} (h₁ : f₁ = f₂)
     (h₂ : g₁ = g₂) [HasPullback f₁ g₁] [HasPullback f₂ g₂] :
@@ -362,7 +351,6 @@ theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y �
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
   ext <;> simp [Iso.inv_comp_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂]
     (g₁ : T ⟶ Y) (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁) (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) [IsIso i₁] [IsIso i₂] [IsIso i₃] :
@@ -373,7 +361,6 @@ instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [
   · cat_disch
   · cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S) (i' : S ⟶ S')
     [HasPullback f g] [HasPullback (f ≫ i) (g ≫ i)] [HasPullback (f ≫ i ≫ i') (g ≫ i ≫ i')]
     [HasPullback ((f ≫ i) ≫ i') ((g ≫ i) ≫ i')] :
@@ -388,7 +375,6 @@ def pushout.congrHom {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X ⟶ Z} (h�
     [HasPushout f₁ g₁] [HasPushout f₂ g₂] : pushout f₁ g₁ ≅ pushout f₂ g₂ :=
   asIso <| pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pushout.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X ⟶ Z} (h₁ : f₁ = f₂)
     (h₂ : g₁ = g₂) [HasPushout f₁ g₁] [HasPushout f₂ g₂] :
@@ -396,7 +382,6 @@ theorem pushout.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X �
       pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
   ext <;> simp [Iso.comp_inv_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pushout.mapLift_comp {X Y S T S' : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) (i' : S' ⟶ S)
     [HasPushout f g] [HasPushout (i ≫ f) (i ≫ g)] [HasPushout (i' ≫ i ≫ f) (i' ≫ i ≫ g)]
     [HasPushout ((i' ≫ i) ≫ f) ((i' ≫ i) ≫ g)] :
@@ -430,7 +415,6 @@ theorem pullbackComparison_comp_snd (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
     pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g) :=
   pullback.lift_snd _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPullback (G.map f) (G.map g)] {W : C} {h : W ⟶ X} {k : W ⟶ Y} (w : h ≫ f = k ≫ g) :
@@ -473,7 +457,6 @@ theorem inr_comp_pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
       G.map (pushout.inr _ _) :=
   pushout.inr_desc _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pushoutComparison_map_desc (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
     [HasPushout (G.map f) (G.map g)] {W : C} {h : Y ⟶ W} {k : Z ⟶ W} (w : f ≫ h = g ≫ k) :
@@ -498,12 +481,10 @@ def pullbackSymmetry [HasPullback f g] : pullback f g ≅ pullback g f :=
   IsLimit.conePointUniqueUpToIso
     (PullbackCone.flipIsLimit (pullbackIsPullback f g)) (limit.isLimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackSymmetry_hom_comp_fst [HasPullback f g] :
     (pullbackSymmetry f g).hom ≫ pullback.fst g f = pullback.snd f g := by simp [pullbackSymmetry]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackSymmetry_hom_comp_snd [HasPullback f g] :
     (pullbackSymmetry f g).hom ≫ pullback.snd g f = pullback.fst f g := by simp [pullbackSymmetry]
@@ -620,7 +601,6 @@ section Products
 
 variable {C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `X ×[Y] (Y ⨯ Z) ≅ X ⨯ Z` -/
 noncomputable def pullbackProdFstIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
     [HasBinaryProduct Y Z] [HasBinaryProduct X Z] [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)] :
@@ -647,19 +627,16 @@ lemma pullbackProdFstIsoProd_hom_snd :
     (pullbackProdFstIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ ≫ prod.snd := by
   simp [pullbackProdFstIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdFstIsoProd_inv_fst :
     (pullbackProdFstIsoProd f Z).inv ≫ pullback.fst _ _ = prod.fst := by
   simp [pullbackProdFstIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdFstIsoProd_inv_snd_fst :
     (pullbackProdFstIsoProd f Z).inv ≫ pullback.snd _ _ ≫ prod.fst = prod.fst ≫ f := by
   simp [pullbackProdFstIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdFstIsoProd_inv_snd_snd :
     (pullbackProdFstIsoProd f Z).inv ≫ pullback.snd _ _ ≫ prod.snd = prod.snd := by
@@ -669,7 +646,6 @@ end
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `(Z ⨯ Y) ×[Y] X ≅ Z ⨯ X` -/
 noncomputable def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
     [HasBinaryProduct Z Y] [HasBinaryProduct Z X] [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f] :
@@ -694,19 +670,16 @@ lemma pullbackProdSndIsoProd_hom_snd :
     (pullbackProdSndIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ := by
   simp [pullbackProdSndIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdSndIsoProd_inv_fst_fst :
     (pullbackProdSndIsoProd f Z).inv ≫ pullback.fst _ _ ≫ prod.fst = prod.fst := by
   simp [pullbackProdSndIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdSndIsoProd_inv_fst_snd :
     (pullbackProdSndIsoProd f Z).inv ≫ pullback.fst _ _ ≫ prod.snd = prod.snd ≫ f := by
   simp [pullbackProdSndIsoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackProdSndIsoProd_inv_snd :
     (pullbackProdSndIsoProd f Z).inv ≫ pullback.snd _ _ = prod.snd := by

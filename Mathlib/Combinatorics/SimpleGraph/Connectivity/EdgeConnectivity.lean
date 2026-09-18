@@ -197,7 +197,8 @@ lemma IsTrail.isEdgeReachable_two_of_isEdgeReachable_two (hw : w.IsTrail)
 
 /-- A trail doesn't go through a vertex that is not 2-edge-reachable from its 2-edge-reachable
 endpoints. -/
-@[deprecated IsTrail.isEdgeReachable_two_of_isEdgeReachable_two (since := "2026-04-01")]
+@[deprecated IsTrail.isEdgeReachable_two_of_isEdgeReachable_two +typeChanged
+  (since := "2026-04-01")]
 lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
     (huv : G.IsEdgeReachable 2 u v) (huy : ¬ G.IsEdgeReachable 2 u x) : x ∉ w.support :=
   mt (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv) huy

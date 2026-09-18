@@ -66,8 +66,8 @@ noncomputable def pointSmallEtale : (smallEtaleTopology S).Point where
   initiallySmall :=
     initiallySmall_of_essentiallySmall_weakly_initial_objectProperty
       (Functor.Elements.precomp (AffineEtale.Spec S)
-        (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s)))).essImage (by
-      rintro ⟨X, x⟩
+        (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s)))).essImage (fun x ↦ by
+      induction x with | @mk X x
       cases X with | _ Y f
       obtain ⟨y, hy, rfl⟩ := Over.homMk_surjective x
       dsimp at y hy

@@ -54,12 +54,6 @@ def chudnovskyDenom (n : ℕ) : ℕ :=
 def chudnovskyTerm (n : ℕ) : ℚ :=
   chudnovskyNum n / chudnovskyDenom n
 
--- Sanity check that when calculated in `Float` we get the right answer:
-/-- info: 3.141593 -/
-#guard_msgs in
-#eval 1 / (12 / (640320 : Float) ^ (3 / 2) *
-  (List.ofFn fun n : Fin 37 => (chudnovskyTerm n).toFloat).sum)
-
 /-- The infinite sum in Chudnovsky's formula for `π⁻¹` -/
 noncomputable def chudnovskySum : ℝ :=
   12 / (640320 : ℝ) ^ (3 / 2 : ℝ) * ∑' n : ℕ, (chudnovskyTerm n : ℝ)

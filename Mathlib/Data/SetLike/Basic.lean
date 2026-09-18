@@ -211,41 +211,86 @@ lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
 
 end SetLike
 
-/-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving.
+/--
+A class to indicate that the order on a type corresponds to set inclusion.
 
-An instance of this class is automatically available on any partial order defined as
-`PartialOrder.ofSetLike`.
+An instance of this class is automatically available on any order defined via `LE.ofMembership`.
 -/
-class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
-  /-- The coercion from a `SetLike` type preserves the ordering. -/
-  protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
+class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
+  /-- The order corresponds to set inclusion. -/
+  le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
 section default
 
-variable (A B : Type*) [SetLike A B]
+variable (A B : Type*)
 
-/-- The order induced from a `SetLike` instance by inclusion.
+/-- The order induced from a `Membership` instance by inclusion.
 
-An order defined as `.ofSetLike` will automatically make available an instance
-of `IsConcreteLE`.
+An order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
-@[reducible] def LE.ofSetLike : LE A where
-  le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+@[reducible] def LE.ofMembership [Membership B A] : LE A where
+  le H K := ∀ ⦃x⦄, x ∈ H → x ∈ K
 
-instance : letI := LE.ofSetLike A B; IsConcreteLE A B :=
-  letI := LE.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
+@[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
+
+instance [Membership B A] : letI := LE.ofMembership A B; IsConcreteLE A B :=
+  letI := LE.ofMembership A B; { le_iff := .rfl }
+
+/-- The preorder induced from a `Membership` instance by inclusion.
+
+A preorder defined this way automatically makes available an instance of `IsConcreteLE`.
+-/
+@[reducible] def Preorder.ofMembership [Membership B A] : Preorder A where
+  __ := LE.ofMembership A B
+  le_refl _ _ h := h
+  le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
-
-A partial order defined as `.ofSetLike` will automatically make available an instance
-of `IsConcreteLE`.
+A partial order defined this way automatically makes available an instance of `IsConcreteLE`.
 -/
-@[reducible] def PartialOrder.ofSetLike : PartialOrder A where
-  __ := LE.ofSetLike A B
-  lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
+@[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
+  __ := Preorder.ofMembership A B
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
 end default
+
+namespace IsConcreteLE
+
+variable {A B : Type*} [Membership B A]
+
+section LE
+
+variable [LE A] [IsConcreteLE A B] {p q : A}
+
+@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
+alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
+
+theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
+  simp [le_iff]
+
+end LE
+
+section Preorder
+
+variable [Preorder A] [IsConcreteLE A B] {p q : A}
+
+theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
+  rw [lt_iff_le_not_ge, not_le_iff_exists]
+
+theorem exists_of_lt (h : p < q) : ∃ x ∈ q, x ∉ p :=
+  (lt_iff_le_and_exists.mp h).2
+
+end Preorder
+
+end IsConcreteLE
+
+@[deprecated (since := "2026-09-01")] alias SetLike.le_def := IsConcreteLE.le_iff
+@[deprecated (since := "2026-09-01")]
+alias SetLike.not_le_iff_exists := IsConcreteLE.not_le_iff_exists
+@[deprecated (since := "2026-09-01")]
+alias SetLike.lt_iff_le_and_exists := IsConcreteLE.lt_iff_le_and_exists
+@[deprecated (since := "2026-09-01")]
+alias SetLike.exists_of_lt := IsConcreteLE.exists_of_lt
 
 namespace SetLike
 
@@ -255,17 +300,8 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast, gcongr] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
-  IsConcreteLE.coe_subset_coe'
-
-theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := by
-  simp [← coe_subset_coe, Set.subset_def]
-
-@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
-
-theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simpa [← coe_subset_coe] using! Set.not_subset
+@[simp, norm_cast, gcongr] lemma coe_subset_coe : (p : Set B) ⊆ q ↔ p ≤ q :=
+  (IsConcreteLE.le_iff (A := A)).symm
 
 end LE
 
@@ -282,17 +318,11 @@ section PartialOrder
 
 variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
+@[simp, norm_cast, gcongr] lemma coe_ssubset_coe : (p : Set B) ⊂ q ↔ p < q := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 
 @[gcongr, mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
-
-theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
-  simpa [← coe_ssubset_coe] using! Set.exists_of_ssubset
-
-theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
-  rw [lt_iff_le_not_ge, not_le_iff_exists]
 
 /-- membership is inherited from `Set X` -/
 abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where

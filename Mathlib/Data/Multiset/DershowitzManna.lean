@@ -14,7 +14,7 @@ public import Mathlib.Data.Multiset.OrderedMonoid
 In this file we define the _Dershowitz-Manna ordering_ on multisets. Specifically, for two multisets
 `M` and `N` in a partial order `(S, <)`, `M` is smaller than `N` in the Dershowitz-Manna ordering if
 `M` can be obtained from `N` by replacing one or more elements in `N` by some finite number of
-elements from `S`, each of which is smaller (in the underling ordering over `S`) than one of the
+elements from `S`, each of which is smaller (in the underlying ordering over `S`) than one of the
 replaced elements from `N`. We prove that, given a well-founded partial order on the underlying set,
 the Dershowitz-Manna ordering defined over multisets is also well-founded.
 

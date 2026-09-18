@@ -90,7 +90,6 @@ instance : NormedDivisionRing ℍ where
 
 instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
-  toAlgebra := Quaternion.algebra
 
 instance : CStarRing ℍ where
   norm_mul_self_le x :=

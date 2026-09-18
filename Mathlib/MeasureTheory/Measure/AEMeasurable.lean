@@ -42,12 +42,6 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 
-lemma aemeasurable_of_map_neZero {μ : Measure α}
-    {f : α → β} (h : NeZero (μ.map f)) :
-    AEMeasurable f μ := by
-  by_contra h'
-  simp [h'] at h
-
 namespace AEMeasurable
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
@@ -162,11 +156,6 @@ theorem comp_aemeasurable' {f : α → δ} {g : δ → β} (hg : AEMeasurable g 
 theorem comp_measurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
     (hf : Measurable f) : AEMeasurable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
-
-@[fun_prop]
-theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ → β} (hg : AEMeasurable g ν)
-    (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
-  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
 
 theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) := by
@@ -372,8 +361,7 @@ theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf :
       apply congr_arg
       ext1 t ht
       simp only [ht, Measure.restrict_apply]
-      apply measure_congr
-      apply (EventuallyEq.refl _ _).inter (hf.ae_eq_mk.symm.preimage s)
+      exact measure_congr <| .inter .rfl (hf.ae_eq_mk.symm.preimage s)
 
 theorem MeasureTheory.Measure.map_mono_of_aemeasurable {f : α → δ} (h : μ ≤ ν)
     (hf : AEMeasurable f ν) : μ.map f ≤ ν.map f :=
@@ -449,7 +437,13 @@ instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := 
   · rw [← sum_sfiniteSeq μ] at H ⊢
     rw [map_sum H]
     infer_instance
-  · rw [map_of_not_aemeasurable H]
+  · obtain rfl | hμ := eq_or_ne μ 0
+    · rw [Measure.map_zero]; infer_instance
+    rw [map_of_not_aemeasurable_of_ne_zero H hμ]
+    have : Nonempty β := by
+      contrapose! H
+      exact (measurable_of_empty_codomain f).aemeasurable
+    have : IsFiniteMeasure (dirac Classical.ofNonempty : Measure β) := isFiniteMeasure_dirac
     infer_instance
 
 end Measure

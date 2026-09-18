@@ -168,7 +168,9 @@ noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A
 
 attribute [local instance] normedAddCommGroupProdAux
 
-open Filter Uniformity Bornology
+open Filter Bornology
+
+open scoped Uniformity
 
 private lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv A (E × F)) :=
   AddMonoidHomClass.antilipschitz_of_bound (linearEquiv ℂ A (E × F)) fun x ↦ by
@@ -296,7 +298,9 @@ noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, 
 
 attribute [local instance] normedAddCommGroupPiAux
 
-open Uniformity Bornology
+open Bornology
+
+open scoped Uniformity
 
 private lemma antilipschitzWith_card_equiv_pi_aux :
     AntilipschitzWith (Fintype.card ι) (equiv A (Π i, E i)) :=

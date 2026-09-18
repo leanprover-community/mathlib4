@@ -267,4 +267,15 @@ lemma posLog_norm_add_le {E : Type*} [SeminormedAddCommGroup E] (a b : E) :
   grw [norm_add_le, posLog_add, add_rotate]
   exact neg_one_lt_zero.le.trans (norm_nonneg _)
 
+/--
+Multiplying the argument of `log⁺` by a nonzero factor `x` changes its value by at most
+`log⁺ x + log⁺ x⁻¹`, which equals `|log x|` by `Real.abs_log_eq_posLog_add_posLog_inv`.
+-/
+theorem abs_posLog_mul_sub_posLog_le_posLog_add_posLog {x y : ℝ} (hx : x ≠ 0) :
+    |log⁺ (x * y) - log⁺ y| ≤ log⁺ x + log⁺ x⁻¹ := by
+  rw [abs_le]
+  constructor
+  · grind [posLog_mul (x := x⁻¹) (y := x * y), posLog_nonneg]
+  · grind [posLog_mul, posLog_nonneg]
+
 end Real

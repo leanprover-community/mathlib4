@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Countable.Basic
+public import Mathlib.Basic.Countable.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Equiv.List

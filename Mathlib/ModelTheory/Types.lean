@@ -237,6 +237,35 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
 
 section
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`(L.lhomWithConstants α).IsExpansionOn ↑(ModelType.reduct (L.lhomWithConstants α)
+(M.subtheoryModel ⋯))`
+It is needed by the `@Formula.realize_equivSentence_symm_con` application below, which passes
+`M.struc` explicitly.
+
+The failure happens while applying `@LHom.isExpansionOn_reduct`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type of
+the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+`L[[α]].Structure ↑(ModelType.reduct (L.lhomWithConstants α) (M.subtheoryModel ⋯))`, whereas the
+supplied `M.struc` has type `L[[α]].Structure ↑M`. The comparison bottoms out at
+`ModelType.reduct (L.lhomWithConstants α) (M.subtheoryModel ⋯) =?= M`, which would require
+`ModelType.reduct` and `ModelType.subtheoryModel` to unfold; both are plain semireducible `def`s and
+therefore do not unfold at the `.instances` transparency that instance search runs at. Lean falls
+back to synthesize an instance of the correct type, but that synthesis fails as well: its only
+candidate `@ModelType.struc` needs to unify `T` with a metavariable of type `L[[α]].Theory`, and
+`L[[α]].Theory` and `L.Theory` do not even agree at `.default`.
+
+Potential fix: mark `ModelType.reduct` and `ModelType.subtheoryModel`
+implicit-reducible and replace `M.struc` with `cast rfl M.struc`, so that it gets the correct type.
+The `cast rfl` there is a quick and dirty way of ensuring that the `Structure` instance has the
+expected type.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by

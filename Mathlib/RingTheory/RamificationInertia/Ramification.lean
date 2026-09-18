@@ -6,11 +6,11 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.LocalRing.Length
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.LocalRing.ResidueField.Separable
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Ramification index
@@ -77,14 +77,9 @@ theorem ramificationIdx_pos [q.IsPrime] [Module.Finite R S] : 0 < q.ramification
       IsScalarTower.algebraMap_eq R S, ← map_map, ← lt_top_iff_ne_top]
     grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal]
     exact (IsLocalRing.maximalIdeal.isMaximal _).lt_top
-  · let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
-    have : q = r.1.comap Algebra.TensorProduct.includeRight := by
-      rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
-    let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
-    have : IsArtinianRing (Sq ⧸ map (algebraMap R Sq) p) := by
-      convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
-    rwa [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
+  · rw [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
       Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength]
+    infer_instance
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_pos := ramificationIdx_pos
 
@@ -104,7 +99,7 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
 
 variable {q R} in
 theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
-    [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
+    [Algebra.HasSeparableResidueFieldsAt R S (q.under R)] :
     q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx_eq_one q R⟩
   rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
@@ -117,7 +112,7 @@ theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
   suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
   rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
-  exact ⟨Algebra.IsAlgebraic.isSeparable_of_perfectField, h⟩
+  exact ⟨Algebra.HasSeparableResidueFieldsAt.isSeparable q, h⟩
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one_iff :=
   ramificationIdx_eq_one_iff
@@ -201,7 +196,7 @@ end IsDedekindDomain
 /-- See `ramificationIdx_tower` for a version that does not assume primality. -/
 theorem ramificationIdx_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     [Algebra (Localization.AtPrime q) (Localization.AtPrime r)]
-    [Localization.AtPrime.IsLiesOverAlgebra q r]
+    [IsScalarTower S (Localization.AtPrime q) (Localization.AtPrime r)]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     r.ramificationIdx R = q.ramificationIdx R * r.ramificationIdx S := by
   have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)

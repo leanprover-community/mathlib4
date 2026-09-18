@@ -94,9 +94,9 @@ namespace padicValInt
 
 variable {p : ℕ}
 
-theorem of_ne_one_ne_zero {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
+theorem of_ne_one_ne_zero {z : ℤ} :
     padicValInt p z = multiplicity (p : ℤ) z := by
-  rw [padicValInt, padicValNat_def' hp (Int.natAbs_ne_zero.mpr hz)]
+  rw [padicValInt, padicValNat_def]
   apply Int.multiplicity_natAbs
 
 /-- `padicValInt p 0` is `0` for any `p`. -/
@@ -154,14 +154,13 @@ protected theorem one : padicValRat p 1 = 0 := by simp [padicValRat]
 theorem of_int {z : ℤ} : padicValRat p z = padicValInt p z := by simp [padicValRat]
 
 /-- The `p`-adic value of an integer `z ≠ 0` is the multiplicity of `p` in `z`. -/
-theorem of_int_multiplicity {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
+theorem of_int_multiplicity {z : ℤ} :
     padicValRat p (z : ℚ) = multiplicity (p : ℤ) z := by
-  rw [of_int, padicValInt.of_ne_one_ne_zero hp hz]
+  rw [of_int, padicValInt.of_ne_one_ne_zero]
 
-theorem multiplicity_sub_multiplicity {q : ℚ} (hp : p ≠ 1) (hq : q ≠ 0) :
+theorem multiplicity_sub_multiplicity {q : ℚ} :
     padicValRat p q = multiplicity (p : ℤ) q.num - multiplicity p q.den := by
-  rw [padicValRat, padicValInt.of_ne_one_ne_zero hp (Rat.num_ne_zero.2 hq),
-    padicValNat_def' hp q.den_ne_zero]
+  rw [padicValRat, padicValInt.of_ne_one_ne_zero, padicValNat_def]
 
 /-- The `p`-adic value of an integer `z ≠ 0` is its `p`-adic value as a rational. -/
 @[simp]
@@ -183,9 +182,8 @@ theorem zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
 theorem padicValRat_of_nat (n : ℕ) : ↑(padicValNat p n) = padicValRat p n := by simp
 
 @[simp]
-theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
-  rw [padicValNat_def (@Fact.out p.Prime).ne_zero]
-  simp
+theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 :=
+  padicValNat.self Fact.out
 
 theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (div : p ∣ n) :
     1 ≤ padicValNat p n := by
@@ -213,7 +211,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
     padicValRat p q = multiplicity (p : ℤ) n - multiplicity (p : ℤ) d := by
   have hd : d ≠ 0 := Rat.mk_denom_ne_zero_of_ne_zero hqz qdf
   let ⟨c, hc1, hc2⟩ := Rat.num_den_mk hd qdf
-  rw [padicValRat.multiplicity_sub_multiplicity hp.1.ne_one hqz]
+  rw [padicValRat.multiplicity_sub_multiplicity]
   simp only [hc1, hc2]
   rw [multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1),
     multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1)]

@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.ENNReal.Basic
+import Mathlib.Basic.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Bound

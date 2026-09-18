@@ -118,6 +118,10 @@ lemma norm_map_star_mul_le (f : F) (x y : A) :
 
 alias cauchy_schwarz_star_mul := norm_map_star_mul_le
 
+lemma norm_map_star_mul_sq_le (f : F) (x y : A) :
+    ‖f (star x * y)‖ ^ 2 ≤ ‖f (star x * x)‖ * ‖f (star y * y)‖ := by
+  grw [norm_map_star_mul_le, mul_pow]; simp
+
 /-- The **Cauchy--Schwarz** lemma for positive linear functionals on a non-unital
 star-ordered `ℂ`-algebra. -/
 lemma norm_map_mul_star_le (f : F) (x y : A) :
@@ -125,6 +129,10 @@ lemma norm_map_mul_star_le (f : F) (x y : A) :
   simpa using cauchy_schwarz_star_mul f (star x) (star y)
 
 alias cauchy_schwarz_mul_star := norm_map_mul_star_le
+
+lemma norm_map_mul_star_sq_le (f : F) (x y : A) :
+    ‖f (x * star y)‖ ^ 2 ≤ ‖f (x * star x)‖ * ‖f (y * star y)‖ := by
+  grw [norm_map_mul_star_le, mul_pow]; simp
 
 end PreGNS
 

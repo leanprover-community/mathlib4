@@ -5,8 +5,7 @@ Authors: Finn Mortimore
 -/
 module
 
-public import Mathlib.Order.Preorder.Chain
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!

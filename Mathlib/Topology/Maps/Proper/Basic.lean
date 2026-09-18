@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Etienne Marion
 -/
 module
 
+public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -346,3 +347,19 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prodMap isProperMap_id).isClosedMap
+
+/-- A function into a compact space with a closed graph is continuous.
+
+For the closed graph theorem of functional analysis, about linear maps between Banach spaces, see
+`LinearMap.continuous_of_isClosed_graph`. -/
+theorem continuous_of_isClosed_graph [CompactSpace Y] (hf : IsClosed f.graph) : Continuous f := by
+  rw [continuous_iff_isClosed]
+  intro C hC
+  convert isClosedMap_fst_of_compactSpace _ (hf.inter (isClosed_univ.prod hC))
+  ext
+  simp
+
+/-- A function into a compact Hausdorff space is continuous if and only if its graph is closed. -/
+theorem continuous_iff_isClosed_graph [CompactSpace Y] [T2Space Y] :
+    Continuous f ↔ IsClosed f.graph :=
+  ⟨Continuous.isClosed_graph, continuous_of_isClosed_graph⟩

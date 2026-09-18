@@ -304,10 +304,18 @@ theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
   · rintro rfl
     simp
 
+lemma _root_.Disjoint.powersetCard_powersetCard_finset {s t : Finset α}
+    (h : Disjoint s t) {m : ℕ} (hn : n ≠ 0 ∨ m ≠ 0) :
+    Disjoint (powersetCard n s) (powersetCard m t) := by
+  grind [disjoint_left]
+
+lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Finset α) :
+    Disjoint (powersetCard m s) (powersetCard n t) := by
+  grind [disjoint_left]
+
 theorem pairwise_disjoint_powersetCard (s : Finset α) :
-    Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) := fun _i _j hij =>
-  Finset.disjoint_left.mpr fun _x hi hj =>
-    hij <| (mem_powersetCard.mp hi).2.symm.trans (mem_powersetCard.mp hj).2
+    Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
+  fun _i _j hij => disjoint_powersetCard_of_ne hij s s
 
 set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_disjiUnion (s : Finset α) :

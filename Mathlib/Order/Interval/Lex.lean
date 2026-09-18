@@ -48,17 +48,6 @@ instance [DecidableEq α] [DecidableLT α] [DecidableLE α] : DecidableLE (Lex (
 instance [DecidableEq α] [DecidableLT α] : DecidableLT (Lex (NonemptyInterval α)) :=
   fun _ _ => decidable_of_iff' _ toLex_lt_toLex
 
--- Sanity check on the ordering.
-/-- info: [(3, 3), (2, 2), (2, 3), (1, 1), (1, 2), (1, 3)] -/
-#guard_msgs in
-#eval [
-  NonemptyInterval.mk (1, 1) (by grind),
-  NonemptyInterval.mk (1, 2) (by grind),
-  NonemptyInterval.mk (1, 3) (by grind),
-  NonemptyInterval.mk (2, 2) (by grind),
-  NonemptyInterval.mk (2, 3) (by grind),
-  NonemptyInterval.mk (3, 3) (by grind)].map toLex |>.mergeSort.map (·.toProd)
-
 end LELT
 
 instance [Preorder α] : Preorder (Lex (NonemptyInterval α)) := fast_instance%

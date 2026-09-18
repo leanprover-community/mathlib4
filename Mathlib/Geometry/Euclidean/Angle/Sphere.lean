@@ -184,11 +184,15 @@ theorem IsTangentAt_iff_angle_eq_pi_div_two {s : Sphere P} {p q : P} (hp : p ∈
 end Sphere
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
-
-local notation "o" => Module.Oriented.positiveOrientation
+  [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)]
 
 namespace Sphere
+
+section
+
+variable [Module.Oriented ℝ V (Fin 2)]
+
+local notation "o" => Module.Oriented.positiveOrientation
 
 /-- The angle at the center of a circle equals twice the angle at the circumference, oriented angle
 version. -/
@@ -198,6 +202,46 @@ theorem oangle_center_eq_two_zsmul_oangle {s : Sphere P} {p₁ p₂ p₃ : P} (h
   rw [mem_sphere, @dist_eq_norm_vsub V] at hp₁ hp₂ hp₃
   rw [oangle, oangle, o.oangle_eq_two_zsmul_oangle_sub_of_norm_eq_real _ _ hp₂ hp₁ hp₃] <;>
     simp [hp₂p₁, hp₂p₃]
+
+end
+
+open scoped Module.Oriented.Arbitrary in
+/-- The angle at the center of a circle equals twice the angle at the circumference, unoriented
+angle version, provided twice the angle at the circumference is at most `π`. -/
+theorem angle_center_eq_two_mul_angle_of_two_mul_angle_le_pi {s : Sphere P} {p₁ p₂ p₃ : P}
+    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁) (hp₂p₃ : p₂ ≠ p₃)
+    (h : 2 * ∠ p₁ p₂ p₃ ≤ π) : ∠ p₁ s.center p₃ = 2 * ∠ p₁ p₂ p₃ := by
+  have : FiniteDimensional ℝ V := .of_fact_finrank_eq_two
+  have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
+  have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
+  rw [angle_eq_abs_oangle_toReal hp₁c hp₃c,
+    Sphere.oangle_center_eq_two_zsmul_oangle hp₁ hp₂ hp₃ hp₂p₁ hp₂p₃]
+  exact (two_mul_angle_eq_abs_two_zsmul_oangle_toReal hp₂p₁.symm hp₂p₃.symm (by linarith)).symm
+
+open scoped Module.Oriented.Arbitrary in
+/-- The angle at the center of a circle is `2 * π` minus twice the angle at the circumference,
+unoriented angle version, provided twice the angle at the circumference is at least `π`. -/
+theorem angle_center_eq_two_pi_sub_two_mul_angle_of_pi_le_two_mul_angle {s : Sphere P}
+    {p₁ p₂ p₃ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₁ : p₂ ≠ p₁)
+    (hp₂p₃ : p₂ ≠ p₃) (h : π ≤ 2 * ∠ p₁ p₂ p₃) :
+    ∠ p₁ s.center p₃ = 2 * π - 2 * ∠ p₁ p₂ p₃ := by
+  have : FiniteDimensional ℝ V := .of_fact_finrank_eq_two
+  have hp₁c : p₁ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₁ hp₂ hp₂p₁.symm
+  have hp₃c : p₃ ≠ s.center := ne_center_of_mem_of_mem_of_ne hp₃ hp₂ hp₂p₃.symm
+  rw [angle_eq_abs_oangle_toReal hp₁c hp₃c,
+    Sphere.oangle_center_eq_two_zsmul_oangle hp₁ hp₂ hp₃ hp₂p₁ hp₂p₃]
+  linarith [two_mul_angle_eq_two_pi_sub_abs_two_zsmul_oangle_toReal hp₂p₁.symm hp₂p₃.symm
+    (by linarith)]
+
+end Sphere
+
+section
+
+variable [Module.Oriented ℝ V (Fin 2)]
+
+local notation "o" => Module.Oriented.positiveOrientation
+
+namespace Sphere
 
 /-- Oriented angle version of "angles in same segment are equal" and "opposite angles of a
 cyclic quadrilateral add to π", for oriented angles mod π (for which those are the same result),
@@ -374,6 +418,8 @@ theorem dist_div_sin_oangle_eq_two_mul_radius {s : Sphere P} {p₁ p₂ p₃ : P
     mul_div_cancel₀ _ (two_ne_zero' ℝ)]
 
 end Sphere
+
+end
 
 end EuclideanGeometry
 

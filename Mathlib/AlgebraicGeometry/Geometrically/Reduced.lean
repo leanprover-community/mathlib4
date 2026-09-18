@@ -91,7 +91,7 @@ lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
     let z : Z := Sigma.ι (fun Z ↦ Spec (pt Z)) ⟨_, irreducibleComponent_mem_irreducibleComponents y⟩
       (IsLocalRing.closedPoint _)
     have hz : g z ⤳ y := by
-      simp only [g, z, Z, ← Scheme.Hom.comp_apply, Sigma.ι_desc, pt,
+      simp only [g, z, Z, ← Scheme.Hom.comp_apply, Sigma.ι_comp_desc, pt,
         Scheme.fromSpecStalk_closedPoint]
       exact (IsIrreducible.isGenericPoint_genericPoint _
         isClosed_irreducibleComponent).specializes mem_irreducibleComponent

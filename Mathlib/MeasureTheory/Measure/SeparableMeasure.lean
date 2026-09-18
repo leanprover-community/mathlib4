@@ -368,7 +368,7 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
     · rw [← hgen]
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
         generateSetAlgebra_mono <| subset_union_left ..
-    · induction hs with
+    · induction hs using generateSetAlgebra_induction with
       | base t t_mem =>
         rcases t_mem with t_mem | ⟨n, rfl⟩
         · exact hgen ▸ measurableSet_generateFrom t_mem

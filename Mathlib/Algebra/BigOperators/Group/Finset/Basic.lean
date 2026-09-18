@@ -1037,7 +1037,7 @@ theorem prod_subsingleton [Subsingleton ι] (f : ι → M) (a : ι) : ∏ x : ι
   have : Unique ι := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
 
-@[to_additive] theorem prod_Prop (f : Prop → M) : ∏ p, f p = f True * f False := by simp
+@[to_additive] theorem prod_Prop (f : Prop → M) : ∏ p, f p = f True * f False := by classical simp
 
 @[to_additive]
 theorem prod_subtype_mul_prod_subtype (p : ι → Prop) (f : ι → M) [DecidablePred p] :
@@ -1141,6 +1141,3 @@ lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
-
-@[deprecated (since := "2026-02-14")]
-alias nat_abs_sum_le := Int.natAbs_sum_le

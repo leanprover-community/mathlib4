@@ -225,7 +225,7 @@ theorem empty_toList_eq_ff (v : Vector α (n + 1)) : v.toList.isEmpty = false :=
   | ⟨_ :: _, _⟩ => rfl
 
 theorem not_empty_toList (v : Vector α (n + 1)) : ¬v.toList.isEmpty := by
-  simp only [empty_toList_eq_ff, Bool.coe_sort_false, not_false_iff]
+  simp [empty_toList_eq_ff]
 
 /-- Mapping under `id` does not change a vector. -/
 @[simp]
@@ -553,8 +553,7 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     rw [Subtype.mk_eq_mk]
     simp only [Fin.lt_def]
     split_ifs with hij
-    · rcases Nat.exists_eq_succ_of_ne_zero
-        (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
+    · rcases j.exists_eq_succ_of_ne_zero (Nat.ne_zero_of_lt hij) with ⟨j, rfl⟩
       rw [← List.insertIdx_eraseIdx_of_ge]
       · simp; rfl
       · simpa

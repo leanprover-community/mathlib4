@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Range
 
-/-! ### Linear equivalences involving submodules -/
+/-! # Linear equivalences involving submodules -/
 
 @[expose] public section
 
@@ -35,7 +35,7 @@ variable (p q : Submodule R M)
 
 /-- Linear equivalence between two equal submodules. -/
 def ofEq (h : p = q) : p ≃ₗ[R] q :=
-  { Equiv.setCongr (congr_arg _ h) with
+  { Set.equivOfEq (congr_arg _ h) with
     map_smul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -121,7 +121,7 @@ protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤
   LinearMap.range_eq_top.2 e.toEquiv.surjective
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
-  refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)
+  refine bot_unique (IsConcreteLE.le_iff.2 fun b hb => (Submodule.mem_bot R).2 ?_)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 

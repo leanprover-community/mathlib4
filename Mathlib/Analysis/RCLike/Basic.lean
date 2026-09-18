@@ -1190,7 +1190,7 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
 theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
-  ofRealLI.lipschitz
+  ofRealLI.lipschitzWith
 
 lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   intro x y

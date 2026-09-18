@@ -34,7 +34,9 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
 
 public section
 
-open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
+open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Function
+
+open scoped Topology
 
 variable {X Y : Type*} {mX : MeasurableSpace X} [Nonempty Y] {mY : MeasurableSpace Y}
     [StandardBorelSpace Y]

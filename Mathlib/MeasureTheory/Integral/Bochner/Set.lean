@@ -423,7 +423,6 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
     _ = ∫ x in s \ k, f x ∂μ := by
       apply setIntegral_congr_set
       filter_upwards [h't] with x hx
-      change (x ∈ t \ k) = (x ∈ s \ k)
       simp only [eq_iff_iff, and_congr_left_iff, Set.mem_sdiff]
       intro h'x
       by_cases xs : x ∈ s
@@ -988,7 +987,8 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 `(Lp.memLp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memLp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, eLpNorm_congr_ae (MemLp.coeFn_toLp _)]
+  rw [Lp.norm_def, Lp.norm_def,
+    eLpNorm_congr_ae (MemLp.coeFn_toLp _)]
   refine ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) ?_
   exact eLpNorm_mono_measure _ Measure.restrict_le_self
 

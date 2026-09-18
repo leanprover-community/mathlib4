@@ -34,7 +34,9 @@ corresponds to `HasSolidNorm`.
 
 public section
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 variable {ι α G : Type*} [Preorder ι] [TopologicalSpace α]
   [NormedAddCommGroup G] [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G]

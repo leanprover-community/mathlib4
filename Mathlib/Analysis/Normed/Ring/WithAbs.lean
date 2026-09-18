@@ -308,12 +308,28 @@ end WithAbs
 
 namespace AbsoluteValue
 
-variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
-  [Nontrivial L] [Semiring S]
+variable {L K S : Type*} [CommSemiring K] [Semiring L] [Algebra K L] [FaithfulSMul K L]
+  [PartialOrder S] [Semiring S]
+
+variable (K)
+
+/-- The restriction of an absolute value `w` on `L` to `K`. -/
+def under (w : AbsoluteValue L S) : AbsoluteValue K S :=
+  w.comp (FaithfulSMul.algebraMap_injective K L)
+
+theorem under_def (w : AbsoluteValue L S) :
+    w.under K = w.comp (FaithfulSMul.algebraMap_injective K L) :=
+  rfl
+
+variable {K}
 
 /-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
 restriction of `w` to `K`. -/
 class LiesOver (w : AbsoluteValue L S) (v : AbsoluteValue K S) : Prop where
-  comp_eq (w) (v) : w.comp (algebraMap K L).injective = v
+  under_eq (w) (v) : w.under K = v
+
+@[deprecated (since := "2026-08-08")] alias LiesOver.comp_eq := LiesOver.under_eq
+
+instance (w : AbsoluteValue L S) : w.LiesOver (w.under K) := ⟨rfl⟩
 
 end AbsoluteValue

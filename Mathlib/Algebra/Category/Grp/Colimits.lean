@@ -188,7 +188,7 @@ induces a cocone on `F` as long as the universes work out.
 -/
 @[simps]
 def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
-  pt := AddCommGrpCat.of A
+  pt := ↧A
   ι.app j := ofHom <| f.comp (Quot.ι F j)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -238,7 +238,7 @@ set_option backward.defeqAttrib.useBackward true in
 -/
 @[simps pt ι_app]
 noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocone F where
-  pt := AddCommGrpCat.of (Shrink (Quot F))
+  pt := ↧(Shrink (Quot F))
   ι :=
     { app j :=
         AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
@@ -248,7 +248,7 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrpCat.{w}) [Small.{w} (Quot F)] :
     Quot.desc F (colimitCocone F) = (Shrink.addEquiv (α := Quot F)).symm.toAddMonoidHom := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
-  simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
+  simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_ofClass]
     using! Quot.ι_desc F (colimitCocone F) j x
 
 /-- (internal implementation) The fact that the candidate colimit cocone constructed in
@@ -291,13 +291,22 @@ namespace AddCommGrpCat
 
 open QuotientAddGroup
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/12179:
+
+This definition fails without `respectTransparency false`. Removing `lift_mk` from the `dsimp only`
+set in `inv_hom_id` would help. A more sustainable fix would probably be to revisit the `lift_mk`
+refl lemma: Its LHS and RHS are not defeq at implicit transparency. Either the lemma shouldn't be
+a refl lemma or more declarations need to be implicit-reducible.
+-/
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The categorical cokernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical quotient.
 -/
 noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
-    cokernel f ≅ AddCommGrpCat.of (H ⧸ AddMonoidHom.range f.hom) where
+    cokernel f ≅ ↧(H ⧸ AddMonoidHom.range f.hom) where
   hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
         simp
@@ -311,8 +320,8 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     rfl
   inv_hom_id := by
     ext x
-    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk',
-      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, lift_mk, hom_id, AddMonoidHom.coe_id]
+    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk', lift_mk,
+      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, hom_id, AddMonoidHom.coe_id]
     exact QuotientAddGroup.induction_on (α := H) x <| cokernel.π_desc_apply f _ _
 
 end AddCommGrpCat
