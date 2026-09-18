@@ -64,8 +64,9 @@ lake exe lint-exec [--allowlist FILE | --no-allowlist] [--root DIR] [--github]
   root; a missing file means an empty allowlist). Each line is `path: construct=N …`, allowing
   `N` uses of `construct` in that file (`construct` alone means one, `*` means any number). A
   path ending in `/` applies to every file below that directory, and a construct ending in `*`
-  matches every construct with that prefix, e.g. `Mathlib/Tactic/: meta:*=*`. Lines starting
-  with `#` are comments.
+  matches every construct with that prefix, e.g. `Mathlib/Tactic/: meta:*=*`. Counts are per
+  concrete construct (`meta:*=1` allows one `meta:elab` and one `meta:macro`), and the largest
+  applicable count wins. Lines starting with `#` are comments.
 * `--no-allowlist`: allow nothing.
 * `--root DIR`: directory that file paths and allowlist entries are relative to (default `.`).
 * `--github`: print findings as GitHub Actions error annotations.
@@ -105,23 +106,26 @@ def metaKinds : List (Name × String) := [
   (``Lean.Parser.Command.elab, "elab"), (``Lean.Parser.Command.elab_rules, "elab_rules"),
   (``Lean.Parser.Command.macro, "macro"), (``Lean.Parser.Command.macro_rules, "macro_rules")]
 
-/-- Commands that define a metaprogram, by leading keyword (their syntax kinds are generated). -/
+/-- Commands that define a metaprogram, by keyword (their syntax kinds are generated). -/
 def metaHeadAtoms : List String := ["simproc", "dsimproc", "simproc_decl", "dsimproc_decl",
   "sevalproc", "sevalproc_decl", "builtin_simproc", "builtin_dsimproc", "builtin_simproc_decl",
   "builtin_dsimproc_decl", "builtin_sevalproc", "builtin_sevalproc_decl"]
 
-/-- Attributes that register a metaprogram (parsed as `Lean.Parser.Attr.simple`). -/
-def metaAttrs : List Name := [`command_elab, `term_elab, `tactic, `macro, `delab, `app_delab,
-  `app_unexpander, `simproc, `dsimproc, `seval_simproc, `norm_num, `positivity, `env_linter,
-  `widget_module]
+/-- Attributes that register a metaprogram: a declaration that Lean or a tactic later runs. -/
+def metaAttrs : List Name := [
+  -- core
+  `command_elab, `term_elab, `tactic, `macro, `delab, `app_delab, `app_unexpander,
+  `quot_precheck, `simproc, `dsimproc, `seval_simproc, `command_parser, `term_parser,
+  `tactic_parser, `doc_parser, `widget_module, `env_linter,
+  `builtin_command_elab, `builtin_term_elab, `builtin_tactic, `builtin_macro, `builtin_delab,
+  `builtin_app_unexpander, `builtin_quot_precheck, `builtin_simproc, `builtin_dsimproc,
+  `builtin_command_parser, `builtin_term_parser, `builtin_tactic_parser, `builtin_doc_parser,
+  -- Mathlib tactic extensions
+  `norm_num, `positivity, `gcongr_forward, `tacticAnalysis, `tactic_code_action, `bareiss_ext,
+  `inclusion_ext]
 
-/-- Is this attribute name one that registers a metaprogram? Besides `metaAttrs`, every
-`builtin_*` and `*_parser` attribute. -/
-def isMetaAttr (n : Name) : Bool :=
-  metaAttrs.contains n ||
-    match n with
-    | .str .anonymous s => s.startsWith "builtin_" || s.endsWith "_parser"
-    | _ => false
+/-- Is this attribute name one that registers a metaprogram? -/
+def isMetaAttr (n : Name) : Bool := metaAttrs.contains n
 
 /-- Construct name for parse errors in the allowlist. -/
 def parseErrorConstruct : String := "parse-error"
@@ -194,6 +198,12 @@ partial def isScoping (stx : Syntax) (afterFinding : Bool := false) : Bool :=
     let k := stx.getKind
     scopingKinds.contains k && !(afterFinding && parserReferencingKinds.contains k)
 
+/-- Is this a `macro` or `elab` command, possibly inside wrappers? -/
+partial def isMacroOrElab (stx : Syntax) : Bool :=
+  match unwrap? stx with
+  | some (inner, _) => isMacroOrElab inner
+  | none => stx.getKind == ``Lean.Parser.Command.macro || stx.getKind == ``Lean.Parser.Command.elab
+
 /-- A flagged construct at a position. -/
 structure Finding where
   pos : String.Pos.Raw
@@ -231,8 +241,9 @@ partial def walk (stx : Syntax) (acc : Array Finding := #[]) : Array Finding :=
           | none =>
             if isMetaAttr a then acc.push { pos, construct := s!"{metaPrefix}@[{a}]" } else acc
       else if k.toString.startsWith "Lean.Parser.«command" then
-        -- the `simproc` family has generated kind names; recognise them by keyword
-        match headAtom? stx with
+        -- the `simproc` family has generated kind names; recognise them by their keyword, which
+        -- is a direct child (after an optional doc comment and attributes)
+        match args.findSome? (fun a => if a.isAtom then some a.getAtomVal else none) with
         | some h =>
           if metaHeadAtoms.contains h then acc.push { pos, construct := metaPrefix ++ h } else acc
         | none => acc
@@ -271,24 +282,30 @@ def normalizePath (p : String) : String :=
   let p := p.replace "\\" "/"
   if p.startsWith "./" then (p.drop 2).toString else p
 
-def parseAllowlist (contents : String) : Allowlist := Id.run do
+def parseAllowlist (contents : String) : Except String Allowlist := do
   let mut m : Allowlist := {}
+  let mut lineNo := 0
   for line in contents.splitOn "\n" do
+    lineNo := lineNo + 1
     let line := line.trimAscii.toString
     -- whole-line comments only: `#` also starts the construct name `#eval`
     if line.isEmpty || line.startsWith "#" then continue
     -- split at the first `: ` only: construct names such as `meta:elab` contain colons
-    match line.splitOn ": " with
-    | path :: rest =>
-      let constructs := ": ".intercalate rest
-      let mut allowed : Array (String × Limit) := #[]
-      for c in (constructs.splitOn " ").filter (!·.isEmpty) do
-        match c.splitOn "=" with
-        | [c, "*"] => allowed := allowed.push (c, none)
-        | [c, n] => allowed := allowed.push (c, some (n.toNat?.getD 0))
-        | _ => allowed := allowed.push (c, some 1)
-      m := m.insert (normalizePath path.trimAscii.toString) allowed
-    | _ => continue
+    let path :: rest := line.splitOn ": " | throw s!"line {lineNo}: expected `path: constructs`"
+    let path := normalizePath path.trimAscii.toString
+    if rest.isEmpty then throw s!"line {lineNo}: expected `path: constructs`"
+    if m.contains path then throw s!"line {lineNo}: duplicate entry for `{path}`"
+    let constructs := ": ".intercalate rest
+    let mut allowed : Array (String × Limit) := #[]
+    for c in (constructs.splitOn " ").filter (!·.isEmpty) do
+      match c.splitOn "=" with
+      | [c, "*"] => allowed := allowed.push (c, none)
+      | [c, n] =>
+        let some n := n.toNat? | throw s!"line {lineNo}: `{c}={n}` is not a count"
+        allowed := allowed.push (c, some n)
+      | [c] => allowed := allowed.push (c, some 1)
+      | _ => throw s!"line {lineNo}: cannot parse `{c}`"
+    m := m.insert path allowed
   return m
 
 /-- Does the construct spec `pat` (possibly ending in `*`) match `construct`? -/
@@ -347,6 +364,18 @@ def syntaxPartOfMacroOrElab (stx : Syntax) : CommandElabM (Option Syntax) := do
 `syntax` part is computed in the scope of `cmd`. Throws if a `macro`/`elab` has an unexpected
 shape, in which case nothing is elaborated (later uses of its syntax then fail to parse, which
 is reported). -/
+partial def syntaxOnly (stx : Syntax) : CommandElabM Syntax := do
+  match unwrap? stx with
+  | some (inner, rebuild) => return rebuild (← syntaxOnly inner)
+  | none =>
+    let k := stx.getKind
+    if k == ``Lean.Parser.Command.macro || k == ``Lean.Parser.Command.elab then
+      let some part ← syntaxPartOfMacroOrElab stx
+        | throwError "unexpected shape of `macro`/`elab` command; its syntax was not set up"
+      return part
+    else
+      return stx
+
 partial def elabSyntaxOnly (stx : Syntax) : CommandElabM Unit := do
   if stx.getKind == ``Lean.Parser.Command.in then
     elabCommandTopLevel (← `(section))
@@ -356,23 +385,7 @@ partial def elabSyntaxOnly (stx : Syntax) : CommandElabM Unit := do
     finally
       elabCommandTopLevel (← `(end))
   else
-    match unwrap? stx with
-    | some (inner, rebuild) =>
-      let k := inner.getKind
-      if k == ``Lean.Parser.Command.macro || k == ``Lean.Parser.Command.elab then
-        let some part ← syntaxPartOfMacroOrElab inner
-          | throwError "unexpected shape of `macro`/`elab` command; its syntax was not set up"
-        elabCommandTopLevel (rebuild part)
-      else
-        elabCommandTopLevel stx
-    | none =>
-      let k := stx.getKind
-      if k == ``Lean.Parser.Command.macro || k == ``Lean.Parser.Command.elab then
-        let some part ← syntaxPartOfMacroOrElab stx
-          | throwError "unexpected shape of `macro`/`elab` command; its syntax was not set up"
-        elabCommandTopLevel part
-      else
-        elabCommandTopLevel stx
+    elabCommandTopLevel (← syntaxOnly stx)
 
 /-- Elaborate a scoping command (see `elabSyntaxOnly`), discarding all messages. Returns the
 first error message, if any. -/
@@ -471,7 +484,12 @@ def lintFile (path : FilePath) (opts : Options) (limit : String → Limit)
         let (c, r) := record counts f
         counts := c; findings := findings.push r
         if stopOnFinding && !r.2 then afterFinding := true
-      if isScoping cmd afterFinding then
+      -- A command that itself contains a code-executing construct (for example
+      -- `variable (x : by run_tac …)`) is never elaborated, allowed or not. `macro` and `elab`
+      -- are exempt: only their `syntax` half is elaborated, and their bodies are never defined.
+      let executes := !isMacroOrElab cmd && fs.any fun f =>
+        !f.construct.startsWith metaPrefix && f.construct != parseErrorConstruct
+      if !executes && isScoping cmd afterFinding then
         if let some e ← elabScoping cmd then
           let p := ictx.fileMap.toPosition (cmd.getPos?.getD 0)
           if verbose then IO.eprintln s!"{path}:{p.line}: could not set up command: {e}"
@@ -527,8 +545,7 @@ def formatFinding (cfg : Config) (rel : String) (fm : FileMap) (f : Finding) (k 
       else
         s!"this is use number {k} of '{what}' in this file, but only {allowedCount} \
           {if allowedCount == 1 then "is" else "are"} allowed. If this use is intended and has \
-          been reviewed, update the count for '{rel}: {f.construct}={allowedCount}' in \
-          {allowlist}."
+          been reviewed, update the entry to '{rel}: {f.construct}={k}' in {allowlist}."
     else if allowedCount == 0 then
       s!"'{f.construct}' is not allowed here: it executes code at elaboration time or bypasses \
         the type checker. If this use is intended and has been reviewed, add \
@@ -536,7 +553,7 @@ def formatFinding (cfg : Config) (rel : String) (fm : FileMap) (f : Finding) (k 
     else
       s!"this is use number {k} of '{f.construct}' in this file, but only {allowedCount} \
         {if allowedCount == 1 then "is" else "are"} allowed. If this use is intended and has \
-        been reviewed, update the count for '{rel}: {f.construct}={allowedCount}' in {allowlist}."
+        been reviewed, update the entry to '{rel}: {f.construct}={k}' in {allowlist}."
   if cfg.github then
     s!"::error file={rel},line={p.line},col={p.column + 1}::{msg}"
   else
@@ -550,7 +567,11 @@ unsafe def lintSingle (cfg : Config) (rel : String) : IO Bool := do
     match cfg.allowlistPath with
     | some p =>
       let p := cfg.root / p
-      if (← p.pathExists) then pure (parseAllowlist (← IO.FS.readFile p)) else pure {}
+      if (← p.pathExists) then
+        match parseAllowlist (← IO.FS.readFile p) with
+        | .ok a => pure a
+        | .error e => throw <| IO.userError s!"{p}: {e}"
+      else pure {}
     | none => pure {}
   let limit := allowlist.limit rel
   let (imports, toReplay, importFindings) ← resolveImports cfg.root path

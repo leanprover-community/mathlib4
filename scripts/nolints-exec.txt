@@ -100,10 +100,11 @@ Mathlib/Analysis/SpecialFunctions/Pow/Real.lean: meta:@[norm_num]=1 meta:@[posit
 Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean: meta:@[positivity]=3
 Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean: meta:@[positivity]=1
 Mathlib/Analysis/SpecialFunctions/Trigonometric/DerivHyp.lean: meta:@[positivity]=1
-Mathlib/Basic/Complex/Basic.lean: unsafe=1
+Mathlib/Basic/Complex/Basic.lean: meta:simproc=1 unsafe=1
 Mathlib/Basic/ENNReal/Basic.lean: meta:@[positivity]=2 unsafe=1
 Mathlib/Basic/ENNReal/Real.lean: meta:@[positivity]=1
 Mathlib/Basic/ExistsUnique.lean: meta:@[app_unexpander]=1 meta:macro=1 meta:macro_rules=1
+Mathlib/Basic/Logic/Basic.lean: meta:simproc_decl=2
 Mathlib/Basic/NNReal/Defs.lean: meta:@[positivity]=3 unsafe=1
 Mathlib/Basic/Real/Basic.lean: unsafe=1
 Mathlib/CategoryTheory/Category/Basic.lean: meta:@[tactic]=1 meta:elab=1 meta:macro=4
@@ -130,12 +131,13 @@ Mathlib/Data/EReal/Inv.lean: meta:@[positivity]=2
 Mathlib/Data/EReal/Operations.lean: meta:@[positivity]=2
 Mathlib/Data/FP/Basic.lean: unsafe=14
 Mathlib/Data/Fin/Basic.lean: meta:macro=1
-Mathlib/Data/Fin/VecNotation.lean: meta:@[app_unexpander]=2 meta:macro_rules=1
+Mathlib/Data/Fin/Tuple/Reflection.lean: meta:simproc_decl=2
+Mathlib/Data/Fin/VecNotation.lean: meta:@[app_unexpander]=2 meta:dsimproc=1 meta:macro_rules=1
 Mathlib/Data/Finset/Filter.lean: meta:@[term_elab]=1
 Mathlib/Data/Finset/Sort.lean: unsafe=1
 Mathlib/Data/Finsupp/Notation.lean: meta:@[app_unexpander]=2 meta:@[term_elab]=2 meta:@[term_parser]=1 meta:macro_rules=1 parse-error=3 unsafe=1
 Mathlib/Data/Fintype/Defs.lean: meta:@[app_delab]=1 meta:@[term_elab]=1
-Mathlib/Data/Fintype/Sets.lean: meta:elab=1
+Mathlib/Data/Fintype/Sets.lean: meta:@[quot_precheck]=1 meta:elab=1
 Mathlib/Data/FunLike/Basic.lean: run_cmd=1
 Mathlib/Data/List/Cycle.lean: unsafe=1
 Mathlib/Data/Multiset/Sort.lean: unsafe=2
@@ -210,6 +212,8 @@ Mathlib/NumberTheory/Height/NumberField.lean: meta:@[positivity]=1
 Mathlib/NumberTheory/Height/Projectivization.lean: meta:@[positivity]=2
 Mathlib/NumberTheory/LucasLehmer.lean: meta:@[norm_num]=1 meta:@[positivity]=1
 Mathlib/NumberTheory/SelbergSieve.lean: meta:@[positivity]=1
+Mathlib/Order/Antisymmetrization.lean: meta:@[gcongr_forward]=1
+Mathlib/Order/Basic.lean: meta:@[gcongr_forward]=1
 Mathlib/Order/Bounds/Basic.lean: meta:macro=1
 Mathlib/Order/Category/BddDistLat.lean: meta:@[app_delab]=1
 Mathlib/Order/Category/BddLat.lean: meta:@[app_delab]=1
@@ -231,7 +235,7 @@ Mathlib/Order/Category/PartOrdEmb.lean: meta:@[app_delab]=1
 Mathlib/Order/Category/Preord.lean: meta:@[app_delab]=1
 Mathlib/Order/Category/Semilat.lean: meta:@[app_delab]=2
 Mathlib/Order/Defs/LinearOrder.lean: meta:macro=1
-Mathlib/Order/Filter/Defs.lean: meta:@[app_unexpander]=4 meta:@[term_elab]=2 meta:elab_rules=1
+Mathlib/Order/Filter/Defs.lean: meta:@[app_unexpander]=4 meta:@[quot_precheck]=2 meta:@[term_elab]=2 meta:elab_rules=1
 Mathlib/Order/Filter/IsBounded.lean: meta:macro=1
 Mathlib/Order/Interval/Finset/Defs.lean: meta:@[term_elab]=1
 Mathlib/Order/Interval/Lex.lean: #eval=1
@@ -239,6 +243,7 @@ Mathlib/Order/Notation.lean: meta:@[delab]=2 meta:macro_rules=1
 Mathlib/Order/SetNotation.lean: meta:@[app_delab]=4
 Mathlib/Probability/ConditionalProbability.lean: meta:@[app_delab]=1 meta:@[app_unexpander]=1 meta:macro=6
 Mathlib/Probability/Notation.lean: meta:macro=1
+Mathlib/RingTheory/Coalgebra/CoassocSimps.lean: meta:simproc_decl=8
 Mathlib/RingTheory/Coalgebra/TensorProduct.lean: meta:macro=1
 Mathlib/RingTheory/Derivation/DifferentialRing.lean: meta:@[app_delab]=1
 Mathlib/RingTheory/HahnSeries/Basic.lean: meta:@[app_unexpander]=1 meta:macro_rules=1

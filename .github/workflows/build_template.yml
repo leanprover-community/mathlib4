@@ -215,10 +215,22 @@ jobs:
           git diff --name-only --diff-filter=d "$mb" HEAD -- '*.lean' \
             | { grep -E '^(Mathlib|Archive|Counterexamples)(/.*)?\.lean$' || true; } \
             > .lake/lint-exec-files.txt
-          echo "$(wc -l < .lake/lint-exec-files.txt) changed Lean files to lint"
-          # master's copy of the linter source, for the no-prebuilt-binary case below.
+          # If the allowlist changed, re-check every file it mentions too, so that an entry
+          # cannot be loosened for a file the PR does not otherwise touch.
+          if ! git diff --quiet "$mb" HEAD -- scripts/nolints-exec.txt; then
+            grep -vE '^\s*(#|$)' scripts/nolints-exec.txt | cut -d: -f1 | grep -v '/$' \
+              | while read -r f; do [ -f "$f" ] && echo "$f"; done >> .lake/lint-exec-files.txt
+          fi
+          sort -u -o .lake/lint-exec-files.txt .lake/lint-exec-files.txt
+          echo "$(wc -l < .lake/lint-exec-files.txt) Lean files to lint"
+          # master's copies of the linter source and lakefile, for the no-prebuilt-binary case
+          # below (a missing file means master does not have the linter yet).
           git fetch --no-tags --depth=1 "$upstream" master
-          git show FETCH_HEAD:scripts/lint-exec.lean > .lake/lint-exec-master.lean || true
+          for f in scripts/lint-exec.lean lakefile.lean; do
+            if git cat-file -e "FETCH_HEAD:$f" 2>/dev/null; then
+              git show "FETCH_HEAD:$f" > ".lake/master-$(basename "$f")"
+            fi
+          done
 
       - name: lint elaboration-time code execution
         if: github.repository == 'leanprover-community/mathlib4'
@@ -231,15 +243,17 @@ jobs:
           if [ -x ../tools-branch/.lake/build/bin/lint-exec ] \
               && cmp -s ../tools-branch/lean-toolchain lean-toolchain; then
             LINT_EXEC=../tools-branch/.lake/build/bin/lint-exec
-          elif [ ! -s .lake/lint-exec-master.lean ] \
-              || cmp -s .lake/lint-exec-master.lean scripts/lint-exec.lean; then
+          elif [ ! -f .lake/master-lint-exec.lean ] \
+              || { cmp -s .lake/master-lint-exec.lean scripts/lint-exec.lean \
+                   && cmp -s .lake/master-lakefile.lean lakefile.lean; }; then
             # No prebuilt binary for this toolchain (toolchain bump), or master does not have the
-            # linter yet: build it from this branch, whose source equals master's.
+            # linter yet: build it from this branch, whose linter source and lakefile equal
+            # master's.
             echo "no prebuilt lint-exec for this toolchain; building it from this branch"
             lake build lint-exec
             LINT_EXEC=.lake/build/bin/lint-exec
           else
-            echo "::error::scripts/lint-exec.lean differs from master and there is no prebuilt lint-exec for this toolchain; land the linter change and the toolchain change separately"
+            echo "::error::scripts/lint-exec.lean or lakefile.lean differs from master and there is no prebuilt lint-exec for this toolchain; land those changes separately from the toolchain change"
             exit 1
           fi
           lake env "$LINT_EXEC" --github --files-from .lake/lint-exec-files.txt
