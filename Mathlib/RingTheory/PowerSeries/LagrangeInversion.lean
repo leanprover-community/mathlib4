@@ -67,22 +67,14 @@ private lemma hasSubst_of_fixedPoint : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
 
 /-- If `Y = X * P(Y)` and the constant coefficient of `P` is zero, then `Y = 0`. -/
-theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0) : Y = 0 := by
-  let Q := mk fun n ↦ P.coeff (n + 1)
-  have hP' : P = X * Q := by simpa [Q, hP] using P.eq_X_mul_shift_add_const
-  have hYsubst := hasSubst_of_fixedPoint hY
-  have hsubst : P.subst Y = Y * Q.subst Y := by
-    rw [hP', subst_mul hYsubst, subst_X hYsubst]
-  rw [hsubst] at hY
+theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero' (hP : P.constantCoeff = 0) : Y = 0 := by
+  have hsubst := hasSubst_of_fixedPoint hY
+  obtain ⟨Q, rfl⟩ := X_dvd_iff.mpr hP
+  rw [subst_mul hsubst, subst_X hsubst] at hY
   have hunit : IsUnit (1 - X * Q.subst Y) := by
-    apply MvPowerSeries.isUnit_iff_constantCoeff.mpr
-    change IsUnit (constantCoeff (1 - X * Q.subst Y))
-    simp
-  apply hunit.mul_right_cancel
-  rw [zero_mul]
-  calc
-    Y * (1 - X * Q.subst Y) = Y - X * (Y * Q.subst Y) := by ring
-    _ = 0 := sub_eq_zero.mpr hY
+    simp [isUnit_iff_constantCoeff]
+  rw [← hunit.mul_left_eq_zero]
+  linear_combination hY
 
 end CommRing
 
