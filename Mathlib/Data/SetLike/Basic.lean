@@ -244,7 +244,7 @@ An order defined this way automatically makes available an instance of `IsMemLE`
 @[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
 
 instance [Membership B A] : letI := LE.ofMembership A B; IsMemLE A B :=
-  letI := LE.ofMembership A B; { le_iff := .rfl }
+  letI := LE.ofMembership A B; { le_iff_mem_imp_mem := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
 
@@ -269,13 +269,13 @@ section Membership
 variable {A B : Type*} [Membership B A]
 
 theorem not_le_iff_exists_mem_notMem [LE A] [IsMemLE A B] {p q : A} :
-    ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by simp [le_iff]
+    ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by simp [le_iff_mem_imp_mem]
 
 theorem lt_iff_le_and_exists_mem_notMem [Preorder A] [IsMemLE A B] {p q : A} :
-    p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by rw [lt_iff_le_not_ge, not_le_iff_exists]
+    p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by rw [lt_iff_le_not_ge, not_le_iff_exists_mem_notMem]
 
 theorem exists_mem_notMem_of_lt [Preorder A] [IsMemLE A B] {p q : A} (h : p < q) :
-    ∃ x ∈ q, x ∉ p := (lt_iff_le_and_exists.mp h).2
+    ∃ x ∈ q, x ∉ p := (lt_iff_le_and_exists_mem_notMem.mp h).2
 
 end Membership
 
@@ -302,7 +302,7 @@ section LE
 variable [LE A] [IsMemLE A B] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_subset_coe : (p : Set B) ⊆ q ↔ p ≤ q :=
-  (IsMemLE.le_iff (A := A)).symm
+  (le_iff_mem_imp_mem (A := A)).symm
 
 end LE
 
