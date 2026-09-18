@@ -291,6 +291,15 @@ theorem cancel_left {g : SupBotHom β γ} {f₁ f₂ : SupBotHom α β} (hg : In
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => SupBotHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
+@[to_dual (attr := simps)]
+def _root_.OrderIso.supBotHomCongr {α β γ δ : Type*} [SemilatticeSup α] [SemilatticeSup β]
+    [SemilatticeSup γ] [SemilatticeSup δ] [OrderBot α] [OrderBot β] [OrderBot γ] [OrderBot δ]
+    (e : α ≃o γ) (e' : β ≃o δ) : SupBotHom α β ≃ SupBotHom γ δ where
+  toFun f := (e' : SupBotHom β δ).comp (f.comp e.symm)
+  invFun f := (e'.symm : SupBotHom δ β).comp (f.comp e)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 end Sup
 
 variable [SemilatticeSup β] [OrderBot β]
@@ -471,6 +480,14 @@ theorem cancel_right {g₁ g₂ : BoundedLatticeHom β γ} {f : BoundedLatticeHo
 theorem cancel_left {g : BoundedLatticeHom β γ} {f₁ f₂ : BoundedLatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+
+@[simps]
+def _root_.OrderIso.boundedLatticeHomCongr (e : α ≃o γ) (e' : β ≃o δ) :
+    BoundedLatticeHom α β ≃ BoundedLatticeHom γ δ where
+  toFun f := (e' : BoundedLatticeHom β δ).comp (f.comp e.symm)
+  invFun f := (e'.symm : BoundedLatticeHom δ β).comp (f.comp e)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 /-- `Subtype.val` as a `BoundedLatticeHom`. -/
 @[to_dual self (reorder := Pbot Ptop, Psup Pinf)]

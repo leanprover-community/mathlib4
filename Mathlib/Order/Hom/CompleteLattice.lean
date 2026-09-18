@@ -326,6 +326,17 @@ theorem coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=
 theorem bot_apply (a : α) : (⊥ : sSupHom α β) a = ⊥ :=
   rfl
 
+variable {_ : CompleteLattice α}
+
+@[to_dual (attr := simps)]
+def _root_.OrderIso.sSupHomCongr {α β γ δ : Type*} [CompleteLattice α] [CompleteLattice β]
+    [CompleteLattice γ] [CompleteLattice δ] (e : α ≃o γ) (e' : β ≃o δ) :
+    sSupHom α β ≃ sSupHom γ δ where
+  toFun f := (e' : sSupHom β δ).comp (f.comp e.symm)
+  invFun f := (e'.symm : sSupHom δ β).comp (f.comp e)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 end sSupHom
 
 /-! ### Frame homomorphisms -/
@@ -428,6 +439,15 @@ theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Sur
 theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+
+@[simps]
+def _root_.OrderIso.frameHomCongr {α β γ δ : Type*} [CompleteLattice α] [CompleteLattice β]
+    [CompleteLattice γ] [CompleteLattice δ] (e : α ≃o γ) (e' : β ≃o δ) :
+    FrameHom α β ≃ FrameHom γ δ where
+  toFun f := (e' : FrameHom β δ).comp (f.comp e.symm)
+  invFun f := (e'.symm : FrameHom δ β).comp (f.comp e)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 instance : PartialOrder (FrameHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
@@ -539,6 +559,15 @@ theorem cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLattice
 theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeHom α β}
     (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+
+@[simps]
+def _root_.OrderIso.completeLatticeHomCongr {α β γ δ : Type*} [CompleteLattice α]
+    [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ] (e : α ≃o γ) (e' : β ≃o δ) :
+    CompleteLatticeHom α β ≃ CompleteLatticeHom γ δ where
+  toFun f := (e' : CompleteLatticeHom β δ).comp (f.comp e.symm)
+  invFun f := (e'.symm : CompleteLatticeHom δ β).comp (f.comp e)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 end CompleteLatticeHom
 
