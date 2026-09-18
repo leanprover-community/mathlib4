@@ -164,7 +164,7 @@ lemma factorizationM_ι_inr (i : Index I W g) :
     (i.factorization hJ₁).m ≫
       Sigma.ι (fun i ↦ (i.factorization hJ₁).B') i ≫ inr g hJ₁ =
         (i.factorization hJ₁).β.left ≫ ιSuccObj g hJ₁ := by
-  haveI := hasCoproductsOfShape_index I W g
+  have := hasCoproductsOfShape_index I W g
   simpa using (Sigma.ι (fun i ↦ (i.factorization hJ₁).A') i ≫=
     pushout.condition (f := sigmaDesc g hJ₁) (g := sigmaMap g hJ₁)).symm
 
@@ -352,7 +352,7 @@ lemma lemma_1_8' {X Y : C} (f : X ⟶ Y) (hf : W f) :
       (_ : J.rlp.llp a) (_ : I.rlp b), a ≫ b = f := by
   have : Nonempty κ.ord.ToType := by
     simpa using Cardinal.IsRegular.ne_zero Fact.out
-  letI : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
+  let : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
   obtain ⟨Z, a, b, ha, hb, fac⟩ := lemma_1_8 hJ₁ hJ₂ κ hκ f hf
   refine ⟨Z, a, b, ?_, hb, fac⟩
   apply MorphismProperty.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp

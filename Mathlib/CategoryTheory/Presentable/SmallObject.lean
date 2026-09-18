@@ -47,7 +47,7 @@ instance (W : MorphismProperty C) [MorphismProperty.IsSmall.{w} W] :
     have : Nonempty κ.ord.ToType := by
       simp only [Ordinal.nonempty_toType_iff, ne_eq, Cardinal.ord_eq_zero]
       exact Cardinal.IsRegular.ne_zero Fact.out
-    haveI : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
+    have : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
     exact ⟨κ, inferInstance, inferInstance,
       { preservesColimit {A _ _ _} i hi _ _ := by
           have : IsCardinalPresentable A κ := hκ ⟨i, hi⟩
