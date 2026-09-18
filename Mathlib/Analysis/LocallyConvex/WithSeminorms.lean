@@ -569,6 +569,9 @@ variable (𝕜 E)
 /-- A seminorm defining the topology in a normable space. -/
 noncomputable def IsNormableSpace.seminorm : Seminorm 𝕜 E := hn.withSeminorms'.choose
 
+lemma IsNormableSpace.withSeminorms_seminorm : WithSeminorms (fun (_ : Unit) ↦ hn.seminorm 𝕜 E) :=
+  hn.withSeminorms'.choose_spec
+
 /-- A normable space can be endowed with a seminorm defining the same topology. -/
 noncomputable abbrev IsNormableSpace.toSeminormedAddCommGroup : SeminormedAddCommGroup E := by
   let : Norm E := ⟨IsNormableSpace.seminorm 𝕜 E⟩
@@ -577,8 +580,7 @@ noncomputable abbrev IsNormableSpace.toSeminormedAddCommGroup : SeminormedAddCom
     norm_smul c x := map_smul_eq_mul _ c x
     norm_triangle x y := map_add_le_add _ x y }
   refine SeminormedAddCommGroup.ofCoreReplaceTopology c ?_
-  rw [hn.withSeminorms'.choose_spec.topologicalSpace_eq_iInf, ciInf_unique]
-  rfl
+  rw [hn.withSeminorms_seminorm.topologicalSpace_eq_iInf, ciInf_unique]
 
 /-- A normable space can be endowed with a normed space structure. -/
 noncomputable abbrev IsNormableSpace.toNormedSpace :

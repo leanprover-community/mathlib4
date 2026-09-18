@@ -174,26 +174,21 @@ namespace ContinuousLinearMap
 variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
   [IsNormableSpace 𝕜 E'] [IsTopologicalAddGroup G'] [IsTopologicalAddGroup Gₗ']
 
-/-- Flip the order of arguments of a continuous bilinear map. Linear version.
-Do not use: use instead `flip` which outputs a continuous bilinear map. -/
-def flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →ₛₗ[σ₂₃] E' →ₛₗ[σ₁₃] G' :=
-  LinearMap.flip f.toLinearMap₁₂
-
-private lemma exists_eq_flipₗ (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') :
-    ∃ g : F' →SL[σ₂₃] E' →SL[σ₁₃] G', ∀ a b, flipₗ f a b = g a b := by
+private lemma exists_eq_flip_toLinearMap (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') :
+    ∃ g : F' →SL[σ₂₃] E' →SL[σ₁₃] G', ∀ a b, f.toLinearMap₁₂.flip a b = g a b := by
   let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
   let : NormedSpace 𝕜 E' := IsNormableSpace.toNormedSpace 𝕜 E'
   let : SeminormedAddCommGroup F' := IsNormableSpace.toSeminormedAddCommGroup 𝕜₂ F'
   let : NormedSpace 𝕜₂ F' := IsNormableSpace.toNormedSpace 𝕜₂ F'
   let : SeminormedAddCommGroup G' := IsNormableSpace.toSeminormedAddCommGroup 𝕜₃ G'
   let : NormedSpace 𝕜₃ G' := IsNormableSpace.toNormedSpace 𝕜₃ G'
-  exact ⟨LinearMap.mkContinuous₂ (flipₗ f)
+  exact ⟨LinearMap.mkContinuous₂ f.toLinearMap₁₂.flip
     ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm], fun a b ↦ rfl⟩
 
 /-- Flip the order of arguments of a continuous bilinear map.
 For a version bundled as `LinearIsometryEquiv`, see `ContinuousLinearMap.flipL`. -/
 def flip (f : E' →SL[σ₁₃] F' →SL[σ₂₃] G') : F' →SL[σ₂₃] E' →SL[σ₁₃] G' :=
-  (flipₗ f).mkContinuous₂OfExists (by exact exists_eq_flipₗ f)
+  f.toLinearMap₁₂.flip.mkContinuous₂OfExists (by exact exists_eq_flip_toLinearMap f)
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
   f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
