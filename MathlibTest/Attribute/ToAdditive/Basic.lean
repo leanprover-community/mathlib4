@@ -643,8 +643,8 @@ fun {α} [Add α] a => Add.add a
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
 /--
-warning: `to_additive self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_additive self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_additive` to translate expressions involving `test1`,
 use `to_additive_do_translate` instead
 
