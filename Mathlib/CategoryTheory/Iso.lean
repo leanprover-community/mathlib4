@@ -239,11 +239,7 @@ class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 
-/-- `IsIso.mk'` is the dual of `IsIso.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-theorem IsIso.mk' {f : Y ⟶ X} (out : ∃ inv : X ⟶ Y, inv ≫ f = 𝟙 X ∧ f ≫ inv = 𝟙 Y) : IsIso f where
-  out := by simp_all only [and_comm]
+to_dual_for IsIso.mk := ⟨by simpa only [and_comm] using out⟩
 
 /-- The inverse of a morphism `f` when we have `[IsIso f]`. -/
 @[to_dual self, no_expose]
