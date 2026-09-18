@@ -94,7 +94,6 @@ instance : Unique (Σ n, Language.order.Relations n) :=
       | 2, .le => rfl⟩
 
 instance : Unique Language.order.Symbols := ⟨⟨Sum.inr default⟩, by
-  have : IsEmpty (Σ n, Language.order.Functions n) := isEmpty_sigma.2 inferInstance
   simp only [Symbols, Sum.forall, reduceCtorEq, Sum.inr.injEq, IsEmpty.forall_iff, true_and]
   exact Unique.eq_default⟩
 
@@ -484,11 +483,11 @@ lemma dlo_isExtensionPair
   have := NoTopOrder.to_noMaxOrder N
   have hS : Set.Finite (S : Set M) := (S.fg_iff_structure_fg.1 S_fg).finite
   obtain ⟨g, hg⟩ := Order.exists_orderEmbedding_insert hS.toFinset
-    ((OrderIso.Set.congr hS.toFinset (S : Set M) hS.coe_toFinset).toOrderEmbedding.trans
+    ((Set.orderIsoOfEq hS.toFinset (S : Set M) hS.coe_toFinset).toOrderEmbedding.trans
       (OrderEmbedding.ofStrictMono f (HomClass.strictMono f))) m
   let g' :
     ((Substructure.closure Language.order).toFun {m} ⊔ S : Language.order.Substructure M) ↪o N :=
-    ((OrderIso.Set.congr _ _ (by
+    ((Set.orderIsoOfEq _ _ (by
       convert!
         LowerAdjoint.closure_eq_self_of_mem_closed _
           (Substructure.mem_closed_of_isRelational Language.order

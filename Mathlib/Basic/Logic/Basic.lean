@@ -80,7 +80,7 @@ simproc_decl iffComm (_ ↔ _) := fun e => do
       ``Iff.comm,
       -- These theorems aren't commute-resistant (they turn an iff into a non-iff in a
       -- non-commutative way).
-      ``and_congr_left_iff, ``and_congr_right_iff,  ``iff_def, ``iff_def',
+      ``and_congr_left_iff, ``and_congr_right_iff, ``iff_def, ``iff_def',
       ``iff_iff_implies_and_implies, ``Bool.coe_iff_coe] do
     withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting iff: {e}") <| simp symmExpr
   -- If no actual progress happened (modulo commutativity), return early.
@@ -310,6 +310,12 @@ theorem xor_comm (a b : Prop) : Xor a b = Xor b a := by grind
 
 instance : Std.Commutative Xor := ⟨xor_comm⟩
 
+instance : Std.Symm Xor where
+  symm _ _ := .symm
+
+instance : Std.Irrefl Xor where
+  irrefl _ h := and_not_self <| h.elim id id
+
 @[simp] theorem xor_self (a : Prop) : Xor a a = False := by grind
 
 @[simp] theorem xor_not_left : Xor (¬a) b ↔ (a ↔ b) := by grind
@@ -328,6 +334,9 @@ protected alias Xor'.or := Xor.or
 alias Iff.and := and_congr
 alias ⟨And.rotate, _⟩ := and_rotate
 
+instance : Std.Symm And where
+  symm _ _ := .symm
+
 theorem and_symm_right {α : Sort*} (a b : α) (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]
 theorem and_symm_left {α : Sort*} (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]
 
@@ -335,6 +344,9 @@ theorem and_symm_left {α : Sort*} (a b : α) (p : Prop) : a = b ∧ p ↔ b = a
 
 alias Iff.or := or_congr
 alias ⟨Or.rotate, _⟩ := or_rotate
+
+instance : Std.Symm Or where
+  symm _ _ := .symm
 
 theorem Or.elim3 {c d : Prop} (h : a ∨ b ∨ c) (ha : a → d) (hb : b → d) (hc : c → d) : d :=
   Or.elim h ha fun h₂ ↦ Or.elim h₂ hb hc
@@ -369,9 +381,7 @@ theorem or_congr_left' {c a b : Prop} (h : ¬c → (a ↔ b)) : a ∨ c ↔ b �
 theorem or_congr_right' {c : Prop} (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c :=
   open scoped Classical in Decidable.or_congr_right' h
 
-/-! ### Declarations about distributivity -/
-
-/-! Declarations about `iff` -/
+/-! ### Declarations about `iff` -/
 
 alias Iff.iff := iff_congr
 
@@ -434,7 +444,7 @@ end Propositional
 
 section Equality
 
--- todo: change name
+-- TODO: change name
 theorem forall_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
     (∀ a, s a → ∀ b, s b → p a b) ↔ ∀ a b, s a → s b → p a b :=
   ⟨fun h a b ha hb ↦ h a ha b hb, fun h a ha b hb ↦ h a b ha hb⟩
@@ -442,7 +452,6 @@ theorem forall_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
 theorem forall_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Prop} :
     (∀ a (_ : a ∈ s) b (_ : b ∈ s), p a b) ↔ ∀ a b, a ∈ s → b ∈ s → p a b :=
   forall_cond_comm
-
 
 lemma ne_of_eq_of_ne {α : Sort*} {a b c : α} (h₁ : a = b) (h₂ : b ≠ c) : a ≠ c := h₁.symm ▸ h₂
 lemma ne_of_ne_of_eq {α : Sort*} {a b c : α} (h₁ : a ≠ b) (h₂ : b = c) : a ≠ c := h₂ ▸ h₁
@@ -538,7 +547,7 @@ theorem forall₂_comm
 
 @[deprecated (since := "2026-03-25")] alias forall₂_swap := forall₂_comm
 
-/-- We intentionally restrict the type of `α` in this lemma so that this is a safer to use in simp
+/-- We intentionally restrict the type of `α` in this lemma so that this is safer to use in simp
 than `forall_comm`. -/
 theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
   forall_comm
@@ -695,12 +704,16 @@ theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
 theorem Exists.snd {b : Prop} {p : b → Prop} : ∀ h : Exists p, p h.fst
   | ⟨_, h⟩ => h
 
-theorem Prop.exists_iff {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
+theorem Prop.exists {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
   ⟨fun ⟨h₁, h₂⟩ ↦ by_cases (fun H : h₁ ↦ .inr <| by simpa only [H] using h₂)
     (fun H ↦ .inl <| by simpa only [H] using h₂), fun h ↦ h.elim (.intro _) (.intro _)⟩
 
-theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
+@[deprecated (since := "2026-09-02")] alias Prop.exists_iff := Prop.exists
+
+theorem Prop.forall {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
   ⟨fun H ↦ ⟨H _, H _⟩, fun ⟨h₁, h₂⟩ h ↦ by by_cases H : h <;> simpa only [H]⟩
+
+@[deprecated (since := "2026-09-02")] alias Prop.forall_iff := Prop.forall
 
 theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃ h, q h) ↔ p :=
   ⟨Exists.fst, fun H ↦ ⟨H, h H⟩⟩
@@ -732,8 +745,6 @@ lemma eq_false_intro {a : Prop} (h : ¬a) : a = False := propext (iff_false_intr
 alias Iff.eq := propext
 
 lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
-
--- They were not used in Lean 3 and there are already lemmas with those names in Lean 4
 
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
@@ -787,10 +798,6 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 
--- This can be removed after https://github.com/leanprover/lean4/pull/11316
--- arrives in a release candidate.
-grind_pattern Exists.choose_spec => P.choose
-
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
 @[simp]
@@ -800,11 +807,6 @@ lemma choose_eq' (a : α) : @Exists.choose _ (a = ·) ⟨a, rfl⟩ = a :=
 alias axiom_of_choice := axiomOfChoice -- TODO: remove? rename in core?
 alias by_cases := byCases -- TODO: remove? rename in core?
 alias by_contradiction := byContradiction -- TODO: remove? rename in core?
-
--- The remaining theorems in this section were ported from Lean 3,
--- but are currently unused in Mathlib, so have been deprecated.
--- If any are being used downstream, please remove the deprecation.
-
 alias prop_complete := propComplete -- TODO: remove? rename in core?
 
 end Classical
@@ -847,7 +849,6 @@ theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ 
 
 theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
-
 
 theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_imp
 
@@ -957,18 +958,18 @@ theorem apply_dite₂ {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Deci
     f (dite P a b) (dite P c d) = dite P (fun h ↦ f (a h) (c h)) fun h ↦ f (b h) (d h) := by
   by_cases h : P <;> simp [h]
 
-/-- A two-argument function applied to two `ite`s is a `ite` of that two-argument function
+/-- A two-argument function applied to two `ite`s is an `ite` of that two-argument function
 applied to each of the branches. -/
 theorem apply_ite₂ {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P] (a b : α) (c d : β) :
     f (ite P a b) (ite P c d) = ite P (f a c) (f b d) :=
   apply_dite₂ f P (fun _ ↦ a) (fun _ ↦ b) (fun _ ↦ c) fun _ ↦ d
 
-/-- A 'dite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `dite` that applies
+/-- A `dite` producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `dite` that applies
 either branch to `a`. -/
 theorem dite_apply (f : P → ∀ a, σ a) (g : ¬P → ∀ a, σ a) (a : α) :
     (dite P f g) a = dite P (fun h ↦ f h a) fun h ↦ g h a := by by_cases h : P <;> simp [h]
 
-/-- A 'ite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `ite` that applies
+/-- An `ite` producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is an `ite` that applies
 either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a

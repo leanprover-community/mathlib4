@@ -14,7 +14,7 @@ public meta import Lean.Meta.Tactic.Simp.RegisterCommand
 
 This file declares the three attributes that drive `basify`, together with the two environment
 extensions backing them. They live in their own file because Lean cannot use an attribute in the
-file that declares it; `Mathlib/Tactic/Basify/Core.lean` documents the tactic itself.
+file that declares it; `Mathlib/Tactic/Basify.lean` documents the tactic itself.
 -/
 
 public meta section

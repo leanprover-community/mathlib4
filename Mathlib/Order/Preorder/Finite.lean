@@ -164,7 +164,7 @@ lemma OrderEmbedding.range_eq_iff
   let ef := (f.strictMono.strictMonoOn .univ).orderIso
   let eg := (g.strictMono.strictMonoOn .univ).orderIso
   let i : f '' .univ ≃o g '' .univ :=
-    { __ := Equiv.Set.congr (by simpa using! h)
+    { __ := Set.equivOfEq (by simpa using! h)
       map_rel_iff' := by rfl }
   have : (ef.trans i).trans eg.symm = .refl _ := by
     exact Subsingleton.elim _ _

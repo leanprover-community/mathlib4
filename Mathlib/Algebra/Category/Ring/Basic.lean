@@ -40,10 +40,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `SemiRingCat.of R` being printed as `{ carrier := R, semiring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `SemiRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, semiring := ... }` by `delabStructureInstance`. -/
 @[app_delab SemiRingCat.of]
-meta def SemiRingCat.delabOf : Delab := delabApp
+meta def SemiRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -67,19 +67,15 @@ variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
 structure Hom (R S : SemiRingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category SemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -154,20 +150,17 @@ unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
   (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R'
 
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
   inferInstanceAs <| Semiring R.carrier
 
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
-    { obj := fun R ↦ MonCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ MonCat.ofHom f.hom.toMonoidHom }
 
 instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommMonCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp] lemma forget₂_monCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
@@ -205,10 +198,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `RingCat.of R` being printed as `{ carrier := R, ring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `RingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, ring := ... }` by `delabStructureInstance`. -/
 @[app_delab RingCat.of]
-meta def RingCat.delabOf : Delab := delabApp
+meta def RingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -232,19 +225,15 @@ variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
 structure Hom (R S : RingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category RingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -323,15 +312,12 @@ unif_hint forget_obj_eq_coe (R R' : RingCat) where
   R ≟ R' ⊢
   (forget RingCat).obj R ≟ RingCat.carrier R'
 
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
   inferInstanceAs <| Ring R.carrier
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
-    { obj := fun R ↦ SemiRingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
 @[simp] lemma forget₂_map {R S : RingCat} (f : R ⟶ S) (x) :
@@ -347,7 +333,7 @@ instance : (forget₂ RingCat SemiRingCat).Full :=
 
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommGrpCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of rings -/
@@ -379,10 +365,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `CommSemiRingCat.of R` being printed as `{ carrier := R, commSemiring := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `CommSemiRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, commSemiring := ... }` by `delabStructureInstance`. -/
 @[app_delab CommSemiRingCat.of]
-meta def CommSemiRingCat.delabOf : Delab := delabApp
+meta def CommSemiRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -406,19 +392,15 @@ variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
 @[ext]
 structure Hom (R S : CommSemiRingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category CommSemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -494,14 +476,9 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
   (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
 
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
   inferInstanceAs <| CommSemiring R.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
@@ -518,7 +495,7 @@ instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
   forget₂ :=
-    { obj := fun R ↦ CommMonCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of commutative semirings -/
@@ -551,10 +528,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `CommRingCat.of R` being printed as `{ carrier := R, commRing := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `CommRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ carrier := R, commRing := ... }` by `delabStructureInstance`. -/
 @[app_delab CommRingCat.of]
-meta def CommRingCat.delabOf : Delab := delabApp
+meta def CommRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
@@ -578,19 +555,15 @@ variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/
 @[ext]
 structure Hom (R S : CommRingCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category CommRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -660,9 +633,6 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
-@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
 An example where this is needed is in applying `TopCat.Presheaf.restrictOpen` to commutative rings.
@@ -676,7 +646,7 @@ instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
-    { obj := fun R ↦ RingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ RingCat.ofHom f.hom }
 
 /-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
@@ -697,12 +667,12 @@ instance : (forget₂ CommRingCat RingCat).Full :=
 
 instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat where
   forget₂ :=
-    { obj := fun R ↦ CommSemiRingCat.of R
+    { obj := fun R ↦ ↧R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
 
 @[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
-  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
+  forget₂ := { obj M := ↧M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
 /-- Ring equivalences are isomorphisms in category of commutative rings -/
