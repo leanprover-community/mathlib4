@@ -140,9 +140,9 @@ public def suggestUnfold (e : Expr) (rwKind : RwKind) :
     return none
   let htmls ← results.mapM fun unfold => do
     let tactic ← tacticSyntax e unfold rwKind
-    mkSuggestion tactic (← exprToHtml unfold)
+    mkSuggestion tactic "rw" (← exprToHtml unfold) (solves := false)
   return <details>
-    <summary className="mv2 pointer"> unfold ({← exprToHtml e}) </summary>
+    <summary className="mv2 pointer"> Unfold ({← exprToHtml e}) </summary>
     {.element "div" #[] htmls}
   </details>
 
