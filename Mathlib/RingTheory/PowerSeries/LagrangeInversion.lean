@@ -62,8 +62,7 @@ variable (hY : Y = X * P.subst Y)
 include hY
 
 private lemma constantCoeff_eq_zero : Y.constantCoeff = 0 := by
-  rw [hY]
-  simp
+  simpa using congrArg constantCoeff hY
 
 private lemma hasSubst_of_fixedPoint : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
