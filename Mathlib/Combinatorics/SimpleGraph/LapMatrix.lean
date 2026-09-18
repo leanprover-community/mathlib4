@@ -290,15 +290,13 @@ This holds over any linearly ordered field (same assumptions as `posSemidef_lapM
 minus the star data): the quadratic forms expand as a sum of squares over edges, so
 adding edges can only increase the value. -/
 theorem lapMatrix_toLinearMap₂'_mono [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {G H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
-    (hGH : G ≤ H) (x : V → R) :
+    {G H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj] (hGH : G ≤ H) (x : V → R) :
     toLinearMap₂' R (G.lapMatrix R) x x ≤ toLinearMap₂' R (H.lapMatrix R) x x := by
   rw [lapMatrix_toLinearMap₂' R G x, lapMatrix_toLinearMap₂' R H x]
-  refine div_le_div_of_nonneg_right ?_ (by norm_num : (0 : R) ≤ 2)
+  refine div_le_div_of_nonneg_right ?_ zero_le_two
   refine sum_le_sum fun i _ => sum_le_sum fun j _ => ?_
   by_cases hG : G.Adj i j
-  · have hH : H.Adj i j := hGH hG
-    simp [hG, hH]
+  · simp [hG, hGH hG]
   · simp only [hG, ↓reduceIte]
     split_ifs with hH
     · exact sq_nonneg _
@@ -313,26 +311,20 @@ corresponding quadratic form is `|V| ‖x‖² - (∑ x)² ≤ |V| ‖x‖²`.
 Uses a linearly ordered field (squares nonnegative / ordered arithmetic), the same style as
 `posSemidef_lapMatrix`. -/
 theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    (x : V → R) :
-    x ⬝ᵥ (G.lapMatrix R *ᵥ x) ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := by
+    (x : V → R) : x ⬝ᵥ G.lapMatrix R *ᵥ x ≤ Fintype.card V * x ⬝ᵥ x := by
   classical
-  have hcmp := lapMatrix_toLinearMap₂'_mono (R := R) (le_top : G ≤ ⊤) x
-  have htop : toLinearMap₂' R ((⊤ : SimpleGraph V).lapMatrix R) x x ≤
-      (Fintype.card V : R) * (x ⬝ᵥ x) := by
-    rw [lapMatrix_top (R := R), toLinearMap₂'_apply']
+  have htop : toLinearMap₂' R ((⊤ : SimpleGraph V).lapMatrix R) x x ≤ Fintype.card V * x ⬝ᵥ x := by
+    rw [lapMatrix_top, toLinearMap₂'_apply']
     rw [sub_mulVec, dotProduct_sub, natCast_mulVec, dotProduct_smul, smul_eq_mul]
-    have hJ : x ⬝ᵥ (Matrix.of (1 : V → V → R) *ᵥ x) = (∑ i, x i) ^ 2 := by
-      have hmul : Matrix.of (1 : V → V → R) *ᵥ x = fun _ => ∑ j, x j := by
+    have hJ : x ⬝ᵥ .of 1 *ᵥ x = (∑ i, x i) ^ 2 := by
+      have hmul : .of (1 : V → V → R) *ᵥ x = fun _ ↦ ∑ j, x j := by
         ext i
         simp [mulVec_apply_eq_sum, of_apply]
       rw [hmul, dotProduct, ← sum_mul, ← sq]
     rw [hJ]
     exact sub_le_self _ (sq_nonneg _)
-  calc
-    x ⬝ᵥ (G.lapMatrix R *ᵥ x) = toLinearMap₂' R (G.lapMatrix R) x x :=
-      (toLinearMap₂'_apply' _ x x).symm
-    _ ≤ toLinearMap₂' R ((⊤ : SimpleGraph V).lapMatrix R) x x := hcmp
-    _ ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := htop
+  rw [← toLinearMap₂'_apply']
+  grw [lapMatrix_toLinearMap₂'_mono (R := R) (le_top : G ≤ ⊤) x, htop]
 
 /-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
 is at most `|V|`.
@@ -342,21 +334,19 @@ upper bound; it does not assert that `|V|` lies in the spectrum.
 
 Stated via `Module.End.HasEigenvalue` of `toLin'` rather than `IsHermitian.eigenvalues`,
 to avoid importing `Analysis.Matrix.Spectrum`. -/
-theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    {μ : R}
-    (hμ : Module.End.HasEigenvalue (toLin' (G.lapMatrix R)) μ) :
-    μ ≤ (Fintype.card V : R) := by
+theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R] {μ : R}
+    (hμ : End.HasEigenvalue (G.lapMatrix R).toLin' μ) : μ ≤ Fintype.card V := by
   obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
   have h : G.lapMatrix R *ᵥ x = μ • x := by
     simpa [toLin'_apply] using hx.apply_eq_smul
   have hquad := dotProduct_mulVec_lapMatrix_le_card (R := R) G x
-  have hμ' : x ⬝ᵥ (G.lapMatrix R *ᵥ x) = μ * (x ⬝ᵥ x) := by
+  have hμ' : x ⬝ᵥ G.lapMatrix R *ᵥ x = μ * x ⬝ᵥ x := by
     rw [h, dotProduct_smul, smul_eq_mul]
   have hxpos : 0 < x ⬝ᵥ x := by
     have hnn : 0 ≤ x ⬝ᵥ x := Fintype.sum_nonneg fun i => mul_self_nonneg (x i)
     have hne : x ⬝ᵥ x ≠ 0 := mt dotProduct_self_eq_zero.mp hx.right
     exact lt_of_le_of_ne hnn hne.symm
-  have : μ * (x ⬝ᵥ x) ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := by
+  have : μ * x ⬝ᵥ x ≤ Fintype.card V * x ⬝ᵥ x := by
     rwa [← hμ']
   exact (mul_le_mul_iff_of_pos_right hxpos).1 this
 
