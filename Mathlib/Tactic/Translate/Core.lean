@@ -729,26 +729,6 @@ def findAuxDecls (decl : ConstantInfo) (pre : Name) : CoreM (Array Name) := do
     else
       l
 
-/-- If `src` is a class projection or class constructor, ensure that the class itself
-has a translation. This ensures that `relevant_arg` will be inferred correctly.
-
-For example, for `LE.le` and `GE.ge` we infer `(relevant_arg := α)` because `α` appears in `LE α`,
-where it is a relevant argument.
--/
-def ensureClassTranslated (t : TranslateData) (src : Name) : CoreM Unit := do
-  if let .ctorInfo info ← getConstInfo src then
-    if isClass (← getEnv) info.induct then
-      translateClass info.induct
-  else if let some { fromClass := true, ctorName, .. } ← getProjectionFnInfo? src then
-    let .ctorInfo info ← getConstInfo ctorName | throwError "invalid projection {src}"
-    translateClass info.induct
-where
-  /-- If `cls` has no translation, give it a translation to itself
-  with `relevant_arg` defaulting to the first argument. -/
-  translateClass (cls : Name) : CoreM Unit := do
-    if (findTranslation? (← getEnv) t cls).isNone then
-      modifyEnv (t.translations.addEntry · (cls, { translation := cls, relevantArg := .arg 0 }))
-
 /-- Return the `relevant_arg` option based on the computed `relevantArg`
 and the given `cfg.relevantArg?`.
 
@@ -772,6 +752,31 @@ def getRelevantArg (t : TranslateData) (cfg : Config) (relevantArg : RelevantArg
         is the right option for `{.ofConstName src}`, \
         rather than `(relevant_arg := {relevantArg'})`.\nYou may remove the option."
   return relevantArg'
+
+/-- If `src` is a class projection or class constructor, ensure that the class itself
+has a translation. This ensures that `relevant_arg` will be inferred correctly.
+
+For example, for `LE.le` and `GE.ge` we infer `(relevant_arg := α)` because `α` appears in `LE α`,
+where it is a relevant argument.
+-/
+def ensureClassTranslated (t : TranslateData) (cfg : Config) (src : Name) : CoreM Unit := do
+  if let .ctorInfo info ← getConstInfo src then
+    if isClass (← getEnv) info.induct then
+      translateClass info.induct
+  else if let some { fromClass := true, ctorName, .. } ← getProjectionFnInfo? src then
+    let .ctorInfo info ← getConstInfo ctorName | throwError "invalid projection {src}"
+    translateClass info.induct
+where
+  /-- If `cls` has no translation, give it a translation to itself. -/
+  translateClass (cls : Name) : CoreM Unit := do
+    if (findTranslation? (← getEnv) t cls).isNone then
+      let type := (← getConstInfo cls).type
+      let (type', relevantArg) ← applyReplacementForall t cfg.dontTranslate type |>.run'
+      if type' != type then
+        throwError "The type of {.ofConstName cls} does not translate to itself, \
+          but to{indentExpr type'}"
+      let relevantArg ← getRelevantArg t cfg relevantArg cls (isMainTranslation := false)
+      modifyEnv (t.translations.addEntry · (cls, { translation := cls, relevantArg }))
 
 /-- Translate the declaration `src` and recursively all declarations `rootSrc._proof_i`
 occurring in `src` using the `translations` dictionary.
@@ -1330,7 +1335,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       else
         "The translated declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
-    ensureClassTranslated t src
+    ensureClassTranslated t cfg src
     let (reorder, relevantArg) ← MetaM.run' <| checkExistingType t src tgt cfg
     insertTranslation t src tgt reorder relevantArg cfg.ref
     -- since `tgt` already exists, we just need to
