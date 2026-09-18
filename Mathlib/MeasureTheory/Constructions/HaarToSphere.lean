@@ -313,4 +313,88 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
       · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 
+/-- **Polar coordinates for a Lebesgue integral against an additive Haar measure.**
+
+Let `μ` be an additive Haar measure on a nontrivial finite-dimensional real normed space `E`
+of dimension `n`. Then the integral of a non-negative measurable function against `μ`
+decomposes as an integral over the unit sphere, with respect to the sphere measure
+`MeasureTheory.Measure.toSphere`, of a radial integral carrying the density `r ^ (n - 1)`.
+
+This is the `lintegral` form of
+`MeasureTheory.Measure.measurePreserving_homeomorphUnitSphereProd`, for a general integrand.
+The Bochner and integrability corollaries of that theorem,
+`MeasureTheory.integral_fun_norm_addHaar` and
+`MeasureTheory.integrableOn_fun_norm_addHaar`, are both restricted to radial integrands. -/
+theorem lintegral_addHaar_eq_lintegral_toSphere_lintegral_Ioi {f : E → ℝ≥0∞}
+    (hf : Measurable f) :
+    ∫⁻ x, f x ∂μ =
+      ∫⁻ ω : sphere (0 : E) 1,
+        (∫⁻ r in Ioi (0 : ℝ), ENNReal.ofReal (r ^ (dim E - 1)) * f (r • (ω : E)))
+          ∂μ.toSphere := by
+  have hmeas : Measurable fun p : sphere (0 : E) 1 × Ioi (0 : ℝ) ↦ f ((p.2 : ℝ) • (p.1 : E)) :=
+    hf.comp (by fun_prop)
+  calc ∫⁻ x, f x ∂μ
+      = ∫⁻ x : ({0}ᶜ : Set E), f (x : E) ∂(μ.comap (↑)) := by
+        rw [lintegral_subtype_comap (measurableSet_singleton (0 : E)).compl,
+          restrict_compl_singleton]
+    _ = ∫⁻ p : sphere (0 : E) 1 × Ioi (0 : ℝ), f ((p.2 : ℝ) • (p.1 : E))
+          ∂(μ.toSphere.prod (Measure.volumeIoiPow (dim E - 1))) := by
+        rw [← μ.measurePreserving_homeomorphUnitSphereProd.lintegral_comp_emb
+          (Homeomorph.measurableEmbedding _) fun p ↦ f ((p.2 : ℝ) • (p.1 : E))]
+        refine lintegral_congr fun x ↦ ?_
+        rw [← homeomorphUnitSphereProd_symm_apply_coe, Homeomorph.symm_apply_apply]
+    _ = ∫⁻ ω : sphere (0 : E) 1,
+          (∫⁻ r : Ioi (0 : ℝ), f ((r : ℝ) • (ω : E))
+            ∂(Measure.volumeIoiPow (dim E - 1))) ∂μ.toSphere :=
+        lintegral_prod _ hmeas.aemeasurable
+    _ = _ := by
+        refine lintegral_congr fun ω ↦ ?_
+        simp only [Measure.volumeIoiPow]
+        rw [lintegral_withDensity_eq_lintegral_mul (Measure.comap Subtype.val volume)
+          (f := fun r : Ioi (0 : ℝ) ↦ ENNReal.ofReal ((r : ℝ) ^ (dim E - 1)))
+          (by fun_prop)
+          (g := fun r : Ioi (0 : ℝ) ↦ f ((r : ℝ) • (ω : E))) (hf.comp (by fun_prop))]
+        simp only [Pi.mul_apply]
+        exact lintegral_subtype_comap measurableSet_Ioi
+          (fun t : ℝ ↦ ENNReal.ofReal (t ^ (dim E - 1)) * f (t • (ω : E)))
+
+/-- Polar coordinates centred at `c` for a Lebesgue integral over the ball `ball c R`, the
+localised form of `lintegral_addHaar_eq_lintegral_toSphere_lintegral_Ioi`. The radial
+integral now runs over `Ioo 0 R`. -/
+theorem setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo (c : E) (R : ℝ)
+    {f : E → ℝ≥0∞} (hf : Measurable f) :
+    ∫⁻ y in ball c R, f y ∂μ =
+      ∫⁻ ω : sphere (0 : E) 1,
+        (∫⁻ ρ in Ioo (0 : ℝ) R,
+          ENNReal.ofReal (ρ ^ (dim E - 1)) * f (c + ρ • (ω : E))) ∂μ.toSphere := by
+  set g : E → ℝ≥0∞ := (ball (0 : E) R).indicator fun z ↦ f (c + z) with hg
+  have hgm : Measurable g := (hf.comp (measurable_const_add c)).indicator measurableSet_ball
+  have h1 : ∫⁻ y in ball c R, f y ∂μ = ∫⁻ z, g z ∂μ := by
+    have h := (measurePreserving_add_left μ c).setLIntegral_comp_preimage_emb
+      (measurableEmbedding_addLeft c) f (ball c R)
+    have hpre : (fun z : E ↦ c + z) ⁻¹' ball c R = ball (0 : E) R := by
+      ext z
+      rw [Set.mem_preimage, mem_ball_iff_norm, mem_ball_zero_iff, add_sub_cancel_left]
+    rw [hpre] at h
+    rw [← h, hg, lintegral_indicator measurableSet_ball]
+  rw [h1, lintegral_addHaar_eq_lintegral_toSphere_lintegral_Ioi μ hgm]
+  refine lintegral_congr fun ω ↦ ?_
+  have hω : ‖(ω : E)‖ = 1 := mem_sphere_zero_iff_norm.1 ω.2
+  have h2 : EqOn (fun ρ : ℝ ↦ ENNReal.ofReal (ρ ^ (dim E - 1)) * g (ρ • (ω : E)))
+      ((Ioo (0 : ℝ) R).indicator
+        fun ρ ↦ ENNReal.ofReal (ρ ^ (dim E - 1)) * f (c + ρ • (ω : E))) (Ioi 0) := by
+    intro ρ hρ
+    have hρ0 : (0 : ℝ) < ρ := hρ
+    have hnorm : ‖ρ • (ω : E)‖ = ρ := by
+      rw [norm_smul, hω, mul_one, Real.norm_eq_abs, abs_of_pos hρ0]
+    by_cases hR : ρ < R
+    · rw [Set.indicator_of_mem (Set.mem_Ioo.2 ⟨hρ0, hR⟩)]
+      simp only [hg]
+      rw [Set.indicator_of_mem (mem_ball_zero_iff.2 (by rw [hnorm]; exact hR))]
+    · rw [Set.indicator_of_notMem (by simp [Set.mem_Ioo, hR])]
+      simp only [hg]
+      rw [Set.indicator_of_notMem (by simp [hnorm, hR]), mul_zero]
+  rw [setLIntegral_congr_fun measurableSet_Ioi h2, lintegral_indicator measurableSet_Ioo,
+    Measure.restrict_restrict measurableSet_Ioo, Set.inter_eq_left.2 Ioo_subset_Ioi_self]
+
 end MeasureTheory
