@@ -674,9 +674,9 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) :=
 @[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ ofNat(n) :=
   bot_ne_natCast n
 
-@[simp] lemma ofNat_untop {n : ℕ} (hn : (n : WithBot α) ≠ ⊥) [n.AtLeastTwo] :
+@[simp] lemma ofNat_unbot {n : ℕ} (hn : (n : WithBot α) ≠ ⊥) [n.AtLeastTwo] :
     (ofNat(n) : WithBot α).unbot hn = ofNat(n) := rfl
-@[simp] lemma natCast_untop {n : ℕ} (hn : (n : WithBot α) ≠ ⊥) :
+@[simp] lemma natCast_unbot {n : ℕ} (hn : (n : WithBot α) ≠ ⊥) :
     (Nat.cast n : WithBot α).unbot hn = n := rfl
 
 lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
