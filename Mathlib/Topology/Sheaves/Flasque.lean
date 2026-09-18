@@ -200,7 +200,7 @@ private abbrev freeAbSheaf (U : Opens X) : Sheaf AddCommGrpCat.{u} X :=
 private abbrev freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
   (presheafToSheaf _ _).map (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
 
-/-- Morphisms out of `freeAbSheaf U` are in correspondance with the sections `I.obj.obj (op U)` -/
+/-- Morphisms out of `freeAbSheaf U` are in correspondence with the sections `I.obj.obj (op U)` -/
 private abbrev freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
     (freeAbSheaf U ⟶ I) ≃ I.obj.obj (op U) :=
   ((sheafificationAdjunction _ _).homEquiv (yoneda.obj U ⋙ AddCommGrpCat.free) I).trans <|
