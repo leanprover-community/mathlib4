@@ -21,7 +21,7 @@ def PNat := { n : ℕ // 0 < n } deriving DecidableEq, LE, LT
 @[inherit_doc]
 notation "ℕ+" => PNat
 
-/- Helper constructor for `PNat`. -/
+/-- Helper constructor for `PNat`. -/
 abbrev PNat.mk (n : ℕ) (h : 0 < n) : ℕ+ := ⟨n, h⟩
 
 example (n : ℕ+) : n = PNat.mk n.val n.property := by
@@ -56,6 +56,7 @@ lemma mk_one : PNat.mk 1 Nat.zero_lt_one = (1 : ℕ+) :=
 lemma val_one : (1 : ℕ+).val = 1 :=
   rfl
 
+-- Note: similar to Subtype.coe_mk
 @[simp]
 theorem mk_coe (n h) : (PNat.val (⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
@@ -67,14 +68,8 @@ theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
 instance : Add ℕ+ where
   add m n := ⟨m.1 + n.1, Nat.add_pos_right m.val n.property⟩
 
-protected lemma «exists» {p : ℕ+ → Prop} :
-    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ) (hn : 0 < n), p (PNat.mk n hn) :=
-  Subtype.exists
-
-protected lemma exists_val {p : ℕ → Prop} :
-    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ), 0 < n ∧ p n := by
-  simp [PNat.exists]
-
+/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
+not only to `Prop`. -/
 @[elab_as_elim, induction_eliminator]
 def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) :
     p n := by
@@ -102,11 +97,17 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
 theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
+/-- Strong induction on `ℕ+`. -/
 def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) :
     (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
 termination_by n.1
 
+/-- We now define a long list of structures on ℕ+ induced by
+similar structures on ℕ. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
+-/
 theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) :
     (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
   Iff.rfl

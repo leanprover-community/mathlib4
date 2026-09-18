@@ -26,7 +26,8 @@ Most algebraic facts are deferred to `Data.PNat.Algebra` and
 deriving instance LinearOrder for PNat
 
 namespace PNat
-/- Predecessor of a `ℕ+`, as a `ℕ`. -/
+
+/-- Predecessor of a `ℕ+`, as a `ℕ`. -/
 def natPred (i : ℕ+) : ℕ :=
   i - 1
 
@@ -38,12 +39,12 @@ end PNat
 
 namespace Nat
 
-/- Convert a natural number to a positive natural number. The
+/-- Convert a natural number to a positive natural number. The
   positivity assumption is inferred by `dec_trivial`. -/
 def toPNat (n : ℕ) (h : 0 < n := by decide) : ℕ+ :=
   ⟨n, h⟩
 
-/- Write a successor as an element of `ℕ+`. -/
+/-- Write a successor as an element of `ℕ+`. -/
 def succPNat (n : ℕ) : ℕ+ :=
   ⟨succ n, succ_pos n⟩
 
@@ -59,7 +60,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.ext <| succ_pred_eq_of_pos n.2
 
-/- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
+/-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
 def toPNat' (n : ℕ) : ℕ+ :=
   succPNat (pred n)
