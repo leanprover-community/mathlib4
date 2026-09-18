@@ -61,7 +61,7 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
       Linter.logLintIf linter.fast_instance_existing (← getRef) m!"\
         An instance of `{expectedType}` already exists.\n\
         Please use `inferInstance` instead of `fast_instance%`"
-    if ← withDefault <| isDefEq inst new then
+    if ← withoutExporting <| withDefault <| isDefEq inst new then
       trace[Elab.fast_instance] "replaced with synthesized instance"
       return new
     else
@@ -101,7 +101,7 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
       let arg := args[i]!
       if ← isProp argExpectedType then
         -- For proofs, create an auxiliary theorem of the expected type.
-        if ← withDefault <| isDefEq argExpectedType (← inferType arg) then
+        if ← withoutExporting <| withDefault <| isDefEq argExpectedType (← inferType arg) then
           mvarId.assign <| ← mkAuxTheorem argExpectedType arg (zetaDelta := true)
         else
           throwError "Proof `{arg}` does not have expected type `{argExpectedType}`"

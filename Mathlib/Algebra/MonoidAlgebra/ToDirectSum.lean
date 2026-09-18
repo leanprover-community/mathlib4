@@ -9,6 +9,8 @@ public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Data.Finsupp.ToDFinsupp
 
+import all Mathlib.Algebra.MonoidAlgebra.Defs
+
 /-!
 # Conversion between `AddMonoidAlgebra` and homogeneous `DirectSum`
 
