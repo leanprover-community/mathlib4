@@ -66,16 +66,6 @@ private lemma constantCoeff_eq_zero : Y.constantCoeff = 0 := by
 private lemma hasSubst_of_fixedPoint : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
 
-private lemma coeff_subst_of_fixedPoint (Q : R⟦X⟧) (j : ℕ) :
-    coeff j (Q.subst Y) = ∑ l ∈ range (j + 1), Q.coeff l * (Y ^ l).coeff j := by
-  rw [coeff_subst' (hasSubst_of_fixedPoint hY),
-    finsum_eq_sum_of_support_subset (s := range (j + 1))]
-  · simp [smul_eq_mul]
-  · intro l hl
-    simp only [mem_coe, mem_range]
-    by_contra hlj
-    simp [coeff_pow_eq_zero_of_lt (constantCoeff_eq_zero hY) (by omega : j < l)] at hl
-
 /-- If `Y = X * P(Y)` and the constant coefficient of `P` is zero, then `Y = 0`. -/
 theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0) : Y = 0 := by
   let Q := mk fun n ↦ P.coeff (n + 1)
@@ -118,7 +108,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
       nth_rw 1 [hmt, hY, mul_pow, ← subst_pow (hasSubst_of_fixedPoint hY), add_comm k t,
         coeff_X_pow_mul]
     rcases t with _ | t
-    · rw [hcoe, coeff_subst_of_fixedPoint hY, hmt]
+    · rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), hmt]
       simp
     have hih : ∀ l ∈ range (t + 2),
         ((t : R) + 1) * ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
@@ -156,7 +146,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
       rw [h, coeff_derivative]
       ring
     have hsum : ((t : R) + 1) * (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [hcoe, coeff_subst_of_fixedPoint hY, mul_sum, ← hconv]
+      rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), mul_sum, ← hconv]
       exact sum_congr rfl hih
     rw [hmt] at hsum
     rw [hmt, show k + (t + 1) - k = t + 1 by omega]
@@ -174,7 +164,7 @@ theorem lagrange_burmann_coeff
   simp only [nsmul_eq_mul]
   have hlhs : ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
         ∑ i ∈ range (n + 2), H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) := by
-    rw [coeff_subst_of_fixedPoint hY H, mul_sum]
+    rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY) H, mul_sum]
     refine sum_congr rfl fun i hi ↦ ?_
     rw [mem_range_succ_iff] at hi
     have h := lagrange_inversion_coeff_pow_of_le hY n i hi
