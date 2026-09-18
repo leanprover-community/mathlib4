@@ -86,7 +86,7 @@ variable {P Y : R⟦X⟧}
 variable (hY : Y = X * P.subst Y)
 include hY
 
-private theorem lagrange_inversion_coeff_pow_of_le (m k : ℕ) (hk : k ≤ m + 1) :
+private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1) :
       (m + 1) • (Y ^ k).coeff (m + 1) = k • (P ^ (m + 1)).coeff (m + 1 - k) := by
   induction m using Nat.strong_induction_on generalizing k with
   | h m ih =>
@@ -102,7 +102,7 @@ private theorem lagrange_inversion_coeff_pow_of_le (m k : ℕ) (hk : k ≤ m + 1
     have hih : ∀ l ∈ range (t + 2), (t + 1) • ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
         (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
-      rw [← mul_smul_comm, ih t (by omega) l (mem_range_succ_iff.mp hl)]
+      rw [← mul_smul_comm, ih t (by omega) (mem_range_succ_iff.mp hl)]
     have hconv :
         ∑ l ∈ range (t + 2), (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) =
           (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
@@ -113,8 +113,7 @@ private theorem lagrange_inversion_coeff_pow_of_le (m k : ℕ) (hk : k ≤ m + 1
       push_cast
       ring
     have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) = k • d⁄dX (P ^ (k + (t + 1))) := by
-      rw [derivative_pow, derivative_pow, show k + (t + 1) - 1 = (k - 1) + (t + 1) by omega,
-        pow_add]
+      rw [derivative_pow, derivative_pow, Nat.sub_add_comm hk0, pow_add]
       push_cast
       ring
     have hcoeff : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t =
@@ -140,7 +139,7 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
         ∑ i ∈ range (n + 2), H.coeff i * (i • (P ^ (n + 1)).coeff (n + 1 - i)) := by
     rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY) H, smul_sum]
     refine sum_congr rfl fun i hi ↦ ?_
-    rw [← lagrange_inversion_coeff_pow_of_le hY n i (mem_range_succ_iff.mp hi)]
+    rw [← lagrange_inversion_coeff_pow_of_le hY (mem_range_succ_iff.mp hi)]
     ring
   rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
   grind [coeff_derivative]
