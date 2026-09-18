@@ -62,7 +62,7 @@ noncomputable instance :
   letI : MonoidalCategory (Sheaf J A) := monoidalCategory J A
   Functor.Monoidal.transport (presheafToSheafCompComposeAndSheafifyIso J F).symm
 
-noncomputable instance composeAndSheafify_monoidal_of_types :
+noncomputable instance composeAndSheafifyMonoidalOfTypes :
     letI : MonoidalCategory (Sheaf J A) := monoidalCategory J A
     (composeAndSheafify J F).Monoidal := by
   letI : MonoidalCategory (Sheaf J A) := monoidalCategory J A
