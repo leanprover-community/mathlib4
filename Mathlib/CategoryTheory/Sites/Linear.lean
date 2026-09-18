@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Linear.FunctorCategory
-public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Sites.Preadditive
 
 /-!
 # Linear categories of sheaves and linear sheafification

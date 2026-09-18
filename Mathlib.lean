@@ -3529,6 +3529,7 @@ public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Point.Presheaf
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
+public import Mathlib.CategoryTheory.Sites.Preadditive
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.CategoryTheory.Sites.Precoverage.Generates
 public import Mathlib.CategoryTheory.Sites.Precoverage.Subsheaf
