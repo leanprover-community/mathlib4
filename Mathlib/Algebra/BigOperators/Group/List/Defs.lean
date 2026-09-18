@@ -24,7 +24,7 @@ namespace List
 section Defs
 
 attribute [to_additive existing] prod prod_nil prod_cons prod_one_cons prod_append prod_concat
-  prod_flatten prod_eq_foldl
+  prod_flatten prod_eq_foldl prod_reverse
 
 /-- The alternating sum of a list. -/
 def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G

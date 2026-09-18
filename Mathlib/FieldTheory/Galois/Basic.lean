@@ -643,7 +643,9 @@ theorem restrictRestrictAlgEquivMapHom_apply (φ : Gal(E/L)) (x : K) :
 theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
     Function.Injective (restrictRestrictAlgEquivMapHom F K L E) := by
   refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
-  suffices h : MulSemiringAction.toAlgAut Gal(E/L) F E φ = 1 by rwa [AlgEquiv.ext_iff] at h ⊢
+  suffices h : MulSemiringAction.toAlgAut Gal(E/L) F E φ = 1 by
+    rw [AlgEquiv.ext_iff] at h ⊢
+    assumption
   rw [← Subgroup.mem_bot, ← fixingSubgroup_top, ← h, fixingSubgroup_sup]
   exact ⟨fun x ↦ (hφ ▸ restrictRestrictAlgEquivMapHom_apply K L φ x).symm, φ.commutes⟩
 
@@ -796,7 +798,7 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
 
-@[deprecated inferInstance (since := "2026-04-09")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-09")]
 theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
   inferInstance
 
