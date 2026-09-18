@@ -405,7 +405,6 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm {p q r : ℝ}
     _ ≤ c * eLpNorm' f p μ * eLpNorm' g q μ := by
       simp only [mul_assoc]
       rw [eLpNorm'_const_mul_ennreal hro_lt (by exact (hf.enorm.mul hg.enorm).aestronglyMeasurable)]
-      simp only [enorm_eq_self]
       gcongr
       simpa only [eLpNorm', enorm_mul, enorm_norm] using!
         ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hro_lt hrp hpqr μ hf.enorm hg.enorm
