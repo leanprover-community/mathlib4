@@ -110,14 +110,13 @@ private theorem lagrange_inversion_coeff_pow_of_le : ∀ m : ℕ, ∀ k ≤ m + 
     have hconv :
         ∑ l ∈ range (t + 2), (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) =
           (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
-      simp only [zero_smul, mul_zero, add_zero]
+      rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ', zero_smul,
+        mul_zero, add_zero]
       refine sum_congr rfl fun p _ ↦ ?_
       rw [coeff_derivative]
       push_cast
       ring
-    have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) =
-        k • d⁄dX (P ^ (k + (t + 1))) := by
+    have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) = k • d⁄dX (P ^ (k + (t + 1))) := by
       rw [derivative_pow, derivative_pow, show k + (t + 1) - 1 = (k - 1) + (t + 1) by omega,
         pow_add]
       push_cast
@@ -128,8 +127,7 @@ private theorem lagrange_inversion_coeff_pow_of_le : ∀ m : ℕ, ∀ k ≤ m + 
       simp only [nsmul_eq_mul, coeff_natCast_mul, coeff_derivative] at h
       push_cast at h
       linear_combination h
-    have hsum : (t + 1) • (Y ^ k).coeff (m + 1) =
-        (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
+    have hsum : (t + 1) • (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
       rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), smul_sum, ← hconv]
       exact sum_congr rfl hih
     apply nsmul_right_injective (by omega : t + 1 ≠ 0)
@@ -169,7 +167,7 @@ end TorsionFree
 section Field
 
 variable {K : Type*} [Field K] [CharZero K]
-variable (P Y : K⟦X⟧) (hY : Y = X * P.subst Y)
+variable {P Y : K⟦X⟧} (hY : Y = X * P.subst Y)
 include hY
 
 /-- The divided coefficient form of the Lagrange–Bürmann formula over a field of
@@ -183,7 +181,8 @@ theorem lagrange_burmann_coeff_div (n : ℕ) (H : K⟦X⟧) :
 case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff_div`. -/
 theorem lagrange_inversion_coeff (n : ℕ) :
     Y.coeff (n + 1) = (P ^ (n + 1)).coeff n / (n + 1) := by
-  simpa [subst_X (hasSubst_of_fixedPoint hY)] using lagrange_burmann_coeff_div P Y hY n X
+  simpa [subst_X (hasSubst_of_fixedPoint hY)] using
+    lagrange_burmann_coeff_div (P := P) (Y := Y) hY n X
 
 end Field
 
