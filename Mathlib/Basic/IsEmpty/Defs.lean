@@ -130,9 +130,15 @@ theorem exists_iff {p : α → Prop} : (∃ a, p a) ↔ False :=
   iff_false_intro fun ⟨x, _⟩ ↦ IsEmpty.false x
 
 -- see Note [lower instance priority]
-instance (priority := 100) : Subsingleton α :=
+protected instance (priority := 100) subsingleton : Subsingleton α :=
   ⟨isEmptyElim⟩
 
 protected lemma congr_fun (f g : α → β) : f = g := funext fun a ↦ IsEmpty.elim' inferInstance a
 
 end IsEmpty
+
+/-- `Fin k` is empty iff `k = 0`. -/
+@[simp, grind =]
+lemma Fin.isEmpty_iff {k : Nat} : IsEmpty (Fin k) ↔ k = 0 where
+  mp h := by cases k with | zero => rfl | succ k => exact h.elim 0
+  mpr h := by subst h; infer_instance
