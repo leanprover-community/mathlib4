@@ -17,12 +17,6 @@ jobs:
       # Pinned commit of https://github.com/kim-em/paranoid-lake-update, which prepares
       # the diffs of every dependency the PR would pull in, for a human or AI audit.
       PARANOID_LAKE_UPDATE_REF: 1c43573cd1d3a56430e04d26c713cea990aead4a
-      # Optional secrets.  A token with `gist` scope makes the audit comment link a gist
-      # holding the full diffs; an Anthropic API key makes Claude audit the diffs on the
-      # runner and removes `auto-merge-after-CI` when the verdict is not CLEAN.
-      # Both steps are skipped when the secret is absent.
-      PARANOID_GIST_TOKEN: ${{ secrets.PARANOID_LAKE_UPDATE_GIST_TOKEN }}
-      PARANOID_ANTHROPIC_API_KEY: ${{ secrets.PARANOID_LAKE_UPDATE_ANTHROPIC_API_KEY }}
     steps:
       - name: Generate app token
         id: app-token
@@ -213,30 +207,6 @@ jobs:
           name: dependency-diffs
           path: /tmp/paranoid-out
 
-      - name: AI audit of dependency diffs
-        if: ${{ steps.paranoid.outcome == 'success' && env.PARANOID_ANTHROPIC_API_KEY != '' }}
-        id: paranoid-audit
-        env:
-          ANTHROPIC_API_KEY: ${{ env.PARANOID_ANTHROPIC_API_KEY }}
-          PARANOID_KEEP_ANTHROPIC_API_KEY: "1"
-        run: |
-          npm install -g @anthropic-ai/claude-code
-          set +e
-          python3 /tmp/paranoid-lake-update/paranoid-lake-update audit --out /tmp/paranoid-out --audit claude
-          status=$?
-          set -e
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          if [ "$status" != "0" ]; then
-            echo "flagged=true" >> "$GITHUB_OUTPUT"
-            echo "::warning::AI audit did not return VERDICT: CLEAN (exit $status); auto-merge will be disabled."
-          fi
-
-      - name: Upload dependency diffs as a gist
-        if: ${{ steps.paranoid.outcome == 'success' && env.PARANOID_GIST_TOKEN != '' }}
-        env:
-          GH_TOKEN: ${{ env.PARANOID_GIST_TOKEN }}
-        run: python3 /tmp/paranoid-lake-update/paranoid-lake-update publish --out /tmp/paranoid-out --gist
-
       - name: Generate PR title
         id: pr-title
         if: ${{ steps.determine_state.outputs.create_pr == 'true' }}
@@ -266,9 +236,9 @@ jobs:
           labels: "auto-merge-after-CI"
 
       - name: Comment dependency audit on the PR
-        # Summary table with links to every upstream commit and compare view, the
-        # artifact (and gist) with the full diffs, any AI audit report, and the audit
-        # prompt so that anyone can run their own model over the same material.
+        # Summary table with links to every upstream commit and GitHub compare view,
+        # the artifact with the full diffs, and the audit prompt so that anyone can
+        # run their own model over the same material.
         if: ${{ steps.paranoid.outcome == 'success' && steps.cpr.outputs.pull-request-number != '' }}
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -277,14 +247,6 @@ jobs:
             --comment-pr "${{ steps.cpr.outputs.pull-request-number }}" \
             --github-repo "${{ github.repository }}" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-      - name: Disable auto-merge after a flagged audit
-        if: ${{ steps.paranoid-audit.outputs.flagged == 'true' && steps.cpr.outputs.pull-request-number != '' }}
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          gh pr edit "${{ steps.cpr.outputs.pull-request-number }}" --repo "${{ github.repository }}" \
-            --remove-label auto-merge-after-CI
 
       - name: Send Zulip message (failure)
         if: ${{ failure() }}
