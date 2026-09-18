@@ -25,7 +25,10 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
-* `eigenvalues_lapMatrix_le_card`: Every real Laplacian eigenvalue is at most `|V|`.
+* `lapMatrix_toLinearMap₂'_mono`: The Laplacian quadratic form is monotone in the graph.
+* `dotProduct_mulVec_lapMatrix_le_card`: The Laplacian quadratic form is at most `|V| · ‖x‖²`.
+* `eigenvalues_lapMatrix_le_card`: Every Laplacian eigenvalue (in an ordered field) is at most
+  `|V|`.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
@@ -280,72 +283,90 @@ noncomputable def lapMatrix_ker_basis :=
 
 end
 
+/-- The Laplacian quadratic form is monotone in the graph: if `G ≤ H`, then
+`xᵀ L(G) x ≤ xᵀ L(H) x`.
+
+This holds over any linearly ordered field (same assumptions as `posSemidef_lapMatrix`,
+minus the star data): the quadratic forms expand as a sum of squares over edges, so
+adding edges can only increase the value. -/
+theorem lapMatrix_toLinearMap₂'_mono [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    {G H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hGH : G ≤ H) (x : V → R) :
+    toLinearMap₂' R (G.lapMatrix R) x x ≤ toLinearMap₂' R (H.lapMatrix R) x x := by
+  rw [lapMatrix_toLinearMap₂' R G x, lapMatrix_toLinearMap₂' R H x]
+  refine div_le_div_of_nonneg_right ?_ (by norm_num : (0 : R) ≤ 2)
+  refine sum_le_sum fun i _ => sum_le_sum fun j _ => ?_
+  by_cases hG : G.Adj i j
+  · have hH : H.Adj i j := hGH hG
+    simp [hG, hH]
+  · simp only [hG, ↓reduceIte]
+    split_ifs with hH
+    · exact sq_nonneg _
+    · rfl
+
 /-- The quadratic form of a simple-graph Laplacian is at most `|V| · ‖x‖²`.
 
-The comparison is with the complete graph: adjacency of `G` is a subset of pairs `i ≠ j`, so
-`xᵀ L(G) x ≤ xᵀ L(K_V) x`. From `lapMatrix_top`, `L(K_V) = |V| - J` where `J` is the all-ones
-matrix, and the corresponding quadratic form is `|V| ‖x‖² - (∑ x)² ≤ |V| ‖x‖²`. -/
-theorem dotProduct_mulVec_lapMatrix_le_card (x : V → ℝ) :
-    x ⬝ᵥ (G.lapMatrix ℝ *ᵥ x) ≤ (Fintype.card V : ℝ) * (x ⬝ᵥ x) := by
+Proof: by `lapMatrix_toLinearMap₂'_mono` and `le_top`, compare with the complete graph.
+From `lapMatrix_top`, `L(K_V) = |V| - J` where `J` is the all-ones matrix, and the
+corresponding quadratic form is `|V| ‖x‖² - (∑ x)² ≤ |V| ‖x‖²`.
+
+Uses a linearly ordered field (squares nonnegative / ordered arithmetic), the same style as
+`posSemidef_lapMatrix`. -/
+theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    (x : V → R) :
+    x ⬝ᵥ (G.lapMatrix R *ᵥ x) ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := by
   classical
-  have hcmp : toLinearMap₂' ℝ (G.lapMatrix ℝ) x x ≤
-      toLinearMap₂' ℝ ((⊤ : SimpleGraph V).lapMatrix ℝ) x x := by
-    rw [G.lapMatrix_toLinearMap₂' ℝ x, (⊤ : SimpleGraph V).lapMatrix_toLinearMap₂' ℝ x]
-    refine div_le_div_of_nonneg_right ?_ (by norm_num)
-    refine sum_le_sum fun i _ => sum_le_sum fun j _ => ?_
-    by_cases hG : G.Adj i j
-    · have hne : i ≠ j := hG.ne
-      simp [hG, hne, SimpleGraph.top_adj]
-    · simp only [hG, ↓reduceIte, SimpleGraph.top_adj]
-      split_ifs with hne
-      · exact sq_nonneg _
-      · rfl
-  have htop : toLinearMap₂' ℝ ((⊤ : SimpleGraph V).lapMatrix ℝ) x x ≤
-      (Fintype.card V : ℝ) * (x ⬝ᵥ x) := by
-    rw [lapMatrix_top (R := ℝ), toLinearMap₂'_apply']
+  have hcmp := lapMatrix_toLinearMap₂'_mono (R := R) (le_top : G ≤ ⊤) x
+  have htop : toLinearMap₂' R ((⊤ : SimpleGraph V).lapMatrix R) x x ≤
+      (Fintype.card V : R) * (x ⬝ᵥ x) := by
+    rw [lapMatrix_top (R := R), toLinearMap₂'_apply']
     rw [sub_mulVec, dotProduct_sub, natCast_mulVec, dotProduct_smul, smul_eq_mul]
-    have hJ : x ⬝ᵥ (Matrix.of (1 : V → V → ℝ) *ᵥ x) = (∑ i, x i) ^ 2 := by
-      have hmul : Matrix.of (1 : V → V → ℝ) *ᵥ x = fun _ => ∑ j, x j := by
+    have hJ : x ⬝ᵥ (Matrix.of (1 : V → V → R) *ᵥ x) = (∑ i, x i) ^ 2 := by
+      have hmul : Matrix.of (1 : V → V → R) *ᵥ x = fun _ => ∑ j, x j := by
         ext i
         simp [mulVec_apply_eq_sum, of_apply]
       rw [hmul, dotProduct, ← sum_mul, ← sq]
     rw [hJ]
     exact sub_le_self _ (sq_nonneg _)
   calc
-    x ⬝ᵥ (G.lapMatrix ℝ *ᵥ x) = toLinearMap₂' ℝ (G.lapMatrix ℝ) x x :=
+    x ⬝ᵥ (G.lapMatrix R *ᵥ x) = toLinearMap₂' R (G.lapMatrix R) x x :=
       (toLinearMap₂'_apply' _ x x).symm
-    _ ≤ toLinearMap₂' ℝ ((⊤ : SimpleGraph V).lapMatrix ℝ) x x := hcmp
-    _ ≤ (Fintype.card V : ℝ) * (x ⬝ᵥ x) := htop
+    _ ≤ toLinearMap₂' R ((⊤ : SimpleGraph V).lapMatrix R) x x := hcmp
+    _ ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := htop
 
-/-- A real eigenpair of the Laplacian satisfies `μ ≤ |V|`.
+/-- An eigenpair of the Laplacian satisfies `μ ≤ |V|`.
 
 This is the Rayleigh-quotient form of `dotProduct_mulVec_lapMatrix_le_card`.
 It is a uniform upper bound; it does not assert that `|V|` lies in the spectrum.
 
-We state the bound via an explicit eigenpair (equivalently `HasEigenvalue` of `toLin'`)
-rather than `IsHermitian.eigenvalues`, to avoid importing `Analysis.Matrix.Spectrum`. -/
-theorem eigenvalue_lapMatrix_le_card {μ : ℝ} {x : V → ℝ} (hx : x ≠ 0)
-    (h : G.lapMatrix ℝ *ᵥ x = μ • x) :
-    μ ≤ (Fintype.card V : ℝ) := by
-  have hquad := dotProduct_mulVec_lapMatrix_le_card G x
-  have hμ : x ⬝ᵥ (G.lapMatrix ℝ *ᵥ x) = μ * (x ⬝ᵥ x) := by
+Stated over a linearly ordered field (via Rayleigh / positivity of `x ⬝ᵥ x` for `x ≠ 0`).
+We use an explicit eigenpair (equivalently `HasEigenvalue` of `toLin'`) rather than
+`IsHermitian.eigenvalues`, to avoid importing `Analysis.Matrix.Spectrum`. -/
+theorem eigenvalue_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    {μ : R} {x : V → R} (hx : x ≠ 0)
+    (h : G.lapMatrix R *ᵥ x = μ • x) :
+    μ ≤ (Fintype.card V : R) := by
+  have hquad := dotProduct_mulVec_lapMatrix_le_card (R := R) G x
+  have hμ : x ⬝ᵥ (G.lapMatrix R *ᵥ x) = μ * (x ⬝ᵥ x) := by
     rw [h, dotProduct_smul, smul_eq_mul]
   have hxpos : 0 < x ⬝ᵥ x := by
     have hnn : 0 ≤ x ⬝ᵥ x := Fintype.sum_nonneg fun i => mul_self_nonneg (x i)
     have hne : x ⬝ᵥ x ≠ 0 := mt dotProduct_self_eq_zero.mp hx
     exact lt_of_le_of_ne hnn hne.symm
-  have : μ * (x ⬝ᵥ x) ≤ (Fintype.card V : ℝ) * (x ⬝ᵥ x) := by
+  have : μ * (x ⬝ᵥ x) ≤ (Fintype.card V : R) * (x ⬝ᵥ x) := by
     rwa [← hμ]
   exact (mul_le_mul_iff_of_pos_right hxpos).1 this
 
-/-- Every real eigenvalue of the Laplacian of a finite simple graph is at most `|V|`.
+/-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
+is at most `|V|`.
 
 See `eigenvalue_lapMatrix_le_card` for the Rayleigh form on an explicit eigenpair. -/
-theorem eigenvalues_lapMatrix_le_card {μ : ℝ}
-    (hμ : Module.End.HasEigenvalue (toLin' (G.lapMatrix ℝ)) μ) :
-    μ ≤ (Fintype.card V : ℝ) := by
+theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    {μ : R}
+    (hμ : Module.End.HasEigenvalue (toLin' (G.lapMatrix R)) μ) :
+    μ ≤ (Fintype.card V : R) := by
   obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
-  refine eigenvalue_lapMatrix_le_card G hx.right ?_
+  refine eigenvalue_lapMatrix_le_card (R := R) G hx.right ?_
   simpa [toLin'_apply] using hx.apply_eq_smul
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
