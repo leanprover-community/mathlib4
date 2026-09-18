@@ -48,7 +48,7 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u
 /-- A `2`-square consists of a natural transformation `T ⋙ R ⟶ L ⋙ B`
 involving fours functors `T`, `L`, `R`, `B` that are on the
 top/left/right/bottom sides of a square of categories. -/
-def TwoSquare := T ⋙ R ⟶ L ⋙ B
+abbrev TwoSquare := T ⋙ R ⟶ L ⋙ B
 
 namespace TwoSquare
 
