@@ -195,7 +195,7 @@ lemma rightDerivedFunctorPlus_fac (τ : F₁ ⟶ F₂) :
 
 /-- The additive map from `F₁ ⟶ F₂` to `F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus`
 that is given by `NatTrans.rightDerivedFunctorPlus`. -/
-@[implicit_reducible, simps!]
+@[simps!]
 noncomputable def rightDerivedFunctorPlusAddMonoidHom :
     (F₁ ⟶ F₂) →+ (F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus) :=
   AddMonoidHom.mk' rightDerivedFunctorPlus
