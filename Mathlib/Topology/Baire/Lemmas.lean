@@ -46,6 +46,19 @@ section BaireTheorem
 
 variable [TopologicalSpace X]
 
+/-- A space has the Baire property iff the countable union of closed nowhere dense sets has empty
+interior. -/
+theorem baireSpace_iff_interior_iUnion_eq_empty :
+    BaireSpace X ↔ ∀ f : ℕ → Set X,
+      (∀ n, IsClosed (f n)) → (∀ n, IsNowhereDense (f n)) → interior (⋃ n, f n) = ∅ := by
+  refine baireSpace_iff X |>.trans ⟨fun h f hc hnd ↦ ?_, fun h f ho hd ↦ ?_⟩
+  · rw [interior_eq_empty_iff_dense_compl, compl_iUnion]
+    refine h _ (hc · |>.isOpen_compl) fun n ↦ ?_
+    exact isClosed_isNowhereDense_iff_compl.mp ⟨hc n, hnd n⟩ |>.right
+  · rw [← interior_compl_eq_empty_iff_dense, compl_iInter]
+    refine h _ (ho · |>.isClosed_compl) fun n ↦ ?_
+    exact isClosed_compl_and_isNowhereDense_compl.mpr ⟨ho n, hd n⟩ |>.right
+
 /-- The intersection of finitely many open dense sets is dense. -/
 theorem Set.Finite.dense_sInter {s : Set (Set X)} (hs : s.Finite)
     (ho : ∀ t ∈ s, IsOpen t) (hd : ∀ t ∈ s, Dense t) : Dense (⋂₀ s) := by
@@ -66,6 +79,10 @@ variable [BaireSpace X]
 theorem dense_iInter_of_isOpen_nat {f : ℕ → Set X} (ho : ∀ n, IsOpen (f n))
     (hd : ∀ n, Dense (f n)) : Dense (⋂ n, f n) :=
   BaireSpace.baire_property f ho hd
+
+theorem interior_iUnion_eq_empty_of_isClosed_nat {f : ℕ → Set X} (hc : ∀ n, IsClosed (f n))
+    (hnd : ∀ n, IsNowhereDense (f n)) : interior (⋃ n, f n) = ∅ :=
+  baireSpace_iff_interior_iUnion_eq_empty.mp ‹_› f hc hnd
 
 /-- A dense Gδ subset of a Baire space is Baire. -/
 theorem IsGδ.baireSpace_of_dense {s : Set X} (hG : IsGδ s) (hd : Dense s) : BaireSpace s := by
@@ -129,6 +146,12 @@ theorem dense_sInter_of_isOpen {S : Set (Set X)} (ho : ∀ s ∈ S, IsOpen s) (h
   · rcases hS.exists_eq_range h with ⟨f, rfl⟩
     exact dense_iInter_of_isOpen_nat (forall_mem_range.1 ho) (forall_mem_range.1 hd)
 
+theorem interior_sUnion_eq_empty_of_isClosed {S : Set (Set X)} (hc : ∀ s ∈ S, IsClosed s)
+    (hS : S.Countable) (hnd : ∀ s ∈ S, IsNowhereDense s) : interior (⋃₀ S) = ∅ := by
+  rw [interior_eq_empty_iff_dense_compl, compl_sUnion]
+  refine dense_sInter_of_isOpen (by simpa) (hS.image _) <| forall_mem_image.mpr fun s hs ↦ ?_
+  exact isClosed_isNowhereDense_iff_compl.mp ⟨hc s hs, hnd s hs⟩ |>.right
+
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable set in any type. -/
 theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ S, IsOpen (f s))
@@ -136,12 +159,22 @@ theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ 
   rw [← sInter_image]
   refine dense_sInter_of_isOpen ?_ (hS.image _) ?_ <;> rwa [forall_mem_image]
 
+theorem interior_biUnion_of_isClosed {S : Set α} {f : α → Set X} (hc : ∀ s ∈ S, IsClosed (f s))
+    (hS : S.Countable) (hnd : ∀ s ∈ S, IsNowhereDense (f s)) : interior (⋃ s ∈ S, f s) = ∅ := by
+  rw [← sUnion_image]
+  refine interior_sUnion_eq_empty_of_isClosed ?_ (hS.image _) ?_ <;> rwa [forall_mem_image]
+
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable type. -/
 @[wikidata Q1052678]
 theorem dense_iInter_of_isOpen [Countable ι] {f : ι → Set X} (ho : ∀ i, IsOpen (f i))
     (hd : ∀ i, Dense (f i)) : Dense (⋂ s, f s) :=
   dense_sInter_of_isOpen (forall_mem_range.2 ho) (countable_range _) (forall_mem_range.2 hd)
+
+theorem interior_iUnion_of_isClosed [Countable ι] {f : ι → Set X} (hc : ∀ i, IsClosed (f i))
+    (hnd : ∀ i, IsNowhereDense (f i)) : interior (⋃ s, f s) = ∅ :=
+  interior_sUnion_eq_empty_of_isClosed (forall_mem_range.mpr hc) (countable_range _)
+    (forall_mem_range.mpr hnd)
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
 theorem mem_residual {s : Set X} : s ∈ residual X ↔ ∃ t ⊆ s, IsGδ t ∧ Dense t := by
