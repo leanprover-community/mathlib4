@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Sites.Sheaf
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
 
 # Sheafification
@@ -82,6 +82,10 @@ def sheafificationAdjunction [HasWeakSheafify J A] :
 
 instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
+
+instance [Preadditive A] [HasSheafify J A] [HasBinaryProducts A] :
+    (presheafToSheaf J A).Additive :=
+  Functor.additive_of_preserves_binary_products _
 
 instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   L := presheafToSheaf J A
