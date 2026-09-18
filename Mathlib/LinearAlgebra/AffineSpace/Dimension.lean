@@ -245,24 +245,36 @@ theorem finDim_strictMono [Module.Finite R t.direction] (h : s < t) : finDim s <
   exact (nonempty_iff_ne_bot _).mpr hs
 
 @[simp]
-theorem finrank_vectorSpan_pair {x y : A} (hxy : x ≠ y) :
-    Module.finrank R (vectorSpan R {x, y}) = 1 := by
-  rw [vectorSpan_pair, finrank_span_singleton]
-  simpa
+theorem finrank_vectorSpan_pair_eq_one_iff {x y : A} :
+    Module.finrank R (vectorSpan R {x, y}) = 1 ↔ x ≠ y := by
+  refine ⟨fun h hcontra ↦ ?_, fun h ↦ ?_⟩
+  · rw [hcontra, Set.pair_eq_singleton, vectorSpan_singleton] at h
+    simp at h
+  · rw [vectorSpan_pair, finrank_span_singleton]
+    simpa
 
 @[simp]
-theorem finrank_direction_affineSpan_pair {x y : A} (hxy : x ≠ y) :
-    Module.finrank R (affineSpan R {x, y}).direction = 1 := by
-  rw [direction_affineSpan, finrank_vectorSpan_pair hxy]
+theorem finrank_direction_affineSpan_pair_eq_one_iff {x y : A} :
+    Module.finrank R (affineSpan R {x, y}).direction = 1 ↔ x ≠ y := by
+  rw [direction_affineSpan]
+  exact finrank_vectorSpan_pair_eq_one_iff
+
+@[simp] alias ⟨_, finrank_vectorSpan_pair⟩ := finrank_vectorSpan_pair_eq_one_iff
+@[simp] alias ⟨_, finrank_direction_affineSpan_pair⟩ := finrank_direction_affineSpan_pair_eq_one_iff
 
 @[simp]
-theorem dim_affineSpan_pair {x y : A} (hxy : x ≠ y) : (affineSpan R {x, y}).dim = 1 := by
+theorem dim_affineSpan_eq_one_iff {x y : A} : (affineSpan R {x, y}).dim = 1 ↔ x ≠ y := by
+  refine ⟨fun h hcontra ↦ by simp [hcontra] at h, fun h ↦ ?_⟩
   rw [dim_eq_rank (nonempty_iff_ne_bot _ |>.mp ⟨x, left_mem_affineSpan_pair ..⟩)]
-  simp [Module.rank_eq_one_iff_finrank_eq_one, hxy]
+  simp [Module.rank_eq_one_iff_finrank_eq_one, h]
 
 @[simp]
-theorem finDim_affineSpan_pair {x y : A} (hxy : x ≠ y) : (affineSpan R {x, y}).finDim = 1 := by
-  simp [finDim_eq_map_dim_toNat, hxy]
+theorem finDim_affineSpan_eq_one_iff {x y : A} : (affineSpan R {x, y}).finDim = 1 ↔ x ≠ y := by
+  refine ⟨fun h hcontra ↦ by simp [hcontra] at h, fun h ↦ ?_⟩
+  simp [finDim_eq_map_dim_toNat, dim_affineSpan_eq_one_iff.mpr h]
+
+@[simp] alias ⟨_, dim_affineSpan_pair⟩ := dim_affineSpan_eq_one_iff
+@[simp] alias ⟨_, finDim_affineSpan_pair⟩ := finDim_affineSpan_eq_one_iff
 
 theorem dim_eq_one_iff :
     dim s = 1 ↔ ∃ x y : s, x ≠ y ∧ s = affineSpan R {x.1, y.1} := by
