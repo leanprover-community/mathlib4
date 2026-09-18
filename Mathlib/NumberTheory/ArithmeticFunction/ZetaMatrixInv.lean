@@ -10,9 +10,9 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Redheffer
 /-!
 # The inverse of the zeta matrix is the Möbius matrix
 
-The *Möbius matrix* `Matrix.moebiusMatrix n` is the `n × n` matrix with entry
+The *Möbius matrix* `Matrix.moebiusMatrix R n` is the `n × n` matrix over `R` with entry
 `μ ((j + 1) / (i + 1))` at `(i, j)` when `i + 1 ∣ j + 1` and `0` otherwise. It is the two-sided
-inverse of the zeta (divisibility) matrix `Matrix.zetaMatrix n`: this is Möbius inversion,
+inverse of the zeta (divisibility) matrix `Matrix.zetaMatrix R n`: this is Möbius inversion,
 `μ * ζ = 1` (`ArithmeticFunction.moebius_mul_coe_zeta`), written for the matrices of the truncated
 Dirichlet convolution on `{1, …, n}`.
 
@@ -20,16 +20,17 @@ Dirichlet convolution on `{1, …, n}`.
 
 * `Matrix.moebiusMatrix_mul_zetaMatrix`, `Matrix.zetaMatrix_mul_moebiusMatrix`: the two products
   are `1`.
-* `Matrix.zetaMatrix_inv`: `(zetaMatrix n)⁻¹ = moebiusMatrix n`.
+* `Matrix.zetaMatrix_inv`: `(zetaMatrix R n)⁻¹ = moebiusMatrix R n` over any commutative ring `R`.
 * `Matrix.det_moebiusMatrix`: the Möbius matrix has determinant `1`.
 
 ## Implementation notes
 
-The entry `(i, j)` of `moebiusMatrix n * zetaMatrix n` is
+The entry `(i, j)` of `moebiusMatrix R n * zetaMatrix R n` is
 `∑ k, [i + 1 ∣ k + 1] μ ((k + 1) / (i + 1)) [k + 1 ∣ j + 1]`; when `i + 1 ∣ j + 1` the `k` with
 `i + 1 ∣ k + 1 ∣ j + 1` are the `(i + 1) d` with `d ∣ (j + 1) / (i + 1)`, and the sum is
 `∑ d ∈ ((j + 1) / (i + 1)).divisors, μ d`, which is `ArithmeticFunction.sum_divisors_moebius`.
-The other product follows from `Matrix.mul_eq_one_comm`.
+The other product follows from `Matrix.mul_eq_one_comm`. As for `zetaMatrix`, the ring `R` is an
+explicit argument; the definition only needs `Zero R` and `IntCast R`.
 
 ## Tags
 
@@ -45,16 +46,22 @@ namespace Matrix
 
 open ArithmeticFunction
 
+variable (R : Type*)
+
+section ZeroIntCast
+
+variable [Zero R] [IntCast R]
+
 /-- The `n × n` Möbius matrix: the `(i, j)` entry is `μ ((j + 1) / (i + 1))` if `i + 1 ∣ j + 1`
 and `0` otherwise. -/
-def moebiusMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
-  of fun i j ↦ if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : ℤ) else 0
+def moebiusMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
+  of fun i j ↦ if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0
 
 @[simp] theorem moebiusMatrix_apply (n : ℕ) (i j : Fin n) :
-    moebiusMatrix n i j =
-      if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : ℤ) else 0 := rfl
+    moebiusMatrix R n i j =
+      if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0 := rfl
 
-theorem moebiusMatrix_isUpperTriangular (n : ℕ) : (moebiusMatrix n).IsUpperTriangular := by
+theorem moebiusMatrix_isUpperTriangular (n : ℕ) : (moebiusMatrix R n).IsUpperTriangular := by
   intro i j hij
   simp only [id] at hij
   have : ¬ ((i : ℕ) + 1 ∣ (j : ℕ) + 1) := fun hd ↦ by
@@ -62,7 +69,10 @@ theorem moebiusMatrix_isUpperTriangular (n : ℕ) : (moebiusMatrix n).IsUpperTri
     omega
   simp [this]
 
-theorem sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (n a b : ℕ) (f : ℕ → M)
+end ZeroIntCast
+
+theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (n a b : ℕ)
+    (f : ℕ → M)
     (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a ∣ b) (hbn : b ≤ n) :
     (∑ k : Fin n, if a ∣ (k : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ b then f (((k : ℕ) + 1) / a) else 0) =
       ∑ d ∈ (b / a).divisors, f d := by
@@ -111,18 +121,20 @@ theorem sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (n a b : �
       omega
     exact Nat.eq_of_mul_eq_mul_left (by omega) this
 
-theorem moebiusMatrix_mul_zetaMatrix (n : ℕ) : moebiusMatrix n * zetaMatrix n = 1 := by
+variable [CommRing R]
+
+theorem moebiusMatrix_mul_zetaMatrix (n : ℕ) : moebiusMatrix R n * zetaMatrix R n = 1 := by
   ext i j
   simp only [mul_apply, moebiusMatrix_apply, zetaMatrix_apply, one_apply]
   by_cases hij : (i : ℕ) + 1 ∣ (j : ℕ) + 1
   · rw [show (∑ k : Fin n,
-          (if (i : ℕ) + 1 ∣ (k : ℕ) + 1 then (μ (((k : ℕ) + 1) / ((i : ℕ) + 1)) : ℤ) else 0) *
-            (if (k : ℕ) + 1 ∣ (j : ℕ) + 1 then (1 : ℤ) else 0)) =
+          (if (i : ℕ) + 1 ∣ (k : ℕ) + 1 then (μ (((k : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0) *
+            (if (k : ℕ) + 1 ∣ (j : ℕ) + 1 then (1 : R) else 0)) =
         ∑ k : Fin n, if (i : ℕ) + 1 ∣ (k : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ (j : ℕ) + 1
-          then (μ (((k : ℕ) + 1) / ((i : ℕ) + 1)) : ℤ) else 0 from
+          then (μ (((k : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0 from
         sum_congr rfl fun k _ ↦ by split_ifs <;> simp_all]
-    rw [sum_fin_dvd_dvd_eq_sum_divisors n ((i : ℕ) + 1) ((j : ℕ) + 1) (fun d ↦ (μ d : ℤ)) (by omega)
-      (by omega) hij (by omega), sum_divisors_moebius]
+    rw [Nat.sum_fin_dvd_dvd_eq_sum_divisors n ((i : ℕ) + 1) ((j : ℕ) + 1) (fun d ↦ (μ d : R))
+      (by omega) (by omega) hij (by omega), ← Int.cast_sum, sum_divisors_moebius]
     have hq : ((j : ℕ) + 1) / ((i : ℕ) + 1) = 1 ↔ i = j := by
       constructor
       · intro h
@@ -144,19 +156,19 @@ theorem moebiusMatrix_mul_zetaMatrix (n : ℕ) : moebiusMatrix n * zetaMatrix n 
       · simp [h2]
     · simp [h1]
 
-theorem zetaMatrix_mul_moebiusMatrix (n : ℕ) : zetaMatrix n * moebiusMatrix n = 1 :=
-  mul_eq_one_comm.mp (moebiusMatrix_mul_zetaMatrix n)
+theorem zetaMatrix_mul_moebiusMatrix (n : ℕ) : zetaMatrix R n * moebiusMatrix R n = 1 :=
+  mul_eq_one_comm.mp (moebiusMatrix_mul_zetaMatrix R n)
 
 /-- **Möbius inversion as a matrix identity**: the inverse of the zeta (divisibility) matrix is
 the Möbius matrix. -/
-theorem zetaMatrix_inv (n : ℕ) : (zetaMatrix n)⁻¹ = moebiusMatrix n :=
-  inv_eq_left_inv (moebiusMatrix_mul_zetaMatrix n)
+theorem zetaMatrix_inv (n : ℕ) : (zetaMatrix R n)⁻¹ = moebiusMatrix R n :=
+  inv_eq_left_inv (moebiusMatrix_mul_zetaMatrix R n)
 
-theorem moebiusMatrix_inv (n : ℕ) : (moebiusMatrix n)⁻¹ = zetaMatrix n :=
-  inv_eq_left_inv (zetaMatrix_mul_moebiusMatrix n)
+theorem moebiusMatrix_inv (n : ℕ) : (moebiusMatrix R n)⁻¹ = zetaMatrix R n :=
+  inv_eq_left_inv (zetaMatrix_mul_moebiusMatrix R n)
 
-@[simp] theorem det_moebiusMatrix (n : ℕ) : (moebiusMatrix n).det = 1 := by
-  have h := congrArg det (moebiusMatrix_mul_zetaMatrix n)
+@[simp] theorem det_moebiusMatrix (n : ℕ) : (moebiusMatrix R n).det = 1 := by
+  have h := congrArg det (moebiusMatrix_mul_zetaMatrix R n)
   rwa [det_mul, det_zetaMatrix, mul_one, det_one] at h
 
 end Matrix
