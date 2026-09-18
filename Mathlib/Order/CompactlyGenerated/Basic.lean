@@ -73,11 +73,11 @@ section Preorder
 
 variable [Preorder α] (a : α)
 
-theorem IsBot.IsCompactElement (h : IsBot a) : IsCompactElement a :=
+theorem IsBot.isCompactElement (h : IsBot a) : IsCompactElement a :=
   fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, h x⟩
 
 protected theorem IsCompactElement.bot [OrderBot α] : IsCompactElement (⊥ : α) :=
-  isBot_bot.IsCompactElement
+  isBot_bot.isCompactElement
 
 theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement a := by
   intro s u hne hdir hsu hau
