@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Tactic.Peel
-public import Mathlib.Tactic.Recall
 
 /-!
 # IMO 2024 Q1
@@ -51,7 +50,8 @@ lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   simp
 
 lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m) ↔ Condition α := by
-  peel with n hn
+  unfold Condition
+  congr! 2 with n hn
   apply dvd_iff_dvd_of_dvd_sub
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
   norm_cast

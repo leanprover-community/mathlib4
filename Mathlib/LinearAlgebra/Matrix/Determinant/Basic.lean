@@ -55,7 +55,12 @@ local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
-/-- The determinant of a matrix given by the Leibniz formula. -/
+/-- The determinant of a matrix given by the Leibniz formula.
+
+This is available in bundled forms as:
+* `Matrix.detMonoidHom`
+* `Matrix.detRowAlternating`
+-/
 @[wikidata Q178546]
 def det (M : Matrix n n R) : R :=
   detRowAlternating M
