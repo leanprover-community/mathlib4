@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.SqrtDeriv
 public import Mathlib.Analysis.Normed.Ring.InfiniteProd
-public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
+public import Mathlib.NumberTheory.ModularForms.DedekindEta
+public import Mathlib.NumberTheory.ModularForms.Derivative
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.QExpansion
@@ -153,6 +154,28 @@ lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
+
+open Derivative EisensteinSeries in
+/-- `D Δ = E₂ Δ`, where `D = (2πi)⁻¹ d/dz`. Equivalently, the logarithmic derivative of `Δ`
+is `2πi E₂`. -/
+theorem normalizedDerivOfComplex_discriminant : D Δ = E2 * Δ := by
+  ext z
+  have hΔ : Δ ∘ ofComplex =ᶠ[𝓝 (z : ℂ)] (eta · ^ 24) := by
+    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.2] with w hw
+    simp [discriminant, ofComplex_apply_of_im_pos hw]
+  have hη := differentiableAt_eta_of_mem_upperHalfPlaneSet z.2
+  have h1 : deriv eta z = (π * I / 12) * E2 z * eta z := by
+    rw [← logDeriv_eta_eq_E2, logDeriv_apply, div_mul_cancel₀ _ (eta_ne_zero z.2)]
+  simp only [normalizedDerivOfComplex, Pi.mul_apply, hΔ.deriv_eq, deriv_fun_pow hη, h1,
+    discriminant]
+  field_simp
+  ring
+
+open Derivative in
+/-- `Δ` is annihilated by the weight-12 Serre derivative `∂₁₂ = D - E₂`. -/
+theorem serreDerivative_discriminant : serreDerivative 12 Δ = 0 := by
+  ext z
+  simp [normalizedDerivOfComplex_discriminant]
 
 lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - eta_q n x) ^ 24) atImInfty (𝓝 1) := by
