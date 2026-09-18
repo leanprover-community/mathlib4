@@ -285,7 +285,7 @@ theorem exists_addMonoidAlgebra {K S : Type*}
     have h : f.coeff (u' i) ≠ 0 := by
       unfold f
       rw [AddMonoidAlgebra.coeff_mapDomain, AddMonoidAlgebra.coeff_ofCoeff,
-        Finsupp.mapDomain_apply u'_inj]
+        Finsupp.mapDomain_apply_of_injective u'_inj]
       simpa
     clear_value f
     rintro rfl
