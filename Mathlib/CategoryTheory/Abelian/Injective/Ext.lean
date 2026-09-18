@@ -324,7 +324,6 @@ lemma extClass_comp_extMk
     constructor
     all_goals exact HomologicalComplex.isZero_single_obj_X _ _ _ _ (by lia)
 
-
 lemma δ_extMk
     {S : ShortComplex C} (hS : S.ShortExact) (f₁ : S.X₁ ⟶ R.cocomplex.X n)
     (m : ℕ) (hm : n + 1 = m)
