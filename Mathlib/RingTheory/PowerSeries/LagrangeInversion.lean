@@ -22,16 +22,22 @@ additive torsion. Let `P` and `Y` be formal power series satisfying
 
 Then, for natural numbers `n` and `k`,
 
-`(n + k) * [X^(n+k)] Y^k = k * [X^n] P^(n+k)`.
+`(n + k) * [X ^ (n + k)] Y ^ k = k * [X ^ n] P ^ (n + k)`.
 
 We also give the Lagrange–Bürmann form
 
-`(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`
+`(n + 1) * [X ^ (n + 1)] H(Y) = [X ^ n] (H' * P ^ (n + 1))`
 
 for a formal power series `H`, together with the corresponding divided formulas over a field of
 characteristic zero.
 
-The proof follows the induction in the reference below.
+## Main results
+
+* `PowerSeries.eq_zero_of_fixedPoint_of_constantCoeff_eq_zero`
+* `PowerSeries.lagrange_burmann_coeff`
+* `PowerSeries.lagrange_inversion_coeff_pow`
+* `PowerSeries.lagrange_burmann_coeff_div`
+* `PowerSeries.lagrange_inversion_coeff`
 
 ## References
 
@@ -103,12 +109,12 @@ include hY
 
 private theorem lagrange_inversion_coeff_pow_of_le
     : ∀ m : ℕ, ∀ k ≤ m + 1,
-      ((m + 1 : ℕ) : R) * (Y ^ k).coeff (m + 1) =
-        (k : R) * (P ^ (m + 1)).coeff (m + 1 - k) := by
+      (m + 1) • (Y ^ k).coeff (m + 1) = k • (P ^ (m + 1)).coeff (m + 1 - k) := by
   intro m
   induction m using Nat.strong_induction_on with
   | h m ih =>
     intro k hk
+    simp only [nsmul_eq_mul]
     rcases Nat.eq_zero_or_pos k with rfl | hk0
     · simp
     obtain ⟨t, hmt⟩ : ∃ t, m + 1 = k + t := ⟨m + 1 - k, by omega⟩
@@ -123,8 +129,11 @@ private theorem lagrange_inversion_coeff_pow_of_le
           (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
       rw [mem_range_succ_iff] at hl
-      rw_mod_cast [← ih t (by omega) l hl]
-      ring
+      have h := ih t (by omega) l hl
+      simp only [nsmul_eq_mul] at h
+      push_cast at h
+      rw [show ((t : R) + 1) * ((P ^ k).coeff l * (Y ^ l).coeff (t + 1)) =
+          (P ^ k).coeff l * (((t : R) + 1) * (Y ^ l).coeff (t + 1)) by ring, h]
     have hconv :
         ∑ l ∈ range (t + 2),
           (P ^ k).coeff l * ((l : R) * (P ^ (t + 1)).coeff (t + 1 - l)) =
@@ -162,25 +171,29 @@ private theorem lagrange_inversion_coeff_pow_of_le
 /-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
 a formal power series `H`,
 
-`(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`. -/
+`(n + 1) * [X ^ (n + 1)] H(Y) = [X ^ n] (H' * P ^ (n + 1))`. -/
 theorem lagrange_burmann_coeff
     (n : ℕ) (H : R⟦X⟧) :
-    ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
+    (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
+  simp only [nsmul_eq_mul]
   have hlhs : ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
         ∑ i ∈ range (n + 2), H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) := by
     rw [coeff_subst_of_fixedPoint hY H, mul_sum]
     refine sum_congr rfl fun i hi ↦ ?_
     rw [mem_range_succ_iff] at hi
-    simp only [← lagrange_inversion_coeff_pow_of_le hY n i hi]
+    have h := lagrange_inversion_coeff_pow_of_le hY n i hi
+    simp only [nsmul_eq_mul] at h
+    rw [← h]
     ring
   rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
   grind [coeff_derivative]
 
 /-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
-`(n + k) * [X^(n+k)] Y^k = k * [X^n] P^(n+k)` for all natural numbers `n` and `k`. -/
+`(n + k) * [X ^ (n + k)] Y ^ k = k * [X ^ n] P ^ (n + k)` for all natural numbers
+`n` and `k`. -/
 theorem lagrange_inversion_coeff_pow
     (n k : ℕ) :
-    ((n + k : ℕ) : R) * (Y ^ k).coeff (n + k) = (k : R) * (P ^ (n + k)).coeff n := by
+    (n + k) • (Y ^ k).coeff (n + k) = k • (P ^ (n + k)).coeff n := by
   rcases k with _ | k
   · by_cases hn : n = 0
     · subst n
@@ -191,7 +204,7 @@ theorem lagrange_inversion_coeff_pow
   rw [subst_pow hYsubst, subst_X hYsubst, derivative_pow, derivative_X] at h
   simp only [Nat.add_sub_cancel, mul_one] at h
   rw [mul_assoc, coeff_natCast_mul, coeff_X_pow_mul] at h
-  simpa [add_assoc] using h
+  simpa [nsmul_eq_mul, add_assoc] using h
 
 end TorsionFree
 
@@ -206,7 +219,7 @@ characteristic zero. -/
 theorem lagrange_burmann_coeff_div (n : ℕ) (H : K⟦X⟧) :
     coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n / (n + 1) := by
   field_simp [Nat.cast_add_one_ne_zero n]
-  simpa [mul_comm] using lagrange_burmann_coeff hY n H
+  simpa [nsmul_eq_mul, mul_comm] using lagrange_burmann_coeff hY n H
 
 /-- The usual coefficient form of the formal Lagrange inversion formula. This is the
 case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff_div`. -/
