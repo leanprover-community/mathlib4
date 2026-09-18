@@ -99,8 +99,7 @@ theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
 
 @[simp]
 theorem prodComm_trans_prodComm (α β) : (prodComm α β).trans (prodComm β α) = Equiv.refl _ := by
-  ext
-  all_goals simp
+  ext <;> simp
 
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]

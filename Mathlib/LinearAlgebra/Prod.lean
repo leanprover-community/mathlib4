@@ -675,9 +675,8 @@ theorem snd_comp_prodComm :
 theorem symm_prodComm : (prodComm R M M₂).symm = prodComm R M₂ M := rfl
 
 @[simp]
-theorem prodComm_trans_prodComm : prodComm R M M₂ ≪≫ₗ prodComm R M₂ M = LinearEquiv.refl _ _ := by
-  ext
-  all_goals simp
+theorem prodComm_trans_prodComm : prodComm R M M₂ ≪≫ₗ prodComm R M₂ M = .refl _ _ := by
+  ext <;> simp
 
 end prodComm
 

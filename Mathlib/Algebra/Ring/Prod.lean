@@ -273,6 +273,10 @@ theorem coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap
   rfl
 
 @[simp]
+theorem prodComm_trans_prodComm : (prodComm : R × S ≃+* S × R).trans prodComm = .refl _ := by
+  ext <;> simp
+
+@[simp]
 theorem fst_comp_coe_prodComm :
     (RingHom.fst S R).comp ↑(prodComm : R × S ≃+* S × R) = RingHom.snd R S :=
   RingHom.ext fun _ => rfl

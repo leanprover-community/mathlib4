@@ -262,6 +262,10 @@ theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
 theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm α β).trans (prodComm β α) = .refl _ := by
+  ext <;> simp
+
 /-- `(α × β) × γ` is uniformly isomorphic to `α × (β × γ)`. -/
 def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
   uniformContinuous_toFun :=

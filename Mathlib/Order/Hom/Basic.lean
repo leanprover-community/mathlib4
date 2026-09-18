@@ -1014,6 +1014,10 @@ theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
 theorem prodComm_symm : (prodComm : α × β ≃o β × α).symm = prodComm :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm : α × β ≃o β × α).trans prodComm = .refl _ := by
+  ext <;> simp
+
 variable (α)
 
 /-- The order isomorphism between a type and its double dual. -/
