@@ -314,11 +314,10 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) where
 @[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ ofNat(n) :=
   top_ne_natCast n
 
-@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
-    WithTop.map f (ofNat(n) : WithTop α) = f (ofNat(n)) := map_coe f n
-
-@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
-    WithTop.map f (n : WithTop α) = f n := map_coe f n
+@[simp] lemma ofNat_untop {n : ℕ} (hn : (n : WithTop α) ≠ ⊤) [n.AtLeastTwo] :
+    (ofNat(n) : WithTop α).untop hn = ofNat(n) := rfl
+@[simp] lemma natCast_untop {n : ℕ} (hn : (n : WithTop α) ≠ ⊤) :
+    (Nat.cast n : WithTop α).untop hn = n := rfl
 
 lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
     a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
@@ -675,11 +674,10 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) :=
 @[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ ofNat(n) :=
   bot_ne_natCast n
 
-@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
-    WithBot.map f (ofNat(n) : WithBot α) = f ofNat(n) := map_coe f n
-
-@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
-    WithBot.map f (n : WithBot α) = f n := map_coe f n
+@[simp] lemma ofNat_untop {n : ℕ} (hn : (n : WithBot α) ≠ ⊥) [n.AtLeastTwo] :
+    (ofNat(n) : WithBot α).unbot hn = ofNat(n) := rfl
+@[simp] lemma natCast_untop {n : ℕ} (hn : (n : WithBot α) ≠ ⊥) :
+    (Nat.cast n : WithBot α).unbot hn = n := rfl
 
 lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
     a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
