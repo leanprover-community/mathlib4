@@ -400,11 +400,11 @@ theorem le_iff_forall_isCompactElement [IsCompactlyGenerated α] :
 @[deprecated (since := "2026-08-03")]
 alias le_iff_compact_le_imp := le_iff_forall_isCompactElement
 
-theorem isCompactlyGenerated_of_wellFoundedGT [WellFoundedGT α] : IsCompactlyGenerated α :=
+theorem IsCompactlyGenerated.of_wellFoundedGT [WellFoundedGT α] : IsCompactlyGenerated α :=
   ⟨(⟨{·}, fun x _ ↦ .of_wellFoundedGT x, isLUB_singleton⟩)⟩
 
 @[deprecated (since := "2026-08-03")]
-alias CompleteLattice.isCompactlyGenerated_of_wellFoundedGT := isCompactlyGenerated_of_wellFoundedGT
+alias CompleteLattice.isCompactlyGenerated_of_wellFoundedGT := IsCompactlyGenerated.of_wellFoundedGT
 
 end Preorder
 
