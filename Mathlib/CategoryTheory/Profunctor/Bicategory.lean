@@ -42,10 +42,10 @@ attribute [instance] ProfCat.str
 namespace ProfCat
 
 @[simp]
-lemma coe_of (C : Type u) [Category.{v} C] : (of C : Type u) = C := rfl
+lemma of_obj (C : Type u) [Category.{v} C] : (of C).obj = C := rfl
 
 @[simp]
-lemma of_coe (C : ProfCat.{v, u}) : of C = C := rfl
+lemma coe_of (C : ProfCat.{v, u}) : of C = C := rfl
 
 end ProfCat
 
