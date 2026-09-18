@@ -139,7 +139,7 @@ lemma inv_hom_iso_homₚ_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
     (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X = (f.homₚ i).app (ofTopCat X) :=
   congr($(inv_hom_iso_homₚ _ _).app _)
 
-/-- The map `H i X.fst ⟶ Hₚ i X` incuded by the inclusion. -/
+/-- The map `H i X.fst ⟶ Hₚ i X` induced by the inclusion. -/
 abbrev hFstToHₚ (i : ι) (X : TopPair.{u}) : (HP.H i).obj X.fst ⟶ (HP.Hₚ i).obj X :=
   (HP.iso i).hom.app _ ≫ (HP.Hₚ i).map X.j
 
