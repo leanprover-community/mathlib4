@@ -16,7 +16,7 @@ jobs:
       BRANCH_NAME: "update-dependencies-bot-use-only"
       # Pinned commit of https://github.com/kim-em/paranoid-lake-update, which prepares
       # the diffs of every dependency the PR would pull in, for a human or AI audit.
-      PARANOID_LAKE_UPDATE_REF: 14c0cb251ae23ccb1aac424ed1ea3df23394d76a
+      PARANOID_LAKE_UPDATE_REF: a3390d726f7ded3fd883f2f9534910754d28cffd
     steps:
       - name: Generate app token
         id: app-token
