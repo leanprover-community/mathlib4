@@ -148,15 +148,11 @@ a formal power series `H`,
 `(n + 1) * [X ^ (n + 1)] H(Y) = [X ^ n] (H' * P ^ (n + 1))`. -/
 theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
-  simp only [nsmul_eq_mul]
-  have hlhs : ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
-        ∑ i ∈ range (n + 2), H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) := by
-    rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY) H, mul_sum]
+  have hlhs : (n + 1) • coeff (n + 1) (H.subst Y) =
+        ∑ i ∈ range (n + 2), H.coeff i * (i • (P ^ (n + 1)).coeff (n + 1 - i)) := by
+    rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY) H, smul_sum]
     refine sum_congr rfl fun i hi ↦ ?_
-    rw [mem_range_succ_iff] at hi
-    have h := lagrange_inversion_coeff_pow_of_le hY n i hi
-    simp only [nsmul_eq_mul] at h
-    rw [← h]
+    rw [← lagrange_inversion_coeff_pow_of_le hY n i (mem_range_succ_iff.mp hi)]
     ring
   rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
   grind [coeff_derivative]
