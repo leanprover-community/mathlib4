@@ -86,7 +86,7 @@ theorem IsUnramified.finrank_eq_one [w.LiesOver v] (h : w.IsUnramified K) :
 variable (w) in
 theorem mult_mul_finrank [w.LiesOver v] :
     v.mult * Module.finrank v.Completion w.Completion = w.mult := by
-  have hv : v = w.comap (algebraMap K L) := Subtype.ext ‹w.LiesOver v›.comp_eq.symm
+  have hv : v = w.comap (algebraMap K L) := Subtype.ext ‹w.LiesOver v›.under_eq.symm
   rcases w.isUnramified_or_isRamified K with h | h
   · rw [h.finrank_eq_one v, hv, h.eq, mul_one]
   · rw [h.finrank_eq_two v, hv, h.isReal.mult_eq_one, h.isComplex.mult_eq_two, one_mul]
@@ -102,7 +102,7 @@ protected noncomputable def inertiaDeg : ℕ :=
 
 theorem inertiaDeg_of_liesOver [w.LiesOver v] :
     v.inertiaDeg w = (⊥ : Ideal w.Completion).inertiaDeg v.Completion := by
-  simp only [InfinitePlace.inertiaDeg, dif_pos]
+  simp only [InfinitePlace.inertiaDeg, dite_eq_left]
 
 theorem inertiaDeg_eq_finrank [w.LiesOver v] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
@@ -112,11 +112,11 @@ theorem inertiaDeg_eq_finrank [w.LiesOver v] :
 
 variable {v w} in
 theorem inertiaDeg_eq_one (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 :=
-  have := (Set.mem_setOf.1 hw).1; hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_ofPred.1 hw).1; hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
 
 variable {v w} in
 theorem inertiaDeg_eq_two (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 :=
-  have := (Set.mem_setOf.1 hw).1; hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_ofPred.1 hw).1; hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
 
 variable (K L) in
 open scoped Classical in

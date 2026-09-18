@@ -57,12 +57,12 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
   /- `s` is the set of all coefficients of the polynomial, as well as all of
     the coordinates of `v`, the point I am trying to find the preimage of. -/
   let s : Finset R :=
-    (Finset.biUnion (univ : Finset ι) fun i => (ps i).support.image fun x => coeff x (ps i)) ∪
+    (Finset.biUnion (univ : Finset ι) fun i => (ps i).support.image fun x => (ps i).coeff x) ∪
       (univ : Finset ι).image v
   have hv : ∀ i, v i ∈ Algebra.adjoin K (s : Set R) := fun j =>
     Algebra.subset_adjoin (mem_union_right _ (mem_image.2 ⟨j, mem_univ _, rfl⟩))
   have hs₁ : ∀ (i : ι) (k : ι →₀ ℕ),
-      k ∈ (ps i).support → coeff k (ps i) ∈ Algebra.adjoin K (s : Set R) :=
+      k ∈ (ps i).support → (ps i).coeff k ∈ Algebra.adjoin K (s : Set R) :=
     fun i k hk => Algebra.subset_adjoin
       (mem_union_left _ (mem_biUnion.2 ⟨i, mem_univ _, mem_image_of_mem _ hk⟩))
   have := isNoetherian_adjoin_finset s fun x _ => is_int x
@@ -156,7 +156,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     realize_bdEqual, Term.realize_relabel,
     Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply,
     Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
-    Set.MapsTo, Set.mem_setOf_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
+    Set.MapsTo, Set.mem_ofPred_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)

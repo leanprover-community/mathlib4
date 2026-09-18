@@ -104,12 +104,12 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
     intro M hM; by_contra! h
     obtain ⟨x, hx, hxM⟩ :=
-      SetLike.exists_of_lt
+      IsConcreteLE.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).lt_top).trans_eq
           hinv.symm)
     exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this
-  choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
+  choose! u hu hum using fun M hM => IsConcreteLE.not_le_iff_exists.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
   have hv : v ∈ I' := Submodule.sum_mem _ fun M hM => Submodule.smul_mem _ _ <| hb M hM
   refine
@@ -212,7 +212,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
     hpu (IsLocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
   · have : Algebra.IsIntegral (Localization.AtPrime p) Sₚ := ⟨isIntegral_localization⟩
-    exact mt (Ideal.eq_bot_of_comap_eq_bot) hP0
+    exact mt (Ideal.eq_bot_of_under_eq_bot) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
   · exact (IsLocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
@@ -232,7 +232,7 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
       (Set.Finite.ofFinset
         {P ∈ {⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset | P.IsPrime}
         fun P => ?_)
-  rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
+  rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_ofPred,
     Multiset.mem_toFinset]
   exact
     and_iff_right_of_imp fun hP =>

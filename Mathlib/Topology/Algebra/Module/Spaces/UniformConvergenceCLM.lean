@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps
@@ -105,6 +105,7 @@ namespace UniformConvergenceCLM
 def ofFun [TopologicalSpace F] (𝔖 : Set (Set E)) : (E →SL[σ] F) ≃ (E →SLᵤ[σ, 𝔖] F) :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
+@[macro_inline]
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (E →SLᵤ[σ, 𝔖] F) E F :=
   inferInstanceAs <| FunLike (E →SL[σ] F) E F
@@ -398,7 +399,7 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   rw [completeSpace_iff_isComplete_range (isUniformInducing_coeFn _ _ _)]
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
-    UniformOnFun.isClosed_setOf_continuous h𝔖
+    UniformOnFun.isClosed_setOfPred_continuous h𝔖
   convert!
     H₁.inter <|
       (LinearMap.isClosed_range_coe E F σ).preimage
@@ -505,12 +506,6 @@ def precompUniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul 
     exact (UniformOnFun.precomp_uniformContinuous hL).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-@[deprecated (since := "2026-01-27")]
-alias precomp_uniformConvergenceCLM := precompUniformConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias precomp_uniformConvergenceCLM_apply := precompUniformConvergenceCLM_apply
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
@@ -530,12 +525,6 @@ def postcompUniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGro
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_uniformConvergenceCLM := postcompUniformConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_uniformConvergenceCLM_apply := postcompUniformConvergenceCLM_apply
 
 end ContinuousLinearMap
 

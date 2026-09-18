@@ -81,7 +81,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β ι M N O G H : Type*}
+variable {α β ι M N O H : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
@@ -106,6 +106,7 @@ section Basic
 
 variable [Zero M]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →₀ M) α M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
@@ -276,13 +277,14 @@ noncomputable def ofSupportFinite (f : α → M) (hf : (Function.support f).Fini
   toFun := f
   mem_support_toFun _ := hf.mem_toFinset
 
+@[simp]
 theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
 
 theorem ofSupportFinite_support {f : α → M} (hf : f.support.Finite) :
     (ofSupportFinite f hf).support = hf.toFinset := by
-  ext; simp [ofSupportFinite_coe]
+  ext; simp
 
 instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
@@ -349,7 +351,7 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
 lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
   ext g
-  simp only [Set.mem_range, Set.mem_setOf]
+  simp only [Set.mem_range, Set.mem_ofPred]
   constructor
   · grind
   · intro h

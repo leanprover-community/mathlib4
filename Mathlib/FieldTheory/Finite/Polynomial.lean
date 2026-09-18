@@ -9,9 +9,10 @@ public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
-## Polynomials over finite fields
+# Polynomials over finite fields
 -/
 
 @[expose] public section
@@ -49,7 +50,7 @@ namespace MvPolynomial
 
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Submodule
 
 variable {K : Type*} {σ : Type*}
 
@@ -115,7 +116,6 @@ section
 
 variable (K σ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.eval` as a `K`-linear map. -/
 @[simps]
 def evalₗ [CommSemiring K] : MvPolynomial σ K →ₗ[K] (σ → K) → K where
@@ -127,7 +127,7 @@ variable [Field K] [Fintype K] [Finite σ]
 
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
-  refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
+  refine top_unique (IsConcreteLE.le_iff.2 fun e _ => mem_map.2 ?_)
   classical
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
@@ -174,7 +174,7 @@ noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
 open scoped Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
-  simp only [Set.mem_setOf_eq]; infer_instance
+  simp only [Set.mem_ofPred_eq]; infer_instance
 
 variable [Field K]
 

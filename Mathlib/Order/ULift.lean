@@ -18,8 +18,6 @@ public section
 
 namespace ULift
 
-open Batteries
-
 universe v u
 
 variable {α : Type u}

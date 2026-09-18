@@ -105,7 +105,7 @@ end BottomRow
 
 section TendstoLemmas
 
-open Filter ContinuousLinearMap
+open Filter
 
 attribute [local simp] FunLike.coe_smul
 
@@ -793,7 +793,7 @@ theorem eq_one_or_neg_one_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z 
 /-- This was previously an auxiliary result en route to
 `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. It is now deprecated, since the proof has been
 refactored so this step is no longer needed. -/
-@[deprecated eq_one_or_neg_one_of_mem_fdo_mem_fdo (since := "2026-03-19")]
+@[deprecated eq_one_or_neg_one_of_mem_fdo_mem_fdo +typeChanged (since := "2026-03-19")]
 theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by
   rcases eq_one_or_neg_one_of_mem_fdo_mem_fdo hz hg with rfl | rfl <;> rfl
 
@@ -861,7 +861,7 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖
   apply mem_closure_of_frequently_of_tendsto (α := ℝ)
       (b := 𝓝[<] 1) (f := fun t ↦ ofComplex (t * x))
   · apply Filter.Eventually.frequently
-    simp only [fdo, Set.mem_setOf, Filter.eventually_and, one_lt_normSq_iff]
+    simp only [fdo, Set.mem_ofPred, Filter.eventually_and, one_lt_normSq_iff]
     refine ⟨Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds), ?_⟩
     · have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
         refine .comp (by fun_prop) ((OpenPartialHomeomorph.continuousAt _ ?_).comp (by fun_prop))

@@ -139,7 +139,7 @@ theorem HasSubst.smul_X (a : σ → R) :
 
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
 noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
-  { carrier := setOf HasSubst
+  { carrier := Set.ofPred HasSubst
     add_mem' := HasSubst.add
     zero_mem' := HasSubst.zero
     smul_mem' := HasSubst.mul_left }
@@ -354,7 +354,7 @@ theorem map_subst {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+*
   rw [coeff_subst (ha.map h), coeff_map, coeff_subst ha, this, AddMonoidHom.map_finsum _
     (coeff_subst_finite ha _ _), finsum_congr]
   intro d
-  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
+  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_ofClass, map_mul,
     ← coeff_map, Finsupp.prod]
 
 lemma subst_zero_eq_C_constantCoeff {f : MvPowerSeries σ R} :
@@ -745,7 +745,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   rw [Finset.sum_eq_single n _ _]
   · simp [mul_comm, ← monomial_eq]
   · intro b hb hbn
-    rw [← monomial_eq, coeff_monomial, if_neg (Ne.symm hbn), mul_zero]
+    rw [← monomial_eq, coeff_monomial, ite_eq_right (Ne.symm hbn), mul_zero]
   · intro hn
     simpa using hn
 

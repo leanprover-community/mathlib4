@@ -5,6 +5,7 @@ Authors: Brendan Murphy
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.Regular
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
@@ -43,7 +44,7 @@ lemma LinearEquiv.isSMulRegular_congr [AddCommMonoid N] [Module R N]
 
 end Congr
 
-variable {R S M M' M'' : Type*}
+variable {R M M' M'' : Type*}
 
 lemma IsSMulRegular.submodule [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (r : R) (h : IsSMulRegular M r) : IsSMulRegular N r :=
@@ -124,7 +125,7 @@ variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | IsSMulRegular M r }ᶜ :=
   Eq.trans (biUnion_associatedPrimes_eq_zero_divisors R M) <| by
-    simp_rw [Set.compl_setOf, isSMulRegular_iff_right_eq_zero_of_smul,
+    simp_rw [Set.compl_ofPred, isSMulRegular_iff_right_eq_zero_of_smul,
       not_forall, exists_prop, and_comm]
 
 lemma isSMulRegular_iff_ker_lsmul_eq_bot :

@@ -142,11 +142,11 @@ lemma trans [Algebra S T] [Algebra R T] [IsScalarTower R S T]
   rw [Ideal.map_top, Ideal.map_span] at h1
   nth_rw 1 [_root_.eq_top_iff, ← Ideal.top_mul ⊤, ← h1, ← span_isStandardOpenImmersion_eq_top S T,
     Ideal.span_mul_span, Ideal.span_le, Set.mul_subset_iff]
-  simp only [Set.mem_image, Set.mem_setOf_eq, SetLike.mem_coe, forall_exists_index, and_imp,
+  simp only [Set.mem_image, Set.mem_ofPred_eq, SetLike.mem_coe, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
   intro g hg x hx
   refine Ideal.subset_span ⟨⟨⟨g, hg⟩, ⟨x, ?_⟩⟩, rfl⟩
-  simp only [Set.mem_setOf_eq, t]
+  simp only [Set.mem_ofPred_eq, t]
   let : Algebra (Localization.Away x) (T'' g x) :=
     localizationAlgebra (.powers x) (T' g)
   have : IsScalarTower S (Localization.Away x) (T'' g x) :=
@@ -177,7 +177,7 @@ instance [Algebra R T] [IsLocalIso R S] : IsLocalIso T (T ⊗[R] S) := by
     Ideal.map_le_iff_le_comap, Ideal.span_le]
   intro g hg
   apply Ideal.subset_span
-  simp only [Set.mem_setOf_eq] at hg ⊢
+  simp only [Set.mem_ofPred_eq] at hg ⊢
   exact .of_algEquiv <| IsLocalization.Away.tensorProductEquivTMulRight R T g (Localization.Away g)
 
 end Algebra.IsLocalIso

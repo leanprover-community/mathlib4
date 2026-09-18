@@ -180,7 +180,7 @@ theorem range_preOmega : range preOmega = {x | IsInitial x} :=
   range_enumOrd not_bddAbove_isInitial
 
 theorem mem_range_preOmega_iff {x : Ordinal} : x ∈ range preOmega ↔ IsInitial x := by
-  rw [range_preOmega, mem_setOf]
+  rw [range_preOmega, mem_ofPred]
 
 alias ⟨_, IsInitial.mem_range_preOmega⟩ := mem_range_preOmega_iff
 
@@ -269,7 +269,7 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
     rw [omega_eq_preOmega, Ordinal.add_sub_cancel_of_le ha']
 
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
-  rw [range_omega, mem_setOf]
+  rw [range_omega, mem_ofPred]
 
 theorem preOmega_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
   rw [← opow_natCast] at ho
@@ -330,11 +330,11 @@ theorem preAleph_zero : preAleph 0 = 0 :=
 theorem succ_preAleph (o : Ordinal) : succ (preAleph o) = preAleph (o + 1) :=
   (preAleph.map_succ o).symm
 
-@[deprecated succ_preAleph (since := "2026-03-24")]
+@[deprecated succ_preAleph +typeChanged (since := "2026-03-24")]
 theorem preAleph_add_one (o : Ordinal) : preAleph (o + 1) = succ (preAleph o) :=
   preAleph.map_succ o
 
-@[deprecated succ_preAleph (since := "2026-03-24")]
+@[deprecated succ_preAleph +typeChanged (since := "2026-03-24")]
 theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
@@ -452,11 +452,11 @@ theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
 theorem succ_aleph (o : Ordinal) : succ (ℵ_ o) = ℵ_ (o + 1) := by
   rw [aleph_eq_preAleph, succ_preAleph, add_assoc, aleph_eq_preAleph]
 
-@[deprecated succ_aleph (since := "2026-03-24")]
+@[deprecated succ_aleph +typeChanged (since := "2026-03-24")]
 theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
   simp
 
-@[deprecated succ_aleph (since := "2026-03-24")]
+@[deprecated succ_aleph +typeChanged (since := "2026-03-24")]
 theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) :=
   (succ_aleph o).symm
 
@@ -536,24 +536,31 @@ theorem lt_aleph_one_iff {c : Cardinal} : c < ℵ₁ ↔ c ≤ ℵ₀ := by
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by simp
 
-@[deprecated aleph_one_le_iff (since := "2026-03-23")]
+@[deprecated aleph_one_le_iff +typeChanged (since := "2026-03-23")]
 theorem aleph0_lt_iff_aleph_one_le {c} : ℵ₀ < c ↔ ℵ₁ ≤ c :=
   aleph_one_le_iff.symm
 
-@[deprecated aleph0_lt_mk_iff (since := "2026-03-23")]
+@[deprecated aleph0_lt_mk_iff +typeChanged (since := "2026-03-23")]
 theorem aleph1_le_mk_iff {α : Type*} : ℵ₁ ≤ #α ↔ Uncountable α := by
   rw [aleph_one_le_iff, aleph0_lt_mk_iff]
 
-@[deprecated aleph0_lt_mk (since := "2026-03-23")]
+@[deprecated aleph0_lt_mk +typeChanged (since := "2026-03-23")]
 theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α := by
   simp
 
-@[deprecated le_aleph0_iff_set_countable (since := "2026-03-23")]
+@[deprecated le_aleph0_iff_set_countable +typeChanged (since := "2026-03-23")]
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
 
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
+
+theorem countable_toType_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : Countable (ToType o) := by
+  rwa [← mk_le_aleph0_iff, mk_toType, card_le_iff, succ_aleph0, ord_aleph]
+
+theorem countable_Iio_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : (Iio o).Countable := by
+  rw [← countable_coe_iff, ToType.mk.toEquiv.countable_iff]
+  exact countable_toType_of_lt_omega_one h
 
 end Cardinal
 
@@ -605,7 +612,7 @@ theorem preBeth_add_one (o : Ordinal) : preBeth (o + 1) = 2 ^ preBeth o := by
   rw [preBeth, ← succ_eq_add_one, Iio_succ]
   exact ciSup_Iic o fun x y h ↦ power_le_power_left two_ne_zero (preBeth_mono h)
 
-@[deprecated preBeth_add_one (since := "2026-05-26")]
+@[deprecated preBeth_add_one +typeChanged (since := "2026-05-26")]
 theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o :=
   preBeth_add_one o
 
@@ -777,7 +784,7 @@ theorem preBeth_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = 
 section lift
 variable {c : Cardinal.{u}} {n : ℕ}
 
-@[deprecated aleph0_lt_lift (since := "2026-03-23")]
+@[deprecated aleph0_lt_lift +typeChanged (since := "2026-03-23")]
 theorem aleph_one_le_lift : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
   simp
 
@@ -789,7 +796,7 @@ theorem lift_le_aleph_one : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
 theorem aleph_one_lt_lift : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
   simpa using lift_lt (a := ℵ₁)
 
-@[deprecated lift_le_aleph0 (since := "2026-03-23")]
+@[deprecated lift_le_aleph0 +typeChanged (since := "2026-03-23")]
 theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
   simp
 

@@ -19,7 +19,7 @@ This file proves properties about
 * `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
 * `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
 * `List.inits`: The list of prefixes of a list.
-* `List.tails`: The list of prefixes of a list.
+* `List.tails`: The list of suffixes of a list.
 * `insert` on lists
 
 All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
@@ -56,7 +56,7 @@ lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l�
    fun h ↦ h.trans <| l₂.prefix_append l₃⟩
 
 @[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
-  simp [prefix_take_iff, take_prefix]; omega
+  simp [prefix_take_iff, take_prefix]
 
 @[gcongr]
 protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :

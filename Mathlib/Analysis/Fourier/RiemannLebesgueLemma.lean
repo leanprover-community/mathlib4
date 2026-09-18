@@ -142,7 +142,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
     refine (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => ?_).symm
     dsimp only [A] at hv
-    simp only [mem_setOf, not_le] at hv
+    simp only [mem_ofPred, not_le] at hv
     rw [hR_bd v _, hR_bd (v + i w) _, sub_zero, norm_zero]
     · rw [← sub_neg_eq_add]
       refine le_trans ?_ (norm_sub_norm_le _ _)

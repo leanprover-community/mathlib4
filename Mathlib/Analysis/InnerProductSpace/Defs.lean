@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Basic.Complex.Basic
 
 /-!
 # Inner product spaces
@@ -69,7 +69,9 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp Bornology
+open RCLike Real Filter Bornology
+
+open scoped Topology ComplexConjugate
 
 open LinearMap (BilinForm)
 
@@ -510,12 +512,12 @@ lemma topology_eq
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
   let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
     InnerProductSpace.Core.toNormedSpace
-  suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
+  suffices WithSeminorms (fun (i : Unit) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
     simp
   have : p.ball 0 1 = {v | re (cd.inner v v) < 1} := by
     ext v
-    simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_setOf_eq, p]
+    simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_ofPred_eq, p]
     change √(re (cd.inner v v)) < 1 ↔ re (cd.inner v v) < 1
     conv_lhs => rw [show (1 : ℝ) = √1 by simp]
     rw [sqrt_lt_sqrt_iff]
