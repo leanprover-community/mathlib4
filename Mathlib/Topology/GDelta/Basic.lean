@@ -60,6 +60,7 @@ section IsGδ
 variable [TopologicalSpace X]
 
 /-- A Gδ set is a countable intersection of open sets. -/
+@[wikidata Q127244]
 def IsGδ (s : Set X) : Prop :=
   ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
@@ -167,6 +168,7 @@ section residual
 variable [TopologicalSpace X]
 
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
+@[wikidata Q97623888]
 def residual (X : Type*) [TopologicalSpace X] : Filter X :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
 
@@ -197,6 +199,7 @@ open Function TopologicalSpace Set
 variable [TopologicalSpace X]
 
 /-- A set is called **nowhere dense** iff its closure has empty interior. -/
+@[wikidata Q1991405]
 def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 
 /-- The empty set is nowhere dense. -/
@@ -281,6 +284,7 @@ lemma IsNowhereDense.image_val {Y : Set X} {s : Set Y}
   Topology.IsInducing.subtypeVal.isNowhereDense_image hs
 
 /-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
+@[wikidata Q1747745]
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
 
 /-- The empty set is meagre. -/
