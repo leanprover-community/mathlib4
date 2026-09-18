@@ -703,7 +703,7 @@ theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 <| subset_lieSpan
+  eq_top_iff.2 <| le_iff_mem_imp_mem.2 <| subset_lieSpan
 
 variable {L}
 

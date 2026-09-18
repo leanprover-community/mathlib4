@@ -114,6 +114,6 @@ theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) :
 @[to_additive]
 theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
     Maximal IsMulPointed M :=
-  ⟨hMp, fun N hN h ↦ by rw [IsConcreteLE.le_iff] at h ⊢; aesop⟩
+  ⟨hMp, fun N hN h ↦ by rw [le_iff_mem_imp_mem] at h ⊢; aesop⟩
 
 end Submonoid.IsMulSpanning

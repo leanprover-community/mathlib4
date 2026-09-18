@@ -257,7 +257,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
         Opens (Set.range f)) = ⊤ := by
       rw [← top_le_iff]
-      simpa [Set.range_subset_iff, IsConcreteLE.le_iff] using hU
+      simpa [Set.range_subset_iff, le_iff_mem_imp_mem] using hU
     refine this _ ?_ _ ?_ V iV hiV ?_ ?_ hU''
     · fun_prop
     · rw [hU'']; simp

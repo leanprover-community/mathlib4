@@ -468,7 +468,7 @@ theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s₁ : AffineSubspace k
   have hp₁s₁ : p₁ ∈ (s₁ : Set P) := Set.mem_of_mem_of_subset hp₁ h
   refine vadd_mem_of_mem_direction ?_ hp₁s₁
   have hs : vectorSpan k s ≤ s₁.direction := vectorSpan_mono k h
-  rw [IsConcreteLE.le_iff] at hs
+  rw [le_iff_mem_imp_mem] at hs
   rw [← SetLike.mem_coe]
   exact Set.mem_of_mem_of_subset hv hs
 
@@ -914,7 +914,7 @@ theorem sup_direction_lt_of_nonempty_of_inter_empty {s₁ s₂ : AffineSubspace 
     s₁.direction ⊔ s₂.direction < (s₁ ⊔ s₂).direction := by
   obtain ⟨p₁, hp₁⟩ := h1
   obtain ⟨p₂, hp₂⟩ := h2
-  rw [IsConcreteLE.lt_iff_le_and_exists]
+  rw [lt_iff_le_and_exists_mem_notMem]
   use sup_direction_le s₁ s₂, p₂ -ᵥ p₁,
     vsub_mem_direction ((le_sup_right : s₂ ≤ s₁ ⊔ s₂) hp₂) ((le_sup_left : s₁ ≤ s₁ ⊔ s₂) hp₁)
   intro h
@@ -964,7 +964,7 @@ theorem affineSpan_coe (s : AffineSubspace k P) : affineSpan k (s : Set P) = s :
 
 @[simp, gcongr]
 theorem mk'_le_mk'_iff (p : P) {d₁ d₂ : Submodule k V} : mk' p d₁ ≤ mk' p d₂ ↔ d₁ ≤ d₂ := by
-  simp_rw [IsConcreteLE.le_iff, mem_mk']
+  simp_rw [le_iff_mem_imp_mem, mem_mk']
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ h hx⟩
   simpa using h (show (x +ᵥ p) -ᵥ p ∈ d₁ by simpa using hx)
 

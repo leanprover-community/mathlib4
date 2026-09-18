@@ -426,4 +426,4 @@ end Ideal
   invFun I := have := I.2; I.1.toTwoSided
   left_inv _ := by simp
   right_inv I := by simp
-  map_rel_iff' {I I'} := by simp [IsConcreteLE.le_iff]
+  map_rel_iff' {I I'} := by simp [le_iff_mem_imp_mem]
