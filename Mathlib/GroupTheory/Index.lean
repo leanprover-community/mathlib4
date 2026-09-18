@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Coset.Card
@@ -298,7 +299,7 @@ theorem card_ker_mul_card_range (f : G →* G') : Nat.card f.ker * Nat.card f.ra
 @[to_additive card_ker_mul_card_of_surjective]
 theorem card_ker_mul_card_of_surjective (hf : Surjective f) :
     Nat.card f.ker * Nat.card G' = Nat.card G := by
-  rw [← card_ker_mul_card_range f, f.range_eq_top.mpr hf, Nat.card_congr topEquiv.toEquiv]
+  rw [← card_ker_mul_card_range f, f.range_eq_top.mpr hf, card_top]
 
 @[to_additive]
 theorem card_dvd_of_surjective (hf : Surjective f) : Nat.card G' ∣ Nat.card G :=
