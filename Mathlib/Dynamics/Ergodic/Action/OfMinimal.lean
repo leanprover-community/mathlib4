@@ -91,7 +91,8 @@ theorem ergodic_smul_of_denseRange_pow {M : Type*} [Monoid M] [TopologicalSpace 
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul M X μ] :
     Ergodic (g • ·) μ := by
   borelize M
-  refine ⟨measurePreserving_smul _ _, ⟨fun s hsm hs ↦ ?_⟩⟩
+  refine .of_preimage_eq (continuous_const_smul g).measurable (measurePreserving_smul _ _)
+    fun s hsm hs ↦ ?_
   refine aeconst_of_dense_setOfPred_preimage_smul_eq hsm.nullMeasurableSet (hg.mono ?_)
   refine range_subset_iff.2 fun n ↦ ?_
   rw [mem_ofPred, ← smul_iterate, preimage_iterate_eq, iterate_fixed hs]
@@ -149,7 +150,8 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul G X μ] :
     Ergodic (g • ·) μ := by
   borelize G
-  refine ⟨measurePreserving_smul _ _, ⟨fun s hsm hs ↦ ?_⟩⟩
+  refine .of_preimage_eq (continuous_const_smul g).measurable (measurePreserving_smul _ _)
+    fun s hsm hs ↦ ?_
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
     MulAction.mem_aestabilizer, ← preimage_smul]
@@ -191,7 +193,7 @@ theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
     simp only [s, preimage_iUnion, ← smul_eq_mul, preimage_smul]
     refine iUnion_congr_of_surjective _ (add_left_surjective (-1)) fun m ↦ ?_
     simp [zpow_add, mul_smul]
-  cases hg.measure_self_or_compl_eq_zero hso.measurableSet hgs with
+  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet hgs.eventuallyEq with
   | inl h => exact hso.measure_ne_zero _ hsne h
   | inr h =>
     refine (hVo.smul a).measure_ne_zero μ (.image _ ⟨1, hV₁⟩) (measure_mono_null ?_ h)
@@ -233,9 +235,11 @@ If the preimages of `0` under the iterations of `f` are dense,
 then it is pre-ergodic with respect to any finite inner regular left invariant measure. -/]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
-    (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) : PreErgodic f μ := by
-  refine ⟨fun s hsm hs ↦
-    aeconst_of_dense_setOfPred_preimage_smul_eq (M := G) hsm.nullMeasurableSet ?_⟩
+    (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hfm : Measurable f)
+    (hqmp : Measure.QuasiMeasurePreserving f μ μ) :
+    PreErgodic f μ := by
+  refine .of_preimage_eq hfm hqmp fun s hsm hs ↦
+    aeconst_of_dense_setOfPred_preimage_smul_eq (M := G) hsm.nullMeasurableSet ?_
   refine hf.mono <| iUnion_subset fun n x hx ↦ ?_
   have hsn : f^[n] ⁻¹' s = s := by
     rw [preimage_iterate_eq, iterate_fixed hs]
@@ -255,6 +259,7 @@ then `f` is ergodic with respect to any finite inner regular left invariant meas
 theorem ergodic_of_dense_iUnion_preimage_one [CompactSpace G] {μ : Measure G} [μ.IsHaarMeasure]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hcont : Continuous f) (hsurj : Surjective f) :
     Ergodic f μ :=
-  ⟨f.measurePreserving hcont hsurj rfl, f.preErgodic_of_dense_iUnion_preimage_one hf⟩
+  have hmp := f.measurePreserving hcont hsurj rfl
+  ⟨hmp, f.preErgodic_of_dense_iUnion_preimage_one hf hcont.measurable hmp.quasiMeasurePreserving⟩
 
 end MonoidHom

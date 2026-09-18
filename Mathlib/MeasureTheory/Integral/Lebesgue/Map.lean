@@ -117,7 +117,8 @@ protected theorem lintegral_map_equiv (f : β → ℝ≥0∞) (g : α ≃ᵐ β)
 include hg
 
 theorem lintegral_comp {f : β → ℝ≥0∞} (hf : Measurable f) :
-    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, lintegral_map hf hg.measurable]
+    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by
+  rw [← hg.map_eq, lintegral_map' hf.aemeasurable hg.aemeasurable]
 
 theorem lintegral_comp_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, hge.lintegral_map]
@@ -125,7 +126,8 @@ theorem lintegral_comp_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞)
 theorem setLIntegral_comp_preimage
     {s : Set β} (hs : MeasurableSet s) {f : β → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a in g ⁻¹' s, f (g a) ∂μ = ∫⁻ b in s, f b ∂ν := by
-  rw [← hg.map_eq, setLIntegral_map hs hf hg.measurable]
+  rw [← hg.map_eq, Measure.restrict_map_of_aemeasurable hg.aemeasurable hs,
+    lintegral_map' hf.aemeasurable hg.aemeasurable.restrict]
 
 theorem setLIntegral_comp_preimage_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) (s : Set β) :
     ∫⁻ a in g ⁻¹' s, f (g a) ∂μ = ∫⁻ b in s, f b ∂ν := by
