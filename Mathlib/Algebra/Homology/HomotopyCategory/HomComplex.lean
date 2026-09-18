@@ -775,7 +775,7 @@ def Cocycle.postcomp {n : ℤ} (z : Cocycle F G n) (f : G ⟶ K) : Cocycle F K n
 
 /-- The composition of two cocycles. -/
 @[implicit_reducible, simps!]
-def Cocycle.comp {a b c : ℤ} (z₁ : Cocycle F G a) (z₂ : Cocycle G K b) (h : a + b = c) :
+def Cocycle.comp {a b c : ℤ} (z₁ : Cocycle F G a) (z₂ : Cocycle G K b) (h : a + b = c := by lia) :
     Cocycle F K c :=
   Cocycle.mk (z₁.1.comp z₂.1 h) _ rfl (by simp [δ_comp _ _ _ _ _ _ rfl rfl rfl])
 
