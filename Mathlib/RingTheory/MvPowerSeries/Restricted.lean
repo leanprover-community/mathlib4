@@ -258,7 +258,7 @@ lemma map_injective {φ : R →+* S} (C : ℝ) (hφ : ∀ x, ‖φ x‖ ≤ C * 
 
 /-- A version of `MvPowerSeries.Restricted.map` where we take `π` only being additive (not
 neccesarily multiplicative), this gives an additive map between restricted power series. -/
-noncomputable def map_additive (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖ ≤ C * ‖x‖) :
+noncomputable def mapAdditive (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖ ≤ C * ‖x‖) :
     Restricted S c →+ Restricted R c where
   toFun A := ⟨fun t ↦ π (coeff t A.1), isRestricted_map c π hC A.2⟩
   map_zero' := Restricted.ext (MvPowerSeries.ext fun t ↦ by aesop)
@@ -266,7 +266,7 @@ noncomputable def map_additive (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖
 
 @[simp]
 lemma coeff_val_map_additive (π : S →+ R) {C : ℝ} (hC : ∀ x, ‖π x‖ ≤ C * ‖x‖)
-    (A : Restricted S c) : (map_additive c π hC A).1 = fun t ↦ π (coeff t A.1) := rfl
+    (A : Restricted S c) : (mapAdditive c π hC A).1 = fun t ↦ π (coeff t A.1) := rfl
 
 end Restricted
 
