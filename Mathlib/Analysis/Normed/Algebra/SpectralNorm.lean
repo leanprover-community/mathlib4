@@ -32,7 +32,7 @@ section matrices
 
 open scoped Matrix.Norms.Operator
 
--- waiting on spectral radius (also look into futher golfing)
+-- waiting on spectral radius (also look into further golfing)
 open Filter Topology in
 private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
