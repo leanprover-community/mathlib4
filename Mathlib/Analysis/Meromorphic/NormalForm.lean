@@ -115,6 +115,27 @@ theorem meromorphicNFAt_iff_analyticAt_or :
   · obtain ⟨hf, _⟩ := h
     exact hf
 
+open Asymptotics in
+lemma MeromorphicNFAt.isTheta_pow_sub
+    (hf : MeromorphicNFAt f x) (hf' : meromorphicOrderAt f x ≠ ⊤) :
+    f =Θ[𝓝 x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop hf' := by
+  rcases id hf with h | ⟨n, g, hgan, hgne, hev⟩
+  · -- Case `f =ᶠ[𝓝 x] 0` contradicts assumptions
+    rw [ne_eq, meromorphicOrderAt_eq_top_iff] at hf'
+    exact (hf' (h.filter_mono nhdsWithin_le_nhds)).elim
+  · -- Case of nat vanishing order: show order must be `(meromorphicOrderAt f x).untop hf'`
+    calc
+    f =Θ[𝓝 x] fun z ↦ (z - x) ^ n • g z := Filter.EventuallyEq.isTheta hev
+    _ =Θ[𝓝 x] fun z ↦ (z - x) ^ n • (1 : 𝕜) :=
+        (isTheta_refl _ _).smul (hgan.continuousAt.isTheta hgne)
+    _ =Θ[𝓝 x] fun z ↦ (z - x) ^ n := by simp [isTheta_refl]
+    _ =Θ[𝓝 x] fun z ↦ (z - x) ^ (meromorphicOrderAt f x).untop hf' := by
+      congr!
+      rw [Eq.comm, WithTop.untop_eq_iff, meromorphicOrderAt_congr
+        (hev.filter_mono nhdsWithin_le_nhds), meromorphicOrderAt_eq_int_iff <|
+          hf.meromorphicAt.congr <| hev.filter_mono nhdsWithin_le_nhds]
+      exact ⟨g, hgan, hgne, by simp⟩
+
 /--
 If a function is meromorphic in normal form at `x`, then it has non-negative order iff it is
 analytic.

@@ -6,6 +6,7 @@ Authors: Vincent Beffara, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Asymptotics.Theta
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
@@ -120,6 +121,15 @@ lemma AnalyticAt.analyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
         f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ analyticOrderNatAt f z₀ • g z := by
   simp only [← ENat.natCast_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.analyticOrderAt_eq_natCast,
     analyticOrderNatAt]
+
+/-- An analytic function that does not vanish identically near a point is asymptotic, up to
+constant factors, to the corresponding power of the local parameter. -/
+lemma AnalyticAt.isTheta_pow_sub (hf : AnalyticAt 𝕜 f z₀) (hf' : analyticOrderAt f z₀ ≠ ⊤) :
+    f =Θ[𝓝 z₀] fun z ↦ (z - z₀) ^ analyticOrderNatAt f z₀ := by
+  obtain ⟨g, hg, hg0, hfg⟩ := hf.analyticOrderAt_ne_top.mp hf'
+  have hgΘ : g =Θ[𝓝 z₀] fun _ ↦ (1 : 𝕜) := hg.continuousAt.isTheta hg0
+  exact hfg.isTheta.trans <| by simpa using
+    (Asymptotics.isTheta_refl (fun z ↦ (z - z₀) ^ analyticOrderNatAt f z₀) (𝓝 z₀)).smul hgΘ
 
 lemma analyticOrderAt_eq_zero : analyticOrderAt f z₀ = 0 ↔ ¬ AnalyticAt 𝕜 f z₀ ∨ f z₀ ≠ 0 := by
   by_cases hf : AnalyticAt 𝕜 f z₀
