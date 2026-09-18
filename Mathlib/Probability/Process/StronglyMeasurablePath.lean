@@ -18,7 +18,7 @@ every path `X · ω` is right-continuous, then that path map is strongly measura
 
 * `stronglyMeasurable_path_of_isRightContinuous`: the path map of a right-continuous process
   with strongly measurable marginals is strongly measurable.
-* `StronglyAdapted.stronglyMeasurable_path`: the same statement for a strongly
+* `StronglyAdapted.stronglyMeasurable_path_of_isRightContinuous`: the same statement for a strongly
   adapted process with right-continuous paths.
 
 -/
@@ -39,24 +39,29 @@ open scoped Classical in
 /-- The simple function sending `ω` to the step function taking at `i` the value
 `SimpleFunc.nearestPt e n (X t ω)`, where `t` is the smallest element of `s` with `i ≤ t`
 (and the value `0` if `s` has no element `≥ i`). -/
-noncomputable def pathApprox (X : ι → Ω → E) (hX : ∀ t, Measurable (X t)) (e : ℕ → E)
+@[to_dual pathApproxLeft /-- The simple function sending `ω` to the step function taking at `i` the
+value `SimpleFunc.nearestPt e n (X t ω)`, where `t` is the biggest element of `s` with `t ≤ i`
+(and the value `0` if `s` has no element `≤ i`). -/]
+noncomputable def pathApproxRight (X : ι → Ω → E) (hX : ∀ t, Measurable (X t)) (e : ℕ → E)
     (s : Finset ι) (n : ℕ) :
     SimpleFunc Ω (ι → E) :=
   ∑ t ∈ s, ((SimpleFunc.nearestPt e n).comp (X t) (hX t)).map
     fun w i ↦ if IsLeast {u ∈ s | i ≤ u} t then w else 0
 
 open scoped Classical in
-lemma pathApprox_apply (hX : ∀ t, Measurable (X t)) (ω : Ω) (i : ι) :
-    pathApprox X hX e s n ω i =
+@[to_dual pathApproxLeft_apply]
+lemma pathApproxRight_apply (hX : ∀ t, Measurable (X t)) (ω : Ω) (i : ι) :
+    pathApproxRight X hX e s n ω i =
       ∑ t ∈ s, if IsLeast {u ∈ s | i ≤ u} t then SimpleFunc.nearestPt e n (X t ω) else 0 := by
-  simp [pathApprox, SimpleFunc.coe_finsetSum]
+  simp [pathApproxRight, SimpleFunc.coe_finsetSum]
 
 /-- Evaluation of `pathApprox` at a time `i` for which `t₀` is the smallest element of `s`
 that is `≥ i`. -/
-lemma pathApprox_apply_of_isLeast (hX : ∀ t, Measurable (X t)) {ω : Ω} {i t₀ : ι}
+@[to_dual pathApproxLeft_apply_of_isGreatest]
+lemma pathApproxRight_apply_of_isLeast (hX : ∀ t, Measurable (X t)) {ω : Ω} {i t₀ : ι}
     (h : IsLeast {u ∈ s | i ≤ u} t₀) :
-    pathApprox X hX e s n ω i = SimpleFunc.nearestPt e n (X t₀ ω) := by
-  rw [pathApprox_apply hX, Finset.sum_eq_single t₀] <;> grind [IsLeast, lowerBounds]
+    pathApproxRight X hX e s n ω i = SimpleFunc.nearestPt e n (X t₀ ω) := by
+  rw [pathApproxRight_apply hX, Finset.sum_eq_single t₀] <;> grind [IsLeast, lowerBounds]
 
 end PathApprox
 
@@ -66,7 +71,8 @@ variable [TopologicalSpace ι] [SecondCountableTopology ι] [OrderTopology ι]
 
 /-- The set of values taken by a right-continuous process with strongly measurable marginals
 is separable. -/
-@[to_dual]
+@[to_dual /-- The set of values taken by a left-continuous process with strongly measurable
+marginals is separable. -/]
 lemma isSeparable_iUnion_range_of_stronglyMeasurable_of_isRightContinuous [TopologicalSpace E]
     (hX : ∀ i, StronglyMeasurable (X i)) (hX_cont : ∀ ω, IsRightContinuous (X · ω)) :
     IsSeparable (⋃ t, range (X t)) := by
@@ -94,6 +100,9 @@ variable [PseudoMetricSpace E] [AddCommMonoid E]
 
 /-- A process whose paths are right-continuous and whose marginals `X i` are strongly measurable
 is strongly measurable as a map `Ω → (ι → E)` into the path space with the product topology. -/
+@[to_dual /-- A process whose paths are left-continuous and whose marginals `X i` are
+strongly measurable is strongly measurable as a map `Ω → (ι → E)`
+into the path space with the product topology. -/]
 lemma stronglyMeasurable_path_of_isRightContinuous
     (hX : ∀ i, StronglyMeasurable (X i)) (hX_cont : ∀ ω, IsRightContinuous (X · ω)) :
     StronglyMeasurable (fun ω ↦ (X · ω)) := by
@@ -122,7 +131,7 @@ lemma stronglyMeasurable_path_of_isRightContinuous
   have hXmem i ω : X i ω ∈ closure (range e) :=
     closure_mono hce (hc (mem_iUnion.2 ⟨i, ⟨ω, rfl⟩⟩))
   -- The approximating simple functions.
-  refine ⟨fun n ↦ pathApprox X hX_meas e (times n) n,
+  refine ⟨fun n ↦ pathApproxRight X hX_meas e (times n) n,
     fun ω ↦ tendsto_pi_nhds.2 fun i ↦ EMetric.tendsto_atTop.2 fun ε hε ↦ ?_⟩
   have hε3 : 0 < ε / 3 := ENNReal.div_pos hε.ne' (by norm_num)
   -- A point `e k` close to `X i ω`.
@@ -160,7 +169,7 @@ lemma stronglyMeasurable_path_of_isRightContinuous
       · simpa [h] using hε3
   refine ⟨max k N₀, fun n hn ↦ ?_⟩
   obtain ⟨t₀, ht₀, hclose⟩ := hN₀ n ((le_max_right _ _).trans hn)
-  rw [pathApprox_apply_of_isLeast hX_meas ht₀]
+  rw [pathApproxRight_apply_of_isLeast hX_meas ht₀]
   calc edist (SimpleFunc.nearestPt e n (X t₀ ω)) (X i ω)
   _ ≤ edist (SimpleFunc.nearestPt e n (X t₀ ω)) (X t₀ ω) + edist (X t₀ ω) (X i ω) :=
       edist_triangle _ _ _
@@ -174,10 +183,12 @@ lemma stronglyMeasurable_path_of_isRightContinuous
 
 /-- A strongly adapted process with right-continuous paths is strongly measurable as a path-valued
 random variable `Ω → (ι → E)`. -/
-lemma StronglyAdapted.stronglyMeasurable_path {𝓕 : Filtration ι mΩ}
+@[to_dual /-- A strongly adapted process with left-continuous paths is strongly measurable as a
+path-valued random variable `Ω → (ι → E)`. -/]
+lemma StronglyAdapted.stronglyMeasurable_path_of_isRightContinuous {𝓕 : Filtration ι mΩ}
     (hX : StronglyAdapted 𝓕 X) (hX_cont : ∀ ω, IsRightContinuous (X · ω)) :
     StronglyMeasurable (fun ω ↦ (X · ω)) :=
-  stronglyMeasurable_path_of_isRightContinuous (fun i ↦ (hX i).mono (𝓕.le i)) hX_cont
+  MeasureTheory.stronglyMeasurable_path_of_isRightContinuous (fun i ↦ (hX i).mono (𝓕.le i)) hX_cont
 
 end RightContinuous
 
