@@ -72,24 +72,18 @@ instance : (curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤
     C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E).Faithful :=
   fullyFaithfulCurry₄.faithful
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((currying₄.unitIso.hom.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
   simp [currying₄, Equivalence.unit]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma currying₄_unitIso_inv_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((currying₄.unitIso.inv.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
   simp [currying₄, Equivalence.unitInv]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁ : C₁ ⥤ D₁`, `F₂ : C₂ ⥤ D₂`, `F₃ : C₃ ⥤ D₃`,
 `F₄ : C₄ ⥤ D₄` and `G : D₁ × D₂ × D₃ × D₄ ⥤ E`, this is the isomorphism between
 `curry₄.obj (F₁.prod (F₂.prod (F₃.prod F₄)) ⋙ G) : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E`
