@@ -119,60 +119,57 @@ lemma strictLimitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
 
 section
 
-variable {β : Type w'} [LinearOrder β] [OrderBot β] [SuccOrder β] [WellFoundedLT β]
+variable {β : Type w'} [LinearOrder β] [OrderBot β] [WellFoundedLT β]
 
 /-- Given `P : ObjectProperty C`, a family of categories `J a`, this
 is the transfinite iteration of `Q ↦ Q.strictLimitsClosureStep J`. -/
 abbrev strictLimitsClosureIter (b : β) : ObjectProperty C :=
-  transfiniteIterate (φ := fun Q ↦ Q.strictLimitsClosureStep J) b P
+  supTransfiniteIterate (φ := fun Q ↦ Q.strictLimitsClosureStep J) b P
 
 lemma le_strictLimitsClosureIter (b : β) :
     P ≤ P.strictLimitsClosureIter J b :=
-  le_of_eq_of_le (transfiniteIterate_bot _ _).symm
-    (monotone_transfiniteIterate _ _ (fun _ ↦ le_strictLimitsClosureStep _ _) bot_le)
+  le_of_eq_of_le (supTransfiniteIterate_bot _ _).symm
+    (supTransfiniteIterate_mono _ (fun _ ↦ le_strictLimitsClosureStep _ _) bot_le)
 
 instance (b : β) [P.Nonempty] : (P.strictLimitsClosureIter J b).Nonempty :=
   .mono (P.le_strictLimitsClosureIter J b)
 
 lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     P.strictLimitsClosureIter J b ≤ P.limitsClosure J := by
+  have := SuccOrder.ofLinearWellFoundedLT β
   induction b using SuccOrder.limitRecOn with
   | isMin b hb =>
     obtain rfl := hb.eq_bot
     simp
   | succ b hb hb' =>
-    rw [strictLimitsClosureIter, transfiniteIterate_succ _ _ _ hb,
+    rw [strictLimitsClosureIter, supTransfiniteIterate_succ_of_not_isMax _ _ hb,
       strictLimitsClosureStep, sup_le_iff, iSup_le_iff]
     exact ⟨hb', fun a ↦ ((strictLimitsOfShape_le_limitsOfShape _ _).trans
       (limitsOfShape_monotone _ hb')).trans (limitsOfShape_le _ _)⟩
-  | isSuccLimit b hb hb' =>
-    simp only [transfiniteIterate_limit _ _ _ hb,
-      iSup_le_iff, Subtype.forall, Set.mem_Iio]
-    intro c hc
-    exact hb' _ hc
+  | isSuccLimit b hb hb' => simpa [supTransfiniteIterate_limit _ _ hb] using fun c hc ↦ hb' _ hc
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
     [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] (b : β)
     [hb₀ : Small.{w} (Set.Iio b)] :
     ObjectProperty.Small.{w} (P.strictLimitsClosureIter J b) := by
+  have := SuccOrder.ofLinearWellFoundedLT β
   have H {b c : β} (hbc : b ≤ c) [Small.{w} (Set.Iio c)] : Small.{w} (Set.Iio b) :=
-    small_of_injective (f := fun x ↦ (⟨x.1, lt_of_lt_of_le x.2 hbc⟩ : Set.Iio c))
-      (fun _ _ _ ↦ by aesop)
+    small_of_injective (f := fun x ↦ (⟨x.1, Set.mem_Iio.2 <| x.2.trans_le hbc⟩ : Set.Iio c))
+      (fun _ _ _ ↦ by grind)
   induction b using SuccOrder.limitRecOn generalizing hb₀ with
   | isMin b hb =>
     obtain rfl := hb.eq_bot
-    simp only [transfiniteIterate_bot]
+    simp only [supTransfiniteIterate_bot]
     infer_instance
   | succ b hb hb' =>
     have := H (Order.le_succ b)
-    rw [strictLimitsClosureIter, transfiniteIterate_succ _ _ _ hb,
+    rw [strictLimitsClosureIter, supTransfiniteIterate_succ_of_not_isMax _ _ hb,
       strictLimitsClosureStep]
     infer_instance
   | isSuccLimit b hb hb' =>
-    simp only [transfiniteIterate_limit _ _ _ hb]
+    simp only [supTransfiniteIterate_limit _ _ hb]
     have (c : Set.Iio b) : ObjectProperty.Small.{w}
-      (transfiniteIterate (fun Q ↦ Q.strictLimitsClosureStep J) c.1 P) := by
+      (supTransfiniteIterate (fun Q ↦ Q.strictLimitsClosureStep J) c.1 P) := by
       have := H c.2.le
       exact hb' c.1 c.2
     infer_instance
@@ -194,7 +191,7 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
   simp only [strictLimitsClosureStep, prop_sup_iff, prop_iSup_iff] at hX
   obtain (hX | ⟨a, F, hF⟩) := hX
   · exact hX
-  · simp only [strictLimitsClosureIter, transfiniteIterate_limit _ _ _
+  · simp only [strictLimitsClosureIter, supTransfiniteIterate_limit _ _
       (Cardinal.isSuccLimit_ord hκ.aleph0_le), prop_iSup_iff,
       Subtype.exists, Set.mem_Iio, exists_prop] at hF
     choose o ho ho' using hF
@@ -206,12 +203,11 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
         exact h a
       · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j
         exact le_ciSup Ordinal.bddAbove_of_small _
-    refine monotone_transfiniteIterate _ _
+    refine supTransfiniteIterate_mono _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J) (Order.succ_le_iff.2 hm) _ ?_
-    dsimp
-    rw [transfiniteIterate_succ _ _ _ (by simp)]
+    rw [supTransfiniteIterate_succ_of_not_isMax _ _ (by simp)]
     simp only [strictLimitsClosureStep, prop_sup_iff, prop_iSup_iff]
-    exact Or.inr ⟨a, ⟨_, fun j ↦ monotone_transfiniteIterate _ _
+    exact .inr ⟨a, ⟨_, fun j ↦ supTransfiniteIterate_mono _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J)  (hm' j) _ (ho' j)⟩⟩
 
 lemma isoClosure_strictLimitsClosureIter_eq_limitsClosure :
