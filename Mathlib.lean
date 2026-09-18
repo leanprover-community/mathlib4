@@ -3450,6 +3450,7 @@ public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
+public import Mathlib.CategoryTheory.Sites.Coherent.Colimits
 public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 public import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits

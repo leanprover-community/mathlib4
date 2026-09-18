@@ -260,3 +260,27 @@ end Colimits
 end Sheaf
 
 end CategoryTheory
+
+section
+
+open CategoryTheory Limits
+
+namespace CategoryTheory
+namespace Sheaf
+
+variable {C : Type*} [Category C] {D : Type*} [Category D]
+variable {J : GrothendieckTopology C} {I : Type*} [Category I]
+
+/-- If presheaf-level colimit cocones of a fixed shape have sheaf colimit points, then the
+forgetful functor from sheaves to presheaves creates colimits of that shape. -/
+@[implicit_reducible]
+noncomputable def createsColimitsOfShapeOfIsSheaf
+    (h : ∀ (F : I ⥤ Sheaf J D) (c : Cocone (F ⋙ sheafToPresheaf J D)),
+      IsColimit c → Presheaf.IsSheaf J c.pt) :
+    CreatesColimitsOfShape I (sheafToPresheaf J D) where
+  CreatesColimit {K} := createsColimitOfIsSheaf K (h K)
+
+end Sheaf
+end CategoryTheory
+
+end
