@@ -82,20 +82,20 @@ protected theorem IsCompactElement.bot [OrderBot α] : IsCompactElement (⊥ : �
 
 @[simp]
 theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement a := by
-  intro s u hne hdir hsu hau
-  grw [hau]
+  intro s u hne hdir hlub hle
+  grw [hle]
   have ⟨m, hm⟩ := ‹WellFoundedGT α›.exists_maximal s hne
-  exact ⟨m, hm.prop, hsu.right <| hdir.maximal_iff_isGreatest.mp hm |>.right⟩
+  exact ⟨m, hm.prop, hlub.right <| hdir.maximal_iff_isGreatest.mp hm |>.right⟩
 
 end Preorder
 
 @[simp, grind .]
 protected theorem IsCompactElement.sup [SemilatticeSup α] {a b : α} (ha : IsCompactElement a)
     (hb : IsCompactElement b) : IsCompactElement (a ⊔ b) := by
-  intro s u hne hd hsu hle
-  have ⟨a', ha's, haa'⟩ := ha s u hne hd hsu <| le_sup_left.trans hle
-  have ⟨b', hb's, hbb'⟩ := hb s u hne hd hsu <| le_sup_right.trans hle
-  obtain ⟨x, hxs, ha'x, hb'x⟩ := hd a' ha's b' hb's
+  intro s u hne hdir hlub hle
+  have ⟨a', ha's, haa'⟩ := ha s u hne hdir hlub <| le_sup_left.trans hle
+  have ⟨b', hb's, hbb'⟩ := hb s u hne hdir hlub <| le_sup_right.trans hle
+  obtain ⟨x, hxs, ha'x, hb'x⟩ := hdir a' ha's b' hb's
   exact ⟨x, hxs, sup_le (haa'.trans ha'x) (hbb'.trans hb'x)⟩
 
 section CompleteLattice
