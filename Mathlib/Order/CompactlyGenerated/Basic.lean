@@ -83,9 +83,8 @@ protected theorem IsCompactElement.bot [OrderBot α] : IsCompactElement (⊥ : �
 @[simp]
 theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement a := by
   intro s u hne hdir hlub hle
-  grw [hle]
   have ⟨m, hm⟩ := ‹WellFoundedGT α›.exists_maximal s hne
-  exact ⟨m, hm.prop, hlub.right <| hdir.maximal_iff_isGreatest.mp hm |>.right⟩
+  exact ⟨m, hm.prop, hle.trans <| hlub.right <| hdir.maximal_iff_isGreatest.mp hm |>.right⟩
 
 end Preorder
 
