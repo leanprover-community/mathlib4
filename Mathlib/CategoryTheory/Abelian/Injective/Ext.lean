@@ -292,8 +292,6 @@ lemma extClass_comp_extMk
     mem_coboundaries_iff _ n (by lia)]
   refine ⟨Int.negOnePow m • (mappingCone.snd _).comp ((Cochain.fromSingleEquiv (zero_add _)).symm
     (f₂ ≫ (R.cochainComplexXIso n n rfl).inv)) (zero_add _), ?_⟩
-  dsimp
-  simp only [Cocycle.comp_coe, Cocycle.fromSingleMk_coe]
   ext p q hpq
   by_cases hp : p = 0 ∨ p = -1
   · obtain rfl | rfl := hp
