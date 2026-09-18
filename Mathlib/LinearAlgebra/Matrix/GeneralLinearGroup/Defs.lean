@@ -210,9 +210,6 @@ theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
 abbrev mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
   Units.mapEquiv f.mapMatrix.toMulEquiv
 
-@[simp]
-lemma mapEquiv_symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv (n := n) f.symm := rfl
-
 section Pi
 
 variable {ι : Type*} (R : ι → Type*)
