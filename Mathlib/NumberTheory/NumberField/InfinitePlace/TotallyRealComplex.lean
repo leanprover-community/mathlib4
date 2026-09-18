@@ -113,6 +113,33 @@ instance _root_.Subfield.isTotallyReal_bot [CharZero K] :
   rw [Subfield.bot_eq_of_charZero]
   exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
 
+section Sup
+
+variable {K}
+
+/-- The compositum of a family of totally real subfields is totally real. -/
+instance isTotallyReal_iSup {ι : Sort*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
+    IsTotallyReal (⨆ i, k i : Subfield K) := by
+  refine ⟨fun w ↦ InfinitePlace.isReal_iff.mpr <| ComplexEmbedding.isReal_iff.mpr <|
+    RingHom.ext fun z ↦ RingHom.mem_eqLocusField.mp ?_⟩
+  -- the subfield where `w.embedding` and its conjugate agree contains every `k i`, hence is `⊤`
+  have h : (ComplexEmbedding.conjugate w.embedding).eqLocusField w.embedding = ⊤ := by
+    rw [eq_top_iff, ← Subfield.comap_subtype_self, Subfield.comap_iSup _
+      (fun _ ↦ by simpa using le_iSup _ _), iSup_le_iff]
+    refine fun _ x hx ↦ RingHom.congr_fun (IsTotallyReal.complexEmbedding_isReal
+      (w.embedding.comp (Subfield.inclusion ?_))) ⟨x, hx⟩
+    exact le_iSup _ _
+  exact h ▸ Subsemiring.mem_top z
+
+/-- The compositum of two totally real subfields is totally real. -/
+instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F] :
+    IsTotallyReal (E ⊔ F : Subfield K) := by
+  have (b : Bool) : IsTotallyReal (cond b E F : Subfield K) := by cases b <;> assumption
+  rw [sup_eq_iSup]
+  exact isTotallyReal_iSup
+
+end Sup
+
 section maximalRealSubfield
 
 open ComplexEmbedding
@@ -169,20 +196,6 @@ theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
   have : Algebra.IsAlgebraic E (maximalRealSubfield K) :=
       Algebra.IsAlgebraic.tower_bot E (maximalRealSubfield K) K
   exact IsTotallyReal.of_algebra _ (maximalRealSubfield K)
-
-instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTotallyReal F] :
-    IsTotallyReal (E ⊔ F : Subfield K) := by
-  rw [isTotallyReal_iff_le_maximalRealSubfield, sup_le_iff,
-    ← isTotallyReal_iff_le_maximalRealSubfield, ← isTotallyReal_iff_le_maximalRealSubfield]
-  exact ⟨hE, hF⟩
-
-instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
-    IsTotallyReal (⨆ i, k i : Subfield K) := by
-  obtain hι | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
-  · rw [iSup_of_empty]
-    infer_instance
-  · rw [isTotallyReal_iff_le_maximalRealSubfield, iSup_le_iff]
-    exact fun i ↦ IsTotallyReal.le_maximalRealSubfield (k i)
 
 theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
