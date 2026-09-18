@@ -2107,6 +2107,7 @@ public import Mathlib.Analysis.InnerProductSpace.Reproducing.Operations
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
 public import Mathlib.Analysis.InnerProductSpace.SingularValues
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.Analysis.InnerProductSpace.Spectrum.Extremal
 public import Mathlib.Analysis.InnerProductSpace.StandardSubspace
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.InnerProductSpace.Subspace
@@ -2455,6 +2456,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.ChebyshevGauss
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.CosecantSq
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Extremal
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExtrema
@@ -2464,6 +2466,14 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.BernsteinCertificate
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.ClosedSurface
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.Coherence
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.DimensionEquation
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.Limit
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.Monotonicity
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.Positivity
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.FinitePath.SpectralCoherence
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Meromorphic
@@ -3806,6 +3816,10 @@ public import Mathlib.Combinatorics.SimpleGraph.Matching
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Partition
+public import Mathlib.Combinatorics.SimpleGraph.Path.CommutatorSpectrum
+public import Mathlib.Combinatorics.SimpleGraph.Path.Hermitian
+public import Mathlib.Combinatorics.SimpleGraph.Path.Operators
+public import Mathlib.Combinatorics.SimpleGraph.Path.Spectrum
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
