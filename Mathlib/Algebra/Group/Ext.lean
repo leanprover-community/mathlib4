@@ -43,7 +43,7 @@ theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.m
     ext n x
     rw [@ppow_eq_pow _ m₁, @ppow_eq_pow _ m₂]
     induction n using PNat.strongInductionOn with
-    | ind n ih =>
+    | _ n ih =>
       induction n
       · rw [m₁.ppow_one, m₂.ppow_one]
       · rw [m₁.ppow_succ, m₂.ppow_succ, ih _ (Nat.lt_succ_self _)]
