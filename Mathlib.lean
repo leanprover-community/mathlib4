@@ -3984,6 +3984,7 @@ public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.EReal.Basic
+public import Mathlib.Data.EReal.BigOperators
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Data.Erased
