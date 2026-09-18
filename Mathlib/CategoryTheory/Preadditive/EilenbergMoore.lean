@@ -39,6 +39,9 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, zero_comp, comp_zero] }
+      psmul n α :=
+        { f := n • α.f
+          h := by rw [Functor.map_psmul, psmul_comp, Monad.Algebra.Hom.h, comp_psmul] }
       nsmul n α :=
         { f := n • α.f
           h := by rw [Functor.map_nsmul, nsmul_comp, Monad.Algebra.Hom.h, comp_nsmul] }
@@ -54,6 +57,8 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
       add_assoc _ _ _ := Algebra.Hom.ext <| add_assoc _ _ _
       zero_add _ := Algebra.Hom.ext <| zero_add _
       add_zero _ := Algebra.Hom.ext <| add_zero _
+      psmul_one _ := Algebra.Hom.ext <| one_psmul _
+      psmul_succ _ _ := Algebra.Hom.ext <| succ_psmul _ _
       nsmul_zero _ := Algebra.Hom.ext <| zero_nsmul _
       nsmul_succ _ _ := Algebra.Hom.ext <| succ_nsmul _ _
       sub_eq_add_neg _ _ := Algebra.Hom.ext <| sub_eq_add_neg _ _
