@@ -338,6 +338,8 @@ theorem div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff
 
 theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 
+theorem neg_mod : (-p) % q = -(p % q) := by rw [mod_def, mod_def, neg_modByMonic]
+
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
     simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
@@ -731,6 +733,14 @@ theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % 
   apply Polynomial.modByMonic_eq_of_dvd_sub (by simp [Polynomial.Monic.def, hq])
   rw [mul_comm]
   exact (Polynomial.C_mul_dvd (by simpa using hq)).mpr h
+
+theorem mul_mod_mul_left {p₁ p₂ q : R[X]} (hq : q ≠ 0) : (q * p₁) % (q * p₂) = q * (p₁ % p₂) := by
+  rcases eq_or_ne p₂ 0 with rfl | hp₂
+  · simp
+  · have h1 : (q * p₁) % (q * p₂) = (q * (p₁ % p₂)) % (q * p₂) :=
+      mod_eq_of_dvd_sub ⟨p₁ / p₂, by rw [← mul_sub, EuclideanDomain.mod_eq_sub_mul_div]; ring⟩
+    rw [h1, mod_eq_self_iff (mul_ne_zero hq hp₂), degree_mul, degree_mul]
+    exact WithBot.add_lt_add_left (degree_ne_bot.mpr hq) (degree_mod_lt p₁ hp₂)
 
 end Field
 
