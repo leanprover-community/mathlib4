@@ -474,8 +474,20 @@ theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
     F.map (X ◁ f) = δ F X Y ≫ F.obj X ◁ F.map f ≫ μ F X Z := by simp
 
 @[reassoc]
+lemma map_whiskerLeft' (X : C) {Y Z : C} (f : Y ⟶ Z) :
+    F.obj X ◁ F.map f = μ F X Y ≫ F.map (X ◁ f) ≫ δ F X Z := by
+  rw [map_whiskerLeft]
+  simp [-μ_natural_right, -δ_natural_right_assoc, -δ_natural_right]
+
+@[reassoc]
 theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     F.map (f ▷ Z) = δ F X Z ≫ F.map f ▷ F.obj Z ≫ μ F Y Z := by simp
+
+@[reassoc]
+lemma map_whiskerRight' {X Y : C} (f : X ⟶ Y) (Z : C) :
+    F.map f ▷ F.obj Z = μ F X Z ≫ F.map (f ▷ Z) ≫ δ F Y Z := by
+  rw [map_whiskerRight]
+  simp [-μ_natural_left, -δ_natural_left_assoc, -δ_natural_left]
 
 @[reassoc]
 theorem map_associator (X Y Z : C) :
@@ -1434,30 +1446,3 @@ def monoidalOfPostcompFunctor (e : C ≌ D) (F : E ⥤ C) {F' : E ⥤ D} (i : F 
 end Equivalence
 
 end CategoryTheory
-
-section
-
-open CategoryTheory MonoidalCategory Functor.Monoidal
-
-namespace CategoryTheory.Functor.Monoidal
-
-open Functor.LaxMonoidal Functor.OplaxMonoidal
-
-variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
-    (F : C ⥤ D) [F.Monoidal]
-
-@[reassoc]
-lemma map_whiskerLeft' (X : C) {Y Z : C} (f : Y ⟶ Z) :
-    F.obj X ◁ F.map f = μ F X Y ≫ F.map (X ◁ f) ≫ δ F X Z := by
-  rw [map_whiskerLeft]
-  simp [-μ_natural_right, -δ_natural_right_assoc, -δ_natural_right]
-
-@[reassoc]
-lemma map_whiskerRight' {X Y : C} (f : X ⟶ Y) (Z : C) :
-    F.map f ▷ F.obj Z = μ F X Z ≫ F.map (f ▷ Z) ≫ δ F Y Z := by
-  rw [map_whiskerRight]
-  simp [-μ_natural_left, -δ_natural_left_assoc, -δ_natural_left]
-
-end CategoryTheory.Functor.Monoidal
-
-end
