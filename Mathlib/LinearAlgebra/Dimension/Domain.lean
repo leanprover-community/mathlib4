@@ -20,16 +20,13 @@ This file proves some `Module.rank` and `Module.finrank` theorems for modules ov
 Let `M/S/R` be a tower where `R`, `S` are domains.
 
 We obtain the following tower laws:
-- `Module.rank_mul_rank_of_isFractionRing_isLocalization` & variants:
-  when `(R⁰)⁻¹ S = (S⁰)⁻¹ S`.
+- `Module.rank_mul_rank_of_isFractionRing_isLocalization` & variants: when `(R⁰)⁻¹ S = (S⁰)⁻¹ S`.
 - `Module.rank_mul_rank_of_field_isLocalization` & variants:
   wrapper for the above that only asks `(R⁰)⁻¹ S` to be a field.
 - `Module.IsTorsionFree.erank_mul_erank`, `Module.IsTorsionFree.finrank_mul_finrank`:
   when `M` is torsion-free over `S`. We only get truncated cardinalities.
-- `Module.finrank_mul_finrank'`:
-  alias for the above.
-- `Algebra.IsAlgebraic.rank_mul_rank` & variants:
-  when `S/R` is algebraic.
+- `Module.finrank_mul_finrank'`: alias for the above.
+- `Algebra.IsAlgebraic.rank_mul_rank` & variants: when `S/R` is algebraic.
 -/
 
 public section
@@ -248,8 +245,7 @@ $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)
 
 See `Algebra.IsAlgebraic.lift_rank_mul_lift_rank` for a universe polymorphic version, and
 `_root_.rank_mul_rank` for when your modules are free. -/
-theorem rank_mul_rank :
-    rank R S * rank S M₁ = rank R M₁ :=
+theorem rank_mul_rank : rank R S * rank S M₁ = rank R M₁ :=
   rank_mul_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 /-- **Tower law over algebraic extensions of domains.**
@@ -258,8 +254,7 @@ if `R` and `S` have no zero divisors, `S` is a faithful algebraic `R`-algebra, a
 $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
 
 See `Module.finrank_mul_finrank` for when your modules are free. -/
-theorem finrank_mul_finrank :
-    finrank R S * finrank S M = finrank R M :=
+theorem finrank_mul_finrank : finrank R S * finrank S M = finrank R M :=
   finrank_mul_finrank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 end Algebra.IsAlgebraic
