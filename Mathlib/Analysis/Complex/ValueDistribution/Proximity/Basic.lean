@@ -142,9 +142,14 @@ theorem proximity_nonneg {a : WithTop E} :
   cases a <;>
   simpa [proximity_top, proximity_coe] using circleAverage_nonneg_of_nonneg fun _ _ ↦ posLog_nonneg
 
-@[simp] lemma proximity_const {c : E} {r : ℝ} :
-    proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
-  simp [proximity_top, circleAverage_const]
+/--
+The proximity function of a constant function `c` for the value `⊤` is the constant function
+`log⁺ ‖c‖`.
+-/
+@[simp] lemma proximity_const {c : E} :
+    proximity (fun _ ↦ c) ⊤ = fun _ ↦ log⁺ ‖c‖ := by
+  ext r
+  simp [proximity, circleAverage_const]
 
 /--
 If `f` is continuous, then so is its proximitiy function at `⊤`.
@@ -196,23 +201,25 @@ theorem proximity_add_top_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f�
   simpa using proximity_sum_top_le Finset.univ ![f₁, f₂]
     (fun i ↦ by fin_cases i <;> aesop)
 
+
 /--
-The proximity function `f * g` at `⊤` is less than or equal to the sum of the proximity functions of
-`f` and `g`, respectively.
+The proximity function of `f • g` at `⊤` is less than or equal to the sum of the proximity functions
+of `f` and `g`, respectively.
 -/
-theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f₁) (h₁f₂ : Meromorphic f₂) :
-    proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := by
-  calc proximity (f₁ * f₂) ⊤
+theorem proximity_smul_top_le [NormedSpace ℂ E] {f₁ : ℂ → ℂ} {f₂ : ℂ → E} (h₁f₁ : Meromorphic f₁)
+    (h₁f₂ : Meromorphic f₂) :
+    proximity (f₁ • f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := by
+  calc proximity (f₁ • f₂) ⊤
     _ = circleAverage (fun x ↦ log⁺ (‖f₁ x‖ * ‖f₂ x‖)) 0 := by
-      simp [proximity_top]
+      simp [proximity, norm_smul]
     _ ≤ circleAverage (fun x ↦ log⁺ ‖f₁ x‖ + log⁺ ‖f₂ x‖) 0 := by
       intro r
       apply circleAverage_mono
-      · simp_rw [← norm_mul]
+      · simp_rw [← norm_smul]
         apply MeromorphicOn.circleIntegrable_posLog_norm
         fun_prop
-      · apply (MeromorphicOn.circleIntegrable_posLog_norm h₁f₁.meromorphicOn).add
-          (MeromorphicOn.circleIntegrable_posLog_norm h₁f₂.meromorphicOn)
+      · apply (MeromorphicOn.circleIntegrable_posLog_norm (by fun_prop)).add
+          (MeromorphicOn.circleIntegrable_posLog_norm (by fun_prop))
       · exact fun _ _ ↦ posLog_mul
     _ = circleAverage (log⁺ ‖f₁ ·‖) 0 + circleAverage (log⁺ ‖f₂ ·‖) 0 := by
       ext r
@@ -220,6 +227,13 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
       · exact MeromorphicOn.circleIntegrable_posLog_norm h₁f₁.meromorphicOn
       · exact MeromorphicOn.circleIntegrable_posLog_norm h₁f₂.meromorphicOn
     _ = proximity f₁ ⊤ + proximity f₂ ⊤ := rfl
+
+/--
+The proximity function of `f * g` at `⊤` is less than or equal to the sum of the proximity functions
+of `f` and `g`, respectively.
+-/
+theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁ : Meromorphic f₁) (h₂ : Meromorphic f₂) :
+    proximity (f₁ * f₂) ⊤ ≤ proximity f₁ ⊤ + proximity f₂ ⊤ := proximity_smul_top_le h₁ h₂
 
 /--
 The proximity function `f * g` at `0` is less than or equal to the sum of the proximity functions of
@@ -233,6 +247,40 @@ theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic 
       apply proximity_mul_top_le h₁f₁.inv h₁f₂.inv
     _ = (proximity f₁ 0) + (proximity f₂ 0) := by
       rw [proximity_inv, proximity_inv]
+
+/--
+Multiplying a meromorphic function by a nonzero constant `s` changes the proximity function (for the
+value `⊤`) at most by `log⁺ ‖s‖ + log⁺ ‖s⁻¹‖`.
+-/
+theorem proximity_top_sub_proximity_const_smul_top_le [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
+    {r : ℝ} (hf : Meromorphic f) (hs : s ≠ 0) :
+    |proximity f ⊤ r - proximity (s • f) ⊤ r| ≤ log⁺ ‖s‖ + log⁺ ‖s⁻¹‖ := by
+  simp only [proximity, ↓reduceDIte, Pi.smul_apply, norm_inv]
+  rw [← circleAverage_sub (by fun_prop) (by fun_prop)]
+  trans circleAverage |(log⁺ ‖f ·‖) - (log⁺ ‖s • f ·‖)| 0 r
+  · apply abs_circleAverage_le_circleAverage_abs
+  · rw [← circleAverage_const (a := log⁺ ‖s‖ + log⁺ ‖s‖⁻¹)]
+    apply circleAverage_mono (by fun_prop) (by fun_prop)
+    intro x hx
+    simp only [Pi.abs_apply, Pi.sub_apply]
+    rw [norm_smul, abs_sub_comm]
+    apply abs_posLog_mul_sub_posLog_le_posLog_add_posLog
+    simp_all
+
+/--
+Multiplying a meromorphic function by a nonzero constant `s` changes the proximity function (for the
+value `⊤`) only by a bounded function.
+-/
+theorem isBigO_proximity_top_sub_proximity_const_smul_top [NormedSpace ℂ E] {f : ℂ → E}
+    {s : ℂ} (hf : Meromorphic f) (hs : s ≠ 0) :
+    (proximity f ⊤ - proximity (s • f) ⊤) =O[atTop] (1 : ℝ → ℝ) := by
+  apply Asymptotics.isBigO_iff.2
+  use log⁺ ‖s‖ + log⁺ ‖s⁻¹‖
+  apply eventually_atTop.2
+  use 0
+  intro r hr
+  rw [Pi.sub_apply, norm_eq_abs, Pi.one_apply, norm_one, mul_one]
+  apply proximity_top_sub_proximity_const_smul_top_le hf hs
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `⊤` equals `n` times the proximity

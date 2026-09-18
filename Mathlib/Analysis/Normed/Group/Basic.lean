@@ -550,19 +550,13 @@ theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ �
 theorem IndiscreteTopology.nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
   indiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
 
+@[to_additive of_exists_nnnorm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_nnnorm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_nnnorm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_nnnorm_ne_zero]
-  NontrivialTopology.of_exists_nnnorm_ne_zero'
 
+@[to_additive of_forall_nnnorm_eq_zero]
 alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero'⟩ :=
   indiscreteTopology_iff_forall_nnnorm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_nnnorm_eq_zero]
-  IndiscreteTopology.of_forall_nnnorm_eq_zero'
 
 @[to_additive nontrivialTopology_iff_exists_norm_ne_zero]
 theorem nontrivialTopology_iff_exists_norm_ne_zero' :
@@ -583,19 +577,13 @@ theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :
 theorem IndiscreteTopology.norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
   indiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
 
+@[to_additive of_exists_norm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_norm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_norm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_norm_ne_zero]
-  NontrivialTopology.of_exists_norm_ne_zero'
 
+@[to_additive of_forall_norm_eq_zero]
 alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero'⟩ :=
   indiscreteTopology_iff_forall_norm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_norm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_norm_eq_zero]
-  IndiscreteTopology.of_forall_norm_eq_zero'
 
 end NNNorm
 
