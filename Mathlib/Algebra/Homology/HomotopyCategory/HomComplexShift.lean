@@ -565,7 +565,7 @@ lemma equivHomShift_symm_postcomp
 
 lemma shiftedHomComp_equivHomShift_symm
     {a b c : ℤ} (z : Cocycle K L a) {K' : CochainComplex C ℤ}
-    (g : ShiftedHom K' K b) (h : a + b = c) :
+    (g : ShiftedHom K' K b) (h : a + b = c := by lia) :
     ShiftedHom.comp g (equivHomShift.symm z) h =
       equivHomShift.symm ((equivHomShift g).comp z (by lia)) := by
   ext n
