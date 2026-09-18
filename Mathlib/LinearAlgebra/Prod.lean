@@ -674,6 +674,11 @@ theorem snd_comp_prodComm :
 @[simp]
 theorem symm_prodComm : (prodComm R M M₂).symm = prodComm R M₂ M := rfl
 
+@[simp]
+theorem trans_prodComm_prodComm : prodComm R M M₂ ≪≫ₗ prodComm R M₂ M = LinearEquiv.refl _ _ := by
+  ext
+  all_goals simp
+
 end prodComm
 
 /-- Product of modules is associative up to linear isomorphism. -/

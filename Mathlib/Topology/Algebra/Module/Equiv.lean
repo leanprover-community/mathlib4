@@ -363,6 +363,11 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
   ext
   rfl
 
+@[simp]
+theorem trans_apply (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂₃] M₃) (c : M₁) :
+    (e₁.trans e₂) c = e₂ (e₁ c) :=
+  rfl
+
 /-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
 def prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
     (M₁ × M₃) ≃L[R₁] M₂ × M₄ where
@@ -393,6 +398,12 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
   __ := LinearEquiv.prodComm R₁ M₁ M₂
 
 @[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
+
+@[simp]
+theorem trans_prodComm_prodComm [Module R₁ M₂] :
+    (prodComm R₁ M₁ M₂).trans (prodComm R₁ M₂ M₁) = .refl _ _ := by
+  ext
+  all_goals simp
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem _root_.ContinuousLinearMap.coprod_comp_prodComm [Module R₁ M₂] [Module R₁ M₃]
@@ -514,11 +525,6 @@ protected theorem injective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Injective
 
 protected theorem surjective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Surjective e :=
   e.toLinearEquiv.toEquiv.surjective
-
-@[simp]
-theorem trans_apply (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂₃] M₃) (c : M₁) :
-    (e₁.trans e₂) c = e₂ (e₁ c) :=
-  rfl
 
 @[simp]
 theorem apply_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (c : M₂) : e (e.symm c) = c :=
