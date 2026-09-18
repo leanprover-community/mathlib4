@@ -323,7 +323,7 @@ namespace AbsoluteValue
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ) (L : Type*) [Field L] [Algebra K L]
   [FiniteDimensional K L] [CompleteSpace (WithAbs v)]
 
-/-- The unique extension of a complete absolue value to a finite extension. -/
+/-- The unique extension of a complete absolute value to a finite extension. -/
 noncomputable def extension : AbsoluteValue L ℝ :=
   spectralAbsoluteValue (WithAbs v) L
 
