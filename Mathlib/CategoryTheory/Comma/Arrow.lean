@@ -168,12 +168,8 @@ def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
   right := v
   w := w
 
-/-- `homMk''` is the dual of `homMk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing homMk]
-abbrev homMk'' {f g : Arrow T} (u : g.right ⟶ f.right) (v : g.left ⟶ f.left)
-    (w : g.hom ≫ u = v ≫ f.hom := by cat_disch) : g ⟶ f :=
-  homMk v u
+to_dual_for homMk := homMk v u
+
 attribute [to_dual none] homMk_left homMk_right
 
 /-- We can also build a morphism in the arrow category out of any commutative square in `T`. -/
@@ -185,13 +181,9 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} (u : X ⟶ P) (v : Y 
   right := v
   w := w
 
-/-- `homMk'''` is the dual of `homMk'`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing homMk']
-abbrev homMk''' {X Y : T} {f : Y ⟶ X} {P Q : T} {g : Q ⟶ P} (u : P ⟶ X) (v : Q ⟶ Y)
-    (w : g ≫ u = v ≫ f := by cat_disch) : mk g ⟶ mk f :=
-  homMk' v u
-attribute [to_dual none] homMk'_left
+to_dual_for homMk' := homMk' v u
+
+attribute [to_dual none] homMk'_left homMk'_right
 
 set_option backward.defeqAttrib.useBackward true in
 @[to_dual none, reassoc]
@@ -224,12 +216,8 @@ def isoMk {f g : Arrow T} (l : f.left ≅ g.left) (r : f.right ≅ g.right)
     (h : l.hom ≫ g.hom = f.hom ≫ r.hom := by cat_disch) : f ≅ g :=
   Comma.isoMk l r h
 
-/-- `isoMk''` is the dual of `isoMk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing isoMk]
-abbrev isoMk'' {f g : Arrow T} (l : f.right ≅ g.right) (r : f.left ≅ g.left)
-    (h : g.hom ≫ l.inv = r.inv ≫ f.hom := by cat_disch) : f ≅ g :=
-  isoMk r l (by rwa [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp] at h)
+to_dual_for isoMk := isoMk r l (by rwa [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp] at h)
+
 attribute [to_dual none] isoMk_hom_left isoMk_hom_right isoMk_inv_left isoMk_inv_right
 
 /-- A variant of `Arrow.isoMk` that creates an iso between two `Arrow.mk`s with a better type
@@ -238,11 +226,7 @@ abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ :
     (h : e₁.hom ≫ g = f ≫ e₂.hom := by cat_disch) : Arrow.mk f ≅ Arrow.mk g :=
   Arrow.isoMk e₁ e₂ h
 
-/-- `isoMk'''` is the dual of `isoMk'`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing isoMk']
-abbrev isoMk''' {W X Y Z : T} (f : X ⟶ W) (g : Z ⟶ Y) (e₁ : W ≅ Y)
-  (e₂ : X ≅ Z) (h : g ≫ e₁.inv = e₂.inv ≫ f := by cat_disch) : mk f ≅ mk g :=
+to_dual_for isoMk' :=
   isoMk' f g e₂ e₁ (by rwa [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp] at h)
 
 section
