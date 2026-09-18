@@ -103,9 +103,7 @@ example {k m n : ℤ} (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by gcon
 
 -- test of behaviour when no lemmas are applicable
 example (n k : ℕ) (H : n % k + 1 ≤ k % n + 1) : n % k ≤ k % n := by
-  success_if_fail_with_msg
-    "gcongr did not make progress"
-    (gcongr)
+  fail_if_success gcongr
   linarith
 
 set_option linter.unusedVariables false in
@@ -147,14 +145,12 @@ example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + (C : ℝ
 
 example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   gcongr
-  · norm_num
-  · apply le_of_lt
-    simpa using hi
+  apply le_of_lt
+  simpa using hi
 
 example {n' : ℕ} (hn' : 6 ≤ n') : 2 ^ ((n' + 1) * (n' + 1)) ≤ 2 ^ (n' * n' + 4 * n') := by
   gcongr
-  · norm_num
-  · linarith
+  linarith
 
 example {F : ℕ → ℕ} (le_sum : ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : ℕ} (hn' : 6 ≤ n') :
     let A := F n';

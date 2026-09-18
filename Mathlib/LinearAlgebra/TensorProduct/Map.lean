@@ -271,11 +271,11 @@ theorem congr_tmul (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N
     congr f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
-@[simp]
 theorem congr_symm_tmul (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N₂) (p : M₂) (q : N₂) :
     (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
   rfl
 
+@[simp]
 theorem congr_symm (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N₂) :
     (congr f g).symm = congr f.symm g.symm := rfl
 

@@ -392,14 +392,20 @@ protected theorem IsRotated.forall (l : List α) (n : ℕ) : l.rotate n ~r l :=
 theorem IsRotated.trans : ∀ {l l' l'' : List α}, l ~r l' → l' ~r l'' → l ~r l''
   | _, _, _, ⟨n, rfl⟩, ⟨m, rfl⟩ => ⟨n + m, by rw [rotate_rotate]⟩
 
+instance : IsEquiv (List α) IsRotated where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
+@[deprecated Equivalence.of_isEquiv +typeChanged (since := "2026-09-09")]
 theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
-  Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
+  .of_isEquiv IsRotated
 
 /-- The relation `List.IsRotated l l'` forms a `Setoid` of cycles. -/
 @[instance_reducible]
 def IsRotated.setoid (α : Type*) : Setoid (List α) where
   r := IsRotated
-  iseqv := IsRotated.eqv
+  iseqv := .of_isEquiv IsRotated
 
 theorem IsRotated.perm (h : l ~r l') : l ~ l' :=
   Exists.elim h fun _ hl => hl ▸ (rotate_perm _ _).symm

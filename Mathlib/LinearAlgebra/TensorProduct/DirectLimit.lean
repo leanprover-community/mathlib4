@@ -47,7 +47,7 @@ given by `gᵢ ⊗ m ↦ [gᵢ] ⊗ m`.
 noncomputable def fromDirectLimit :
     DirectLimit (G · ⊗[R] M) (f ▷ M) →ₗ[R] DirectLimit G f ⊗[R] M :=
   Module.DirectLimit.lift _ _ _ _ (fun _ ↦ (of _ _ _ _ _).rTensor M)
-    fun _ _ _ x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
+    fun _ _ _ x ↦ by refine x.inductionOn ?_ ?_ <;> aesop
 
 variable {M} in
 @[simp] lemma fromDirectLimit_of_tmul {i : ι} (g : G i) (m : M) :
@@ -89,7 +89,7 @@ noncomputable def directLimitLeft :
 
 lemma directLimitLeft_rTensor_of {i : ι} (x : G i ⊗[R] M) :
     directLimitLeft f M (LinearMap.rTensor M (of ..) x) = of _ _ _ (f ▷ M) _ x :=
-  x.induction_on (by simp) (by simp +contextual) (by simp +contextual)
+  x.inductionOn (by simp +contextual) (by simp +contextual)
 
 /--
 `M ⊗ (limᵢ Gᵢ)` and `limᵢ (M ⊗ Gᵢ)` are isomorphic as modules
