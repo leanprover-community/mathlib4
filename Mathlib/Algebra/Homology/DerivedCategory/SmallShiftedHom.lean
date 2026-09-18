@@ -44,10 +44,11 @@ variable [HasDerivedCategory C]
 attached to a class in `CohomologyClass K L n`. -/
 noncomputable def toShiftedHom (x : CohomologyClass K L n) : Q.obj K ⟶ (Q.obj L)⟦n⟧ :=
   Quotient.lift (fun y ↦ ShiftedHom.map (Cocycle.equivHomShift.symm y) Q) (fun y₁ y₂ h ↦ by
-    simp only [ShiftedHom.map]
-    rw [cancel_mono, DerivedCategory.Q_map_eq_of_homotopy]
-    apply HomotopyCategory.homotopyOfEq
-    rw [← toHom_mk, ← toHom_mk]
+    dsimp [ShiftedHom.map]
+    rw [cancel_mono]
+    refine DerivedCategory.Q_map_eq_of_homotopy _
+      (HomotopyCategory.homotopyOfEq _ _ ?_)
+    simp only [← toHom_mk]
     congr 1
     exact Quotient.sound h) x
 
