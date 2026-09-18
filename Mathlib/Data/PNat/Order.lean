@@ -5,9 +5,11 @@ Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 module
 
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Positive.Ring
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.PNat.Equiv
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Basic order and conversion lemmas for positive natural numbers
@@ -104,5 +106,12 @@ instance : IsBotOneClass ℕ+ where
 @[simp]
 theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
+
+@[deprecated le_one_iff_eq_one +typeChanged (since := "2026-05-07")]
+theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 := by
+  simp
+
+@[deprecated one_lt_of_gt +typeChanged (since := "2026-05-07")]
+theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := hab.one_lt
 
 end PNat
