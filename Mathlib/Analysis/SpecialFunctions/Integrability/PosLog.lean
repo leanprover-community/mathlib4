@@ -62,6 +62,7 @@ variable
 If `f` is complex meromorphic on a circle in the complex plane, then `log⁺ ‖f ·‖` is circle
 integrable over that circle.
 -/
+@[fun_prop]
 theorem MeromorphicOn.circleIntegrable_posLog_norm (hf : MeromorphicOn f (sphere c |R|)) :
     CircleIntegrable (log⁺ ‖f ·‖) c R := by
   simp_rw [← half_mul_log_add_log_abs, mul_add]
@@ -75,6 +76,7 @@ alias circleIntegrable_posLog_norm_meromorphicOn := MeromorphicOn.circleIntegrab
 /--
 Variant of `MeromorphicOn.circleIntegrable_posLog_norm` for non-negative radii.
 -/
+@[fun_prop]
 theorem MeromorphicOn.circleIntegrable_posLog_norm_of_nonneg (hf : MeromorphicOn f (sphere c R))
     (hR : 0 ≤ R) :
     CircleIntegrable (log⁺ ‖f ·‖) c R := by
