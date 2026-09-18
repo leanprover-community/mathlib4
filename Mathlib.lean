@@ -3007,6 +3007,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
 public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Limits.Set
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryCoproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryFan
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
