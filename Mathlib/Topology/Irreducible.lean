@@ -321,6 +321,11 @@ theorem isIrreducible_iff_sUnion_isClosed :
   simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
 
+lemma isPreirreducible_compl_iff {X : Type*} [TopologicalSpace X] (s : Set X) :
+    IsPreirreducible sᶜ ↔ ∀ u v, IsOpen u → IsOpen v → u ∩ v ⊆ s → (u ⊆ s ∨ v ⊆ s) := by
+  simp_rw [IsPreirreducible, compl_inter_nonempty_iff]
+  grind
+
 /-- A nonempty open subset of a preirreducible subspace is dense in the subspace. -/
 theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : IsPreirreducible S)
     (hU : IsOpen U) (h : (S ∩ U).Nonempty) : S ⊆ closure (S ∩ U) := by
