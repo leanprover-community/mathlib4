@@ -986,6 +986,7 @@ run_cmd
 
 /-! Deprecated attribute -/
 
+set_option linter.style.deprecationDate false in
 @[to_additive (attr := deprecated mul_comm (since := "today"))]
 theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm a b
 
@@ -1011,6 +1012,7 @@ info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a
 #guard_msgs in
 #check @old_add_comm
 
+set_option linter.style.deprecationDate false in
 @[to_additive (attr := deprecated (since := "today"))]
 alias mul_comm_alias := mul_comm
 
