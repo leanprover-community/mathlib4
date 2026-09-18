@@ -1205,7 +1205,6 @@ variable {r : R}
 
 variable [SMulCommClass R R E]
 
-
 /-- The resolvent set of a `LinearPMap`.
 
 This definition only agrees with the conventional one only if `f` is closed, but if that is not
