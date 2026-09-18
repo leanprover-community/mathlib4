@@ -31,15 +31,13 @@ variable {T : C₁ ⥤ D₁} {L : C₁ ⥤ C₂} {R : D₁ ⥤ D₂} {B : C₂ �
 
 /-- Given `w : TwoSquare T L R B`, one may obtain a 2-square `TwoSquare T' L R B'` if we
 provide natural transformations `α : T ⟶ T'` and `β : B' ⟶ B`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def whiskerHorizontal (α : T' ⟶ T) (β : B ⟶ B') :
     TwoSquare T' L R B' :=
   (w.whiskerTop α).whiskerBottom β
 
 namespace GuitartExact
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- A 2-square stays Guitart exact if we replace the top and bottom functors
 by isomorphic functors. See also `whiskerHorizontal_iff`. -/
 lemma whiskerHorizontal [w.GuitartExact] (α : T ≅ T') (β : B ≅ B') :
@@ -78,15 +76,13 @@ variable {V₁ : C₁ ⥤ D₁} {T₁ : C₁ ⥤ C₂} {B₁ : D₁ ⥤ D₂} {V
 
 /-- The horizontal composition of 2-squares. (Variant where we allow the replacement of
 the horizontal compositions by isomorphic functors.) -/
-@[simps!]
+@[simps!, implicit_reducible]
 def hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T₂ ≅ T₁₂) (eB : B₁ ⋙ B₂ ≅ B₁₂) :
     TwoSquare T₁₂ V₁ V₃ B₁₂ :=
   (w ≫ₕ w').whiskerHorizontal eT.inv eB.hom
 
 namespace GuitartExact
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 instance hComp [w.GuitartExact] [w'.GuitartExact] :
     (w ≫ₕ w').GuitartExact := by
   rw [← guitartExact_op_iff]
@@ -100,8 +96,6 @@ instance hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ �
   dsimp only [TwoSquare.hComp']
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism between
 `w.costructuredArrowRightwards Y₁ ⋙ w'.costructuredArrowRightwards (B₁.obj Y₁)` and
 `(w ≫ₕ w').costructuredArrowRightwards Y₁`. -/
@@ -137,18 +131,16 @@ lemma hComp'_iff_of_essSurj
     (w.hComp' w' eT eB).GuitartExact ↔ w'.GuitartExact :=
   ⟨fun _ ↦ of_hComp' w w' eT eB, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
     (w' : eT.functor ⋙ V₃ ≅ V₂ ⋙ eB.functor) :
     (w ≫ₕ w'.hom).GuitartExact ↔ w.GuitartExact := by
   let w'' : V₂.op ⋙ eB.op.functor ≅ eT.op.functor ⋙ V₃.op := NatIso.op w'
-  have : (w ≫ₕ w'.hom).op = (w.op ≫ᵥ w''.hom) := by ext; simp [w'']
+  have : (w ≫ₕ w'.hom).op = (w.op ≫ᵥ w''.hom) := by cat_disch
   rw [← guitartExact_op_iff, ← guitartExact_op_iff w,
     ← vComp_iff_of_equivalences _ _ _ w'', this]
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hComp'_iff_of_equivalences (E : C₂ ≌ C₃) (E' : D₂ ≌ D₃)
     (w' : E.functor ⋙ V₃ ≅ V₂ ⋙ E'.functor)
     {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ E.functor ≅ T₁₂)

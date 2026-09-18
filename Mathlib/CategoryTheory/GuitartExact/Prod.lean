@@ -70,15 +70,12 @@ def inverseObj (X : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwa
 def inverse : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) ⥤
     StructuredArrowRightwards (w.prod w') g where
   obj X := inverseObj w w' g X
-  map f := StructuredArrow.homMk
-    (CostructuredArrow.homMk ⟨f.1.right.left, f.2.right.left⟩ (by
-      dsimp
-      ext
-      · exact CostructuredArrow.w f.1.right
-      · exact CostructuredArrow.w f.2.right)) (by
-      have := StructuredArrow.w f.1
-      have := StructuredArrow.w f.2
-      cat_disch)
+  map f :=
+    StructuredArrow.homMk
+      (CostructuredArrow.homMk ⟨f.1.right.left, f.2.right.left⟩) (by
+        have := StructuredArrow.w f.1
+        have := StructuredArrow.w f.2
+        cat_disch)
 
 end prodEquivalence
 

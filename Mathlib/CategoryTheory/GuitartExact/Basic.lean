@@ -48,8 +48,6 @@ derived functors.
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -68,7 +66,7 @@ variable {T L R B} (w : TwoSquare T L R B)
 
 /-- Given `w : TwoSquare T L R B` and `X₃ : C₃`, this is the obvious functor
 `CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)`. -/
-@[simps! obj map]
+@[simps! obj map, implicit_reducible]
 def costructuredArrowRightwards (X₃ : C₃) :
     CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃) :=
   CostructuredArrow.post L B X₃ ⋙ Comma.mapLeft _ w ⋙
@@ -76,7 +74,7 @@ def costructuredArrowRightwards (X₃ : C₃) :
 
 /-- Given `w : TwoSquare T L R B` and `X₂ : C₂`, this is the obvious functor
 `StructuredArrow X₂ T ⥤ StructuredArrow (R.obj X₂) B`. -/
-@[simps! obj map]
+@[simps! obj map, implicit_reducible]
 def structuredArrowDownwards (X₂ : C₂) :
     StructuredArrow X₂ T ⥤ StructuredArrow (R.obj X₂) B :=
   StructuredArrow.post X₂ T R ⋙ Comma.mapRight _ w ⋙
@@ -114,7 +112,6 @@ abbrev StructuredArrowRightwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b =
     w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
 abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
     w.CostructuredArrowDownwards g :=
@@ -123,7 +120,6 @@ abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b 
 
 variable {w g}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma StructuredArrowRightwards.mk_surjective
     (f : w.StructuredArrowRightwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
@@ -133,7 +129,6 @@ lemma StructuredArrowRightwards.mk_surjective
   obtain ⟨a, ha, rfl⟩ := CostructuredArrow.homMk_surjective φ
   exact ⟨X₁, a, b, by simpa using ha, rfl⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma CostructuredArrowDownwards.mk_surjective
     (f : w.CostructuredArrowDownwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
@@ -147,41 +142,32 @@ end
 
 namespace EquivalenceJ
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious functor `w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g`. -/
-@[simps]
+@[simps, implicit_reducible]
 def functor : w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g where
   obj f := CostructuredArrow.mk (Y := StructuredArrow.mk f.hom.left)
       (StructuredArrow.homMk f.right.hom (by simpa using CostructuredArrow.w f.hom))
-  map {f₁ f₂} φ :=
+  map φ :=
     CostructuredArrow.homMk (StructuredArrow.homMk φ.right.left
       (by dsimp; rw [← StructuredArrow.w φ]; rfl))
-      (by ext; exact CostructuredArrow.w φ.right)
-  map_id _ := rfl
-  map_comp _ _ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious functor `w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g`. -/
-@[simps]
+@[simps, implicit_reducible]
 def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g where
   obj f := StructuredArrow.mk (Y := CostructuredArrow.mk f.hom.right)
       (CostructuredArrow.homMk f.left.hom (by simpa using StructuredArrow.w f.hom))
-  map {f₁ f₂} φ :=
+  map φ :=
     StructuredArrow.homMk (CostructuredArrow.homMk φ.left.right
       (by dsimp; rw [← CostructuredArrow.w φ]; rfl))
-      (by ext; exact StructuredArrow.w φ.left)
-  map_id _ := rfl
-  map_comp _ _ := rfl
 
 end EquivalenceJ
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious equivalence of categories
 `w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
-@[simps functor inverse unitIso counitIso]
+@[simps functor inverse unitIso counitIso, implicit_reducible]
 def equivalenceJ : w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g where
   functor := EquivalenceJ.functor w g
   inverse := EquivalenceJ.inverse w g
@@ -196,25 +182,20 @@ end
 
 section
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g'` induced
 by a morphism `γ` such that `R.map γ ≫ g = g'`. -/
-@[simps]
+@[simps, implicit_reducible]
 def costructuredArrowDownwardsPrecomp
     {X₂ X₂' : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃) (g' : R.obj X₂' ⟶ B.obj X₃)
     (γ : X₂' ⟶ X₂) (hγ : R.map γ ≫ g = g') :
     w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g' where
   obj A := CostructuredArrowDownwards.mk _ _ A.left.right (γ ≫ A.left.hom) A.hom.right
     (by simpa [← hγ] using R.map γ ≫= StructuredArrow.w A.hom)
-  map {A A'} φ := CostructuredArrow.homMk (StructuredArrow.homMk φ.left.right (by
-      dsimp
-      rw [assoc, StructuredArrow.w])) (by
+  map φ := CostructuredArrow.homMk (StructuredArrow.homMk φ.left.right) (by
     ext
     dsimp
     rw [← CostructuredArrow.w φ, structuredArrowDownwards_map]
     rfl)
-  map_id _ := rfl
-  map_comp _ _ := rfl
 
 end
 
@@ -250,7 +231,6 @@ instance [hw : w.GuitartExact] {X₂ : C₂} (g : StructuredArrow (R.obj X₂) B
   rw [guitartExact_iff_isConnected_downwards] at hw
   apply hw
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma costructuredArrowRightwards_final_iff_of_iso {X₃ X₃' : C₃} (e : X₃ ≅ X₃') :
     (w.costructuredArrowRightwards X₃).Final ↔
       (w.costructuredArrowRightwards X₃').Final := by
@@ -268,7 +248,6 @@ instance [hw : w.GuitartExact] (X₃ : C₃) :
   rw [guitartExact_iff_final] at hw
   apply hw
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma structuredArrowDownwards_initial_iff_of_iso {X₂ X₂' : C₂} (e : X₂ ≅ X₂') :
     (w.structuredArrowDownwards X₂).Initial ↔
       (w.structuredArrowDownwards X₂').Initial := by
@@ -302,7 +281,6 @@ instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
   dsimp only [structuredArrowDownwards]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance guitartExact_id (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
   rw [guitartExact_iff_isConnected_rightwards]
