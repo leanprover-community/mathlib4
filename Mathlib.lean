@@ -8460,6 +8460,7 @@ public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sion
 public import Mathlib.Topology.SmallInductiveDimension
 public import Mathlib.Topology.Sober
+public import Mathlib.Topology.Sobrification
 public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.ConstructibleTopology
