@@ -171,29 +171,23 @@ end NNReal
 
 section ENNReal
 
+theorem eLpNorm'_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞}
+    (hq_pos : 0 < q) (hf : AEStronglyMeasurable f μ) :
+    eLpNorm' (fun x ↦ c * f x) q μ = c * eLpNorm' f q μ := by
+  simp [eLpNorm', lintegral_const_mul'' _ (hf.aemeasurable.pow_const q),
+    ENNReal.mul_rpow_of_nonneg (z := q⁻¹) (c ^ q) _ (by simp [hq_pos.le]),
+    ENNReal.mul_rpow_of_nonneg _ _ (by positivity), ← ENNReal.rpow_mul,
+    hq_pos.ne']
+
 theorem eLpNorm_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hf : AEStronglyMeasurable f μ) :
     eLpNorm (fun x ↦ c * f x) p μ = c * eLpNorm f p μ := by
-  rcases eq_or_ne c ∞ with rfl | hc; swap
-  · lift c to ℝ≥0 using hc
-    apply eLpNorm_const_smul_nnreal
+  have hcf := (hf.aemeasurable.const_mul c).aestronglyMeasurable
   rcases eq_or_ne p 0 with rfl | hp
-  · simp [eLpNorm_exponent_zero, hf, (hf.aemeasurable.const_mul ∞).aestronglyMeasurable]
-  by_cases h'f : eLpNorm f p μ = 0
-  · have : (fun x ↦ ∞ * f x) =ᵐ[μ] 0 := by
-      filter_upwards [(eLpNorm_eq_zero_iff hp).mp h'f] with x hx using by simp [hx]
-    rw [eLpNorm_congr_ae this]
-    simp [h'f]
-  rw [ENNReal.top_mul h'f]
-  apply le_antisymm le_top
-  have : Tendsto (fun (t : ℝ≥0) ↦ eLpNorm (t • f) p μ) atTop (𝓝 ∞) := by
-    simp only [eLpNorm_const_smul_nnreal]
-    rw [show ∞ = ∞ * eLpNorm f p μ by rw [ENNReal.top_mul h'f]]
-    apply ENNReal.Tendsto.mul ?_ (by simp) (by simp) (by simp [h'f])
-    exact ENNReal.tendsto_coe_nhds_top.2 tendsto_id
-  apply le_of_tendsto this (Eventually.of_forall (fun t ↦ ?_))
-  apply eLpNorm_mono_enorm (hf.const_smul _) (fun x ↦ ?_)
-  simp only [Pi.smul_apply, enorm_eq_self]
-  exact mul_le_mul (by simp) le_rfl zero_le zero_le
+  · simp [hf, hcf]
+  rcases eq_or_ne p ∞ with rfl | hp'
+  · simp only [eLpNorm_exponent_top, hf, hcf, eLpNormEssSup, enorm_eq_self, c.essSup_const_mul]
+  simp only [eLpNorm_eq_eLpNorm' hp hp', hf, (hf.aemeasurable.const_mul c).aestronglyMeasurable]
+  exact eLpNorm'_const_mul_ennreal (ENNReal.toReal_pos hp hp') hf
 
 theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hp : 0 < p) :
     eLpNorm (fun x ↦ c * f x) p μ = c * eLpNorm f p μ := by
@@ -216,19 +210,6 @@ theorem eLpNorm_const_mul_ennreal_of_pos {f : α → ℝ≥0∞} {c : ℝ≥0∞
   filter_upwards [hf] with x hx
   simp at hx
   simp [hx]
-
-theorem eLpNorm'_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞}
-    (hq_pos : 0 < q) (hf : AEStronglyMeasurable f μ) :
-    eLpNorm' (fun x ↦ c * f x) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
-  let p := ENNReal.ofReal q
-  have hp : p ≠ 0 := by simp [p, hq_pos]
-  have h'p : p ≠ ∞ := by simp [p]
-  have hcf : AEStronglyMeasurable (c • f) μ := (hf.aemeasurable.const_mul c).aestronglyMeasurable
-  have A : (fun x ↦ c * f x) = c • f := rfl
-  have : q = ENNReal.toReal p := by simp [p, ENNReal.toReal_ofReal hq_pos.le]
-  simp only [this, A, enorm_eq_self, ← eLpNorm_eq_eLpNorm' hp h'p hcf,
-    ← eLpNorm_eq_eLpNorm' hp h'p hf]
-  exact eLpNorm_const_mul_ennreal_of_pos (by simp [p, hq_pos])
 
 end ENNReal
 
