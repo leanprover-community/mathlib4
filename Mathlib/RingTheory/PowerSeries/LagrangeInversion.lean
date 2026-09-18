@@ -28,7 +28,7 @@ We also give the Lagrange–Bürmann form
 
 `(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`
 
-for a formal power series `H`, and the usual divided coefficient formula over a field of
+for a formal power series `H`, together with the corresponding divided formulas over a field of
 characteristic zero.
 
 The proof follows the induction in the reference below.
@@ -159,20 +159,6 @@ private theorem lagrange_inversion_coeff_pow_of_le
     push_cast
     linear_combination ((k : R) + (t + 1)) * hsum + hcoeff
 
-/-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
-`(n + k) * [X^(n+k)] Y^k = k * [X^n] P^(n+k)` for all natural numbers `n` and `k`.
-
-The coefficient ring is assumed to have no additive torsion because the inductive proof cancels
-multiplication by a positive natural number. -/
-theorem lagrange_inversion_coeff_pow
-    (n k : ℕ) :
-    ((n + k : ℕ) : R) * (Y ^ k).coeff (n + k) = (k : R) * (P ^ (n + k)).coeff n := by
-  rcases eq_or_ne (n + k) 0 with hnk | hnk
-  · obtain ⟨rfl, rfl⟩ := Nat.add_eq_zero_iff.mp hnk
-    simp
-  · simpa [show n + k - 1 + 1 = n + k by omega] using
-      lagrange_inversion_coeff_pow_of_le hY (n + k - 1) k (by omega)
-
 /-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
 a formal power series `H`,
 
@@ -190,6 +176,23 @@ theorem lagrange_burmann_coeff
   rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
   grind [coeff_derivative]
 
+/-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
+`(n + k) * [X^(n+k)] Y^k = k * [X^n] P^(n+k)` for all natural numbers `n` and `k`. -/
+theorem lagrange_inversion_coeff_pow
+    (n k : ℕ) :
+    ((n + k : ℕ) : R) * (Y ^ k).coeff (n + k) = (k : R) * (P ^ (n + k)).coeff n := by
+  rcases k with _ | k
+  · by_cases hn : n = 0
+    · subst n
+      simp
+    · simp [hn]
+  have hYsubst := hasSubst_of_fixedPoint hY
+  have h := lagrange_burmann_coeff hY (n + k) (X ^ (k + 1))
+  rw [subst_pow hYsubst, subst_X hYsubst, derivative_pow, derivative_X] at h
+  simp only [Nat.add_sub_cancel, mul_one] at h
+  rw [mul_assoc, coeff_natCast_mul, coeff_X_pow_mul] at h
+  simpa [add_assoc] using h
+
 end TorsionFree
 
 section Field
@@ -198,12 +201,18 @@ variable {K : Type*} [Field K] [CharZero K]
 variable (P Y : K⟦X⟧) (hY : Y = X * P.subst Y)
 include hY
 
+/-- The divided coefficient form of the Lagrange–Bürmann formula over a field of
+characteristic zero. -/
+theorem lagrange_burmann_coeff_div (n : ℕ) (H : K⟦X⟧) :
+    coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n / (n + 1) := by
+  field_simp [Nat.cast_add_one_ne_zero n]
+  simpa [mul_comm] using lagrange_burmann_coeff hY n H
+
 /-- The usual coefficient form of the formal Lagrange inversion formula. This is the
-case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff`. -/
+case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff_div`. -/
 theorem lagrange_inversion_coeff (n : ℕ) :
     Y.coeff (n + 1) = (P ^ (n + 1)).coeff n / (n + 1) := by
-  field_simp [Nat.cast_add_one_ne_zero n]
-  simpa [mul_comm] using lagrange_inversion_coeff_pow (P := P) hY n 1
+  simpa [subst_X (hasSubst_of_fixedPoint hY)] using lagrange_burmann_coeff_div P Y hY n X
 
 end Field
 
