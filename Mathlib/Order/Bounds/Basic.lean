@@ -731,21 +731,14 @@ section OrderSupSet
 variable [Preorder α]
 
 @[to_dual]
-theorem isLUB_sSup_of_isLUB [OrderSupSet α] {s : Set α} {a : α} :
+protected theorem IsLUB.isLUB_sSup [OrderSupSet α] {s : Set α} {a : α} :
     IsLUB s a → IsLUB s (sSup s) :=
   OrderSupSet.isLUB_sSup_of_isLUB _ _
-
-@[to_dual] protected alias IsLUB.isLUB_sSup := isLUB_sSup_of_isLUB
-
-@[to_dual]
-theorem isLUB_sSup_of_exists [OrderSupSet α] {s : Set α} :
-    (∃ a, IsLUB s a) → IsLUB s (sSup s) :=
-  fun ⟨_, h⟩ ↦ h.isLUB_sSup
 
 @[to_dual]
 theorem exists_isLUB_iff_isLUB_sSup [OrderSupSet α] {s : Set α} :
     (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
-  ⟨isLUB_sSup_of_exists, fun h ↦ ⟨_, h⟩⟩
+  ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
 
 /-- Constructs an `OrderInfSet` from an `OrderSupSet` by defining the infimum of a set as the
 supremum of its lower bounds. -/
@@ -755,7 +748,7 @@ infimum of its upper bounds. -/]
 abbrev OrderInfSet.ofOrderSupSet [OrderSupSet α] :
     OrderInfSet α where
   sInf s := sSup (lowerBounds s)
-  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp (isLUB_sSup_of_isLUB h.isLUB)
+  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp h.isLUB.isLUB_sSup
 
 open Classical in
 /-- Noncomputably constructs an `OrderSupSet` using the axiom of choice,
@@ -869,26 +862,30 @@ theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb
 
+section OrderSupSet
+
+variable [OrderSupSet α]
+
 @[to_dual]
-theorem IsLUB.sSup_eq [OrderSupSet α] {s : Set α} {a : α} (h : IsLUB s a) :
+theorem IsLUB.sSup_eq {s : Set α} {a : α} (h : IsLUB s a) :
     sSup s = a :=
   h.isLUB_sSup.unique h
 
 @[to_dual]
-theorem IsLUB.iSup_eq [OrderSupSet α] {f : ι → α} {a : α} (h : IsLUB (.range f) a) :
+theorem IsLUB.iSup_eq {f : ι → α} {a : α} (h : IsLUB (.range f) a) :
     iSup f = a :=
   h.sSup_eq
 
 @[to_dual (attr := simp)]
-theorem sSup_singleton [OrderSupSet α] {a : α} : sSup {a} = a :=
+theorem sSup_singleton {a : α} : sSup {a} = a :=
   isLUB_singleton.sSup_eq
 
 @[to_dual (attr := simp)]
-theorem sSup_empty [OrderBot α] [OrderSupSet α] : sSup ∅ = (⊥ : α) :=
+theorem sSup_empty [OrderBot α] : sSup ∅ = (⊥ : α) :=
   isLUB_empty.sSup_eq
 
 @[to_dual (attr := simp)]
-theorem sSup_univ [OrderTop α] [OrderSupSet α] : sSup univ = (⊤ : α) :=
+theorem sSup_univ [OrderTop α] : sSup univ = (⊤ : α) :=
   isLUB_univ.sSup_eq
 
 @[to_dual]
@@ -902,26 +899,28 @@ theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f
   congr_arg sSup (range_eq_empty f)
 
 @[to_dual]
-theorem iSup_of_empty [OrderBot α] [OrderSupSet α] [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
+theorem iSup_of_empty [OrderBot α] [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
   (iSup_of_empty' f).trans sSup_empty
 
 @[to_dual]
-theorem iSup_const [OrderSupSet α] [Nonempty ι] : ⨆ _ : ι, a = a := by
+theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by
   rw [iSup, range_const, sSup_singleton]
 
 @[to_dual le_iInf_const]
-theorem iSup_const_le [OrderBot α] [OrderSupSet α] : ⨆ _ : ι, a ≤ a := by
+theorem iSup_const_le [OrderBot α] : ⨆ _ : ι, a ≤ a := by
   obtain h | h := isEmpty_or_nonempty ι
   · simp
   · simp [iSup_const]
 
 @[to_dual]
-lemma iSup_unique [OrderSupSet α] [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
+lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
   simp only [congr_arg f (Unique.eq_default _), iSup_const]
 
 @[to_dual (attr := simp)]
-theorem iSup_bot [OrderBot α] [OrderSupSet α] : (⨆ _ : ι, ⊥ : α) = ⊥ :=
+theorem iSup_bot [OrderBot α] : (⨆ _ : ι, ⊥ : α) = ⊥ :=
   bot_unique iSup_const_le
+
+end OrderSupSet
 
 @[to_dual self (reorder := a b, Ha Hb)]
 theorem Set.subsingleton_of_isLUB_le_isGLB (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
