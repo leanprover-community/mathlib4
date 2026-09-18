@@ -518,7 +518,8 @@ theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y �
 the distance between `x` and `y`. -/
 theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := by
   rw [infDist, infDist, dist_edist]
-  refine ENNReal.toReal_le_add' infEDist_le_infEDist_add_edist ?_ (flip absurd (edist_ne_top _ _))
+  refine ENNReal.toReal_le_add_of_top_imp_top infEDist_le_infEDist_add_edist ?_
+    (flip absurd (edist_ne_top _ _))
   simp only [infEDist_eq_top_iff, imp_self]
 
 theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
@@ -770,7 +771,8 @@ theorem exists_dist_lt_of_hausdorffDist_lt' {r : ℝ} (h : y ∈ t) (H : hausdor
 between `s` and `t` -/
 theorem infDist_le_infDist_add_hausdorffDist (fin : hausdorffEDist s t ≠ ⊤) :
     infDist x t ≤ infDist x s + hausdorffDist s t := by
-  refine toReal_le_add' infEDist_le_infEDist_add_hausdorffEDist (fun h ↦ ?_) (flip absurd fin)
+  refine toReal_le_add_of_top_imp_top infEDist_le_infEDist_add_hausdorffEDist (fun h ↦ ?_)
+    (flip absurd fin)
   rw [infEDist_eq_top_iff, ← not_nonempty_iff_eq_empty] at h ⊢
   rw [hausdorffEDist_comm] at fin
   exact mt (nonempty_of_hausdorffEDist_ne_top · fin) h
@@ -783,7 +785,8 @@ theorem hausdorffDist_image (h : Isometry Φ) :
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffDist_triangle (fin : hausdorffEDist s t ≠ ⊤) :
     hausdorffDist s u ≤ hausdorffDist s t + hausdorffDist t u := by
-  refine toReal_le_add' hausdorffEDist_triangle (flip absurd fin) (not_imp_not.1 fun h ↦ ?_)
+  refine toReal_le_add_of_top_imp_top hausdorffEDist_triangle (flip absurd fin)
+    (not_imp_not.1 fun h ↦ ?_)
   rw [hausdorffEDist_comm] at fin
   exact ne_top_of_le_ne_top (add_ne_top.2 ⟨fin, h⟩) hausdorffEDist_triangle
 
