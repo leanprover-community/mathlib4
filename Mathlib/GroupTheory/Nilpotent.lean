@@ -1277,9 +1277,7 @@ theorem not_isCyclic_iff_exists_ne_index_eq_prime [Group.IsNilpotent G]
     [IsCoatomic (Subgroup G)] (hG : IsPGroup p G) :
     ¬ IsCyclic G ↔ ∃ H₁ H₂ : Subgroup G, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by
   refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, hne, h₁, h₂⟩ _ ↦ hne ?_⟩
-  · by_contra! h
-    refine hnc (isCyclic_of_isCoatom_subsingleton fun M₁ M₂ hM₁ hM₂ ↦ by_contra fun h' ↦ ?_)
-    exact h M₁ M₂ h' (hG.isCoatom_iff_index_eq_prime.mp hM₁) (hG.isCoatom_iff_index_eq_prime.mp hM₂)
+  · grind [isCyclic_of_isCoatom_subsingleton, isCoatom_iff_index_eq_prime]
   · rw [IsCyclic.subgroup_eq_iff_index_eq, h₁, h₂]
 
 end IsPGroup
