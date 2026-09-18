@@ -43,6 +43,10 @@ the *index of imprimitivity*; a quiver is *aperiodic* when it equals `1`.
 ## Tags
 
 quiver, aperiodic, primitive matrix, Perron–Frobenius theorem
+
+## References
+
+* [E. Seneta, *Non-negative Matrices and Markov Chains*][seneta2006]
 -/
 
 @[expose] public section
