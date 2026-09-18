@@ -133,7 +133,7 @@ instance isMulCommutative_topologicalClosure [T2Space A] (s : StarSubalgebra R A
 open scoped IsMulCommutative in
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   fast_instance%
@@ -143,7 +143,7 @@ abbrev commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
 open scoped IsMulCommutative in
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] [IsSemitopologicalRing A] [ContinuousStar A]
     [T2Space A] (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) :
@@ -172,10 +172,10 @@ theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     (hφ : Continuous φ) (hψ : Continuous ψ) (h : ∀ x : S,
         φ (inclusion (le_topologicalClosure S) x) = ψ ((inclusion (le_topologicalClosure S)) x)) :
     φ = ψ := by
-  have : (φ : S.topologicalClosure →⋆ₐ[R] B) = (ψ : S.topologicalClosure →⋆ₐ[R] B) := by
+  have : .ofClass φ = (.ofClass ψ : S.topologicalClosure →⋆ₐ[R] B) := by
     refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext ?_)
-    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using! h
-  rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe]
+    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_ofClass] using! h
+  rw [DFunLike.ext'_iff, ← StarAlgHom.coe_ofClass]
   apply congrArg _ this
 
 end TopologicalStarAlgebra

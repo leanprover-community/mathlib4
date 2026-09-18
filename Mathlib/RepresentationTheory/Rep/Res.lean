@@ -31,7 +31,7 @@ namespace Rep
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
     of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
-  ofHom ⟨p.hom, fun h ↦ by simpa using p.hom.2 (f h)⟩
+  ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.2 (f h)⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where

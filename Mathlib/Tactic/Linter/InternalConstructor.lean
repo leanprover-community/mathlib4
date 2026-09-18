@@ -6,10 +6,11 @@ Authors: Thomas R. Murrills
 module
 
 public meta import Lean.Linter.Basic
-public meta import Lean.Server.InfoUtils
+public meta import Lean.Elab.InfoTree.Util
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Message
 
 /-!
 # Linting against internal constructors

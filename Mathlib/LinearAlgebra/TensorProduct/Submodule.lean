@@ -73,7 +73,7 @@ theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ
   ext
   simp only [TensorProduct.AlgebraTensorModule.curry_apply,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-    Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
+    Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_ofClass, map_mul]
   rfl
 
 theorem coe_mulMap_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :

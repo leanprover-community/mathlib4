@@ -99,6 +99,39 @@ lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘
 @[simp] lemma mlieBracketWithin_univ :
     mlieBracketWithin I V W univ = mlieBracket I V W := (rfl)
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`FunLike (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x) x)) →L[𝕜] TangentSpace I x) _ _`
+It is needed by `map_zero` in the first bullet's `simp only`. That same `simp only` unfolds
+`extChartAt`, which rewrites `↑(extChartAt I x) x` in the type index to `↑I (↑(chartAt H x) x)`,
+while the instance arguments inside the term keep the old spelling `↑(extChartAt I x) x`.
+
+The failure happens while applying `@ContinuousLinearMap.funLike`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+`TopologicalSpace (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x) x)))`, whereas the assigned value
+`instTopologicalSpaceTangentSpace 𝓘(𝕜, E) (↑(extChartAt I x) x)` has type
+`TopologicalSpace (TangentSpace 𝓘(𝕜, E) (↑(extChartAt I x) x))`. The comparison bottoms out at
+`(extChartAt I x).1 =?= @ModelWithCorners.toFun'`. Lean falls back to synthesize an instance of the
+correct type, which succeeds and returns
+`instTopologicalSpaceTangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x) x))`, but that is again not defeq to
+the assigned value, stalling at the same comparison. It, too, runs at `.instances`, since
+`respectTransparency false` suppresses the transparency bump that instance-implicit arguments would
+otherwise receive.
+
+With no `FunLike` instance found, `map_zero` does not fire and the goal
+`(mfderiv% (↑I ∘ ↑(chartAt H x)) x).inverse 0 = 0` is left open.
+
+Potential fix: mark `TangentSpace` implicit-reducible, then remove `respectTransparency false`; the
+bumped comparison then unfolds both `TangentSpace`'s to `E`, so the point no longer
+matters. The annotation has to be at the definition site of `TangentSpace`; a `local` attribute here
+is not enough.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     mlieBracketWithin I V W s x = 0 := by
@@ -131,6 +164,25 @@ lemma mlieBracket_swap_apply : mlieBracket I V W x = - mlieBracket I W V x :=
 lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
   mlieBracketWithin_swap
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. This is the same failure as for `mlieBracketWithin_eq_zero_of_eq_zero` above, reached
+through the `simp` below instead: the instance
+`FunLike (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x✝) x✝)) →L[𝕜] TangentSpace I x✝) _ _` cannot be
+synthesized, because while applying `@ContinuousLinearMap.funLike` the metavariable of type
+`TopologicalSpace (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x✝) x✝)))` is assigned
+`instTopologicalSpaceTangentSpace 𝓘(𝕜, E) (↑(extChartAt I x✝) x✝)`, whose type spells the point as
+`↑(extChartAt I x✝) x✝`. Both the direct `.instances` check and the comparison against the
+re-synthesized instance bottom out at `(extChartAt I x✝).1 =?= @ModelWithCorners.toFun'`, and the
+goal `(mfderiv% (↑I ∘ ↑(chartAt H x✝)) x✝).inverse 0 = 0` is left open.
+
+Potential fix: mark `TangentSpace` implicit-reducible at its definition site, then remove
+`respectTransparency false`.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mlieBracketWithin_self : mlieBracketWithin I V V = 0 := by
   ext x; simp [mlieBracketWithin, mpullback]
@@ -330,6 +382,46 @@ private lemma mfderiv_extChart_inverse_comp_aux :
       ((mfderiv[range I] φ.symm (φ x)).inverse) (W (φ.symm (φ x))) = W x := by
   rw [mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm, extChartAt_to_inv]
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`HSMul (TangentSpace 𝓘(𝕜, 𝕜) (f x)) (TangentSpace I x) ?m`
+It is needed for the `•` in the statement below, and reduces through the `instHSMul`/`SMul`/…/
+`Module` chain sketched in the section header to
+`Module (TangentSpace 𝓘(𝕜, 𝕜) (f x)) (TangentSpace I x)`.
+
+The failure happens while applying `@instModuleTangentSpace`. This seems to make sense
+mathematically: it makes `TangentSpace I x` a `𝕜`-module, but not a
+`TangentSpace 𝓘(𝕜, 𝕜) (f x)`-module as needed.
+
+Unlike for the two adaptations above, marking `TangentSpace` implicit-reducible at its definition
+site does not fix this one. It does make `respectTransparency false` removable, but
+`instanceSearchTypes false` is still needed afterwards.
+
+The technical reason for the failure: assigning one of the instane's instance-implicit-argument
+metavariables is rejected because the metavariable's type and the type of the assigned value do not
+match at `.instances` transparency. The metavariable's expected type is
+`NontriviallyNormedField (TangentSpace 𝓘(𝕜, 𝕜) (f x))`, whereas the assigned value is the ambient
+instance of type `NontriviallyNormedField 𝕜`. The comparison bottoms out at
+`TangentSpace 𝓘(𝕜, 𝕜) (f x) =?= 𝕜`, where `TangentSpace` is a plain semireducible `def` and
+therefore does not unfold at the `.instances` transparency that instance search runs at. Lean falls
+back to synthesize an instance of the expected type, but that synthesis fails as well.
+
+Instance search follows this path:
+
+```
+  HSMul (TangentSpace 𝓘(𝕜,𝕜) (f x)) (TangentSpace I x) ?m.238
+    └ @instHSMul
+      └ @SMulZeroClass.toSMul
+        └ @SMulWithZero.toSMulZeroClass
+          └ MulActionWithZero.toSMulWithZero
+            └ @Module.toMulActionWithZero
+```
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pulling back through `extChartAt` the scalar multiplication of a vector field by
 the derivative of a scalar function equals the scalar multiplication by the manifold derivative. -/
