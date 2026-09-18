@@ -66,15 +66,15 @@ lemma isRestricted_C (a : R) : IsRestricted c (C a) :=
 variable {f} in
 lemma isRestricted.add {g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f + g) :=
-  MvPowerSeries.isRestricted.add (fun _ ↦ c) hf hg
+  hf.add hg
 
 variable {f} in
 lemma isRestricted.neg (hf : IsRestricted c f) : IsRestricted c (-f) :=
-  MvPowerSeries.isRestricted.neg (fun _ ↦ c) hf
+  hf.neg
 
 lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) :=
-  MvPowerSeries.isRestricted.mul (fun _ ↦ c) hf hg
+  hf.mul (fun _ ↦ c) hg
 
 namespace IsRestricted
 
