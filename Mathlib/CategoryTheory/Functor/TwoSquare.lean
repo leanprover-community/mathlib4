@@ -53,7 +53,6 @@ abbrev TwoSquare := T ⋙ R ⟶ L ⋙ B
 namespace TwoSquare
 
 /-- Constructor for `TwoSquare`. -/
-@[deprecated "No replacement" (since := "2026-09-18")]
 abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T} {L} {R} {B} in

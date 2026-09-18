@@ -61,7 +61,7 @@ obtained by the precomposition with `T` and the postcomposition with `w`. -/
 abbrev compTwoSquare (w : TwoSquare T L R B) : L.LeftExtension (T ⋙ F) :=
   LeftExtension.mk (B ⋙ E.right)
     (whiskerLeft T E.hom ≫ (associator _ _ _).inv ≫
-      whiskerRight w.natTrans _ ≫ (associator _ _ _).hom)
+      whiskerRight w _ ≫ (associator _ _ _).hom)
 
 /-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a left extension
 of `F` along `R`, then `E` is a pointwise left Kan extension of `F` along `R` at
@@ -126,7 +126,7 @@ variable {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ �
 obtained by the precomposition with `L` and the postcomposition with `w`. -/
 abbrev compTwoSquare (w : TwoSquare T L R B) : T.RightExtension (L ⋙ F) :=
   RightExtension.mk (R ⋙ E.left)
-    ((associator _ _ _).inv ≫ whiskerRight w.natTrans _ ≫
+    ((associator _ _ _).inv ≫ whiskerRight w _ ≫
       (associator _ _ _).hom ≫ whiskerLeft L E.hom)
 
 /-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a right extension

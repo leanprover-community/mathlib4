@@ -108,7 +108,7 @@ instance guitartExact_id' (F : C₁ ⥤ C₂) :
   apply guitartExact_id
 
 instance guitartExact_of_isEquivalence_of_isIso'
-    [T.IsEquivalence] [B.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
+    [T.IsEquivalence] [B.IsEquivalence] [IsIso w] : GuitartExact w := by
   rw [← guitartExact_op_iff]
   infer_instance
 

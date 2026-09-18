@@ -67,8 +67,8 @@ Frobenius morphism is an isomorphism.
 -/
 instance frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C)
     [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) L] [F.Full] [F.Faithful] :
-    IsIso (frobeniusMorphism F h A).natTrans :=
-  suffices ∀ (X : D), IsIso ((frobeniusMorphism F h A).natTrans.app X) from
+    IsIso (frobeniusMorphism F h A) :=
+  suffices ∀ (X : D), IsIso ((frobeniusMorphism F h A).app X) from
     NatIso.isIso_of_isIso_app _
   fun B ↦ by dsimp [frobeniusMorphism]; infer_instance
 
@@ -82,7 +82,7 @@ def expComparison (A : C) : TwoSquare (ihom A) F F (ihom (F.obj A)) :=
   mateEquiv (ihom.adjunction A) (ihom.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 
 theorem expComparison_ev (A B : C) :
-    F.obj A ◁ ((expComparison F A).natTrans.app B) ≫ (ihom.ev (F.obj A)).app (F.obj B) =
+    F.obj A ◁ ((expComparison F A).app B) ≫ (ihom.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by
   convert! mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
@@ -90,14 +90,14 @@ theorem expComparison_ev (A B : C) :
     IsIso.hom_inv_id]
 
 theorem coev_expComparison (A B : C) :
-    F.map ((ihom.coev A).app B) ≫ (expComparison F A).natTrans.app (A ⊗ B) =
+    F.map ((ihom.coev A).app B) ≫ (expComparison F A).app (A ⊗ B) =
       (ihom.coev _).app (F.obj B) ≫ (ihom (F.obj A)).map (inv (prodComparison F A B)) := by
   convert! unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
   simp
 
 theorem uncurry_expComparison (A B : C) :
-    MonoidalClosed.uncurry ((expComparison F A).natTrans.app B) =
+    MonoidalClosed.uncurry ((expComparison F A).app B) =
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by
   rw [uncurry_eq, expComparison_ev]
 
@@ -116,7 +116,6 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   rw [← vcomp1, ← vcomp2]
   unfold TwoSquare.whiskerLeft TwoSquare.whiskerRight
   congr 1
-  apply congr_arg
   ext B
   simp only [Functor.comp_obj, curriedTensor_obj_obj, prodComparisonNatIso_inv,
     NatTrans.comp_app, Functor.whiskerLeft_app, curriedTensor_map_app, NatIso.isIso_inv_app,
@@ -128,14 +127,14 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
 `expComparison F A` is an isomorphism
 -/
 class MonoidalClosedFunctor : Prop where
-  comparison_iso : ∀ A, IsIso (expComparison F A).natTrans
+  comparison_iso : ∀ A, IsIso (expComparison F A)
 
 attribute [instance] MonoidalClosedFunctor.comparison_iso
 
 set_option backward.defeqAttrib.useBackward true in
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     conjugateEquiv (h.comp (ihom.adjunction A)) ((ihom.adjunction (F.obj A)).comp h)
-        (frobeniusMorphism F h A).natTrans = (expComparison F A).natTrans := by
+        (frobeniusMorphism F h A) = (expComparison F A) := by
   unfold expComparison frobeniusMorphism
   have conjeq := iterated_mateEquiv_conjugateEquiv h h
     (ihom.adjunction (F.obj A)) (ihom.adjunction A)
@@ -143,7 +142,6 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
       Functor.whiskerLeft L ((curriedTensor C).map (h.counit.app A)))
   rw [← conjeq]
   congr 1
-  apply congr_arg
   ext B
   unfold mateEquiv
   simp only [Functor.comp_obj, curriedTensor_obj_obj, Equiv.coe_fn_mk, Functor.whiskerRight_comp,
@@ -167,7 +165,7 @@ If the exponential comparison transformation (at `A`) is an isomorphism, then th
 at `A` is an isomorphism.
 -/
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
-    [i : IsIso (expComparison F A).natTrans] : IsIso (frobeniusMorphism F h A).natTrans := by
+    [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
   exact @conjugateEquiv_of_iso _ _ _ _ _ _ _ _ _ _ _ i
 
@@ -176,7 +174,7 @@ If the Frobenius morphism at `A` is an isomorphism, then the exponential compari
 (at `A`) is an isomorphism.
 -/
 theorem expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
-    [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A).natTrans := by
+    [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A) := by
   rw [← frobeniusMorphism_mate F h]; infer_instance
 
 open Limits in
