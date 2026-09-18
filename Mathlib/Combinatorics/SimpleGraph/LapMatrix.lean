@@ -339,7 +339,7 @@ theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrdered
   obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
   have h : G.lapMatrix R *ᵥ x = μ • x := by
     simpa [toLin'_apply] using hx.apply_eq_smul
-  have hquad := dotProduct_mulVec_lapMatrix_le_card G x
+  have hquad := dotProduct_mulVec_lapMatrix_le_card (R := R) x
   have hμ' : x ⬝ᵥ G.lapMatrix R *ᵥ x = μ * x ⬝ᵥ x := by
     rw [h, dotProduct_smul, smul_eq_mul]
   have hxpos : 0 < x ⬝ᵥ x := by
