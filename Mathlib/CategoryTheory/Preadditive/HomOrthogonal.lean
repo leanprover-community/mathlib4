@@ -127,7 +127,6 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
       dsimp [biproduct.components]
       simp }
 
---set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f : α → ι} (i : ι) :
