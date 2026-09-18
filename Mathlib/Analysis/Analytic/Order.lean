@@ -259,6 +259,7 @@ lemma analyticOrderAt_smul_eq_top_of_right {f : 𝕜 → 𝕜} (hg : analyticOrd
   exact ⟨t, fun y hy ↦ by simp [h₁t y hy], h₂t, h₃t⟩
 
 /-- The order is additive when scalar multiplying analytic functions. -/
+@[to_fun analyticOrderAt_fun_smul]
 lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     analyticOrderAt (f • g) z₀ = analyticOrderAt f z₀ + analyticOrderAt g z₀ := by
   -- Trivial cases: one of the functions vanishes around z₀
@@ -279,6 +280,7 @@ lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg
     exact eventually_nhds_iff.2
       ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; module), h₂t.inter h₂s, h₃t, h₃s⟩
 
+@[to_fun analyticOrderAt_fun_smul_const]
 lemma analyticOrderAt_smul_const {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (e : E) [Decidable (e = 0)] :
     analyticOrderAt (f • fun _ ↦ e) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
   rw [analyticOrderAt_smul hf (by fun_prop), analyticOrderAt_const]
@@ -531,30 +533,36 @@ lemma analyticOrderAt_mul_eq_top_of_right (hg : analyticOrderAt g z₀ = ⊤) :
     analyticOrderAt (f * g) z₀ = ⊤ := analyticOrderAt_smul_eq_top_of_right hg
 
 /-- The order is additive when multiplying analytic functions. -/
+@[to_fun analyticOrderAt_fun_mul]
 theorem analyticOrderAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     analyticOrderAt (f * g) z₀ = analyticOrderAt f z₀ + analyticOrderAt g z₀ :=
   analyticOrderAt_smul hf hg
 
+@[to_fun analyticOrderAt_fun_mul_const]
 theorem analyticOrderAt_mul_const (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Decidable (e = 0)] :
     analyticOrderAt (f * (fun _ ↦ e)) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ :=
   analyticOrderAt_smul_const hf e
 
+@[to_fun analyticOrderAt_fun_const_mul]
 theorem analyticOrderAt_const_mul (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Decidable (e = 0)] :
     analyticOrderAt ((fun _ ↦ e) * f) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
   rw [mul_comm]
   exact analyticOrderAt_mul_const hf e
 
 /-- The order is additive when multiplying analytic functions. -/
+@[to_fun analyticOrderNatAt_fun_mul]
 theorem analyticOrderNatAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
     (hf' : analyticOrderAt f z₀ ≠ ⊤) (hg' : analyticOrderAt g z₀ ≠ ⊤) :
     analyticOrderNatAt (f * g) z₀ = analyticOrderNatAt f z₀ + analyticOrderNatAt g z₀ := by
   simp [analyticOrderNatAt, analyticOrderAt_mul, ENat.toNat_add, *]
 
+@[to_fun analyticOrderNatAt_fun_mul_const]
 theorem analyticOrderNatAt_mul_const (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0) :
     analyticOrderNatAt (f * fun _ ↦ e) z₀ = analyticOrderNatAt f z₀ := by
   classical
   simp [analyticOrderNatAt, analyticOrderAt_mul_const hf, he]
 
+@[to_fun analyticOrderNatAt_fun_const_mul]
 theorem analyticOrderNatAt_const_mul (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0) :
     analyticOrderNatAt ((fun _ ↦ e) * f) z₀ = analyticOrderNatAt f z₀ := by
   rw [mul_comm]
