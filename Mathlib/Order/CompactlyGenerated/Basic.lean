@@ -380,14 +380,14 @@ element is the least upper bound of compact elements. -/
 class IsCompactlyGenerated (α : Type*) [Preorder α] : Prop where
   /-- In a compactly generated complete lattice,
   every element is the least upper bound of some set of compact elements. -/
-  exists_isLUB : ∀ a : α, ∃ s : Set α, (∀ x ∈ s, IsCompactElement x) ∧ IsLUB s a
+  exists_isLUB (a : α) : ∃ s : Set α, (∀ x ∈ s, IsCompactElement x) ∧ IsLUB s a
 
 section Preorder
 
 variable [Preorder α] (a b : α)
 
 theorem isLUB_setOfPred_le_and_isCompactElement [IsCompactlyGenerated α] :
-    IsLUB { x ≤ a | IsCompactElement x } a :=
+    IsLUB {x ≤ a | IsCompactElement x} a :=
   have ⟨_, hs, hsa⟩ := IsCompactlyGenerated.exists_isLUB a
   ⟨fun _ ↦ And.left, fun _ hb ↦ hsa.right fun x hxs ↦ hb ⟨hsa.left hxs, hs x hxs⟩⟩
 
