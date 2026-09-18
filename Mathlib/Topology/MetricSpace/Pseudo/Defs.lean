@@ -11,6 +11,7 @@ public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Pseudo-metric spaces
@@ -288,7 +289,7 @@ instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
 /-- Express `dist` in terms of `nndist` -/
 theorem dist_nndist (x y : α) : dist x y = nndist x y := rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_op]
 theorem coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
 
 /-- Express `edist` in terms of `nndist` -/
