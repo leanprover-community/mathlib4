@@ -438,7 +438,7 @@ theorem monodromy_trans_apply {x y z : X}
 /-- The monodromy action of the fundamental group at `x` on the fiber over `x`. -/
 @[reducible] def fundamentalGroupMulAction (x : X) :
     MulAction (FundamentalGroup X x) (p ⁻¹' {x}) :=
-  { smul γ z := cov.monodromy (x := x) (y := x) γ.asHom z
+  { smul γ z := cov.monodromy γ.asHom z
     mul_smul _ _ _ := cov.monodromy_trans_apply ..
     one_smul := congr_fun cov.monodromy_refl }
 
