@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Tactic.Ring
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
 
 /-!
 # The complex numbers

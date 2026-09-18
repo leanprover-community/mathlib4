@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
 

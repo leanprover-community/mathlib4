@@ -6,7 +6,7 @@ Authors: Jannis Limperg
 module
 
 public import Mathlib.Init
-public import Aesop
+public meta import Aesop
 
 /-!
 # Category Theory Rule Set

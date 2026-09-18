@@ -11,7 +11,7 @@ public import Mathlib.Tactic.FieldSimp.Discharger
 public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.SynthesizeUsing
-public import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq.Defs
 
 /-!
 # `field_simp` tactic

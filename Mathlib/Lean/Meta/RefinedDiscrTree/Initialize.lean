@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Lean.Linter.Deprecated
 public import Lean.Meta.CompletionName
 
 /-!

@@ -10,7 +10,7 @@ public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Intro
 public meta import Lean.Elab.DeclarationRange
-public import Lean.Meta.Tactic.Simp
+public meta import Lean.Meta.Tactic.Simp
 public import Mathlib.Init
 
 

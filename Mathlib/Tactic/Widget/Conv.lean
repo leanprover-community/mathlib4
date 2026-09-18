@@ -5,7 +5,7 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot, Aaron Liu
 -/
 module
 
-public import Mathlib.Lean.Name
+public meta import Mathlib.Lean.Name
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.OfRpcMethod
 public import ProofWidgets.Component.Basic

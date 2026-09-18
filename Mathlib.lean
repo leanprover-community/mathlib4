@@ -316,7 +316,7 @@ public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Exact
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Exact.Sequence
-public import Mathlib.Algebra.Expr
+public meta import Mathlib.Algebra.Expr
 public import Mathlib.Algebra.Field.Action.ConjAct
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.Defs
@@ -4143,7 +4143,8 @@ public import Mathlib.Data.FunLike.IsApply
 public import Mathlib.Data.FunLike.Module
 public import Mathlib.Data.FunLike.Ring
 public import Mathlib.Data.Holor
-public import Mathlib.Data.Ineq
+public meta import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq.Defs
 public import Mathlib.Data.Int.AbsoluteValue
 public import Mathlib.Data.Int.Associated
 public import Mathlib.Data.Int.Basic
@@ -5053,38 +5054,38 @@ public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
-public import Mathlib.Lean.CoreM
-public import Mathlib.Lean.Elab.InfoTree
-public import Mathlib.Lean.Elab.Tactic.Basic
-public import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Mathlib.Lean.CoreM
+public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Mathlib.Lean.Elab.Tactic.Basic
+public meta import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.Elab.Term
-public import Mathlib.Lean.EnvExtension
-public import Mathlib.Lean.Environment
-public import Mathlib.Lean.Exception
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Lean.Expr.ExtraRecognizers
-public import Mathlib.Lean.Expr.Rat
-public import Mathlib.Lean.FoldEnvironment
-public import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.EnvExtension
+public meta import Mathlib.Lean.Environment
+public meta import Mathlib.Lean.Exception
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Expr.ExtraRecognizers
+public meta import Mathlib.Lean.Expr.Rat
+public meta import Mathlib.Lean.FoldEnvironment
+public meta import Mathlib.Lean.GoalsLocation
 public import Mathlib.Lean.Json
 public import Mathlib.Lean.Linter
-public import Mathlib.Lean.LocalContext
-public import Mathlib.Lean.MessageData.ForExprs
-public import Mathlib.Lean.MessageData.Trace
-public import Mathlib.Lean.Meta
-public import Mathlib.Lean.Meta.Basic
+public meta import Mathlib.Lean.LocalContext
+public meta import Mathlib.Lean.MessageData.ForExprs
+public meta import Mathlib.Lean.MessageData.Trace
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Meta.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
-public import Mathlib.Lean.Meta.DiscrTree
-public import Mathlib.Lean.Meta.KAbstractPositions
-public import Mathlib.Lean.Meta.RefinedDiscrTree
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-public import Mathlib.Lean.Meta.Simp
-public import Mathlib.Lean.Meta.Tactic.Rewrite
-public import Mathlib.Lean.Name
-public import Mathlib.Lean.PrettyPrinter.Delaborator
+public meta import Mathlib.Lean.Meta.DiscrTree
+public meta import Mathlib.Lean.Meta.KAbstractPositions
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Lean.Meta.Tactic.Rewrite
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Lean.Thunk
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -8534,7 +8535,7 @@ public import Mathlib.Util.Notation3
 public import Mathlib.Util.PPOptions
 public import Mathlib.Util.ParseCommand
 public import Mathlib.Util.PrintSorries
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
 public import Mathlib.Util.Simp
 public import Mathlib.Util.SleepHeartbeats
 public import Mathlib.Util.Superscript

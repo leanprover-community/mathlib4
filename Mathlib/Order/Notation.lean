@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Qq
+public meta import Qq
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual

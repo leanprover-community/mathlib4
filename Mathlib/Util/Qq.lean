@@ -6,6 +6,7 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 module
 
 public import Mathlib.Init
+public import Lean.Meta.Tactic.Assumption
 public import Qq
 public import Qq.Typ
 

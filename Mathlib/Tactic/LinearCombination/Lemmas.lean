@@ -8,7 +8,7 @@ module
 public meta import Mathlib.Data.Ineq
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq.Defs
 public meta import Mathlib.Tactic.ToAdditive
 
 /-!

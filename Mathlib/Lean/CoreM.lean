@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
+public import Lean.CoreM
 
 /-!
 # Additional functions using `CoreM` state.
