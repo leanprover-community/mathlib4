@@ -220,7 +220,13 @@ class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
   le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
-@[deprecated (since := "2026-08-12")] alias IsConcreteLE := IsMemLE
+@[deprecated (since := "2026-09-18")] alias IsConcreteLE := IsMemLE
+@[deprecated (since := "2026-09-01")] alias SetLike.le_def := IsMemLE.le_iff
+
+alias le_iff_mem_imp_mem := IsMemLE.le_iff -- for discoverability
+
+@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
+alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
 
 section default
 
@@ -256,43 +262,34 @@ A partial order defined this way automatically makes available an instance of `I
 
 end default
 
-namespace IsMemLE
+section Membership
 
 variable {A B : Type*} [Membership B A]
 
-section LE
+theorem not_le_iff_exists_mem_notMem [LE A] [IsMemLE A B] {p q : A} :
+    ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by simp [le_iff]
 
-variable [LE A] [IsMemLE A B] {p q : A}
+theorem lt_iff_le_and_exists_mem_notMem [Preorder A] [IsMemLE A B] {p q : A} :
+    p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by rw [lt_iff_le_not_ge, not_le_iff_exists]
 
-@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
+theorem exists_mem_notMem_of_lt [Preorder A] [IsMemLE A B] {p q : A} (h : p < q) :
+    ∃ x ∈ q, x ∉ p := (lt_iff_le_and_exists.mp h).2
 
-theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simp [le_iff]
+end Membership
 
-end LE
-
-section Preorder
-
-variable [Preorder A] [IsMemLE A B] {p q : A}
-
-theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
-  rw [lt_iff_le_not_ge, not_le_iff_exists]
-
-theorem exists_of_lt (h : p < q) : ∃ x ∈ q, x ∉ p :=
-  (lt_iff_le_and_exists.mp h).2
-
-end Preorder
-
-end IsMemLE
-
-@[deprecated (since := "2026-09-01")] alias SetLike.le_def := IsMemLE.le_iff
 @[deprecated (since := "2026-09-01")]
-alias SetLike.not_le_iff_exists := IsMemLE.not_le_iff_exists
+alias SetLike.not_le_iff_exists := not_le_iff_exists_mem_notMem
 @[deprecated (since := "2026-09-01")]
-alias SetLike.lt_iff_le_and_exists := IsMemLE.lt_iff_le_and_exists
+alias SetLike.lt_iff_le_and_exists := lt_iff_le_and_exists_mem_notMem
 @[deprecated (since := "2026-09-01")]
-alias SetLike.exists_of_lt := IsMemLE.exists_of_lt
+alias SetLike.exists_of_lt := exists_mem_notMem_of_lt
+
+@[deprecated (since := "2026-09-18")]
+alias IsConcreteLE.not_le_iff_exists := not_le_iff_exists_mem_notMem
+@[deprecated (since := "2026-09-18")]
+alias IsConcreteLE.lt_iff_le_and_exists := lt_iff_le_and_exists_mem_notMem
+@[deprecated (since := "2026-09-18")]
+alias IsConcreteLE.exists_of_lt := exists_mem_notMem_of_lt
 
 namespace SetLike
 
