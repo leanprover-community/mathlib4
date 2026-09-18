@@ -13,10 +13,11 @@
 # Adding or bumping an entry here means "this use has been reviewed". Regenerate the per-file
 # lines with `lake exe lint-exec --emit-allowlist <files>` on a tree you trust.
 
-# Metaprogramming lives here; defining elaborators, macros and tactic extensions is the point.
-Mathlib/Lean/: meta:*=*
-Mathlib/Tactic/: meta:*=*
-Mathlib/Util/: meta:*=*
+# Metaprogramming lives here; defining elaborators, macros, tactic extensions and initializers is
+# the point.
+Mathlib/Lean/: initialize=* @[init]=* meta:*=*
+Mathlib/Tactic/: initialize=* @[init]=* meta:*=*
+Mathlib/Util/: initialize=* @[init]=* meta:*=*
 
 Archive/Examples/IfNormalization/Result.lean: meta:macro=2
 Archive/Imo/Imo2001Q5.lean: meta:macro=1
@@ -180,7 +181,6 @@ Mathlib/GroupTheory/OreLocalization/Basic.lean: meta:macro_rules=1
 Mathlib/GroupTheory/Perm/Cycle/Concrete.lean: unsafe=1
 Mathlib/Init.lean: run_cmd=1
 Mathlib/Lean/CoreM.lean: unsafe=1
-Mathlib/Lean/Meta/CongrTheorems.lean: initialize=1
 Mathlib/LinearAlgebra/Dual/Basis.lean: meta:elab=1
 Mathlib/LinearAlgebra/LinearIndependent/Defs.lean: meta:@[app_delab]=1
 Mathlib/LinearAlgebra/Matrix/Notation.lean: meta:@[app_delab]=1 meta:macro_rules=1
@@ -249,125 +249,30 @@ Mathlib/RingTheory/WittVector/Basic.lean: meta:elab=1 meta:macro=1
 Mathlib/RingTheory/WittVector/InitTail.lean: meta:elab_rules=1
 Mathlib/RingTheory/WittVector/IsPoly.lean: meta:elab_rules=1 meta:macro_rules=1
 Mathlib/RingTheory/WittVector/Truncated.lean: meta:macro=1
-Mathlib/Tactic/Abel.lean: initialize=2
-Mathlib/Tactic/AdaptationNote.lean: initialize=1
-Mathlib/Tactic/Algebraize.lean: initialize=1
-Mathlib/Tactic/ApplyFun.lean: initialize=1
-Mathlib/Tactic/Basify/Attr.lean: initialize=4
-Mathlib/Tactic/Bound/Attribute.lean: initialize=2
-Mathlib/Tactic/CancelDenoms/Core.lean: initialize=1
-Mathlib/Tactic/CategoryTheory/Bicategory/Datatypes.lean: initialize=1
-Mathlib/Tactic/CategoryTheory/Elementwise.lean: initialize=1
-Mathlib/Tactic/CategoryTheory/IsoReassoc.lean: initialize=1
-Mathlib/Tactic/CategoryTheory/Map.lean: initialize=1
-Mathlib/Tactic/CategoryTheory/Monoidal/Datatypes.lean: initialize=1
-Mathlib/Tactic/CategoryTheory/Reassoc.lean: initialize=2
-Mathlib/Tactic/CategoryTheory/ToApp.lean: initialize=1
-Mathlib/Tactic/ClickSuggestions/FindPremises.lean: initialize=4
-Mathlib/Tactic/ComputeDegree.lean: initialize=1
-Mathlib/Tactic/CongrExclamation.lean: initialize=2
-Mathlib/Tactic/CongrM.lean: initialize=1
 Mathlib/Tactic/Conv.lean: run_tac=1
-Mathlib/Tactic/CrossRefAttribute.lean: initialize=6 parse-error=11
-Mathlib/Tactic/DepRewrite.lean: initialize=1
-Mathlib/Tactic/DeriveCountable.lean: initialize=1
-Mathlib/Tactic/DeriveEncodable.lean: initialize=1
-Mathlib/Tactic/DeriveFintype.lean: initialize=1
-Mathlib/Tactic/DeriveTraversable.lean: initialize=4
-Mathlib/Tactic/Echelon/Bareiss.lean: initialize=1
-Mathlib/Tactic/Echelon/Core.lean: initialize=2 unsafe=1
-Mathlib/Tactic/Eqns.lean: initialize=2
+Mathlib/Tactic/CrossRefAttribute.lean: parse-error=11
+Mathlib/Tactic/Echelon/Core.lean: unsafe=1
 Mathlib/Tactic/Eval.lean: unsafe=1
-Mathlib/Tactic/Explode/Datatypes.lean: initialize=1
-Mathlib/Tactic/FBinop.lean: initialize=1
-Mathlib/Tactic/FastInstance.lean: initialize=1
-Mathlib/Tactic/FieldSimp.lean: initialize=1
-Mathlib/Tactic/FieldSimp/Attr.lean: initialize=1
-Mathlib/Tactic/Find.lean: initialize=1
 Mathlib/Tactic/FindSyntax.lean: unsafe=1
-Mathlib/Tactic/FunProp/Attr.lean: initialize=1
-Mathlib/Tactic/FunProp/Decl.lean: initialize=1
-Mathlib/Tactic/FunProp/Theorems.lean: initialize=4
-Mathlib/Tactic/FunProp/Types.lean: initialize=3
-Mathlib/Tactic/GCongr/Core.lean: initialize=3
-Mathlib/Tactic/GCongr/ForwardAttr.lean: initialize=2 unsafe=1
-Mathlib/Tactic/GRewrite/Core.lean: initialize=1
+Mathlib/Tactic/GCongr/ForwardAttr.lean: unsafe=1
 Mathlib/Tactic/Have.lean: parse-error=3
-Mathlib/Tactic/HigherOrder.lean: initialize=1
-Mathlib/Tactic/Hint.lean: initialize=2
 Mathlib/Tactic/Inclusion/Core/Core.lean: unsafe=1
 Mathlib/Tactic/Inclusion/Core/DiscrTreeExt.lean: unsafe=1
-Mathlib/Tactic/Inclusion/Core/Extensions.lean: initialize=2 unsafe=1
-Mathlib/Tactic/Inclusion/Core/Inclusion.lean: initialize=1
-Mathlib/Tactic/Inclusion/Extension/Core/Init.lean: initialize=1
-Mathlib/Tactic/Inclusion/Extension/IntervalDyadicReal/Init.lean: initialize=1
-Mathlib/Tactic/Inclusion/ExtensionAPI/Attr.lean: initialize=5
-Mathlib/Tactic/Linarith/Datatypes.lean: initialize=2
-Mathlib/Tactic/Linarith/NNRealPreprocessor.lean: initialize=1
-Mathlib/Tactic/Linarith/Preprocessing.lean: initialize=1
-Mathlib/Tactic/Linter/AuxLemma.lean: initialize=1
-Mathlib/Tactic/Linter/CommandRanges.lean: initialize=1
-Mathlib/Tactic/Linter/DeprecatedSyntaxLinter.lean: initialize=1
-Mathlib/Tactic/Linter/DocPrime.lean: initialize=1
-Mathlib/Tactic/Linter/DocString.lean: initialize=2
-Mathlib/Tactic/Linter/EmptyLine.lean: initialize=1
-Mathlib/Tactic/Linter/FlexibleLinter.lean: initialize=1
-Mathlib/Tactic/Linter/GlobalAttributeIn.lean: initialize=1
-Mathlib/Tactic/Linter/HashCommandLinter.lean: initialize=1
-Mathlib/Tactic/Linter/HaveLetLinter.lean: initialize=1
-Mathlib/Tactic/Linter/Header.lean: initialize=2
-Mathlib/Tactic/Linter/InternalConstructor.lean: initialize=1
-Mathlib/Tactic/Linter/Lint.lean: initialize=1
-Mathlib/Tactic/Linter/MinImports.lean: initialize=2 run_cmd=1
-Mathlib/Tactic/Linter/Multigoal.lean: initialize=1
-Mathlib/Tactic/Linter/OldObtain.lean: initialize=1
-Mathlib/Tactic/Linter/OverlappingInstances.lean: initialize=3
-Mathlib/Tactic/Linter/PPRoundtrip.lean: initialize=1
-Mathlib/Tactic/Linter/PrivateModule.lean: initialize=1
-Mathlib/Tactic/Linter/Style.lean: initialize=9
-Mathlib/Tactic/Linter/UnusedInstancesInType.lean: initialize=2
-Mathlib/Tactic/Linter/UnusedTactic.lean: initialize=2
-Mathlib/Tactic/Linter/UnusedTacticExtension.lean: initialize=2
-Mathlib/Tactic/Linter/UpstreamableDecl.lean: initialize=1
+Mathlib/Tactic/Inclusion/Core/Extensions.lean: unsafe=1
+Mathlib/Tactic/Linter/MinImports.lean: run_cmd=1
 Mathlib/Tactic/Linter/ValidatePRTitle.lean: #eval=11
-Mathlib/Tactic/Linter/Whitespace.lean: initialize=1
-Mathlib/Tactic/Measurability.lean: initialize=1
-Mathlib/Tactic/MkIffOfInductiveProp.lean: initialize=1
-Mathlib/Tactic/Monotonicity/Attr.lean: initialize=1
-Mathlib/Tactic/MoveAdd.lean: initialize=1
-Mathlib/Tactic/NormNum/Core.lean: initialize=3 unsafe=1
-Mathlib/Tactic/Order.lean: initialize=1
-Mathlib/Tactic/PPWithUniv.lean: initialize=1
-Mathlib/Tactic/Polynomial/Core.lean: initialize=4 unsafe=1
-Mathlib/Tactic/Positivity/Core.lean: initialize=4 unsafe=1
-Mathlib/Tactic/ProxyType.lean: initialize=1
-Mathlib/Tactic/Push/Attr.lean: initialize=3
+Mathlib/Tactic/NormNum/Core.lean: unsafe=1
+Mathlib/Tactic/Polynomial/Core.lean: unsafe=1
+Mathlib/Tactic/Positivity/Core.lean: unsafe=1
 Mathlib/Tactic/ReduceModChar.lean: unsafe=2
-Mathlib/Tactic/ReduceModChar/Ext.lean: initialize=1
-Mathlib/Tactic/Ring/Basic.lean: initialize=1
-Mathlib/Tactic/Ring/RingNF.lean: initialize=1
 Mathlib/Tactic/Sat/FromLRAT.lean: unsafe=4
-Mathlib/Tactic/Says.lean: initialize=1
-Mathlib/Tactic/SetNotationForOrder.lean: initialize=2
 Mathlib/Tactic/Simproc/Divisors.lean: unsafe=3
-Mathlib/Tactic/Simps/Basic.lean: initialize=6 unsafe=1
-Mathlib/Tactic/Simps/NotationClass.lean: initialize=1
+Mathlib/Tactic/Simps/Basic.lean: unsafe=1
 Mathlib/Tactic/SuccessIfFailWithMsg.lean: unsafe=1
 Mathlib/Tactic/TFAE.lean: parse-error=5
-Mathlib/Tactic/TacticAnalysis.lean: initialize=3 unsafe=2
-Mathlib/Tactic/Tauto.lean: initialize=1
-Mathlib/Tactic/TermCongr.lean: initialize=1
-Mathlib/Tactic/ToFun.lean: initialize=1
+Mathlib/Tactic/TacticAnalysis.lean: unsafe=2
 Mathlib/Tactic/Trace.lean: unsafe=1
-Mathlib/Tactic/Translate/Attributes.lean: initialize=1
-Mathlib/Tactic/Translate/Core.lean: @[implemented_by]=1 initialize=2 unsafe=1
-Mathlib/Tactic/Translate/ToAdditive.lean: initialize=6
-Mathlib/Tactic/Translate/ToDual.lean: initialize=7
-Mathlib/Tactic/Use.lean: initialize=1
-Mathlib/Tactic/Variable.lean: initialize=2
-Mathlib/Tactic/Widget/LibraryRewrite.lean: initialize=3
-Mathlib/Tactic/Widget/SelectInsertParamsClass.lean: initialize=1
-Mathlib/Tactic/Widget/StringDiagram.lean: initialize=1
+Mathlib/Tactic/Translate/Core.lean: @[implemented_by]=1 unsafe=1
 Mathlib/Tactic/WithoutCDot.lean: parse-error=2
 Mathlib/Topology/Algebra/Category/ProfiniteGrp/Basic.lean: meta:@[app_delab]=2
 Mathlib/Topology/Algebra/InfiniteSum/ENNReal.lean: meta:macro_rules=1
@@ -395,11 +300,7 @@ Mathlib/Topology/MetricSpace/Pseudo/Defs.lean: meta:@[positivity]=1
 Mathlib/Topology/Order/Category/AlexDisc.lean: meta:@[app_delab]=1
 Mathlib/Topology/Sheaves/Presheaf.lean: meta:macro=3
 Mathlib/Topology/UnitInterval.lean: meta:macro=1
-Mathlib/Util/AliasIn.lean: initialize=1
 Mathlib/Util/CompileInductive.lean: run_cmd=1
-Mathlib/Util/CountHeartbeats.lean: initialize=1
 Mathlib/Util/Delaborators.lean: parse-error=3
-Mathlib/Util/Notation3.lean: initialize=2
 Mathlib/Util/ParseCommand.lean: run_cmd=1
-Mathlib/Util/Superscript.lean: initialize=2
 Mathlib/Util/WhatsNew.lean: unsafe=1
