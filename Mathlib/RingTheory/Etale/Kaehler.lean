@@ -162,7 +162,7 @@ def tensorCotangentInvFun
     obtain ⟨x, hx⟩ := e.surjective ⟨a, ha⟩
     obtain rfl : (e x).1 = a := congr_arg Subtype.val hx
     obtain ⟨y, rfl⟩ := e.surjective b
-    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_coe, map_smul,
+    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_ofClass, map_smul,
       LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       LinearEquiv.symm_apply_apply, f']
     clear hx ha
