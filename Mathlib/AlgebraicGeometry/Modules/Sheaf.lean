@@ -352,7 +352,7 @@ def restrictAppIso (M : Y.Modules) (U : X.Opens) : Γ(M.restrict f, U) ≅ Γ(M,
 
 @[elementwise (attr := simp), reassoc (attr := simp)]
 lemma smul_restrictAppIso_hom (M : Y.Modules) (U : X.Opens) (r : Γ(X, U)) :
-    dsimp% ((M.restrict f).smul r).asHom ≫ (M.restrictAppIso f U).hom =
+    ((M.restrict f).smul r).asHom ≫ (M.restrictAppIso f U).hom =
       (M.restrictAppIso f U).hom ≫ (M.smul ((f.appIso U).inv r)).asHom :=
   rfl
 
