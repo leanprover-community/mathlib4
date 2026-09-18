@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlus
+public import Mathlib.CategoryTheory.Abelian.Injective.RightDerived
 
 /-!
 # The Grothendieck spectral sequence
@@ -21,7 +22,7 @@ open CategoryTheory Triangulated Limits
 
 namespace Plus
 
-open TStructure
+open DerivedCategory.Plus.TStructure
 
 variable {A B C : Type*} [Category* A] [Category* B] [Category* C]
   [Abelian A] [Abelian B] [Abelian C]
@@ -30,7 +31,7 @@ variable {A B C : Type*} [Category* A] [Category* B] [Category* C]
   (G : B ⥤ C) [G.Additive] [EnoughInjectives B] (X : A)
 
 variable [∀ (I : InjectiveObject A),
-  IsIso (G.rightDerivedFunctorPlusUnit.app
+  IsIso (G.rightDerivedFunctorPlusUnith.app
     ((HomotopyCategory.Plus.singleFunctor B 0).obj (F.obj ((InjectiveObject.ι A).obj I))))]
 
 noncomputable example : (F ⋙ G).rightDerivedFunctorPlus ≅

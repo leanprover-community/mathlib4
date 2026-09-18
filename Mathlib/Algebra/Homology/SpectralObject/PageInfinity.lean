@@ -287,6 +287,7 @@ lemma spectralSequence_edgeMonoStep_compatibility
     hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁', Iso.inv_hom_id_assoc, Iso.inv_hom_id_assoc]
   dsimp
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma spectralSequence_edgeEpiStep_compatibility
@@ -444,6 +445,7 @@ noncomputable def EIsoPageInfinity :
   (X.isoMapFourδ₁Toδ₀' ⊥ i₀ i₁ i₂ i₃ bot_le hi₀₁ hi₁₂ hi₂₃ n₀ n₁ n₂ isZero₀ hn₁ hn₂).symm ≪≫
     X.isoMapFourδ₄Toδ₃' ⊥ i₁ i₂ i₃ ⊤ bot_le hi₁₂ hi₂₃ le_top n₀ n₁ n₂ isZero₃ hn₁ hn₂
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma EMapFourδ₁Toδ₀'_EObjIsoPageInfinity_hom :
     X.mapFourδ₁Toδ₀' ⊥ i₀ i₁ i₂ i₃ bot_le hi₀₁ hi₁₂ hi₂₃ n₀ n₁ n₂ hn₁ hn₂ ≫

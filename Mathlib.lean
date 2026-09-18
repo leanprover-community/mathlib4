@@ -619,6 +619,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Minus
 public import Mathlib.Algebra.Homology.DerivedCategory.Monoidal
 public import Mathlib.Algebra.Homology.DerivedCategory.Plus
 public import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlus
+public import Mathlib.Algebra.Homology.DerivedCategory.RightDerivedFunctorPlusComp
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom

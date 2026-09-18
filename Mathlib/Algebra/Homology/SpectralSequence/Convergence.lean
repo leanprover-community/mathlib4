@@ -29,7 +29,6 @@ namespace SpectralSequence
 
 variable {σ : Type w₂} (α : σ → Type w₃) [∀ n, LinearOrder (α n)]
 
-@[nolint checkUnivs]
 structure ConvergenceStripes where
   pred (n : σ) (i : α n) : WithBot (α n)
   pred_lt n (i : α n) : pred n i < WithBot.some i := by aesop
@@ -41,6 +40,7 @@ structure ConvergenceStripes where
 
 variable {α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ) where
   stripe pq := pq.1 + pq.2
@@ -63,6 +63,7 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
     simp at h
     lia
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def cohomomologicalStripesFin (l : ℕ) : ConvergenceStripes (ℤ × Fin l) (fun (_ : ℤ) => Fin l) where
   stripe pq := pq.1 + pq.2.1
@@ -96,6 +97,7 @@ lemma stripe_eq (n : σ) (i : α n) (pq : ι) (hpq : s.position n i = pq) :
 def segment (_ : ConvergenceStripes ι α) (n : σ) (i j : α n) : Set (α n) :=
   fun k => i ≤ k ∧ k ≤ j
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (n : σ) (i j : α n) : Fintype (s.segment n i j) := by
   have h := s.finite_segment n i j
   rw [Set.finite_def] at h
@@ -163,6 +165,7 @@ lemma pred'_bot (n : σ) : s.pred' n ⊥ = ⊥ := rfl
 lemma pred'_some (n : σ) (i : α n) :
     s.pred' n (WithBot.some i) = s.pred n i := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pred'_le (n : σ) (i : WithBot (α n)) :
     s.pred' n i ≤ i := by
   obtain _ | ⟨i⟩ := i
@@ -308,6 +311,7 @@ lemma sub_injective (n : σ) (i : WithBot (α n)) (k₁ k₂ : ℕ)
   · exact Or.inl h
   · exact Or.inr (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_sub_eq (n : σ) (i j : α n) (hij : i ≤ j) :
     ∃ (k : ℕ), s.sub n j k = i := by
   let S : Set ℕ := fun k => (WithBot.some i) ≤ s.sub n (WithBot.some j) k
@@ -446,6 +450,7 @@ noncomputable def shortComplex :
     ShortComplex C :=
   ShortComplex.mk _ _ (h.comp_π'' i j hij pq hpq)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance : Mono (h.shortComplex i j hij pq hpq).f := by dsimp; infer_instance
 
@@ -464,6 +469,7 @@ lemma isIso_filtration_map_from_pred_iff (i : WithBot (α n)) (j : α n)
     IsIso (h.filtration.map φ) ↔ IsZero (E.pageInfinity pq) :=
   (h.shortExact i j hij pq hpq).isIso_f_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_filtration_map_from_pred'_iff
     (i j : WithBot (α n)) (φ : i ⟶ j) (hij : s.pred' n j = i) :
     IsIso (h.filtration.map φ) ↔
@@ -580,6 +586,7 @@ lemma isZero_filtration_obj_of_LE (i j : WithBot (α n)) (hij : i ≤ j)
   intro k hk pq hpq
   exact hj k (hk.trans hij) pq hpq
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_filtration_map_iff (i j : WithBot (α n)) (φ : i ⟶ j) :
     IsIso (h.filtration.map φ) ↔
       ∀ (k : α n) (_ : i ≤ s.pred n k) (_ : WithBot.some k ≤ j)

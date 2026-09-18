@@ -43,6 +43,7 @@ namespace CohomologicalSpectralSequenceNat
 
 open SpectralSequence
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def stripes : ConvergenceStripes (ℕ × ℕ) (fun (n : ℕ) => Fin (n + 1)) where
   stripe pq := pq.1 + pq.2
@@ -127,6 +128,7 @@ noncomputable def ιE₂OneZero [E.HasEdgeMonoAtFrom (1, 0) 2] [E.HasEdgeEpiAtFr
     (E.page 2 (E.le₀_of_hasEdgeMonoAtFrom ⟨1, 0⟩ 2)).X ⟨1, 0⟩ ⟶ X 1 :=
   (E.pageInfinityIso ⟨1, 0⟩ 2).inv ≫ (hE 1).pageInfinityι 0 ⟨1, 0⟩ rfl inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance [E.HasEdgeMonoAtFrom (1, 0) 2] [E.HasEdgeEpiAtFrom (1, 0) 2] : Mono (ιE₂OneZero hE) := by
   dsimp [ιE₂OneZero]
   infer_instance
@@ -135,11 +137,13 @@ noncomputable def πE₃ZeroOne [E.HasEdgeMonoAtFrom (0, 1) 3] [E.HasEdgeEpiAtFr
     X 1 ⟶ (E.page 3 (E.le₀_of_hasEdgeMonoAtFrom ⟨0, 1⟩ 3)).X ⟨0, 1⟩ :=
   (hE 1).pageInfinityπ 1 ⟨0, 1⟩ rfl inferInstance ≫ (E.pageInfinityIso ⟨0, 1⟩ 3).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance [E.HasEdgeMonoAtFrom (0, 1) 3] [E.HasEdgeEpiAtFrom (0, 1) 3] :
     Epi (πE₃ZeroOne hE) := by
   dsimp [πE₃ZeroOne]
   apply epi_comp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ιE₂OneZero_πE₃ZeroOne
     [E.HasEdgeMonoAtFrom (1, 0) 2] [E.HasEdgeEpiAtFrom (1, 0) 2]
     [E.HasEdgeMonoAtFrom (0, 1) 3] [E.HasEdgeEpiAtFrom (0, 1) 3] :
@@ -148,6 +152,7 @@ lemma ιE₂OneZero_πE₃ZeroOne
   simp only [assoc, Preadditive.IsIso.comp_left_eq_zero]
   rw [(hE 1).pageInfinityι_π_eq_zero_assoc 0 1 (by apply @zero_lt_one ℕ), zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma ιE₂OneZero_πE₃ZeroOne_exact
     [E.HasEdgeMonoAtFrom (1, 0) 2] [E.HasEdgeEpiAtFrom (1, 0) 2]
@@ -176,6 +181,7 @@ noncomputable def ιE₃TwoZero
     (E.page 3 (E.le₀_of_hasEdgeMonoAtFrom ⟨2, 0⟩ 3)).X ⟨2, 0⟩ ⟶ X 2 :=
   (E.pageInfinityIso ⟨2, 0⟩ 3).inv ≫ (hE 2).pageInfinityι 0 ⟨2, 0⟩ rfl inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance [E.HasEdgeMonoAtFrom (2, 0) 3] [E.HasEdgeEpiAtFrom (2, 0) 3] : Mono (ιE₃TwoZero hE) := by
   dsimp [ιE₃TwoZero]
   infer_instance

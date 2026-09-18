@@ -202,6 +202,7 @@ omit [OrderTop ι] in
 lemma mapWithBot_some' (n : σ) (i : α n) :
     hdata.mapWithBot n (WithBot.some i) = data.i₂ (s.position n i) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 omit [OrderTop ι] in
 lemma mapWithBot_monotone (n : σ) : Monotone (hdata.mapWithBot n) := by
   rintro i j hij
@@ -256,6 +257,7 @@ def coreE₂CohomologicalNatCompatibility :
   deg n := n
   i₂_monotone n i j hij := by simpa using hij
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def homologicalStripesNat :
     SpectralSequence.ConvergenceStripes (ℕ × ℕ) (fun (n : ℕ) => Fin (n + 1)) where
@@ -531,8 +533,8 @@ lemma π_pageInfinityIso_hom_iso₃_hom :
       (iso₃ X hdata n i j hij pq hpq).hom =
         X.abutmentFiltrationToPageInfinity _ _ _ _ _ _ _ _ := by
   by_cases h : data.i₁ pq ≤ hdata.mapWithBot n i
-  · simp [iso₃, dif_pos h]
-  · simp [iso₃, dif_neg h]
+  · simp [iso₃, dite_eq_left h]
+  · simp [iso₃, dite_eq_right h]
 
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def iso : composableArrows X hdata n i j hij pq hpq ≅
@@ -540,7 +542,7 @@ noncomputable def iso : composableArrows X hdata n i j hij pq hpq ≅
       (by simp) (by simp) _ _ (hdata.mapWithBot_pred_le_i₂ n i j hij)).toComposableArrows :=
   isoMk₂ (Iso.refl _) (Iso.refl _)
     (pageInfinityIso X hdata n j pq hpq ≪≫ iso₃ X hdata n i j hij pq hpq) (by simp)
-    (by simp [Precomp.map, Precomp.obj])
+    (by simp)
 
 lemma composableArrows_exact :
     (composableArrows X hdata n i j hij pq hpq).Exact :=

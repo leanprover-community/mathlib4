@@ -27,7 +27,7 @@ lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
   obtain ⟨t, ht⟩ := Int.eq_ofNat_of_zero_le hy'
   obtain rfl : y = m₀ + t := by lia
   simp only [ge_iff_le, add_le_add_iff_left, Nat.cast_le]
-  exact (Nat.lt_wfRel.wf).min_le hy
+  exact WellFoundedLT.min_le (s := T) hy
 
 namespace CategoryTheory
 
@@ -521,7 +521,7 @@ variable (pq : ι) [E.HasPageInfinityAt pq]
 /-- Auxiliary definition for `pageInfinityIso`. -/
 noncomputable def pageInfinityIso' :
     E.pageInfinity pq ≅ (E.page (E.rMin pq) (E.LE_rMin pq)).X pq :=
-  eqToIso (dif_pos (by infer_instance))
+  eqToIso (dite_eq_left (by infer_instance))
 
 noncomputable def pageInfinityIso
     (r : ℤ) [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r] :
@@ -529,6 +529,7 @@ noncomputable def pageInfinityIso
   E.pageInfinityIso' pq ≪≫ E.edgeIsoSteps pq (E.rMin pq) r
     ((max_le (E.LE_of_hasEdgeMonoAtFrom pq r) (E.LE_of_hasEdgeEpiAtFrom pq r)))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pageInfinityIso_hom_edgeEpiSteps
     (r r' : ℤ) (h : r ≤ r') [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r]
@@ -562,6 +563,7 @@ lemma edgeEpiStep_pageInfinityIso_inv
   rw [← E.edgeEpiSteps_eq_edgeEpiStep pq r r' h,
     edgeEpiSteps_pageInfinityIso_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma edgeMonoSteps_pageInfinityIso_inv
     (r r' : ℤ) (h : r ≤ r') [E.HasEdgeMonoAtFrom pq r] [E.HasEdgeEpiAtFrom pq r]
@@ -613,6 +615,7 @@ instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
   dsimp [edgeMono]
   split_ifs <;> infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma edgeMono_edgeMonoSteps (r r' : ℤ) (h : r ≤ r' := by lia)
@@ -621,17 +624,17 @@ lemma edgeMono_edgeMonoSteps (r r' : ℤ) (h : r ≤ r' := by lia)
       E.edgeMono pq r := by
   by_cases hr : r ≤ E.rMin pq
   · dsimp [edgeMono]
-    rw [dif_pos hr]
+    rw [dite_eq_left hr]
     by_cases hr' : r' ≤ E.rMin pq
-    · simp [dif_pos hr']
-    · rw [dif_neg hr']
+    · simp [dite_eq_left hr']
+    · rw [dite_eq_right hr']
       dsimp [pageInfinityIso]
       simp only [assoc]
       congr 1
       simp only [← cancel_epi (E.edgeIsoSteps pq (E.rMin pq) r' (by lia)).inv,
         edgeIsoSteps_inv, edgeMonoSteps_edgeEpiSteps_assoc, edgeMonoSteps_comp]
   · dsimp [edgeMono]
-    rw [dif_neg hr, dif_neg (by lia)]
+    rw [dite_eq_right hr, dite_eq_right (by lia)]
     dsimp [pageInfinityIso]
     simp only [assoc]
     have : E.HasEdgeEpiAtFrom pq r := ⟨by have := E.rFromMin_LE_rMin pq; lia⟩
@@ -639,6 +642,7 @@ lemma edgeMono_edgeMonoSteps (r r' : ℤ) (h : r ≤ r' := by lia)
       assoc, assoc, assoc, edgeIsoSteps_hom, edgeMonoSteps_edgeEpiSteps,
       comp_id, edgeEpiSteps_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 -- priority less than that of pageInfinityIso_hom_edgeMonoSteps
 /-- `(E.pageInfinityIso pq r').hom ≫ E.edgeMonoSteps pq r r' h = E.edgeMono pq r`. -/
@@ -685,6 +689,7 @@ instance (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
   dsimp [edgeEpi]
   split_ifs <;> infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma edgeEpiSteps_edgeEpi (r r' : ℤ) (h : r ≤ r')
@@ -692,20 +697,21 @@ lemma edgeEpiSteps_edgeEpi (r r' : ℤ) (h : r ≤ r')
     E.edgeEpiSteps pq r r' h ≫ E.edgeEpi pq r' = E.edgeEpi pq r := by
   by_cases hr : r ≤ E.rMin pq
   · dsimp [edgeEpi]
-    rw [dif_pos hr]
+    rw [dite_eq_left hr]
     by_cases hr' : r' ≤ E.rMin pq
-    · simp [dif_pos hr']
-    · rw [dif_neg hr']
+    · simp [dite_eq_left hr']
+    · rw [dite_eq_right hr']
       dsimp [pageInfinityIso]
       simp only [← assoc]
       congr 1
       simp [← cancel_mono (E.edgeIsoSteps pq (E.rMin pq) r' (by lia)).hom]
   · dsimp [edgeEpi]
-    rw [dif_neg hr, dif_neg (by lia)]
+    rw [dite_eq_right hr, dite_eq_right (by lia)]
     dsimp [pageInfinityIso]
     have : E.HasEdgeMonoAtFrom pq r := ⟨by have := E.rToMin_LE_rMin pq; lia⟩
     simp [← cancel_epi (E.edgeIsoSteps pq r r' h).inv]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 -- priority less than that of edgeEpiSteps_pageInfinityIso_inv
 /-- `E.edgeEpiSteps pq r r' h ≫ (E.pageInfinityIso pq r').inv = E.edgeEpi pq r`. -/
@@ -799,7 +805,7 @@ lemma mapPageInfinity_eq (pq : ι) (r : ℤ)
     (max_le (E'.LE_of_hasEdgeMonoAtFrom pq r) (E'.LE_of_hasEdgeEpiAtFrom pq r))
   have : r₀ ≤ r' := (E.LE_rMin pq).trans (le_max_left _ _)
   dsimp [mapPageInfinity]
-  rw [dif_pos (by infer_instance), dif_pos (by infer_instance),
+  rw [dite_eq_left (by infer_instance), dite_eq_left (by infer_instance),
     ← E.pageInfinityIso_hom_edgeEpiSteps pq r' r hrr',
     ← E'.edgeMonoSteps_pageInfinityIso_inv pq r' r hrr', assoc,
     ← edgeMonoSteps_naturality_assoc _ _ _ _ ,
