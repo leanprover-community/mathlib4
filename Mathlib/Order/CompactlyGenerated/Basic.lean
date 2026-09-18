@@ -397,13 +397,13 @@ theorem le_iff_forall_isCompactElement [IsCompactlyGenerated α] :
   have := isLUB_le_iff <| isLUB_setOfPred_le_and_isCompactElement a
   this.trans ⟨fun h _ hx hxa ↦ h ⟨hxa, hx⟩, fun h x ⟨hxa, hx⟩ ↦ h x hx hxa⟩
 
-@[deprecated (since := "2026-08-03")]
+@[deprecated (since := "2026-09-17")]
 alias le_iff_compact_le_imp := le_iff_forall_isCompactElement
 
 theorem IsCompactlyGenerated.of_wellFoundedGT [WellFoundedGT α] : IsCompactlyGenerated α :=
   ⟨(⟨{·}, fun x _ ↦ .of_wellFoundedGT x, isLUB_singleton⟩)⟩
 
-@[deprecated (since := "2026-08-03")]
+@[deprecated (since := "2026-09-17")]
 alias CompleteLattice.isCompactlyGenerated_of_wellFoundedGT := IsCompactlyGenerated.of_wellFoundedGT
 
 end Preorder
