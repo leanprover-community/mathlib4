@@ -3412,6 +3412,7 @@ public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Profunctor.Basic
+public import Mathlib.CategoryTheory.Profunctor.Comp
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
 public import Mathlib.CategoryTheory.Quotient.LocallySmall
@@ -7440,6 +7441,8 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.BDSimp
 public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basify
+public import Mathlib.Tactic.Basify.Attr
 public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Bound.Init
@@ -7754,6 +7757,7 @@ public import Mathlib.Tactic.SetLike
 public import Mathlib.Tactic.SetNotationForOrder
 public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
+public import Mathlib.Tactic.SimpLibraryNote
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
