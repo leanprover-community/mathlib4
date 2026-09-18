@@ -341,7 +341,9 @@ lemma mul_one_div_cancel (h : a ≠ 0) : a * (1 / a) = 1 := h.isUnit.mul_one_div
 lemma one_div_mul_cancel (h : a ≠ 0) : 1 / a * a = 1 := h.isUnit.one_div_mul_cancel
 
 @[simp]
-lemma div_left_inj' (hc : c ≠ 0) : a / c = b / c ↔ a = b := hc.isUnit.div_left_inj
+lemma div_left_inj₀ (hc : c ≠ 0) : a / c = b / c ↔ a = b := hc.isUnit.div_left_inj
+
+@[deprecated (since := "2026-09-15")] alias div_left_inj' := div_left_inj₀
 
 lemma div_eq_iff (hb : b ≠ 0) : a / b = c ↔ a = c * b := hb.isUnit.div_eq_iff
 
@@ -491,13 +493,17 @@ lemma div_eq_div_of_div_eq_div (hc : c ≠ 0) (hd : d ≠ 0) (h : a / b = c / d)
 
 @[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
 
-lemma div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_div_cancel_left
+lemma div_div_cancel_left₀ (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_div_cancel_left
+
+@[deprecated (since := "2026-09-15")] alias div_div_cancel_left' := div_div_cancel_left₀
 
 lemma div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_cancel_left₀ h, one_div]
 
-lemma div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
+lemma div_div_div_cancel_left₀ (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
   rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
+@[deprecated (since := "2026-09-15")] alias div_div_div_cancel_left' := div_div_div_cancel_left₀
 
 @[simp] lemma div_mul_div_cancel₀' (ha : a ≠ 0) (b c : G₀) : a / b * (c / a) = c / b := by
   rw [mul_comm, div_mul_div_cancel₀ ha]
