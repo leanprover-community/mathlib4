@@ -32,7 +32,14 @@ namespace Matrix
 variable (I J K L R R' : Type*)
 
 /-- An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
-    an `I × K` by `J × L` matrix -/
+an `I × K` by `J × L` matrix.
+
+This is available in bundled forms as:
+* `Matrix.compAddEquiv`
+* `Matrix.compLinearEquiv`
+* `Matrix.compRingEquiv`
+* `Matrix.compAlgEquiv`
+-/
 @[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
@@ -41,6 +48,7 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
 section Basic
 variable {R I J K L}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J R 1 = 1 := by
   ext; simp only [comp, Equiv.coe_fn_mk, one_apply, apply_ite]; aesop
 

@@ -5,14 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public meta import Mathlib.Lean.GoalsLocation
-public meta import Mathlib.Lean.Meta.KAbstractPositions
-public import Lean.Server.Rpc.RequestHandling
 public import Mathlib.Tactic.NthRewrite
-public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.Basic
-public import ProofWidgets.Component.OfRpcMethod
 public import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
@@ -97,8 +91,6 @@ where
           let e ← whnfCore e
           return ← go e (acc.push e)
         if let some e ← reduceNat? e then
-          return acc.push e
-        if let some e ← reduceNative? e then
           return acc.push e
         if let some e ← unfoldProjDefaultInst? e then
           -- when unfolding a default instance, don't add it to the array of unfolds.

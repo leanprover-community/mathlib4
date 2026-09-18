@@ -40,7 +40,7 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
     expand R p (cyclotomic n R) = cyclotomic (n * p) R * cyclotomic n R := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · simp
-  haveI := NeZero.of_pos hnpos
+  have := NeZero.of_pos hnpos
   suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ * cyclotomic n ℤ by
     rw [← map_cyclotomic_int, ← map_expand, this, Polynomial.map_mul, map_cyclotomic_int,
       map_cyclotomic]
@@ -88,7 +88,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     [CommRing R] : expand R p (cyclotomic n R) = cyclotomic (n * p) R := by
   rcases n.eq_zero_or_pos with (rfl | hzero)
   · simp
-  haveI := NeZero.of_pos hzero
+  have := NeZero.of_pos hzero
   suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ by
     rw [← map_cyclotomic_int, ← map_expand, this, map_cyclotomic_int]
   refine eq_of_monic_of_dvd_of_natDegree_le (cyclotomic.monic _ ℤ)
@@ -130,7 +130,7 @@ section CharP
 `cyclotomic (n * p) R = (cyclotomic n R) ^ (p - 1)`. -/
 theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type*) {p n : ℕ} [hp : Fact (Nat.Prime p)]
     [Ring R] [CharP R p] (hn : ¬p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ (p - 1) := by
-  letI : Algebra (ZMod p) R := ZMod.algebra _ _
+  let : Algebra (ZMod p) R := ZMod.algebra _ _
   suffices cyclotomic (n * p) (ZMod p) = cyclotomic n (ZMod p) ^ (p - 1) by
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
@@ -144,7 +144,7 @@ theorem cyclotomic_mul_prime_eq_pow_of_not_dvd (R : Type*) {p n : ℕ} [hp : Fac
 `cyclotomic (n * p) R = (cyclotomic n R) ^ p`. -/
 theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type*) {p n : ℕ} [hp : Fact (Nat.Prime p)] [Ring R]
     [CharP R p] (hn : p ∣ n) : cyclotomic (n * p) R = cyclotomic n R ^ p := by
-  letI : Algebra (ZMod p) R := ZMod.algebra _ _
+  let : Algebra (ZMod p) R := ZMod.algebra _ _
   suffices cyclotomic (n * p) (ZMod p) = cyclotomic n (ZMod p) ^ p by
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]

@@ -114,9 +114,6 @@ theorem comp_hom_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
 
-@[deprecated (since := "2025-12-18")] alias id_hom := id_hom_hom
-@[deprecated (since := "2025-12-18")] alias comp_hom := comp_hom_hom
-
 @[to_additive (attr := ext)]
 theorem hom_ext {A B : Grp C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
   InducedCategory.hom_ext (Mon.Hom.ext h)
@@ -220,26 +217,14 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
-/-- Transfer `AddGrpObj` along an isomorphism. -/
--- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
-abbrev _root_.CategoryTheory.AddGrpObj.ofIso {G' X : C} [AddGrpObj G'] (e : G' ≅ X) :
-    AddGrpObj X where
-  toAddMonObj := AddMonObj.ofIso e
-  neg := e.inv ≫ AddGrpObj.neg ≫ e.hom
-  left_neg := by simp +instances [AddMonObj.ofIso]
-  right_neg := by simp +instances [AddMonObj.ofIso]
-
 /-- Transfer `GrpObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
+@[to_additive (attr := simps! -isSimp) /-- Transfer `AddGrpObj` along an isomorphism. -/]
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
   left_inv := by simp +instances [MonObj.ofIso]
   right_inv := by simp +instances [MonObj.ofIso]
-
-attribute [to_additive existing] ofIso
 
 @[to_additive]
 instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
@@ -348,7 +333,7 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
 
 -- Note: `Invertible` has no additive variant
 /-- A monoid object with invertible homs is a group object. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
   inv := Yoneda.fullyFaithful.preimage
     ⟨fun X ↦ ↾fun f ↦ (h X.unop f).invOf, fun X Y f ↦ by
@@ -447,9 +432,6 @@ abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
-@[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom
-@[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom
-
 @[to_additive]
 instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
   (show _ ≃ (Mon.trivial C ⟶ A.toMon) from InducedCategory.homEquiv).unique
@@ -531,15 +513,6 @@ lemma associator_hom_hom_hom (G H I : Grp C) :
 lemma associator_inv_hom_hom (G H I : Grp C) :
     (α_ G H I).inv.hom.hom = (α_ G.X H.X I.X).inv := rfl
 
-@[deprecated (since := "2025-12-18")] alias whiskerLeft_hom := whiskerLeft_hom_hom
-@[deprecated (since := "2025-12-18")] alias whiskerRight_hom := whiskerRight_hom_hom
-@[deprecated (since := "2025-12-18")] alias leftUnitor_hom_hom := leftUnitor_hom_hom_hom
-@[deprecated (since := "2025-12-18")] alias leftUnitor_inv_hom := leftUnitor_inv_hom_hom
-@[deprecated (since := "2025-12-18")] alias rightUnitor_hom_hom := rightUnitor_hom_hom_hom
-@[deprecated (since := "2025-12-18")] alias rightUnitor_inv_hom := rightUnitor_inv_hom_hom
-@[deprecated (since := "2025-12-18")] alias associator_hom_hom := associator_hom_hom_hom
-@[deprecated (since := "2025-12-18")] alias associator_inv_hom := associator_inv_hom_hom
-
 @[to_additive]
 instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
@@ -565,9 +538,6 @@ lemma fst_hom_hom (G H : Grp C) : (fst G H).hom.hom = fst G.X H.X := rfl
 @[to_additive (attr := simp)]
 lemma snd_hom_hom (G H : Grp C) : (snd G H).hom.hom = snd G.X H.X := rfl
 
-@[deprecated (since := "2025-12-18")] alias fst_hom := fst_hom_hom
-@[deprecated (since := "2025-12-18")] alias snd_hom := snd_hom_hom
-
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simps)]
 instance : (forget₂Mon C).Monoidal where
@@ -576,6 +546,7 @@ instance : (forget₂Mon C).Monoidal where
   «η» := 𝟙 _
   δ G H := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
 @[to_additive]
@@ -586,9 +557,6 @@ instance instBraidedCategory : BraidedCategory (Grp C) :=
 lemma braiding_hom_hom_hom (G H : Grp C) : (β_ G H).hom.hom.hom = (β_ G.X H.X).hom := rfl
 @[to_additive (attr := simp)]
 lemma braiding_inv_hom_hom (G H : Grp C) : (β_ G H).inv.hom.hom = (β_ G.X H.X).inv := rfl
-
-@[deprecated (since := "2025-12-18")] alias braiding_hom_hom := braiding_hom_hom_hom
-@[deprecated (since := "2025-12-18")] alias braiding_inv_hom := braiding_inv_hom_hom
 
 end Grp
 
@@ -638,6 +606,7 @@ protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
     (Grp.forget₂Mon _).map_injective
       (F.mapMon.map_injective ((Grp.forget₂Mon _).congr_map hfg))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `F.mapGrp : Grp C ⥤ Grp D` is fully faithful too. -/
 @[to_additive /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
@@ -683,6 +652,7 @@ set_option backward.isDefEq.respectTransparency false in
 def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Natural transformations between functors lift to group objects. -/
 @[to_additive (attr := simps!)
@@ -690,6 +660,7 @@ set_option backward.defeqAttrib.useBackward true in
 def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
   app X := Grp.homMk' ((mapMonNatTrans f).app X.toMon)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[to_additive (attr := simps!)
@@ -697,6 +668,7 @@ set_option backward.defeqAttrib.useBackward true in
 def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (e.app _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
@@ -765,7 +737,7 @@ noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
 end Braided
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]

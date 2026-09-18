@@ -131,21 +131,21 @@ protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
 protected lemma isLeftCancelMul [Mul β] [IsLeftCancelMul β] :
     letI := e.mul
     IsLeftCancelMul α := by
-  letI := e.mul; exact e.injective.isLeftCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+  let := e.mul; exact e.injective.isLeftCancelMul _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `IsRightCancelMul` across an `Equiv` -/
 @[to_additive /-- Transfer `IsRightCancelAdd` across an `Equiv` -/]
 protected lemma isRightCancelMul [Mul β] [IsRightCancelMul β] :
     letI := e.mul
     IsRightCancelMul α := by
-  letI := e.mul; exact e.injective.isRightCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+  let := e.mul; exact e.injective.isRightCancelMul _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `IsCancelMul` across an `Equiv` -/
 @[to_additive /-- Transfer `IsCancelAdd` across an `Equiv` -/]
 protected lemma isCancelMul [Mul β] [IsCancelMul β] :
     letI := e.mul
     IsCancelMul α := by
-  letI := e.mul; exact e.injective.isCancelMul _ fun _ _ ↦ e.apply_symm_apply _
+  let := e.mul; exact e.injective.isCancelMul _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `MulOneClass` across an `Equiv` -/
 @[to_additive /-- Transfer `AddZeroClass` across an `Equiv` -/]
@@ -204,7 +204,7 @@ lemma exists_type_univ_nonempty_mulEquiv.{u, v} (G : Type u) [Group G] [Finite G
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
   let f : Fin n ≃ ULift (Fin n) := Equiv.ulift.symm
   let e : G ≃ ULift (Fin n) := e.trans f
-  letI groupH : Group (ULift (Fin n)) := e.symm.group
+  let groupH : Group (ULift (Fin n)) := e.symm.group
   exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm <| e.symm.mulEquiv⟩⟩
 
 end Finite

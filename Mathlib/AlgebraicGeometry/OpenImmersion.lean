@@ -30,8 +30,6 @@ namespace AlgebraicGeometry
 
 universe v v₁ v₂ u
 
-variable {C : Type u} [Category.{v} C]
-
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
 of LocallyRingedSpaces
 -/
@@ -267,6 +265,7 @@ theorem appIso_inv_app (U) :
     (f.appIso U).inv ≫ f.app (f ''ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise nosimp]
 lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Y.Opens}
@@ -299,6 +298,7 @@ lemma id_appIso (U : X.Opens) :
     (𝟙 X :).appIso U = X.presheaf.mapIso (eqToIso (by simp)).op := by
   ext; simp [appIso_hom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma comp_appIso {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion f]
     [IsOpenImmersion g] (U : X.Opens) :
@@ -328,8 +328,9 @@ instance isOpenImmersion_SpecMap_localizationAway {R : CommRingCat.{u}} (f : R) 
 
 instance {R} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
-  isOpenImmersion_SpecMap_localizationAway (R := .of R) f
+  isOpenImmersion_SpecMap_localizationAway (R := ↧R) f
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Hom.opensRange_localizationAway {R : CommRingCat.{u}} (g : R) :
     (Spec.map <| CommRingCat.ofHom <| algebraMap R (Localization.Away g)).opensRange =
@@ -359,9 +360,9 @@ theorem exists_affine_mem_range_and_range_subset
     show ((e.hom ≫ e.inv).base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
-  let f : Spec (.of <| Localization.Away r) ⟶ X :=
+  let f : Spec ↧(Localization.Away r) ⟶ X :=
     Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))) ≫ ⟨e.inv ≫ X.ofRestrict _⟩
-  refine ⟨.of (Localization.Away r), f, inferInstance, ?_⟩
+  refine ⟨↧(Localization.Away r), f, inferInstance, ?_⟩
   rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
   erw [PrimeSpectrum.localization_away_comap_range (Localization.Away r) r]
   exact ⟨⟨_, hr, congr(($(e.hom_inv_id).base ⟨x, hxV⟩).1)⟩, Set.image_subset_iff.mpr hr'⟩
@@ -419,7 +420,7 @@ end PresheafedSpace.IsOpenImmersion
 
 section Restrict
 
-variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : IsOpenEmbedding f)
+variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ ↧X} (h : IsOpenEmbedding f)
 
 /-- The restriction of a Scheme along an open embedding. -/
 @[simps! -isSimp carrier, simps! presheaf_obj]
@@ -450,6 +451,7 @@ lemma Scheme.ofRestrict_appLE (V W e) :
   dsimp [Hom.appLE]
   exact (X.presheaf.map_comp _ _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Scheme.ofRestrict_appIso (U) :
     (X.ofRestrict h).appIso U = Iso.refl _ := by
@@ -855,6 +857,7 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
   · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If
 ```
   P --fst--> X

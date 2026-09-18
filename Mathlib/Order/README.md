@@ -8,6 +8,7 @@ The basic order hierarchy is split across a series of subfolders that each depen
 * `Order.Preorder` for preorders, partial orders, lattices, linear orders
 * `Order.BooleanAlgebra` for Heyting/bi-Heyting/co-Heyting/Boolean algebras
 * `Order.CompleteLattice` for frames, coframes, complete lattices
+* `Order.ConditionallyCompletePartialOrder` for conditionally complete partial orders
 * `Order.ConditionallyCompleteLattice` for conditionally complete lattices
 * `Order.CompleteBooleanAlgebra` for complete Boolean algebras
 

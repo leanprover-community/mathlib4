@@ -25,7 +25,7 @@ probability measure, Dirac delta, embedding
 
 @[expose] public section
 
-open Topology Metric Filter Set ENNReal NNReal BoundedContinuousFunction
+open Topology Filter Set ENNReal NNReal BoundedContinuousFunction
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 

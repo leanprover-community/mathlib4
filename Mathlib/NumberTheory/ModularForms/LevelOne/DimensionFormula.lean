@@ -30,8 +30,10 @@ for `𝒮ℒ` (= `SL(2, ℤ)`) of even weight.
 
 @[expose] public noncomputable section
 
-open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass ModularFormClass
-  CuspFormClass MatrixGroups OnePoint Filter EisensteinSeries Asymptotics
+open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass
+  CuspFormClass OnePoint Filter EisensteinSeries Asymptotics
+
+open scoped MatrixGroups
 
 open scoped Topology
 
@@ -91,10 +93,10 @@ lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (discriminantEquiv f) z = f z / Δ z := rfl
 
 /-- Divide a cusp form by the discriminant to get a modular form of weight `k - 12`. -/
-@[deprecated discriminantEquiv (since := "2026-05-18")]
+@[deprecated discriminantEquiv +typeChanged (since := "2026-05-18")]
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) := discriminantEquiv f
 
-@[deprecated discriminantEquiv_apply (since := "2026-05-18")]
+@[deprecated discriminantEquiv_apply +typeChanged (since := "2026-05-18")]
 lemma divDiscriminant_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (divDiscriminant f) z = f z / Δ z := rfl
 
@@ -178,8 +180,8 @@ lemma ModularForm.rank_eq_one_add_rank_cuspForm {k : ℕ} (hk : 3 ≤ k) (hk2 : 
     exact one_ne_zero <| hE.symm.trans <| (isCuspForm_iff_coeffZero_eq_zero _).mp h
   · refine (Submodule.Quotient.forall _).mpr fun f ↦ ⟨(qExpansion 1 f).coeff 0, ?_⟩
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq, mem_cuspFormSubmodule_iff,
-      isCuspForm_iff_coeffZero_eq_zero, ModularForm.coe_sub, ModularForm.qExpansion_sub,
-      IsGLPos.coe_smul, ModularForm.qExpansion_smul, map_sub,
+      isCuspForm_iff_coeffZero_eq_zero, FunLike.coe_sub, ModularForm.qExpansion_sub,
+      FunLike.coe_smul, ModularForm.qExpansion_smul, map_sub,
       PowerSeries.coeff_smul, E_qExpansion_coeff_zero hk hk2, smul_eq_mul, mul_one, sub_self]
     all_goals simp
 
@@ -297,7 +299,7 @@ theorem sturm_bound_levelOne_nat {k : ℕ} {f : ModularForm 𝒮ℒ (k : ℤ)}
     have hsucc : k / 12 = (k - 12) / 12 + 1 := by lia
     rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
       discriminant_qExpansion_order, add_comm, hsucc, Nat.cast_add, Nat.cast_one] at h
-    exact (ENat.add_lt_add_iff_right (ENat.coe_ne_top 1)).mp h
+    exact (ENat.add_lt_add_iff_right (ENat.natCast_ne_top 1)).mp h
 
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
 has q-expansion of order strictly greater than `k / 12`, then `f` is identically zero.

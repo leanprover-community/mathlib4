@@ -70,7 +70,7 @@ lemma Module.mem_support_iff' :
 lemma Module.mem_support_iff_exists_annihilator :
     p ∈ Module.support R M ↔ ∃ m : M, (R ∙ m).annihilator ≤ p.asIdeal := by
   rw [Module.mem_support_iff']
-  simp_rw [not_imp_not, SetLike.le_def, Submodule.mem_annihilator_span_singleton]
+  simp_rw [not_imp_not, IsConcreteLE.le_iff, Submodule.mem_annihilator_span_singleton]
 
 lemma Module.mem_support_mono {p q : PrimeSpectrum R} (H : p ≤ q) (hp : p ∈ Module.support R M) :
     q ∈ Module.support R M := by
@@ -83,7 +83,7 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
   · contrapose
     rw [notMem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
       ← hs, Submodule.span_le, Set.subset_def]
-    simp_rw [SetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
+    simp_rw [IsConcreteLE.le_iff, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
     push Not
     simp_rw [and_comm]
@@ -143,11 +143,14 @@ lemma Module.support_of_algebra {A : Type*} [Ring A] [Algebra R A] :
   · simpa [Algebra.smul_def, (show _ = _ from hx)] using hm _ hx'
   · exact hr (H ((Algebra.algebraMap_eq_smul_one _).trans e))
 
-lemma Module.support_of_noZeroSMulDivisors [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
+lemma Module.support_of_isTorsionFree [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
     Module.support R M = Set.univ := by
   simp only [Set.eq_univ_iff_forall, mem_support_iff', ne_eq, smul_eq_zero, not_or]
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   exact fun p ↦ ⟨x, fun r hr ↦ ⟨fun e ↦ hr (e ▸ p.asIdeal.zero_mem), hx⟩⟩
+
+@[deprecated (since := "2026-07-27")]
+alias Module.support_of_noZeroSMulDivisors := Module.support_of_isTorsionFree
 
 variable {N P : Type*} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 variable (f : M →ₗ[R] N) (g : N →ₗ[R] P)
@@ -198,10 +201,9 @@ open PrimeSpectrum
 
 lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
-  classical
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
   refine ⟨annihilator_le_of_mem_support, fun H ↦ (mem_support_iff_of_span_eq_top hs).mpr ?_⟩
-  simp only [SetLike.le_def, Submodule.mem_annihilator_span_singleton] at H ⊢
+  simp only [IsConcreteLE.le_iff, Submodule.mem_annihilator_span_singleton] at H ⊢
   contrapose! H
   choose x hx hx' using Subtype.forall'.mp H
   refine ⟨s.attach.prod x, ?_, ?_⟩

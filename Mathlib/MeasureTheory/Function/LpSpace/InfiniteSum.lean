@@ -28,14 +28,21 @@ variable {X E : Type*} {_ : MeasurableSpace X} {μ : Measure X} [NormedAddCommGr
 /-- If a series of functions has summable `L^p` norms for some `1 ≤ p`, then the norms are ae
 pointwise summable. -/
 theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
-    {p : ℝ≥0∞} (hp : 1 ≤ p) {f : ι → X → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
-    (h'f : ∑' n, eLpNorm (f n) p μ ≠ ∞) :
+    {p : ℝ≥0∞} (hp : 1 ≤ p) {f : ι → X → E} (h'f : ∑' n, eLpNorm (f n) p μ ≠ ∞) :
     ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
+  have hf n : AEStronglyMeasurable (f n) μ := by
+    contrapose! h'f
+    apply top_le_iff.1
+    have : eLpNorm (f n) p μ = ∞ := eLpNorm_of_not_aestronglyMeasurable h'f
+    rw [← this]
+    exact ENNReal.le_tsum (f := fun i ↦ eLpNorm (f i) p μ) _
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
     filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
   -- the result is straightforward in `L^∞`.
   rcases eq_top_or_lt_top p with rfl | h'p
-  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := ae_all_iff.2 (fun n ↦ ae_le_eLpNormEssSup)
+  · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := ae_all_iff.2 fun n ↦ by
+      filter_upwards [ae_le_eLpNormEssSup (f := f n) (μ := μ)] with x hx
+      exact hx.trans eLpNormEssSup_le_eLpNorm_top
     filter_upwards [this] with x hx
     apply lt_of_le_of_lt ?_ h'f.lt_top
     gcongr with i
@@ -65,8 +72,8 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
         simpa
     apply lt_of_le_of_lt ?_ this
     gcongr with i
-    rw [← eLpNorm_one_eq_lintegral_enorm]
-    exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ hp (hf i).restrict
+    rw [← eLpNorm_one_eq_lintegral_enorm (hf i).restrict]
+    exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos hp zero_lt_one
   /- We wish now to reduce to finite measure sets to apply the above. The function `f n` in `L^p`
   has a sigma-finite support, that we denote by `s n`. -/
   have B n : ∃ s, MeasurableSet s ∧ (f n =ᵐ[μ.restrict sᶜ] 0) ∧ SigmaFinite (μ.restrict s) := by
@@ -104,7 +111,7 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     [CompleteSpace E] {f : ℕ → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
     ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (⇑(∑' n, f n) a) := by
   have A : ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
-    apply summable_norm_of_tsum_eLpNorm_ne_top hp.out (fun n ↦ Lp.aestronglyMeasurable (f n))
+    apply summable_norm_of_tsum_eLpNorm_ne_top hp.out
     simpa [enorm_def] using hf
   have B : ∀ᵐ x ∂μ, ∀ n, ⇑(∑ i ∈ range n, f i) x = ∑ i ∈ range n, f i x := by
     rw [ae_all_iff]
@@ -122,7 +129,6 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
 theorem hasSum_coeFn_tsum {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {ι : Type*} [Countable ι]
     [CompleteSpace E] {f : ι → Lp E p μ} (hf : ∑' n, ‖f n‖ₑ ≠ ∞) :
     ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (⇑(∑' n, f n) a) := by
-  classical
   rcases finite_or_infinite ι with hι | hι
   · let : Fintype ι := Fintype.ofFinite ι
     filter_upwards [coeFn_fun_finsetSum univ f] with x hx

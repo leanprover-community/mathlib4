@@ -155,8 +155,8 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
   have h7 := parallelogram_identity ((I : 𝕜) • y + z) z
   have h8 := parallelogram_identity ((I : 𝕜) • y - z) z
   apply_fun 𝓚 at h1 h2 h3 h4 h5 h6 h7 h8
-  simp only [map_add, map_mul, map_ofNat, smul_add] at *
-  abel_nf at * -- TODO this should be `module_nf` (then the `smul_add` above can go)
+  simp only [map_add, map_mul, map_ofNat] at *
+  module_nf with 𝕜 at *
   linear_combination (- h1 + h2 + h3 - h4 + I * (- h5 + h6 + h7 - h8)) / 8
 
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
@@ -203,7 +203,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- **Fréchet–von Neumann–Jordan Theorem**. A normed space `E` whose norm satisfies the
 parallelogram identity can be given a compatible inner product. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def InnerProductSpace.ofNorm
     (h : ∀ x y : E, ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖)) :
     InnerProductSpace 𝕜 E :=

@@ -21,20 +21,20 @@ The notation `- ⊠ -` is scoped to `MonoidalCategory.ExternalProduct`.
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory
-open Functor
+open CategoryTheory.Functor
 
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]
 
 /-- The (curried version of the) external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `j₁ ↦ j₂ ↦ K₁ j₁ ⊗ K₂ j₂`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def externalProductBifunctorCurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
   (Functor.postcompose₂.obj <| (evaluation _ _).obj <| curriedTensor C).obj <| whiskeringLeft₂ C
 
 /-- The external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ ⥤ C :=
   uncurry.obj <| (Functor.postcompose₂.obj <| uncurry).obj <|
     externalProductBifunctorCurried J₁ J₂ C
@@ -56,6 +56,7 @@ open scoped ExternalProduct
 
 variable (J₁ J₂ C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When both diagrams have the same source category, composing the external product with
 the diagonal gives the pointwise functor tensor product.

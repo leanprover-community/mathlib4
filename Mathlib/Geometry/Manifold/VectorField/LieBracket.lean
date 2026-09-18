@@ -10,7 +10,6 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Lie brackets of vector fields on manifolds
@@ -49,9 +48,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {H'' : Type*} [TopologicalSpace H''] {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
-  {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {f : M → M'} {s t : Set M} {x x₀ : M}
 
 namespace VectorField
@@ -103,6 +99,39 @@ lemma mlieBracketWithin_eq_lieBracketWithin {V W : Π (x : E), TangentSpace 𝓘
 @[simp] lemma mlieBracketWithin_univ :
     mlieBracketWithin I V W univ = mlieBracket I V W := (rfl)
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`FunLike (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x) x)) →L[𝕜] TangentSpace I x) _ _`
+It is needed by `map_zero` in the first bullet's `simp only`. That same `simp only` unfolds
+`extChartAt`, which rewrites `↑(extChartAt I x) x` in the type index to `↑I (↑(chartAt H x) x)`,
+while the instance arguments inside the term keep the old spelling `↑(extChartAt I x) x`.
+
+The failure happens while applying `@ContinuousLinearMap.funLike`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+`TopologicalSpace (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x) x)))`, whereas the assigned value
+`instTopologicalSpaceTangentSpace 𝓘(𝕜, E) (↑(extChartAt I x) x)` has type
+`TopologicalSpace (TangentSpace 𝓘(𝕜, E) (↑(extChartAt I x) x))`. The comparison bottoms out at
+`(extChartAt I x).1 =?= @ModelWithCorners.toFun'`. Lean falls back to synthesize an instance of the
+correct type, which succeeds and returns
+`instTopologicalSpaceTangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x) x))`, but that is again not defeq to
+the assigned value, stalling at the same comparison. It, too, runs at `.instances`, since
+`respectTransparency false` suppresses the transparency bump that instance-implicit arguments would
+otherwise receive.
+
+With no `FunLike` instance found, `map_zero` does not fire and the goal
+`(mfderiv% (↑I ∘ ↑(chartAt H x)) x).inverse 0 = 0` is left open.
+
+Potential fix: mark `TangentSpace` implicit-reducible, then remove `respectTransparency false`; the
+bumped comparison then unfolds both `TangentSpace`'s to `E`, so the point no longer
+matters. The annotation has to be at the definition site of `TangentSpace`; a `local` attribute here
+is not enough.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     mlieBracketWithin I V W s x = 0 := by
@@ -135,6 +164,25 @@ lemma mlieBracket_swap_apply : mlieBracket I V W x = - mlieBracket I W V x :=
 lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
   mlieBracketWithin_swap
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. This is the same failure as for `mlieBracketWithin_eq_zero_of_eq_zero` above, reached
+through the `simp` below instead: the instance
+`FunLike (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x✝) x✝)) →L[𝕜] TangentSpace I x✝) _ _` cannot be
+synthesized, because while applying `@ContinuousLinearMap.funLike` the metavariable of type
+`TopologicalSpace (TangentSpace 𝓘(𝕜, E) (↑I (↑(chartAt H x✝) x✝)))` is assigned
+`instTopologicalSpaceTangentSpace 𝓘(𝕜, E) (↑(extChartAt I x✝) x✝)`, whose type spells the point as
+`↑(extChartAt I x✝) x✝`. Both the direct `.instances` check and the comparison against the
+re-synthesized instance bottom out at `(extChartAt I x✝).1 =?= @ModelWithCorners.toFun'`, and the
+goal `(mfderiv% (↑I ∘ ↑(chartAt H x✝)) x✝).inverse 0 = 0` is left open.
+
+Potential fix: mark `TangentSpace` implicit-reducible at its definition site, then remove
+`respectTransparency false`.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mlieBracketWithin_self : mlieBracketWithin I V V = 0 := by
   ext x; simp [mlieBracketWithin, mpullback]
@@ -176,7 +224,7 @@ theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     =ᶠ[𝓝[{(extChartAt I x) x}ᶜ] (extChartAt I x x)]
       ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) by
     apply lieBracketWithin_congr_set' _ A
-  exact preimage_extChartAt_eventuallyEq_compl_singleton y h
+  exact preimage_extChartAt_eventuallyEqSet_compl_singleton y h
 
 theorem mlieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x :=
@@ -186,7 +234,6 @@ theorem mlieBracketWithin_inter (ht : t ∈ 𝓝 x) :
     mlieBracketWithin I V W (s ∩ t) x = mlieBracketWithin I V W s x := by
   apply mlieBracketWithin_congr_set
   filter_upwards [ht] with y hy
-  change (y ∈ s ∩ t) = (y ∈ s)
   simp_all
 
 theorem mlieBracketWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
@@ -327,6 +374,7 @@ lemma mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm (Y : Tangent
     mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (mem_extChartAt_source x)]
   exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (x W) in
 private lemma mfderiv_extChart_inverse_comp_aux :
     letI φ := extChartAt I x
@@ -334,6 +382,46 @@ private lemma mfderiv_extChart_inverse_comp_aux :
       ((mfderiv[range I] φ.symm (φ x)).inverse) (W (φ.symm (φ x))) = W x := by
   rw [mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm, extChartAt_to_inv]
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`HSMul (TangentSpace 𝓘(𝕜, 𝕜) (f x)) (TangentSpace I x) ?m`
+It is needed for the `•` in the statement below, and reduces through the `instHSMul`/`SMul`/…/
+`Module` chain sketched in the section header to
+`Module (TangentSpace 𝓘(𝕜, 𝕜) (f x)) (TangentSpace I x)`.
+
+The failure happens while applying `@instModuleTangentSpace`. This seems to make sense
+mathematically: it makes `TangentSpace I x` a `𝕜`-module, but not a
+`TangentSpace 𝓘(𝕜, 𝕜) (f x)`-module as needed.
+
+Unlike for the two adaptations above, marking `TangentSpace` implicit-reducible at its definition
+site does not fix this one. It does make `respectTransparency false` removable, but
+`instanceSearchTypes false` is still needed afterwards.
+
+The technical reason for the failure: assigning one of the instane's instance-implicit-argument
+metavariables is rejected because the metavariable's type and the type of the assigned value do not
+match at `.instances` transparency. The metavariable's expected type is
+`NontriviallyNormedField (TangentSpace 𝓘(𝕜, 𝕜) (f x))`, whereas the assigned value is the ambient
+instance of type `NontriviallyNormedField 𝕜`. The comparison bottoms out at
+`TangentSpace 𝓘(𝕜, 𝕜) (f x) =?= 𝕜`, where `TangentSpace` is a plain semireducible `def` and
+therefore does not unfold at the `.instances` transparency that instance search runs at. Lean falls
+back to synthesize an instance of the expected type, but that synthesis fails as well.
+
+Instance search follows this path:
+
+```
+  HSMul (TangentSpace 𝓘(𝕜,𝕜) (f x)) (TangentSpace I x) ?m.238
+    └ @instHSMul
+      └ @SMulZeroClass.toSMul
+        └ @SMulWithZero.toSMulZeroClass
+          └ MulActionWithZero.toSMulWithZero
+            └ @Module.toMulActionWithZero
+```
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pulling back through `extChartAt` the scalar multiplication of a vector field by
 the derivative of a scalar function equals the scalar multiplication by the manifold derivative. -/
@@ -470,6 +558,7 @@ lemma mlieBracket_add_right (hW : MDiffAt (T% W) x) (hW₁ : MDiffAt (T% W₁) x
   simp only [← mlieBracketWithin_univ] at hW hW₁ ⊢
   exact mlieBracketWithin_add_right hW hW₁ (uniqueMDiffWithinAt_univ _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mlieBracketWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (hs : UniqueMDiffAt[s] x)
     (hV : MDiffAt[t] (T% V) x) (hW : MDiffAt[t] (T% W) x) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
@@ -617,7 +706,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   simp only [mpullbackWithin_eq_pullbackWithin]
   -- finally, use the fact that for `C^2` maps between vector spaces with symmetric second
   -- derivative, the pullback and the Lie bracket commute.
-  rw [pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
+  rw [pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEqSet
       (u := (extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target)]
   · exact hsymm
   · rw [hF, comp_assoc]
@@ -640,7 +729,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     refine ⟨?_, mem_range_self _⟩
     convert! hst hz.1
     exact PartialEquiv.left_inv (extChartAt I' (f x₀)) (ht (hst hz.1))
-  · rw [← nhdsWithin_eq_iff_eventuallyEq]
+  · rw [← nhdsWithin_eq_iff_eventuallyEqSet]
     apply le_antisymm
     · exact nhdsWithin_mono _ (inter_subset_inter_right _ (extChartAt_target_subset_range x₀))
     · rw [nhdsWithin_le_iff, nhdsWithin_inter]
@@ -696,8 +785,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   set s' := s ∩ u with hs'
   have s'_eq : s' =ᶠ[𝓝 x₀] s := by
     filter_upwards [u_mem] with y hy
-    change (y ∈ s ∩ u) = (y ∈ s)
-    simp [hy]
+    simp [hs', hy]
   set t' := t ∩ (extChartAt I' (f x₀)).source with ht'
   calc mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t) s' x₀ := by
@@ -713,8 +801,6 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
       apply (continuousAt_extChartAt_symm x₀).preimage_mem_nhds
       apply u_open.mem_nhds (by simpa using x₀u)
     filter_upwards [this] with y hy
-    change (y ∈ (extChartAt I x₀).symm ⁻¹' s ∩ range I) =
-      (y ∈ (extChartAt I x₀).symm ⁻¹' (s ∩ u) ∩ range I)
     simp [-extChartAt, hy]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s x₀ := by
     simp only [hs', mlieBracketWithin_inter u_mem]
@@ -749,12 +835,12 @@ lemma mpullbackWithin_mlieBracketWithin'
   have B : ContDiffWithinAt 𝕜 n ((extChartAt I' (f x₀)) ∘ f ∘ (extChartAt I x₀).symm)
       ((extChartAt I x₀).symm ⁻¹' u ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) := by
     apply (contMDiffWithinAt_iff.1 hf).2.congr_set
-    exact EventuallyEq.inter (by rfl) extChartAt_target_eventuallyEq.symm
+    exact EventuallyEqSet.inter (by rfl) extChartAt_target_eventuallyEqSet.symm
   apply mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt hV hW hs
     ((hf.mono hsu).of_le (le_minSmoothness.trans hn)) hx₀ hst
   have : ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target : Set E)
-      =ᶠ[𝓝 (extChartAt I x₀ x₀)] ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) :=
-    EventuallyEq.inter (by rfl) extChartAt_target_eventuallyEq
+      =ᶠ[𝓝 (extChartAt I x₀ x₀)] (extChartAt I x₀).symm ⁻¹' s ∩ range I :=
+    EventuallyEqSet.inter (by rfl) extChartAt_target_eventuallyEqSet
   apply IsSymmSndFDerivWithinAt.congr_set _ this
   have : IsSymmSndFDerivWithinAt 𝕜 ((extChartAt I' (f x₀)) ∘ f ∘ (extChartAt I x₀).symm)
       ((extChartAt I x₀).symm ⁻¹' u ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) := by
@@ -920,6 +1006,7 @@ section Leibniz
 
 variable [IsManifold I (minSmoothness 𝕜 3) M] [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
 theorem leibniz_identity_mlieBracketWithin_apply

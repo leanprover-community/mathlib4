@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
+# The associator equivalence for products of categories
+
 The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse form an equivalence.
 -/
 
@@ -19,29 +21,28 @@ open CategoryTheory
 
 namespace CategoryTheory.prod
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] (E : Type u₃)
   [Category.{v₃} E]
 
 /-- The associator functor `(C × D) × E ⥤ C × (D × E)`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def associator : (C × D) × E ⥤ C × D × E where
   obj X := (X.1.1, (X.1.2, X.2))
   map := @fun _ _ f => f.1.1 ×ₘ (f.1.2 ×ₘ f.2)
 
 /-- The inverse associator functor `C × (D × E) ⥤ (C × D) × E `.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def inverseAssociator : C × D × E ⥤ (C × D) × E where
   obj X := ((X.1, X.2.1), X.2.2)
   map := @fun _ _ f => (f.1 ×ₘ f.2.1) ×ₘ f.2.2
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def associativity : (C × D) × E ≌ C × D × E where
   functor := associator C D E
   inverse := inverseAssociator C D E
@@ -59,7 +60,7 @@ instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalenc
 variable (A : Type u₄) [Category.{v₄} A]
 
 /-- The associator isomorphism is compatible with `prodFunctorToFunctorProd`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def prodFunctorToFunctorProdAssociator :
     (associativity _ _ _).functor ⋙ ((𝟭 _).prod (prodFunctorToFunctorProd A D E) ⋙
       (prodFunctorToFunctorProd A C (D × E))) ≅
@@ -68,7 +69,7 @@ def prodFunctorToFunctorProdAssociator :
   Iso.refl _
 
 /-- The associator isomorphism is compatible with `functorProdToProdFunctor`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def functorProdToProdFunctorAssociator :
     (associativity _ _ _).congrRight.functor ⋙ functorProdToProdFunctor A C (D × E) ⋙
       (𝟭 _).prod (functorProdToProdFunctor A D E) ≅
@@ -76,9 +77,12 @@ def functorProdToProdFunctorAssociator :
           (associativity _ _ _).functor :=
   Iso.refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence swapping the second and third categories in `(A × C) × (D × E)`. This follows
 the definition of `MonoidalCategory.tensorμ`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def prodμ : (A × C) × (D × E) ≌ (A × D) × (C × E) :=
   (associativity ..).trans <|
     (Equivalence.refl.prod (associativity ..).symm).trans <|

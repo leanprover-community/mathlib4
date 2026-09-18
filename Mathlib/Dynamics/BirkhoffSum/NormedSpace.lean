@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Birkhoff average in a normed space
@@ -98,6 +100,24 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
   tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
 
+section
+variable [MeasurableSpace α] [NormedSpace ℝ E]
+
+open MeasureTheory
+
+theorem integral_birkhoffSum_measure (f : α → α) (g : α → E) (x : α) (μ : α → Measure α)
+    {n : ℕ} (hg : ∀ k ∈ Finset.range n, Integrable g (μ (f^[k] x))) :
+    ∫ y, g y ∂(birkhoffSum f μ n x) = birkhoffSum f (fun z ↦ ∫ y, g y ∂(μ z)) n x :=
+  integral_finsetSum_measure hg
+
+theorem integral_birkhoffAverage_measure (f : α → α) (g : α → E) (x : α) (μ : α → Measure α)
+    {n : ℕ} (hg : ∀ k ∈ Finset.range n, Integrable g (μ (f^[k] x))) :
+    ∫ y, g y ∂(birkhoffAverage NNReal f μ n x) =
+      birkhoffAverage NNReal f (fun z ↦ ∫ y, g y ∂(μ z)) n x := by
+  simp [birkhoffAverage, integral_birkhoffSum_measure f g x μ hg]
+
+end
+
 end
 
 variable (𝕜 : Type*) {X E : Type*}
@@ -130,7 +150,10 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
 then the set of points `x`
 such that the Birkhoff average of `g` along the orbit of `x` tends to `l x`
 is a closed set. -/
-theorem isClosed_setOf_tendsto_birkhoffAverage
+theorem isClosed_setOfPred_tendsto_birkhoffAverage
     (hf : LipschitzWith 1 f) (hg : UniformContinuous g) (hl : Continuous l) :
     IsClosed {x | Tendsto (birkhoffAverage 𝕜 f g · x) atTop (𝓝 (l x))} :=
-  (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOf_tendsto hl
+  (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOfPred_tendsto hl
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_tendsto_birkhoffAverage := isClosed_setOfPred_tendsto_birkhoffAverage

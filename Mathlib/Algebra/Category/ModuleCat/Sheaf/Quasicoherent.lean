@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.CategoryTheory.Sites.CoversTop.Over
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 # Quasicoherent sheaves
@@ -55,7 +57,7 @@ class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Pr
 attribute [instance] Presentation.IsFinite.isFiniteType_generators
   Presentation.IsFinite.isFiniteType_relations
 
-@[deprecated Presentation.IsFinite.isFiniteType_relations (since := "2026-04-14")]
+@[deprecated Presentation.IsFinite.isFiniteType_relations +typeChanged (since := "2026-04-14")]
 lemma Presentation.IsFinite.finite_relations {M : SheafOfModules.{u} R} (p : M.Presentation)
     [p.IsFinite] : Finite p.relations.I := GeneratingSections.IsFiniteType.finite
 
@@ -136,6 +138,7 @@ noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N
 
 @[deprecated (since := "2026-04-15")] alias Presentation.of_isIso := Presentation.ofIsIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) [σ.IsFinite] : (σ.ofIsIso f).IsFinite where
   isFiniteType_generators := inferInstanceAs (σ.generators.ofEpi _).IsFiniteType
@@ -170,6 +173,7 @@ theorem Presentation.mapRelations_mapGenerators :
   simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
@@ -398,6 +402,7 @@ instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
     intro ⟨⟨q⟩⟩
     exact ⟨⟨q.ofIsIso e.hom⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
     [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where
@@ -443,7 +448,6 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
   (QuasicoherentData.bind M X hX fun _ ↦
     IsQuasicoherent.nonempty_quasicoherentData.some).isQuasicoherent
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isQuasicoherent_over
     [HasPullbacks C] [HasBinaryProducts C] (M : SheafOfModules.{u} R) (X : C) [IsQuasicoherent M] :
     IsQuasicoherent (M.over X) :=

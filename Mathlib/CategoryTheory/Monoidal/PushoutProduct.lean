@@ -47,7 +47,7 @@ universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory Functor PushoutObjObj
+open Limits MonoidalCategory CategoryTheory.Functor PushoutObjObj
 
 variable {C : Type u} [Category.{v} C]
 
@@ -72,9 +72,6 @@ noncomputable
 abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] :
     Arrow C ⥤ Arrow C ⥤ Arrow C := (curriedTensor C).leibnizPushout
 
-/-- Notation for the pushout-product of morphisms. -/
-notation3 f " □ " g:10 => (pushoutProduct.obj f).obj g
-
 /-- The Leibniz functor associated to the internal hom on a monoidal closed category. This is the
 bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from
 `B ⟹ X` to the pullback of `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and
@@ -90,8 +87,15 @@ noncomputable
 abbrev pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
     (Arrow C)ᵒᵖ ⥤ Arrow C ⥤ Arrow C := MonoidalClosed.internalHom.leibnizPullback
 
+end Arrow
+
+/-- Notation for the pushout-product of morphisms. -/
+scoped notation3 f " □ " g:10 => (Arrow.pushoutProduct.obj f).obj g
+
 /-- Notation for the pullback-hom of morphisms. -/
-notation3 f " ⋔ " g:10 => (pullbackHom.obj f).obj g
+scoped notation3 f " ⋔ " g:10 => (Arrow.pullbackHom.obj f).obj g
+
+namespace Arrow
 
 namespace PushoutProduct
 
@@ -103,8 +107,8 @@ section Monoidal
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `W ◁ X₁` and `X₂`. -/
 @[simps!]
@@ -218,7 +222,7 @@ def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
   haveI : IsPushout (X.hom ▷ I) (_ ◁ i.to W) ((i.ofIso (zeroMul i).symm).to _) (𝟙 _) :=
     .of_horiz_isIso (sq := ⟨(i.ofIso (zeroMul i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext ..) (by simp [pushout.inr_desc]))
+    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext ..) (by simp))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
@@ -231,7 +235,7 @@ def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W
   haveI : IsPushout (i.to W ▷ _) (I ◁ X.hom) (𝟙 _) ((i.ofIso (mulZero i).symm).to _) :=
     .of_vert_isIso (sq := ⟨(i.ofIso (mulZero i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext (by simp [pushout.inl_desc]) ((i.ofIso (mulZero i).symm).hom_ext _ _))
+    (pushout.hom_ext (by simp) ((i.ofIso (mulZero i).symm).hom_ext _ _))
 
 /-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
 terminal object. -/

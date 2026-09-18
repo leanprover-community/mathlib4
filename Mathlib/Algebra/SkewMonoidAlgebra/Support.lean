@@ -35,11 +35,10 @@ variable [AddCommMonoid k] {a : G} {b : k}
 
 theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_single_subset
 
-theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : SkewMonoidAlgebra k G}
+theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : G →₀ k}
     {g : G → k → SkewMonoidAlgebra k' G'} :
-    (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f.coeff a)).support := by
-  simp_rw [support, coeff_sum']
-  apply Finsupp.support_sum
+    (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f a)).support := by
+  simpa [support, coeff_finsuppSum] using Finsupp.support_sum
 
 end AddCommMonoid
 
@@ -95,8 +94,8 @@ theorem support_single_mul_eq_image {r : k} {x : G} (lx : IsLeftRegular x)
   refine subset_antisymm (support_single_mul_subset f _ _) fun y hy ↦ ?_
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
-  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, Ne,
-    zero_mul, ite_self, sum_zero, lx.eq_iff]
+  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, Ne,
+    zero_mul, ite_self, lx.eq_iff]
 
 theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
     (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
@@ -104,7 +103,7 @@ theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
   refine subset_antisymm (support_mul_single_subset f _ _) fun y hy ↦ ?_
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
-  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, mul_zero,
+  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, mul_zero,
     ite_self, rx.eq_iff]
 
 end DecidableEq
@@ -130,7 +129,9 @@ theorem mem_span_support (f : SkewMonoidAlgebra k G) :
     f ∈ Submodule.span k (of k G '' (f.support : Set G)) := by
   rw [Fintype.mem_span_image_iff_exists_fun k]
   use Finset.restrict f.support f.coeff
-  simp [smul_single, ← sum_def', sum_single]
+  simp only [Finset.restrict_def, smul_of]
+  conv_rhs => rw [← sum_coeff_single f, Finsupp.sum, ← Finset.sum_finset_coe]
+  rfl
 
 end Span
 
