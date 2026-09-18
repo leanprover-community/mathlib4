@@ -92,7 +92,7 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
   | h m ih =>
     rcases Nat.eq_zero_or_pos k with rfl | hk0
     · simp
-    obtain ⟨t, hmt⟩ : ∃ t, m + 1 = k + t := ⟨m + 1 - k, by omega⟩
+    obtain ⟨t, hmt⟩ := Nat.exists_eq_add_of_le hk
     have hcoe : (Y ^ k).coeff (m + 1) = coeff t ((P ^ k).subst Y) := by
       nth_rw 1 [hmt, hY, mul_pow, ← subst_pow (hasSubst_of_fixedPoint hY), add_comm k t,
         coeff_X_pow_mul]
@@ -125,7 +125,7 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
     have hsum : (t + 1) • (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
       rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), smul_sum, ← hconv]
       exact sum_congr rfl hih
-    apply nsmul_right_injective (by omega : t + 1 ≠ 0)
+    apply nsmul_right_injective (Nat.succ_ne_zero t)
     simp [hmt] at *
     linear_combination (k + t + 1) • hsum + hcoeff
 
