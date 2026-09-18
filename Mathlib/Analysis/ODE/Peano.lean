@@ -312,7 +312,7 @@ variable [FiniteDimensional ℝ E]
 
 /-- A subsequence of Tonelli approximations converges uniformly to a continuous curve. -/
 lemma exists_tendstoUniformlyOn_subseq_tonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ∃ φ : ℕ → ℕ, StrictMono φ ∧ ContinuousOn α (Icc t₀ tmax) ∧
       MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
         TendstoUniformlyOn (tonelliApproximation f t₀ tmax x₀ ∘ φ) α atTop (Icc t₀ tmax) := by
