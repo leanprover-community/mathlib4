@@ -67,12 +67,14 @@ private lemma hasSubst_of_fixedPoint : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
 
 /-- If `Y = X * P(Y)` and the constant coefficient of `P` is zero, then `Y = 0`. -/
-theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero' (hP : P.constantCoeff = 0) : Y = 0 := by
+theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0) : Y = 0 := by
   have hsubst := hasSubst_of_fixedPoint hY
   obtain ⟨Q, rfl⟩ := X_dvd_iff.mpr hP
   rw [subst_mul hsubst, subst_X hsubst] at hY
   have hunit : IsUnit (1 - X * Q.subst Y) := by
-    simp [isUnit_iff_constantCoeff]
+    apply MvPowerSeries.isUnit_iff_constantCoeff.mpr
+    change IsUnit (constantCoeff (1 - X * Q.subst Y))
+    simp
   rw [← hunit.mul_left_eq_zero]
   linear_combination hY
 
