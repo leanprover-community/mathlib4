@@ -133,7 +133,7 @@ lemma tonelliIterate_apply_t₀
   induction k <;> simp [tonelliIterate]
 
 /-- Every recursively defined curve stays in the cylinder and has Lipschitz constant `L`. -/
-private lemma tonelliIterate_bounds (hf : IsPeano f tmin tmax t₀ x₀ r L) (n k : ℕ) :
+private lemma tonelliIterate_bounds (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n k : ℕ) :
     MapsTo (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) (closedBall x₀ r) ∧
     LipschitzOnWith L (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) := by
   induction k with
@@ -151,14 +151,16 @@ private lemma tonelliIterate_bounds (hf : IsPeano f tmin tmax t₀ x₀ r L) (n 
       hk.1.comp h_delayed
     have h_cont :
         ContinuousOn
-          (fun s ↦ f (s, tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
+          (fun s ↦ f s (tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
           (uIcc t₀ tmax) := by
       rw [uIcc_of_le hf.t₀_mem.2]
-      exact hf.continuousOn.comp (by fun_prop [delayedInput])
+      exact hf.continuousOn.comp
+        (f := fun s ↦ (s, tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
+        (by fun_prop [delayedInput])
         (fun t ht ↦ ⟨Icc_t0_subset_Icc hf.t₀_mem ht, h_map ht⟩)
     have h_int :
         IntervalIntegrable
-          (fun s ↦ f (s, tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
+          (fun s ↦ f s (tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)))
           MeasureTheory.volume t₀ tmax :=
       ContinuousOn.intervalIntegrable h_cont
     have h_lip : LipschitzOnWith L (tonelliIterate f t₀ tmax x₀ n (k + 1)) (Icc t₀ tmax) := by
@@ -180,13 +182,13 @@ private lemma tonelliIterate_bounds (hf : IsPeano f tmin tmax t₀ x₀ r L) (n 
 
 /-- Every recursively defined curve stays in the cylinder. -/
 lemma mapsTo_tonelliIterate_closedBall
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
     MapsTo (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) (closedBall x₀ r) :=
   tonelliIterate_bounds hf n k |>.1
 
 /-- Every recursively defined curve is Lipschitz continuous with constant `L`. -/
 lemma lipschitzOnWith_tonelliIterate
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) (k : ℕ) :
     LipschitzOnWith L (tonelliIterate f t₀ tmax x₀ n k) (Icc t₀ tmax) :=
   tonelliIterate_bounds hf n k |>.2
 
@@ -215,19 +217,19 @@ noncomputable def tonelliApproximation
 
 /-- Every diagonal Tonelli approximation stays in the cylinder. -/
 lemma mapsTo_tonelliApproximation_closedBall
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     MapsTo (tonelliApproximation f t₀ tmax x₀ n) (Icc t₀ tmax) (closedBall x₀ r) :=
   mapsTo_tonelliIterate_closedBall hf (n + 1) (n + 1)
 
 /-- Every diagonal Tonelli approximation is Lipschitz continuous with constant `L`. -/
 lemma lipschitzOnWith_tonelliApproximation
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     LipschitzOnWith L (tonelliApproximation f t₀ tmax x₀ n) (Icc t₀ tmax) :=
   lipschitzOnWith_tonelliIterate hf (n + 1) (n + 1)
 
 /-- Every diagonal Tonelli approximation takes the value `x₀` at `t₀`. -/
 lemma tonelliApproximation_apply_t₀
-    (f : ℝ × E → E) {t₀ tmax : ℝ} (x₀ : E) (n : ℕ) :
+    (f : ℝ → E → E) {t₀ tmax : ℝ} (x₀ : E) (n : ℕ) :
     tonelliApproximation f t₀ tmax x₀ n t₀ = x₀ :=
   tonelliIterate_apply_t₀ f x₀ (n + 1) (n + 1)
 
