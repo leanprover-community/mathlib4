@@ -183,6 +183,50 @@ jobs:
           working_directory: pr-branch
           cache_bin: ../tools-branch/.lake/build/bin/cache
 
+      # Flag elaboration-time code execution (`#eval`, `run_cmd`, `initialize`, `unsafe`,
+      # `@[implemented_by]`, `@[extern]`, ...) in the Lean files this commit changes, outside the
+      # allowlist `scripts/nolints-exec.txt`. The linter only *parses* the changed files against
+      # the oleans fetched above; it never elaborates them, so nothing from the PR is executed to
+      # reach the verdict. See `scripts/lint-exec.lean`.
+      - name: list changed Lean files
+        if: github.repository == 'leanprover-community/mathlib4'
+        # Only queries the GitHub API; writes the list under pr-branch/.lake for the sandboxed
+        # step below. Fails (rather than linting nothing) if the API call fails.
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          # Files changed relative to the merge-base with master. The compare API returns at
+          # most 300 files per page, hence --paginate.
+          gh api --paginate "repos/leanprover-community/mathlib4/compare/master...${HEAD_SHA}" \
+            --jq '.files[] | select(.status != "removed") | .filename' \
+            | { grep -E '^(Mathlib|Archive|Counterexamples)/.*\.lean$' || true; } \
+            > pr-branch/.lake/lint-exec-files.txt
+          echo "$(wc -l < pr-branch/.lake/lint-exec-files.txt) changed Lean files to lint"
+
+      - name: lint elaboration-time code execution
+        if: github.repository == 'leanprover-community/mathlib4'
+        run: |
+          cd pr-branch
+          if [ ! -s .lake/lint-exec-files.txt ]; then
+            echo "no changed Lean files to lint"
+            exit 0
+          fi
+          # Prefer the trusted binary built from master (tools-branch). It can only read this
+          # commit's oleans if both were built by the same toolchain; otherwise (toolchain bump,
+          # or no prebuilt binary available) build the linter from this branch.
+          if [ -x ../tools-branch/.lake/build/bin/lint-exec ] \
+              && cmp -s ../tools-branch/lean-toolchain lean-toolchain; then
+            LINT_EXEC=../tools-branch/.lake/build/bin/lint-exec
+          else
+            echo "no trusted lint-exec for this toolchain; building it from this branch"
+            lake build lint-exec
+            LINT_EXEC=.lake/build/bin/lint-exec
+          fi
+          xargs -a .lake/lint-exec-files.txt lake env "$LINT_EXEC" --github
+
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
         continue-on-error: true # Allow workflow to continue, outcome checked later

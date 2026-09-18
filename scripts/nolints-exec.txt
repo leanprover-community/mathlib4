@@ -1,0 +1,166 @@
+# Files allowed to use constructs that execute code at elaboration time or bypass the type
+# checker, checked by `lake exe lint-exec` (see `scripts/lint-exec.lean`).
+#
+# Format: `<path>: <construct> <construct> ...`, one line per file, sorted by path.
+# Constructs: `#eval` `run_cmd` `run_meta` `run_elab` `initialize` `@[init]` `unsafe`
+# `@[implemented_by]` `@[extern]`, and `parse-error` for files the linter cannot parse.
+#
+# Adding a line here means "this use has been reviewed". Please keep entries per file: a widening
+# of this list should be one visible line in a PR's diff.
+Mathlib/Algebra/Order/CauSeq/Completion.lean: unsafe
+Mathlib/Analysis/Real/Pi/Bounds.lean: unsafe
+Mathlib/Analysis/Real/Pi/Chudnovsky.lean: #eval
+Mathlib/Basic/Complex/Basic.lean: unsafe
+Mathlib/Basic/ENNReal/Basic.lean: unsafe
+Mathlib/Basic/NNReal/Defs.lean: unsafe
+Mathlib/Basic/Real/Basic.lean: unsafe
+Mathlib/Data/DFinsupp/Notation.lean: unsafe
+Mathlib/Data/Finset/Sort.lean: unsafe
+Mathlib/Data/Finsupp/Notation.lean: parse-error unsafe
+Mathlib/Data/FP/Basic.lean: unsafe
+Mathlib/Data/FunLike/Basic.lean: run_cmd
+Mathlib/Data/List/Cycle.lean: unsafe
+Mathlib/Data/Multiset/Sort.lean: unsafe
+Mathlib/Data/Part.lean: unsafe
+Mathlib/Data/PNat/Factors.lean: unsafe
+Mathlib/Data/Quot.lean: run_cmd unsafe
+Mathlib/Data/Seq/Computation.lean: unsafe
+Mathlib/Data/Seq/Defs.lean: unsafe
+Mathlib/Data/Sym/Sym2.lean: unsafe
+Mathlib/Data/UInt.lean: run_cmd
+Mathlib/Geometry/Manifold/Notation.lean: initialize
+Mathlib/GroupTheory/GroupAction/DomAct/Basic.lean: run_cmd
+Mathlib/GroupTheory/Perm/Cycle/Concrete.lean: unsafe
+Mathlib/Init.lean: run_cmd
+Mathlib/Lean/CoreM.lean: unsafe
+Mathlib/Lean/Meta/CongrTheorems.lean: initialize
+Mathlib/LinearAlgebra/TensorProduct/Defs.lean: unsafe
+Mathlib/Order/Interval/Lex.lean: #eval
+Mathlib/Tactic/Abel.lean: initialize
+Mathlib/Tactic/AdaptationNote.lean: initialize
+Mathlib/Tactic/Algebraize.lean: initialize
+Mathlib/Tactic/ApplyFun.lean: initialize
+Mathlib/Tactic/Basify/Attr.lean: initialize
+Mathlib/Tactic/Bound/Attribute.lean: initialize
+Mathlib/Tactic/CancelDenoms/Core.lean: initialize
+Mathlib/Tactic/CategoryTheory/Bicategory/Datatypes.lean: initialize
+Mathlib/Tactic/CategoryTheory/Elementwise.lean: initialize
+Mathlib/Tactic/CategoryTheory/IsoReassoc.lean: initialize
+Mathlib/Tactic/CategoryTheory/Map.lean: initialize
+Mathlib/Tactic/CategoryTheory/Monoidal/Datatypes.lean: initialize
+Mathlib/Tactic/CategoryTheory/Reassoc.lean: initialize
+Mathlib/Tactic/CategoryTheory/ToApp.lean: initialize
+Mathlib/Tactic/ClickSuggestions/FindPremises.lean: initialize
+Mathlib/Tactic/ComputeDegree.lean: initialize
+Mathlib/Tactic/CongrExclamation.lean: initialize
+Mathlib/Tactic/CongrM.lean: initialize
+Mathlib/Tactic/CrossRefAttribute.lean: initialize parse-error
+Mathlib/Tactic/DepRewrite.lean: initialize
+Mathlib/Tactic/DeriveCountable.lean: initialize
+Mathlib/Tactic/DeriveEncodable.lean: initialize
+Mathlib/Tactic/DeriveFintype.lean: initialize
+Mathlib/Tactic/DeriveTraversable.lean: initialize
+Mathlib/Tactic/Echelon/Bareiss.lean: initialize
+Mathlib/Tactic/Echelon/Core.lean: unsafe initialize
+Mathlib/Tactic/Eqns.lean: initialize
+Mathlib/Tactic/Eval.lean: unsafe
+Mathlib/Tactic/Explode/Datatypes.lean: initialize
+Mathlib/Tactic/FastInstance.lean: initialize
+Mathlib/Tactic/FBinop.lean: initialize
+Mathlib/Tactic/FieldSimp/Attr.lean: initialize
+Mathlib/Tactic/FieldSimp.lean: initialize
+Mathlib/Tactic/Find.lean: initialize
+Mathlib/Tactic/FindSyntax.lean: unsafe
+Mathlib/Tactic/FunProp/Attr.lean: initialize
+Mathlib/Tactic/FunProp/Decl.lean: initialize
+Mathlib/Tactic/FunProp/Theorems.lean: initialize
+Mathlib/Tactic/FunProp/Types.lean: initialize
+Mathlib/Tactic/GCongr/Core.lean: initialize
+Mathlib/Tactic/GCongr/ForwardAttr.lean: unsafe initialize
+Mathlib/Tactic/GRewrite/Core.lean: initialize
+Mathlib/Tactic/Have.lean: parse-error
+Mathlib/Tactic/HigherOrder.lean: initialize
+Mathlib/Tactic/Hint.lean: initialize
+Mathlib/Tactic/Inclusion/Core/Core.lean: unsafe
+Mathlib/Tactic/Inclusion/Core/DiscrTreeExt.lean: unsafe
+Mathlib/Tactic/Inclusion/Core/Extensions.lean: initialize unsafe
+Mathlib/Tactic/Inclusion/Core/Inclusion.lean: initialize
+Mathlib/Tactic/Inclusion/ExtensionAPI/Attr.lean: initialize
+Mathlib/Tactic/Inclusion/Extension/Core/Init.lean: initialize
+Mathlib/Tactic/Inclusion/Extension/IntervalDyadicReal/Init.lean: initialize
+Mathlib/Tactic/Linarith/Datatypes.lean: initialize
+Mathlib/Tactic/Linarith/NNRealPreprocessor.lean: initialize
+Mathlib/Tactic/Linarith/Preprocessing.lean: initialize
+Mathlib/Tactic/Linter/AuxLemma.lean: initialize
+Mathlib/Tactic/Linter/CommandRanges.lean: initialize
+Mathlib/Tactic/Linter/DeprecatedSyntaxLinter.lean: initialize
+Mathlib/Tactic/Linter/DocPrime.lean: initialize
+Mathlib/Tactic/Linter/DocString.lean: initialize
+Mathlib/Tactic/Linter/EmptyLine.lean: initialize
+Mathlib/Tactic/Linter/FlexibleLinter.lean: initialize
+Mathlib/Tactic/Linter/GlobalAttributeIn.lean: initialize
+Mathlib/Tactic/Linter/HashCommandLinter.lean: initialize
+Mathlib/Tactic/Linter/HaveLetLinter.lean: initialize
+Mathlib/Tactic/Linter/Header.lean: initialize
+Mathlib/Tactic/Linter/InternalConstructor.lean: initialize
+Mathlib/Tactic/Linter/Lint.lean: initialize
+Mathlib/Tactic/Linter/MinImports.lean: initialize run_cmd
+Mathlib/Tactic/Linter/Multigoal.lean: initialize
+Mathlib/Tactic/Linter/OldObtain.lean: initialize
+Mathlib/Tactic/Linter/OverlappingInstances.lean: initialize
+Mathlib/Tactic/Linter/PPRoundtrip.lean: initialize
+Mathlib/Tactic/Linter/PrivateModule.lean: initialize
+Mathlib/Tactic/Linter/Style.lean: initialize
+Mathlib/Tactic/Linter/UnusedInstancesInType.lean: initialize
+Mathlib/Tactic/Linter/UnusedTacticExtension.lean: initialize
+Mathlib/Tactic/Linter/UnusedTactic.lean: initialize
+Mathlib/Tactic/Linter/UpstreamableDecl.lean: initialize
+Mathlib/Tactic/Linter/ValidatePRTitle.lean: #eval
+Mathlib/Tactic/Linter/Whitespace.lean: initialize
+Mathlib/Tactic/Measurability.lean: initialize
+Mathlib/Tactic/MkIffOfInductiveProp.lean: initialize
+Mathlib/Tactic/Monotonicity/Attr.lean: initialize
+Mathlib/Tactic/MoveAdd.lean: initialize
+Mathlib/Tactic/NormNum/Core.lean: initialize unsafe
+Mathlib/Tactic/Order.lean: initialize
+Mathlib/Tactic/Polynomial/Core.lean: initialize unsafe
+Mathlib/Tactic/Positivity/Core.lean: unsafe initialize
+Mathlib/Tactic/PPWithUniv.lean: initialize
+Mathlib/Tactic/ProxyType.lean: initialize
+Mathlib/Tactic/Push/Attr.lean: initialize
+Mathlib/Tactic/ReduceModChar/Ext.lean: initialize
+Mathlib/Tactic/ReduceModChar.lean: unsafe
+Mathlib/Tactic/Ring/Basic.lean: initialize
+Mathlib/Tactic/Ring/RingNF.lean: initialize
+Mathlib/Tactic/Sat/FromLRAT.lean: unsafe
+Mathlib/Tactic/Says.lean: initialize
+Mathlib/Tactic/SetNotationForOrder.lean: initialize
+Mathlib/Tactic/Simproc/Divisors.lean: unsafe
+Mathlib/Tactic/Simps/Basic.lean: initialize unsafe
+Mathlib/Tactic/Simps/NotationClass.lean: initialize
+Mathlib/Tactic/SuccessIfFailWithMsg.lean: unsafe
+Mathlib/Tactic/TacticAnalysis.lean: unsafe initialize
+Mathlib/Tactic/Tauto.lean: initialize
+Mathlib/Tactic/TermCongr.lean: initialize
+Mathlib/Tactic/TFAE.lean: parse-error
+Mathlib/Tactic/ToFun.lean: initialize
+Mathlib/Tactic/Trace.lean: unsafe
+Mathlib/Tactic/Translate/Attributes.lean: initialize
+Mathlib/Tactic/Translate/Core.lean: initialize unsafe @[implemented_by]
+Mathlib/Tactic/Translate/Reorder.lean: parse-error
+Mathlib/Tactic/Translate/ToAdditive.lean: initialize
+Mathlib/Tactic/Translate/ToDual.lean: initialize
+Mathlib/Tactic/Use.lean: initialize
+Mathlib/Tactic/Variable.lean: initialize
+Mathlib/Tactic/Widget/LibraryRewrite.lean: initialize
+Mathlib/Tactic/Widget/SelectInsertParamsClass.lean: initialize
+Mathlib/Tactic/Widget/StringDiagram.lean: initialize
+Mathlib/Tactic/WithoutCDot.lean: parse-error
+Mathlib/Util/AliasIn.lean: initialize
+Mathlib/Util/CompileInductive.lean: run_cmd
+Mathlib/Util/CountHeartbeats.lean: initialize
+Mathlib/Util/Delaborators.lean: parse-error
+Mathlib/Util/Notation3.lean: initialize
+Mathlib/Util/ParseCommand.lean: run_cmd
+Mathlib/Util/Superscript.lean: initialize
+Mathlib/Util/WhatsNew.lean: unsafe
