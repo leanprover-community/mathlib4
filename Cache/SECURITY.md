@@ -146,8 +146,9 @@ The trust model does not attempt to defend against:
   default read host `https://cache.mathlib.org`, or a host named by
   `MATHLIB_CACHE_GET_URL`.
 - **Substituted write endpoint** — the cache does not verify the host it uploads
-  to: whichever host `MATHLIB_CACHE_PUT_URL` or `MATHLIB_CACHE_PUT_BASE_URL`
-  names receives the upload, and on the azure backend the bearer token with it.
+  to: whichever host `MATHLIB_CACHE_PUT_URL` names, or the Azure storage
+  account for `--container`, receives the upload, and on the azure backend the
+  bearer token with it.
   The trusted branch's workflow defines the upload job's environment, and a
   token captured this way stays bounded by Layer 1.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
@@ -162,10 +163,10 @@ The trust model does not attempt to defend against:
 
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
-| Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
+| Container model, layouts, URL shape, per-repo defaults | [`Cache/Infra.lean`](Infra.lean)                         |
 | Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`)      |
-| Backend selection, destination arbitration     | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`, `stagedUploadDest`), [`Cache/Upload.lean`](Upload.lean) (`runPut`) |
-| Upload backends: credentials, destination, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
+| Upload decision: layout and URL; backend selection | [`Cache/Upload.lean`](Upload.lean) (`Upload.decide`, `uploadFiles`), [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`) |
+| Upload backends: credentials, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
 | Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean), [`Cache/Upload/Dest.lean`](Upload/Dest.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md), [`Cache/CI.md`](CI.md) |

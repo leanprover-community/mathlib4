@@ -43,6 +43,44 @@ uploads and downloads always meet at the same path.
 def normalizeRepo (repo : String) : String := repo.toLower
 
 /--
+The layout of the cache artifacts under a base URL: the directory a file lives
+in, relative to the base, so that a file is at `{base}/{layout.fileDir}/{fileName}`.
+Reads and uploads share this type, so a `put` writes where the readers of its
+trust class probe.
+-/
+inductive Layout where
+  /-- `f/{fileName}`: one writer, so a hash never collides. -/
+  | flat
+  /-- `f/{repo}/{fileName}`, or `f/{repo}/{scope}/{fileName}` under a per-commit
+  scope. Several writers share the base, so identical hashes from different
+  writers stay on distinct paths. `repo` is lowercased (`normalizeRepo`). -/
+  | namespaced (repo : String) (scope? : Option String)
+  deriving Repr, BEq, Inhabited
+
+namespace Layout
+
+/-- The layout's name in messages. -/
+def name : Layout → String
+  | .flat => "flat"
+  | .namespaced .. => "namespaced"
+
+/-- The directory of the files, relative to the base; no trailing slash. -/
+def fileDir : Layout → String
+  | .flat => "f"
+  | .namespaced repo scope? =>
+    let repo := normalizeRepo repo
+    match scope? with
+    | some s => s!"f/{repo}/{s}"
+    | none => s!"f/{repo}"
+
+/-- The per-commit scope of a namespaced layout. -/
+def scope? : Layout → Option String
+  | .flat => none
+  | .namespaced _ scope? => scope?
+
+end Layout
+
+/--
 Trust-classified Azure storage containers for the Mathlib cache.
 
 Each variant maps to one Azure Blob Storage container on the `lakecache` storage
@@ -95,9 +133,8 @@ def parse? (s : String) : Option Container :=
 
 /--
 The container's segment in the URL contract: read URLs are
-`{base}/{pathSegment}/{key}`, and a bucket backend uses the same string as its
-key prefix. The segment is also the Azure storage container name on the
-`lakecache` account; `Container.azureURL` builds its URL from it.
+`{base}/{pathSegment}/{key}`. The segment is also the Azure storage container
+name on the `lakecache` account; `Container.azureURL` builds its URL from it.
 
 Trust-level containers follow the `mathlib4-{name}` convention; `legacy` is the
 bare `mathlib4` segment.
@@ -111,8 +148,8 @@ def azureURL (c : Container) : String :=
   s!"{azureAccountURL}/{c.pathSegment}"
 
 /--
-Whether file lookups in this container use the flat `/f/<hash>` layout, or
-namespace under `/f/<repo>/<hash>`.
+The layout of the container's files for a writer `repo`, with the per-commit
+`scope?` when one applies.
 
 The layout is fixed per container, not per repo, because one container holds
 artifacts from several writers whose `repo` need not match the container's
@@ -129,34 +166,34 @@ writers in sync.
   (`ci-dev/*`, `bors trying`) — so identical hashes from different writers must
   stay on distinct paths.
 -/
-def flatPath (c : Container) (repo : String) : Bool :=
+def layout (c : Container) (repo : String) (scope? : Option String) : Layout :=
   match c with
-  | .master => true
-  | .legacy => repo == MATHLIBREPO
+  | .master => .flat
+  | .legacy => if normalizeRepo repo == MATHLIBREPO then .flat else .namespaced repo scope?
+  | _ => .namespaced repo scope?
+
+/-- Whether the container has per-commit namespaces: `forks`, whose uploads
+land under the commit they were built from (`layout` with a scope). -/
+def perCommit : Container → Bool
+  | .forks => true
   | _ => false
 
 end Container
 
 /--
-Blob path of the directory that holds the cache artifacts, per the container's
-layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
-a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
-is lowercased via `normalizeRepo`. A file lives at
-`{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
-`stagedUploadDestFrom` both build on this, so reads and uploads share one path
-contract. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no
+Blob path of the directory that holds the cache artifacts: the container's
+layout (`Container.layout`) or, with no container, the layout the repo alone
+selects, flat for `MATHLIBREPO` and repo-namespaced otherwise. A file lives at
+`{fileDirPath container repo scope}/{fileName}` (`Layout.fileDir`); `mkFileURL`
+builds on this. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no
 trailing slash.
 -/
 def fileDirPath (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=
-  let repo := normalizeRepo repo
-  let flat := match container with
-    | some c => c.flatPath repo
-    | none => repo == MATHLIBREPO
-  if flat then "f"
-  else match repoScope with
-    | some s => s!"f/{repo}/{s}"
-    | none => s!"f/{repo}"
+  let layout := match container with
+    | some c => c.layout repo repoScope
+    | none => if normalizeRepo repo == MATHLIBREPO then .flat else .namespaced repo repoScope
+  layout.fileDir
 
 /--
 The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
@@ -196,8 +233,8 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes resolve their own
-destination per the selected backend (`stagedUploadDest`).
+Only reads follow this base. Uploads and marker writes go under the URL
+`MATHLIB_CACHE_PUT_URL` names, or the container's Azure base (`Upload.decide`).
 -/
 def getBaseURLFrom (envValue? : Option String) (useLegacy : Bool) : String :=
   (normalizeBaseURL envValue?).getD (defaultGetBaseURL useLegacy)
@@ -228,7 +265,7 @@ trusted first. Each repo reads from its own trust-level container, with `legacy`
 appended so older clients' artifacts stay reachable.
 
 Fork chains lead with `master`. The layout is fixed per container
-(`Container.flatPath`), so the `master` container is read flat at `/f/{hash}`
+(`Container.layout`), so the `master` container is read flat at `/f/{hash}`
 whatever the `repo` is, and a fork build finds the master-built deps that make
 up the bulk of its files there; the fork's own container then supplies the
 PR-specific files at `/f/{repo}/...`.

@@ -23,7 +23,7 @@ def knownNamedOpts : List String :=
   ["repo", "staging-dir", "cache-from", "container", "scope", "unsafe-window", "backend"]
 
 /-- The flag options supported by the CLI. -/
-def knownFlagOpts : List String := ["help", "unsafe"]
+def knownFlagOpts : List String := ["help", "unsafe", "namespaced"]
 
 /-- Parses an optional `--foo=bar` option. Returns the value for the
 last-mentioned occurrence (so a later `--foo=` overrides an earlier one). -/
