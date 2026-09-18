@@ -260,8 +260,7 @@ theorem coeff_subst_of_constantCoeff_zero {b : R⟦X⟧} (hb : b.constantCoeff =
   · intro d hd
     simp only [Finset.mem_coe, Finset.mem_range]
     by_contra hde
-    have hed : e < d := Nat.lt_of_not_ge fun h ↦ hde (Nat.lt_succ_iff.mpr h)
-    simp [coeff_pow_eq_zero_of_lt hb hed] at hd
+    simp [coeff_pow_eq_zero_of_lt hb (by omega : e < d)] at hd
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
     MvPowerSeries.constantCoeff (subst a f) =
