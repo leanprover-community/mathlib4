@@ -211,6 +211,12 @@ theorem comp_sortDesc_comp_rev_eq_comp_sort : f ∘ sortDesc f ∘ Fin.rev = f �
   rw [show ⇑(sortDesc f) ∘ Fin.rev = ⇑(sortDesc f * Fin.revPerm : Equiv.Perm (Fin n)) from rfl]
   exact unique_monotone ((antitone_sortDesc f).comp Fin.rev_anti) (monotone_sort f)
 
+/-- When `f` is injective there are no ties, so sorting descending agrees with sorting ascending
+then reversing, already as an equality of permutations. -/
+theorem sort_comp_rev_eq_sortDesc_of_injective (inj : Function.Injective f) :
+    sort f ∘ Fin.rev = sortDesc f :=
+  inj.comp_left comp_sort_comp_rev_eq_comp_sortDesc
+
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`
 has a pair of strictly decreasing entries. -/
 theorem antitone_pair_of_not_sorted' (h : f ∘ σ ≠ f ∘ sort f) :
