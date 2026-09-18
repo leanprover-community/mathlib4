@@ -1960,6 +1960,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.LogDerivLemma
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.SecondMainTheorem
