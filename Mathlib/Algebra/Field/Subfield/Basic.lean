@@ -610,9 +610,6 @@ theorem map_comap_eq_self_of_surjective
     {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=
   SetLike.coe_injective (Set.image_preimage_eq _ hf)
 
-theorem comap_map (f : K →+* L) (s : Subfield K) : (s.map f).comap f = s :=
-  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
-
 section GaloisCoinsertion
 
 variable {ι : Sort*} (f : K →+* L)
@@ -621,6 +618,9 @@ variable {ι : Sort*} (f : K →+* L)
 injective. -/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x ↦ by simp [mem_comap]
+
+theorem comap_map (s : Subfield K) : (s.map f).comap f = s :=
+  (gciMapComap f).u_l_eq _
 
 theorem comap_surjective : Function.Surjective (comap f) :=
   (gciMapComap f).u_surjective
