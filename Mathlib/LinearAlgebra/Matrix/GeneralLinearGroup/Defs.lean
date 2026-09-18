@@ -219,7 +219,6 @@ variable {ι : Type*} (R : ι → Type*)
 
 /-- The monoid equivalence between `GL n` of a product of rings,
 and the product of the `GL n` of each ring. -/
-@[simps!]
 abbrev piEquiv [∀ i, CommRing (R i)] :  GL n (∀ i, R i) ≃* ∀ i, GL n (R i) :=
   (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
 
