@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Units
+public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -204,6 +205,21 @@ theorem map_comp (f : T →+* R) (g : R →+* S) :
 theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
     (map g).comp (map f) x = map g (map f x) :=
   rfl
+
+/-- The `MulEquiv` induces by a `RingEquiv` on the coefficents. -/
+abbrev mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
+  Units.mapEquiv f.mapMatrix.toMulEquiv
+
+section Pi
+
+variable {ι : Type*} (R : ι → Type*)
+
+/-- The monoid equivalence between `GL n` of a product of rings,
+and the product of the `GL n` of each ring. -/
+abbrev piEquiv [∀ i, CommRing (R i)] :  GL n (∀ i, R i) ≃* ∀ i, GL n (R i) :=
+  (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
+
+end Pi
 
 variable (f : R →+* S)
 
