@@ -53,8 +53,6 @@ instance : Inhabited ℍ := ⟨.I⟩
 
 @[simp, norm_cast] theorem coe_inj {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
-@[deprecated (since := "2026-01-31")] alias ext_iff' := coe_inj
-
 theorem coe_injective : Function.Injective UpperHalfPlane.coe := fun _ _ ↦ UpperHalfPlane.ext
 
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im where
@@ -77,9 +75,6 @@ def re (z : ℍ) :=
 /-- Extensionality lemma in terms of `UpperHalfPlane.re` and `UpperHalfPlane.im`. -/
 theorem ext_re_im {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
   UpperHalfPlane.ext <| Complex.ext hre him
-
-@[deprecated (since := "2026-01-29")]
-alias ext' := ext_re_im
 
 @[simp]
 theorem coe_im (z : ℍ) : (z : ℂ).im = z.im :=
@@ -113,11 +108,6 @@ lemma I_re : I.re = 0 := Complex.I_re
 @[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl
 
-@[deprecated coe_mk (since := "2026-01-29")]
-lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
-    UpperHalfPlane.coe ⟨z, hz⟩ = z :=
-  rfl
-
 theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
   Complex.re_add_im z
 
@@ -144,24 +134,24 @@ end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
-meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(@UpperHalfPlane.im_pos $a))
   | _, _, _ => throwError "not UpperHalfPlane.im"
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
   | _, _, _ => throwError "not UpperHalfPlane.coe"
@@ -188,11 +178,7 @@ lemma ne_ofReal (z : ℍ) (x : ℝ) : (z : ℂ) ≠ x :=
 
 lemma ne_intCast (z : ℍ) (n : ℤ) : (z : ℂ) ≠ n := mod_cast ne_ofReal z n
 
-@[deprecated (since := "2026-01-29")] alias ne_int := ne_intCast
-
 lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z n
-
-@[deprecated (since := "2026-01-29")] alias ne_nat := ne_natCast
 
 section PosRealAction
 

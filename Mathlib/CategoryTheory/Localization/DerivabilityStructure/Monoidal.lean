@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Monoidal.Derived
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 namespace NatTrans
 

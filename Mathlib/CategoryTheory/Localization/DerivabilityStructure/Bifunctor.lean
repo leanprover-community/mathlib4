@@ -24,7 +24,7 @@ universe v₁ v₂ v₁' v₂' v₃ v₄ v u₁ u₂ u₁' u₂' u₃ u₄ u
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable
     (C₁ : Type u₁) (C₂ : Type u₂) (H : Type u)
@@ -155,6 +155,7 @@ section
 variable [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructure]
 variable {W₁ W₂}
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_app_of_isRightDerivedBifunctor
     [W₁'.ContainsIdentities] [W₂'.ContainsIdentities]

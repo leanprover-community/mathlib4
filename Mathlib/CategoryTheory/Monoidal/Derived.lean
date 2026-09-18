@@ -20,7 +20,7 @@ public import Mathlib.CategoryTheory.Monoidal.Functor
 
 namespace CategoryTheory
 
-open MonoidalCategory Functor
+open MonoidalCategory CategoryTheory.Functor
 
 variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
@@ -167,6 +167,7 @@ noncomputable def associator :
   Functor.leftDerived₃NatIso _ _ (counit₁₂ L W) (counit₂₃ L W) W W W
     ((Functor.postcompose₃.obj L).mapIso (curriedAssociatorNatIso C))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma associator_hom_fac_app_app_app (X₁ X₂ X₃ : C) :
     (((associator L W).hom.app ((L').obj X₁)).app ((L').obj X₂)).app ((L').obj X₃) ≫

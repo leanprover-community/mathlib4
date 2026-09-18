@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Polynomial.CoeffMem
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -105,7 +106,7 @@ private def coeffSubmodule (e : InductionObj R n) : Submodule R₀ R :=
 private lemma coeffSubmodule_mapRingHom_comp (e : InductionObj R n) (f : R →ₐ[R₀] S) :
     ({ val := mapRingHom f ∘ e } : InductionObj S n).coeffSubmodule R₀
       = (e.coeffSubmodule R₀).map f.toLinearMap := by
-  simp [coeffSubmodule, Submodule.map_span, Set.image_insert_eq, Set.image_iUnion, ← Set.range_comp,
+  simp [coeffSubmodule, Submodule.map_span, Set.image_iUnion, ← Set.range_comp,
     coeff_map_eq_comp]
 
 variable {e T : InductionObj R n}
@@ -158,8 +159,7 @@ set_option backward.privateInPublic true in
 variable (R₀ R n e) in
 /-- The statement we induct on in the `C : R → R[X]` case of Chevalley's theorem with complexity
 bound. -/
-private def Statement [Algebra ℤ R] : Prop :=
-  ∀ f : R[X], ∃ T : ConstructibleSetData R,
+private def Statement : Prop := ∀ f : R[X], ∃ T : ConstructibleSetData R,
     comap Polynomial.C '' (zeroLocus (Set.range e) \ zeroLocus {f}) = T.toSet ∧
     ∀ C ∈ T, C.n ≤ e.degBound ∧ ∀ i, C.g i ∈ e.coeffSubmodule R₀ ^ e.powBound
 
@@ -272,9 +272,6 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
--- TODO: fix non-terminal simp (large simp set)
-set_option linter.flexible false in
-open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
 `induction_structure`. -/
@@ -319,10 +316,11 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         (span R₀ ({c} ∪ ⋃ i, coeff(e i)) ^ e₁.powBound).map q₁.toLinearMap := by
     unfold coeffSubmodule
     rw [Submodule.map_pow, map_span, invOf_pow, ← smul_pow, ← span_smul]
-    simp [Set.image_insert_eq, Set.smul_set_insert, Set.image_iUnion, Set.smul_set_iUnion, q₁, e₁]
+    simp only [Set.singleton_union, AlgHom.toLinearMap_apply, Set.image_insert_eq,
+      Set.smul_set_insert, Set.image_iUnion, Set.smul_set_iUnion, e₁, smul_eq_mul, invOf_mul_self']
     congr! with i
     change _ = IsLocalization.Away.invSelf c • _
-    simp [← Set.range_comp, Set.smul_set_range]
+    simp only [← Set.range_comp, Set.smul_set_range]
     ext
     simp
   replace hT₁span x hx i :=
@@ -330,7 +328,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
   simp only [he₁span, smul_invOf_smul, smul_eq_mul] at hT₁span
   choose! g₁ hg₁ hq₁g₁ using hT₁span
   -- Lift the constants of `T₁` from `Away c` to `R`
-  choose! n₁ f₁ hf₁ using Away.surj (S := Away c) c
+  choose! n₁ f₁ hf₁ using IsLocalization.Away.surj (S := Away c) c
   change (∀ _, _ * q₁ _ ^ _ = q₁ _) at hf₁
   -- Lift the tuples of `T₂` from `R ⧸ Ideal.span {c}` to `R`
   rw [coeffSubmodule_mapRingHom_comp, ← Submodule.map_pow] at hT₂span
@@ -339,7 +337,6 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
   choose! f₂ hf₂ using Ideal.Quotient.mkₐ_surjective R₀ (I := .span {c})
   change (∀ _, q₂ _ = _) at hf₂
   -- Lift everything together
-  classical
   let S₁ : Finset (BasicConstructibleSetData R) := T₁.image fun x ↦ ⟨c * f₁ x.f, _, g₁ x⟩
   let S₂ : Finset (BasicConstructibleSetData R) := T₂.image fun x ↦ ⟨f₂ x.f, _, Fin.cons c (g₂ x)⟩
   refine ⟨S₁ ∪ S₂, ?_, ?_⟩
@@ -432,7 +429,6 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
 See the docstring of `induction_structure` for the overview. -/
 private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
   intro S; revert R₀; revert S
-  classical
   apply induction_structure
   · intro R _ R₀ _ _ f
     refine ⟨(Finset.range (f.natDegree + 2)).image fun j ↦ ⟨f.coeff j, 0, 0⟩, ?_, ?_⟩
@@ -487,7 +483,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           split_ifs with hkj
           · subst hkj; exact (degree_modByMonic_le _ hi).trans hle
           · rfl
-      refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ SetLike.le_def.mp ?_ ((hS' C hC).2 k)⟩
+      refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ mem_of_le_of_mem ?_ ((hS' C hC).2 k)⟩
       change c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
       delta powBound
       suffices hij : c'.coeffSubmodule R₀ ≤ c.coeffSubmodule R₀ ^ (c.val j).degree.succ by
@@ -562,7 +558,6 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
     ∃ T : ConstructibleSetData R,
       comap Polynomial.C '' S.toSet = T.toSet ∧ ∀ C ∈ T, C.n ≤ S.degBound ∧
       ∀ i, C.g i ∈ M ^ S.degBound ^ S.degBound := by
-  classical
   choose f hf₁ hf₂ hf₃ using fun C : BasicConstructibleSetData R[X] ↦ statement (R₀ := ℤ) ⟨C.g⟩ C.f
   refine ⟨S.biUnion f, ?_, ?_⟩
   · simp only [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion,
@@ -571,7 +566,7 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
     intro x y hy hx
     have H : degBound ⟨y.g⟩ ≤ S.degBound :=
       Finset.le_sup (f := fun e ↦ ∑ i, (e.g i).degree.succ) hy
-    refine ⟨(hf₂ y x hx).trans H, fun i ↦ SetLike.le_def.mp ?_ (hf₃ y x hx i)⟩
+    refine ⟨(hf₂ y x hx).trans H, fun i ↦ mem_of_le_of_mem ?_ (hf₃ y x hx i)⟩
     gcongr
     · simpa [Submodule.one_eq_span]
     · refine Submodule.span_le.mpr ?_
@@ -668,7 +663,6 @@ lemma degBound_pos (k : ℕ) (D : ℕ → ℕ) : ∀ n, 0 < degBound k D n
 
 end MvPolynomialC
 
-set_option backward.isDefEq.respectTransparency false in
 open MvPolynomialC in
 /-- The `C : R → R[X₁, ..., Xₘ]` case of **Chevalley's theorem** with complexity bound. -/
 lemma chevalley_mvPolynomialC
@@ -680,7 +674,6 @@ lemma chevalley_mvPolynomialC
       comap MvPolynomial.C '' S.toSet = T.toSet ∧
       ∀ C ∈ T, C.n ≤ numBound k (fun i ↦ 1 + (d.map Fin.val).count i) n ∧
       ∀ i, C.g i ∈ M ^ (degBound k (fun i ↦ 1 + (d.map Fin.val).count i) n) := by
-  classical
   induction n generalizing k M with
   | zero =>
     refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
@@ -740,7 +733,7 @@ lemma chevalley_mvPolynomialC
   let N := (k * (1 + d.count 0)) ^ (k * (1 + d.count 0))
   have (C) (hCT : C ∈ T) (a) : C.g a ∈ coeffsIn (Fin n) (M ^ N) ⊓
         (degreesLE R (Fin n) (N • B)).restrictScalars ℤ := by
-    refine SetLike.le_def.mp ?_ ((hT₂ C hCT).2 a)
+    refine mem_of_le_of_mem ?_ ((hT₂ C hCT).2 a)
     refine pow_inf_le.trans (inf_le_inf ?_ ?_)
     · refine (pow_le_pow_right' ?_ (Nat.pow_self_mono hS')).trans le_coeffsIn_pow
       simpa [MvPolynomial.coeff_one, apply_ite] using hM
@@ -749,7 +742,7 @@ lemma chevalley_mvPolynomialC
       simp
   have h1M : 1 ≤ M := Submodule.one_le.mpr hM
   obtain ⟨U, hU₁, hU₂⟩ := IH (M := M ^ N)
-    (SetLike.le_def.mp (le_self_pow h1M Nat.pow_self_pos.ne') hM) _ _ T
+    (mem_of_le_of_mem (le_self_pow h1M Nat.pow_self_pos.ne') hM) _ _ T
     (fun C hCT ↦ (hT₂ C hCT).1)
     (fun C hCT k ↦ this C hCT k)
   simp only [Multiset.map_nsmul, Multiset.count_nsmul, ← pow_mul, N] at hU₂
@@ -815,7 +808,6 @@ lemma chevalley_mvPolynomial_mvPolynomial
     ∃ T : ConstructibleSetData (MvPolynomial (Fin n) R),
       comap f '' S.toSet = T.toSet ∧
       ∀ C ∈ T, C.n ≤ numBound k m n d ∧ ∀ i j, (C.g i).degreeOf j ≤ degBound k m n d := by
-  classical
   let g : MvPolynomial (Fin m) (MvPolynomial (Fin n) R) →+* MvPolynomial (Fin m) R :=
     eval₂Hom f.toRingHom X
   have hg : g.comp (algebraMap (MvPolynomial (Fin n) R) _) = f := by ext x : 2 <;> simp [g]

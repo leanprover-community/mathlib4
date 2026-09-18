@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
 
 namespace CategoryTheory
 
-open Limits Category Functor
+open Limits Category CategoryTheory.Functor
 
 variable {C₁₀ C₂₀ C₃₀ C₁ C₂ C₃ D₁ D₂ D₃ H : Type*}
   [Category C₁₀] [Category C₂₀] [Category C₃₀]
@@ -46,7 +46,7 @@ variable {Φ₁ Φ₂ Φ₃ F} (h : Derives₃ Φ₁ Φ₂ Φ₃ F)
 
 include h in
 lemma hasLeftDerivedFunctor₃ : F.HasLeftDerivedFunctor₃ W₁ W₂ W₃ :=
-  Derives.hasLeftDerivedFunctor h
+  h.hasLeftDerivedFunctor
 
 include h in
 lemma isIso_of_isLeftDerivabilityStructure

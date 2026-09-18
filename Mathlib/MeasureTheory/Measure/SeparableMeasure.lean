@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Measure.Continuity
 public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
@@ -109,6 +110,7 @@ theorem measureDense_measurableSet : μ.MeasureDense {s | MeasurableSet s} where
   measurable _ h := h
   approx s hs _ ε ε_pos := ⟨s, hs, by simpa⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.completion.MeasureDense 𝒜 where
   measurable s hs := (h𝒜.measurable s hs).nullMeasurableSet
   approx s hs hμs ε ε_pos := by
@@ -200,7 +202,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
       | iUnion f _ hf =>
         refine ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
         -- We have  `μ (⋃ n ≤ N, fₙ) ⟶ μ (⋃ n, fₙ)`.
-        have := tendsto_measure_iUnion_accumulate (μ := μ) (f := f)
+        have := tendsto_measure_iUnion_accumulate (μ := μ) (s := f)
         rw [← tendsto_toReal_iff (fun _ ↦ measure_ne_top _ _) (measure_ne_top _ _)] at this
         -- So there exists `N` such that `μ (⋃ n, fₙ) - μ (⋃ n ≤ N, fₙ) < ε/2`.
         rcases Metric.tendsto_atTop.1 this (ε / 2) (by linarith [ε_pos]) with ⟨N, hN⟩
@@ -366,7 +368,7 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
     · rw [← hgen]
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
         generateSetAlgebra_mono <| subset_union_left ..
-    · induction hs with
+    · induction hs using generateSetAlgebra_induction with
       | base t t_mem =>
         rcases t_mem with t_mem | ⟨n, rfl⟩
         · exact hgen ▸ measurableSet_generateFrom t_mem

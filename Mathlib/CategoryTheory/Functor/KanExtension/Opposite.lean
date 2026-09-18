@@ -45,6 +45,7 @@ protected def LeftExtension.unop (E : LeftExtension L.op F.op) : RightExtension 
 
 variable (L F)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def rightExtensionOpEquivalence :
@@ -60,6 +61,7 @@ def rightExtensionOpEquivalence :
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def leftExtensionOpEquivalence :

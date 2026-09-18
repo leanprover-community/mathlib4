@@ -30,6 +30,7 @@ section IsInternal
 
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a linear map `f : M₁ → M₂` respects direct sum decompositions of `M₁` and `M₂`, then it has a
 block diagonal matrix with respect to bases compatible with the direct sum decompositions. -/
 lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} [CommSemiring R]

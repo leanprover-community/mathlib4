@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-public import Mathlib.CategoryTheory.ArrowTwo
 
 /-!
 # Short complexes
@@ -165,7 +164,7 @@ lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ 
 
 /-- The short complex in `D` obtained by applying a functor `F : C ⥤ D` to a
 short complex in `C`, assuming that `F` preserves zero morphisms. -/
-@[simps]
+@[implicit_reducible, simps]
 def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
   ShortComplex.mk (F.map S.f) (F.map S.g) (by rw [← F.map_comp, S.zero, F.map_zero])
 
@@ -175,7 +174,6 @@ def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
     (F : C ⥤ D) [F.PreservesZeroMorphisms] (G : D ⥤ E) [G.PreservesZeroMorphisms] :
     S.map (F ⋙ G) = (S.map F).map G := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
 @[simps]
@@ -185,7 +183,6 @@ def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorph
   τ₂ := τ.app _
   τ₃ := τ.app _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of short complexes `S.map F ≅ S.map G` induced by
 a natural isomorphism `F ≅ G`. -/
 @[simps]
@@ -194,10 +191,9 @@ def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphis
   hom := S.mapNatTrans τ.hom
   inv := S.mapNatTrans τ.inv
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `ShortComplex C ⥤ ShortComplex D` induced by a functor `C ⥤ D` which
 preserves zero morphisms. -/
-@[simps]
+@[implicit_reducible, simps]
 def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZeroMorphisms] :
     ShortComplex C ⥤ ShortComplex D where
   obj S := S.map F
@@ -302,6 +298,7 @@ def unopFunctor : ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ where
   obj S := Opposite.op (S.unop)
   map φ := (unopMap φ).op
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The obvious equivalence of categories `(ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ`. -/
 @[simps]
@@ -319,29 +316,6 @@ abbrev unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counit
 /-- The canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
 abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
   Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
-
-@[simps]
-def arrow₂ : Arrow₂ C := Arrow₂.mk S.f S.g
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-lemma _root_.CategoryTheory.Arrow₂.zero_of_arrow₂Iso
-    {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
-    D.f ≫ D.g = 0 := by
-  have : IsIso e.hom.τ₂ := (inferInstance : IsIso (Arrow₂.obj₂.mapIso e).hom)
-  rw [← cancel_mono e.hom.τ₂, assoc, zero_comp, ← e.hom.commg, ← e.hom.commf_assoc]
-  dsimp
-  rw [S.zero, comp_zero]
-
-@[simps!]
-def mkOfArrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) : ShortComplex C :=
-    ShortComplex.mk D.f D.g (Arrow₂.zero_of_arrow₂Iso e)
-
-@[simps!]
-def isoOfArrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
-    mkOfArrow₂Iso e ≅ S :=
-  isoMk (Arrow₂.obj₀.mapIso e) (Arrow₂.obj₁.mapIso e) (Arrow₂.obj₂.mapIso e)
-    e.hom.commf e.hom.commg
 
 end ShortComplex
 

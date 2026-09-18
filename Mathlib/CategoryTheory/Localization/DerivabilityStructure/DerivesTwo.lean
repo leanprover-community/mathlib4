@@ -21,7 +21,7 @@ universe v₁₀ v₂₀ v₁ v₂ v₃ u₁₀ u₂₀ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Category Functor
+open Limits Category CategoryTheory.Functor
 
 -- to be moved
 namespace MorphismProperty
@@ -91,8 +91,9 @@ variable [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
   [W₁.ContainsIdentities] [W₂.ContainsIdentities]
 
 include h in
-lemma hasLeftDerivedFunctor₂ : F.HasLeftDerivedFunctor₂ W₁ W₂ :=
-  Derives.hasLeftDerivedFunctor h
+lemma hasLeftDerivedFunctor₂ : F.HasLeftDerivedFunctor₂ W₁ W₂ := by
+  have := h.hasPointwiseLeftDerivedFunctor
+  infer_instance
 
 include h in
 lemma isIso_of_isLeftDerivabilityStructure

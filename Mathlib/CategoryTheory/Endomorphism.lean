@@ -29,6 +29,7 @@ namespace CategoryTheory
 
 /-- Endomorphisms of an object in a category. Arguments order in multiplication agrees with
 `Function.comp`, not with `CategoryTheory.CategoryStruct.comp`. -/
+@[implicit_reducible]
 def End {C : Type u} [CategoryStruct.{v} C] (X : C) := X ⟶ X
 
 namespace End
@@ -77,8 +78,6 @@ instance monoid {C : Type u} [Category.{v} C] {X : C} : Monoid (End X) where
 section MulAction
 
 variable {C : Type u} [Category.{v} C]
-
-open Opposite
 
 instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
@@ -152,6 +151,7 @@ def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
 @[simps!]
 def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEndEquivAut X).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := { hom := h.inv ≫ x.hom ≫ h.hom, inv := h.inv ≫ x.inv ≫ h.hom }

@@ -50,7 +50,7 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   comp f g := ⟨⟨le_trans f.down.down g.down.down⟩⟩
 
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
-  ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
+  ⟨fun _ _ => ULift.ext (Subsingleton.elim _ _ )⟩
 
 end Preorder
 
@@ -61,10 +61,11 @@ open Opposite
 variable {X : Type u} [Preorder X]
 
 /-- Express an inequality as a morphism in the corresponding preorder category. -/
+@[to_dual self]
 def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 
-@[inherit_doc homOfLE]
+@[inherit_doc homOfLE, to_dual self]
 abbrev _root_.LE.le.hom := @homOfLE
 
 /-- Express an inequality `x ≤ y` as a morphism in the corresponding preorder category.
@@ -84,8 +85,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
-@[nolint defLemma, inherit_doc leOfHom]
-abbrev _root_.Quiver.Hom.le := @leOfHom
+alias _root_.Quiver.Hom.le := leOfHom
 
 @[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
@@ -128,12 +128,9 @@ def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
 theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 
+@[to_dual uniqueFromBot]
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
-  uniq := fun a => by rfl
-
-instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
-  default := homOfLE bot_le
   uniq := fun a => by rfl
 
 variable (X) in
@@ -159,6 +156,7 @@ open CategoryTheory
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A monotone function between preorders induces a functor between the associated categories. -/
+@[implicit_reducible]
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
   obj := f
   map g := CategoryTheory.homOfLE (h g.le)

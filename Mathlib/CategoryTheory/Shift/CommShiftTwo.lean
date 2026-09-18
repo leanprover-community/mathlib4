@@ -60,7 +60,6 @@ structure CommShift₂Setup (M : Type*) [AddCommMonoid M] [HasShift D M] extends
   ε (m n : M) : (CatCenter D)ˣ
   hε (m n : M) : ε m n = (z (0, n) (m, 0))⁻¹ * z (m, 0) (0, n) := by aesop
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The standard setup for the commutation of bifunctors with shifts by `ℤ`. -/
 @[simps]
 noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
@@ -117,16 +116,13 @@ namespace CommShift₂
 attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.inferInstanceAs.wrap.data false in
-set_option backward.isDefEq.respectTransparency false in
 instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
     [HasShift C₂ M] [HasShift D M] (F : C₁' ⥤ C₁) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :
     (F ⋙ G).CommShift₂ h where
   commShiftObj (X₁' : C₁') := inferInstanceAs ((G.obj (F.obj X₁')).CommShift M)
   commShift_map {X₁' Y₁' : C₁'} (f : X₁' ⟶ Y₁') := by dsimp; infer_instance
-  commShiftFlipObj (X₂ : C₂) := inferInstanceAs ((F ⋙ G.flip.obj X₂).CommShift M)
+  commShiftFlipObj (X₂ : C₂) := CommShift.comp F (G.flip.obj X₂)
   commShift_flip_map {X₂ Y₂ : C₂} (g : X₂ ⟶ Y₂) :=
     inferInstanceAs (NatTrans.CommShift (whiskerLeft F (G.flip.map g)) M)
   comm X₁' X₂ m n := by
@@ -136,13 +132,11 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     rw [NatTrans.shift_app (G.map ((F.commShiftIso m).hom.app X₁')) n X₂]
     simp [this]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.inferInstanceAs.wrap false in
 instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂' M]
     [HasShift C₂ M] [HasShift D M] (F : C₂' ⥤ C₂) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :
     (G ⋙ (whiskeringLeft C₂' C₂ D).obj F).CommShift₂ h where
-  commShiftObj (X₁ : C₁) := inferInstanceAs ((F ⋙ G.obj X₁).CommShift M)
+  commShiftObj (X₁ : C₁) := CommShift.comp F (G.obj X₁)
   commShift_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) := by dsimp; infer_instance
   commShiftFlipObj (X₂' : C₂') := inferInstanceAs ((G.flip.obj (F.obj X₂')).CommShift M)
   commShift_flip_map {X₂' Y₂' : C₂'} (g : X₂' ⟶ Y₂') :=
@@ -182,14 +176,12 @@ namespace CommShift₂
 
 attribute [instance] commShift_app commShift_flipApp
 
-set_option backward.defeqAttrib.useBackward true in
 instance : CommShift₂ (𝟙 G₁) h where
   commShift_app _ := by dsimp; infer_instance
   commShift_flipApp _ := by
     simp only [flipApp, flipFunctor_obj, Functor.map_id, id_app]
     infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance [CommShift₂ τ h] [CommShift₂ τ' h] : CommShift₂ (τ ≫ τ') h where
   commShift_app _ := by dsimp; infer_instance
   commShift_flipApp _ := by
@@ -215,6 +207,7 @@ variable (h : CommShift₂Setup D M)
 
 namespace CommShift₂Setup
 
+@[implicit_reducible]
 protected def Category (h : CommShift₂Setup D M) := h.toTwistShiftData.Category
 
 instance category : Category h.Category := inferInstanceAs (Category (h.toTwistShiftData.Category))
@@ -267,7 +260,7 @@ lemma shiftFunctorAdd'_inv_app (m₁ m₂ m₃ : M) (hm : m₁ + m₂ = m₃)
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable (F : C₁ ⥤ C₂ ⥤ D) [F.CommShift₂ h]
 
@@ -438,6 +431,7 @@ lemma isoAdd'_iso₁_iso₂ (m₁ m₂ : M) :
 end commShiftUncurry
 
 open commShiftUncurry in
+@[simps! -isSimp]
 noncomputable instance commShiftUncurry : (h.uncurry F).CommShift (M × M) :=
   Functor.CommShift.mkProd (iso₁ h F) (iso₂ h F) (iso₁_zero h F) (iso₂_zero h F)
     (iso₁_add h F) (iso₂_add h F) (isoAdd'_iso₁_iso₂ h F)
@@ -446,7 +440,7 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
 
@@ -461,6 +455,7 @@ noncomputable def iso₁ (m : M) :
     G.commShiftIso ((0 : M), m) ≪≫
     isoWhiskerLeft G (h.shiftIso 0 m m (zero_add m)))
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma iso₁_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
@@ -540,6 +535,7 @@ noncomputable def iso₂ (m : M) :
     G.commShiftIso (m, (0 : M)) ≪≫
     isoWhiskerLeft G (h.shiftIso m 0 m (add_zero m)))
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma iso₂_hom_app_app (X₁ : C₁) (X₂ : C₂) (m : M) :
@@ -638,7 +634,7 @@ noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
       dsimp at this
       rw [← reassoc_of% this, ← G.map_comp_assoc,
         ← CatCenter.naturality_assoc, ← CatCenter.naturality, Category.assoc,
-        ← CatCenter.mul_app, Units.mul_inv, End.one_def,
+        ← CatCenter.mul_app, Units.mul_inv,
         Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app_assoc,
         NatTrans.naturality_assoc]
       dsimp
@@ -671,7 +667,7 @@ end
 
 section
 
-open Functor
+open CategoryTheory.Functor
 
 variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
 
@@ -684,15 +680,23 @@ instance : NatTrans.CommShift (h.uncurryCurryIso G).hom (M × M) where
   shift_comm := by
     rintro ⟨m, n⟩
     ext ⟨X₁, X₂⟩
-    conv_lhs => dsimp [Functor.commShiftIso, Functor.CommShift.commShiftIso, commShiftUncurry,
-      Functor.CommShift.mkProd]
-    simp [iso₁_hom_app, iso₂_hom_app, commShift_curry_obj_hom_app,
-      commShift_curry_flip_obj_hom_app, commShift₂Curry.iso₁_hom_app_app,
-      commShift₂Curry.iso₂_hom_app_app,
-      G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop)]
+    --simp? [commShiftUncurry_commShiftIso_hom_app,
+    --  iso₁_hom_app, iso₂_hom_app, commShift_curry_obj_hom_app,
+    --  commShift_curry_flip_obj_hom_app, commShift₂Curry.iso₁_hom_app_app,
+    --  commShift₂Curry.iso₂_hom_app_app,
+    --  G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop)]
+    dsimp
+    simp only [commShiftUncurry_commShiftIso_hom_app, uncurry_obj_obj, curry_obj_obj_obj,
+      uncurry_obj_map, NatTrans.prod_app_fst, curry_obj_map_app, NatTrans.prod_app_snd,
+      curry_obj_obj_map, iso₂_hom_app, id_obj, comp_obj, commShift_curry_obj_hom_app, Iso.app_hom,
+      commShift₂Curry.iso₁_hom_app_app, shiftFunctor_prod, Category.assoc, Iso.hom_inv_id_app,
+      Category.comp_id, iso₁_hom_app, flip_obj_obj, commShift_curry_flip_obj_hom_app,
+      commShift₂Curry.iso₂_hom_app_app, map_comp, map_id,
+      G.commShiftIso_add' (show (m, 0) + (0, n) = (m, n) by aesop), CommShift.isoAdd'_hom_app,
+      prod_obj, shiftFunctorAdd'_prod, NatIso.prod_hom, Category.id_comp]
     simp only [← Functor.map_comp_assoc]
     congr 4
-    · aesop
+    · cat_disch
     · simp [prod_comp, ← prod_id]
 
 end

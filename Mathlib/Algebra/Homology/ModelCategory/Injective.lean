@@ -19,6 +19,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # The model category structure on bounded below complexes
@@ -37,7 +38,7 @@ The `ModelCategory` instance is scoped in the namespace
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory HomotopicalAlgebra Limits
 

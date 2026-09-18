@@ -78,7 +78,7 @@ noncomputable def TStructure.t : TStructure (DerivedCategory C) where
       rw [id_comp]
       rfl
     · dsimp
-      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE,
+      rw [← Q.map_comp, CochainComplex.g_shortComplexTruncLEX₃ToTruncGE ..,
         Iso.hom_inv_id_assoc]
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
@@ -330,14 +330,24 @@ open DerivedCategory.TStructure
 
 variable (C)
 
-abbrev Minus := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
-abbrev Plus := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
-abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
+/-- The bounded above derived category of an abelian category. -/
+abbrev Minus : Type max u v := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+
+/-- The bounded below derived category of an abelian category. -/
+abbrev Plus : Type max u v := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+
+/-- The bounded derived category of an abelian category. -/
+abbrev Bounded : Type max u v := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
 
 variable {C}
 
+/-- The inclusion of the bounded above derived category. -/
 noncomputable abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
+
+/-- The inclusion of the bounded below derived category. -/
 noncomputable abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
+
+/-- The inclusion of the bounded derived category. -/
 noncomputable abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
 end DerivedCategory

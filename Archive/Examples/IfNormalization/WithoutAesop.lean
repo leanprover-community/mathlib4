@@ -3,8 +3,10 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Kim Morrison
 -/
-import Archive.Examples.IfNormalization.Statement
-import Mathlib.Data.List.AList
+module
+
+public import Archive.Examples.IfNormalization.Statement
+public import Mathlib.Data.List.AList
 
 /-!
 # A variant of Chris Hughes' solution for the if normalization challenge.
@@ -14,6 +16,8 @@ In this variant we eschew the use of `aesop`, and instead write out the proofs.
 (In order to avoid duplicated names with `Result.lean`,
 we put primes on the declarations in the file.)
 -/
+
+@[expose] public section
 
 namespace IfExpr
 
@@ -60,7 +64,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · simp only [eval, apply_ite, ite_eq_iff']
           cases hfv : f v
-          · simp +contextual only [cond_false, h, he₁]
+          · simp +contextual only [Bool.cond_false, h, he₁]
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
@@ -74,7 +78,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
               · subst h
                 simp_all
               · simp_all
-          · simp only [cond_true, h, ht₁]
+          · simp only [Bool.cond_true, h, ht₁]
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w

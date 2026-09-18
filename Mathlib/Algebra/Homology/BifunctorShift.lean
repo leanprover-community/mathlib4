@@ -114,7 +114,6 @@ lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {K₁ L₁} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₁Iso_hom_naturality₁ :
@@ -145,6 +144,7 @@ variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive] (y : ℤ)
   [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor L₁ K₂ F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `mapBifunctorShift₂Iso`. -/
 @[simps! hom_f_f inv_f_f]
@@ -218,7 +218,6 @@ variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   [HasMapBifunctor K₁ K₂ F]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
     mapBifunctorShift₁Iso K₁ (K₂⟦y⟧) F x ≪≫
       (CategoryTheory.shiftFunctor _ x).mapIso (mapBifunctorShift₂Iso K₁ K₂ F y) =
@@ -288,7 +287,6 @@ lemma commShiftIso_map₂CochainComplex_inv_app (K₁ : CochainComplex C₁ ℤ)
       (CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F n).inv := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) :
     NatTrans.CommShift (F.map₂CochainComplex.map f) ℤ where
   shift_comm n := by
@@ -296,7 +294,6 @@ instance {K₁ L₁ : CochainComplex C₁ ℤ} (f : K₁ ⟶ L₁) :
     dsimp
     ext p q h
     simp [commShiftIso_map₂CochainComplex_hom_app,
-      CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ _ _ _ _ _ _ (q + n) (d + n) rfl rfl,
       CochainComplex.ι_mapBifunctorShift₂Iso_hom_f_assoc _ _ _ _ _ _ _ _ (q + n) (d + n) rfl rfl]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -334,7 +331,6 @@ lemma commShiftIso_map₂CochainComplex_flip_inv_app (K₁ : CochainComplex C₁
       (CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F n).inv := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance {K₂ L₂ : CochainComplex C₂ ℤ} (g : K₂ ⟶ L₂) :
     NatTrans.CommShift (F.map₂CochainComplex.flip.map g) ℤ where
   shift_comm n := by
@@ -342,11 +338,9 @@ instance {K₂ L₂ : CochainComplex C₂ ℤ} (g : K₂ ⟶ L₂) :
     dsimp
     ext p q h
     simp [commShiftIso_map₂CochainComplex_flip_hom_app,
-      CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl,
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     F.map₂CochainComplex.CommShift₂Int where
   comm K₁ K₂ p q := by

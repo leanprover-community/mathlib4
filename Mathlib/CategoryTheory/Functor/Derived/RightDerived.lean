@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Right derived functors
@@ -45,8 +46,8 @@ open Category Limits
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
-  [Category* D] [Category* D'] [Category* H] [Category* H']
+variable {C D D' H H' : Type _} [Category* C] [Category* D] [Category* D']
+  [Category* H] [Category* H']
   (RF RF' RF'' : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α : F ⟶ L ⋙ RF) (α' : F' ⟶ L ⋙ RF') (α'' : F'' ⟶ L ⋙ RF'') (α'₂ : F ⟶ L ⋙ RF')
   (W : MorphismProperty C)
@@ -148,6 +149,13 @@ lemma isRightDerivedFunctor_iff_isIso_rightDerivedDesc (G : D ⥤ H) (β : F ⟶
   have := IsRightDerivedFunctor.isLeftKanExtension _ α W
   exact isLeftKanExtension_iff_isIso _ α _ (by simp)
 
+instance (G : H ⥤ H') [G.IsLeftAdjoint] :
+    (RF ⋙ G).IsRightDerivedFunctor (whiskerRight α G ≫ (associator _ _ _).hom) W := by
+  have : RF.IsLeftKanExtension α := by
+    rwa [← isRightDerivedFunctor_iff_isLeftKanExtension _ _ W]
+  rw [isRightDerivedFunctor_iff_isLeftKanExtension]
+  infer_instance
+
 end
 
 variable (F)
@@ -193,7 +201,7 @@ section
 
 variable (F) [F.HasRightDerivedFunctor W] (L W)
 
-/-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
+/-- Given a functor `F : C ⥤ H`, and a localization functor `L : C ⥤ D` for `W`,
 this is the right derived functor `D ⥤ H` of `F`, i.e. the left Kan extension
 of `F` along `L`. -/
 noncomputable def totalRightDerived : D ⥤ H :=
@@ -306,36 +314,26 @@ end Functor
 
 namespace LocalizerMorphism
 
-open Functor
-
-variable {C₁ C₂ H₁ H₂ D : Type*} [Category C₁] [Category C₂] [Category D]
-  [Category H₁] [Category H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+variable {C₁ C₂ H₁ H₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
+  [Category* H₁] [Category* H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
   (Φ : LocalizerMorphism W₁ W₂) [Φ.IsLocalizedEquivalence] [Φ.functor.IsEquivalence]
-  (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
-  (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
-  {F₂ : C₂ ⥤ D} {RF₂ : H₂ ⥤ D} (α₂ : F₂ ⟶ L₂ ⋙ RF₂)
-  {F₁ : C₁ ⥤ D} {RF₁ : H₁ ⥤ D} (α₁ : F₁ ⟶ L₁ ⋙ RF₁)
-  (e₁ : Φ.functor ⋙ F₂ ≅ F₁)
-  (e₂ : G ⋙ RF₂ ≅ RF₁)
-  (h : α₁ = e₁.inv ≫ whiskerLeft Φ.functor α₂ ≫ (Functor.associator _ _ _).inv ≫
-    whiskerRight iso.hom RF₂ ≫ (Functor.associator L₁ G RF₂).hom ≫ whiskerLeft L₁ e₂.hom)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-include h in
-lemma isRightDerivedFunctor_iff_precomp :
-    RF₁.IsRightDerivedFunctor α₁ W₁ ↔ RF₂.IsRightDerivedFunctor α₂ W₂ := by
+open CategoryTheory.Functor in
+lemma isRightDerivedFunctor_iff_precomp
+    (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+    (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
+    {F₁ : C₁ ⥤ D} {RF₁ : H₁ ⥤ D} (α₁ : F₁ ⟶ L₁ ⋙ RF₁)
+    {F₂ : C₂ ⥤ D} {RF₂ : H₂ ⥤ D} (α₂ : F₂ ⟶ L₂ ⋙ RF₂)
+    (e₁ : Φ.functor ⋙ F₂ ≅ F₁)
+    (e₂ : G ⋙ RF₂ ≅ RF₁)
+    (h : α₁ = e₁.inv ≫ whiskerLeft Φ.functor α₂ ≫ (Functor.associator _ _ _).inv ≫
+      whiskerRight iso.hom RF₂ ≫ (Functor.associator L₁ G RF₂).hom ≫
+      whiskerLeft L₁ e₂.hom := by cat_disch) :
+    RF₂.IsRightDerivedFunctor α₂ W₂ ↔ RF₁.IsRightDerivedFunctor α₁ W₁ := by
   have : CatCommSq Φ.functor L₁ L₂ G := ⟨iso⟩
   have := Φ.isEquivalence L₁ L₂ G
-  rw [← Functor.isRightDerivedFunctor_iff_of_isLocalization W₁
-    (α₁ ≫ whiskerLeft L₁ e₂.inv ≫ (Functor.associator _ _ _).inv) α₁
-    _ (Iso.refl _) e₂ (by cat_disch),
-    Functor.isRightDerivedFunctor_iff_isLeftKanExtension _ _ W₁,
-    Functor.isRightDerivedFunctor_iff_isLeftKanExtension _ _ W₂,
-    Functor.isLeftKanExtension_iff_precomp RF₂ Φ.functor α₂]
-  apply Functor.isLeftKanExtension_iff_of_iso₃ _ _ e₁.symm (Iso.refl _) iso.symm
-  ext
-  simp [h]
+  simpa [Functor.isRightDerivedFunctor_iff_isLeftKanExtension] using
+    isLeftKanExtension_iff_precomp_equivalence α₁ α₂ iso e₁.symm e₂
 
 end LocalizerMorphism
 

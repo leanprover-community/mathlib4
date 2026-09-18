@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedThree
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₁₂ C₂₃ C D₁ D₂ D₃ D₁₂ D₂₃ D : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃] [Category C]

@@ -14,6 +14,7 @@ public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.Periodic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Euler's totient function
@@ -55,7 +56,7 @@ theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n �
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
       left_inv := fun m => by simp only [Subtype.coe_eta]
-      right_inv := fun m => by simp only [Subtype.coe_eta] }
+      right_inv := fun m => by simp only }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -121,21 +122,22 @@ theorem _root_.ZMod.card_units_eq_totient (n : ℕ) [NeZero n] [Fintype (ZMod n)
       rfl
 
 theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
-  haveI : Fact (1 < n) := ⟨one_lt_two.trans hn⟩
-  haveI : NeZero n := NeZero.of_gt hn
+  have : Fact (1 < n) := ⟨one_lt_two.trans hn⟩
+  have : NeZero n := NeZero.of_gt hn
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
     exact orderOf_dvd_card
-  rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n, if_neg hn.ne']
+  rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n,
+    ite_eq_right hn.ne']
 
 theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
     rcases Nat.mul_eq_zero.1 hmn0 with h | h <;>
       simp only [totient_zero, mul_zero, zero_mul, h]
   else by
-    haveI : NeZero (m * n) := ⟨hmn0⟩
-    haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
-    haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
+    have : NeZero (m * n) := ⟨hmn0⟩
+    have : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
+    have : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
     simp only [← ZMod.card_units_eq_totient]
     rw [Fintype.card_congr (Units.mapEquiv (ZMod.chineseRemainder h).toMulEquiv).toEquiv,
       Fintype.card_congr (@MulEquiv.prodUnits (ZMod m) (ZMod n) _ _).toEquiv, Fintype.card_prod]
@@ -223,7 +225,7 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
       rw [totient_one, tsub_self] at h
       exact one_ne_zero h
   rw [totient_eq_card_coprime, range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico hp.le,
-    Finset.filter_insert, if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)),
+    Finset.filter_insert, ite_eq_right (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)),
     ← Nat.card_Ico 1 p] at h
   refine
     p.prime_of_coprime hp fun n hn hnz => Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
@@ -231,10 +233,11 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by
-  haveI : NeZero p := ⟨(pos_of_gt hp).ne'⟩
+  have : NeZero p := ⟨(pos_of_gt hp).ne'⟩
   rw [ZMod.card_units_eq_totient p]
   exact Nat.le_sub_one_of_lt (Nat.totient_lt p hp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
   rcases eq_zero_or_neZero p with rfl | hp
@@ -443,7 +446,8 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.totient`. -/
 @[positivity Nat.totient _]
-meta def evalNatTotient : PositivityExt where eval {u α} z p e := do
+meta def evalNatTotient : PositivityExt where eval {u α} z p e :=
+  match p with | none => pure .none | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
     match ← core z p n with

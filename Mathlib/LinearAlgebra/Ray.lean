@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
@@ -71,7 +72,6 @@ instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
 variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable (ι : Type*) [DecidableEq ι]
 
 namespace SameRay
 
@@ -205,7 +205,9 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
   rcases hy.exists_pos hy₀ hz₀ with ⟨ry, rz₂, hry, hrz₂, Hy⟩
   refine Or.inr (Or.inr ⟨rx * ry, ry * rz₁ + rx * rz₂, mul_pos hrx hry, ?_, ?_⟩)
   · positivity
-  · convert! congr(ry • $Hx + rx • $Hy) using 1 <;> module
+  · have h := congr(ry • $Hx + rx • $Hy)
+    module_nf at h ⊢
+    exact h
 
 /-- If `y` and `z` are on the same ray as `x`, then so is `y + z`. -/
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
@@ -463,6 +465,19 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
   calc
     u⁻¹ • v = (u * u) • u⁻¹ • v := Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ (by exact this)
     _ = u • v := by rw [mul_smul, smul_inv_smul]
+
+/-- Two scalar multiples of a common vector whose coefficients have nonnegative product
+lie on a common ray. -/
+theorem sameRay_smul_smul_of_mul_nonneg {v : M} {c₁ c₂ : R} (h : 0 ≤ c₁ * c₂) :
+    SameRay R (c₁ • v) (c₂ • v) := by
+  rcases eq_or_ne c₁ 0 with hc₁ | hc₁
+  · rw [hc₁, zero_smul]; exact SameRay.zero_left _
+  rcases eq_or_ne c₂ 0 with hc₂ | hc₂
+  · rw [hc₂, zero_smul]; exact SameRay.zero_right _
+  have hpos : 0 < c₁ * c₂ := h.lt_of_ne (mul_ne_zero hc₁ hc₂).symm
+  rcases mul_pos_iff.mp hpos with ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩
+  · exact Or.inr (Or.inr ⟨c₂, c₁, h₂, h₁, by module⟩)
+  · exact Or.inr (Or.inr ⟨-c₂, -c₁, neg_pos.2 h₂, neg_pos.2 h₁, by module⟩)
 
 section
 

@@ -86,14 +86,12 @@ end ShortComplex
 
 namespace Functor
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma preserves_shortComplexQuasiIso [F.PreservesHomology] :
     ShortComplex.quasiIso C ≤ (ShortComplex.quasiIso D).inverseImage F.mapShortComplex := by
   intro _ _ _ hf
   simp only [ShortComplex.mem_quasiIso_iff, MorphismProperty.inverseImage_iff,
     mapShortComplex_obj] at hf ⊢
-  infer_instance
+  exact ShortComplex.quasiIso_map_of_preservesLeftHomology F _
 
 instance [F.PreservesHomology] {ι : Type*} (c : ComplexShape ι) {K L : HomologicalComplex C c}
     (f : K ⟶ L) (i : ι) [hf : QuasiIsoAt f i] :
@@ -141,7 +139,7 @@ lemma preservesQuasiIso_mapHomologicalComplex_iff {C D : Type*} [Category C]
     simp only [mem_quasiIso_iff, MorphismProperty.inverseImage_iff] at hf ⊢
     infer_instance
   mp h := by
-    apply (F.exact_tfae.out 0 2).1
+    apply (F.exact_tfae.out 1 3).1
     intro S hS
     rw [← ShortComplex.quasiIso_doubleFunctor_map_arrowHomToG_iff_exact _ hi₀₁ hi₀₁'] at hS ⊢
     let e : Arrow.mk (F.map (0 : S.X₁ ⟶ 0)) ≅ Arrow.mk (0 : F.obj S.X₁ ⟶ 0) :=

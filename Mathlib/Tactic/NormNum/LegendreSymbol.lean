@@ -116,7 +116,7 @@ theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b %
     decide
   rcases eq_or_ne c 0 with (rfl | hc')
   · rw [← hr, Nat.eq_zero_of_dvd_of_div_eq_zero (Nat.dvd_of_mod_eq_zero hb) hc]
-  · haveI : NeZero c := ⟨hc'⟩
+  · have : NeZero c := ⟨hc'⟩
     -- for `jacobiSym.mul_right`
     rwa [← Nat.mod_add_div b 2, hb, hc, Nat.zero_add, jacobiSymNat, jacobiSym.mul_right,
       ← jacobiSym.legendreSym.to_jacobiSym, ha', one_mul]
@@ -133,25 +133,25 @@ We give one version for each of the four odd residue classes mod `8`. -/
 theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 1)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
-  rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
+  rw [← jacobiSym.even_odd (mod_cast ha), ite_eq_right (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; simp
 
 theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
-  rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
+  rw [← jacobiSym.even_odd (mod_cast ha), ite_eq_right (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; simp
 
 theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
-  rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
+  rw [← jacobiSym.even_odd (mod_cast ha), ite_eq_left (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; simp
 
 theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
-  rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
+  rw [← jacobiSym.even_odd (mod_cast ha), ite_eq_left (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; simp
 
 /-- Use quadratic reciprocity to reduce to smaller `b`. -/

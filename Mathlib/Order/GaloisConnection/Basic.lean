@@ -45,8 +45,7 @@ open Function OrderDual Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a₁ a₂ : α}
-  {b₁ b₂ : β}
+variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*} {a₁ a₂ : α} {b₁ b₂ : β}
 
 namespace GaloisConnection
 
@@ -89,7 +88,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] {l : α → β} {u : β → α}
 
 @[to_dual (rename := α ↔ β, a₁ → b₁, a₂ → b₂)]
 theorem l_sup (gc : GaloisConnection l u) : l (a₁ ⊔ a₂) = l a₁ ⊔ l a₂ :=
-  (gc.isLUB_l_image isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
+  (gc.isLUB_l_image isLUB_pair).unique <| by simp [isLUB_pair]
 
 end SemilatticeSup
 
@@ -114,12 +113,16 @@ theorem l_iSup₂ {f : ∀ i, κ i → α} :
 theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
   simp only [sSup_eq_iSup, gc.l_iSup]
 
+@[to_dual]
+theorem l_sSup_eq_sSup_image {s : Set α} : l (sSup s) = sSup (l '' s) := by
+  rw [sSup_image]
+  exact gc.l_sSup
+
 end CompleteLattice
 
 -- Constructing Galois connections
 section Constructions
 
-@[to_dual self]
 protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} {u : β → α}
     (gc : GaloisConnection l u) :
     GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := fun a b ↦ by
@@ -137,8 +140,8 @@ section image2
 section LUB_GLB
 
 variable [Preorder α] [Preorder β] [Preorder γ] {s : Set α}
-  {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
-  {a₀ : α} {b₀ : β} {c₀ : γ}
+  {t : Set β} {l u : α → β → γ} {u₁ : β → γ → α} {u₂ : α → γ → β}
+  {a₀ : α} {b₀ : β}
 
 @[to_dual]
 theorem isLUB_image2_of_isLUB_isLUB (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
@@ -175,7 +178,7 @@ end LUB_GLB
 section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {s : Set α}
-  {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
+  {t : Set β} {l u : α → β → γ} {u₁ : β → γ → α} {u₂ : α → γ → β}
 
 @[to_dual]
 theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
@@ -419,14 +422,20 @@ theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
   fun _ _ ↦ le_sInf_iff.symm
 
 /-- `sSup` and `Iic` form a Galois insertion. -/
-def gi_sSup_Iic [CompleteSemilatticeSup α] :
+def giSSupIic [CompleteSemilatticeSup α] :
     GaloisInsertion (sSup : Set α → α) (Iic : α → Set α) :=
   gc_sSup_Iic.toGaloisInsertion fun _ ↦ le_sSup le_rfl
 
+@[deprecated (since := "2026-07-18")]
+alias gi_sSup_Iic := giSSupIic
+
 /-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois coinsertion. -/
-def gci_Ici_sInf [CompleteSemilatticeInf α] :
+def gciIciSInf [CompleteSemilatticeInf α] :
     GaloisCoinsertion (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   gc_Ici_sInf.toGaloisCoinsertion fun _ ↦ sInf_le le_rfl
+
+@[deprecated (since := "2026-07-18")]
+alias gci_Ici_sInf := gciIciSInf
 
 /-- If `α` is a partial order with bottom element (e.g., `ℕ`, `ℝ≥0`), then `WithBot.unbot' ⊥` and
 coercion form a Galois insertion. -/
@@ -439,3 +448,33 @@ def WithBot.giUnbotDBot [Preorder α] [OrderBot α] :
   le_l_u _ := le_rfl
   choice o _ := o.unbotD ⊥
   choice_eq _ _ := rfl
+
+/-- For function `f` and `g`, `Relation.Map · f g` and `·.bicompl f g` form a Galois connection. -/
+theorem gc_map_bicompl (f : α → γ) (g : β → δ) :
+    GaloisConnection (Relation.Map · f g) (·.bicompl f g) :=
+  fun _ _ ↦ Relation.map_le_iff_le_bicompl
+
+/-- For a function `f`, `Relation.Map · f f` and `· on f` form a Galois connection. -/
+theorem gc_map_onFun (f : α → β) : GaloisConnection (Relation.Map · f f) (· on f) :=
+  gc_map_bicompl f f
+
+/-- For injective functions `f` and `g`, `Relation.Map · f g` and `·.bicompl f g` form a Galois
+coinsertion. -/
+def gciMapBicompl {f : α → γ} {g : β → δ} (hf : f.Injective) (hg : g.Injective) :
+    GaloisCoinsertion (Relation.Map · f g) (·.bicompl f g) :=
+  gc_map_bicompl f g |>.toGaloisCoinsertion (Relation.bicompl_map_eq_of_injective · hf hg |>.le)
+
+/-- For an injective function `f`, `Relation.Map · f f` and `· on f` form a Galois coinsertion. -/
+def gciMapOnFun {f : α → β} (hf : f.Injective) :
+    GaloisCoinsertion (Relation.Map · f f) (· on f) :=
+  gciMapBicompl hf hf
+
+/-- For surjective functions `f` and `g`, `Relation.Map · f g` and `·bicompl f g` form a Galois
+insertion. -/
+def giMapBicompl {f : α → γ} {g : β → δ} (hf : f.Surjective) (hg : g.Surjective) :
+    GaloisInsertion (Relation.Map · f g) (·.bicompl f g) :=
+  gc_map_bicompl f g |>.toGaloisInsertion (Relation.map_bicompl_eq_of_surjective · hf hg |>.symm.le)
+
+/-- For a surjective function `f`, `Relation.Map · f f` and `· on f` form a Galois insertion. -/
+def giMapOnFun {f : α → β} (hf : f.Surjective) : GaloisInsertion (Relation.Map · f f) (· on f) :=
+  giMapBicompl hf hf

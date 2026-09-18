@@ -33,7 +33,7 @@ universe v₁ v₂ v₃ v₄ v₄' v₅ v₅' v₆ u₁ u₂ u₃ u₄ u₄' u�
 
 namespace CategoryTheory
 
-open Localization Functor
+open Localization CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
@@ -79,8 +79,8 @@ def id : LocalizerMorphism W₁ W₁ where
   functor := 𝟭 C₁
   map _ _ _ hf := hf
 
-set_option backward.defeqAttrib.useBackward true in
-instance : (id W₁).functor.IsEquivalence := by dsimp; infer_instance
+instance : (id W₁).functor.IsEquivalence :=
+  inferInstanceAs (𝟭 C₁).IsEquivalence
 
 variable {W₁ W₂ W₃}
 
@@ -199,7 +199,7 @@ lemma isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L
 
 instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
   let G := Φ.localizedFunctor W₁.Q W₂.Q
-  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+  let : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
     ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
   have := Φ.isEquivalence W₁.Q W₂.Q G
   exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
@@ -224,7 +224,7 @@ an equivalence of categories and that `W₁` and `W₂` essentially correspond t
 other via this equivalence, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
-  haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
+  have : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
     refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
       (asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
       ((associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
@@ -321,7 +321,7 @@ instance [Φ.IsLocalizedFullyFaithful] : (Φ.localizedFunctor L₁ L₂).Faithfu
 
 instance [Φ.IsLocalizedFullyFaithful] : Φ.op.IsLocalizedFullyFaithful := by
   let G := Φ.localizedFunctor W₁.Q W₂.Q
-  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+  let : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
     ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
   exact IsLocalizedFullyFaithful.mk' Φ.op W₁.Q.op W₂.Q.op G.op
     (Φ.fullyFaithful W₁.Q W₂.Q G).op
@@ -344,7 +344,7 @@ lemma isLocalization_of_isLocalizedFullyFaithful
       (Arrow.isoOfNatIso iso f)).1 (Localization.inverts L₂ W₂ _ (Φ.map _ hf))
   let G := Localization.lift L₁ h W₁.Q
   let e : W₁.Q ⋙ G ≅ L₁ := Localization.fac L₁ h W₁.Q
-  letI : CatCommSq Φ.functor W₁.Q L₂ (G ⋙ F) :=
+  let : CatCommSq Φ.functor W₁.Q L₂ (G ⋙ F) :=
     ⟨iso ≪≫ isoWhiskerRight e.symm _ ≪≫ associator _ _ _⟩
   have hG : G.FullyFaithful := Functor.FullyFaithful.ofCompFaithful
     (Φ.fullyFaithful W₁.Q L₂ (G ⋙ F))
@@ -377,12 +377,12 @@ lemma isLocalizedEquivalence_op_iff :
   constructor
   · intro
     let G := Φ.op.localizedFunctor W₁.Q.op W₂.Q.op
-    letI : CatCommSq Φ.functor W₁.Q W₂.Q G.unop :=
+    let : CatCommSq Φ.functor W₁.Q W₂.Q G.unop :=
       ⟨NatIso.unop (CatCommSq.iso Φ.op.functor W₁.Q.op W₂.Q.op G).symm⟩
     exact IsLocalizedEquivalence.mk' Φ W₁.Q W₂.Q G.unop
   · intro
     let G := Φ.localizedFunctor W₁.Q W₂.Q
-    letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+    let : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
       ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
     exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
 
@@ -437,6 +437,7 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_counitIso_hom_app
   Functor.asEquivalence_counitIso_inv_app in
@@ -458,6 +459,7 @@ instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_inverse
   Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in

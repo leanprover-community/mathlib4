@@ -94,7 +94,7 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
 /- Then the equality follows from the hypothesis that `f` is a 1-cocycle. -/
   simp only [IsMulCocycle₁, AlgEquiv.smul_units_def,
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
-    Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
+    Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_ofClass] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
   exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
     (Group.mulLeft_bijective g) _ _ (fun i => rfl))
@@ -133,7 +133,6 @@ that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
 such that `y/g y = x`. -/
 theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
     (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, y / g y = x := by
-  classical
   suffices H : ∀ x, Algebra.norm K x = 1 → ∃ y : Lˣ, g y / y = x by
     have hxinv : Algebra.norm K x⁻¹ = 1 := by simp [Algebra.norm_inv, hx]
     obtain ⟨y, hy⟩ := H _ hxinv

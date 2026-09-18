@@ -3,10 +3,7 @@ module
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.SetNotationForOrder
 
-attribute [use_set_notation_for_order] Set
-
 section Delab
-
 -- `LE.le` is printed as `≤` or `⊆` depending on the type.
 
 /-- info: a ⊆ b : Prop -/
@@ -52,10 +49,9 @@ variable (a b : Nat) in
 end Delab
 
 section Elab
+-- `⊆` is elaborated to `LE.le` or `Subset` depending on the type.
 
 set_option pp.notation false -- So we can see the difference between `LE.le` and `Subset`.
-
--- `⊆` is elaborated to `LE.le` or `Subset` depending on the type.
 
 /-- info: LE.le a b : Prop -/
 #guard_msgs in
@@ -148,3 +144,19 @@ example (a b : List Nat) : True ∨ True ∨ a ⊆ b := by
   left; trivial
 
 end Elab
+
+section UsesSetNotationForOrder
+-- Theorems like `subset_rfl` should only apply to things tagged with `use_set_notation_for_order`
+
+/--
+error: failed to synthesize instance of type class
+  UsesSetNotationForOrder ℕ
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+-/
+#guard_msgs in
+example : 1 ≤ 1 := subset_rfl
+
+example : ({1} : Set Nat) ≤ {1} := subset_rfl
+
+end UsesSetNotationForOrder

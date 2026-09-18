@@ -42,8 +42,6 @@ universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
 
-open Category Localization
-
 variable {C₁ C₂ D₁ D₂ H : Type*}
   [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂] [Category* H]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
@@ -140,7 +138,7 @@ def isoMk {R R' : Φ.RightResolution X₂} (e : R.X₁ ≅ R'.X₁)
     { f := e.inv
       --hf := W₁.of_isIso _
       comm := by
-        rw [← comm, Category.assoc, Iso.map_hom_inv_id, comp_id] }
+        rw [← comm, Category.assoc, Iso.map_hom_inv_id, Category.comp_id] }
 
 end RightResolution
 
@@ -211,6 +209,7 @@ def chgObj {X₂' : C₂} [W₂.IsStableUnderComposition] (π : X₂ ⟶ X₂') 
   map φ :=
     { f := φ.f }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def chgObjEquivalence {X₂' : C₂} (e : X₂ ≅ X₂') [W₂.IsMultiplicative] [W₂.RespectsIso] :
@@ -302,6 +301,7 @@ def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     { f := φ.unop.f.unop
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories
 `(Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂)`. -/
@@ -379,7 +379,6 @@ lemma hasRightResolutions_of_iso_of_essSurj
     w := e.inv ≫ R.functor.map ρ.w ≫ iso.hom.app _
     hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk e (iso.app _))).1 (R.map _ ρ.hw) }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasLeftResolutions_of_iso_of_essSurj
     [R.functor.EssSurj] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.HasLeftResolutions] :
@@ -392,7 +391,6 @@ lemma hasLeftResolutions_of_iso_of_essSurj
     w := iso.inv.app _ ≫ R.functor.map ρ.w ≫ e.hom
     hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk (iso.app _) e)).1 (R.map _ ρ.hw) }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasRightResolutions_of_iso_of_essSurj_of_full
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [B.HasRightResolutions] :
@@ -442,7 +440,7 @@ lemma hasRightResolutions_arrow_of_essSurj_of_full
     [R.functor.EssSurj] [R.functor.Full] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasRightResolutions] :
     B.arrow.HasRightResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasRightResolutions_of_iso_of_essSurj
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -450,7 +448,7 @@ lemma hasLeftResolutions_arrow_of_essSurj_of_full
     [R.functor.EssSurj] [R.functor.Full] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasLeftResolutions] :
     B.arrow.HasLeftResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasLeftResolutions_of_iso_of_essSurj
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -458,7 +456,7 @@ lemma hasRightResolutions_arrow_iff_of_equivalences
     [R.functor.IsEquivalence] [R.IsInduced] [L.functor.IsEquivalence] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.arrow.HasRightResolutions ↔ B.arrow.HasRightResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasRightResolutions_iff_iso_of_essSurj_of_full
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -466,7 +464,7 @@ lemma hasLeftResolutions_arrow_iff_of_equivalences
     [R.functor.IsEquivalence] [R.IsInduced] [L.functor.IsEquivalence] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.arrow.HasLeftResolutions ↔ B.arrow.HasLeftResolutions := by
-  letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasLeftResolutions_iff_iso_of_essSurj_of_full
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 

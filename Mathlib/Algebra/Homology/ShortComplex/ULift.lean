@@ -137,20 +137,4 @@ lemma _root_.ShortComplex.exact_and_epi_g_iff_of_addEquiv :
 
 end
 
-section
-
-variable
-  {S S' : Arrow₂ Ab.{v}}
-  (e₀ : S.X₀ ≃+ S'.X₀) (e₁ : S.X₁ ≃+ S'.X₁) (e₂ : S.X₂ ≃+ S'.X₂)
-  (commf : ∀ (x₁ : S.X₀), S'.f (e₀ x₁) = e₁ (S.f x₁))
-  (commg : ∀ (x₂ : S.X₁), S'.g (e₁ x₂) = e₂ (S.g x₂))
-
-@[simps!]
-def arrow₂IsoMk : S ≅ S' :=
-  Arrow₂.isoMk e₀.toAddCommGrpIso
-    e₁.toAddCommGrpIso e₂.toAddCommGrpIso
-      (by ext; apply commf) (by ext; apply commg)
-
-end
-
 end AddCommGrpCat

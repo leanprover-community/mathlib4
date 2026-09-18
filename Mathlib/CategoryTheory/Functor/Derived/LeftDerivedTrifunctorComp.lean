@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₄ C₂₃₄ C D₁ D₂ D₃ D₄ D₂₃₄ D : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₂₃₄] [Category C]

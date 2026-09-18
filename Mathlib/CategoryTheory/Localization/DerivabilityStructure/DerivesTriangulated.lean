@@ -1,66 +1,87 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTriangulated
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
-public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 
 /-!
-# The right derived functor is triangulated
+# Triangulated derived functors using derivability structures
+
+This file provides lemmas in order to show that derived functors are triangulated
+when they are "derived" by a left or right derivability structure whose underlying
+functor is triangulated.
 
 -/
 
-@[expose] public section
-
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+public section
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated
+open Limits Category Pretriangulated
 
-variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
-  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
-  {D₁ : Type u₄} {D₂ : Type u₅}
-  [Category.{v₄} D₁] [Category.{v₅} D₂]
+variable {C₁ C₂ H D₂ : Type*}
+  [Category* C₁] [Category* C₂] [Category* H] [Category* D₂]
+  [HasZeroObject C₁] [HasShift C₁ ℤ] [Preadditive C₁]
+  [HasZeroObject C₂] [HasShift C₂ ℤ] [Preadditive C₂]
+  [HasZeroObject H] [HasShift H ℤ] [Preadditive H]
+  [HasZeroObject D₂] [HasShift D₂ ℤ] [Preadditive D₂]
+  [∀ (n : ℤ), (shiftFunctor C₁ n).Additive]
+  [∀ (n : ℤ), (shiftFunctor C₂ n).Additive]
+  [∀ (n : ℤ), (shiftFunctor H n).Additive]
+  [∀ (n : ℤ), (shiftFunctor D₂ n).Additive]
+  [Pretriangulated C₁] [Pretriangulated C₂]
+  [Pretriangulated H] [Pretriangulated D₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
-namespace LocalizerMorphism
+namespace LocalizerMorphism.Derives
 
-variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsRightDerivabilityStructure]
-  [Φ.arrow.HasRightResolutions]
-  (F : C₂ ⥤ H) (hF : W₁.IsInvertedBy (Φ.functor ⋙ F))
-  (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂] [L₂.mapArrow.EssSurj]
-  (RF : D₂ ⥤ H) (α : F ⟶ L₂ ⋙ RF) [RF.IsRightDerivedFunctor α W₂]
-  [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D₂ ℤ] [HasShift H ℤ]
-  [HasZeroObject C₁] [HasZeroObject C₂] [HasZeroObject D₂] [HasZeroObject H]
-  [Preadditive C₁] [Preadditive C₂] [Preadditive D₂] [Preadditive H]
-  [∀ (n : ℤ), (shiftFunctor C₁ n).Additive] [∀ (n : ℤ), (shiftFunctor C₂ n).Additive]
-  [∀ (n : ℤ), (shiftFunctor D₂ n).Additive] [∀ (n : ℤ), (shiftFunctor H n).Additive]
-  [Pretriangulated C₁] [Pretriangulated C₂] [Pretriangulated D₂] [Pretriangulated H]
-  [F.CommShift ℤ] [L₂.CommShift ℤ] [RF.CommShift ℤ] [Φ.functor.CommShift ℤ]
-  [NatTrans.CommShift α ℤ] [F.IsTriangulated] [L₂.IsTriangulated] [Φ.functor.IsTriangulated]
+variable {Φ : LocalizerMorphism W₁ W₂}
+  [Φ.functor.CommShift ℤ] [Φ.functor.IsTriangulated]
+  {F : C₂ ⥤ H} [F.CommShift ℤ] [F.IsTriangulated]
+  (hF : Φ.Derives F)
+  {L : C₂ ⥤ D₂} [L.IsLocalization W₂] [L.CommShift ℤ] [L.IsTriangulated]
+  [L.mapArrow.EssSurj]
 
-set_option backward.defeqAttrib.useBackward true in
-include α hF in
-lemma isTriangulated_of_isRightDerivedFunctor : RF.IsTriangulated :=
-  RF.isTriangulated_of_isRightDerivedFunctor α (fun X Y f => by
-    have φ : Φ.arrow.RightResolution (L₂.mapArrow.objPreimage (Arrow.mk f)) :=
-      Classical.arbitrary _
-    obtain ⟨Z, a, b, hT⟩ := distinguished_cocone_triangle φ.X₁.hom
+include hF in
+lemma isTriangulated_of_isRightDerivedFunctor
+    [Φ.IsRightDerivabilityStructure] [Φ.arrow.HasRightResolutions]
+    {RF : D₂ ⥤ H} [RF.CommShift ℤ]
+    (α : F ⟶ L ⋙ RF) [NatTrans.CommShift α ℤ]
+    [RF.IsRightDerivedFunctor α W₂] :
+    RF.IsTriangulated :=
+  Functor.isTriangulated_of_leftExtension _ α fun X Y f ↦ by
+    obtain ⟨φ, ⟨eφ⟩⟩ := Functor.EssSurj.mem_essImage (F := L.mapArrow) (Arrow.mk f)
+    let R : Φ.arrow.RightResolution φ := Classical.arbitrary _
+    obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle R.X₁.hom
+    exact ⟨_, Φ.functor.map_distinguished _ hT,
+      hF.isIso_of_isRightDerivedFunctor _ _, hF.isIso_of_isRightDerivedFunctor _ _,
+      hF.isIso_of_isRightDerivedFunctor _ _,
+      ⟨(Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
+        (Localization.isoOfHom L _ _ R.hw.2) (by simp [← Functor.map_comp])).symm ≪≫ eφ⟩⟩
+
+include hF in
+lemma isTriangulated_of_isLeftDerivedFunctor
+    [Φ.IsLeftDerivabilityStructure] [Φ.arrow.HasLeftResolutions]
+    {LF : D₂ ⥤ H} [LF.CommShift ℤ]
+    (α : L ⋙ LF ⟶ F) [NatTrans.CommShift α ℤ]
+    [LF.IsLeftDerivedFunctor α W₂] :
+    LF.IsTriangulated :=
+  Functor.isTriangulated_of_rightExtension _ α fun X Y f ↦ by
+    obtain ⟨φ, ⟨eφ⟩⟩ := Functor.EssSurj.mem_essImage (F := L.mapArrow) (Arrow.mk f)
+    let R : Φ.arrow.LeftResolution φ := Classical.arbitrary _
+    obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle R.X₁.hom
     refine ⟨_, Φ.functor.map_distinguished _ hT,
-      Φ.isIso_app_of_isRightDerivedFunctor F hF L₂ RF α _,
-      Φ.isIso_app_of_isRightDerivedFunctor F hF L₂ RF α _,
-      Φ.isIso_app_of_isRightDerivedFunctor F hF L₂ RF α _,
-      ⟨Iso.symm ?_ ≪≫ L₂.mapArrow.objObjPreimageIso (Arrow.mk f)⟩⟩
-    refine Arrow.isoMk (Localization.isoOfHom L₂ W₂ _ φ.hw.left)
-      (Localization.isoOfHom L₂ W₂ _ φ.hw.right) ?_
-    dsimp
-    simp only [← L₂.map_comp, Arrow.w_mk_right])
+      hF.isIso_of_isLeftDerivedFunctor _ _, hF.isIso_of_isLeftDerivedFunctor _ _,
+      hF.isIso_of_isLeftDerivedFunctor _ _, ⟨?_ ≪≫ eφ⟩⟩
+    exact Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
+      (Localization.isoOfHom L _ _ R.hw.2)
+      (by simp [← Functor.map_comp])
 
-end LocalizerMorphism
+end LocalizerMorphism.Derives
 
 end CategoryTheory

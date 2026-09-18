@@ -142,6 +142,7 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
+    simp_rw [HPow.hPow, Pow.pow]
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 
@@ -239,6 +240,14 @@ attribute [nolint simpComm] AddOpposite.addCommute_unop
 
 @[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
   MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›
+
+@[to_additive (attr := simp)]
+theorem isMulCommutative_op_iff [Mul α] : IsMulCommutative αᵐᵒᵖ ↔ IsMulCommutative α := by
+  simp [isMulCommutative_iff, ← commute_iff_eq]
+
+@[to_additive]
+instance [Mul α] [IsMulCommutative α] : IsMulCommutative αᵐᵒᵖ :=
+  isMulCommutative_op_iff.mpr ‹_›
 
 end MulOpposite
 

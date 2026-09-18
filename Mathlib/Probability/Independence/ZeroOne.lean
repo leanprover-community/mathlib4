@@ -181,7 +181,7 @@ theorem Kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
   rw [iSup_comm]
   refine iSup_congr fun n => ?_
   have h : ⨆ (i : β) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
-  haveI : Nonempty (∃ i : β, n ∈ ns i) := ⟨hns_univ n⟩
+  have : Nonempty (∃ i : β, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]
 
 theorem indep_iSup_limsup

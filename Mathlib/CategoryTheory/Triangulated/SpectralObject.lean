@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Triangulated.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.ComposableArrows.One
 public import Mathlib.CategoryTheory.ComposableArrows.Two
-public import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-!
 # Spectral objects in triangulated categories
@@ -19,12 +18,8 @@ In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in a pretriangulated category `C` indexed by the category `ι`.
 
 ## TODO (@joelriou)
-* construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
-  of all truncations of an object of a triangulated category equipped with a t-structure
-* define a similar notion of spectral objects in abelian categories, show that
-  by applying a homological functor `C ⥤ A` to a spectral object in the
-  triangulated category `C`, we obtain a spectral object in the abelian category `A`
 * construct the spectral sequence attached to a spectral object in an abelian category
+ (the spectral sequence is already constructed: it remains to study convergence)
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
@@ -83,16 +78,12 @@ are composable. -/
 def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
   X.δ'.app (mk₂ f g)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
     (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0) :
     X.ω₁.map β ≫ X.δ f' g' = X.δ f g ≫ (X.ω₁.map α)⟦(1 : ℤ)⟧' := by
   let φ : mk₂ f g ⟶ mk₂ f' g' := homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
-    (by
-      dsimp
-      simp only [hαβ]
-      exact naturality' β 0 1)
+    (by simp [Precomp.map, hαβ, dsimp% naturality' β 0 1] )
   have h := X.δ'.naturality φ
   dsimp at h
   simp only [φ, hαβ] at h
@@ -100,7 +91,7 @@ lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
 
 /-- The distinguished triangle attached to a spectral object `E : SpectralObject C ι`
 and composable morphisms `f : i ⟶ j` and `g : j ⟶ k` in `ι`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def triangle : Triangle C :=
   Triangle.mk (X.ω₁.map (twoδ₂Toδ₁ f g _ rfl))
     (X.ω₁.map (twoδ₁Toδ₀ f g _ rfl)) (X.δ f g)
@@ -110,10 +101,12 @@ lemma triangle_distinguished : X.triangle f g ∈ distTriang C :=
 
 section
 
-variable {f g}
-variable {i' j' k' : ι} {f' : i' ⟶ j'} {g' : j' ⟶ k'}
+variable {f g} {i' j' k' : ι} {f' : i' ⟶ j'} {g' : j' ⟶ k'}
 
-set_option backward.defeqAttrib.useBackward true in
+/-- Given a spectral object `X` indexed by `ι` in a triangulated category,
+this is the morphisms of distinguished triangles `X.triangle f g ⟶ X.triangle f' g'`
+induced by a morphism `mk₂ f g ⟶ mk₂ f' g'` in `ComposableArrows ι 2`. -/
+@[simps]
 noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
     X.triangle f g ⟶ X.triangle f' g' where
   hom₁ := X.ω₁.map ((functorArrows ι 0 1 2).map φ)
@@ -133,18 +126,15 @@ noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
     ext
     · exact naturality' φ 0 1
     · simp
-  comm₃ := by
-    symm
-    apply X.δ_naturality
-    rfl
+  comm₃ := (X.δ_naturality _ _ _ _ _ _ rfl).symm
 
 end
 
 end
+
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
 def precomp : SpectralObject C ι' where
@@ -189,14 +179,14 @@ section
 
 variable (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 
-/-- The image of a spectral by a triangulated functor. -/
-@[simps]
-def mapTriangulatedFunctor :
-    SpectralObject D ι where
+/-- The image of a spectral object by a triangulated functor. -/
+@[implicit_reducible, simps]
+def mapTriangulatedFunctor : SpectralObject D ι where
   ω₁ := X.ω₁ ⋙ F
   δ' := Functor.whiskerRight X.δ' F ≫
       Functor.whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
   distinguished' D := F.map_distinguished _ (X.distinguished' D)
+
 
 @[simp]
 lemma mapTriangulatedFunctor_δ {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
@@ -218,8 +208,7 @@ attribute [reassoc (attr := simp)] Hom.comm
 instance : Category (SpectralObject C ι) where
   Hom := Hom
   id X := { hom := 𝟙 _ }
-  comp f g :=
-    { hom := f.hom ≫ g.hom }
+  comp f g := { hom := f.hom ≫ g.hom }
 
 attribute [simp] id_hom
 attribute [reassoc (attr := simp)] comp_hom
@@ -228,13 +217,29 @@ variable {X} in
 @[ext]
 lemma hom_ext {Y : SpectralObject C ι} {α β : X ⟶ Y} (h : α.hom = β.hom) : α = β := Hom.ext h
 
+variable {X} in
+/-- If `φ : X ⟶ Y` is a morphism of spectral objects indexed by `ι`
+in a triangulated category, this is the induced morphism of distinguished
+triangles `X.triangle f g ⟶ Y.triangle f g` associated to two composable
+morphisms `f` and `g` in `ι`. -/
+@[simps]
+def triangleMap {Y : SpectralObject C ι} (φ : X ⟶ Y)
+    {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
+    X.triangle f g ⟶ Y.triangle f g where
+  hom₁ := φ.hom.app _
+  hom₂ := φ.hom.app _
+  hom₃ := φ.hom.app _
+
 section
 
-variable {A : Type*} [Category A] [Abelian A]
-  (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ]
+variable {A : Type*} [Category* A] [Abelian A]
 
-@[simps]
-noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
+/-- If `X` is a spectral object indexed by `ι` in a triangulated category `C`, and
+`F : C ⥤ A` is a homological functor, this is the spectral object in the
+abelian category `A` that is obtained by applying `F` to `X`. -/
+@[implicit_reducible, simps H]
+noncomputable def mapHomologicalFunctor (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ] :
+    Abelian.SpectralObject A ι where
   H n := X.ω₁ ⋙ F.shift n
   δ' n₀ n₁ h :=
     { app D := F.homologySequenceδ (X.triangle (D.map' 0 1) (D.map' 1 2)) n₀ n₁ h
@@ -255,10 +260,23 @@ noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
       (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
 
 @[simp]
-lemma mapHomologicalFunctor_δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
+lemma mapHomologicalFunctor_δ (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ]
+    {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁ := by lia) :
     (X.mapHomologicalFunctor F).δ f g n₀ n₁ h =
-      F.homologySequenceδ (X.triangle f g) n₀ n₁ h := by
-  rfl
+      F.homologySequenceδ (X.triangle f g) n₀ n₁ h := rfl
+
+/-- Given a homological functor `F : C ⥤ A`, this is the functor which sends
+a spectral object `X : SpectralObject C ι` in the triangulated category `C`
+to the spectral object `X.mapHomologicalFunctor F` in the abelian category `A`. -/
+@[implicit_reducible, simps]
+noncomputable def mapHomologicalFunctorFunctor
+    (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ] (ι : Type*) [Category* ι] :
+    SpectralObject C ι ⥤ Abelian.SpectralObject A ι where
+  obj X := X.mapHomologicalFunctor F
+  map φ :=
+    { hom n := Functor.whiskerRight φ.hom _
+      comm n₀ n₁ h _ _ _ f g :=
+        (F.homologySequenceδ_naturality (triangleMap φ f g) n₀ n₁ h).symm }
 
 end
 
@@ -273,6 +291,7 @@ variable {C}
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor between categories of spectral objects that is induced by
 a triangulated functor. -/
+@[implicit_reducible, simps]
 def mapTriangulatedSpectralObject (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
     (ι : Type*) [Category* ι] :
     Triangulated.SpectralObject C ι ⥤ Triangulated.SpectralObject D ι where

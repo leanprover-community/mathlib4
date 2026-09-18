@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Whiskering
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₄ C₁₂₃ C₂₃₄ C D₁ D₂ D₃ D₄ E : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂₃]
@@ -44,6 +44,7 @@ def whiskeringLeft₄ObjObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) 
   (whiskeringRight _ _ _).obj ((((whiskeringLeft₃ E).obj F₂).obj F₃).obj F₄) ⋙
     (whiskeringLeft C₁ D₁ _).obj F₁
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
 @[simps]
@@ -53,6 +54,7 @@ def whiskeringLeft₄ObjObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) 
       whiskeringLeft₄ObjObjObjObj E F₁ F₂ F₃ F₄' where
   app F := whiskerLeft _ (whiskerLeft _ ((((whiskeringLeft₃ E).obj F₂).obj F₃).map τ₄))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C₄ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
 @[simps]
@@ -62,6 +64,7 @@ def whiskeringLeft₄ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F�
   map τ₄ := whiskeringLeft₄ObjObjObjMap E F₁ F₂ F₃ τ₄
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable (C₄ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
@@ -78,6 +81,7 @@ def whiskeringLeft₄ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
   obj F₃ := whiskeringLeft₄ObjObjObj C₄ D₄ E F₁ F₂ F₃
   map τ₃ := whiskeringLeft₄ObjObjMap C₄ D₄ E F₁ F₂ τ₃
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 variable (C₃ C₄ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
@@ -99,6 +103,7 @@ def whiskeringLeft₄Obj (F₁ : C₁ ⥤ D₁) :
   obj F₂ := whiskeringLeft₄ObjObj C₃ C₄ D₃ D₄ E F₁ F₂
   map τ₂ := whiskeringLeft₄ObjMap C₃ C₄ D₃ D₄ E F₁ τ₂
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 variable (C₂ C₃ C₄ D₂ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/

@@ -19,7 +19,7 @@ setting the correct order on their shared indexing type.
 
 open Function Set
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β : Type*}
 
 section
 variable [LinearOrder α] [LinearOrder β] (f : ι → α) (g : ι → β) {s : Set ι}
@@ -44,7 +44,7 @@ variable {f g}
 lemma monovaryOn_iff_exists_monotoneOn :
     MonovaryOn f g s ↔ ∃ (_ : LinearOrder ι), MonotoneOn f s ∧ MonotoneOn g s := by
   classical
-  letI := linearOrderOfSTO (MonovaryOrder f g)
+  let := linearOrderOfSTO (MonovaryOrder f g)
   refine ⟨fun hfg => ⟨‹_›, monotoneOn_iff_forall_lt.2 fun i hi j hj hij => ?_,
     monotoneOn_iff_forall_lt.2 fun i hi j hj hij => ?_⟩, ?_⟩
   · obtain h | ⟨h, -⟩ := Prod.lex_iff.1 hij <;> exact h.le

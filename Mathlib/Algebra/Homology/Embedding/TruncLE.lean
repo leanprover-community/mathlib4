@@ -57,6 +57,7 @@ lemma truncLE'_d_eq {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
         (K.truncLE'XIso e hj' hj).inv :=
   Quiver.Hom.op_inj (by simpa using! K.op.truncGE'_d_eq e.op hij hj' hi' (by simpa))
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma truncLE'_d_eq_toCycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hj : e.BoundaryLE j) :
     (K.truncLE' e).d i j = (K.truncLE'XIso e hi' (e.not_boundaryLE_prev hij)).hom ≫

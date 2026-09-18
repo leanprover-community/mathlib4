@@ -112,9 +112,10 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ιStupidTruncf_eq [e.IsRelIff] (i : ι) :
     K.ιStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).hom := by
   dsimp [ιStupidTruncf]
-  rw [dif_pos ⟨i, rfl⟩]
+  rw [dite_eq_left ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma ιStupidTruncf'_eq [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
     K.ιStupidTruncf e i' = ((K.restriction e).extendXIso e h).hom ≫
@@ -124,6 +125,7 @@ lemma ιStupidTruncf'_eq [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
 
 variable [e.IsTruncGE]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
   f := K.ιStupidTruncf e
@@ -134,6 +136,7 @@ noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
       simp [ιStupidTruncf_eq, stupidTrunc, (K.restriction e).extend_d_eq e rfl rfl]
     · apply (K.isZero_stupidTrunc_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_ιStupidTrunc_f {i' : ι'} {i : ι} (h : e.f i = i') :
     IsIso ((K.ιStupidTrunc e).f i') := by
   subst h
@@ -211,9 +214,10 @@ set_option backward.isDefEq.respectTransparency false in
 lemma πStupidTruncf_eq [e.IsRelIff] (i : ι) :
     K.πStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).inv := by
   dsimp [πStupidTruncf]
-  rw [dif_pos ⟨i, rfl⟩]
+  rw [dite_eq_left ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Variant of `πStupidTruncf_eq`. -/
 lemma πStupidTruncf_eq' [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
@@ -224,6 +228,7 @@ lemma πStupidTruncf_eq' [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
 
 variable [e.IsTruncLE]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
   f := K.πStupidTruncf e
@@ -234,6 +239,7 @@ noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
       simp [πStupidTruncf_eq, stupidTrunc, (K.restriction e).extend_d_eq e rfl rfl]
     · apply (K.isZero_stupidTrunc_X e j' (fun j hj => hj' ⟨j, hj⟩)).eq_of_tgt
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_πStupidTrunc_f {i' : ι'} {i : ι} (h : e.f i = i') :
     IsIso ((K.πStupidTrunc e).f i') := by
   subst h
@@ -300,6 +306,7 @@ section
 
 variable (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsRelIff] (i' : ι')
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιStupidTruncf_πStupidTruncf :
     K.ιStupidTruncf e i' ≫ K.πStupidTruncf e i' = 𝟙 _ := by

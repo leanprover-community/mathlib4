@@ -58,7 +58,7 @@ variable (φ : K.restriction e ⟶ L)
 
 variable {e}
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `liftExtend`. -/
 noncomputable def f (i' : ι') : K.X i' ⟶ (L.extend e).X i' :=
   if hi' : ∃ i, e.f i = i' then
@@ -121,6 +121,7 @@ lemma liftExtend_f :
       (L.extendXIso e hi).inv := by
   apply liftExtend.f_eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given `φ : K.restriction e ⟶ L` such that `hφ : e.HasLift φ`, this is
 the isomorphisms in the category of arrows between the maps
@@ -165,7 +166,7 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
   have hi' : ∃ k, e.f k = i' := ⟨i, hi⟩
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
   dsimp [f]
-  rw [dif_pos ⟨i, hi⟩]
+  rw [dite_eq_left ⟨i, hi⟩]
   subst this
   rfl
 
@@ -212,6 +213,7 @@ lemma descExtend_f :
     (e.descExtend φ hφ).f i' = (L.extendXIso e hi).hom ≫ φ.f i ≫(K.restrictionXIso e hi).hom := by
   apply descExtend.f_eq
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def descExtendfArrowIso :
     Arrow.mk ((e.descExtend φ hφ).f i') ≅ Arrow.mk (φ.f i) :=
@@ -243,6 +245,7 @@ variable (ψ : K ⟶ L.extend e)
 noncomputable def f (i : ι) : (K.restriction e).X i ⟶ L.X i :=
   ψ.f (e.f i) ≫ (L.extendXIso e rfl).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma f_eq {i : ι} {i' : ι'} (h : e.f i = i') :
     f ψ i = (K.restrictionXIso e h).hom ≫ ψ.f i' ≫ (L.extendXIso e h).hom := by
@@ -291,6 +294,7 @@ lemma homRestrict_liftExtend (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ) :
   ext i
   simp [e.homRestrict_f _ rfl, e.liftExtend_f _ _ rfl]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma homRestrict_precomp (α : K' ⟶ K) (ψ : K ⟶ L.extend e) :
@@ -313,6 +317,7 @@ variable (ψ : L.extend e ⟶ K)
 noncomputable def f (i : ι) : L.X i ⟶ (K.restriction e).X i :=
   (L.extendXIso e rfl).inv ≫ ψ.f (e.f i)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma f_eq {i : ι} {i' : ι'} (h : e.f i = i') :
     f ψ i = (L.extendXIso e h).inv ≫ ψ.f i' ≫ (K.restrictionXIso e h).inv := by
@@ -365,6 +370,7 @@ lemma homRestrict'_descExtend (φ : L ⟶ K.restriction e) (hφ : e.HasDesc φ) 
   ext i
   simp [e.homRestrict'_f _ rfl, e.descExtend_f _ _ rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma homRestrict'_postcomp (α : K ⟶ K') (ψ : L.extend e ⟶ K) :

@@ -49,6 +49,15 @@ theorem comp {g : Y → Z} (hg : IsOpenQuotientMap g) (hf : IsOpenQuotientMap f)
     IsOpenQuotientMap (g ∘ f) :=
   ⟨.comp hg.1 hf.1, .comp hg.2 hf.2, .comp hg.3 hf.3⟩
 
+theorem of_comp {g : Y → Z} (hf : Continuous f) (f_surj : Surjective f) (hg : Continuous g)
+    (h : IsOpenQuotientMap (g ∘ f)) : IsOpenQuotientMap g :=
+  ⟨.of_comp h.surjective, hg, .of_comp hf f_surj h.isOpenMap ⟩
+
+theorem of_comp_iff {g : Y → Z} (hf : IsOpenQuotientMap f) :
+    IsOpenQuotientMap (g ∘ f) ↔ IsOpenQuotientMap g :=
+  ⟨fun h ↦ .of_comp hf.continuous hf.surjective
+    (hf.isQuotientMap.continuous_iff.mpr h.continuous) h, fun hg ↦ hg.comp hf⟩
+
 theorem map_nhds_eq (h : IsOpenQuotientMap f) (x : X) : map f (𝓝 x) = 𝓝 (f x) :=
   le_antisymm h.continuous.continuousAt <| h.isOpenMap.nhds_le _
 
@@ -59,6 +68,10 @@ theorem continuous_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} :
 theorem continuousAt_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} {x : X} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp only [ContinuousAt, ← h.map_nhds_eq, tendsto_map'_iff, comp_def]
+
+theorem isOpenMap_iff (hf : IsOpenQuotientMap f) {g : Y → Z} :
+    IsOpenMap g ↔ IsOpenMap (g ∘ f) :=
+  ⟨fun hg ↦ hg.comp hf.isOpenMap, fun h ↦ .of_comp hf.continuous hf.surjective h⟩
 
 theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻¹' s) ↔ Dense s :=
   ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),

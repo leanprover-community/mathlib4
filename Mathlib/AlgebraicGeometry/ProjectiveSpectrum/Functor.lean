@@ -22,11 +22,10 @@ namespace AlgebraicGeometry
 
 section universe_polymorphic
 
-variable {A B C σ τ ψ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable {A B C σ τ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
   [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
-  [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
-  {𝒜 : ℕ → σ} {ℬ : ℕ → τ} {𝒞 : ℕ → ψ} [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
-  (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (hf : ℬ₊ ≤ 𝒜₊.map f) (hg : 𝒞₊ ≤ ℬ₊.map g)
+  [CommRing C] {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜] [GradedRing ℬ]
+  (f : 𝒜 →+*ᵍ ℬ) (hf : ℬ₊ ≤ 𝒜₊.map f)
 
 namespace ProjectiveSpectrum
 
@@ -95,6 +94,7 @@ variable {A B C σ τ ψ : Type u} [CommRing A] [SetLike σ A] [AddSubgroupClass
   {𝒜 : ℕ → σ} {ℬ : ℕ → τ} {𝒞 : ℕ → ψ} [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
   (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (hf : ℬ₊ ≤ 𝒜₊.map f) (hg : 𝒞₊ ≤ ℬ₊.map g)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The underlying map of `Proj ℬ ⟶ Proj 𝒜` on the level of sheafed spaces. -/
 @[simps! (isSimp := false)] noncomputable def sheafedSpaceMap :
     Proj.toSheafedSpace ℬ ⟶ Proj.toSheafedSpace 𝒜 where
@@ -112,12 +112,14 @@ lemma germ_map_sectionInBasicOpen {p : ProjectiveSpectrum ℬ}
       (sectionInBasicOpen ℬ p (c.map _ le_rfl)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma val_sectionInBasicOpen_apply (p : ProjectiveSpectrum.top 𝒜)
     (c : NumDenSameDeg 𝒜 p.1.toIdeal.primeCompl)
     (q : ProjectiveSpectrum.basicOpen 𝒜 c.den) :
     ((sectionInBasicOpen 𝒜 p c).val q).val = .mk c.num ⟨c.den, q.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[elementwise] theorem localRingHom_comp_stalkIso (p : ProjectiveSpectrum ℬ) :
     (stalkIso 𝒜 (ProjectiveSpectrum.comap f hf p)).hom ≫
       CommRingCat.ofHom (localRingHom f _ _ rfl) ≫
@@ -156,6 +158,7 @@ noncomputable def map : Proj ℬ ⟶ Proj 𝒜 where
 @[simp] theorem map_preimage_basicOpen (s : A) :
     map f hf ⁻¹ᵁ basicOpen 𝒜 s = basicOpen ℬ (f s) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
     (map f hf).resLE _ _ le_rfl ≫ (basicOpen 𝒜 s).ι := by simp
 

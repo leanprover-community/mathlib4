@@ -121,7 +121,7 @@ instance : Inhabited (Con M) :=
   toSetoid_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-@[to_additive
+@[to_additive (attr := macro_inline)
 /-- A coercion from an additive congruence relation to its underlying binary relation. -/]
 instance : FunLike (Con M) M (M → Prop) where
   coe c := c.r
@@ -516,6 +516,23 @@ def comap (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (c : Con N) : Con M
 theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N} {x y : M} :
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
+
+@[to_additive (attr := simp)]
+theorem comap_id (c : Con M) : c.comap id (by intros; rfl) = c := rfl
+
+@[to_additive (attr := simp)]
+theorem comap_comp (c : Con P) (g : N → P) (f : M → N) (hg) (hf) :
+    c.comap (g ∘ f) (by grind) = (c.comap g hg).comap f hf := rfl
+
+@[to_additive]
+theorem le_comap_conGen (r : N → N → Prop) (f : M → N) (hf) :
+    conGen (r.onFun f) ≤ (conGen r).comap f hf :=
+  conGen_le.2 fun _ _ h => ConGen.Rel.of _ _ h
+
+@[to_additive]
+theorem comap_injective (f : M → N) (hf : Function.Surjective f) (hf') :
+    Function.Injective (comap f hf') :=
+  .of_comp (f := toSetoid) <| (Setoid.comap_injective f hf).comp toSetoid_injective
 
 end
 
