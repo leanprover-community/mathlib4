@@ -42,7 +42,7 @@ variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a b : α}
 
 instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
-  coe_injective' L M h := by cases L; congr
+  coe_injective L M h := by cases L; congr
 
 instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
 
@@ -302,7 +302,7 @@ lemma map_top (f : LatticeHom α β) (h : Surjective f) : Sublattice.map f ⊤ =
 end Sublattice
 
 namespace Sublattice
-variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a : α}
+variable {L M : Sublattice α} {f : LatticeHom α β} {s : Set α} {a : α}
 
 /-- Binary product of sublattices as a sublattice. -/
 @[simps]
@@ -345,7 +345,7 @@ lemma top_prod (L : Sublattice β) : (⊤ : Sublattice α).prod L = L.comap Latt
 
 lemma le_prod_iff {M : Sublattice β} {N : Sublattice (α × β)} :
     N ≤ L.prod M ↔ N ≤ comap LatticeHom.fst L ∧ N ≤ comap LatticeHom.snd M := by
-  simp [SetLike.le_def, forall_and]
+  simp [IsConcreteLE.le_iff, forall_and]
 
 @[simp] lemma prod_eq_bot {M : Sublattice β} : L.prod M = ⊥ ↔ L = ⊥ ∨ M = ⊥ := by
   simpa only [← coe_inj] using! Set.prod_eq_empty_iff
@@ -387,7 +387,9 @@ attribute [norm_cast] coe_pi
 lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
 
 lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
-    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; grind
+    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by
+  simp [IsConcreteLE.le_iff]
+  grind
 
 @[simp] lemma pi_univ_eq_bot_iff {L : ∀ i, Sublattice (π i)} : pi univ L = ⊥ ↔ ∃ i, L i = ⊥ := by
   simp_rw [← coe_inj]; simp

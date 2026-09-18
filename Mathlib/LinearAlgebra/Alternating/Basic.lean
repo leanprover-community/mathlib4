@@ -91,9 +91,10 @@ open Function
 
 section Coercions
 
+@[macro_inline]
 instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
@@ -785,7 +786,7 @@ theorem map_linearDependent {K M N : Type*} [Ring K] [IsDomain K] [AddCommGroup 
     [AddCommGroup N] [Module K N] [IsTorsionFree K N] (f : M [⋀^ι]→ₗ[K] N)
     (v : ι → M) (h : ¬LinearIndependent K v) : f v = 0 := by
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   suffices f (update v i (g i • v i)) = 0 by
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
@@ -852,6 +853,14 @@ theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
   simp only [alternatization_def, smul_apply, sum_apply]
+
+@[simp]
+theorem alternatization_compLinearMap
+    (f : MultilinearMap R (fun _ : ι => M') N')
+    (g : M →ₗ[R] M') :
+    (f.compLinearMap fun _ => g).alternatization = f.alternatization.compLinearMap g := by
+  ext
+  simp [alternatization]
 
 end MultilinearMap
 

@@ -116,8 +116,10 @@ circle homeomorphism, rotation number
 
 @[expose] public section
 
-open Filter Set Int Topology
+open Filter Set Int
 open Function hiding Commute
+
+open scoped Topology
 
 /-!
 ### Definition and monoid structure
@@ -129,9 +131,10 @@ structure CircleDeg1Lift : Type extends ℝ →o ℝ where
 
 namespace CircleDeg1Lift
 
+@[macro_inline]
 instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
-  coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
+  coe_injective | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
 
 instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
   map_rel f _ _ h := f.monotone' h

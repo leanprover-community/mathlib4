@@ -26,7 +26,6 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory
 
@@ -96,6 +95,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factors (0 : X ⟶ Y) :=
   (factors_iff _ _).mpr ⟨0, by simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem factors_of_le {Y Z : C} {P Q : Subobject Y} (f : Z ⟶ Y) (h : P ≤ Q) :
     P.Factors f → Q.Factors f := by
   simp only [factors_iff]

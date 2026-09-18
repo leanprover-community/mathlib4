@@ -63,14 +63,13 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `R[X₁, ..., Xₙ] → S` factors via `T`, because the `bᵢ` are in `I`. -/
 def hom : D.T →ₐ[R] S := Ideal.Quotient.liftₐ _ (aeval P.val) <| by
-  simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
+  simp_rw [← RingHom.mem_ker, ← IsConcreteLE.le_iff, Ideal.span_le, Set.range_subset_iff]
   intro i
   simpa only [Generators.toExtension_Ring, Generators.toExtension_commRing, Function.comp_apply,
     SetLike.mem_coe, RingHom.mem_ker, ← P.algebraMap_apply] using (D.f _).property
 
 instance : Algebra D.T S := D.hom.toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Nontrivial S] : Nontrivial D.T := RingHom.domain_nontrivial (algebraMap D.T S)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -98,7 +97,7 @@ instance : IsLocalization.Away D.gbar S := by
     rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
     exact D.hgmem
 
-open Classical in
+open scoped Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
 We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to `0`. -/
 def presLeft : Presentation R D.T ι σ :=
@@ -120,7 +119,6 @@ def fhom : D.presLeft.Hom P where
   val i := X i
   aeval_val i := by simp [RingHom.algebraMap_toAlgebra, presLeft, hom, T]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toAlgHom_fhom : D.fhom.toAlgHom = AlgHom.id R P.Ring := by
   ext : 1
@@ -134,7 +132,7 @@ lemma ker_presLeft_le : D.presLeft.ker ≤ P.ker := by
     toExtension_algebra₂, algebraMap_apply, Ideal.Quotient.algebraMap_eq,
     map_zero] using! (algebraMap D.T S).congr_arg hx
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P.toExtension.Cotangent :=
   LinearMap.liftBaseChange _ (Extension.Cotangent.map D.fhom.toExtensionHom)
@@ -149,17 +147,16 @@ lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
     toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, toExtension_Ring,
     toExtension_commRing, toExtension_algebra₂, Presentation.naive_toGenerators, RingHom.id_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The backwards direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
   b.constr S fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorCotangentInv_apply (i : σ) :
     D.tensorCotangentInv (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
   Module.Basis.constr_basis _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma span_range_mk_kerGen : Submodule.span D.T
     (Set.range fun i ↦ Extension.Cotangent.mk (D.kerGen i)) = ⊤ := by
@@ -171,7 +168,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The linear isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentEquiv :
     S ⊗[D.T] D.presLeft.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := by
-  refine LinearEquiv.ofLinear D.tensorCotangentHom D.tensorCotangentInv ?_ ?_
+  refine LinearEquiv.ofLinearMap D.tensorCotangentHom D.tensorCotangentInv ?_ ?_
   · refine b.ext fun i ↦ ?_
     simpa only [LinearMap.coe_comp, Function.comp_apply, tensorCotangentInv_apply,
       tensorCotangentHom_tmul] using! D.hf (b i)
@@ -239,6 +236,35 @@ set_option backward.isDefEq.respectTransparency false in
 def basisRight : Module.Basis Unit S D.presRight.toExtension.Cotangent :=
   Generators.basisCotangentAway S D.gbar
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`AddCommMonoid D.presRight.toExtension.Cotangent`
+It is needed by the `Module.Basis.prod` below.
+
+The search reduces via `@AddCommGroup.toAddCommMonoid` to
+`AddCommGroup D.presRight.toExtension.Cotangent`, and the failure happens while applying
+`@Extension.instAddCommGroupCotangent`: assigning one of its instance-implicit-argument
+metavariables is rejected because the metavariable's type and the type of the assigned value do not
+match at `.instances` transparency. The metavariable's expected type is `CommRing D.T`, whereas the
+assigned value `Ideal.Quotient.commRing (Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))` has type
+`CommRing (MvPolynomial ι R ⧸ Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))`. `T` is an `abbrev`,
+so it unfolds and both sides become that same quotient; but the two ideals are taken over different
+rings, `P.toExtension.Ring` on one side and `MvPolynomial ι R` on the other. Comparing those bumps
+the transparency to `.implicit` and bottoms out at
+`P.toExtension.1 =?= AddMonoidAlgebra R (ι →₀ ℕ)`, where `Algebra.Generators.toExtension` is a plain
+semireducible `def` and therefore does not unfold. Lean falls back to synthesize an instance of the
+correct type, which succeeds, but it returns the same `Ideal.Quotient.commRing` term with the ideal
+over `P.toExtension.Ring`, which is again not defeq to the assigned value, for the same reason.
+
+Potential fix: make `Algebra.Generators.toExtension` implicit-reducible.
+Then both backward compatibility options can go.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 /-- The basis on the cotangent space of the constructed presentation. -/
 def basis [Nontrivial S] : Module.Basis (Unit ⊕ σ) S D.pres.toExtension.Cotangent :=
   (Module.Basis.prod D.basisRight D.basisLeft).map D.cotangentEquivProd.symm
@@ -249,6 +275,30 @@ lemma basis_inl [Nontrivial S] :
       D.cotangentEquivProd.symm (Generators.cMulXSubOneCotangent S D.gbar, 0) := by
   simpa [basis] using! Generators.basisCotangentAway_apply _ _
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following two instances cannot be synthesized:
+`OfNat D.presRight.toExtension.Cotangent 0`
+`AddCommMonoid (D.presRight.toExtension.Cotangent × S ⊗[D.T] D.presLeft.toExtension.Cotangent)`
+Both are needed by the pair `(0, D.basisLeft i)` below.
+
+Both searches reduce to `AddCommGroup D.presRight.toExtension.Cotangent` and then fail exactly as
+in `basis` above: applying `@Extension.instAddCommGroupCotangent`, the assignment to the
+instance-implicit-argument metavariable of type `CommRing D.T` is rejected, the assigned value
+`Ideal.Quotient.commRing (Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))` having type
+`CommRing (MvPolynomial ι R ⧸ Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))`, with the two ideals
+taken over different rings; the comparison bottoms out at
+`P.toExtension.1 =?= AddMonoidAlgebra R (ι →₀ ℕ)`, and the fallback synthesis returns a term that is
+again not defeq to the assigned value.
+
+Potential fix: make `Algebra.Generators.toExtension` implicit-reducible.
+Then both backward compatibility options can go.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 lemma basis_inr [Nontrivial S] (i : σ) :
     D.basis (.inr i) = D.cotangentEquivProd.symm (0, D.basisLeft i) := by
   simp [basis]
@@ -265,12 +315,40 @@ lemma basis_apply [Nontrivial S] (r : Unit ⊕ σ) :
   · rw [basis_inr, cotangentEquivProd_symm_apply, cotangentCompLocalizationAwayEquiv_symm_inl,
       basisLeft, Module.Basis.map_apply, tensorCotangentEquiv_symm_apply,
       LinearMap.liftBaseChange_tmul, one_smul, Extension.Cotangent.map_mk]
+    simp only [Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom, AlgHom.toRingHom_eq_coe]
+    congr! 2 with x
+    simp [pres, Presentation.comp_relation_inr, kerGen, presLeft, Generators.toComp_toAlgHom]
     rfl
 
 end PresentationOfFreeCotangent.Aux
 
 end
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`LE (Submodule P.Ring P.toExtension.Cotangent)`
+It is needed by the `refine le_trans le_top (top_le_iff.mpr ?_)` below, as are the `Preorder`,
+`PartialOrder` and `OrderTop` instances on the same type, which fail in the same way.
+
+The failure happens while applying `@Submodule.completeLattice`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `Semiring P.Ring`, whereas the assigned value `CommRing.toCommSemiring.toSemiring` has type
+`Semiring P.toExtension.Ring`. The comparison bottoms out at
+`AddMonoidAlgebra R (α →₀ ℕ) =?= P.toExtension.1`, where `Algebra.Generators.toExtension` is a plain
+semireducible `def` and therefore does not unfold at the `.instances` transparency that instance
+search runs at. Lean falls back to synthesize an instance of the correct type, which succeeds, but
+it returns `AddMonoidAlgebra.semiring`, which is again not defeq to the assigned value; that second
+comparison also runs at `.instances`, `respectTransparency false` suppressing the transparency bump.
+
+Potential fix: make `Algebra.Generators.toExtension` implicit-reducible.
+Then `respectTransparency false` and `instanceSearchTypes false` can both go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open PresentationOfFreeCotangent in
@@ -296,7 +374,6 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
         span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
-  classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
   let v (i : σ) : P.ker := f (b₀ i)
   let J : Ideal P.Ring := Ideal.span (Set.range <| Subtype.val ∘ v)
@@ -313,7 +390,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
   rw [← Submodule.comap_le_comap_iff_of_le_range (f := P.ker.subtype) (by simp),
     Submodule.comap_subtype_self,
     Submodule.comap_sup_of_injective P.ker.subtype_injective (by simpa using hJ)
-    (by simp [Ideal.mul_le_left]),
+    (by simp [Ideal.mul_le_right]),
     Submodule.comap_smul'' P.ker.subtype_injective (by simp)]
   simp only [Submodule.comap_subtype_self, J]
   rw [← Submodule.coe_subtype, Ideal.span, Set.range_comp, ← Submodule.map_span,

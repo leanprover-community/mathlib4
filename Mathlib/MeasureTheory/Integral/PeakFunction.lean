@@ -72,8 +72,8 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
     (tendsto_order.1 hiφ).2 1 zero_lt_one, h'iφ] with i hi h'i h''i
   have I : IntegrableOn (φ i) t μ := .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
   have A : IntegrableOn (fun x => φ i x • g x) (s \ u) μ := by
-    refine Integrable.smul_of_top_right (hmg.mono diff_subset le_rfl) ?_
-    apply memLp_top_of_bound (h''i.mono_set diff_subset) 1
+    refine Integrable.smul_of_top_right (hmg.mono sdiff_subset le_rfl) ?_
+    apply memLp_top_of_bound (h''i.mono_set sdiff_subset) 1
     filter_upwards [self_mem_ae_restrict (hs.diff u_open.measurableSet)] with x hx
     simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
   have B : IntegrableOn (fun x => φ i x • g x) (s ∩ u) μ := by
@@ -85,7 +85,7 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
       rw [inter_comm] at hx
       exact (norm_lt_of_mem_ball (hu x hx)).le
   convert! A.union B
-  simp only [diff_union_inter]
+  simp only [sdiff_union_inter]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -157,8 +157,8 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         norm_integral_le_integral_norm _
       _ ≤ ∫ x in s \ u, δ * ‖g x‖ ∂μ := by
         refine setIntegral_mono_on ?_ ?_ (hs.diff u_open.measurableSet) fun x hx => ?_
-        · exact IntegrableOn.mono_set h''i.norm diff_subset
-        · exact IntegrableOn.mono_set (hmg.norm.const_mul _) diff_subset
+        · exact IntegrableOn.mono_set h''i.norm sdiff_subset
+        · exact IntegrableOn.mono_set (hmg.norm.const_mul _) sdiff_subset
         rw [norm_smul]
         gcongr
         simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
@@ -166,13 +166,13 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         rw [integral_const_mul]
         apply mul_le_mul_of_nonneg_left (setIntegral_mono_set hmg.norm _ _) δpos.le
         · filter_upwards with x using norm_nonneg _
-        · filter_upwards using diff_subset (s := s) (t := u)
+        · filter_upwards using sdiff_subset (s := s) (t := u)
   calc
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by
-      conv_lhs => rw [← diff_union_inter s u]
+      conv_lhs => rw [← sdiff_union_inter s u]
       rw [setIntegral_union disjoint_sdiff_inter (hs.inter u_open.measurableSet)
-          (h''i.mono_set diff_subset) (h''i.mono_set inter_subset_left)]
+          (h''i.mono_set sdiff_subset) (h''i.mono_set inter_subset_left)]
     _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
 
@@ -230,7 +230,7 @@ theorem tendsto_integral_peak_smul_of_integrable_of_tendsto
   suffices Tendsto (fun i : ι ↦ ∫ x in univ, φ i x • g x ∂μ) l (𝓝 a) by simpa
   exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto MeasurableSet.univ ht (x₀ := x₀)
     (subset_univ _) (by simpa [nhdsWithin_univ]) h't (by simpa)
-    (by simpa [← compl_eq_univ_diff] using hlφ) hiφ
+    (by simpa [← compl_eq_univ_sdiff] using hlφ) hiφ
     (by simpa) (by simpa) (by simpa [nhdsWithin_univ])
 
 /-!
@@ -288,7 +288,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
       · exact
           ⟨0, le_rfl, hnc₀, by simp only [h, mem_empty_iff_false, IsEmpty.forall_iff, imp_true_iff]⟩
       obtain ⟨x, hx, h'x⟩ : ∃ x ∈ s \ u, ∀ y ∈ s \ u, c y ≤ c x :=
-        IsCompact.exists_isMaxOn (hs.diff u_open) h (hc.mono diff_subset)
+        IsCompact.exists_isMaxOn (hs.diff u_open) h (hc.mono sdiff_subset)
       refine ⟨c x, hnc x hx.1, h'c x hx.1 ?_, h'x⟩
       rintro rfl
       exact hx.2 x₀u

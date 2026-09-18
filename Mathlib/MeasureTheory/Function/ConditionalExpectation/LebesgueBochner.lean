@@ -6,8 +6,8 @@ Authors: Rémy Degenne
 
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 # Results about both conditional expectations

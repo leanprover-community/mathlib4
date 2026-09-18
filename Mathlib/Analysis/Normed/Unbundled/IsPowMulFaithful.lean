@@ -70,7 +70,7 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
   obtain ⟨s, hs0, hs⟩ := hgf
   have hle : RingHom.IsBoundedWrt f g (RingHom.id _) := ⟨s, hs0, hs⟩
   have hge : RingHom.IsBoundedWrt g f (RingHom.id _) := ⟨r, hr0, hr⟩
-  rw [← Function.Injective.eq_iff DFunLike.coe_injective']
+  rw [← Function.Injective.eq_iff DFunLike.coe_injective]
   ext x
   exact le_antisymm (contraction_of_isPowMul_of_boundedWrt g hfpm hge x)
     (contraction_of_isPowMul_of_boundedWrt f hgpm hle x)

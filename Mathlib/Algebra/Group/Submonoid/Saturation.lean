@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-! # Saturation of a submonoid
 
@@ -119,7 +118,7 @@ variable (M) in
 @[to_additive]
 instance : SetLike (SaturatedSubmonoid M) M where
   coe := (·.carrier)
-  coe_injective' _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
 
 @[to_additive]
 instance : PartialOrder (SaturatedSubmonoid M) := .ofSetLike ..

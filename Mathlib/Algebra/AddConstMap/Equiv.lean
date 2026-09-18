@@ -44,6 +44,7 @@ variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
 lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
+@[macro_inline]
 instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
     EquivLike (G ≃+c[a, b] H) G H where
   coe f := f.toEquiv
@@ -75,6 +76,22 @@ def Simps.symm_apply (e : G ≃+c[a, b] H) : H → G := e.symm
 initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp] lemma symm_symm (e : G ≃+c[a, b] H) : e.symm.symm = e := rfl
+
+theorem symm_apply_eq (e : G ≃+c[a, b] H) {a b} :
+    e.symm a = b ↔ a = e b :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : G ≃+c[a, b] H) {a b} :
+    b = e.symm a ↔ e b = a :=
+  e.toEquiv.eq_symm_apply
+
+@[simp] theorem apply_symm_apply (e : G ≃+c[a, b] H) (a) :
+    e (e.symm a) = a :=
+  e.toEquiv.apply_symm_apply _
+
+@[simp] theorem symm_apply_apply (e : G ≃+c[a, b] H) (a) :
+    e.symm (e a) = a :=
+  e.toEquiv.symm_apply_apply _
 
 /-- The identity map as an `AddConstEquiv`. -/
 @[simps! toEquiv apply]

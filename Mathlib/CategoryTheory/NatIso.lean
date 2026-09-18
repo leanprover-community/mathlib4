@@ -40,8 +40,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open NatTrans
-
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
   [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
@@ -49,13 +47,12 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps (attr := grind =)]
+@[implicit_reducible, simps (attr := grind =)]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
   inv := α.inv.app X
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing app_inv] app_hom
 
 @[reassoc +to_dual (attr := simp), grind =]
@@ -176,7 +173,7 @@ theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
-@[to_dual (attr := simps (attr := grind =)) ofComponents'
+@[implicit_reducible, to_dual (attr := simps (attr := grind =)) ofComponents'
 /-- The dual of `ofComponents` -/]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
@@ -189,14 +186,6 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
-
-set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
-attribute [to_dual existing ofComponents'_inv_app] ofComponents_hom_app
-
-set_option linter.translateOverwrite false in
-set_option linter.existingAttributeWarning false in
-attribute [to_dual existing ofComponents'_hom_app] ofComponents_inv_app
 
 @[to_dual (attr := simp)]
 theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
@@ -214,7 +203,6 @@ def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ 
   hom := α.hom ◫ β.hom
   inv := α.inv ◫ β.inv
 
-set_option linter.existingAttributeWarning false in
 attribute [to_dual existing hcomp_inv] hcomp_hom
 
 @[to_dual self]
