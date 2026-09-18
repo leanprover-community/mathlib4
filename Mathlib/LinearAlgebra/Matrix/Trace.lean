@@ -158,6 +158,15 @@ theorem trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Ma
 theorem trace_mul_comm [AddCommMonoid R] [CommMagma R] (A : Matrix m n R) (B : Matrix n m R) :
     trace (A * B) = trace (B * A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
 
+/-- For two idempotent square matrices, the trace of the square of their difference is the
+difference of the corresponding trace defects. -/
+theorem trace_sub_mul_sub_of_idempotent [NonUnitalCommRing R]
+    (P Q : Matrix n n R) (hP : P * P = P) (hQ : Q * Q = Q) :
+    trace ((Q - P) * (Q - P)) =
+      (trace Q - trace (P * Q)) - (trace (P * Q) - trace P) := by
+  rw [sub_mul, mul_sub, mul_sub, trace_sub, trace_sub, trace_sub, hP, hQ,
+    trace_mul_comm Q P]
+
 theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
     (C : Matrix p m R) : trace (A * B * C) = trace (C * A * B) := by
   rw [trace_mul_comm, Matrix.mul_assoc]
