@@ -231,8 +231,8 @@ variable (S : ObjectProperty C) [S.IsTriangulated] (t : TStructure C)
   {H : Type*} [Category H] [Preadditive H] [t.Heart H]
 
 instance : S.ι.TExact (S.tStructure t) t where
-  rightTExact := Functor.RightTExact.mk _ _ _ (fun _ ⟨hX⟩ ↦ ⟨hX⟩)
-  leftTExact := Functor.LeftTExact.mk _ _ _ (fun _ ⟨hX⟩ ↦ ⟨hX⟩)
+  rightTExact := Functor.RightTExact.mk (fun _ ⟨hX⟩ ↦ ⟨hX⟩)
+  leftTExact := Functor.LeftTExact.mk (fun _ ⟨hX⟩ ↦ ⟨hX⟩)
 
 class ContainsHeart : Prop where
   subset : t.heart ≤ S

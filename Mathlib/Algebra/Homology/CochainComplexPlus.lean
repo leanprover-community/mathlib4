@@ -118,11 +118,29 @@ instance [CategoryWithHomology C] : (quasiIso C).IsStableUnderRetracts := by
   dsimp [quasiIso]
   infer_instance
 
+@[implicit_reducible, simps! obj_obj map]
+noncomputable def singleFunctor [HasZeroObject C] (n : ℤ) : C ⥤ CochainComplex.Plus C :=
+  ObjectProperty.lift _ (HomologicalComplex.single C (.up ℤ) n) (fun _ ↦ ⟨n, inferInstance⟩)
+
 end
 
 instance [Preadditive C] : (CochainComplex.plus C).IsStableUnderShift ℤ where
   isStableUnderShiftBy n :=
     ⟨fun K ⟨k, hk⟩ ↦ ⟨k - n, K.isStrictlyGE_shift k n _ (by lia)⟩⟩
+
+instance [Preadditive C] [CategoryWithHomology C] :
+    (HomologicalComplex.quasiIso C (.up ℤ)).IsCompatibleWithShift ℤ := inferInstance
+
+instance [Preadditive C] [CategoryWithHomology C] :
+    (CochainComplex.Plus.quasiIso C).IsCompatibleWithShift ℤ where
+  condition a := by
+    ext K L f
+    have := MorphismProperty.IsCompatibleWithShift.iff (HomologicalComplex.quasiIso _ _) f.hom a
+    simp only [HomologicalComplex.mem_quasiIso_iff,
+      MorphismProperty.inverseImage_iff, quasiIso_iff] at this ⊢
+    rw [← this]
+    exact quasiIso_iff_of_arrow_mk_iso _ _
+      (((Functor.mapArrowFunctor _ _).mapIso ((Plus.ι C).commShiftIso a)).app (Arrow.mk f))
 
 end Plus
 
@@ -140,7 +158,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
 /-- The functor on categories of bounded below cochain complexes that
 is induced by a functor (which preserves zero morphisms). -/
-@[implicit_reducible, simps!]
+@[implicit_reducible, simps! obj_obj map_hom]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
     obtain ⟨i, hi⟩ := K.2
@@ -155,6 +173,22 @@ is a functor which preserves zero morphisms -/
 def mapCochainComplexPlusCompι :
     F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D ≅
       CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _ := Iso.refl _
+
+section
+
+variable [HasZeroObject C] [HasZeroObject D]
+
+open HomologicalComplex in
+@[simps! hom_app_hom inv_app_hom]
+noncomputable def singleMapCochainComplexPlus (n : ℤ) :
+    CochainComplex.Plus.singleFunctor C n ⋙ F.mapCochainComplexPlus ≅
+      F ⋙ CochainComplex.Plus.singleFunctor D n :=
+  NatIso.ofComponents (fun X ↦ ObjectProperty.isoMk _
+    ((singleMapHomologicalComplex F _ _).app X)) (fun f ↦ by
+      ext : 1
+      apply (singleMapHomologicalComplex F (.up ℤ) n).hom.naturality)
+
+end
 
 end
 
@@ -177,5 +211,52 @@ lemma homotopyEquivalences_mapCochainComplexPlus_map {K L : CochainComplex.Plus 
 end
 
 end Functor
+
+namespace NatTrans
+
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
+    {F₁ F₂ F₃ : C ⥤ D} [F₁.Additive] [F₂.Additive] [F₃.Additive]
+
+/-- The natural transformation `F₁.mapCochainComplexPlus ⟶ F₂.mapCochainComplexPlus`
+induced by a natural transformation `F₁ ⟶ F₂`. -/
+@[simps! app_hom]
+def mapCochainComplexPlus (τ : F₁ ⟶ F₂) :
+    F₁.mapCochainComplexPlus ⟶ F₂.mapCochainComplexPlus where
+  app K := ObjectProperty.homMk ((NatTrans.mapHomologicalComplex τ _).app _)
+
+@[reassoc]
+lemma mapCochainComplexPlus_app_singleFunctor_obj
+    [HasZeroObject C] [HasZeroObject D] (τ : F₁ ⟶ F₂) (X : C) (n : ℤ) :
+    τ.mapCochainComplexPlus.app ((CochainComplex.Plus.singleFunctor C n).obj X) =
+      (F₁.singleMapCochainComplexPlus n).hom.app X ≫
+        (CochainComplex.Plus.singleFunctor D n).map (τ.app X) ≫
+        (F₂.singleMapCochainComplexPlus n).inv.app X := by
+  ext : 1
+  apply HomologicalComplex.natTransMapHomologicalComplex_app_single_obj
+
+@[simp]
+lemma mapCochainComplexPlus_add (τ τ' : F₁ ⟶ F₂) :
+    (τ + τ').mapCochainComplexPlus = τ.mapCochainComplexPlus + τ'.mapCochainComplexPlus := rfl
+
+variable (F₁) in
+@[simp]
+lemma mapCochainComplexPlus_id :
+    NatTrans.mapCochainComplexPlus (𝟙 F₁) = 𝟙 _ := by cat_disch
+
+@[reassoc]
+lemma mapCochainComplexPlus_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
+    (τ ≫ τ').mapCochainComplexPlus =
+      τ.mapCochainComplexPlus ≫ τ'.mapCochainComplexPlus := by cat_disch
+
+instance (τ : F₁ ⟶ F₂) : τ.mapCochainComplexPlus.CommShift ℤ :=
+  NatTrans.CommShift.of_comp_faithful (ObjectProperty.ι _) (by
+    have :
+        Functor.whiskerRight τ.mapCochainComplexPlus (CochainComplex.Plus.ι D) =
+          F₁.mapCochainComplexPlusCompι.hom ≫ Functor.whiskerLeft _ (τ.mapHomologicalComplex _) ≫
+            F₂.mapCochainComplexPlusCompι.inv := by cat_disch
+    rw [this]
+    infer_instance)
+
+end NatTrans
 
 end CategoryTheory

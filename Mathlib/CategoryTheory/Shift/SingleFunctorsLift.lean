@@ -63,7 +63,7 @@ Given `F : SingleFunctors C E A`, and a family of functors
 `Φ a : C ⥤ D` with isomorphisms `Φ a ⋙ G ≅ F.functor a` for all `a : A`,
 this is a term in `SingleFunctors C D A` which is given by the functors `Φ a`
 for all `a`. -/
-@[simps functor]
+@[implicit_reducible, simps functor]
 noncomputable def lift : SingleFunctors C D A where
   functor := Φ
   shiftIso := lift.shiftIso hΦ
