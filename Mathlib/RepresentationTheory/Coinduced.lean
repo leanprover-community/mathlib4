@@ -69,7 +69,6 @@ def coindV : Submodule k (H → A) where
 lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `ρ : Representation k G A` and `φ : G →* H` then `coind φ ρ` is the representation
 coinduced by `ρ` along `φ`, defined as the following action of `H` on the submodule `coindV φ ρ`
@@ -78,14 +77,17 @@ to the function sending `h₁` to `f (h₁ * h)`.
 
 See also `Rep.coind` and `Representation.coind'` for variants involving the category `Rep k G`.
 -/
-@[simps]
+@[simps -isSimp]
 def coind : Representation k H (coindV φ ρ) where
-  toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx g h₁ => by
-    simpa [mul_assoc] using hx g (h₁ * h)
+  toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx => (mem_coindV φ ρ _).mpr <| by
+      simp [(mem_coindV φ ρ _).mp hx, mul_assoc]
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
-set_option backward.isDefEq.respectTransparency.types false in
+@[simp]
+lemma coind_apply_apply (h x : H) (f : coindV φ ρ) :
+    (coind φ ρ h f).val x = f.val (x * h) := rfl
+
 variable {σ ρ} in
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
@@ -187,7 +189,7 @@ variable {A} in
 @[ext]
 lemma coind'_ext {f g : coind' φ A} (hfg : ∀ h, f.hom.toLinearMap (.single h 1) =
     g.hom.toLinearMap (.single h 1)) : f = g :=
-  Rep.hom_ext <| by ext1; dsimp; ext h; simpa using hfg h
+  Rep.hom_ext <| by ext h; simpa using hfg h
 
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind' φ A ⟶ coind' φ B`, given by postcomposition
@@ -224,7 +226,6 @@ noncomputable def coindVEquiv :
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
@@ -243,14 +244,13 @@ end CoindIso
 
 noncomputable section Adjunction
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
   `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
   `b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
 def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coind φ A) :=
-  Rep.ofHom ⟨(LinearMap.pi fun h => f.hom.toLinearMap ∘ₗ
-    Rep.ρ B h).codRestrict _ fun _ _ _ => by simpa using hom_comm_apply f _ _, fun g ↦ by
-    dsimp; ext; simp⟩
+  Rep.ofHom ⟨(LinearMap.pi fun h => f.hom.toLinearMap ∘ₗ Rep.ρ B h).codRestrict _ fun b =>
+    (Representation.mem_coindV φ A.ρ _).mpr <| fun g h => by
+      simpa using hom_comm_apply f g ((B.ρ h) b), fun _ ↦ by ext; simp⟩
 
 @[simp]
 lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
@@ -270,7 +270,6 @@ info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ 
 
 attribute [pp_with_univ] Rep coind
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `res φ B ⟶ A` and
 the `H`-representation morphisms `B ⟶ coind φ A`.
