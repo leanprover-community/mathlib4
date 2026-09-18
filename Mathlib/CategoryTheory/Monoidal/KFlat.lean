@@ -20,7 +20,7 @@ namespace CategoryTheory
 
 variable {C D : Type*} [Category C] [MonoidalCategory C] [Category D]
 
-open MonoidalCategory Functor
+open MonoidalCategory CategoryTheory.Functor
 
 namespace MorphismProperty
 

@@ -219,6 +219,7 @@ namespace Functor
 variable {C}
 variable (F : C ⥤ D) [F.Additive]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 def mapHomotopyCategoryMinus : HomotopyCategory.Minus C ⥤ HomotopyCategory.Minus D :=
   (HomotopyCategory.minus D).lift
@@ -256,7 +257,7 @@ def mapHomotopyCategoryMinusCompIso {E : Type*} [Category E] [Preadditive E] [Ha
     H.mapHomotopyCategoryMinus ≅ F.mapHomotopyCategoryMinus ⋙ G.mapHomotopyCategoryMinus :=
   ((HomotopyCategory.minus _).fullyFaithfulι.whiskeringRight _).preimageIso
     (isoWhiskerLeft (HomotopyCategory.Minus.ι C)
-      (mapHomotopyCategoryCompIso e (ComplexShape.up ℤ)))
+      (mapHomotopyCategoryCompIso e (ComplexShape.up ℤ)).symm)
 
 end Functor
 

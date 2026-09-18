@@ -78,6 +78,7 @@ noncomputable def bifunctorComp₂₃Iso :
 
 variable {C c}
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₁₂Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
@@ -90,6 +91,7 @@ lemma bifunctorComp₁₂Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComple
   erw [comp_id, (bifunctor C c).map_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₁₂Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
@@ -102,6 +104,7 @@ lemma bifunctorComp₁₂Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComple
   erw [id_comp, (bifunctor C c).map_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₂₃Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :
@@ -114,6 +117,7 @@ lemma bifunctorComp₂₃Iso_hom_app_app_app (K₁ K₂ K₃ : HomologicalComple
   erw [comp_id, ((bifunctor C c).obj _).map_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma bifunctorComp₂₃Iso_inv_app_app_app (K₁ K₂ K₃ : HomologicalComplex C c) :

@@ -458,6 +458,7 @@ instance : (R A).functor.EssSurj := by
   dsimp [R]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance : TwoSquare.GuitartExact (iso A).inv :=
   TwoSquare.GuitartExact.quotient_of_nonempty_leftHomotopy (iso A).symm (by

@@ -131,9 +131,9 @@ lemma cofanOfIsZero_inj (j : J) :
     (cofanOfIsZero X ι).inj (ι j) = Sigma.ι (X ∘ ι) j := by
   dsimp [cofanOfIsZero]
   have hi : ι j ∈ Set.range ι := ⟨j, rfl⟩
-  rw [dif_pos hi]
+  rw [dite_eq_left hi]
   apply Sigma.eqToHom_comp_ι (X ∘ ι)
-  exact (hι hi.choose_spec).symm
+  exact hι hi.choose_spec
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -194,14 +194,14 @@ variable {I : Type*} (X : I → C) (i : I)
     (hX : ∀ j, j ≠ i → IsZero (X j))
 
 open Classical in
-@[simp]
+@[implicit_reducible, simps!]
 noncomputable def cofanOfIsZeroButOne : Cofan X := Cofan.mk (X i)
   (fun j => if h : j = i then eqToHom (by rw [h]) else (hX _ h).to_ _)
 
 @[simp]
 lemma cofanOfIsZeroButOne_ι_self :
     (cofanOfIsZeroButOne X i hX).inj i = 𝟙 _ :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 set_option backward.defeqAttrib.useBackward true in
 noncomputable def isColimitCofanOfIsZeroButOne :
@@ -299,8 +299,8 @@ noncomputable def isColimit : IsColimit κ.cofan :=
   isColimitCofanOfIsZero (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) κ.φ
     κ.injective_φ κ.isZero'
 
-@[implicit_reducible]
-def hasCoproduct :
+include κ in
+lemma hasCoproduct :
     HasCoproduct (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) :=
   ⟨_, κ.isColimit⟩
 
@@ -452,6 +452,7 @@ lemma isIso_stupidFiltrationGE_map_f (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (k : 
     exact Or.inl ⟨j, by dsimp; omega⟩
   · exact Or.inr (fun i₂ => by dsimp; omega)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[simps]
@@ -639,6 +640,7 @@ instance (L : CochainComplex C ℤ) (i₂ : ℤ) :
     simp at hxy h
     omega)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 noncomputable def cofanSingleColumnObjTotal (L : CochainComplex C ℤ) (x y n : ℤ) (h : x + y = n) :
   GradedObject.CofanMapObjFun (((singleColumn C (up ℤ) (up ℤ) x).obj L).toGradedObject)
@@ -689,9 +691,8 @@ noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (
       obtain rfl : x' = -x := by omega
       simp))
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
-noncomputable def singleColumnObjTotal_inv_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+lemma singleColumnObjTotal_inv_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
     (x x' : ℤ) (h : x + x' = 0) :
     (singleColumnObjTotal K x x' h).inv ≫
       total.map ((HomologicalComplex.single _ (up ℤ) x).map φ) (up ℤ) =
@@ -704,7 +705,7 @@ noncomputable def singleColumnObjTotal_inv_naturality {K L : CochainComplex C �
     HomologicalComplex.singleObjXIsoOfEq]
 
 @[reassoc (attr := simp)]
-noncomputable def singleColumnObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+lemma singleColumnObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
     (x x' : ℤ) (h : x + x' = 0) :
     total.map ((HomologicalComplex.single _ (up ℤ) x).map φ) (up ℤ) ≫
       (singleColumnObjTotal L x x' h).hom =
@@ -755,6 +756,7 @@ lemma preservesTotal_of_isStrictlyLE
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up ℤ) (up ℤ))
     (x₀ x₁ : ℤ)
     [CochainComplex.IsStrictlyGE K x₀] [CochainComplex.IsStrictlyLE K x₁] :
@@ -778,6 +780,7 @@ lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up 
     · exact (HomologicalComplex.eval _ _ y).map_isZero
         (CochainComplex.isZero_of_isStrictlyGE K x₀ x (by simpa using hx))
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}
     (φ : K ⟶ L) [K.HasTotal (up ℤ)] [L.HasTotal (up ℤ)] (x₀ x₁ : ℤ)

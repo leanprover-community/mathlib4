@@ -136,6 +136,7 @@ instance (K : CochainComplex C ℤ) :
   exact (Zigzag.of_hom g₁).trans ((Zigzag.of_inv f₁).trans
     ((Zigzag.of_hom f₂).trans (Zigzag.of_inv g₂)))
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance : (localizerMorphism C).arrow.HasRightResolutions := by
   intro f
@@ -271,7 +272,10 @@ lemma isIso_toHomotopyCategory_map_iff {K L : KInjectives C} (f : K ⟶ L) :
   obtain ⟨K, _, rfl⟩ := K.mk_surjective
   obtain ⟨L, _, rfl⟩ := L.mk_surjective
   obtain ⟨f, rfl⟩ := ObjectProperty.homMk_surjective f
-  exact DerivedCategory.isIso_Q_map_iff_quasiIso C f
+  erw [← DerivedCategory.isIso_Q_map_iff_quasiIso C f]
+  apply isIso_iff_of_arrow_mk_iso
+  exact ((Functor.mapArrowFunctor _ _).mapIso
+    (DerivedCategory.quotientCompQhIso C)).app (Arrow.mk f)
 
 set_option backward.defeqAttrib.useBackward true in
 instance (K : CochainComplex C ℤ) [K.IsKInjective] :
@@ -287,6 +291,7 @@ instance (K : CochainComplex C ℤ) [K.IsKInjective] :
 
 variable [HasKInjectiveResolutions C]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance : toHomotopyCategory.IsLocalization (KInjectives.quasiIso C) := by
   refine Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _ ?_ ?_
@@ -309,28 +314,10 @@ instance : toHomotopyCategory.IsLocalization (KInjectives.quasiIso C) := by
 set_option backward.defeqAttrib.useBackward true in
 instance [HasDerivedCategory C] :
     (ι ⋙ DerivedCategory.Q).IsLocalization (quasiIso C) := by
-  change (toHomotopyCategory ⋙ (HomotopyCategory.KInjectives.Qh (C := C))).IsLocalization _
-  refine Functor.IsLocalization.comp toHomotopyCategory
-    (HomotopyCategory.KInjectives.Qh) (W₂ := .isomorphisms _) _ _ ?_ le_rfl ?_
-  · intro K L f hf
-    have : IsIso (toHomotopyCategory.map f) := by rwa [isIso_toHomotopyCategory_map_iff]
-    dsimp
-    infer_instance
-  · intro K L f hf
-    obtain ⟨K, _, rfl⟩ := K.mk_surjective
-    obtain ⟨L, _, rfl⟩ := L.mk_surjective
-    obtain ⟨f, rfl⟩ := ObjectProperty.homMk_surjective f
-    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
-    refine ⟨mk K, mk L, ObjectProperty.homMk f, ?_, ⟨Iso.refl _⟩⟩
-    have : IsIso ((HomotopyCategory.quotient _ _).map f) := by
-      simp only [MorphismProperty.isomorphisms.iff] at hf
-      exact (Functor.mapIso HomotopyCategory.KInjectives.ι (@asIso _ _ _ _ _ hf)).isIso_hom
-    have : QuasiIso f := by
-      rw [← DerivedCategory.isIso_Q_map_iff_quasiIso]
-      exact
-      (DerivedCategory.Qh.mapIso
-        (asIso ((HomotopyCategory.quotient _ _).map f))).isIso_hom
-    simpa [quasiIso]
+  have e : (toHomotopyCategory ⋙ (HomotopyCategory.KInjectives.Qh (C := C))) ≅
+    ι ⋙ DerivedCategory.Q :=
+      Functor.isoWhiskerLeft _ (DerivedCategory.quotientCompQhIso C)
+  exact Functor.IsLocalization.of_iso _ e
 
 set_option backward.defeqAttrib.useBackward true in
 instance [HasDerivedCategory C] :

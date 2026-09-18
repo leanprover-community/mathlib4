@@ -112,6 +112,7 @@ section
 
 variable {X Y Z : C} {f : X ⟶ Y} [Epi f] {π₁ π₂ : Z ⟶ X}
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def effectiveEpiStructOfEpiOfIsPushout (hc : IsPushout π₁ π₂ f f) :
     EffectiveEpiStruct f where
   desc {W} φ h := PushoutCocone.IsColimit.desc hc.isColimit φ φ (h _ _ hc.w)

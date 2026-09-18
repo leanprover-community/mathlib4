@@ -18,7 +18,7 @@ public import Mathlib.Tactic.SuppressCompilation
 
 namespace CategoryTheory.Quotient
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₁₂ C₂₃ C : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃] [Category C]

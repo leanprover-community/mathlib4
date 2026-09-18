@@ -23,6 +23,7 @@ variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms]
   [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 instance [HasZeroObject C₁] (X₁ : C₁) (K₂ : CochainComplex C₂ ℤ) (x₁ : ℤ) :
     HasMapBifunctor ((single C₁ (ComplexShape.up ℤ) x₁).obj X₁) K₂ F (.up ℤ) :=

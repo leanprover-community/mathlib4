@@ -115,6 +115,7 @@ instance (K : CofibrantObject (Minus C)) (n : ℤ) :
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 def cofibrantObjectEquivalence :
     Minus (ProjectiveObject C) ≌ CofibrantObject (Minus C) where
@@ -277,6 +278,7 @@ instance : (R C).functor.EssSurj := by dsimp; infer_instance
 def iso : (CochainComplex.Minus.localizerMorphism C).functor ⋙
   (R C).functor ≅ (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 open CochainComplex HomologicalComplex in
 instance : TwoSquare.GuitartExact (iso C).inv :=

@@ -81,7 +81,8 @@ end
 
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
 
-@[simp]
+set_option backward.isDefEq.respectTransparency false in
+@[simps!, implicit_reducible]
 noncomputable def cofanSingleRowObjTotal (K : CochainComplex C ℤ) (x y n : ℤ) (h : x + y = n) :
   GradedObject.CofanMapObjFun (((singleRow C (up ℤ) (up ℤ) y).obj K).toGradedObject)
     (π (up ℤ) (up ℤ) (up ℤ)) n :=
@@ -142,7 +143,7 @@ noncomputable def singleRowObjTotal (L : CochainComplex C ℤ) (y y' : ℤ) (h :
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
-noncomputable def singleRowObjTotal_inv_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+lemma singleRowObjTotal_inv_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
     (y y' : ℤ) (h : y + y' = 0) :
     (singleRowObjTotal K y y' h).inv ≫ total.map ((singleRow C (up ℤ) (up ℤ) y).map φ) (up ℤ) =
       φ⟦y'⟧' ≫ (singleRowObjTotal L y y' h).inv := by
@@ -155,7 +156,7 @@ noncomputable def singleRowObjTotal_inv_naturality {K L : CochainComplex C ℤ} 
     HomologicalComplex.singleObjXIsoOfEq, singleRowXXIso]
 
 @[reassoc (attr := simp)]
-noncomputable def singleRowObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+lemma singleRowObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
     (y y' : ℤ) (h : y + y' = 0) :
     total.map ((singleRow C (up ℤ) (up ℤ) y).map φ) (up ℤ) ≫
       (singleRowObjTotal L y y' h).hom =

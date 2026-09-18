@@ -46,7 +46,7 @@ lemma objectPropertyFlat_iff_moduleFlat (M : ModuleCat.{u} R) :
   · intro _ S hS
     exact hS.map _
   · intro hM
-    exact And.left (((Functor.exact_tfae (tensorLeft M)).out 1 3).1 hM)
+    exact And.left (((Functor.exact_tfae (tensorLeft M)).out 2 4).1 hM)
 
 instance : HasFunctorialFlatResolution (ModuleCat.{u} R) :=
   .mk (ModuleCat.projectiveResolution R) (by

@@ -122,6 +122,7 @@ noncomputable def singleFunctorιIso (n : ℤ) :
     singleFunctor C n ⋙ Minus.ι ≅ DerivedCategory.singleFunctor C n :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
