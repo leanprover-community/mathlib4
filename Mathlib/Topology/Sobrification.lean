@@ -145,22 +145,44 @@ open Locale
 
 /-- If `Y` is sober, every frame homomorphism `Opens Y → Opens X` comes from a unique continuous map
 `X → Y`. -/
-noncomputable def continuousMapEquivFrameHom {X Y : Type u} [TopologicalSpace X]
+noncomputable def continuousMapEquivFrameHom (X Y : Type u) [TopologicalSpace X]
     [TopologicalSpace Y] [T0Space Y] [QuasiSober Y] : C(X, Y) ≃ FrameHom (Opens Y) (Opens X) :=
   (Homeomorph.refl X).continuousMapCongr (PT.homeomorphPtOpens Y) |>.trans <|
     continuousMapPTEquivFrameHomOpens X (Opens Y)
 
+@[simp]
 lemma continuousMapEquivFrameHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    [T0Space Y] [QuasiSober Y] (f : C(X, Y)) : continuousMapEquivFrameHom f = Opens.comap f := rfl
+    [T0Space Y] [QuasiSober Y] (f : C(X, Y)) : continuousMapEquivFrameHom X Y f = Opens.comap f :=
+  rfl
+
+@[simps]
+def FrameHom.congrOrderIso {α α' β β' : Type*} [CompleteLattice α] [CompleteLattice α']
+    [CompleteLattice β] [CompleteLattice β'] (eα : α ≃o α') (eβ : β ≃o β') :
+    FrameHom α β ≃ FrameHom α' β' where
+  toFun f := (eβ : FrameHom β β').comp (f.comp eα.symm)
+  invFun g := (eβ.symm : FrameHom β' β).comp (g.comp eα)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 /-- For `Y` sober, continuous maps from the sober space `PT (Opens X)` to `Y` are equivalent to
 continuous maps `X → Y`. -/
-noncomputable def sobrificationEquiv {X Y : Type u} [TopologicalSpace X]
+noncomputable def sobrificationEquiv (X Y : Type u) [TopologicalSpace X]
     [TopologicalSpace Y] [T0Space Y] [QuasiSober Y] : C(PT (Opens X), Y) ≃ C(X, Y) :=
-  ((Homeomorph.refl _).continuousMapCongr <| PT.homeomorphPtOpens Y).trans <|
-    (TopCat.Hom.equivContinuousMap ↧(PT (Opens X)) _).symm.trans <|
-    (adjunctionTopToLocalePT.homEquiv ↧(PT (Opens X)) ↧(Opens Y)).symm.trans <|
-    ((Frm.Iso.mk (orderIsoOpensPtOpens X)).op.homCongr (Iso.refl _)).trans <|
-    (adjunctionTopToLocalePT.homEquiv ↧X ↧(Opens Y)).trans <|
-    (TopCat.Hom.equivContinuousMap ↧X _).trans <|
-    ((Homeomorph.refl X).continuousMapCongr <| PT.homeomorphPtOpens Y).symm
+  (continuousMapEquivFrameHom (PT (Opens X)) Y).trans <|
+    (FrameHom.congrOrderIso (OrderIso.refl (Opens Y)) (orderIsoOpensPtOpens X).symm).trans <|
+    (continuousMapEquivFrameHom X Y).symm
+
+lemma sobrificationEquiv_apply {X Y : Type u} [TopologicalSpace X]
+    [TopologicalSpace Y] [T0Space Y] [QuasiSober Y] (f : C(PT (Opens X), Y)) :
+    sobrificationEquiv X Y f =
+      f.comp ⟨localePointOfSpacePoint X, (isInducing_localePointOfSpacePoint X).continuous⟩ := by
+  simp_rw [sobrificationEquiv, Equiv.trans_apply, continuousMapEquivFrameHom_apply,
+    FrameHom.congrOrderIso_apply, OrderIso.symm_refl, OrderIso.coe_refl, Equiv.symm_apply_eq]
+  ext u x
+  rfl
+
+theorem sobrificationEquiv_apply_coe {X Y : Type u} [TopologicalSpace X]
+    [TopologicalSpace Y] [T0Space Y] [QuasiSober Y] (f : C(PT (Opens X), Y)) :
+    ↑(sobrificationEquiv X Y f) = f ∘ localePointOfSpacePoint X := by
+  rw [sobrificationEquiv_apply]
+  rfl
