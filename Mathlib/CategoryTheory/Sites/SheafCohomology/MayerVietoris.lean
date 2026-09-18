@@ -121,6 +121,7 @@ noncomputable abbrev sequence : ComposableArrows AddCommGrpCat.{w} 5 :=
   mk₅ (S.toBiprod F n₀) (S.fromBiprod F n₀) (S.δ F n₀ n₁ h)
     (S.toBiprod F n₁) (S.fromBiprod F n₁)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Comparison isomorphism from the Mayer-Vietoris sequence and the
 contravariant sequence of `Ext`-groups. -/

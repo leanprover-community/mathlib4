@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Basics on bilinear maps
@@ -262,7 +263,6 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
     (B · ·)
     B.map_add₂
     (fun r' m _ ↦ by
-      dsimp only
       rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
     (fun _ ↦ map_add _)
     (fun _ x ↦ (B x).map_smul_of_tower _)
@@ -365,7 +365,7 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     ext x y
     obtain ⟨x', rfl⟩ := hₗ x
     obtain ⟨y', rfl⟩ := hᵣ y
-    convert LinearMap.congr_fun₂ h x' y' using 0
+    convert! LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
@@ -429,8 +429,8 @@ variable [CommSemiring R₂] [CommSemiring R₃] [CommSemiring R₄]
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄} {σ₂₃ : R₂ →+* R₃}
-variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 variable [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
 
@@ -513,9 +513,6 @@ variable {R}
 lemma lsmul_eq_distribSMultoLinearMap (r : R) :
     lsmul R M r = DistribSMul.toLinearMap R M r := rfl
 
-@[deprecated (since := "2026-01-07")]
-alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
-
 variable {M}
 
 @[simp]
@@ -527,6 +524,7 @@ protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
 variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+@[wikidata Q837924]
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring
@@ -570,6 +568,7 @@ noncomputable def restrictScalarsRange :
     M' →ₗ[S] P' :=
   ((f.restrictScalars S).comp i).codLift k hk hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalarsRange_apply (m : M') :
     k (restrictScalarsRange i k hk f hf m) = f (i m) := by
@@ -609,6 +608,7 @@ noncomputable def restrictScalarsRange₂ :
   (((LinearMap.restrictScalarsₗ S R _ _ _).comp
     (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma restrictScalarsRange₂_apply (m : M') (n : N') :
     k (restrictScalarsRange₂ i j k hk B hB m n) = B (i m) (j n) := by
   simp [restrictScalarsRange₂]

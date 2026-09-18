@@ -29,7 +29,7 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 ## Main theorems
 
-- `sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
+- `Polynomial.sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
   coefficients up to `n` is `(n + 1) * X^n`.
 - `Polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
   for the exponential.
@@ -63,7 +63,7 @@ theorem coeff_bernoulli (n i : ℕ) :
     (bernoulli n).coeff i = if i ≤ n then (_root_.bernoulli (n - i) * choose n i) else 0 := by
   simp only [bernoulli, finsetSum_coeff, coeff_monomial]
   split_ifs with h
-  · convert sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
+  · convert! sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
   · exact Finset.sum_eq_zero <| by grind
 
 /-
@@ -80,7 +80,7 @@ theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
-  rw [← coeff_zero_eq_eval_zero, coeff_bernoulli, if_pos (Nat.zero_le n), Nat.sub_zero,
+  rw [← coeff_zero_eq_eval_zero, coeff_bernoulli, ite_eq_left (Nat.zero_le n), Nat.sub_zero,
     Nat.choose_zero_right, Nat.cast_one, mul_one]
 
 @[simp]
@@ -111,7 +111,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [range_add_one, sum_insert notMem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
-  refine sum_congr (by rfl) fun m _ => ?_
+  refine sum_congr rfl fun m _ => ?_
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_natCast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
@@ -213,7 +213,6 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
   have := bernoulli_comp_one_add_X n
   simpa using congr(Polynomial.eval x $this)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_neg_X (n : ℕ) :
     (bernoulli n).comp (-X) = (-1) ^ n • (bernoulli n + n • X ^ (n - 1)) := by
   cases n with
@@ -288,7 +287,7 @@ theorem bernoulli_generating_function (t : A) :
   -- factorials and binomial coefficients between ℕ and ℚ and A.
   intro i hi
   -- deal with coefficients of e^X-1
-  simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
+  simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, ite_eq_right (mem_range_sub_ne_zero hi),
     PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def,
     mul_right_comm _ ((aeval t) _), ← mul_assoc, ← map_mul, ← Polynomial.C_eq_algebraMap,
     Polynomial.aeval_mul, Polynomial.aeval_C]

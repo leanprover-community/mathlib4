@@ -89,7 +89,7 @@ private lemma piRightInv_single (x : N) (i : ι) (m : M i) :
 
 /-- Tensor product commutes with finite products on the right. -/
 def piRight : N ⊗[R] (∀ i, M i) ≃ₗ[S] ∀ i, N ⊗[R] M i :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (piRightHom R S N M)
     (piRightInv R S N M)
     (by ext i x m j; simp [tmul_single])
@@ -117,7 +117,8 @@ TODO: generalize to `S`-linear. -/
 
 end
 
-/-- (Implementation): Bilinear map for defining `TensorProduct.piScalarRightHom`. -/
+set_option backward.defeqAttrib.useBackward true in
+/-- Internal implementation detail: we should make this `private`. -/
 def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι
   map_add' x y := by
@@ -151,6 +152,7 @@ def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
     map_smul' := fun _ _ ↦ rfl
   }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma piScalarRightInv_single (x : N) (i : ι) :
     piScalarRightInv R S N ι (Pi.single i x) = x ⊗ₜ Pi.single i 1 := by
@@ -159,7 +161,7 @@ private lemma piScalarRightInv_single (x : N) (i : ι) :
 /-- For any `R`-module `N` and finite index type `ι`, `N ⊗[R] (ι → R)` is canonically
 isomorphic to `ι → N`. -/
 def piScalarRight : N ⊗[R] (ι → R) ≃ₗ[S] (ι → N) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (piScalarRightHom R S N ι)
     (piScalarRightInv R S N ι)
     (by ext i x j; simp [Pi.single_apply])

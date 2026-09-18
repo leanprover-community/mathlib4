@@ -81,7 +81,7 @@ theorem eq_of_degree_le_of_eval_finset_eq
   rcases eq_or_ne f 0 with rfl | hf
   · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
   · exact eq_of_degree_sub_lt_of_eval_finset_eq s
-      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le) h_eval
+      (lt_of_lt_of_le (degree_sub_lt_left h_deg_eq hf hlc) h_deg_le) h_eval
 
 end Finset
 
@@ -122,7 +122,7 @@ theorem eq_of_degree_le_of_eval_index_eq (hvs : Set.InjOn v s)
   rcases eq_or_ne f 0 with rfl | hf
   · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
   · exact eq_of_degree_sub_lt_of_eval_index_eq s hvs
-      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le)
+      (lt_of_lt_of_le (degree_sub_lt_left h_deg_eq hf hlc) h_deg_le)
       h_eval
 
 end Indexed
@@ -244,7 +244,7 @@ theorem natDegree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     simp_rw [Ne, mem_erase, basisDivisor_eq_zero_iff]
     exact fun j ⟨hij₁, hj⟩ hij₂ => hij₁ (hvs hj hi hij₂.symm)
   rw [← card_erase_of_mem hi, card_eq_sum_ones]
-  convert natDegree_prod _ _ H using 1
+  convert! natDegree_prod _ _ H using 1
   refine sum_congr rfl fun j hj => (natDegree_basisDivisor_of_ne ?_).symm
   rw [Ne, ← basisDivisor_eq_zero_iff]
   exact H _ hj
@@ -393,12 +393,12 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
     simp only [Subtype.mk_eq_mk, dite_eq_ite]
     rw [mem_degreeLT] at hf
     conv => rhs; rw [eq_interpolate hvs hf]
-    exact interpolate_eq_of_values_eq_on _ _ fun _ hi => if_pos hi
+    exact interpolate_eq_of_values_eq_on _ _ fun _ hi => ite_eq_left hi
   right_inv := by
     intro f
     ext ⟨i, hi⟩
     simp only [eval_interpolate_at_node _ hvs hi]
-    exact dif_pos hi
+    exact dite_eq_left hi
 
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
@@ -414,7 +414,8 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
         Nat.succ_add_sub_one, zero_add]
     rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add, Nat.cast_withBot,
       WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (#s - 1))]
-    convert degree_interpolate_lt _
+    convert!
+      degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
     rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff_of_subset hst, add_comm]
   · simp_rw [eval_finsetSum, eval_mul]
@@ -485,11 +486,6 @@ theorem eval_iterate_derivative_eq_sum (hvs : Set.InjOn v s) {P : Polynomial F} 
         ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (x - v a) := by
   nth_rewrite 1 [eq_interpolate hvs hP, iterate_derivative_interpolate _ hvs hk]
   simp [eval_finsetSum, eval_prod]
-
-@[deprecated eq_interpolate (since := "2026-01-14")]
-theorem interpolate_poly_eq_self
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
-    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
 
 theorem coeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :

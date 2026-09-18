@@ -44,7 +44,7 @@ open CategoryTheory.Preadditive CategoryTheory.Category CategoryTheory.Idempoten
 
 open Opposite
 
-open Simplicial
+open scoped Simplicial
 
 noncomputable section
 
@@ -94,15 +94,15 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
     rw [Prod.mk_inj]
-    exact ⟨by simpa [φ] using congr_arg Prod.snd h,
-      by simpa [φ, Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
+    exact ⟨by simpa [φ] using! congr_arg Prod.snd h,
+      by simpa [φ, Fin.castSucc_castLT] using! congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
     simp_rw [S, Finset.compl_filter, Finset.mem_filter_univ, not_le] at hij'
     refine ⟨(j'.pred <| ?_, Fin.castSucc i'), ?_, ?_⟩
     · rintro rfl
-      simp only [Fin.val_zero, not_lt_zero'] at hij'
-    · simpa [S] using Nat.le_sub_one_of_lt hij'
+      simp only [Fin.val_zero, not_lt_zero] at hij'
+    · simpa [S] using! Nat.le_sub_one_of_lt hij'
     · simp only [φ, Fin.castLT_castSucc, Fin.succ_pred]
   · -- identification of corresponding terms in both sums
     rintro ⟨i, j⟩ hij
@@ -112,7 +112,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     · simp only [φ, Fin.val_succ, pow_add, pow_one, mul_neg, neg_neg, mul_one]
       apply mul_comm
     · rw [CategoryTheory.SimplicialObject.δ_comp_δ'']
-      simpa [S] using hij
+      simpa [S] using! hij
 
 /-!
 ## Construction of the alternating face map complex functor
@@ -120,6 +120,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 
 
 /-- The alternating face map complex, on objects -/
+@[implicit_reducible]
 def obj : ChainComplex C ℕ :=
   ChainComplex.of (fun n => X _⦋n⦌) (objD X) (d_squared X)
 
@@ -155,6 +156,7 @@ end AlternatingFaceMapComplex
 variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The alternating face map complex, as a functor -/
+@[implicit_reducible]
 def alternatingFaceMapComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := AlternatingFaceMapComplex.obj
   map f := AlternatingFaceMapComplex.map f
@@ -176,27 +178,25 @@ theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y)
     ((alternatingFaceMapComplex C).map f).f n = f.app (op ⦋n⦌) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Functor.map_zsmul in
+/-- The construction of the alternating face map complex commutes with the application
+of an additive functor. -/
+@[simps!]
+def alternatingFaceMapComplexCompMapHomologicalComplexIso
+    {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D) [F.Additive] :
+    alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ ≅
+      (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D :=
+  NatIso.ofComponents
+    (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _))
+
+set_option backward.defeqAttrib.useBackward true in
 theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
-      (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D := by
-  apply CategoryTheory.Functor.ext
-  · intro X Y f
-    ext n
-    simp only [Functor.comp_map, HomologicalComplex.comp_f, alternatingFaceMapComplex_map_f,
-      Functor.mapHomologicalComplex_map_f, HomologicalComplex.eqToHom_f, eqToHom_refl, comp_id,
-      id_comp, SimplicialObject.whiskering_obj_map_app]
-  · intro X
-    apply HomologicalComplex.ext
-    · rintro i j (rfl : j + 1 = i)
-      dsimp only [Functor.comp_obj]
-      simp only [Functor.mapHomologicalComplex_obj_d, alternatingFaceMapComplex_obj_d,
-        eqToHom_refl, id_comp, comp_id, AlternatingFaceMapComplex.objD, Functor.map_sum,
-        Functor.map_zsmul]
-      rfl
-    · ext n
-      rfl
+      (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D :=
+  Functor.ext_of_iso (alternatingFaceMapComplexCompMapHomologicalComplexIso F) (fun X ↦
+    HomologicalComplex.ext_of_iso
+      ((alternatingFaceMapComplexCompMapHomologicalComplexIso F).app X) (fun _ ↦ rfl))
 
 instance : (alternatingFaceMapComplex C).Additive where
 
@@ -213,7 +213,7 @@ theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (
 
 namespace AlternatingFaceMapComplex
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation which gives the augmentation of the alternating face map
 complex attached to an augmented simplicial object. -/
 def ε [Limits.HasZeroObject C] :
@@ -229,8 +229,18 @@ def ε [Limits.HasZeroObject C] :
     apply add_neg_cancel
   naturality X Y f := by
     apply HomologicalComplex.to_single_hom_ext
+    #adaptation_note /-- This proof broke at nightly-2026-04-28. It used to be:
+    ```
     dsimp
     simp [ChainComplex.toSingle₀Equiv, SimplicialObject.Augmented.w₀]
+    ```
+    The proof below is an emergency repair, and I've asked the authors of this file to review.
+    -/
+    change f.left.app _ ≫ _ = _ ≫ ((ChainComplex.single₀ _).map f.right).f 0
+    rw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
+      ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
+      ChainComplex.single₀_map_f_zero]
+    exact SimplicialObject.Augmented.w₀ f
 
 @[simp]
 lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) :
@@ -249,6 +259,7 @@ end AlternatingFaceMapComplex
 
 variable {A : Type*} [Category* A] [Abelian A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :
     (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X :=
@@ -277,6 +288,8 @@ theorem inclusionOfMooreComplexMap_f (X : SimplicialObject A) (n : ℕ) :
 
 variable (A)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion map of the Moore complex in the alternating face map complex,
 as a natural transformation -/
 @[simps]

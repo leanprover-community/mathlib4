@@ -148,6 +148,7 @@ noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ
     simp [b.span_eq, Submodule.map_top, span_eq_top]
   Basis.mk hli hsp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.Module.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) (k : κ) :

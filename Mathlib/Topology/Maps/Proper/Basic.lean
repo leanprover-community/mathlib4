@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Etienne Marion
 -/
 module
 
+public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -172,9 +173,9 @@ lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g
     simp_rw [nhds_prod_eq, tendsto_prod_iff'] at hyw
   -- Thus, by properness of `f` and `g`, we get some `x : X` and `z : Z` such that `f x = y`,
   -- `g z = w`, `map fst 𝒰` tends to  `x`, and `map snd 𝒰` tends to `y`.
-    rcases hf.2 (show Tendsto f (Ultrafilter.map fst 𝒰) (𝓝 y) by simpa using hyw.1) with
+    rcases hf.2 (show Tendsto f (Ultrafilter.map fst 𝒰) (𝓝 y) by simpa using! hyw.1) with
       ⟨x, hxy, hx⟩
-    rcases hg.2 (show Tendsto g (Ultrafilter.map snd 𝒰) (𝓝 w) by simpa using hyw.2) with
+    rcases hg.2 (show Tendsto g (Ultrafilter.map snd 𝒰) (𝓝 w) by simpa using! hyw.2) with
       ⟨z, hzw, hz⟩
   -- By the properties of the product topology, that means that `𝒰` tends to `(x, z)`,
   -- which completes the proof since `(f × g)(x, z) = (y, w)`.
@@ -195,7 +196,7 @@ lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
   · intro 𝒰 y hy
   -- That means that each `f i` tends to `y i` along `map (eval i) 𝒰`.
     have : ∀ i, Tendsto (f i) (Ultrafilter.map (eval i) 𝒰) (𝓝 (y i)) := by
-      simpa [tendsto_pi_nhds] using hy
+      simpa [tendsto_pi_nhds] using! hy
   -- Thus, by properness of all the `f i`s, we can choose some `x : Π i, X i` such that, for all
   -- `i`, `f i (x i) = y i` and `map (eval i) 𝒰` tends to  `x i`.
     choose x hxy hx using fun i ↦ (h i).2 (this i)
@@ -346,3 +347,19 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prodMap isProperMap_id).isClosedMap
+
+/-- A function into a compact space with a closed graph is continuous.
+
+For the closed graph theorem of functional analysis, about linear maps between Banach spaces, see
+`LinearMap.continuous_of_isClosed_graph`. -/
+theorem continuous_of_isClosed_graph [CompactSpace Y] (hf : IsClosed f.graph) : Continuous f := by
+  rw [continuous_iff_isClosed]
+  intro C hC
+  convert isClosedMap_fst_of_compactSpace _ (hf.inter (isClosed_univ.prod hC))
+  ext
+  simp
+
+/-- A function into a compact Hausdorff space is continuous if and only if its graph is closed. -/
+theorem continuous_iff_isClosed_graph [CompactSpace Y] [T2Space Y] :
+    Continuous f ↔ IsClosed f.graph :=
+  ⟨Continuous.isClosed_graph, continuous_of_isClosed_graph⟩

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -42,6 +42,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
       hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct an `IsLimit` structure of kernels given `Function.Exact`. -/
 noncomputable
@@ -63,7 +64,7 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     (fun s => ofHom <| (LinearMap.range f.hom).liftQ (Cofork.π s).hom <|
       LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.mp <| CokernelCofork.condition s)
     (fun s => hom_ext <| (LinearMap.range f.hom).liftQ_mkQ (Cofork.π s).hom _) fun s m h => by
-    haveI : Epi (ofHom f.hom.range.mkQ) :=
+    have : Epi (ofHom f.hom.range.mkQ) :=
       (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
     apply (cancel_epi (ofHom f.hom.range.mkQ)).1
     exact h
@@ -77,7 +78,7 @@ def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.ho
     Cocone.ext (((Submodule.quotEquivOfEq _ _ (LinearMap.exact_iff.mp H)).toModuleIso).symm
     ≪≫ ((LinearMap.quotKerEquivOfSurjective _ H₂).toModuleIso)) ?_
   · rintro ⟨⟩ <;> ext x
-    · simpa using (Function.Exact.apply_apply_eq_zero H x).symm
+    · simpa using! (Function.Exact.apply_apply_eq_zero H x).symm
     · rfl
 
 end
@@ -102,7 +103,7 @@ variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 agrees with the usual module-theoretical kernel.
 -/
 noncomputable def kernelIsoKer {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    kernel f ≅ ModuleCat.of R f.hom.ker :=
+    kernel f ≅ ↧f.hom.ker :=
   limit.isoLimitCone ⟨_, kernelIsLimit f⟩
 
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
@@ -119,7 +120,7 @@ theorem kernelIsoKer_hom_ker_subtype :
 agrees with the usual module-theoretical quotient.
 -/
 noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H) :
-    cokernel f ≅ ModuleCat.of R (H ⧸ f.hom.range) :=
+    cokernel f ≅ ↧(H ⧸ f.hom.range) :=
   colimit.isoColimitCocone ⟨_, cokernelIsColimit f⟩
 
 -- We now show this isomorphism commutes with the projection of target to the cokernel.
@@ -136,6 +137,6 @@ theorem range_mkQ_cokernelIsoRangeQuotient_inv :
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
     cokernel.π f x = cokernel.π f y := by
   subst w
-  simpa only [map_add, add_eq_left] using cokernel.condition_apply f m
+  simpa only [map_add, add_eq_left] using! cokernel.condition_apply f m
 
 end ModuleCat

@@ -182,9 +182,10 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
 theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
   nontriviality E
-  apply le_antisymm (spectrum.spectralRadius_le_nnnorm T)
+  apply le_antisymm (spectralRadius_le_nnnorm T)
   suffices h : algebraMap ℝ 𝕜 ‖T‖ ∈ spectrum 𝕜 T ∨ algebraMap ℝ 𝕜 (-‖T‖) ∈ spectrum 𝕜 T by
-    rcases h with h | h <;> exact le_trans (by simp) (le_biSup _ h)
+    rcases h with h | h <;>
+      exact le_trans (by simp) (le_biSup _ (spectrum_subset_quasispectrum 𝕜 T h))
   simp_rw [spectrum, Set.mem_compl_iff, map_neg]
   by_contra! h
   obtain ⟨c, hc0, hc⟩ := T.abs_rayleighQuotient_le_of_norm_mem_resolventSet h.1 h.2
@@ -201,9 +202,9 @@ variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F →L[ℝ] F}
     (hT : (T : F →ₗ[ℝ] F).IsSymmetric) (x₀ : F) :
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
-  convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
+  convert! T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
-  rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
+  rw [smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
     ContinuousLinearMap.prod_apply, innerSL_apply_apply, id, ContinuousLinearMap.id_apply,
     hT.apply_clm x₀ y, real_inner_comm _ x₀, two_smul]
 
@@ -213,7 +214,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by
   have H : IsLocalExtrOn T.reApplyInnerSelf {x : F | ‖x‖ ^ 2 = ‖x₀‖ ^ 2} x₀ := by
-    convert hextr
+    convert! hextr
     ext x
     simp
   -- find Lagrange multipliers for the function `T.re_apply_inner_self` and the
@@ -238,15 +239,15 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   by_cases hx₀ : x₀ = 0
   · simp [hx₀]
   by_cases hb : b = 0
-  · have : a ≠ 0 := by simpa [hb] using h₁
+  · have : a ≠ 0 := by simpa [hb] using! h₁
     refine absurd ?_ hx₀
     apply smul_right_injective F this
-    simpa [hb] using h₂
+    simpa [hb] using! h₂
   have hc : T x₀ = (-b⁻¹ * a) • x₀ := by
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
   convert hc
-  simpa [field, inner_smul_left, mul_comm a] using congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
+  simpa [field, inner_smul_left, mul_comm a] using! congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
 
 end Real
 
@@ -257,7 +258,7 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 theorem eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     T x₀ = (T.rayleighQuotient x₀ : 𝕜) • x₀ := by
-  letI := InnerProductSpace.rclikeToReal 𝕜 E
+  let := InnerProductSpace.rclikeToReal 𝕜 E
   let hSA := hT.isSymmetric.restrictScalars.toSelfAdjoint.prop
   exact hSA.eq_smul_self_of_isLocalExtrOn_real hextr
 
@@ -276,7 +277,7 @@ quotient. -/
 theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMaxOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨆ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
+  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.isLocalMaxOn)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iSup_rayleigh_eq_iSup_rayleigh_sphere hx₀']
@@ -295,7 +296,7 @@ quotient. -/
 theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMinOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨅ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
+  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.isLocalMinOn)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iInf_rayleigh_eq_iInf_rayleigh_sphere hx₀']
@@ -324,7 +325,7 @@ namespace IsSymmetric
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iSup_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetric) :
     HasEigenvalue T (⨆ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
-  haveI := FiniteDimensional.proper_rclike 𝕜 E
+  have := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
   have H₁ : IsCompact (sphere (0 : E) ‖x‖) := isCompact_sphere _ _
@@ -343,7 +344,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetr
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iInf_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetric) :
     HasEigenvalue T (⨅ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
-  haveI := FiniteDimensional.proper_rclike 𝕜 E
+  have := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
   have H₁ : IsCompact (sphere (0 : E) ‖x‖) := isCompact_sphere _ _

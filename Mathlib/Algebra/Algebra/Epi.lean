@@ -34,8 +34,7 @@ lemma isEpi_iff_forall_one_tmul_eq :
     Algebra.IsEpi R A ↔ ∀ a : A, 1 ⊗ₜ[R] a = a ⊗ₜ[R] 1 := by
   refine ⟨fun h a ↦ IsEpi.injective_lift_mul <| by simp, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
   have h' (x : A ⊗[R] A) : ∃ a : A, x = a ⊗ₜ 1 := by
-    induction x using TensorProduct.induction_on with
-    | zero => exact ⟨0, by simp⟩
+    induction x using TensorProduct.inductionOn with
     | tmul u v =>
       use u * v
       calc u ⊗ₜ[R] v = u ⊗ₜ[R] 1 * 1 ⊗ₜ[R] v := by simp
@@ -85,7 +84,6 @@ lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
   have : Subsingleton ((A ⧸ R') ⊗[R] (A ⧸ R')) := by
     refine subsingleton_of_forall_eq 0 fun y ↦ ?_
     induction y with
-    | zero => rfl
     | add a b e₁ e₂ => rwa [e₁, zero_add]
     | tmul x y =>
       obtain ⟨x, rfl⟩ := R'.mkQ_surjective x
@@ -98,10 +96,6 @@ lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
       have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R A)⟩
       rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
   cases false_of_nontrivial_of_subsingleton ((A ⧸ R') ⊗[R] (A ⧸ R'))
-
-@[deprecated (since := "2026-01-13")]
-alias _root_.RingHom.surjective_of_tmul_eq_tmul_of_finite :=
-  isEpi_iff_surjective_algebraMap_of_finite
 
 end Ring
 
@@ -143,7 +137,7 @@ lemma injective_lift_lsmul :
         map_add' m n := tmul_add _ _ _
         map_smul' r m := tmul_smul _ _ _ }
     have aux : f ∘ₗ (lift <| LinearMap.restrictScalars₁₂ R R (LinearMap.lsmul A M)) = .id := by
-      ext a m; simpa using this a m
+      ext a m; simpa using! this a m
     exact HasLeftInverse.injective ⟨f, fun x ↦ congr($aux x)⟩
   intro a m
   let f : A ⊗[R] A →ₗ[R] A ⊗[R] M := lift
@@ -153,7 +147,7 @@ lemma injective_lift_lsmul :
         map_smul' := by simp }
       map_add' := by intros; ext; simp [add_tmul]
       map_smul' := by intros; ext; simp [smul_tmul'] }
-  simpa [f] using congr_arg f (tmul_comm R 1 a)
+  simpa [f] using! congr_arg f (tmul_comm R 1 a)
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
 def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=

@@ -35,6 +35,7 @@ section
 variable (C : Type*) [Category* C] {ι : Type*} (c : ComplexShape ι) [HasZeroMorphisms C]
   [CategoryWithHomology C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
   rw [mem_quasiIso_iff] at hf
@@ -66,6 +67,7 @@ noncomputable def homologyFunctorFactors (i : ι) :
 
 variable {C c}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_Q_map_iff_mem_quasiIso {K L : HomologicalComplex C c} (f : K ⟶ L) :
     IsIso (Q.map f) ↔ HomologicalComplex.quasiIso C c f := by
   constructor
@@ -108,6 +110,7 @@ lemma mem_quasiIso_iff {X Y : HomotopyCategory C c} (f : X ⟶ Y) :
     quasiIso C c f ↔ ∀ (n : ι), IsIso ((homologyFunctor _ _ n).map f) := by
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     quasiIso C c ((quotient C c).map f) ↔ HomologicalComplex.quasiIso C c f := by
   have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
@@ -169,6 +172,7 @@ lemma Q_map_eq_of_homotopy {K L : HomologicalComplex C c} {f g : K ⟶ L} (h : H
 
 /-- The functor `HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c` from the homotopy
 category to the localized category with respect to quasi-isomorphisms. -/
+@[no_expose]
 def Qh : HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c :=
   CategoryTheory.Quotient.lift _ HomologicalComplexUpToQuasiIso.Q (by
     intro K L f g ⟨h⟩
@@ -177,6 +181,7 @@ def Qh : HomotopyCategory C c ⥤ HomologicalComplexUpToQuasiIso C c :=
 variable (C c)
 
 /-- The canonical isomorphism `HomotopyCategory.quotient C c ⋙ Qh ≅ Q`. -/
+@[no_expose]
 def quotientCompQhIso : HomotopyCategory.quotient C c ⋙ Qh ≅ Q := by
   apply Quotient.lift.isLift
 
@@ -304,7 +309,7 @@ end ChainComplex
 
 section CochainComplex
 
-variable (C : Type*) [Category* C] {ι : Type*} [Preadditive C] [HasBinaryBiproducts C]
+variable (C : Type*) [Category* C] [Preadditive C] [HasBinaryBiproducts C]
 
 instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=
@@ -381,6 +386,7 @@ variable [c.QFactorsThroughHomotopy C] [c.QFactorsThroughHomotopy D]
 
 /-- The functor `F.mapHomologicalComplexUpToQuasiIso c` is induced by
 `F.mapHomotopyCategory c`. -/
+@[no_expose]
 noncomputable def mapHomologicalComplexUpToQuasiIsoFactorsh :
     HomologicalComplexUpToQuasiIso.Qh ⋙ F.mapHomologicalComplexUpToQuasiIso c ≅
       F.mapHomotopyCategory c ⋙ HomologicalComplexUpToQuasiIso.Qh :=
@@ -400,6 +406,8 @@ noncomputable instance :
 
 variable {c}
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex C c) :
     (F.mapHomologicalComplexUpToQuasiIsoFactorsh c).hom.app

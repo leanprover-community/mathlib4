@@ -20,8 +20,8 @@ universe w v u
 
 namespace CategoryTheory
 
+set_option linter.checkUnivs false in
 /-- The bicategory of categories where the 1-morphisms are profunctors. -/
-@[nolint checkUnivs]
 structure ProfCat where
   of ::
   /-- The objects of the bicategory are types... -/
@@ -52,6 +52,7 @@ lemma pentagon {C D E F G : Type u} [Category* C] [Category* D] [Category* E]
   ext _ _ ⟨_, ⟨_, ⟨_, _, _⟩, _⟩, _⟩
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def in
 @[reassoc (attr := simp)]
@@ -60,11 +61,11 @@ lemma triangle {C D E : Type u} [Category* C] [Category.{u} D] [Category* E]
     (P.associator (Profunctor.id (C := D)) Q).hom ≫ P.whiskerLeft (Q.leftUnitor.hom) =
       whiskerRight Q (P.rightUnitor.hom) := by
   ext _ _ ⟨_, ⟨_, _, g⟩, _⟩
-  dsimp [chosenCoend.map_apply, Quot.map]
+  dsimp [chosenCoend.map_apply, Quot.map, associatorHomFun]
   symm
   apply Quot.sound
   rw [coendRel_iff]
-  exact ⟨g, by simp⟩
+  exact ⟨g, by simp [associatorHomFun, leftUnitor, rightUnitor]⟩
 
 end
 
