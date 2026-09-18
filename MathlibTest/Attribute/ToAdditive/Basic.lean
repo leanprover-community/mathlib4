@@ -896,8 +896,8 @@ You may remove the option.
 
 Note: This linter can be disabled with `set_option linter.translateRelevantArg false`
 ---
-warning: @[to_additive] failed to add a translation from `monoidAlgebraFoo₂.eq_1` to `addMonoidAlgebraFoo₂.eq_1`.
-Please silence this warning and add a translation manually. Error:
+warning: @[to_additive] failed to add a translation from `monoidAlgebraFoo₂.eq_1` to any of `[addMonoidAlgebraFoo₂.eq_1]`.
+Please silence this warning and add a translation manually. Errors:
 
 `to_additive` validation failed: expected
   ∀ {k G : Type} [inst : Inhabited k], monoidAlgebraFoo₂ = ({ x := fun x => default }, 2)
@@ -991,6 +991,9 @@ theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm 
 
 /--
 warning: `old_mul_comm` has been deprecated: Use `mul_comm` instead
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵_̵mul_comm
 ---
 info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * b = b * a
 -/
@@ -999,6 +1002,9 @@ info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * 
 
 /--
 warning: `old_add_comm` has been deprecated: Use `add_comm` instead
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵_̵add_comm
 ---
 info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a + b = b + a
 -/
@@ -1010,6 +1016,9 @@ alias mul_comm_alias := mul_comm
 
 /--
 warning: `mul_comm_alias` has been deprecated: Use `mul_comm` instead
+
+Hint: Replace the deprecated name:
+  mul_comm_̵a̵l̵i̵a̵s̵
 ---
 info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
 -/
@@ -1018,8 +1027,60 @@ info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b
 
 /--
 warning: `add_comm_alias` has been deprecated: Use `add_comm` instead
+
+Hint: Replace the deprecated name:
+  add_comm_̵a̵l̵i̵a̵s̵
 ---
 info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a + b = b + a
 -/
 #guard_msgs in
 #check @add_comm_alias
+
+/-! Warning when adding docstrings to existing declarations -/
+
+namespace ExistingDeclDocstring
+
+/-- Existing docstring -/
+opaque add (G : Type*) [AddGroup G] : Prop
+
+/-- warning: The target declaration `add` already has a docstring. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul (G : Type*) [Group G] : Prop
+
+/-- warning: The target declaration `self` already has a docstring. -/
+#guard_msgs in
+/-- Existing docstring -/
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self (x y : Nat) : Prop
+
+/-- Existing docstring -/
+structure addStruct (G : Type*) [AddGroup G] where
+
+/-- warning: The target declaration `addStruct` already has a docstring. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct (G : Type*) [Group G] where
+
+-- Examples with no pre-existing docstring
+
+opaque add' (G : Type*) [AddGroup G] : Prop
+
+/-- warning: This docstring should be added directly to `add'`. -/
+#guard_msgs in
+@[to_additive existing /-- New docstring -/]
+opaque mul' (G : Type*) [Group G] : Prop
+
+/-- warning: This docstring should be added directly to `self'`. -/
+#guard_msgs in
+@[to_additive self (reorder := x y) /-- New docstring -/]
+opaque self' (x y : Nat) : Prop
+
+structure addStruct' (G : Type*) [AddGroup G] where
+
+/-- warning: This docstring should be added directly to `addStruct'`. -/
+#guard_msgs in
+@[to_additive /-- New docstring -/]
+structure mulStruct' (G : Type*) [Group G] where
+
+end ExistingDeclDocstring

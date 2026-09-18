@@ -364,7 +364,7 @@ variable {solution' : relations.Solution N} (h' : solution'.IsPresentation)
 
 /-- Uniqueness (up to a unique linear equivalence) of the module defined
 by generators and relations. -/
-def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinear
+def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinearMap
   (h.desc solution') (h'.desc solution)
     (h'.postcomp_injective (by simp))
     (h.postcomp_injective (by simp))
@@ -459,7 +459,7 @@ lemma isPresentation {solution : relations.Solution M}
     solution.IsPresentation where
   bijective := by
     let e : relations.Quotient ≃ₗ[A] M :=
-      LinearEquiv.ofLinear solution.fromQuotient
+      LinearEquiv.ofLinearMap solution.fromQuotient
       ((down.{v} h).desc (ofQuotient relations))
       ((down.{max u w₀} h).postcomp_injective (by aesop)) (by aesop)
     exact e.bijective
@@ -473,7 +473,7 @@ lemma isPresentation_iff :
       Submodule.span A (Set.range solution.var) = ⊤ ∧
       LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation) := by
   rw [← injective_fromQuotient_iff_ker_π_eq_span,
-    ← surjective_π_iff_span_eq_top, ← surjective_fromQuotient_iff_surjective_π, ]
+    ← surjective_π_iff_span_eq_top, ← surjective_fromQuotient_iff_surjective_π]
   exact ⟨fun h ↦ ⟨h.bijective.2, h.bijective.1⟩, fun h ↦ ⟨⟨h.2, h.1⟩⟩⟩
 
 lemma isPresentation_mk

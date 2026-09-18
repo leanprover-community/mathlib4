@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Evaluation of polynomials
@@ -51,8 +52,6 @@ theorem eval₂_C_X : eval₂ C X p = p :=
 end
 
 section Eval
-
-variable {x : R}
 
 theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
   calc
@@ -182,7 +181,7 @@ section Eval
 
 section
 
-variable [Semiring R] {p q : R[X]} {x : R} [Semiring S] (f : R →+* S)
+variable [Semiring R] {p : R[X]} {x : R} [Semiring S] (f : R →+* S)
 
 theorem eval₂_hom (x : R) : p.eval₂ f (f x) = f (p.eval x) :=
   RingHom.comp_id f ▸ (hom_eval₂ p (RingHom.id R) f x).symm
@@ -191,7 +190,7 @@ end
 
 section
 
-variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
+variable [CommSemiring R] {p : R[X]} [CommSemiring S]
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
   DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
