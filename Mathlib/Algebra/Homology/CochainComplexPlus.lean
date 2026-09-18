@@ -125,9 +125,6 @@ instance [Preadditive C] : (CochainComplex.plus C).IsStableUnderShift ℤ where
     ⟨fun K ⟨k, hk⟩ ↦ ⟨k - n, K.isStrictlyGE_shift k n _ (by lia)⟩⟩
 
 instance [Preadditive C] [CategoryWithHomology C] :
-    (HomologicalComplex.quasiIso C (.up ℤ)).IsCompatibleWithShift ℤ := inferInstance
-
-instance [Preadditive C] [CategoryWithHomology C] :
     (CochainComplex.Plus.quasiIso C).IsCompatibleWithShift ℤ where
   condition a := by
     ext K L f
