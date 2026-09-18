@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adrian Wüthrich
+Authors: Adrian Wüthrich, Jack Pickett
 -/
 module
 
@@ -9,9 +9,11 @@ public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.Analysis.Matrix.Spectrum
 
 import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
@@ -25,6 +27,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
+* `eigenvalues_lapMatrix_le_card`: Every Laplacian eigenvalue is at most the number of vertices.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
@@ -278,6 +281,68 @@ noncomputable def lapMatrix_ker_basis :=
   Basis.mk G.linearIndependent_lapMatrix_ker_basis_aux G.top_le_span_range_lapMatrix_ker_basis_aux
 
 end
+
+/-- The quadratic form of a simple-graph Laplacian is at most `|V| · ‖x‖²`.
+
+The comparison is with the complete graph: adjacency of `G` is a subset of pairs `i ≠ j`, so
+`xᵀ L(G) x ≤ xᵀ L(K_V) x`. From `lapMatrix_top`, `L(K_V) = |V| - J` where `J` is the all-ones
+matrix, and the corresponding quadratic form is `|V| ‖x‖² - (∑ x)² ≤ |V| ‖x‖²`. -/
+theorem dotProduct_mulVec_lapMatrix_le_card (x : V → ℝ) :
+    x ⬝ᵥ (G.lapMatrix ℝ *ᵥ x) ≤ (Fintype.card V : ℝ) * (x ⬝ᵥ x) := by
+  classical
+  have hcmp : toLinearMap₂' ℝ (G.lapMatrix ℝ) x x ≤
+      toLinearMap₂' ℝ ((⊤ : SimpleGraph V).lapMatrix ℝ) x x := by
+    rw [G.lapMatrix_toLinearMap₂' ℝ x, (⊤ : SimpleGraph V).lapMatrix_toLinearMap₂' ℝ x]
+    refine div_le_div_of_nonneg_right ?_ (by norm_num)
+    refine sum_le_sum fun i _ => sum_le_sum fun j _ => ?_
+    by_cases hG : G.Adj i j
+    · have hne : i ≠ j := hG.ne
+      simp [hG, hne, SimpleGraph.top_adj]
+    · simp only [hG, ↓reduceIte, SimpleGraph.top_adj]
+      split_ifs with hne
+      · exact sq_nonneg _
+      · rfl
+  have htop : toLinearMap₂' ℝ ((⊤ : SimpleGraph V).lapMatrix ℝ) x x ≤
+      (Fintype.card V : ℝ) * (x ⬝ᵥ x) := by
+    rw [lapMatrix_top (R := ℝ), toLinearMap₂'_apply']
+    rw [sub_mulVec, dotProduct_sub, natCast_mulVec, dotProduct_smul, smul_eq_mul]
+    have hJ : x ⬝ᵥ (Matrix.of (1 : V → V → ℝ) *ᵥ x) = (∑ i, x i) ^ 2 := by
+      have hmul : Matrix.of (1 : V → V → ℝ) *ᵥ x = fun _ => ∑ j, x j := by
+        ext i
+        simp [mulVec_apply_eq_sum, of_apply]
+      rw [hmul, dotProduct, ← sum_mul, ← sq]
+    rw [hJ]
+    exact sub_le_self _ (sq_nonneg _)
+  calc
+    x ⬝ᵥ (G.lapMatrix ℝ *ᵥ x) = toLinearMap₂' ℝ (G.lapMatrix ℝ) x x :=
+      (toLinearMap₂'_apply' _ x x).symm
+    _ ≤ toLinearMap₂' ℝ ((⊤ : SimpleGraph V).lapMatrix ℝ) x x := hcmp
+    _ ≤ (Fintype.card V : ℝ) * (x ⬝ᵥ x) := htop
+
+/-- Every eigenvalue of the Laplacian of a finite simple graph is at most the number of vertices.
+
+This is the Rayleigh-quotient form of `dotProduct_mulVec_lapMatrix_le_card` on a unit eigenvector.
+It is a uniform upper bound `λ ≤ |V|`; it does not assert that `|V|` lies in the spectrum. -/
+theorem eigenvalues_lapMatrix_le_card (i : V) :
+    ((G.posSemidef_lapMatrix ℝ).isHermitian.eigenvalues i) ≤ (Fintype.card V : ℝ) := by
+  classical
+  let hA := (G.posSemidef_lapMatrix ℝ).isHermitian
+  let v := hA.eigenvectorBasis i
+  have hunit : ‖v‖ = 1 := hA.eigenvectorBasis.orthonormal.norm_eq_one i
+  have hdot : ⇑v ⬝ᵥ ⇑v = 1 := by
+    rw [dotProduct]
+    have hsq := EuclideanSpace.real_norm_sq_eq v
+    rw [hunit, one_pow] at hsq
+    have hsq' : ∑ j, (v.ofLp j) * (v.ofLp j) = ∑ j, (v.ofLp j) ^ 2 := by
+      refine sum_congr rfl fun j _ => ?_
+      ring
+    rw [hsq', ← hsq]
+  have hquad := dotProduct_mulVec_lapMatrix_le_card G (⇑v)
+  rw [hA.eigenvalues_eq i]
+  simp only [RCLike.re_to_real, star_trivial]
+  calc
+    ⇑v ⬝ᵥ (G.lapMatrix ℝ *ᵥ ⇑v) ≤ (Fintype.card V : ℝ) * (⇑v ⬝ᵥ ⇑v) := hquad
+    _ = (Fintype.card V : ℝ) := by rw [hdot, mul_one]
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
