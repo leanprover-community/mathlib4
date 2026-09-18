@@ -3,17 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Lemmas relating fintypes and order/lattice structure.
 -/
 
-
-open Function
-
-open Nat
+public section
 
 universe u v
 
@@ -43,7 +42,7 @@ theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
   @fold_inf_univ αᵒᵈ _ _ _ _
 
 lemma mem_inf [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α} :
-    a ∈ s.inf f ↔ ∀ i ∈ s, a ∈ f i := by induction' s using Finset.cons_induction <;> simp [*]
+    a ∈ s.inf f ↔ ∀ i ∈ s, a ∈ f i := by induction s using Finset.cons_induction <;> simp [*]
 
 end Finset
 

@@ -3,9 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 
 /-!
 # Pointwise operations of finsets
@@ -19,6 +20,8 @@ For finsets `s` and `t`:
 * `s +ᵥ t` (`Finset.vadd`): Scalar addition, finset of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
 * `s • t` (`Finset.smul`): Scalar multiplication, finset of all `x • y` where `x ∈ s` and
   `y ∈ t`.
+* `s /ₛ t` (`Finset.sdiv`): Scalar division, finset of all `x /ₛ y` where `x ∈ s` and
+  `y ∈ t`.
 * `s -ᵥ t` (`Finset.vsub`): Scalar subtraction, finset of all `x -ᵥ y` where `x ∈ s` and
   `y ∈ t`.
 * `a • s` (`Finset.smulFinset`): Scaling, finset of all `a • x` where `x ∈ s`.
@@ -31,10 +34,10 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 
 ## Implementation notes
 
-We put all instances in the locale `Pointwise`, so that these instances are not available by
+We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-since we expect the locale to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+since we expect the scope to be open whenever the instances are actually used (and making the
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -42,17 +45,19 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+@[expose] public section
 
-open Function MulOpposite
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
+
+open MulOpposite
 
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 namespace Finset
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Scalar addition/multiplication of finsets -/
 
@@ -60,7 +65,8 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
 
 /-- The pointwise product of two finsets `s` and `t`: `s • t = {x • y | x ∈ s, y ∈ t}`. -/
-@[to_additive "The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`."]
+@[to_additive (attr := instance_reducible)
+/-- The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`. -/]
 protected def smul : SMul (Finset α) (Finset β) := ⟨image₂ (· • ·)⟩
 
 scoped[Pointwise] attribute [instance] Finset.smul Finset.vadd
@@ -78,9 +84,6 @@ lemma coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) •
 @[to_additive] lemma smul_mem_smul : a ∈ s → b ∈ t → a • b ∈ s • t := mem_image₂_of_mem
 
 @[to_additive] lemma card_smul_le : #(s • t) ≤ #s * #t := card_image₂_le ..
-
-@[deprecated (since := "2024-11-19")] alias smul_card_le := card_smul_le
-@[deprecated (since := "2024-11-19")] alias vadd_card_le := card_vadd_le
 
 @[to_additive (attr := simp)]
 lemma empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ := image₂_empty_left
@@ -138,8 +141,8 @@ lemma union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t₁
 /-- If a finset `u` is contained in the scalar product of two sets `s • t`, we can find two finsets
 `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' • t'`. -/
 @[to_additive
-"If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
-finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
+/-- If a finset `u` is contained in the scalar sum of two sets `s +ᵥ t`, we can find two
+finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`. -/]
 lemma subset_smul {s : Set α} {t : Set β} :
     ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
   subset_set_image₂
@@ -152,7 +155,8 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
 
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
-@[to_additive "The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
+@[to_additive (attr := instance_reducible)
+  /-- The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`. -/]
 protected def smulFinset : SMul α (Finset β) where smul a := image <| (a • ·)
 
 scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
@@ -163,17 +167,19 @@ scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
 
 @[to_additive]
 lemma mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y = x := by
-  simp only [Finset.smul_finset_def, and_assoc, mem_image, exists_prop, Prod.exists, mem_product]
+  simp only [Finset.smul_finset_def, mem_image]
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) := coe_image
 
 @[to_additive] lemma smul_mem_smul_finset : b ∈ s → a • b ∈ a • s := mem_image_of_mem _
 
-@[to_additive] lemma smul_finset_card_le : #(a • s) ≤ #s := card_image_le
+@[to_additive] lemma card_smul_finset_le : #(a • s) ≤ #s := card_image_le
+@[deprecated (since := "2026-04-16")] alias smul_finset_card_le := card_smul_finset_le
+@[deprecated (since := "2026-04-16")] alias vadd_finset_card_le := card_vadd_finset_le
 
 @[to_additive (attr := simp)]
-lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := image_empty _
+lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := rfl
 
 @[to_additive (attr := simp)]
 lemma smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ := image_eq_empty
@@ -217,114 +223,134 @@ open scoped Pointwise
 
 /-! ### Instances -/
 
-open Pointwise
+open scoped Pointwise
 
-/-! ### Scalar subtraction of finsets -/
+/-! ### Scalar division and subtraction of finsets -/
 
-section VSub
+section SDiv
 
-variable [VSub α β] [DecidableEq α] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
+variable [SDiv α β] [DecidableEq α] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
 
-/-- The pointwise subtraction of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
-protected def vsub : VSub (Finset α) (Finset β) :=
-  ⟨image₂ (· -ᵥ ·)⟩
+/-- The pointwise division of two finsets `s` and `t`: `s /ₛ t = {x /ₛ y | x ∈ s, y ∈ t}`. -/
+@[to_additive (attr := instance_reducible)
+  /-- The pointwise subtraction of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/]
+protected def sdiv : SDiv (Finset α) (Finset β) :=
+  ⟨image₂ (· /ₛ ·)⟩
 
-scoped[Pointwise] attribute [instance] Finset.vsub
+scoped[Pointwise] attribute [instance] Finset.sdiv Finset.vsub
 
-theorem vsub_def : s -ᵥ t = image₂ (· -ᵥ ·) s t :=
+@[to_additive]
+theorem sdiv_def : s /ₛ t = image₂ (· /ₛ ·) s t :=
   rfl
 
-@[simp]
-theorem image_vsub_product : image₂ (· -ᵥ ·) s t = s -ᵥ t :=
+@[to_additive (attr := simp)]
+theorem image_sdiv_product : image₂ (· /ₛ ·) s t = s /ₛ t :=
   rfl
 
-theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ b ∈ s, ∃ c ∈ t, b -ᵥ c = a :=
+@[to_additive]
+theorem mem_sdiv : a ∈ s /ₛ t ↔ ∃ b ∈ s, ∃ c ∈ t, b /ₛ c = a :=
   mem_image₂
 
-@[simp, norm_cast]
-theorem coe_vsub (s t : Finset β) : (↑(s -ᵥ t) : Set α) = (s : Set β) -ᵥ t :=
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_sdiv (s t : Finset β) : (↑(s /ₛ t) : Set α) = (s : Set β) /ₛ t :=
   coe_image₂ _ _ _
 
-theorem vsub_mem_vsub : b ∈ s → c ∈ t → b -ᵥ c ∈ s -ᵥ t :=
+@[to_additive]
+theorem sdiv_mem_sdiv : b ∈ s → c ∈ t → b /ₛ c ∈ s /ₛ t :=
   mem_image₂_of_mem
 
-theorem vsub_card_le : #(s -ᵥ t : Finset α) ≤ #s * #t :=
+@[to_additive]
+theorem sdiv_card_le : #(s /ₛ t : Finset α) ≤ #s * #t :=
   card_image₂_le _ _ _
 
-@[simp]
-theorem empty_vsub (t : Finset β) : (∅ : Finset β) -ᵥ t = ∅ :=
+@[to_additive (attr := simp)]
+theorem empty_sdiv (t : Finset β) : (∅ : Finset β) /ₛ t = ∅ :=
   image₂_empty_left
 
-@[simp]
-theorem vsub_empty (s : Finset β) : s -ᵥ (∅ : Finset β) = ∅ :=
+@[to_additive (attr := simp)]
+theorem sdiv_empty (s : Finset β) : s /ₛ (∅ : Finset β) = ∅ :=
   image₂_empty_right
 
-@[simp]
-theorem vsub_eq_empty : s -ᵥ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
+@[to_additive (attr := simp)]
+theorem sdiv_eq_empty : s /ₛ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[simp]
-theorem vsub_nonempty : (s -ᵥ t : Finset α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
+@[to_additive (attr := simp)]
+theorem sdiv_nonempty : (s /ₛ t : Finset α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-theorem Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Finset α).Nonempty :=
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
+theorem Nonempty.sdiv : s.Nonempty → t.Nonempty → (s /ₛ t : Finset α).Nonempty :=
   Nonempty.image₂
 
-theorem Nonempty.of_vsub_left : (s -ᵥ t : Finset α).Nonempty → s.Nonempty :=
+@[to_additive]
+theorem Nonempty.of_sdiv_left : (s /ₛ t : Finset α).Nonempty → s.Nonempty :=
   Nonempty.of_image₂_left
 
-theorem Nonempty.of_vsub_right : (s -ᵥ t : Finset α).Nonempty → t.Nonempty :=
+@[to_additive]
+theorem Nonempty.of_sdiv_right : (s /ₛ t : Finset α).Nonempty → t.Nonempty :=
   Nonempty.of_image₂_right
 
-@[simp]
-theorem vsub_singleton (b : β) : s -ᵥ ({b} : Finset β) = s.image (· -ᵥ b) :=
+@[to_additive (attr := simp)]
+theorem sdiv_singleton (b : β) : s /ₛ ({b} : Finset β) = s.image (· /ₛ b) :=
   image₂_singleton_right
 
-theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·) :=
+@[to_additive]
+theorem singleton_sdiv (a : β) : ({a} : Finset β) /ₛ t = t.image (a /ₛ ·) :=
   image₂_singleton_left
 
-theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
+@[to_additive]
+theorem singleton_sdiv_singleton (a b : β) : ({a} : Finset β) /ₛ {b} = {a /ₛ b} :=
   image₂_singleton
 
-@[mono, gcongr]
-theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
+@[to_additive (attr := mono, gcongr)]
+theorem sdiv_subset_sdiv : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ /ₛ t₁ ⊆ s₂ /ₛ t₂ :=
   image₂_subset
 
-theorem vsub_subset_vsub_left : t₁ ⊆ t₂ → s -ᵥ t₁ ⊆ s -ᵥ t₂ :=
+@[to_additive]
+theorem sdiv_subset_sdiv_left : t₁ ⊆ t₂ → s /ₛ t₁ ⊆ s /ₛ t₂ :=
   image₂_subset_left
 
-theorem vsub_subset_vsub_right : s₁ ⊆ s₂ → s₁ -ᵥ t ⊆ s₂ -ᵥ t :=
+@[to_additive]
+theorem sdiv_subset_sdiv_right : s₁ ⊆ s₂ → s₁ /ₛ t ⊆ s₂ /ₛ t :=
   image₂_subset_right
 
-theorem vsub_subset_iff : s -ᵥ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x -ᵥ y ∈ u :=
+@[to_additive]
+theorem sdiv_subset_iff : s /ₛ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x /ₛ y ∈ u :=
   image₂_subset_iff
 
 section
 
 variable [DecidableEq β]
 
-theorem union_vsub : s₁ ∪ s₂ -ᵥ t = s₁ -ᵥ t ∪ (s₂ -ᵥ t) :=
+@[to_additive]
+theorem union_sdiv : s₁ ∪ s₂ /ₛ t = s₁ /ₛ t ∪ (s₂ /ₛ t) :=
   image₂_union_left
 
-theorem vsub_union : s -ᵥ (t₁ ∪ t₂) = s -ᵥ t₁ ∪ (s -ᵥ t₂) :=
+@[to_additive]
+theorem sdiv_union : s /ₛ (t₁ ∪ t₂) = s /ₛ t₁ ∪ (s /ₛ t₂) :=
   image₂_union_right
 
-theorem inter_vsub_subset : s₁ ∩ s₂ -ᵥ t ⊆ (s₁ -ᵥ t) ∩ (s₂ -ᵥ t) :=
+@[to_additive]
+theorem inter_sdiv_subset : s₁ ∩ s₂ /ₛ t ⊆ (s₁ /ₛ t) ∩ (s₂ /ₛ t) :=
   image₂_inter_subset_left
 
-theorem vsub_inter_subset : s -ᵥ t₁ ∩ t₂ ⊆ (s -ᵥ t₁) ∩ (s -ᵥ t₂) :=
+@[to_additive]
+theorem sdiv_inter_subset : s /ₛ t₁ ∩ t₂ ⊆ (s /ₛ t₁) ∩ (s /ₛ t₂) :=
   image₂_inter_subset_right
 
 end
 
-/-- If a finset `u` is contained in the pointwise subtraction of two sets `s -ᵥ t`, we can find two
-finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' -ᵥ t'`. -/
-theorem subset_vsub {s t : Set β} :
-    ↑u ⊆ s -ᵥ t → ∃ s' t' : Finset β, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' -ᵥ t' :=
+/-- If a finset `u` is contained in the pointwise division of two sets `s /ₛ t`, we can find two
+finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' /ₛ t'`. -/
+@[to_additive
+  /-- If a finset `u` is contained in the pointwise subtraction of two sets `s -ᵥ t`, we can find
+  two finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' -ᵥ t'`. -/]
+theorem subset_sdiv {s t : Set β} :
+    ↑u ⊆ s /ₛ t → ∃ s' t' : Finset β, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' /ₛ t' :=
   subset_set_image₂
 
-end VSub
+end SDiv
 
 section SMul
 
@@ -339,26 +365,6 @@ theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Fi
 
 end SMul
 
-
-section IsRightCancelMul
-
-variable [Mul α] [IsRightCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
-
-
-end IsRightCancelMul
-
-section CancelMonoid
-variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
-
-
-end CancelMonoid
-
-section Group
-variable [Group α] [DecidableEq α] {s t : Finset α}
-
-
-end Group
-
 @[to_additive]
 theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α γ] (f : β → γ) (a : α)
     (s : Finset β) : (∀ b, f (a • b) = a • f b) → (a • s).image f = a • s.image f :=
@@ -366,13 +372,7 @@ theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α 
 
 end Finset
 
-namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
-  [∀ i, DecidableEq (α i)]
-
-end Fintype
-
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 
@@ -408,19 +408,20 @@ theorem Finite.toFinset_smul_set (hs : s.Finite) (hf : (a • s).Finite := hs.sm
 
 end SMul
 
-section VSub
+section SDiv
 
-variable [DecidableEq α] [VSub α β] {s t : Set β}
+variable [DecidableEq α] [SDiv α β] {s t : Set β}
 
-@[simp]
-theorem toFinset_vsub (s t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s -ᵥ t)] :
-    (s -ᵥ t : Set α).toFinset = s.toFinset -ᵥ t.toFinset :=
+@[to_additive (attr := simp)]
+theorem toFinset_sdiv (s t : Set β) [Fintype s] [Fintype t] [Fintype ↑(s /ₛ t)] :
+    (s /ₛ t : Set α).toFinset = s.toFinset /ₛ t.toFinset :=
   toFinset_image2 _ _ _
 
-theorem Finite.toFinset_vsub (hs : s.Finite) (ht : t.Finite) (hf := hs.vsub ht) :
-    hf.toFinset = hs.toFinset -ᵥ ht.toFinset :=
+@[to_additive]
+theorem Finite.toFinset_sdiv (hs : s.Finite) (ht : t.Finite) (hf := hs.sdiv ht) :
+    hf.toFinset = hs.toFinset /ₛ ht.toFinset :=
   Finite.toFinset_image2 _ _ _
 
-end VSub
+end SDiv
 
 end Set

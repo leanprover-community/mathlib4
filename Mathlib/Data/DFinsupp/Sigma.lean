@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Fintype.Quotient
+module
+
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Data.Fintype.Quotient
 
 /-!
 # `DFinsupp` on `Sigma` types
@@ -20,18 +22,18 @@ import Mathlib.Data.Fintype.Quotient
 
 -/
 
+@[expose] public section
+
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u} {γ : Type w}
 
 namespace DFinsupp
 
 section Equiv
 
 open Finset
-
-variable {κ : Type*}
 
 section SigmaCurry
 
@@ -46,7 +48,8 @@ def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
   { toFun := fun j ↦ f ⟨i, j⟩,
     support' := f.support'.map (fun ⟨m, hm⟩ ↦
       ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some <| h.rec j' else none),
-        fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr ⟨⟨i, j⟩, h, dif_pos rfl⟩)⟩) }
+        fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr
+          ⟨⟨i, j⟩, h, dite_eq_left rfl⟩)⟩) }
   support' := f.support'.map (fun ⟨m, hm⟩ ↦
     ⟨m.map Sigma.fst, fun i ↦ Decidable.or_iff_not_imp_left.mpr (fun h ↦ DFinsupp.ext
       (fun j ↦ (hm ⟨i, j⟩).resolve_left (fun H ↦ (Multiset.mem_map.not.mp h) ⟨⟨i, j⟩, H, rfl⟩)))⟩)
@@ -63,8 +66,6 @@ theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] :
 
 @[simp]
 theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (f + g) = (sigmaCurry f + sigmaCurry g : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -72,8 +73,6 @@ theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, 
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (r • f) = (r • sigmaCurry f : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -88,17 +87,15 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
   rw [sigmaCurry_apply]
   obtain rfl | hi := eq_or_ne i i'
   · rw [single_eq_same]
-    obtain rfl | hj := eq_or_ne j j'
+    obtain rfl | hj := eq_or_ne j' j
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne, single_eq_of_ne hj]
       simpa using hj
-  · rw [single_eq_of_ne, single_eq_of_ne hi, zero_apply]
-    simp [hi]
+  · simp [hi]
 
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
-def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), δ i j) :
-    Π₀ i : Σ_, _, δ i.1 i.2 where
+def sigmaUncurry [∀ i j, Zero (δ i j)] (f : Π₀ (i) (j), δ i j) : Π₀ i : Σ _, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
   support' :=
     f.support'.bind fun s =>
@@ -148,18 +145,16 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
   rw [sigmaUncurry_apply]
   obtain rfl | hi := eq_or_ne i i'
   · rw [single_eq_same]
-    obtain rfl | hj := eq_or_ne j j'
+    obtain rfl | hj := eq_or_ne j' j
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne hj, single_eq_of_ne]
       simpa using hj
-  · rw [single_eq_of_ne hi, single_eq_of_ne, zero_apply]
-    simp [hi]
+  · simp [hi]
 
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
-def sigmaCurryEquiv [∀ i j, Zero (δ i j)] [DecidableEq ι] :
-    (Π₀ i : Σ_, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
+def sigmaCurryEquiv [∀ i j, Zero (δ i j)] : (Π₀ i : Σ _, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry
   left_inv f := by

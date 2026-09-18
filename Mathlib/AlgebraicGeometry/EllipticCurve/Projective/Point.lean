@@ -3,16 +3,18 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 
 /-!
 # Nonsingular points and the group law in projective coordinates
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular projective points of `W` can be
-endowed with an group law, which is uniquely determined by the formulae in
+endowed with a group law, which is uniquely determined by the formulae in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean` and follows from an equivalence
-with the nonsingular points `W⟮F⟯` in affine coordinates.
+with the nonsingular points in affine coordinates.
 
 This file defines the group law on nonsingular projective points.
 
@@ -26,7 +28,7 @@ This file defines the group law on nonsingular projective points.
 * `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
 * `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
 * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
-  nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
+  nonsingular projective points with the type of nonsingular points in affine coordinates.
 
 ## Main statements
 
@@ -42,8 +44,8 @@ the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a non
 point on `W` can be given by `[x : y : z]` and the nonsingular condition on any representative.
 
 A nonsingular projective point representative can be converted to a nonsingular point in affine
-coordinates using `WeiestrassCurve.Projective.Point.toAffine`, which lifts to a map on nonsingular
-projective points using `WeiestrassCurve.Projective.Point.toAffineLift`. Conversely, a nonsingular
+coordinates using `WeierstrassCurve.Projective.Point.toAffine`, which lifts to a map on nonsingular
+projective points using `WeierstrassCurve.Projective.Point.toAffineLift`. Conversely, a nonsingular
 point in affine coordinates can be converted to a nonsingular projective point using
 `WeierstrassCurve.Projective.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toProjective`.
 
@@ -58,6 +60,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 elliptic curve, projective, point, group law
 -/
+
+@[expose] public section
 
 local notation3 P " x" => Prod.fst P
 
@@ -176,7 +180,7 @@ noncomputable def add (P Q : R × R × R) : R × R × R :=
   if P ≈ Q then W'.dblXYZ P else W'.addXYZ P Q
 
 lemma add_of_equiv {P Q : R × R × R} (h : P ≈ Q) : W'.add P Q = W'.dblXYZ P :=
-  if_pos h
+  ite_eq_left h
 
 lemma add_smul_of_equiv {P Q : R × R × R} (h : P ≈ Q) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) = u ^ 4 • W'.add P Q := by
@@ -189,7 +193,7 @@ lemma add_of_eq {P Q : R × R × R} (h : P = Q) : W'.add P Q = W'.dblXYZ P :=
   h ▸ add_self P
 
 lemma add_of_not_equiv {P Q : R × R × R} (h : ¬P ≈ Q) : W'.add P Q = W'.addXYZ P Q :=
-  if_neg h
+  ite_eq_right h
 
 lemma add_smul_of_not_equiv {P Q : R × R × R} (h : ¬P ≈ Q) {u v : R} (hu : IsUnit u)
     (hv : IsUnit v) : W'.add (u • P) (v • Q) = (u * v) ^ 2 • W'.add P Q := by
@@ -198,8 +202,8 @@ lemma add_smul_of_not_equiv {P Q : R × R × R} (h : ¬P ≈ Q) {u v : R} (hu : 
 lemma add_smul_equiv (P Q : R × R × R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) ≈ W'.add P Q := by
   by_cases h : P ≈ Q
-  · exact ⟨hu.unit ^ 4, by convert (add_smul_of_equiv h hu hv).symm⟩
-  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert (add_smul_of_not_equiv h hu hv).symm⟩
+  · exact ⟨hu.unit ^ 4, by convert! (add_smul_of_equiv h hu hv).symm⟩
+  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert! (add_smul_of_not_equiv h hu hv).symm⟩
 
 lemma add_equiv {P P' Q Q' : R × R × R} (hP : P ≈ P') (hQ : Q ≈ Q') :
     W'.add P Q ≈ W'.add P' Q' := by
@@ -228,8 +232,8 @@ lemma add_of_Y_ne {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (h
     W.add P Q = addU P Q • (0, 1, 0) := by
   rw [add_of_not_equiv <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
 
-lemma add_of_Y_ne' {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma add_of_Y_ne' [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.add P Q = W.dblZ P •
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -238,16 +242,16 @@ lemma add_of_Y_ne' {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (
   rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy,
     dblXYZ_of_Z_ne_zero hP hQ hPz hQz hx hy]
 
-lemma add_of_X_ne {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.add P Q = W.addZ P Q •
+lemma add_of_X_ne [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.add P Q = W.addZ P Q •
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1) := by
   rw [add_of_not_equiv <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
 
-private lemma nonsingular_add_of_Z_ne_zero {P Q : F × F × F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+private lemma nonsingular_add_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F}
+    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) : W.Nonsingular
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -275,7 +279,8 @@ lemma nonsingular_add {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsing
             nonsingular_smul _ <| isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right]
         · rwa [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             nonsingular_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy]
-      · have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
+      · classical
+        have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
         by_cases hx : P x * Q z = Q x * P z
         · rwa [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx, nonsingular_smul _ <|
               isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx]
@@ -324,8 +329,8 @@ lemma addMap_of_Y_eq {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Equation
   · rw [addMap_eq, add_of_Y_ne hP.left hQ hPz hQz hx hy,
       mk_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy]
 
-lemma addMap_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) :
+lemma addMap_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) :
     W.addMap ⟦P⟧ ⟦Q⟧ =
       ⟦(W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -373,20 +378,18 @@ lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦(X, Y, 1)�
 corresponding nonsingular projective point. -/
 def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
   | 0 => 0
-  | .some h => ⟨(nonsingularLift_some ..).mpr h⟩
+  | .some _ _ h => ⟨(nonsingularLift_some ..).mpr h⟩
 
 lemma fromAffine_zero [Nontrivial R] : fromAffine 0 = (0 : W'.Point) :=
   rfl
 
 lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
+    fromAffine (.some _ _ h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
 lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) ≠ 0 :=
+    fromAffine (.some _ _ h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
-
-@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular projective point on a Weierstrass curve `W`.
 
@@ -425,23 +428,23 @@ variable (W) in
 /-- The natural map from a nonsingular projective point representative on a Weierstrass curve to its
 corresponding nonsingular point in affine coordinates. -/
 noncomputable def toAffine (P : F × F × F) : W.toAffine.Point :=
-  if hP : W.Nonsingular P ∧ P z ≠ 0 then .some <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
+  if hP : W.Nonsingular P ∧ P z ≠ 0 then .some _ _ <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
 
 lemma toAffine_of_singular {P : F × F × F} (hP : ¬W.Nonsingular P) : toAffine W P = 0 := by
-  rw [toAffine, dif_neg <| not_and_of_not_left _ hP]
+  rw [toAffine, dite_eq_right <| not_and_of_not_left _ hP]
 
 lemma toAffine_of_Z_eq_zero {P : F × F × F} (hPz : P z = 0) : toAffine W P = 0 := by
-  rw [toAffine, dif_neg <| not_and_not_right.mpr fun _ => hPz]
+  rw [toAffine, dite_eq_right <| not_and_not_right.mpr fun _ => hPz]
 
 lemma toAffine_zero : toAffine W (0, 1, 0) = 0 :=
   toAffine_of_Z_eq_zero rfl
 
 lemma toAffine_of_Z_ne_zero {P : F × F × F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
-    toAffine W P = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
-  rw [toAffine, dif_pos ⟨hP, hPz⟩]
+    toAffine W P = .some _ _ ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
+  rw [toAffine, dite_eq_left ⟨hP, hPz⟩]
 
 lemma toAffine_some {X Y : F} (h : W.Nonsingular (X, Y, 1)) :
-    toAffine W (X, Y, 1) = .some ((nonsingular_some ..).mp h) := by
+    toAffine W (X, Y, 1) = .some _ _ ((nonsingular_some ..).mp h) := by
   simp_rw [toAffine_of_Z_ne_zero h one_ne_zero, div_one]
 
 lemma toAffine_smul (P : F × F × F) {u : F} (hu : IsUnit u) :
@@ -467,8 +470,8 @@ lemma toAffine_neg {P : F × F × F} (hP : W.Nonsingular P) :
         (nonsingular_smul _ <| Ne.isUnit hPz).mp <| neg_of_Z_ne_zero hPz ▸ nonsingular_neg hP,
       toAffine_of_Z_ne_zero hP hPz, Affine.Point.neg_some]
 
-private lemma toAffine_add_of_Z_ne_zero {P Q : F × F × F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+private lemma toAffine_add_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F}
+    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) : toAffine W
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -479,7 +482,7 @@ private lemma toAffine_add_of_Z_ne_zero {P Q : F × F × F} (hP : W.Nonsingular 
     toAffine_of_Z_ne_zero hQ hQz,
     Affine.Point.add_some <| by rwa [← X_eq_iff hPz hQz, ← Y_eq_iff' hPz hQz]]
 
-lemma toAffine_add {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+lemma toAffine_add [DecidableEq F] {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
     toAffine W (W.add P Q) = toAffine W P + toAffine W Q := by
   by_cases hPz : P z = 0
   · rw [toAffine_of_Z_eq_zero hPz, zero_add]
@@ -527,27 +530,28 @@ lemma toAffineLift_zero : toAffineLift (0 : W.Point) = 0 :=
   toAffine_zero
 
 lemma toAffineLift_of_Z_ne_zero {P : F × F × F} {hP : W.NonsingularLift ⟦P⟧} (hPz : P z ≠ 0) :
-    toAffineLift ⟨hP⟩ = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) :=
+    toAffineLift ⟨hP⟩ = .some _ _ ((nonsingular_of_Z_ne_zero hPz).mp hP) :=
   toAffine_of_Z_ne_zero hP hPz
 
 lemma toAffineLift_some {X Y : F} (h : W.NonsingularLift ⟦(X, Y, 1)⟧) :
-    toAffineLift ⟨h⟩ = .some ((nonsingular_some ..).mp h) :=
+    toAffineLift ⟨h⟩ = .some _ _ ((nonsingular_some ..).mp h) :=
   toAffine_some h
 
 lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
   rcases P with @⟨⟨_⟩, hP⟩
   exact toAffine_neg hP
 
-lemma toAffineLift_add (P Q : W.Point) :
+lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
     (P + Q).toAffineLift = P.toAffineLift + Q.toAffineLift := by
   rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
   exact toAffine_add hP hQ
 
+set_option backward.isDefEq.respectTransparency false in
 variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular projective points on a
-Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/
+Weierstrass curve `W` and the type of nonsingular points in affine coordinates. -/
 @[simps]
-noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
+noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
   invFun := fromAffine
   left_inv := by
@@ -566,42 +570,52 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
 noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
-    rw [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
-    rw [map_add, toAffineAddEquiv_apply W 0, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
-    simp_rw [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp_rw [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp_rw [map_add, add_assoc]
+  zero_add _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
+  add_zero _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
+  neg_add_cancel P := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
+  add_comm _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_comm]
+  add_assoc _ _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_assoc]
 
 end Point
 
 /-! ## Maps and base changes -/
 
 @[simp]
-protected lemma map_neg (f : R →+* S) (P : R × R × R) :
-    (W'.map f).toProjective.neg (f ∘ P) = f ∘ W'.neg P := by
+protected lemma map_neg (f : R →+* S) (P : R × R × R) : (W'.map f).neg (f ∘ P) = f ∘ W'.neg P := by
   simp_rw [neg, map_negY, map_eq]
 
 @[simp]
 protected lemma map_add (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) : (W.map f).toProjective.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+    (hQ : W.Nonsingular Q) : (W.map f).add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
   by_cases h : P ≈ Q
-  · rw [add_of_equiv <| (map_equiv_map f hP hQ).mpr h, add_of_equiv h, map_dblXYZ]
-  · rw [add_of_not_equiv <| h.comp (map_equiv_map f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
+  · rw [add_of_equiv <| (map_equiv_map_of_field f P Q).mpr h, add_of_equiv h, map_dblXYZ]
+  · rw [add_of_not_equiv <| h.comp (map_equiv_map_of_field f P Q).mp, add_of_not_equiv h,
+      map_addXYZ]
 
 lemma baseChange_neg [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
     [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B) (P : A × A × A) :
-    (W'.baseChange B).toProjective.neg (f ∘ P) = f ∘ (W'.baseChange A).toProjective.neg P := by
+    (W'⁄B).neg (f ∘ P) = f ∘ (W'⁄A).neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_neg, map_baseChange]
 
 lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K]
     [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K) {P Q : F × F × F}
-    (hP : (W'.baseChange F).toProjective.Nonsingular P)
-    (hQ : (W'.baseChange F).toProjective.Nonsingular Q) :
-    (W'.baseChange K).toProjective.add (f ∘ P) (f ∘ Q) =
-      f ∘ (W'.baseChange F).toProjective.add P Q := by
+    (hP : (W'⁄F).Nonsingular P) (hQ : (W'⁄F).Nonsingular Q) :
+    (W'⁄K).add (f ∘ P) (f ∘ Q) = f ∘ (W'⁄F).add P Q := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_add _ hP hQ, map_baseChange]
 
 end Projective

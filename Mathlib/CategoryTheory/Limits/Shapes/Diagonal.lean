@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 
 /-!
 # The diagonal object of a morphism.
@@ -16,6 +17,8 @@ of a morphism `f : X ⟶ Y`.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -23,7 +26,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {X Y Z : C}
+variable {C : Type*} [Category* C] {X Y Z : C}
 
 namespace pullback
 
@@ -71,6 +74,8 @@ theorem diagonal_isKernelPair : IsKernelPair f (pullback.fst f f) (pullback.snd 
 end Diagonal
 
 end pullback
+
+section Diagonal
 
 variable [HasPullbacks C]
 
@@ -127,9 +132,9 @@ abbrev pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
         (Category.id_comp _).symm) (by
         ext
         · simp only [Category.assoc, diagonal_fst, Category.comp_id, limit.lift_π,
-            PullbackCone.mk_pt, PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_left]
+          PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_left]
         · simp only [condition_assoc, Category.assoc, diagonal_snd, Category.comp_id, limit.lift_π,
-            PullbackCone.mk_pt, PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right])
+          PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right])
 
 /-- This iso witnesses the fact that
 given `f : X ⟶ Y`, `i : U ⟶ Y`, and `i₁ : V₁ ⟶ X ×[Y] U`, `i₂ : V₂ ⟶ X ×[Y] U`, the diagram
@@ -159,21 +164,21 @@ theorem pullbackDiagonalMapIso.hom_fst :
     (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.fst _ _ =
       pullback.snd _ _ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
-  simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+  simp only [limit.lift_π, PullbackCone.mk_π_app]
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso.hom_snd :
     (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.snd _ _ := by
   delta pullbackDiagonalMapIso
-  simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+  simp only [limit.lift_π, PullbackCone.mk_π_app]
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso.inv_fst :
     (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ i₁ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
-  simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+  simp only [limit.lift_π, PullbackCone.mk_π_app]
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso.inv_snd_fst :
@@ -198,7 +203,7 @@ theorem pullback_fst_map_snd_isPullback :
         (by simp [condition])) :=
   IsPullback.of_iso_pullback ⟨by ext <;> simp [condition_assoc]⟩
     (pullbackDiagonalMapIso f i i₁ i₂).symm (pullbackDiagonalMapIso.inv_fst f i i₁ i₂)
-    (by aesop_cat)
+    (by cat_disch)
 
 end
 
@@ -376,7 +381,7 @@ lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :
   · simp [e]
   · ext <;> simp [e, i]
   · constructor
-    ext <;> simp [condition]
+    ext <;> simp
 
 end
 
@@ -429,15 +434,15 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
       · apply pullback.hom_ext
         · simp only [Category.assoc, lift_fst, lift_fst_assoc, Category.id_comp]
           rw [condition]
-        · simp [Category.assoc, lift_snd, condition_assoc, condition]
-      · simp only [Category.assoc, lift_fst_assoc, lift_snd, lift_fst, Category.id_comp]
+        · simp [Category.assoc, condition]
+      · simp only [Category.assoc, lift_snd, lift_fst, Category.id_comp]
     · apply pullback.hom_ext
       · apply pullback.hom_ext
         · simp only [Category.assoc, lift_snd_assoc, lift_fst_assoc, lift_fst, Category.id_comp]
           rw [← condition_assoc, condition]
         · simp only [Category.assoc, lift_snd, lift_fst_assoc, lift_snd_assoc, Category.id_comp]
           rw [condition]
-      · simp only [Category.assoc, lift_snd_assoc, lift_snd, Category.id_comp]
+      · simp only [Category.assoc, lift_snd, Category.id_comp]
   inv_hom_id := by
     apply pullback.hom_ext
     · simp only [Category.assoc, lift_fst, lift_fst_assoc, lift_snd, Category.id_comp]
@@ -458,5 +463,99 @@ theorem pullback_lift_map_isPullback {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y �
       (pullback.fst _ _) (pullback.fst _ _) :=
   IsPullback.of_iso_pullback ⟨by rw [lift_fst, lift_fst]⟩
     (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).symm (by simp) (by simp)
+
+lemma isPullback_map_snd_snd {X Y Z S : C} (f : X ⟶ S) (g : Y ⟶ S) (h : Z ⟶ S) :
+    IsPullback (pullback.map _ _ _ _ (pullback.snd f g) (pullback.snd f h) f
+        pullback.condition pullback.condition)
+      (pullback.fst (pullback.fst f g) (pullback.fst f h))
+      (pullback.fst g h) (pullback.snd f g) := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+  · intro c
+    refine pullback.lift c.snd
+        (pullback.lift (c.snd ≫ pullback.fst _ _) (c.fst ≫ pullback.snd _ _) ?_) ?_
+    · simp [pullback.condition, ← c.condition_assoc]
+    · simp
+  · intro c
+    apply pullback.hom_ext <;> simp [c.condition]
+  · intro c
+    apply pullback.hom_ext <;> simp
+  · intro c m hfst hsnd
+    refine pullback.hom_ext (by simpa) ?_
+    apply pullback.hom_ext <;> simp [← hsnd, pullback.condition, ← hfst]
+
+end Diagonal
+
+section Codiagonal
+
+namespace pushout
+
+variable {X Y : C} (f : X ⟶ Y) [HasPushout f f]
+
+/-- The codiagonal object of a morphism `f : X ⟶ Y` is `pushout f f`. -/
+noncomputable abbrev codiagonalObj (f : X ⟶ Y) [HasPushout f f] : C :=
+  pushout f f
+
+/-- The codiagonal morphism `pushout f f ⟶ Y` for a morphism `f : X ⟶ Y`. -/
+noncomputable def codiagonal (f : X ⟶ Y) [HasPushout f f] : codiagonalObj f ⟶ Y :=
+  pushout.desc (𝟙 Y) (𝟙 Y) rfl
+
+@[reassoc (attr := simp)]
+theorem inl_codiagonal : pushout.inl _ _ ≫ codiagonal f = 𝟙 _ :=
+  pushout.inl_desc _ _ _
+
+@[reassoc (attr := simp)]
+theorem inr_codiagonal : pushout.inr _ _ ≫ codiagonal f = 𝟙 _ :=
+  pushout.inr_desc _ _ _
+
+lemma op_codiagonal :
+    (pushout.codiagonal f).op = pullback.diagonal f.op ≫ (pullbackIsoOpPushout _ _).hom := by
+  rw [← Iso.comp_inv_eq]
+  ext <;> simp [← op_comp]
+
+instance : IsSplitEpi (codiagonal f) :=
+  ⟨⟨⟨pushout.inl _ _, inl_codiagonal f⟩⟩⟩
+
+instance : IsSplitMono (pushout.inl f f) :=
+  ⟨⟨⟨codiagonal f, inl_codiagonal f⟩⟩⟩
+
+instance : IsSplitMono (pushout.inr f f) :=
+  ⟨⟨⟨codiagonal f, inr_codiagonal f⟩⟩⟩
+
+instance [Epi f] : IsIso (codiagonal f) := by
+  rw [(IsIso.inv_eq_of_hom_inv_id (inl_codiagonal f)).symm]
+  infer_instance
+
+lemma isIso_codiagonal_iff : IsIso (codiagonal f) ↔ Epi f :=
+  ⟨fun H ↦ ⟨fun _ _ e ↦ by rw [← inl_desc _ _ e, (cancel_mono (g := inl f f) (h := inr f f)
+    (codiagonal f)).mp (by simp), inr_desc]⟩, fun _ ↦ inferInstance⟩
+
+end pushout
+
+variable [HasPushouts C]
+
+/--
+Given `f : T ⟶ X`, `g : T ⟶ Y`, and `i : S ⟶ T`, the diagram
+```
+X ⨿ₛ Y ⟶ X ⨿ₜ Y
+  ↑        ↑
+  |        |
+  |        |
+T ⨿ₛ T  ⟶  T
+```
+is a pushout square.
+-/
+theorem isPushout_map_codiagonal {S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) :
+    IsPushout
+      (pushout.map i i (i ≫ f) (i ≫ g) f g (𝟙 _) (by simp) (by simp))
+      (pushout.codiagonal i)
+      (pushout.map (i ≫ f) (i ≫ g) f g (𝟙 _) (𝟙 _) i (by simp) (by simp))
+      (f ≫ pushout.inl _ _) := by
+  rw [← IsPullback.op_iff]
+  simp only [op_pushoutMap, Quiver.Hom.unop_op, op_comp, unop_comp, op_id, pushout.op_codiagonal]
+  exact .of_iso (pullback_map_diagonal_isPullback f.op g.op i.op)
+    (pullbackIsoOpPushout _ _) (.refl _) (pullbackIsoOpPushout _ _) (pullbackIsoOpPushout _ _)
+    (by simp [← Iso.inv_comp_eq]) (by simp) (by simp) (by simp)
+
+end Codiagonal
 
 end CategoryTheory.Limits

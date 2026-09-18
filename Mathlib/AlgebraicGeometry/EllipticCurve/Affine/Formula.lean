@@ -3,7 +3,9 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 /-!
 # Negation and addition formulae for nonsingular points in affine coordinates
@@ -68,6 +70,8 @@ points `(x₁, y₁)` and `(x₂, y₂)` on a Weierstrass curve `W` over a commu
 elliptic curve, affine, negation, doubling, addition, group law
 -/
 
+@[expose] public section
+
 open Polynomial
 
 open scoped Polynomial.Bivariate
@@ -114,24 +118,29 @@ lemma Y_sub_polynomialY : Y - W'.polynomialY = W'.negPolynomial := by
 lemma Y_sub_negPolynomial : Y - W'.negPolynomial = W'.polynomialY := by
   rw [← Y_sub_polynomialY, sub_sub_cancel]
 
+#adaptation_note
+/--
+Without this `implicit_reducible` attribute, `simpNF` gives a linter error on `slope_of_Y_eq`
+because of a nonconfluence: `negY` can be unfolded on the LHS, which prevents discharging the
+side condition of `slope_of_Y_eq` -- except if `negY` is implicit-reducible.
+So this attribute improves the confluence of `simp`.
+-/
 variable (W') in
 /-- The `Y`-coordinate of `-(x, y)` for a nonsingular affine point `(x, y)` on a Weierstrass curve
 `W`.
 
 This depends on `W`, and has argument order: `x`, `y`. -/
-@[simp]
+@[simp, implicit_reducible]
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
 
 lemma negY_negY (x y : R) : W'.negY x (W'.negY x y) = y := by
-  simp_rw [negY]
+  simp only [negY]
   ring1
 
 lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y := by
   rw [negY, sub_sub, negPolynomial]
   eval_simp
-
-@[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
 
 lemma Y_sub_Y_mul_Y_sub_negY_of_X_eq {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
     (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) : (y₁ - y₂) * (y₁ - W'.negY x₂ y₂) = 0 := by
@@ -160,16 +169,10 @@ lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y :
   congr! 1
   ring1
 
-@[deprecated (since := "2025-02-01")] alias equation_neg_of := equation_neg
-@[deprecated (since := "2025-02-01")] alias equation_neg_iff := equation_neg
-
 lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
   rw [nonsingular_iff, equation_neg, negY, ← Ideal.span_pair_add_right_mul _ _ <| -W'.a₁,
     ← Ideal.span_pair_neg, nonsingular_iff]
   ring_nf
-
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_of := nonsingular_neg
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_iff := nonsingular_neg
 
 /-! ## Slope formulae in affine coordinates -/
 
@@ -182,7 +185,7 @@ noncomputable def linePolynomial (x y ℓ : R) : R[X] :=
   C ℓ * (X - C x) + C y
 
 open scoped Classical in
-variable (W) in
+variable (W') in
 /-- The slope of the line through two nonsingular affine points `(x₁, y₁)` and `(x₂, y₂)` on a
 Weierstrass curve `W`.
 
@@ -201,7 +204,7 @@ noncomputable def slope (x₁ x₂ y₁ y₂ : R) : R :=
 
 lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : R} (hx : IsUnit <| x₁ - x₂) :
     W'.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) * hx.unit⁻¹ := by
-  rw [slope, dif_pos hx]
+  rw [slope, dite_eq_left hx]
 
 lemma slope_of_X_ne_of_isField {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
     W.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) / (x₁ - x₂) := by
@@ -211,7 +214,7 @@ lemma slope_of_X_ne_of_isField {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
 lemma slope_of_Y_ne' [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (hx : x₁ = x₂)
     (hy : IsUnit <| y₁ - W'.negY x₂ y₂) :
     W'.slope x₁ x₂ y₁ y₂ = (3 * x₁ ^ 2 + 2 * W'.a₂ * x₁ + W'.a₄ - W'.a₁ * y₁) * hy.unit⁻¹ := by
-  rw [slope, hx, sub_self, dif_neg not_isUnit_zero, dif_pos hy]
+  rw [slope, hx, sub_self, dite_eq_right not_isUnit_zero, dite_eq_left hy]
 
 @[deprecated (since := "2025-05-26")] alias slope_of_Y_ne := slope_of_Y_ne'
 
@@ -228,12 +231,12 @@ lemma slope_of_Y_ne'_eq_evalEval {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x�
   rw [slope_of_Y_ne'_of_isField h₁ h₂ hx hy, evalEval_polynomialX, neg_sub, ← Y_sub_negPolynomial,
     evalEval_sub, evalEval_X, evalEval_negPolynomial]
 
-@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_evalEval := slope_of_Y_ne'_eq_evalEval
-@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne'_eq_evalEval
+@[deprecated (since := "2025-05-26")] alias slope_of_Y_ne_eq_evalEval := slope_of_Y_ne'_eq_evalEval
 
 lemma slope_of_Y_eq' [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (hx : x₁ = x₂) (hy : y₁ = W'.negY x₂ y₂) :
     W'.slope x₁ x₂ y₁ y₂ = 0 := by
-  rw [slope, hx, sub_self, dif_neg not_isUnit_zero, hy, sub_self, dif_neg not_isUnit_zero]
+  rw [slope, hx, sub_self, dite_eq_right not_isUnit_zero, hy, sub_self,
+    dite_eq_right not_isUnit_zero]
 
 @[deprecated (since := "2025-05-26")] alias slope_of_Y_eq := slope_of_Y_eq'
 
@@ -289,7 +292,6 @@ variable (W') in
 `(x₂, y₂)` on a Weierstrass curve `W`, where the line through them has a slope of `ℓ`.
 
 This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
-@[simp]
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
 
@@ -420,83 +422,156 @@ lemma addY_sub_negY_addY {x₁ x₂ y₁ y₂ : R} (hx : IsUnit <| x₁ - x₂) 
   linear_combination (norm := (simp_rw [slope_of_X_ne hx, addY, negAddY, addX, negY]; ring1))
     (y₁ - W'.negY (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂) y₁) * hx.mul_val_inv
 
+/-- The explicit formula for the `x`-coordinate of `P + Q` when `P ≠ ±Q`. -/
+lemma addX_of_X_ne {x₁ y₁ x₂ y₂ : F} (hn : x₁ ≠ x₂) :
+     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) =
+       ((y₁ - y₂) ^ 2 + W.a₁ * (y₁ - y₂) * (x₁ - x₂) - (W.a₂ + x₁ + x₂) * (x₁ - x₂) ^2) /
+         (x₁ - x₂) ^ 2 := by
+  rw [addX, slope_of_X_ne_of_isField hn]
+  simp [field]
+  ring1
+
+/-!
+### Some statements about the numerator and denominator of the x-coordinate of 2*P
+
+We add the explicit formula for the duplication map on the `x`-coordinate here
+(see `WeierstrassCurve.Affine.addX_self_of_Y_ne` below)
+even though this duplicates a small part of the theory of division polynomials.
+In this way, we avoid importing all the division polynomial machinery.
+We keep the associated API light-weight.
+-/
+
+/-- The polynomial on the left is the denominator of the rational expression for the `x`-coordinate
+of twice the point `(x, y)`. This is the same as `W'.Ψ₂Sq` evaluated at `x`.
+The statement corresponds to `W'.C_Ψ₂Sq` after evaluation (but note that `C_Ψ₂Sq`
+is not available in this file). -/
+lemma den_duplication_eq {x y : R} (h : W'.Equation x y) :
+    4 * x ^ 3 + W'.b₂ * x ^ 2 + 2 * W'.b₄ * x + W'.b₆ = (2 * y + W'.a₁ * x + W'.a₃) ^ 2 := by
+  have Heq := (W'.equation_iff x y).mp h
+  simp only [b₂, b₄, b₆]
+  linear_combination -4 * Heq
+
+/-- The denominator in the rational expression for the `x`-coordinate of twice the point `(x, y)`
+vanishes if and only if the point is equal to its negative. -/
+lemma den_duplication_eq_zero_iff [IsReduced R] {x y : R} (h : W'.Equation x y) :
+    4 * x ^ 3 + W'.b₂ * x ^ 2 + 2 * W'.b₄ * x + W'.b₆ = 0 ↔ y = W'.negY x y := by
+  rw [den_duplication_eq h, sq_eq_zero_iff, negY]
+  grind only
+
+/-- If `(x, y)` is a nonsingular point on `W` in affine coordinates, then the `x`-coordinate
+of its double is well-defined as a point on the projective line: in the corresponding rational
+expression, at least one of the numerator and denominator does not vanish. -/
+lemma den_duplication_ne_zero_or_num_duplication_ne_zero {x y : F} (h : W.Nonsingular x y) :
+    4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆ ≠ 0 ∨
+      x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈ ≠ 0 := by
+  have ⟨h₁, h₂⟩ := (W.nonsingular_iff x y).mp h
+  rw [equation_iff x y] at h₁
+  replace h₂ : W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) ≠ 0 ∨ 2 * y + W.a₁ * x + W.a₃ ≠ 0 := by
+    by_contra hc
+    push Not at hc
+    rw [hc.left, hc.right, Set.pair_eq_singleton, Ideal.span_singleton_eq_top] at h₂
+    exact not_isUnit_zero h₂
+  by_cases H : 2 * y + W.a₁ * x + W.a₃ = 0
+  · right
+    replace h₂ : W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ := by grind
+    contrapose! h₂
+    rw [b₄, b₆, b₈] at h₂
+    grobner
+  · left
+    clear h₂
+    contrapose! H
+    rw [b₂, b₄, b₆] at H
+    grobner
+
+/-- The explicit duplication formula for the `x`-coordinate when `2*P ≠ 0`. -/
+lemma addX_self_of_Y_ne {x y : F} (h : W.Equation x y) (hn : y ≠ W.negY x y) :
+    W.addX x x (W.slope x x y y) =
+      (x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) := by
+  have aux {a b c : F} (h : a ≠ 0) : a ^ 2 * (b * (c / a)) = a * b * c := by field
+  have hn' := (den_duplication_eq_zero_iff h).not.mpr hn
+  refine mul_left_cancel₀ hn' ?_
+  have hn'' : 2 * y + W.a₁ * x + W.a₃ ≠ 0 := by
+    rw [den_duplication_eq h] at hn'
+    grind
+  rw [mul_div_cancel₀ _ hn', addX, sub_sub, sub_sub, mul_sub, mul_add,
+    slope_of_Y_ne'_of_isField h h rfl hn]
+  rw [negY, show y - (-y - W.a₁ * x - W.a₃) = 2 * y + W.a₁ * x + W.a₃ by ring, div_pow]
+  nth_rewrite 1 2 [den_duplication_eq h]
+  rw [mul_div_cancel₀ _ <| pow_ne_zero 2 hn'', aux hn'', b₂, b₄, b₆, b₈]
+  linear_combination -W.a₁ ^ 2 * (W.equation_iff x y).mp h
+
 /-! ## Maps and base changes -/
 
 variable (f : R →+* S) (x y x₁ y₁ x₂ y₂ ℓ : R)
 
-lemma map_negPolynomial :
-    (W'.map f).toAffine.negPolynomial = W'.negPolynomial.map (mapRingHom f) := by
-  simp_rw [negPolynomial]
+lemma map_negPolynomial : (W'.map f).negPolynomial = W'.negPolynomial.map (mapRingHom f) := by
+  simp only [negPolynomial]
   map_simp
 
-lemma map_negY : (W'.map f).toAffine.negY (f x) (f y) = f (W'.negY x y) := by
-  simp_rw [negY]
+lemma map_negY : (W'.map f).negY (f x) (f y) = f (W'.negY x y) := by
+  simp only [negY]
   map_simp
 
 lemma map_linePolynomial : linePolynomial (f x) (f y) (f ℓ) = (linePolynomial x y ℓ).map f := by
-  simp_rw [linePolynomial]
+  simp only [linePolynomial]
   map_simp
 
 lemma map_addPolynomial :
-    (W'.map f).toAffine.addPolynomial (f x) (f y) (f ℓ) = (W'.addPolynomial x y ℓ).map f := by
-  simp_rw [addPolynomial, map_polynomial, eval_map, linePolynomial, ← coe_mapRingHom, ← eval₂_hom]
+    (W'.map f).addPolynomial (f x) (f y) (f ℓ) = (W'.addPolynomial x y ℓ).map f := by
+  rw [addPolynomial, map_polynomial, eval_map, linePolynomial, addPolynomial, ← coe_mapRingHom,
+    ← eval₂_hom, linePolynomial]
+  simp
+
+lemma map_addX : (W'.map f).addX (f x₁) (f x₂) (f ℓ) = f (W'.addX x₁ x₂ ℓ) := by
+  simp only [addX]
   map_simp
 
-lemma map_addX : (W'.map f).toAffine.addX (f x₁) (f x₂) (f ℓ) = f (W'.addX x₁ x₂ ℓ) := by
-  simp_rw [addX]
+lemma map_negAddY : (W'.map f).negAddY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.negAddY x₁ x₂ y₁ ℓ) := by
+  simp only [negAddY, map_addX]
   map_simp
 
-lemma map_negAddY :
-    (W'.map f).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.negAddY x₁ x₂ y₁ ℓ) := by
-  simp_rw [negAddY, map_addX]
-  map_simp
-
-lemma map_addY :
-    (W'.map f).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.toAffine.addY x₁ x₂ y₁ ℓ) := by
-  simp_rw [addY, map_negAddY, map_addX, map_negY]
+lemma map_addY : (W'.map f).addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.addY x₁ x₂ y₁ ℓ) := by
+  simp only [addY, map_negAddY, map_addX, map_negY]
 
 lemma map_slope [IsLocalHom f] :
-    (W'.map f).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W'.slope x₁ x₂ y₁ y₂) := by
+    (W'.map f).slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W'.slope x₁ x₂ y₁ y₂) := by
   have isUnit_f {x y : R} : IsUnit (f x - f y) ↔ IsUnit (x - y) := map_sub f .. ▸ isUnit_map_iff ..
   by_cases hx : IsUnit <| x₁ - x₂
   · simp_rw [slope_of_X_ne <| isUnit_f.mpr hx, ← map_sub, hx.unit_inv_map, slope_of_X_ne hx]
     map_simp
-  · rw [slope, dif_neg <| hx ∘ isUnit_f.mp, map_negY, slope, dif_neg hx]
+  · rw [slope, dite_eq_right <| hx ∘ isUnit_f.mp, map_negY, slope, dite_eq_right hx]
     by_cases hy : IsUnit <| y₁ - W'.negY x₂ y₂
-    · simp_rw [dif_pos <| isUnit_f.mpr hy, dif_pos hy, ← map_sub, hy.unit_inv_map]
+    · simp_rw [dite_eq_left <| isUnit_f.mpr hy, dite_eq_left hy, ← map_sub, hy.unit_inv_map]
       map_simp
-    · rw [dif_neg <| hy ∘ isUnit_f.mp, dif_neg hy, map_zero]
+    · rw [dite_eq_right <| hy ∘ isUnit_f.mp, dite_eq_right hy, map_zero]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (x y x₁ y₁ x₂ y₂ ℓ : A)
 
-lemma baseChange_negPolynomial : (W'.baseChange B).toAffine.negPolynomial =
-    (W'.baseChange A).toAffine.negPolynomial.map (mapRingHom f) := by
+lemma baseChange_negPolynomial :
+    (W'⁄B).negPolynomial = (W'⁄A).negPolynomial.map (mapRingHom f) := by
   rw [← map_negPolynomial, map_baseChange]
 
-lemma baseChange_negY :
-    (W'.baseChange B).toAffine.negY (f x) (f y) = f ((W'.baseChange A).toAffine.negY x y) := by
+lemma baseChange_negY : (W'⁄B).negY (f x) (f y) = f ((W'⁄A).negY x y) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-lemma baseChange_addPolynomial : (W'.baseChange B).toAffine.addPolynomial (f x) (f y) (f ℓ) =
-    ((W'.baseChange A).toAffine.addPolynomial x y ℓ).map f := by
+lemma baseChange_addPolynomial :
+    (W'⁄B).addPolynomial (f x) (f y) (f ℓ) = ((W'⁄A).addPolynomial x y ℓ).map f := by
   rw [← RingHom.coe_coe, ← map_addPolynomial, map_baseChange]
 
-lemma baseChange_addX : (W'.baseChange B).toAffine.addX (f x₁) (f x₂) (f ℓ) =
-    f ((W'.baseChange A).toAffine.addX x₁ x₂ ℓ) := by
+lemma baseChange_addX : (W'⁄B).addX (f x₁) (f x₂) (f ℓ) = f ((W'⁄A).addX x₁ x₂ ℓ) := by
   rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
-lemma baseChange_negAddY : (W'.baseChange B).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f ℓ) =
-    f ((W'.baseChange A).toAffine.negAddY x₁ x₂ y₁ ℓ) := by
+lemma baseChange_negAddY :
+    (W'⁄B).negAddY (f x₁) (f x₂) (f y₁) (f ℓ) = f ((W'⁄A).negAddY x₁ x₂ y₁ ℓ) := by
   rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
-lemma baseChange_addY : (W'.baseChange B).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) =
-    f ((W'.baseChange A).toAffine.addY x₁ x₂ y₁ ℓ) := by
+lemma baseChange_addY : (W'⁄B).addY (f x₁) (f x₂) (f y₁) (f ℓ) = f ((W'⁄A).addY x₁ x₂ y₁ ℓ) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
 lemma baseChange_slope [hf : IsLocalHom f] :
-    (W'.baseChange B).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
-      f ((W'.baseChange A).toAffine.slope x₁ x₂ y₁ y₂) := by
+    (W'⁄B).slope (f x₁) (f x₂) (f y₁) (f y₂) = f ((W'⁄A).slope x₁ x₂ y₁ y₂) := by
   have : IsLocalHom (f : A →+* B) := ⟨hf.map_nonunit⟩
   rw [← RingHom.coe_coe, ← map_slope, map_baseChange]
 

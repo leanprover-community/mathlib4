@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Widget.StringDiagram
 import ProofWidgets.Component.Panel.SelectionPanel
 
-/-! ## Example use of string diagram widgets -/
+/-! # Example use of string diagram widgets -/
 
 open ProofWidgets Mathlib.Tactic.Widget
 
@@ -41,12 +41,12 @@ lemma yang_baxter' {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ �
   exact w.elim
 
 lemma yang_baxter'' {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) (w : False) :
-    (R V₁ V₂ ⊗ 𝟙 V₃) ≫ (α_ _ ..).hom ≫
-      (𝟙 V₂ ⊗ R V₁ V₃) ≫ (α_ _ ..).inv ≫
-        (R V₂ V₃ ⊗ 𝟙 V₁) ≫ (α_ _ ..).hom =
-      (α_ _ ..).hom ≫ (𝟙 V₁ ⊗ R V₂ V₃) ≫
-        (α_ _ ..).inv ≫ (R V₁ V₃ ⊗ 𝟙 V₂) ≫
-          (α_ _ ..).hom ≫ (𝟙 V₃ ⊗ R V₁ V₂) := by
+    (R V₁ V₂ ⊗ₘ 𝟙 V₃) ≫ (α_ _ ..).hom ≫
+      (𝟙 V₂ ⊗ₘ R V₁ V₃) ≫ (α_ _ ..).inv ≫
+        (R V₂ V₃ ⊗ₘ 𝟙 V₁) ≫ (α_ _ ..).hom =
+      (α_ _ ..).hom ≫ (𝟙 V₁ ⊗ₘ R V₂ V₃) ≫
+        (α_ _ ..).inv ≫ (R V₁ V₃ ⊗ₘ 𝟙 V₂) ≫
+          (α_ _ ..).hom ≫ (𝟙 V₃ ⊗ₘ R V₁ V₂) := by
   exact w.elim
 
 example {X Y : C} (f : X ⟶ Y) (g : X ⊗ X ⊗ Y ⟶ Y ⊗ X ⊗ Y) (w : False) : f ▷ (X ⊗ Y) = g := by
@@ -55,7 +55,7 @@ example {X Y : C} (f : X ⟶ Y) (g : X ⊗ X ⊗ Y ⟶ Y ⊗ X ⊗ Y) (w : False
 example {X Y : C} (f : X ⟶ Y) (g : 𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y) (w : False) : 𝟙_ C ◁ f = g := by
   exact w.elim
 
-example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ := by
+example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f ⊗ₘ g = X₁ ◁ g ≫ f ▷ Y₂ := by
   rw [MonoidalCategory.whisker_exchange]
   rw [MonoidalCategory.tensorHom_def]
 

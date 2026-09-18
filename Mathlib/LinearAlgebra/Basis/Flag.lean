@@ -3,10 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Fin.FlagRange
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Data.Fin.FlagRange
+public import Mathlib.LinearAlgebra.Basis.Fin
+public import Mathlib.LinearAlgebra.Dual.Basis
 
 /-!
 # Flag of submodules defined by a basis
@@ -14,12 +15,18 @@ import Mathlib.RingTheory.SimpleRing.Basic
 In this file we define `Basis.flag b k`, where `b : Basis (Fin n) R M`, `k : Fin (n + 1)`,
 to be the subspace spanned by the first `k` vectors of the basis `b`.
 
-We also prove some lemmas about this definition.
+We also prove some lemmas about this definition, including `flag_map`, `Basis.mkFinCons`, and
+`mem_flag_iff_repr_eq_zero`.
 -/
+
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- This is why this section is `noncomputable`.
+-- See https://github.com/leanprover/lean4/issues/14084.
+@[expose] public noncomputable section
 
 open Set Submodule
 
-namespace Basis
+namespace Module.Basis
 
 section Semiring
 
@@ -42,9 +49,19 @@ theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
   span_le.trans forall_mem_image
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
-    b.flag k.succ = (R ∙ b k) ⊔ b.flag k.castSucc := by
-  simp only [flag, Fin.castSucc_lt_castSucc_iff]
-  simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, setOf_or, image_insert_eq, span_insert]
+    b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
+  simp [flag, Fin.castSucc_lt_castSucc_iff, le_iff_eq_or_lt, ofPred_or, span_insert]
+
+/-- `flag` commutes with `Basis.map`. -/
+theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
+    (b : Basis (Fin n) R M) (e : M ≃ₗ[R] M₂) (k : Fin (n + 1)) :
+    (b.map e).flag k = (b.flag k).map (e : M →ₗ[R] M₂) := by
+  simp [flag, Submodule.map_span, Set.image_image, coe_map]
+
+/-- `x ∈ b.flag k` iff `b.repr x i = 0` for `k ≤ i.castSucc`. -/
+theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
+    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
+  simp [flag, mem_span_image, Finsupp.support_subset_iff]
 
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
@@ -55,23 +72,44 @@ theorem self_mem_flag_iff [Nontrivial R] (b : Basis (Fin n) R M) {i : Fin n} {k 
     b i ∈ b.flag k ↔ i.castSucc < k :=
   b.self_mem_span_image
 
-@[mono]
+@[gcongr, mono]
 theorem flag_mono (b : Basis (Fin n) R M) : Monotone b.flag :=
   Fin.monotone_iff_le_succ.2 fun k ↦ by rw [flag_succ]; exact le_sup_right
 
 theorem isChain_range_flag (b : Basis (Fin n) R M) : IsChain (· ≤ ·) (range b.flag) :=
   b.flag_mono.isChain_range
 
-@[mono]
+@[gcongr, mono]
 theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=
   Fin.strictMono_iff_lt_succ.2 fun _ ↦ by simp [flag_succ]
 
-@[gcongr] lemma flag_le_flag (hij : i ≤ j) : b.flag i ≤ b.flag j := flag_mono _ hij
-
-@[gcongr]
-lemma flag_lt_flag [Nontrivial R] (hij : i < j) : b.flag i < b.flag j := flag_strictMono _ hij
-
 end Semiring
+
+section Ring
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {n : ℕ}
+
+/-- The span of the new head vector lies in the successor flag of `Basis.mkFinCons`. -/
+theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    R ∙ v ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.span_singleton_le_iff_mem]
+  convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := 0) (k := k.succ) ?_
+  · simp [coe_mkFinCons, Fin.cons_zero]
+  · simp
+
+/-- The image of a flag under `Submodule.subtype` lies in the successor flag of
+`Basis.mkFinCons`. -/
+theorem map_flag_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    (bW.flag k).map W.subtype ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.map_le_iff_le_comap]
+  exact bW.flag_le_iff.2 fun i hi => by
+    convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := i.succ) (k := k.succ)
+      (Fin.succ_lt_succ_iff.mpr hi) using 1
+    · simp [coe_mkFinCons, Fin.cons_succ]
+
+end Ring
 
 section CommRing
 
@@ -122,4 +160,4 @@ theorem isMaxChain_range_flag (b : Basis (Fin n) K V) : IsMaxChain (· ≤ ·) (
 
 end DivisionRing
 
-end Basis
+end Module.Basis

@@ -3,8 +3,10 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Analysis.Asymptotics.LinearGrowth
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+module
+
+public import Mathlib.Analysis.Asymptotics.LinearGrowth
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 
 /-!
 # Exponential growth
@@ -16,12 +18,14 @@ versions, using a `liminf` and a `limsup` respectively.
 
 - `expGrowthInf`, `expGrowthSup`: respectively, `liminf` and `limsup` of `log (u n) / n`.
 - `expGrowthInfTopHom`, `expGrowthSupBotHom`: the functions `expGrowthInf`, `expGrowthSup`
-as homomorphisms preserving finitary `Inf`/`Sup` respectively.
+  as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## Tags
 
 asymptotics, exponential
 -/
+
+@[expose] public section
 
 namespace ExpGrowth
 
@@ -147,7 +151,7 @@ lemma _root_.Frequently.le_expGrowthSup (h : ∃ᶠ n : ℕ in atTop, exp (a * n
 
 lemma expGrowthSup_zero : expGrowthSup 0 = ⊥ := by
   rw [← linearGrowthSup_bot, expGrowthSup_def]
-  congr
+  congr 1
   ext _
   rw [comp_apply, Pi.zero_apply, Pi.bot_apply, log_zero]
 
@@ -158,7 +162,7 @@ lemma expGrowthInf_zero : expGrowthInf 0 = ⊥ := by
 
 lemma expGrowthInf_top : expGrowthInf ⊤ = ⊤ := by
   rw [← linearGrowthInf_top, expGrowthInf_def]
-  congr
+  rfl
 
 lemma expGrowthSup_top : expGrowthSup ⊤ = ⊤ := by
   apply top_le_iff.1
@@ -342,7 +346,7 @@ lemma expGrowthSup_add : expGrowthSup (u + v) = expGrowthSup u ⊔ expGrowthSup 
     exact sup_le (self_le_add_right (u n) (v n)) (self_le_add_left (v n) (u n))
 
 -- By lemma `expGrowthSup_add`, `expGrowthSup` is an `AddMonoidHom` from `ℕ → ℝ≥0∞` to
--- `Tropical ERealᵒᵈ`. Lemma `expGrowthSup_sum` is exactly `Finset.trop_inf`. We prove it from
+-- `MaxTropical EReal`. Lemma `expGrowthSup_sum` is exactly `Finset.trop_inf`. We prove it from
 -- scratch to reduce imports.
 lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset α) :
     expGrowthSup (∑ x ∈ s, u x) = ⨆ x ∈ s, expGrowthSup (u x) := by

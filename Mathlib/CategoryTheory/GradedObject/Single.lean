@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 
 /-!
 # The graded object in a single degree
@@ -14,21 +16,23 @@ the initial object of `C` in other degrees.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
 namespace GradedObject
 
-variable {J : Type*} {C : Type*} [Category C] [HasInitial C] [DecidableEq J]
+variable {J : Type*} {C : Type*} [Category* C] [HasInitial C] [DecidableEq J]
 
 /-- The functor which sends `X : C` to the graded object which is `X` in degree `j`
 and the initial object in other degrees. -/
 noncomputable def single (j : J) : C ⥤ GradedObject J C where
   obj X i := if i = j then X else ⊥_ C
   map {X₁ X₂} f i :=
-    if h : i = j then eqToHom (if_pos h) ≫ f ≫ eqToHom (if_pos h).symm
-    else eqToHom (by dsimp; rw [if_neg h, if_neg h])
+    if h : i = j then eqToHom (ite_eq_left h) ≫ f ≫ eqToHom (ite_eq_left h).symm
+    else eqToHom (by dsimp; rw [ite_eq_right h, ite_eq_right h])
 
 variable (J) in
 /-- The functor which sends `X : C` to the graded object which is `X` in degree `0`
@@ -37,7 +41,7 @@ noncomputable abbrev single₀ [Zero J] : C ⥤ GradedObject J C := single 0
 
 /-- The canonical isomorphism `(single j).obj X i ≅ X` when `i = j`. -/
 noncomputable def singleObjApplyIsoOfEq (j : J) (X : C) (i : J) (h : i = j) :
-    (single j).obj X i ≅ X := eqToIso (if_pos h)
+    (single j).obj X i ≅ X := eqToIso (ite_eq_left h)
 
 /-- The canonical isomorphism `(single j).obj X j ≅ X`. -/
 noncomputable abbrev singleObjApplyIso (j : J) (X : C) :
@@ -47,7 +51,7 @@ noncomputable abbrev singleObjApplyIso (j : J) (X : C) :
 noncomputable def isInitialSingleObjApply (j : J) (X : C) (i : J) (h : i ≠ j) :
     IsInitial ((single j).obj X i) := by
   dsimp [single]
-  rw [if_neg h]
+  rw [ite_eq_right h]
   exact initialIsInitial
 
 lemma singleObjApplyIsoOfEq_inv_single_map (j : J) {X Y : C} (f : X ⟶ Y) (i : J) (h : i = j) :
@@ -72,6 +76,7 @@ lemma single_map_singleObjApplyIso_hom (j : J) {X Y : C} (f : X ⟶ Y) :
     (single j).map f j ≫ (singleObjApplyIso j Y).hom = (singleObjApplyIso j X).hom ≫ f := by
   apply single_map_singleObjApplyIsoOfEq_hom
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The composition of the single functor `single j : C ⥤ GradedObject J C` and the
 evaluation functor `eval j` identifies to the identity functor. -/

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Set.Pairwise.List
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Set.Pairwise.List
 
 /-!
 # Relations holding pairwise on finite sets
@@ -13,6 +15,8 @@ In this file we prove a few results about the interaction of `Set.PairwiseDisjoi
 as well as the interaction of `List.Pairwise Disjoint` and the condition of
 `Disjoint` on `List.toFinset`, in `Set` form.
 -/
+
+public section
 
 
 open Finset
@@ -34,9 +38,9 @@ theorem PairwiseDisjoint.elim_finset {s : Set ι} {f : ι → Finset α} (hs : s
     {i j : ι} (hi : i ∈ s) (hj : j ∈ s) (a : α) (hai : a ∈ f i) (haj : a ∈ f j) : i = j :=
   hs.elim hi hj (Finset.not_disjoint_iff.2 ⟨a, hai, haj⟩)
 
-section SemilatticeInf
+section PartialOrder
 
-variable [SemilatticeInf α] [OrderBot α] {s : Finset ι} {f : ι → α}
+variable [PartialOrder α] [OrderBot α] {s : Finset ι} {f : ι → α}
 
 theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f : ι → α}
     (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι} (hf : ∀ a, f (g a) ≤ f a) :
@@ -46,9 +50,9 @@ theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f 
 
 theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
     (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
-  hs i.2 j.2 <| mt Subtype.ext_val hij
+  hs i.2 j.2 <| mt Subtype.ext hij
 
-end SemilatticeInf
+end PartialOrder
 
 variable [Lattice α] [OrderBot α]
 
@@ -69,16 +73,15 @@ end Set
 
 namespace List
 
-variable {β : Type*} [DecidableEq α] {r : α → α → Prop} {l : List α}
+variable [DecidableEq α] {r : α → α → Prop} {l : List α}
 
 theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
     l.Pairwise r := by
   rw [coe_toFinset] at hl
   exact hn.pairwise_of_set_pairwise hl
 
-theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
+theorem pairwise_iff_coe_toFinset_pairwise [Std.Symm r] (hn : l.Nodup) :
     (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r := by
-  letI : IsSymm α r := ⟨hs⟩
   rw [coe_toFinset, hn.pairwise_coe]
 
 open scoped Function -- required for scoped `on` notation
@@ -91,6 +94,6 @@ theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [PartialOrder
 theorem pairwiseDisjoint_iff_coe_toFinset_pairwise_disjoint {α ι} [PartialOrder α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hn : l.Nodup) :
     (l.toFinset : Set ι).PairwiseDisjoint f ↔ l.Pairwise (_root_.Disjoint on f) :=
-  pairwise_iff_coe_toFinset_pairwise hn (symmetric_disjoint.comap f)
+  pairwise_iff_coe_toFinset_pairwise hn
 
 end List

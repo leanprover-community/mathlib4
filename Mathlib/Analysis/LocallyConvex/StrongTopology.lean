@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+module
+
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Local convexity of the strong topology
@@ -25,8 +27,7 @@ locally convex.
 locally convex, bounded convergence
 -/
 
-
-open Topology UniformConvergence
+public section
 
 variable {R 𝕜₁ 𝕜₂ E F : Type*}
 

@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.RenameBVar
 import Lean
 
@@ -38,15 +39,13 @@ example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l
   exact h
 
 /--
-trace: case intro
-a b c : Int
+trace: a b c : Int
 h2 : b ∣ c
 k : Int
 hk : b = a * k
 ⊢ ∃ k, c = a * k
 ---
-trace: case intro
-a b c : Int
+trace: a b c : Int
 h2 : b ∣ c
 k : Int
 hk : b = a * k

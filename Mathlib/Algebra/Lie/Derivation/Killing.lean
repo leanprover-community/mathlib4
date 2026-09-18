@@ -3,25 +3,29 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Lie.Derivation.AdjointAction
-import Mathlib.Algebra.Lie.Killing
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+module
+
+public import Mathlib.Algebra.Lie.AdjointAction.Derivation
+public import Mathlib.Algebra.Lie.Killing
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 /-!
-# Derivations of finite dimensional Killing Lie algebras
+# Derivations of finite-dimensional Killing Lie algebras
 
 This file establishes that all derivations of finite-dimensional Killing Lie algebras are inner.
 
 ## Main statements
 
 - `LieDerivation.Killing.ad_mem_orthogonal_of_mem_orthogonal`: if a derivation `D` is in the Killing
-orthogonal of the range of the adjoint action, then, for any `x : L`, `ad (D x)` is also in this
-orthogonal.
+  orthogonal of the range of the adjoint action, then, for any `x : L`, `ad (D x)` is also in this
+  orthogonal.
 - `LieDerivation.Killing.range_ad_eq_top`: in a finite-dimensional Lie algebra with non-degenerate
-Killing form, the range of the adjoint action is full,
+  Killing form, the range of the adjoint action is full,
 - `LieDerivation.Killing.exists_eq_ad`: in a finite-dimensional Lie algebra with non-degenerate
-Killing form, any derivation is an inner derivation.
+  Killing form, any derivation is an inner derivation.
 -/
+
+@[expose] public section
 
 namespace LieDerivation.IsKilling
 
@@ -87,9 +91,10 @@ instance instIsKilling_range_ad : LieAlgebra.IsKilling R 𝕀 :=
 the adjoint action is nondegenerate. -/
 lemma killingForm_restrict_range_ad_nondegenerate :
     ((killingForm R 𝔻).restrict 𝕀).Nondegenerate := by
-  convert LieAlgebra.IsKilling.killingForm_nondegenerate R 𝕀
+  convert! LieAlgebra.IsKilling.killingForm_nondegenerate R 𝕀
   exact killingForm_restrict_range_ad R L
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The range of the adjoint action on a finite-dimensional Killing Lie algebra is full. -/
 @[simp]
 lemma range_ad_eq_top : 𝕀 = ⊤ := by

@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Examples
-import Mathlib.CategoryTheory.Galois.Prorepresentability
+module
+
+public import Mathlib.CategoryTheory.Galois.Examples
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
 
 /-!
 
@@ -18,15 +20,17 @@ See `Mathlib/CategoryTheory/Galois/Full.lean` for the proof that `H` is (faithfu
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
-variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u})
 
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
 the forgetful functor from `Action FintypeCat (Aut F)` to `FintypeCat`. -/

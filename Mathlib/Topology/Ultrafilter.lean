@@ -3,17 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Ultrafilter.Basic
-import Mathlib.Topology.Continuous
+module
+
+public import Mathlib.Order.Filter.Ultrafilter.Basic
+public import Mathlib.Topology.Continuous
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/
 
-open Set Filter Topology
+public section
+
+open Set Filter
+
+open scoped Topology
 
 universe u v w x
 
-variable {X : Type u} {Y : Type v} {ι : Sort w} {α β : Type*} {x : X} {s s₁ s₂ t : Set X}
-    {p p₁ p₂ : X → Prop} [TopologicalSpace X] [TopologicalSpace Y] {F : Filter α} {u : α → X}
+variable {X : Type u} {Y : Type v} {α β : Type*} {x : X} {s : Set X}
+    [TopologicalSpace X] [TopologicalSpace Y] {F : Filter α} {u : α → X}
 
 theorem Ultrafilter.clusterPt_iff {f : Ultrafilter X} : ClusterPt x f ↔ ↑f ≤ 𝓝 x :=
   ⟨f.le_of_inf_neBot', fun h => ClusterPt.of_le_nhds h⟩

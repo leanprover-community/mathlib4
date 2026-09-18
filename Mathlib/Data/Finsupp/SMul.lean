@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.Algebra.Group.Action.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Declarations about scalar multiplication on `Finsupp`
@@ -17,6 +21,8 @@ import Mathlib.Algebra.Group.Action.Basic
 This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -45,6 +51,7 @@ variable [Monoid G] [MulAction G α] [AddCommMonoid M]
 
 This is not an instance as it would conflict with the action on the range.
 See the `instance_diamonds` test for examples of such conflicts. -/
+@[instance_reducible]
 def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
@@ -57,6 +64,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `Finsupp.comapSMul` is multiplicative -/
+@[instance_reducible]
 def comapMulAction : MulAction G (α →₀ M) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
@@ -65,6 +73,7 @@ def comapMulAction : MulAction G (α →₀ M) where
 attribute [local instance] comapMulAction
 
 /-- `Finsupp.comapSMul` is distributive -/
+@[instance_reducible]
 def comapDistribMulAction : DistribMulAction G (α →₀ M) where
   smul_zero g := by
     ext a
@@ -88,7 +97,7 @@ attribute [local instance] comapSMul comapMulAction comapDistribMulAction
 @[simp]
 theorem comapSMul_apply (g : G) (f : α →₀ M) (a : α) : (g • f) a = f (g⁻¹ • a) := by
   conv_lhs => rw [← smul_inv_smul g a]
-  exact mapDomain_apply (MulAction.injective g) _ (g⁻¹ • a)
+  exact mapDomain_apply_of_injective (MulAction.injective g) _ (g⁻¹ • a)
 
 end
 
@@ -125,8 +134,8 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →�
 variable {α M}
 
 @[simp]
-theorem support_smul_eq [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {b : R}
-    (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
+theorem support_smul_eq [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+    [Module.IsTorsionFree R M] {b : R} (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
   Finset.ext fun a => by simp [Finsupp.smul_apply, hb]
 
 section
@@ -183,10 +192,9 @@ theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddCommMonoid N] [SMulZero
     ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
   sum_mapRange_index fun i => (h i).map_zero
 
-instance noZeroSMulDivisors [Zero R] [Zero M] [SMulZeroClass R M] {ι : Type*}
-    [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
-  ⟨fun h => or_iff_not_imp_left.mpr fun hc => Finsupp.ext fun i =>
-    (eq_zero_or_eq_zero_of_smul_eq_zero (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
+instance moduleIsTorsionFree [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
+    [Module.IsTorsionFree R M] : Module.IsTorsionFree R (ι →₀ M) where
+  isSMulRegular r hr f g hfg := by ext i; exact hr.isSMulRegular congr($hfg i)
 
 section DistribMulActionSemiHom
 variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribMulAction R N]

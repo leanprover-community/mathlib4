@@ -3,8 +3,11 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Logic.Basic
+module
+
+public import Mathlib.Basic.Logic.Basic
+public import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 
@@ -24,6 +27,8 @@ from the natural numbers into it is injective.
 
 * Unify with `CharP` (possibly using an out-parameter)
 -/
+
+public section
 
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)
@@ -80,16 +85,13 @@ theorem cast_eq_one {n : ℕ} : (n : R) = 1 ↔ n = 1 := by rw [← cast_one, ca
 theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
   cast_eq_one.not
 
-instance (priority := 100) AtLeastTwo.toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
-  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
-
 end Nat
 
 namespace OfNat
 
 variable [AddMonoidWithOne R] [CharZero R]
 
-@[simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ≠ 0 :=
+@[simp, basify_simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ≠ 0 :=
   Nat.cast_ne_zero.2 (NeZero.ne n)
 
 @[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (ofNat(n) : R) :=

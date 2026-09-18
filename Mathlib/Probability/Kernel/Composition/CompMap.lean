@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.Comp
-import Mathlib.Probability.Kernel.Composition.MapComap
+module
+
+public import Mathlib.Probability.Kernel.Composition.Comp
+public import Mathlib.Probability.Kernel.Composition.MapComap
 
 /-!
 # Lemmas about compositions and maps of kernels
@@ -16,6 +18,8 @@ Map and comap are particular cases of composition: they correspond to compositio
 a deterministic kernel. See `deterministic_comp_eq_map` and `comp_deterministic_eq_comap`.
 
 -/
+
+public section
 
 
 open MeasureTheory
@@ -46,14 +50,6 @@ theorem comp_deterministic_eq_comap (κ : Kernel α β) (hg : Measurable g) :
 lemma deterministic_comp_deterministic (hf : Measurable f) (hg : Measurable g) :
     (deterministic g hg) ∘ₖ (deterministic f hf) = deterministic (g ∘ f) (hg.comp hf) := by
   ext; simp [comp_deterministic_eq_comap, comap_apply, deterministic_apply]
-
-@[simp]
-lemma comp_id (κ : Kernel α β) : κ ∘ₖ Kernel.id = κ := by
-  rw [Kernel.id, comp_deterministic_eq_comap, comap_id]
-
-@[simp]
-lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
-  rw [Kernel.id, deterministic_comp_eq_map, map_id]
 
 @[simp]
 lemma swap_swap : (swap α β) ∘ₖ (swap β α) = Kernel.id := by

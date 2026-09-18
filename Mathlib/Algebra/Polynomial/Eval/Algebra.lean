@@ -3,20 +3,22 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Polynomial.Eval.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Evaluation of polynomials in an algebra
 
 This file concerns evaluating polynomials where the map is `algebraMap`
 
-TODO: merge with parts of `Algebra/Polynomial/AlgebraMap.lean`?
+TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 -/
 
-noncomputable section
+public section
 
-open Finset AddMonoidAlgebra
+noncomputable section
 
 open Polynomial
 
@@ -24,7 +26,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {a : R} {n : ℕ}
 
 section CommSemiring
 

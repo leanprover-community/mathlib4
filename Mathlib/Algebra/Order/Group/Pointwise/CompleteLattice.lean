@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Bounds
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Infima/suprema in ordered monoids and groups
@@ -17,7 +19,9 @@ In this file we prove a few facts like “The infimum of `-s` is `-` the supremu
 `CovariantClass` is currently not polymorphic enough to state it.
 -/
 
-open Function Set
+public section
+
+open Set
 open scoped Pointwise
 
 variable {M : Type*}

@@ -3,8 +3,10 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Category.CompHausLike.Limits
+module
+
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # Explicit limits and colimits
@@ -12,6 +14,8 @@ import Mathlib.Topology.Category.CompHausLike.Limits
 This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
 the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special case of `CompHaus`.
 -/
+
+@[expose] public section
 
 namespace CompHaus
 
@@ -31,7 +35,7 @@ example : FinitaryExtensive CompHaus.{u} := inferInstance
 abbrev isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit
 
 /-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
-noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ ↧PUnit :=
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
 noncomputable example : PreservesFiniteCoproducts compHausToTop := inferInstance

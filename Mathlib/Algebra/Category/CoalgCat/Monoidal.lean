@@ -3,11 +3,12 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+module
 
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
 # The monoidal category structure on `R`-coalgebras
@@ -22,6 +23,8 @@ fields proved by pulling back the `MonoidalCategory` instance on the category of
 using `Monoidal.induced`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -38,7 +41,7 @@ noncomputable instance instMonoidalCategoryStruct :
   whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
   whiskerRight f X := ofHom (f.1.rTensor X)
   tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.1 g.1)
-  tensorUnit := CoalgCat.of R R
+  tensorUnit := ↧R
   associator X Y Z := (Coalgebra.TensorProduct.assoc R R X Y Z).toCoalgIso
   leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgIso
   rightUnitor X := (Coalgebra.TensorProduct.rid R R X).toCoalgIso

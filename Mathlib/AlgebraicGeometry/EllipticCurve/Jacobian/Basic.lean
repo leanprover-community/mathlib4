@@ -3,8 +3,13 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
 # Weierstrass equations and the nonsingular condition in Jacobian coordinates
@@ -63,6 +68,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Basic.lean`.
 elliptic curve, Jacobian, Weierstrass equation, nonsingular
 -/
 
+@[expose] public section
+
 local notation3 P " x" => Prod.fst P
 
 local notation3 P " y" => Prod.fst (Prod.snd P)
@@ -89,7 +96,9 @@ local macro "pderiv_simp" : tactic =>
 
 universe r s u v
 
-variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
+variable {R : Type r} {F : Type u}
+
+name_poly_vars X, Y, Z over R
 
 namespace WeierstrassCurve
 
@@ -101,8 +110,8 @@ abbrev Jacobian : Type r :=
   WeierstrassCurve R
 
 /-- The conversion from a Weierstrass curve to Jacobian coordinates. -/
-abbrev toJacobian (W' : WeierstrassCurve R) : Jacobian R :=
-  W'
+abbrev toJacobian (W : WeierstrassCurve R) : Jacobian R :=
+  W
 
 namespace Jacobian
 
@@ -110,18 +119,18 @@ namespace Jacobian
 abbrev toAffine (W' : Jacobian R) : Affine R :=
   W'
 
-lemma map_eq (f : R → S) (P : R × R × R) : f ∘ P = (f (P x), f (P y), f (P z)) := by
+lemma map_eq {S : Type s} (f : R → S) (P : R × R × R) : f ∘ P = (f (P x), f (P y), f (P z)) := by
   rfl
 
-lemma map_fin3 (f : R → S) (P : R × R × R) :
+lemma map_fin3 {S : Type s} (f : R → S) (P : R × R × R) :
     f ∘ ![P x, P y, P z] = ![f (P x), f (P y), f (P z)] := by
   ext n; fin_cases n <;> simp
 
 @[deprecated (since := "2025-05-04")] alias comp_fin3 := map_fin3
 @[deprecated (since := "2025-05-04")] alias comp_smul := map_fin3
 
-variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
-  {W : Jacobian F}
+variable [CommRing R] [Field F] {W' : Jacobian R} {W : Jacobian F} {S : Type s} [CommRing S]
+  {A : Type u} [CommRing A] {B : Type v} [CommRing B] {K : Type v} [Field K]
 
 /-- The scalar multiplication for a Jacobian point representative on a Weierstrass curve. -/
 scoped instance : SMul R <| R × R × R :=
@@ -161,7 +170,7 @@ lemma map_equiv_map {f : R →+* S} (hf : Function.Bijective f) (P Q : R × R ×
   rcases h with ⟨u, hu⟩
   rcases (Units.map_bijective hf).right u with ⟨u, rfl⟩
   simp_rw [map_eq, Units.smul_def, smul_eq, Units.coe_map, RingHom.toMonoidHom_eq_coe,
-    MonoidHom.coe_coe, Prod.mk.injEq, ← map_pow, ← map_mul, hf.injective.eq_iff] at hu
+    MonoidHom.coe_ofClass, Prod.mk.injEq, ← map_pow, ← map_mul, hf.injective.eq_iff] at hu
   exact ⟨u, Prod.ext hu.left <| Prod.ext hu.right.left hu.right.right⟩
 
 variable (R) in
@@ -285,18 +294,17 @@ variable (W') in
 /-- The polynomial `W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)` associated to a
 Weierstrass curve `W` over a ring `R` in Jacobian coordinates.
 
-This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2`
+This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X`, `Y`, and `Z`
 represent `X`, `Y`, and `Z` respectively. -/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
-  X 1 ^ 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 3
-    - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 ^ 2 + C W'.a₄ * X 0 * X 2 ^ 4 + C W'.a₆ * X 2 ^ 6)
+  Y ^ 2 + C W'.a₁ * X * Y * Z + C W'.a₃ * Y * Z ^ 3
+    - (X ^ 3 + C W'.a₂ * X ^ 2 * Z ^ 2 + C W'.a₄ * X * Z ^ 4 + C W'.a₆ * Z ^ 6)
 
 lemma eval_polynomial (P : R × R × R) : eval ![P x, P y, P z] W'.polynomial =
     P y ^ 2 + W'.a₁ * P x * P y * P z + W'.a₃ * P y * P z ^ 3
       - (P x ^ 3 + W'.a₂ * P x ^ 2 * P z ^ 2 + W'.a₄ * P x * P z ^ 4 + W'.a₆ * P z ^ 6) := by
   rw [polynomial]
-  eval_simp
-  rfl
+  simp
 
 lemma eval_polynomial_smul (P : R × R × R) (u : R) :
     eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomial =
@@ -348,7 +356,7 @@ lemma equation_of_Z_eq_zero {P : R × R × R} (hPz : P z = 0) :
 lemma equation_zero : W'.Equation (1, 1, 0) := by
   simp_rw [equation_of_Z_eq_zero, one_pow]
 
-lemma equation_some (X Y : R) : W'.Equation (X, Y, 1) ↔ W'.toAffine.Equation X Y := by
+lemma equation_some (a b : R) : W'.Equation (a, b, 1) ↔ W'.toAffine.Equation a b := by
   simp_rw [equation_iff, Affine.equation_iff', one_pow, mul_one]
 
 lemma equation_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
@@ -369,7 +377,7 @@ noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv 0 W'.polynomial
 
 lemma polynomialX_eq : W'.polynomialX =
-    C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 ^ 2 + C W'.a₄ * X 2 ^ 4) := by
+    C W'.a₁ * Y * Z - (C 3 * X ^ 2 + C (2 * W'.a₂) * X * Z ^ 2 + C W'.a₄ * Z ^ 4) := by
   rw [polynomialX, polynomial]
   pderiv_simp
   ring1
@@ -377,8 +385,7 @@ lemma polynomialX_eq : W'.polynomialX =
 lemma eval_polynomialX (P : R × R × R) : eval ![P x, P y, P z] W'.polynomialX =
     W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4) := by
   rw [polynomialX_eq]
-  eval_simp
-  rfl
+  simp
 
 lemma eval_polynomialX_smul (P : R × R × R) (u : R) :
     eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomialX =
@@ -406,7 +413,7 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv 1 W'.polynomial
 
-lemma polynomialY_eq : W'.polynomialY = C 2 * X 1 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 3 := by
+lemma polynomialY_eq : W'.polynomialY = C 2 * Y + C W'.a₁ * X * Z + C W'.a₃ * Z ^ 3 := by
   rw [polynomialY, polynomial]
   pderiv_simp
   ring1
@@ -414,8 +421,7 @@ lemma polynomialY_eq : W'.polynomialY = C 2 * X 1 + C W'.a₁ * X 0 * X 2 + C W'
 lemma eval_polynomialY (P : R × R × R) :
     eval ![P x, P y, P z] W'.polynomialY = 2 * P y + W'.a₁ * P x * P z + W'.a₃ * P z ^ 3 := by
   rw [polynomialY_eq]
-  eval_simp
-  rfl
+  simp
 
 lemma eval_polynomialY_smul (P : R × R × R) (u : R) :
     eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomialY =
@@ -442,8 +448,8 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv 2 W'.polynomial
 
-lemma polynomialZ_eq : W'.polynomialZ = C W'.a₁ * X 0 * X 1 + C (3 * W'.a₃) * X 1 * X 2 ^ 2 -
-    (C (2 * W'.a₂) * X 0 ^ 2 * X 2 + C (4 * W'.a₄) * X 0 * X 2 ^ 3 + C (6 * W'.a₆) * X 2 ^ 5) := by
+lemma polynomialZ_eq : W'.polynomialZ = C W'.a₁ * X * Y + C (3 * W'.a₃) * Y * Z ^ 2 -
+    (C (2 * W'.a₂) * X ^ 2 * Z + C (4 * W'.a₄) * X * Z ^ 3 + C (6 * W'.a₆) * Z ^ 5) := by
   rw [polynomialZ, polynomial]
   pderiv_simp
   ring1
@@ -452,8 +458,7 @@ lemma eval_polynomialZ (P : R × R × R) : eval ![P x, P y, P z] W'.polynomialZ 
     W'.a₁ * P x * P y + 3 * W'.a₃ * P y * P z ^ 2 -
       (2 * W'.a₂ * P x ^ 2 * P z + 4 * W'.a₄ * P x * P z ^ 3 + 6 * W'.a₆ * P z ^ 5) := by
   rw [polynomialZ_eq]
-  eval_simp
-  rfl
+  simp
 
 lemma eval_polynomialZ_smul (P : R × R × R) (u : R) :
     eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomialZ =
@@ -507,13 +512,13 @@ lemma nonsingular_zero : W'.Nonsingular (1, 1, 0) := by
     Ideal.mem_span_singleton']
   exact ⟨equation_zero, ⟨-1, 1, 0, by ring1⟩⟩
 
-lemma nonsingular_some (X Y : R) : W'.Nonsingular (X, Y, 1) ↔ W'.toAffine.Nonsingular X Y := by
+lemma nonsingular_some (a b : R) : W'.Nonsingular (a, b, 1) ↔ W'.toAffine.Nonsingular a b := by
   simp_rw [nonsingular_iff, equation_some, Affine.nonsingular_iff, Affine.equation_iff',
     and_congr_right_iff, Ideal.span_insert, ← sup_assoc, ← Ideal.span_insert, one_pow, mul_one]
   intro h
   congr! 1
   rw [sup_eq_left, Ideal.span_singleton_le_iff_mem, Ideal.mem_span_pair]
-  exact ⟨-2 * X, -3 * Y, by linear_combination (norm := ring1) -6 * h⟩
+  exact ⟨-2 * a, -3 * b, by linear_combination (norm := ring1) -6 * h⟩
 
 lemma nonsingular_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     W'.Nonsingular P ↔ W'.toAffine.Nonsingular (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) :=
@@ -603,98 +608,107 @@ lemma nonsingularLift_iff (P : R × R × R) : W'.NonsingularLift ⟦P⟧ ↔ W'.
 lemma nonsingularLift_zero : W'.NonsingularLift ⟦(1, 1, 0)⟧ :=
   nonsingular_zero
 
-lemma nonsingularLift_some (X Y : R) :
-    W'.NonsingularLift ⟦(X, Y, 1)⟧ ↔ W'.toAffine.Nonsingular X Y :=
-  nonsingular_some X Y
+lemma nonsingularLift_some (a b : R) :
+    W'.NonsingularLift ⟦(a, b, 1)⟧ ↔ W'.toAffine.Nonsingular a b :=
+  nonsingular_some a b
 
 /-! ## Maps and base changes -/
 
-variable (f : R →+* S) (P : R × R × R)
+variable (W') (f : R →+* S)
+
+/-- The Weierstrass curve in Jacobian coordinates mapped over a ring homomorphism `f : R →+* S`. -/
+abbrev map : Jacobian S :=
+  WeierstrassCurve.map W' f
+
+variable (S) in
+/-- The Weierstrass curve in Jacobian coordinates base changed to an algebra `S` over `R`. -/
+abbrev baseChange [Algebra R S] : Jacobian S :=
+  WeierstrassCurve.baseChange W' S
+
+/-- The notation `\textf` for `WeierstrassCurve.Jacobian.baseChange W S`. -/
+scoped notation:max W:max "⁄" S:max => baseChange W S
 
 @[simp]
-lemma map_polynomial : (W'.map f).toJacobian.polynomial = W'.polynomial.map f := by
-  simp_rw [polynomial]
+lemma map_polynomial : (W'.map f).polynomial = .map f W'.polynomial := by
+  simp only [polynomial]
   map_simp
 
-variable {P} in
-lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation <| f ∘ P := by
+variable {W'} in
+lemma Equation.map {P : R × R × R} (h : W'.Equation P) : (W'.map f).Equation (f ∘ P) := by
   rw [Equation, map_polynomial, eval_map, map_eq, ← map_fin3, ← eval₂_comp, h, map_zero]
 
 variable {f} in
 @[simp]
-lemma map_equation (hf : Function.Injective f) :
-    (W'.map f).toJacobian.Equation (f ∘ P) ↔ W'.Equation P := by
-  simp_rw [Equation, map_polynomial, eval_map, map_eq, ← map_fin3, ← eval₂_comp,
+lemma map_equation (hf : Function.Injective f) (P : R × R × R) :
+    (W'.map f).Equation (f ∘ P) ↔ W'.Equation P := by
+  simp only [Equation, map_polynomial, eval_map, map_eq, ← map_fin3, ← eval₂_comp,
     map_eq_zero_iff f hf]
 
 @[simp]
-lemma map_polynomialX : (W'.map f).toJacobian.polynomialX = W'.polynomialX.map f := by
-  simp_rw [polynomialX, map_polynomial, pderiv_map]
+lemma map_polynomialX : (W'.map f).polynomialX = .map f W'.polynomialX := by
+  simp only [polynomialX, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialY : (W'.map f).toJacobian.polynomialY = W'.polynomialY.map f := by
-  simp_rw [polynomialY, map_polynomial, pderiv_map]
+lemma map_polynomialY : (W'.map f).polynomialY = .map f W'.polynomialY := by
+  simp only [polynomialY, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = W'.polynomialZ.map f := by
-  simp_rw [polynomialZ, map_polynomial, pderiv_map]
+lemma map_polynomialZ : (W'.map f).polynomialZ = .map f W'.polynomialZ := by
+  simp only [polynomialZ, map_polynomial, pderiv_map]
 
-variable {P} in
-lemma Nonsingular.map (h : W'.Nonsingular P) : (W'.map f).toJacobian.Nonsingular <| f ∘ P := by
+variable {W'} in
+lemma Nonsingular.map {P : R × R × R} (h : W'.Nonsingular P) : (W'.map f).Nonsingular (f ∘ P) := by
   simp_rw [Nonsingular, h.left.map f, true_and, map_polynomialX, map_polynomialY, map_polynomialZ,
     eval_map, map_eq, ← map_fin3, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq,
     ← Ideal.map_span, h.right, Ideal.map_top]
 
 variable {f} in
 @[simp]
-lemma map_nonsingular (hf : Function.Bijective f) :
-    (W'.map f).toJacobian.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
+lemma map_nonsingular (hf : Function.Bijective f) (P : R × R × R) :
+    (W'.map f).Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
   refine ⟨?_, fun h => h.map f⟩
-  simp_rw [Nonsingular, map_equation _ hf.left, map_polynomialX, map_polynomialY, map_polynomialZ,
+  simp_rw [Nonsingular, W'.map_equation hf.left, map_polynomialX, map_polynomialY, map_polynomialZ,
     eval_map, map_eq, ← map_fin3, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq,
     ← Ideal.map_span, Ideal.map_eq_top_of_bijective f hf, imp_self]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
-  [IsScalarTower R S B] (f : A →ₐ[S] B) (P : A × A × A)
+  [IsScalarTower R S B] (f : A →ₐ[S] B)
 
-lemma baseChange_polynomial :
-    (W'.baseChange B).toJacobian.polynomial = (W'.baseChange A).toJacobian.polynomial.map f := by
+lemma map_baseChange : (W'⁄A).map f = W'⁄B :=
+  WeierstrassCurve.map_baseChange W' f
+
+lemma baseChange_polynomial : (W'⁄B).polynomial = .map f (W'⁄A).polynomial := by
   rw [← map_polynomial, map_baseChange]
 
-variable {P} in
-lemma Equation.baseChange (h : (W'.baseChange A).toJacobian.Equation P) :
-    (W'.baseChange B).toJacobian.Equation <| f ∘ P := by
-  convert h.map f.toRingHom using 1
+variable {W'} in
+lemma Equation.baseChange {P : A × A × A} (h : (W'⁄A).Equation P) : (W'⁄B).Equation (f ∘ P) := by
+  convert! Equation.map f.toRingHom h using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
-lemma baseChange_equation (hf : Function.Injective f) :
-    (W'.baseChange B).toJacobian.Equation (f ∘ P) ↔ (W'.baseChange A).toJacobian.Equation P := by
-  rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+lemma baseChange_equation (hf : Function.Injective f) (P : A × A × A) :
+    (W'⁄B).Equation (f ∘ P) ↔ (W'⁄A).Equation P := by
+  rw [← RingHom.coe_coe, ← map_equation _ hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
-lemma baseChange_polynomialX :
-    (W'.baseChange B).toJacobian.polynomialX = (W'.baseChange A).toJacobian.polynomialX.map f := by
+lemma baseChange_polynomialX : (W'⁄B).polynomialX = .map f (W'⁄A).polynomialX := by
   rw [← map_polynomialX, map_baseChange]
 
-lemma baseChange_polynomialY :
-    (W'.baseChange B).toJacobian.polynomialY = (W'.baseChange A).toJacobian.polynomialY.map f := by
+lemma baseChange_polynomialY : (W'⁄B).polynomialY = .map f (W'⁄A).polynomialY := by
   rw [← map_polynomialY, map_baseChange]
 
-lemma baseChange_polynomialZ :
-    (W'.baseChange B).toJacobian.polynomialZ = (W'.baseChange A).toJacobian.polynomialZ.map f := by
+lemma baseChange_polynomialZ : (W'⁄B).polynomialZ = .map f (W'⁄A).polynomialZ := by
   rw [← map_polynomialZ, map_baseChange]
 
-variable {P} in
-lemma Nonsingular.baseChange (h : (W'.baseChange A).toJacobian.Nonsingular P) :
-    (W'.baseChange B).toJacobian.Nonsingular <| f ∘ P := by
-  convert h.map f.toRingHom using 1
+variable {W'} in
+lemma Nonsingular.baseChange {P : A × A × A} (h : (W'⁄A).Nonsingular P) :
+    (W'⁄B).Nonsingular (f ∘ P) := by
+  convert! Nonsingular.map f.toRingHom h using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
-lemma baseChange_nonsingular (hf : Function.Bijective f) :
-    (W'.baseChange B).toJacobian.Nonsingular (f ∘ P) ↔
-      (W'.baseChange A).toJacobian.Nonsingular P := by
-  rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+lemma baseChange_nonsingular (hf : Function.Bijective f) (P : A × A × A) :
+    (W'⁄B).Nonsingular (f ∘ P) ↔ (W'⁄A).Nonsingular P := by
+  rw [← RingHom.coe_coe, ← map_nonsingular _ hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
 end Jacobian
 

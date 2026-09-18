@@ -3,8 +3,10 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
-import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 
 /-!
 # Negation and addition formulae for nonsingular points in projective coordinates
@@ -62,6 +64,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean`.
 
 elliptic curve, projective, negation, doubling, addition, group law
 -/
+
+@[expose] public section
 
 local notation3 P " x" => Prod.fst P
 
@@ -228,7 +232,7 @@ noncomputable def dblU (P : R × R × R) : R :=
 lemma dblU_eq_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     W'.dblU P = (W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z + W'.a₄ * P z ^ 2)) ^ 3
       * hPz.unit⁻¹ ^ 2 := by
-  rw [dblU, dif_pos hPz, eval_polynomialX]
+  rw [dblU, dite_eq_left hPz, eval_polynomialX]
 
 @[deprecated (since := "2025-05-26")] alias dblU_eq := dblU_eq_of_isUnit_Z
 
@@ -239,19 +243,20 @@ lemma dblU_eq_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) : W.dblU P =
 
 lemma dblU_smul (P : R × R × R) {u : R} (hu : IsUnit u) : W'.dblU (u • P) = u ^ 4 * W'.dblU P := by
   by_cases hPz : IsUnit <| P z
-  · rw [dblU, dif_pos <| by exact hu.mul hPz, eval_polynomialX_smul, hu.unit_mul hPz, mul_inv,
-      Units.val_mul, dblU, dif_pos hPz]
+  · rw [dblU, dite_eq_left <| by exact hu.mul hPz, eval_polynomialX_smul, hu.unit_mul hPz, mul_inv,
+      Units.val_mul, dblU, dite_eq_left hPz]
     linear_combination (norm := (rw [hu.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
       eval ![P x, P y, P z] W'.polynomialX ^ 3 * u ^ 4 * hPz.unit⁻¹ ^ 2 * (hu.pow 2).mul_val_inv
-  · rw [dblU, dif_neg <| by exact hPz ∘ isUnit_of_mul_isUnit_right, dblU, dif_neg hPz, mul_zero]
+  · rw [dblU, dite_eq_right <| by exact hPz ∘ isUnit_of_mul_isUnit_right, dblU, dite_eq_right hPz,
+      mul_zero]
 
 lemma dblU_of_Z_eq_zero [Nontrivial R] {P : R × R × R} (hPz : P z = 0) : W'.dblU P = 0 := by
-  rw [dblU, hPz, dif_neg not_isUnit_zero]
+  rw [dblU, hPz, dite_eq_right not_isUnit_zero]
 
 lemma dblU_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     W'.dblU P = (W'.a₁ * (P y * hPz.unit⁻¹) - (3 * (P x * hPz.unit⁻¹) ^ 2
       + 2 * W'.a₂ * (P x * hPz.unit⁻¹) + W'.a₄)) ^ 3 * P z ^ 4 := by
-  rw [dblU, dif_pos hPz, eval_polynomialX_of_isUnit_Z hPz, Affine.evalEval_polynomialX,
+  rw [dblU, dite_eq_left hPz, eval_polynomialX_of_isUnit_Z hPz, Affine.evalEval_polynomialX,
     mul_pow, pow_succ <| _ ^ 2, ← pow_mul, mul_assoc, mul_assoc <| _ ^ 4, ← mul_pow,
     hPz.mul_val_inv, one_pow, mul_one]
 
@@ -262,7 +267,7 @@ lemma dblU_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) : W.dblU P =
 lemma isUnit_dblU_of_Y_eq_of_Y_eq' {P Q : R × R × R} (hP : W'.Nonsingular P) (hPz : IsUnit <| P z)
     (hQz : IsUnit <| Q z) (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z)
     (hy' : P y * Q z = W'.negY Q * P z) : IsUnit <| W'.dblU P := by
-  simpa only [dblU, dif_pos hPz] using (((nonsingular_iff_of_Y_eq_negY hPz <|
+  simpa only [dblU, dite_eq_left hPz] using (((nonsingular_iff_of_Y_eq_negY hPz <|
     Y_eq_negY_of_Y_eq_of_Y_eq' hQz hx hy hy').mp hP).right.pow 3).mul <| hPz.unit⁻¹.isUnit.pow 2
 
 @[deprecated (since := "2025-05-26")] alias dblU_ne_zero_of_Y_eq := isUnit_dblU_of_Y_eq_of_Y_eq'
@@ -389,14 +394,14 @@ private lemma toAffine_addX_of_eq {P : F × F × F} (hPz : P z ≠ 0) {n d : F} 
     W.toAffine.addX (P x / P z) (P x / P z) (-n / P z / d) =
       (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * P z * d ^ 2) * d / P z
         / (P z * d ^ 3) := by
-  field_simp [mul_ne_zero hPz hd]
+  simp [field]
   ring1
 
-lemma dblX_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma dblX_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.dblX P / W.dblZ P = W.toAffine.addX (P x / P z) (Q x / Q z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  rw [dblX_eq hP hPz, dblZ, toAffine_slope_of_eq hP hQ hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
+  rw [dblX_eq hP hPz, dblZ, toAffine_slope_of_eq hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
@@ -475,14 +480,13 @@ private lemma toAffine_negAddY_of_eq {P : F × F × F} (hPz : P z ≠ 0) {n d : 
       (-n * (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * P z * d ^ 2
           - P x * P z * d ^ 2) + P y * P z ^ 2 * d ^ 3) / P z ^ 2 / (P z * d ^ 3) := by
   rw [Affine.negAddY, toAffine_addX_of_eq hPz hd]
-  field_simp [mul_ne_zero hPz <| mul_ne_zero hPz <| pow_ne_zero 3 hd]
-  ring1
+  simp [field]
 
-lemma negDblY_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+lemma negDblY_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.negDblY P / W.dblZ P = W.toAffine.negAddY (P x / P z) (Q x / Q z) (P y / P z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  rw [negDblY_eq hP hPz, dblZ, toAffine_slope_of_eq hP hQ hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
+  rw [negDblY_eq hP hPz, dblZ, toAffine_slope_of_eq hPz hQz hx hy, ← (X_eq_iff hPz hQz).mp hx,
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
@@ -512,8 +516,8 @@ lemma dblY_of_Y_eq {P Q : F × F × F} (hP : W.Equation P) (hPz : P z ≠ 0) (hQ
     W.dblY P = W.dblU P := by
   rw [dblU, ← dblY_of_Y_eq' hP hPz hQz hx hy hy', mul_div_cancel_right₀ _ <| pow_ne_zero 2 hPz]
 
-lemma dblY_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma dblY_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.dblY P / W.dblZ P = W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   rw [dblY, negY_of_Z_ne_zero <| dblZ_ne_zero_of_Y_ne' hP hQ hPz hQz hx hy,
@@ -543,8 +547,8 @@ lemma dblXYZ_of_Y_eq {P Q : F × F × F} (hP : W.Equation P) (hPz : P z ≠ 0) (
   rw [dblXYZ, dblX_of_Y_eq hP hPz hQz hx hy hy', dblY_of_Y_eq hP hPz hQz hx hy hy',
     dblZ_of_Y_eq hQz hx hy hy', smul_eq, mul_zero, mul_one]
 
-lemma dblXYZ_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma dblXYZ_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.dblXYZ P = W.dblZ P •
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -564,10 +568,8 @@ but `P ≠ W.neg P`. -/
 def addU (P Q : F × F × F) : F :=
   -(P y * Q z - Q y * P z) ^ 3 / (P z * Q z)
 
-lemma addU_smul {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) {u v : F} (hu : u ≠ 0)
-    (hv : v ≠ 0) : addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
-  field_simp [addU, smul_eq]
-  ring1
+lemma addU_smul (P Q : F × F × F) (u v : F) : addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
+  simp [field, addU, smul_eq]
 
 lemma addU_of_Z_eq_zero_left {P Q : F × F × F} (hPz : P z = 0) : addU P Q = 0 := by
   rw [addU, hPz, zero_mul, div_zero]
@@ -635,12 +637,11 @@ lemma isUnit_addZ_of_X_ne {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equati
     (hx : P x * Q z ≠ Q x * P z) : IsUnit <| W.addZ P Q :=
   (addZ_ne_zero_of_X_ne hP hQ hx).isUnit
 
-private lemma toAffine_slope_of_ne {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+private lemma toAffine_slope_of_ne [DecidableEq F] {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ≠ Q x * P z) :
     W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z) =
       (P y * Q z - Q y * P z) / (P x * Q z - Q x * P z) := by
-  field_simp [Affine.slope_of_X_ne <| by rwa [ne_eq, ← X_eq_iff hPz hQz]]
-  ring1
+  simp [field, Affine.slope_of_X_ne <| by rwa [ne_eq, ← X_eq_iff hPz hQz]]
 
 variable (W') in
 /-- The `X`-coordinate of a representative of `P + Q` for two distinct projective point
@@ -702,11 +703,10 @@ private lemma toAffine_addX_of_ne {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q
     (hd : d ≠ 0) : W.toAffine.addX (P x / P z) (Q x / Q z) (n / d) =
       (n ^ 2 * P z * Q z + W.a₁ * n * P z * Q z * d - W.a₂ * P z * Q z * d ^ 2 - P x * Q z * d ^ 2
         - Q x * P z * d ^ 2) * d / (P z * Q z) ^ 2 / (d ^ 3 / (P z * Q z)) := by
-  field_simp [hd]
-  ring1
+  simp [field]
 
-lemma addX_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addX P Q / W.addZ P Q =
+lemma addX_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addX P Q / W.addZ P Q =
     W.toAffine.addX (P x / P z) (Q x / Q z)
       (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   rw [addX_eq hP hQ hPz hQz, addZ_eq hP hQ hPz hQz, toAffine_slope_of_ne hPz hQz hx,
@@ -783,11 +783,10 @@ private lemma toAffine_negAddY_of_ne {P Q : F × F × F} (hPz : P z ≠ 0) (hQz 
         - P x * Q z * d ^ 2 - Q x * P z * d ^ 2 - P x * Q z * d ^ 2) + P y * Q z * d ^ 3)
         / (P z * Q z) ^ 2 / (d ^ 3 / (P z * Q z)) := by
   rw [Affine.negAddY, toAffine_addX_of_ne hPz hQz hd]
-  field_simp [mul_ne_zero (pow_ne_zero 2 <| mul_ne_zero hPz hQz) <| pow_ne_zero 3 hd]
-  ring1
+  simp [field]
 
-lemma negAddY_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.negAddY P Q / W.addZ P Q =
+lemma negAddY_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.negAddY P Q / W.addZ P Q =
       W.toAffine.negAddY (P x / P z) (Q x / Q z) (P y / P z)
         (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   rw [negAddY_eq hP hQ hPz hQz, addZ_eq hP hQ hPz hQz, toAffine_slope_of_ne hPz hQz hx,
@@ -834,8 +833,8 @@ lemma addY_of_X_eq {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (
     ← addY_of_X_eq' hP hQ hPz hQz hx, ← pow_succ',
     mul_div_cancel_right₀ _ <| pow_ne_zero 3 <| mul_ne_zero hPz hQz]
 
-lemma addY_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addY P Q / W.addZ P Q =
+lemma addY_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addY P Q / W.addZ P Q =
       W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
         (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   rw [addY, negY_of_Z_ne_zero <| addZ_ne_zero_of_X_ne hP hQ hx, addX_of_Z_ne_zero hP hQ hPz hQz hx,
@@ -875,8 +874,8 @@ lemma addXYZ_of_X_eq {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
   rw [addXYZ, addX_of_X_eq hP hQ hPz hQz hx, addY_of_X_eq hP hQ hPz hQz hx,
     addZ_of_X_eq hP hQ hPz hQz hx, smul_eq, mul_zero, mul_one]
 
-lemma addXYZ_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addXYZ P Q = W.addZ P Q •
+lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addXYZ P Q = W.addZ P Q •
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
@@ -890,38 +889,37 @@ lemma addXYZ_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equati
 variable (f : R →+* S) (P Q : R × R × R)
 
 @[simp]
-lemma map_negY : (W'.map f).toProjective.negY (f ∘ P) = f (W'.negY P) := by
+lemma map_negY : (W'.map f).negY (f ∘ P) = f (W'.negY P) := by
   simp_rw [negY]
   map_simp
 
 @[simp]
-lemma map_dblU (f : F →+* K) (P : F × F × F) :
-    (W.map f).toProjective.dblU (f ∘ P) = f (W.dblU P) := by
+lemma map_dblU (f : F →+* K) (P : F × F × F) : (W.map f).dblU (f ∘ P) = f (W.dblU P) := by
   simp_rw [dblU_eq]
   map_simp
 
 @[simp]
-lemma map_dblZ : (W'.map f).toProjective.dblZ (f ∘ P) = f (W'.dblZ P) := by
+lemma map_dblZ : (W'.map f).dblZ (f ∘ P) = f (W'.dblZ P) := by
   simp_rw [dblZ, negY]
   map_simp
 
 @[simp]
-lemma map_dblX : (W'.map f).toProjective.dblX (f ∘ P) = f (W'.dblX P) := by
+lemma map_dblX : (W'.map f).dblX (f ∘ P) = f (W'.dblX P) := by
   simp_rw [dblX]
   map_simp
 
 @[simp]
-lemma map_negDblY : (W'.map f).toProjective.negDblY (f ∘ P) = f (W'.negDblY P) := by
+lemma map_negDblY : (W'.map f).negDblY (f ∘ P) = f (W'.negDblY P) := by
   simp_rw [negDblY]
   map_simp
 
 @[simp]
-lemma map_dblY : (W'.map f).toProjective.dblY (f ∘ P) = f (W'.dblY P) := by
+lemma map_dblY : (W'.map f).dblY (f ∘ P) = f (W'.dblY P) := by
   simp_rw [dblY, negY, map_negDblY, map_dblX, map_dblZ]
   map_simp
 
 @[simp]
-lemma map_dblXYZ : (W'.map f).toProjective.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
+lemma map_dblXYZ : (W'.map f).dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
   simp_rw [dblXYZ, map_dblX, map_dblY, map_dblZ, map_eq]
 
 @[simp]
@@ -930,75 +928,65 @@ lemma map_addU (f : F →+* K) (P Q : F × F × F) : addU (f ∘ P) (f ∘ Q) = 
   map_simp
 
 @[simp]
-lemma map_addZ : (W'.map f).toProjective.addZ (f ∘ P) (f ∘ Q) = f (W'.addZ P Q) := by
+lemma map_addZ : (W'.map f).addZ (f ∘ P) (f ∘ Q) = f (W'.addZ P Q) := by
   simp_rw [addZ]
   map_simp
 
 @[simp]
-lemma map_addX : (W'.map f).toProjective.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+lemma map_addX : (W'.map f).addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
   simp_rw [addX]
   map_simp
 
 @[simp]
-lemma map_negAddY : (W'.map f).toProjective.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+lemma map_negAddY : (W'.map f).negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
   simp_rw [negAddY]
   map_simp
 
 @[simp]
-lemma map_addY : (W'.map f).toProjective.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+lemma map_addY : (W'.map f).addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
   simp_rw [addY, negY, map_negAddY, map_addX, map_addZ]
   map_simp
 
 @[simp]
-lemma map_addXYZ : (W'.map f).toProjective.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+lemma map_addXYZ : (W'.map f).addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
   simp_rw [addXYZ, map_addX, map_addY, map_addZ, map_eq]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P Q : A × A × A)
 
-lemma baseChange_negY :
-    (W'.baseChange B).toProjective.negY (f ∘ P) = f ((W'.baseChange A).toProjective.negY P) := by
+lemma baseChange_negY : (W'⁄B).negY (f ∘ P) = f ((W'⁄A).negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
 lemma baseChange_dblU [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
     [IsScalarTower R S K] (f : F →ₐ[S] K) (P : F × F × F) :
-    (W'.baseChange K).toProjective.dblU (f ∘ P) = f ((W'.baseChange F).toProjective.dblU P) := by
+    (W'⁄K).dblU (f ∘ P) = f ((W'⁄F).dblU P) := by
   rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
 
-lemma baseChange_dblZ :
-    (W'.baseChange B).toProjective.dblZ (f ∘ P) = f ((W'.baseChange A).toProjective.dblZ P) := by
+lemma baseChange_dblZ : (W'⁄B).dblZ (f ∘ P) = f ((W'⁄A).dblZ P) := by
   rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
 
-lemma baseChange_dblX :
-    (W'.baseChange B).toProjective.dblX (f ∘ P) = f ((W'.baseChange A).toProjective.dblX P) := by
+lemma baseChange_dblX : (W'⁄B).dblX (f ∘ P) = f ((W'⁄A).dblX P) := by
   rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
 
-lemma baseChange_negDblY : (W'.baseChange B).toProjective.negDblY (f ∘ P) =
-    f ((W'.baseChange A).toProjective.negDblY P) := by
+lemma baseChange_negDblY : (W'⁄B).negDblY (f ∘ P) = f ((W'⁄A).negDblY P) := by
   rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
 
-lemma baseChange_dblY :
-    (W'.baseChange B).toProjective.dblY (f ∘ P) = f ((W'.baseChange A).toProjective.dblY P) := by
+lemma baseChange_dblY : (W'⁄B).dblY (f ∘ P) = f ((W'⁄A).dblY P) := by
   rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
 
-lemma baseChange_dblXYZ : (W'.baseChange B).toProjective.dblXYZ (f ∘ P) =
-    f ∘ (W'.baseChange A).toProjective.dblXYZ P := by
+lemma baseChange_dblXYZ : (W'⁄B).dblXYZ (f ∘ P) = f ∘ (W'⁄A).dblXYZ P := by
   rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
 
-lemma baseChange_addX : (W'.baseChange B).toProjective.addX (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toProjective.addX P Q) := by
+lemma baseChange_addX : (W'⁄B).addX (f ∘ P) (f ∘ Q) = f ((W'⁄A).addX P Q) := by
   rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
-lemma baseChange_negAddY : (W'.baseChange B).toProjective.negAddY (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toProjective.negAddY P Q) := by
+lemma baseChange_negAddY : (W'⁄B).negAddY (f ∘ P) (f ∘ Q) = f ((W'⁄A).negAddY P Q) := by
   rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
-lemma baseChange_addY : (W'.baseChange B).toProjective.addY (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toProjective.addY P Q) := by
+lemma baseChange_addY : (W'⁄B).addY (f ∘ P) (f ∘ Q) = f ((W'⁄A).addY P Q) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
-lemma baseChange_addXYZ : (W'.baseChange B).toProjective.addXYZ (f ∘ P) (f ∘ Q) =
-    f ∘ (W'.baseChange A).toProjective.addXYZ P Q := by
+lemma baseChange_addXYZ : (W'⁄B).addXYZ (f ∘ P) (f ∘ Q) = f ∘ (W'⁄A).addXYZ P Q := by
   rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
 end Projective
