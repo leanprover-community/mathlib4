@@ -70,13 +70,13 @@ lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
 
 @[simp]
 lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
-     indToCoindAux A (s * g₁) (A.ρ s a) g₂ = indToCoindAux A g₁ a g₂ := by
+     indToCoindAux A (s * g₁) a g₂ = indToCoindAux A g₁ (A.ρ s⁻¹ a) g₂ := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s₁, rfl⟩ | h
-  · simp only [indToCoindAux, LinearMap.pi_apply]
+  · simp only [indToCoindAux, mul_inv_rev, LinearMap.pi_apply]
     rw [dite_eq_left ⟨s₁ * s⁻¹, by simp [S.1.smul_def, smul_eq_mul, mul_assoc]⟩,
       dite_eq_left ⟨s₁, rfl⟩, ← Module.End.mul_apply, ← map_mul]
-    congr
-    simp [Subtype.ext_iff, S.1.smul_def, mul_assoc]
+    congr 2
+    simp [Subtype.ext_iff, S.1.smul_def]
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s₁ * s, by simp_all [S.1.smul_def, mul_assoc]⟩) h
 
@@ -99,15 +99,18 @@ lemma indToCoindAux_comm {A B : Rep k S} (f : A ⟶ B) (g₁ g₂ : G) (a : A) :
   · simp [S.1.smul_def, hom_comm_apply]
   · simp [indToCoindAux_of_not_rel (h := h)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (A) in
 /-- Let `S ≤ G` be a subgroup and `A` a `k`-linear `S`-representation. This is the `k`-linear map
 `Ind_S^G(A) →ₗ[k] Coind_S^G(A)` sending `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`. -/
-noncomputable abbrev indToCoind :
+noncomputable def indToCoind :
     ind S.subtype A →ₗ[k] coind S.subtype A :=
-  Representation.Coinvariants.lift _ (TensorProduct.lift <| (linearCombination _ fun g =>
-    LinearMap.codRestrict _ (indToCoindAux A g) fun _ _ _ => by simp) ∘ₗ
-    (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) fun _ => by ext; simp
+  Representation.IndV.lift S.subtype A.ρ
+    (fun g => LinearMap.codRestrict _ (indToCoindAux A g) (by simp)) (by intros; ext; simp)
+
+lemma indToCoind_mk (g : G) (a : A) :
+    indToCoind A (IndV.mk S.subtype A.ρ g a) = indToCoindAux A g a := by
+  ext
+  simp [indToCoind]
 
 variable [S.FiniteIndex]
 
@@ -145,31 +148,27 @@ lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma coindToInd_indToCoind : A.indToCoind ∘ₗ A.coindToInd = LinearMap.id := by
   ext g a
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   conv_lhs => rw [coindToInd_apply]
   simp only [map_sum, AddSubmonoidClass.coe_finsetSum, Finset.sum_apply]
   rw [Finset.sum_eq_single ⟦a⟧]
-  · simp
+  · simp [indToCoind_mk _]
   · intro b _ hb
     induction b using Quotient.inductionOn with | h b =>
-    simpa using indToCoindAux_of_not_rel b a (g.1 b) (mt Quotient.sound hb.symm)
+    simpa [indToCoind_mk _] using indToCoindAux_of_not_rel b a (g.1 b) (mt Quotient.sound hb.symm)
   · simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma indToCoind_coindToInd : A.coindToInd ∘ₗ A.indToCoind = LinearMap.id := by
   ext g a
-  simp only [LinearMap.comp_apply, AlgebraTensorModule.curry_apply,
-    TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearMap.id_apply]
+  simp only [LinearMap.comp_apply, LinearMap.id_apply]
   rw [coindToInd_of_support_subset_orbit g]
-  · simp
+  · simp [indToCoind_mk _]
   · intro x hx
     contrapose hx
-    simpa using indToCoindAux_of_not_rel g x a hx
+    simpa [indToCoind_mk _] using indToCoindAux_of_not_rel g x a hx
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is an isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)`.
 The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse sends `f : G → A` to
@@ -177,12 +176,12 @@ The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse 
 @[simps! hom_hom_toLinearMap inv_hom_toLinearMap]
 noncomputable def indCoindIso (A : Rep.{max w u} k S) :
     ind S.subtype A ≅ coind S.subtype A :=
-  mkIso (.mk (.ofLinearMap (indToCoind A) (coindToInd A)
-    (coindToInd_indToCoind A) (indToCoind_coindToInd A)) <| fun g ↦ by ext; simp)
+  mkIso (.mk (.ofLinearMap _ _ (coindToInd_indToCoind A) (indToCoind_coindToInd A)) fun g ↦ by
+    ext h
+    simp [indToCoind_mk _])
 
 variable (k S)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_G^S` functors `Rep k S ⥤ Rep k G`. -/
 @[implicit_reducible, simps! hom_app inv_app]
@@ -191,7 +190,7 @@ noncomputable def indCoindNatIso :
   NatIso.ofComponents (fun (A : Rep k S) => indCoindIso A) fun f => by
     simp only [indFunctor_obj, coindFunctor_obj];
     ext g1 x g2
-    simp [indToCoind, indMap, indToCoindAux_comm]
+    simp [indToCoind, indToCoindAux_comm]
 
 /-- Given a finite index subgroup `S ≤ G`, `Ind_S^G` is right adjoint to the restriction functor
 `Res k G ⥤ Res k S`, since it is naturally isomorphic to `Coind_S^G`. -/
