@@ -14,6 +14,15 @@ jobs:
       id-token: write
     env:
       BRANCH_NAME: "update-dependencies-bot-use-only"
+      # Pinned commit of https://github.com/kim-em/paranoid-lake-update, which prepares
+      # the diffs of every dependency the PR would pull in, for a human or AI audit.
+      PARANOID_LAKE_UPDATE_REF: 1c43573cd1d3a56430e04d26c713cea990aead4a
+      # Optional secrets.  A token with `gist` scope makes the audit comment link a gist
+      # holding the full diffs; an Anthropic API key makes Claude audit the diffs on the
+      # runner and removes `auto-merge-after-CI` when the verdict is not CLEAN.
+      # Both steps are skipped when the secret is absent.
+      PARANOID_GIST_TOKEN: ${{ secrets.PARANOID_LAKE_UPDATE_GIST_TOKEN }}
+      PARANOID_ANTHROPIC_API_KEY: ${{ secrets.PARANOID_LAKE_UPDATE_ANTHROPIC_API_KEY }}
     steps:
       - name: Generate app token
         id: app-token
@@ -177,6 +186,57 @@ jobs:
           fi
           echo "create_pr=$create_pr" >> "$GITHUB_OUTPUT"
 
+      - name: Prepare dependency diffs for audit
+        # Everything the PR would pull in, as full diffs: the packages whose revision
+        # changed in lake-manifest.json (base master vs the updated tree) plus the
+        # mathlib-ci pin bumped above.  Nothing from upstream is executed here.
+        if: ${{ steps.determine_state.outputs.create_pr == 'true' && steps.determine_state.outputs.state != 'SUPERSEDED' }}
+        id: paranoid
+        run: |
+          git clone --quiet https://github.com/kim-em/paranoid-lake-update /tmp/paranoid-lake-update
+          git -C /tmp/paranoid-lake-update checkout --quiet "$PARANOID_LAKE_UPDATE_REF"
+          old_ci=$(git show origin/master:.github/actions/get-mathlib-ci/action.yml | sed -n 's/^ *default: \([0-9a-f]\{40\}\)$/\1/p')
+          new_ci=$(sed -n 's/^ *default: \([0-9a-f]\{40\}\)$/\1/p' .github/actions/get-mathlib-ci/action.yml)
+          extra=()
+          if [ -n "$old_ci" ] && [ -n "$new_ci" ] && [ "$old_ci" != "$new_ci" ]; then
+            extra+=(--extra "https://github.com/leanprover-community/mathlib-ci@${old_ci}..${new_ci}")
+          fi
+          python3 /tmp/paranoid-lake-update/paranoid-lake-update compare \
+            --base origin/master \
+            --title "Mathlib dependency update $(date -u +%Y-%m-%d)" \
+            --out /tmp/paranoid-out "${extra[@]}"
+
+      - name: Upload dependency diffs
+        if: ${{ steps.paranoid.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dependency-diffs
+          path: /tmp/paranoid-out
+
+      - name: AI audit of dependency diffs
+        if: ${{ steps.paranoid.outcome == 'success' && env.PARANOID_ANTHROPIC_API_KEY != '' }}
+        id: paranoid-audit
+        env:
+          ANTHROPIC_API_KEY: ${{ env.PARANOID_ANTHROPIC_API_KEY }}
+          PARANOID_KEEP_ANTHROPIC_API_KEY: "1"
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          set +e
+          python3 /tmp/paranoid-lake-update/paranoid-lake-update audit --out /tmp/paranoid-out --audit claude
+          status=$?
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          if [ "$status" != "0" ]; then
+            echo "flagged=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::AI audit did not return VERDICT: CLEAN (exit $status); auto-merge will be disabled."
+          fi
+
+      - name: Upload dependency diffs as a gist
+        if: ${{ steps.paranoid.outcome == 'success' && env.PARANOID_GIST_TOKEN != '' }}
+        env:
+          GH_TOKEN: ${{ env.PARANOID_GIST_TOKEN }}
+        run: python3 /tmp/paranoid-lake-update/paranoid-lake-update publish --out /tmp/paranoid-out --gist
+
       - name: Generate PR title
         id: pr-title
         if: ${{ steps.determine_state.outputs.create_pr == 'true' }}
@@ -185,6 +245,7 @@ jobs:
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
+        id: cpr
         if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
@@ -203,6 +264,27 @@ jobs:
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
+
+      - name: Comment dependency audit on the PR
+        # Summary table with links to every upstream commit and compare view, the
+        # artifact (and gist) with the full diffs, any AI audit report, and the audit
+        # prompt so that anyone can run their own model over the same material.
+        if: ${{ steps.paranoid.outcome == 'success' && steps.cpr.outputs.pull-request-number != '' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          python3 /tmp/paranoid-lake-update/paranoid-lake-update publish --out /tmp/paranoid-out \
+            --comment-pr "${{ steps.cpr.outputs.pull-request-number }}" \
+            --github-repo "${{ github.repository }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      - name: Disable auto-merge after a flagged audit
+        if: ${{ steps.paranoid-audit.outputs.flagged == 'true' && steps.cpr.outputs.pull-request-number != '' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh pr edit "${{ steps.cpr.outputs.pull-request-number }}" --repo "${{ github.repository }}" \
+            --remove-label auto-merge-after-CI
 
       - name: Send Zulip message (failure)
         if: ${{ failure() }}
