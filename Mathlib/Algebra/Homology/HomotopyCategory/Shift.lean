@@ -234,6 +234,18 @@ lemma mapHomologicalComplex_commShiftIso_hom_app_f (K : CochainComplex C ℤ) (n
 lemma mapHomologicalComplex_commShiftIso_inv_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
     (((F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n).inv.app K).f i = 𝟙 _ := rfl
 
+instance : NatTrans.CommShift (mapHomologicalComplexIdIso C (.up ℤ)).hom ℤ where
+
+variable {F} in
+attribute [local simp] commShiftIso_comp_hom_app in
+instance {E : Type*} [Category* E] [Preadditive E] {G : D ⥤ E} {H : C ⥤ E}
+    [G.Additive] [H.Additive] (e : F ⋙ G ≅ H) :
+    NatTrans.CommShift (mapHomologicalComplexCompIso e (.up ℤ)).hom ℤ where
+
+variable {F} in
+instance {G : C ⥤ D} [G.Additive] (τ : F ⟶ G) :
+    NatTrans.CommShift (τ.mapHomologicalComplex (.up ℤ)) ℤ where
+
 end Functor
 
 end CategoryTheory
@@ -281,8 +293,6 @@ instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n)
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _)
-
-attribute [local implicit_reducible] HomotopyCategory.quotient
 
 instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where

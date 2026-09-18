@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Basic.Unique
 public import Mathlib.Data.Sum.Basic
-public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Spread
 
 /-!

@@ -255,7 +255,7 @@ protected lemma _root_.Topology.IsInducing.isTopologicalBasis [TopologicalSpace 
     convert! (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
     aesop
 
-@[deprecated Topology.IsInducing.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated Topology.IsInducing.isTopologicalBasis +typeChanged (since := "2026-08-21")]
 protected lemma IsTopologicalBasis.isInducing [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
     (hf : IsInducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
   hf.isTopologicalBasis h
@@ -322,6 +322,13 @@ lemma isTopologicalBasis_singleton_empty : IsTopologicalBasis {(∅ : Set α)} �
   mp h := by simpa using h.sdiff_empty
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
+/-- For a topological basis `B`, the finite unions of sets in `B` also form a topological basis. -/
+lemma IsTopologicalBasis.finite_sUnion (hB : IsTopologicalBasis B) :
+    IsTopologicalBasis (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ B}) := by
+  refine hB.of_isOpen_of_subset ?_ (fun u hu ↦ ⟨{u}, by simpa⟩)
+  rintro - ⟨f, ⟨hf1, hf2⟩, rfl⟩
+  exact isOpen_sUnion fun u hu ↦ hB.isOpen (hf2 hu)
+
 variable (α)
 
 /-- A separable space is one with a countable dense subset, available through
@@ -342,6 +349,12 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 
 theorem exists_countable_dense [SeparableSpace α] : ∃ s : Set α, s.Countable ∧ Dense s :=
   SeparableSpace.exists_countable_dense
+
+variable {α} in
+theorem exists_countable_dense_subset (s : Set α) [SeparableSpace s] :
+    ∃ t : Set α, t.Countable ∧ t ⊆ s ∧ s ⊆ closure t := by
+  obtain ⟨t, ct, dt⟩ := exists_countable_dense s
+  exact ⟨Subtype.val '' t, ct.image _, by simp, fun x hx ↦ closure_subtype.1 (dt ⟨x, hx⟩)⟩
 
 /-- A nonempty separable space admits a sequence with dense range. Instead of running `cases` on the
 conclusion of this lemma, you might want to use `TopologicalSpace.denseSeq` and
@@ -753,7 +766,7 @@ theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x
   subseq_tendsto_of_neBot hx
 
 @[deprecated MapClusterPt.tendsto_subseq (since := "2026-03-29")]
-theorem FirstCountableTopology.tendsto_subseq {u : ℕ → α} {x : α}
+theorem FirstCountableTopology.tendsto_subseq {x : α} {u : ℕ → α}
     (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 
@@ -1119,7 +1132,7 @@ theorem _root_.IsOpenQuotientMap.isTopologicalBasis (h : IsOpenQuotientMap π)
   · rintro - ⟨⟨s, hs, rfl⟩, hxs⟩
     exact h.isOpenMap s (hV.isOpen hs) |>.mem_nhds hxs
 
-@[deprecated IsOpenQuotientMap.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated IsOpenQuotientMap.isTopologicalBasis +typeChanged (since := "2026-08-21")]
 theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
     (h' : IsQuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) :=
   IsOpenQuotientMap.isTopologicalBasis (.of_isOpenMap_isQuotientMap h h') hV
@@ -1132,7 +1145,8 @@ theorem _root_.Topology.IsOpenQuotientMap.secondCountableTopology [SecondCountab
     exact ⟨Set.image π '' V, V_countable.image (Set.image π),
       (h.isTopologicalBasis V_generates).eq_generateFrom⟩
 
-@[deprecated IsOpenQuotientMap.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated Topology.IsOpenQuotientMap.secondCountableTopology +typeChanged
+  (since := "2026-08-21")]
 theorem _root_.Topology.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
     (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y :=
   IsOpenQuotientMap.secondCountableTopology ⟨h'.surjective, h'.continuous, h⟩
