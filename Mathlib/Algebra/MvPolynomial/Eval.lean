@@ -727,14 +727,14 @@ def eval₂AlgHom : MvPolynomial σ R →ₐ[R] S₁ :=
   { eval₂Hom (algebraMap R S₁) g with
     commutes' r := by simp }
 
-@[deprecated aeval_def (since := "2026-07-22")]
+@[deprecated aeval_def +typeChanged (since := "2026-07-22")]
 theorem eval₂AlgHom_apply (P : MvPolynomial σ R) :
     eval₂AlgHom R g P = eval₂Hom (algebraMap R S₁) g P := rfl
 
-@[simp, deprecated aeval_eq_eval₂Hom (since := "2026-07-22")]
+@[simp, deprecated aeval_eq_eval₂Hom +typeChanged (since := "2026-07-22")]
 theorem coe_eval₂AlgHom : ⇑(eval₂AlgHom R g) = eval₂ (algebraMap R S₁) g := rfl
 
-@[simp, deprecated aeval_X (since := "2026-07-22")]
+@[simp, deprecated aeval_X +typeChanged (since := "2026-07-22")]
 theorem eval₂AlgHom_X (i : σ) :
     eval₂AlgHom R g (X i : MvPolynomial σ R) = g i := eval₂_X (algebraMap R S₁) g i
 

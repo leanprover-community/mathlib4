@@ -199,6 +199,21 @@ theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
 
+variable (X) in
+/-- `closure`, bundled as a `ClosureOperator` on `Set X`; its closed elements are the closed sets.
+-/
+@[expose]
+def Topology.closureOperator : ClosureOperator (Set X) :=
+  .ofPred closure IsClosed (fun _ ↦ subset_closure) (fun _ ↦ isClosed_closure)
+    fun _ _ h hy ↦ closure_minimal h hy
+
+@[simp]
+theorem Topology.closureOperator_apply : Topology.closureOperator X s = closure s := rfl
+
+@[simp]
+theorem Topology.isClosed_closureOperator :
+    (Topology.closureOperator X).IsClosed s ↔ IsClosed s := Iff.rfl
+
 theorem Disjoint.closure_left (hd : Disjoint s t) (ht : IsOpen t) :
     Disjoint (closure s) t :=
   disjoint_compl_left.mono_left <| closure_minimal hd.subset_compl_right ht.isClosed_compl
