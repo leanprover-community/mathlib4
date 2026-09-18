@@ -345,12 +345,12 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem stabilizer_subgroupOf (H : Subgroup G) (a : α) :
     (stabilizer G a).subgroupOf H = stabilizer H a := by
   simp [Subgroup.ext_iff, Subgroup.mem_subgroupOf, subgroup_smul_def]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem stabilizer_comap_conj_eq_centralizer_singleton (g : G) :
     (stabilizer (MulAut G) g).comap MulAut.conj = Subgroup.centralizer {g} := by
   simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul]
