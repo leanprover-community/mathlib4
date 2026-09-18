@@ -1,5 +1,7 @@
 module  -- shake: keep-all --deprecated_module: ignore
 
+public import Mathlib.CategoryTheory.Monoidal.Linear.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Preadditive.FunctorCategory
 public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic

@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Sites.SheafHom
 public import Mathlib.CategoryTheory.Localization.Monoidal.Linear
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Linear.FunctorCategory
 public import Mathlib.CategoryTheory.Sites.Linear
 
 /-!
