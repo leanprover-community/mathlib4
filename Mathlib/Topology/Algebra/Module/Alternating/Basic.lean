@@ -231,8 +231,8 @@ instance : SMul ℕ+ (M [⋀^ι]→L[R] N) :=
 theorem coe_psmul (f : M [⋀^ι]→L[R] N) (c : ℕ+) : ⇑(c • f) = c • ⇑f :=
   rfl
 
-theorem psmul_apply (f : M [⋀^ι]→L[R] N) (c : ℕ+) (v : ι → M) : (c • f) v = c • f v :=
-  rfl
+instance : IsSMulApply ℕ+ (M [⋀^ι]→L[R] N) (ι → M) N where
+  smul_apply _ _ _ := rfl
 
 @[simp]
 theorem toContinuousMultilinearMap_psmul (c : ℕ+) (f : M [⋀^ι]→L[R] N) :

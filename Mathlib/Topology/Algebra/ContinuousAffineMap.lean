@@ -279,9 +279,8 @@ instance [ContinuousConstSMul ℕ+ W] : SMul ℕ+ (P →ᴬ[R] W) where
 @[norm_cast, simp]
 theorem coe_psmul [ContinuousConstSMul ℕ+ W] (t : ℕ+) (f : P →ᴬ[R] W) : ⇑(t • f) = t • ⇑f := rfl
 
-theorem psmul_apply [ContinuousConstSMul ℕ+ W] (t : ℕ+) (f : P →ᴬ[R] W) (x : P) :
-    (t • f) x = t • f x :=
-  rfl
+instance [ContinuousConstSMul ℕ+ W] : IsSMulApply ℕ+ (P →ᴬ[R] W) P W where
+  smul_apply _ _ _ := rfl
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup W]
 

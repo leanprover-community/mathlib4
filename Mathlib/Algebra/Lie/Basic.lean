@@ -846,8 +846,8 @@ instance hasPSMul : SMul ℕ+ (M →ₗ⁅R,L⁆ N) where
 theorem coe_psmul (n : ℕ+) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
   rfl
 
-theorem psmul_apply (n : ℕ+) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = n • f m :=
-  rfl
+instance : IsSMulApply ℕ+ (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
 
 instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
