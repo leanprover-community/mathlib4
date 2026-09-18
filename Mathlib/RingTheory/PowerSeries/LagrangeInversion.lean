@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Derivative
 
+import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
@@ -49,24 +50,21 @@ section CommRing
 
 variable {R : Type*} [CommRing R]
 variable {P Y : R⟦X⟧}
+variable (hY : Y = X * P.subst Y)
+include hY
 
-private lemma constantCoeff_eq_zero
-    (hY : Y = X * P.subst Y) : Y.constantCoeff = 0 := by
+private lemma constantCoeff_eq_zero : Y.constantCoeff = 0 := by
   rw [hY]
   simp
 
-private lemma hasSubst_of_fixedPoint
-    (hY : Y = X * P.subst Y) : HasSubst Y :=
+private lemma hasSubst_of_fixedPoint : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
 
-private lemma coeff_pow_of_lt
-    (hY : Y = X * P.subst Y) {m k : ℕ} (h : m < k) :
-    (Y ^ k).coeff m = 0 := by
+private lemma coeff_pow_of_lt {m k : ℕ} (h : m < k) : (Y ^ k).coeff m = 0 := by
   have hpow : Y ^ k = X ^ k * (P.subst Y) ^ k := by rw [← mul_pow, ← hY]
   simp [hpow, coeff_X_pow_mul', Nat.not_le.2 h]
 
-private lemma coeff_subst_of_fixedPoint
-    (hY : Y = X * P.subst Y) (Q : R⟦X⟧) (j : ℕ) :
+private lemma coeff_subst_of_fixedPoint (Q : R⟦X⟧) (j : ℕ) :
     coeff j (Q.subst Y) = ∑ l ∈ range (j + 1), Q.coeff l * (Y ^ l).coeff j := by
   rw [coeff_subst' (hasSubst_of_fixedPoint hY),
     finsum_eq_sum_of_support_subset (s := range (j + 1))]
@@ -76,16 +74,35 @@ private lemma coeff_subst_of_fixedPoint
     by_contra hlj
     simp [coeff_pow_of_lt hY (by omega : j < l)] at hl
 
+/-- If `Y = X * P(Y)` and the constant coefficient of `P` is zero, then `Y = 0`. -/
+theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0) : Y = 0 := by
+  let Q := mk fun n ↦ P.coeff (n + 1)
+  have hP' : P = X * Q := by simpa [Q, hP] using P.eq_X_mul_shift_add_const
+  have hYsubst := hasSubst_of_fixedPoint hY
+  have hsubst : P.subst Y = Y * Q.subst Y := by
+    rw [hP', subst_mul hYsubst, subst_X hYsubst]
+  rw [hsubst] at hY
+  have hunit : IsUnit (1 - X * Q.subst Y) := by
+    apply MvPowerSeries.isUnit_iff_constantCoeff.mpr
+    change IsUnit (constantCoeff (1 - X * Q.subst Y))
+    simp
+  apply hunit.mul_right_cancel
+  rw [zero_mul]
+  calc
+    Y * (1 - X * Q.subst Y) = Y - X * (Y * Q.subst Y) := by ring
+    _ = 0 := sub_eq_zero.mpr hY
+
 end CommRing
 
 section TorsionFree
 
 variable {R : Type*} [CommRing R] [IsAddTorsionFree R]
 variable {P Y : R⟦X⟧}
+variable (hY : Y = X * P.subst Y)
+include hY
 
 private theorem lagrange_inversion_coeff_pow_of_le
-    (hY : Y = X * P.subst Y) :
-    ∀ m : ℕ, ∀ k ≤ m + 1,
+    : ∀ m : ℕ, ∀ k ≤ m + 1,
       ((m + 1 : ℕ) : R) * (Y ^ k).coeff (m + 1) =
         (k : R) * (P ^ (m + 1)).coeff (m + 1 - k) := by
   intro m
@@ -148,7 +165,7 @@ private theorem lagrange_inversion_coeff_pow_of_le
 The coefficient ring is assumed to have no additive torsion because the inductive proof cancels
 multiplication by a positive natural number. -/
 theorem lagrange_inversion_coeff_pow
-    (hY : Y = X * P.subst Y) (n k : ℕ) :
+    (n k : ℕ) :
     ((n + k : ℕ) : R) * (Y ^ k).coeff (n + k) = (k : R) * (P ^ (n + k)).coeff n := by
   rcases eq_or_ne (n + k) 0 with hnk | hnk
   · obtain ⟨rfl, rfl⟩ := Nat.add_eq_zero_iff.mp hnk
@@ -161,7 +178,7 @@ a formal power series `H`,
 
 `(n + 1) * [X^(n+1)] H(Y) = [X^n] (H' * P^(n+1))`. -/
 theorem lagrange_burmann_coeff
-    (hY : Y = X * P.subst Y) (n : ℕ) (H : R⟦X⟧) :
+    (n : ℕ) (H : R⟦X⟧) :
     ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
   have hlhs : ((n + 1 : ℕ) : R) * coeff (n + 1) (H.subst Y) =
         ∑ i ∈ range (n + 2), H.coeff i * ((i : R) * (P ^ (n + 1)).coeff (n + 1 - i)) := by
@@ -178,11 +195,12 @@ end TorsionFree
 section Field
 
 variable {K : Type*} [Field K] [CharZero K]
+variable (P Y : K⟦X⟧) (hY : Y = X * P.subst Y)
+include hY
 
 /-- The usual coefficient form of the formal Lagrange inversion formula. This is the
 case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff`. -/
-theorem lagrange_inversion_coeff (P Y : K⟦X⟧)
-    (hY : Y = X * P.subst Y) (n : ℕ) :
+theorem lagrange_inversion_coeff (n : ℕ) :
     Y.coeff (n + 1) = (P ^ (n + 1)).coeff n / (n + 1) := by
   field_simp [Nat.cast_add_one_ne_zero n]
   simpa [mul_comm] using lagrange_inversion_coeff_pow (P := P) hY n 1
