@@ -374,7 +374,7 @@ end LimitExtraction
 
 /-- Every composition of a Tonelli approximation with its delayed input is continuous. -/
 lemma continuousOn_tonelliApproximation_delayedInput
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     ContinuousOn
       (fun t ↦ tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t))
       (Icc t₀ tmax) :=
@@ -384,7 +384,7 @@ lemma continuousOn_tonelliApproximation_delayedInput
 
 /-- Every Tonelli approximation composed with its delayed input stays in the cylinder. -/
 lemma mapsTo_tonelliApproximation_delayedInput
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     MapsTo
       (fun t ↦ tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t))
       (Icc t₀ tmax) (closedBall x₀ r) :=
@@ -393,9 +393,9 @@ lemma mapsTo_tonelliApproximation_delayedInput
 
 /-- Every composition of the vector field `f` with a delayed Tonelli approximation is continuous. -/
 lemma continuousOn_comp_tonelliApproximation_delayedInput
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) (n : ℕ) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n : ℕ) :
     ContinuousOn
-      (fun t ↦ f (t, tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t)))
+      (fun t ↦ f t (tonelliApproximation f t₀ tmax x₀ n (delayedInput t₀ tmax (n + 1) t)))
       (Icc t₀ tmax) := by
   apply hf.continuousOn.comp
     (ContinuousOn.prodMk continuousOn_id (continuousOn_tonelliApproximation_delayedInput hf n))
@@ -413,9 +413,9 @@ variable [FiniteDimensional ℝ E]
 
 /-- There exists a solution of the integral equation on the interval forward in time. -/
 lemma exists_eq_forall_mem_Icc_eq_integral_forward
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+    (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) :
     ∃ α : ℝ → E, ContinuousOn α (Icc t₀ tmax) ∧ MapsTo α (Icc t₀ tmax) (closedBall x₀ r) ∧
-      ∀ t ∈ Icc t₀ tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
+      ∀ t ∈ Icc t₀ tmax, α t = x₀ + ∫ s in t₀..t, f s (α s) := by
   obtain ⟨α, φ, hφ_mono, hα_cont, hα_maps, hα_tendsto⟩ :=
     exists_tendstoUniformlyOn_subseq_tonelliApproximation hf
   refine ⟨α, hα_cont, hα_maps, fun t ht ↦ tendsto_nhds_unique
@@ -438,7 +438,10 @@ lemma exists_eq_forall_mem_Icc_eq_integral_forward
         hφ_mono hα_cont hα_tendsto
     filter_upwards with s hs
     have hs := mem_Icc_of_mem_uIoc ht hs
-    apply Tendsto.comp (hf.continuousOn.continuousWithinAt _)
+    apply Tendsto.comp
+      (f := fun n ↦
+        (s, tonelliApproximation f t₀ tmax x₀ (φ n) (delayedInput t₀ tmax (φ n + 1) s)))
+      (hf.continuousOn.continuousWithinAt (x := (s, α s)) _)
     · refine tendsto_nhdsWithin_iff.mpr
         ⟨Tendsto.prodMk_nhds tendsto_const_nhds (h_lim s hs), ?_⟩
       apply Eventually.of_forall
