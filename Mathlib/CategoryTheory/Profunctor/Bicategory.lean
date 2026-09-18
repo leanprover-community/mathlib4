@@ -11,7 +11,10 @@ public import Mathlib.CategoryTheory.Profunctor.Comp
 # The Profunctor Bicategory
 
 This file defines the bicategory `ProfCat` whose objects are categories and whose 1-morphisms are
-profunctors.
+profunctors. The 2-morphisms are natural transformations between profunctors.
+
+The bicategory instance is defined on `ProfCat.{u, u}`, with profunctors valued in `Type u`.
+Its operations simplify to the corresponding operations in the `Profunctor` namespace.
 -/
 
 @[expose] public section
@@ -35,6 +38,16 @@ instance : CoeSort ProfCat (Type u) :=
   ⟨ProfCat.obj⟩
 
 attribute [instance] ProfCat.str
+
+namespace ProfCat
+
+@[simp]
+lemma coe_of (C : Type u) [Category.{v} C] : (of C : Type u) = C := rfl
+
+@[simp]
+lemma of_coe (C : ProfCat.{v, u}) : of C = C := rfl
+
+end ProfCat
 
 open Limits Types Profunctor
 
@@ -71,14 +84,34 @@ end
 
 end Profunctor
 
-instance : Bicategory ProfCat.{u, u} where
+namespace ProfCat
+
+/-- The bicategory of categories, profunctors, and natural transformations. -/
+-- Stop at the profunctor operations instead of unfolding the quotient constructions.
+@[simps! id comp whiskerLeft whiskerRight associator leftUnitor rightUnitor]
+instance bicategory : Bicategory ProfCat.{u, u} where
   Hom X Y := Profunctor.{u} X Y
   id X := .id
   comp P Q := P.comp Q
-  whiskerLeft P _ _ f := P.whiskerLeft f
+  whiskerLeft {_ _ _} P {_ _} f := P.whiskerLeft f
   whiskerRight f R := whiskerRight R f
   associator P Q R := P.associator Q R
   leftUnitor P := P.leftUnitor
   rightUnitor P := P.rightUnitor
+
+variable {C D : ProfCat.{u, u}} {P Q : C ⟶ D}
+
+/-- Two 2-morphisms in `ProfCat` are equal if they agree on every element. -/
+@[ext]
+lemma hom_ext {η θ : P ⟶ Q}
+    (h : ∀ (X : C) (Y : Dᵒᵖ) (x : (P.obj X).obj Y),
+      (η.app X).app Y x = (θ.app X).app Y x) : η = θ := by
+  apply NatTrans.ext
+  funext X
+  apply NatTrans.ext
+  funext Y
+  exact ConcreteCategory.hom_ext _ _ (h X Y)
+
+end ProfCat
 
 end CategoryTheory
