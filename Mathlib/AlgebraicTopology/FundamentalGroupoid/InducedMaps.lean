@@ -82,7 +82,7 @@ open scoped ContinuousMap
 
 /-- Homotopy equivalent topological spaces have equivalent fundamental groupoids. -/
 def equivOfHomotopyEquiv {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (hequiv : X ≃ₕ Y) :
-    πₓ (.of X) ≌ πₓ (.of Y) := by
+    πₓ ↧X ≌ πₓ ↧Y := by
   apply CategoryTheory.Equivalence.mk (map hequiv.toFun) (map hequiv.invFun)
   · simpa only [FundamentalGroupoid.map_id, FundamentalGroupoid.map_comp]
       using (asIso (homotopicMapsNatIso hequiv.left_inv.some)).symm
@@ -121,7 +121,7 @@ def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1) where
   target' := rfl
 
 /-- The homotopy path class of 0 → 1 in `ULift I` -/
-def uhpath01 : @fromTop (TopCat.of <| ULift.{u} I) (ULift.up (0 : I)) ⟶ fromTop (ULift.up 1) :=
+def uhpath01 : @fromTop ↧(ULift.{u} I) (ULift.up (0 : I)) ⟶ fromTop (ULift.up 1) :=
   ⟦upath01⟧
 
 end unitInterval
@@ -213,7 +213,7 @@ theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x
 typechecker. In particular, the first path should be on the ulifted unit interval. -/
 abbrev prodToProdTopI {a₁ a₂ : TopCat.of (ULift I)} {b₁ b₂ : X} (p₁ : fromTop a₁ ⟶ fromTop a₂)
     (p₂ : fromTop b₁ ⟶ fromTop b₂) :=
-  (prodToProdTop (TopCat.of <| ULift I) X).map (X := (⟨a₁⟩, ⟨b₁⟩)) (Y := (⟨a₂⟩, ⟨b₂⟩)) (p₁, p₂)
+  (prodToProdTop ↧(ULift I) X).map (X := (⟨a₁⟩, ⟨b₁⟩)) (Y := (⟨a₂⟩, ⟨b₂⟩)) (p₁, p₂)
 
 /-- The diagonal path `d` of a homotopy `H` on a path `p` -/
 def diagonalPath : fromTop (H (0, x₀)) ⟶ fromTop (H (1, x₁)) :=
@@ -226,7 +226,7 @@ def diagonalPath' : fromTop (f x₀) ⟶ fromTop (g x₁) :=
 /-- Proof that `f(p) = H(0 ⟶ 0, p)`, with the appropriate casts -/
 theorem apply_zero_path : (πₘ (TopCat.ofHom f)).map p = hcast (H.apply_zero x₀).symm ≫
     (πₘ (TopCat.ofHom H.uliftMap)).map
-      (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 0))) p) ≫
+      (prodToProdTopI (𝟙 (@fromTop ↧_ (ULift.up 0))) p) ≫
     hcast (H.apply_zero x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
@@ -237,7 +237,7 @@ theorem apply_zero_path : (πₘ (TopCat.ofHom f)).map p = hcast (H.apply_zero x
 /-- Proof that `g(p) = H(1 ⟶ 1, p)`, with the appropriate casts -/
 theorem apply_one_path : (πₘ (TopCat.ofHom g)).map p = hcast (H.apply_one x₀).symm ≫
     (πₘ (TopCat.ofHom H.uliftMap)).map
-      (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 1))) p) ≫
+      (prodToProdTopI (𝟙 (@fromTop ↧_ (ULift.up 1))) p) ≫
     hcast (H.apply_one x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
