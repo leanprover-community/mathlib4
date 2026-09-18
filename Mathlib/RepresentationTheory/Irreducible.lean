@@ -43,10 +43,20 @@ theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Mo
 
 namespace IsIrreducible
 
-variable {ρ σ} (f : IntertwiningMap ρ σ) [IsIrreducible ρ]
+variable (f : IntertwiningMap ρ σ) [IsIrreducible ρ]
 
 instance : IsSimpleModule k[G] ρ.asModule :=
   (irreducible_iff_isSimpleModule_asModule ρ).mp inferInstance
+
+instance [Finite G] : FiniteDimensional k ρ.asModule :=
+  Module.Finite.trans k[G] ρ.asModule
+
+include ρ in
+theorem finiteDimensional [Finite G] : FiniteDimensional k V :=
+  have := Module.Finite.trans (R := k) k[G] ρ.asModule
+  .of_surjective ρ.asModuleEquiv.toLinearMap ρ.asModuleEquiv.surjective
+
+variable {ρ} {σ}
 
 open Function IntertwiningMap
 
@@ -65,12 +75,6 @@ theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
 instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ sub_eq_zero.mp <| (bijective_or_eq_zero _).resolve_left
     fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
-
-variable (ρ) in
-include ρ in
-theorem finiteDimensional [Finite G] : FiniteDimensional k V :=
-  have := Module.Finite.trans (R := k) k[G] ρ.asModule
-  .of_surjective ρ.asModuleEquiv.toLinearMap ρ.asModuleEquiv.surjective
 
 variable [FiniteDimensional k V] [IsAlgClosed k]
 
