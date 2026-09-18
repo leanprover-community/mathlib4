@@ -43,8 +43,7 @@ characteristic zero.
 
 ## References
 
-* [Erlang Surya and Lutz Warnke, *Lagrange Inversion Formula by
-  Induction*][surya_warnke_2023]
+* [Erlang Surya and Lutz Warnke, *Lagrange Inversion Formula by Induction*][surya_warnke_2023]
 -/
 
 @[expose] public section
@@ -52,7 +51,6 @@ characteristic zero.
 namespace PowerSeries
 
 open Finset
-open scoped PowerSeries
 
 section CommRing
 
