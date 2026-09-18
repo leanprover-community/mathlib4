@@ -111,13 +111,9 @@ private theorem c1_eq_c0_mul_rot (m : ℕ) : c1 m = c0 m * rot m := by
 
 private theorem c0_mul_rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
     c0 m * (rot m) ^ k * c0 m = (rot m) ^ (-k) := by
-  calc
-    c0 m * (rot m) ^ k * c0 m
-        = c0 m * (rot m) ^ k * (c0 m)⁻¹ := by simp
-    _ = (c0 m * rot m * (c0 m)⁻¹) ^ k := by
-          simpa using (conj_zpow (a := c0 m) (b := rot m) (i := k)).symm
-    _ = ((rot m)⁻¹) ^ k := by simp
-    _ = (rot m) ^ (-k) := by simp
+  have h := (conj_zpow (a := c0 m) (b := rot m) (i := k)).symm
+  rw [c0_inv, c0_mul_rot_mul_c0] at h
+  simpa using h
 
 private theorem rot_zpow_mul_c0 (m : ℕ) (k : ℤ) :
     (rot m) ^ k * c0 m = c0 m * (rot m) ^ (-k) := by
