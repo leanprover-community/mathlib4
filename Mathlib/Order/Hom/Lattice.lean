@@ -258,6 +258,15 @@ theorem cancel_left {g : SupHom β γ} {f₁ f₂ : SupHom α β} (hg : Injectiv
 
 end Sup
 
+@[to_dual (attr := simps)]
+def _root_.OrderIso.supHomCongr {α β γ δ : Type*} [SemilatticeSup α]
+    [SemilatticeSup β] [SemilatticeSup γ] [SemilatticeSup δ] (e : α ≃o γ) (e' : β ≃o δ) :
+    SupHom α β ≃ SupHom γ δ where
+  toFun f := (e' : SupHom β δ).comp (f.comp e.symm)
+  invFun f := (e'.symm : SupHom δ β).comp (f.comp e)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 variable (α) [SemilatticeSup β]
 
 /-- The constant function as a `SupHom`. -/
@@ -463,6 +472,14 @@ theorem cancel_left {g : LatticeHom β γ} {f₁ f₂ : LatticeHom α β} (hg : 
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => LatticeHom.ext fun a => hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
     congr_arg _⟩
+
+@[simps]
+def _root_.OrderIso.latticeHomCongr (e : α ≃o γ) (e' : β ≃o δ) :
+    LatticeHom α β ≃ LatticeHom γ δ where
+  toFun f := (e' : LatticeHom β δ).comp (f.comp e.symm)
+  invFun f := (e'.symm : LatticeHom δ β).comp (f.comp e)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 /-- `Subtype.val` as a `LatticeHom`. -/
 @[to_dual self (reorder := 4 5)]
