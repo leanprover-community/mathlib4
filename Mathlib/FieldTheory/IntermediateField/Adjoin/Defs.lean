@@ -291,6 +291,18 @@ theorem map_iInf {ι : Sort*} [Nonempty ι] (f : E →ₐ[F] K) (s : ι → Inte
   apply SetLike.coe_injective
   simpa using (Set.injOn_of_injective f.injective).image_iInter_eq (s := SetLike.coe ∘ s)
 
+theorem comap_inf (s t : IntermediateField F K) (f : E →ₐ[F] K) :
+    (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
+  (gc_map_comap f).u_inf
+
+theorem comap_iInf {ι : Sort*} (f : E →ₐ[F] K) (s : ι → IntermediateField F K) :
+    (iInf s).comap f = ⨅ i, (s i).comap f :=
+  (gc_map_comap f).u_iInf
+
+@[simp]
+theorem comap_top (f : E →ₐ[F] K) : (⊤ : IntermediateField F K).comap f = ⊤ :=
+  (gc_map_comap f).u_top
+
 theorem _root_.AlgHom.fieldRange_eq_map (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
   SetLike.ext' Set.image_univ.symm
@@ -720,6 +732,67 @@ theorem map_comap_eq_self_of_surjective {f : L →ₐ[K] L'} (hf : Function.Surj
 
 theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
   SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+
+section GaloisCoinsertion
+
+variable {ι : Sort*} (f : L →ₐ[K] L')
+
+/-- `map f` and `comap f` form a `GaloisCoinsertion`, since an algebra homomorphism out of a field
+is injective. -/
+def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun S ↦ (comap_map f S).le
+
+theorem comap_surjective : Function.Surjective (comap f) :=
+  (gciMapComap f).u_surjective
+
+theorem comap_inf_map (S T : IntermediateField K L) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
+  (gciMapComap f).u_inf_l _ _
+
+theorem comap_iInf_map (S : ι → IntermediateField K L) : (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
+  (gciMapComap f).u_iInf_l _
+
+theorem comap_sup_map (S T : IntermediateField K L) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
+  (gciMapComap f).u_sup_l _ _
+
+theorem comap_iSup_map (S : ι → IntermediateField K L) : (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
+  (gciMapComap f).u_iSup_l _
+
+theorem map_le_map_iff {S T : IntermediateField K L} : S.map f ≤ T.map f ↔ S ≤ T :=
+  (gciMapComap f).l_le_l_iff
+
+/-- In general `comap` only preserves infima, but it preserves the supremum of two intermediate
+fields lying in the range of `f`. -/
+theorem comap_sup {S T : IntermediateField K L'} (hS : S ≤ f.fieldRange) (hT : T ≤ f.fieldRange) :
+    (S ⊔ T).comap f = S.comap f ⊔ T.comap f := by
+  rw [← map_comap_eq_self hS, ← map_comap_eq_self hT, comap_sup_map, comap_map, comap_map]
+
+/-- In general `comap` only preserves infima, but it preserves the supremum of a family of
+intermediate fields lying in the range of `f`. -/
+theorem comap_iSup {S : ι → IntermediateField K L'} (hS : ∀ i, S i ≤ f.fieldRange) :
+    (⨆ i, S i).comap f = ⨆ i, (S i).comap f := by
+  have h (i : ι) : ((S i).comap f).map f = S i := map_comap_eq_self (hS i)
+  calc (⨆ i, S i).comap f = (⨆ i, ((S i).comap f).map f).comap f := by simp_rw [h]
+    _ = ⨆ i, (S i).comap f := comap_iSup_map f _
+
+end GaloisCoinsertion
+
+section val
+
+variable {S T : IntermediateField K L}
+
+@[simp]
+theorem comap_val_eq_top : T.comap S.val = ⊤ ↔ S ≤ T := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ eq_top_iff.mpr fun z _ ↦ mem_comap.mpr (h z.2)⟩
+  exact mem_comap.mp (h ▸ mem_top (x := (⟨x, hx⟩ : S)))
+
+@[simp]
+theorem comap_val_self (S : IntermediateField K L) : S.comap S.val = ⊤ :=
+  comap_val_eq_top.mpr le_rfl
+
+theorem map_comap_val : (T.comap S.val).map S.val = S ⊓ T := by
+  rw [map_comap_eq, fieldRange_val, inf_comm]
+
+end val
 
 end IntermediateField
 
