@@ -6,10 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Linear.FunctorCategory
-public import Mathlib.CategoryTheory.Sites.Sheaf
-public import Mathlib.CategoryTheory.Sites.LeftExact
+public import Mathlib.CategoryTheory.Sites.Preadditive
 
 /-!
 # Linear categories of sheaves and linear sheafification
@@ -19,15 +17,10 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
 
 universe u
 
-open CategoryTheory
-
 namespace CategoryTheory
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
     [Preadditive A]
-
-instance [HasSheafify J A] [Limits.HasBinaryProducts A] : (presheafToSheaf J A).Additive :=
-  Functor.additive_of_preserves_binary_products _
 
 variable (R : Type u) [Ring R]
 
@@ -40,9 +33,6 @@ instance [Linear R A] [HasWeakSheafify J A] :
       (sheafToPresheaf J A).map_smul r ((presheafToSheaf J A).map f)]
     apply sheafify_hom_ext _ _ _
       ((presheafToSheaf J A).obj Q).property
-    rw [← toSheafify_naturality]
-    rw [Linear.comp_smul]
-    rw [← toSheafify_naturality]
-    rw [← Linear.smul_comp]
+    rw [← toSheafify_naturality, Linear.comp_smul, ← toSheafify_naturality, ← Linear.smul_comp]
 
 end CategoryTheory
