@@ -229,7 +229,7 @@ theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
-theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
+theorem NatTrans.rightDerived_comp' {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
     (α : F ⟶ G) (β : G ⟶ H) (n : ℕ) :
     NatTrans.rightDerived (α ≫ β) n = NatTrans.rightDerived α n ≫ NatTrans.rightDerived β n := by
   simp [NatTrans.rightDerived]
