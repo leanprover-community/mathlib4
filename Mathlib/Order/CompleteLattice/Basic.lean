@@ -363,7 +363,7 @@ theorem iSup₂_eq_bot {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j = ⊥ ↔ �
 theorem iSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
   le_antisymm (iSup_le fun _ => le_rfl) (le_iSup _ _)
 
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem iSup_neg {p : Prop} {f : p → α} (hp : ¬p) : ⨆ h : p, f h = ⊥ :=
   le_antisymm (iSup_le fun h => (hp h).elim) bot_le
 
