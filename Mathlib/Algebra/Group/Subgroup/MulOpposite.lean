@@ -21,11 +21,11 @@ subgroup, subgroups
 
 variable {G : Type*}
 
+namespace Subgroup
+
 section Group
 
 variable [Group G]
-
-namespace Subgroup
 
 /-- Pull a subgroup back to an opposite subgroup along `MulOpposite.unop` -/
 @[to_additive (attr := simps)
@@ -143,15 +143,11 @@ def mopMulEquivOp (S : Subgroup G) : Sᵐᵒᵖ ≃* S.op where
   toEquiv := (MulOpposite.opEquiv : S ≃ Sᵐᵒᵖ).symm.trans S.equivOp
   map_mul' _ _ := rfl
 
-end Subgroup
-
 end Group
 
 section CommGroup
 
 variable [CommGroup G]
-
-namespace Subgroup
 
 /-- Bijection between a subgroup `S` and its opposite as a monoid equivalence. -/
 @[to_additive (attr := simps!)
@@ -160,6 +156,6 @@ def mulEquivOp (S : Subgroup G) : S ≃* S.op where
   toEquiv := S.equivOp
   map_mul' x y := by ext; simp [MulOpposite.op_mul, mul_comm]
 
-end Subgroup
-
 end CommGroup
+
+end Subgroup
