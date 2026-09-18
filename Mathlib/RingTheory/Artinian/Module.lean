@@ -5,10 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-import Mathlib.Algebra.Group.Units.Opposite
+public import Mathlib.Algebra.Group.Units.Opposite
 import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Data.SetLike.Fintype
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.RingTheory.Artinian.Defs
 import Mathlib.RingTheory.Ideal.Prod

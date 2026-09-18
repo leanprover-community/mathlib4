@@ -7,7 +7,7 @@ module
 
 import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!

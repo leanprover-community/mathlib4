@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Bilinear
+public import Mathlib.RingTheory.Finiteness.Bilinear
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 

@@ -9,8 +9,8 @@ import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Basic.Unique
-import Mathlib.Tactic.Conv
-import Batteries.Tactic.SeqFocus
+public import Mathlib.Tactic.Conv
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Groups with an adjoined zero element

@@ -9,9 +9,9 @@ public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public meta import Mathlib.Lean.Meta.KAbstractPositions
 public meta import Lean.Server.FileWorker.RequestHandling
-import Lean.Widget.InteractiveGoal
+public import Lean.Widget.InteractiveGoal
 public meta import Mathlib.Lean.GoalsLocation
-import ProofWidgets.Component.OfRpcMethod
+public import ProofWidgets.Component.OfRpcMethod
 
 /-!
 # Point & click suggestions

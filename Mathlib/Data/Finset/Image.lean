@@ -11,7 +11,7 @@ public import Mathlib.Data.Finset.Disjoint
 public import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finset.Range
-import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.Data.Finset.Lattice.Lemmas
 public import Mathlib.Data.Finset.SDiff
 public import Mathlib.Data.Fintype.Defs
 

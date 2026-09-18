@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Field.NegOnePow
 public import Mathlib.Algebra.Field.Periodic
 public import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!

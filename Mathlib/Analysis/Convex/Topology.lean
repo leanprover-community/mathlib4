@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
-import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
+public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.Topology.Algebra.Affine
 

@@ -5,7 +5,7 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
+public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
 import Mathlib.RingTheory.Spectrum.Prime.Basic

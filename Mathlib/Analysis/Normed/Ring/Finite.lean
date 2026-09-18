@@ -7,7 +7,7 @@ module
 
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Analysis.Normed.Ring.Basic
 
 

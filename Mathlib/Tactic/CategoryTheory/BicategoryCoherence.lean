@@ -6,7 +6,7 @@ Authors: Yuma Mizuno
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Free
-import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # A `coherence` tactic for bicategories

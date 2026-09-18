@@ -5,7 +5,7 @@ Authors: Kim Morrison, Mario Carneiro
 -/
 module
 
-import Mathlib.Data.Finset.Attr
+public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.NormNum
 public meta import Mathlib.Tactic.Simps
 

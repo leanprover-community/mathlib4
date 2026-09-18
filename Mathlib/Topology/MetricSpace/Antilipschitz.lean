@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Topology.UniformSpace.CompleteSeparated
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded

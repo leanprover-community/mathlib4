@@ -6,11 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Support of a function in an order

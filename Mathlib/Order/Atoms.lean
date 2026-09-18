@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Tactic.Nontriviality.Core

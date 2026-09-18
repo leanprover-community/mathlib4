@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
 
 /-!

@@ -7,7 +7,7 @@ module
 
 import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.OpenCover
-public import Mathlib.Topology.LocallyClosed
+import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!

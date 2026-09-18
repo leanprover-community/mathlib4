@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Group.ContinuousDiv
 import Mathlib.Topology.Algebra.Group.Subgroup
-import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Pointwise operations on sets in topological groups

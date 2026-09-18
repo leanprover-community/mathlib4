@@ -5,12 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.GDelta.Basic
 

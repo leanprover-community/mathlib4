@@ -10,7 +10,7 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.Filter.Curry
+public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.WithTopology

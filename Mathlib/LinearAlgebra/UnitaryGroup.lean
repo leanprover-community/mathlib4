@@ -6,7 +6,7 @@ Authors: Shing Tak Lam
 module
 
 public import Mathlib.Algebra.Star.Unitary
-import Mathlib.Data.Matrix.Reflection
+public import Mathlib.Data.Matrix.Reflection
 import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse

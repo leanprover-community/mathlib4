@@ -6,7 +6,7 @@ Authors: Anatole Dedecker, Eric Wieser, Yuyang Zhao
 module
 
 import Mathlib.Algebra.Algebra.TransferInstance
-import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Analysis.Analytic.ChangeOrigin
 public import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Nat.Choose.Cast

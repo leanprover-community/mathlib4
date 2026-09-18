@@ -10,7 +10,7 @@ public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Matrices and linear equivalences

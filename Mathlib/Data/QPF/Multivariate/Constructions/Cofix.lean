@@ -9,7 +9,7 @@ import Mathlib.Control.Functor.Multivariate
 import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.QPF.Multivariate.Basic
-import Lean.Elab.Tactic.RCases
+public import Lean.Elab.Tactic.RCases
 
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.

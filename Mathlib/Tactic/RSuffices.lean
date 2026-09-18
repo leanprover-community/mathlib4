@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `rsuffices` tactic

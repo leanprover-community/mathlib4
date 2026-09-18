@@ -7,7 +7,7 @@ module
 
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Setoid.Basic
-import Mathlib.Dynamics.FixedPoints.Topology
+public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!

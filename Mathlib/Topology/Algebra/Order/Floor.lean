@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Order.Filter.AtTopBot.Floor
+public import Mathlib.Order.Filter.AtTopBot.Floor
 public import Mathlib.Topology.Algebra.Order.Group
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 public import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 

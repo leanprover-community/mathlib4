@@ -6,7 +6,7 @@ Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Squarefree.Basic
 
 /-!

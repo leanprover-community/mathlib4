@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Topology.Algebra.AffineSubspace
 public import Mathlib.Topology.Algebra.Module.FiniteDimension

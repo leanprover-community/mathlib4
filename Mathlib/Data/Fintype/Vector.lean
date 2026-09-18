@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Basic.Finite.Prod
-public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Basic.Finite.Prod
+import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Sym.Basic
 
 /-!

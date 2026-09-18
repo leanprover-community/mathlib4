@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
-import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # The type `List.Vector`

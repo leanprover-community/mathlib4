@@ -13,7 +13,7 @@ public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation
-import Lean.Elab.ConfigEval
+public import Lean.Elab.ConfigEval
 
 /-!
 # The `push` and `pull` tactics

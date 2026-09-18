@@ -12,7 +12,7 @@ import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Int.CharZero
 
 import Mathlib.Algebra.Ring.Hom.InjSurj

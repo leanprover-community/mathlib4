@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.List.MinMax
+public import Mathlib.Data.List.MinMax
 public import Mathlib.Data.Nat.Order.Lemmas
 public import Mathlib.Logic.Encodable.Basic
 

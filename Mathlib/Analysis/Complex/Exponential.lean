@@ -6,7 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Order.CauSeq.BigOperators
+public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Complex.Norm
 import Mathlib.Basic.Complex.BigOperators

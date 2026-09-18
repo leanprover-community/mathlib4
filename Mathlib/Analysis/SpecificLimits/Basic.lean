@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Topology.Algebra.InfiniteSum.Real

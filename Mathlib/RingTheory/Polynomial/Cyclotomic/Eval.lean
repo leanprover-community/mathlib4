@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.Tactic.ByContra
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 public import Mathlib.Analysis.Complex.Arg
 
 /-!

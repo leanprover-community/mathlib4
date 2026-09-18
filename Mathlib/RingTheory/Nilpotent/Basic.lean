@@ -9,7 +9,7 @@ public import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.FiniteSupport.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Nilpotent.Defs

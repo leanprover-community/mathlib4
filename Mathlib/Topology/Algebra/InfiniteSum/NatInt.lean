@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Logic.Encodable.Lattice
+public import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 

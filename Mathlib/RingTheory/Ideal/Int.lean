@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
+import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!

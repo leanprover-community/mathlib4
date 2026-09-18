@@ -5,10 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-import Mathlib.Basic.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fintype
+public import Mathlib.Logic.Equiv.Fintype
 
 /-!
 # Permutations on `Fintype`s

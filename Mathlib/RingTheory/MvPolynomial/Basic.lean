@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.MvPolynomial.Degrees
-import Mathlib.Data.DFinsupp.Small
+public import Mathlib.Data.DFinsupp.Small
 import Mathlib.Data.Fintype.Pi
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic

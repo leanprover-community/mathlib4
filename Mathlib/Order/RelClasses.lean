@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!

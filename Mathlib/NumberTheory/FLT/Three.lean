@@ -8,7 +8,7 @@ module
 
 public import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 /-!

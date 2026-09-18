@@ -8,7 +8,7 @@ module
 public import Mathlib.Tactic.TautoSet
 import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Separation.Basic
-import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.LocallyClosed
 
 /-!
 # Discrete subsets of topological spaces

@@ -7,7 +7,7 @@ module
 
 import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded

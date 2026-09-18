@@ -15,9 +15,9 @@ public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Combinatorics.Enumerative.Stirling
 import Mathlib.Data.List.TFAE
-import Mathlib.Data.Nat.Choose.Bounds
+public import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Order.Filter.AtTopBot.ModEq
+public import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.Tactic.NoncommRing
 
 /-!

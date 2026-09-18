@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 import Mathlib.CategoryTheory.Adjunction.Opposites
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-!

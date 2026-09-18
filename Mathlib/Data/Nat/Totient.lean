@@ -8,7 +8,7 @@ module
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.CharP.Two
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.Data.Nat.Factorization.Basic

@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Mario Carneiro
 module
 
 import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval

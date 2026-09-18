@@ -8,7 +8,7 @@ module
 import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
-import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Hom.ContinuousEvalConst
 import Mathlib.Topology.Algebra.InfiniteSum.Basic

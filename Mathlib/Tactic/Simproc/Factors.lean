@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Tactic.NormNum.Prime
-import Batteries.Lean.Expr
+public import Batteries.Lean.Expr
 
 /-!
 # `simproc` for `Nat.primeFactorsList`

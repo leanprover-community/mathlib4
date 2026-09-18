@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.List.Dedup
+public import Mathlib.Data.List.Dedup
 public import Mathlib.Data.List.Flatten
 public import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm.Basic

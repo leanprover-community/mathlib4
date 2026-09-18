@@ -6,7 +6,7 @@ Authors: Gabriel Ebner
 module
 
 public meta import Lean.Elab.Tactic.ElabTerm
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # The `rename'` tactic

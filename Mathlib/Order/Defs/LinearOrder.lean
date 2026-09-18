@@ -8,11 +8,11 @@ module
 public import Batteries.Classes.Order
 import Batteries.Tactic.Trans
 public import Mathlib.Data.Ordering.Basic
-import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Order.Defs.PartialOrder
-import Batteries.Tactic.Init
+public import Batteries.Tactic.Init
 
 /-!
 # Orders

@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Bornology.Real
 public import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Order.MonotoneContinuity
+public import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.UniformSpace.Real
 

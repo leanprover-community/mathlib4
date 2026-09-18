@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators

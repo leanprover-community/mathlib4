@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.Group.ULift
+public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Data.DFinsupp.Defs
 
 /-!

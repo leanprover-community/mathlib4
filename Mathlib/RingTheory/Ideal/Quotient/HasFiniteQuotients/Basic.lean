@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.Data.ZMod.QuotientRing
+public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal

@@ -7,7 +7,7 @@ module
 
 import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set

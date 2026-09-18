@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod

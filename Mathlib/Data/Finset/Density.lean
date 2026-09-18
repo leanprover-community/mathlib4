@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Basic
 
 /-!

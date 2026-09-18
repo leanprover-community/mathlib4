@@ -6,7 +6,7 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 module
 
 public import Mathlib.Algebra.Notation.Defs
-import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Logic.Function.Defs
 import Batteries.Tactic.Alias
 

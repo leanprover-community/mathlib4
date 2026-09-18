@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Matrix.Block
 import Mathlib.LinearAlgebra.Basis.Basic

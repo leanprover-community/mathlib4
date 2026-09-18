@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
 import Mathlib.Tactic.FastInstance
 import Mathlib.LinearAlgebra.Finsupp.LSum
-import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Nat
 
 
 /-!

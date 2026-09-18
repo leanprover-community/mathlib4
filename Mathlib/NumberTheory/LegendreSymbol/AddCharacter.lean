@@ -8,7 +8,7 @@ module
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.Algebra.Group.AddChar
-import Mathlib.Data.ZMod.Units
+public import Mathlib.Data.ZMod.Units
 
 /-!
 # Additive characters of finite rings and fields

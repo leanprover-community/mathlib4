@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit

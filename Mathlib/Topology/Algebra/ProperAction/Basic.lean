@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Proper group action

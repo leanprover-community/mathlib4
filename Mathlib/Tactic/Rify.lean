@@ -6,7 +6,7 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 module
 
 public import Mathlib.Basic.Real.Basic
-import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
 public import Mathlib.Tactic.Zify
 

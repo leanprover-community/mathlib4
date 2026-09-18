@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Units of a number field

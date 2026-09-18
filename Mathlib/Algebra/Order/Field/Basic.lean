@@ -6,7 +6,7 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Set.Monotone

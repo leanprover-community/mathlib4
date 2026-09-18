@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Util.Qq
 

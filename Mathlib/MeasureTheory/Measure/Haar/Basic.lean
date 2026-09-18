@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.Topology.Algebra.Group.Compact
+public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
 # Haar measure

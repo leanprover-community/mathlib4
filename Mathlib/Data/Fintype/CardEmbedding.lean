@@ -8,7 +8,7 @@ module
 import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Set.Finite.Range
-import Mathlib.Logic.Equiv.Embedding
+public import Mathlib.Logic.Equiv.Embedding
 
 /-!
 # Number of embeddings

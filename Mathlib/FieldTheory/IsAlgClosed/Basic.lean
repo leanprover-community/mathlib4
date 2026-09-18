@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Perfect

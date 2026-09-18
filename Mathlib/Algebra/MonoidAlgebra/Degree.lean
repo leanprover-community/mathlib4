@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-import Mathlib.Algebra.Group.Subsemigroup.Operations
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Order.Filter.Extr
 

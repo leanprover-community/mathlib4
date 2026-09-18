@@ -5,7 +5,7 @@ Authors: Kim Morrison, Newell Jensen
 -/
 module
 
-import Mathlib.Init
+public import Mathlib.Init
 public meta import Lean.Elab.SyntheticMVars
 public meta import Lean.Meta.Tactic.Constructor
 

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Int.Basic
 
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group

@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public meta import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.Alias
+public import Batteries.Tactic.Alias
 import Lean.Exception
 public import Mathlib.Tactic.Core
 

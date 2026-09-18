@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Basic.Real.Basic
-import Mathlib.Order.Interval.Set.Disjoint
+public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Data.Int.LeastGreatest

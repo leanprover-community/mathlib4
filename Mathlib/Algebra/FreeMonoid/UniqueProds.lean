@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Free monoids have unique products

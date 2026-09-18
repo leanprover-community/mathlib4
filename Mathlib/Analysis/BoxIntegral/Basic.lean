@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Partition.Filter
 public import Mathlib.Analysis.BoxIntegral.Partition.Measure
-import Mathlib.Analysis.Oscillation
+public import Mathlib.Analysis.Oscillation
 import Mathlib.Data.Bool.Basic
 public import Mathlib.MeasureTheory.Measure.Real
 import Mathlib.Topology.UniformSpace.Compact

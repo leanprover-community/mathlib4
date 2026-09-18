@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 module
 
-import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension

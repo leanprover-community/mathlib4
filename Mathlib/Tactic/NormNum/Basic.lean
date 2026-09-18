@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Nat.Cast.Commute
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
 

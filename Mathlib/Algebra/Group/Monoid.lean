@@ -9,7 +9,7 @@ public import Batteries.Logic
 public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.Nat.Notation
-import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Monoids

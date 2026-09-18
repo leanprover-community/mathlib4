@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Complex.Exponential
-import Mathlib.Topology.MetricSpace.CauSeqFilter
+public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
 # Calculus results on exponential in a Banach algebra

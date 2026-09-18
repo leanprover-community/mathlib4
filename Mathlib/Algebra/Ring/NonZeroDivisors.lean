@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Ring.Basic
 

@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Rat.Encodable
-import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.UniformSpace.Real
 

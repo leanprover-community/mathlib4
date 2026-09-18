@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-import Mathlib.Data.Finset.Order
+public import Mathlib.Data.Finset.Order
 import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.Finite

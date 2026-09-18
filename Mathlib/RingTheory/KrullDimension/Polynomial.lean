@@ -6,9 +6,9 @@ Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 module
 
 import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.KrullDimension.PID
+public import Mathlib.RingTheory.KrullDimension.PID
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!

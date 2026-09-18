@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.StarRingHom

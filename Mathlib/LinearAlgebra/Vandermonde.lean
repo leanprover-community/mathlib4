@@ -10,8 +10,8 @@ public import Mathlib.Data.Nat.Factorial.SuperFactorial
 public import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # Vandermonde matrix
