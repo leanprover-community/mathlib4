@@ -225,3 +225,46 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 /-- info: Message: 'error: the PR subject `A new lemma` should be lowercased' -/
 #guard_msgs in
 #check_title "feat(ModuleForm): A new lemma"
+
+section prTitle
+
+open Std.Internal.Parsec String
+
+-- Tests for the title parser.
+
+/-- info: Except.ok ("feat", some "x", "") -/
+#guard_msgs in
+#eval Parser.run prTitle "feat(x):"
+/-- info: Except.ok ("feat", some "x", "") -/
+#guard_msgs in
+#eval Parser.run prTitle "feat(x): "
+
+/-- info: Except.ok ("feat", some "x", "foo") -/
+#guard_msgs in
+#eval Parser.run prTitle "feat(x): foo"
+/-- info: Except.ok ("feat", none, "foo") -/
+#guard_msgs in
+#eval Parser.run prTitle "feat: foo"
+/-- info: Except.error "offset 10: expected: ):" -/
+#guard_msgs in
+#eval Parser.run prTitle "feat(: foo"
+/-- info: Except.error "offset 4: expected: :" -/
+#guard_msgs in
+#eval Parser.run prTitle "feat): foo"
+/-- info: Except.error "offset 4: expected: :" -/
+#guard_msgs in
+#eval Parser.run prTitle "feat)(: foo"
+/-- info: Except.error "offset 4: expected: :" -/
+#guard_msgs in
+#eval Parser.run prTitle "feat)(sdf): foo"
+/-- info: Except.ok ("feat", some "sdf", "foo:") -/
+#guard_msgs in
+#eval Parser.run prTitle "feat(sdf): foo:"
+/-- info: Except.error "offset 4: expected: :" -/
+#guard_msgs in
+#eval Parser.run prTitle "feat foo"
+/-- info: Except.ok ("chore", none, "test") -/
+#guard_msgs in
+#eval Parser.run prTitle "chore: test"
+
+end prTitle

@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 
 module
 
+public import Std.Internal.Parsec.String
 import Mathlib.Init
 import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 
@@ -22,7 +23,7 @@ open Std.Internal.Parsec String
 
 /-- Basic parser for PR titles: given a title `kind(scope): main title` or `kind: title`,
 extracts the `kind`, `scope` and `main title` components. -/
-def prTitle : Parser (String × Option String × String) := do
+public def prTitle : Parser (String × Option String × String) := do
   let kind ←
     ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"].firstM pstring
   let scope ← (
@@ -32,43 +33,6 @@ def prTitle : Parser (String × Option String × String) := do
     )
   let mainTitle ← manyChars any
   return (kind, scope, mainTitle)
-
--- Some self-tests for the parser.
-
-/-- info: Except.ok ("feat", some "x", "") -/
-#guard_msgs in
-#eval Parser.run prTitle "feat(x):"
-/-- info: Except.ok ("feat", some "x", "") -/
-#guard_msgs in
-#eval Parser.run prTitle "feat(x): "
-
-/-- info: Except.ok ("feat", some "x", "foo") -/
-#guard_msgs in
-#eval Parser.run prTitle "feat(x): foo"
-/-- info: Except.ok ("feat", none, "foo") -/
-#guard_msgs in
-#eval Parser.run prTitle "feat: foo"
-/-- info: Except.error "offset 10: expected: ):" -/
-#guard_msgs in
-#eval Parser.run prTitle "feat(: foo"
-/-- info: Except.error "offset 4: expected: :" -/
-#guard_msgs in
-#eval Parser.run prTitle "feat): foo"
-/-- info: Except.error "offset 4: expected: :" -/
-#guard_msgs in
-#eval Parser.run prTitle "feat)(: foo"
-/-- info: Except.error "offset 4: expected: :" -/
-#guard_msgs in
-#eval Parser.run prTitle "feat)(sdf): foo"
-/-- info: Except.ok ("feat", some "sdf", "foo:") -/
-#guard_msgs in
-#eval Parser.run prTitle "feat(sdf): foo:"
-/-- info: Except.error "offset 4: expected: :" -/
-#guard_msgs in
-#eval Parser.run prTitle "feat foo"
-/-- info: Except.ok ("chore", none, "test") -/
-#guard_msgs in
-#eval Parser.run prTitle "chore: test"
 
 /--
 Check if `word` looks like an abbreviation, like `JSON` or `E2` or `W3C`.
