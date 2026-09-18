@@ -1036,6 +1036,11 @@ def prodComm [Module R E₂] : E × E₂ ≃ₗᵢ[R] E₂ × E :=
 theorem symm_prodComm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E₂ E :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm [Module R M₂] :
+    (prodComm R E E₂).trans (prodComm R E₂ E) = .refl _ _ := by
+  ext <;> simp
+
 variable (E₃)
 
 /-- The natural equivalence `(E × E₂) × E₃ ≃ E × (E₂ × E₃)` is a linear isometry. -/

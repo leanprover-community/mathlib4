@@ -522,6 +522,10 @@ theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
 theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
 
+@[to_additive (attr := simp) prodComm_trans_prodComm]
+theorem prodComm_trans_prodComm : (prodComm : M × N ≃* N × M).trans prodComm = .refl _ := by
+  ext <;> simp
+
 variable [MulOneClass P]
 
 /-- The equivalence between `(M × N) × P` and `M × (N × P)` is multiplicative. -/
