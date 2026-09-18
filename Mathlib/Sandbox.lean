@@ -1,12 +1,14 @@
 module
 
 public import Mathlib.NumberTheory.NumberField.QuadraticField.Basic
+public import Mathlib.Algebra.QuadraticAlgebra.Int
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.DualNumber
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 
 /-!
 # Sandbox: splitting of primes in quadratic fields
@@ -17,6 +19,10 @@ Guiding idea: the fibre at `n` is itself a quadratic algebra, so the inert crite
 `isField_iff_not_isSquare_discr` over `ZMod p`, with no `Polynomial` and no Kummer-Dedekind.
 
 `QuadraticAlgebra.adjoin_omega_eq_top` is already in master.
+
+TODO: the namespaces here are inconsistent, some declarations are inside a `namespace` block,
+others carry the prefix in their name, and a few sit in no namespace at all. Decide on a
+convention and apply it throughout before splitting this file into PRs.
 -/
 
 @[expose] public section
@@ -24,6 +30,169 @@ Guiding idea: the fibre at `n` is itself a quadratic algebra, so the inert crite
 open Ideal
 
 open scoped QuadraticAlgebra
+
+/-! ### A prime divides the discriminant exactly when it ramifies -/
+
+-- TODO: for `Mathlib/NumberTheory/NumberField/Discriminant/Different.lean`, next to
+-- `not_dvd_discr_iff_forall_liesOver`, of which this is the contrapositive in terms of `e`.
+open scoped NumberField Ideal in
+/-- A prime divides the discriminant exactly when some prime above it is ramified. -/
+theorem NumberField.dvd_discr_iff_exists_two_le_ramificationIdx (K 𝒪 : Type*) [Field K]
+    [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K] [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪]
+    [CharZero 𝒪] [Module.Finite ℤ 𝒪] [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
+    p ∣ NumberField.discr K ↔
+      ∃ P : Ideal 𝒪, P.IsMaximal ∧ P.LiesOver (span {p}) ∧ 2 ≤ P.ramificationIdx ℤ := by
+  rw [← not_iff_not, NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
+  simp only [not_exists, not_and, not_le, Order.lt_two_iff]
+  exact forall₃_congr fun P _ _ ↦ by grind [ramificationIdx_eq_one_iff, ramificationIdx_pos]
+
+/-! ### Bounding `e`, `f` and `g` by the rank
+
+`Ideal.ramificationIdx_le_finrank`, `Ideal.inertiaDeg_le_finrank` and
+`Ideal.card_primesOverFinset_le_finrank` are deprecated in favour of
+`Mathlib/RingTheory/RamificationInertia/Basic.lean`, which however has no replacement for them.
+All three follow from `Ideal.sum_ramification_inertia_eq_finrank` as the deprecated ones follow
+from `Ideal.sum_ramification_inertia`.
+-/
+
+namespace Ideal
+
+variable {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S]
+  [IsDomain R] [Module.Finite R S] [Module.Flat R S] [Finite (p.primesOver S)]
+
+theorem inertiaDeg_le_finrank' (P : p.primesOver S) :
+    P.1.inertiaDeg R ≤ Module.finrank R S := by
+  have : Fintype (p.primesOver S) := Fintype.ofFinite (p.primesOver S)
+  rw [← sum_ramification_inertia_eq_finrank p S, ← Finset.add_sum_erase _ _ (Finset.mem_univ P)]
+  exact le_trans (Nat.le_mul_of_pos_left _ (ramificationIdx_pos P.1 R)) (Nat.le_add_right _ _)
+
+theorem ramificationIdx_le_finrank' (P : p.primesOver S) :
+    P.1.ramificationIdx R ≤ Module.finrank R S := by
+  have : Fintype (p.primesOver S) := Fintype.ofFinite (p.primesOver S)
+  rw [← sum_ramification_inertia_eq_finrank p S, ← Finset.add_sum_erase _ _ (Finset.mem_univ P)]
+  exact le_trans (Nat.le_mul_of_pos_right _ (inertiaDeg_pos P.1 R)) (Nat.le_add_right _ _)
+
+/-- The number of primes above `p` is at most the rank. -/
+theorem ncard_primesOver_le_finrank' : (p.primesOver S).ncard ≤ Module.finrank R S := by
+  have : Fintype (p.primesOver S) := Fintype.ofFinite (p.primesOver S)
+  rw [← sum_ramification_inertia_eq_finrank p S, ← Set.fintypeCard_eq_ncard,
+    Fintype.card_eq_sum_ones]
+  exact Finset.sum_le_sum fun P _ ↦ one_le_mul (ramificationIdx_pos P.1 R) (inertiaDeg_pos P.1 R)
+
+end Ideal
+
+/-! ### Transfer of `IsDedekindDomain` along a ring isomorphism
+
+Mathlib has the transfer for each of the four constituents, but not for the conjunction.
+-/
+
+-- TODO: for `Mathlib/RingTheory/DedekindDomain/Basic.lean`, next to
+-- `Ring.DimensionLEOne.of_ringEquiv`. An `IsDedekindRing` version belongs there too.
+/-- A ring isomorphic to a Dedekind domain is a Dedekind domain. -/
+theorem IsDedekindDomain.of_ringEquiv {R S : Type*} [CommRing R] [CommRing S] [IsDedekindDomain S]
+    (e : R ≃+* S) : IsDedekindDomain R := by
+  have : IsDomain R := e.toMulEquiv.isDomain S
+  have : IsNoetherianRing R := isNoetherianRing_of_ringEquiv S e.symm
+  have : Ring.DimensionLEOne R := .of_ringEquiv e
+  have : IsIntegrallyClosed R := .of_equiv e.symm
+  have : IsDedekindRing R := ⟨⟩
+  exact ⟨⟩
+
+/-! ### Base change for `Module.length`
+
+`Mathlib/RingTheory/Length.lean` has `LinearEquiv.length_eq` over one ring and
+`Module.length_eq_of_surjective` for one module over two rings, but nothing carrying a length
+along a ring isomorphism.
+-/
+
+-- TODO: for `Mathlib/RingTheory/Length.lean`, replacing `LinearEquiv.length_eq`, of which this
+-- is the semilinear generalisation, with the same proof.
+theorem LinearEquiv.length_eq' {A B M N : Type*} [Ring A] [Ring B]
+    [AddCommGroup M] [Module A M] [AddCommGroup N] [Module B N] {σ : A →+* B} {σ' : B →+* A}
+    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (e : M ≃ₛₗ[σ] N) :
+    Module.length A M = Module.length B N := by
+  apply WithBot.coe_injective
+  rw [Module.coe_length, Module.coe_length,
+    Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
+
+-- TODO: for `Mathlib/RingTheory/Length.lean`, modelled on `Algebra.finrank_eq_of_equiv_equiv`.
+/-- If `M / A` and `M' / A'` are algebras, `i : A ≃+* A'` and `j : M ≃+* M'` are ring isomorphisms
+such that `A → A' → M'` and `A → M → M'` commute, then the lengths of `M / A` and `M' / A'`
+agree. -/
+theorem Module.length_eq_of_equiv_equiv {A M A' M' : Type*} [CommRing A] [CommRing M] [Algebra A M]
+    [CommRing A'] [CommRing M'] [Algebra A' M'] (i : A ≃+* A') (j : M ≃+* M')
+    (hc : (algebraMap A' M').comp i.toRingHom = j.toRingHom.comp (algebraMap A M)) :
+    Module.length A M = Module.length A' M' := by
+  have := RingHomInvPair.of_ringEquiv i
+  have := RingHomInvPair.symm (i : A →+* A') (i.symm : A' →+* A)
+  refine LinearEquiv.length_eq' (σ := (i : A →+* A')) (σ' := (i.symm : A' →+* A))
+    { j with map_smul' a x := ?_ }
+  have h : algebraMap A' M' (i a) = j (algebraMap A M a) := RingHom.congr_fun hc a
+  change j (a • x) = i a • j x
+  rw [Algebra.smul_def, map_mul, Algebra.smul_def, h]
+
+/-! ### Transfer of `inertiaDeg` and `ramificationIdx` along an algebra isomorphism
+
+The primed versions of these exist (`Ideal.inertiaDeg'_comap_eq` and friends) but are deprecated,
+and the unprimed definitions have no such transfer lemma yet.
+-/
+
+namespace Ideal
+
+section
+
+variable {R S : Type*} [CommRing R] [CommRing S]
+
+theorem map_isPrime_iff {I : Ideal R} (e : R ≃+* S) : (I.map e).IsPrime ↔ I.IsPrime := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ map_isPrime_of_equiv e⟩
+  rw [← map_comap_eq_self_of_equiv e.symm I, comap_symm]
+  exact map_isPrime_of_equiv _
+
+theorem comap_isPrime_iff {I : Ideal S} (e : R ≃+* S) : (I.comap e).IsPrime ↔ I.IsPrime := by
+  rw [← map_isPrime_iff e, map_comap_eq_self_of_equiv]
+
+end
+
+variable {R S S₁ : Type*} [CommRing R] [CommRing S] [CommRing S₁] [Algebra R S] [Algebra R S₁]
+
+theorem inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
+    (P.comap e).inertiaDeg R = P.inertiaDeg R := by
+  by_cases hP : P.IsPrime
+  · let := Localization.AtPrime.algebraOfLiesOver (under R P) P
+    let := Localization.AtPrime.algebraOfLiesOver (under R P) (comap e P)
+    rw [inertiaDeg_eq (P.under R) (P.comap e), inertiaDeg_eq (P.under R) P]
+    exact (residueFieldAlgEquiv' (P.under R) (P.comap e) P e rfl).toLinearEquiv.finrank_eq
+  · rw [inertiaDeg_of_not_isPrime _ _ hP, inertiaDeg_of_not_isPrime _ _]
+    exact (comap_isPrime_iff e.toRingEquiv).not.mpr hP
+
+theorem inertiaDeg_map_eq (e : S ≃ₐ[R] S₁) (P : Ideal S) :
+    (P.map e).inertiaDeg R = P.inertiaDeg R := by
+  rw [← inertiaDeg_comap_eq e, comap_map_of_bijective _ e.bijective]
+
+theorem ramificationIdx_comap_eq' (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
+    (P.comap e).ramificationIdx R = P.ramificationIdx R := by
+  by_cases hP : P.IsPrime
+  · let := Localization.AtPrime.algebraOfLiesOver (under R P) P
+    let := Localization.AtPrime.algebraOfLiesOver (under R P) (comap e P)
+    let φ := Localization.localRingEquiv (P.comap e) P e rfl
+    rw [ramificationIdx_eq (P.under R) (P.comap e), ramificationIdx_eq (P.under R) P]
+    have : algebraMap R (Localization.AtPrime P) =
+        φ.toRingHom.comp (algebraMap R (Localization.AtPrime (comap e P))) := by
+      ext x
+      simp [φ, Localization.localRingEquiv_apply (P.comap e) P e rfl,
+        IsScalarTower.algebraMap_apply R S (Localization.AtPrime (P.comap e)),
+        ← IsScalarTower.algebraMap_apply R S₁]
+    congr
+    refine Module.length_eq_of_equiv_equiv φ (Ideal.quotientEquiv _ _ φ ?_) rfl
+    simp [map_map, this]
+  · rw [ramificationIdx_of_not_isPrime _ _ hP, ramificationIdx_of_not_isPrime _ _]
+    exact (comap_isPrime_iff e.toRingEquiv).not.mpr hP
+
+theorem ramificationIdx_map_eq' (e : S ≃ₐ[R] S₁) (P : Ideal S) :
+    (P.map e).ramificationIdx R = P.ramificationIdx R := by
+  rw [← ramificationIdx_comap_eq' e, comap_map_of_bijective _ e.bijective]
+
+end Ideal
 
 -- /-- The coercion `R → R ⧸ I` is the quotient map. -/
 -- @[simp]
@@ -135,6 +304,14 @@ end adjoin
 namespace QuadraticAlgebra
 
 variable {a b : ℤ} {p : ℕ} [Fact p.Prime]
+
+-- TODO: for `Mathlib/Algebra/QuadraticAlgebra/Int.lean`, to replace `discr_intCast`, which is
+-- this for `R = ℚ`; its eight call sites should then use this one, and the prime can go.
+/-- The discriminant commutes with the coercion `ℤ → R`. -/
+@[simp, norm_cast]
+theorem discr_intCast' {R : Type*} [CommRing R] (a b : ℤ) :
+    discr (a : R) (b : R) = ((discr a b : ℤ) : R) := by
+  simpa using discr_algebraMap (S := R) a b
 
 -- /-- An element vanishes exactly when both its coordinates do. -/
 -- theorem eq_zero_iff {R : Type*} [CommRing R] {a b : R} (x : QuadraticAlgebra R a b) :
@@ -318,14 +495,14 @@ noncomputable def quotientTwoEquivProd (ha : Even a) (hb : Odd b) :
     ((equivOfEq ha.intCast_zmod_two hb.intCast_zmod_two).trans
       (algEquivProdOfIsUnit (ZMod 2) isUnit_one)).toRingEquiv
 
-open scoped DualNumber in
-/-- Ramified at `2`: the fibre is the dual numbers over `ZMod 2`. -/
-noncomputable def quotientTwoEquivDualNumberOfEven (hb : Even b) :
-    (QuadraticAlgebra ℤ a b ⧸ span {(2 : QuadraticAlgebra ℤ a b)}) ≃+*
-      DualNumber (ZMod 2) :=
-  (quotientSpanEquivZMod a b 2).trans <| ((equivOfEq rfl hb.intCast_zmod_two).trans <|
-    (changeGeneratorEquiv _ _ 1 ↑a (by simp) (by simp [CharTwo.two_eq_zero])).trans
-      (algEquivDualNumber (ZMod 2))).toRingEquiv
+-- open scoped DualNumber in
+-- /-- Ramified at `2`: the fibre is the dual numbers over `ZMod 2`. -/
+-- noncomputable def quotientTwoEquivDualNumberOfEven (hb : Even b) :
+--     (QuadraticAlgebra ℤ a b ⧸ span {(2 : QuadraticAlgebra ℤ a b)}) ≃+*
+--       DualNumber (ZMod 2) :=
+--   (quotientSpanEquivZMod a b 2).trans <| ((equivOfEq rfl hb.intCast_zmod_two).trans <|
+--     (changeGeneratorEquiv _ _ 1 ↑a (by simp) (by simp [CharTwo.two_eq_zero])).trans
+--       (algEquivDualNumber (ZMod 2))).toRingEquiv
 
 /-- Split: the fibre is `ZMod p × ZMod p`. -/
 noncomputable def quotientEquivProd (hp2 : p ≠ 2) {s : ZMod p}
@@ -334,12 +511,12 @@ noncomputable def quotientEquivProd (hp2 : p ≠ 2) {s : ZMod p}
   haveI := ZMod.neZero_two_of_ne_two hp2
   (quotientSpanEquivZMod a b p).trans (algEquivProdOfDiscrSq hd hs).toRingEquiv
 
-/-- Ramified: the fibre is the dual numbers over `ZMod p`. -/
-noncomputable def quotientEquivDualNumber (hp2 : p ≠ 2)
-    (hd : (discr a b : ZMod p) = 0) :
-    (QuadraticAlgebra ℤ a b ⧸ span {(p : QuadraticAlgebra ℤ a b)}) ≃+* DualNumber (ZMod p) :=
-  haveI := ZMod.neZero_two_of_ne_two hp2
-  (quotientSpanEquivZMod a b p).trans (algEquivDualNumberOfDiscrZero hd).toRingEquiv
+-- /-- Ramified: the fibre is the dual numbers over `ZMod p`. -/
+-- noncomputable def quotientEquivDualNumber (hp2 : p ≠ 2)
+--     (hd : (discr a b : ZMod p) = 0) :
+--     (QuadraticAlgebra ℤ a b ⧸ span {(p : QuadraticAlgebra ℤ a b)}) ≃+* DualNumber (ZMod p) :=
+--   haveI := ZMod.neZero_two_of_ne_two hp2
+--   (quotientSpanEquivZMod a b p).trans (algEquivDualNumberOfDiscrZero hd).toRingEquiv
 
 /-! ### What the `e`/`f` layer consumes
 
@@ -404,29 +581,11 @@ A quadratic field is Galois over `ℚ`, so the `…In` forms are available.
 -- prime above `p` into the `…In` form, so that the `Classical.choose` never has to be unfolded
 -- by hand.
 
-theorem Ideal.inertiaDegIn_eq_of_forall {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-    {p : Ideal A} {n : ℕ} [Nonempty (p.primesOver B)]
-    (h : ∀ P : Ideal B, P.IsPrime → P.LiesOver p → P.inertiaDeg A = n) :
-    Ideal.inertiaDegIn p B = n := by
-  obtain ⟨⟨P, hP, hPp⟩⟩ := ‹Nonempty (p.primesOver B)›
-  have hex : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hP, hPp⟩
-  rw [Ideal.inertiaDegIn, dite_eq_left hex]
-  exact h _ hex.choose_spec.1 hex.choose_spec.2
-
-theorem Ideal.ramificationIdxIn_eq_of_forall {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-    {p : Ideal A} {n : ℕ} [Nonempty (p.primesOver B)]
-    (h : ∀ P : Ideal B, P.IsPrime → P.LiesOver p → P.ramificationIdx A = n) :
-    Ideal.ramificationIdxIn p B = n := by
-  obtain ⟨⟨P, hP, hPp⟩⟩ := ‹Nonempty (p.primesOver B)›
-  have hex : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hP, hPp⟩
-  rw [Ideal.ramificationIdxIn, dite_eq_left hex]
-  exact h _ hex.choose_spec.1 hex.choose_spec.2
-
 namespace NumberField.QuadraticField
 
 open scoped QuadraticAlgebra
 
-variable (K : Type*) [Field K] [CharZero K] [Algebra.IsQuadraticExtension ℚ K]
+variable (K : Type*) [Field K] [CharZero K] [hKQ : Algebra.IsQuadraticExtension ℚ K]
   (p : ℕ) [hp : Fact p.Prime]
 
 local notation3 "𝒑" => (span {(p : ℤ)})
@@ -434,11 +593,35 @@ local notation3 "𝒑" => (span {(p : ℤ)})
 /-! Following `Cyclotomic/Ideal.lean`: one hypothesis per case, and the three invariants
 `g`, `e`, `f` read off as equalities, rather than one `Iff` per invariant. -/
 
+/-- A chosen isomorphism between `𝓞 K` and the quadratic algebra of discriminant `discr K`. -/
+noncomputable def algEquivRingOfIntegers :
+    𝓞 K ≃ₐ[ℤ] QuadraticAlgebra ℤ (discr K / 4) (discr K % 4) :=
+  (nonempty_algEquiv_ringOfIntegers K).some
+
+/-- The quadratic algebra modelling `𝓞 K` is a Dedekind domain. -/
+instance isDedekindDomain_quadraticAlgebra :
+    IsDedekindDomain (QuadraticAlgebra ℤ (discr K / 4) (discr K % 4)) :=
+  .of_ringEquiv (algEquivRingOfIntegers K).symm.toRingEquiv
+
+
 /-! The case `p = 2` first, since it is the one the discriminant criterion below does not cover:
 the behaviour is read off `discr K` modulo `8`, inert when `discr K % 8 = 5`, split when
 `discr K % 8 = 1`, and ramified when `discr K` is even — that last case being the `ramified`
 section below, which is uniform in `p`. -/
 
+section tools
+
+variable {K}
+
+/-- The fundamental identity `g * e * f = 2` for a quadratic field. -/
+theorem ncard_primesOver_mul_ramificationIdx_mul_inertiaDeg (P : Ideal (𝓞 K)) [P.IsPrime] :
+    ((under ℤ P).primesOver (𝓞 K)).ncard * (P.ramificationIdx ℤ * P.inertiaDeg ℤ) = 2 := by
+  rw [← ramificationIdxIn_eq_ramificationIdx (under ℤ P) P Gal(K/ℚ),
+    ← inertiaDegIn_eq_inertiaDeg (under ℤ P) P Gal(K/ℚ),
+    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn _ _ Gal(K/ℚ),
+    IsGalois.card_aut_eq_finrank, Algebra.IsQuadraticExtension.finrank_eq_two']
+
+end tools
 section two
 
 variable {K}
@@ -446,13 +629,7 @@ variable {K}
 /-- `2` is inert exactly when `discr K % 8 = 5`: `f = 2` at every prime above `2`. -/
 theorem inertiaDeg_two_of_discr_emod_eight (h : NumberField.discr K % 8 = 5)
     (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver (span {(2 : ℤ)})] :
-    P.inertiaDeg ℤ = 2 :=
-  sorry
-
-/-- `2` is inert exactly when `discr K % 8 = 5`: `f = 2`. -/
-theorem inertiaDegIn_two_of_discr_emod_eight (h : NumberField.discr K % 8 = 5) :
-    Ideal.inertiaDegIn (span {(2 : ℤ)}) (𝓞 K) = 2 :=
-  -- the `Nonempty (primesOver …)` instance is stated for `span {(p : ℤ)}`, not the literal `2`
+    P.inertiaDeg ℤ = 2 := by
   sorry
 
 /-- `2` is inert exactly when `discr K % 8 = 5`: `g = 1`. -/
@@ -471,12 +648,6 @@ theorem inertiaDeg_two_of_discr_emod_eight_one (h : NumberField.discr K % 8 = 1)
     P.inertiaDeg ℤ = 1 :=
   sorry
 
-/-- `2` splits exactly when `discr K % 8 = 1`: `f = 1`. -/
-theorem inertiaDegIn_two_of_discr_emod_eight_one (h : NumberField.discr K % 8 = 1) :
-    Ideal.inertiaDegIn (span {(2 : ℤ)}) (𝓞 K) = 1 :=
-  -- the `Nonempty (primesOver …)` instance is stated for `span {(p : ℤ)}`, not the literal `2`
-  sorry
-
 end two
 
 section ramified
@@ -486,34 +657,29 @@ variable {K p} (hd : (p : ℤ) ∣ NumberField.discr K)
 include hd
 
 /-- If `p` divides the discriminant, it is ramified: `e = 2` at every prime above `p`. -/
-theorem ramificationIdx_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P.ramificationIdx ℤ = 2 :=
-  sorry
-
-/-- If `p` divides the discriminant, it is ramified: `e = 2`. Uniform in `p`, `p = 2` included. -/
-theorem ramificationIdxIn_of_dvd_discr : Ideal.ramificationIdxIn 𝒑 (𝓞 K) = 2 :=
-  Ideal.ramificationIdxIn_eq_of_forall
-    fun P hP hPp ↦ by
-      have := hP
-      have := hPp
-      exact ramificationIdx_of_dvd_discr hd P
+theorem ramificationIdx_of_dvd_discr (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
+    P.ramificationIdx ℤ = 2 := by
+  refine Nat.le_antisymm ?_ ?_
+  · rw [← hKQ.finrank_eq_two, ← RingOfIntegers.rank K]
+    exact ramificationIdx_le_finrank' 𝒑 (𝓞 K) ⟨P, ⟨hP₁, hP₂⟩⟩
+  · obtain ⟨Q, _, _, _⟩ := (dvd_discr_iff_exists_two_le_ramificationIdx K (𝓞 K)
+      (Nat.prime_iff_prime_int.mp hp.out)).mp hd
+    rwa [ramificationIdx_eq_of_isGaloisGroup 𝒑 P Q Gal(K/ℚ)]
 
 /-- If `p` divides the discriminant, it is ramified: `f = 1` at every prime above `p`. -/
 theorem inertiaDeg_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P.inertiaDeg ℤ = 1 :=
-  sorry
-
-/-- If `p` divides the discriminant, it is ramified: `f = 1`. -/
-theorem inertiaDegIn_of_dvd_discr : Ideal.inertiaDegIn 𝒑 (𝓞 K) = 1 :=
-  Ideal.inertiaDegIn_eq_of_forall
-    fun P hP hPp ↦ by
-      have := hP
-      have := hPp
-      exact inertiaDeg_of_dvd_discr hd P
+    P.inertiaDeg ℤ = 1 := by
+  have h := ncard_primesOver_mul_ramificationIdx_mul_inertiaDeg P
+  rw [ramificationIdx_of_dvd_discr hd, mul_comm 2, ← mul_assoc, mul_eq_right₀ two_ne_zero] at h
+  exact Nat.eq_one_of_mul_eq_one_left h
 
 /-- If `p` divides the discriminant, it is ramified: `g = 1`. -/
-theorem ncard_primesOver_of_dvd_discr : (𝒑.primesOver (𝓞 K)).ncard = 1 :=
-  sorry
+theorem ncard_primesOver_of_dvd_discr : (𝒑.primesOver (𝓞 K)).ncard = 1 := by
+  obtain ⟨P, _, _⟩ := exists_isPrime_liesOver_of_faithfullyFlat 𝒑 (B := 𝓞 K)
+  have h := ncard_primesOver_mul_ramificationIdx_mul_inertiaDeg P
+  rw [ramificationIdx_of_dvd_discr hd, mul_comm 2, ← mul_assoc, mul_eq_right₀ two_ne_zero,
+    ← over_def P 𝒑] at h
+  exact Nat.eq_one_of_mul_eq_one_right h
 
 end ramified
 
@@ -526,34 +692,29 @@ include hp2 hd
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `f = 2` at every prime
 above `p`. -/
 theorem inertiaDeg_of_not_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P.inertiaDeg ℤ = 2 :=
-  sorry
-
-/-- If the discriminant is not a square mod `p`, then `p` is inert: `f = 2`. -/
-theorem inertiaDegIn_of_not_isSquare : Ideal.inertiaDegIn 𝒑 (𝓞 K) = 2 :=
-  Ideal.inertiaDegIn_eq_of_forall
-    fun P hP hPp ↦ by
-      have := hP
-      have := hPp
-      exact inertiaDeg_of_not_isSquare hp2 hd P
+    P.inertiaDeg ℤ = 2 := by
+  let f := algEquivRingOfIntegers K
+  rw [← pow_right_inj₀ hp.out.pos hp.out.ne_one, ← inertiaDeg_map_eq f P, pow_inertiaDeg,
+    QuadraticAlgebra.eq_span_of_liesOver (P := map f P) hp2 _ (map_isPrime_of_equiv f)
+    (map_equiv_liesOver P 𝒑 f), absNorm_span_singleton, Algebra.norm_quadraticAlgebra_apply,
+    QuadraticAlgebra.norm_natCast, Int.natAbs_pow, Int.natAbs_natCast]
+  rwa [QuadraticAlgebra.discr_intCast', (isFundamentalDiscr_discr K).discr_ediv_four_emod_four]
 
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `e = 1` at every prime
 above `p`. -/
 theorem ramificationIdx_of_not_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P.ramificationIdx ℤ = 1 :=
-  sorry
-
-/-- If the discriminant is not a square mod `p`, then `p` is inert: `e = 1`. -/
-theorem ramificationIdxIn_of_not_isSquare : Ideal.ramificationIdxIn 𝒑 (𝓞 K) = 1 :=
-  Ideal.ramificationIdxIn_eq_of_forall
-    fun P hP hPp ↦ by
-      have := hP
-      have := hPp
-      exact ramificationIdx_of_not_isSquare hp2 hd P
+    P.ramificationIdx ℤ = 1 := by
+  have h := ncard_primesOver_mul_ramificationIdx_mul_inertiaDeg P
+  rw [inertiaDeg_of_not_isSquare hp2 hd, ← mul_assoc, mul_eq_right₀ two_ne_zero] at h
+  exact Nat.eq_one_of_mul_eq_one_left h
 
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `g = 1`. -/
-theorem ncard_primesOver_of_not_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 1 :=
-  sorry
+theorem ncard_primesOver_of_not_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 1 := by
+  obtain ⟨P, _, _⟩ := exists_isPrime_liesOver_of_faithfullyFlat 𝒑 (B := 𝓞 K)
+  have h := ncard_primesOver_mul_ramificationIdx_mul_inertiaDeg P
+  rw [inertiaDeg_of_not_isSquare hp2 hd, ← mul_assoc, mul_eq_right₀ two_ne_zero,
+    ← over_def P 𝒑] at h
+  exact Nat.eq_one_of_mul_eq_one_right h
 
 end inert
 
@@ -565,7 +726,8 @@ variable {K p} (hp2 : p ≠ 2) (hnd : ¬ (p : ℤ) ∣ NumberField.discr K)
 include hp2 hnd hd
 
 /-- If the discriminant is a nonzero square mod `p`, then `p` splits: `g = 2`. -/
-theorem ncard_primesOver_of_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 2 :=
+theorem ncard_primesOver_of_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 2 := by
+
   sorry
 
 /-- If the discriminant is a nonzero square mod `p`, then `p` splits: `e = 1` at every prime
@@ -574,35 +736,13 @@ theorem ramificationIdx_of_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver
     P.ramificationIdx ℤ = 1 :=
   sorry
 
-/-- If the discriminant is a nonzero square mod `p`, then `p` splits: `e = 1`. -/
-theorem ramificationIdxIn_of_isSquare : Ideal.ramificationIdxIn 𝒑 (𝓞 K) = 1 :=
-  Ideal.ramificationIdxIn_eq_of_forall
-    fun P hP hPp ↦ by
-      have := hP
-      have := hPp
-      exact ramificationIdx_of_isSquare hp2 hnd hd P
-
 /-- If the discriminant is a nonzero square mod `p`, then `p` splits: `f = 1` at every prime
 above `p`. -/
 theorem inertiaDeg_of_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
     P.inertiaDeg ℤ = 1 :=
   sorry
 
-/-- If the discriminant is a nonzero square mod `p`, then `p` splits: `f = 1`. -/
-theorem inertiaDegIn_of_isSquare : Ideal.inertiaDegIn 𝒑 (𝓞 K) = 1 :=
-  Ideal.inertiaDegIn_eq_of_forall
-    fun P hP hPp ↦ by
-      have := hP
-      have := hPp
-      exact inertiaDeg_of_isSquare hp2 hnd hd P
-
 end split
 
 
 end NumberField.QuadraticField
-
-/-! ### Pure arithmetic, for `FundamentalDiscriminant.lean` -/
-
-theorem Int.IsFundamentalDiscr.emod_eight {D : ℤ} (h : Int.IsFundamentalDiscr D) :
-    D % 8 = 0 ∨ D % 8 = 1 ∨ D % 8 = 4 ∨ D % 8 = 5 :=
-  sorry
