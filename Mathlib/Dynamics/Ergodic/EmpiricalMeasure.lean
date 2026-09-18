@@ -86,21 +86,20 @@ end NormedAddCommGroup
 
 section KrylovBogolyubov
 
-/-- If, for any bounded continuous function `g`, the difference between the integrals of `g ∘ f`
+/-- If, for a bounded continuous function `g`, the difference between the integrals of `g ∘ f`
 and `g` tends to zero with respect to a filter of probability measures, then for a limit
-measure `μ`, we have `∫ y, (g ∘ f) y ∂μ = ∫ y, g y ∂μ` for any bounded continuous `g`. -/
+measure `μ`, we have `∫ y, (g ∘ f) y ∂μ = ∫ y, g y ∂μ`. -/
 lemma ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt
     [TopologicalSpace X] [BorelSpace X]
     {α : Type*} {F : Filter α} {f : X → X} (hf : Continuous f)
     {u : α → ProbabilityMeasure X} {μ : ProbabilityMeasure X} (hμ : MapClusterPt μ F u)
-    (h : ∀ g : X →ᵇ ℝ, Tendsto (fun t ↦ (∫ y, (g ∘ f) y ∂(u t)) - ∫ y, g y ∂(u t)) F (𝓝 0)) :
-    ∀ g : X →ᵇ ℝ, ∫ y, (g ∘ f) y ∂μ = ∫ y, g y ∂μ := by
+    {g : X →ᵇ ℝ} (hg : Tendsto (fun t ↦ (∫ y, (g ∘ f) y ∂(u t)) - ∫ y, g y ∂(u t)) F (𝓝 0)) :
+    ∫ y, (g ∘ f) y ∂μ = ∫ y, g y ∂μ := by
   rcases (mapClusterPt_iff_ultrafilter.mp hμ) with ⟨U, hUl, hUμ⟩
-  intro g
   have hgf : Tendsto (fun t ↦ ∫ y, (g ∘ f) y ∂(u t)) U (𝓝 (∫ y, (g ∘ f) y ∂μ)) :=
     (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ) (g.compContinuous ⟨f, hf⟩)
   have hgf' : Tendsto (fun t ↦ ∫ y, (g ∘ f) y ∂(u t)) U (𝓝 (∫ y, g y ∂μ)) := by
-    simpa using ((h g).mono_left hUl).add
+    simpa using (hg.mono_left hUl).add
       (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ g)
   exact tendsto_nhds_unique hgf hgf'
 
@@ -130,11 +129,9 @@ public theorem exists_measurePreserving_probabilityMeasure
     · simp_rw [← g.toBoundedContinuousFunction_apply]
       rw [← ContinuousMap.coe_mk f hf]
       simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
-      refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ ?_
-        g.toBoundedContinuousFunction
-      intro g'
-      refine tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder f x g' ?_
-      exact g'.isBounded_range.subset <| Set.range_comp_subset_range ..
+      refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ (g := g) ?_
+      refine tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder f x g ?_
+      exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
     · exact g.continuous.aestronglyMeasurable
   use ν
   exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
