@@ -60,6 +60,8 @@ theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).s
   simp only [unzip_eq_map, map_map]
   rfl
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 @[congr]
 theorem zipWith_congr (f g : α → β → γ) (la : List α) (lb : List β)
     (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
