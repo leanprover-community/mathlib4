@@ -760,14 +760,13 @@ theorem comap_iSup_map (S : ι → IntermediateField K L) : (⨆ i, (S i).map f)
 theorem map_le_map_iff {S T : IntermediateField K L} : S.map f ≤ T.map f ↔ S ≤ T :=
   (gciMapComap f).l_le_l_iff
 
-/-- In general `comap` only preserves infima, but it preserves the supremum of two intermediate
-fields lying in the range of `f`. -/
+/-- `comap f` preserves the supremum of two intermediate fields lying in the range of `f`. -/
 theorem comap_sup {S T : IntermediateField K L'} (hS : S ≤ f.fieldRange) (hT : T ≤ f.fieldRange) :
     (S ⊔ T).comap f = S.comap f ⊔ T.comap f := by
   rw [← map_comap_eq_self hS, ← map_comap_eq_self hT, comap_sup_map, comap_map, comap_map]
 
-/-- In general `comap` only preserves infima, but it preserves the supremum of a family of
-intermediate fields lying in the range of `f`. -/
+/-- `comap f` preserves the supremum of a family of intermediate fields lying in the range
+of `f`. -/
 theorem comap_iSup {S : ι → IntermediateField K L'} (hS : ∀ i, S i ≤ f.fieldRange) :
     (⨆ i, S i).comap f = ⨆ i, (S i).comap f := by
   have h (i : ι) : ((S i).comap f).map f = S i := map_comap_eq_self (hS i)
