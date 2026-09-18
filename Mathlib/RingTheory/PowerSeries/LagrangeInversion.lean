@@ -175,15 +175,11 @@ theorem lagrange_inversion_coeff_pow
     (n k : ℕ) :
     (n + k) • (Y ^ k).coeff (n + k) = k • (P ^ (n + k)).coeff n := by
   rcases k with _ | k
-  · by_cases hn : n = 0
-    · subst n
-      simp
-    · simp [hn]
+  · simp +contextual
   have hYsubst := hasSubst_of_fixedPoint hY
   have h := lagrange_burmann_coeff hY (n + k) (X ^ (k + 1))
   rw [subst_pow hYsubst, subst_X hYsubst, derivative_pow, derivative_X] at h
-  simp only [Nat.add_sub_cancel, mul_one] at h
-  rw [mul_assoc, coeff_natCast_mul, coeff_X_pow_mul] at h
+  simp only [mul_assoc, coeff_natCast_mul] at h
   simpa [nsmul_eq_mul, add_assoc] using h
 
 end TorsionFree
