@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.Sym.Sym2
 
 /-! # Unordered tuples of elements of a list

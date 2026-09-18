@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.Const
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!

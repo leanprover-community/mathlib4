@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds

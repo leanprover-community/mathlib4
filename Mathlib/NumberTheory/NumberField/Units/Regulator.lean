@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Covolume
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
+import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 /-!

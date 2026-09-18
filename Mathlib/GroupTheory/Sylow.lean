@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.GroupTheory.PGroup
-public import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.GroupTheory.NoncommPiCoprod
 
 import Mathlib.Data.Fintype.Lattice
 

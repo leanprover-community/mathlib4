@@ -5,9 +5,9 @@ Authors: Andrew Yang, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Constructions
+import Mathlib.Topology.Constructions
 public import Mathlib.Topology.NhdsWithin
-public import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets

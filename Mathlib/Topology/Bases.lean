@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-public import Mathlib.Topology.Constructions
-public import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Constructions
+import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.NhdsWithin
 
 /-!

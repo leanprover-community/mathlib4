@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology

@@ -6,12 +6,12 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
-public import Mathlib.LinearAlgebra.Matrix.Vec
+import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.Analysis.CStarAlgebra.Matrix
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Radius of convergence of a power series

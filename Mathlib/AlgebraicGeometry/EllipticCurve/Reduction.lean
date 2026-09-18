@@ -6,10 +6,10 @@ Authors: Bryan Wang
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
-public import Mathlib.GroupTheory.ArchimedeanDensely
+import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
 # Reduction of Weierstrass curves over local fields

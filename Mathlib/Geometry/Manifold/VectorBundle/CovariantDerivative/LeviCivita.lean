@@ -5,7 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 

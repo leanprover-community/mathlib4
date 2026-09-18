@@ -5,10 +5,10 @@ Authors: Jingting Wang, Junyan Xu, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-public import Mathlib.RingTheory.TensorProduct.Quotient
-public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.RingTheory.TensorProduct.Quotient
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # The fiber of a ring homomorphism at a prime ideal

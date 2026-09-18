@@ -5,7 +5,7 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!

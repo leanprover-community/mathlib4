@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Monoid.OrderDual
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
 
 /-!

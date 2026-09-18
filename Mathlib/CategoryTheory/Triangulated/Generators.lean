@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
+import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 /-!

@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 public import Mathlib.Geometry.Manifold.Riemannian.PathELength
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 
 /-! # Riemannian manifolds
 

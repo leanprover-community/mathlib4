@@ -6,7 +6,7 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.Algebra.Torsor.Basic
-public import Mathlib.Topology.Algebra.Group.Defs
+import Mathlib.Topology.Algebra.Group.Defs
 
 import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Tactic.Bound.Init

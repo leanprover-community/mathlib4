@@ -5,13 +5,13 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Extension
+import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.NumberTheory.Cyclotomic.Gal
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
-public import Mathlib.NumberTheory.NumberField.Ideal.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
+import Mathlib.NumberTheory.NumberField.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
 /-!
 # Galois theory for cyclotomic fields

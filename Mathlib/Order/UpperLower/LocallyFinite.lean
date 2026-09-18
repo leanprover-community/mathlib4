@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.UpperLower.Closure
 

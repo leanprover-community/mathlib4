@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-public import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Locally
 
 /-!

@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Topology.Gluing
-public import Mathlib.Geometry.RingedSpace.OpenImmersion
+import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 
 /-!

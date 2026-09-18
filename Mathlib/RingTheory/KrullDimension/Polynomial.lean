@@ -5,11 +5,11 @@ Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.PID
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Krull dimension of polynomial ring

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.ZMod.Defs
 

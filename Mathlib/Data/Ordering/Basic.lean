@@ -5,7 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Helper definitions and instances for `Ordering`

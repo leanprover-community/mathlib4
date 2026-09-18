@@ -6,7 +6,7 @@ Authors: Pierre-Alexandre Bazin, Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Algebra
-public import Mathlib.Algebra.Category.ModuleCat.Subobject
+import Mathlib.Algebra.Category.ModuleCat.Subobject
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.SimpleModule.Basic

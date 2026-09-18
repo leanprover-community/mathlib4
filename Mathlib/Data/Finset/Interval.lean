@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finset.Grade
+import Mathlib.Data.Finset.Grade
 public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Order.Interval.Finset.Basic
 

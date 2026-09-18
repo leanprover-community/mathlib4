@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Category.Frm
+import Mathlib.Order.Category.Frm
 public import Mathlib.Topology.Category.CompHaus.Frm
 
 /-!

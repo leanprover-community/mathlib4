@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Matrix.Reindex
+import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!

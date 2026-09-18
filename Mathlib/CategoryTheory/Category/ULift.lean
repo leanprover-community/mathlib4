@@ -5,9 +5,9 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.Data.ULift
+import Mathlib.Data.ULift
 
 /-!
 # Basic API for ULift

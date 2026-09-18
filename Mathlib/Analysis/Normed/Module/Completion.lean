@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.Algebra.LinearMapCompletion
-public import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.Algebra.UniformField
 
 /-!

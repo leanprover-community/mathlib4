@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Hom.ContinuousEvalConst
-public import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Bundled maps with evaluation continuous in both variables

@@ -6,7 +6,7 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.Charpoly.Basic
-public import Mathlib.LinearAlgebra.Matrix.Basis
+import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!

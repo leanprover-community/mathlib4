@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Multiples of a real number form a discrete subgroup of `ℝ`

@@ -5,7 +5,7 @@ Authors: Wanyi He, Huanyu Zheng
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Module.Torsion.Basic
 
 /-!

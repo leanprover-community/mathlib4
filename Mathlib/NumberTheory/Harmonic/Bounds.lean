@@ -5,7 +5,7 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Harmonic.Defs
 

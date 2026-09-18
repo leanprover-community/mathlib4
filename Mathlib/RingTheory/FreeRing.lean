@@ -5,7 +5,7 @@ Authors: Kenny Lau, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!

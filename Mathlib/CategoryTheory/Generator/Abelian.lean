@@ -5,8 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Subobject
-public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.Limits.EssentiallySmall
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite

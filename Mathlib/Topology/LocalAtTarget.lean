@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.OpenCover
-public import Mathlib.Topology.LocallyClosed
+import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!

@@ -6,9 +6,9 @@ Authors: Luke Mantle, Jake Levinson
 module
 
 public import Mathlib.RingTheory.Polynomial.Hermite.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!

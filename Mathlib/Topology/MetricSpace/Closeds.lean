@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 public import Mathlib.Topology.UniformSpace.Closeds
 

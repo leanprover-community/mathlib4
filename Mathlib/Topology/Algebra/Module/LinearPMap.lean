@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!

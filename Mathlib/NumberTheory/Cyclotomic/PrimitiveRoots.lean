@@ -5,15 +5,15 @@ Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.LCM
-public import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.Data.Nat.Factorization.LCM
+import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.Data.PNat.Prime
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.RingTheory.Adjoin.PowerBasis
-public import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-public import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Primitive roots in cyclotomic fields

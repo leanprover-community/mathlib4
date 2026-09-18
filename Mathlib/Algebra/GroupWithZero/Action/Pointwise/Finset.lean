@@ -6,10 +6,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-public import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
+import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
 /-!
 # Pointwise operations of finsets in a group with zero

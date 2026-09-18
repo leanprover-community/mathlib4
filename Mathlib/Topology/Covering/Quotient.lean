@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.GroupTheory.Coset.Defs
-public import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Covering.Basic
 

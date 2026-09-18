@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Equivalence
+import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!

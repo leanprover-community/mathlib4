@@ -5,9 +5,9 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Group.AddChar
+import Mathlib.Algebra.Group.AddChar
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
 # Classification of elements of `GL (Fin 2) R`

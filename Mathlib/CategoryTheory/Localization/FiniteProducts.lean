@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Localization.Adjunction
 public import Mathlib.CategoryTheory.Localization.HasLocalization

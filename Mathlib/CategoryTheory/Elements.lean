@@ -6,7 +6,7 @@ Authors: Kim Morrison, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.ShrinkYoneda
 

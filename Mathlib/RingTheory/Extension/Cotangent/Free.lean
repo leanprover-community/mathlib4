@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.Basis.Exact
+import Mathlib.LinearAlgebra.Basis.Exact
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
 

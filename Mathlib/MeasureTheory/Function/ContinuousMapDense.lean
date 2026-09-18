@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 

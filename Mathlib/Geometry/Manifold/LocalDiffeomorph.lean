@@ -6,7 +6,7 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Diffeomorph
-public import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between manifolds

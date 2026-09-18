@@ -6,9 +6,9 @@ Authors: Andrew Yang, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Restrict
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
-public import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Cocontinuous functors between sites.

@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Topology.Constructions
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Topology.Constructions
 public import Mathlib.Topology.GDelta.Basic
-public import Mathlib.Topology.Maps.OpenQuotient
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Topology.Maps.OpenQuotient
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Baire spaces

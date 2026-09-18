@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.Partrec
-public import Mathlib.Data.Option.Basic
+import Mathlib.Data.Option.Basic
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.

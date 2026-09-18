@@ -6,7 +6,7 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Join.Basic
-public import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposites of joins of categories

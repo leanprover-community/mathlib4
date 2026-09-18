@@ -5,14 +5,14 @@ Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang, BeiBei Xiong
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Module.Submodule.LinearMap
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.GroupWithZero.Action.Pi
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Algebra.Polynomial.Degree.Defs
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.AddChar
+import Mathlib.Algebra.Module.Submodule.LinearMap
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Tactic.Abel
+import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 /-!

@@ -5,9 +5,9 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Permutation
-public import Mathlib.Data.Matrix.PEquiv
+import Mathlib.Data.Matrix.PEquiv
 
 /-!
 # Swap matrices

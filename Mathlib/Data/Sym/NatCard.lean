@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Sym.Basic
+import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2
 
 import Mathlib.Data.Sym.Card

@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Topology.Instances.Discrete
-public import Mathlib.Order.Interval.Set.WithBotTop
-public import Mathlib.Order.Filter.Pointwise
-public import Mathlib.Topology.Algebra.Monoid.Defs
+import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Order.Filter.Pointwise
+import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!

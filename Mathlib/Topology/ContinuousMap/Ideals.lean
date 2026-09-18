@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.ContinuousMap.Compact
+import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Ring.Units

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Control.Functor
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 public import Mathlib.Control.Basic
 
 /-!

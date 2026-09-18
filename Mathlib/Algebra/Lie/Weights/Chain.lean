@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.Weights.Cartan
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.RingTheory.Finiteness.Nilpotent
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Order.Filter.Cofinite
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights

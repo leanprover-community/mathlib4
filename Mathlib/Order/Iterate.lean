@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Aesop
-public import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Monotone.Basic
 
 /-!

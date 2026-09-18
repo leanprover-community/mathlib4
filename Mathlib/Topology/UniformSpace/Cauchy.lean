@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Constructions
-public import Mathlib.Topology.Bases
+import Mathlib.Topology.Bases
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 

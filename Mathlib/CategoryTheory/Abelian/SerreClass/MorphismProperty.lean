@@ -6,10 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
-public import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy

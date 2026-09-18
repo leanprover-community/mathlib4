@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
-public import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # Additive Contents

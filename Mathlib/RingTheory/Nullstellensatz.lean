@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Jacobson.Ring
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Nullstellensatz

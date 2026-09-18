@@ -5,11 +5,11 @@ Authors: Matthew Jasper, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Basic
+import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.DedekindDomain.Dvr
-public import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Tensor
-public import Mathlib.RingTheory.Ideal.IsPrincipal
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Relationships between flatness and torsionfreeness.

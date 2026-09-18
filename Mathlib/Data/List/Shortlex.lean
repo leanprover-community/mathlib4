@@ -5,8 +5,8 @@ Authors: Hannah Fechtner
 -/
 module
 
-public import Mathlib.Data.List.Lex
-public import Mathlib.Order.RelClasses
+import Mathlib.Data.List.Lex
+import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.NormNum
 
 /-!

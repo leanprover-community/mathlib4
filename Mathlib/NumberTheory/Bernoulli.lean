@@ -6,8 +6,8 @@ Authors: Johan Commelin, Kevin Buzzard, Seewoo Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-public import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
+import Mathlib.Data.Nat.Choose.Bounds
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.Padics.PadicNumbers

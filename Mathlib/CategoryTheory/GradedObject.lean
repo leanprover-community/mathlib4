@@ -6,7 +6,7 @@ Authors: Kim Morrison, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Shift.Basic
-public import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Algebra.Group.Int.Defs
 
 /-!

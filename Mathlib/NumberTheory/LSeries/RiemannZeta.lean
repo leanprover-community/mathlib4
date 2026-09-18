@@ -6,8 +6,8 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
-public import Mathlib.Analysis.PSeriesComplex
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Analysis.PSeriesComplex
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definition of the Riemann zeta function

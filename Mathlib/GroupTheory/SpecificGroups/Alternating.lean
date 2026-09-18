@@ -5,11 +5,11 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Fintype
-public import Mathlib.GroupTheory.IndexNormal
-public import Mathlib.GroupTheory.Perm.ConjAct
+import Mathlib.Algebra.GroupWithZero.Units.Fintype
+import Mathlib.GroupTheory.IndexNormal
+import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
-public import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.IntervalCases
 public import Mathlib.Data.Nat.Totient
 
 /-!

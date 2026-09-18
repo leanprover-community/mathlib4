@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Shift.Opposite
 public import Mathlib.CategoryTheory.Shift.Pullback
 

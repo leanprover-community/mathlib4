@@ -5,7 +5,7 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Filtered
 
 /-!

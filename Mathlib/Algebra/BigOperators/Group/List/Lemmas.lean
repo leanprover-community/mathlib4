@@ -11,11 +11,11 @@ public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Data.List.Dedup
 public import Mathlib.Data.List.Flatten
 public import Mathlib.Data.List.Pairwise
-public import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Range
 public import Mathlib.Data.List.Rotate
 public import Mathlib.Data.List.ProdSigma
-public import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Sums and products from lists

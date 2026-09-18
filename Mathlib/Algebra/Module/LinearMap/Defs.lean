@@ -6,7 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Module.RingHom
 public import Mathlib.Algebra.Ring.CompTypeclasses

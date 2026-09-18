@@ -6,8 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.Module.Opposite
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Algebra structures on the multiplicative opposite

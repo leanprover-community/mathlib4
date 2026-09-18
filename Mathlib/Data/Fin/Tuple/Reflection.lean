@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Algebra.BigOperators.Fin
 
 /-!

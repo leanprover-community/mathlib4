@@ -6,8 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 public import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Unramified.Basic
 

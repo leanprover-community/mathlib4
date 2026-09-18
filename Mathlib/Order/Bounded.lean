@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.RelClasses
+import Mathlib.Order.RelClasses
 public import Mathlib.Order.Interval.Set.Basic
 
 /-!

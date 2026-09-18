@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.Algebra.GradedMulAction
-public import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.Module.BigOperators
 
 /-!

@@ -6,7 +6,7 @@ Authors: Wrenna Robson
 module
 
 public import Mathlib.Data.Nat.Notation
-public import Init.Data.Fin.Bitwise
+import Init.Data.Fin.Bitwise
 
 /-!
 # Basic operations on bounded natural numbers.

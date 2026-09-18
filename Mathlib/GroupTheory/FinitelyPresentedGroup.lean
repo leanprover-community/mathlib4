@@ -6,15 +6,15 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Basic.Finite.Sum
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.GroupTheory.Coprod.Basic
-public import Mathlib.GroupTheory.FreeGroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Basic.Finite.Sum
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.GroupTheory.Coprod.Basic
+import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.PresentedGroup
-public import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.Schreier
-public import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Finitely Presented Groups

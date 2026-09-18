@@ -6,7 +6,7 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-public import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!

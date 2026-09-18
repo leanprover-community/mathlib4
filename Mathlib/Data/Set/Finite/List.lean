@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Set.Finite.Lattice
 
 /-!

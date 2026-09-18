@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr
 
 /-!
 # Cauchy sequences

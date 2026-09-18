@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.DifferentialForm.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
+import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 public import Mathlib.Analysis.Calculus.VectorField
 
 /-!

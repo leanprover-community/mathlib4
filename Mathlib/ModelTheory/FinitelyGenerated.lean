@@ -5,9 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.ModelTheory.Substructures
-public import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Finitely Generated First-Order Structures

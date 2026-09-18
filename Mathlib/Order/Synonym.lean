@@ -5,7 +5,7 @@ Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
 module
 
-public import Mathlib.Util.CompileInductive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Type synonyms

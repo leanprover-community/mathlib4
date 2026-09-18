@@ -6,9 +6,9 @@ Authors: Dhruv Gupta
 module
 
 public import Mathlib.Combinatorics.SetFamily.Shatter
-public import Mathlib.Data.Fin.Embedding
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Fin.Embedding
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Assouad's dual VC bound

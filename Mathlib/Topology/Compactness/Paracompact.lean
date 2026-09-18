@@ -5,7 +5,7 @@ Authors: Reid Barton, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Option.Basic
+import Mathlib.Data.Option.Basic
 public import Mathlib.Topology.Separation.Regular
 
 /-!

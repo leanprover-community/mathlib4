@@ -5,12 +5,12 @@ Authors: Elazar Gershuni
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.List.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.List.Basic
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
 

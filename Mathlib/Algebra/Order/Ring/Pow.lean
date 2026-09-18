@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Nat.Cast.Commute
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Tactic.Abel
 

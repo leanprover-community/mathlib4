@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!

@@ -5,10 +5,10 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Defs
+import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.Inhabit
-public import Batteries.Tactic.Trans
+import Mathlib.Tactic.Inhabit
+import Batteries.Tactic.Trans
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 

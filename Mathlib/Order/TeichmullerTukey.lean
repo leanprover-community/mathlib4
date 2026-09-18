@@ -5,9 +5,9 @@ Authors: Ansar Azhdarov
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.Zorn
+import Mathlib.Order.Zorn
 
 /-!
 # Teichmuller-Tukey

@@ -6,7 +6,7 @@ Authors: Benjamin Davidson
 module
 
 public import Mathlib.Algebra.Field.Opposite
-public import Mathlib.Algebra.Module.Opposite
+import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 

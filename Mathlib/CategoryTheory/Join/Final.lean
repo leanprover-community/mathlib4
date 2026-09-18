@@ -6,7 +6,7 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Join.Basic
-public import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.IsConnected
 
 /-!

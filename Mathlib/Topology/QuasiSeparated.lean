@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Compactness.Bases
+import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.NoetherianSpace
 
 /-!

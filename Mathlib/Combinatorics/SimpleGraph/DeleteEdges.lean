@@ -5,10 +5,10 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Combinatorics.SimpleGraph.Maps
-public import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Edge deletion

@@ -5,10 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-public import Mathlib.RingTheory.Localization.NumDen
+import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 

@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-public import Mathlib.Algebra.Module.Opposite
+import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Conjugations

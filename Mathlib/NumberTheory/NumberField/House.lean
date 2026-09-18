@@ -6,7 +6,7 @@ Authors: Michail Karatarakis
 module
 
 public import Mathlib.NumberTheory.SiegelsLemma
-public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 
 /-!

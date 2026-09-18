@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Star.TransferInstance
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 
 /-!

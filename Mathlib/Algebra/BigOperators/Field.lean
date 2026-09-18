@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Daniel Weber
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.Defs
 public import Mathlib.Data.Finset.Density
 
 /-!

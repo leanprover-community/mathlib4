@@ -6,9 +6,9 @@ Authors: Jujian Zhang, Yunzhou Xie
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Morita equivalence

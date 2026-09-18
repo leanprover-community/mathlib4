@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!

@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Trace
 

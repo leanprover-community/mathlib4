@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-public import Mathlib.MeasureTheory.Measure.Continuity
+import Mathlib.MeasureTheory.Measure.Continuity
 public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!

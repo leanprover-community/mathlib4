@@ -5,7 +5,7 @@ Authors: Fernando Chu
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
 
 /-!

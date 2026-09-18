@@ -5,13 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.Analysis.Calculus.DSlope
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Calculus.DSlope
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
-public import Mathlib.Analysis.Real.Cardinality
+import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex

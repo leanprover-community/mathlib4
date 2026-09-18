@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.Tactic.Group
-public import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Tactic.Group
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces

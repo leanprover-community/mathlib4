@@ -5,10 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-public import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-! # Continuous functional calculus

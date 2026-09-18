@@ -8,12 +8,12 @@ module
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Basic
 public import Mathlib.Order.Nat
-public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Order.SuccPred.WithBot
+import Mathlib.Order.SuccPred.Archimedean
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Successors and predecessors of naturals

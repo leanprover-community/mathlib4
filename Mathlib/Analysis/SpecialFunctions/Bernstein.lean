@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Gauge
-public import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.RingTheory.Polynomial.Bernstein
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.ContinuousMap.Polynomial

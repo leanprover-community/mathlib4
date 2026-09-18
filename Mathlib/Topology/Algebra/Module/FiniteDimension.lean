@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Finiteness.Cofinite

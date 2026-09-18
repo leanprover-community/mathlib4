@@ -12,7 +12,7 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.GDelta.Basic
+import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Urysohn's lemma

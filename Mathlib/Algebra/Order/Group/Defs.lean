@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Ordered groups

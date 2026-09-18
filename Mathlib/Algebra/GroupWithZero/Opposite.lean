@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Opposites of groups with zero

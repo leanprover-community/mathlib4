@@ -5,7 +5,7 @@ Authors: Attila Gáspár
 -/
 module
 
-public import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.Lattice
 public import Mathlib.Topology.Sets.VietorisTopology
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
 

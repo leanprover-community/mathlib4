@@ -6,7 +6,7 @@ Authors: Luke Kershaw, Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
-public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 /-!

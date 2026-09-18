@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Adjunction.Basic
-public import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 

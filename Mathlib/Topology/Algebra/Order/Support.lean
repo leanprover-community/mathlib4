@@ -5,7 +5,7 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Topology.Algebra.Support
 
 /-!

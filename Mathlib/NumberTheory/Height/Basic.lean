@@ -6,7 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-public import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean

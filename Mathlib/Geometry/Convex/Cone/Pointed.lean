@@ -6,7 +6,7 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Group.SelfInv
+import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic

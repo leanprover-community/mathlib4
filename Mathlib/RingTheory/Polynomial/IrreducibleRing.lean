@@ -5,7 +5,7 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Eval.Irreducible
+import Mathlib.Algebra.Polynomial.Eval.Irreducible
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!

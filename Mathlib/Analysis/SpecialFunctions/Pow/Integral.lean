@@ -5,10 +5,10 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.MeasureTheory.Integral.Layercake
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
-public import Mathlib.Tactic.MoveAdd
+import Mathlib.Tactic.MoveAdd
 
 /-!
 # The integral of the real power of a nonnegative function

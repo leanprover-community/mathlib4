@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Lattice
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Types.Set
 

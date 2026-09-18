@@ -6,13 +6,13 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.RingTheory.Nilpotent.Defs
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.Tactic.Peel
+import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues

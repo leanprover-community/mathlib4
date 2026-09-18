@@ -5,11 +5,11 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Dvd
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-public import Mathlib.Algebra.Group.Nat.Range
+import Mathlib.Algebra.Group.Nat.Range
 
 /-!
 # Eisenstein polynomials

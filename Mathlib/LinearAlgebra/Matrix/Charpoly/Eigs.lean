@@ -6,7 +6,7 @@ Authors: Mohanad Ahmed
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!

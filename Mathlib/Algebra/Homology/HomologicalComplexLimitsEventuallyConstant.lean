@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!

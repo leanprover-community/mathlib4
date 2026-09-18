@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
-public import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Renaming variables of power series

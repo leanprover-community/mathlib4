@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Order.SetNotation
 public import Aesop
-public import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ToAdditive
 
 /-!

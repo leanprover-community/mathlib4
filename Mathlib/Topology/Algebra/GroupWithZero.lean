@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological group with zero

@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Inverse
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Analytic.Inverse
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 

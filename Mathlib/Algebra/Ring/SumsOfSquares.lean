@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Even
 public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
+import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums of squares

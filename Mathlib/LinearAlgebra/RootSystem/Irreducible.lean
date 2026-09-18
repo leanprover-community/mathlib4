@@ -5,9 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.RootPositive
+import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
-public import Mathlib.RepresentationTheory.Submodule
+import Mathlib.RepresentationTheory.Submodule
 
 /-!
 # Irreducible root pairings

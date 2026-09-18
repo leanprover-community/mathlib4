@@ -5,7 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 

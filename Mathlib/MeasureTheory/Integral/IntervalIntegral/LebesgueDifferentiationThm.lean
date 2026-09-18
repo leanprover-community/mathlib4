@@ -6,7 +6,7 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.MeasureTheory.Covering.OneDim
+import Mathlib.MeasureTheory.Covering.OneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!

@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.JensenFormula
+import Mathlib.Analysis.Complex.JensenFormula
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 
 /-!

@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!

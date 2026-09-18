@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.Order.Minimal
+import Mathlib.Order.Minimal
 
 /-!
 

@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 

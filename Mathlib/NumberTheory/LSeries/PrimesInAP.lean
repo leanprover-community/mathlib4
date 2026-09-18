@@ -6,7 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-public import Mathlib.NumberTheory.LSeries.Linearity
+import Mathlib.NumberTheory.LSeries.Linearity
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
 
 /-!

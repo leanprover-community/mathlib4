@@ -5,7 +5,7 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.RepresentationTheory.Subrepresentation
+import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
 

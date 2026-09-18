@@ -5,8 +5,8 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Setoid.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.Setoid.Basic
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Topology.MetricSpace.Lipschitz
 

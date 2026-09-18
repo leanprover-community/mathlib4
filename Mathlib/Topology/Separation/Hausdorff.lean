@@ -8,7 +8,7 @@ module
 public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Irreducible
-public import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # T₂ and T₂.₅ spaces.

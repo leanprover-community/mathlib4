@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Topology.Algebra.Group.ContinuousDiv
 
 /-!

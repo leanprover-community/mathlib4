@@ -6,8 +6,8 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Tactic.Push
-public import Batteries.Tactic.Init
+import Mathlib.Tactic.Push
+import Batteries.Tactic.Init
 
 /-!
 # `Nat.find` and `Nat.findGreatest`

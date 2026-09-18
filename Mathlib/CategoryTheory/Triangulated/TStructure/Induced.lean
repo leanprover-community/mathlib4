@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Shift
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.CategoryTheory.ObjectProperty.Shift
+import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 
 /-!

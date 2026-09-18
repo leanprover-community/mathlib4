@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Dynamics.Newton
+import Mathlib.Dynamics.Newton
 public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 

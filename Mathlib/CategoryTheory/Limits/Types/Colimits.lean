@@ -5,8 +5,8 @@ Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
 module
 
-public import Mathlib.Basic.UnivLE
-public import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.Basic.UnivLE
+import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 

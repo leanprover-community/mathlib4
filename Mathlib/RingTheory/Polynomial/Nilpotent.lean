@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!

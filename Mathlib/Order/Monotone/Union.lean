@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Monotonicity on intervals

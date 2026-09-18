@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # Block matrices and their determinant

@@ -5,10 +5,10 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Basic.Finite.Sum
+import Mathlib.Basic.Finite.Sum
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Finiteness.Ideal
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!

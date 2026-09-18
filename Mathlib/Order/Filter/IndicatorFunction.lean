@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Filter.AtTopBot.Defs
-public import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Indicator function and filters

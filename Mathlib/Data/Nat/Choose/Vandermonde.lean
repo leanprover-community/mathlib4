@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Polynomial.Coeff
-public import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 

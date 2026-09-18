@@ -5,9 +5,9 @@ Authors: Kevin Buzzard, Johan Commelin, Ashwin Iyengar, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Nonarchimedean Topology

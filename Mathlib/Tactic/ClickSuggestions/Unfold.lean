@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.NthRewrite
-public import ProofWidgets.Component.Basic
+import Mathlib.Tactic.NthRewrite
+import ProofWidgets.Component.Basic
 public import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!

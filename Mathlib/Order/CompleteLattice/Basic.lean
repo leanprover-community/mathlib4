@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.NAry
 public import Mathlib.Data.ULift
 public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs

@@ -6,9 +6,9 @@ Authors: Yudai Yamazaki
 module
 
 public import Mathlib.GroupTheory.GroupExtension.Defs
-public import Mathlib.GroupTheory.SemidirectProduct
-public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.Tactic.Group
+import Mathlib.GroupTheory.SemidirectProduct
+import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Tactic.Group
 
 /-!
 # Basic lemmas about group extensions

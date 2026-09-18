@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 

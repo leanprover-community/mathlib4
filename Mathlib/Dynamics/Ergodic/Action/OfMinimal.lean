@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Dynamics.Ergodic.Action.Regular
-public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
+import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!

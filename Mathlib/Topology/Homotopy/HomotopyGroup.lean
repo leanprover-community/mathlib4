@@ -5,7 +5,7 @@ Authors: Roberto Alvarez
 -/
 module
 
-public import Mathlib.Algebra.Group.Ext
+import Mathlib.Algebra.Group.Ext
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.GroupTheory.EckmannHilton

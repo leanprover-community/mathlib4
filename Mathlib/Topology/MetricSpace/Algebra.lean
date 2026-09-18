@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Lipschitz

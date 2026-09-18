@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Integration by parts and by substitution

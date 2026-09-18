@@ -6,7 +6,7 @@ Authors: Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.Support
-public import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!

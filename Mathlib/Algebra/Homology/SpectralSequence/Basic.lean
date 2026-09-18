@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 
 /-!

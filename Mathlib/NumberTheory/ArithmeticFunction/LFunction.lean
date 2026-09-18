@@ -7,8 +7,8 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.Order.Northcott
-public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.PowerSeries.PiTopology
+import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!

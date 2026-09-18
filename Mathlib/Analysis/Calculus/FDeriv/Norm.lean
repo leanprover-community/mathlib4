@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Abs
-public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
 # Differentiability of the norm in a real normed vector space

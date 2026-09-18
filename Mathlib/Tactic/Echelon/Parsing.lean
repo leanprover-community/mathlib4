@@ -7,11 +7,11 @@ module
 
 public meta import Mathlib.LinearAlgebra.Matrix.Notation -- shake: keep (!![] elaboration)
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Tactic.Bound.Init
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Tactic.SetLike
+import Mathlib.Data.Finset.Attr
+import Mathlib.LinearAlgebra.Matrix.Defs
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.SetLike
 
 /-!
 # Parsing matrix literals

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ExtremalEpi
 public import Mathlib.CategoryTheory.Generator.Basic
-public import Mathlib.CategoryTheory.Limits.Presentation
+import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Strong generators

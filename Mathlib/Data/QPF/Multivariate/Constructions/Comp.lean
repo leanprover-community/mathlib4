@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Mathlib.Data.PFunctor.Multivariate.Basic
+import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!

@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.Submodule
-public import Mathlib.RingTheory.Ideal.Colon
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
+import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop

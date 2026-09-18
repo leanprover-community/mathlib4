@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-public import Mathlib.Topology.Order.CountableSeparating
+import Mathlib.Topology.Order.CountableSeparating
 
 /-!
 # Radon-Nikodym derivative of invariant measures

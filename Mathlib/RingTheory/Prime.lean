@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Prime.Defs
 public import Mathlib.Algebra.Ring.Units

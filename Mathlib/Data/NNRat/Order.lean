@@ -5,9 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Tactic.Bound.Init
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 deprecated_module (since := "2026-04-29")

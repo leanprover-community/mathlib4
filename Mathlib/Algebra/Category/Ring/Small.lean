@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
-public import Mathlib.CategoryTheory.ObjectProperty.Small
+import Mathlib.CategoryTheory.ObjectProperty.Small
 
 
 /-! # Smallness results on the category of `CommRing` -/

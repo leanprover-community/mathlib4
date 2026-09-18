@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.Multiset.Replicate
 public import Mathlib.Data.Set.List
 

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-public import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.Order.MonotoneConvergence
 
 /-!

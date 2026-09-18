@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.ContinuedFractions.Determinant
 public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-public import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Data.Nat.Fib.Basic
-public import Mathlib.Tactic.Monotonicity
-public import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.GCongr
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)

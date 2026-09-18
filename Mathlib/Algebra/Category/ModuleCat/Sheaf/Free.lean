@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
-public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
+import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Free sheaves of modules

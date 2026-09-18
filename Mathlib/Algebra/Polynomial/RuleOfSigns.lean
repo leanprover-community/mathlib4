@@ -6,9 +6,9 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Algebra.Polynomial.CoeffList
-public import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Basic.Sign.Basic
+import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.List.SignVariations
 
 /-!

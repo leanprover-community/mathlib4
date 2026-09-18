@@ -5,7 +5,7 @@ Authors: Reid Barton
 -/
 module
 
-public import Mathlib.Topology.Bases
+import Mathlib.Topology.Bases
 public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.Connected.TotallyDisconnected
 

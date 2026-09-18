@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Bundle
-public import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Image
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Order.Basic

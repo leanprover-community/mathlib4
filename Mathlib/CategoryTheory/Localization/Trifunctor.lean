@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Bifunctor
 public import Mathlib.CategoryTheory.Functor.CurryingThree
-public import Mathlib.CategoryTheory.Products.Associator
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Lifting of trifunctors

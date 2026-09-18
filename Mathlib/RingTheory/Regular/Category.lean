@@ -6,7 +6,7 @@ Authors: Jingting Wang, Wanyi He, Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Categorical constructions for `IsSMulRegular`

@@ -6,9 +6,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Exposed sets

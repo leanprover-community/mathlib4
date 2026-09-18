@@ -5,10 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Frobenius
-public import Mathlib.Algebra.CharP.Pi
+import Mathlib.Algebra.CharP.Frobenius
+import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient
-public import Mathlib.Algebra.CharP.Subring
+import Mathlib.Algebra.CharP.Subring
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Valuation.Integers

@@ -5,8 +5,8 @@ Authors: euprunin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.RingTheory.NonUnitalSubring.Defs
 public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!

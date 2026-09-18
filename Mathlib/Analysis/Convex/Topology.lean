@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.Topology.Algebra.Affine
 
 /-!

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Matrix.Diagonal

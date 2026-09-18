@@ -8,7 +8,7 @@ module
 public import Mathlib.Combinatorics.Additive.AP.Three.Defs
 public import Mathlib.Combinatorics.Additive.Corner.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
-public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 
 /-!
 # The corners theorem and Roth's theorem

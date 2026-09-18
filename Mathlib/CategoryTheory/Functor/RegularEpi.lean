@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!

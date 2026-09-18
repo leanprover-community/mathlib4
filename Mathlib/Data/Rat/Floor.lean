@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.Order.Round
-public import Mathlib.Data.Rat.Cast.Order
-public import Mathlib.Tactic.FieldSimp
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Ring
 public meta import Mathlib.Algebra.Order.Round
 

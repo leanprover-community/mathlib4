@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!

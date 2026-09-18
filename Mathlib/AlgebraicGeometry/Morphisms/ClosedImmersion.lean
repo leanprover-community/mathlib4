@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.ResidueField
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
+import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 

@@ -5,10 +5,10 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Basic.Finite.Prod
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Shrink
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Basic.Finite.Prod
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Shrink
 public import Mathlib.Data.Fintype.Sum
 
 /-!

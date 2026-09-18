@@ -6,7 +6,7 @@ Authors: Ziyu Wang, Chenyi Li, Sébastien Gouëzel, Penghao Yu, Zhipeng Cao
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!

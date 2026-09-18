@@ -5,7 +5,7 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Basic.ENNReal.Lemmas
+import Mathlib.Basic.ENNReal.Lemmas
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 public import Mathlib.Topology.MetricSpace.Thickening
 

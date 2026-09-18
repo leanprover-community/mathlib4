@@ -6,11 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.BernoulliPolynomials
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Polynomial
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.PSeries
 
 /-!
 # Critical values of the Riemann zeta function

@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
 module
 
-public import Batteries.Tactic.Alias
+import Batteries.Tactic.Alias
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.TypeTags
 import Mathlib.Tactic.Basify.Attr

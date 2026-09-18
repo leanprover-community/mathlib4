@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Plus
 public import Mathlib.Algebra.Homology.FullSubcategory
 public import Mathlib.Algebra.Homology.ModelCategory.Injective
 public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibrant
-public import Mathlib.CategoryTheory.GuitartExact.Quotient
+import Mathlib.CategoryTheory.GuitartExact.Quotient
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 public import Mathlib.CategoryTheory.Preadditive.Injective.InjectiveObject
 
 /-!

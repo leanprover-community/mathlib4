@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finite.Perm
+import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Nat.Prime.Factorial
 public import Mathlib.GroupTheory.Index
 

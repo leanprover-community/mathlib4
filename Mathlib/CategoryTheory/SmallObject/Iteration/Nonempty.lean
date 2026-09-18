@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 public import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 

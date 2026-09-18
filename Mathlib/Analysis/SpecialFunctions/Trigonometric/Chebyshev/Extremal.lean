@@ -5,11 +5,11 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
-public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.Tactic.Positivity
+import Mathlib.LinearAlgebra.Lagrange
+import Mathlib.Tactic.Positivity
 
 /-!
 # Chebyshev polynomials over the reals: some extremal properties

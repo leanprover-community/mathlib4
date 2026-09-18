@@ -5,11 +5,11 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
+import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Data.EReal.Operations
-public import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Data.EReal.Operations
+import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Transfer normed algebraic structures across `Equiv`s

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
-public import Mathlib.Tactic.DepRewrite
+import Mathlib.Tactic.DepRewrite
 
 /-!
 # Ideal sheaves on schemes

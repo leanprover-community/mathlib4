@@ -6,7 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Limits over essentially small indexing categories

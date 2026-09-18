@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Limits
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!

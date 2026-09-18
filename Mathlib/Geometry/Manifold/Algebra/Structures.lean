@@ -6,7 +6,7 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-public import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # `C^n` structures

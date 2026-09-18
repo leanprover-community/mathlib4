@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Restricted
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Order.Filter.Cofinite
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Univariate restricted power series

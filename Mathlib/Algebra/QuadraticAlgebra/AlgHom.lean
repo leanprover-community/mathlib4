@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
-public import Mathlib.LinearAlgebra.Matrix.Nonsingular
+import Mathlib.LinearAlgebra.Matrix.Nonsingular
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!

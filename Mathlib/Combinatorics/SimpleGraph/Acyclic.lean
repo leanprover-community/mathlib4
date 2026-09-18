@@ -6,11 +6,11 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-public import Mathlib.Combinatorics.SimpleGraph.Metric
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 

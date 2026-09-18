@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
+import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 

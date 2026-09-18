@@ -5,12 +5,12 @@ Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+import Mathlib.Analysis.Analytic.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
-public import Mathlib.Analysis.Convex.Integral
+import Mathlib.Analysis.Convex.Integral
 public import Mathlib.Analysis.Polynomial.Fourier
 
 /-!

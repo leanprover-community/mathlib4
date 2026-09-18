@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, A
 -/
 module
 
-public import Mathlib.Data.Fin.Rev
+import Mathlib.Data.Fin.Rev
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Fin.Basic
 public import Batteries.Data.Fin.Lemmas

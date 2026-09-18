@@ -6,12 +6,12 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Group.Fin.Basic
-public import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.NeZero
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.GrindInstances  -- shake: keep (used in `example` only)
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Definition of `ZMod n` + basic results.

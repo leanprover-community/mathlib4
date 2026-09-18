@@ -5,11 +5,11 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Order.AddTorsor
-public import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.AddTorsor
+import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
-public import Mathlib.Basic.Real.Pointwise
+import Mathlib.Basic.Real.Pointwise
 
 /-!
 # Seminorms

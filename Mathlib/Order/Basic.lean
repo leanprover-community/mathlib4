@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.FastInstance
 
 /-!

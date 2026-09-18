@@ -5,10 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Ideal
-public import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Direct sums of Lie algebras and Lie modules

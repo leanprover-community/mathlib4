@@ -6,11 +6,11 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.DirectSum.Decomposition
-public import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Submodule.Order
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Equiv
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.RingTheory.HahnSeries.Lex
 

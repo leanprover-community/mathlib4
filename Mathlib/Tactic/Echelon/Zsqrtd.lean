@@ -6,7 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Tactic.Echelon.Core
-public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.NormNum.Basic
 
 public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic

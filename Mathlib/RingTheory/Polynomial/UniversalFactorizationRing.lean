@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Presentation.Submersive
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Polynomial.IsIntegral
+import Mathlib.RingTheory.Extension.Presentation.Submersive
+import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal

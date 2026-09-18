@@ -5,7 +5,7 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 /-!

@@ -5,8 +5,8 @@ Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.SuccPred.WithBot

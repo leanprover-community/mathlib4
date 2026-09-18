@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Ring.Parity

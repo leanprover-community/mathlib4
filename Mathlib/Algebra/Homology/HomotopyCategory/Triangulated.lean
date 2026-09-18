@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
-public import Mathlib.CategoryTheory.Triangulated.Triangulated
-public import Mathlib.CategoryTheory.ComposableArrows.Basic
+import Mathlib.CategoryTheory.Triangulated.Triangulated
+import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-! # The triangulated structure on the homotopy category of complexes
 

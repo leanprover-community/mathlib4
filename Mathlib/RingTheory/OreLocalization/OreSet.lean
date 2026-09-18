@@ -5,7 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 

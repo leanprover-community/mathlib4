@@ -5,11 +5,11 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.Analysis.Convex.Star
 public import Mathlib.Tactic.Field
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
-public import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # Convex sets

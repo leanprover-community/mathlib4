@@ -6,7 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Completeness of normed groups

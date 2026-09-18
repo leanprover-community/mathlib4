@@ -6,8 +6,8 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Algebra.Module.Torsion.Free
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Basics on bilinear maps

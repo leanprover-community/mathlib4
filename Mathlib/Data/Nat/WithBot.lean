@@ -6,7 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.Cast.WithTop
-public import Mathlib.Order.Nat
+import Mathlib.Order.Nat
 public import Mathlib.Algebra.Ring.Nat
 
 /-!

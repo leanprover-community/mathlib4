@@ -6,7 +6,7 @@ Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Metric
-public import Mathlib.Combinatorics.SimpleGraph.Paths
+import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Sum
 
 /-!

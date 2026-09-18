@@ -5,11 +5,11 @@ Authors: Johan Commelin, Jiedong Jiang, Fangming Li, Christian Merten
 -/
 module
 
-public import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Sober
-public import Mathlib.Topology.Spectral.Prespectral
-public import Mathlib.Topology.WithTopology
+import Mathlib.Topology.Spectral.Prespectral
+import Mathlib.Topology.WithTopology
 
 /-!
 # Constructible topology

@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
+import Mathlib.Order.Filter.Cofinite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.RingTheory.RamificationInertia.Ramification

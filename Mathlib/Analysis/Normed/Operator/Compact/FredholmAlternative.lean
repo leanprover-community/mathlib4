@@ -5,10 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.Normed.Module.RieszLemma
-public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.Normed.Module.RieszLemma
+import Mathlib.Analysis.Normed.Operator.Banach
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 

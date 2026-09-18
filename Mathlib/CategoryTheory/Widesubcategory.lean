@@ -5,7 +5,7 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!

@@ -5,11 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
-public import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
 

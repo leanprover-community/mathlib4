@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!

@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Spaces
+import Mathlib.CategoryTheory.Sites.Spaces
 public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 

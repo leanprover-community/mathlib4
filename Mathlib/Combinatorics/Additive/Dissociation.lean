@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Data.Finset.Powerset
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Dissociation and span

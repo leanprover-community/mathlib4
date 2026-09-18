@@ -5,9 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Perm.MaximalSubgroups
-public import Mathlib.GroupTheory.SpecificGroups.Alternating
+import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Maximal subgroups of the alternating group
 

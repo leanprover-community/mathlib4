@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!

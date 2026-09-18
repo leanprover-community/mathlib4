@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!

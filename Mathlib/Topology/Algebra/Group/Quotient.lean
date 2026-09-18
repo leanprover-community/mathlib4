@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Topology.Algebra.Group.Pointwise
-public import Mathlib.Topology.Maps.OpenQuotient
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Topology on the quotient group

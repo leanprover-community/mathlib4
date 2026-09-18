@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 

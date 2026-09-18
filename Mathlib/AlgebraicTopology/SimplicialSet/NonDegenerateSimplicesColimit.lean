@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
-public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
-public import Mathlib.CategoryTheory.Subfunctor.Equalizer
+import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
+import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!
 # Any simplicial set is the colimit of its monogenous subcomplexes

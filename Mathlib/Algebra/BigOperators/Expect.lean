@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Fintype.BigOperators

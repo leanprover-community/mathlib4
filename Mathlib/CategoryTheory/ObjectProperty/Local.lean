@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Objects that are local with respect to a property of morphisms

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-! # Metric connections
 

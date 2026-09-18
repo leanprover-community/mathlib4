@@ -5,12 +5,12 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix

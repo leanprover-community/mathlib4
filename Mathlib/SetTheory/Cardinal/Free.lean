@@ -6,13 +6,13 @@ Authors: Eric Wieser, Daniel Weber
 module
 
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.Ring.TransferInstance
-public import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.Data.ZMod.Defs
-public import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.Algebra.Ring.TransferInstance
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Data.ZMod.Defs
+import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.RingTheory.FreeCommRing
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.Cardinal.Finsupp
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!

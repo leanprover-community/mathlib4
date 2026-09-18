@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Yunzhou Xie, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Basis
 
 /-!

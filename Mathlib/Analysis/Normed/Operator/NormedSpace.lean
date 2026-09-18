@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.Normed.Operator.NNNorm
+import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operator norm for maps on normed spaces

@@ -6,7 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Topology.Instances.EReal.Lemmas
+import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # Half-planes in ℂ are open

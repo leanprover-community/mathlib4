@@ -5,13 +5,13 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Rat.Floor
-public import Mathlib.RingTheory.Nakayama
-public import Mathlib.Tactic.Continuity
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Floor
+import Mathlib.RingTheory.Nakayama
+import Mathlib.Tactic.Continuity
 
 /-!
 # Ramification index

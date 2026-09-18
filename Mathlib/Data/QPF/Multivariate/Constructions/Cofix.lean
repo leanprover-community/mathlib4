@@ -5,8 +5,8 @@ Authors: Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Functor.Multivariate
-public import Mathlib.Data.PFunctor.Multivariate.Basic
+import Mathlib.Control.Functor.Multivariate
+import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.QPF.Multivariate.Basic
 public import Lean.Elab.Tactic.RCases

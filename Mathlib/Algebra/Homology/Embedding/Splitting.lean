@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Homotopy
-public import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.Algebra.Homology.Embedding.Extend
 
 /-!

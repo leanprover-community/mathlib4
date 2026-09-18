@@ -5,7 +5,7 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!

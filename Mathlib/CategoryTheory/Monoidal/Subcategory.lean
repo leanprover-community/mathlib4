@@ -8,8 +8,8 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!

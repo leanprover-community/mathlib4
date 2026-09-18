@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-public import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.FunProp
 
 /-!
 # Measurable embeddings and equivalences

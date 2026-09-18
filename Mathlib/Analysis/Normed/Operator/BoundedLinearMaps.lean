@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Asymptotics.Prod
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
 /-!

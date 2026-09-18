@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Single
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Limits and colimits in the category of homological complexes

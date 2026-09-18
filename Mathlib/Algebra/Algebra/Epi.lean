@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.TensorProduct.Finite
 

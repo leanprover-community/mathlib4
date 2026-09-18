@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
-public import Mathlib.Data.Set.Card
+import Mathlib.Data.Set.Card
 
 /-!
 # Connectivity of subgraphs and induced graphs

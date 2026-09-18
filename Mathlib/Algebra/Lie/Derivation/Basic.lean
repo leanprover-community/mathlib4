@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Subalgebra
+import Mathlib.Algebra.Lie.Subalgebra
 public import Mathlib.RingTheory.Nilpotent.Exp
-public import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations

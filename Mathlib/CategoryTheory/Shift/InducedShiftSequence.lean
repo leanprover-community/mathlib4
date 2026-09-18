@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 
 /-! # Induced shift sequences

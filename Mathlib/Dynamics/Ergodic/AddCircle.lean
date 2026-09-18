@@ -5,12 +5,12 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
-public import Mathlib.Dynamics.FixedPoints.Prufer
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Dynamics.FixedPoints.Prufer
 public import Mathlib.Dynamics.Ergodic.Ergodic
-public import Mathlib.MeasureTheory.Covering.DensityTheorem
+import Mathlib.MeasureTheory.Covering.DensityTheorem
 public import Mathlib.MeasureTheory.Group.AddCircle
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Ergodic maps of the additive circle

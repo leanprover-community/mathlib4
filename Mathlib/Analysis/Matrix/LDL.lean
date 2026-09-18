@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.Analysis.Matrix.PosDef
-public import Mathlib.LinearAlgebra.Matrix.Block
+import Mathlib.LinearAlgebra.Matrix.Block
 
 /-! # LDL decomposition
 

@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
-public import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!

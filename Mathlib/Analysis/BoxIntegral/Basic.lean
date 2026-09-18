@@ -8,9 +8,9 @@ module
 public import Mathlib.Analysis.BoxIntegral.Partition.Filter
 public import Mathlib.Analysis.BoxIntegral.Partition.Measure
 public import Mathlib.Analysis.Oscillation
-public import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Bool.Basic
 public import Mathlib.MeasureTheory.Measure.Real
-public import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane

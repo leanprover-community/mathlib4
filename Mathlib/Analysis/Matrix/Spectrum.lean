@@ -5,11 +5,11 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Star.UnitaryStarAlgAut
+import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-! # Spectral theory of Hermitian matrices

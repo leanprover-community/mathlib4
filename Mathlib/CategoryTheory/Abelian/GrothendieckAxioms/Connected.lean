@@ -6,8 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-public import Mathlib.CategoryTheory.Limits.Connected
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
 /-!
 # Pulling back connected colimits

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Setoid.Partition
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Strictly positive elements of an algebra

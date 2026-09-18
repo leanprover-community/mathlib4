@@ -9,7 +9,7 @@ module
 public import Mathlib.CategoryTheory.MarkovCategory.Positive
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Widesubcategory
 public import Mathlib.Probability.Kernel.Category.SFinKer
-public import Mathlib.Probability.Kernel.Deterministic
+import Mathlib.Probability.Kernel.Deterministic
 
 /-!
 # Stoch

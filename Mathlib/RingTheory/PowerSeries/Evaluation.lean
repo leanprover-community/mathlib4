@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.PiTopology
-public import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-! # Evaluation of power series
 

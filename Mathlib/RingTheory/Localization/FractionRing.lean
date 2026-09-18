@@ -9,10 +9,10 @@ public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Algebra.Ring.CompTypeclasses
+import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization

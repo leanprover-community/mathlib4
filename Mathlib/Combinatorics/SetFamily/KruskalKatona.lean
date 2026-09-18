@@ -8,7 +8,7 @@ module
 public import Mathlib.Combinatorics.Colex
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
 public import Mathlib.Combinatorics.SetFamily.Intersecting
-public import Mathlib.Data.Finset.Fin
+import Mathlib.Data.Finset.Fin
 
 /-!
 # Kruskal-Katona theorem

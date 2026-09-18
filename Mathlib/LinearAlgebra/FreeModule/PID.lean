@@ -6,7 +6,7 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-! # Free modules over PID

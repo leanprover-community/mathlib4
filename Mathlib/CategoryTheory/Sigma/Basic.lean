@@ -6,8 +6,8 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Whiskering
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
-public import Mathlib.CategoryTheory.NatIso
+import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Disjoint union of categories

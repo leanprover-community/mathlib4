@@ -5,12 +5,12 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.Algebra.FreeAlgebra
+import Mathlib.LinearAlgebra.Basis.Cardinality
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!

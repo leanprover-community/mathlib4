@@ -6,7 +6,7 @@ Authors: Adam Topaz, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 

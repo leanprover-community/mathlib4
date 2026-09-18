@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localized Module

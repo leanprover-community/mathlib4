@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.LSum
+import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 

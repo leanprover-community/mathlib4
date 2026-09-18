@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Normed.Lp.ProdLp
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L²` inner product space structure on products of inner product spaces

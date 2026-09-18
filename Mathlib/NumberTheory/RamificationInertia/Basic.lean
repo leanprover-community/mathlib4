@@ -5,11 +5,11 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Ramification index and inertia degree

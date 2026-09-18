@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
-public import Mathlib.CategoryTheory.Sites.Localization
+import Mathlib.CategoryTheory.Sites.Localization
 
 /-!
 # The category of sheaves of modules as a localization of presheaves of modules

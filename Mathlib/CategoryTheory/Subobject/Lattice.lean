@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Subobject.FactorThru
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.Data.Finset.Lattice.Fold

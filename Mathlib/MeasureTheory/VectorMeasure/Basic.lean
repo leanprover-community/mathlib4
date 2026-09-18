@@ -5,12 +5,12 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.MeasureTheory.VectorMeasure.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 

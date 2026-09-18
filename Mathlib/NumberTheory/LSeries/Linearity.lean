@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!

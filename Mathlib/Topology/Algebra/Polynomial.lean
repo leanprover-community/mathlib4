@@ -5,9 +5,9 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Inductions
-public import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Inductions
+import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.RingTheory.Polynomial.Vieta

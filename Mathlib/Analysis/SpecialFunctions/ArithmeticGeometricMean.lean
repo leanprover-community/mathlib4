@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Analysis.Real.Sqrt
 
 /-!

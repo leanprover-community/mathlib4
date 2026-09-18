@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Dedekind domains and invertible ideals

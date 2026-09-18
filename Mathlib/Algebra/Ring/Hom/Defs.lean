@@ -6,7 +6,7 @@ Authors: Amelia Livingston, Jireh Loreaux
 module
 
 public import Mathlib.Algebra.GroupWithZero.Hom
-public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.Basic
 
 /-!

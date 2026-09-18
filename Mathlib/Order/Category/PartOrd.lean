@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Category.Preord
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget

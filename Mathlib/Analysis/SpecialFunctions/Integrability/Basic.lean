@@ -5,7 +5,7 @@ Authors: Benjamin Davidson
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv

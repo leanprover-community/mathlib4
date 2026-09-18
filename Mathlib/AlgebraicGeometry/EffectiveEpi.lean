@@ -5,10 +5,10 @@ Authors: Yong-Gyu Choi
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.EqualizerPushout
+import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
-public import Mathlib.Topology.Category.TopCat.EffectiveEpi
-public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
+import Mathlib.Topology.Category.TopCat.EffectiveEpi
+import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 
 /-!
 # Effective epimorphisms in the category of schemes

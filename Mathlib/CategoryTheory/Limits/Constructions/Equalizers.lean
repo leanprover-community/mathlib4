@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
 /-!

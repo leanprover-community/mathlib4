@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.ObjectProperty.Shift

@@ -5,8 +5,8 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!

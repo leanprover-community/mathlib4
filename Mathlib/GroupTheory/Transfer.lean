@@ -7,7 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Sylow
-public import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # The Transfer Homomorphism

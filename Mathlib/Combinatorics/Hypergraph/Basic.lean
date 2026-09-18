@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Spotte-Smith, Bhavik Mehta
 -/
 module
-public import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Set.Card
 
 /-!

@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Elementwise
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subfunctor.Sieves

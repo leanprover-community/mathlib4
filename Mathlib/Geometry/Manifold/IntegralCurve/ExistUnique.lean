@@ -5,8 +5,8 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.ODE.ExistUnique
-public import Mathlib.Analysis.ODE.Gronwall
+import Mathlib.Analysis.ODE.ExistUnique
+import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary

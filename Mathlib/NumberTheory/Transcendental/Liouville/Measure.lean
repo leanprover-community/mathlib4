@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
-public import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.PSeries
 
 /-!
 # Volume of the set of Liouville numbers

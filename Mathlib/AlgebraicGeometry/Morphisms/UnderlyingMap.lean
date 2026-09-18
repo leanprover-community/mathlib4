@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocalAtTarget
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!

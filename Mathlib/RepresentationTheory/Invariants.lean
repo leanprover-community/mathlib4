@@ -5,7 +5,7 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.Intertwining
+import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.Rep.Res
 

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 

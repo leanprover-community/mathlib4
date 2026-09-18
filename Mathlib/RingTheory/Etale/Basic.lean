@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Smooth.Basic
-public import Mathlib.RingTheory.Unramified.Basic
+import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 

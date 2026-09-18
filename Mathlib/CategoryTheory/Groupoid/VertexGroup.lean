@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.PathCategory.Basic
-public import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # Vertex group

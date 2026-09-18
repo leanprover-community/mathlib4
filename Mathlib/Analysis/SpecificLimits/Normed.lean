@@ -14,11 +14,11 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Combinatorics.Enumerative.Stirling
-public import Mathlib.Data.List.TFAE
+import Mathlib.Data.List.TFAE
 public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Order.Filter.AtTopBot.ModEq
-public import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # A collection of specific limit computations

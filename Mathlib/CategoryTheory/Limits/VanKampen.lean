@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equifibered
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts

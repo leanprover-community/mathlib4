@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.Polynomial.Degree.Support
-public import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NoncommRing
 
 /-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 

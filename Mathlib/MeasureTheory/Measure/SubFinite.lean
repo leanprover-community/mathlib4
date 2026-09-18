@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.Sub
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!

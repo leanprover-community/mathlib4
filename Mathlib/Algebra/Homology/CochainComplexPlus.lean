@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
-public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 
 /-!

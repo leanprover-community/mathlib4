@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
-public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Localization.StructuredArrow
 
 /-!

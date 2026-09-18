@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.Logic.Equiv.Fin.Rotate
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 

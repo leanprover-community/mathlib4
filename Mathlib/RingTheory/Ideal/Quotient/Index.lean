@@ -5,13 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.GroupTheory.Index
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.TensorProduct.Finite
 

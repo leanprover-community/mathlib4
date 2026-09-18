@@ -5,13 +5,13 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Number fields

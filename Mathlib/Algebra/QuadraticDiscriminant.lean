@@ -5,9 +5,9 @@ Authors: Zhouhang Zhou
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Field
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.LinearCombination
+import Mathlib.Order.Filter.AtTopBot.Field
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Linarith.Frontend
 
 /-!

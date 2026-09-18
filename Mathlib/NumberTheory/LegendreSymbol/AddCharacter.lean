@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.FieldTheory.Finite.Trace
-public import Mathlib.Algebra.Group.AddChar
+import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Data.ZMod.Units
 
 /-!

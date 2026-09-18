@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.PolarCoord
+import Mathlib.Analysis.SpecialFunctions.PolarCoord
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!

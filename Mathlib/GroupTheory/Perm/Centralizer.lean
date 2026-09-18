@@ -5,13 +5,13 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-public import Mathlib.GroupTheory.Perm.DomMulAct
-public import Mathlib.GroupTheory.Rank
+import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Rank
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups

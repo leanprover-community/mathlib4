@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
 

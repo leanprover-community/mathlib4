@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Presentable.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!
 # Colimits of presentable objects

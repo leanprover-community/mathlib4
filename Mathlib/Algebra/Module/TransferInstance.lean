@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Algebra.Module.Torsion.Free
+import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!

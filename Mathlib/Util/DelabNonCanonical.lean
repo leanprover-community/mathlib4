@@ -5,7 +5,7 @@ Authors: Robert Maxton
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!

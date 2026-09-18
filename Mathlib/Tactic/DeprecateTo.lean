@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import Std.Time.Format
-public import Batteries.Tactic.Alias
+import Batteries.Tactic.Alias
 public import Mathlib.Init
 
 /-!
