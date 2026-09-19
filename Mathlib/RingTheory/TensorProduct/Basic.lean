@@ -198,6 +198,17 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
       | add x y hx hy => simp [smul_add, add_mul _, *]
     | add x y hx hy => simp [smul_add, mul_add _, *]
 
+open scoped RingTheory.LinearMap in
+lemma _root_.LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (f : M →ₗ[R] R ⊗[R] A) (g : N →ₗ[R] A) :
+    μ[R] ∘ₗ ((TensorProduct.lid R A ∘ₗ f) ⊗ₘ g) =
+      TensorProduct.lid R A ∘ₗ LinearMap.lTensor R μ ∘ₗ
+        (TensorProduct.assoc R R A A).toLinearMap ∘ₗ (f ⊗ₘ g) := by
+  trans μ[R] ∘ₗ (LinearMap.rTensor A (TensorProduct.lid R A)) ∘ₗ (f ⊗ₘ g)
+  · ext; simp
+  simp only [← LinearMap.comp_assoc]
+  congr 1; ext; simp
+
 end NonUnitalNonAssocSemiring
 
 section NonAssocSemiring
