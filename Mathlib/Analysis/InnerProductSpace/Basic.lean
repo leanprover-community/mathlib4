@@ -507,6 +507,17 @@ theorem parallelogram_law_with_nnnorm (x y : E) :
     ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
   simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
 
+include 𝕜 in
+/-- The identity underlying Euler's quadrilateral theorem, for the quadrilateral with vertices
+`0`, `x`, `x + y` and `x + y + z`: the sum of the squares of the four sides equals the sum of the
+squares of the diagonals `x + y` and `y + z`, plus `‖x + z‖ ^ 2`, where `x + z` is twice the vector
+between the midpoints of the diagonals. The case `z = -y` is `parallelogram_law_with_norm`. -/
+theorem norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq (x y z : E) :
+    ‖x‖ ^ 2 + ‖y‖ ^ 2 + ‖z‖ ^ 2 + ‖x + y + z‖ ^ 2
+      = ‖x + y‖ ^ 2 + ‖y + z‖ ^ 2 + ‖x + z‖ ^ 2 := by
+  simp only [norm_add_sq (𝕜 := 𝕜), inner_add_left, map_add]
+  ring
+
 variable {𝕜}
 
 /-- Polarization identity: The real part of the inner product, in terms of the norm. -/
