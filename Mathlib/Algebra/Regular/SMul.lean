@@ -243,7 +243,7 @@ section Group
 variable {G : Type*} [Group G]
 
 /-- An element of a group acting on a type is regular. -/
-@[deprecated IsSMulRegular.all (since := "2026-09-08")]
+@[deprecated IsSMulRegular.all +typeChanged (since := "2026-09-08")]
 theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g :=
   IsSMulRegular.all g
 

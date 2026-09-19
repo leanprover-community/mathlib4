@@ -991,6 +991,9 @@ theorem old_mul_comm {α} [CommMagma α] (a b : α) : a * b = b * a := mul_comm 
 
 /--
 warning: `old_mul_comm` has been deprecated: Use `mul_comm` instead
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵_̵mul_comm
 ---
 info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * b = b * a
 -/
@@ -999,6 +1002,9 @@ info: @old_mul_comm : ∀ {α : Type u_1} [inst : CommMagma α] (a b : α), a * 
 
 /--
 warning: `old_add_comm` has been deprecated: Use `add_comm` instead
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵_̵add_comm
 ---
 info: @old_add_comm : ∀ {α : Type u_1} [inst : AddCommMagma α] (a b : α), a + b = b + a
 -/
@@ -1010,6 +1016,9 @@ alias mul_comm_alias := mul_comm
 
 /--
 warning: `mul_comm_alias` has been deprecated: Use `mul_comm` instead
+
+Hint: Replace the deprecated name:
+  mul_comm_̵a̵l̵i̵a̵s̵
 ---
 info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b = b * a
 -/
@@ -1018,6 +1027,9 @@ info: @mul_comm_alias : ∀ {G : Type u_1} [inst : CommMagma G] (a b : G), a * b
 
 /--
 warning: `add_comm_alias` has been deprecated: Use `add_comm` instead
+
+Hint: Replace the deprecated name:
+  add_comm_̵a̵l̵i̵a̵s̵
 ---
 info: @add_comm_alias : ∀ {G : Type u_1} [inst : AddCommMagma G] (a b : G), a + b = b + a
 -/

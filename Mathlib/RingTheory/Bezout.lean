@@ -55,27 +55,28 @@ set_option backward.isDefEq.respectTransparency false in
 theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
-  tfae_have 1 → 2
-  | _ => inferInstance
-  tfae_have 2 → 3
-  | _ => inferInstance
-  tfae_have 3 → 4
-  | _ => inferInstance
-  tfae_have 4 → 1
-  | ⟨h⟩ => by
-    rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
-    refine ⟨RelEmbedding.wellFounded ?_ h⟩
-    have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
-      fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).1
-    choose f hf using this
-    exact
-      { toFun := f
-        inj' := fun x y e => by ext1; rw [hf, hf, e]
-        map_rel_iff' := by
-          dsimp
-          intro a b
-          rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]
-          rfl }
-  tfae_finish
+  classical
+    tfae_have 1 → 2
+    | _ => inferInstance
+    tfae_have 2 → 3
+    | _ => inferInstance
+    tfae_have 3 → 4
+    | _ => inferInstance
+    tfae_have 4 → 1
+    | h => by
+      rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
+      refine RelEmbedding.wellFounded ?_ h
+      have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
+        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).1
+      choose f hf using this
+      exact
+        { toFun := f
+          inj' := fun x y e => by ext1; rw [hf, hf, e]
+          map_rel_iff' := by
+            dsimp
+            intro a b
+            rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]
+            rfl }
+    tfae_finish
 
 end IsBezout
