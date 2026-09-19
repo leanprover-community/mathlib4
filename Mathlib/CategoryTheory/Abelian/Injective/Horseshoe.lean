@@ -1,0 +1,229 @@
+/-
+Copyright (c) 2026 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
+public import Mathlib.Algebra.Homology.Embedding.ExtendLimits
+public import Mathlib.Algebra.Homology.Embedding.Splitting
+public import Mathlib.CategoryTheory.Abelian.Injective.Ext
+
+/-!
+# Horseshoe
+
+-/
+
+universe w
+
+@[expose] public section
+
+namespace CategoryTheory
+
+open Abelian Limits CochainComplex Pretriangulated
+
+variable {C : Type*} [Category* C] [Abelian C]
+
+namespace InjectiveResolution
+
+/-- Given a short exact sequence `S : ShortComplex` in an abelian category,
+this is the data of a horseshoe diagram involving injective resolutions of
+`S.X₁`, `S.X₂`, `S.X₃`. -/
+structure Horseshoe {S : ShortComplex C} (hS : S.ShortExact)
+    (R₁ : InjectiveResolution S.X₁) (R₂ : InjectiveResolution S.X₂)
+    (R₃ : InjectiveResolution S.X₃) where
+  /-- A morphism between the injective resolutions `R₁` and `R₂` which extends `S.f`. -/
+  f : Hom R₁ R₂ S.f
+  /-- A morphism between the injective resolutions `R₂` and `R₃` which extends `S.g`. -/
+  g : Hom R₂ R₃ S.g
+  w_f (n : ℕ) : f.hom.f n ≫ g.hom.f n = 0 := by cat_disch
+  /-- A degreewise splitting of the short exact sequence of complexes
+  `0 ⟶ R₁.cocomplex ⟶ R₂.cocomplex ⟶ R₃.cocomplex ⟶ 0`. -/
+  splitting (n : ℕ) : (ShortComplex.mk _ _ (w_f n)).Splitting
+
+namespace Horseshoe
+
+variable {S : ShortComplex C} {hS : S.ShortExact}
+  {R₁ : InjectiveResolution S.X₁} {R₂ : InjectiveResolution S.X₂}
+  {R₃ : InjectiveResolution S.X₃} (h : Horseshoe hS R₁ R₂ R₃)
+
+attribute [reassoc (attr := simp)] w_f
+
+@[reassoc (attr := simp)]
+lemma w : h.f.hom ≫ h.g.hom = 0 := by cat_disch
+
+@[reassoc (attr := simp)]
+lemma w' : h.f.hom' ≫ h.g.hom' = 0 := by
+  simp [Hom.hom', ← HomologicalComplex.extendMap_comp, w]
+
+/-- The short exact sequence of cochain complexes (indexed by `ℕ`)
+`0 ⟶ R₁.cocomplex ⟶ R₂.cocomplex ⟶ R₃.cocomplex ⟶ 0` of a horseshoe diagram. -/
+@[implicit_reducible]
+def shortComplex : ShortComplex (CochainComplex C ℕ) := .mk _ _ h.w
+
+lemma shortExact_shortComplex : h.shortComplex.ShortExact :=
+  HomologicalComplex.shortExact_of_degreewise_shortExact _
+    (fun n ↦ (h.splitting n).shortExact)
+
+lemma extMk_comp_extClass'_aux
+    {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) {m : ℕ}
+    (hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0) (m' : ℕ) :
+    (x₃ ≫ (h.splitting n).s ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r) ≫
+      R₁.cocomplex.d m m' = 0 := by
+  have := (h.splitting m').shortExact.mono_f
+  let x₂ := x₃ ≫ (h.splitting n).s
+  let x₁ := x₂ ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r
+  have hx₂ : x₂ ≫ h.g.hom.f n = x₃ := by simp [x₂, (h.splitting n).s_g]
+  have hx₁ : x₁ ≫ h.f.hom.f m = x₂ ≫ R₂.cocomplex.d n m := by
+    dsimp [x₁]
+    simp [(h.splitting m).r_f, ← HomologicalComplex.Hom.comm_assoc, reassoc_of% hx₂,
+      reassoc_of% hx₃]
+  have : x₁ ≫ R₁.cocomplex.d m m' = 0 := by
+    simp [← cancel_mono (h.f.hom.f m'), ← HomologicalComplex.Hom.comm, reassoc_of% hx₁]
+  simpa [x₁, x₂] using this
+
+/-- The short exact sequence of cochain complexes (indexed by `ℤ`)
+`0 ⟶ R₁.cochainComplex ⟶ R₂.cochainComplex ⟶ R₃.cochainComplex ⟶ 0` of a horseshoe diagram. -/
+@[implicit_reducible, simps]
+noncomputable def shortComplexExtend : ShortComplex (CochainComplex C ℤ) where
+  X₁ := R₁.cochainComplex
+  X₂ := R₂.cochainComplex
+  X₃ := R₃.cochainComplex
+  f := h.f.hom'
+  g := h.g.hom'
+
+lemma shortExact_shortComplexExtend :
+    h.shortComplexExtend.ShortExact :=
+  h.shortExact_shortComplex.map_of_exact (ComplexShape.embeddingUpNat.extendFunctor C)
+
+/-- The degreewise splitting of the short exact sequence `h.shortComplexExtend`
+of cochain complexes (indexed by `ℤ`) of a horseshoe diagram. In nonnegative degrees,
+it is induced by the given splittings `h.splitting`. -/
+noncomputable def splittingExtend (n : ℤ) :
+    (h.shortComplexExtend.map (HomologicalComplex.eval C (ComplexShape.up ℤ) n)).Splitting :=
+  ComplexShape.embeddingUpNat.splittingExtend (S := h.shortComplex) h.splitting n
+
+@[reassoc]
+lemma splittingExtend_s (n : ℤ) (m : ℕ) (hm : m = n) :
+    (h.splittingExtend n).s =
+        (R₃.cochainComplexXIso n m hm).hom ≫ (h.splitting m).s ≫
+          (R₂.cochainComplexXIso n m hm).inv := by
+  dsimp [splittingExtend]
+  rw [ComplexShape.embeddingUpNat.splittingExtend_apply _ hm]
+  rfl
+
+@[reassoc]
+lemma splittingExtend_r (n : ℤ) (m : ℕ) (hm : m = n) :
+    (h.splittingExtend n).r =
+        (R₂.cochainComplexXIso n m hm).hom ≫ (h.splitting m).r ≫
+          (R₁.cochainComplexXIso n m hm).inv := by
+  dsimp [splittingExtend]
+  rw [ComplexShape.embeddingUpNat.splittingExtend_apply _ hm]
+  rfl
+
+
+/-- The triangle of cochain complexes corresponding to the degreewise split
+short exact sequence `h.shortComplexExtend` that is part of a horseshoe diagram.
+The image of this triangle in the derived category is a distinguished triangle. -/
+noncomputable abbrev triangle : Triangle (CochainComplex C ℤ) :=
+    triangleOfDegreewiseSplit h.shortComplexExtend h.splittingExtend
+
+/-- The morphism which relates the short exact sequence `0 ⟶ S.X₁ ⟶ S.X₂ ⟶ S.X₃ ⟶ 0`
+and the short exact sequence
+`0 ⟶ R₁.cochainComplex ⟶ R₂.cochainComplex ⟶ R₃.cochainComplex ⟶ 0` when
+we have a horseshoe diagram. -/
+@[simps, implicit_reducible]
+noncomputable def η :
+    ShortComplex.mk ((singleFunctor C 0).map S.f) ((singleFunctor C 0).map S.g)
+      (by simp [← Functor.map_comp]) ⟶ h.shortComplexExtend where
+  τ₁ := R₁.ι'
+  τ₂ := R₂.ι'
+  τ₃ := R₃.ι'
+
+/-- Given a horseshoe diagram `h : Horseshoe hS R₁ R₂ R₃` for a short exact sequence
+`0 ⟶ S.X₁ ⟶ S.X₂ ⟶ S.X₃ ⟶ 0` in an abelian category, this is the isomorphism between
+the distinguished triangle in the derived category attached to `S` and the
+distinguished triangle attached to the degreewise split short exact sequence
+of cochain complexes
+`0 ⟶ R₁.cochainComplex ⟶ R₂.cochainComplex ⟶ R₃.cochainComplex ⟶ 0`. -/
+@[simps!]
+noncomputable def singleTriangleIso [HasDerivedCategory C] :
+    ShortComplex.ShortExact.singleTriangle hS ≅
+    DerivedCategory.Q.mapTriangle.obj h.triangle :=
+  Triangle.isoMk _ _ (asIso (DerivedCategory.Q.map R₁.ι'))
+    (asIso (DerivedCategory.Q.map R₂.ι')) (asIso (DerivedCategory.Q.map R₃.ι'))
+    (by simp [← DerivedCategory.Q_map_single_map, ← Functor.map_comp])
+    (by simp [← DerivedCategory.Q_map_single_map, ← Functor.map_comp]) (by
+      simp [ShortComplex.ShortExact.singleδ,
+        DerivedCategory.triangleOfSESδ_eq_map_homOfDegreewiseSplit_comp h.splittingExtend,
+        dsimp% (DerivedCategory.triangleOfSES.map
+        (hS.map_of_exact ((singleFunctor C 0))) h.shortExact_shortComplexExtend h.η).comm₃])
+
+lemma shiftedHomMk₀_inv_Q_ι'_comp_singleδ [HasDerivedCategory C] :
+    (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₃.ι'))).comp
+        hS.singleδ (add_zero 1) =
+    (ShiftedHom.map (homOfDegreewiseSplit h.shortComplexExtend h.splittingExtend)
+      DerivedCategory.Q).comp (ShiftedHom.mk₀ 0 rfl (inv (DerivedCategory.Q.map R₁.ι')))
+        (zero_add 1) := by
+  simpa [ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀] using! h.singleTriangleIso.hom.comm₃
+
+attribute [local instance] HasDerivedCategory.standard in
+open HomComplex in
+lemma extMk_comp_extClass'
+    [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0) (m' : ℕ) (hm' : m + 1 = m') :
+    (R₃.extMk x₃ m hm hx₃).comp hS.extClass hm =
+    R₁.extMk (x₃ ≫ (h.splitting n).s ≫ R₂.cocomplex.d n m ≫ (h.splitting m).r) m' hm'
+      (h.extMk_comp_extClass'_aux x₃ hx₃ m') := by
+  ext
+  simp only [Ext.comp_hom, extMk_hom, Functor.comp_obj,
+    Category.comp_id, ShiftedHom.mk₀_id_comp,
+    ShortComplex.ShortExact.extClass_hom, Category.assoc,
+    DerivedCategory.singleFunctorIsoCompQ_hom_app,
+    DerivedCategory.singleFunctorIsoCompQ_inv_app, ← DerivedCategory.Q_obj_single_obj,
+    ShiftedHom.comp_assoc (a := (m : ℤ)) _ _ _ (zero_add (n : ℤ)) (add_zero 1) (by lia),
+    h.shiftedHomMk₀_inv_Q_ι'_comp_singleδ,
+    ← ShiftedHom.comp_assoc (a₂ := 1) (a₁ := (n : ℤ)) (a₁₂ := (m : ℤ)) (a := (m : ℤ)) _ _ _
+      (by lia) (zero_add 1) (by lia), ← ShiftedHom.map_comp,
+      HomComplex.Cocycle.equivHomShift_symm_shiftedHomComp]
+  congr 3
+  ext : 1
+  simp only [HomComplex.Cocycle.comp_coe, HomComplex.Cocycle.fromSingleMk_coe,
+    HomComplex.Cochain.fromSingleMk_comp (r := 1) (m := m) _ (zero_add (n : ℤ)) _
+      (by lia) m (by lia)]
+  congr 1
+  subst hm
+  simp [Cocycle.equivHomShift_apply, cocycleOfDegreewiseSplit_coe,
+    Cochain.rightUnshift_v _ _ _ _ _ _ _ (add_zero (n : ℤ)),
+    h.splittingExtend_s n n rfl, h.splittingExtend_r (n + 1) (n + 1) (by lia),
+    R₂.cochainComplex_d n (n + 1) n (n + 1) (by lia) (by lia)]
+
+lemma extMk_comp_extClass
+    [HasExt.{w} C] {X : C} {n : ℕ} (x₃ : X ⟶ R₃.cocomplex.X n)
+    (x₂ : X ⟶ R₂.cocomplex.X n) (hx₂ : x₂ ≫ h.g.hom.f n = x₃)
+    (m : ℕ) (hm : n + 1 = m)
+    (x₁ : X ⟶ R₁.cocomplex.X m) (hx₁ : x₁ ≫ h.f.hom.f m = x₂ ≫ R₂.cocomplex.d n m)
+    (m' : ℕ) (hm' : m + 1 = m') :
+    (R₃.extMk x₃ m hm (by simp [← hx₂, ← reassoc_of% hx₁])).comp hS.extClass hm =
+    R₁.extMk x₁ m' hm' (by
+      have := (h.splitting m').shortExact.mono_f
+      simp [← cancel_mono (h.f.hom.f m'), ← HomologicalComplex.Hom.comm, reassoc_of% hx₁]) := by
+  have hx₃ : x₃ ≫ R₃.cocomplex.d n m = 0 := by simp [← hx₂, ← reassoc_of% hx₁]
+  rw [h.extMk_comp_extClass' x₃ m hm hx₃ m' hm',
+    ← sub_eq_zero, sub_extMk, extMk_eq_zero_iff _ _ _ _ _ _ hm]
+  obtain ⟨u, rfl⟩ :
+      ∃ (u : X ⟶ R₁.cocomplex.X n), x₂ = u ≫ h.f.hom.f n + x₃ ≫ (h.splitting n).s :=
+    ⟨x₂ ≫ (h.splitting n).r, by simpa [← hx₂] using x₂ ≫= (h.splitting n).id.symm⟩
+  refine ⟨-u, ?_⟩
+  have := (h.splitting m).shortExact.mono_f
+  simp [← cancel_mono (h.f.hom.f m),
+    (h.splitting m).r_f, ← HomologicalComplex.Hom.comm_assoc, (h.splitting n).s_g_assoc,
+    hx₁, reassoc_of% hx₃]
+
+end Horseshoe
+
+end InjectiveResolution
+
+end CategoryTheory
