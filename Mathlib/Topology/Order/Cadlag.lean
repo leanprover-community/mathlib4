@@ -22,6 +22,8 @@ Using the `to_dual` machinery we also define *càglàd functions* (left-continuo
 open Filter TopologicalSpace Bornology
 open scoped Topology ENNReal
 
+namespace Function
+
 variable {X Y : Type*} [TopologicalSpace X] {f g : X → Y}
 
 section Basic
@@ -37,7 +39,7 @@ def IsRightContinuous (f : X → Y) :=
   ∀ a, ContinuousWithinAt f (Set.Ioi a) a
 
 @[to_dual]
-lemma Continuous.isRightContinuous (hf : Continuous f) :
+lemma _root_.Continuous.isRightContinuous (hf : Continuous f) :
     IsRightContinuous f :=
   fun _ ↦ hf.continuousWithinAt
 
@@ -106,7 +108,7 @@ structure IsCadlag (f : X → Y) : Prop where
   tendsto_nhdsLT : ∀ x, ∃ l, Tendsto f (𝓝[<] x) (𝓝 l)
 
 @[to_dual]
-lemma Continuous.isCadlag (hf : Continuous f) :
+lemma _root_.Continuous.isCadlag (hf : Continuous f) :
     IsCadlag f where
   isRightContinuous := hf.isRightContinuous
   tendsto_nhdsLT x := ⟨f x, hf.continuousAt.continuousWithinAt⟩
@@ -194,3 +196,5 @@ lemma isBounded_image_of_isCadlag_of_isCompact (hf : IsCadlag f) {s : Set X} (hs
   isBounded_image_of_isLocallyBounded_of_isCompact hs hf.isLocallyBounded
 
 end PseudoMetricSpace
+
+end Function
