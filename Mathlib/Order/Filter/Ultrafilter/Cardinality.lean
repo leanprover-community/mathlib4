@@ -41,7 +41,7 @@ section Infinite
 def interPair (s : Set α) : Set (Finset α × Finset (Finset α)) :=
   open scoped Classical in {p | p.1.filter (· ∈ s) ∈ p.2}
 
-def interPairsFilter (s : Set (Set α)) : Filter (Finset α × Finset (Finset α)) :=
+noncomputable def interPairsFilter (s : Set (Set α)) : Filter (Finset α × Finset (Finset α)) :=
   open scoped Classical in ⨅ t, 𝓟 (if t ∈ s then interPair t else (interPair t)ᶜ)
 
 instance interPairsFilter_neBot (s : Set (Set α)) : (interPairsFilter s).NeBot := by

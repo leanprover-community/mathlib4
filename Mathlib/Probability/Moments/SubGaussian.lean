@@ -378,12 +378,7 @@ lemma ae_eq_zero_of_hasSubgaussianMGF_zero (h : HasSubgaussianMGF X 0 κ ν) :
   filter_upwards [(h.neg).measure_pos_eq_zero_of_hasSubGaussianMGF_zero,
     h.measure_pos_eq_zero_of_hasSubGaussianMGF_zero]
   intro ω' h1 h2
-  simp_rw [Pi.neg_apply, Left.neg_pos_iff] at h1
-  apply nonpos_iff_eq_zero.1
-  calc (κ ω') {ω | X ω ≠ 0}
-  _ = (κ ω') {ω | X ω < 0 ∨ 0 < X ω} := by simp_rw [ne_iff_lt_or_gt]
-  _ ≤ (κ ω') {ω | X ω < 0} + (κ ω') {ω | 0 < X ω} := measure_union_le _ _
-  _ = 0 := by simp [h1, h2]
+  exact measure_mono_null (by simp [Set.subset_def]) <| measure_union_null h1 h2
 
 /-- Auxiliary lemma for `ae_eq_zero_of_hasSubgaussianMGF_zero'`. -/
 lemma ae_eq_zero_of_hasSubgaussianMGF_zero_of_measurable

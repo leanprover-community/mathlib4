@@ -701,9 +701,7 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
       simp only [this, h0, ENNReal.zero_div, tendsto_const_nhds_iff]
       suffices κ a (countablePartitionSet n x ×ˢ univ) = 0 by
         simp only [this, ENNReal.zero_div]
-      convert! h0
-      ext x
-      simp only [mem_prod, mem_univ, and_true, mem_ofPred_eq]
+      simpa [Set.prod_eq, Set.preimage] using h0
     refine fun m ↦ measure_mono_null (fun x ↦ ?_) h0
     simp only [mem_prod, mem_ofPred_eq, and_imp]
     exact fun h _ ↦ h

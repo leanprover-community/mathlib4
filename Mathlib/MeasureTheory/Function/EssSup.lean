@@ -369,9 +369,9 @@ theorem essSup_liminf_le {ι} [Countable ι] [Preorder ι] (f : ι → α → �
 
 theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ) f) :
     ((essSup f μ : ℝ≥0) : ℝ≥0∞) = essSup (fun x => (f x : ℝ≥0∞)) μ :=
-  (ENNReal.coe_sInf <| hf).trans <|
+  (ENNReal.coe_sInf (s := {a | ∀ᶠ n in (ae μ).map f, n ≤ a}) hf).trans <|
     eq_of_forall_le_iff fun r => by
-      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
+      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]
 
 lemma ofReal_essSup {f : α → ℝ} (h₁ : IsCoboundedUnder (· ≤ ·) (ae μ) f)
     (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) f) :

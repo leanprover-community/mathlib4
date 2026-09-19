@@ -388,7 +388,7 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     exfalso; apply hA'
     suffices ∃ g : G, a ∈ g • A by
       obtain ⟨g, hg⟩ := this
-      have : B ⊆ g • A := Set.biInter_subset_of_mem hg
+      have : B ⊆ g • A := Set.iInter₂_subset g hg
       rw [hyp, Set.univ_subset_iff, ← eq_inv_smul_iff] at this
       rw [this, Set.smul_set_univ]
     -- ∃ (g : M), a ∈ g • A
