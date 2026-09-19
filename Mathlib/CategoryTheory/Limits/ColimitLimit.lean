@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Joël Riou
 -/
 module
 
@@ -13,9 +13,20 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The morphism comparing a colimit of limits with the corresponding limit of colimits.
 
-For `F : J × K ⥤ C` there is always a morphism $\colim_k \lim_j F(j,k) → \lim_j \colim_k F(j, k)$.
+In this file, we introduce morphisms which allow to study the commuation of limits
+with colimits.
+
+In the uncurried situation of a functor, `F : J × K ⥤ C` there is always a
+morphism $\colim_k \lim_j F(j,k) → \lim_j \colim_k F(j, k)$ (see `colimitLimitToLimitColimit`).
 While it is not usually an isomorphism, with additional hypotheses on `J` and `K` it may be,
 in which case we say that "colimits commute with limits".
+
+The situation appears slightly better for curried bifunctors `F : J ⥤ K ⥤ C`. In this case,
+we define a morphism `colimitLimToLimitColim : colimit (F.flip ⋙ lim) ⟶ limit (F ⋙ colim)`.
+We show that this morphism is an isomorphism iff `lim : (J ⥤ C) ⥤ C` preserves the
+colimit of `F.flip`, and this is also equivalent to saying that `colim : (K ⥤ C) ⥤ C`
+preserves the limit of `F`. In particular, `lim : (J ⥤ C) ⥤ C` preserves colimits
+of shape `K` iff `colim : (K ⥤ C) ⥤ C` preserves limits of shape `J`.
 
 The prototypical example, proved in `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit`,
 is that when `C = Type`, filtered colimits commute with finite limits.
@@ -36,6 +47,9 @@ namespace CategoryTheory.Limits
 
 variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
+
+section
+
 variable (F : J × K ⥤ C)
 
 open CategoryTheory.prod CategoryTheory.Prod
@@ -111,5 +125,90 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
       uncurry_obj_obj, ι_colimMap, currying_unitIso_inv_app_app_app, Category.id_comp,
       limMap_π_assoc, Functor.flip_obj_obj, flipIsoCurrySwapUncurry_hom_app_app]
     simp [compEvaluation]
+
+end
+
+section
+
+variable [HasColimitsOfShape K C] [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C)
+
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as colimits of shape `K`,
+this is the cocone of `F.flip` with point `F ⋙ colim`. -/
+@[simps, implicit_reducible]
+noncomputable def colim.coconeFlip : Cocone F.flip where
+  pt := F ⋙ colim
+  ι.app k := { app j := colimit.ι (F.obj j) k }
+
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as colimits of shape `K`,
+the colimit of `F.flip` is `F ⋙ colim`. -/
+@[no_expose]
+noncomputable def colim.isColimitCoconeFlip : IsColimit (colim.coconeFlip F) :=
+  evaluationJointlyReflectsColimits _ (fun _ ↦ colimit.isColimit _)
+
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as limits of shape `J`,
+this is the cone of `F` with point `F.flip ⋙ lim`. -/
+@[simps, implicit_reducible]
+noncomputable def lim.cone : Cone F where
+  pt := F.flip ⋙ lim
+  π.app j := { app k := limit.π (F.flip.obj k) j }
+  π.naturality _ _ f := by ext k; simpa using (limit.w (F.flip.obj k) f).symm
+
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as limits of shape `J`,
+the limit of `F` is `F.flip ⋙ lim`. -/
+@[no_expose]
+noncomputable def lim.isLimitCone : IsLimit (lim.cone F) :=
+  evaluationJointlyReflectsLimits _ (fun _ ↦ limit.isLimit _)
+
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as limits of shape `J` and
+colimit of shape `K`, this is the canonical morphism from the colimit of `F.flip ⋙ lim`
+and the limit of `F ⋙ colimit`. -/
+@[no_expose]
+noncomputable def colimitLimToLimitColim :
+    colimit (F.flip ⋙ lim) ⟶ limit (F ⋙ colim) :=
+  colimit.desc (F.flip ⋙ lim) (lim.mapCocone (colim.coconeFlip F))
+
+@[reassoc (attr := simp)]
+lemma ι_colimitToLimit_π (j : J) (k : K) :
+    colimit.ι _ k ≫ colimitLimToLimitColim F ≫ limit.π _ j =
+    limit.π (F.flip.obj k) j ≫ colimit.ι (F.obj j) k := by
+  simp [colimitLimToLimitColim]
+
+lemma colimitLimToLimitColim_eq_colimit_desc :
+    colimitLimToLimitColim F =
+      colimit.desc (F.flip ⋙ lim) (lim.mapCocone (colim.coconeFlip F)) := by
+  cat_disch
+
+lemma colimitLimToLimitColim_eq_limit_lift :
+    colimitLimToLimitColim F =
+      limit.lift (F ⋙ colim) (colim.mapCone (lim.cone F)) := by
+  cat_disch
+
+lemma isIso_colimitLimToLimitColim_iff_preservesColimit :
+    IsIso (colimitLimToLimitColim F) ↔ PreservesColimit F.flip lim := by
+  rw [preservesColimit_iff_isColimit_mapCocone (colim.isColimitCoconeFlip F),
+    (colimit.isColimit _).nonempty_isColimit_iff_isIso_desc,
+    colimit.isColimit_desc, colimitLimToLimitColim_eq_colimit_desc]
+
+lemma isIso_colimitLimToLimitColim_iff_preservesLimit :
+    IsIso (colimitLimToLimitColim F) ↔ PreservesLimit F colim := by
+  rw [preservesLimit_iff_isLimit_mapCone (lim.isLimitCone F),
+    (limit.isLimit _).nonempty_isLimit_iff_isIso_lift,
+    limit.isLimit_lift, colimitLimToLimitColim_eq_limit_lift]
+
+end
+
+variable (J K C) in
+lemma preservesColimitsOfShape_lim_iff_preservesLimitsOfShape_colim
+    [HasColimitsOfShape K C] [HasLimitsOfShape J C] :
+    PreservesColimitsOfShape K (lim : (J ⥤ C) ⥤ C) ↔
+    PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ C) := by
+  refine ⟨fun _ ↦ ⟨fun {F} ↦ ?_⟩, fun _ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  · rw [← isIso_colimitLimToLimitColim_iff_preservesLimit,
+      isIso_colimitLimToLimitColim_iff_preservesColimit]
+    infer_instance
+  · change PreservesColimit F.flip.flip lim
+    rw [← isIso_colimitLimToLimitColim_iff_preservesColimit,
+      isIso_colimitLimToLimitColim_iff_preservesLimit]
+    infer_instance
 
 end CategoryTheory.Limits

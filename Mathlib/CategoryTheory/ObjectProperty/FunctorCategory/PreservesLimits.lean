@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
@@ -165,68 +166,6 @@ instance [HasColimitsOfShape K' C] [HasExactColimitsOfShape K' C] :
     rintro G ⟨h⟩
     have := h.prop_diag_obj
     exact ⟨fun K _ _ ↦ (preservesLimitsOfShape K).prop_of_isColimit h.isColimit inferInstance⟩
-
-section
-
-variable {K K'} [HasColimitsOfShape K' C] [HasLimitsOfShape K C]
-
--- to be moved
-noncomputable def colimitToLimit (F : K' ⥤ K ⥤ C) :
-    colimit (F ⋙ lim) ⟶ limit (F.flip ⋙ colim) :=
-  colimit.desc _ (Cocone.mk _
-    { app k' := limMap { app k := colimit.ι (F.flip.obj k) k' }
-      naturality k₁' k₂' f := by
-        dsimp
-        ext k
-        simp [dsimp% colimit.w (F.flip.obj k) f] })
-
-@[reassoc (attr := simp)]
-lemma ι_colimitToLimit_π (F : K' ⥤ K ⥤ C) (k' : K') (k : K) :
-    colimit.ι _ k' ≫ colimitToLimit F ≫ limit.π _ k =
-    limit.π (F.obj k') k ≫ colimit.ι (F.flip.obj k) k' := by
-  simp [colimitToLimit]
-
-lemma isIso_colimitToLimit_iff_preservesColimit (F : K' ⥤ K ⥤ C) :
-    IsIso (colimitToLimit F) ↔ PreservesColimit F lim := by
-  -- this should be a separate def
-  let c : Cocone F :=
-    { pt := F.flip ⋙ colim
-      ι.app k' := { app k := colimit.ι (F.flip.obj k) k' }
-      ι.naturality k₁' k₂' f := by
-        dsimp
-        ext k
-        simpa using colimit.w (F.flip.obj k) f }
-  have hc : IsColimit c := evaluationJointlyReflectsColimits _ (fun k ↦ colimit.isColimit _)
-  have : (colimit.isColimit (F ⋙ lim)).desc (lim.mapCocone c) = colimitToLimit F := rfl
-  rw [preservesColimit_iff_isColimit_mapCocone hc,
-    IsColimit.nonempty_isColimit_iff_isIso_desc (colimit.isColimit _), this]
-
-lemma isIso_colimitToLimit_iff_preservesLimit (F : K' ⥤ K ⥤ C) :
-    IsIso (colimitToLimit F) ↔ PreservesLimit F.flip colim := by
-  let c : Cone F.flip :=
-    { pt := F ⋙ lim
-      π.app k := { app k' := limit.π (F.obj k') k } }
-  have hc : IsLimit c := evaluationJointlyReflectsLimits _ (fun k ↦ limit.isLimit _)
-  have : (limit.isLimit (F.flip ⋙ colim)).lift (colim.mapCone c) = colimitToLimit F := by
-    cat_disch
-  rw [preservesLimit_iff_isLimit_mapCone hc,
-    IsLimit.nonempty_isLimit_iff_isIso_lift (limit.isLimit _), this]
-
-end
-
-variable (C) in
-lemma preservesColimitsOfShape_lim_iff_preservesLimitsOfShape_colim
-    [HasColimitsOfShape K' C] [HasLimitsOfShape K C] :
-    PreservesColimitsOfShape K' (lim (J := K) (C := C)) ↔
-    PreservesLimitsOfShape K (colim (J := K') (C := C)) := by
-  refine ⟨fun _ ↦ ⟨fun {F} ↦ ?_⟩, fun _ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  · change PreservesLimit F.flip.flip colim
-    rw [← isIso_colimitToLimit_iff_preservesLimit,
-      isIso_colimitToLimit_iff_preservesColimit]
-    infer_instance
-  · rw [← isIso_colimitToLimit_iff_preservesColimit,
-      isIso_colimitToLimit_iff_preservesLimit]
-    infer_instance
 
 instance [HasColimitsOfShape K' C] [HasLimitsOfShape K C]
     [PreservesLimitsOfShape K (colim (J := K') (C := C))] :
