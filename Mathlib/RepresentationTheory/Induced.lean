@@ -158,7 +158,7 @@ end Representation
 
 namespace Rep
 
-open CategoryTheory Finsupp
+open CategoryTheory
 
 variable {k : Type u} {G : Type v} {H : Type v'} [CommRing k] [Group G] [Group H] (φ : G →* H)
   (A : Rep.{w} k G)
@@ -186,13 +186,14 @@ noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   map_comp _ _ := by ext; simp
 
 end Ind
+
 section Adjunction
 
 variable (B : Rep k H)
 
 /-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
-the `G`-representation morphisms `A ⟶ res B`. -/
+the `G`-representation morphisms `A ⟶ res φ B`. -/
 @[simps]
 noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) where
@@ -275,7 +276,7 @@ noncomputable def coinvariantsTensorIndIso :
   hom := coinvariantsTensorIndHom φ A B
   inv := coinvariantsTensorIndInv φ A B
   hom_inv_id := by
-    ext h a b
+    ext
     simp [coinvariantsTensorIndInv_mk_tmul_indVMk φ, coinvariantsTensorIndHom_mk_tmul_indVMk φ,
       ← Coinvariants.mk_inv_tmul]
   inv_hom_id := by
