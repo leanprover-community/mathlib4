@@ -573,13 +573,18 @@ theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
+/-- `M.mulVec` is surjective iff `M` has full row rank. -/
+theorem mulVec_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
+    M.mulVec.Surjective ↔ M.rank = Fintype.card m := by
+  rw [← coe_mulVecLin, ← LinearMap.range_eq_top, rank, ← Module.finrank_pi R]
+  exact ⟨fun h ↦ by rw [h, finrank_top], Submodule.eq_top_of_finrank_eq⟩
+
 /-- A matrix with linearly independent rows has surjective `mulVec`. -/
 theorem _root_.LinearIndependent.mulVec_surjective [Field R] {M : Matrix m n R}
     (h : LinearIndependent R M.row) : M.mulVec.Surjective := by
   have : Finite m := h.finite_of_isNoetherian
   cases nonempty_fintype m
-  rw [← coe_mulVecLin, ← LinearMap.range_eq_top]
-  exact Submodule.eq_top_of_finrank_eq <| by rw [← rank, h.rank_matrix, Module.finrank_pi]
+  rw [mulVec_surjective_iff_rank_eq_card, h.rank_matrix]
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
     {A : Matrix l m R} {B : Matrix m n R} (hAB : A * B = 0) :
