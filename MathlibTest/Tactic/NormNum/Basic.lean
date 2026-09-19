@@ -776,3 +776,22 @@ example : (5 : UInt8) + 3 = 8 := by norm_num
 example : (200 : UInt8) + 100 = 44 := by norm_num
 example : (5 : Int8) * 3 = 15 := by norm_num
 example : (0xff : BitVec 8) &&& 0x0f = 0x0f := by norm_num
+
+-- Remaining `at` locations error if an earlier one closed the goal.
+-- https://github.com/leanprover-community/mathlib4/issues/28703
+example (h : 0 = 1) : False := by
+  norm_num at h
+
+/--
+error: Goal was closed before the tactic could be applied at `_h2`
+-/
+#guard_msgs in
+example (h : 0 = 1) (_h2 : 0 = 2) : False := by
+  norm_num at h _h2
+
+/--
+error: Goal was closed before the tactic could be applied at ⊢
+-/
+#guard_msgs in
+example (h : 0 = 1) : False := by
+  norm_num at h ⊢
