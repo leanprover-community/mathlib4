@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.NNReal.Defs
-public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Data.FunLike.Module
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Group seminorms
@@ -72,7 +72,7 @@ structure AddGroupSeminorm (G : Type*) [AddGroup G] where
 
 /-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` for all `x`. -/
-@[to_additive]
+@[to_additive, to_additive_dont_translate]
 structure GroupSeminorm (G : Type*) [Group G] where
   /-- The bare function of a `GroupSeminorm`. -/
   protected toFun : G → ℝ
@@ -106,7 +106,7 @@ structure AddGroupNorm (G : Type*) [AddGroup G] extends AddGroupSeminorm G where
 
 /-- A norm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` and `f x = 0 → x = 1` for all `x`. -/
-@[to_additive]
+@[to_additive, to_additive_dont_translate]
 structure GroupNorm (G : Type*) [Group G] extends GroupSeminorm G where
   /-- If the image under the norm is zero, then the argument is one. -/
   protected eq_one_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 1
@@ -177,7 +177,7 @@ section Group
 
 variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -427,58 +427,10 @@ end CommGroup
 
 end GroupSeminorm
 
-/- TODO: All the following ought to be automated using `to_additive`. The problem is that it doesn't
-see that `SMul R ℝ` should be fixed because `ℝ` is fixed. -/
-namespace AddGroupSeminorm
+@[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_smul := FunLike.coe_smul
 
-variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
-
-instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
-  ⟨{  toFun := fun x => if x = 0 then 0 else 1
-      map_zero' := ite_eq_left rfl
-      add_le' := fun x y => by
-        by_cases hx : x = 0
-        · rw [ite_eq_left hx, hx, zero_add, zero_add]
-        · rw [ite_eq_right hx]
-          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
-      neg' := fun x => by simp_rw [neg_eq_zero] }⟩
-
-@[simp]
-theorem apply_one [DecidableEq E] (x : E) : (1 : AddGroupSeminorm E) x = if x = 0 then 0 else 1 :=
-  rfl
-
-/-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
-instance toSMul : SMul R (AddGroupSeminorm E) :=
-  ⟨fun r p =>
-    { toFun := fun x => r • p x
-      map_zero' := by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero, mul_zero]
-      add_le' := fun _ _ => by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
-        gcongr
-        apply map_add_le_add
-      neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
-
-instance : IsSMulApply R (AddGroupSeminorm E) E ℝ where
-  smul_apply _ _ _ := rfl
-
-@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
-
-@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
-
-instance isScalarTower [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R']
-    [IsScalarTower R R' ℝ] : IsScalarTower R R' (AddGroupSeminorm E) :=
-  FunLike.isScalarTower
-
-instance : AddCommMonoid (AddGroupSeminorm E) := fast_instance% FunLike.addCommMonoid
-
-theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
-  have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
-    simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun _ => Real.smul_max _ _
-
-end AddGroupSeminorm
+@[deprecated (since := "2026-07-10")]
+protected alias _root_.AddGroupSeminorm.smul_apply := smul_apply
 
 namespace NonarchAddGroupSeminorm
 
@@ -486,6 +438,7 @@ section AddGroup
 
 variable [AddGroup E] {p q : NonarchAddGroupSeminorm E}
 
+@[macro_inline]
 instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
@@ -619,7 +572,8 @@ namespace GroupSeminorm
 
 variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
-instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
+@[to_additive instOne]
+instance instOne [DecidableEq E] : One (GroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
       map_one' := ite_eq_left rfl
       mul_le' := fun x y => by
@@ -629,11 +583,12 @@ instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
-@[simp]
+@[to_additive (attr := simp) apply_one]
 theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 then 0 else 1 :=
   rfl
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
+@[to_additive (dont_translate := R) instSMul]
 instance : SMul R (GroupSeminorm E) :=
   ⟨fun r p =>
     { toFun := fun x => r • p x
@@ -646,6 +601,7 @@ instance : SMul R (GroupSeminorm E) :=
         apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
+@[to_additive (dont_translate := R) instIsSMulApplyReal]
 instance : IsSMulApply R (GroupSeminorm E) E ℝ where
   smul_apply _ _ _ := rfl
 
@@ -653,12 +609,15 @@ instance : IsSMulApply R (GroupSeminorm E) E ℝ where
 
 @[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
 
+@[to_additive (dont_translate := R R') instIsScalarTowerOfReal]
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
     IsScalarTower R R' (GroupSeminorm E) :=
   FunLike.isScalarTower
 
+@[to_additive instAddCommMonoid]
 instance : AddCommMonoid (GroupSeminorm E) := fast_instance% FunLike.addCommMonoid
 
+@[to_additive (dont_translate := R) smul_sup]
 theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
@@ -728,7 +687,7 @@ section Group
 
 variable [Group E] {p q : GroupNorm E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
@@ -813,39 +772,19 @@ end Group
 
 end GroupNorm
 
-namespace AddGroupNorm
-
-variable [AddGroup E] [DecidableEq E]
-
-instance : One (AddGroupNorm E) :=
-  ⟨{ (1 : AddGroupSeminorm E) with
-      eq_zero_of_map_eq_zero' := fun _x => zero_ne_one.ite_eq_left_iff.1 }⟩
-
-@[simp]
-theorem apply_one (x : E) : (1 : AddGroupNorm E) x = if x = 0 then 0 else 1 :=
-  rfl
-
-instance : Inhabited (AddGroupNorm E) :=
-  ⟨1⟩
-
-end AddGroupNorm
-
 namespace GroupNorm
-
-instance _root_.AddGroupNorm.toOne [AddGroup E] [DecidableEq E] : One (AddGroupNorm E) :=
-  ⟨{ (1 : AddGroupSeminorm E) with
-    eq_zero_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
 variable [Group E] [DecidableEq E]
 
-instance toOne : One (GroupNorm E) :=
+@[to_additive instOne]
+instance : One (GroupNorm E) :=
   ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
-@[simp]
+@[to_additive (attr := simp) apply_one]
 theorem apply_one (x : E) : (1 : GroupNorm E) x = if x = 1 then 0 else 1 :=
   rfl
 
-@[to_additive existing]
+@[to_additive]
 instance : Inhabited (GroupNorm E) :=
   ⟨1⟩
 
@@ -857,6 +796,7 @@ section AddGroup
 
 variable [AddGroup E] {p q : NonarchAddGroupNorm E}
 
+@[macro_inline]
 instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr

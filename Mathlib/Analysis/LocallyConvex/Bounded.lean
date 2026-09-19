@@ -61,6 +61,7 @@ variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
+@[wikidata Q17003677]
 def IsVonNBounded (s : Set E) : Prop :=
   ∀ ⦃V⦄, V ∈ 𝓝 (0 : E) → Absorbs 𝕜 V s
 
