@@ -43,7 +43,7 @@ is used to prove Shapiro's lemma in
 
 @[expose] public section
 
-open scoped MonoidAlgebra
+open scoped MonoidAlgebra Representation
 
 universe t w w' u u' v v'
 
@@ -124,6 +124,7 @@ lemma IndV.lift_apply_mk (f : H → A →ₗ[k] B) (h : H) (a : A)
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
 `(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
+@[simps -isSimp]
 noncomputable def ind : Representation k H (IndV φ ρ) where
   toFun h := IndV.lift φ ρ (fun x => IndV.mk φ ρ (x * h⁻¹)) (by simp [mul_assoc])
   map_one' := by ext; simp
@@ -134,19 +135,22 @@ lemma ind_apply_mk (h₁ h₂ : H) (a : A) :
     ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
   simp [ind]
 
+@[deprecated (since := "2026-09-19")] alias ind_mk := ind_apply_mk
+
 lemma ind_conj_map_apply (g : G) (h : H) (a : A) :
     ind φ ρ (h⁻¹ * (φ g) * h) (IndV.mk _ _ h a) = IndV.mk _ _ h (ρ g a) := by
   simp
 
-variable {ρ} in
+variable {ρ : Representation k G A} {σ : Representation k H B}
+
 /-- Construct an `IntertwiningMap` starting from an induced representation by lifting an
 `IntertwiningMap` with a `res` representation as target. -/
-noncomputable def ind.lift {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) :
+noncomputable def ind.lift (f : IntertwiningMap ρ (σ.comp φ)) :
     (ind φ ρ).IntertwiningMap σ :=
   ⟨IndV.lift φ ρ (fun h => σ h⁻¹ ∘ₗ f) (by simp [f.isIntertwining]), fun g => by ext; simp⟩
 
 @[simp]
-lemma ind.lift_apply {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) (h : H) (a : A) :
+lemma ind.lift_apply_mk (f : ρ.IntertwiningMap (σ.comp φ)) (h : H) (a : A) :
     ind.lift φ f (IndV.mk φ ρ h a) = σ h⁻¹ (f a) := by
   simp [ind.lift]
 
@@ -154,7 +158,7 @@ end Representation
 
 namespace Rep
 
-open CategoryTheory Finsupp Representation
+open CategoryTheory Finsupp
 
 variable {k : Type u} {G : Type v} {H : Type v'} [CommRing k] [Group G] [Group H] (φ : G →* H)
   (A : Rep.{w} k G)
@@ -182,9 +186,8 @@ noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   map_comp _ _ := by ext; simp
 
 end Ind
-section Adjunction
 
-open Representation
+section Adjunction
 
 variable (B : Rep k H)
 
@@ -221,8 +224,6 @@ end Adjunction
 
 variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : Rep k H)
 
-open Representation
-
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
 `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧` for all
 `h : H`, `a : A`, and `b : B`. -/
@@ -239,9 +240,12 @@ noncomputable def coinvariantsTensorIndHom :
 
 variable {A B} in
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
-    coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
-      coinvariantsTensorMk _ _ x (B.ρ h y) := by
-  simp [coinvariantsTensorIndHom, coinvariantsTensorMk]
+    coinvariantsTensorIndHom φ A B (Coinvariants.mk ((Representation.ind φ A.ρ).tprod B.ρ)
+      ((IndV.mk φ _ h x) ⊗ₜ[k] y)) = Coinvariants.mk (A.ρ.tprod (res φ B).ρ) (x ⊗ₜ[k] (B.ρ h y))
+  := by simp [coinvariantsTensorIndHom]
+
+@[deprecated (since := "2026-09-19")]
+alias coinvariantsTensorIndHom_mk_tmul_indMk := coinvariantsTensorIndHom_mk_tmul_indVMk
 
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
 `(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B))_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
@@ -257,10 +261,9 @@ noncomputable def coinvariantsTensorIndInv :
         ((IndV.mk φ A.ρ (1 : H) x) ⊗ₜ[k] y) _ (by simp)
 
 variable {A B} in
-lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
-    coinvariantsTensorIndInv φ A B (Coinvariants.mk
-      (A.ρ.tprod (Rep.ρ (res φ B))) <| x ⊗ₜ y) =
-      coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := by
+lemma coinvariantsTensorIndInv_mk_tmul_indVMk (x : A) (y : B) :
+    coinvariantsTensorIndInv φ A B (Coinvariants.mk (A.ρ.tprod (res φ B).ρ) (x ⊗ₜ y)) =
+      Coinvariants.mk ((Representation.ind φ A.ρ).tprod B.ρ) ((IndV.mk φ _ 1 x) ⊗ₜ[k] y) := by
   simp [coinvariantsTensorIndInv, coinvariantsTensorMk]
 
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
@@ -274,12 +277,11 @@ noncomputable def coinvariantsTensorIndIso :
   inv := coinvariantsTensorIndInv φ A B
   hom_inv_id := by
     ext h a b
-    simpa [coinvariantsTensorIndInv, coinvariantsTensorMk,
-      coinvariantsTensorIndHom, Coinvariants.mk_eq_iff] using
-        Coinvariants.mem_ker_of_eq h (IndV.mk φ _ h a ⊗ₜ[k] b) _ <| by simp
+    simp [coinvariantsTensorIndInv_mk_tmul_indVMk φ, coinvariantsTensorIndHom_mk_tmul_indVMk φ,
+      ← Coinvariants.mk_inv_tmul]
   inv_hom_id := by
     ext
-    simp [coinvariantsTensorIndInv, coinvariantsTensorMk, coinvariantsTensorIndHom]
+    simp [coinvariantsTensorIndInv_mk_tmul_indVMk φ, coinvariantsTensorIndHom_mk_tmul_indVMk φ]
 
 /-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
 `B ↦ (Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
@@ -288,6 +290,6 @@ noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=
   NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
     ext
-    simp [coinvariantsTensorIndHom, coinvariantsTensorMk, hom_comm_apply]
+    simp [coinvariantsTensorIndHom_mk_tmul_indVMk φ, hom_comm_apply]
 
 end Rep
