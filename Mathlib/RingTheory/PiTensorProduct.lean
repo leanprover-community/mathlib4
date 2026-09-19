@@ -204,8 +204,7 @@ def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
 Lifting a multilinear map to an algebra homomorphism from tensor product
 -/
 @[simps!]
-def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
-    (f : MultilinearMap R A S)
+def liftAlgHom {S : Type*} [Semiring S] [Algebra R S] (f : A →ₘₗ[R] S)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S :=
   AlgHom.ofLinearMap (lift f) (show lift f (tprod R 1) = 1 by simp [one]) <|
     LinearMap.map_mul_iff _ |>.mpr <| by aesop
