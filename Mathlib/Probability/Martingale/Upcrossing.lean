@@ -813,9 +813,7 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
           ∫⁻ ω, upcrossingsBefore a b f N ω ∂μ = ∫⁻ ω, ↑(upcrossingsBefore a b f N ω : ℝ≥0) ∂μ),
         lintegral_coe_eq_integral, ← ENNReal.ofReal_mul (sub_pos.2 hab).le]
       · simp_rw [NNReal.coe_natCast]
-        exact (ENNReal.ofReal_le_ofReal
-          (hf.mul_integral_upcrossingsBefore_le_integral_pos_part a b N)).trans
-            (le_iSup (α := ℝ≥0∞) _ N)
+        grw [hf.mul_integral_upcrossingsBefore_le_integral_pos_part a b N, ← le_iSup _ N]
       · simp only [NNReal.coe_natCast, hf.stronglyAdapted.integrable_upcrossingsBefore hab]
     · exact fun n => measurable_from_top.comp_aemeasurable
         (hf.stronglyAdapted.measurable_upcrossingsBefore hab).aemeasurable

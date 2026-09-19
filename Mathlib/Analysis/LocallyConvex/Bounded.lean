@@ -8,7 +8,7 @@ module
 public import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.UniformSpace.Cauchy
@@ -61,6 +61,7 @@ variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
+@[wikidata Q17003677]
 def IsVonNBounded (s : Set E) : Prop :=
   ∀ ⦃V⦄, V ∈ 𝓝 (0 : E) → Absorbs 𝕜 V s
 

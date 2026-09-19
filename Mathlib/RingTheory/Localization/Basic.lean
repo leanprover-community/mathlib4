@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.OreLocalization.Ring
@@ -704,7 +704,8 @@ def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B whe
     have : f.toRingHom.comp (algebraMap R S) = g.toRingHom.comp (algebraMap R S) := by simp
     suffices f = g by rwa [DFunLike.ext_iff] at this
     apply IsLocalization.algHom_ext M
-    rwa [DFunLike.ext_iff] at this ⊢
+    rw [DFunLike.ext_iff] at this ⊢
+    assumption
 
 @[simp]
 theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :
