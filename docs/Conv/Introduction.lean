@@ -19,7 +19,7 @@ other theorem provers like HOL4, HOL Light or Isabelle.
 As a first example, let us prove
 `example (a b c : ℕ) : a * (b * c) = a * (c * b)` (examples in this file
 are somewhat artificial since the `ring` tactic from
-`Mathlib.Tactic.Ring` could finish them immediately). The naive first attempt is
+`Mathlib/Tactic/Ring.lean` could finish them immediately). The naive first attempt is
 to enter tactic mode and try `rw [mul_comm]`. But this transforms the goal
 into `b * c * a = a * (c * b)`, after commuting the very first
 multiplication appearing in the term. There are several ways to fix this
@@ -156,7 +156,7 @@ example (a b : ℕ) :
 ## Other tactics inside conversion mode
 
 Besides rewriting using `rw`, one can use `simp`, `dsimp`, `change`, `equals`, `ring`, `norm_num`,
-`push_neg`, `unfold`, among others.
+`push`, `unfold`, among others.
 
 See the [`conv` guide](https://leanprover-community.github.io/mathlib4_docs/docs/Conv/Guide.html)
 for a more in-depth overview.

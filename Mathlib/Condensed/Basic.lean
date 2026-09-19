@@ -3,9 +3,9 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
+public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 
@@ -19,10 +19,6 @@ of Clausen-Scholze and Barwick-Haine.
 We use the coherent Grothendieck topology on `CompHaus`, and define condensed objects in `C` to
 be `C`-valued sheaves, with respect to this Grothendieck topology.
 
-In future work, we will define similar Grothendieck topologies on the category of profinite sets
-and extremally disconnected sets, and show that the three categories are equivalent (under
-suitable assumptions on `C`).
-
 Note: Our definition more closely resembles "Pyknotic objects" in the sense of Barwick-Haine,
 as we do not impose cardinality bounds, and manage universes carefully instead.
 
@@ -33,7 +29,9 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 -/
 
-open CategoryTheory Limits
+public section
+
+open CategoryTheory
 
 open CategoryTheory
 
@@ -43,14 +41,43 @@ universe u v w
 `Condensed.{u} C` is the category of condensed objects in a category `C`, which are
 defined as sheaves on `CompHaus.{u}` with respect to the coherent Grothendieck topology.
 -/
-def Condensed (C : Type w) [Category.{v} C] :=
+abbrev Condensed (C : Type w) [Category.{v} C] :=
   Sheaf (coherentTopology CompHaus.{u}) C
 
-instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
-  show Category (Sheaf _ _) from inferInstance
-
 /--
-Condensed sets (types) with the appropriate universe levels, i.e. `Type (u+1)`-valued
+Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
 sheaves on `CompHaus.{u}`.
 -/
-abbrev CondensedSet := Condensed.{u} (Type (u+1))
+abbrev CondensedSet := Condensed.{u} <| Type (u + 1)
+
+namespace Condensed
+
+variable {C : Type w} [Category.{v} C]
+
+@[deprecated ObjectProperty.FullSubcategory.id_hom +typeChanged (since := "2026-04-08")]
+lemma id_hom (X : Condensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
+
+@[deprecated ObjectProperty.FullSubcategory.comp_hom +typeChanged (since := "2026-04-08")]
+lemma comp_hom {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
+  rfl
+set_option linter.deprecated.deprecatedTarget false in
+@[deprecated (since := "2026-03-05")] alias id_val := id_hom
+set_option linter.deprecated.deprecatedTarget false in
+@[deprecated (since := "2026-03-05")] alias comp_val := comp_hom
+
+@[ext]
+lemma hom_ext {X Y : Condensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
+    f = g := by
+  ext
+  exact h _
+
+end Condensed
+
+namespace CondensedSet
+
+@[deprecated NatTrans.naturality_apply +typeChanged (since := "2026-03-19")]
+lemma hom_naturality_apply {X Y : CondensedSet.{u}} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
+    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) := by
+  simp
+
+end CondensedSet

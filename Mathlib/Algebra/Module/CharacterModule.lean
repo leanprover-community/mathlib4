@@ -3,13 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
+module
 
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Injective
-import Mathlib.Topology.Instances.AddCircle
-import Mathlib.Topology.Instances.Rat
-import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Injective
+public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Character module of a module
@@ -22,7 +21,7 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 ## Main results
 
 - `CharacterModuleFunctor` : the contravariant functor of `R`-modules where `M ↦ M⋆` and
-an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
+  an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
 - `LinearMap.dual_surjective_of_injective` : If `l` is injective then `l⋆` is surjective,
   in another word taking character module as a functor sends monos to epis.
 - `CharacterModule.homEquiv` : there is a bijection between linear map `Hom(N, M⋆)` and
@@ -30,7 +29,7 @@ an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l`
 
 -/
 
-open CategoryTheory
+@[expose] public section
 
 universe uR uA uB
 
@@ -46,13 +45,15 @@ def CharacterModule : Type uA := A →+ AddCircle (1 : ℚ)
 
 namespace CharacterModule
 
+set_option backward.isDefEq.respectTransparency.types false in
+@[macro_inline]
 instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
-  coe_injective' _ _ _ := by aesop
+  coe_injective _ _ _ := by simp_all
 
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
-  map_add _ _ _ := by rw [AddMonoidHom.map_add]
-  map_smulₛₗ _ _ _ := by rw [AddMonoidHom.map_zsmul, RingHom.id_apply]
+  map_add := AddMonoidHom.map_add
+  map_smulₛₗ := AddMonoidHom.map_zsmul
 
 instance : AddCommGroup (CharacterModule A) :=
   inferInstanceAs (AddCommGroup (A →+ _))
@@ -63,8 +64,9 @@ section module
 
 variable [Module R A] [Module R A'] [Module R B]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (CharacterModule A) :=
-  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
+  fast_instance% Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
 variable {R A B}
 
@@ -79,30 +81,48 @@ from `B⋆` to `A⋆`.
   map_add' := by aesop
   map_smul' r c := by ext x; exact congr(c $(f.map_smul r x)).symm
 
+@[simp]
+lemma dual_zero : dual (0 : A →ₗ[R] B) = 0 := by
+  ext f
+  exact map_zero f
+
+lemma dual_comp {C : Type*} [AddCommGroup C] [Module R C] (f : A →ₗ[R] B) (g : B →ₗ[R] C) :
+    dual (g.comp f) = (dual f).comp (dual g) := by
+  ext
+  rfl
+
+lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective f) :
+    Function.Injective (dual f) := by
+  intro φ ψ eq
+  ext x
+  obtain ⟨y, rfl⟩ := hf x
+  change (dual f) φ _ = (dual f) ψ _
+  rw [eq]
+
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
-  have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf
 
 /--
 Two isomorphic modules have isomorphic character modules.
 -/
 def congr (e : A ≃ₗ[R] B) : CharacterModule A ≃ₗ[R] CharacterModule B :=
-  .ofLinear (dual e.symm) (dual e)
+  .ofLinearMap (dual e.symm) (dual e)
     (by ext c _; exact congr(c $(e.right_inv _)))
     (by ext c _; exact congr(c $(e.left_inv _)))
 
 open TensorProduct
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ b ↦ L a b`.
 -/
 @[simps] noncomputable def uncurry :
     (A →ₗ[R] CharacterModule B) →ₗ[R] CharacterModule (A ⊗[R] B) where
   toFun c := TensorProduct.liftAddHom c.toAddMonoidHom fun r a b ↦ congr($(c.map_smul r a) b)
-  map_add' c c' := DFunLike.ext _ _ fun x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
-  map_smul' r c := DFunLike.ext _ _ fun x ↦ x.induction_on
-    (by simp_rw [map_zero]) (fun a b ↦ congr($(c.map_smul r a) b).symm) (by aesop)
+  map_add' c c' := DFunLike.ext _ _ fun x ↦ by refine x.inductionOn ?_ ?_ <;> aesop
+  map_smul' r c := DFunLike.ext _ _ fun x ↦ x.inductionOn
+    (fun a b ↦ congr($(c.map_smul r a) b).symm) (by aesop)
 
 /--
 Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ b ↦ c (a ⊗ b)`.
@@ -111,18 +131,19 @@ Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ 
     CharacterModule (A ⊗[R] B) →ₗ[R] (A →ₗ[R] CharacterModule B) where
   toFun c :=
   { toFun := (c.comp <| TensorProduct.mk R A B ·)
-    map_add' := fun a a' ↦ DFunLike.ext _ _ fun b ↦
+    map_add' := fun _ _ ↦ DFunLike.ext _ _ fun b ↦
       congr(c <| $(map_add (mk R A B) _ _) b).trans (c.map_add _ _)
     map_smul' := fun r a ↦ by ext; exact congr(c $(TensorProduct.tmul_smul _ _ _)).symm }
-  map_add' c c' := rfl
+  map_add' _ _ := rfl
   map_smul' r c := by ext; exact congr(c $(TensorProduct.tmul_smul _ _ _)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Linear maps into a character module are exactly characters of the tensor product.
 -/
 @[simps!] noncomputable def homEquiv :
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
-  .ofLinear uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
+  .ofLinearMap uncurry curry (by ext _ z; refine z.inductionOn ?_ ?_ <;> aesop) (by aesop)
 
 theorem dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
     homEquiv.symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ homEquiv.toLinearMap = f.lcomp R _ := rfl
@@ -143,10 +164,13 @@ protected lemma int.divByNat_self (n : ℕ) :
   obtain rfl | h0 := eq_or_ne n 0
   · apply map_zero
   exact (AddCircle.coe_eq_zero_iff _).mpr
-    ⟨1, by simp [mul_inv_cancel (Nat.cast_ne_zero (R := ℚ).mpr h0)]⟩
+    ⟨1, by simp [mul_inv_cancel₀ (Nat.cast_ne_zero (R := ℚ).mpr h0)]⟩
 
 variable {A}
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `ℤ`-submodule spanned by a single element `a` is isomorphic to the quotient of `ℤ`
 by the ideal generated by the order of `a`. -/
 @[simps!] noncomputable def intSpanEquivQuotAddOrderOf (a : A) :
@@ -169,7 +193,7 @@ For an abelian group `A` and an element `a ∈ A`, there is a character `c : ℤ
 does not exist, `c` is defined by `m • a ↦ m / 2`.
 -/
 noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
-  let l :  ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
+  let l : ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
     Submodule.liftQSpanSingleton _
       (CharacterModule.int.divByNat <|
         if addOrderOf a = 0 then 2 else addOrderOf a).toIntLinearMap <| by
@@ -182,17 +206,15 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
   erw [ofSpanSingleton, LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply,
      intSpanEquivQuotAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
-    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_one,
+    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_apply_one,
     AddCircle.coe_eq_zero_iff] at h
   rcases h with ⟨n, hn⟩
   apply_fun Rat.den at hn
-  rw [zsmul_one, Rat.coe_int_den, Rat.inv_coe_nat_den_of_pos] at hn
+  rw [zsmul_one, Rat.den_intCast, Rat.inv_natCast_den_of_pos] at hn
   · split_ifs at hn
     · cases hn
     · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn
-  · split_ifs with h
-    · norm_num
-    · exact Nat.pos_of_ne_zero h
+  · grind
 
 lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
     ∃ (c : CharacterModule A), c a ≠ 0 :=
@@ -213,5 +235,25 @@ lemma dual_surjective_iff_injective {f : A →ₗ[R] A'} :
 theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
     Function.Injective (f.rTensor B) ↔ Function.Surjective (f.lcomp R <| CharacterModule B) := by
   simp [← dual_rTensor_conj_homEquiv, dual_surjective_iff_injective]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective (dual f)) :
+    Function.Surjective f := by
+  rw [← LinearMap.range_eq_top, ← Submodule.unique_quotient_iff_eq_top]
+  refine ⟨Unique.mk inferInstance fun a ↦ eq_zero_of_character_apply fun c ↦ ?_⟩
+  obtain ⟨b, rfl⟩ := QuotientAddGroup.mk'_surjective _ a
+  suffices eq : dual (Submodule.mkQ _) c = 0 from congr($eq b)
+  refine hf ?_
+  rw [← LinearMap.comp_apply, ← dual_comp, LinearMap.range_mkQ_comp, dual_zero,
+    LinearMap.zero_apply, dual_apply, AddMonoidHom.zero_comp]
+
+lemma dual_injective_iff_surjective {f : A →ₗ[R] A'} :
+    Function.Injective (dual f) ↔ Function.Surjective f :=
+  ⟨fun h ↦ surjective_of_dual_injective f h, fun h ↦ dual_injective_of_surjective f h⟩
+
+lemma dual_bijective_iff_bijective {f : A →ₗ[R] A'} :
+    Function.Bijective (dual f) ↔ Function.Bijective f :=
+  ⟨fun h ↦ ⟨dual_surjective_iff_injective.mp h.2, dual_injective_iff_surjective.mp h.1⟩,
+  fun h ↦ ⟨dual_injective_iff_surjective.mpr h.2, dual_surjective_iff_injective.mpr h.1⟩⟩
 
 end CharacterModule

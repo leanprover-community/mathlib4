@@ -3,8 +3,16 @@ Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.Matrix.PosDef
+
+import Mathlib.Algebra.Order.Star.Real
+import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Laplacian Matrix
@@ -16,124 +24,204 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.degMatrix`: The degree matrix of a simple graph
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
-* `isPosSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
-* `rank_ker_lapMatrix_eq_card_ConnectedComponent`: The number of connected components in `G` is
-  the dimension of the nullspace of its Laplacian matrix.
+* `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
+* `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
+  The number of connected components in a graph
+  is the dimension of the nullspace of its Laplacian matrix.
 
 -/
 
+@[expose] public section
 
-open BigOperators Finset Matrix
+open Finset Matrix Module
+
+namespace Matrix.IsAdjMatrix
+
+variable {α V : Type*} [NonAssocSemiring α] [StarRing α] {A : Matrix V V α} (h : A.IsAdjMatrix)
+include h
+
+@[simp]
+protected theorem isHermitian : A.IsHermitian := by
+  ext i j
+  rcases h.zero_or_one i j with heq | heq
+    <;> simp [heq, h.symm.apply]
+
+end Matrix.IsAdjMatrix
 
 namespace SimpleGraph
 
-variable {V : Type*} (α : Type*)
-variable [Fintype V] [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+variable {V : Type*} (R : Type*)
+variable [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj]
+
+omit [Fintype V] in
+theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R).IsHermitian :=
+  G.isAdjMatrix_adjMatrix R |>.isHermitian
+
+theorem IsRegularOfDegree.mem_spectrum_adjMatrix [DecidableEq V] [Nonempty V] [Nontrivial R]
+    [CommRing R] {d : ℕ} (hd : G.IsRegularOfDegree d) : (d : R) ∈ spectrum R (G.adjMatrix R) := by
+  rw [← Matrix.spectrum_toLin']
+  apply End.HasEigenvalue.mem_spectrum
+  refine End.hasEigenvalue_of_hasEigenvector (x := 1) ⟨End.mem_genEigenspace_one.mpr ?_, by simp⟩
+  ext v
+  simp [hd.degree_eq v]
+
+theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
+    (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
+  unfold degree neighborFinset neighborSet
+  rw [sum_boole, Set.toFinset_ofPred]
+
+variable [DecidableEq V]
 
 /-- The diagonal matrix consisting of the degrees of the vertices in the graph. -/
-def degMatrix [AddMonoidWithOne α] : Matrix V V α := Matrix.diagonal (G.degree ·)
+def degMatrix [AddMonoidWithOne R] : Matrix V V R := Matrix.diagonal (G.degree ·)
 
-/-- `lapMatrix G R` is the matrix `L = D - A` where `D`is the degree
-and `A` the adjacency matrix of `G`. -/
-def lapMatrix [AddGroupWithOne α] : Matrix V V α := G.degMatrix α - G.adjMatrix α
+/-- The *Laplacian matrix* `lapMatrix G R` of a graph `G`
+is the matrix `L = D - A` where `D` is the degree and `A` the adjacency matrix of `G`. -/
+def lapMatrix [AddGroupWithOne R] : Matrix V V R := G.degMatrix R - G.adjMatrix R
 
-variable {α}
-
-theorem isSymm_degMatrix [AddMonoidWithOne α] : (G.degMatrix α).IsSymm :=
+theorem isSymm_degMatrix [AddMonoidWithOne R] : (G.degMatrix R).IsSymm :=
   isSymm_diagonal _
 
-theorem isSymm_lapMatrix [AddGroupWithOne α] : (G.lapMatrix α).IsSymm :=
-  (isSymm_degMatrix _).sub (isSymm_adjMatrix _)
+theorem isHermitian_degMatrix [NonAssocSemiring R] [StarRing R] : (G.degMatrix R).IsHermitian :=
+  Matrix.isHermitian_diagonal_iff.mpr <| by simp
 
-theorem degMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
-    (G.degMatrix α).mulVec vec v = G.degree v * vec v := by
+theorem isSymm_lapMatrix [AddGroupWithOne R] : (G.lapMatrix R).IsSymm :=
+  G.isSymm_degMatrix R |>.sub G.isSymm_adjMatrix
+
+theorem isHermitian_lapMatrix [NonAssocRing R] [StarRing R] : (G.lapMatrix R).IsHermitian :=
+  G.isHermitian_degMatrix R |>.sub <| G.isHermitian_adjMatrix R
+
+variable {R}
+
+theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
+    (G.degMatrix R *ᵥ vec) v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
 
-theorem lapMatrix_mulVec_apply [NonAssocRing α] (v : V) (vec : V → α) :
-    (G.lapMatrix α).mulVec vec v = G.degree v * vec v - ∑ u in G.neighborFinset v, vec u := by
+variable (R) in
+theorem IsRegularOfDegree.degMatrix_eq [AddMonoidWithOne R] {d : ℕ}
+    (hd : G.IsRegularOfDegree d) : G.degMatrix R = d := by
+  simp [degMatrix, diagonal_natCast, hd.degree_eq]
+
+variable (R) in
+@[simp]
+theorem degMatrix_bot [AddMonoidWithOne R] : (⊥ : SimpleGraph V).degMatrix R = 0 := by
+  simp [degMatrix]
+
+variable (R) in
+@[simp]
+theorem degMatrix_top [AddMonoidWithOne R] :
+    (⊤ : SimpleGraph V).degMatrix R = (Fintype.card V - 1 : ℕ) :=
+  IsRegularOfDegree.top.degMatrix_eq R
+
+variable (R) in
+theorem IsIsolated.not_isUnit_degMatrix [Nontrivial R] [CommRing R] {v : V} (h : G.IsIsolated v) :
+    ¬IsUnit (G.degMatrix R) :=
+  (isUnit_diagonal.mp · |>.apply v |>.ne_zero <| by simp [h])
+
+theorem lapMatrix_mulVec_apply [NonAssocRing R] (v : V) (vec : V → R) :
+    (G.lapMatrix R *ᵥ vec) v = G.degree v * vec v - ∑ u ∈ G.neighborFinset v, vec u := by
   simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, degMatrix_mulVec_apply, adjMatrix_mulVec_apply]
 
-theorem lapMatrix_mulVec_const_eq_zero [Ring α] : mulVec (G.lapMatrix α) (fun _ ↦ 1) = 0 := by
+theorem lapMatrix_mulVec_apply' [NonAssocRing R] (v : V) (vec : V → R) :
+    (G.lapMatrix R *ᵥ vec) v = ∑ u ∈ G.neighborFinset v, (vec v - vec u) := by
+  simp [lapMatrix_mulVec_apply]
+
+variable (R) in
+theorem lapMatrix_mulVec_one_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0 := by
   ext1 i
-  rw [lapMatrix_mulVec_apply]
+  simp [lapMatrix_mulVec_apply]
+
+variable (R) in
+@[simp]
+theorem det_lapMatrix_eq_zero [Nonempty V] [CommRing R] : (G.lapMatrix R).det = 0 := by
+  have ⟨v⟩ := ‹Nonempty V›
+  apply det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors (i := v) <|
+    G.lapMatrix_mulVec_one_eq_zero R
   simp
 
-theorem dotProduct_mulVec_degMatrix [CommRing α] (x : V → α) :
-    x ⬝ᵥ (G.degMatrix α).mulVec x = ∑ i : V, G.degree i * x i * x i := by
+variable (R) in
+theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+    ¬IsUnit (G.lapMatrix R) := by
+  simp [isUnit_iff_isUnit_det]
+
+variable (R) in
+/-- `0` is an eigenvalue of the Laplacian matrix of any graph. -/
+theorem zero_mem_spectrum_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+    0 ∈ spectrum R (G.lapMatrix R) :=
+  spectrum.zero_mem R <| G.not_isUnit_lapMatrix R
+
+variable (R) in
+@[simp]
+theorem lapMatrix_bot [AddGroupWithOne R] : (⊥ : SimpleGraph V).lapMatrix R = 0 := by
+  simp [lapMatrix]
+
+variable (R) in
+@[simp]
+theorem lapMatrix_top [AddGroupWithOne R] :
+    (⊤ : SimpleGraph V).lapMatrix R = Fintype.card V - .of 1 := by
+  ext i j
+  rcases eq_or_ne i j with rfl | h
+  · simp [lapMatrix, Nat.cast_pred <| Fintype.card_pos_iff.mpr ⟨i⟩, sub_eq_add_neg]
+  · simp [lapMatrix, Matrix.natCast_apply, h]
+
+theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
+    x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
   simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 
-variable (α)
-
-theorem degree_eq_sum_if_adj [AddCommMonoidWithOne α] (i : V) :
-    (G.degree i : α) = ∑ j : V, if G.Adj i j then 1 else 0 := by
-  unfold degree neighborFinset neighborSet
-  rw [sum_boole, Set.toFinset_setOf]
+variable (R)
 
 /-- Let $L$ be the graph Laplacian and let $x \in \mathbb{R}$, then
 $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
 where $\sim$ denotes the adjacency relation -/
-theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
-    toLinearMap₂' (G.lapMatrix α) x x =
-    (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
+theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
+    toLinearMap₂' R (G.lapMatrix R) x x =
+    (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j) ^ 2 else 0) / 2 := by
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
     zero_mul, ← sum_sub_distrib, ite_sub_ite, sub_zero]
-  rw [← half_add_self (∑ x_1 : V, ∑ x_2 : V, _)]
-  conv_lhs => enter [1,2,2,i,2,j]; rw [if_congr (adj_comm G i j) rfl rfl]
-  conv_lhs => enter [1,2]; rw [Finset.sum_comm]
+  rw [← add_self_div_two (∑ x_1 : V, ∑ x_2 : V, _)]
+  conv_lhs => enter [1, 2, 2, i, 2, j]; rw [if_congr (adj_comm G i j) rfl rfl]
+  conv_lhs => enter [1, 2]; rw [Finset.sum_comm]
   simp_rw [← sum_add_distrib, ite_add_ite]
   congr 2 with i
   congr 2 with j
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField α] [StarOrderedRing α] [TrivialStar α] :
-    PosSemidef (G.lapMatrix α) := by
-  constructor
+theorem posSemidef_lapMatrix [Field R] [LinearOrder R] [IsStrictOrderedRing R] [StarRing R]
+    [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
+  refine .of_dotProduct_mulVec_nonneg ?_ (fun x ↦ ?_)
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
-  · intro x
-    rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
-    refine div_nonneg (sum_nonneg' fun i ↦ sum_nonneg' fun j ↦ ?_) two_pos.le
-    split
-    · apply sq_nonneg
-    · rfl
+  · rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
+    positivity
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField α] (x : V → α) :
-    Matrix.toLinearMap₂' (G.lapMatrix α) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
-  constructor
-  · intro h i j
-    by_contra! hn
-    suffices hc : toLinearMap₂' (G.lapMatrix α) x x > 0 from gt_irrefl _ (h ▸ hc)
-    rw [lapMatrix_toLinearMap₂']
-    refine div_pos (sum_pos' (fun k _ ↦ sum_nonneg' (fun l ↦ ?_)) ?_) two_pos
-    · exact ite_nonneg (sq_nonneg _) le_rfl
-    · refine ⟨i, mem_univ _, sum_pos' (fun k _ ↦ ?_) ⟨j, mem_univ _, ?_⟩⟩
-      · exact ite_nonneg (sq_nonneg _) le_rfl
-      · simpa only [hn, ite_true, gt_iff_lt, sub_pos] using
-          sq_pos_of_ne_zero _ (sub_ne_zero.mpr hn.2)
-  · intro h
-    rw [lapMatrix_toLinearMap₂', div_eq_zero_iff]
-    refine Or.inl <| sum_eq_zero fun i _ ↦ (sum_eq_zero fun j _ ↦ ?_)
-    simpa only [ite_eq_right_iff, pow_eq_zero_iff two_ne_zero, sub_eq_zero] using h i j
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
+    [Field R] [LinearOrder R] [IsStrictOrderedRing R] (x : V → R) :
+    Matrix.toLinearMap₂' R (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+  simp (disch := intros; positivity)
+    [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLinearMap₂' (G.lapMatrix ℝ) x x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable [Field R] [LinearOrder R]
+    [IsStrictOrderedRing R] (x : V → R) :
+    (G.lapMatrix R).toLinearMap₂' R x x = 0 ↔ ∀ i j, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
-  · intro h i j ⟨w⟩
-    induction' w with w i j _ hA _ h'
-    · rfl
-    · exact (h i j hA).trans h'
+  intro h i j ⟨w⟩
+  induction w with
+  | nil => rfl
+  | cons hA _ h' => exact (h _ _ hA).trans h'
 
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
+
+section
 
 variable [DecidableEq G.ConnectedComponent]
 
@@ -141,15 +229,8 @@ lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [Decida
     [DecidableEq G.ConnectedComponent] (c : G.ConnectedComponent) :
     (fun i ↦ if connectedComponentMk G i = c then 1 else 0) ∈
       LinearMap.ker (toLin' (lapMatrix ℝ G)) := by
-  rw [LinearMap.mem_ker, lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable]
-  intro i j h
-  split_ifs with h₁ h₂ h₃
-  · rfl
-  · rw [← ConnectedComponent.eq] at h
-    exact (h₂ (h₁ ▸ h.symm)).elim
-  · rw [← ConnectedComponent.eq] at h
-    exact (h₁ (h₃ ▸ h)).elim
-  · rfl
+  rw [LinearMap.mem_ker, toLin'_apply, lapMatrix_mulVec_eq_zero_iff_forall_reachable]
+  grind [ConnectedComponent.eq]
 
 /-- Given a connected component `c` of a graph `G`, `lapMatrix_ker_basis_aux c` is the map
 `V → ℝ` which is `1` on the vertices in `c` and `0` elsewhere.
@@ -157,7 +238,7 @@ The family of these maps indexed by the connected components of `G` proves to be
 of the kernel of `lapMatrix G R` -/
 def lapMatrix_ker_basis_aux (c : G.ConnectedComponent) :
     LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ)) :=
-  ⟨fun i ↦ if G.connectedComponentMk i = c then (1 : ℝ)  else 0,
+  ⟨fun i ↦ if G.connectedComponentMk i = c then (1 : ℝ) else 0,
     mem_ker_toLin'_lapMatrix_of_connectedComponent c⟩
 
 lemma linearIndependent_lapMatrix_ker_basis_aux :
@@ -166,37 +247,42 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   intro g h0
   rw [Subtype.ext_iff] at h0
   have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
-    simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk, AddSubmonoid.coe_finset_sum]
-    conv_lhs => enter [2, c, j]; rw [Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+    simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk]
+    repeat rw [AddSubmonoid.coe_finsetSum]
     ext i
-    simp only [Finset.sum_apply, sum_ite_eq, mem_univ, ite_true]
+    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,
+      mem_univ, ↓reduceIte]
   rw [h] at h0
   intro c
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
-  rw [mem_span_range_iff_exists_fun]
-  use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
-    LinearMap.map_coe_ker])
+  rw [Submodule.mem_span_range_iff_exists_fun]
+  use Quot.lift x.val (by rw [← lapMatrix_mulVec_eq_zero_iff_forall_reachable,
+    ← toLin'_apply, LinearMap.map_coe_ker])
   ext j
-  simp only [lapMatrix_ker_basis_aux, AddSubmonoid.coe_finset_sum, Submodule.coe_toAddSubmonoid,
-    SetLike.val_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero,
-    sum_ite_eq, mem_univ, ite_true]
+  simp only [lapMatrix_ker_basis_aux]
+  rw [AddSubmonoid.coe_finsetSum]
+  simp only [SetLike.mk_smul_mk, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one,
+    mul_zero, sum_ite_eq, mem_univ, ↓reduceIte]
   rfl
 
 /-- `lapMatrix_ker_basis G` is a basis of the nullspace indexed by its connected components,
 the basis is made up of the functions `V → ℝ` which are `1` on the vertices of the given
 connected component and `0` elsewhere. -/
 noncomputable def lapMatrix_ker_basis :=
-  Basis.mk (linearIndependent_lapMatrix_ker_basis_aux G)
-    (top_le_span_range_lapMatrix_ker_basis_aux G)
+  Basis.mk G.linearIndependent_lapMatrix_ker_basis_aux G.top_le_span_range_lapMatrix_ker_basis_aux
 
-/-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
-theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
-    FiniteDimensional.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
-  rw [FiniteDimensional.finrank_eq_card_basis (lapMatrix_ker_basis G)]
+end
+
+/-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
+theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
+    Fintype.card G.ConnectedComponent = Module.finrank ℝ (G.lapMatrix ℝ).toLin'.ker := by
+  classical
+  rw [Module.finrank_eq_card_basis G.lapMatrix_ker_basis]
 
 end SimpleGraph

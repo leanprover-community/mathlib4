@@ -3,8 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 
 /-! # Measurability of the line derivative
 
@@ -18,6 +20,8 @@ An assumption such as continuity is necessary, as otherwise one could alternate 
 way between differentiable and non-differentiable functions along the various lines
 directed by `v`.
 -/
+
+public section
 
 open MeasureTheory
 
@@ -34,22 +38,22 @@ theorem measurableSet_lineDifferentiableAt (hf : Continuous f) :
     MeasurableSet {x : E | LineDifferentiableAt 𝕜 f x v} := by
   borelize 𝕜
   let g : E → 𝕜 → F := fun x t ↦ f (x + t • v)
-  have hg : Continuous g.uncurry := by apply hf.comp; continuity
-  exact measurable_prod_mk_right (measurableSet_of_differentiableAt_with_param 𝕜 hg)
+  have hg : Continuous g.uncurry := by fun_prop
+  exact measurable_prodMk_right (measurableSet_of_differentiableAt_with_param 𝕜 hg)
 
 theorem measurable_lineDeriv [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) : Measurable (fun x ↦ lineDeriv 𝕜 f x v) := by
   borelize 𝕜
   let g : E → 𝕜 → F := fun x t ↦ f (x + t • v)
-  have hg : Continuous g.uncurry := by apply hf.comp; continuity
-  exact (measurable_deriv_with_param hg).comp measurable_prod_mk_right
+  have hg : Continuous g.uncurry := by fun_prop
+  exact (measurable_deriv_with_param hg).comp measurable_prodMk_right
 
 theorem stronglyMeasurable_lineDeriv [SecondCountableTopologyEither E F] (hf : Continuous f) :
     StronglyMeasurable (fun x ↦ lineDeriv 𝕜 f x v) := by
   borelize 𝕜
   let g : E → 𝕜 → F := fun x t ↦ f (x + t • v)
-  have hg : Continuous g.uncurry := by apply hf.comp; continuity
-  exact (stronglyMeasurable_deriv_with_param hg).comp_measurable measurable_prod_mk_right
+  have hg : Continuous g.uncurry := by fun_prop
+  exact (stronglyMeasurable_deriv_with_param hg).comp_measurable measurable_prodMk_right
 
 theorem aemeasurable_lineDeriv [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) (μ : Measure E) :
@@ -78,7 +82,7 @@ theorem measurableSet_lineDifferentiableAt_uncurry (hf : Continuous f) :
     <| continuous_snd.smul (continuous_snd.comp continuous_fst)
   have M_meas : MeasurableSet {q : (E × E) × 𝕜 | DifferentiableAt 𝕜 (g q.1) q.2} :=
     measurableSet_of_differentiableAt_with_param 𝕜 this
-  exact measurable_prod_mk_right M_meas
+  exact measurable_prodMk_right M_meas
 
 theorem measurable_lineDeriv_uncurry [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) : Measurable (fun (p : E × E) ↦ lineDeriv 𝕜 f p.1 p.2) := by
@@ -87,7 +91,7 @@ theorem measurable_lineDeriv_uncurry [MeasurableSpace F] [BorelSpace F]
   have : Continuous g.uncurry :=
     hf.comp <| (continuous_fst.comp continuous_fst).add
     <| continuous_snd.smul (continuous_snd.comp continuous_fst)
-  exact (measurable_deriv_with_param this).comp measurable_prod_mk_right
+  exact (measurable_deriv_with_param this).comp measurable_prodMk_right
 
 theorem stronglyMeasurable_lineDeriv_uncurry (hf : Continuous f) :
     StronglyMeasurable (fun (p : E × E) ↦ lineDeriv 𝕜 f p.1 p.2) := by
@@ -96,7 +100,7 @@ theorem stronglyMeasurable_lineDeriv_uncurry (hf : Continuous f) :
   have : Continuous g.uncurry :=
     hf.comp <| (continuous_fst.comp continuous_fst).add
     <| continuous_snd.smul (continuous_snd.comp continuous_fst)
-  exact (stronglyMeasurable_deriv_with_param this).comp_measurable measurable_prod_mk_right
+  exact (stronglyMeasurable_deriv_with_param this).comp_measurable measurable_prodMk_right
 
 theorem aemeasurable_lineDeriv_uncurry [MeasurableSpace F] [BorelSpace F]
     (hf : Continuous f) (μ : Measure (E × E)) :

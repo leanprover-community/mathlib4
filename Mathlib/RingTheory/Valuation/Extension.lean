@@ -1,0 +1,330 @@
+/-
+Copyright (c) 2024 Jiedong Jiang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jiedong Jiang, Bichang Lei, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
+-/
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationSubring
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
+/-!
+# Extension of Valuations
+
+In this file, we define the typeclass for valuation extensions and prove basic facts about the
+extension of valuations. Let `A` be an `R` algebra, equipped with valuations `vA` and `vR`
+respectively. Here, the extension of a valuation means that the pullback of valuation `vA` to `R`
+is equivalent to the valuation `vR` on `R`. We only require equivalence, not equality, of
+valuations here.
+
+Note that we do not require the ring map from `R` to `A` to be injective. This holds automatically
+when `R` is a division ring and `A` is nontrivial.
+
+A motivation for choosing the more flexible `Valuation.Equiv` rather than strict equality here is
+to allow for possible normalization. As an example, consider a finite extension `K` of `ℚ_[p]`,
+which is a discretely valued field. We may choose the valuation on `K` to be either:
+
+1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤᵐ⁰`) or
+
+2. the valuation where `p` is mapped to one.
+
+For the algebraic closure of `ℚ_[p]`, if we choose the valuation of `p` to be one, then the
+restriction of this valuation to `K` equals the second valuation, but is only equivalent to the
+first valuation. The flexibility of equivalence here allows us to develop theory for both cases
+without first determining the normalizations once and for all.
+
+## Main Definition
+
+* `Valuation.HasExtension vR vA` : The valuation `vA` on `A` is an extension of the valuation
+  `vR` on `R`.
+
+* `Valuation.HasExtension.mapValueGroup₀ vR vA` : The extension of valuation groups associated to
+  an extension of the valuation `vR` on `R` to `vA` on `A`, which is uniquely characterized by the
+  lemmas `mapValueGroup₀_strictMono`, `mapValueGroup₀_strictMono`, and `mapValueGroup₀_uniq`.
+
+## References
+
+* [Bourbaki, Nicolas. *Commutative algebra*] Chapter VI §3, Valuations.
+* <https://en.wikipedia.org/wiki/Valuation_(algebra)#Extension_of_valuations>
+
+## Tags
+Valuation, Extension of Valuations
+
+-/
+
+public section
+
+open Module
+
+namespace Valuation
+
+variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
+    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA] [Algebra R A]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA)
+
+/--
+The class `Valuation.HasExtension vR vA` states that the valuation `vA` on `A` is an extension of
+the valuation `vR` on `R`. More precisely, `vR` is equivalent to the comap of the valuation `vA`.
+-/
+class HasExtension : Prop where
+  /-- The valuation `vR` on `R` is equivalent to the comap of the valuation `vA` on `A` -/
+  val_isEquiv_comap : vR.IsEquiv <| vA.comap (algebraMap R A)
+
+namespace HasExtension
+
+section algebraMap
+
+variable [vR.HasExtension vA]
+
+-- @[simp] does not work because `vR` cannot be inferred from `R`.
+theorem val_map_le_iff (x y : R) : vA (algebraMap R A x) ≤ vA (algebraMap R A y) ↔ vR x ≤ vR y :=
+  val_isEquiv_comap.symm x y
+
+theorem val_map_lt_iff (x y : R) : vA (algebraMap R A x) < vA (algebraMap R A y) ↔ vR x < vR y := by
+  simpa only [not_le] using ((val_map_le_iff vR vA _ _).not)
+
+theorem val_map_eq_iff (x y : R) : vA (algebraMap R A x) = vA (algebraMap R A y) ↔ vR x = vR y :=
+  (IsEquiv.eq_iff val_isEquiv_comap).symm
+
+theorem val_map_le_one_iff (x : R) : vA (algebraMap R A x) ≤ 1 ↔ vR x ≤ 1 := by
+  simpa only [map_one] using val_map_le_iff vR vA x 1
+
+theorem val_map_lt_one_iff (x : R) : vA (algebraMap R A x) < 1 ↔ vR x < 1 := by
+  simpa only [map_one, not_le] using (val_map_le_iff vR vA 1 x).not
+
+theorem val_map_eq_one_iff (x : R) : vA (algebraMap R A x) = 1 ↔ vR x = 1 := by
+  simpa only [le_antisymm_iff, map_one] using
+    and_congr (val_map_le_iff vR vA x 1) (val_map_le_iff vR vA 1 x)
+
+end algebraMap
+
+instance id : vR.HasExtension vR where
+  val_isEquiv_comap := by
+    simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
+
+theorem comp {A B ΓR ΓA ΓB : Type*} [CommRing A] [Ring B]
+    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
+    [LinearOrderedCommMonoidWithZero ΓB] [Algebra R A] [Algebra A B] [Algebra R B]
+    [IsScalarTower R A B]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA) (vB : Valuation B ΓB)
+    [vR.HasExtension vA] [vA.HasExtension vB] : vR.HasExtension vB where
+  val_isEquiv_comap := by
+    rw [IsScalarTower.algebraMap_eq R A B, comap_comp]
+    have hRA : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+    have hAB : vA.IsEquiv (vB.comap (algebraMap A B)) := HasExtension.val_isEquiv_comap
+    exact hRA.trans (hAB.comap (algebraMap R A))
+
+section integer
+
+variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK : Type*}
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
+    [LinearOrderedCommGroupWithZero ΓA] {vR : Valuation R ΓR} {vK : Valuation K ΓK}
+    {vA : Valuation A ΓA} [vR.HasExtension vA]
+
+/--
+When `K` is a field, if the preimage of the valuation integers of `A` equals to the valuation
+integers of `K`, then the valuation on `A` is an extension of the valuation on `K`.
+-/
+theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
+    vK.HasExtension vA where
+  val_isEquiv_comap := by
+    rw [isEquiv_iff_val_le_one]
+    intro x
+    simp_rw [← Valuation.mem_integer_iff, ← h, Subring.mem_comap, mem_integer_iff, comap_apply]
+
+instance instAlgebraInteger : Algebra vR.integer vA.integer where
+  smul r a := ⟨r • a,
+    Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.2) a.2⟩
+  algebraMap := (algebraMap R A).restrict vR.integer vA.integer
+    (by simp [Valuation.mem_integer_iff, val_map_le_one_iff vR vA])
+  commutes' _ _ := Subtype.ext (Algebra.commutes _ _)
+  smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
+
+@[simp, norm_cast]
+theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := by
+  rfl
+
+@[simp]
+lemma mk_smul_mk (r : R) (hr) (a : A) (ha) :
+    (⟨r, hr⟩ : vR.integer) • (⟨a, ha⟩ : vA.integer) =
+      ⟨r • a, Algebra.smul_def r a ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr hr) ha⟩ := rfl
+
+@[simp, norm_cast]
+theorem val_algebraMap (r : vR.integer) :
+    ((algebraMap vR.integer vA.integer) r : A) = (algebraMap R A) (r : R) := by
+  rfl
+
+instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
+  smul_assoc x y z := by
+    simp only [Algebra.smul_def]
+    exact mul_assoc _ _ _
+
+instance instIsTorsionFreeInteger [IsDomain R] [IsTorsionFree R A] :
+    IsTorsionFree vR.integer vA.integer := .of_smul_eq_zero <| by simp
+
+theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
+    Function.Injective (algebraMap vK.integer vA.integer) :=
+  FaithfulSMul.algebraMap_injective _ _
+
+@[instance]
+theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
+    [LinearOrderedCommGroupWithZero ΓS]
+    [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
+    [vR.HasExtension vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
+  map_nonunit r hr := by
+    apply (Valuation.integer.integers (v := vR)).isUnit_of_one
+    · exact (isUnit_map_iff (algebraMap R S) _).mp (hr.map (algebraMap _ S))
+    · apply (Valuation.integer.integers (v := vS)).one_of_isUnit at hr
+      exact (val_map_eq_one_iff vR vS _).mp hr
+
+end integer
+
+section AlgebraInstances
+
+open IsLocalRing Valuation ValuationSubring
+
+variable {K L Γ₀ Γ₁ : outParam Type*} [Field K] [Field L] [Algebra K L]
+  [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₁] (vK : Valuation K Γ₀)
+  (vL : Valuation L Γ₁) [vK.HasExtension vL]
+
+local notation "K₀" => Valuation.valuationSubring vK
+local notation "L₀" => Valuation.valuationSubring vL
+
+lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := by
+  rw [mem_valuationSubring_iff, ← _root_.map_one vL, ← _root_.map_one (algebraMap K L),
+    val_map_le_iff (vR := vK), _root_.map_one]
+  exact x.2
+
+instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
+  inferInstanceAs (Algebra vK.integer vL.integer)
+
+@[simp]
+lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
+    (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
+
+instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
+  inferInstanceAs (IsScalarTower vK.integer K L)
+
+instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L :=
+  instIsScalarTowerInteger
+
+instance : IsLocalHom (algebraMap K₀ L₀) := instIsLocalHomValuationInteger
+
+lemma algebraMap_mem_maximalIdeal_iff {x : K₀} :
+    algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) ↔ x ∈ maximalIdeal K₀ := by
+  simp [mem_maximalIdeal, map_mem_nonunits_iff, _root_.mem_nonunits_iff]
+
+lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
+    (maximalIdeal L₀).comap (algebraMap K₀ L₀) = maximalIdeal K₀ :=
+  Ideal.ext fun _ ↦ by rw [Ideal.mem_comap, algebraMap_mem_maximalIdeal_iff]
+
+instance : Ideal.LiesOver (maximalIdeal L₀) (maximalIdeal K₀) :=
+  ⟨(maximalIdeal_comap_algebraMap_eq_maximalIdeal _ _).symm⟩
+
+lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
+    (algebraMap (ResidueField K₀) (ResidueField L₀)) (IsLocalRing.residue K₀ x) =
+      IsLocalRing.residue L₀ (algebraMap K₀ L₀ x) :=
+  rfl
+
+end AlgebraInstances
+
+section ValueGroup₀
+
+-- TODO: generalize to `[LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]`
+variable {ΓR ΓA : Type*}
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA) [vR.HasExtension vA]
+
+open MonoidWithZeroHom in
+/-- The map of valuation groups induced by a valuation extension.
+See `mapValueGroup₀_apply_restrict` for the proof that this map is
+compatible with the valuation extension, `mapValueGroup₀_strictMono` for the proof
+that it is compatible with the order and `mapValueGroup₀_uniq` for the uniqueness.
+The definition is not exposed. -/
+noncomputable def mapValueGroup₀ :
+    (ValueGroup₀ (vR : R →*₀ ΓR)) →*₀o (ValueGroup₀ (vA : A →*₀ ΓA)) := by
+  have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+  refine .mk ((WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom) ?_
+  · intro r hr
+    rw [mem_valueGroup_iff_of_comm] at hr ⊢
+    obtain ⟨a, ha0, x, hr⟩ := hr
+    exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
+  · refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso.toOrderIso.strictMono |>.monotone
+    intro a b hab
+    simpa [← Subtype.coe_lt_coe] using hab
+
+theorem mapValueGroup₀_strictMono : StrictMono (mapValueGroup₀ vR vA) := by
+  have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+  refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso.toOrderIso.strictMono
+  intro a b hab
+  simpa [← Subtype.coe_lt_coe] using hab
+
+theorem mapValueGroup₀_monotone : Monotone (mapValueGroup₀ vR vA) :=
+  (mapValueGroup₀_strictMono vR vA).monotone
+
+theorem restrict_map_mapValueGroup₀ :
+    vR.restrict.map (mapValueGroup₀ vR vA) = vA.restrict.comap (algebraMap R A) := by
+  ext x
+  have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
+  unfold mapValueGroup₀
+  simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply, OrderMonoidWithZeroHom.coe_mk,
+    MonoidWithZeroHom.coe_comp, MulEquiv.coe_toMonoidWithZeroHom, OrderMonoidIso.coe_mulEquiv,
+    Function.comp_apply, IsEquiv.orderMonoidIso_spec, comap_apply]
+  generalize hc : (vA.comap (algebraMap R A)).restrict x = c
+  cases c using WithZero.cases_on with
+  | zero =>
+    rw [restrict_eq_zero_iff, comap_apply, ← restrict_eq_zero_iff] at hc
+    simp [hc]
+  | coe c =>
+    rw [← MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.injective.eq_iff,
+      Valuation.embedding_restrict] at hc ⊢
+    rw [← comap_apply, hc]
+    simp [MonoidWithZeroHom.ValueGroup₀.embedding_apply]
+
+theorem mapValueGroup₀_apply_restrict (x : R) :
+    mapValueGroup₀ vR vA (vR.restrict x) = vA.restrict (algebraMap R A x) :=
+  congr($(restrict_map_mapValueGroup₀ vR vA) x)
+
+theorem mapValueGroup₀_uniq (m : type_of% (mapValueGroup₀ vR vA))
+    (hm : ∀ x, m (vR.restrict x) = vA.restrict (algebraMap R A x)) :
+    mapValueGroup₀ vR vA = m := by
+  refine DFunLike.ext _ _ fun x => ?_
+  obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x
+  · simp
+  obtain ⟨r, s, hr, hs, hrs⟩ := exists_div_eq_of_unit vR x
+  rw [← hrs, map_div₀, map_div₀, hm, hm,
+    mapValueGroup₀_apply_restrict, mapValueGroup₀_apply_restrict]
+
+@[simp]
+theorem mapValueGroup₀_self : mapValueGroup₀ vR vR = .id .. := by
+  apply mapValueGroup₀_uniq
+  simp
+
+section tower
+variable {A B ΓA ΓB : Type*}
+    [CommRing A] [Ring B] [Algebra R A] [Algebra A B] [Algebra R B]
+    [IsScalarTower R A B]
+    [LinearOrderedCommGroupWithZero ΓA] [LinearOrderedCommGroupWithZero ΓB]
+    (vA : Valuation A ΓA) (vB : Valuation B ΓB)
+    [vR.HasExtension vA] [vA.HasExtension vB]
+
+theorem mapValueGroup₀_comp_mapValueGroup₀ :
+    haveI := HasExtension.comp vR vA vB
+    (mapValueGroup₀ vA vB).comp (mapValueGroup₀ vR vA) = mapValueGroup₀ vR vB := by
+  have := HasExtension.comp vR vA vB
+  symm
+  apply mapValueGroup₀_uniq
+  simp [mapValueGroup₀_apply_restrict, ← IsScalarTower.algebraMap_apply]
+
+theorem mapValueGroup₀_mapValueGroup₀ (x) :
+    haveI := HasExtension.comp vR vA vB
+    (mapValueGroup₀ vA vB) (mapValueGroup₀ vR vA x) = mapValueGroup₀ vR vB x :=
+  congr($(mapValueGroup₀_comp_mapValueGroup₀ vR vA vB) x)
+
+end tower
+
+end ValueGroup₀
+
+end HasExtension
+
+end Valuation

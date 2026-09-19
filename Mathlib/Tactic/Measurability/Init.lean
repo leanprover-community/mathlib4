@@ -3,8 +3,10 @@ Copyright (c) 2023 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Aesop
+public import Mathlib.Init
+public import Aesop
 
 /-!
 # Measurability Rule Set
