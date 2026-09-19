@@ -155,15 +155,6 @@ lemma continuousMapEquivFrameHom_apply {X Y : Type u} [TopologicalSpace X] [Topo
     [T0Space Y] [QuasiSober Y] (f : C(X, Y)) : continuousMapEquivFrameHom X Y f = Opens.comap f :=
   rfl
 
-@[simps]
-def FrameHom.congrOrderIso {α α' β β' : Type*} [CompleteLattice α] [CompleteLattice α']
-    [CompleteLattice β] [CompleteLattice β'] (eα : α ≃o α') (eβ : β ≃o β') :
-    FrameHom α β ≃ FrameHom α' β' where
-  toFun f := (eβ : FrameHom β β').comp (f.comp eα.symm)
-  invFun g := (eβ.symm : FrameHom β' β).comp (g.comp eα)
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
 /-- For `Y` sober, continuous maps from the sober space `PT (Opens X)` to `Y` are equivalent to
 continuous maps `X → Y`. -/
 noncomputable def sobrificationEquiv (X Y : Type u) [TopologicalSpace X]
