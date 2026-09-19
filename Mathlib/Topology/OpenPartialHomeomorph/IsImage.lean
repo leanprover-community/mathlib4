@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+public import Mathlib.Topology.PartialHomeomorph.IsImage
 /-!
 # Partial homeomorphisms: Images of sets
 
@@ -20,6 +21,9 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 Most statements are copied from their `PartialEquiv` versions, although some care is required
 especially when restricting to subsets, as these should be open subsets.
+
+See `Mathlib/Topology/PartialHomeomorph/IsImage.lean` for a version of this file for general
+partial homeomorphisms (without the requirement that source and target are open).
 
 For design notes, see `PartialEquiv.lean`.
 
@@ -71,6 +75,9 @@ def IsImage (s : Set X) (t : Set Y) : Prop :=
 namespace IsImage
 
 variable {e} {s : Set X} {t : Set Y} {x : X} {y : Y}
+
+theorem toPartialHomeomorph (h : e.IsImage s t) : e.toPartialHomeomorph.IsImage s t :=
+  h
 
 theorem toPartialEquiv (h : e.IsImage s t) : e.toPartialEquiv.IsImage s t :=
   h
@@ -173,11 +180,9 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
 /-- Restrict an `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
 @[simps! -fullyApplied apply symm_apply toPartialHomeomorph]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : OpenPartialHomeomorph X Y where
-  toPartialEquiv := h.toPartialEquiv.restr
+  toPartialHomeomorph := PartialHomeomorph.IsImage.restr h
   open_source := hs
   open_target := h.isOpen_iff.1 hs
-  continuousOn_toFun := e.continuousOn.mono inter_subset_left
-  continuousOn_invFun := e.symm.continuousOn.mono inter_subset_left
 
 end IsImage
 
@@ -222,6 +227,11 @@ theorem restrOpen_toPartialEquiv (s : Set X) (hs : IsOpen s) :
     (e.restrOpen s hs).toPartialEquiv = e.toPartialEquiv.restr s :=
   rfl
 
+@[simp, mfld_simps]
+theorem restrOpen_toPartialHomeomorph (s : Set X) (hs : IsOpen s) :
+    (e.restrOpen s hs).toPartialHomeomorph = e.toPartialHomeomorph.restr s :=
+  rfl
+
 -- Already simp via `PartialEquiv`
 theorem restrOpen_source (s : Set X) (hs : IsOpen s) : (e.restrOpen s hs).source = e.source ∩ s :=
   rfl
@@ -254,7 +264,7 @@ theorem restr_toPartialEquiv' (s : Set X) (hs : IsOpen s) :
 
 theorem restr_eq_of_source_subset {e : OpenPartialHomeomorph X Y} {s : Set X} (h : e.source ⊆ s) :
     e.restr s = e :=
-  toPartialEquiv_injective <| PartialEquiv.restr_eq_of_source_subset <|
+  toPartialHomeomorph_injective <| PartialHomeomorph.restr_eq_of_source_subset <|
     interior_maximal h e.open_source
 
 @[simp, mfld_simps]
@@ -280,11 +290,13 @@ variable {s : Set X} (hs : IsOpen s)
 /-- The identity partial equivalence on a set `s` -/
 @[simps! (attr := mfld_simps) -fullyApplied apply, simps! -isSimp source target]
 def ofSet (s : Set X) (hs : IsOpen s) : OpenPartialHomeomorph X X where
-  toPartialEquiv := PartialEquiv.ofSet s
+  toPartialHomeomorph := PartialHomeomorph.ofSet s
   open_source := hs
   open_target := hs
-  continuousOn_toFun := continuous_id.continuousOn
-  continuousOn_invFun := continuous_id.continuousOn
+
+@[simp]
+theorem ofSet_toPartialHomeomorph : (ofSet s hs).toPartialHomeomorph = PartialHomeomorph.ofSet s :=
+  rfl
 
 @[simp, mfld_simps]
 theorem ofSet_toPartialEquiv : (ofSet s hs).toPartialEquiv = PartialEquiv.ofSet s :=
@@ -313,10 +325,13 @@ theorem eqOnSource_iff (e e' : OpenPartialHomeomorph X Y) :
     EqOnSource e e' ↔ PartialEquiv.EqOnSource e.toPartialEquiv e'.toPartialEquiv :=
   Iff.rfl
 
+theorem eqOnSource_iff_partialHomeomorph (e e' : OpenPartialHomeomorph X Y) :
+    EqOnSource e e' ↔ e.toPartialHomeomorph.EqOnSource e'.toPartialEquiv :=
+  Iff.rfl
+
 /-- `EqOnSource` is an equivalence relation. -/
 instance eqOnSourceSetoid : Setoid (OpenPartialHomeomorph X Y) :=
-  { PartialEquiv.eqOnSourceSetoid.comap
-    (fun x ↦ (toPartialHomeomorph x).toPartialEquiv) with r := EqOnSource }
+  { PartialHomeomorph.eqOnSourceSetoid.comap toPartialHomeomorph with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 
@@ -352,8 +367,7 @@ theorem EqOnSource.restr {e e' : OpenPartialHomeomorph X Y} (he : e ≈ e') (s :
 theorem Set.EqOn.restr_eqOn_source {e e' : OpenPartialHomeomorph X Y}
     (h : EqOn e e' (e.source ∩ e'.source)) : e.restr e'.source ≈ e'.restr e.source := by
   constructor
-  · rw [e'.restr_source' _ e.open_source]
-    rw [e.restr_source' _ e'.open_source]
+  · rw [e'.restr_source' _ e.open_source, e.restr_source' _ e'.open_source]
     exact Set.inter_comm _ _
   · rw [e.restr_source' _ e'.open_source]
     refine (EqOn.trans ?_ h).trans ?_ <;> simp only [mfld_simps, eqOn_refl]
