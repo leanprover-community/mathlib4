@@ -874,6 +874,32 @@ lemma wideCospan [IsCofilteredOrEmpty C]
     (Finset.univ.image fun x ↦ ⟨j x, i, by simp, by simp, f x⟩)
   exact ⟨k, _, _, fun x ↦ hk _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ _))⟩
 
+lemma exists_hom_forall {I : Type*} [Finite I] (j : I → C) :
+    ∃ k : C, Nonempty (∀ x, k ⟶ j x) := by
+  classical
+  cases nonempty_fintype I
+  obtain ⟨k, hk⟩ := inf_objs_exists (Finset.univ.image j)
+  exact ⟨k, ⟨fun x ↦ (hk (Finset.mem_image_of_mem j (Finset.mem_univ x))).some⟩⟩
+
+omit [IsCofiltered C] in
+lemma exists_forall [IsCofilteredOrEmpty C] {I : Type*} [Finite I] {i : C}
+    {P : ∀ k : C, (k ⟶ i) → I → Prop}
+    (hP : ∀ {k l} (v : l ⟶ k) (u : k ⟶ i) (x : I), P k u x → P l (v ≫ u) x)
+    (h : ∀ x, ∃ (k : C) (u : k ⟶ i), P k u x) :
+    ∃ (k : C) (u : k ⟶ i), ∀ x, P k u x := by
+  choose k u hu using h
+  obtain ⟨l, v, w, hw⟩ := wideCospan u
+  exact ⟨l, v, fun x ↦ hw x ▸ hP (w x) (u x) x (hu x)⟩
+
+omit [IsCofiltered C] in
+lemma exists_forall₂ [IsCofilteredOrEmpty C] {I J : Type*} [Finite I] [Finite J] {i : C}
+    {P : ∀ k : C, (k ⟶ i) → I → J → Prop}
+    (hP : ∀ {k l} (v : l ⟶ k) (u : k ⟶ i) (x : I) (y : J), P k u x y → P l (v ≫ u) x y)
+    (h : ∀ x y, ∃ (k : C) (u : k ⟶ i), P k u x y) :
+    ∃ (k : C) (u : k ⟶ i), ∀ x y, P k u x y :=
+  exists_forall (P := fun k u x ↦ ∀ y, P k u x y) (fun v u x hx y ↦ hP v u x y (hx y))
+    fun x ↦ exists_forall (P := fun k u y ↦ P k u x y) (fun v u y ↦ hP v u x y) (h x)
+
 end Nonempty
 
 
