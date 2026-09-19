@@ -295,9 +295,9 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
     exact hp.out.not_dvd_one
-  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
-  have h₃ := inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' h₁ h₂
-  simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
+  let 𝓟 : (span {(p : ℤ)}).primesOver (𝓞 K) := ⟨P, ⟨inferInstance, inferInstance⟩⟩
+  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ 𝓟).2
+  have h₃ := inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply h₁ 𝓟
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
   have : P.IsMaximal := .of_liesOver_isMaximal P 𝒑
@@ -314,9 +314,9 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
     exact hp.out.not_dvd_one
-  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
-  have h₃ := ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' h₁ h₂
-  simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
+  let 𝓟 : (span {(p : ℤ)}).primesOver (𝓞 K) := ⟨P, ⟨inferInstance, inferInstance⟩⟩
+  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ 𝓟).2
+  have h₃ := ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply h₁ 𝓟
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
   rw [h₃]
