@@ -195,6 +195,15 @@ lemma isIso_colimitLimToLimitColim_iff_preservesLimit :
     (limit.isLimit _).nonempty_isLimit_iff_isIso_lift,
     limit.isLimit_lift, colimitLimToLimitColim_eq_limit_lift]
 
+lemma preservesColimit_flip_lim_iff_preservesLimit_colim :
+    PreservesColimit F.flip lim ↔ PreservesLimit F colim := by
+  rw [← isIso_colimitLimToLimitColim_iff_preservesColimit,
+    isIso_colimitLimToLimitColim_iff_preservesLimit]
+
+lemma preservesColimit_lim_iff_preservesLimit_colim (F : K ⥤ J ⥤ C) :
+    PreservesColimit F lim ↔ PreservesLimit F.flip colim :=
+  preservesColimit_flip_lim_iff_preservesLimit_colim F.flip
+
 end
 
 variable (J K C) in
@@ -203,12 +212,9 @@ lemma preservesColimitsOfShape_lim_iff_preservesLimitsOfShape_colim
     PreservesColimitsOfShape K (lim : (J ⥤ C) ⥤ C) ↔
     PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ C) := by
   refine ⟨fun _ ↦ ⟨fun {F} ↦ ?_⟩, fun _ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  · rw [← isIso_colimitLimToLimitColim_iff_preservesLimit,
-      isIso_colimitLimToLimitColim_iff_preservesColimit]
+  · rw [← preservesColimit_flip_lim_iff_preservesLimit_colim]
     infer_instance
-  · change PreservesColimit F.flip.flip lim
-    rw [← isIso_colimitLimToLimitColim_iff_preservesColimit,
-      isIso_colimitLimToLimitColim_iff_preservesLimit]
+  · rw [preservesColimit_lim_iff_preservesLimit_colim]
     infer_instance
 
 end CategoryTheory.Limits
