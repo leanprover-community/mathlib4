@@ -84,6 +84,32 @@ lemma hom₁_single (r : σ) :
     hom₁ pres (Finsupp.single r 1) = Extension.Cotangent.mk ⟨pres.relation r, by simp⟩ := by
   simp [hom₁]
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`RingHomSurjective (RingHom.id pres.Ring)`
+It is needed by the `rw [Submodule.map_span_le]` below.
+
+The failure happens while applying `@RingHomSurjective.ids`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+`Semiring pres.Ring`, whereas the assigned value `CommRing.toCommSemiring.toSemiring` has type
+`Semiring pres.toExtension.Ring`. The comparison bottoms out at
+`AddMonoidAlgebra R (ι →₀ ℕ) =?= pres.toExtension.1`: the left-hand side is what `pres.Ring` reduces
+to, while the right-hand side is stuck, since `Generators.toExtension` is a semireducible `def` and
+therefore does not unfold at the `.instances` transparency instance search runs at. Lean
+falls back to synthesize an instance of the correct type, which succeeds and returns
+`AddMonoidAlgebra.semiring`, but that is again not defeq to the assigned value, stalling at the same
+boundary. That comparison, too, runs at `.instances`, since `respectTransparency false` suppresses
+the transparency bump that instance-implicit arguments would otherwise receive.
+
+Potential fix: Mark `Generators.toExtension` implicit-reducible; then `respectTransparency false`
+and `instanceSearchTypes false` can both go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
