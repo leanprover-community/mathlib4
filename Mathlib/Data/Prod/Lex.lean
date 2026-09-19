@@ -193,14 +193,11 @@ instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : Lin
   toDecidableLE := Prod.Lex.decidable _ _
   toDecidableLT := Prod.Lex.decidable _ _
   toDecidableEq := instDecidableEqLex _
-  compare_eq_compareOfLessAndEq := fun a b => by
-    have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
-    have : Std.LawfulBEqOrd (α ×ₗ β) := ⟨by
-      simp [compare_def, compareLex, compareOn, Ordering.then_eq_eq]⟩
-    have : Std.LawfulLTOrd (α ×ₗ β) := ⟨by
-      simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, toLex_lt_toLex,
-        compare_lt_iff_lt]⟩
-    convert! Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
+  compare_eq_cmpLE := fun a b => by
+    have : Std.LawfulLEOrd (α ×ₗ β) := ⟨by
+      simp [compare_def, compareLex, compareOn, Ordering.isLE_then_iff_or, toLex_le_toLex,
+        compare_lt_iff_lt, compare_le_iff_le]⟩
+    convert! Std.LawfulLECmp.eq_cmpLE (cmp := compare) a b
 
 @[to_dual]
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
