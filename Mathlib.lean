@@ -5209,6 +5209,7 @@ public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.HodgeStar
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
+public import Mathlib.LinearAlgebra.ExteriorPower.Product
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
@@ -6949,6 +6950,7 @@ public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Kaehler.JacobiZariski
 public import Mathlib.RingTheory.Kaehler.Polynomial
 public import Mathlib.RingTheory.Kaehler.TensorProduct
+public import Mathlib.RingTheory.KoszulComplex.Complex
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.KrullDimension.LocalRing
