@@ -217,26 +217,14 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
-/-- Transfer `AddGrpObj` along an isomorphism. -/
--- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
-abbrev _root_.CategoryTheory.AddGrpObj.ofIso {G' X : C} [AddGrpObj G'] (e : G' ≅ X) :
-    AddGrpObj X where
-  toAddMonObj := AddMonObj.ofIso e
-  neg := e.inv ≫ AddGrpObj.neg ≫ e.hom
-  left_neg := by simp +instances [AddMonObj.ofIso]
-  right_neg := by simp +instances [AddMonObj.ofIso]
-
 /-- Transfer `GrpObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[simps! -isSimp]
+@[to_additive (attr := simps! -isSimp) /-- Transfer `AddGrpObj` along an isomorphism. -/]
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
   left_inv := by simp +instances [MonObj.ofIso]
   right_inv := by simp +instances [MonObj.ofIso]
-
-attribute [to_additive existing] ofIso
 
 @[to_additive]
 instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
@@ -530,7 +518,6 @@ instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   triangle _ _ := by ext; exact triangle _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
@@ -627,7 +614,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 protected def FullyFaithful.mapGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
   preimage f := Grp.homMk' (hF.mapMon.preimage f.hom)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
 protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full :=
   ((FullyFaithful.ofFullyFaithful F).mapGrp).full
@@ -756,7 +742,6 @@ open CategoryTheory.Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
 @[to_additive (attr := simps)
@@ -771,7 +756,6 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[to_additive (attr := simps)

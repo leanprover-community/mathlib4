@@ -87,7 +87,7 @@ theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
   classical
   simp_rw [← AlgHom.coe_toRingHom, ← coeff_map, subProdXSubC, Polynomial.map_sub,
     Polynomial.map_prod, Polynomial.map_sub, map_X, map_C, toSplittingField,
-    AlgHom.coe_toRingHom, MvPolynomial.aeval_X, dif_pos h,
+    AlgHom.coe_toRingHom, MvPolynomial.aeval_X, dite_eq_left h,
     ← (finEquivRoots (Monics.splits_finsetProd h)).symm.prod_comp, Equiv.apply_symm_apply]
   rw [Finset.prod_coe_sort (f := fun x : _ × ℕ ↦ X - C x.1), (Multiset.toEnumFinset _)
     |>.prod_eq_multiset_prod, ← Function.comp_def (X - C ·) Prod.fst, ← Multiset.map_map,

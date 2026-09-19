@@ -79,7 +79,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
 namespace Prime
 
 theorem emultiplicity_one {p : ℕ} (hp : p.Prime) : emultiplicity p 1 = 0 :=
-  emultiplicity_of_one_right hp.prime.not_unit
+  emultiplicity_of_one_right hp.prime.not_isUnit
 
 theorem emultiplicity_mul {p m n : ℕ} (hp : p.Prime) :
     emultiplicity p (m * n) = emultiplicity p m + emultiplicity p n :=
@@ -93,7 +93,7 @@ theorem emultiplicity_self {p : ℕ} (hp : p.Prime) : emultiplicity p p = 1 :=
   (Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, hp.pos⟩).emultiplicity_self
 
 theorem emultiplicity_pow_self {p n : ℕ} (hp : p.Prime) : emultiplicity p (p ^ n) = n :=
-  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_unit n
+  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_isUnit n
 
 /-- **Legendre's Theorem**
 
@@ -277,7 +277,7 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
     by_cases hn : n = 0
     · subst hn
       simp only [ne_eq, bit_eq_zero_iff, true_and, Bool.not_eq_false] at h
-      simp only [bit, h, cond_true, mul_zero, zero_add, factorial_one]
+      simp only [bit, h, Bool.cond_true, mul_zero, zero_add, factorial_one]
       rw [Prime.emultiplicity_one]
       · exact zero_lt_one
       · decide

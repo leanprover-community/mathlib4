@@ -220,7 +220,7 @@ ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
 noncomputable irreducible_def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
   mapEquiv
     { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
-        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl, Submonoid.map_id]) with
+        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl', Submonoid.map_id]) with
       commutes' := fun _ => ringEquivOfRingEquiv_eq _ _ }
 
 @[simp]
@@ -289,7 +289,7 @@ variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
     ∃ x, x ≠ 0 ∧ algebraMap R K x ∈ I := by
   obtain ⟨y : K, y_mem, y_notMem⟩ :=
-    SetLike.exists_of_lt (bot_lt_iff_ne_bot.mpr hI)
+    IsConcreteLE.exists_of_lt (bot_lt_iff_ne_bot.mpr hI)
   have y_ne_zero : y ≠ 0 := by simpa using y_notMem
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine ⟨x, ?_, ?_⟩
@@ -370,7 +370,7 @@ theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
     IsFractional R₁⁰ I → IsFractional R₁⁰ J → J ≠ 0 → IsFractional R₁⁰ (I / J)
   | ⟨aI, haI, hI⟩, ⟨aJ, haJ, hJ⟩, h => by
     obtain ⟨y, mem_J, notMem_zero⟩ :=
-      SetLike.exists_of_lt (show 0 < J by simpa only using! bot_lt_iff_ne_bot.mpr h)
+      IsConcreteLE.exists_of_lt (show 0 < J by simpa only using! bot_lt_iff_ne_bot.mpr h)
     obtain ⟨y', hy'⟩ := hJ y mem_J
     use aI * y'
     constructor
@@ -401,16 +401,16 @@ variable {I J : FractionalIdeal R₁⁰ K}
 
 @[simp]
 theorem div_zero {I : FractionalIdeal R₁⁰ K} : I / 0 = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     I / J = ⟨I / J, isFractional_div_of_ne_zero h⟩ :=
-  dif_neg h
+  dite_eq_right h
 
 @[simp]
 theorem coe_div {I J : FractionalIdeal R₁⁰ K} (hJ : J ≠ 0) :
     (↑(I / J) : Submodule R₁ K) = ↑I / (↑J : Submodule R₁ K) :=
-  congr_arg _ (dif_neg hJ)
+  congr_arg _ (dite_eq_right hJ)
 
 theorem mem_div_iff_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) {x} :
     x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I := by
@@ -975,13 +975,11 @@ noncomputable def ringEquivOfRingEquiv :
       convert! Submodule.map_id _
       ext; simp [semilinearEquivOfRingEquiv, IsLocalization.map_map]}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ringEquivOfRingEquiv_apply (f : R ≃+* S) (I : FractionalIdeal (nonZeroDivisors R) K) :
     ringEquivOfRingEquiv K L f I =
       ⟨Submodule.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap I.val,
         IsFractional.mapEquiv K L f I.prop⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ringEquivOfRingEquiv_apply_val (f : R ≃+* S) (I : FractionalIdeal R⁰ K) :
     (ringEquivOfRingEquiv K L f I).val =
       I.val.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap  := rfl
@@ -1031,7 +1029,6 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
     simp only [Algebra.smul_def, semilinearEquivOfRingEquiv_apply, map_mul, map_eq, RingHom.coe_coe,
       IsFractionRing.ringEquivOfRingEquiv_apply, RingEquiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =
       FractionalIdeal.ringEquivOfRingEquiv L K f.symm := by

@@ -22,7 +22,7 @@ and shows that the tensor product of free modules is again free.
 
 noncomputable section
 
-open LinearMap Module Set Submodule
+open LinearMap Module
 
 open scoped TensorProduct
 

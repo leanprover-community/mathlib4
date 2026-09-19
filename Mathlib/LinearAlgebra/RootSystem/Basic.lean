@@ -15,14 +15,14 @@ This file contains basic results for root systems and root data.
 
 ## Main definitions / results:
 
-* `RootPairing.ext`: In characteristic zero if there is no torsion, the correspondence between
+* `RootPairing.ext`: In characteristic zero over an integral domain, the correspondence between
   roots and coroots is unique.
-* `RootSystem.ext`: In characteristic zero if there is no torsion, a root system is determined
+* `RootSystem.ext`: In characteristic zero over an integral domain, a root system is determined
   entirely by its roots.
-* `RootPairing.mk'`: In characteristic zero if there is no torsion, to check that two finite
+* `RootPairing.mk'`: In characteristic zero over an integral domain, to check that two finite
   families of roots and coroots form a root pairing, it is sufficient to check that they are
   stable under reflections.
-* `RootSystem.mk'`: In characteristic zero if there is no torsion, to check that a finite family of
+* `RootSystem.mk'`: In characteristic zero over an integral domain, to check that a finite family of
   roots form a root system, we do not need to check that the coroots are stable under reflections
   since this follows from the corresponding property for the roots.
 
@@ -92,17 +92,18 @@ lemma injOn_dualMap_subtype_span_root_coroot [IsAddTorsionFree M] :
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
   exact P.flip.toPerfPair.injective <| this (mem_range_self i) (mem_range_self j) hij
 
-/-- In characteristic zero if there is no torsion, the correspondence between roots and coroots is
+/-- In characteristic zero over an integral domain, the correspondence between roots and coroots is
 unique.
 
 Formally, the point is that the hypothesis `hc` depends only on the range of the coroot mappings. -/
 @[ext]
-protected lemma ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
+protected lemma ext [CharZero R] [IsDomain R]
     {P₁ P₂ : RootPairing ι R M N}
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root)
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
+  have : IsReflexive R M := .of_isPerfPair P₁.toLinearMap
   have hp (hc' : P₁.coroot = P₂.coroot) : P₁.reflectionPerm = P₂.reflectionPerm := by
     ext i j
     refine P₁.root.injective ?_
@@ -127,7 +128,7 @@ protected lemma ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
 
-private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTorsionFree R M]
+private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -136,6 +137,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTo
     (hc : ∀ i, MapsTo (preReflection (coroot i) (p (root i))) (range coroot) (range coroot))
     {i j k : ι} (hk : root k = preReflection (root i) (p.flip (coroot i)) (root j)) :
     coroot k = preReflection (coroot i) (p (root i)) (coroot j) := by
+  have : IsReflexive R M := .of_isPerfPair p
   set α := root i
   set β := root j
   set α' := coroot i
@@ -167,9 +169,9 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTo
   exact (hr i).comp <| (hr j).comp (hr i)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- In characteristic zero if there is no torsion, to check that two finite families of roots and
+/-- In characteristic zero over an integral domain, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
-def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]
+def mk' [CharZero R] [IsDomain R]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -185,18 +187,20 @@ def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]
   reflectionPerm_root i j := by
     simp [(exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec, preReflection_apply]
   reflectionPerm_coroot i j := by
+    have : IsReflexive R M := .of_isPerfPair p
     refine (coroot_eq_coreflection_of_root_eq' p root coroot hp hr hc ?_).symm
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec]
 
 variable [P.IsRootSystem]
 
-/-- In characteristic zero if there is no torsion, a finite root system is determined entirely by
+/-- In characteristic zero over an integral domain, a finite root system is determined entirely by
 its roots. -/
-protected lemma IsRootSystem.ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
+protected lemma IsRootSystem.ext [CharZero R] [IsDomain R]
     {P₁ P₂ : RootPairing ι R M N} [P₁.IsRootSystem] [P₂.IsRootSystem]
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root) :
     P₁ = P₂ := by
+  have : IsReflexive R M := .of_isPerfPair P₁.toLinearMap
   suffices ∀ (P₁ P₂ : RootPairing ι R M N) [P₁.IsRootSystem] [P₂.IsRootSystem],
       P₁.toLinearMap = P₂.toLinearMap → P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
     have h₁ := this P₁ P₂ he hr
@@ -215,7 +219,7 @@ protected lemma IsRootSystem.ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
   · exact P₁.mapsTo_reflection_root i
 
 private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [IsDomain R]
-    [IsTorsionFree R M] (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
+    (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
     (hp : ∀ i, p (root i) (coroot i) = 2)
@@ -223,6 +227,7 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [IsD
     (hsp : span R (range root) = ⊤)
     {i j k : ι} (hk : root k = preReflection (root i) (p.flip (coroot i)) (root j)) :
     coroot k = preReflection (coroot i) (p (root i)) (coroot j) := by
+  have : IsReflexive R M := .of_isPerfPair p
   set α := root i
   set β := root j
   set α' := coroot i

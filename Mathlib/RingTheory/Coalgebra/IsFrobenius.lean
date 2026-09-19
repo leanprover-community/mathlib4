@@ -29,6 +29,8 @@ which in diagrams looks like
   |    |         |    |
 ```
 where `μ` stands for multiplication and `δ` for comultiplication.
+We define the left diagram as `Coalgebra.IsFrobenius.left` and the right as
+`Coalgebra.IsFrobenius.right` in order to shorten the names.
 
 When the Frobenius equations are satisfied, we actually get
 `(id ⊗ mul') ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul' = (mul' ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
@@ -53,8 +55,14 @@ In texts, this is what the Frobenius equations are usually referred to as.
 * `Coalgebra.IsFrobenius.instFinite`: a coalgebra satisfying the Frobenius equations is finite
 * `Coalgebra.IsFrobenius.instProjective`: a coalgebra satisfying the Frobenius equations is
   projective
-* `Bialgebra.nonempty_algEquiv_of_isFrobenius`: when a bialgebra satisfies the Frobenius
+* `Bialgebra.nonempty_algEquiv_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the Frobenius
   equations, `R` is isomorphic to `A`
+
+## TODO
+
+* show `IsFrobenius R (A ⊗ B)`
+* show `IsFrobenius R (A × B)`
+
 -/
 
 public section
@@ -71,15 +79,6 @@ local notation3 "β" => (TensorProduct.lid R _).toLinearMap
 local notation3 "β⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
 local notation "rT" => rTensor
 local notation "lT" => lTensor
-
--- TODO: move earlier
-lemma LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R M]
-    [AddCommMonoid N] [Module R N] (f : M →ₗ[R] R ⊗[R] A) (g : N →ₗ[R] A) :
-    μ[R] ∘ₗ ((β ∘ₗ f) ⊗ₘ g) = β ∘ₗ lT R μ ∘ₗ α ∘ₗ (f ⊗ₘ g) := by
-  trans μ[R] ∘ₗ (rT _ β) ∘ₗ (f ⊗ₘ g)
-  · ext; simp
-  simp only [← comp_assoc]
-  congr 1; ext; simp
 
 /-! ### Definition and basic properties -/
 
@@ -118,7 +117,7 @@ end Defs
 namespace Coalgebra.IsFrobenius
 variable [Coalgebra R A] [IsFrobenius R A]
 
-instance _root_.CommSemiring.toIsFrobenius : IsFrobenius R R where
+instance of_commSemiring : IsFrobenius R R where
   left_eq_right := by ext; simp [left_def, right_def]
 
 lemma left_eq_comul_comp_mul' : left R A = δ ∘ₗ μ[R] := by
@@ -126,19 +125,16 @@ lemma left_eq_comul_comp_mul' : left R A = δ ∘ₗ μ[R] := by
   simp only [left_def, lTensor, rTensor, right_def] at h ⊢
   calc
     _ = rT A μ ∘ₗ α⁻¹ ∘ₗ ((β ∘ₗ rT A ε ∘ₗ δ) ⊗ₘ δ) := by
-      simp only [h, CoassocSimps.map_counit_comp_comul_left, coassoc_simps]
+      simp [h, CoassocSimps.map_counit_comp_comul_left, coassoc_simps]
     _ = β ∘ₗ rT (A ⊗[R] A) ε ∘ₗ α ∘ₗ rT A (rT A μ ∘ₗ α⁻¹ ∘ₗ lT A δ) ∘ₗ α⁻¹ ∘ₗ lT A δ := by
       simp only [rTensor, lTensor, ← h, lid_tensor]
-      simp only [coassoc_simps, mul'_comp_map_lid_comp]
-    _ = β ∘ₗ (ε ⊗ₘ δ) ∘ₗ lT A μ ∘ₗ α ∘ₗ rT A δ := by simp only [assoc_tensor, h, coassoc_simps]
-    _ = β ∘ₗ lT R (δ ∘ₗ μ) ∘ₗ α ∘ₗ rT A (rT A ε ∘ₗ δ) := by simp only [coassoc_simps]
-    _ = δ ∘ₗ μ := by simp only [coassoc_simps, CoassocSimps.map_counit_comp_comul_left]
+      simp [coassoc_simps, mul'_comp_map_lid_comp]
+    _ = β ∘ₗ (ε ⊗ₘ δ) ∘ₗ lT A μ ∘ₗ α ∘ₗ rT A δ := by simp [assoc_tensor, h, coassoc_simps]
+    _ = β ∘ₗ lT R (δ ∘ₗ μ) ∘ₗ α ∘ₗ rT A (rT A ε ∘ₗ δ) := by simp [coassoc_simps]
+    _ = δ ∘ₗ μ := by simp [coassoc_simps, CoassocSimps.map_counit_comp_comul_left]
 
 lemma right_eq_comul_comp_mul' : right R A = δ ∘ₗ μ[R] := by
   rw [← left_eq_right, left_eq_comul_comp_mul']
-
--- TODO: show `IsFrobenius R (A ⊗ B)` and `IsFrobenius R (A × B)`
--- should be easy, but annoying
 
 /-! ### Unital coalgebras
 
@@ -190,14 +186,13 @@ lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ ε).Nondegenerate 
   ⟨fun _ ↦ forall_counit_mul_left_eq_zero_iff.mp, fun _ ↦ forall_counit_mul_right_eq_zero_iff.mp⟩
 
 /-- The bilinear form `mul.compr₂ counit` is bijective. -/
-lemma bijective_compr₂_mul_counit : (⇑((mul R A).compr₂ ε)).Bijective := by
+lemma compr₂_mul_counit_bijective : (⇑((mul R A).compr₂ ε)).Bijective := by
   have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   refine ⟨fun a b h ↦ ?_, fun f ↦ ⟨∑ x ∈ S, f x.1 • x.2, ext fun b ↦ ?_⟩⟩
   · rw [← sum_counit_mul_left_smul_of_comul_one hS b]
     simp only [LinearMap.ext_iff, compr₂_apply, mul_apply_apply] at h
-    simp only [← h, sum_counit_mul_left_smul_of_comul_one hS]
-  · calc _ = ∑ x ∈ S, ε (x.2 * b) * f x.1 := by simp [mul_comm (f _)]
-      _ = ∑ x ∈ S, ε (x.2 * b) • f x.1 := by simp only [← smul_eq_mul]; rfl
+    simp [← h, sum_counit_mul_left_smul_of_comul_one hS]
+  · calc _ = ∑ x ∈ S, (ε (x.2 * b) : R) • f x.1 := by simp [mul_comm (f _)]
       _ = _ := by simp only [← map_smul, ← map_sum, sum_counit_mul_right_smul_of_comul_one hS]
 
 end nonAssoc
@@ -258,7 +253,7 @@ lemma counit_bijective_of_isFrobenius : Function.Bijective (ε : A →ₗ[R] R) 
 
 /-- When a bialgebra satisfies the Frobenius equations, we get `R ≃ A`.
 So if `R` and `A` are not isomorphic, then `A` cannot satisfy the Frobenius equations. -/
-lemma nonempty_algEquiv_of_isFrobenius : Nonempty (R ≃ₐ[R] A) :=
-  ⟨.ofBijective (Algebra.ofId R A) algebraMap_bijective_of_isFrobenius⟩
+lemma algebraOfId_bijective_of_isFrobenius : Function.Bijective (Algebra.ofId R A) :=
+  algebraMap_bijective_of_isFrobenius
 
 end Bialgebra

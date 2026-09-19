@@ -34,7 +34,7 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
 
 @[expose] public section
 
-open LieAlgebra LieModule
+open LieAlgebra
 
 variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
