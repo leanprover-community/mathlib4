@@ -1,11 +1,9 @@
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Lean.Exception
+public meta import Mathlib.Lean.Exception
 public import Mathlib.Tactic.ReduceModChar.Ext
 public import Qq.MetaM
-
-meta import Mathlib.Lean.Exception
 
 open Qq Lean Meta Elab Command Mathlib Tactic Translate ToAdditive
 
