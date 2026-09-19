@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Copy
-public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Definition of cycle graphs
@@ -157,13 +156,13 @@ theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected := by
     exact fun _ _ ↦ reachable_of_mem_support
       (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
 
-@[deprecated (since := "2026-07-06")]
+@[deprecated (since := "2026-09-19")]
 alias cycleGraph_preconnected := preconnected_cycleGraph
 
 theorem connected_cycleGraph {n : ℕ} : (cycleGraph (n + 1)).Connected where
   preconnected := preconnected_cycleGraph
 
-@[deprecated (since := "2026-07-06")]
+@[deprecated (since := "2026-09-19")]
 alias cycleGraph_connected := connected_cycleGraph
 
 section IsContained
