@@ -310,8 +310,6 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
         exact c.parts_strictMono (by simpa using hij)
   disjoint i hi j hj hij := by
     wlog! h : j < i generalizing i j
-    · exact .symm
-        (this j (mem_univ j) i (mem_univ i) hij.symm (lt_of_le_of_ne h hij))
     induction i using Fin.induction with
     | zero => simp at h
     | succ i =>
@@ -392,10 +390,6 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
     · simp [hm]
   disjoint i hi j hj hij := by
     wlog h : i ≠ k generalizing i j
-    · apply Disjoint.symm
-        (this j (mem_univ j) i (mem_univ i) hij.symm ?_)
-      simp only [ne_eq, Decidable.not_not] at h
-      simpa [h] using hij.symm
     rcases eq_or_ne j k with rfl | hj
     · simp only [onFun, ↓reduceDIte]
       suffices ∀ (a' : Fin (c.partSize i)) (b' : Fin (c.partSize j + 1)),
@@ -583,10 +577,6 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         lia
   disjoint i _ j _ hij := by
     wlog h : i ≠ c.index 0 generalizing i j
-    · apply Disjoint.symm
-        (this j (mem_univ j) i (mem_univ i) hij.symm ?_)
-      simp only [ne_eq, Decidable.not_not] at h
-      simpa [h] using hij.symm
     rcases eq_or_ne j (c.index 0) with rfl | hj
     · simp only [onFun, hij, ↓reduceDIte]
       apply Set.disjoint_iff_forall_ne.2

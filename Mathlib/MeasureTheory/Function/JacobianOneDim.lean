@@ -170,8 +170,6 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
   · intro x hx y hy hxy
     contrapose! hxy
     wlog H : x < y generalizing x y with h
-    · have : y < x := by order
-      exact (h hy hx hxy.symm this).symm
     refine fun h ↦ hx.2 ⟨hx.1, ?_⟩
     exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
 

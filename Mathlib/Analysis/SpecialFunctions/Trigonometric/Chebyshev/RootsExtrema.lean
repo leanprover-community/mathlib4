@@ -80,13 +80,13 @@ theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx 
 
 theorem one_le_abs_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ |x|) :
     1 ≤ |(T ℝ n).eval x| := by
-  wlog! h : 0 ≤ x
+  wlog! (disch := none) h : 0 ≤ x
   · simpa [T_eval_neg, abs_mul, abs_unit_intCast] using @this n (-x) (by grind) (by grind)
   · exact one_le_eval_T_real n (abs_of_nonneg h ▸ hx) |>.trans <| le_abs_self _
 
 theorem one_lt_abs_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < |x|) :
     1 < |(T ℝ n).eval x| := by
-  wlog! h : 0 ≤ x
+  wlog! (disch := none) h : 0 ≤ x
   · simpa [T_eval_neg, abs_mul, abs_unit_intCast] using @this n hn (-x) (by grind) (by grind)
   · exact one_lt_eval_T_real hn (abs_of_nonneg h ▸ hx) |>.trans_le <| le_abs_self _
 
@@ -331,7 +331,7 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
 
 theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
     |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
-  wlog hn : 0 ≤ n
+  wlog (disch := none) hn : 0 ≤ n
   · convert! this (-n) k hx (by grind) using 1 <;> rw [T_neg]
   lift n to ℕ using hn
   have := T_iterate_derivative_mem_span_T (R := ℝ) n k

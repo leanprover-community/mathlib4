@@ -419,7 +419,6 @@ lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iter
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :
     iter₁.F.obj ⟨k, h₁⟩ = iter₂.F.obj ⟨k, h₂⟩ := by
   wlog h : j₁ ≤ j₂ generalizing j₁ j₂
-  · exact (this iter₂ iter₁ h₂ h₁ (le_of_lt (by simpa using h))).symm
   rw [Subsingleton.elim iter₁ (iter₂.trunc h)]
   dsimp
 
@@ -427,7 +426,6 @@ lemma congr_arrowMap {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ
     {k₁ k₂ : J} (h : k₁ ≤ k₂) (h₁ : k₂ ≤ j₁) (h₂ : k₂ ≤ j₂) :
     arrowMap iter₁.F k₁ k₂ h h₁ = arrowMap iter₂.F k₁ k₂ h h₂ := by
   wlog hj : j₁ ≤ j₂ generalizing j₁ j₂
-  · simp [this iter₂ iter₁ h₂ h₁ ((not_le.1 hj).le)]
   rw [Subsingleton.elim iter₁ (iter₂.trunc hj)]
   rfl
 
