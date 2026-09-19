@@ -160,7 +160,7 @@ continuous maps `X → Y`. -/
 noncomputable def sobrificationEquiv (X Y : Type u) [TopologicalSpace X]
     [TopologicalSpace Y] [T0Space Y] [QuasiSober Y] : C(PT (Opens X), Y) ≃ C(X, Y) :=
   (continuousMapEquivFrameHom (PT (Opens X)) Y).trans <|
-    (FrameHom.congrOrderIso (OrderIso.refl (Opens Y)) (orderIsoOpensPtOpens X).symm).trans <|
+    ((OrderIso.refl (Opens Y)).frameHomCongr (orderIsoOpensPtOpens X).symm).trans <|
     (continuousMapEquivFrameHom X Y).symm
 
 lemma sobrificationEquiv_apply {X Y : Type u} [TopologicalSpace X]
@@ -168,7 +168,7 @@ lemma sobrificationEquiv_apply {X Y : Type u} [TopologicalSpace X]
     sobrificationEquiv X Y f =
       f.comp ⟨localePointOfSpacePoint X, (isInducing_localePointOfSpacePoint X).continuous⟩ := by
   simp_rw [sobrificationEquiv, Equiv.trans_apply, continuousMapEquivFrameHom_apply,
-    FrameHom.congrOrderIso_apply, OrderIso.symm_refl, OrderIso.coe_refl, Equiv.symm_apply_eq]
+    OrderIso.frameHomCongr_apply, OrderIso.symm_refl, OrderIso.coe_refl, Equiv.symm_apply_eq]
   ext u x
   rfl
 
