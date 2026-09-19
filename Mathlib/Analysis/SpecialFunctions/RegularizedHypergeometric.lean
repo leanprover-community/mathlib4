@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
+import Mathlib.Topology.Algebra.InfiniteSum.ContinuousEval
+
 /-! # Generalized hypergeometric function
 
 In this file we define the generalized hypergeometric function as well as the Gaussian
@@ -147,6 +149,26 @@ theorem mul_regularizedHGFunCoeff_of_mem_right (n : ℕ) {u : ℂ} (h : u ∈ b)
       ring
     _ = 1 / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) ((u - 1) ::ₘ b.erase u)).prod) := by
       rw [← div_div, div_self h0, Multiset.map_cons, Multiset.prod_cons]
+      ring
+
+theorem mul_regularizedHGFunCoeff (n : ℕ) :
+    (n + 1) * regularizedHGFunCoeff a b (n + 1) =
+      a.prod * regularizedHGFunCoeff (a.map (· + 1)) (b.map (· + 1)) n := by
+  unfold regularizedHGFunCoeff
+  simp only [Nat.cast_add, Nat.cast_one, Multiset.map_map, Function.comp_apply]
+  calc
+    _ = (a.map ((ascPochhammer ℂ (n + 1)).eval ·)).prod /
+        (n ! * (b.map (fun x ↦ Gamma (x + (n + 1)))).prod) := by
+      rw [Nat.factorial_succ]
+      push_cast
+      field
+    _ = a.prod * (a.map fun x ↦ (ascPochhammer ℂ n).eval (x + 1)).prod /
+        (n ! * (b.map (fun x ↦ Gamma (x + (n + 1)))).prod) := by
+      simp [ascPochhammer, Multiset.prod_map_mul]
+    _ = a.prod * (a.map fun x ↦ (ascPochhammer ℂ n).eval (x + 1)).prod /
+        (n ! * (b.map (fun x ↦ Gamma (x + 1 + n))).prod) := by
+      congrm _ / (_ * (b.map fun x ↦ Gamma $(by ring)).prod)
+    _ = _ := by
       ring
 
 @[simp]
@@ -409,6 +431,30 @@ theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
       ring
     _ = _ := by
       simp [regularizedHGFun, FormalMultilinearSeries.sum]
+
+section Derivative
+
+private theorem summable_deriv_HGF {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    Summable fun n ↦ z ^ n • (regularizedHGFunSeries a b).derivSeries.coeff n := by
+  have hball : z ∈ Metric.eball 0 (regularizedHGFunSeries a b).radius := by simpa using hz
+  have hdball : z ∈ Metric.eball 0 (regularizedHGFunSeries a b).derivSeries.radius := by
+    simpa using hz.trans_le (FormalMultilinearSeries.radius_le_radius_derivSeries _)
+  simpa using ((regularizedHGFunSeries a b).derivSeries).summable hdball
+
+theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSeries a b).radius) :
+    deriv (regularizedHGFun a b) z =
+      a.prod * regularizedHGFun (a.map (· + 1)) (b.map (· + 1)) z := by
+  unfold regularizedHGFun deriv
+  rw [FormalMultilinearSeries.fderiv_sum hz]
+  suffices ∑' n, z ^ n * ((n + 1) * C a b (n + 1)) =
+      a.prod * ∑' n, z ^ n * C (a.map (· + 1)) (b.map (· + 1)) n by
+    simpa [FormalMultilinearSeries.sum, tsum_apply (summable_deriv_HGF hz)]
+  rw [← tsum_mul_left]
+  congr with n
+  rw [mul_regularizedHGFunCoeff]
+  ring
+
+end Derivative
 
 section ZeroZero
 
