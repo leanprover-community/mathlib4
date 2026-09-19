@@ -11,6 +11,24 @@ public import Mathlib.Topology.Order.Category.FrameAdjunction
 
 We construct the so-called "sobrification" or "sober reflection" of a topological space, which is
 the universal continuous map from `X` into a sober (`T0Space` and `QuasiSober`) space.
+
+## Main results
+
+We construct the sobrification as the unit of the adjunction `Locale.adjunctionTopToLocalePT`, so
+that the sober space extending `X` is `Locale.PT (Opens X)`. The main results are:
+- The counit `localePointOfSpacePoint X: X → PT (Opens X)` is inducing (always), injective iff
+`T0Space X`, and surjective iff `QuasiSober X`. As such, if `X` is sober then we have
+`homeomorphPtOpens : X ≃ₜ PT (Opens X)`.
+- `Locale.PT.equivIrreducibleCloseds` : the points of `Opens X` are equivalent to the irreducible
+closed subsets of `X`.
+- `continuousMapEquivFrameHom` : if `Y` is sober then every frame homomorphism `Opens Y → Opens X`
+comes from a unique continuous map `X → Y`.
+- `sobrificationEquiv` : for `Y` sober, precomposition with `localePointOfSpacePoint` defines an
+equivalence `C(PT (Opens X), Y) ≃ C(X, Y)`.
+
+## References
+
+- https://ncatlab.org/nlab/show/sober+topological+space
 -/
 
 @[expose] public section
@@ -100,7 +118,7 @@ lemma toCloseds_injective (X : Type*) [TopologicalSpace X] :
   · grind [Opens.coe_mk,h u hu hx]
 
 /-- Points of `Opens X` are equivalent to irreducible closed subsets of `X`. -/
-@[simps] def irreducibleClosedsEquiv (X : Type*) [TopologicalSpace X] :
+@[simps] def equivIrreducibleCloseds (X : Type*) [TopologicalSpace X] :
     PT (Opens X) ≃ IrreducibleCloseds X where
   toFun := toIrreducibleCloseds
   invFun | ⟨s, hirred, _⟩ => hirred.toPTOpens
@@ -124,9 +142,9 @@ theorem localePointOfSpacePoint_surjective_iff_quasiSober (X : Type*) [Topologic
     (localePointOfSpacePoint X).Surjective ↔ QuasiSober X := by
   refine ⟨fun h ↦ ⟨?_⟩, fun _ ↦ localePointOfSpacePoint_surjective X⟩
   intro s hs hs'
-  obtain ⟨x, hx⟩ := h <| (irreducibleClosedsEquiv X).symm ⟨s, hs, hs'⟩
+  obtain ⟨x, hx⟩ := h <| (equivIrreducibleCloseds X).symm ⟨s, hs, hs'⟩
   use x
-  rwa [← toPT_singleton, Equiv.eq_symm_apply, irreducibleClosedsEquiv_apply,
+  rwa [← toPT_singleton, Equiv.eq_symm_apply, equivIrreducibleCloseds_apply,
     toIrreducibleCloseds_toPTOpens, IrreducibleCloseds.ext_iff] at hx
 
 lemma isHomeomorph_localePointOfSpacePoint (X : Type*) [TopologicalSpace X] [T0Space X]
