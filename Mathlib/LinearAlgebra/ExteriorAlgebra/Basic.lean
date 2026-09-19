@@ -563,12 +563,9 @@ lemma eq_algebraMap_add_ι (t : ExteriorAlgebra R R) :
   | mul a b ha hb =>
     obtain ⟨α, x, rfl⟩ : ∃ α x, a = algebraMap R _ α + ι R x := ⟨_, _, ha⟩
     obtain ⟨β, y, rfl⟩ : ∃ β y, b = algebraMap R _ β + ι R y := ⟨_, _, hb⟩
-    have e1 : algebraMap R (ExteriorAlgebra R R) α * ι R y = ι R (α • y) := by
-      rw [← Algebra.smul_def, ← map_smul]
-    have e2 : (ι R x : ExteriorAlgebra R R) * algebraMap R _ β = ι R (β • x) := by
-      rw [← Algebra.commutes, ← Algebra.smul_def, ← map_smul]
-    rw [add_mul, mul_add, mul_add, ι_mul_ι_ring, e1, e2, ← map_mul, add_zero, add_assoc, ← map_add]
-    simp [-map_mul]
+    rw [add_mul, mul_add, mul_add, ι_mul_ι_ring, add_zero, ← map_mul,
+      ← Algebra.smul_def α (ι R y), ← Algebra.commutes β (ι R x), ← Algebra.smul_def β (ι R x)]
+    simp [add_assoc, -map_mul, ← map_smul]
 
 variable (R) in
 /-- The exterior algebra of the base ring is a free module of rank two, with basis `1, ι 1`. -/
