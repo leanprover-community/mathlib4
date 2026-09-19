@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The morphism comparing a colimit of limits with the corresponding limit of colimits.
 
-In this file, we introduce morphisms which allow to study the commuation of limits
+In this file, we introduce morphisms which allow to study the commutation of limits
 with colimits.
 
 In the uncurried situation of a functor, `F : J × K ⥤ C` there is always a
