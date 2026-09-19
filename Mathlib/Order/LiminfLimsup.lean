@@ -557,7 +557,7 @@ theorem cofinite.blimsup_set_eq :
   refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
   · simp only [mem_sInter, mem_ofPred_eq, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
-  · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
+  · exact hx.mono (s := {n | p n ∧ x ∈ s n}) fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
 
 theorem cofinite.bliminf_set_eq : bliminf s cofinite p = { x | { n | p n ∧ x ∉ s n }.Finite } := by
   rw [← compl_inj_iff]
@@ -738,7 +738,8 @@ set_option linter.unusedVariables false in
 @[to_dual gt_mem_sets_of_limsInf_gt]
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
     ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
+  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ :=
+    exists_lt_of_csInf_lt (s := {a | ∀ᶠ n in f, n ≤ a}) h l
   mem_of_superset h fun _a => hcb.trans_le'
 
 section Classical
