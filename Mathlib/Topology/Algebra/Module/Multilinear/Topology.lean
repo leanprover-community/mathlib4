@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
