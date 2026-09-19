@@ -60,7 +60,7 @@ variable {α : Type}
 def State.getMatch (state : State α) (e : Expr) : MetaM (Array α) := state.tree.getMatch e
 
 /-- When the current module registers an attribute, record for `shake` that modules importing
-the current one should continue to do.
+the current one should continue to do so.
 
 `kind` indicates the scope at which the attribute is registered.
 
