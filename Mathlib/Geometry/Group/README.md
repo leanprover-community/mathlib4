@@ -7,4 +7,5 @@ Geometric group theory is the study of finitely generated groups through their a
 ## Topics
 
 The geometric group theory topics currently covered are:
+* Dehn functions
 * Growth of groups
