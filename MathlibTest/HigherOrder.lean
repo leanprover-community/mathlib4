@@ -1,4 +1,5 @@
 import Mathlib.Tactic.HigherOrder
+import Mathlib.Control.Functor
 
 set_option autoImplicit true
 namespace HigherOrderTest

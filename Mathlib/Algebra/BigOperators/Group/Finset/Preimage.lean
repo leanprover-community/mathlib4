@@ -3,18 +3,20 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Sums and products over preimages of finite sets.
 -/
 
-assert_not_exists MonoidWithZero MulAction OrderedCommMonoid
+public section
+
+assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {ι κ β : Type*}
-
-open Fin Function
 
 namespace Finset
 
@@ -26,7 +28,7 @@ lemma prod_preimage' (f : ι → κ) [DecidablePred (· ∈ Set.range f)] (s : F
   classical
   calc
     ∏ x ∈ preimage s f hf, g (f x) = ∏ x ∈ image f (preimage s f hf), g x :=
-      Eq.symm <| prod_image <| by simpa only [mem_preimage, Set.InjOn] using hf
+      Eq.symm <| prod_image <| by simpa [mem_preimage, Set.InjOn] using hf
     _ = ∏ x ∈ s with x ∈ Set.range f, g x := by rw [image_preimage]
 
 @[to_additive]

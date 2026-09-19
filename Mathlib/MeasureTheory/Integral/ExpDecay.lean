@@ -3,9 +3,10 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.MeasureTheory.Integral.Asymptotics
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.MeasureTheory.Integral.Asymptotics
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integrals with exponential decay at ∞
@@ -15,12 +16,17 @@ for integrability:
 
 * `integrable_of_isBigO_exp_neg`: If `f` is continuous on `[a,∞)`, for some `a ∈ ℝ`, and there
   exists `b > 0` such that `f(x) = O(exp(-b x))` as `x → ∞`, then `f` is integrable on `(a, ∞)`.
+* `integrableOn_exp_neg_smul_of_isBigO_exp`: exponential decay dominates a locally integrable
+  function of strictly smaller exponential order, with `integrableOn_exp_neg_mul_of_isBigO_exp`
+  as the real-valued specialization.
 -/
+
+public section
 
 
 noncomputable section
 
-open Real intervalIntegral MeasureTheory Set Filter
+open Real intervalIntegral MeasureTheory Set Filter Asymptotics
 
 open scoped Topology
 
@@ -38,6 +44,26 @@ theorem exp_neg_integrableOn_Ioi (a : ℝ) {b : ℝ} (h : 0 < b) :
 theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     (hf : ContinuousOn f (Ici a)) (ho : f =O[atTop] fun x => exp (-b * x)) :
     IntegrableOn f (Ioi a) :=
-  integrableOn_Ici_iff_integrableOn_Ioi.mp <|
+  integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp <|
     (hf.locallyIntegrableOn measurableSet_Ici).integrableOn_of_isBigO_atTop
     ho ⟨Ioi b, Ioi_mem_atTop b, exp_neg_integrableOn_Ioi b h0⟩
+
+/-- If `f` is locally integrable on `[c, ∞)` and `f x = O(exp (a * x))` at `∞`, then
+`exp (-b * x) • f x` is integrable on `[c, ∞)` for every `a < b`. -/
+theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {a b c : ℝ} {f : ℝ → E} (hfc : LocallyIntegrableOn f (Ici c))
+    (hf : f =O[atTop] fun x : ℝ => exp (a * x)) (hab : a < b) :
+    IntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ici c) := by
+  have hloc : LocallyIntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ici c) :=
+    hfc.continuousOn_smul isClosed_Ici.isLocallyClosed (by fun_prop)
+  exact hloc.integrableOn_of_isBigO_atTop (g := fun x : ℝ => exp ((a - b) * x))
+    (((isBigO_refl _ atTop).smul hf).congr_right fun x => by
+      simp only [smul_eq_mul, ← exp_add]; ring_nf)
+    ⟨Ioi c, Ioi_mem_atTop c, by
+      simpa [neg_sub] using exp_neg_integrableOn_Ioi c (sub_pos.mpr hab)⟩
+
+/-- Real-valued specialization of `integrableOn_exp_neg_smul_of_isBigO_exp`. -/
+theorem integrableOn_exp_neg_mul_of_isBigO_exp {a b c : ℝ} {f : ℝ → ℝ}
+    (hfc : LocallyIntegrableOn f (Ici c)) (hf : f =O[atTop] fun x : ℝ => exp (a * x))
+    (hab : a < b) : IntegrableOn (fun x : ℝ => exp (-b * x) * f x) (Ici c) := by
+  simpa using integrableOn_exp_neg_smul_of_isBigO_exp hfc hf hab

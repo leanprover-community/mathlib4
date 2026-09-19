@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Finiteness and `Filter.atTop` and `Filter.atBot` filters
@@ -14,12 +16,15 @@ This file contains results on `Filter.atTop` and `Filter.atBot` that depend on
 the finiteness theory developed in Mathlib.
 -/
 
-variable {ι ι' α β γ : Type*}
+public section
+
+variable {ι α β : Type*}
 
 open Set
 
 namespace Filter
 
+@[to_dual eventually_forall_le_atBot]
 theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
     (∀ᶠ x in atTop, ∀ y, x ≤ y → p y) ↔ ∀ᶠ x in atTop, p x := by
   refine ⟨fun h ↦ h.mono fun x hx ↦ hx x le_rfl, fun h ↦ ?_⟩
@@ -28,19 +33,11 @@ theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
   simp only [mem_iInter] at hS hx
   exact hS fun z hz ↦ le_trans (hx ⟨z, hz⟩) hy
 
-theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
-    (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
-  eventually_forall_ge_atTop (α := αᵒᵈ)
-
+@[to_dual eventually_forall_le_atBot]
 theorem Tendsto.eventually_forall_ge_atTop [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
     ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
   rw [← Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
-
-theorem Tendsto.eventually_forall_le_atBot [Preorder β] {l : Filter α}
-    {p : β → Prop} {f : α → β} (hf : Tendsto f l atBot) (h_evtl : ∀ᶠ x in atBot, p x) :
-    ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
-  rw [← Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
 /-!
 ### Sequences
@@ -49,6 +46,10 @@ theorem Tendsto.eventually_forall_le_atBot [Preorder β] {l : Filter α}
 /-- If `u` is a sequence which is unbounded above,
 then after any point, it reaches a value strictly greater than all previous values.
 -/
+@[to_dual low_scores
+/-- If `u` is a sequence which is unbounded below,
+then after any point, it reaches a value strictly smaller than all previous values.
+-/]
 theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tendsto u atTop atTop) :
     ∀ N, ∃ n ≥ N, ∀ k < n, u k < u n := by
   intro N
@@ -58,39 +59,21 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u k < u n, hn_min : ∀ m, m < n → N ≤ m → u m ≤ u k⟩ :
       ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k := by
     rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
-    push_neg at hn_min
+    push Not at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
   use n, hnN
-  rintro (l : ℕ) (hl : l < n)
-  have hlk : u l ≤ u k := by
-    rcases (le_total l N : l ≤ N ∨ N ≤ l) with H | H
-    · exact hku l H
-    · exact hn_min l hl H
-  calc
-    u l ≤ u k := hlk
-    _ < u n := hnk
-
--- see Note [nolint_ge]
-/-- If `u` is a sequence which is unbounded below,
-then after any point, it reaches a value strictly smaller than all previous values.
--/
-theorem low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β} (hu : Tendsto u atTop atBot) :
-    ∀ N, ∃ n ≥ N, ∀ k < n, u n < u k :=
-  @high_scores βᵒᵈ _ _ _ hu
+  grind
 
 /-- If `u` is a sequence which is unbounded above,
 then it `Frequently` reaches a value strictly greater than all previous values.
 -/
+@[to_dual frequently_low_scores
+/-- If `u` is a sequence which is unbounded below,
+then it `Frequently` reaches a value strictly smaller than all previous values.
+-/]
 theorem frequently_high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ᶠ n in atTop, ∀ k < n, u k < u n := by
   simpa [frequently_atTop] using high_scores hu
-
-/-- If `u` is a sequence which is unbounded below,
-then it `Frequently` reaches a value strictly smaller than all previous values.
--/
-theorem frequently_low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β}
-    (hu : Tendsto u atTop atBot) : ∃ᶠ n in atTop, ∀ k < n, u n < u k :=
-  @frequently_high_scores βᵒᵈ _ _ _ hu
 
 theorem strictMono_subseq_of_tendsto_atTop [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=
@@ -109,7 +92,7 @@ theorem Eventually.atTop_of_arithmetic {p : ℕ → Prop} {n : ℕ} (hn : n ≠ 
   rw [← Nat.div_add_mod b n]
   have hlt := Nat.mod_lt b hn.bot_lt
   refine hN _ hlt _ ?_
-  rw [ge_iff_le, Nat.le_div_iff_mul_le hn.bot_lt, mul_comm]
+  rw [Nat.le_div_iff_mul_le hn.bot_lt, mul_comm]
   exact (Finset.le_sup (f := (n * N ·)) (Finset.mem_range.2 hlt)).trans hb
 
 /-- Given an antitone basis `s : ℕ → Set α` of a filter, extract an antitone subbasis `s ∘ φ`,
@@ -124,11 +107,11 @@ theorem HasAntitoneBasis.subbasis_with_rel {f : Filter α} {s : ℕ → Set α}
     (eventually_all_finite ht).2 fun m _ => (eventually_gt_atTop m).and (hr _)
   rcases seq_of_forall_finite_exists fun t ht => (this t ht).exists with ⟨φ, hφ⟩
   simp only [forall_mem_image, forall_and, mem_Iio] at hφ
-  exact ⟨φ, forall_swap.2 hφ.1, forall_swap.2 hφ.2⟩
+  exact ⟨φ, forall_comm.2 hφ.1, forall_comm.2 hφ.2⟩
 
 end Filter
 
-open Filter Finset
+open Filter
 
 namespace Nat
 
@@ -140,12 +123,12 @@ theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n <
   obtain (rfl | c0) := c.eq_zero_or_pos
   · simp [Nat.two_mul, ← Nat.add_assoc, Nat.add_right_comm _ 1, Nat.factorial_pos]
   refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d') c0)).trans_lt ?_
-  convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
+  convert_to! (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
   · rw [← pow_mul, ← pow_add]
     congr 1
-    omega
+    lia
   · congr 1
-    omega
+    lia
   refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
     (factorial_le (Nat.le_succ _))
   rw [← one_mul (_ ^ _ : ℕ)]

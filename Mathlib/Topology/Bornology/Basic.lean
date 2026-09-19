@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Basic theory of bornology
@@ -27,7 +29,7 @@ cobounded filter is generally referred to as the *filter at infinity*.
   contains the `cofinite` filter.
 - `Bornology.IsCobounded`: the predicate that a set is a member of the `cobounded α` filter. For
   `s : Set α`, one should prefer `Bornology.IsCobounded s` over `s ∈ cobounded α`.
-- `bornology.IsBounded`: the predicate that states a set is bounded (i.e., the complement of a
+- `Bornology.IsBounded`: the predicate that states a set is bounded (i.e., the complement of a
   cobounded set). One should prefer `Bornology.IsBounded s` over `sᶜ ∈ cobounded α`.
 - `BoundedSpace α`: a class extending `Bornology α` with the condition
   `Bornology.IsBounded (Set.univ : Set α)`
@@ -35,6 +37,8 @@ cobounded filter is generally referred to as the *filter at infinity*.
 Although use of `cobounded α` is discouraged for indicating the (co)boundedness of individual sets,
 it is intended for regular use as a filter on `α`.
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -44,28 +48,12 @@ variable {ι α β : Type*}
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded` -/
+@[wikidata Q96373820]
 class Bornology (α : Type*) where
-  /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
-  should always prefer `Bornology.cobounded` because it makes the `α` argument explicit. -/
-  cobounded' : Filter α
-  /-- The cobounded filter in a bornology is smaller than the cofinite filter. This is a field of
-  the structure, but one should always prefer `Bornology.le_cofinite` because it makes the `α`
-  argument explicit. -/
-  le_cofinite' : cobounded' ≤ cofinite
-
-/- porting note: Because Lean 4 doesn't accept the `[]` syntax to make arguments of structure
-fields explicit, we have to define these separately, prove the `ext` lemmas manually, and
-initialize new `simps` projections. -/
-
-/-- The filter of cobounded sets in a bornology. -/
-def Bornology.cobounded (α : Type*) [Bornology α] : Filter α := Bornology.cobounded'
-
-alias Bornology.Simps.cobounded := Bornology.cobounded
-
-lemma Bornology.le_cofinite (α : Type*) [Bornology α] : cobounded α ≤ cofinite :=
-Bornology.le_cofinite'
-
-initialize_simps_projections Bornology (cobounded' → cobounded)
+  /-- The filter of cobounded sets in a bornology. -/
+  cobounded (α) : Filter α
+  /-- The cobounded filter in a bornology is smaller than the cofinite filter. -/
+  le_cofinite (α) : cobounded ≤ cofinite
 
 @[ext]
 lemma Bornology.ext (t t' : Bornology α)
@@ -77,18 +65,18 @@ lemma Bornology.ext (t t' : Bornology α)
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps]
+@[simps, instance_reducible]
 def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
     (union_mem : ∀ s₁ ∈ B, ∀ s₂ ∈ B, s₁ ∪ s₂ ∈ B)
     (singleton_mem : ∀ x, {x} ∈ B) : Bornology α where
-  cobounded' := comk (· ∈ B) empty_mem subset_mem union_mem
-  le_cofinite' := by simpa [le_cofinite_iff_compl_singleton_mem]
+  cobounded := comk (· ∈ B) empty_mem subset_mem union_mem
+  le_cofinite := by simpa [le_cofinite_iff_compl_singleton_mem]
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps! cobounded]
+@[simps! cobounded, instance_reducible]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
@@ -109,6 +97,7 @@ def IsCobounded [Bornology α] (s : Set α) : Prop :=
   s ∈ cobounded α
 
 /-- `IsBounded` is the predicate that `s` is bounded relative to the ambient bornology on `α`. -/
+@[wikidata Q726212]
 def IsBounded [Bornology α] (s : Set α) : Prop :=
   IsCobounded sᶜ
 
@@ -194,7 +183,7 @@ theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
       ⟨(f '' tᶜ)ᶜ, h <| IsCobounded.compl ht, compl_subset_comm.1 <| subset_preimage_image _ _⟩⟩
   obtain ⟨t, ht, hts⟩ := h hs.compl
   rw [subset_compl_comm, ← preimage_compl] at hts
-  exact (IsCobounded.compl ht).subset ((image_subset f hts).trans <| image_preimage_subset _ _)
+  exact (IsCobounded.compl ht).subset ((image_mono hts).trans <| image_preimage_subset _ _)
 
 end
 
@@ -264,6 +253,17 @@ theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : 
     Disjoint l (cobounded α) ↔ ∃ i, p i ∧ Bornology.IsBounded (s i) :=
   h.disjoint_iff_left
 
+theorem Filter.disjoint_cobounded_iff [Bornology α] {l : Filter α} :
+    Disjoint l (cobounded α) ↔ ∃ s ∈ l, Bornology.IsBounded s :=
+  l.basis_sets.disjoint_cobounded_iff
+
+alias ⟨Disjoint.exists_isBounded, _⟩ := Filter.disjoint_cobounded_iff
+
+theorem Bornology.IsBounded.disjoint_cobounded [Bornology α]
+    {l : Filter α} {s : Set α} (hs : IsBounded s) (hl : s ∈ l) :
+    Disjoint l (cobounded α) :=
+  l.disjoint_cobounded_iff.mpr ⟨s, hl, hs⟩
+
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 
@@ -276,8 +276,8 @@ instance : Bornology PUnit :=
 
 /-- The cofinite filter as a bornology -/
 abbrev Bornology.cofinite : Bornology α where
-  cobounded' := Filter.cofinite
-  le_cofinite' := le_rfl
+  cobounded := Filter.cofinite
+  le_cofinite := le_rfl
 
 /-- A space with a `Bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
 class BoundedSpace (α : Type*) [Bornology α] : Prop where

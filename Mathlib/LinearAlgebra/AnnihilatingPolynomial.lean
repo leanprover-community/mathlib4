@@ -3,15 +3,17 @@ Copyright (c) 2022 Justin Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Thomas
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Algebra.Polynomial.Module.AEval
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Annihilating Ideal
 
-Given a commutative ring `R` and an `R`-algebra `A`
-Every element `a : A` defines
+Given a commutative ring `R` and an `R`-algebra `A`,
+every element `a : A` defines
 an ideal `Polynomial.annIdeal a ⊆ R[X]`.
 Simply put, this is the set of polynomials `p` where
 the polynomial evaluation `p(a)` is 0.
@@ -32,6 +34,8 @@ there are some common specializations which may be more familiar.
 * Example 2: `A = n × n` matrices with entries in `R`.
 -/
 
+@[expose] public section
+
 
 open Polynomial
 
@@ -44,7 +48,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable (R) in
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
 
-The informal notation `p(a)` stand for `Polynomial.aeval a p`.
+The informal notation `p(a)` stands for `Polynomial.aeval a p`.
 Again informally, the annihilating ideal of `a` is
 `{ p ∈ R[X] | p(a) = 0 }`. This is an ideal in `R[X]`.
 The formal definition uses the kernel of the aeval map. -/
@@ -105,7 +109,7 @@ theorem annIdealGenerator_mem (a : A) : annIdealGenerator 𝕜 a ∈ annIdeal �
 
 theorem mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
     p ∈ annIdeal 𝕜 a ↔ ∃ s : 𝕜[X], p = s • annIdealGenerator 𝕜 a := by
-  simp_rw [@eq_comm _ p, ← mem_span_singleton, ← span_singleton_annIdealGenerator 𝕜 a, Ideal.span]
+  simp_rw [@eq_comm _ p, ← mem_span_singleton, ← span_singleton_annIdealGenerator 𝕜 a]
 
 /-- The generator we chose for the annihilating ideal is monic when the ideal is non-zero. -/
 theorem monic_annIdealGenerator (a : A) (hg : annIdealGenerator 𝕜 a ≠ 0) :

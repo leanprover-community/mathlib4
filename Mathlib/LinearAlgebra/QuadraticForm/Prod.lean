@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-! # Quadratic form on product and pi types
 
@@ -28,6 +30,8 @@ non-negative elements, and would generalize to any map `Q` where `Q 0 = 0`, not 
 forms specifically.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -205,6 +209,7 @@ variable [CommRing R]
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup P]
 variable [Module R M₁] [Module R M₂] [Module R P]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] theorem polar_prod (Q₁ : QuadraticMap R M₁ P) (Q₂ : QuadraticMap R M₂ P) (x y : M₁ × M₂) :
     polar (Q₁.prod Q₂) x y = polar Q₁ x.1 y.1 + polar Q₂ x.2 y.2 := by
   dsimp [polar]
@@ -258,7 +263,7 @@ def IsometryEquiv.pi [Fintype ι]
     {Q : ∀ i, QuadraticMap R (Mᵢ i) P} {Q' : ∀ i, QuadraticMap R (Nᵢ i) P}
     (e : ∀ i, (Q i).IsometryEquiv (Q' i)) : (pi Q).IsometryEquiv (pi Q') where
   map_app' x := by
-    simp only [pi_apply, LinearEquiv.piCongrRight, LinearEquiv.toFun_eq_coe,
+    simp only [pi_apply, LinearEquiv.piCongrRight,
       IsometryEquiv.coe_toLinearEquiv, IsometryEquiv.map_app]
   toLinearEquiv := LinearEquiv.piCongrRight fun i => (e i : Mᵢ i ≃ₗ[R] Nᵢ i)
 
@@ -321,7 +326,7 @@ theorem nonneg_pi_iff {P} [Fintype ι] [AddCommMonoid P] [PartialOrder P] [IsOrd
   -- TODO: does this generalize to a useful lemma independent of `QuadraticMap`?
   · intro h i x
     classical
-    convert h (Pi.single i x) using 1
+    convert! h (Pi.single i x) using 1
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hji => ?_, Pi.single_eq_same]
     rw [Pi.single_eq_of_ne hji, map_zero]
   · rintro h x

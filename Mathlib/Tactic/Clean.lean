@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Michail Karatarakis, Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Elab.SyntheticMVars
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
 
 /-!
 # `clean%` term elaborator
 
 Remove identity functions from a term.
 -/
+
+public meta section
 
 open Lean Meta Elab
 
@@ -23,15 +27,13 @@ def cleanConsts : List Name :=
   [``id]
 
 /-- Clean an expression by eliminating identify functions listed in `cleanConsts`.
-Also eliminates `fun x => x` applications and tautological `let_fun` bindings. -/
+Also eliminates `fun x => x` applications and tautological `let`/`have` bindings. -/
 def clean (e : Expr) : Expr :=
   e.replace fun
     | .app (.app (.const n _) _) e' => if n ∈ cleanConsts then some e' else none
     | .app (.lam _ _ (.bvar 0) _) e' => some e'
-    | e =>
-      match e.letFun? with
-      | some (_n, _t, v, .bvar 0) => some v
-      | _ => none
+    | .letE _ _ v (.bvar 0) _ => some v
+    | _ => none
 
 end Lean.Expr
 
@@ -55,6 +57,7 @@ def x' : Id Nat := clean% by dsimp [Id]; exact 1
 -- def x' : Id Nat := 1
 ```
 -/
+@[deprecated "`clean%` is not used/needed anymore" (since := "2026-09-03")]
 syntax (name := cleanStx) "clean% " term : term
 
 @[term_elab cleanStx, inherit_doc cleanStx]
@@ -66,6 +69,7 @@ def elabClean : Term.TermElab := fun stx expectedType? =>
   | _ => throwUnsupportedSyntax
 
 /-- (Deprecated) `clean t` is a macro for `exact clean% t`. -/
+@[deprecated "`clean' is not used/needed anymore" (since := "2026-09-03")]
 macro "clean " t:term : tactic => `(tactic| exact clean% $t)
 
 end Mathlib.Tactic

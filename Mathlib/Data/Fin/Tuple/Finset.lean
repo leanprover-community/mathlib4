@@ -3,19 +3,21 @@ Copyright (c) 2023 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Pi
+module
+
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.Pi
 
 /-!
 # Fin-indexed tuples of finsets
 -/
 
+public section
+
 open Fin Fintype
 
 namespace Fin
 variable {n : ℕ} {α : Fin (n + 1) → Type*} {f : ∀ i, α i} {s : ∀ i, Finset (α i)} {p : Fin (n + 1)}
-
-open Fintype
 
 lemma mem_piFinset_iff_zero_tail :
     f ∈ Fintype.piFinset s ↔ f 0 ∈ s 0 ∧ tail f ∈ piFinset (tail s) := by

@@ -3,7 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # Isometric linear maps
@@ -16,6 +18,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 `Q₁ →qᵢ Q₂` is notation for `Q₁.Isometry Q₂`.
 -/
+
+@[expose] public section
 
 variable {R M M₁ M₂ M₃ M₄ N : Type*}
 
@@ -41,9 +45,10 @@ notation:25 Q₁ " →qᵢ " Q₂:0 => Isometry Q₁ Q₂
 variable {Q₁ : QuadraticMap R M₁ N} {Q₂ : QuadraticMap R M₂ N}
 variable {Q₃ : QuadraticMap R M₃ N} {Q₄ : QuadraticMap R M₄ N}
 
+@[macro_inline]
 instance instFunLike : FunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
 
 instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
   map_add f := f.toLinearMap.map_add

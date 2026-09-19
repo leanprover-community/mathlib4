@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.FunLike.Embedding
+module
+
+public import Mathlib.Data.FunLike.Embedding
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
@@ -21,6 +23,7 @@ namespace MyIso
 
 variable (A B : Type*) [MyClass A] [MyClass B]
 
+@[macro_inline]
 instance instEquivLike : EquivLike (MyIso A B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -94,6 +97,7 @@ namespace CoolerIso
 
 variable {A B : Type*} [CoolClass A] [CoolClass B]
 
+@[macro_inline]
 instance : EquivLike (CoolerIso A B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -122,6 +126,8 @@ and defining `CoolerIsoClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyIso`-related declaration.
 
 -/
+
+public section
 
 
 /-- The class `EquivLike E α β` expresses that terms of type `E` have an
@@ -154,10 +160,17 @@ variable {E F α β γ : Sort*} [EquivLike E α β] [EquivLike F β γ]
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
 
+@[macro_inline]
 instance (priority := 100) toFunLike : FunLike E α β where
   coe := (coe : E → α → β)
-  coe_injective' e g h :=
+  coe_injective e g h :=
     coe_injective' e g h ((left_inv e).eq_rightInverse (h.symm ▸ right_inv g))
+
+@[simp] theorem coe_apply {e : E} {a : α} : coe e a = e a := rfl
+
+theorem inv_apply_eq {e : E} {b : β} {a : α} : inv e b = a ↔ b = e a := by
+  constructor <;> rintro ⟨_, rfl⟩
+  exacts [(right_inv e b).symm, left_inv e a]
 
 instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where
   injective' e := (left_inv e).injective
@@ -193,8 +206,7 @@ or its equivalent.
 
 TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
-theorem inv_apply_apply (e : E) (a : α) : EquivLike.inv e (e a) = a :=
-  left_inv _ _
+theorem inv_apply_apply (e : E) (a : α) : inv e (e a) = a := left_inv _ _
 
 /-- This lemma is only supposed to be used in the generic context, when working with instances
 of classes extending `EquivLike`.
@@ -203,11 +215,7 @@ or its equivalent.
 
 TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
-theorem apply_inv_apply (e : E) (b : β) : e (EquivLike.inv e b) = b :=
-  right_inv _ _
-
-lemma inv_apply_eq_iff_eq_apply {e : E} {b : β} {a : α} : (EquivLike.inv e b) = a ↔ b = e a := by
-  constructor <;> rintro ⟨_, rfl⟩ <;> simp
+theorem apply_inv_apply (e : E) (b : β) : e (inv e b) = b := right_inv _ _
 
 theorem comp_injective (f : α → β) (e : F) : Function.Injective (e ∘ f) ↔ Function.Injective f :=
   EmbeddingLike.comp_injective f e
@@ -220,8 +228,9 @@ theorem comp_surjective (f : α → β) (e : F) : Function.Surjective (e ∘ f) 
 theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) ↔ Function.Bijective f :=
   (EquivLike.bijective e).of_comp_iff' f
 
+include β in
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
-lemma subsingleton_dom [FunLike F β γ] [Subsingleton β] : Subsingleton F :=
+lemma subsingleton_dom [Subsingleton α] : Subsingleton E :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 
 end EquivLike

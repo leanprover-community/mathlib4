@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.BoundedLattice
+module
+
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # The categories of semilattices
@@ -17,6 +19,8 @@ element and inf-semilattices with a top element.
 * [nLab, *semilattice*](https://ncatlab.org/nlab/show/semilattice)
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -24,6 +28,8 @@ open CategoryTheory
 
 /-- The category of sup-semilattices with a bottom element. -/
 structure SemilatSupCat : Type (u + 1) where
+  /-- Construct a bundled `SemilatSupCat` from a `SemilatticeSup`. -/
+  of ::
   /-- The underlying type of a sup-semilattice with a bottom element. -/
   protected X : Type u
   [isSemilatticeSup : SemilatticeSup X]
@@ -31,6 +37,8 @@ structure SemilatSupCat : Type (u + 1) where
 
 /-- The category of inf-semilattices with a top element. -/
 structure SemilatInfCat : Type (u + 1) where
+  /-- Construct a bundled `SemilatInfCat` from a `SemilatticeInf`. -/
+  of ::
   /-- The underlying type of an inf-semilattice with a top element. -/
   protected X : Type u
   [isSemilatticeInf : SemilatticeInf X]
@@ -38,14 +46,15 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `SemilatSupCat.of X` as `↧X`. -/
+@[app_delab SemilatSupCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort SemilatSupCat Type* :=
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
-
-/-- Construct a bundled `SemilatSupCat` from a `SemilatticeSup`. -/
-abbrev of (α : Type*) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
-  ⟨α⟩
 
 theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
   rfl
@@ -66,7 +75,7 @@ instance : ConcreteCategory SemilatSupCat (SupBotHom · ·) where
   ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩
 
 @[simp]
@@ -78,14 +87,15 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `SemilatInfCat.of X` as `↧X`. -/
+@[app_delab SemilatInfCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort SemilatInfCat Type* :=
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop
-
-/-- Construct a bundled `SemilatInfCat` from a `SemilatticeInf`. -/
-abbrev of (α : Type*) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
-  ⟨α⟩
 
 theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
   rfl
@@ -106,7 +116,7 @@ instance : ConcreteCategory SemilatInfCat (InfTopHom · ·) where
   ofHom f := f
 
 instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩
 
 @[simp]
@@ -131,7 +141,7 @@ def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
 /-- `OrderDual` as a functor. -/
 @[simps map]
 def dual : SemilatSupCat ⥤ SemilatInfCat where
-  obj X := .of Xᵒᵈ
+  obj X := ↧Xᵒᵈ
   map {_ _} := SupBotHom.dual
 
 end SemilatSupCat
@@ -142,14 +152,14 @@ namespace SemilatInfCat
 @[simps]
 def Iso.mk {α β : SemilatInfCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : InfTopHom _ _)
-  inv := (e.symm :  InfTopHom _ _)
+  inv := (e.symm : InfTopHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
 @[simps]
 def dual : SemilatInfCat ⥤ SemilatSupCat where
-  obj X := .of Xᵒᵈ
+  obj X := ↧Xᵒᵈ
   map {_ _} := InfTopHom.dual
 
 end SemilatInfCat

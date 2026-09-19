@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 
 /-! # Calculus of fractions in the derived category
 
@@ -19,6 +21,8 @@ on the auxiliary object appearing in the fraction.
 
 -/
 
+public section
+
 universe w v u
 
 open CategoryTheory Category Limits
@@ -28,11 +32,11 @@ namespace DerivedCategory
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category can be written
@@ -40,26 +44,50 @@ as `f = inv (Q.map s) ≫ Q.map g` with `s : X' ⟶ X` a quasi-isomorphism and `
 lemma right_fac {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (X' : CochainComplex C ℤ) (s : X' ⟶ X) (_ : IsIso (Q.map s)) (g : X' ⟶ Y),
       f = inv (Q.map s) ≫ Q.map g := by
-  have ⟨φ, hφ⟩ := Localization.exists_rightFraction Qh (HomotopyCategory.quasiIso C _) f
+  have ⟨φ, hφ⟩ := Localization.exists_rightFraction Qh (HomotopyCategory.quasiIso C _)
+    ((quotientCompQhIso C).hom.app X ≫ f ≫ (quotientCompQhIso C).inv.app Y)
+  have hφ' := φ.map_s_comp_map Qh Functor.IsLocalization.inverts
   obtain ⟨X', s, hs, g, rfl⟩ := φ.cases
   obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
   obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s
   obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g
-  rw [← isIso_Qh_map_iff] at hs
-  exact ⟨X', s, hs, g, hφ⟩
+  dsimp at hφ'
+  simp only [← hφ, ← cancel_mono ((quotientCompQhIso C).hom.app Y), Category.assoc,
+    Iso.inv_hom_id_app, Category.comp_id] at hφ'
+  replace hs : IsIso (Q.map s) := by
+    rw [← isIso_Qh_map_iff] at hs
+    exact ((MorphismProperty.isomorphisms _).arrow_mk_iso_iff
+      (Arrow.isoOfNatIso (quotientCompQhIso C) (Arrow.mk s))).1 hs
+  refine ⟨X', s, hs, g, ?_⟩
+  rw [← cancel_epi (Q.map s), IsIso.hom_inv_id_assoc,
+    ← NatIso.naturality_1_assoc (quotientCompQhIso C) s,
+    ← NatIso.naturality_1 (quotientCompQhIso C) g,
+    Functor.comp_map, Functor.comp_map, hφ']
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category can be written
 as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and `s : Y ⟶ Y'` a quasi-isomorphism. -/
 lemma left_fac {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (Y' : CochainComplex C ℤ) (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)),
       f = Q.map g ≫ inv (Q.map s) := by
-  have ⟨φ, hφ⟩ := Localization.exists_leftFraction Qh (HomotopyCategory.quasiIso C _) f
+  have ⟨φ, hφ⟩ := Localization.exists_leftFraction Qh (HomotopyCategory.quasiIso C _)
+    ((quotientCompQhIso C).hom.app X ≫ f ≫ (quotientCompQhIso C).inv.app Y)
+  have hφ' := φ.map_comp_map_s Qh Functor.IsLocalization.inverts
   obtain ⟨X', g, s, hs, rfl⟩ := φ.cases
   obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
   obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s
   obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g
-  rw [← isIso_Qh_map_iff] at hs
-  exact ⟨X', g, s, hs, hφ⟩
+  dsimp at hφ'
+  simp only [← hφ, Category.assoc, ← cancel_epi ((quotientCompQhIso C).inv.app X),
+    Iso.inv_hom_id_app_assoc] at hφ'
+  replace hs : IsIso (Q.map s) := by
+    rw [← isIso_Qh_map_iff] at hs
+    exact ((MorphismProperty.isomorphisms _).arrow_mk_iso_iff
+      (Arrow.isoOfNatIso (quotientCompQhIso C) (Arrow.mk s))).1 hs
+  refine ⟨X', g, s, hs, ?_⟩
+  rw [← cancel_mono (Q.map s), Category.assoc, IsIso.inv_hom_id, comp_id,
+    ← NatIso.naturality_1 (quotientCompQhIso C) s,
+    ← NatIso.naturality_1 (quotientCompQhIso C) g,
+    Functor.comp_map, Functor.comp_map, reassoc_of% hφ']
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category with `X` strictly `≤ n`
 can be written as `f = inv (Q.map s) ≫ Q.map g` with `s : X' ⟶ X` a quasi-isomorphism with
@@ -77,11 +105,7 @@ lemma right_fac_of_isStrictlyLE {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.
       CochainComplex.truncLEMap g n ≫ Y.ιTruncLE n, ?_⟩
   · rw [Q.map_comp]
     infer_instance
-  · have eq := Q.congr_map (CochainComplex.ιTruncLE_naturality s n)
-    have eq' := Q.congr_map (CochainComplex.ιTruncLE_naturality g n)
-    simp only [Functor.map_comp] at eq eq'
-    simp only [Functor.map_comp, ← cancel_epi (Q.map (CochainComplex.truncLEMap s n) ≫
-      Q.map (CochainComplex.ιTruncLE X n)), IsIso.hom_inv_id_assoc, assoc, reassoc_of% eq, eq']
+  · simp
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category with `Y` strictly `≥ n`
 can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and `s : Y ⟶ Y'`
@@ -102,8 +126,8 @@ lemma left_fac_of_isStrictlyGE {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.o
   · have eq := Q.congr_map (CochainComplex.πTruncGE_naturality s n)
     have eq' := Q.congr_map (CochainComplex.πTruncGE_naturality g n)
     simp only [Functor.map_comp] at eq eq'
-    simp only [Functor.map_comp, ← cancel_mono (Q.map (CochainComplex.πTruncGE Y n)
-      ≫ Q.map (CochainComplex.truncGEMap s n)), assoc, IsIso.inv_hom_id, comp_id]
+    simp only [Functor.map_comp, ← cancel_mono (Q.map (CochainComplex.πTruncGE Y n) ≫
+      Q.map (CochainComplex.truncGEMap s n)), assoc, IsIso.inv_hom_id, comp_id]
     simp only [eq, IsIso.inv_hom_id_assoc, eq']
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category
@@ -113,7 +137,7 @@ a quasi-isomorphism with `X'` strictly `≥ a` and `≤ b`, and `g : X' ⟶ Y`. 
 lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ) [X.IsStrictlyGE a] [X.IsStrictlyLE b]
     [Y.IsStrictlyGE a] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (X' : CochainComplex C ℤ) ( _ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
+    ∃ (X' : CochainComplex C ℤ) (_ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
     (s : X' ⟶ X) (_ : IsIso (Q.map s)) (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
   obtain ⟨X', hX', s, hs, g, fac⟩ := right_fac_of_isStrictlyLE f b
   have : IsIso (Q.map (CochainComplex.truncGEMap s a)) := by
@@ -139,8 +163,8 @@ can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and
 lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ)
     [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
-    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
+    ∃ (Y' : CochainComplex C ℤ) (_ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
+    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)), f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE f a
   have : IsIso (Q.map (CochainComplex.truncLEMap s b)) := by
     rw [isIso_Q_map_iff_quasiIso] at hs
@@ -168,7 +192,7 @@ lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C �
     ext i
     by_cases hi : a < i
     · apply (X'.isZero_of_isStrictlyLE a i hi).eq_of_src
-    · apply (Y.isZero_of_isStrictlyGE b i (by omega)).eq_of_tgt
+    · apply (Y.isZero_of_isStrictlyGE b i (by lia)).eq_of_tgt
   rw [this, Q.map_zero, comp_zero]
 
 end DerivedCategory

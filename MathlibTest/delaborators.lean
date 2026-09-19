@@ -1,5 +1,5 @@
 import Mathlib.Util.Delaborators
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 
 section PiNotation
 variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)
@@ -123,7 +123,7 @@ open PiNotation
 #check (x : Nat) → P x
 
 /-!
-Note that the implementation of the `Π` delaborator in `Mathlib.Util.Delaborators`
+Note that the implementation of the `Π` delaborator in `Mathlib/Util/Delaborators.lean`
 does not (yet?) make use of binder predicates.
 -/
 /-- info: Π (x : ℕ), x > 0 → α x : Type -/

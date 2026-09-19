@@ -3,10 +3,13 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Bundle
+
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
@@ -29,13 +32,15 @@ general, the constructions of fiber bundles we will make will be of this form.
   Lean 4 `simp` fails to apply lemmas about `Σ x, E x` to elements of the total space.
 
 - The definition of `Bundle.TotalSpace` has an unused argument `F`. The reason is that in some
-  constructions (e.g., `Bundle.ContinuousLinearMap.vectorBundle`) we need access to the atlas of
+  constructions (e.g., the bundle of continuous linear maps) we need access to the atlas of
   trivializations of original fiber bundles to construct the topology on the total space of the new
   fiber bundle.
 
 ## References
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -104,12 +109,10 @@ def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial
   TotalSpace.snd
 
 /-- A trivial bundle is equivalent to the product `B × F`. -/
-@[simps (config := { attrs := [`mfld_simps] })]
+@[simps (attr := mfld_simps)]
 def TotalSpace.toProd (B F : Type*) : (TotalSpace F fun _ : B => F) ≃ B × F where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
-  left_inv := fun ⟨_, _⟩ => rfl
-  right_inv := fun ⟨_, _⟩ => rfl
 
 section Pullback
 
@@ -131,7 +134,7 @@ def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' 
   fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
 
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
-@[simps (config := { attrs := [`mfld_simps] })]
+@[simps (attr := mfld_simps)]
 def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.2⟩
 
 @[simp, mfld_simps]

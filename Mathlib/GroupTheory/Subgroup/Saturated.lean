@@ -3,8 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
 
 /-!
 # Saturated subgroups
@@ -14,50 +15,53 @@ subgroup, subgroups
 
 -/
 
+@[expose] public section
+
+
+namespace Submonoid
+
+variable {G : Type*} [Monoid G]
+
+/-- A submonoid `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `g^n ∈ H` we have
+`n = 0` or `g ∈ H`. We use the name `PowSaturated` to distinguish from `Submonoid.MulSaturated`. -/
+@[to_additive
+/-- An additive submonoid `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with
+`n•g ∈ H` we have `n = 0` or `g ∈ H`. We use the name `NSMulSaturated` to distinguish from
+`Submonoid.MulSaturated`. -/]
+def PowSaturated (H : Submonoid G) : Prop :=
+  ∀ ⦃n g⦄, g ^ n ∈ H → n = 0 ∨ g ∈ H
+
+@[to_additive]
+theorem powSaturated_iff_npow {H : Submonoid G} :
+    PowSaturated H ↔ ∀ (n : ℕ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H :=
+  Iff.rfl
+
+end Submonoid
+
+@[deprecated (since := "2026-03-03")] alias Subgroup.Saturated := Submonoid.PowSaturated
+@[deprecated (since := "2026-03-03")] alias AddSubgroup.Saturated := AddSubmonoid.NSMulSaturated
+@[deprecated (since := "2026-03-03")]
+alias Subgroup.saturated_iff_npow := Submonoid.powSaturated_iff_npow
+@[deprecated (since := "2026-03-03")]
+alias AddSubgroup.saturated_iff_nsmul := AddSubmonoid.nsmulSaturated_iff_nsmul
 
 namespace Subgroup
 
 variable {G : Type*} [Group G]
 
-/-- A subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `g^n ∈ H`
-we have `n = 0` or `g ∈ H`. -/
-@[to_additive
-      "An additive subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `n•g ∈ H`
-      we have `n = 0` or `g ∈ H`."]
-def Saturated (H : Subgroup G) : Prop :=
-  ∀ ⦃n g⦄, g ^ n ∈ H → n = 0 ∨ g ∈ H
-
-@[to_additive]
-theorem saturated_iff_npow {H : Subgroup G} :
-    Saturated H ↔ ∀ (n : ℕ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H :=
-  Iff.rfl
-
 @[to_additive]
 theorem saturated_iff_zpow {H : Subgroup G} :
-    Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
-  constructor
-  · intros hH n g hgn
-    cases n with
-    | ofNat n =>
-      simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
-      exact hH hgn
-    | negSucc n =>
-      suffices g ^ (n + 1) ∈ H by
-        refine (hH this).imp ?_ id
-        simp only [IsEmpty.forall_iff, Nat.succ_ne_zero]
-      simpa only [inv_mem_iff, zpow_negSucc] using hgn
-  · intro h n g hgn
-    specialize h n g
-    simp only [Int.natCast_eq_zero, zpow_natCast] at h
-    apply h hgn
+    H.PowSaturated ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
+  refine ⟨fun h n g hgn ↦ ?_, fun h n g hgn ↦ by simpa using h n g (by simpa using hgn)⟩
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg <;> simpa using h (by simpa using hgn)
 
 end Subgroup
 
-namespace AddSubgroup
+namespace AddSubmonoid
 
-theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [NoZeroSMulDivisors ℕ A₂]
-    (f : A₁ →+ A₂) : f.ker.Saturated := by
-  intro n g hg
-  simpa only [f.mem_ker, nsmul_eq_smul, f.map_nsmul, smul_eq_zero] using hg
+theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [IsAddTorsionFree A₂]
+    (f : A₁ →+ A₂) : f.ker.NSMulSaturated := by simp [NSMulSaturated, or_comm]
 
-end AddSubgroup
+end AddSubmonoid
+
+@[deprecated (since := "2026-03-03")] alias AddSubgroup.ker_saturated := AddSubmonoid.ker_saturated

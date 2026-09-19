@@ -3,10 +3,12 @@ Copyright (c) 2024 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Elab.Binders
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Meta.Tactic.Generalize
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Binders
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.Generalize
 
 /-!
 # Backwards compatibility shim for `generalize`.
@@ -18,8 +20,10 @@ haven't updated their code yet can still use `generalize` with the old setting.
 This file can be removed once all uses of the compatibility shim have been removed from Mathlib.
 
 (Possibly we will instead add a `transparency` argument to `generalize`.
-This would also allow removing this file.
+This would also allow removing this file.)
 -/
+
+public meta section
 
 open Lean Elab Tactic Meta in
 /-- Backwards compatibility shim for `generalize`. -/

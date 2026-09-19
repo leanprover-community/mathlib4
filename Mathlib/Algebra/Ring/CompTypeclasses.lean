@@ -3,7 +3,9 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Propositional typeclasses on several ring homs
@@ -40,6 +42,8 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 `RingHomCompTriple`, `RingHomInvPair`, `RingHomSurjective`
 -/
 
+@[expose] public section
+
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
@@ -48,7 +52,7 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 -- This at first seems not very useful. However we need this when considering
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
--- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
+-- See `Mathlib/Algebra/Category/ModuleCat/Presheaf.lean`.
 class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 
@@ -107,13 +111,26 @@ instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂�
     RingHomCompTriple σ₂₁ σ₁₂ (RingHom.id R₂) :=
   ⟨by simp only [comp_eq₂]⟩
 
+variable (σ σ') in
+/-- The ring equivalence defined by a pair of ring homomorphisms satisfying `RingHomInvPair`. -/
+@[simps!]
+def toRingEquiv : R₁ ≃+* R₂ := .ofRingHom σ σ' comp_eq₂ comp_eq
+
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.
 
 This is not an instance, as for equivalences that are involutions, a better instance
-would be `RingHomInvPair e e`. Indeed, this declaration is not currently used in mathlib.
+would be `RingHomInvPair e e`.
 -/
-theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
+lemma of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
+
+/-- Construct a `RingHomInvPair` from both directions of a ring equiv.
+
+This is not an instance, as for equivalences that are involutions, a better instance
+would be `RingHomInvPair e e`.
+-/
+theorem of_ringEquiv_symm (e : R₁ ≃+* R₂) : RingHomInvPair (↑e.symm : R₂ →+* R₁) ↑e :=
+  of_ringEquiv e.symm
 
 /--
 Swap the direction of a `RingHomInvPair`. This is not an instance as it would loop, and better
@@ -130,12 +147,10 @@ namespace RingHomCompTriple
 
 instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
   ⟨by
-    ext
     simp⟩
 
 instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
   ⟨by
-    ext
     simp⟩
 
 end RingHomCompTriple

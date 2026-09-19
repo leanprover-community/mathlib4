@@ -3,9 +3,11 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 /-! # The Mellin transform
 
@@ -23,11 +25,13 @@ differentiable in a suitable vertical strip.
 
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter Asymptotics TopologicalSpace
 
 open Real
 
-open Complex hiding exp log abs_of_nonneg
+open Complex hiding exp log
 
 open scoped Topology
 
@@ -44,7 +48,7 @@ def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
 theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type*}
     [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     MellinConvergent (fun t => c • f t) s := by
-  simpa only [MellinConvergent, smul_comm] using hf.smul c
+  simpa only [MellinConvergent, smul_comm] using! hf.smul c
 
 theorem MellinConvergent.cpow_smul {f : ℝ → E} {s a : ℂ} :
     MellinConvergent (fun t => (t : ℂ) ^ a • f t) s ↔ MellinConvergent f (s + a) := by
@@ -53,7 +57,7 @@ theorem MellinConvergent.cpow_smul {f : ℝ → E} {s a : ℂ} :
 
 nonrec theorem MellinConvergent.div_const {f : ℝ → ℂ} {s : ℂ} (hf : MellinConvergent f s) (a : ℂ) :
     MellinConvergent (fun t => f t / a) s := by
-  simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using hf.div_const a
+  simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using! hf.div_const a
 
 theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : 0 < a) :
     MellinConvergent (fun t => f (a * t)) s ↔ MellinConvergent f s := by
@@ -73,7 +77,6 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
   refine Iff.trans ?_ (integrableOn_Ioi_comp_rpow_iff' _ ha)
   rw [MellinConvergent]
   refine integrableOn_congr_fun (fun t ht => ?_) measurableSet_Ioi
-  dsimp only [Pi.smul_apply]
   rw [← Complex.coe_smul (t ^ (a - 1)), ← mul_smul, ← cpow_mul_ofReal_nonneg (le_of_lt ht),
     ofReal_cpow (le_of_lt ht), ← cpow_add _ _ (ofReal_ne_zero.mpr (ne_of_gt ht)), ofReal_sub,
     ofReal_one, mul_sub, mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), mul_one, add_comm, ←
@@ -114,14 +117,13 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
   convention. The interesting case is `a ≠ 0` -/
-  rcases eq_or_ne a 0 with rfl|ha
+  rcases eq_or_ne a 0 with rfl | ha
   · by_cases hE : CompleteSpace E
     · simp [integral_smul_const, mellin, setIntegral_Ioi_zero_cpow]
     · simp [integral, mellin, hE]
   simp_rw [mellin]
   conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
   refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
-  dsimp only
   rw [← mul_smul, ← mul_assoc, inv_mul_cancel₀ (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
     real_smul]
   rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
@@ -160,18 +162,18 @@ def HasMellin (f : ℝ → E) (s : ℂ) (m : E) : Prop :=
 
 theorem hasMellin_add {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     (hg : MellinConvergent g s) : HasMellin (fun t => f t + g t) s (mellin f s + mellin g s) :=
-  ⟨by simpa only [MellinConvergent, smul_add] using hf.add hg, by
-    simpa only [mellin, smul_add] using integral_add hf hg⟩
+  ⟨by simpa only [MellinConvergent, smul_add] using! hf.add hg, by
+    simpa only [mellin, smul_add] using! integral_add hf hg⟩
 
 theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     (hg : MellinConvergent g s) : HasMellin (fun t => f t - g t) s (mellin f s - mellin g s) :=
-  ⟨by simpa only [MellinConvergent, smul_sub] using hf.sub hg, by
-    simpa only [mellin, smul_sub] using integral_sub hf hg⟩
+  ⟨by simpa only [MellinConvergent, smul_sub] using! hf.sub hg, by
+    simpa only [mellin, smul_sub] using! integral_sub hf hg⟩
 
 theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
-    HasMellin (fun t => c • f t) s  (c • mellin f s) :=
-  ⟨hf.const_smul c, by simp [HasMellin, mellin, smul_comm, hf.integral_smul]⟩
+    HasMellin (fun t => c • f t) s (c • mellin f s) :=
+  ⟨hf.const_smul c, by simp [mellin, smul_comm, hf.integral_smul]⟩
 
 end Defs
 
@@ -230,25 +232,24 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
   obtain ⟨d, _, hd'⟩ := hf.exists_pos
   simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
   obtain ⟨ε, hε, hε'⟩ := hd'
-  refine ⟨ε, hε, integrableOn_Ioc_iff_integrableOn_Ioo.mpr ⟨?_, ?_⟩⟩
+  refine ⟨ε, hε, Iff.mpr integrableOn_Ioc_iff_integrableOn_Ioo ⟨?_, ?_⟩⟩
   · refine AEStronglyMeasurable.mul ?_ (hfc.mono_set Ioo_subset_Ioi_self)
     refine (continuousOn_of_forall_continuousAt fun t ht => ?_).aestronglyMeasurable
       measurableSet_Ioo
     exact continuousAt_rpow_const _ _ (Or.inl ht.1.ne')
-  · apply HasFiniteIntegral.mono'
-    · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
-      refine (Integrable.hasFiniteIntegral ?_).const_mul _
+  · apply HasFiniteIntegral.mono' (g := fun t => d * t ^ (s - b - 1))
+    · refine (Integrable.hasFiniteIntegral ?_).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
       exact intervalIntegral.intervalIntegrable_rpow' (by linarith)
     · refine (ae_restrict_iff' measurableSet_Ioo).mpr (Eventually.of_forall fun t ht => ?_)
       rw [mul_comm, norm_mul]
       specialize hε' _ ht.1
-      · rw [dist_eq_norm, sub_zero, norm_of_nonneg (le_of_lt ht.1)]
+      · rw [dist_eq_norm, sub_zero, norm_of_nonneg ht.1.le]
         exact ht.2
       · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
           _ = d * t ^ (s - b - 1) := ?_
-        simp_rw [norm_of_nonneg (rpow_nonneg (le_of_lt ht.1) _), mul_assoc]
+        simp_rw [norm_of_nonneg (rpow_nonneg ht.1.le _), mul_assoc]
         rw [← rpow_add ht.1]
         congr 2
         abel
@@ -266,7 +267,7 @@ theorem mellin_convergent_of_isBigO_scalar {a b : ℝ} {f : ℝ → ℝ} {s : �
     rw [union_assoc, Ioc_union_Ioi (le_max_right _ _),
       Ioc_union_Ioi ((min_le_left _ _).trans (le_max_right _ _)), min_eq_left (lt_min hc2 hc1).le]
   rw [this, integrableOn_union, integrableOn_union]
-  refine ⟨⟨hc2', integrableOn_Icc_iff_integrableOn_Ioc.mp ?_⟩, hc1'⟩
+  refine ⟨⟨hc2', Iff.mp integrableOn_Icc_iff_integrableOn_Ioc ?_⟩, hc1'⟩
   refine
     (hfc.continuousOn_mul ?_ isOpen_Ioi.isLocallyClosed).integrableOn_compact_subset
       (fun t ht => (hc2.trans_le ht.1 : 0 < t)) isCompact_Icc
@@ -343,16 +344,16 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       ((continuousOn_of_forall_continuousAt fun t ht => ?_).mul ?_)
     · exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
     · refine continuous_ofReal.comp_continuousOn ?_
-      exact continuousOn_log.mono (subset_compl_singleton_iff.mpr not_mem_Ioi_self)
+      exact continuousOn_log.mono (subset_compl_singleton_iff.mpr self_notMem_Ioi)
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t := by
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => ?_
-    simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc]
+    simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc, norm_eq_abs]
     gcongr
     rw [norm_cpow_eq_rpow_re_of_pos ht]
-    rcases le_or_lt 1 t with h | h
+    rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
-        (rpow_nonneg (zero_le_one.trans h) _)
+        (by positivity)
       rw [sub_re, one_re, sub_le_sub_iff_right]
       rw [mem_ball_iff_norm] at hz
       have hz' := (re_le_norm _).trans hz.le
@@ -376,7 +377,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       · simp_rw [mul_comm]
         refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi.isLocallyClosed
         refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)
-        exact subset_compl_singleton_iff.mpr not_mem_Ioi_self
+        exact subset_compl_singleton_iff.mpr self_notMem_Ioi
       · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_
         simp only [norm_smul, Real.norm_eq_abs]
       · refine (isBigO_rpow_zero_log_smul hw1 hf_bot).norm_left.congr_left fun t ↦ ?_
@@ -386,12 +387,13 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht y _ => ?_
     have ht' : (t : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt ht)
     have u1 : HasDerivAt (fun z : ℂ => (t : ℂ) ^ (z - 1)) (t ^ (y - 1) * log t) y := by
-      convert ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
+      convert! ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
       rw [ofReal_log (le_of_lt ht)]
       ring
     exact u1.smul_const (f t)
-  have main := hasDerivAt_integral_of_dominated_loc_of_deriv_le hv0 h1 h2 h3 h4 h5 h6
-  simpa only [F', mul_smul] using main
+  have main :=
+    hasDerivAt_integral_of_dominated_loc_of_deriv_le (Metric.ball_mem_nhds _ hv0) h1 h2 h3 h4 h5 h6
+  simpa only [F', mul_smul] using! main
 
 /-- Suppose `f` is locally integrable on `(0, ∞)`, is `O(x ^ (-a))` as `x → ∞`, and is
 `O(x ^ (-b))` as `x → 0`. Then its Mellin transform is differentiable on the domain `b < re s < a`.
@@ -436,7 +438,7 @@ section MellinIoc
 theorem hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
     HasMellin (indicator (Ioc 0 1) (fun _ => 1 : ℝ → ℂ)) s (1 / s) := by
   have aux1 : -1 < (s - 1).re := by
-    simpa only [sub_re, one_re, sub_eq_add_neg] using lt_add_of_pos_left _ hs
+    simpa only [sub_re, one_re, sub_eq_add_neg] using! lt_add_of_pos_left _ hs
   have aux2 : s ≠ 0 := by contrapose! hs; rw [hs, zero_re]
   have aux3 : MeasurableSet (Ioc (0 : ℝ) 1) := measurableSet_Ioc
   simp_rw [HasMellin, mellin, MellinConvergent, ← indicator_smul, IntegrableOn,

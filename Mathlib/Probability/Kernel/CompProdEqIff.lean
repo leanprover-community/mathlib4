@@ -3,7 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
+module
+
+public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
+
+import Mathlib.Probability.Kernel.Composition.WithDensity
 
 /-!
 # Condition for two kernels to be equal almost everywhere
@@ -14,10 +18,11 @@ The result requires `α` to be countable or `β` to be a countably generated mea
 
 ## Main statements
 
-* `compProd_withDensity`: `μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2)`
 * `compProd_eq_iff`: `μ ⊗ₘ κ = μ ⊗ₘ η ↔ κ =ᵐ[μ] η`
 
 -/
+
+public section
 
 open ProbabilityTheory MeasureTheory
 
@@ -26,23 +31,6 @@ open scoped ENNReal
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ : Measure α} {κ : Kernel α β}
   {f : α → β → ℝ≥0∞}
-
-namespace MeasureTheory.Measure
-
-/-- A composition-product of a measure with a kernel defined with `withDensity` is equal to the
-`withDensity` of the composition-product. -/
-lemma compProd_withDensity [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel (κ.withDensity f)]
-    (hf : Measurable (Function.uncurry f)) :
-    μ ⊗ₘ (κ.withDensity f) = (μ ⊗ₘ κ).withDensity (fun p ↦ f p.1 p.2) := by
-  ext s hs
-  rw [compProd_apply hs, withDensity_apply _ hs, ← lintegral_indicator hs,
-    lintegral_compProd]
-  · congr with a
-    rw [Kernel.withDensity_apply' _ hf, ← lintegral_indicator (measurable_prodMk_left hs)]
-    rfl
-  · exact hf.indicator hs
-
-end MeasureTheory.Measure
 
 namespace ProbabilityTheory.Kernel
 
