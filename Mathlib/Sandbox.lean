@@ -32,6 +32,34 @@ open Ideal
 
 open scoped QuadraticAlgebra
 
+/-! ### The minimal polynomial of `ω`
+
+`QuadraticAlgebra R a b` is free with basis `1, ω` and `ω ^ 2 = a + b * ω`, so the minimal
+polynomial of `ω` is `X ^ 2 - b * X - a`. Uniqueness of the minimal polynomial over a ring needs
+`R` integrally closed, hence the hypotheses.
+-/
+
+-- TODO: for `Mathlib/Algebra/QuadraticAlgebra/Defs.lean`, next to `algebraMap_im`.
+/-- `ω` is not a scalar. -/
+theorem QuadraticAlgebra.omega_notMem_range_algebraMap {R : Type*} [CommRing R] [Nontrivial R]
+    {a b : R} :
+    (ω : QuadraticAlgebra R a b) ∉ Set.range (algebraMap R (QuadraticAlgebra R a b)) :=
+  fun ⟨r, hr⟩ ↦ by simpa using congr_arg im hr
+
+-- TODO: for `Mathlib/Algebra/QuadraticAlgebra/Basic.lean`, next to `omega_mul_omega_eq_add`.
+open Polynomial in
+/-- The minimal polynomial of `ω` is `X ^ 2 - b * X - a`. -/
+theorem QuadraticAlgebra.minpoly_omega {R : Type*} [CommRing R] [IsDomain R] [IsIntegrallyClosed R]
+    {a b : R} [IsDomain (QuadraticAlgebra R a b)] :
+    minpoly R (ω : QuadraticAlgebra R a b) = X ^ 2 - C b * X - C a := by
+  refine (minpoly.IsIntegrallyClosed.unique_of_degree_le_degree_minpoly (by monicity!) ?_ ?_).symm
+  · simp [aeval_sub, map_pow, aeval_X, map_mul, omega_pow_two_eq_add,
+      Algebra.algebraMap_eq_smul_one]
+  · compute_degree
+    rw [Polynomial.degree_eq_natDegree (minpoly.ne_zero (Algebra.IsIntegral.isIntegral ω)),
+      Nat.ofNat_le_cast, minpoly.two_le_natDegree_iff (Algebra.IsIntegral.isIntegral ω)]
+    exact QuadraticAlgebra.omega_notMem_range_algebraMap
+
 /-! ### A prime divides the discriminant exactly when it ramifies -/
 
 -- TODO: for `Mathlib/NumberTheory/NumberField/Discriminant/Different.lean`, next to
@@ -787,7 +815,9 @@ theorem not_dvd_exponent_integralGen (p : ℕ) [Fact p.Prime] :
 discriminant is `discr K`. -/
 theorem minpoly_integralGen :
     minpoly ℤ (integralGen K) = X ^ 2 - C (discr K % 4) * X - C (discr K / 4) := by
-  sorry
+  refine (minpoly.IsIntegrallyClosed.unique_of_degree_le_degree_minpoly (by monicity!) ?_ ?_).symm
+  · sorry
+  · sorry
 
 
 
