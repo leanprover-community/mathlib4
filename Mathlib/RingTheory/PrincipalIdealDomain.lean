@@ -379,7 +379,7 @@ section Surjective
 open Submodule
 
 variable {S N F : Type*} [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring S]
-variable [Module R M] [Module R N] [FunLike F R S] [RingHomClass F R S]
+  [Module R M] [Module R N]
 
 theorem Submodule.IsPrincipal.map (f : M →ₗ[R] N) {S : Submodule R M}
     (hI : IsPrincipal S) : IsPrincipal (map f S) :=
@@ -391,19 +391,19 @@ theorem Submodule.IsPrincipal.of_comap (f : M →ₗ[R] N) (hf : Function.Surjec
   rw [← Submodule.map_comap_eq_of_surjective hf S]
   exact hI.map f
 
-theorem Submodule.IsPrincipal.map_ringHom (f : F) {I : Ideal R}
+theorem Submodule.IsPrincipal.map_ringHom (f : R →+* S) {I : Ideal R}
     (hI : IsPrincipal I) : IsPrincipal (Ideal.map f I) :=
   ⟨⟨f (IsPrincipal.generator I), by
       rw [Ideal.submodule_span_eq, ← Set.image_singleton, ← Ideal.map_span,
       Ideal.span_singleton_generator]⟩⟩
 
-theorem Ideal.IsPrincipal.of_comap (f : F) (hf : Function.Surjective f) (I : Ideal S)
+theorem Ideal.IsPrincipal.of_comap (f : R →+* S) (hf : Function.Surjective f) (I : Ideal S)
     [hI : IsPrincipal (I.comap f)] : IsPrincipal I := by
   rw [← map_comap_of_surjective f hf I]
   exact hI.map_ringHom f
 
 /-- The surjective image of a principal ideal ring is again a principal ideal ring. -/
-theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : F)
+theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : R →+* S)
     (hf : Function.Surjective f) : IsPrincipalIdealRing S :=
   ⟨fun I => Ideal.IsPrincipal.of_comap f hf I⟩
 

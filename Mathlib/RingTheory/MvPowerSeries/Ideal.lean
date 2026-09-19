@@ -75,8 +75,8 @@ theorem ker_map_of_fg (f : R →+* S) (hf : (RingHom.ker f).FG) :
     RingHom.ker (map f (σ := σ)) = Ideal.map C (RingHom.ker f) := by
   ext; simp [mem_map_C_iff_of_fg hf, MvPowerSeries.ext_iff]
 
-lemma ker_mapAlgHom_of_fg (f : S₁ →ₐ[R] S₂) (hf : (RingHom.ker f).FG) :
-    RingHom.ker (mapAlgHom (σ := σ) f) = Ideal.map C (RingHom.ker f) :=
+lemma ker_mapAlgHom_of_fg (f : S₁ →ₐ[R] S₂) (hf : f.toRingHom.ker.FG) :
+    (mapAlgHom (σ := σ) f).toRingHom.ker = Ideal.map C f.toRingHom.ker :=
   ker_map_of_fg f.toRingHom hf
 
 end MvPowerSeries
