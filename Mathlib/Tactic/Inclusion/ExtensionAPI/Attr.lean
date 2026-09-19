@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic
+public import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic
 
 /-!
 # Attributes for `inclusion` extensions
