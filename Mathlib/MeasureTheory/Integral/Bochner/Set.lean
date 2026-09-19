@@ -134,11 +134,11 @@ theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
     · exact Finset.measurableSet_biUnion _ hs.2
 
 theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
-    (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
+    (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise' (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
   convert! integral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
   · simp
-  · simp [pairwise_univ, h's]
+  · simp [pairwise'_univ, h's]
 
 theorem setIntegral_empty : ∫ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, integral_zero_measure]
@@ -317,26 +317,26 @@ theorem tendsto_setIntegral_of_antitone
     exact hi₀.mono_set sdiff_subset
 
 theorem hasSum_integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set X}
-    (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
+    (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise' (AEDisjoint μ on s))
     (hfi : IntegrableOn f (⋃ i, s i) μ) :
     HasSum (fun n => ∫ x in s n, f x ∂μ) (∫ x in ⋃ n, s n, f x ∂μ) := by
   simp only [IntegrableOn, Measure.restrict_iUnion_ae hd hm] at hfi ⊢
   exact hasSum_integral_measure hfi
 
 theorem hasSum_integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
-    (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
+    (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise' (Disjoint on s))
     (hfi : IntegrableOn f (⋃ i, s i) μ) :
     HasSum (fun n => ∫ x in s n, f x ∂μ) (∫ x in ⋃ n, s n, f x ∂μ) :=
   hasSum_integral_iUnion_ae (fun i => (hm i).nullMeasurableSet) (hd.mono fun _ _ h => h.aedisjoint)
     hfi
 
 theorem integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X} (hm : ∀ i, MeasurableSet (s i))
-    (hd : Pairwise (Disjoint on s)) (hfi : IntegrableOn f (⋃ i, s i) μ) :
+    (hd : Pairwise' (Disjoint on s)) (hfi : IntegrableOn f (⋃ i, s i) μ) :
     ∫ x in ⋃ n, s n, f x ∂μ = ∑' n, ∫ x in s n, f x ∂μ :=
   (HasSum.tsum_eq (hasSum_integral_iUnion hm hd hfi)).symm
 
 theorem integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set X}
-    (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
+    (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise' (AEDisjoint μ on s))
     (hfi : IntegrableOn f (⋃ i, s i) μ) : ∫ x in ⋃ n, s n, f x ∂μ = ∑' n, ∫ x in s n, f x ∂μ :=
   (HasSum.tsum_eq (hasSum_integral_iUnion_ae hm hd hfi)).symm
 

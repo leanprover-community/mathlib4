@@ -654,13 +654,14 @@ theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
     (hI : ∀ (i j) (_ : i ≠ j), IsCoprime (I i) (I j)) :
     ⨅ i, span ({I i} : Set R) = span {∏ i, I i} := by
   rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
-  rwa [Finset.coe_univ, Set.pairwise_univ]
+  have := pairwise'_mk hI
+  rwa [Finset.coe_univ, Set.pairwise'_univ]
 
 theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
-    {I : ι → ℕ} (hI : Pairwise fun i j => (I i).Coprime (I j)) :
+    {I : ι → ℕ} (hI : Pairwise' fun i j => (I i).Coprime (I j)) :
     ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
   rw [iInf_span_singleton, Nat.cast_prod]
-  exact fun i j h ↦ (hI h).cast
+  exact fun i j h ↦ (pairwise'_apply hI h).cast
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by

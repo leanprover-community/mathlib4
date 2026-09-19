@@ -412,11 +412,11 @@ private theorem disjointOfUnion_coe (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j 
 
 lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     PairwiseDisjoint J (hC.disjointOfUnion hJ) := by
-  refine Pairwise.set_of_subtype _ _ fun j k hjk ↦ ?_
+  refine Pairwise'.set_of_subtype _ _ fun j _ k _ hjk ↦ ?_
   simp_rw [Function.onFun, hC.disjointOfUnion_coe hJ, Finset.disjoint_iff_ne]
   exact fun s hs t ht ↦ Disjoint.ne (Finpartition.ne_bot _ hs) <|
     .mono (Finpartition.le _ hs) (Finpartition.le _ ht) <|
-    disjoint_disjointed _ <| J.equivFin.injective.ne hjk
+    (pairwise'_apply ( disjoint_disjointed _)) <| J.equivFin.injective.ne hjk
 
 lemma disjointOfUnion_subset (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hj : j ∈ J) :
     (disjointOfUnion hC hJ j : Set (Set α)) ⊆ C := by
@@ -434,7 +434,7 @@ lemma pairwiseDisjoint_biUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J
     PairwiseDisjoint (⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α))) id := by
   simp_rw [← SetLike.mem_coe]
   refine Set.PairwiseDisjoint.biUnion
-    (Pairwise.set_of_subtype _ _ ?_)
+    (Pairwise'.set_of_subtype _ _ ?_)
     (fun _ ↦ hC.pairwiseDisjoint_disjointOfUnion_of_mem hJ)
   simp_rw [Function.onFun, disjointOfUnion_coe, SetLike.mem_coe, ← Finset.sup_eq_iSup,
     Finpartition.sup_parts]

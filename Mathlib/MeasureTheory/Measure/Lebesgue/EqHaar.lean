@@ -137,7 +137,7 @@ zero. This auxiliary lemma proves this assuming additionally that the set is bou
 theorem addHaar_eq_zero_of_disjoint_translates_aux {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (sb : IsBounded s) (hu : IsBounded (range u))
-    (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
+    (hs : Pairwise' (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
   by_contra h
   apply lt_irrefl ∞
   calc
@@ -154,7 +154,7 @@ zero. -/
 theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : IsBounded (range u))
-    (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
+    (hs : Pairwise' (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
   suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0 by
     rw [← nonpos_iff_eq_zero]
     calc
@@ -165,7 +165,7 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
   intro R
   apply addHaar_eq_zero_of_disjoint_translates_aux μ u
     (isBounded_closedBall.subset inter_subset_right) hu _ (h's.inter measurableSet_closedBall)
-  refine pairwise_disjoint_mono hs fun n => ?_
+  refine pairwise'_disjoint_mono hs fun n => ?_
   exact add_subset_add Subset.rfl inter_subset_left
 
 /-- A strict vector subspace has measure zero. -/
@@ -181,6 +181,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     isBounded_range_of_tendsto _ this
   apply addHaar_eq_zero_of_disjoint_translates μ _ A _
     (Submodule.closed_of_finiteDimensional s).measurableSet
+  rw [pairwise'_iff]
   intro m n hmn
   simp only [Function.onFun, image_add_left, singleton_add, disjoint_left, mem_preimage,
     SetLike.mem_coe]

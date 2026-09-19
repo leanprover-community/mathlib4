@@ -219,7 +219,8 @@ lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) [∀ i, (I i).IsTwoSided]
 variable {R : Type*} [CommRing R] {ι : Type*} [Finite ι]
 
 lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
-    (hI : Pairwise (IsCoprime on I)) : Surjective (quotientInfToPiQuotient I) := by
+    (hI : Pairwise' (IsCoprime on I)) : Surjective (quotientInfToPiQuotient I) := by
+  rw [pairwise'_iff] at hI
   classical
   cases nonempty_fintype ι
   intro g
@@ -246,20 +247,20 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
 Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
 @[wikidata Q193878]
 noncomputable def quotientInfRingEquivPiQuotient (f : ι → Ideal R)
-    (hf : Pairwise (IsCoprime on f)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
+    (hf : Pairwise' (IsCoprime on f)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 
 /-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
 commutative ring then the canonical map `R → ∏ (R ⧸ Iᵢ)` is surjective. -/
 lemma pi_quotient_surjective {I : ι → Ideal R}
-    (hf : Pairwise (IsCoprime on I)) (x : (i : ι) → R ⧸ I i) :
+    (hf : Pairwise' (IsCoprime on I)) (x : (i : ι) → R ⧸ I i) :
     ∃ r : R, ∀ i, r = x i := by
   obtain ⟨y, rfl⟩ := Ideal.quotientInfToPiQuotient_surj hf x
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective y
   exact ⟨r, fun i ↦ rfl⟩
 
-lemma pi_mkQ_surjective {I : ι → Ideal R} (hI : Pairwise (IsCoprime on I)) :
+lemma pi_mkQ_surjective {I : ι → Ideal R} (hI : Pairwise' (IsCoprime on I)) :
     Surjective (LinearMap.pi fun i ↦ (I i).mkQ) :=
   fun x ↦ have ⟨r, eq⟩ := pi_quotient_surjective hI x; ⟨r, funext eq⟩
 
@@ -267,7 +268,7 @@ lemma pi_mkQ_surjective {I : ι → Ideal R} (hI : Pairwise (IsCoprime on I)) :
 /-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
 commutative ring then given elements `xᵢ` you can find `r` with `r - xᵢ ∈ Iᵢ` for all `i`. -/
 lemma exists_forall_sub_mem_ideal
-    {I : ι → Ideal R} (hI : Pairwise (IsCoprime on I)) (x : ι → R) :
+    {I : ι → Ideal R} (hI : Pairwise' (IsCoprime on I)) (x : ι → R) :
     ∃ r : R, ∀ i, r - x i ∈ I i := by
   obtain ⟨y, hy⟩ := Ideal.pi_quotient_surjective hI (fun i ↦ x i)
   exact ⟨y, fun i ↦ (Submodule.Quotient.eq (I i)).mp <| hy i⟩
@@ -276,8 +277,8 @@ lemma exists_forall_sub_mem_ideal
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I ⊓ J ≃+* (R ⧸ I) × R ⧸ J :=
   let f : Fin 2 → Ideal R := ![I, J]
-  have hf : Pairwise (IsCoprime on f) := by
-    intro i j h
+  have hf : Pairwise' (IsCoprime on f) := by
+    intro i _ j _ h
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption
     · exact coprime.symm

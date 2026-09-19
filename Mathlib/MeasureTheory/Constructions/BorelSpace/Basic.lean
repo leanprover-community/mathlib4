@@ -230,7 +230,7 @@ open scoped Function in -- required for scoped `on` notation
 theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s → Prop}
     (isOpen : ∀ U (hU : IsOpen U), C U hU.measurableSet)
     (compl : ∀ t (ht : MeasurableSet t), C t ht → C tᶜ ht.compl)
-    (iUnion : ∀ f : ℕ → Set γ, Pairwise (Disjoint on f) → ∀ (hf : ∀ i, MeasurableSet (f i)),
+    (iUnion : ∀ f : ℕ → Set γ, Pairwise' (Disjoint on f) → ∀ (hf : ∀ i, MeasurableSet (f i)),
       (∀ i, C (f i) (hf i)) → C (⋃ i, f i) (.iUnion hf)) :
     ∀ t (ht : MeasurableSet t), C t ht := fun t ht ↦
   MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen

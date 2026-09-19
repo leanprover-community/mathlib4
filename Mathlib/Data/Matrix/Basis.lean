@@ -374,8 +374,9 @@ theorem diag_eq_of_commute_single {i j : n} {M : Matrix n n α}
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `single`. -/
 theorem mem_range_scalar_of_commute_single {M : Matrix n n α}
-    (hM : Pairwise fun i j => Commute (single i j 1) M) :
+    (hM : Pairwise' fun i j => Commute (single i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
+  rw [pairwise'_iff] at hM
   cases isEmpty_or_nonempty n
   · exact ⟨0, Subsingleton.elim _ _⟩
   obtain ⟨i⟩ := ‹Nonempty n›
@@ -393,9 +394,11 @@ theorem mem_range_scalar_of_commute_single {M : Matrix n n α}
 
 theorem mem_range_scalar_iff_commute_single {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), i ≠ j → Commute (single i j 1) M := by
-  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_single⟩
-  rw [scalar_commute_iff]
-  simp
+  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, ?_⟩
+  · rw [scalar_commute_iff]
+    simp
+  · intro h
+    exact mem_range_scalar_of_commute_single (pairwise'_mk h)
 
 /-- `M` is a scalar matrix if and only if it commutes with every `single`. -/
 theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :

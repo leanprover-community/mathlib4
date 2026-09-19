@@ -100,7 +100,7 @@ theorem conj_eigenvalue_eq_self (hT : T.IsSymmetric) {μ : 𝕜} (hμ : HasEigen
 /-- The eigenspaces of a self-adjoint operator are mutually orthogonal. -/
 theorem orthogonalFamily_eigenspaces (hT : T.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun μ => eigenspace T μ) fun μ => (eigenspace T μ).subtypeₗᵢ := by
-  rintro μ ν hμν ⟨v, hv⟩ ⟨w, hw⟩
+  rintro μ _ ν _ hμν ⟨v, hv⟩ ⟨w, hw⟩
   by_cases hv' : v = 0
   · simp [hv']
   have H := hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector ⟨hv, hv'⟩)

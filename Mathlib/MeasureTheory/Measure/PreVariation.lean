@@ -149,9 +149,10 @@ lemma exists_Finpartition_sum_ge' {s : Set X} (hs : MeasurableSet s) {ε : ℝ�
   exact exists_Finpartition_sum_ge _ hs (by simpa using hε) h
 
 lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
-    (hs' : Pairwise (Disjoint on s))
+    (hs' : Pairwise' (Disjoint on s))
     (P : ∀ (i : ℕ), Finpartition (⟨s i, hs i⟩ : Subtype MeasurableSet)) (n : ℕ) :
     ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p ≤ preVariationFun f (⋃ i, s i) := by
+  rw [pairwise'_iff] at hs'
   let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
   have hs_disj : Set.PairwiseDisjoint (Finset.range n : Set ℕ) s' := fun i _ j _ hij => by
     simp only [Function.onFun, disjoint_iff, Subtype.ext_iff]
@@ -167,7 +168,7 @@ lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, Measurable
     _ ≤ preVariationFun f (⋃ i, s i) := sum_le f (MeasurableSet.iUnion hs) R
 
 lemma sum_le_preVariationFun_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
-    (hs' : Pairwise (Disjoint on s)) :
+    (hs' : Pairwise' (Disjoint on s)) :
     ∑' i, preVariationFun f (s i) ≤ preVariationFun f (⋃ i, s i) := by
   refine ENNReal.tsum_le_of_sum_range_le fun n ↦ ?_
   by_cases hn : n = 0
@@ -193,7 +194,7 @@ end preVariation
 /-- A set function is σ-subadditive on measurable sets if the value assigned to the union of a
 countable disjoint family of measurable sets is bounded above by the sum of values on the family. -/
 def IsSigmaSubadditiveSetFun (f : Set X → ℝ≥0∞) : Prop :=
-  ∀ (s : ℕ → {t : Set X // MeasurableSet t}), Pairwise (Disjoint on (Subtype.val ∘ s)) →
+  ∀ (s : ℕ → {t : Set X // MeasurableSet t}), Pairwise' (Disjoint on (Subtype.val ∘ s)) →
     f (⋃ i, (s i).val) ≤ ∑' i, f (s i)
 
 lemma isSigmaSubadditiveSetFun_zero : IsSigmaSubadditiveSetFun (0 : Set X → ℝ≥0∞) := by intro; simp
@@ -204,7 +205,7 @@ variable {f : Set X → ℝ≥0∞}
 
 /-- Additivity of `preVariationFun` for disjoint measurable sets. -/
 lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Set X)
-    (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
+    (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise' (Disjoint on s)) :
     HasSum (fun i ↦ preVariationFun f (s i)) (preVariationFun f (⋃ i, s i)) := by
   refine ENNReal.summable.hasSum_iff.mpr (le_antisymm (sum_le_preVariationFun_iUnion f hs hs') ?_)
   refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
@@ -219,8 +220,9 @@ lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Se
           have hq_eq : q.val = ⋃ i, q.val ∩ s i := by
             rw [← Set.inter_iUnion]; exact (Set.inter_eq_left.mpr (Q.le hq)).symm
           let t (i : ℕ) : Subtype MeasurableSet := ⟨q.val ∩ s i, q.2.inter (hs i)⟩
-          have ht_disj : Pairwise (Disjoint on (Subtype.val ∘ t)) :=
-            fun i j hij => (hs' hij).mono Set.inter_subset_right Set.inter_subset_right
+          have ht_disj : Pairwise' (Disjoint on (Subtype.val ∘ t)) :=
+            fun i _ j _ hij => (pairwise'_apply hs' hij).mono
+              Set.inter_subset_right Set.inter_subset_right
           calc f q
             _ = f (⋃ i, q.val ∩ s i) := congrArg f hq_eq
             _ = f (⋃ i, (t i).val) := rfl

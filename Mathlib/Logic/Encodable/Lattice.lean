@@ -49,8 +49,9 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     simp
 
 open scoped Function in -- required for scoped `on` notation
-theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
-    Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
+theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise' (Disjoint on f)) :
+    Pairwise' (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
+  simp only [pairwise'_iff] at *
   rintro i j ij
   refine disjoint_left.mpr fun x => ?_
   suffices ∀ a, encode a = i → x ∈ f a → ∀ b, encode b = j → x ∉ f b by simpa [decode₂_eq_some]

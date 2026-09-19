@@ -154,7 +154,7 @@ open scoped Function -- required for scoped `on` notation
 
 /-- For an indexed family `s : ι → Set α` of disjoint sets,
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
-@[simps] def Function.Embedding.sigmaSet {s : ι → Set α} (h : Pairwise (Disjoint on s)) :
+@[simps] def Function.Embedding.sigmaSet {s : ι → Set α} (h : Pairwise' (Disjoint on s)) :
     (i : ι) × s i ↪ α where
   toFun x := x.2.1
   inj' := by
@@ -167,12 +167,12 @@ set_option warning.simp.otherHead false in
     (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.1 := rfl
 
 @[simp] theorem Function.Embedding.sigmaSet_preimage {s : ι → Set α}
-    (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :
+    (h : Pairwise' (Disjoint on s)) (i : ι) (r : Set α) :
     Sigma.mk i ⁻¹' Function.Embedding.sigmaSet h ⁻¹' r = r ∩ s i := by
   simp [Set.ext_iff]
 
 @[simp] theorem Function.Embedding.sigmaSet_range {s : ι → Set α}
-    (h : Pairwise (Disjoint on s)) : Set.range (Function.Embedding.sigmaSet h) = ⋃ i, s i := by
+    (h : Pairwise' (Disjoint on s)) : Set.range (Function.Embedding.sigmaSet h) = ⋃ i, s i := by
   simp [Set.ext_iff]
 
 end Disjoint

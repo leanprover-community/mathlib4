@@ -32,14 +32,19 @@ theorem dist_coe_int (x y : ℕ) : dist (x : ℤ) (y : ℤ) = dist x y := rfl
 @[norm_cast, simp]
 theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun _ _ hne =>
-  Int.pairwise_one_le_dist <| mod_cast hne
+theorem pairwise'_one_le_dist : Pairwise' fun m n : ℕ => 1 ≤ dist m n := by
+  --fun _ _ _ _ hne =>
+  have :=Int.pairwise'_one_le_dist
+  simp only [pairwise'_iff] at *
+  intro i j ho
+  exact this (show (i : ℤ) ≠ (j : ℤ) by exact mod_cast ho )
+
 
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℕ → ℝ) :=
-  isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+  isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise'_one_le_dist
 
 theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℕ → ℝ) :=
-  isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+  isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise'_one_le_dist
 
 instance : MetricSpace ℕ := Nat.isUniformEmbedding_coe_real.comapMetricSpace _
 

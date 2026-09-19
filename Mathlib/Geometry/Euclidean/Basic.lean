@@ -133,7 +133,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace 鈩
     refine linearIndependent_of_ne_zero_of_inner_eq_zero ?_ ?_
     路 intro i
       fin_cases i <;> simp [b, hc.symm, hp.symm]
-    路 intro i j hij
+    路 intro i _ j _ hij
       fin_cases i <;> fin_cases j <;> try exact False.elim (hij rfl)
       路 exact ho
       路 rw [real_inner_comm]

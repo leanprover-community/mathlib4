@@ -355,7 +355,7 @@ theorem iSupIndep_subsingleton [Subsingleton ι] (t : ι → α) : iSupIndep t :
 
 include ht in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
-theorem iSupIndep.pairwiseDisjoint : Pairwise (Disjoint on t) := fun x y h =>
+theorem iSupIndep.pairwiseDisjoint : Pairwise' (Disjoint on t) := fun x _ y _ h =>
   disjoint_sSup_right (ht x) ⟨y, iSup_pos h.symm⟩
 
 theorem iSupIndep.mono {s t : ι → α} (hs : iSupIndep s) (hst : t ≤ s) : iSupIndep t :=
@@ -425,7 +425,7 @@ theorem iSupIndep.injective (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) :
 theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
     iSupIndep t ↔ Disjoint (t i) (t j) := by
   constructor
-  · exact fun h => h.pairwiseDisjoint hij
+  · exact fun h => h.pairwiseDisjoint (Set.mem_univ i) (Set.mem_univ j) hij
   · rintro h k
     obtain rfl | rfl := huniv k
     · refine h.mono_right (iSup_le fun i => iSup_le fun hi => Eq.le ?_)
@@ -557,8 +557,9 @@ theorem sSupIndep_iff_pairwiseDisjoint {s : Set α} : sSupIndep s ↔ s.Pairwise
 alias ⟨_, _root_.Set.PairwiseDisjoint.sSupIndep⟩ := sSupIndep_iff_pairwiseDisjoint
 
 open scoped Function in -- required for scoped `on` notation
-theorem iSupIndep_iff_pairwiseDisjoint {f : ι → α} : iSupIndep f ↔ Pairwise (Disjoint on f) :=
-  ⟨iSupIndep.pairwiseDisjoint, fun hs _ =>
-    disjoint_iSup_iff.2 fun _ => disjoint_iSup_iff.2 fun hij => hs hij.symm⟩
+theorem iSupIndep_iff_pairwiseDisjoint {f : ι → α} : iSupIndep f ↔ Pairwise' (Disjoint on f) :=
+  ⟨iSupIndep.pairwiseDisjoint, fun hs i =>
+    disjoint_iSup_iff.2 fun j => disjoint_iSup_iff.2 fun hij => hs (Set.mem_univ i)
+    (Set.mem_univ j) hij.symm⟩
 
 end Frame

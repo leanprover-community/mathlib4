@@ -70,7 +70,7 @@ def ClosureAntitone [TopologicalSpace α] : Prop :=
 
 /-- A scheme is disjoint if the children of each set of pairwise disjoint. -/
 protected def Disjoint : Prop :=
-  ∀ l : List β, Pairwise fun a b => Disjoint (A (a :: l)) (A (b :: l))
+  ∀ l : List β, Pairwise' fun a b => Disjoint (A (a :: l)) (A (b :: l))
 
 variable {A}
 
@@ -100,7 +100,7 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
     simp only [res_succ, cons.injEq]
     refine ⟨?_, ih⟩
     contrapose hA
-    simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
+    simp only [CantorScheme.Disjoint, pairwise'_iff, Ne, not_forall, exists_prop]
     refine ⟨res x n, _, _, hA, ?_⟩
     rw [not_disjoint_iff]
     refine ⟨(inducedMap A).2 x, ?_, ?_⟩

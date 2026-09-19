@@ -314,8 +314,8 @@ lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Finset α) :
   grind [disjoint_left]
 
 theorem pairwise_disjoint_powersetCard (s : Finset α) :
-    Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
-  fun _i _j hij => disjoint_powersetCard_of_ne hij s s
+    Pairwise' fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
+  fun _ _ _ _ hij => disjoint_powersetCard_of_ne hij s s
 
 set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_disjiUnion (s : Finset α) :

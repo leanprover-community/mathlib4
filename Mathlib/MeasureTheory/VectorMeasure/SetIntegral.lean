@@ -143,12 +143,12 @@ theorem setIntegral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set 
     · apply IntegrableOn.biUnion_finset hs.2 hf.2
 
 theorem setIntegral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
-    (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
+    (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise' (Disjoint on s))
     (hf : ∀ i, μ.IntegrableOn f (s i)) :
     ∫ᵛ x in ⋃ i, s i, f x ∂[B; μ] = ∑ i, ∫ᵛ x in s i, f x ∂[B; μ] := by
   convert setIntegral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
   · simp
-  · simp [pairwise_univ, h's]
+  · simp [pairwise'_univ, h's]
 
 theorem setIntegral_empty : ∫ᵛ x in ∅, f x ∂[B; μ] = 0 := by simp
 
@@ -469,7 +469,7 @@ theorem enorm_setIntegral_le_lintegral_enorm_transpose :
   grw [enorm_integral_le_lintegral_enorm_transpose, transpose_restrict,variation_restrict_le]
 
 private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
-    (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
+    (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise' (Disjoint on s))
     (hfi : μ.IntegrableOn f (⋃ i, s i)) :
     HasSum (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
   by_cases hG : CompleteSpace G; swap
@@ -496,6 +496,7 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
       ⟨fun ⟨i, hi⟩ ↦ ⟨i + N, by grind⟩, fun ⟨i, hi, h'i⟩ ↦ ⟨i - N, by grind⟩⟩
     simp only [mem_iUnion, Finset.mem_range, mem_union, exists_prop, this, ge_iff_le]
     grind
+  rw [pairwise'_iff] at hd
   rw [this, setIntegral_union]; rotate_left
   · simp only [Finset.mem_range, disjoint_iUnion_right, disjoint_iUnion_left]
     intro i j hi
@@ -511,10 +512,10 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
   simp only [add_sub_cancel_left]
   apply enorm_setIntegral_le_lintegral_enorm.trans_eq
   rw [lintegral_iUnion (fun i ↦ hm _), ENNReal.tsum_mul_left]
-  exact fun i j hij ↦ hd (by grind)
+  exact fun i _ j _ hij ↦ hd (by grind)
 
 theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
-    (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
+    (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise' (Disjoint on s))
     (hfi : μ.IntegrableOn f (⋃ i, s i)) :
     HasSum (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
   rcases finite_or_infinite ι with hι | hι
@@ -526,11 +527,12 @@ theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
     apply hasSum_fintype
   obtain ⟨e⟩ : Nonempty (ι ≃ ℕ) := nonempty_equiv_of_countable
   rw [← e.symm.surjective.iUnion_comp, ← e.symm.hasSum_iff]
-  apply hasSum_setIntegral_iUnion_nat (fun i ↦ hm _) (fun i j hij ↦ hd (by simp [hij]))
+  apply hasSum_setIntegral_iUnion_nat (fun i ↦ hm _)
+    (fun i _ j _ hij ↦ pairwise'_apply hd (by simp [hij]))
   rwa [e.symm.surjective.iUnion_comp]
 
 theorem integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X} (hm : ∀ i, MeasurableSet (s i))
-    (hd : Pairwise (Disjoint on s)) (hfi : μ.IntegrableOn f (⋃ i, s i)) :
+    (hd : Pairwise' (Disjoint on s)) (hfi : μ.IntegrableOn f (⋃ i, s i)) :
     ∫ᵛ x in ⋃ n, s n, f x ∂[B; μ] = ∑' n, ∫ᵛ x in s n, f x ∂[B; μ] :=
   (HasSum.tsum_eq (hasSum_setIntegral_iUnion hm hd hfi)).symm
 

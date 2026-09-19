@@ -109,7 +109,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
 
 /-- This is another version of `gramSchmidt_orthogonal` using `Pairwise` instead. -/
 theorem gramSchmidt_pairwise_orthogonal (f : ι → E) :
-    Pairwise fun a b => ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := fun _ _ =>
+    Pairwise' fun a b => ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := fun _ _ _ _ =>
   gramSchmidt_orthogonal 𝕜 f
 
 theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
@@ -167,7 +167,7 @@ theorem span_gramSchmidt (f : ι → E) : span 𝕜 (range (gramSchmidt 𝕜 f))
         span_mono (image_subset_range _ _) <| mem_span_gramSchmidt _ _ le_rfl
 
 /-- If given an orthogonal set of vectors, `gramSchmidt` fixes its input. -/
-theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise (⟪f ·, f ·⟫ = 0)) :
+theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise' (⟪f ·, f ·⟫ = 0)) :
     gramSchmidt 𝕜 f = f := by
   ext i
   rw [gramSchmidt_def]
@@ -181,6 +181,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise (⟪f ·, f ·�
       rw [mem_orthogonal_singleton_iff_inner_left, ← mem_orthogonal_singleton_iff_inner_right]
       exact this (gramSchmidt_mem_span 𝕜 f (le_refl j))
     rw [isOrtho_span]
+    rw [pairwise'_iff] at hf
     rintro u ⟨k, hk, rfl⟩ v (rfl : v = f i)
     apply hf
     exact (lt_of_le_of_lt hk (Finset.mem_Iio.mp hj)).ne
@@ -225,7 +226,7 @@ theorem gramSchmidt_triangular {i j : ι} (hij : i < j) (b : Basis ι 𝕜 E) :
 /-- `gramSchmidt` produces linearly independent vectors when given linearly independent vectors. -/
 theorem gramSchmidt_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     LinearIndependent 𝕜 (gramSchmidt 𝕜 f) :=
-  linearIndependent_of_ne_zero_of_inner_eq_zero (fun _ => gramSchmidt_ne_zero _ h₀) fun _ _ =>
+  linearIndependent_of_ne_zero_of_inner_eq_zero (fun _ => gramSchmidt_ne_zero _ h₀) fun _ _ _ _ =>
     gramSchmidt_orthogonal 𝕜 f
 
 /-- When given a basis, `gramSchmidt` produces a basis. -/
@@ -264,7 +265,7 @@ theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent �
   unfold Orthonormal
   constructor
   · simp only [gramSchmidtNormed_unit_length, h₀, imp_true_iff]
-  · intro i j hij
+  · intro i _ j _ hij
     simp only [gramSchmidtNormed, inner_smul_left, inner_smul_right, RCLike.conj_inv,
       RCLike.conj_ofReal, mul_eq_zero, inv_eq_zero, RCLike.ofReal_eq_zero, norm_eq_zero]
     repeat' right
@@ -276,7 +277,7 @@ become zero in the process. -/
 theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
     Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i := by
   refine ⟨fun i => gramSchmidtNormed_unit_length' i.prop, ?_⟩
-  rintro i j (hij : ¬_)
+  rintro i _ j _ (hij : ¬_)
   rw [Subtype.ext_iff] at hij
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
 
@@ -326,7 +327,7 @@ theorem gramSchmidtOrthonormalBasis_apply {f : ι → E} {i : ι} (hi : gramSchm
     (v := gramSchmidtNormed 𝕜 f) h).choose_spec i hi
 
 theorem gramSchmidtOrthonormalBasis_apply_of_orthogonal {f : ι → E}
-    (hf : Pairwise fun i j => ⟪f i, f j⟫ = 0) {i : ι} (hi : f i ≠ 0) :
+    (hf : Pairwise' fun i j => ⟪f i, f j⟫ = 0) {i : ι} (hi : f i ≠ 0) :
     gramSchmidtOrthonormalBasis h f i = (‖f i‖⁻¹ : 𝕜) • f i := by
   have H : gramSchmidtNormed 𝕜 f i = (‖f i‖⁻¹ : 𝕜) • f i := by
     rw [gramSchmidtNormed, gramSchmidt_of_orthogonal 𝕜 hf]
@@ -348,7 +349,7 @@ theorem inner_gramSchmidtOrthonormalBasis_eq_zero {f : ι → E} {i : ι}
   have : k ≠ i := by
     rintro rfl
     exact hk hi
-  exact (gramSchmidtOrthonormalBasis h f).orthonormal.2 this
+  exact pairwise'_apply (gramSchmidtOrthonormalBasis h f).orthonormal.2 this
 
 theorem gramSchmidtOrthonormalBasis_inv_triangular {i j : ι} (hij : i < j) :
     ⟪gramSchmidtOrthonormalBasis h f j, f i⟫ = 0 := by
