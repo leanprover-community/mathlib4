@@ -315,12 +315,8 @@ theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictO
   grw [lapMatrix_toLinearMap₂'_mono (R := R) (le_top : G ≤ ⊤) x]
   rw [lapMatrix_top, toLinearMap₂'_apply', sub_mulVec, dotProduct_sub, natCast_mulVec,
     dotProduct_smul, smul_eq_mul]
-  rw [show x ⬝ᵥ (.of 1 : Matrix V V R) *ᵥ x = (∑ i, x i) ^ 2 by
-    have hmul : (.of (1 : V → V → R)) *ᵥ x = fun _ ↦ ∑ j, x j := by
-      ext i
-      simp [mulVec_apply_eq_sum, of_apply]
-    rw [hmul, dotProduct, ← sum_mul, ← sq]]
-  exact sub_le_self _ (sq_nonneg _)
+  convert (sub_le_self (Fintype.card V * x ⬝ᵥ x) (sq_nonneg (∑ i, x i))) using 2
+  simp [mulVec, of_apply, dotProduct, Finset.sum_mul, sq]
 
 /-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
 is at most `|V|`.
@@ -333,16 +329,12 @@ to avoid importing `Analysis.Matrix.Spectrum`. -/
 theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R] {μ : R}
     (hμ : End.HasEigenvalue (G.lapMatrix R).toLin' μ) : μ ≤ Fintype.card V := by
   obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
-  have h : G.lapMatrix R *ᵥ x = μ • x := by
-    simpa [toLin'_apply] using hx.apply_eq_smul
-  have hxpos : 0 < x ⬝ᵥ x := by
-    have hnn : 0 ≤ x ⬝ᵥ x := Fintype.sum_nonneg fun i => mul_self_nonneg (x i)
-    have hne : x ⬝ᵥ x ≠ 0 := mt dotProduct_self_eq_zero.mp hx.right
-    exact lt_of_le_of_ne hnn hne.symm
-  rw [← mul_le_mul_iff_of_pos_right hxpos]
-  calc
-    μ * (x ⬝ᵥ x) = x ⬝ᵥ (G.lapMatrix R *ᵥ x) := by rw [h, dotProduct_smul, smul_eq_mul]
-    _ ≤ Fintype.card V * (x ⬝ᵥ x) := dotProduct_mulVec_lapMatrix_le_card R G x
+  have hxpos : 0 < x ⬝ᵥ x :=
+    lt_of_le_of_ne (Fintype.sum_nonneg fun i ↦ mul_self_nonneg (x i))
+      (Ne.symm <| mt dotProduct_self_eq_zero.mp hx.right)
+  rw [← mul_le_mul_iff_of_pos_right hxpos, ← smul_eq_mul, ← dotProduct_smul,
+    ← hx.apply_eq_smul, toLin'_apply]
+  exact dotProduct_mulVec_lapMatrix_le_card R G x
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
