@@ -259,19 +259,24 @@ theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
     one_pow, C_1, mul_one]
 
 @[simp]
-theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
-    bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
+theorem aeval_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
+    aeval (xInTermsOfW p R) (W_ R k) = X k := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum]
   simp only [map_pow, map_mul, algHom_C, algebraMap_eq]
-  rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
+  rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, aeval_X, mul_comm, ← C_pow,
     xInTermsOfW_aux]
-  simp only [C_pow, bind₁_X_right, sub_add_cancel]
+  simp
+
+@[deprecated aeval_xInTermsOfW_wittPolynomial (since := "2026-09-02")]
+theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
+    bind₁ (xInTermsOfW p R) (W_ R k) = X k :=
+  aeval_xInTermsOfW_wittPolynomial p R k
 
 @[simp]
-theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
-    bind₁ (W_ R) (xInTermsOfW p R n) = X n := by
+theorem aeval_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
+    aeval (W_ R) (xInTermsOfW p R n) = X n := by
   induction n using Nat.strongRecOn with | ind n H => ?_
-  rw [xInTermsOfW_eq, map_mul, map_sub, bind₁_X_right, algHom_C, map_sum,
+  rw [xInTermsOfW_eq, map_mul, map_sub, aeval_X, algHom_C, map_sum,
     show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
@@ -280,4 +285,9 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h
-  rw [map_mul, map_pow (bind₁ _), algHom_C, H i h, algebraMap_eq]
+  rw [map_mul, map_pow (aeval _), algHom_C, H i h, algebraMap_eq]
+
+@[deprecated aeval_wittPolynomial_xInTermsOfW (since := "2026-09-02")]
+theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
+    bind₁ (W_ R) (xInTermsOfW p R n) = X n :=
+  aeval_wittPolynomial_xInTermsOfW p R n
