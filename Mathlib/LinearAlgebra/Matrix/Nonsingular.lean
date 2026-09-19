@@ -1,14 +1,13 @@
 /-
 Copyright (c) 2026 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu, Aristotle AI
+Authors: Junyan Xu
 -/
 module
 
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
-import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
@@ -33,12 +32,12 @@ a matrix is nonsingular if and only if its determinant is not a zero divisor).
   rank condition.
 -/
 
+public section
+
 variable {R m n : Type*} [CommSemiring R] [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable {A : Matrix n n R}
 
 namespace Matrix
-
-public section
 
 lemma isDetpBalanced_iff_sub_mul_det_eq_zero {R : Type*} [CommRing R] {A : Matrix n n R} {a b : R} :
     A.IsDetpBalanced a b ↔ (a - b) * A.det = 0 := by
@@ -140,8 +139,6 @@ theorem linearIndependent_col_iff_row [Finite n] :
     LinearIndependent R A.col ↔ LinearIndependent R A.row := by
   have := Fintype.ofFinite
   classical rw [linearIndependent_col_iff, linearIndependent_row_iff]
-
-end
 
 end Matrix
 

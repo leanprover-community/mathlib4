@@ -29,10 +29,8 @@ where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     Basis (Fin (minpoly K x).natDegree) K (K[(x : S)]) := by
   have hST : Function.Injective (algebraMap (K[(x : S)]) S) := Subtype.coe_injective
-  have hx' :
-    IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) := by
-    apply (isIntegral_algebraMap_iff hST).mp
-    convert! hx
+  have hx' : IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) :=
+    isIntegral_algebraMap_iff.mp hx
   apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : K[x])
@@ -67,12 +65,10 @@ noncomputable def _root_.PowerBasis.ofAdjoinEqTop {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) : PowerBasis K S :=
   (adjoin.powerBasis hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) : (PowerBasis.ofAdjoinEqTop hx hx').gen = x := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) :
@@ -120,7 +116,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
     Algebra.smul_def, map_smul]
   simp only [algebraMap_smul, Finsupp.coe_smul, Pi.smul_apply, B.basis.repr_self_apply]
   by_cases hij : (⟨j, hj⟩ : Fin _) = i
-  · simp only [hij, if_true]
+  · simp only [hij, ite_true]
     rw [Algebra.smul_def, mul_one]
     exact isIntegral_algebraMap
   · simp [hij, isIntegral_zero]

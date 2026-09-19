@@ -9,6 +9,7 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Factorial and variants
@@ -374,6 +375,12 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
 lemma descFactorial_pos {n k : ℕ} : 0 < n.descFactorial k ↔ k ≤ n := by simp [Nat.pos_iff_ne_zero]
 
 alias ⟨_, descFactorial_of_lt⟩ := descFactorial_eq_zero_iff_lt
+
+theorem descFactorial_mul_self (n j : ℕ) :
+    n.descFactorial j * n = n.descFactorial (j + 1) + j * n.descFactorial j := by
+  rcases le_or_gt j n with h | h
+  · rw [descFactorial_succ, ← Nat.add_mul, Nat.sub_add_cancel h, Nat.mul_comm]
+  · simp [descFactorial_of_lt h]
 
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) : ∀ k : ℕ,
     (n + k).descFactorial k = (n + 1).ascFactorial k

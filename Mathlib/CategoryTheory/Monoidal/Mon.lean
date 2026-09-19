@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # The category of monoids in a monoidal category.
@@ -146,7 +145,7 @@ open scoped MonObj
 
 namespace Mathlib.Tactic.MonTauto
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
-  {M W X X₁ X₂ X₃ Y Y₁ Y₂ Y₃ Z Z₁ Z₂ : C} [MonObj M]
+  {M W X X₁ X₂ Y Y₁ Y₂ Z Z₁ Z₂ : C} [MonObj M]
 
 attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   id_tensorHom_id tensorμ tensorδ
@@ -220,11 +219,7 @@ attribute [to_additive existing (attr := reassoc (attr := simp))] IsMonHom.one_h
 @[to_additive]
 instance : IsMonHom (𝟙 M) where
 
-instance instIsAddMonHomComp {M N O : C} [AddMonObj M] [AddMonObj N] [AddMonObj O]
-    (f : M ⟶ N) (g : N ⟶ O)
-    [IsAddMonHom f] [IsAddMonHom g] : IsAddMonHom (f ≫ g) where
-
-@[to_additive existing]
+@[to_additive]
 instance instIsMonHomComp (f : M ⟶ N) (g : N ⟶ O) [IsMonHom f] [IsMonHom g] : IsMonHom (f ≫ g) where
 
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
@@ -957,14 +952,7 @@ protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
         F.map_injective <| by simpa [← hg, cancel_epi] using IsMonHom.mul_hom f.hom },
       Mon.Hom.ext hg⟩
 
-instance FullyFaithful.isAddMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
-    [AddMonObj X] [AddMonObj Y] (f : F.obj X ⟶ F.obj Y) [IsAddMonHom f] :
-    IsAddMonHom (hF.preimage f) where
-  zero_hom := hF.map_injective (by simp [← cancel_epi (ε F), ← obj.ζ_def_assoc, ← obj.ζ_def])
-  add_hom := hF.map_injective (by
-    simp [← obj.σ_def_assoc, ← obj.σ_def, ← μ_natural_assoc, ← cancel_epi (LaxMonoidal.μ F ..)])
-
-@[to_additive existing]
+@[to_additive]
 instance FullyFaithful.isMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
     [MonObj X] [MonObj Y] (f : F.obj X ⟶ F.obj Y) [IsMonHom f] :
     IsMonHom (hF.preimage f) where
@@ -1006,7 +994,7 @@ variable [BraidedCategory C] [BraidedCategory D] (F)
 open scoped Obj
 
 attribute [-simp] IsMonHom.one_hom_assoc in
-attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp ←] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
 attribute [local simp] tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc MonObj.tensorObj.one_def
   MonObj.tensorObj.mul_def in
 @[to_additive instIsAddMonHomμ]
@@ -1026,7 +1014,7 @@ instance [F.LaxBraided] : F.mapMon.LaxMonoidal where
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
-attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp ←] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
 attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
   MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 @[to_additive]
@@ -1077,7 +1065,6 @@ end Adjunction
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their monoid objects. -/
 @[to_additive (attr := simps)

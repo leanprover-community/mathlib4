@@ -48,7 +48,7 @@ arcosh, arccosh, argcosh, acosh
 
 noncomputable section
 
-open Function Filter Set
+open Function Set
 
 open scoped Topology
 

@@ -100,7 +100,7 @@ theorem integral_comp_comm' (L : E →L[𝕜] Fₗ) {K} (hL : AntilipschitzWith 
   · exact integral_comp_comm L h
   have : ¬Integrable (fun x => L (φ x)) μ := by
     rwa [← Function.comp_def,
-      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
+      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitzWith hL L.map_zero]
   simp [integral_undef, h, this]
 
 theorem integral_comp_L1_comm (L : E →L[𝕜] Fₗ) (φ : X →₁[μ] E) :
@@ -114,7 +114,7 @@ namespace LinearIsometry
 variable [CompleteSpace F] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E] [NormedSpace ℝ E]
 
 theorem integral_comp_comm (L : E →ₗᵢ[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) :=
-  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
 
 end LinearIsometry
 

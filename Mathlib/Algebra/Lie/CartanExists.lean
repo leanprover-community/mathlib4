@@ -128,7 +128,6 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -300,7 +299,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   intro α hα
   -- Once again, we are left with showing that `⁅y, _⁆` acts nilpotently on `E`.
   rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
-    (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
+    (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, ite_eq_right hi.ne]
   -- To do so, it suffices to show that the Engel subalgebra of `v = a • u + x` is contained in `E`.
   let v := α • u + x'
   suffices engel K (v : L) ≤ engel K x by

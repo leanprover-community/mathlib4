@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.OreLocalization.Ring
@@ -130,7 +130,6 @@ section CompatibleSMul
 
 variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M S) in
 include M in
 theorem linearMap_compatibleSMul [Module S N₁] [Module S N₂]
@@ -304,7 +303,6 @@ instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S
 
 variable (R M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The localization at a module of units is isomorphic to the ring. -/
 noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
   refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩
@@ -706,7 +704,8 @@ def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B whe
     have : f.toRingHom.comp (algebraMap R S) = g.toRingHom.comp (algebraMap R S) := by simp
     suffices f = g by rwa [DFunLike.ext_iff] at this
     apply IsLocalization.algHom_ext M
-    rwa [DFunLike.ext_iff] at this ⊢
+    rw [DFunLike.ext_iff] at this ⊢
+    assumption
 
 @[simp]
 theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :
