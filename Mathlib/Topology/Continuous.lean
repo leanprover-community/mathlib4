@@ -171,6 +171,13 @@ theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
     Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y => h y x
 
+@[nontriviality]
+lemma Continuous.of_subsingleton [Subsingleton X] : Continuous f := continuous_of_const (by simp)
+
+@[nontriviality]
+lemma ContinuousAt.of_subsingleton [Subsingleton X] (x : X) : ContinuousAt f x :=
+  Continuous.of_subsingleton |>.continuousAt
+
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt
 
