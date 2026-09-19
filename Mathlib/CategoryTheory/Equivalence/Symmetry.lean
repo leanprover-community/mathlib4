@@ -64,10 +64,10 @@ def symmEquiv : (C ≌ D) ≌ (D ≌ C)ᵒᵖ where
   functor := symmEquivFunctor _ _
   inverse := symmEquivInverse _ _
   counitIso :=
-    NatIso.ofComponents (fun e ↦ Iso.op <| Iso.refl _) <| fun _ ↦
+    NatIso.ofComponents (fun e ↦ Iso.op <| Iso.refl _) fun _ ↦
       (by simp [symm, symmEquivInverse])
   unitIso :=
-    NatIso.ofComponents (fun e ↦ Iso.refl _) <| fun _ ↦ by
+    NatIso.ofComponents (fun e ↦ Iso.refl _) fun _ ↦ by
       ext c
       simp [symm, symmEquivInverse]
   functor_unitIso_comp X := by

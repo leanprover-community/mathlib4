@@ -134,7 +134,7 @@ variable {P₁ P₂ P : Type*} [AddCommMonoid P₁] [AddCommMonoid P₂]
   (i₁ : N₁ →ₗ[R] P₁) (j₁ : M₁ →ₗ[R] N₁) (i₂ : N₂ →ₗ[R] P₂) (j₂ : M₂ →ₗ[R] N₂)
 
 theorem map_comp : hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) = hg.map hp i₁ i₂ ∘ₗ hf.map hg j₁ j₂ :=
-  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+  LinearMap.ext fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
 theorem map_map (x : M) :
     hg.map hp i₁ i₂ ((hf.map hg j₁ j₂) x) = hf.map hp (i₁ ∘ₗ j₁) (i₂ ∘ₗ j₂) x :=
@@ -143,7 +143,7 @@ theorem map_map (x : M) :
 @[simp]
 theorem map_id :
     hf.map hf (LinearMap.id : M₁ →ₗ[R] M₁) (LinearMap.id : M₂ →ₗ[R] M₂) = LinearMap.id :=
-  LinearMap.ext <| fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
+  LinearMap.ext fun x ↦ hf.inductionOn x (by simp) (fun _ _ h₁ h₂ ↦ by simp [h₁, h₂])
 
 @[simp]
 protected theorem map_one : hf.map hf (1 : M₁ →ₗ[R] M₁) (1 : M₂ →ₗ[R] M₂) = 1 :=

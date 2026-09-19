@@ -322,7 +322,7 @@ lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj
 /-- A morphism from an object `X` with non-empty fiber to a connected object `A` is an
 epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
-    (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
+    (f : X ⟶ A) : Epi f := Epi.mk fun {Z} u v huv ↦ by
   apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
   simpa using ConcreteCategory.congr_hom (F.congr_map huv) _
 

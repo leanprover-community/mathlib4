@@ -125,12 +125,12 @@ def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ nor
   | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, (@Hom.comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) =>
-    Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
+    Discrete.natTrans fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
       (normalizeObj' W).map ((normalizeMapAux f).app ⟨X⟩)
   | _, _, (@Hom.whiskerLeft _ T _ W f) =>
-    Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux f).app ⟨normalizeObj T X⟩
+    Discrete.natTrans fun ⟨X⟩ => (normalizeMapAux f).app ⟨normalizeObj T X⟩
   | _, _, (@Hom.whiskerRight _ T _ f W) =>
-    Discrete.natTrans <| fun X => (normalizeObj' W).map <| (normalizeMapAux f).app X
+    Discrete.natTrans fun X => (normalizeObj' W).map <| (normalizeMapAux f).app X
 
 end
 

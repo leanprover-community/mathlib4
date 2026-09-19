@@ -66,8 +66,8 @@ section accumulate
 /-- The `j`th entry of `accumulate n m t` is the sum of `t i` over all `i ≥ j`. -/
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
   toFun t j := ∑ i : Fin n with j.val ≤ i.val, t i
-  map_zero' := funext <| fun _ ↦ sum_eq_zero <| fun _ _ ↦ rfl
-  map_add' _ _ := funext <| fun _ ↦ sum_add_distrib
+  map_zero' := funext fun _ ↦ sum_eq_zero fun _ _ ↦ rfl
+  map_add' _ _ := funext fun _ ↦ sum_add_distrib
 
 /-- The `i`th entry of `invAccumulate n m s` is `s i - s (i+1)`, where `s j = 0` if `j ≥ m`. -/
 def invAccumulate (n m : ℕ) (s : Fin m → ℕ) (i : Fin n) : ℕ :=
@@ -103,7 +103,7 @@ lemma accumulate_injective {n m} (hnm : n ≤ m) : Function.Injective (accumulat
     iterate 2 { intro j hj; exact ((j.2.trans_le hnm).not_ge hj).elim }
 
 lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Antitone s) :
-    accumulate n m (invAccumulate n m s) = s := funext <| fun ⟨i, hi⟩ ↦ by
+    accumulate n m (invAccumulate n m s) = s := funext fun ⟨i, hi⟩ ↦ by
   have := Nat.le_sub_one_of_lt hi
   revert hi
   refine Nat.decreasingInduction' (fun i hi _ ih him ↦ ?_) this fun hm ↦ ?_

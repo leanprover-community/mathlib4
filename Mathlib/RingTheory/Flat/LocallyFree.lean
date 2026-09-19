@@ -54,7 +54,7 @@ theorem Free.away_of_finite_of_flat_of_rankAtStalk_constant (p : Ideal R) [p.IsP
     let φₐ : LocalizedModule.Away a (Fin n →₀ R) →ₗ[Localization.Away a] LocalizedModule.Away a M :=
       LocalizedModule.map (Submonoid.powers a) φ
     refine ⟨a, hap, Module.Free.of_equiv <| LinearEquiv.ofBijective φₐ <|
-      bijective_of_surjective_of_rankAtStalk_eq hφas <| fun m _ ↦ ?_⟩
+      bijective_of_surjective_of_rankAtStalk_eq hφas fun m _ ↦ ?_⟩
     obtain ⟨𝔪, _, hm𝔪⟩ : ∃ 𝔪 : Ideal R, 𝔪.IsMaximal ∧ PrimeSpectrum.comap
         (algebraMap R (Localization (Submonoid.powers a))) ⟨m, inferInstance⟩ ≤ 𝔪 :=
       (m.comap (algebraMap R (Localization.Away a))).exists_le_maximal Ideal.IsPrime.ne_top'

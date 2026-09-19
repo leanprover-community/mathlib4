@@ -55,7 +55,7 @@ theorem matrix_monotone : Monotone (matrix (R := R) n) :=
 
 theorem matrix_strictMono_of_nonempty [Nonempty n] :
     StrictMono (matrix (R := R) n) :=
-  matrix_monotone n |>.strictMono_of_injective <| fun I J eq => by
+  matrix_monotone n |>.strictMono_of_injective fun I J eq => by
     ext x
     have : (∀ _ _, x ∈ I) ↔ (∀ _ _, x ∈ J) := congr((Matrix.of fun _ _ => x) ∈ $eq)
     simpa only [forall_const] using this

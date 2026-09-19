@@ -157,7 +157,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma sieve₀_cylinder :
     (cylinder f g).sieve₀ =
       Sieve.generate
-        (Presieve.bindOfArrows _ E.f <| fun i ↦
+        (Presieve.bindOfArrows _ E.f fun i ↦
           (Sieve.pullback (pullback.lift (f.h₀ _) (g.h₀ _) (by simp))
             (F.sieve₁' _ _)).arrows) := by
   refine le_antisymm ?_ ?_

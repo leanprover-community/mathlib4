@@ -41,7 +41,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
   refine Lifts.nonempty_algHom_of_exist_lifts_finset fun S ↦ ⟨⟨adjoin F S, ?_⟩, subset_adjoin _ _⟩
-  let p := (S.prod <| fun x ↦ (minpoly F x).map (algebraMap F K))
+  let p := (S.prod fun x ↦ (minpoly F x).map (algebraMap F K))
   let K' := SplittingField p
   have splits s (hs : s ∈ S) : ((minpoly F s).map (algebraMap F K')).Splits := by
     apply (SplittingField.splits p).of_dvd (map_ne_zero (Finset.prod_ne_zero_iff.mpr

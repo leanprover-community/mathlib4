@@ -158,7 +158,7 @@ theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := .intro fun a => by
   | zero =>
     rw [List.length_eq_zero_iff] at len_a
     rw [len_a]
-    exact Acc.intro _ <| fun _ ylt => (not_shortlex_nil_right ylt).elim
+    exact Acc.intro _ fun _ ylt => (not_shortlex_nil_right ylt).elim
   | ind n ih =>
     obtain ⟨head, tail, rfl⟩ := List.exists_of_length_succ a len_a
     rw [List.length_cons, add_left_inj] at len_a

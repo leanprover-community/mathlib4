@@ -1367,7 +1367,7 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
       .isTrue <| SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
         ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
     else
-      .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
+      .isFalse fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/

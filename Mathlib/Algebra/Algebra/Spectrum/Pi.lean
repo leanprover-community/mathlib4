@@ -42,7 +42,7 @@ of pre-quasiregular elements. -/
 def PreQuasiregular.toPi [∀ i, NonUnitalSemiring (κ i)] :
     PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasiregular (κ i) where
   toFun := fun x i => .mk <| x.val i
-  invFun := fun x => .mk <| fun i => (x i).val
+  invFun := fun x => .mk fun i => (x i).val
   map_mul' _ _ := rfl
 
 variable (A B) in

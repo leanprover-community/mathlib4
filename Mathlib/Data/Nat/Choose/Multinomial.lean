@@ -451,7 +451,7 @@ end List
 namespace Multiset
 
 /-- The `multinomial` coefficients on `Multiset ℕ`. -/
-def multinomial (m : Multiset ℕ) : ℕ := Quot.liftOn m List.multinomial <| fun l l' h ↦ by
+def multinomial (m : Multiset ℕ) : ℕ := Quot.liftOn m List.multinomial fun l l' h ↦ by
   induction h with
   | nil => simp
   | @cons x l l' hl hl' => simp [List.multinomial_cons, hl', hl.sum_nat]

@@ -162,7 +162,7 @@ theorem map_comap_eq_of_surjective (hg : Function.Surjective g) : (m.comap g).ma
 end Functors
 
 @[simp] theorem map_const {m} (b : β) : MeasurableSpace.map (fun _a : α ↦ b) m = ⊤ :=
-  eq_top_iff.2 <| fun s _ ↦ by rw [map_def]; by_cases h : b ∈ s <;> simp [h]
+  eq_top_iff.2 fun s _ ↦ by rw [map_def]; by_cases h : b ∈ s <;> simp [h]
 
 @[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
   eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]

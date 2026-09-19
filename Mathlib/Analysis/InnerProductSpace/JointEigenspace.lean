@@ -77,8 +77,8 @@ theorem orthogonalFamily_iInf_eigenspaces (hT : ∀ i, (T i).IsSymmetric) :
   have H := orthogonalFamily_eigenspaces (hT a) ha
   simp only [Submodule.coe_subtypeₗᵢ, Submodule.coe_subtype, Subtype.forall] at H
   apply H
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
+  · exact (Submodule.mem_iInf fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
+  · exact (Submodule.mem_iInf fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
 
 variable [FiniteDimensional 𝕜 E]
 

@@ -82,7 +82,7 @@ lemma Presieve.isSheafFor_sigmaDesc_iff {ι : Type*} {X : ι → C} (f : ∀ i, 
     [HasPullback (Cofan.IsColimit.desc hc f) (Cofan.IsColimit.desc hc f)]
     [∀ i, HasPullback (f i) (Cofan.IsColimit.desc hc f)]
     (F : Cᵒᵖ ⥤ Type*)
-    [PreservesLimit (Discrete.functor <| fun i ↦ op (X i)) F]
+    [PreservesLimit (Discrete.functor fun i ↦ op (X i)) F]
     [PreservesLimit (Discrete.functor fun (ij : ι × ι) ↦
       op (Limits.pullback (f ij.1) (f ij.2))) F] :
     Presieve.IsSheafFor F (.singleton <| Cofan.IsColimit.desc hc f) ↔

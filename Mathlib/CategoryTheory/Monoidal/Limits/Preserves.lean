@@ -66,7 +66,7 @@ lemma preservesLimit_of_braided_and_preservesLimit_tensor_right
 
 lemma preservesLimit_curriedTensor [h : ∀ c : C, PreservesLimit F (tensorRight c)] :
     PreservesLimit F (curriedTensor C) :=
-  preservesLimit_of_evaluation _ _ <| fun c ↦ inferInstanceAs (PreservesLimit F (tensorRight c))
+  preservesLimit_of_evaluation _ _ fun c ↦ inferInstanceAs (PreservesLimit F (tensorRight c))
 
 end Limits
 

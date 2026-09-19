@@ -103,7 +103,7 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
     (fun s ↦ (hc.lift <| pullbackConeEquivBinaryFan.functor.obj s).left)
     (fun s ↦ by simpa only using! congr($(hc.fac _ _).left))
     (fun s ↦ by simpa only using! congr($(hc.fac _ _).left))
-    <| fun s m hm₁ hm₂ ↦ by
+    fun s m hm₁ hm₂ ↦ by
       change PullbackCone f g at s
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
         simp [← hm₁, dsimp% c.fst.w])
@@ -165,7 +165,7 @@ def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f)
     (fun s ↦ (hc.desc <| pushoutCoconeEquivBinaryCofan.functor.obj s).right)
     (fun s ↦ by simpa only using! congr($(hc.fac _ _).right))
     (fun s ↦ by simpa only using! congr($(hc.fac _ _).right))
-    <| fun s m hm₁ hm₂ ↦ by
+    fun s m hm₁ hm₂ ↦ by
       change PushoutCocone f g at s
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
         simp [← hm₁, dsimp% c.inl.w_assoc])

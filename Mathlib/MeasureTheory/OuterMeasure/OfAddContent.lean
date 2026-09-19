@@ -111,7 +111,7 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
     obtain h6 := MeasureTheory.measure_biUnion_finset_le
       (μ := OuterMeasure.ofFunction m addContent_empty) (A i) id
     simp only [id_eq] at h6
-    exact le_trans h6 <| Finset.sum_le_sum <| fun b _ ↦ OuterMeasure.ofFunction_le b
+    exact le_trans h6 <| Finset.sum_le_sum fun b _ ↦ OuterMeasure.ofFunction_le b
 
 /-- Every `s ∈ C` for an `m : AddContent C` with `IsSetSemiring C` is Carathéodory measurable
 with respect to the `inducedOuterMeasure` from `m`. -/

@@ -141,7 +141,7 @@ universal property of the free product, characterizing it as a categorical copro
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
     Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
-      Con.conGen_le.2 <| fun _ _ => by
+      Con.conGen_le.2 fun _ _ => by
         simp_rw [Con.ker_rel]
         rintro (i | ⟨x, y⟩) <;> simp
   invFun f _ := f.comp of

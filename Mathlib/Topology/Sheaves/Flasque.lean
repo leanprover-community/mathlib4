@@ -96,7 +96,7 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
       dsimp
       rw [← Functor.map_comp_apply]
       rfl
-  have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.1.unop
+  have le₁ : iSup f ≤ U := iSup_le fun j => leOfHom j.1.hom.1.unop
   have le₂ : ∀ i, i ∈ c → unop i.right.1 ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
   use StructuredArrow.mk (Functor.Elements.homMk (homOfLE le₁).op (eq_app_of_locally_eq ht
       (fun i ↦ leOfHom i.1.hom.1.unop) (fun i ↦ (i.1.hom.map_val).symm)).symm :

@@ -86,7 +86,7 @@ lemma Submartingale.monotone_predictablePart
     [CompleteSpace E] [PartialOrder E] [IsOrderedAddMonoid E]
     (hf : Submartingale f ℱ μ) :
     ∀ᵐ ω ∂μ, Monotone (predictablePart f ℱ μ · ω) := by
-  have := ae_all_iff.2 <| fun n : ℕ ↦ hf.condExp_sub_nonneg n.le_succ
+  have := ae_all_iff.2 fun n : ℕ ↦ hf.condExp_sub_nonneg n.le_succ
   filter_upwards [this] with ω h
   simp only [Pi.zero_apply, Nat.succ_eq_add_one, ← ge_iff_le] at h
   refine monotone_nat_of_le_succ fun n ↦ (?_ : _ ≥ _)

@@ -247,7 +247,7 @@ instance IsLocalizedModule.rTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S
   let : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
   have : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
   have : IsScalarTower R Aₚ M' :=
-    IsScalarTower.of_algebraMap_smul <| fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
+    IsScalarTower.of_algebraMap_smul fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
   rw [isLocalizedModule_iff_isBaseChange (S := S) (A := Aₚ)] at h ⊢
   exact isBaseChange_tensorProduct_map _ h
 

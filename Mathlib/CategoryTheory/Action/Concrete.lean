@@ -139,7 +139,7 @@ sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
 multiplication with `g⁻¹` on the right. -/
 def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
   toFun v :=
-  { hom := FintypeCat.homMk (Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
+  { hom := FintypeCat.homMk (Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) fun a b h ↦ Quotient.sound <| by
       apply (QuotientGroup.leftRel_apply).mpr
       -- We avoid `group` here to minimize imports while low in the hierarchy;
       -- typically it would be better to invoke the tactic.
@@ -176,7 +176,7 @@ lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n =
 /-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
 group homomorphism `H ⧸ N ⊓ H` to the `G`-endomorphisms of `G ⧸ N`. -/
 def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
-  QuotientGroup.lift (Subgroup.subgroupOf N H) ((toEndHom N).comp H.subtype) <| fun _ uinU' ↦
+  QuotientGroup.lift (Subgroup.subgroupOf N H) ((toEndHom N).comp H.subtype) fun _ uinU' ↦
     toEndHom_trivial_of_mem uinU'
 
 @[simp]
@@ -187,7 +187,7 @@ lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
 /-- If `N` and `H` are subgroups of a group `G` with `N ≤ H`, this is the canonical
 `G`-morphism `G ⧸ N ⟶ G ⧸ H`. -/
 def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ (G ⧸ₐ H) where
-  hom := FintypeCat.homMk (Quotient.lift _ <| fun _ _ hab ↦ Quotient.sound <|
+  hom := FintypeCat.homMk (Quotient.lift _ fun _ _ hab ↦ Quotient.sound <|
     (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab))
   comm g := by
     ext (x : G ⧸ N)

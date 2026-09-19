@@ -65,7 +65,7 @@ instance : LinearOrder (Lex R⟦Γ⟧) where
         ((ofLex a).isPWO_support'.isWF.union (ofLex b).isPWO_support'.isWF).subset hvu
       let i := hv.min hab
       have hji (j) : j < i → (ofLex a).coeff j = (ofLex b).coeff j :=
-        not_imp_not.mp <| fun h' ↦ hv.not_lt_min hab h'
+        not_imp_not.mp fun h' ↦ hv.not_lt_min hab h'
       have hne : (ofLex a).coeff i ≠ (ofLex b).coeff i := hv.min_mem hab
       obtain hi | hi := lt_or_gt_of_ne hne
       · exact Or.inl (le_of_lt ⟨i, hji, hi⟩)

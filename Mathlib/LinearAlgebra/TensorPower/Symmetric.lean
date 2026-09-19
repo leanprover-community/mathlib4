@@ -97,12 +97,12 @@ def smul' (r : R) : Sym[R] ι M →+ Sym[R] ι M :=
 
 instance module : Module R (Sym[R] ι M) where
   smul r x := smul' ι M r x
-  one_smul x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| one_smul R x
-  mul_smul r s x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| mul_smul r s x
+  one_smul x := AddCon.induction_on x fun x ↦ congr_arg _ <| one_smul R x
+  mul_smul r s x := AddCon.induction_on x fun x ↦ congr_arg _ <| mul_smul r s x
   smul_zero r := congr_arg _ <| smul_zero r
-  smul_add r x y := AddCon.induction_on₂ x y <| fun x y ↦ congr_arg _ <| smul_add r x y
-  add_smul r s x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| add_smul r s x
-  zero_smul x := AddCon.induction_on x <| fun x ↦ congr_arg _ <| zero_smul R x
+  smul_add r x y := AddCon.induction_on₂ x y fun x y ↦ congr_arg _ <| smul_add r x y
+  add_smul r s x := AddCon.induction_on x fun x ↦ congr_arg _ <| add_smul r s x
+  zero_smul x := AddCon.induction_on x fun x ↦ congr_arg _ <| zero_smul R x
 
 /-- The canonical map from the `ι`-indexed tensor power to the symmetric tensor power. -/
 def mk : (⨂[R] (_ : ι), M) →ₗ[R] Sym[R] ι M where

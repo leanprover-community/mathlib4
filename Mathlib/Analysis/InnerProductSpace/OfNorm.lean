@@ -162,7 +162,7 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   intro x y
   let hom : 𝕜 →ₗ[ℚ] 𝕜 := AddMonoidHom.toRatLinearMap <|
-    AddMonoidHom.mk' (fun r ↦ inner_ 𝕜 (r • x) y) <| fun a b ↦ by
+    AddMonoidHom.mk' (fun r ↦ inner_ 𝕜 (r • x) y) fun a b ↦ by
       simpa [add_smul] using add_left (a • x) (b • x) y
   simpa [hom, Rat.smul_def] using map_smul hom r 1
 

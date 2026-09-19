@@ -68,7 +68,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The two fans on `i ↦ S ⊗[R] P i` agree if `ι` is finite. -/
 def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     tensorProductFan S P ≅ tensorProductFan' S P :=
-  Fan.ext (Algebra.TensorProduct.piRight R S _ _).toUnder <| fun i ↦ by
+  Fan.ext (Algebra.TensorProduct.piRight R S _ _).toUnder fun i ↦ by
     dsimp only [tensorProductFan, Fan.mk_pt, fan_mk_proj, tensorProductFan']
     apply CommRingCat.mkUnder_ext
     intro c

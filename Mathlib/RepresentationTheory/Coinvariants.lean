@@ -206,7 +206,7 @@ variable {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
 sending `⟦single a v⟧ ↦ single a ⟦v⟧`. -/
 noncomputable def coinvariantsToFinsupp :
     Coinvariants (ρ.finsupp α) →ₗ[k] α →₀ Coinvariants ρ :=
-  Coinvariants.lift _ (mapRange.linearMap (Coinvariants.mk _)) <| fun _ => by ext; simp
+  Coinvariants.lift _ (mapRange.linearMap (Coinvariants.mk _)) fun _ => by ext; simp
 
 variable {ρ α}
 

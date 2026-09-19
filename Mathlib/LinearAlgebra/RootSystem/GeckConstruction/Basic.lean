@@ -105,7 +105,7 @@ lemma span_range_h_le_range_diagonal [DecidableEq ι] :
 open Matrix in
 @[simp] lemma diagonal_elim_mem_span_h_iff [DecidableEq ι] {d : ι → R} :
     diagonal (Sum.elim 0 d) ∈ span R (range <| h (b := b)) ↔
-      d ∈ span R (range <| fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R)) := by
+      d ∈ span R (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R)) := by
   let g : Matrix ι ι R →ₗ[R] Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
     { toFun := .fromBlocks 0 0 0
       map_add' x y := by ext (i | i) (j | j) <;> simp
@@ -114,7 +114,7 @@ open Matrix in
   have h₁ {d : ι → R} : diagonal (Sum.elim 0 d) = g (diagonalLinearMap ι R R d) := by
     ext (i | i) (j | j) <;> simp [g]
   have h₂ : range h = g '' (diagonalLinearMap ι R R ''
-    (range <| fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R))) := by ext; simp [g, h_def]
+    (range fun (i : b.support) j ↦ (P.pairingIn ℤ j i : R))) := by ext; simp [g, h_def]
   simp_rw [h₁, h₂, span_image, ← map_comp, ← comp_apply (f := g), mem_map, LinearMap.coe_comp,
     h₀.eq_iff, exists_eq_right]
 
