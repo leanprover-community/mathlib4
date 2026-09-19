@@ -189,8 +189,6 @@ end Ind
 
 section Adjunction
 
-variable (B : Rep k H)
-
 /-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
 the `G`-representation morphisms `A ⟶ res φ B`. -/
