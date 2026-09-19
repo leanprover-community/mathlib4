@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Subgroup.Defs
-public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Set.BooleanAlgebra
 public meta import Mathlib.Tactic.ToDual
 
@@ -29,8 +29,6 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 @[expose] public section
 
 assert_not_exists MonoidWithZero DistribMulAction
-
-universe u v
 
 open scoped Pointwise
 
@@ -172,32 +170,42 @@ end Stabilizers
 
 end MulAction
 
-section FixedPoints
+namespace FixedPoints
 
-variable (M : Type u) (α : Type v) [Monoid M]
+variable (M α β : Type*) [Monoid M]
 
 section Monoid
 
-variable [Monoid α] [MulDistribMulAction M α]
+variable [Monoid α] [MulDistribMulAction M α] [Monoid β] [MulDistribMulAction M β] {f : α →* β}
 
 /-- The submonoid of elements fixed under the whole action. -/
-def FixedPoints.submonoid : Submonoid α where
+def submonoid : Submonoid α where
   carrier := MulAction.fixedPoints M α
   one_mem' := smul_one
   mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
 
 @[simp]
-lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
+lemma mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 instance : SMulCommClass M (FixedPoints.submonoid M α) α where
   smul_comm g x y := by simp_rw [Submonoid.smul_def, smul_eq_mul, smul_mul', x.2 g]
 
+variable {M α β}
+
+/-- The restriction of a `MonoidHom` to `FixedPoints.submonoid`. -/
+def submonoidMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) : submonoid M α →* submonoid M β :=
+  f.restrict fun _ h' _ => by rw [← h, h']
+
+lemma submonoidMap_injective (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a)
+    (hf : Function.Injective f) : Function.Injective <| submonoidMap h :=
+  MonoidHom.restrict_injective _ hf
+
 end Monoid
 
 section Group
-namespace FixedPoints
-variable [Group α] [MulDistribMulAction M α]
+
+variable [Group α] [MulDistribMulAction M α] [Group β] [MulDistribMulAction M β] {f : α →* β}
 
 /-- The subgroup of elements fixed under the whole action. -/
 def subgroup : Subgroup α where
@@ -215,8 +223,19 @@ instance : SMulCommClass M (FixedPoints.subgroup M α) α :=
 lemma subgroup_toSubmonoid : (FixedPoints.subgroup M α).toSubmonoid = submonoid M α :=
   rfl
 
-end FixedPoints
+variable {M α β}
+
+/-- The restriction of a `MonoidHom` to `FixedPoints.subgroup`. -/
+def subgroupMap (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a) :
+    FixedPoints.subgroup M α →* FixedPoints.subgroup M β :=
+  submonoidMap h
+
+lemma subgroupMap_injective (h : ∀ m : M, ∀ a : α, f (m • a) = m • f a)
+    (hf : Function.Injective f) : Function.Injective <| subgroupMap h :=
+  submonoidMap_injective h hf
+
 end Group
+
 end FixedPoints
 
 namespace MulAction
