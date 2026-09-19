@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Monomial
-public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.Nat
 
 /-!
 # Degree of univariate monomials

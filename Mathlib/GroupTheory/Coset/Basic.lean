@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.Coset.Defs
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Cosets

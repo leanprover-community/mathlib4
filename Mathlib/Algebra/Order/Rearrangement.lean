@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Prod.Lex
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Order.Monotone.Monovary
+public import Mathlib.Order.Prod.Lex.Basic
 
 /-!
 # Rearrangement inequality

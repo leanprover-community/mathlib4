@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
 
 /-!
