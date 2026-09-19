@@ -47,6 +47,11 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   map f :=
     { app _ := ↾fun g ↦ g ≫ f }
 
+example {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) {X Y : C}
+    (f : X ⟶ Y) :
+    ((F ⋙ yoneda).map f).app (op (F.obj Y)) = (yoneda.map (F.map f)).app (op (F.obj Y)) := by
+  simp
+
 /-- Unification hint for `(yoneda.obj X).obj (op Y) = Y ⟶ X`. -/
 unif_hint yoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
