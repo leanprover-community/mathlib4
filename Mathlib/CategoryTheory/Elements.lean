@@ -216,6 +216,23 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
   counitIso :=
     NatIso.ofComponents (fun f ↦ CostructuredArrow.isoMk (Iso.refl _))
 
+/-- The functor `toCostructuredArrow F : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F` for
+`F : Cᵒᵖ ⥤ Type v` is "natural" in `F`. -/
+def mapElementsOpCompToCostructuredArrow {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
+    α.mapElements.op ⋙ toCostructuredArrow F₂ ≅
+      toCostructuredArrow F₁ ⋙ CostructuredArrow.map α :=
+  NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _)
+    (yonedaEquiv.injective (by simp [yonedaEquiv_symm_naturality_right.{v}])))
+
+/-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` is actually a natural isomorphism of functors.
+-/
+theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
+    α.mapElements.op ⋙ toCostructuredArrow F₂ =
+      toCostructuredArrow F₁ ⋙ CostructuredArrow.map α :=
+  Functor.ext_of_iso (mapElementsOpCompToCostructuredArrow α) (fun e ↦
+    CostructuredArrow.obj_ext _ _ rfl
+      (yonedaEquiv.injective (by simp [yonedaEquiv_symm_naturality_right.{v}])))
+
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
 @[simps!]
 def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ Type v) :

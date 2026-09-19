@@ -5,9 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.FinallySmall
-public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Filtered.Small
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
@@ -171,18 +172,15 @@ open IsFiltered.SmallFilteredIntermediate
 theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
     IsIndObject A := by
-  have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
+  have : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
       inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final := Functor.final_of_natIso
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
-  have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
+  have : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
     Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
-  let c := (Presheaf.tautologicalCocone A).whisker
-    (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
-  let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
-    (Presheaf.isColimitTautologicalCocone A)
-  have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
+  have : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
     (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
-  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
+  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, _,
+    (Functor.Final.isColimitWhiskerEquiv _ _).symm (denseAtYoneda A)⟩
 
 /-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
 `CostructuredArrow yoneda A` is filtered and finally `v`-small.
