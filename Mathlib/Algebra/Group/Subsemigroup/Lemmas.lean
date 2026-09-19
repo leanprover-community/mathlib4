@@ -13,6 +13,8 @@ import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Subsemigroup lemmas
+
+This file contains lemmas about the lattice of `Subsemigroup`s.
 -/
 
 public section
