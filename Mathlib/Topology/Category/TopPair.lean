@@ -79,13 +79,27 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
+def proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
+
+-- `simps` generates the wrong lemmas
+@[simp]
+lemma proj₁_obj : proj₁.obj X = X.fst := rfl
+
+@[simp]
+lemma proj₁_map (f : X ⟶ Y) : proj₁.map f = Hom.fst f := rfl
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
+def proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
+
+-- `simps` generates the wrong lemmas
+@[simp]
+lemma proj₂_obj : proj₂.obj X = X.snd := rfl
+
+@[simp]
+lemma proj₂_map (f : X ⟶ Y) : proj₂.map f = Hom.snd f := rfl
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
@@ -214,5 +228,35 @@ theorem equivalence : Equivalence (Homotopic (X := X) (Y := Y)) :=
   ⟨fun f ↦ ⟨Homotopy.refl f⟩, fun h ↦ h.map Homotopy.symm, fun h₀ h₁ ↦ h₀.map2 Homotopy.trans h₁⟩
 
 end Homotopic
+
+section Embedding
+
+/-- A morphism `f : X ⟶ Y` in `TopPair` is an embedding if its first and second component are
+embeddings. -/
+structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y)where
+  fst : Topology.IsEmbedding (Hom.fst f)
+  snd : Topology.IsEmbedding (Hom.snd f)
+
+end Embedding
+
+section Complement
+
+/-- Two morphisms `f : A ⟶ X` and `g : B ⟶ X` in `TopPair` are complements if their first and second
+components are complements in `TopCat`. -/
+protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
+  fst : IsCompl (Set.range (Hom.fst f)) (Set.range (Hom.fst g))
+  snd : IsCompl (Set.range (Hom.snd f)) (Set.range (Hom.snd g))
+
+end Complement
+
+/-- A morphism `g : (V, C) ⟶ (X, A)` in `TopPair` is excisive if it is an embedding,
+`g(C) = g(V) ∩ C`, and `cl(g(V)ᶜ) ⊆ int(A)`. -/
+class IsExcisive ⦃V X : TopPair.{u}⦄ (g : V ⟶ X) : Prop where
+  isEmbedding_fst : Topology.IsEmbedding (Hom.fst g)
+  range_fst_map : Set.range (Hom.fst g ∘ V.map) = Set.range (Hom.fst g) ∩ Set.range X.map
+  closure_range_fst_compl : closure (Set.range (Hom.fst g))ᶜ ⊆ interior (Set.range X.map)
+
+/-- A `MorphismProperty` for `IsExcisive`. -/
+abbrev isExcisive : MorphismProperty TopPair.{u} := IsExcisive
 
 end TopPair
