@@ -168,22 +168,18 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
     cycleGraph n ⊑ G ↔ ∃ (v : V) (p : G.Walk v v), p.IsCycle ∧ p.length = n := by
   have hn' : n - 3 + 3 = n := by lia
   refine ⟨fun ⟨h⟩ ↦ ⟨_, _, cycleGraph.isCycle_cycle.map (hn' ▸ h).injective, by simp [hn']⟩, ?_⟩
-  intro ⟨a, p, hp₁, hp₂⟩
-  refine ⟨⟨fun n ↦ p.support[n.succ]'(by grind [not_nil_iff_lt_length]), ?_⟩, ?_⟩
-  · intro ⟨x, hx⟩ ⟨y, hy⟩ hab
-    wlog hle : x > y
-    · have hne : x ≠ y := by simpa using hab.ne
-      exact this hn hn' a p hp₁ hp₂ y hy x hx hab.symm (by lia) |>.symm
-    rcases cycleGraph_adj'.mp hab with hab | hab
-    · simp_rw [show x = y + 1 by grind [Fin.sub_val_of_le]]
-      exact p.isChain_adj_support.getElem _ _ |>.symm
-    · rw [Fin.coe_sub_iff_lt.mpr hle] at hab
-      simp_rw [show x = n - 1 by lia, show y = 0 by lia, Fin.succ_mk, show n - 1 + 1 = n by lia]
-      simp [← hp₂, hp₁.not_nil]
-  · have hlen : p.tail.support.length = n := by grind [length_tail_add_one]
-    have (m : Fin n) : p.support[m.succ]'(by grind) = p.tail.support[m] := by simp [hp₁.not_nil]
-    simp_rw [this]
-    exact hlen ▸ (isPath_iff_injective_get_support _).mp hp₁.isPath_tail
+  rintro ⟨u, p, hp, rfl⟩
+  -- The copy sends `i : Fin p.length` to the `i`-th vertex of the cycle `p`.
+  have key {i j : Fin p.length} (h : (j - i).val = 1) : G.Adj (p.getVert i) (p.getVert j) := by
+    rcases Nat.lt_or_ge j i with hij | hij
+    · -- wraparound: `i` is the last vertex of `p` and `j` the first
+      rw [Fin.coe_sub_iff_lt.mpr (Fin.lt_def.mpr hij)] at h
+      rw [show i = p.length - 1 by lia, show ↑j = 0 by lia, getVert_zero]
+      exact p.adj_penultimate hp.not_nil
+    · grind [adj_getVert_succ, Fin.sub_val_of_le]
+  refine ⟨⟨(p.getVert ·), fun hij ↦ ?_⟩, fun i j hij ↦ ?_⟩
+  · exact cycleGraph_adj'.mp hij |>.elim (key · |>.symm) key
+  · grind [hp.getVert_injOn', Set.InjOn, RelHom.coeFn_mk]
 
 end IsContained
 
