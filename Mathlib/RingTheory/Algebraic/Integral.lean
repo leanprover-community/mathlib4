@@ -567,7 +567,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 free. -/
 @[deprecated
   "Use the more general theorem `Module.IsTorsionFree.finrank_mul_finrank` instead."
-  (since := "2026-09-20")]
+  +typeChanged (since := "2026-09-20")]
 theorem Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T]
     [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
     Module.finrank R S * Module.finrank S T = Module.finrank R T := by
