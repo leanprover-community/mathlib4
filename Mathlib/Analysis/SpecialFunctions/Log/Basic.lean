@@ -420,7 +420,7 @@ lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
     log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
   classical
   have H : (fun i ↦ log (f i)).support = f.mulSupport := by
-    grind [mem_mulSupport, mem_support, log_eq_zero]
+    grind [log_eq_zero]
   have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
     simp [HasFiniteMulSupport, HasFiniteSupport, H]
   simp only [finprod_def, finsum_def]

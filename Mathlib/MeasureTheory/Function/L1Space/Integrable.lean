@@ -780,7 +780,7 @@ lemma integrable_count_iff :
   · refine ⟨f '' univ, ?_, ae_of_all _ fun a ↦ ⟨a, ⟨mem_univ _, rfl⟩⟩⟩
     suffices f '' univ ⊆ (f '' f.support) ∪ {0} from
       (((hs'.image f).union (countable_singleton 0)).mono this).isSeparable
-    grind [Function.mem_support]
+    grind
 
 end count
 
