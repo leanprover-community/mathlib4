@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Logic.Relation
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Equivalence relations
@@ -460,6 +460,54 @@ theorem comap_id (c : Setoid α) : c.comap id = c := rfl
 @[simp]
 theorem comap_comp (c : Setoid γ) (g : β → γ) (f : α → β) : c.comap (g ∘ f) = (c.comap g).comap f :=
   rfl
+
+theorem gc_map_comap {f : α → β} :
+    GaloisConnection (fun s => Setoid.map s f) (Setoid.comap f) :=
+  fun _ _ => Setoid.gi.gc.le_iff_le.trans (gc_map_bicompl f f).le_iff_le
+
+@[simp]
+theorem map_id (s : Setoid α) : s.map id = s :=
+  Setoid.gc_map_comap.l_unique GaloisConnection.id Setoid.comap_id
+
+theorem map_map (f : α → β) (g : β → γ) (s : Setoid α) :
+    (s.map f).map g = s.map (g ∘ f) :=
+  (Setoid.gc_map_comap.compose Setoid.gc_map_comap).l_unique
+    Setoid.gc_map_comap (fun c => (Setoid.comap_comp c g f).symm)
+
+theorem map_le_comap_of_inverse
+    {f : α → β} {g : β → α} (I : Function.LeftInverse g f)
+    (s : Setoid α) : s.map f ≤ s.comap g := by
+  rw [Setoid.gc_map_comap.le_iff_le, ← Setoid.comap_comp, I.comp_eq_id, Setoid.comap_id]
+
+theorem comap_le_map_of_inverse
+    {f : α → β} {g : β → α} (I : Function.LeftInverse g f)
+    (s : Setoid β) : s.comap f ≤ s.map g :=
+  fun x y hxy => Relation.EqvGen.rel x y ⟨f x, f y, hxy, I x, I y⟩
+
+theorem map_eq_comap_of_inverse {f : α → β} {g : β → α}
+    (hl : Function.LeftInverse g f) (hr : Function.RightInverse g f)
+    (s : Setoid α) : s.map f = s.comap g :=
+  le_antisymm
+    (Setoid.map_le_comap_of_inverse hl s)
+    (Setoid.comap_le_map_of_inverse hr s)
+
+theorem map_equiv_eq_comap_symm (e : α ≃ β)
+    (s : Setoid α) : s.map e = s.comap e.symm :=
+  le_antisymm
+    (Setoid.map_le_comap_of_inverse e.left_inv s)
+    (Setoid.comap_le_map_of_inverse e.right_inv s)
+
+theorem comap_equiv_eq_map_symm (e : α ≃ β)
+    (s : Setoid β) : s.comap e = s.map e.symm :=
+  le_antisymm
+    (Setoid.comap_le_map_of_inverse e.left_inv s)
+    (Setoid.map_le_comap_of_inverse e.right_inv s)
+
+theorem map_monotone (f : α → β) : Monotone (fun s => Setoid.map s f) :=
+  Setoid.gc_map_comap.monotone_l
+
+theorem comap_monotone (f : α → β) : Monotone (Setoid.comap f) :=
+  Setoid.gc_map_comap.monotone_u
 
 theorem comap_injective (f : α → β) (hf : Function.Surjective f) :
     Function.Injective (comap f) :=
