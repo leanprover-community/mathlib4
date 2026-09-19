@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
 # Preservation of limits, as a property of objects in the functor category
