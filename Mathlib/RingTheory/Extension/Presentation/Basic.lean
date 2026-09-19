@@ -439,10 +439,15 @@ lemma span_range_relation_eq_ker_comp : Ideal.span
     (Set.range (Sum.elim (Algebra.Presentation.compRelationAux Q P)
       fun rp ↦ (rename Sum.inr) (P.relation rp))) = (Q.comp P.toGenerators).ker := by
   rw [Generators.ker_eq_ker_aeval_val, Q.aeval_comp_val_eq, ← AlgHom.comap_ker]
-  change _ = Ideal.comap _ (RingHom.ker (aeval Q.val))
+  change _ = Ideal.comap (Q.aux P).toRingHom (RingHom.ker (aeval Q.val))
+  -- TODO: change Ideal.map to take a concrete morphism, then this `have` can be deleted
+  have h (I : Ideal (MvPolynomial (ι' ⊕ ι) R)) :
+      Ideal.map (Q.aux P) I = Ideal.map (Q.aux P).toRingHom I := rfl
+  -- TODO: change RingHom.ker to take a concrete morphism, then this `have` can be deleted
+  have h' : RingHom.ker (Q.aux P).toRingHom = RingHom.ker (Q.aux P) := rfl
   rw [← Q.ker_eq_ker_aeval_val, ← Q.span_range_relation_eq_ker, ← Q.aux_image_relation P,
-    ← Ideal.map_span, Ideal.comap_map_of_surjective' _ (Q.aux_surjective P)]
-  rw [Set.Sum.elim_range, Ideal.span_union, Q.aux_ker, ← P.ker_eq_ker_aeval_val,
+    ← Ideal.map_span, h, Ideal.comap_map_of_surjective' _ (Q.aux_surjective P),
+    Set.Sum.elim_range, Ideal.span_union, h', Q.aux_ker, ← P.ker_eq_ker_aeval_val,
     ← P.span_range_relation_eq_ker, Ideal.map_span]
   congr
   ext

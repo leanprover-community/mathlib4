@@ -99,7 +99,8 @@ theorem of_ringEquiv [hA : Ring.DimensionLEOne A] (e : R ≃+* A) : Ring.Dimensi
     rw [← Ideal.map_comap_eq_self_of_equiv e.symm P,
       Ideal.isMaximal_map_iff_of_bijective _ e.symm.bijective]
     apply Ring.DimensionLEOne.maximalOfPrime ?_ (P.comap_isPrime e.symm)
-    simp [Ideal.map_eq_bot_iff_of_injective e.injective, hP_ne]
+    simp --[Ideal.map_eq_bot_iff_of_injective (f := e.toRingHom) e.injective, hP_ne]
+    sorry
 
 -- TODO: replace `Ring.DimensionLEOne` with `Ring.KrullDimLE`.
 instance (priority := low) {R : Type*} [CommRing R] [Ring.DimensionLEOne R] : Ring.KrullDimLE 1 R :=
