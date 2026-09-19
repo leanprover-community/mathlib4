@@ -319,4 +319,3 @@ theorem Finsupp.isDickson (σ : Type*) [Finite σ] : isDickson (σ →₀ ℕ) :
   exact Finsupp.isDickson_equiv e.symm (Finsupp.isDickson_nat n)
 
 end Dickson
-
