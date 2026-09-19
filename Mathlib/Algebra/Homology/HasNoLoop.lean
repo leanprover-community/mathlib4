@@ -42,35 +42,23 @@ lemma not_rel_of_eq {j' : ι} (h : j = j') : ¬ c.Rel j j' := by
 instance : c.symm.HasNoLoop where
   not_rel_self j := c.not_rel_self j
 
+@[to_dual]
 lemma exists_distinct_prev_or :
-    (∃ (k : ι), c.Rel j k ∧ j ≠ k) ∨ ∀ (k : ι), ¬ c.Rel j k := by
+    (∃ (i : ι), c.Rel j i ∧ i ≠ j) ∨ ∀ (i : ι), ¬ c.Rel j i := by
   grind +splitIndPred
 
-lemma exists_distinct_next_or :
-    (∃ (i : ι), c.Rel i j ∧ i ≠ j) ∨ ∀ (i : ι), ¬ c.Rel i j := by
-  grind +splitIndPred
-
+@[to_dual hasNoLoop_down']
 lemma hasNoLoop_up' {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
     (a : α) (ha : a ≠ 0) :
     (up' a).HasNoLoop where
   not_rel_self i (hi : _ = _) :=
     ha (add_left_cancel (by rw [add_zero, hi]))
 
-lemma hasNoLoop_down' {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
-    (a : α) (ha : a ≠ 0) :
-    (down' a).HasNoLoop := by
-  have := hasNoLoop_up' a ha
-  exact inferInstanceAs (up' a).symm.HasNoLoop
-
+@[to_dual hasNoLoop_down]
 lemma hasNoLoop_up {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
     [One α] (ha : (1 : α) ≠ 0) :
     (up α).HasNoLoop :=
   hasNoLoop_up' _ ha
-
-lemma hasNoLoop_down {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
-    [One α] (ha : (1 : α) ≠ 0) :
-    (down α).HasNoLoop :=
-  hasNoLoop_down' _ ha
 
 end
 
