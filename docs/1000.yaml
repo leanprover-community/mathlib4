@@ -1918,6 +1918,9 @@ Q1893717:
 
 Q1896455:
   title: Varignon's theorem
+  decl: midpoint_midpoint_midpoint_rotate
+  authors: Daniel Liao
+  date: 2026
 
 Q1899432:
   title: Grothendieck–Hirzebruch–Riemann–Roch theorem
