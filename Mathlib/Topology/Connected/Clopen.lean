@@ -147,7 +147,7 @@ lemma subsingleton_of_disjoint_isClopen
   rw [← not_nontrivial_iff_subsingleton]
   by_contra ⟨i, j, h_ne⟩
   replace h_ne : s i ∩ s j = ∅ := by
-    simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
+    simpa only [← bot_eq_empty, eq_bot_iff, ← disjoint_iff_inf_le] using h_disj h_ne
   rcases isClopen_iff.mp (h_clopen i) with hi | hi
   · exact (h_nonempty i).ne_empty hi
   · rw [hi, univ_inter] at h_ne

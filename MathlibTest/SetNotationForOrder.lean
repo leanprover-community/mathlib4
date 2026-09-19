@@ -129,9 +129,9 @@ example (a b : Set Nat) : True ∨ True ∨ a ⊆ b := by
   left; trivial
 
 /--
-warning: Ambiguous use of subset notation: the type is a metavariable.
+warning: Ambiguous use of set notation: the type is a metavariable.
 Consider adding a type annotation, e.g. `(_ : Set _) ⊆ _`.
-The term will elaborate to a different constant depending on whether the type is tagged with `@[use_set_notation_for_order]`.
+The notation will elaborate to a different constant depending on whether the type is tagged with `@[use_set_notation_for_order]`.
 
 Note: This linter can be disabled with `set_option linter.setNotationForOrder false`
 -/
