@@ -295,18 +295,14 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
     exact hp.out.not_dvd_one
-  let 𝓟 : (span {(p : ℤ)}).primesOver (𝓞 K) := ⟨P, ⟨inferInstance, inferInstance⟩⟩
-  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ 𝓟).2
-  have h₃ := inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply h₁ 𝓟
-  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
-    (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  have : P.IsMaximal := .of_liesOver_isMaximal P 𝒑
-  rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
+  rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply h₁ ⟨P, ⟨hP₁, hP₂⟩⟩,
+    natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1)]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
-  · refine dvd_trans h₂.2.2 ?_
+  · refine dvd_trans (monicFactorsMod_dvd_map_minpoly _) ?_
     rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
     simp [ζ]
+  · exact irreducible_monicFactorsMod _
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx P ℤ = 1 := by
@@ -314,18 +310,13 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
     exact hp.out.not_dvd_one
-  let 𝓟 : (span {(p : ℤ)}).primesOver (𝓞 K) := ⟨P, ⟨inferInstance, inferInstance⟩⟩
-  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ 𝓟).2
-  have h₃ := ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply h₁ 𝓟
-  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
-    (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  rw [h₃]
+  rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply h₁ ⟨P, ⟨hP₁, hP₂⟩⟩]
   refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
   · apply emultiplicity_le_one_of_separable
-    · exact isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'
+    · exact isUnit_iff_degree_eq_zero.not.mpr (irreducible_monicFactorsMod _).degree_pos.ne'
     · exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot.separable_minpoly_mod hm
   · rw [ENat.natCast_one]
-    exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd h₂.2.2
+    exact Order.one_le_iff_pos.mpr <| emultiplicity_pos_of_dvd <| monicFactorsMod_dvd_map_minpoly _
 
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
