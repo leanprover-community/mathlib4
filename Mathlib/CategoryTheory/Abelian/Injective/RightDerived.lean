@@ -242,13 +242,13 @@ noncomputable def rightDerived' (τ : F₁ ⟶ F₂) (n : ℕ) :
 
 attribute [local simp] rightDerived'_app in
 variable (F₁) in
-lemma rightDerived_id (n : ℕ) :
+lemma rightDerived'_id (n : ℕ) :
     rightDerived' (𝟙 F₁) n = 𝟙 _ := by
   cat_disch
 
 attribute [local simp] rightDerived'_app rightDerivedFunctorPlus_comp in
 @[reassoc]
-lemma rightDerived_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) (n : ℕ) :
+lemma rightDerived'_comp (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) (n : ℕ) :
     (τ ≫ τ').rightDerived' n = τ.rightDerived' n ≫ τ'.rightDerived' n := by
   cat_disch
 
