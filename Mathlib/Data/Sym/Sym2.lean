@@ -182,8 +182,6 @@ protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
-@[deprecated (since := "2026-02-05")] alias mk_prod_swap_eq := eq_swap
-
 theorem congr_right {a b c : α} : s(a, b) = s(a, c) ↔ b = c := by
   simp +contextual
 
@@ -268,8 +266,6 @@ theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) 
 @[simp]
 theorem map_mk (f : α → β) (a b : α) : map f s(a, b) = s(f a, f b) := rfl
 
-@[deprecated (since := "2026-02-05")] alias map_pair_eq := map_mk
-
 theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) := by
   intro z z'
   refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
@@ -298,6 +294,7 @@ lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂
   conv_rhs => rw [← lift_comp_map, comp_apply]
 
 section Membership
+variable {x : α}
 
 /-! ### Membership and set coercion -/
 
@@ -331,7 +328,7 @@ instance : SetLike (Sym2 α) α where
     simp only [mem_iff'] at hx hy hx' hy'
     aesop
 
-instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α) α
+instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α)
 
 @[simp]
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
@@ -359,6 +356,9 @@ theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
 
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
+
+@[simp] lemma fst_out_mk_self : (Quot.out s(x, x)).1 = x := by simpa using out_fst_mem s(x, x)
+@[simp] lemma snd_out_mk_self : (Quot.out s(x, x)).2 = x := by simpa using out_snd_mem s(x, x)
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
   simp
@@ -512,8 +512,6 @@ def IsDiag : Sym2 α → Prop :=
 theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
   Iff.rfl
 
-@[deprecated (since := "2026-02-05")] alias isDiag_iff_proj_eq := mk_isDiag_iff
-
 protected lemma IsDiag.map : z.IsDiag → (z.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) z
 
 lemma isDiag_map (hf : Injective f) : (z.map f).IsDiag ↔ z.IsDiag :=
@@ -593,8 +591,6 @@ def fromRel (sym : Std.Symm r) : Set (Sym2 α) :=
 theorem fromRel_prop {sym : Std.Symm r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 
-@[deprecated (since := "2026-02-05")] alias fromRel_proj_prop := fromRel_prop
-
 theorem fromRel_mono_iff (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
     fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
   ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
@@ -647,8 +643,6 @@ lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) in
 theorem fromRel_irrefl {sym : Std.Symm r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
   mp := by intro ⟨h⟩; apply Sym2.ind; aesop
   mpr h := ⟨fun _ hr ↦ h (fromRel_prop.mpr hr) rfl⟩
-
-@[deprecated (since := "2026-02-12")] alias fromRel_irreflexive := fromRel_irrefl
 
 theorem mem_fromRel_irrefl_other_ne {sym : Std.Symm r} (irrefl : Std.Irrefl r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
@@ -753,7 +747,7 @@ def fromRelOrderIso : { r : α → α → Prop // Std.Symm r } ≃o Set (Sym2 α
   map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-@[deprecated fromRelOrderIso (since := "2026-03-11")]
+@[deprecated fromRelOrderIso +typeChanged (since := "2026-03-11")]
 def fromRelOrderEmbedding : { r : α → α → Prop // Std.Symm r } ↪o Set (Sym2 α) :=
   fromRelOrderIso α |>.toOrderEmbedding
 
@@ -850,7 +844,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]
-          first | done | constructor }
+          first | done | apply List.Perm.swap }
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -860,7 +854,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
       (by
         rintro _ _ ⟨_⟩
-        · constructor; apply List.Perm.refl
+        · apply List.Perm.cons; apply List.Perm.refl
         apply List.Perm.swap'
         rfl)
   invFun :=
@@ -1016,11 +1010,9 @@ variable {s : Set α}
 /--
 For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
 -/
-def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) inferInstance
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
-
-@[deprecated (since := "2026-02-05")] alias mk'_mem_sym2_iff := mk_mem_sym2_iff
 
 lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn

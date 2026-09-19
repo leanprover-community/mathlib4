@@ -46,7 +46,7 @@ instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α) α
+instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
@@ -166,6 +166,10 @@ theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
 theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 
+@[simp]
+theorem singleton_le_iff {x : α} {K : Compacts α} : {x} ≤ K ↔ x ∈ K :=
+  Set.singleton_subset_iff
+
 theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjoint K L where
   mp h := .of_orderEmbedding (.ofMapLEIff SetLike.coe (fun _ _ => SetLike.coe_subset_coe)) h
   mpr h := by
@@ -282,7 +286,7 @@ theorem singleton_prod_singleton (x : α) (y : β) :
 
 -- todo: add `pi`
 
-open Topology
+open scoped Topology
 
 /-- The compacts neighbourhoods of a compact -/
 def compactNhds (K : Compacts α) : Set (Compacts α) :=
@@ -404,7 +408,7 @@ instance : SetLike (NonemptyCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α) α
+instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
@@ -508,6 +512,10 @@ theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts
 @[simp]
 theorem singleton_inj {x y : α} : ({x} : NonemptyCompacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
+
+@[simp]
+theorem singleton_le_iff {x : α} {K : NonemptyCompacts α} : {x} ≤ K ↔ x ∈ K :=
+  Set.singleton_subset_iff
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/
@@ -649,7 +657,7 @@ instance : SetLike (PositiveCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α) α
+instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
@@ -779,7 +787,7 @@ instance : SetLike (CompactOpens α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α) α
+instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s

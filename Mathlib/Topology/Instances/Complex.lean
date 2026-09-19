@@ -23,7 +23,7 @@ section ComplexSubfield
 
 open Complex Set
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 /-- The only closed subfields of `ℂ` are `ℝ` and `ℂ`. -/
 theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set ℂ)) :

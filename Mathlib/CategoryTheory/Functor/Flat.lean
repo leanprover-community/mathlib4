@@ -414,9 +414,9 @@ instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)
 instance (G : D ⥤ Type*) [RepresentablyFlat F] [IsCofiltered G.Elements] :
     IsCofiltered (F ⋙ G).Elements := by
   suffices h : IsCofiltered (StructuredArrow PUnit (F ⋙ G)) from
-    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _).symm
+    .of_equivalence (Functor.Elements.structuredArrowEquivalence _).symm
   have : IsCofiltered (StructuredArrow PUnit G) :=
-    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _)
+    .of_equivalence (Functor.Elements.structuredArrowEquivalence _)
   infer_instance
 
 end

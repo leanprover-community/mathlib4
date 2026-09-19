@@ -30,10 +30,9 @@ namespace Group
 
 /-- A group `G` is residually finite if the intersection of all finite index normal subgroups is
 trivial. -/
+@[to_additive]
 class ResiduallyFinite (G : Type*) [Group G] : Prop where
   iInf_eq_bot : ⨅ H : FiniteIndexNormalSubgroup G, H.toSubgroup = ⊥
-
-attribute [to_additive existing] ResiduallyFinite
 
 variable {G G' : Type*} [Group G] [Group G']
 

@@ -18,11 +18,13 @@ intervals to the right or to the left of `a`. We give now these characterization
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 section LinearOrder
 

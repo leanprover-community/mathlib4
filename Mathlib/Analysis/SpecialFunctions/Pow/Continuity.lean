@@ -19,7 +19,9 @@ public section
 
 noncomputable section
 
-open Real Topology NNReal ENNReal Filter Set
+open Real NNReal ENNReal Filter Set
+
+open scoped Topology
 
 section CpowLimits
 

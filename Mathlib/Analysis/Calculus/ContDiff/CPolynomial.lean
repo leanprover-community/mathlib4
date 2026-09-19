@@ -29,7 +29,7 @@ variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
-variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
+variable {n : ℕ}
 variable {f : E → F} {x : E} {s : Set E}
 
 /-- A polynomial function is infinitely differentiable. -/
