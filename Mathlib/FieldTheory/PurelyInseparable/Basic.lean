@@ -402,6 +402,39 @@ theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsSca
 
 end IsPurelyInseparable
 
+/-- For a tower `K/E/F` with `K/E` purely inseparable and `E/F` normal, restriction of
+automorphisms from `K` to `E` is injective. -/
+theorem AlgEquiv.restrictNormalHom_injective_of_isPurelyInseparable
+    [Algebra E K] [IsScalarTower F E K] [Normal F E] [IsPurelyInseparable E K] :
+    Function.Injective (AlgEquiv.restrictNormalHom E : Gal(K/F) →* Gal(E/F)) := by
+  intro σ τ h
+  apply AlgEquiv.coe_toAlgHom_injective
+  apply IsPurelyInseparable.injective_restrictDomain E K F K
+  ext x
+  exact (σ.restrictNormal_commutes E x).symm.trans <|
+    congr(algebraMap E K ($h x)).trans (τ.restrictNormal_commutes E x)
+
+/-- In a tower `K/E/F` with `K/E` purely inseparable and `E/F` normal, fixing an intermediate
+field `L` of `K/F` is equivalent to fixing its preimage in `E` after restricting automorphisms. -/
+theorem IntermediateField.comap_fixingSubgroup_of_isPurelyInseparable
+    [Algebra E K] [IsScalarTower F E K] [Normal F E] [IsPurelyInseparable E K]
+    (L : IntermediateField F K) :
+    (L.comap (IsScalarTower.toAlgHom F E K)).fixingSubgroup.comap
+      (AlgEquiv.restrictNormalHom E) = L.fixingSubgroup := by
+  rw [← IntermediateField.map_fixingSubgroup]
+  refine le_antisymm ?_ (IntermediateField.fixingSubgroup_le
+    (IntermediateField.map_le_iff_le_comap.mpr le_rfl))
+  intro σ hσ
+  rw [IntermediateField.mem_fixingSubgroup_iff] at hσ ⊢
+  intro x hx
+  let q := ringExpChar E
+  have : ExpChar K q := expChar_of_injective_ringHom (algebraMap E K).injective q
+  obtain ⟨n, y, hy⟩ := IsPurelyInseparable.pow_mem E q x
+  have hyL := L.toSubalgebra.pow_mem hx (q ^ n)
+  rw [← hy] at hyL
+  apply iterateFrobenius_inj K q n
+  simpa only [iterateFrobenius_def, ← map_pow] using hσ _ ⟨y, hyL, hy⟩
+
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
 instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
