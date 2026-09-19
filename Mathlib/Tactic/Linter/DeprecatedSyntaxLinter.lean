@@ -152,7 +152,8 @@ def usesNativeConfig : Syntax → Bool
       | _ => false
   | _ => false
 
-/-- Return `true` for some common syntaxes that parse at `max` precedence. -/
+/-- Return `true` for some common syntaxes that parse at `max` precedence.
+Exclude notations `fun`, `¬` and `!` since users might think these have a lower precedence. -/
 partial def hasMaxPrec : Syntax → Bool
   | .ident .. | .atom .. => true
   | .node _ kind args => match kind with
@@ -166,7 +167,7 @@ partial def hasMaxPrec : Syntax → Bool
     -- miscellaneous: `·`, `@x`, `x.1`, `.x`, `x.{u}`
     | ``Parser.Term.cdot | ``Parser.Term.explicit
     | ``Parser.Term.proj | ``Parser.Term.dotIdent | ``Parser.Term.explicitUniv
-    -- getElem notation
+    -- `getElem` notation
     | ``«term__[_]» | ``«term__[_]'_» | ``«term__[_]_!» | ``«term__[_]_?»
     -- tuples/lists
     | ``Parser.Term.tuple | ``Parser.Term.anonymousCtor | ``Parser.Term.structInst
@@ -174,10 +175,12 @@ partial def hasMaxPrec : Syntax → Bool
     -- atomic notation
     | ``«term∅» | `«term⊤» | `«term⊥»
     | `termℕ | `termℤ | `termℚ | `termℝ | `termℂ
-    -- infix/prefix notation
-    | ``«term_⁻¹» | ``«term¬_» | ``term!_
-    -- lambda
-    | ``Parser.Term.fun | ``Parser.Term.nofun => true
+    -- postfix notation
+    | ``«term_⁻¹» => true
+    -- prefix notation (omitted)
+    -- | ``«term¬_» | ``term!_
+    -- lambda (omitted)
+    -- | ``Parser.Term.fun | ``Parser.Term.nofun
     | _ => false
   | _ => false
 
