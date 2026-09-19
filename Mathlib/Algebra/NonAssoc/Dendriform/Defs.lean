@@ -58,7 +58,7 @@ class NonUnitalDendriformSemiring (M) extends AddCommMonoid M where
   succ_zero a : succ a 0 = 0
   zero_succ a : succ 0 a = 0
   succ_succ_eq a b c : succ a (succ b c) = succ (succ a b + prec a b) c
-  succ_prec_assoc a b c : prec (succ a b) c = succ a (prec b c)
+  prec_succ_assoc a b c : prec (succ a b) c = succ a (prec b c)
   prec_prec_eq a b c : prec (prec a b) c = prec a (succ b c + prec b c)
 
 /-- Notation for the right operation. The symbol points right. -/
@@ -68,10 +68,10 @@ infixr:75 " ≺ " => NonUnitalDendriformSemiring.prec
 
 /-- A dendriform ring has a `Neg` instance compatible with both `≺` and `≻`. -/
 class NonUnitalDendriformRing (M) extends NonUnitalDendriformSemiring M, AddCommGroup M where
-  prec_id_neg a b : prec a (-b) = - prec a b
-  prec_neg_id a b : prec (-a) b = - prec a b
-  succ_id_neg a b : succ a (-b) = - succ a b
-  succ_neg_id a b : succ (-a) b = - succ a b
+  prec_neg a b : prec a (-b) = - prec a b
+  neg_prec a b : prec (-a) b = - prec a b
+  succ_neg a b : succ a (-b) = - succ a b
+  neg_succ a b : succ (-a) b = - succ a b
 
 /-- A dendriform algebra is a `DendriformSemiring` with a `Module` structure compatible with `≺` and
 `≻`. -/
@@ -89,16 +89,11 @@ attribute [simp] prec_zero zero_prec succ_zero zero_succ
 variable {M} [NonUnitalDendriformSemiring M]
 variable (a b c : M)
 
-instance : Mul M where
-  mul a b := a ≻ b + a ≺ b
+lemma succ_prec_assoc : a ≻ (b ≺ c) = (a ≻ b) ≺ c := (prec_succ_assoc a b c).symm
 
-lemma mul_def (a b : M) : a * b = a ≻ b + a ≺ b := rfl
+lemma prec_prec_eq_prec_mul : (a ≺ b) ≺ c = a ≺ (b * c) := by simp [mul_eq, prec_prec_eq]
 
-@[simp]
-lemma prec_prec_eq_prec_mul : (a ≺ b) ≺ c = a ≺ (b * c) := by simp [mul_def, prec_prec_eq]
-
-@[simp]
-lemma succ_succ_eq_mul_succ : a ≻ (b ≻ c) = (a * b) ≻ c := by simp [mul_def, succ_succ_eq]
+lemma succ_succ_eq_mul_succ : a ≻ (b ≻ c) = (a * b) ≻ c := by simp [mul_eq, succ_succ_eq]
 
 instance : NonUnitalSemiring M where
   left_distrib a b c := by simpa [mul_def, succ_add, prec_add] using by abel_nf
@@ -114,7 +109,7 @@ namespace NonUnitalDendriformRing
 
 open NonUnitalDendriformSemiring
 
-attribute [simp] prec_id_neg prec_neg_id succ_id_neg succ_neg_id
+attribute [simp] prec_neg neg_prec succ_neg neg_succ
 
 variable {M} [NonUnitalDendriformRing M]
 variable (a b c : M)
