@@ -176,6 +176,16 @@ theorem grade.decompose_single (i : ι) (r : R) :
       .of (fun i ↦ grade R i) i ⟨single i r, single_mem_grade _ _⟩ :=
   decomposeAux_single _ _ _
 
+/-- The component of degree `a` in the decomposition of `f` is its `a`-term. -/
+@[simp] lemma grade.decompose_apply [DecidableEq M] (f : AddMonoidAlgebra R M) (a : M) :
+    DirectSum.decompose (grade R) f a = single a (f.coeff a) := by
+  induction f using induction_linear with
+  | zero => simp
+  | add x y hx hy => simp [decompose_add, hx, hy]
+  | single b r =>
+    rw [grade.decompose_single, DirectSum.coe_of_apply, coeff_single]
+    split_ifs with h <;> simp [h]
+
 /-- `AddMonoidAlgebra.gradeBy` describe an internally graded algebra. -/
 theorem gradeBy.isInternal : DirectSum.IsInternal (gradeBy R f) :=
   DirectSum.Decomposition.isInternal _
