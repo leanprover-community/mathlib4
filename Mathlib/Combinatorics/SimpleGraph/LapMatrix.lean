@@ -313,8 +313,8 @@ theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrdered
     (hμ : End.HasEigenvalue (G.lapMatrix R).toLin' μ) : μ ≤ Fintype.card V := by
   obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
   have hxpos : 0 < x ⬝ᵥ x :=
-    lt_of_le_of_ne (Fintype.sum_nonneg fun i ↦ mul_self_nonneg (x i))
-      (Ne.symm <| mt dotProduct_self_eq_zero.mp hx.right)
+    (Fintype.sum_nonneg (mul_self_nonneg <| x ·)).lt_of_ne'
+      (dotProduct_self_eq_zero.not.mpr hx.right)
   rw [← mul_le_mul_iff_of_pos_right hxpos, ← smul_eq_mul, ← dotProduct_smul,
     ← hx.apply_eq_smul, toLin'_apply]
   exact dotProduct_mulVec_lapMatrix_le_card R G x
