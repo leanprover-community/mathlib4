@@ -202,6 +202,13 @@ instance : IsClosedUnderLimitsOfShape (⊤ : ObjectProperty C) J where
 
 export IsClosedUnderLimitsOfShape (limitsOfShape_le)
 
+instance {ι : Type*} (P : ι → ObjectProperty C) [∀ i, (P i).IsClosedUnderLimitsOfShape J] :
+    (⨅ i, P i).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    simp only [le_iInf_iff]
+    intro i
+    exact (limitsOfShape_monotone _ (iInf_le _ _)).trans (limitsOfShape_le (P i) J)
+
 section
 
 variable {J} [P.IsClosedUnderLimitsOfShape J]
