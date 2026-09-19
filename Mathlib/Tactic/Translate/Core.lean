@@ -772,7 +772,7 @@ where
     if (findTranslation? (← getEnv) t cls).isNone then
       let type := (← getConstInfo cls).type
       let (type', relevantArg) ← applyReplacementForall t cfg.dontTranslate type |>.run'
-      if type' != type then
+      unless ← (withReducible (isDefEq type' type)).run' do
         throwError "The type of {.ofConstName cls} does not translate to itself, \
           but to{indentExpr type'}"
       let relevantArg ← getRelevantArg t cfg relevantArg cls (isMainTranslation := false)
