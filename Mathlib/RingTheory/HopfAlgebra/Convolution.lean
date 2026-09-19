@@ -125,9 +125,9 @@ intertwining the antipodes. -/
 noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
     (map_antipode : ∀ a, f (antipode R a) = antipode R (f a)) : HopfAlgebra R B := by
   refine .ofConvInverse (antipode R) ?_ ?_ <;>
-    refine f.toCoalgHom.convCompLeft_injective hf ?_ <;>
-    rw [map_mul, f.convCompLeft_eq_convCompRight map_antipode,
-      f.convCompLeft_eq_convCompRight (g' := .id) fun _ ↦ rfl, ← map_mul] <;>
+    refine f.toCoalgHom.convPrecomp_injective hf ?_ <;>
+    rw [map_mul, f.convPrecomp_eq_convPostcomp map_antipode,
+      f.convPrecomp_eq_convPostcomp (g' := .id) fun _ ↦ rfl, ← map_mul] <;>
     simp only [LinearMap.antipode_mul_id, LinearMap.id_mul_antipode, map_one]
 
 end HopfAlgebra

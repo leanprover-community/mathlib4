@@ -162,7 +162,7 @@ section CoalgebraStruct
 variable [CoalgebraStruct R C]
 
 /-- Convolution unit on linear maps from a coalgebra to an algebra. -/
-instance convOne : One (WithConv (C →ₗ[R] A)) where one := toConv (Algebra.linearMap R A ∘ₗ counit)
+instance : One (WithConv (C →ₗ[R] A)) where one := toConv (Algebra.linearMap R A ∘ₗ counit)
 
 lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R A ∘ₗ counit) := rfl
 
@@ -243,7 +243,7 @@ variable [Semiring B] [Algebra R B]
 
 /-- Post-composition by an algebra homomorphism, as a homomorphism of convolution algebras. -/
 @[expose, simps]
-def convCompRight (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (C →ₗ[R] B) where
+def convPostcomp (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (C →ₗ[R] B) where
   toFun f := toConv (h.toLinearMap.comp f.ofConv)
   map_one' := WithConv.ext (algHom_comp_convOne h)
   map_mul' f g := WithConv.ext (algHom_comp_convMul_distrib h f g)
@@ -251,14 +251,14 @@ def convCompRight (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →ₐ[R] WithC
   map_add' f g := WithConv.ext (by ext; simp)
   commutes' r := WithConv.ext (by ext; simp)
 
-lemma convCompRight_injective {h : A →ₐ[R] B} (hh : Function.Injective h) :
-    Function.Injective (convCompRight h (C := C)) := fun _ _ e ↦
+lemma convPostcomp_injective {h : A →ₐ[R] B} (hh : Function.Injective h) :
+    Function.Injective (convPostcomp h (C := C)) := fun _ _ e ↦
   WithConv.ext <| (LinearMap.cancel_left hh).1 congr(($e).ofConv)
 
-@[simp] lemma convCompRight_id : (AlgHom.id R A).convCompRight (C := C) = AlgHom.id R _ := rfl
+@[simp] lemma convPostcomp_id : (AlgHom.id R A).convPostcomp (C := C) = AlgHom.id R _ := rfl
 
-lemma convCompRight_comp {D : Type*} [Semiring D] [Algebra R D] (h₁ : B →ₐ[R] D) (h₂ : A →ₐ[R] B) :
-    (h₁.comp h₂).convCompRight (C := C) = h₁.convCompRight.comp h₂.convCompRight := rfl
+lemma convPostcomp_comp {D : Type*} [Semiring D] [Algebra R D] (h₁ : B →ₐ[R] D) (h₂ : A →ₐ[R] B) :
+    (h₁.comp h₂).convPostcomp (C := C) = h₁.convPostcomp.comp h₂.convPostcomp := rfl
 
 end AlgHom
 
@@ -267,7 +267,7 @@ variable [AddCommMonoid B] [Module R B] [Coalgebra R B]
 
 /-- Pre-composition by a coalgebra homomorphism, as a homomorphism of convolution algebras. -/
 @[expose, simps]
-def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (B →ₗ[R] A) where
+def convPrecomp (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithConv (B →ₗ[R] A) where
   toFun f := toConv (f.ofConv.comp (h : B →ₗ[R] C))
   map_one' := WithConv.ext (convOne_comp_coalgHom h)
   map_mul' f g := WithConv.ext (convMul_comp_coalgHom_distrib f g h)
@@ -275,18 +275,18 @@ def convCompLeft (h : B →ₗc[R] C) : WithConv (C →ₗ[R] A) →ₐ[R] WithC
   map_add' f g := WithConv.ext (by ext; simp)
   commutes' r := WithConv.ext (by ext; simp)
 
-lemma convCompLeft_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
-    Function.Injective (convCompLeft h (A := A)) := fun _ _ e ↦
+lemma convPrecomp_injective {h : B →ₗc[R] C} (hh : Function.Surjective h) :
+    Function.Injective (convPrecomp h (A := A)) := fun _ _ e ↦
   WithConv.ext <| (LinearMap.cancel_right hh).1 congr(($e).ofConv)
 
-@[simp] lemma convCompLeft_id : (CoalgHom.id R C).convCompLeft (A := A) = AlgHom.id R _ := rfl
+@[simp] lemma convPrecomp_id : (CoalgHom.id R C).convPrecomp (A := A) = AlgHom.id R _ := rfl
 
-lemma convCompLeft_comp {D : Type*} [AddCommMonoid D] [Module R D] [Coalgebra R D]
+lemma convPrecomp_comp {D : Type*} [AddCommMonoid D] [Module R D] [Coalgebra R D]
     (h₁ : B →ₗc[R] C) (h₂ : D →ₗc[R] B) :
-    (h₁.comp h₂).convCompLeft (A := A) = h₂.convCompLeft.comp h₁.convCompLeft := rfl
+    (h₁.comp h₂).convPrecomp (A := A) = h₂.convPrecomp.comp h₁.convPrecomp := rfl
 
-lemma convCompLeft_comp_convCompRight {D : Type*} [Semiring D] [Algebra R D] (h : B →ₗc[R] C)
-    (φ : A →ₐ[R] D) : h.convCompLeft.comp φ.convCompRight = φ.convCompRight.comp h.convCompLeft :=
+lemma convPrecomp_comp_convPostcomp {D : Type*} [Semiring D] [Algebra R D] (h : B →ₗc[R] C)
+    (φ : A →ₐ[R] D) : h.convPrecomp.comp φ.convPostcomp = φ.convPostcomp.comp h.convPrecomp :=
   rfl
 
 end CoalgHom
