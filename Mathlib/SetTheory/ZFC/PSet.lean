@@ -46,8 +46,6 @@ structure PSet : Type (u + 1) where
 
 namespace PSet
 
-
-
 /-- Two pre-sets are extensionally equivalent if every element of the first family is extensionally
 equivalent to some element of the second family and vice-versa. -/
 def Equiv : PSet → PSet → Prop
