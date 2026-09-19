@@ -5,7 +5,7 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public import Lean.Environment
+public meta import Lean.Environment
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -16,7 +16,7 @@ import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 namespace Lean.Environment
 
-public section constKind
+public meta section constKind
 
 /- The following declarations account for the fact that the `ConstantKind` of a declaration is
 accessible when getting its `ConstantVal`, but is not recorded in said `ConstantVal`. -/

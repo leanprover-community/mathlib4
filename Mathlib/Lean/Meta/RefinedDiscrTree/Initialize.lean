@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public import Lean.Meta.CompletionName
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public meta import Lean.Meta.CompletionName
 
 /-!
 # Constructing a RefinedDiscrTree
@@ -25,7 +25,7 @@ from the current file.
 
 -/
 
-public section
+public meta section
 
 namespace Lean.Meta.RefinedDiscrTree
 

@@ -5,9 +5,9 @@ Authors: Marc Huisinga, Thomas R. Murrills
 -/
 module
 
-public import Mathlib.Lean.Environment
-public import Lean.Elab.InfoTree.Util
-public import Lean.Meta.TryThis
+public meta import Mathlib.Lean.Environment
+public meta import Lean.Elab.InfoTree.Util
+public meta import Lean.Meta.TryThis
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -17,7 +17,7 @@ import Lean.Elab.Term.TermElabM
 # Additions to `Lean.Elab.InfoTree.Main`
 -/
 
-@[expose] public section
+@[expose] public meta section
 
 namespace Lean.Elab
 

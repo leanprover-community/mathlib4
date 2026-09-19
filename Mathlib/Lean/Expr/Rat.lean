@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Kim Morrison
 module
 
 public import Mathlib.Init
-public import Lean.ToExpr
+public meta import Lean.ToExpr
 
 /-!
 # Additional operations on Expr and rational numbers
@@ -19,7 +19,7 @@ This file defines some operations involving `Expr` and rational numbers.
   This includes natural numbers, integers and rationals.
 -/
 
-public section
+public meta section
 
 namespace Lean.Expr
 

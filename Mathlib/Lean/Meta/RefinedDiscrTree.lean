@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 
 /-!
 # Refined discrimination trees
@@ -101,7 +101,7 @@ Improve the unification lookup.
 
 -/
 
-public section
+public meta section
 
 namespace Lean.Meta.RefinedDiscrTree
 

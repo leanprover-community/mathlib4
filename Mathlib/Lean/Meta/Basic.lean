@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
-public import Lean.Meta.AppBuilder
-public import Lean.Meta.Coe
+public meta import Lean.Meta.AppBuilder
+public meta import Lean.Meta.Coe
 
 /-!
 # Additions to `Lean.Meta.Basic`
@@ -15,7 +15,7 @@ public import Lean.Meta.Coe
 Likely these already exist somewhere. Pointers welcome.
 -/
 
-@[expose] public section
+@[expose] public meta section
 
 /--
 Restore the metavariable context after execution.

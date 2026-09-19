@@ -5,9 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public import Lean.Meta.DiscrTree
-public import Lean.Meta.LazyDiscrTree
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public meta import Lean.Meta.DiscrTree
+public meta import Lean.Meta.LazyDiscrTree
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
@@ -30,7 +30,7 @@ To compute all the keys at once, we have
 
 -/
 
-public section
+public meta section
 
 namespace Lean.Meta.RefinedDiscrTree
 

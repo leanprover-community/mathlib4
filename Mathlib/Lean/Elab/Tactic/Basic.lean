@@ -5,12 +5,12 @@ Authors: Floris van Doorn, Jon Eugster
 -/
 module
 
-public import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Meta
 /-!
 # Additions to `Lean.Elab.Tactic.Basic`
 -/
 
-@[expose] public section
+@[expose] public meta section
 
 open Lean Elab Tactic
 
