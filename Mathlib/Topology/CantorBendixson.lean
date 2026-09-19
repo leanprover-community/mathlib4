@@ -86,12 +86,12 @@ theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) : sᵈ[a] = ⋂ b : 
 
 /-- A set is preperfect if and only if every stage of its iterated relative derived-set sequence
 is equal to the original set. -/
-theorem iteratedDerivedSet_constant_iff_preperfect : Preperfect s ↔ ∀ a : Ordinal, sᵈ[a] = s := by
+theorem iteratedDerivedSet_constant_iff_preperfect : Preperfect s ↔ ∀ a, sᵈ[a] = s := by
   rw [preperfect_iff_eq_relDerivedSet, eq_comm,
     ← (gfpApprox_eq_all_of_fixedPoint relDerivedSet (relDerivedSet_subset))]
   simp [iteratedDerivedSet]
 
-theorem isClosed_iteratedDerivedSet (hs : IsClosed s) : ∀ a : Ordinal, IsClosed sᵈ[a] := by
+theorem isClosed_iteratedDerivedSet (hs : IsClosed s) : ∀ a, IsClosed sᵈ[a] := by
   intro a
   induction a using Ordinal.limitRecOn with
   | zero => simpa only [iteratedDerivedSet_zero]
@@ -116,14 +116,14 @@ theorem mem_fixedPoints_of_iteratedDerivedSet_succ_eq (ha : sᵈ[a + 1] = sᵈ[a
   simpa [iteratedDerivedSet_succ] using ha.symm
 
 theorem iteratedDerivedSet_mem_fixedPoints (s : Set X) :
-    ∃ a : Ordinal, sᵈ[a] ∈ fixedPoints relDerivedSet := by
+    ∃ a, sᵈ[a] ∈ fixedPoints relDerivedSet := by
   refine ⟨(Order.succ #(Set X)).ord,
     gfpApprox_ord_mem_fixedPoint relDerivedSet relDerivedSet_subset⟩
 
 /-- The perfect kernel of a set, defined as the intersection of all iterated derived sets. It is
 the largest perfect subset of the original set. -/
 def perfectKernel (s : Set X) : Set X :=
-  ⋂ a : Ordinal, sᵈ[a]
+  ⋂ a, sᵈ[a]
 
 theorem perfectKernel_subset_iteratedDerivedSet (s : Set X) (a : Ordinal) :
     perfectKernel s ⊆ sᵈ[a] :=
