@@ -43,7 +43,8 @@ is used to prove Shapiro's lemma in
 
 @[expose] public section
 
-open scoped MonoidAlgebra Representation
+open Representation 
+open scoped MonoidAlgebra
 
 universe t w w' u u' v v'
 
