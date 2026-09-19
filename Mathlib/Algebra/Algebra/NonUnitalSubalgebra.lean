@@ -736,11 +736,11 @@ theorem toNonUnitalSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R
   simp [← SetLike.coe_set_eq]
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← IsConcreteLE.le_iff]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :
@@ -1230,7 +1230,7 @@ variable (R) in
 semiring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     NonUnitalCommSemiring (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
@@ -1245,7 +1245,7 @@ open scoped IsMulCommutative in
 ring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
 abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
     (hcomm : s.Pairwise Commute) : NonUnitalCommRing (adjoin R s) :=
