@@ -43,11 +43,11 @@ theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d
 
 @[simp]
 theorem Dart.fst_ne_snd (d : G.Dart) : d.fst ≠ d.snd :=
-  fun h ↦ G.irrefl (h ▸ d.adj)
+  fun h ↦ G.adj_irrefl (h ▸ d.adj)
 
 @[simp]
 theorem Dart.snd_ne_fst (d : G.Dart) : d.snd ≠ d.fst :=
-  fun h ↦ G.irrefl (h ▸ d.adj)
+  fun h ↦ G.adj_irrefl (h ▸ d.adj)
 
 theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) :=
   Dart.ext
