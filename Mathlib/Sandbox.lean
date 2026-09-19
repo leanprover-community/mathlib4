@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.DualNumber
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 
 /-!
 # Sandbox: splitting of primes in quadratic fields
@@ -744,5 +745,164 @@ theorem inertiaDeg_of_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑
 
 end split
 
+
+end NumberField.QuadraticField
+
+/-! ### The Kummer-Dedekind route
+
+`𝓞 K = ℤ[ω]` for every quadratic field, so `RingOfIntegers.exponent ω = 1` and the hypothesis
+`¬ p ∣ exponent θ` that gates `Mathlib/NumberTheory/NumberField/Ideal/KummerDedekind.lean` holds
+for every `p`, `2` included. Everything then reads off the factorisation of
+`minpoly ℤ ω = X ^ 2 - (discr K % 4) * X - (discr K / 4)` modulo `p`, uniformly in `p`:
+`g` is the number of monic irreducible factors, `f` the degree of a factor and `e` its
+multiplicity.
+-/
+
+namespace NumberField.QuadraticField
+
+open Polynomial
+
+variable (K : Type*) [Field K] [CharZero K] [Algebra.IsQuadraticExtension ℚ K]
+
+/-- A generator of `𝓞 K` over `ℤ`, pulled back from `ω`. -/
+noncomputable def integralGen : 𝓞 K := (algEquivRingOfIntegers K).symm ω
+
+/-- `𝓞 K = ℤ[ω]`: a quadratic field is monogenic. Transport `adjoin_omega_eq_top` along
+`algEquivRingOfIntegers`. -/
+theorem adjoin_integralGen_eq_top : Algebra.adjoin ℤ {integralGen K} = ⊤ := by
+  rw [integralGen, ← AlgEquiv.coe_toAlgHom, ← AlgHom.map_adjoin_singleton,
+    QuadraticAlgebra.adjoin_omega_eq_top, Algebra.map_top,
+    (AlgHom.range_eq_top _).mpr (AlgEquiv.surjective _)]
+
+/-- The hypothesis gating the Kummer-Dedekind API holds for every prime, `2` included. -/
+theorem exponent_integralGen : RingOfIntegers.exponent (integralGen K) = 1 :=
+  RingOfIntegers.exponent_eq_one_iff.mpr (adjoin_integralGen_eq_top K)
+
+theorem not_dvd_exponent_integralGen (p : ℕ) [Fact p.Prime] :
+    ¬ p ∣ RingOfIntegers.exponent (integralGen K) := by
+  rw [exponent_integralGen, Nat.dvd_one]
+  exact ‹Fact p.Prime›.out.ne_one
+
+/-- The minimal polynomial of the generator is the characteristic polynomial of `ω`, whose
+discriminant is `discr K`. -/
+theorem minpoly_integralGen :
+    minpoly ℤ (integralGen K) = X ^ 2 - C (discr K % 4) * X - C (discr K / 4) := by
+  sorry
+
+
+
+/-! ### The same statements, to be redone through Kummer-Dedekind
+
+One namespaced copy of every splitting result, so the two routes can be compared and the `KD` ones
+swapped in once `minpoly_integralGen` is proved. Each case is now a statement about the
+factorisation of `X ^ 2 - (discr K % 4) * X - (discr K / 4)` modulo `p`, uniformly in `p`: `g`
+counts the monic irreducible factors, `f` is the degree of a factor and `e` its multiplicity, via
+`primesOverSpanEquivMonicFactorsMod` and its `inertiaDeg`/`ramificationIdx` companions.
+-/
+
+namespace KD
+
+variable {K} (p : ℕ) [Fact p.Prime]
+
+local notation3 "𝒑" => (span {(p : ℤ)})
+
+section two
+
+/-- `2` is inert exactly when `discr K % 8 = 5`: `f = 2` at every prime above `2`. -/
+theorem inertiaDeg_two_of_discr_emod_eight (h : NumberField.discr K % 8 = 5)
+    (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver (span {(2 : ℤ)})] :
+    P.inertiaDeg ℤ = 2 :=
+  sorry
+
+/-- `2` is inert exactly when `discr K % 8 = 5`: `g = 1`. -/
+theorem ncard_primesOver_two_of_discr_emod_eight_five (h : NumberField.discr K % 8 = 5) :
+    ((span {(2 : ℤ)}).primesOver (𝓞 K)).ncard = 1 :=
+  sorry
+
+/-- `2` splits exactly when `discr K % 8 = 1`: `g = 2`. -/
+theorem ncard_primesOver_two_of_discr_emod_eight_one (h : NumberField.discr K % 8 = 1) :
+    ((span {(2 : ℤ)}).primesOver (𝓞 K)).ncard = 2 :=
+  sorry
+
+/-- `2` splits exactly when `discr K % 8 = 1`: `f = 1` at every prime above `2`. -/
+theorem inertiaDeg_two_of_discr_emod_eight_one (h : NumberField.discr K % 8 = 1)
+    (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver (span {(2 : ℤ)})] :
+    P.inertiaDeg ℤ = 1 :=
+  sorry
+
+end two
+
+section ramified
+
+variable (hd : (p : ℤ) ∣ NumberField.discr K)
+
+include hd
+
+/-- If `p` divides the discriminant, it is ramified: `e = 2` at every prime above `p`. -/
+theorem ramificationIdx_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.ramificationIdx ℤ = 2 :=
+  sorry
+
+/-- If `p` divides the discriminant, it is ramified: `f = 1` at every prime above `p`. -/
+theorem inertiaDeg_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.inertiaDeg ℤ = 1 :=
+  sorry
+
+/-- If `p` divides the discriminant, it is ramified: `g = 1`. -/
+theorem ncard_primesOver_of_dvd_discr : (𝒑.primesOver (𝓞 K)).ncard = 1 :=
+  sorry
+
+end ramified
+
+section inert
+
+variable (hp2 : p ≠ 2) (hd : ¬ IsSquare ((NumberField.discr K : ZMod p)))
+
+include hp2 hd
+
+/-- If the discriminant is not a square mod `p`, then `p` is inert: `f = 2` at every prime
+above `p`. -/
+theorem inertiaDeg_of_not_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.inertiaDeg ℤ = 2 :=
+  sorry
+
+/-- If the discriminant is not a square mod `p`, then `p` is inert: `e = 1` at every prime
+above `p`. -/
+theorem ramificationIdx_of_not_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.ramificationIdx ℤ = 1 :=
+  sorry
+
+/-- If the discriminant is not a square mod `p`, then `p` is inert: `g = 1`. -/
+theorem ncard_primesOver_of_not_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 1 :=
+  sorry
+
+end inert
+
+section split
+
+variable (hp2 : p ≠ 2) (hnd : ¬ (p : ℤ) ∣ NumberField.discr K)
+  (hd : IsSquare ((NumberField.discr K : ZMod p)))
+
+include hp2 hnd hd
+
+/-- If the discriminant is a nonzero square mod `p`, then `p` splits: `g = 2`. -/
+theorem ncard_primesOver_of_isSquare : (𝒑.primesOver (𝓞 K)).ncard = 2 :=
+  sorry
+
+/-- If the discriminant is a nonzero square mod `p`, then `p` splits: `e = 1` at every prime
+above `p`. -/
+theorem ramificationIdx_of_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.ramificationIdx ℤ = 1 :=
+  sorry
+
+/-- If the discriminant is a nonzero square mod `p`, then `p` splits: `f = 1` at every prime
+above `p`. -/
+theorem inertiaDeg_of_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
+    P.inertiaDeg ℤ = 1 :=
+  sorry
+
+end split
+
+end KD
 
 end NumberField.QuadraticField
