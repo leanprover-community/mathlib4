@@ -74,50 +74,15 @@ meta def GrpCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
-/-- The type of morphisms in `AddGrpCat R`. -/
-@[ext]
-structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →+ B
-
-/-- The type of morphisms in `GrpCat R`. -/
-@[to_additive, ext]
-structure GrpCat.Hom (A B : GrpCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →* B
+@[to_additive AddGrpCat]
+mk_concrete_category GrpCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+  with_of_hom {X Y : Type u} [Group X] [Group Y]
+  hom_type (X →* Y) from (GrpCat.of X) to (GrpCat.of Y)
+  to_additive AddGrpCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  with_of_hom {X Y : Type u} [AddGroup X] [AddGroup Y]
+  hom_type (X →+ Y) from (AddGrpCat.of X) to (AddGrpCat.of Y)
 
 namespace GrpCat
-
-@[to_additive]
-instance : Category GrpCat.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨MonoidHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-@[to_additive]
-instance : ConcreteCategory GrpCat (· →* ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `GrpCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddGrpCat` back into an `AddMonoidHom`. -/]
-abbrev Hom.hom {X Y : GrpCat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := GrpCat) f
-
-/-- Typecheck a `MonoidHom` as a morphism in `GrpCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddGrpCat`. -/]
-abbrev ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := GrpCat) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : GrpCat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddGrpCat.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -138,17 +103,10 @@ lemma ext {X Y : GrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 theorem coe_of (R : Type u) [Group R] : ↑(GrpCat.of R) = R :=
   rfl
 
-@[to_additive (attr := simp)]
-lemma hom_id {X : GrpCat} : (𝟙 X : X ⟶ X).hom = MonoidHom.id X := rfl
-
 /- Provided for rewriting. -/
 @[to_additive]
 lemma id_apply (X : GrpCat) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[to_additive (attr := simp)]
-lemma hom_comp {X Y T : GrpCat} (f : X ⟶ Y) (g : Y ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -158,13 +116,6 @@ lemma comp_apply {X Y T : GrpCat} (f : X ⟶ Y) (g : Y ⟶ T) (x : X) :
 @[to_additive (attr := ext)]
 lemma hom_ext {X Y : GrpCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {R S : Type u} [Group R] [Group S] (f : R →* S) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {X Y : GrpCat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {X : Type u} [Group X] : ofHom (MonoidHom.id X) = 𝟙 (of X) := rfl
@@ -298,50 +249,15 @@ meta def CommGrpCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
-/-- The type of morphisms in `AddCommGrpCat R`. -/
-@[ext]
-structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →+ B
-
-/-- The type of morphisms in `CommGrpCat R`. -/
-@[to_additive, ext]
-structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →* B
+@[to_additive AddCommGrpCat]
+mk_concrete_category CommGrpCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+  with_of_hom {X Y : Type u} [CommGroup X] [CommGroup Y]
+  hom_type (X →* Y) from (CommGrpCat.of X) to (CommGrpCat.of Y)
+  to_additive AddCommGrpCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  with_of_hom {X Y : Type u} [AddCommGroup X] [AddCommGroup Y]
+  hom_type (X →+ Y) from (AddCommGrpCat.of X) to (AddCommGrpCat.of Y)
 
 namespace CommGrpCat
-
-@[to_additive]
-instance : Category CommGrpCat.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨MonoidHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-@[to_additive]
-instance : ConcreteCategory CommGrpCat (· →* ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `CommGrpCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddCommGrpCat` back into an `AddMonoidHom`. -/]
-abbrev Hom.hom {X Y : CommGrpCat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := CommGrpCat) f
-
-/-- Typecheck a `MonoidHom` as a morphism in `CommGrpCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGrpCat`. -/]
-abbrev ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := CommGrpCat) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
-def Hom.Simps.hom (X Y : CommGrpCat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddCommGrpCat.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -366,17 +282,10 @@ instance : Inhabited CommGrpCat :=
 theorem coe_of (R : Type u) [CommGroup R] : ↑(CommGrpCat.of R) = R :=
   rfl
 
-@[to_additive (attr := simp)]
-lemma hom_id {X : CommGrpCat} : (𝟙 X : X ⟶ X).hom = MonoidHom.id X := rfl
-
 /- Provided for rewriting. -/
 @[to_additive]
 lemma id_apply (X : CommGrpCat) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[to_additive (attr := simp)]
-lemma hom_comp {X Y T : CommGrpCat} (f : X ⟶ Y) (g : Y ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -386,13 +295,6 @@ lemma comp_apply {X Y T : CommGrpCat} (f : X ⟶ Y) (g : Y ⟶ T) (x : X) :
 @[to_additive (attr := ext)]
 lemma hom_ext {X Y : CommGrpCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {X Y : CommGrpCat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {X : Type u} [CommGroup X] : ofHom (MonoidHom.id X) = 𝟙 (of X) := rfl
@@ -497,7 +399,7 @@ def asHom {G : AddCommGrpCat.{0}} (g : G) : ↧ℤ ⟶ G :=
   ofHom (zmultiplesHom G g)
 
 theorem asHom_injective {G : AddCommGrpCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
-  simpa using CategoryTheory.congr_fun w 1
+  simpa [asHom] using ConcreteCategory.congr_hom w 1
 
 @[ext]
 theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : ↧ℤ ⟶ G)
@@ -508,7 +410,10 @@ theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : ↧ℤ ⟶ G)
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGrpCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
-  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by cat_disch
+  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by
+    ext
+    change f ((asHom g₁) (1 : ℤ)) = f ((asHom g₂) (1 : ℤ))
+    simp [asHom, h]
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 

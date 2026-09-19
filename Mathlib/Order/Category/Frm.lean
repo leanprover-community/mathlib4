@@ -50,36 +50,9 @@ instance : CoeSort Frm (Type _) :=
 
 attribute [coe] Frm.carrier
 
-/-- The type of morphisms in `Frm R`. -/
-@[ext]
-structure Hom (X Y : Frm.{u}) where
-  _mkInternal ::
-  /-- The underlying `FrameHom`. -/
-  hom' : FrameHom X Y
-
-instance : Category Frm.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨FrameHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-instance : ConcreteCategory Frm (FrameHom · ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `Frm` back into a `FrameHom`. -/
-abbrev Hom.hom {X Y : Frm.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := Frm) f
-
-/-- Typecheck a `FrameHom` as a morphism in `Frm`. -/
-abbrev ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := Frm) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : Frm.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category Frm.{u} (FrameHom · ·) (fun (X : Frm) ↦ FrameHom.id X) FrameHom.comp
+  with_of_hom {X Y : Type u} [Frame X] [Frame Y]
+  hom_type (FrameHom X Y) from (of X) to (of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -102,16 +75,9 @@ lemma ext {X Y : Frm} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [Frame X] : (Frm.of X : Type u) = X := rfl
 
-@[simp]
-lemma hom_id {X : Frm} : (𝟙 X : X ⟶ X).hom = FrameHom.id _ := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (X : Frm) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : Frm} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : Frm} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -120,13 +86,6 @@ lemma comp_apply {X Y Z : Frm} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[ext]
 lemma hom_ext {X Y : Frm} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {X Y : Frm} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [Frame X] : ofHom (FrameHom.id _) = 𝟙 (of X) := rfl

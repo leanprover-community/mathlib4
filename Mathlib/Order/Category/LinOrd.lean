@@ -27,36 +27,9 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab LinOrd.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-/-- The type of morphisms in `LinOrd R`. -/
-@[ext]
-structure Hom (X Y : LinOrd.{u}) where
-  _mkInternal ::
-  /-- The underlying `OrderHom`. -/
-  hom' : X →o Y
-
-instance : Category LinOrd.{u} where
-  Hom X Y := Hom X Y
-  id _ := ⟨OrderHom.id⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-instance : ConcreteCategory LinOrd (· →o ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `LinOrd` back into a `OrderHom`. -/
-abbrev Hom.hom {X Y : LinOrd.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := LinOrd) f
-
-/-- Typecheck a `OrderHom` as a morphism in `LinOrd`. -/
-abbrev ofHom {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := LinOrd) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : LinOrd.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category LinOrd.{u} (· →o ·) (fun (_ : LinOrd) ↦ OrderHom.id) OrderHom.comp
+  with_of_hom {X Y : Type u} [LinearOrder X] [LinearOrder Y]
+  hom_type (X →o Y) from (of X) to (of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -77,16 +50,9 @@ lemma ext {X Y : LinOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [LinearOrder X] : (LinOrd.of X : Type u) = X := rfl
 
-@[simp]
-lemma hom_id {X : LinOrd} : (𝟙 X : X ⟶ X).hom = OrderHom.id := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (X : LinOrd) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : LinOrd} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : LinOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -95,14 +61,6 @@ lemma comp_apply {X Y Z : LinOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[ext]
 lemma hom_ext {X Y : LinOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
-  rfl
-
-@[simp]
-lemma ofHom_hom {X Y : LinOrd} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [LinearOrder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl

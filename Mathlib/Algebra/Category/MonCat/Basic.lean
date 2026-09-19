@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
@@ -78,50 +79,15 @@ meta def MonCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
-/-- The type of morphisms in `AddMonCat`. -/
-@[ext]
-structure AddMonCat.Hom (A B : AddMonCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →+ B
-
-/-- The type of morphisms in `MonCat`. -/
-@[to_additive, ext]
-structure MonCat.Hom (A B : MonCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →* B
+@[to_additive AddMonCat]
+mk_concrete_category MonCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+  with_of_hom {X Y : Type u} [Monoid X] [Monoid Y]
+  hom_type (X →* Y) from (MonCat.of X) to (MonCat.of Y)
+  to_additive AddMonCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  with_of_hom {X Y : Type u} [AddMonoid X] [AddMonoid Y]
+  hom_type (X →+ Y) from (AddMonCat.of X) to (AddMonCat.of Y)
 
 namespace MonCat
-
-@[to_additive]
-instance : Category MonCat.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨MonoidHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-@[to_additive]
-instance : ConcreteCategory MonCat (· →* ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `MonCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddMonCat` back into an `AddMonoidHom`. -/]
-abbrev Hom.hom {X Y : MonCat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := MonCat) f
-
-/-- Typecheck a `MonoidHom` as a morphism in `MonCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/]
-abbrev ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := MonCat) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
-def Hom.Simps.hom (X Y : MonCat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddMonCat.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -145,17 +111,10 @@ lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (M : Type u) [Monoid M] : (MonCat.of M : Type u) = M := rfl
 
-@[to_additive (attr := simp)]
-lemma hom_id {M : MonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := rfl
-
 /- Provided for rewriting. -/
 @[to_additive]
 lemma id_apply (M : MonCat) (x : M) :
     (𝟙 M : M ⟶ M) x = x := by simp
-
-@[to_additive (attr := simp)]
-lemma hom_comp {M N T : MonCat} (f : M ⟶ N) (g : N ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -165,13 +124,6 @@ lemma comp_apply {M N T : MonCat} (f : M ⟶ N) (g : N ⟶ T) (x : M) :
 @[to_additive (attr := ext)]
 lemma hom_ext {M N : MonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {M N : MonCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {M : Type u} [Monoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
@@ -274,50 +226,15 @@ meta def CommMonCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
-/-- The type of morphisms in `AddCommMonCat`. -/
-@[ext]
-structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →+ B
-
-/-- The type of morphisms in `CommMonCat`. -/
-@[to_additive, ext]
-structure CommMonCat.Hom (A B : CommMonCat.{u}) where
-  _mkInternal ::
-  /-- The underlying monoid homomorphism. -/
-  hom' : A →* B
+@[to_additive AddCommMonCat]
+mk_concrete_category CommMonCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+  with_of_hom {X Y : Type u} [CommMonoid X] [CommMonoid Y]
+  hom_type (X →* Y) from (CommMonCat.of X) to (CommMonCat.of Y)
+  to_additive AddCommMonCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  with_of_hom {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y]
+  hom_type (X →+ Y) from (AddCommMonCat.of X) to (AddCommMonCat.of Y)
 
 namespace CommMonCat
-
-@[to_additive]
-instance : Category CommMonCat.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨MonoidHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-@[to_additive]
-instance : ConcreteCategory CommMonCat (· →* ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `CommMonCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`. -/]
-abbrev Hom.hom {X Y : CommMonCat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := CommMonCat) f
-
-/-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/]
-abbrev ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := CommMonCat) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
-def Hom.Simps.hom (X Y : CommMonCat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddCommMonCat.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -333,17 +250,10 @@ lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X �
 lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   ConcreteCategory.hom_ext _ _ w
 
-@[to_additive (attr := simp)]
-lemma hom_id {M : CommMonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := rfl
-
 /- Provided for rewriting. -/
 @[to_additive]
 lemma id_apply (M : CommMonCat) (x : M) :
     (𝟙 M : M ⟶ M) x = x := by simp
-
-@[to_additive (attr := simp)]
-lemma hom_comp {M N T : CommMonCat} (f : M ⟶ N) (g : N ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -353,13 +263,6 @@ lemma comp_apply {M N T : CommMonCat} (f : M ⟶ N) (g : N ⟶ T) (x : M) :
 @[to_additive (attr := ext)]
 lemma hom_ext {M N : CommMonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {M N : CommMonCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {M : Type u} [CommMonoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
