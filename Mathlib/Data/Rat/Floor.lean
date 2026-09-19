@@ -33,7 +33,7 @@ open Int
 namespace Rat
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
-variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+variable {R : Type*} [Ring R] [LinearOrder R] [FloorRing R]
 
 instance : FloorRing ℚ :=
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor_iff.symm
@@ -108,13 +108,11 @@ section NormNum
 
 open Mathlib.Meta.NormNum Qq
 
-theorem isNat_intFloor {R} [Ring R] [LinearOrder R] [FloorRing R]
-    (r : R) (m : ℕ) :
-    IsNat r m → IsNat ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+theorem isNat_intFloor (r : R) (m : ℕ) : IsNat r m → IsNat ⌊r⌋ m := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intFloor {R} [Ring R] [LinearOrder R] [FloorRing R]
-    (r : R) (m : ℤ) :
-    IsInt r m → IsInt ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+theorem isInt_intFloor (r : R) (m : ℤ) : IsInt r m → IsInt ⌊r⌋ m := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
 theorem isNat_intFloor_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     IsNNRat r n d → IsNat ⌊r⌋ (n / d) := by
@@ -166,13 +164,11 @@ meta def evalIntFloor : NormNumExt where eval {u αZ} e := do
       return .isNegNat q(inferInstance) z q(isInt_intFloor_ofIsRat_neg $x $n $d $h)
   | _, _, _ => failure
 
-theorem isNat_intCeil {R} [Ring R] [LinearOrder R] [FloorRing R]
-    (r : R) (m : ℕ) :
-    IsNat r m → IsNat ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+theorem isNat_intCeil (r : R) (m : ℕ) : IsNat r m → IsNat ⌈r⌉ m := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intCeil {R} [Ring R] [LinearOrder R] [FloorRing R]
-    (r : R) (m : ℤ) :
-    IsInt r m → IsInt ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+theorem isInt_intCeil (r : R) (m : ℤ) : IsInt r m → IsInt ⌈r⌉ m := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
 theorem isNat_intCeil_ofIsNNRat (r : α) (n : ℕ) (d : ℕ) :
     IsNNRat r n d → IsNat ⌈r⌉ (-(-n / d) : ℤ).toNat := by
@@ -223,11 +219,9 @@ meta def evalIntCeil : NormNumExt where eval {u αZ} e := do
       return .isNegNat q(inferInstance) z q(isInt_intCeil_ofIsRat_neg $x $n $d $h)
   | _, _, _ => failure
 
-omit [IsStrictOrderedRing R] in
 theorem isNat_intFract_of_isNat (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-omit [IsStrictOrderedRing R] in
 theorem isNat_intFract_of_isInt (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
@@ -281,12 +275,10 @@ meta def evalIntFract : NormNumExt where eval {u α} e := do
 ### `norm_num` extension for `round`
 -/
 
-theorem isNat_round {R : Type*} [Ring R] [LinearOrder R] [FloorRing R]
-    (r : R) (m : ℕ) : IsNat r m → IsNat (round r) m := by
+theorem isNat_round (r : R) (m : ℕ) : IsNat r m → IsNat (round r) m := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_round {R : Type*} [Ring R] [LinearOrder R] [FloorRing R]
-    (r : R) (m : ℤ) : IsInt r m → IsInt (round r) m := by
+theorem isInt_round (r : R) (m : ℤ) : IsInt r m → IsInt (round r) m := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
 theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
