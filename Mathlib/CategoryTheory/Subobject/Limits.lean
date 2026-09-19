@@ -335,11 +335,11 @@ lemma _root_.CategoryTheory.Subobject.exists_eq_imageSubobject [HasImages C]
     (f : X ⟶ Y) (X' : Subobject X) : («exists» f).obj X' = imageSubobject (X'.arrow ≫ f) := by
   apply eq_of_comm ((existsIsoImage f X').trans (imageSubobjectIso (X'.arrow ≫ f)).symm)
   simp only [Iso.trans_hom, Iso.symm_hom, assoc, imageSubobject_arrow']
-  exact Over.w ((Subobject.existsCompRepresentativeIso f).app X').hom.hom
+  exact ((Subobject.existsCompRepresentativeIso f).app X').hom.hom.w
 
 lemma _root_.CategoryTheory.Subobject.exists_mk_eq_imageSubobject [HasImages C]
     {A : C} (g : A ⟶ X) [Mono g] (f : X ⟶ Y) :
-    («exists» f).obj (mk g) = imageSubobject (g ≫ f) := by rfl
+    («exists» f).obj (mk g) = imageSubobject (g ≫ f) := rfl
 
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/
 def factorThruImageSubobject : X ⟶ imageSubobject f :=
@@ -378,7 +378,7 @@ theorem imageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) [HasImage f
     imageSubobject (h ≫ f) ≤ imageSubobject f :=
   Subobject.mk_le_mk_of_comm (image.preComp h f) (by simp)
 
-theorem imageSubobject_epi_comp [HasStrongEpiMonoFactorisations C] {X Y X' : C}
+theorem imageSubobject_strongEpi_comp [HasStrongEpiMonoFactorisations C] {X Y X' : C}
     (e : X' ⟶ X) (f : X ⟶ Y) [StrongEpi e] [Mono f] :
     imageSubobject (e ≫ f) = imageSubobject f :=
   mk_eq_mk_of_comm (image.ι (e ≫ f)) (image.ι f)
@@ -391,7 +391,7 @@ lemma _root_.CategoryTheory.Subobject.sup_eq_imageSubobject [HasImages C] [HasBi
   eq_mk_of_comm (image.ι (coprod.desc X.arrow Y.arrow)) (supIsoImage X Y) (ofLEMk_comp _)
 
 lemma _root_.CategoryTheory.Subobject.mk_mono_eq_imageSubobject [HasStrongEpiMonoFactorisations C]
-    {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f)
+    {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f := by cat_disch)
     [StrongEpi e] [Mono m] :
     mk m = imageSubobject f :=
   mk_eq_mk_of_comm m (image.ι f) (image.isoStrongEpiMono e m comm)

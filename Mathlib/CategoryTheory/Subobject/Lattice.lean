@@ -518,31 +518,27 @@ theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B}
 
 /-- If `C` has binary coproducts and `f g : Subobject A`, then `f ⨿ g ⟶ A` factors as
   `f ⨿ g ⟶ f ⊔ g ⟶ A` -/
-@[simps]
-def supMonoFactorisation {A : C} (f g : Subobject A) : MonoFactorisation
-    (coprod.desc f.arrow g.arrow) where
+@[simps, implicit_reducible]
+def supMonoFactorisation {A : C} (f g : Subobject A) :
+    MonoFactorisation (coprod.desc f.arrow g.arrow) where
   I := underlying.obj (f ⊔ g)
   m := (f ⊔ g).arrow
-  m_mono := inferInstance
   e := coprod.desc (f.ofLE (f ⊔ g) le_sup_left) (g.ofLE (f ⊔ g) le_sup_right)
-  fac := by simp only [coprod.desc_comp, ofLE_arrow]
 
 /-- If `C` has binary coproducts, then `f ⊔ g` is an image of `f ⨿ g ⟶ A`. -/
-@[simps]
 def supIsImage {A : C} (f g : Subobject A) :
     IsImage (supMonoFactorisation f g) where
   lift F := by
     refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
     · refine le_mk_of_comm (coprod.inl ≫ F.e) ?_
-      · simp only [assoc, MonoFactorisation.fac, coprod.inl_desc]
+      simp only [assoc, MonoFactorisation.fac, coprod.inl_desc]
     · refine le_mk_of_comm (coprod.inr ≫ F.e) ?_
-      · simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
-  lift_fac := by simp [supMonoFactorisation]
+      simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
 
 /-- If `C` has binary coproducts, then `f ⊔ g ≅ image (f ⨿ g ⟶ A)`. -/
 @[simps!]
-def supIsoImage {A : C} (f g : Subobject A) : underlying.obj (f ⊔ g) ≅
-    image (coprod.desc f.arrow g.arrow) :=
+def supIsoImage {A : C} (f g : Subobject A) :
+    underlying.obj (f ⊔ g) ≅ image (coprod.desc f.arrow g.arrow) :=
   IsImage.isoExt (supIsImage ..) <| Image.isImage _
 
 variable [HasInitial C] [InitialMonoClass C]
