@@ -233,10 +233,10 @@ theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 
 theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidHom = g.comp Int.ofNatHom.toMonoidHom) : f = g := by
   ext (x | x)
-  · exact (DFunLike.congr_fun h_nat x :)
+  · exact (congr($h_nat x) :)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) :)
+    exact mod_cast (congr($h_nat (x + 1)) :)
 
 end MonoidHom
 
@@ -259,10 +259,8 @@ theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass 
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   (DFunLike.ext _ _) fun n =>
     haveI :=
-      DFunLike.congr_fun
-        (@MonoidWithZeroHom.ext_int _ _ (.ofClass f) (.ofClass g) h_neg_one <|
-          MonoidWithZeroHom.ext_nat (h_pos _))
-        n
+      congr($(@MonoidWithZeroHom.ext_int _ _ (.ofClass f) (.ofClass g) h_neg_one <|
+          MonoidWithZeroHom.ext_nat (h_pos _)) n)
     this
 
 section Group

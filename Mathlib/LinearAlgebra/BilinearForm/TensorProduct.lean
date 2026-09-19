@@ -130,7 +130,7 @@ lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [LinearMap.isSymm_iff_eq_flip]
   ext x₁ x₂ y₁ y₂
-  exact congr_arg₂ (HSMul.hSMul) (hB₂.eq x₂ y₂) (hB₁.eq x₁ y₁)
+  congrm $(hB₂.eq x₂ y₂) • $(hB₁.eq x₁ y₁)
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -149,7 +149,7 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
     (B : BilinForm R M₂) : B.baseChange A = 0 ↔ B = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   ext m m'
-  simpa [← Algebra.algebraMap_eq_smul_one] using LinearMap.congr_fun₂ h (1 ⊗ₜ[R] m) (1 ⊗ₜ[R] m')
+  simpa [← Algebra.algebraMap_eq_smul_one] using congr($h (1 ⊗ₜ[R] m) (1 ⊗ₜ[R] m'))
 
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
@@ -197,7 +197,7 @@ theorem tensorDistribEquiv_toLinearMap :
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) B = tensorDistrib R R B :=
-  DFunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
+  congr($(tensorDistribEquiv_toLinearMap R M₁ M₂) B)
 
 end BilinForm
 

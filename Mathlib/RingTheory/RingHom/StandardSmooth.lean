@@ -224,7 +224,7 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
   let P' : Algebra.PreSubmersivePresentation (MvPolynomial (Fin n) R) S σ σ :=
   { toGenerators := .ofSurjective (algebraMap _ _ <| e <| .X ·) <| by
       convert! P.algebraMap_surjective.comp e.surjective
-      exact congr($H)
+      congrm $H
     relation := e.symm ∘ P.relation
     span_range_relation_eq_ker := by
       rw [Set.range_comp, ← AlgEquiv.coe_ringEquiv e.symm, AlgEquiv.symm_toRingEquiv,

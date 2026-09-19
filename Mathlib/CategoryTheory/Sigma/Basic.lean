@@ -56,13 +56,13 @@ lemma comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z) : comp (mk f) (
   rfl
 
 lemma assoc : ∀ {X Y Z W : Σ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
-  | _, _, _, _, mk _, mk _, mk _ => congr_arg mk (Category.assoc _ _ _)
+  | _, _, _, _, mk _, mk _, mk _ => congr(mk $(Category.assoc ..))
 
 lemma id_comp : ∀ {X Y : Σ i, C i} (f : X ⟶ Y), 𝟙 X ≫ f = f
-  | _, _, mk _ => congr_arg mk (Category.id_comp _)
+  | _, _, mk _ => congr(mk $(Category.id_comp _))
 
 lemma comp_id : ∀ {X Y : Σ i, C i} (f : X ⟶ Y), f ≫ 𝟙 Y = f
-  | _, _, mk _ => congr_arg mk (Category.comp_id _)
+  | _, _, mk _ => congr(mk $(Category.comp_id _))
 
 end SigmaHom
 

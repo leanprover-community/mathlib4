@@ -52,11 +52,11 @@ theorem filter_zero : filter p 0 = 0 :=
 @[congr]
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
-  Quot.inductionOn s fun _l h => congr_arg ofList <| List.filter_congr <| by simpa using h
+  Quot.inductionOn s fun _l h => congr(ofList $(List.filter_congr <| by simpa using h))
 
 @[simp]
 theorem filter_add (s t : Multiset α) : filter p (s + t) = filter p s + filter p t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg ofList <| filter_append _ _
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr(ofList $(filter_append ..))
 
 @[simp]
 theorem filter_le (s : Multiset α) : filter p s ≤ s :=
@@ -81,11 +81,11 @@ variable {p}
 
 @[simp]
 theorem filter_cons_of_pos {a : α} (s) : p a → filter p (a ::ₘ s) = a ::ₘ filter p s :=
-  Quot.inductionOn s fun _ h => congr_arg ofList <| List.filter_cons_of_pos <| by simpa using h
+  Quot.inductionOn s fun _ h => congr(ofList $(List.filter_cons_of_pos <| by simpa using h))
 
 @[simp]
 theorem filter_cons_of_neg {a : α} (s) : ¬p a → filter p (a ::ₘ s) = filter p s :=
-  Quot.inductionOn s fun _ h => congr_arg ofList <| List.filter_cons_of_neg <| by simpa using h
+  Quot.inductionOn s fun _ h => congr(ofList $(List.filter_cons_of_neg <| by simpa using h))
 
 @[simp]
 theorem mem_filter {a : α} {s} : a ∈ filter p s ↔ a ∈ s ∧ p a :=
@@ -103,13 +103,13 @@ theorem mem_filter_of_mem {a : α} {l} (m : a ∈ l) (h : p a) : a ∈ filter p 
 @[simp]
 theorem filter_eq_self {s} : filter p s = s ↔ ∀ a ∈ s, p a :=
   Quot.inductionOn s fun _l =>
-    Iff.trans ⟨fun h => filter_sublist.eq_of_length (congr_arg card h),
+    Iff.trans ⟨fun h => filter_sublist.eq_of_length congr(card $h),
       congr_arg ofList⟩ <| by simp
 
 @[simp]
 theorem filter_eq_nil {s} : filter p s = 0 ↔ ∀ a ∈ s, ¬p a :=
   Quot.inductionOn s fun _l =>
-    Iff.trans ⟨fun h => eq_nil_of_length_eq_zero (congr_arg card h), congr_arg ofList⟩ (by simp)
+    Iff.trans ⟨fun h => eq_nil_of_length_eq_zero congr(card $h), congr_arg ofList⟩ (by simp)
 
 @[simp]
 lemma filter_true (s : Multiset α) : s.filter (fun _ ↦ True) = s := by simp
@@ -192,12 +192,12 @@ theorem filterMap_zero (f : α → Option β) : filterMap f 0 = 0 :=
 @[simp]
 theorem filterMap_cons_none {f : α → Option β} (a : α) (s : Multiset α) (h : f a = none) :
     filterMap f (a ::ₘ s) = filterMap f s :=
-  Quot.inductionOn s fun _ => congr_arg ofList <| List.filterMap_cons_none h
+  Quot.inductionOn s fun _ => congr(ofList $(List.filterMap_cons_none h))
 
 @[simp]
 theorem filterMap_cons_some (f : α → Option β) (a : α) (s : Multiset α) {b : β}
     (h : f a = some b) : filterMap f (a ::ₘ s) = b ::ₘ filterMap f s :=
-  Quot.inductionOn s fun _ => congr_arg ofList <| List.filterMap_cons_some h
+  Quot.inductionOn s fun _ => congr(ofList $(List.filterMap_cons_some h))
 
 theorem filterMap_cons (f : α → Option β) (a : α) (s : Multiset α) :
     filterMap f (a ::ₘ s) = ((f a).map singleton).getD 0 + filterMap f s := by
@@ -208,41 +208,41 @@ theorem filterMap_cons (f : α → Option β) (a : α) (s : Multiset α) :
 @[simp]
 theorem filterMap_add (f : α → Option β) (s t : Multiset α) :
     filterMap f (s + t) = filterMap f s + filterMap f t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg ofList <| filterMap_append
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr(ofList $filterMap_append)
 
 theorem filterMap_eq_map (f : α → β) : filterMap (some ∘ f) = map f :=
   funext fun s =>
-    Quot.inductionOn s fun l => congr_arg ofList <| congr_fun List.filterMap_eq_map l
+    Quot.inductionOn s fun l => congr(ofList ($List.filterMap_eq_map l))
 
 theorem filterMap_eq_filter : filterMap (Option.guard p) = filter p :=
   funext fun s =>
-    Quot.inductionOn s fun l => congr_arg ofList <| by
-      rw [← List.filterMap_eq_filter]
+    Quot.inductionOn s fun l => congr(ofList $(by
+      rw [← List.filterMap_eq_filter]))
 
 theorem filterMap_filterMap (f : α → Option β) (g : β → Option γ) (s : Multiset α) :
     filterMap g (filterMap f s) = filterMap (fun x => (f x).bind g) s :=
-  Quot.inductionOn s fun _ => congr_arg ofList List.filterMap_filterMap
+  Quot.inductionOn s fun _ => congr(ofList $List.filterMap_filterMap)
 
 theorem map_filterMap (f : α → Option β) (g : β → γ) (s : Multiset α) :
     map g (filterMap f s) = filterMap (fun x => (f x).map g) s :=
-  Quot.inductionOn s fun _ => congr_arg ofList List.map_filterMap
+  Quot.inductionOn s fun _ => congr(ofList $List.map_filterMap)
 
 theorem filterMap_map (f : α → β) (g : β → Option γ) (s : Multiset α) :
     filterMap g (map f s) = filterMap (g ∘ f) s :=
-  Quot.inductionOn s fun _ => congr_arg ofList List.filterMap_map
+  Quot.inductionOn s fun _ => congr(ofList $List.filterMap_map)
 
 theorem filter_filterMap (f : α → Option β) (p : β → Prop) [DecidablePred p] (s : Multiset α) :
     filter p (filterMap f s) = filterMap (fun x => (f x).filter p) s :=
-  Quot.inductionOn s fun _ => congr_arg ofList List.filter_filterMap
+  Quot.inductionOn s fun _ => congr(ofList $List.filter_filterMap)
 
 theorem filterMap_filter (f : α → Option β) (s : Multiset α) :
     filterMap f (filter p s) = filterMap (fun x => if p x then f x else none) s :=
-  Quot.inductionOn s fun l => congr_arg ofList <| by
-    simpa using List.filterMap_filter (f := f) (p := p)
+  Quot.inductionOn s fun l => congr(ofList $(by
+    simpa using List.filterMap_filter (f := f) (p := p)))
 
 @[simp]
 theorem filterMap_some (s : Multiset α) : filterMap some s = s :=
-  Quot.inductionOn s fun _ => congr_arg ofList List.filterMap_some
+  Quot.inductionOn s fun _ => congr(ofList $List.filterMap_some)
 
 @[simp]
 theorem mem_filterMap (f : α → Option β) (s : Multiset α) {b : β} :
@@ -251,7 +251,7 @@ theorem mem_filterMap (f : α → Option β) (s : Multiset α) {b : β} :
 
 theorem map_filterMap_of_inv (f : α → Option β) (g : β → α) (H : ∀ x : α, (f x).map g = some x)
     (s : Multiset α) : map g (filterMap f s) = s :=
-  Quot.inductionOn s fun _ => congr_arg ofList <| List.map_filterMap_of_inv H
+  Quot.inductionOn s fun _ => congr(ofList $(List.map_filterMap_of_inv H))
 
 @[gcongr]
 theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s ≤ t) :

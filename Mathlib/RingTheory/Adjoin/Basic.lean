@@ -133,7 +133,7 @@ algebra spanned over `R` by `s ∪ t`.
 theorem adjoin_eq_adjoin_union [CommSemiring B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] (s : Set A) (t : Set B) (hS : adjoin R s = ⊤) :
     (adjoin A t).restrictScalars R = adjoin R ((algebraMap A B '' s) ∪ t) := by
-  have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R A B)) hS
+  have := congr(Subalgebra.map (IsScalarTower.toAlgHom R A B) $hS)
   rw [Algebra.map_top, AlgHom.map_adjoin, IsScalarTower.coe_toAlgHom'] at this
   rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
 
@@ -189,7 +189,7 @@ theorem Subalgebra.adjoin_eq_span_basis {ι : Type*} (bL : Basis ι F L) :
     toSubmodule (adjoin E (L : Set K)) = span E (Set.range fun i : ι ↦ (bL i).1) :=
   L.adjoin_eq_span_of_eq_span E <| by
     simpa only [← L.range_val, Submodule.map_span, Submodule.map_top, ← Set.range_comp]
-      using! congr_arg (Submodule.map (L.val : L →ₗ[F] K)) bL.span_eq.symm
+      using! congr(Submodule.map (L.val : L →ₗ[F] K) $bL.span_eq.symm)
 
 theorem Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
     [Algebra F E] (K : Subalgebra F E) (S : Set E) :

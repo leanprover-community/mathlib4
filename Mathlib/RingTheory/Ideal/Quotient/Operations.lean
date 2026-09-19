@@ -356,7 +356,7 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
   smul_def' := fun _ x =>
     Quotient.inductionOn' x fun _ =>
       ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (map_mul _ _ _)
-  commutes' := by rintro r ⟨x⟩; exact congr_arg (⟦·⟧) (Algebra.commutes r x)
+  commutes' := by rintro r ⟨x⟩; congrm ⟦$(Algebra.commutes r x)⟧
 
 instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
 
@@ -743,8 +743,8 @@ abbrev Quotient.algebraQuotientOfLEComap {R} [CommRing R] [Algebra R A] {p : Ide
     rw [mem_comap, map_sub] at this
     simpa only [Algebra.smul_def] using P.quotientRel_def.mpr
       (P.mul_sub_mul_mem this <| P.quotientRel_def.mp ha)
-  smul_def' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.smul_def _ _)
-  commutes' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.commutes _ _)
+  smul_def' := by rintro ⟨_⟩ ⟨_⟩; congrm ⟦$(Algebra.smul_def ..)⟧
+  commutes' := by rintro ⟨_⟩ ⟨_⟩; congrm ⟦$(Algebra.commutes ..)⟧
 
 instance (priority := 100) quotientAlgebra {R} [CommRing R] {I : Ideal A} [I.IsTwoSided]
     [Algebra R A] : Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=

@@ -561,7 +561,7 @@ theorem algebraMap_injective_of_span_eq_top (s : Set R) (span_eq : Ideal.span s 
   by_contra ne
   have ⟨r, hrs, disj⟩ := Ideal.exists_disjoint_powers_of_span_eq_top s span_eq _ ne
   let r : s := ⟨r, hrs⟩
-  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalization.eq_iff_exists (.powers r.1) _).mp (congr_fun eq r)
+  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalization.eq_iff_exists (.powers r.1) _).mp congr($eq r)
   exact Set.disjoint_left.mp disj eq ⟨n, rfl⟩
 
 /-- The sheaf condition for the structure sheaf on `Spec R`

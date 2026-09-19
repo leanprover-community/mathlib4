@@ -895,7 +895,7 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
   let _ : SeminormedRing R := SeminormedRing.induced R S f
-  { norm_one := (congr_arg norm (map_one f)).trans norm_one }
+  { norm_one := congr(norm $(map_one f)).trans norm_one }
 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
@@ -903,7 +903,7 @@ theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
     [NormMulClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormMulClass R (SeminormedRing.induced R S f).toNorm _ :=
   let _ : SeminormedRing R := SeminormedRing.induced R S f
-  { norm_mul x y := (congr_arg norm (map_mul f x y)).trans <| norm_mul _ _ }
+  { norm_mul x y := congr(norm $(map_mul f x y)).trans <| norm_mul _ _ }
 
 end Induced
 

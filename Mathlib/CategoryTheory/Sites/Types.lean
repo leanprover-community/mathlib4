@@ -98,14 +98,14 @@ noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u)
     (hs.isSheafFor _ (generate_discretePresieve_mem δ)).isSeparatedFor.ext fun ε g ⟨x, _⟩ => by
       have : f₁ (Classical.choose hf₁) = f₂ (Classical.choose hf₂) :=
         Classical.choose_spec hf₁ (g₁ <| g x) ▸
-          Classical.choose_spec hf₂ (g₂ <| g x) ▸ ConcreteCategory.congr_hom h _
+          Classical.choose_spec hf₂ (g₂ <| g x) ▸ congr($h _)
       simp_rw [← comp_apply, ← Functor.map_comp, this, ← op_comp]
       rfl
 
 theorem eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f := by
   funext x
   apply (IsSheafFor.valid_glue _ _ _ <| ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩).trans
-  convert! ConcreteCategory.congr_hom (S.map_id _) _
+  convert! congr($(S.map_id _) _)
 
 theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by
   apply (hs.isSheafFor _ (generate_discretePresieve_mem α)).isSeparatedFor.ext
@@ -115,7 +115,7 @@ theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s :
     ← Functor.map_comp, ← op_comp]
   congr
   ext x
-  exact congr_arg f (Classical.choose_spec hf x).symm
+  congrm f $((Classical.choose_spec hf x).symm)
 
 /-- Given a sheaf `S`, construct an equivalence `S(α) ≃ (α → S(*))`. -/
 @[simps]
@@ -156,7 +156,7 @@ noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology (Type u)) :
 theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S₁ ⟶ S₂)
     (α : Type u) (s : S₁.1.obj (op α)) (x : α) :
     eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op PUnit) (eval S₁.1 α s x) :=
-  (ConcreteCategory.congr_hom (f.hom.naturality (↾fun _ => x).op) s).symm
+  congr($(f.hom.naturality (↾fun _ => x).op) s).symm
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

@@ -109,8 +109,8 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · refine Cocone.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨by simp⟩
     constructor
     · rintro ⟨h₁, h₂⟩ (_ | _ | _)

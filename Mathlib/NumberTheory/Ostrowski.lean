@@ -96,7 +96,7 @@ lemma eq_on_nat_iff_eq : (∀ n : ℕ, f n = g n) ↔ f = g := by
 the natural numbers. -/
 lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f.IsEquiv g := by
   rw [isEquiv_iff_exists_rpow_eq]
-  refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
+  refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congr($h ·))⟩⟩
   ext1 x
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
     ← apply_natAbs_eq, ← apply_natAbs_eq, h (natAbs x.num)]

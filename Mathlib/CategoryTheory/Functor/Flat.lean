@@ -403,7 +403,7 @@ instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
       StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_, ?_⟩
     · simp [← Functor.map_comp, A', T]
     · ext
-      exact congr($(IsCofiltered.eq_condition f' g').right)
+      congrm $(IsCofiltered.eq_condition f' g').right
 
 instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)] :
     IsFiltered (CostructuredArrow (F ⋙ G) X) := by

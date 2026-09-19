@@ -43,7 +43,7 @@ theorem isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divi
     (h : (cyclotomic i R).IsRoot ζ) : ζ ^ n = 1 := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · exact pow_zero _
-  have := congr_arg (eval ζ) (prod_cyclotomic_eq_X_pow_sub_one hn R).symm
+  have := congr(eval ζ $((prod_cyclotomic_eq_X_pow_sub_one hn R).symm))
   rw [eval_sub, eval_X_pow, eval_one] at this
   convert! eq_add_of_sub_eq' this
   convert! (add_zero (M := R) _).symm
@@ -135,12 +135,12 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
   simp only at hnm
   rcases eq_or_ne n 0 with (rfl | hzero)
   · rw [cyclotomic_zero] at hnm
-    replace hnm := congr_arg natDegree hnm
+    replace hnm := congr(natDegree $hnm)
     rwa [natDegree_one, natDegree_cyclotomic, eq_comm, Nat.totient_eq_zero, eq_comm] at hnm
   · have := NeZero.mk hzero
     rw [← map_cyclotomic_int _ R, ← map_cyclotomic_int _ R] at hnm
     replace hnm := map_injective (Int.castRingHom R) Int.cast_injective hnm
-    replace hnm := congr_arg (map (Int.castRingHom ℂ)) hnm
+    replace hnm := congr(map (Int.castRingHom ℂ) $hnm)
     rw [map_cyclotomic_int, map_cyclotomic_int] at hnm
     have hprim := Complex.isPrimitiveRoot_exp _ hzero
     have hroot := isRoot_cyclotomic_iff (R := ℂ).2 hprim

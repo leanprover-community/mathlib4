@@ -113,7 +113,7 @@ theorem tfae_universallyInjective :
   tfae_have 1 ↔ 4 := UniversallyInjective.iff_diagonal f
   tfae_have 3 → 2 := by
     intro ⟨h_inj, hf⟩ K _ g₁ g₂ hg
-    obtain ⟨e, h⟩ := Scheme.SpecToEquivOfField_eq_iff.mp congr((Y.SpecToEquivOfField K) $(hg))
+    obtain ⟨e, h⟩ := Scheme.SpecToEquivOfField_eq_iff.mp congr(Y.SpecToEquivOfField K $hg)
     apply (X.SpecToEquivOfField K).injective
     dsimp at e h
     simp only [Scheme.descResidueField_stalkClosedPointTo_comp] at e h
@@ -147,7 +147,7 @@ theorem tfae_universallyInjective :
     let g₂ := (X.SpecToEquivOfField _).symm ⟨_, CommRingCat.ofHom σ₂.toRingHom⟩
     suffices X.SpecToEquivOfField _ g₁ = X.SpecToEquivOfField _ g₂ by
       rw [Equiv.apply_symm_apply, Equiv.apply_symm_apply] at this
-      exact congr($(this).2.hom)
+      congrm $(this).2.hom
     let q := pullback.lift (f := f) (g := f) g₁ g₂ <| by
       simp only [g₁, g₂, Scheme.SpecToEquivOfField_symm_apply, AlgHom.toRingHom_eq_coe,
         Category.assoc, ← f.SpecMap_residueFieldMap_fromSpecResidueField x, ← Spec.map_comp_assoc]
@@ -160,7 +160,7 @@ theorem tfae_universallyInjective :
     rw [Scheme.SpecToEquivOfField_eq_iff, ← q_fst, ← q_snd]
     obtain ⟨u, hu⟩ := hf (q (IsLocalRing.closedPoint _))
     have hux : u = x := by
-      have := congr(pullback.fst f f $(hu))
+      have := congr(pullback.fst f f $hu)
       rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply] at this
       simpa [Scheme.SpecToEquivOfField_symm_apply, q_fst, g₁] using this
     refine ⟨by simp [g₁, g₂, q_fst, q_snd], ?_⟩

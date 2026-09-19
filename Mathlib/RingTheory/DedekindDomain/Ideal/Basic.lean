@@ -65,7 +65,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit (x : K)
     apply coeToSubmodule_injective
     simp only [coe_mul, adjoinIntegral_coe, I]
     rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
-  convert! congr_arg (· * I⁻¹) mul_self <;>
+  convert! congr($mul_self * I⁻¹) <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
 theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I ≠ ⊥) :

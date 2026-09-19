@@ -126,7 +126,7 @@ theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
 theorem cuspFunction_zero_eq_limUnder_nhds_ne :
     cuspFunction h f 0 = limUnder (𝓝[≠] 0) (cuspFunction h f) := by
   conv_lhs => simp only [cuspFunction, update_self]
-  refine congr_arg lim (Filter.map_congr <| eventuallyEq_nhdsWithin_of_eqOn fun r hr ↦ ?_)
+  congrm lim $(Filter.map_congr <| eventuallyEq_nhdsWithin_of_eqOn fun r hr ↦ ?_)
   rw [cuspFunction, update_of_ne hr]
 
 variable {f h}

@@ -509,7 +509,7 @@ theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
 /-- The `n`th power of a fundamental solution is trivial if and only if `n = 0`. -/
 theorem zpow_eq_one_iff {a : Solution₁ d} (h : IsFundamental a) (n : ℤ) : a ^ n = 1 ↔ n = 0 := by
   rw [← zpow_zero a]
-  exact ⟨fun H => h.y_strictMono.injective (congr_arg Solution₁.y H), fun H => H ▸ rfl⟩
+  exact ⟨fun H => h.y_strictMono.injective congr(Solution₁.y $H), fun H => H ▸ rfl⟩
 
 /-- A power of a fundamental solution is never equal to the negative of a power of this
 fundamental solution. -/

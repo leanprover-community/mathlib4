@@ -293,7 +293,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
   rintro rfl h rfl
   obtain ⟨p, hp⟩ := exists_rename_coe_vars_eq p₁
   rw [← hp, eval₂Hom_rename, eval₂Hom_rename]
-  exact congr(eval₂Hom f₁ (fun x : p₁.vars => $(h x.1 x.2 x.2)) p)
+  congrm eval₂Hom f₁ (fun x : p₁.vars => $(h x.1 x.2 x.2)) p
 
 theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : MvPolynomial σ R}
     (hp : ∀ i ∈ p.vars, g i = 0) : eval₂Hom f g p = f (constantCoeff p) := by

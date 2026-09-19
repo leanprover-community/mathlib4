@@ -546,7 +546,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   -- From these two facts we deduce that `g` actually vanishes on `s`,
   have h3 (i) (his : i ∈ s) : g i = 0 := by
     let ⟨y, hy⟩ := h2 i his
-    have h : g i • i y = g i • a y := congr_fun (h1 i his) y
+    have h : g i • i y = g i • a y := congr($(h1 i his) y)
     rw [← sub_eq_zero, ← smul_sub, smul_eq_zero] at h
     exact h.resolve_right (sub_ne_zero_of_ne hy)
   -- And so, using the fact that the linear combination over `s` and over `insert a s` both

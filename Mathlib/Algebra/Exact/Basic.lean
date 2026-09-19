@@ -75,7 +75,7 @@ lemma comp_injective [One P] [One P'] (mulExact : MulExact f g)
 lemma of_comp_eq_one_of_ker_in_range [One P] (hc : g.comp f = 1)
     (hr : ∀ y, g y = 1 → y ∈ Set.range f) :
     MulExact f g :=
-  fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
+  fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congr($hc x)⟩
 
 /-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -343,7 +343,7 @@ lemma iff_of_ladder_linearEquiv
     Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ :=
   iff_of_ladder_addEquiv e₁.toAddEquiv e₂.toAddEquiv e₃.toAddEquiv
     (f₁₂ := f₁₂) (f₂₃ := f₂₃) (g₁₂ := g₁₂) (g₂₃ := g₂₃)
-    (congr_arg LinearMap.toAddMonoidHom h₁₂) (congr_arg LinearMap.toAddMonoidHom h₂₃)
+    congr($(h₁₂).toAddMonoidHom) congr($(h₂₃).toAddMonoidHom)
 
 lemma of_ladder_linearEquiv_of_exact
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃)
@@ -392,7 +392,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
     · intro x y e
       simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
-      simpa [h₁, h₂] using DFunLike.congr_arg g e
+      simpa [h₁, h₂] using congr(g $e)
     · intro x
       obtain ⟨y, hy⟩ := (h (x - l.1 (g x))).mp (by simp [h₁, g.map_sub])
       exact ⟨⟨y, g x⟩, by simp [hy]⟩

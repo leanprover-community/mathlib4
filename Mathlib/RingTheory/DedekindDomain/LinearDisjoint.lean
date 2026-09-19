@@ -49,7 +49,7 @@ theorem Submodule.traceDual_le_span_map_traceDual [Module.Free A R₂]
       span R₁ (algebraMap F₂ L '' (traceDual A K (1 : Submodule R₂ F₂))) := by
   intro x hx
   have h₂' : F₁.toSubalgebra ⊔ F₂.toSubalgebra = ⊤ := by
-    simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
+    simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(IntermediateField.toSubalgebra $h₂)
   let b₂ := (Free.chooseBasis A R₂).localizationLocalization K A⁰ F₂
   let B₁ := h₁.basisOfBasisRight h₂' b₂
   have h_main : x ∈ span R₁ (Set.range B₁.traceDual) := by
@@ -62,7 +62,7 @@ theorem Submodule.traceDual_le_span_map_traceDual [Module.Free A R₂]
     exact ⟨_, rfl⟩
   have h : Set.range B₁.traceDual =
       Set.range (IsScalarTower.toAlgHom A F₂ L ∘ b₂.traceDual) := by
-    refine congr_arg Set.range <| B₁.traceDual_eq_iff.mpr fun i j ↦ ?_
+    congrm Set.range $(B₁.traceDual_eq_iff.mpr fun i j ↦ ?_)
     rw [LinearDisjoint.basisOfBasisRight_apply, traceForm_apply, Function.comp_apply,
       IsScalarTower.coe_toAlgHom', ← map_mul, h₁.trace_algebraMap h₂, b₂.trace_traceDual_mul,
       MonoidWithZeroHom.map_ite_one_zero]
@@ -187,7 +187,7 @@ private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
     rwa [← sup_toSubalgebra_of_isAlgebraic_right, ← top_toSubalgebra, toSubalgebra_inj] at h₂
   have : Finite ι := Module.Finite.finite_basis b
   have h_main := congr_arg (Submodule.restrictScalars R₁) <|
-    congr_arg coeToSubmodule <| (1 : FractionalIdeal B⁰ L).dual_dual R₁ F₁
+    congr(coeToSubmodule $((1 : FractionalIdeal B⁰ L).dual_dual R₁ F₁))
   rw [← coe_one, ← h_main, coe_dual _ _ (by simp), coe_dual_one, restrictScalars_traceDual,
     ← traceDual_eq_span_map_traceDual_of_linearDisjoint A B R₁ R₂ h₁ h₂' h₃,
     ← coe_restrictScalars A, traceDual_span_of_basis A (1 : Submodule R₂ F₂) b,

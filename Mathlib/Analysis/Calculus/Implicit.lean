@@ -390,7 +390,7 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
       f (hf.implicitFunctionOfComplemented f f' hf' hker p.1 p.2) = p.1 :=
   ((hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).eventually_right_inverse <|
         hf.mem_implicitToOpenPartialHomeomorphOfComplemented_target hf' hker).mono
-    fun ⟨_, _⟩ h => congr_arg Prod.fst h
+    fun ⟨_, _⟩ h => congr($(h).fst)
 
 /-- Any point in some neighborhood of `a` can be represented as
 `HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/

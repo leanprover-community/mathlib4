@@ -68,7 +68,7 @@ noncomputable def isLimitPowerFan : IsLimit (U.powerFan α) :=
         ext i
         dsimp
         ext a
-        exact congr_fun (congr_arg FormalCoproduct.Hom.f (hm a)) i
+        congrm $(hm a).f i
       ext i
       · rfl
       · dsimp
