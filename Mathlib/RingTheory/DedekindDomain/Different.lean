@@ -74,7 +74,7 @@ lemma le_traceDual_iff_map_le_one {I J : Submodule B L} :
     I ≤ Jᵛ ↔ ((I * J : Submodule B L).restrictScalars A).map
       ((trace K L).restrictScalars A) ≤ 1 := by
   rw [Submodule.map_le_iff_le_comap, Submodule.restrictScalars_mul, Submodule.mul_le]
-  simp [IsConcreteLE.le_iff, mem_traceDual]
+  simp [le_iff_mem_imp_mem, mem_traceDual]
 
 lemma le_traceDual_mul_iff {I J J' : Submodule B L} :
     I ≤ (J * J')ᵛ ↔ I * J ≤ J'ᵛ := by
@@ -117,10 +117,10 @@ lemma traceDual_top' :
   split_ifs with h
   · rw [_root_.eq_top_iff]
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
-  · simp only [IsConcreteLE.le_iff, restrictScalars_mem, LinearMap.mem_range, mem_one,
+  · simp only [le_iff_mem_imp_mem, restrictScalars_mem, LinearMap.mem_range, mem_one,
       forall_exists_index, forall_apply_eq_imp_iff, not_forall, not_exists] at h
     obtain ⟨b, hb⟩ := h
-    simp_rw [eq_bot_iff, IsConcreteLE.le_iff, mem_bot, mem_traceDual, mem_top, true_implies,
+    simp_rw [eq_bot_iff, le_iff_mem_imp_mem, mem_bot, mem_traceDual, mem_top, true_implies,
       traceForm_apply, RingHom.mem_range]
     contrapose! hb with hx'
     obtain ⟨c, hc, hc0⟩ := hx'
@@ -134,7 +134,7 @@ lemma traceDual_top [Decidable (IsField A)] :
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
     ← RingHom.range_eq_top, _root_.eq_top_iff]
-  simp [IsConcreteLE.le_iff]
+  simp [le_iff_mem_imp_mem]
 
 end Submodule
 
