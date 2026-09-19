@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adrian Wüthrich
+Authors: Adrian Wüthrich, Jack Pickett
 -/
 module
 
@@ -25,6 +25,8 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
+* `eigenvalues_lapMatrix_le_card`: Every Laplacian eigenvalue (in an ordered field) is at most
+  `|V|`.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
@@ -278,6 +280,43 @@ noncomputable def lapMatrix_ker_basis :=
   Basis.mk G.linearIndependent_lapMatrix_ker_basis_aux G.top_le_span_range_lapMatrix_ker_basis_aux
 
 end
+
+/-- The Laplacian quadratic form is monotone in the graph: if `G ≤ H`, then `xᵀ L(G) x ≤ xᵀ L(H) x`.
+-/
+theorem lapMatrix_toLinearMap₂'_mono {R} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    {G H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj] (hGH : G ≤ H) (x : V → R) :
+    toLinearMap₂' R (G.lapMatrix R) x x ≤ toLinearMap₂' R (H.lapMatrix R) x x := by
+  simp_rw [lapMatrix_toLinearMap₂']
+  refine div_le_div_of_nonneg_right (sum_le_sum fun i _ ↦ sum_le_sum fun j _ ↦ ?_) zero_le_two
+  grind [sq_nonneg, le_iff_adj]
+
+/-- The quadratic form of a simple-graph Laplacian is at most `|V| · ‖x‖²`. -/
+theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    (x : V → R) : x ⬝ᵥ G.lapMatrix R *ᵥ x ≤ Fintype.card V * x ⬝ᵥ x := by
+  classical
+  rw [← toLinearMap₂'_apply']
+  grw [lapMatrix_toLinearMap₂'_mono (R := R) (le_top : G ≤ ⊤) x]
+  rw [lapMatrix_top, toLinearMap₂'_apply', sub_mulVec, dotProduct_sub, natCast_mulVec,
+    dotProduct_smul, smul_eq_mul]
+  have : x ⬝ᵥ of 1 *ᵥ x = (∑ i, x i) ^ 2 := by simp [mulVec, dotProduct, Finset.sum_mul, sq]
+  grw [this, sub_le_self _ <| sq_nonneg _]
+
+/-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
+is at most `|V|`.
+
+Proof: Rayleigh quotient via `dotProduct_mulVec_lapMatrix_le_card`. This is a uniform
+upper bound; it does not assert that `|V|` lies in the spectrum.
+
+Stated via `Module.End.HasEigenvalue` of `toLin'` rather than `IsHermitian.eigenvalues`,
+to avoid importing `Analysis.Matrix.Spectrum`. -/
+theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R] {μ : R}
+    (hμ : End.HasEigenvalue (G.lapMatrix R).toLin' μ) : μ ≤ Fintype.card V := by
+  obtain ⟨x, hx⟩ := hμ.exists_hasEigenvector
+  have hxpos : 0 < x ⬝ᵥ x :=
+    (Fintype.sum_nonneg (mul_self_nonneg <| x ·)).lt_of_ne'
+      (dotProduct_self_eq_zero.not.mpr hx.right)
+  grw [← mul_le_mul_iff_of_pos_right hxpos, ← smul_eq_mul, ← dotProduct_smul,
+    ← hx.apply_eq_smul, toLin'_apply, dotProduct_mulVec_lapMatrix_le_card]
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
