@@ -87,7 +87,7 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
           Set.iUnionLift_const _ (fun i : ι => algebraMap R (K i) r) (fun _ => rfl) _ (by simp) }
   exact liftSup.comp (inclusion hT)
 
-
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
@@ -95,7 +95,6 @@ theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_inclusion]
-  exact SetLike.coe_subset_coe.mpr <| h.trans hT
 
 @[simp]
 theorem iSupLift_comp_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
@@ -103,6 +102,7 @@ theorem iSupLift_comp_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i �
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem iSupLift_mk {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
@@ -111,11 +111,12 @@ theorem iSupLift_mk {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_mk]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem iSupLift_of_mem {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
-  dsimp [iSupLift, inclusion]
+  dsimp [iSupLift, inclusion, Set.inclusion]
   rw [Set.iUnionLift_of_mem]
 
 end Subalgebra
