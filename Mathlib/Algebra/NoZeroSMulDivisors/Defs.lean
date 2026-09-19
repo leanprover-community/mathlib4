@@ -67,10 +67,8 @@ theorem noZeroSMulDivisors_iff_right_eq_zero_of_smul [Zero R] [Zero M] [SMul R M
 
 instance IsAddTorsionFree.to_noZeroSMulDivisors_nat [AddMonoid M] [IsAddTorsionFree M] :
     NoZeroSMulDivisors ℕ M where
-  eq_zero_or_eq_zero_of_smul_eq_zero {n x} hx := by
-    contrapose! hx; simpa using (nsmul_right_injective hx.1).ne hx.2
+  eq_zero_or_eq_zero_of_smul_eq_zero hx := (nsmul_eq_zero_iff.1 hx).symm
 
 instance IsAddTorsionFree.to_noZeroSMulDivisors_int [AddGroup G] [IsAddTorsionFree G] :
     NoZeroSMulDivisors ℤ G where
-  eq_zero_or_eq_zero_of_smul_eq_zero {n x} hx := by
-    contrapose! hx; simpa using (zsmul_right_injective hx.1).ne hx.2
+  eq_zero_or_eq_zero_of_smul_eq_zero hx := (zsmul_eq_zero_iff.1 hx).symm

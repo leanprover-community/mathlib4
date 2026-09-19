@@ -55,8 +55,8 @@ instance instAddCommGroup : AddCommGroup ℤ where
 -- typeclass search, but it is better practice to not rely on algebraic order theory to prove
 -- purely algebraic results on concrete types. Eg the results can be made available earlier.
 
-instance instIsAddTorsionFree : IsAddTorsionFree ℤ where
-  nsmul_right_injective _n hn _x _y := Int.eq_of_mul_eq_mul_left (by lia)
+instance instIsAddTorsionFree : IsAddTorsionFree ℤ :=
+  .of_nsmul_right_injective fun _n hn _x _y ↦ Int.eq_of_mul_eq_mul_left (by lia)
 
 /-!
 ### Extra instances to short-circuit type class resolution
