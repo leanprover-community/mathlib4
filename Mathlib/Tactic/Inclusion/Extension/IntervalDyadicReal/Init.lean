@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Data.Dyadic
+public import Mathlib.Data.Dyadic.ToReal
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Tactic.Inclusion.Extension.Interval
 
