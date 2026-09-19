@@ -65,6 +65,8 @@ namespace StarAlgebra.elemental
 
 variable [CStarAlgebra A]
 
+noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
+
 variable (a : A) [IsStarNormal a]
 
 /-- The natural map from `characterSpace ℂ (elemental ℂ x)` to `spectrum ℂ x` given
