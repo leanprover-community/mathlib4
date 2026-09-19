@@ -22,8 +22,6 @@ public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
--- The following import contains the environment extension for the unused tactic linter.
-public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
@@ -151,4 +149,4 @@ run_cmd liftTermElabM do
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
 
-#allow_unused_tactic! Mathlib.Linter.Style.show
+allow_unused_tactic! Mathlib.Linter.Style.show
