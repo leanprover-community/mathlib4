@@ -8,323 +8,19 @@ import Cache.Hashing
 import Cache.Infra
 import Lake.Load.Manifest
 
+/-!
+# Cache transfers
+
+The shared read mechanism under every workflow (`Cache.Workflow`): the URL
+contract of a file (`mkFileURL`), the `curl` transfer and its classification,
+the decompression pipeline, and the download rounds (`downloadFiles`,
+`getFiles`). It also holds the staging commands. Which rounds a read takes is
+the workflow's decision, not this module's.
+-/
+
 namespace Cache.Requests
 
 open System (FilePath)
-
-/--
-Resolved repository identity for cache lookups.
--/
-structure RepoInfo where
-  repo : String
-  deriving Repr, BEq
-
-/--
-Helper function to extract repository name from a git remote URL
--/
-def extractRepoFromUrl (url : String) : Option String := do
-  let url := url.dropSuffix ".git"
-  let pos ← url.revFind? (· == '/')
-  let pos ← (url.sliceTo pos).revFind? (fun c => c == '/' || c == ':')
-  return url.sliceFrom (String.Slice.Pos.ofSliceTo pos).next! |>.copy
-
-/-- Spot check if a URL is valid for a git remote -/
-def isRemoteURL (url : String) : Bool :=
-  "https://".isPrefixOf url || "http://".isPrefixOf url || "git@github.com:".isPrefixOf url
-
-/--
-Helper function to get repository from a remote name
--/
-def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO (Option String) := do
-  -- If the remote is already a valid URL, attempt to extract the repo from it. This happens with `gh pr checkout`
-  if isRemoteURL remoteName then
-    repoFromURL remoteName
-  else
-  -- If not, we use `git remote get-url` to find the URL of the remote. This assumes the remote has a
-  -- standard name like `origin` or `upstream` or it errors out.
-  let out ← IO.Process.output
-    {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
-  -- If `git remote get-url` fails then return none.
-  let output := out.stdout.trimAscii
-  unless out.exitCode == 0 do
-    IO.println s!"\
-      Warning: failed to run Git to determine Mathlib's repository from {remoteName} remote\n\
-      {errorContext}\n\
-      Continuing to fetch the cache from {MATHLIBREPO}."
-    return none
-  -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
-  repoFromURL output.copy
-where repoFromURL (url : String) : IO (Option String) := do
-    if let some repo := extractRepoFromUrl url then
-      return some repo
-    else
-      IO.println s!"\
-        Warning: Failed to extract repository from remote URL: {url}.\n\
-        {errorContext}\n\
-        Continuing to fetch the cache from {MATHLIBREPO}."
-      return none
-
-/--
-Finds the remote name that points to `leanprover-community/mathlib4` repository.
-Returns the remote name and prints warnings if the setup doesn't follow conventions.
--/
-def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
-  let remotesInfo ← IO.Process.output
-    {cmd := "git", args := #["remote", "-v"], cwd := mathlibDepPath}
-
-  unless remotesInfo.exitCode == 0 do
-    throw <| IO.userError s!"\
-      Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
-      Ensure Git is installed.\n\
-      Stdout:\n{remotesInfo.stdout.trimAscii}\nStderr:\n{remotesInfo.stderr.trimAscii}\n"
-
-  let remoteLines := remotesInfo.stdout.splitToList (· == '\n')
-  let mut mathlibRemote : Option String := none
-  let mut originPointsToMathlib : Bool := false
-
-  for line in remoteLines do
-    let parts := line.trimAscii.copy.splitToList (· == '\t')
-    if parts.length >= 2 then
-      let remoteName := parts[0]!
-      let remoteUrl := parts[1]!.takeWhile (· != ' ') |>.copy -- Remove (fetch) or (push) suffix
-
-      -- Check if this remote points to leanprover-community/mathlib4
-      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
-
-      if isMathlibRepo then
-        if remoteName == "origin" then
-          originPointsToMathlib := true
-        mathlibRemote := some remoteName
-
-  match mathlibRemote with
-  | none =>
-    throw <| IO.userError "Could not find a remote pointing to leanprover-community/mathlib4"
-  | some remoteName =>
-    if remoteName != "upstream" then
-      let mut warning := s!"Some Mathlib ecosystem tools assume that the git remote for `leanprover-community/mathlib4` is named `upstream`. You have named it `{remoteName}` instead. We recommend changing the name to `upstream`."
-      if originPointsToMathlib then
-        warning := warning ++ " Moreover, `origin` should point to your own fork of the mathlib4 repository."
-      warning := warning ++ " You can set this up with `git remote add upstream https://github.com/leanprover-community/mathlib4.git`."
-      IO.println s!"Warning: {warning}"
-    return remoteName
-
-/--
-Extracts PR number from a git ref like "refs/remotes/upstream/pr/1234"
--/
-def extractPRNumber (ref : String) : Option Nat := do
-  let parts := ref.splitToList (· == '/')
-  if parts.length >= 2 && parts[parts.length - 2]! == "pr" then
-    let prStr := parts[parts.length - 1]!
-    prStr.toNat?
-  else
-    none
-
-/-- Check if we're in a detached HEAD state at a nightly-testing tag -/
-def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
-  -- Get the current commit hash and check if it's a nightly-testing tag
-  let currentCommit ← IO.Process.output
-    {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
-  if currentCommit.exitCode == 0 then
-    let commitHash := currentCommit.stdout.trimAscii.copy
-    let tagInfo ← IO.Process.output
-      {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
-    if tagInfo.exitCode == 0 then
-      let parts := tagInfo.stdout.trimAscii.copy.splitOn " "
-      -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash undefined" if no tag
-      if parts.length >= 2 && parts[1]!.startsWith "tags/" then
-        let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
-        return tagName.startsWith "nightly-testing-"
-      else
-        return false
-    else
-      return false
-  else
-    return false
-
-/--
-Inner implementation: may throw if git is unavailable or the directory has no
-git checkout. Callers should use `getRemoteRepo` instead.
--/
-private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
-
-  -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
-  -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
-  -- branches. These should be covered if we ever change how the cache is uploaded from forks
-  -- to obviate the need for a PR.
-  let currentBranch ← IO.Process.output
-    {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
-
-  if currentBranch.exitCode == 0 then
-    let branchName := currentBranch.stdout.trimAscii.dropPrefix "heads/"
-    IO.println s!"Current branch: {branchName}"
-
-    -- Check if we're in a detached HEAD state at a nightly-testing tag
-    let isDetachedAtNightlyTesting ← if branchName == "HEAD".toSlice then
-      isDetachedAtNightlyTesting mathlibDepPath
-    else
-      pure false
-
-    -- Check if we're on a branch that should use nightly-testing remote
-    let shouldUseNightlyTesting := branchName == "nightly-testing".toSlice ||
-                                  branchName.startsWith "lean-pr-testing-" ||
-                                  branchName.startsWith "batteries-pr-testing-" ||
-                                  branchName.startsWith "bump/" ||
-                                  isDetachedAtNightlyTesting
-
-    if shouldUseNightlyTesting then
-      let repo := "leanprover-community/mathlib4-nightly-testing"
-      IO.println s!"Using cache from nightly-testing remote: {repo}"
-      return some {repo := repo}
-
-    -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
-    -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
-    --                       branchName.startsWith "nightly-testing"
-
-    -- TODO: this code is currently broken in two ways: 1. you need to write `%(refname)` in quotes and
-    -- 2. it is looking in the wrong place when in detached HEAD state.
-    -- We comment it out for now, but we should fix it later.
-    -- Check if the current commit coincides with any PR ref
-    -- if !isSpecialBranch then
-    --   let mathlibRemoteName ← findMathlibRemote mathlibDepPath
-    --   let currentCommit ← IO.Process.output
-    --     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
-    --
-    --   if currentCommit.exitCode == 0 then
-    --     let commit := currentCommit.stdout.trim
-    --     -- Get all PR refs that contain this commit
-    --     let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
-    --     let refsInfo ← IO.Process.output
-    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
-    --     -- The code below is for debugging purposes currently
-    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
-    --     {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
-    --     let refsInfo' ← IO.Process.output
-    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
-    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
-    --     {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
-    --
-    --     if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
-    --       let prRefs := refsInfo.stdout.trim.split (· == '\n')
-    --       -- Extract PR numbers from refs like "refs/remotes/upstream/pr/1234"
-    --       for prRef in prRefs do
-    --         if let some prNumber := extractPRNumber prRef then
-    --           -- Get PR details using gh
-    --           let prInfo ← IO.Process.output
-    --             {cmd := "gh", args := #["pr", "view", toString prNumber, "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
-    --           if prInfo.exitCode == 0 then
-    --             if let .ok json := Lean.Json.parse prInfo.stdout.trim then
-    --               if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
-    --                 if let .ok login := owner.getObjValAs? String "login" then
-    --                   if let .ok repoName := json.getObjValAs? String "headRefName" then
-    --                     if let .ok prNum := json.getObjValAs? Nat "number" then
-    --                       let repo := s!"{login}/mathlib4"
-    --                       IO.println s!"Using cache from PR #{prNum} source: {login}/{repoName} (commit {commit.take 8} found in PR ref)"
-    --                       let useFirst := if login != "leanprover-community" then true else false
-    --                       return {repo := repo, useFirst := useFirst}
-
-  -- Fall back to using the remote that the current branch is tracking
-  let trackingRemote ← IO.Process.output
-    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trimAscii}.remote"], cwd := mathlibDepPath}
-
-  let remoteName := if trackingRemote.exitCode == 0 then
-    trackingRemote.stdout.trimAscii.copy
-  else
-    -- If no tracking remote is configured, fall back to origin
-    "origin"
-
-  let repo? ← getRepoFromRemote mathlibDepPath remoteName
-    s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
-  match repo? with
-  | some repo =>
-    IO.println s!"Using cache from {remoteName}: {repo?}"
-    return some {repo := repo}
-  | none =>
-    IO.println s!"Using cache from {MATHLIBREPO}."
-    return none
-
-/--
-Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
-If the current commit coincides with a PR ref, it will determine the source fork
-of that PR rather than just using the origin remote.
-
-Returns `none` if git is unavailable, the path is not inside a git checkout, or
-the remote cannot be resolved. This is the expected outcome when `cache get` is
-invoked on a dependency that was fetched as an archive rather than a git clone;
-callers fall back to `MATHLIBREPO` and the master container.
--/
-def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
-  try
-    return (← getRemoteRepoImpl mathlibDepPath)
-  catch _ =>
-    return none
-
-/--
-Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
-
-Returns `(detectedRepo?, resolvedRepo)`:
-* `detectedRepo?` is what the git remote reports (`none` if it can't be
-  determined); the warning path compares it against an explicit `--repo=` to
-  tell whether the user is overriding the checkout's repo.
-* `resolvedRepo` applies the override precedence `--repo=` > git remote >
-  `MATHLIBREPO`, and is what the read path uses.
-
-`getRemoteRepo` shells out to git and prints branch/remote diagnostics;
-resolving here lets the read path, the warning, and the HEAD hint share a
-single probe keyed on `mathlibDepPath`.
--/
-def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
-    IO (Option String × String) := do
-  let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
-  return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
-
-/--
-Process-wide override for the container fallback list, set by the `--cache-from`
-CLI flag. When `none`, downloads use `defaultContainersForRepo`; when `some cs`,
-all repos use `cs` instead.
--/
-initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
-
-/-- Pair each container in a lookup chain with its read URL. The result keeps
-the chain's trust order. -/
-private def chainWithGetURLs (containers : List Container) :
-    IO (List (Option Container × String)) :=
-  containers.mapM fun c => do return (some c, ← c.getURL)
-
-/--
-Compute the trust-ordered list of container base URLs to try when downloading
-files for a given GitHub repo.
-
-Precedence (most specific wins):
-1. `MATHLIB_CACHE_GET_URL` env var: a single anonymous URL that bypasses the
-   container logic entirely.
-2. `--cache-from` CLI override (via `cacheFromOverride`).
-3. `MATHLIB_CACHE_FROM` env var (same comma-separated shape as `--cache-from`):
-   how CI widens the lookup chain to match its write target without touching
-   each `cache get` call. The (repo, branch) → chain mapping lives in CI config,
-   not here.
-4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
-   overrides it.
-
-An empty value means unset for both variables here, as it does for
-`MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
--/
-def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
-  if let some url := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL") then
-    return [(none, url)]
-  if let some cliOverride ← cacheFromOverride.get then
-    return ← chainWithGetURLs cliOverride
-  let envOverride? ← do
-    match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
-    | none => pure none
-    | some s =>
-      match parseCacheFromList s with
-      | some cs => pure (some cs)
-      | none =>
-        IO.eprintln s!"Warning: ignoring MATHLIB_CACHE_FROM={s} \
-          (unrecognized container name). Known containers: \
-          {", ".intercalate (Container.all.map Container.name)}."
-        pure none
-  chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
 
 /--
 `curl` flags that let a cache read follow a redirect, so a read base may answer
@@ -372,49 +68,32 @@ def mkFileURL (container : Option Container) (repo containerURL fileName : Strin
   s!"{containerURL}/{fileDirPath container repo repoScope}/{fileName}"
 
 /--
-Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
-When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
+One download round: the files still missing are requested from `url`, at the
+path `mkFileURL container? repo url file scope?`. `container?` is `none` for a
+flat endpoint (`MATHLIB_CACHE_GET_URL`, or the public cache read as one URL),
+and `scope?` is the per-commit namespace the round reads at. The workflows
+(`Cache.Workflow`) build the rounds; `downloadFiles` runs them in order.
 -/
-initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
+structure DownloadRound where
+  container? : Option Container
+  url : String
+  scope? : Option String := none
+  deriving BEq, Repr, Inhabited
 
-/--
-Whether `scope` is a well-formed per-commit scope: a nonempty run of hex
-digits, at most 64 of them (a commit SHA, abbreviated or full). The scope
-lands in URL paths and in file names — the fork namespace `f/{repo}/{scope}/`,
-the marker `m/{repo}/{scope}`, and the marker's local temp file — so anything
-else (a path separator, `..`, an unresolved ref name) is a misconfiguration
-that must fail loudly rather than leak into a path.
--/
-def isValidScope (scope : String) : Bool :=
-  !scope.isEmpty && scope.length ≤ 64 &&
-    scope.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f') || ('A' ≤ c && c ≤ 'F')
-
-/--
-Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
-env var > `none`. Both sources mean "the user has explicitly opted into a
-SHA-scoped read"; the non-default-scope warning fires for either. A scope that
-is not a hex SHA (see `isValidScope`) throws: every consumer embeds the scope
-in a URL path or a file name.
--/
-def getRepoScope : IO (Option String) := do
-  let scope? ← do
-    if let some s ← scopeOverride.get then pure (some s)
-    else getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
-  let some scope := scope? | return none
-  unless isValidScope scope do
-    throw <| IO.userError s!"invalid cache scope '{scope}': a scope is a commit SHA (hex \
-      digits; --scope also accepts any ref `git rev-parse` can resolve from inside a git checkout)"
-  return some scope
-
-def getGitCommitHash : IO String :=
-  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
+/-- The full SHA of `HEAD` in `cwd` (`git rev-parse HEAD`); throws when git fails. -/
+def getGitCommitHash (cwd : FilePath := ".") : IO String := do
+  let out ← IO.Process.output {cmd := "git", args := #["rev-parse", "HEAD"], cwd}
+  unless out.exitCode == 0 do
+    throw <| IO.userError
+      s!"git rev-parse HEAD failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
+  return out.stdout.trimAsciiEnd.copy
 
 section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded
 from a single container's base URL. `scope?` is the per-round SHA scope (see
-`mkFileURL`); it is the resolved `getRepoScope` for a normal read and an
-individual walked SHA for an `--unsafe` forks round. -/
+`mkFileURL`); it is the round's scope, the resolved `--scope` for a normal
+read and an individual walked SHA for an `--unsafe` forks round. -/
 def mkGetConfigContent (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap) (scope? : Option String) : IO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
@@ -784,6 +463,10 @@ private def downloadFilesFromContainer
     (scope? : Option String) (decompState : DecompState) :
     IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
+  -- `legacy` answers reads with 403 once its public access is revoked ahead
+  -- of retirement; treat that as a miss so the chain stays quiet for clients
+  -- whose chain still lists it.
+  let treatForbiddenAsMiss := container == some Container.legacy
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
     let args := #["--request", "GET", "--parallel", "--silent"] ++
@@ -791,18 +474,12 @@ private def downloadFilesFromContainer
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
       #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    -- `legacy` answers reads with 403 once its public access is revoked ahead
-    -- of retirement; treat that as a miss so the chain stays quiet for clients
-    -- whose chain still lists it.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
       (classifyDownload · · treatForbiddenAsMiss) (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
-    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
         downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
@@ -818,61 +495,28 @@ private def downloadFilesFromContainer
         | _ => (served, failed + 1)
     return ({ failed, decomp := decompState }, served)
 
-/-- Expand the trust-ordered container list into the concrete download rounds to
-run, each carrying the SHA scope to read at. A round is
-`(container?, url, scope?)`.
-
-Without `--unsafe` (`unsafeScopes` empty) every round uses the single resolved
-`scope?`: one round per container, all at the same scope. When no explicit
-scope is given, `headScope?` (the checked-out HEAD, resolved by the caller)
-applies to the `forks` round only: fork uploads live under the per-commit
-namespace, so this is what lets a plain `cache get` retrieve what CI built for
-exactly the commit the reader has checked out. The other containers' layouts
-are not SHA-scoped, so `headScope?` must not leak into their rounds.
-
-With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
-SHA-scoped container, whose markers the walk probed — is expanded into one round
-per discovered SHA, most recent first. Every other container reads unscoped
-(`master` is flat and serves the bulk of files by hash; `legacy` has no walked
-markers), so the base `scope?` is intentionally dropped here. -/
-def expandDownloadRounds (containerURLs : List (Option Container × String))
-    (scope? : Option String) (unsafeScopes : List String)
-    (headScope? : Option String := none) :
-    List (Option Container × String × Option String) :=
-  if unsafeScopes.isEmpty then
-    containerURLs.map fun (c, url) =>
-      if c == some Container.forks then (c, url, scope? <|> headScope?)
-      else (c, url, scope?)
-  else
-    containerURLs.flatMap fun (c, url) =>
-      if c == some Container.forks then
-        unsafeScopes.map fun sha => (c, url, some sha)
-      else
-        [(c, url, none)]
-
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Return the number of files which failed to download.
 If `decompress` is true, decompresses files as they're downloaded (pipelined).
 
-For each repo, the tool tries the trust-ordered container list returned by
-`effectiveGetURLs`. After each container round, files that were successfully
-fetched are filtered out so the next container only retries genuine misses.
+`rounds` are the download rounds the workflow resolved, in order (see
+`DownloadRound`). After each round, files that were successfully fetched are
+filtered out so the next round only retries genuine misses.
 
-`unsafeScopes` is the list of SHA scopes discovered by `cache get --unsafe`
-(empty for a normal read); see `expandDownloadRounds`. -/
+With `reportScopes` (set by `cache get --unsafe`) the summary reports which
+scoped rounds supplied files. -/
 def downloadFiles
-    (repo : String) (hashMap : IO.ModuleHashMap)
+    (rounds : List DownloadRound) (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
     (decompress : Bool := false) (forceUnpack : Bool := false)
     (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
-    (unsafeScopes : List String := []) : IO Nat := do
+    (reportScopes : Bool := false) : IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   if hashMap.isEmpty then IO.println "No files to download"; return 0
   IO.FS.createDirAll IO.CACHEDIR
 
-  let containerURLs ← effectiveGetURLs repo
-  if containerURLs.isEmpty then
-    IO.eprintln "No container URLs configured for download"
+  if rounds.isEmpty then
+    IO.eprintln "No cache URLs configured for download"
     return hashMap.size
 
   -- Set up decompression config if enabled: one config shared by all container
@@ -884,19 +528,8 @@ def downloadFiles
   else
     pure none
 
-  -- Walk container URLs in trust order. After each round, drop files that
-  -- succeeded so the next round only retries genuine misses. With `--unsafe`
-  -- the `forks` container is expanded into one round per discovered SHA scope.
-  let scope? ← getRepoScope
-  -- With no explicit scope, the forks round defaults to HEAD: `cache get` on a
-  -- checked-out commit retrieves what CI built for exactly that commit, fork
-  -- included. This adds no trust over an unscoped forks read — the namespace
-  -- can only hold artifacts built from the commit the reader already has.
-  let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
-      try pure (some (← getGitCommitHash)) catch _ => pure none
-    else pure none
-  let rounds := expandDownloadRounds containerURLs scope? unsafeScopes headScope?
-  let unsafeMode := !unsafeScopes.isEmpty
+  -- Walk the rounds in trust order. After each round, drop files that
+  -- succeeded so the next round only retries genuine misses.
   let mut remaining := hashMap
   -- Decompression pipeline state, carried from each round into the next (see
   -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
@@ -909,13 +542,14 @@ def downloadFiles
   -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
   -- attributed by the drop in `remaining` across that round.
   let mut scopeServed : Array (String × Nat) := #[]
-  for (container?, url, roundScope?) in rounds do
+  for round in rounds do
     if remaining.isEmpty then break
-    let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
-    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
+    let scopeNote := match round.scope? with | some s => s!" (scope {s})" | none => ""
+    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
+      {round.url}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel
-      decompConfig roundScope? decompState
+    let (s, served) ← downloadFilesFromContainer round.container? repo round.url remaining
+      parallel decompConfig round.scope? decompState
     -- Carry the decompression pipeline into the next round and the drain
     -- below: files left behind here are never decompressed. Drop the files
     -- this round served so the next container only retries genuine misses,
@@ -923,13 +557,13 @@ def downloadFiles
     decompState := s.decomp
     downloadFailed := downloadFailed + s.failed
     remaining := remaining.filter fun _ hash => !served.contains hash
-    if unsafeMode then
-      if let some sha := roundScope? then
+    if reportScopes then
+      if let some sha := round.scope? then
         scopeServed := scopeServed.push (sha, before - remaining.size)
 
   -- `--unsafe`: report which fork commits actually contributed files, so the
   -- user knows whose artifacts they ended up trusting.
-  if unsafeMode then
+  if reportScopes then
     if scopeServed.isEmpty then
       IO.eprintln "--unsafe: no fork scopes were needed; \
         all files were served by higher-trust containers."
@@ -1038,15 +672,14 @@ def checkForManifestMismatch : IO.CacheM Unit := do
 
 /-- Downloads missing files, and unpacks files.
 
-`repo` is the already-resolved GitHub repo (see `resolveRepo`); its
-trust-ordered container list from `defaultContainersForRepo` is the single
-source of truth for what gets tried — there's no separate outer-loop
-iteration. Master's cache reaches fork builds via `master` being in the fork
-chain (the highest-trust source, holding the bulk of any fork's deps). -/
+`rounds` are the download rounds the workflow resolved (see `Cache.Workflow`);
+`repo` is the resolved repo they read for. This function is the shared read
+mechanism under every workflow: the toolchain and manifest checks of a project
+that depends on Mathlib, the download rounds, and the decompression. -/
 def getFiles
-    (repo : String) (hashMap : IO.ModuleHashMap)
+    (rounds : List DownloadRound) (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload forceUnpack parallel decompress : Bool)
-    (unsafeScopes : List String := [])
+    (reportScopes : Bool := false)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
@@ -1071,10 +704,10 @@ def getFiles
     else pure none
   else pure none
 
-  let failed ← downloadFiles repo hashMap forceDownload parallel
+  let failed ← downloadFiles rounds repo hashMap forceDownload parallel
     (warnOnMissing := true)
     (decompress := decompress) (forceUnpack := forceUnpack)
-    isMathlibRoot mathlibDepPath (unsafeScopes := unsafeScopes)
+    isMathlibRoot mathlibDepPath (reportScopes := reportScopes)
   if failed > 0 then
     IO.println s!"Downloading {failed} files failed"
     IO.Process.exit 1

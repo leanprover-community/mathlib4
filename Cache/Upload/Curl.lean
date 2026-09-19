@@ -32,8 +32,8 @@ def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
 /-- Formats the curl config file that lists the files to upload: each staged
-file goes to its `StagedUploadDest.fileURL`, and `stagedUploadDest` resolves
-the destination once. The response body goes to the null device: stdout must
+file goes to its `StagedUploadDest.fileURL`, on the destination `Upload.dest`
+gives. The response body goes to the null device: stdout must
 carry only the per-transfer JSON reports that `monitorCurl` parses. -/
 def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
@@ -41,8 +41,8 @@ def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : Stri
       -o {IO.nullDevice}"
   "\n".intercalate l
 
-/-- Calls `curl` to send a set of files to the already-resolved destination
-(see `stagedUploadDest`), signed per request with `signArgs`. Exits with
+/-- Calls `curl` to send a set of files to the destination (see `Upload.dest`),
+signed per request with `signArgs`. Exits with
 code 1 when any file fails to upload. -/
 def putFilesViaCurl
     (dest : StagedUploadDest) (files : Array FilePath) (tempConfigFilePath : FilePath)

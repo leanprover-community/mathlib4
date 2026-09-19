@@ -567,9 +567,6 @@ Note: An argument like `Archive` is treated as module, not a path.
 -/
 def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     IO <| Except String <| Array (Name × FilePath) := do
-  if argₛ.startsWith "-" then
-    -- provided option after command
-    return .error s!"Invalid argument: option must come before command {argₛ}"
   -- TODO: This could be just `FilePath.normalize` if the TODO there was addressed
   let arg : FilePath := System.mkFilePath <|
     (argₛ : FilePath).normalize.components.filter (· != "")
@@ -646,17 +643,14 @@ where
     pure leanModulesInFolder
 
 /--
-Parse command line arguments.
-Position `0` (i.e. the command `get`, `clean`, etc.) is ignored.
-
-The remaining arguments are parsed as either module name or file path, see `leanModulesFromSpec`.
+The modules the command-line arguments `specs` name, each a module name or a
+file path (see `leanModulesFromSpec`). An argument that names nothing is an
+error, exit 1.
 -/
-def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
-  match args with
-  | [] => pure ∅
-  | _ :: args₀ => args₀.foldlM (init := ∅) fun acc (arg : String) => do
+def parseModuleSpecs (specs : List String) : CacheM <| Std.HashMap Name FilePath := do
+  specs.foldlM (init := ∅) fun acc (spec : String) => do
     let sp := (← read).srcSearchPath
-    match (← leanModulesFromSpec sp arg) with
+    match (← leanModulesFromSpec sp spec) with
     | .ok mods =>
       pure <| acc.insertMany mods
     | .error msg =>
