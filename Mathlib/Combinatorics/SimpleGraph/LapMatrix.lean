@@ -298,8 +298,8 @@ theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictO
   grw [lapMatrix_toLinearMap₂'_mono (R := R) (le_top : G ≤ ⊤) x]
   rw [lapMatrix_top, toLinearMap₂'_apply', sub_mulVec, dotProduct_sub, natCast_mulVec,
     dotProduct_smul, smul_eq_mul]
-  convert (sub_le_self (Fintype.card V * x ⬝ᵥ x) (sq_nonneg (∑ i, x i))) using 2
-  simp [mulVec, of_apply, dotProduct, Finset.sum_mul, sq]
+  have : x ⬝ᵥ of 1 *ᵥ x = (∑ i, x i) ^ 2 := by simp [mulVec, dotProduct, Finset.sum_mul, sq]
+  grw [this, sub_le_self _ <| sq_nonneg _]
 
 /-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
 is at most `|V|`.
