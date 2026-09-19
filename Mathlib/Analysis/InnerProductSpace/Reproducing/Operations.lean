@@ -15,26 +15,37 @@ This file implements the maps that show how RKHSs created from kernels formed by
 to a set of kernels relate to the RKHSs of the constituant kernels.
 
 ## main definitions
+
+The definitions are sorted by operation.
+
+#### SMul
+ - `generator`: the operator `f ↦ c • ↑f` inducing the RKHS `c • H`.
+ - `equiv`: for `c ≠ 0` the space `c • H` is continuously linearly equivalent to `H`
+
+#### Add
+
  - `generator`: the operator `(f, g) ↦ ⇑f + ⇑g` inducing the RKHS `H + H'`.
  - `OfKernelAddEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
     quotient space over `OfKernel K × OfKernel K'`.
  - `projection`: isometry yielding the elements of `H × H'` achieving the norm of `H + H'`.
+
 -/
 
 public noncomputable section
 
-open InnerProductSpace Submodule RKHS
-
 namespace RKHS
 
-namespace Add'
+open InnerProductSpace Submodule
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*}
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
 variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
-variable (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H']
-variable [RKHS 𝕜 H X V] [RKHS 𝕜 H' X V]
+variable [RKHS 𝕜 H X V]
+
+namespace Add'
+
+variable (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [RKHS 𝕜 H' X V]
 
 /-- The operator `(f, g) ↦ ⇑f + ⇑g`, where addition is in `X → V`. -/
 def generator : WithLp 2 (H × H') →L[𝕜] (X → V) :=
@@ -169,5 +180,94 @@ theorem norm_sq_le (f : H + H') (f₁ : H) (f₂ : H') (h : ⇑f = f₁ + f₂) 
     _ = ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := WithLp.prod_norm_sq_eq_of_L2 _
 
 end Add'
+
+namespace SMul
+
+variable (c : 𝕜)
+
+/-- The operator `f ↦ c • ↑f`, where scalar multiplication is in `X → V`. -/
+def generator : H →L[𝕜] (X → V) := c • coeCLM 𝕜
+
+variable {H} in
+@[simp]
+lemma generator_apply (f : H) (x : X) : generator H c f x = c • f x := by rfl
+
+instance : IsClosed ((generator H c).ker : Set H) := (generator H c).isClosed_ker
+
+lemma generator_injective {c} (h : c ≠ 0) : Function.Injective (generator H c) := by
+  intro a b
+  simp [generator, h]
+
+lemma ker_eq_bot {c} (h : c ≠ 0) : (generator H c).ker = ⊥ := by
+  simp [LinearMap.ker_eq_bot, generator_injective H h]
+
+/-- The RKHS `H` multiplied by the scalar `c`, defined as quotient of the original `H`. -/
+abbrev smulSpace := H ⧸ (generator H c).ker
+
+variable [CompleteSpace H]
+
+instance : RKHS 𝕜 (smulSpace H c) X V where
+  coeCLM := (generator H c).ker.liftQL (generator H c) (le_refl _)
+  coeCLM_injective := fun f g hfg => by
+    refine (Function.Injective.eq_iff ?_).mp hfg
+    simp [← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
+
+instance : Subsingleton (smulSpace H 0) where
+  allEq := by simp [smulSpace, Submodule.Quotient.subsingleton_iff, generator]
+
+lemma mk_eq (f : H) :
+    Submodule.Quotient.mk (p:=(generator H c).ker) f = generator H c f := rfl
+
+section CompleteSpaceV
+
+variable [CompleteSpace V]
+
+lemma kerFun_mem_orthogonal (x : X) (v : V) (hc : c ≠ 0) : kerFun H x v ∈ (generator H c).kerᗮ := by
+  intro p hp
+  rw [LinearMap.mem_ker, funext_iff] at hp
+  simp_all
+
+lemma kerFun_apply_eq_mk {c} (hc : c ≠ 0) (x : X) (v : V) :
+    kerFun (smulSpace H c) x v = Submodule.Quotient.mk (starRingEnd 𝕜 c • kerFun H x v) := by
+  rw [Quotient.mk_smul ((generator H c)).ker ((starRingEnd 𝕜) c) ((kerFun H x) v),
+    ← quotientEquivOrthogonal_symm_eq_mk (generator H c).ker _ (kerFun_mem_orthogonal H c x v hc),
+    ← LinearIsometryEquiv.map_smul, (generator H c).ker.quotientEquivOrthogonal.eq_symm_apply,
+    ext_iff_inner_right (𝕜 := 𝕜)]
+  intro f
+  rw [(generator H c).ker.quotientEquivOrthogonal.inner_map_eq_flip,
+    (generator H c).ker.quotientEquivOrthogonal_symm_eq_mk, kerFun_inner]
+  simp only [SetLike.mk_smul_mk, coe_inner]
+  change ⟪v, generator H c (↑f) x⟫_𝕜 = _
+  simp [generator, inner_smul_left, inner_smul_right]
+
+theorem kernel_smul_eq_norm_sq_smul_kernel : kernel (smulSpace H c) = (‖c‖ : 𝕜) ^ 2 • kernel H := by
+  by_cases hc : c = 0
+  · subst c
+    have hcoe : coeCLM 𝕜 (H := smulSpace H 0) = 0 := Subsingleton.eq_zero _
+    ext
+    simp only [kernel_apply, kerFun_def, hcoe, ContinuousLinearMap.comp_zero, map_zero, zero_apply,
+      norm_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, Matrix.smul_apply,
+      ContinuousLinearMap.adjoint_adjoint, zero_smul]
+  · ext
+    simp only [← kerFun_apply, kerFun_apply_eq_mk H hc, Quotient.mk_smul, coe_smul, Pi.smul_apply,
+      Matrix.smul_apply, smul_apply]
+    change starRingEnd 𝕜 c • generator H c (kerFun H _ _ ) _ = _
+    simp [generator_apply, smul_smul, RCLike.conj_mul]
+
+end CompleteSpaceV
+
+/-- If `smulSpace H c` is not a `Subsingleton`, then it is continuously linearly equivalent to `H`.
+-/
+def equiv (h : c ≠ 0) : smulSpace H c ≃L[𝕜] H := ContinuousLinearEquiv.equivOfInverse'
+  ((generator H c).ker.liftQL (ContinuousLinearMap.id 𝕜 H) (by simp [ker_eq_bot H h]))
+  ((generator H c).ker.mkQL)
+  (by ext; rfl)
+  (by
+    ext1 f
+    induction f using Submodule.Quotient.induction_on with
+    | _ f => rfl
+  )
+
+end SMul
 
 end RKHS
