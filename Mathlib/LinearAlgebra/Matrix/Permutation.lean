@@ -34,7 +34,9 @@ open Equiv
 variable {n R : Type*} [DecidableEq n] (σ τ : Perm n)
 
 variable (R) in
-/-- the permutation matrix associated with an `Equiv.Perm` -/
+/-- the permutation matrix associated with an `Equiv.Perm`.
+
+This is available in a bundled form as `Matrix.permMatrixHom`. -/
 abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 
