@@ -291,6 +291,15 @@ theorem mul_continuousOn {f g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
 @[deprecated (since := "2026-07-01")] alias fun_smul_of_continuousOn := fun_continuousOn_smul
 @[deprecated (since := "2026-07-01")] alias fun_mul_of_continuousOn := fun_continuousOn_mul
 
+@[simp]
+theorem circleIntegrable_iff_circleIntegrable_const_smul [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
+    (h : s ≠ 0) :
+    CircleIntegrable (s • f) c R ↔ CircleIntegrable f c R := by
+  constructor <;> intro hf
+  · rw [show f = s⁻¹ • s • f by simp_all]
+    fun_prop
+  · fun_prop
+
 /-- The function we actually integrate over `[0, 2π]` in the definition of `circleIntegral` is
 integrable. -/
 theorem out [NormedSpace ℂ E] (hf : CircleIntegrable f c R) :
@@ -525,7 +534,7 @@ theorem norm_integral_le_of_norm_le_const {f : ℂ → E} {c : ℂ} {R C : ℝ} 
 theorem norm_two_pi_i_inv_smul_integral_le_of_norm_le_const {f : ℂ → E} {c : ℂ} {R C : ℝ}
     (hR : 0 ≤ R) (hf : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), f z‖ ≤ R * C := by
-  have : ‖(2 * π * I : ℂ)⁻¹‖ = (2 * π)⁻¹ := by simp [Real.pi_pos.le]
+  have : ‖(2 * π * I : ℂ)⁻¹‖ = (2 * π)⁻¹ := by simp
   rw [norm_smul, this, ← div_eq_inv_mul, div_le_iff₀ Real.two_pi_pos, mul_comm (R * C), ← mul_assoc]
   exact norm_integral_le_of_norm_le_const hR hf
 
@@ -645,7 +654,7 @@ theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) 
       ((2 * π)⁻¹ * ∫ θ : ℝ in 0..2 * π, ‖f (circleMap c R θ)‖) * |R|⁻¹ ^ n :=
   calc ‖cauchyPowerSeries f c R n‖
     _ = (2 * π)⁻¹ * ‖∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ := by
-      simp [cauchyPowerSeries, norm_smul, Real.pi_pos.le]
+      simp [cauchyPowerSeries, norm_smul]
     _ ≤ (2 * π)⁻¹ * ∫ θ in 0..2 * π, ‖deriv (circleMap c R) θ •
         (circleMap c R θ - c)⁻¹ ^ n • (circleMap c R θ - c)⁻¹ • f (circleMap c R θ)‖ := by
       gcongr
