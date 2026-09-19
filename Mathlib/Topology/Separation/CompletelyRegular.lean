@@ -206,12 +206,12 @@ instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
 theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
     (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
     CompletelyRegularSpace X := by
-  rw [← zeroDimensionalSpace_iff_isTopologicalBasis] at h
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen] at h
   infer_instance
 
 theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
     [CompletelyRegularSpace X] (hX : .mk X < 𝔠) : ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
   refine isTopologicalBasis_of_isOpen_of_nhds (fun x s ↦ IsClopen.isOpen s) (fun x s hxs hs ↦ ?_)
   choose f hf using completely_regular_isOpen x s hs hxs
   obtain ⟨hfc, hf₀, hf₁⟩ := hf
@@ -233,7 +233,7 @@ theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
     [CompletelyRegularSpace X] (hX : .mk X < 𝔠) :
     IsTopologicalBasis {s : Set X | IsClopen s} := by
-  rw [← zeroDimensionalSpace_iff_isTopologicalBasis]
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
   exact CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum hX
 
 instance [CompletelyRegularSpace X] [Countable X] : ZeroDimensionalSpace X :=

@@ -837,7 +837,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
 -- A more general instance is provided below.
 private local instance [T2Space X] [TotallyDisconnectedSpace X] [CompactSpace X] :
     ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
+  rw [zeroDimensionalSpace_iff_nhds_hasBasis_isClopen]
   refine fun x ↦ ⟨fun U ↦ ⟨fun hU ↦ ?_, fun ⟨V, ⟨hxV, V_op⟩, hUV⟩ ↦ ?_⟩⟩
   · have hx : connectedComponent x = {x} :=
       totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
@@ -857,7 +857,7 @@ private local instance [T2Space X] [TotallyDisconnectedSpace X] [CompactSpace X]
 
 instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] :
     ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
   refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
   let u : Set s := ((↑) : s → X) ⁻¹' interior s
@@ -889,7 +889,7 @@ instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] 
 (since := "2026-08-28")]
 theorem loc_compact_Haus_tot_disc_of_zero_dim [T2Space X] [TotallyDisconnectedSpace X]
     [WeaklyLocallyCompactSpace X] : IsTopologicalBasis {s : Set X | IsClopen s} := by
-  rw [← zeroDimensionalSpace_iff_isTopologicalBasis]
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
   infer_instance
 
 theorem totallyDisconnectedSpace_iff_totallySeparatedSpace

@@ -109,7 +109,7 @@ theorem zeroDimensionalSpace_def : ZeroDimensionalSpace X ↔ HasSmallInductiveD
 theorem zeroDimensionalSpace_def' : ZeroDimensionalSpace X ↔ HasSmallInductiveDimensionLE X 0 :=
   .rfl
 
-lemma zeroDimensionalSpace_iff_isTopologicalBasis :
+lemma zeroDimensionalSpace_iff_isTopologicalBasis_isClopen :
     ZeroDimensionalSpace X ↔ IsTopologicalBasis { s : Set X | IsClopen s } := by
   constructor
   · intro (.succ _ s hs h)
@@ -120,25 +120,25 @@ lemma zeroDimensionalSpace_iff_isTopologicalBasis :
   · exact fun h ↦ .succ 0 _ h fun _ hU ↦ hU.frontier_eq ▸ .zero
 
 @[deprecated (since := "2026-08-28")]
-alias hasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
+alias hasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis_isClopen
 
 @[deprecated (since := "2026-06-21")]
-alias HasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis
+alias HasSmallInductiveDimensionLT_one_iff := zeroDimensionalSpace_iff_isTopologicalBasis_isClopen
 
 theorem isTopologicalBasis_isClopen [ZeroDimensionalSpace X] :
     IsTopologicalBasis { s : Set X | IsClopen s } :=
-  zeroDimensionalSpace_iff_isTopologicalBasis.1 ‹_›
+  zeroDimensionalSpace_iff_isTopologicalBasis_isClopen.1 ‹_›
 
 theorem ZeroDimensionalSpace.of_isTopologicalBasis {u : Set (Set X)} (hs : ∀ s ∈ u, IsClopen s)
     (hu : IsTopologicalBasis u) : ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
   exact hu.of_isOpen_of_subset (fun _ ↦ IsClopen.isOpen) hs
 
-theorem zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis :
+theorem zeroDimensionalSpace_iff_nhds_hasBasis_isClopen :
     ZeroDimensionalSpace X ↔ ∀ x : X, (𝓝 x).HasBasis (fun s ↦ IsClopen s ∧ x ∈ s) id where
   mp _ _ := isTopologicalBasis_isClopen.nhds_hasBasis
   mpr H := by
-    rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+    rw [zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
     exact .of_hasBasis_nhds H
 
 theorem nhds_basis_isClopen [ZeroDimensionalSpace X] (x : X) :
@@ -161,7 +161,7 @@ theorem ZeroDimensionalSpace.of_hasBasis
     (H : ∀ x : X, ∃ (ι : Sort*) (p : ι → Prop) (s : ι → Set X),
       (∀ i, p i → IsClopen (s i)) ∧ (𝓝 x).HasBasis p s) :
     ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis_iff_nhds_basis]
+  rw [zeroDimensionalSpace_iff_nhds_hasBasis_isClopen]
   intro x
   obtain ⟨ι, p, s, hx, hx'⟩ := H x
   apply hx'.to_hasBasis'
@@ -169,7 +169,7 @@ theorem ZeroDimensionalSpace.of_hasBasis
   · exact fun s ⟨hs, hx⟩ ↦ hs.isOpen.mem_nhds hx
 
 instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
-  rw [zeroDimensionalSpace_iff_isTopologicalBasis]
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
   simpa using isTopologicalBasis_opens (α := X)
 
 instance [IndiscreteTopology X] : ZeroDimensionalSpace X := by

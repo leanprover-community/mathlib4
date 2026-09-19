@@ -376,5 +376,5 @@ instance [T0Space α] [ZeroDimensionalSpace α] : TotallySeparatedSpace α := by
 theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space α]
     (h : TopologicalSpace.IsTopologicalBasis { s : Set α | IsClopen s }) :
     TotallySeparatedSpace α := by
-  rw [← zeroDimensionalSpace_iff_isTopologicalBasis] at h
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen] at h
   infer_instance
