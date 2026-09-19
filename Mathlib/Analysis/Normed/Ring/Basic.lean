@@ -786,6 +786,16 @@ theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏
 theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
   map_prod nnnormHom.toMonoidHom f s
 
+@[simp]
+theorem Multiset.norm_prod_map (s : Multiset β) (f : β → α) :
+    ‖(s.map f).prod‖ = (s.map (‖f ·‖)).prod := by
+  simpa using normHom.toMonoidHom.map_multiset_prod (s.map f)
+
+@[simp]
+theorem Multiset.nnnorm_prod_map (s : Multiset β) (f : β → α) :
+    ‖(s.map f).prod‖₊ = (s.map (‖f ·‖₊)).prod := by
+  simpa using nnnormHom.toMonoidHom.map_multiset_prod (s.map f)
+
 end SeminormedCommRing
 
 section NormedAddCommGroup
