@@ -103,20 +103,11 @@ lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
 
 variable {G}
 
-/-- Conjugation induces an equivariant map between the SubAddAction of
-the stabilizer of a point and that of its translate. -/
-def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    {g : G} {a b : α} (hg : b = g +ᵥ a) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
-      (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
-  toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
-  map_vadd' := fun ⟨k, hk⟩ x ↦ by
-    simp [← SetLike.coe_eq_coe, AddAction.addSubgroup_vadd_def,
-      AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
-
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate. -/
-@[to_additive existing SubAddAction.ofStabilizer.conjMap]
+@[to_additive SubAddAction.ofStabilizer.conjMap
+/-- Conjugation induces an equivariant map between the SubAddAction of
+the stabilizer of a point and that of its translate. -/]
 def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
     MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
   toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩

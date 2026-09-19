@@ -62,7 +62,7 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
-class AddZeroClass (M : Type*) extends AddZero M where
+class AddZeroClass (M : Type*) extends Zero M, Add M, AddZero M where
   /-- Zero is a left neutral element for addition -/
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
@@ -71,7 +71,7 @@ class AddZeroClass (M : Type*) extends AddZero M where
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 @[to_additive]
-class MulOneClass (M : Type*) extends MulOne M where
+class MulOneClass (M : Type*) extends One M, Mul M, MulOne M where
   /-- One is a left neutral element for multiplication -/
   protected one_mul : ∀ a : M, 1 * a = a
   /-- One is a right neutral element for multiplication -/
@@ -79,7 +79,7 @@ class MulOneClass (M : Type*) extends MulOne M where
 
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type*} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro @⟨@⟨⟨one₁⟩, ⟨mul₁⟩⟩, one_mul₁, mul_one₁⟩ @⟨@⟨⟨one₂⟩, ⟨mul₂⟩⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
+  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   congr
   exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
 
@@ -138,8 +138,6 @@ end IsUnital
 section
 
 variable {M : Type*}
-
-attribute [to_additive existing] npowRec
 
 variable [One M] [Semigroup M] (m n : ℕ) (hn : n ≠ 0) (a : M) (ha : 1 * a = a)
 include hn ha
@@ -376,7 +374,7 @@ instance NPow.toPow {M : Type*} [NPow M] : Pow M ℕ :=
 instance NPow.ofPow {M : Type*} [Pow M ℕ] : NPow M := ⟨fun n x ↦ Pow.pow x n⟩
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type*) extends AddSemigroup M, AddZeroClass M, NSMul M where
+class AddMonoid (M : Type*) extends Zero M, Add M, AddSemigroup M, AddZeroClass M, NSMul M where
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero (x : M) : 0 • x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -387,7 +385,7 @@ attribute [instance 50] AddZero.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type*) extends Semigroup M, MulOneClass M, NPow M where
+class Monoid (M : Type*) extends One M, Mul M, Semigroup M, MulOneClass M, NPow M where
   npow := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero (x : M) : x ^ 0 = 1 := by intros; rfl
@@ -432,7 +430,6 @@ lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_
 /-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
 @[to_additive two_nsmul] lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 
--- TODO: Should `alias` automatically transfer `to_additive` statements?
 @[to_additive existing two_nsmul] alias sq := pow_two
 
 @[to_additive three'_nsmul]

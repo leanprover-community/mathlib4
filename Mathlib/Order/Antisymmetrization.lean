@@ -131,6 +131,11 @@ variable {α}
 def toAntisymmetrization : α → Antisymmetrization α r :=
   Quotient.mk _
 
+@[simp]
+theorem toAntisymmetrization_eq (a b : α) :
+    toAntisymmetrization r a = toAntisymmetrization r b ↔ AntisymmRel r a b :=
+  Quotient.eq
+
 /-- Get a representative from the antisymmetrization. -/
 noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out
@@ -283,12 +288,11 @@ theorem wellFounded_antisymmetrization_iff :
 
 theorem wellFoundedLT_antisymmetrization_iff :
     WellFoundedLT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedLT α := by
-  simp_rw [isWellFounded_iff, wellFounded_antisymmetrization_iff]
+  simp_rw [wellFounded_antisymmetrization_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedGT_antisymmetrization_iff :
     WellFoundedGT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedGT α := by
-  simp_rw [isWellFounded_iff]
   convert! wellFounded_liftOn₂'_iff with ⟨_⟩ ⟨_⟩
   exact fun _ _ _ _ h₁ h₂ ↦ propext
     ⟨fun h ↦ (h₂.2.trans_lt h).trans_le h₁.1, fun h ↦ (h₂.1.trans_lt h).trans_le h₁.2⟩

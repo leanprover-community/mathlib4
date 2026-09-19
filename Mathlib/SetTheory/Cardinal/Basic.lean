@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Countable.Small
+public import Mathlib.Basic.Countable.Small
+public import Mathlib.Basic.UnivLE
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Logic.Small.Set
-public import Mathlib.Logic.UnivLE
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
@@ -166,7 +166,7 @@ theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :
 theorem bddAbove_of_small {s : Set Cardinal.{u}} [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
 
-@[deprecated bddAbove_of_small (since := "2026-04-04")]
+@[deprecated bddAbove_of_small +typeChanged (since := "2026-04-04")]
 theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) : BddAbove (Set.range f) :=
   bddAbove_of_small
 
@@ -273,7 +273,7 @@ lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
   rw [← Nat.cast_succ]
   exact Nat.cast_lt.2 (Nat.lt_succ_self _)
 
-@[deprecated succ_natCast (since := "2026-03-21")]
+@[deprecated succ_natCast +typeChanged (since := "2026-03-21")]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   simp
 
@@ -405,7 +405,7 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
 
-@[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccLimit +typeChanged (since := "2026-04-13")]
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n := by
   rw [← h]
@@ -533,6 +533,10 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 
 lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+
+@[simp] lemma aleph0_le_mk_set {s : Set α} : ℵ₀ ≤ #s ↔ s.Infinite := by
+  rw [aleph0_le_mk_iff, Set.infinite_coe_iff]
+
 lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
 
 @[simp] lemma mk_lt_aleph0 [Finite α] : #α < ℵ₀ := mk_lt_aleph0_iff.2 ‹_›
@@ -1000,8 +1004,6 @@ theorem exists_ne_ne_of_three_le {α : Type*} (h : 3 ≤ #α) (x y : α) : ∃ z
   have : ↑(2 : ℕ) < #α := by rwa [← natCast_add_one_le_iff, ← Nat.cast_add_one]
   have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
-
-@[deprecated (since := "2026-02-17")] alias three_le := exists_ne_ne_of_three_le
 
 /-! ### `powerlt` operation -/
 

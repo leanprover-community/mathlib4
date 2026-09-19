@@ -130,13 +130,11 @@ instance [Add α] : Add αˢʸᵐ where add a b := sym (unsym a + unsym b)
 
 instance [Sub α] : Sub αˢʸᵐ where sub a b := sym (unsym a - unsym b)
 
-instance [Neg α] : Neg αˢʸᵐ where neg a := sym (-unsym a)
-
 -- Introduce the symmetrized multiplication
 instance [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul αˢʸᵐ where
   mul a b := sym (⅟2 * (unsym a * unsym b + unsym b * unsym a))
 
-@[to_additive existing]
+@[to_additive]
 instance [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
 
 instance (R : Type*) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)

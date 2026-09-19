@@ -28,17 +28,12 @@ variable {G : Type*}
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
 Use instead `a ^ n`, which has better definitional behavior. -/
+@[to_additive
+/-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
+times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/]
 def zpowRec [One G] [Mul G] [Inv G] (npow : ℕ → G → G := npowRec) : ℤ → G → G
   | Int.ofNat n, a => npow n a
   | Int.negSucc n, a => (npow n.succ a)⁻¹
-
-/-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
-times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : ℕ → G → G := nsmulRec) : ℤ → G → G
-  | Int.ofNat n, a => nsmul n a
-  | Int.negSucc n, a => -nsmul n.succ a
-
-attribute [to_additive existing] zpowRec
 
 section InvolutiveInv
 
@@ -98,6 +93,14 @@ the `Div` instance in `DivInvMonoid`.
 We keep it as a separate definition rather than inlining it in `DivInvMonoid` so that the `Div`
 field of individual `DivInvMonoid`s constructed using that default value will not be unfolded at
 `.instance` transparency. -/
+@[to_additive SubNegMonoid.sub'
+/-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
+the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
+for the `Sub` instance in `SubNegMonoid`.
+
+We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`
+field of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
+`.instance` transparency. -/]
 def DivInvMonoid.div' {G : Type*} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
 /-- `ZSMul` is an implementation detail of `SubNegMonoid`. It is needed because it is
@@ -151,17 +154,6 @@ class DivInvMonoid (G : Type*) extends Monoid G, Inv G, Div G, ZPow G where
     intros; rfl
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   protected zpow_neg' (n : ℕ) (a : G) : a ^ Int.negSucc n = (a ^ (n.succ : ℤ))⁻¹ := by intros; rfl
-
-/-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
-the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
-for the `Sub` instance in `SubNegMonoid`.
-
-We keep it as a separate definition rather than inlining it in `SubNegMonoid` so that the `Sub`
-field of individual `SubNegMonoid`s constructed using that default value will not be unfolded at
-`.instance` transparency. -/
-def SubNegMonoid.sub' {G : Type*} [AddMonoid G] [Neg G] (a b : G) : G := a + -b
-
-attribute [to_additive existing SubNegMonoid.sub'] DivInvMonoid.div'
 
 /-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
 satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.
