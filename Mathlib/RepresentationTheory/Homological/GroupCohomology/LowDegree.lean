@@ -848,7 +848,7 @@ lemma cocyclesMk₁_eq (x : cocycles₁ A) :
   have := (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
   rw [HomologicalComplex.i_cyclesMk]
   simp only [ModuleCat.forget₂_obj, ModuleCat.forget₂_map, ConcreteCategory.hom_ofHom,
-    AddMonoidHom.coe_coe]
+    AddMonoidHom.coe_ofClass]
   rw [← this]
   rfl
 

@@ -68,7 +68,7 @@ theorem nilradical_eq_zero (R : Type*) [CommSemiring R] [IsReduced R] : nilradic
   Ideal.ext fun _ => isNilpotent_iff_eq_zero
 
 theorem nilradical_eq_bot_iff : nilradical R = ⊥ ↔ IsReduced R := by
-  simp_rw [eq_bot_iff, SetLike.le_def, Submodule.mem_bot, mem_nilradical, isReduced_iff]
+  simp_rw [eq_bot_iff, IsConcreteLE.le_iff, Submodule.mem_bot, mem_nilradical, isReduced_iff]
 
 open UniqueFactorizationMonoid in
 lemma Ideal.radical_span_singleton_eq_span_radical [UniqueFactorizationMonoid R]

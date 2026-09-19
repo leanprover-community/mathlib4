@@ -556,7 +556,6 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [succAbove_of_castSucc_lt, succAbove_of_castSucc_lt, partialProd_right_inv,
     contractNth_apply_of_lt]
-    · assumption
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
@@ -568,8 +567,6 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
       castSucc_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
     · exact le_iff_val_le_val.2 (le_of_lt h)
-    · rw [le_iff_val_le_val, val_succ]
-      exact Nat.succ_le_of_lt h
 
 end PartialProd
 

@@ -111,7 +111,7 @@ into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` 
 `AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
-  { MonoidHomClass.toMonoidHom f with
+  { MonoidHom.ofClass f with
     continuous_toFun := by dsimp; fun_prop }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
@@ -489,7 +489,7 @@ theorem symm_apply_eq (e : M ≃ₜ* N) {x y} : e.symm x = y ↔ x = e y :=
 theorem eq_symm_apply (e : M ≃ₜ* N) {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
 
-@[to_additive (attr := deprecated eq_symm_apply (since := "2026-07-26"))]
+@[to_additive (attr := deprecated eq_symm_apply +typeChanged (since := "2026-07-26"))]
 theorem apply_eq_iff_symm_apply (e : M ≃ₜ* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
   e.eq_symm_apply.symm
 

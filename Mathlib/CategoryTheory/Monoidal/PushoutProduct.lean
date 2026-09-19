@@ -222,7 +222,7 @@ def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
   haveI : IsPushout (X.hom ▷ I) (_ ◁ i.to W) ((i.ofIso (zeroMul i).symm).to _) (𝟙 _) :=
     .of_horiz_isIso (sq := ⟨(i.ofIso (zeroMul i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext ..) (by simp [pushout.inr_desc]))
+    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext ..) (by simp))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
@@ -235,7 +235,7 @@ def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W
   haveI : IsPushout (i.to W ▷ _) (I ◁ X.hom) (𝟙 _) ((i.ofIso (mulZero i).symm).to _) :=
     .of_vert_isIso (sq := ⟨(i.ofIso (mulZero i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext (by simp [pushout.inl_desc]) ((i.ofIso (mulZero i).symm).hom_ext _ _))
+    (pushout.hom_ext (by simp) ((i.ofIso (mulZero i).symm).hom_ext _ _))
 
 /-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
 terminal object. -/
