@@ -25,7 +25,7 @@ namespace MaximalSpectrum
 
 variable {R}
 
-open PrimeSpectrum Set
+open Set
 
 variable (R : Type*)
 variable [CommRing R] [IsDomain R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
@@ -180,7 +180,7 @@ def piLocalizationToMaximal : PiLocalization R →ₐ[R] MaximalSpectrum.PiLocal
 
 theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) := by
   classical
-  exact fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
+  exact fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dite_eq_left _⟩
 
 variable {R}
 

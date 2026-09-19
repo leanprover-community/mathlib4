@@ -40,7 +40,7 @@ In this file we define the various notions of derivatives of Schwartz functions.
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
+variable {ι 𝕜 D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
 
@@ -216,7 +216,7 @@ section integration_by_parts
 
 variable [NormedSpace ℝ E]
 
-open ENNReal MeasureTheory
+open MeasureTheory
 
 section one_dim
 

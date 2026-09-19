@@ -316,21 +316,16 @@ lemma image2_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = 
 theorem image2_inter_union_subset_union :
     image2 f (s ∩ s') (t ∪ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_right]
-  exact
-    union_subset_union (image2_subset_right inter_subset_left)
-      (image2_subset_right inter_subset_right)
+  nth_grw 1 [inter_subset_left, inter_subset_right]
 
 theorem image2_union_inter_subset_union :
     image2 f (s ∪ s') (t ∩ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_left]
-  exact
-    union_subset_union (image2_subset_left inter_subset_left)
-      (image2_subset_left inter_subset_right)
+  nth_grw 1 [inter_subset_left, inter_subset_right]
 
 theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∩ t) (s ∪ t) ⊆ image2 f s t := by
-  rw [inter_comm]
-  exact image2_inter_union_subset_union.trans (union_subset (image2_comm hf).subset Subset.rfl)
+  grw [inter_comm, image2_inter_union_subset_union, image2_comm hf, union_self]
 
 theorem image2_union_inter_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :
     image2 f (s ∪ t) (s ∩ t) ⊆ image2 f s t := by

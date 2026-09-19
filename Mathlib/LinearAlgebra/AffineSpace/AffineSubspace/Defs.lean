@@ -163,6 +163,29 @@ instance : SetLike (AffineSubspace k P) P where
 
 instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
 
+instance : Singleton P (AffineSubspace k P) where
+  singleton x := {
+    carrier := {x}
+    smul_vsub_vadd_mem' _ _ _ _ := by simp +contextual }
+
+@[simp] theorem coe_singleton (x : P) : ({x} : AffineSubspace k P) = ({x} : Set P) := rfl
+
+@[simp, grind =, push]
+theorem mem_singleton_iff (x y : P) : x ∈ ({y} : AffineSubspace k P) ↔ x = y := by
+  simp [← SetLike.mem_coe]
+
+theorem notMem_singleton_iff (x y : P) : x ∉ ({y} : AffineSubspace k P) ↔ x ≠ y := by
+  simp [← SetLike.mem_coe]
+
+theorem mem_singleton (x : P) : x ∈ ({x} : AffineSubspace k P) := by simp [← SetLike.mem_coe]
+
+theorem eq_of_mem_singleton {x y : P} (h : x ∈ ({y} : AffineSubspace k P)) : x = y := by
+  simpa [← SetLike.mem_coe] using h
+
+@[simp]
+theorem singleton_eq_singleton_iff (x y : P) : {x} = ({y} : AffineSubspace k P) ↔ x = y := by
+  simp [← SetLike.coe_set_eq]
+
 @[simp] lemma carrier_eq_coe (s : AffineSubspace k P) : s.carrier = s := rfl
 
 lemma smul_vsub_vadd_mem (s : AffineSubspace k P) (c : k) {p₁ p₂ p₃ : P} :
@@ -239,6 +262,15 @@ def direction (s : AffineSubspace k P) : Submodule k V :=
 /-- The direction equals the `vectorSpan`. -/
 theorem direction_eq_vectorSpan (s : AffineSubspace k P) : s.direction = vectorSpan k (s : Set P) :=
   rfl
+
+@[simp]
+theorem direction_singleton (x : P) : ({x} : AffineSubspace k P).direction = ⊥ := by
+  simp [direction]
+
+@[simp]
+theorem direction_eq_bot_iff {s : AffineSubspace k P} :
+    s.direction = ⊥ ↔ (s : Set P).Subsingleton := by
+  simp [direction]
 
 /-- Alternative definition of the direction when the affine subspace is nonempty. This is defined so
 that the order on submodules (as used in the definition of `Submodule.span`) can be used in the
@@ -360,23 +392,20 @@ theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p 
 instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) :=
   ⟨fun _ hs => ⟨_, direction_eq_self_iff_zero_mem.mpr hs⟩⟩
 
-/-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
-theorem ext_of_direction_eq {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction = s₂.direction)
-    (hn : ((s₁ : Set P) ∩ s₂).Nonempty) : s₁ = s₂ := by
-  ext p
+theorem le_of_direction_le {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction ≤ s₂.direction)
+    (hn : ((s₁ : Set P) ∩ s₂).Nonempty) : s₁ ≤ s₂ := by
+  intro p hp
   have hq1 := Set.mem_of_mem_inter_left hn.some_mem
   have hq2 := Set.mem_of_mem_inter_right hn.some_mem
-  constructor
-  · intro hp
-    rw [← vsub_vadd p hn.some]
-    refine vadd_mem_of_mem_direction ?_ hq2
-    rw [← hd]
-    exact vsub_mem_direction hp hq1
-  · intro hp
-    rw [← vsub_vadd p hn.some]
-    refine vadd_mem_of_mem_direction ?_ hq1
-    rw [hd]
-    exact vsub_mem_direction hp hq2
+  rw [← vsub_vadd p hn.some]
+  refine vadd_mem_of_mem_direction ?_ hq2
+  grw [← hd]
+  exact vsub_mem_direction hp hq1
+
+/-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
+theorem ext_of_direction_eq {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction = s₂.direction)
+    (hn : ((s₁ : Set P) ∩ s₂).Nonempty) : s₁ = s₂ :=
+  le_antisymm (le_of_direction_le hd.le hn) (le_of_direction_le hd.ge (inter_comm .. ▸ hn))
 
 /-- Two affine subspaces with nonempty intersection are equal if and only if their directions are
 equal. -/
@@ -439,7 +468,7 @@ theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s₁ : AffineSubspace k
   have hp₁s₁ : p₁ ∈ (s₁ : Set P) := Set.mem_of_mem_of_subset hp₁ h
   refine vadd_mem_of_mem_direction ?_ hp₁s₁
   have hs : vectorSpan k s ≤ s₁.direction := vectorSpan_mono k h
-  rw [SetLike.le_def] at hs
+  rw [IsConcreteLE.le_iff] at hs
   rw [← SetLike.mem_coe]
   exact Set.mem_of_mem_of_subset hv hs
 
@@ -600,11 +629,11 @@ theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
 
 instance nonempty_sup_left (s₁ s₂ : AffineSubspace k P) [Nonempty s₁] :
     Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
-  .map (Set.inclusion <| SetLike.le_def.1 le_sup_left) ‹_›
+  .map (Set.inclusion <| SetLike.coe_subset_coe.2 le_sup_left) ‹_›
 
 instance nonempty_sup_right (s₁ s₂ : AffineSubspace k P) [Nonempty s₂] :
     Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
-  .map (Set.inclusion <| SetLike.le_def.1 le_sup_right) ‹_›
+  .map (Set.inclusion <| SetLike.coe_subset_coe.2 le_sup_right) ‹_›
 
 variable (k V)
 
@@ -783,7 +812,7 @@ theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set 
 /-- The inf of two affine subspaces, coerced to a set, is the intersection of the two sets of
 points. -/
 @[simp]
-theorem coe_inf (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
+theorem coe_inf (s₁ s₂ : AffineSubspace k P) : ↑(s₁ ⊓ s₂) = (s₁ : Set P) ∩ s₂ :=
   rfl
 
 /-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
@@ -885,7 +914,7 @@ theorem sup_direction_lt_of_nonempty_of_inter_empty {s₁ s₂ : AffineSubspace 
     s₁.direction ⊔ s₂.direction < (s₁ ⊔ s₂).direction := by
   obtain ⟨p₁, hp₁⟩ := h1
   obtain ⟨p₂, hp₂⟩ := h2
-  rw [SetLike.lt_iff_le_and_exists]
+  rw [IsConcreteLE.lt_iff_le_and_exists]
   use sup_direction_le s₁ s₂, p₂ -ᵥ p₁,
     vsub_mem_direction ((le_sup_right : s₂ ≤ s₁ ⊔ s₂) hp₂) ((le_sup_left : s₁ ≤ s₁ ⊔ s₂) hp₁)
   intro h
@@ -935,7 +964,7 @@ theorem affineSpan_coe (s : AffineSubspace k P) : affineSpan k (s : Set P) = s :
 
 @[simp, gcongr]
 theorem mk'_le_mk'_iff (p : P) {d₁ d₂ : Submodule k V} : mk' p d₁ ≤ mk' p d₂ ↔ d₁ ≤ d₂ := by
-  simp_rw [SetLike.le_def, mem_mk']
+  simp_rw [IsConcreteLE.le_iff, mem_mk']
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ h hx⟩
   simpa using h (show (x +ᵥ p) -ᵥ p ∈ d₁ by simpa using hx)
 
@@ -948,8 +977,6 @@ section AffineSpace'
 
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
-
-variable {ι : Type*}
 
 open AffineSubspace
 
@@ -966,6 +993,10 @@ alias ⟨_, _root_.Set.Nonempty.affineSpan⟩ := affineSpan_nonempty
 /-- The affine span of a nonempty set is nonempty. -/
 instance [Nonempty s] : Nonempty (affineSpan k s) :=
   ((nonempty_coe_sort.1 ‹_›).affineSpan _).to_subtype
+
+/-- The affine span of a singleton is nonempty. -/
+instance (x : P) : Nonempty ({x} : AffineSubspace k P) :=
+  ⟨x, SetLike.mem_coe.mp rfl⟩
 
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]
