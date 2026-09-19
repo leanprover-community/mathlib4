@@ -295,7 +295,7 @@ theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictO
     (x : V → R) : x ⬝ᵥ G.lapMatrix R *ᵥ x ≤ Fintype.card V * x ⬝ᵥ x := by
   classical
   rw [← toLinearMap₂'_apply']
-  grw [lapMatrix_toLinearMap₂'_mono (R := R) (le_top : G ≤ ⊤) x]
+  grw [lapMatrix_toLinearMap₂'_mono le_top x]
   rw [lapMatrix_top, toLinearMap₂'_apply', sub_mulVec, dotProduct_sub, natCast_mulVec,
     dotProduct_smul, smul_eq_mul]
   have : x ⬝ᵥ of 1 *ᵥ x = (∑ i, x i) ^ 2 := by simp [mulVec, dotProduct, Finset.sum_mul, sq]
