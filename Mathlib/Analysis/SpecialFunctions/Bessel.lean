@@ -44,14 +44,14 @@ $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 
 @[expose] public noncomputable section
 
-open Nat FormalMultilinearSeries
+open Nat FormalMultilinearSeries Topology
 
 namespace Complex
 
 local notation "F₀₁(" a ")" => regularizedHGFun 0 {(a : ℂ)}
 
 /-- Bessel function of the first kind $J_a(x)$. -/
-@[pp_nodot]
+@[pp_nodot, dlmf 10.2.E2]
 noncomputable def besselJ (a x : ℂ) := (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2)
 
 local notation "J" => besselJ
@@ -80,6 +80,7 @@ theorem analyticOnNhd_besselJ (a : ℂ) : AnalyticOnNhd ℂ (J a) slitPlane :=
   fun _ hz ↦ analyticAt_besselJ a hz
 
 /-- For integer `a`, `J a` and `J (-a)` are related by a sign. -/
+@[dlmf 10.4.E1]
 theorem besselJ_neg_int (a : ℤ) (x : ℂ) : J (-a) x = (-1) ^ a * J a x := by
   wlog! ha : 0 ≤ a
   · specialize this (-a) x (by simpa using ha.le)
@@ -117,5 +118,89 @@ theorem analyticOnNhd_besselJ_int (a : ℤ) : AnalyticOnNhd ℂ (J a) .univ :=
 
 theorem besselJ_zero (a : ℂ) : J a 0 = if a = 0 then 1 else 0 := by
   split_ifs with h <;> simp [besselJ, h, regularizedHGFunCoeff]
+
+@[dlmf 10.6.E1]
+theorem two_mul_self_mul_besselJ (a : ℂ) (x : ℂ) :
+    2 * a * J a x = x * J (a - 1) x + x * J (a + 1) x := by
+  by_cases h : x = 0
+  · simp [h, besselJ_zero]
+  have h : x / 2 ≠ 0 := by simp_all
+  unfold besselJ
+  calc
+    _ = 2 * (x / 2) ^ a * (a * F₀₁(a + 1) (-(x / 2) ^ 2)) := by
+      ring
+    _ = 2 * (x / 2) ^ a * F₀₁(a) (-(x / 2) ^ 2) +
+        2 * (x / 2) ^ a * (x / 2) ^ 2 * F₀₁(a + 2) (-(x / 2) ^ 2) := by
+      rw [← sub_eq_iff_eq_add.mpr (regularizedHGFun_zero_singleton_eq_mul_add_mul a (-(x / 2) ^ 2))]
+      ring_nf
+    _ = 2 * ((x / 2) ^ (a - 1) * (x / 2) ^ (1 : ℂ)) * F₀₁(a) (-(x / 2) ^ 2) +
+        2 * (x / 2) ^ (a + 1) * (x / 2) * F₀₁(a + 2) (-(x / 2) ^ 2) := by
+      rw [← cpow_add _ _ h, sub_add_cancel, cpow_add _ _ h, cpow_one]
+      ring
+    _ = _ := by
+      rw [cpow_one]
+      ring_nf
+
+@[dlmf 10.6.E2]
+theorem mul_deriv_besselJ_eq_besselJ_add_one (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
+    x * deriv (J a) x = a * J a x - x * J (a + 1) x := by
+  have hx2 : x / 2 ∈ slitPlane := by simpa [slitPlane] using h
+  have hx0 : x / 2 ≠ 0 := fun h ↦ by simp_all
+  unfold besselJ
+  calc
+    _ = x * (deriv (fun x ↦ (x / 2) ^ a) x * F₀₁(a + 1) (-(x / 2) ^ 2) +
+        (x / 2) ^ a * deriv ((fun x ↦ F₀₁(a + 1) x) ∘ fun x ↦ -(x / 2) ^ 2) x) := by
+      rw [deriv_fun_mul (by fun_prop) (by fun_prop)]
+      rfl
+    _ = 2 * (x / 2) * deriv (fun x ↦ (x / 2) ^ a) x * F₀₁(a + 1) (-(x / 2) ^ 2) + x *
+        (x / 2) ^ a * (F₀₁(a + 1 + 1) (-(x / 2) ^ 2) * (-x / 2)) := by
+      rw [deriv_comp _ (by fun_prop) (by fun_prop), deriv_regularizedHGFun (by simp)]
+      simp
+      ring
+    _ = (a * (x / 2) ^ a) * F₀₁(a + 1) (-(x / 2) ^ 2) + x *
+        (x / 2) ^ a * (F₀₁(a + 1 + 1) (-(x / 2) ^ 2) * (-x / 2)) := by
+      congrm ?_ * _ + _
+      rw [_root_.deriv_cpow_const (by fun_prop) (by exact hx2)]
+      trans 2 * a * ((x / 2) ^ (a - 1) * (x / 2) ^ (1 : ℂ) * deriv (· / 2) x)
+      · norm_cast
+        ring
+      rw [← cpow_add _ _ hx0]
+      simp
+      ring
+    _ = _ := by
+      rw [cpow_add _ _ hx0, cpow_one]
+      ring
+
+@[dlmf 10.6.E2]
+theorem mul_deriv_besselJ_eq_besselJ_sub_one (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
+    x * deriv (J a) x = x * J (a - 1) x - a * J a x := by
+  linear_combination two_mul_self_mul_besselJ a x + mul_deriv_besselJ_eq_besselJ_add_one a h
+
+@[dlmf 10.6.E1]
+theorem two_mul_deriv_besselJ (a : ℂ) {x : ℂ} (h : x ∈ slitPlane) :
+    2 * deriv (J a) x = J (a - 1) x - J (a + 1) x := by
+  have hx0 : x ≠ 0 := fun h ↦ by simp_all
+  rw [← mul_left_inj' hx0]
+  linear_combination mul_deriv_besselJ_eq_besselJ_sub_one a h +
+    mul_deriv_besselJ_eq_besselJ_add_one a h
+
+@[dlmf 10.6.E1]
+theorem two_mul_deriv_besselJ_int (a : ℤ) (x : ℂ) :
+    2 * deriv (J a) x = J (a - 1) x - J (a + 1) x := by
+  revert x
+  rw [← funext_iff]
+  apply AnalyticOnNhd.eq_of_frequently_eq (by fun_prop) (by norm_cast; fun_prop) (z₀ := 1)
+  refine (eventually_nhdsWithin_of_eventually_nhds (eventually_nhds_iff.mpr ?_)).frequently
+  exact ⟨slitPlane, fun x hx ↦ two_mul_deriv_besselJ a hx, isOpen_slitPlane, by simp⟩
+
+@[dlmf 10.6.E2]
+theorem mul_deriv_besselJ_eq_besselJ_add_one_int (a : ℤ) (x : ℂ) :
+    x * deriv (J a) x = a * J a x - x * J (a + 1) x := by
+  linear_combination x * two_mul_deriv_besselJ_int a x / 2 - two_mul_self_mul_besselJ a x / 2
+
+@[dlmf 10.6.E2]
+theorem mul_deriv_besselJ_eq_besselJ_sub_one_int (a : ℤ) (x : ℂ) :
+    x * deriv (J a) x = x * J (a - 1) x - a * J a x := by
+  linear_combination two_mul_self_mul_besselJ a x + mul_deriv_besselJ_eq_besselJ_add_one_int a x
 
 end Complex
