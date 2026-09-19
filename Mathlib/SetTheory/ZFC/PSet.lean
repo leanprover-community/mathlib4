@@ -41,7 +41,10 @@ universe u v
   to ensure extensionality. -/
 @[pp_with_univ, use_set_notation_for_order, ext]
 structure PSet : Type (u + 1) where
+  /-- The underlying type of a pre-set -/
   «Type» : Type u
+
+  /-- The underlying pre-set family of a pre-set -/
   Func : «Type» → PSet
 
 namespace PSet
