@@ -65,6 +65,8 @@ def coindV : Submodule k (H → A) where
   zero_mem' := by simp
   smul_mem' _ _ _ := by simp_all
 
+instance : CoeFun (coindV φ σ) (fun _ => H → A) := ⟨Subtype.val⟩
+
 @[simp]
 lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
@@ -85,8 +87,8 @@ def coind : Representation k H (coindV φ ρ) where
   map_mul' _ _ := by ext; simp [mul_assoc]
 
 @[simp]
-lemma coind_apply_apply (h x : H) (f : coindV φ ρ) :
-    (coind φ ρ h f).val x = f.val (x * h) := rfl
+lemma coe_coind_apply (h x : H) (f : coindV φ ρ) :
+    (coind φ ρ h f) x = f (x * h) := rfl
 
 variable {σ ρ} in
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
@@ -99,12 +101,16 @@ def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind 
     simpa [h] using LinearMap.ext_iff.1 (f.2 g) (x h0)
   isIntertwining' h := by ext; simp
 
-lemma coindMap_coe_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
+lemma coe_coindMap_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
     (coindMap φ f) x = (f.toLinearMap.compLeft H) x := rfl
 
+@[deprecated (since := "2026-09-20")] alias coindMap_coe_apply := coe_coindMap_apply
+
 @[simp]
-lemma coindMap_coe_apply_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) (h : H) :
-    ((coindMap φ f) x).1 h = f (x.1 h) := rfl
+lemma coe_coindMap_apply_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) (h : H) :
+    ((coindMap φ f) x) h = f (x h) := rfl
+
+@[deprecated (since := "2026-09-20")] alias coindMap_coe_apply_apply := coe_coindMap_apply_apply
 
 end Representation
 
@@ -152,7 +158,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
     · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
     · simp only [coindFunctor_obj, coindFunctor_map, hom_ofHom,
-        Representation.coindMap_coe_apply_apply, hom_comm_apply, x]
+        Representation.coe_coindMap_apply_apply, hom_comm_apply, x]
       simp_all [← y.2 (γ g), γ]
 
 end Coind
