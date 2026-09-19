@@ -155,6 +155,14 @@ lean_exe «lint-style» where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
+/-- `lake exe lint-exec` flags elaboration-time code execution (`#eval`, `run_cmd`, `initialize`,
+`unsafe`, `@[implemented_by]`, `@[extern]`, …) outside the files allowlisted in
+`scripts/nolints-exec.txt`. It parses files against their imports' `.olean`s without elaborating
+them. -/
+lean_exe «lint-exec» where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
