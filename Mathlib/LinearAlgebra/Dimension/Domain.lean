@@ -220,8 +220,6 @@ theorem IsTorsionFree.finrank_mul_finrank [h : IsTorsionFree S M] :
     finrank R S * finrank S M = finrank R M := by
   simpa [finrank] using congr($(h.erank_mul_erank R S M).toNat)
 
-alias finrank_mul_finrank' := IsTorsionFree.finrank_mul_finrank
-
 end Module
 
 namespace Algebra.IsAlgebraic
