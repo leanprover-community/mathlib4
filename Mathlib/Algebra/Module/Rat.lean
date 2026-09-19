@@ -109,10 +109,10 @@ instance SMulCommClass.rat' [AddCommGroup M] [DistribSMul α M] [Module ℚ M] :
 end
 
 variable (M) in
-/-- A `ℚ≥0`-module is torsion-free as a group.
+/-- A `ℚ≥0`-module has unique divisibility.
 
 This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
-lemma IsAddTorsionFree.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : IsAddTorsionFree M where
+lemma HasUniqueDiv.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : HasUniqueDiv M where
   nsmul_right_injective n hn x y hxy := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hxy)
 
@@ -120,6 +120,22 @@ variable (M) in
 /-- A `ℚ≥0`-module is torsion-free as a group.
 
 This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
-lemma IsAddTorsionFree.of_module_rat [AddCommGroup M] [Module ℚ M] : IsAddTorsionFree M where
+lemma IsAddTorsionFree.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : IsAddTorsionFree M :=
+  letI := HasUniqueDiv.of_module_nnrat M
+  inferInstance
+
+variable (M) in
+/-- A `ℚ`-module has unique divisibility.
+
+This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
+lemma HasUniqueDiv.of_module_rat [AddCommGroup M] [Module ℚ M] : HasUniqueDiv M where
   nsmul_right_injective n hn x y hxy := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hxy)
+
+variable (M) in
+/-- A `ℚ`-module is torsion-free as a group.
+
+This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
+lemma IsAddTorsionFree.of_module_rat [AddCommGroup M] [Module ℚ M] : IsAddTorsionFree M :=
+  letI := HasUniqueDiv.of_module_rat M
+  inferInstance
