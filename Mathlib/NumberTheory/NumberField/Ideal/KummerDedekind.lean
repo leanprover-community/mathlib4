@@ -262,4 +262,29 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ 
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply]
 
+/--
+The residual degree of a prime above `p` is the degree of the corresponding factor of
+`minpoly ℤ θ` modulo `p`.
+-/
+theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ exponent θ)
+    (P : (span {(p : ℤ)}).primesOver (𝓞 K)) :
+    inertiaDeg (P : Ideal (𝓞 K)) ℤ =
+      natDegree (primesOverSpanEquivMonicFactorsMod hp P : (ZMod p)[X]) := by
+  simpa only [Subtype.coe_eta, Equiv.symm_apply_apply] using
+    inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
+      (primesOverSpanEquivMonicFactorsMod hp P).2
+
+/--
+The ramification index of a prime above `p` is the multiplicity of the corresponding factor of
+`minpoly ℤ θ` modulo `p`.
+-/
+theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_apply (hp : ¬ p ∣ exponent θ)
+    (P : (span {(p : ℤ)}).primesOver (𝓞 K)) :
+    ramificationIdx (P : Ideal (𝓞 K)) ℤ =
+      multiplicity (primesOverSpanEquivMonicFactorsMod hp P : (ZMod p)[X])
+        ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
+  simpa only [Subtype.coe_eta, Equiv.symm_apply_apply] using
+    ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' hp
+      (primesOverSpanEquivMonicFactorsMod hp P).2
+
 end NumberField.Ideal

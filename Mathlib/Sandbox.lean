@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.DualNumber
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+public import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
 # Sandbox: splitting of primes in quadratic fields
@@ -31,6 +32,32 @@ convention and apply it throughout before splitting this file into PRs.
 open Ideal
 
 open scoped QuadraticAlgebra
+
+/-! ### Casting `discrim` -/
+
+-- TODO: for `Mathlib/Algebra/QuadraticDiscriminant.lean`, next to `discrim`.
+/-- The discriminant of a quadratic commutes with the coercion `ℤ → R`. -/
+@[simp, norm_cast]
+theorem discrim_intCast {R : Type*} [CommRing R] (a b c : ℤ) :
+    discrim (a : R) (b : R) (c : R) = ((discrim a b c : ℤ) : R) := by
+  push_cast [discrim]
+  rfl
+
+/-! ### `Polynomial.discr` and `discrim`
+
+`Mathlib/Algebra/QuadraticDiscriminant.lean` carries the root criteria for `a * x ^ 2 + b * x + c`
+in terms of `discrim a b c`, and `Polynomial.discr` is the resultant-based discriminant; no lemma
+mentions both.
+-/
+
+-- TODO: for `Mathlib/RingTheory/Polynomial/Resultant/Basic.lean`, next to
+-- `Polynomial.discr_of_degree_eq_two`.
+open Polynomial in
+/-- The `discrim` of `a`, `b`, `c` is the discriminant of the polynomial `a * X ^ 2 + b * X + c`. -/
+theorem discrim_eq_polynomial_discr {R : Type*} [CommRing R] (a b c : R) (ha : a ≠ 0) :
+    discrim a b c = (C a * X ^ 2 + C b * X + C c).discr := by
+  rw [discr_of_degree_eq_two (by compute_degree!), discrim]
+  simp [mul_right_comm]
 
 /-! ### The minimal polynomial of `ω`
 
@@ -814,12 +841,25 @@ theorem not_dvd_exponent_integralGen (p : ℕ) [Fact p.Prime] :
 /-- The minimal polynomial of the generator is the characteristic polynomial of `ω`, whose
 discriminant is `discr K`. -/
 theorem minpoly_integralGen :
-    minpoly ℤ (integralGen K) = X ^ 2 - C (discr K % 4) * X - C (discr K / 4) := by
+    minpoly ℤ (integralGen K) = X ^ 2 + C (-(discr K % 4)) * X + C (-(discr K / 4)) := by
   refine (minpoly.IsIntegrallyClosed.unique_of_degree_le_degree_minpoly (by monicity!) ?_ ?_).symm
   · sorry
   · sorry
 
+/-- The minimal polynomial of the generator has degree `2`. -/
+theorem natDegree_minpoly_integralGen : (minpoly ℤ (integralGen K)).natDegree = 2 := by
+  sorry
 
+/-- The minimal polynomial of the generator is monic. -/
+theorem monic_minpoly_integralGen : (minpoly ℤ (integralGen K)).Monic := by
+  sorry
+
+/-- The discriminant of the minimal polynomial of the generator is `discr K`. -/
+theorem discrim_minpoly_integralGen (p : ℕ) [Fact p.Prime]:
+    discrim (1 : ZMod p) (-(discr K % 4) : ℤ) (-(discr K / 4) : ℤ) = (discr K : ZMod p) := by
+  rw [discrim_eq_polynomial_discr _ _ _ one_ne_zero, map_one, one_mul, Polynomial.C_mul', neg_smul,
+    C_neg, ← sub_eq_add_neg, ← sub_eq_add_neg, QuadraticAlgebra.polynomial_discr_eq_discr]
+  exact (isFundamentalDiscr_discr K).discr_ediv_four_emod_four
 
 /-! ### The same statements, to be redone through Kummer-Dedekind
 
@@ -862,29 +902,9 @@ theorem inertiaDeg_two_of_discr_emod_eight_one (h : NumberField.discr K % 8 = 1)
 
 end two
 
-section ramified
-
-variable (hd : (p : ℤ) ∣ NumberField.discr K)
-
-include hd
-
-/-- If `p` divides the discriminant, it is ramified: `e = 2` at every prime above `p`. -/
-theorem ramificationIdx_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P.ramificationIdx ℤ = 2 :=
-  sorry
-
-/-- If `p` divides the discriminant, it is ramified: `f = 1` at every prime above `p`. -/
-theorem inertiaDeg_of_dvd_discr (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P.inertiaDeg ℤ = 1 :=
-  sorry
-
-/-- If `p` divides the discriminant, it is ramified: `g = 1`. -/
-theorem ncard_primesOver_of_dvd_discr : (𝒑.primesOver (𝓞 K)).ncard = 1 :=
-  sorry
-
-end ramified
-
 section inert
+
+open NumberField.Ideal
 
 variable (hp2 : p ≠ 2) (hd : ¬ IsSquare ((NumberField.discr K : ZMod p)))
 
@@ -893,8 +913,29 @@ include hp2 hd
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `f = 2` at every prime
 above `p`. -/
 theorem inertiaDeg_of_not_isSquare (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P.inertiaDeg ℤ = 2 :=
-  sorry
+    P.inertiaDeg ℤ = 2 := by
+  let 𝓟 : 𝒑.primesOver (𝓞 K) := ⟨P, ⟨inferInstance, inferInstance⟩⟩
+  have h₀ : RingOfIntegers.monicFactorsMod (integralGen K) p =
+      {(minpoly ℤ (integralGen K)).map (Int.castRingHom (ZMod p))} := by
+    -- apply UniqueFactorizationMonoid.normalizedFactors_irreducible
+
+    refine Finset.eq_singleton_iff_unique_mem.mpr ⟨?_, ?_⟩
+    · sorry
+    · sorry
+  have h₁ : ¬ p ∣ RingOfIntegers.exponent (integralGen K) := not_dvd_exponent_integralGen K p
+  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ 𝓟).2
+  have h₃ := inertiaDeg_primesOverSpanEquivMonicFactorsMod_apply h₁ 𝓟
+  simp only [h₀, Finset.mem_singleton] at h₂
+  rw [h₃, h₂]
+  rw [Polynomial.Monic.natDegree_map (monic_minpoly_integralGen K)]
+  exact natDegree_minpoly_integralGen K
+
+
+
+
+
+
+
 
 /-- If the discriminant is not a square mod `p`, then `p` is inert: `e = 1` at every prime
 above `p`. -/
