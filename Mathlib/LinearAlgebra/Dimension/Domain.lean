@@ -61,7 +61,7 @@ theorem lift_rank_mul_lift_rank_of_isFractionRing_isLocalization :
   by_cases h : FaithfulSMul R S
   case neg =>
     have : ¬ FaithfulSMul R M := mt (·.tower_bot ..) h
-    simp [rank_eq_zero_of_not_faithfulSMul h, rank_eq_zero_of_not_faithfulSMul this]
+    simp [rank_eq_zero_of_not_faithfulSMul, h, this]
   nontriviality R using subsingleton R S
   have _ : NoZeroDivisors R := .of_faithfulSMul R S
   have _ : Nontrivial S := FaithfulSMul.algebraMap_injective R S |>.nontrivial
@@ -173,7 +173,7 @@ theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
   by_cases h : FaithfulSMul R S
   case neg =>
     have : ¬ FaithfulSMul R M := mt (·.tower_bot ..) h
-    simp [rank_eq_zero_of_not_faithfulSMul h, rank_eq_zero_of_not_faithfulSMul this]
+    simp [rank_eq_zero_of_not_faithfulSMul, h, this]
   nontriviality R using subsingleton R S
   have _ : NoZeroDivisors R := .of_faithfulSMul R S
   have _ : Nontrivial S := FaithfulSMul.algebraMap_injective R S |>.nontrivial
@@ -227,38 +227,50 @@ end Module
 namespace Algebra.IsAlgebraic
 
 variable
-  [FaithfulSMul R S] [h : Algebra.IsAlgebraic R S]
+  [h : Algebra.IsAlgebraic R S]
   (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 
 /-- **Tower law over algebraic extensions of domains.**
-if `R` and `S` have no zero divisors, `S` is a faithful algebraic `R`-algebra, and
+if `R` and `S` have no zero divisors, `S` is an algebraic `R`-algebra, and
 `M` is a `S`-module, then
 $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
 
 See `Algebra.IsAlgebraic.rank_mul_rank` for a non–universe polymorphic version, and
 `_root_.lift_rank_mul_lift_rank` for when your modules are free. -/
 theorem lift_rank_mul_lift_rank :
-    lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) :=
-  lift_rank_mul_lift_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
+    lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) := by
+  by_cases h : FaithfulSMul R S
+  case neg =>
+    have : ¬ FaithfulSMul R M := mt (·.tower_bot ..) h
+    simp [rank_eq_zero_of_not_faithfulSMul, h, this]
+  apply lift_rank_mul_lift_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 /-- **Tower law over algebraic extensions of domains.**
-if `R` and `S` have no zero divisors, `S` is a faithful algebraic `R`-algebra, and
+if `R` and `S` have no zero divisors, `S` is an algebraic `R`-algebra, and
 `M` is a `S`-module, then
 $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
 
 See `Algebra.IsAlgebraic.lift_rank_mul_lift_rank` for a universe polymorphic version, and
 `_root_.rank_mul_rank` for when your modules are free. -/
-theorem rank_mul_rank : rank R S * rank S M₁ = rank R M₁ :=
-  rank_mul_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
+theorem rank_mul_rank : rank R S * rank S M₁ = rank R M₁ := by
+  by_cases h : FaithfulSMul R S
+  case neg =>
+    have : ¬ FaithfulSMul R M₁ := mt (·.tower_bot ..) h
+    simp [rank_eq_zero_of_not_faithfulSMul, h, this]
+  apply rank_mul_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 /-- **Tower law over algebraic extensions of domains.**
-if `R` and `S` have no zero divisors, `S` is a faithful algebraic `R`-algebra, and
+if `R` and `S` have no zero divisors, `S` is an algebraic `R`-algebra, and
 `M` is a `S`-module, then
 $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
 
 See `Module.finrank_mul_finrank` for when your modules are free. -/
-theorem finrank_mul_finrank : finrank R S * finrank S M = finrank R M :=
-  finrank_mul_finrank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
+theorem finrank_mul_finrank : finrank R S * finrank S M = finrank R M := by
+  by_cases h : FaithfulSMul R S
+  case neg =>
+    have : ¬ FaithfulSMul R M := mt (·.tower_bot ..) h
+    simp [finrank_eq_zero_of_not_faithfulSMul, h, this]
+  apply finrank_mul_finrank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 end Algebra.IsAlgebraic
