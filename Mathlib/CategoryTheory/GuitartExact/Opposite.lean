@@ -36,7 +36,7 @@ variable {X₃ : C₃ᵒᵖ} {X₂ : C₂ᵒᵖ} (g : B.op.obj X₃ ⟶ R.op.obj
 namespace structuredArrowRightwardsOpEquivalence
 
 /-- Auxiliary definition for `structuredArrowRightwardsOpEquivalence`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def functor :
     (w.op.StructuredArrowRightwards g)ᵒᵖ ⥤
       w.CostructuredArrowDownwards g.unop where
@@ -52,6 +52,7 @@ def functor :
             ((CostructuredArrow.proj _ _).congr_map (StructuredArrow.w φ.unop)))
 
 /-- Auxiliary definition for `structuredArrowRightwardsOpEquivalence`. -/
+@[simps!, implicit_reducible]
 def inverse :
     w.CostructuredArrowDownwards g.unop ⥤
       (w.op.StructuredArrowRightwards g)ᵒᵖ where
@@ -90,8 +91,6 @@ instance [w.GuitartExact] : w.op.GuitartExact := by
     isConnected_iff_of_equivalence (w.structuredArrowRightwardsOpEquivalence g)]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma guitartExact_op_iff : w.op.GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro
@@ -109,7 +108,7 @@ instance guitartExact_id' (F : C₁ ⥤ C₂) :
   apply guitartExact_id
 
 instance guitartExact_of_isEquivalence_of_isIso'
-    [T.IsEquivalence] [B.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
+    [T.IsEquivalence] [B.IsEquivalence] [IsIso w] : GuitartExact w := by
   rw [← guitartExact_op_iff]
   infer_instance
 
