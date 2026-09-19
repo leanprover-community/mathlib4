@@ -97,49 +97,16 @@ If `a : ℂ` has norm one, then the circle average `circleAverage (log ‖· - a
 -/
 theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
     circleAverage (log ‖· - a‖) 0 1 = 0 := by
-  -- Observing that the problem is rotation invariant, we rotate by an angle of `ζ = - arg a` and
-  -- reduce the problem to the case where `a = 1`. The integral can then be evaluated by a direct
-  -- computation.
-  simp only [circleAverage, mul_inv_rev, smul_eq_mul, mul_eq_zero, inv_eq_zero, OfNat.ofNat_ne_zero,
-    or_false]
-  right
-  obtain ⟨ζ, hζ⟩ : ∃ ζ, a⁻¹ = circleMap 0 1 ζ := by simp [Set.exists_range_iff.1, h]
-  calc ∫ x in 0..(2 * π), log ‖circleMap 0 1 x - a‖
-  _ = ∫ x in 0..(2 * π), log ‖(circleMap 0 1 ζ) * (circleMap 0 1 x - a)‖ := by
-    simp
-  _ = ∫ x in 0..(2 * π), log ‖circleMap 0 1 (ζ + x) - (circleMap 0 1 ζ) * a‖ := by
-    simp [mul_sub, circleMap, add_mul, Complex.exp_add]
-  _ = ∫ x in 0..(2 * π), log ‖circleMap 0 1 (ζ + x) - 1‖ := by
-    simp [← hζ, inv_mul_cancel₀ (by aesop : a ≠ 0)]
-  _ = ∫ x in 0..(2 * π), log ‖circleMap 0 1 x - 1‖ := by
-    have : Function.Periodic (log ‖circleMap 0 1 · - 1‖) (2 * π) :=
-      fun x ↦ by simp [periodic_circleMap 0 1 x]
-    have := this.intervalIntegral_add_eq (t := 0) (s := ζ)
-    simp_all [integral_comp_add_left (log ‖circleMap 0 1 · - 1‖)]
-  _ = ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 := by
-    apply integral_congr
-    intro x hx
-    simp only
-    rw [Complex.norm_def, log_sqrt (circleMap 0 1 x - 1).normSq_nonneg]
-    congr
-    calc Complex.normSq (circleMap 0 1 x - 1)
-    _ = (cos x - 1) * (cos x - 1) + sin x * sin x := by
-      simp [circleMap, Complex.normSq_apply]
-    _ = sin x ^ 2 + cos x ^ 2 + 1 - 2 * cos x := by
-      ring
-    _ = 2 - 2 * cos x := by
-      rw [sin_sq_add_cos_sq]
-      norm_num
-    _ = 2 - 2 * cos (2 * (x / 2)) := by
-      rw [← mul_div_assoc]
-      simp
-    _ = 4 - 4 * cos (x / 2) ^ 2 := by
-      rw [cos_two_mul]
-      ring
-    _ = 4 * sin (x / 2) ^ 2 := by
-      nth_rw 1 [← mul_one 4, ← sin_sq_add_cos_sq (x / 2)]
-      ring
-  _ = 0 := circleAverage_log_norm_sub_const₁_integral
+  -- Rotate by `arg a`. By the law of cosines,
+  -- `‖circleMap 0 1 (x + arg a) - a‖ ^ 2 = 4 * sin (x / 2) ^ 2`.
+  rw [circleAverage_eq_integral_add a.arg,
+    integral_congr (g := fun x ↦ log (4 * sin (x / 2) ^ 2) / 2),
+    circleAverage_log_norm_sub_const₁_integral, smul_zero]
+  intro x _
+  have := norm_circleMap_zero_sub_sq' 1 (x + a.arg) a
+  norm_num [h] at this
+  simp only [← this, log_pow]
+  ring
 
 /-!
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `1 < ‖a‖`.
