@@ -1096,7 +1096,7 @@ instance [Group α] : FakeMul α := ⟨(· * ·)⟩
 
 /--
 error: `@[to_additive]` failed to add declaration `instAddOfAddGroup_mathlibTest`.
-  The translated type is not type correct.
+  The translated value is not type correct.
 Application type mismatch: The argument
   inst✝
 has type

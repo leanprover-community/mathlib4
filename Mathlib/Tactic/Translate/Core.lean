@@ -663,7 +663,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   withOptions (Elab.async.set · false) do
   /- `addDecl` infers visibility from whether the name `tgt` is private, and exposure
   from the current value of `isExporting` (and whether the declaration is a theorem).
-  So, we use `withExporing (isExporting := exposeBody)` around `addDecl`.
+  So, we use `withExporting (isExporting := exposeBody)` around `addDecl`.
   We also need this around `updateDecl` to make sure all identifiers are recognized. -/
   let exposeBody := (← getEnv).hasExposedBody srcDecl.name
   let decl ← withExporting (isExporting := exposeBody) do←
@@ -688,13 +688,13 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     return decl
   catch ex =>
     try
-      check (decl.1.value! (allowOpaque := true))
+      check decl.1.type
     catch ex =>
       throwError "`@[{t.attrName}]` failed to add declaration `{.ofConstName decl.1.name}`.\n  \
         The translated type is not type correct.\n\
         {ex.toMessageData}\n\n\
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
-    withExporting (isExporting := exposeBody) <|
+    withExporting (isExporting := exposeBody) do
     try
       check value
     catch ex =>
@@ -794,7 +794,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
     throwError "The declaration {rootSrc} depends on the declaration {src} \
     which is in the namespace {rootSrc}, but does not have the `@[{t.attrName}]` attribute. \
     This is not supported.\nWorkaround: move {src} to a different namespace."
-  -- Ensure `tgt` is private if an only if `src` is.
+  -- Ensure `tgt` is private if and only if `src` is.
   withExporting (isExporting := !isPrivateName src) do
   -- we find, or guess, the translated name of `src`
   let tgt ← findTargetName (← getEnv) t src rootSrc rootTgt
