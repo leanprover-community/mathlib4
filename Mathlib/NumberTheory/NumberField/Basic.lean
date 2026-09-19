@@ -376,7 +376,7 @@ instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (
 
 /-- The kernel of the algebraMap between ring of integers is `⊥`. -/
 theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥ :=
-  (RingHom.ker_eq_bot_iff_eq_zero (algebraMap (𝓞 K) (𝓞 L))).mpr <| fun x hx => by
+  (RingHom.ker_eq_bot_iff_eq_zero (algebraMap (𝓞 K) (𝓞 L))).mpr fun x hx => by
   have h : (algebraMap K L) x = (algebraMap (𝓞 K) (𝓞 L)) x := rfl
   simp only [hx, map_zero, map_eq_zero, RingOfIntegers.coe_eq_zero_iff] at h
   exact h

@@ -79,7 +79,7 @@ section instances
 
 instance eventuallyMeasurableSingleton [MeasurableSingletonClass α] :
     @MeasurableSingletonClass α (eventuallyMeasurableSpace m l) :=
-  @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
+  @MeasurableSingletonClass.mk _ (_) fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
 
 end instances
 

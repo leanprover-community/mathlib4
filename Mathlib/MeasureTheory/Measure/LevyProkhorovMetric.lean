@@ -398,14 +398,14 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
     apply Measure.integrableOn_of_bounded (M := μ.real univ) measure_Ioc_lt_top.ne
     · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
       exact fun _ _ hst ↦ measure_mono (fun _ h ↦ hst.trans h)
-    · apply Eventually.of_forall <| fun t ↦ ?_
+    · apply Eventually.of_forall fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
       exact measureReal_mono (subset_univ _)
   have intble₂ : IntegrableOn (fun t ↦ ν.real (thickening ε {a | t ≤ f a})) (Ioc 0 ‖f‖) := by
     apply Measure.integrableOn_of_bounded (M := ν.real univ) measure_Ioc_lt_top.ne
     · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
       exact fun _ _ hst ↦ measure_mono <| thickening_subset_of_subset ε (fun _ h ↦ hst.trans h)
-    · apply Eventually.of_forall <| fun t ↦ ?_
+    · apply Eventually.of_forall fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
       exact ENNReal.toReal_mono (by finiteness) <| measure_mono (subset_univ _)
   apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
@@ -428,7 +428,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
   · apply Eventually.of_forall fun n ↦ Measurable.aestronglyMeasurable ?_
     simp only [measurable_coe_nnreal_real_iff]
     apply measurable_toNNReal.comp <| Antitone.measurable (fun s t hst ↦ ?_)
-    exact measure_mono <| thickening_subset_of_subset _ <| fun ω h ↦ hst.trans h
+    exact measure_mono <| thickening_subset_of_subset _ fun ω h ↦ hst.trans h
   · apply Eventually.of_forall (fun i ↦ ?_)
     apply Eventually.of_forall (fun t ↦ ?_)
     simp only [Real.norm_eq_abs, NNReal.abs_eq, Pi.one_apply]

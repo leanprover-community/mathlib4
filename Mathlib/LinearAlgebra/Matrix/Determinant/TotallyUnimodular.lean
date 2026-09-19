@@ -166,7 +166,7 @@ lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {
 
 lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows A (1 : Matrix n n R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
-  fromRows_isTotallyUnimodular_iff_rows <| fun h i ↦
+  fromRows_isTotallyUnimodular_iff_rows fun h i ↦
     ⟨i, 1, funext fun j ↦ by simp [one_apply, Pi.single_apply, eq_comm]⟩
 
 lemma one_fromRows_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
@@ -195,7 +195,7 @@ alias ⟨_, IsTotallyUnimodular.one_fromCols⟩ := one_fromCols_isTotallyUnimodu
 lemma fromRows_replicateRow0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromRows A (replicateRow m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   classical
-  refine fromRows_isTotallyUnimodular_iff_rows <| fun _ _ => ?_
+  refine fromRows_isTotallyUnimodular_iff_rows fun _ _ => ?_
   inhabit n
   refine ⟨default, 0, ?_⟩
   ext x

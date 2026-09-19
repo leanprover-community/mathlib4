@@ -295,7 +295,7 @@ instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
       simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
       intro y hy
       simp only [SetLike.mem_coe, Submodule.mem_iSup] at hy
-      exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ <| fun hb ↦ h hb
+      exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ fun hb ↦ h hb
 
 instance : Lattice (ClosedSubmodule R N) where
 

@@ -134,7 +134,7 @@ lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
     MapsTo f ↑(⨆ i ∈ s, N i) ↑(⨆ i ∈ s, N i) := by
   replace hf : ∀ i, (N i).map f ≤ N i := fun i ↦ Submodule.map_le_iff_le_comap.mpr (hf i)
   suffices (⨆ i ∈ s, N i).map f ≤ ⨆ i ∈ s, N i from Submodule.map_le_iff_le_comap.mp this
-  simpa only [Submodule.map_iSup] using iSup₂_mono <| fun i _ ↦ hf i
+  simpa only [Submodule.map_iSup] using iSup₂_mono fun i _ ↦ hf i
 
 end IsInternal
 
@@ -144,7 +144,7 @@ Note that it is important the statement gives the user definitional control over
 _type_ of the term `trace R p (f.restrict hp')` depends on `p`. -/
 lemma trace_eq_sum_trace_restrict_of_eq_biSup
     [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
-    (s : Finset ι) (h : iSupIndep <| fun i : s ↦ N i)
+    (s : Finset ι) (h : iSupIndep fun i : s ↦ N i)
     {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
     (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
     (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :

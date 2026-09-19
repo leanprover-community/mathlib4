@@ -182,7 +182,7 @@ noncomputable def coinvariantsTensorIndHom :
     ((coinvariantsTensor k H).obj (ind φ A)).obj B ⟶
       ((coinvariantsTensor k G).obj A).obj (res φ B) :=
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <| Coinvariants.lift _
-    (TensorProduct.lift <| (Finsupp.lift _ _ _ <| fun g ↦
+    (TensorProduct.lift <| (Finsupp.lift _ _ _ fun g ↦
       (coinvariantsTensorMk A (res φ B)).compl₂ (B.ρ g)) ∘ₗ
       (MonoidAlgebra.coeffLinearEquiv k).toLinearMap)
       fun g ↦ by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]

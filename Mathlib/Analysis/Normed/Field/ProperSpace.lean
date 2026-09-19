@@ -40,7 +40,7 @@ lemma ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace
   rcases exists_isCompact_closedBall (0 : 𝕜) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have hC n : IsCompact (closedBall (0 : 𝕜) (‖c‖ ^ n * r)) := by
-    have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_gt] at hc
+    have : c ^ n ≠ 0 := pow_ne_zero _ fun h ↦ by simp [h, zero_le_one.not_gt] at hc
     convert! hr.smul (c ^ n)
     ext
     simp only [mem_closedBall, dist_zero_right, Set.mem_smul_set_iff_inv_smul_mem₀ this,

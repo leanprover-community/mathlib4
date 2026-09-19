@@ -199,7 +199,7 @@ lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [IsTopologicalGro
       rw [mem_leftCoset_iff, SetLike.mem_coe, MulAction.mem_stabilizer_iff, mul_smul,
         hgs ⟨X, hXmem⟩, ← hgi X, inv_smul_smul]
   obtain ⟨g, hg⟩ := hne
-  refine ⟨g, Iso.ext <| natTrans_ext_of_isGalois _ <| fun X _ ↦ ?_⟩
+  refine ⟨g, Iso.ext <| natTrans_ext_of_isGalois _ fun X _ ↦ ?_⟩
   ext x
   simp only [toAut_hom_app_apply]
   have : g ∈ (gi ⟨X, x, inferInstance⟩ • MulAction.stabilizer G x : Set G) := by

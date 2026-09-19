@@ -43,7 +43,7 @@ def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   inverse :=
     { obj F := Functor.sum' F.1 F.2
       map η := NatTrans.sum' η.1 η.2 }
-  unitIso := NatIso.ofComponents <| fun F ↦ F.isoSum
+  unitIso := NatIso.ofComponents fun F ↦ F.isoSum
   counitIso := NatIso.ofComponents (fun F ↦
     (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F)
 

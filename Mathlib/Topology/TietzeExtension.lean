@@ -120,7 +120,7 @@ theorem ContinuousMap.exists_extension_forall_mem (he : IsClosedEmbedding e)
 instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [∀ i, TietzeExtension.{u} (Y i)] : TietzeExtension.{u} (∀ i, Y i) where
   exists_restrict_eq' s hs f := by
-    obtain ⟨g', hg'⟩ := Classical.skolem.mp <| fun i ↦
+    obtain ⟨g', hg'⟩ := Classical.skolem.mp fun i ↦
       ContinuousMap.exists_restrict_eq hs (ContinuousMap.piEquiv _ _ |>.symm f i)
     exact ⟨ContinuousMap.piEquiv _ _ g', by ext x i; congrm($(hg' i) x)⟩
 

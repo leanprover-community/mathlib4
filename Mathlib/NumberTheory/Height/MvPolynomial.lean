@@ -306,7 +306,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   · grw [← le_max_right]
     simpa [h₀, mulHeight_zero] using one_le_pow₀ <| one_le_mulHeight x
   have H₀ (v : AbsoluteValue K ℝ) : 0 ≤ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c :=
-    iSup_nonneg (fun j ↦ sum_nonneg' <| fun s ↦ by positivity)
+    iSup_nonneg (fun j ↦ sum_nonneg' fun s ↦ by positivity)
   -- The following four statements are used in the `gcongr`s below.
   have H₁ :
      0 ≤ (archAbsVal.map (fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c)).prod :=

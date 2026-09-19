@@ -731,7 +731,7 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := 
   rw [wellFoundedOn_iff_no_descending_seq]
   rintro ⟨a, ha⟩ f hf
   refine infinite_range_of_injective f.injective ?_
-  exact (finite_Icc a <| f 0).subset <| range_subset_iff.2 <| fun n =>
+  exact (finite_Icc a <| f 0).subset <| range_subset_iff.2 fun n =>
     ⟨ha <| hf _,
       antitone_iff_forall_lt.2 (fun a b hab => (f.map_rel_iff.2 hab).le) <| Nat.zero_le _⟩
 

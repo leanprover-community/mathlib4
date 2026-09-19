@@ -152,7 +152,7 @@ public theorem isDedekindDomain_iff_isDiscreteValuationRing_atPrime [IsDomain A]
         Subtype.val_inj.mp (huq.unique ⟨hp1, P.2⟩ ⟨hq1, Q.2⟩)]
       exact hq
     have _i3 : IsIntegrallyClosed A :=
-      IsIntegrallyClosed.of_localization_maximal <| fun p hp0 hpm ↦
+      IsIntegrallyClosed.of_localization_maximal fun p hp0 hpm ↦
         let ⟨_, _⟩ := (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime
           (Localization.AtPrime p)).mp (h p hp0 hpm.isPrime)
         inferInstance

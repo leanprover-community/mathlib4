@@ -128,7 +128,7 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) (k : ℕ)
   have h00 := tsum_prod_pow_eq_tsum_sigma k hr
   rw [Summable.tsum_comm (by apply (summable_prod_mul_pow k hr).prod_symm)] at h00
   rw [← h00]
-  exact tsum_congr₂ <| fun b c ↦ by simp [mul_comm c.val b.val, pow_mul]
+  exact tsum_congr₂ fun b c ↦ by simp [mul_comm c.val b.val, pow_mul]
 
 omit [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜] in
 lemma tendsto_zero_geometric_tsum_pnat {r : 𝕜} (hr : ‖r‖ < 1) :

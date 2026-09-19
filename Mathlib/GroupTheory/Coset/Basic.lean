@@ -556,7 +556,7 @@ version. -/
 @[to_additive /-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientAddGroup.quotientBot` for an
 additive version. -/]
 def quotientEquivSelf : α ⧸ (⊥ : Subgroup α) ≃ α where
-  toFun := Quotient.lift id <| fun x y (h : leftRel ⊥ x y) ↦
+  toFun := Quotient.lift id fun x y (h : leftRel ⊥ x y) ↦
     eq_of_inv_mul_eq_one <| by rwa [leftRel_apply, Subgroup.mem_bot] at h
   invFun := QuotientGroup.mk
   left_inv x := by induction x using Quotient.inductionOn; simp

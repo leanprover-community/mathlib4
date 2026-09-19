@@ -126,7 +126,7 @@ def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α wh
   left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
     NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
     starCenterToCentroid_apply, mul_one]
-  right_inv T := CentroidHom.ext <| fun _ => by
+  right_inv T := CentroidHom.ext fun _ => by
     simp [starCenterToCentroid_apply, ← map_mul_right]
 
 @[simp]

@@ -50,7 +50,7 @@ variable [IsTriangularizable K H L] [IsKilling K L]
 lemma linearIndepOn_root_baseSupp :
     letI := b.isCartanSubalgebra
     LinearIndepOn K (rootSystem H).root (range b.baseSupp') := by
-  let e : ι ≃ range b.baseSupp' := Equiv.ofInjective _ <| fun i j hij ↦
+  let e : ι ≃ range b.baseSupp' := Equiv.ofInjective _ fun i j hij ↦
     b.linearIndependent_baseSupp.injective <| by simpa [baseSupp'] using hij
   rw [LinearIndepOn, ← linearIndependent_equiv e]
   exact b.linearIndependent_baseSupp

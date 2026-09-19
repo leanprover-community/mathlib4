@@ -191,7 +191,7 @@ lemma exists_nat [IsNoetherian R M] [IsTorsionFree R M] [IsDomain R] [CharZero R
     have := lie_e_pow_succ_toEnd_f P n
     rw [hn₂, lie_zero, eq_comm, smul_eq_zero_iff_left hn₁, mul_eq_zero, sub_eq_zero] at this
     exact this.resolve_left <| Nat.cast_add_one_ne_zero n
-  have hs : (range <| fun (n : ℕ) ↦ μ - 2 * n).Infinite := by
+  have hs : (range fun (n : ℕ) ↦ μ - 2 * n).Infinite := by
     rw [infinite_range_iff (fun n m ↦ by simp)]; infer_instance
   by_contra! contra
   exact hs ((toEnd R L M h).eigenvectors_linearIndependent

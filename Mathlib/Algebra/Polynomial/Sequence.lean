@@ -179,7 +179,7 @@ variable [IsDomain R]
 
 /-- Polynomials in a polynomial sequence are linearly independent. -/
 lemma linearIndependent :
-    LinearIndependent R S := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
+    LinearIndependent R S := linearIndependent_iff'.mpr fun s g eqzero i hi ↦ by
   by_cases hsupzero : s.sup (fun i ↦ (g i • S i).degree) = ⊥
   · have le_sup := Finset.le_sup hi (f := fun i ↦ (g i • S i).degree)
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
