@@ -232,9 +232,10 @@ theorem qPochhammer_self : qPochhammer q q n = (1 - q) ^ n * qFactorial q n := b
 end Ring
 
 section CommRing
-variable [CommRing R] (q a : R) (n : ℕ)
+variable (q a : R) (n : ℕ)
 
-theorem qPochhammer_eq_prod_range : qPochhammer q a n = ∏ i ∈ range n, (1 - a * q ^ i) := by
+theorem qPochhammer_eq_prod_range [CommRing R] :
+    qPochhammer q a n = ∏ i ∈ range n, (1 - a * q ^ i) := by
   induction n with
   | zero => simp
   | succ n ih => rw [qPochhammer_succ, ih, prod_range_succ]
