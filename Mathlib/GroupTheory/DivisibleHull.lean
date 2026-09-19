@@ -250,7 +250,6 @@ end Group
 section LinearOrder
 variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
-set_option backward.privateInPublic true in
 private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (h : mk m s = mk m' s') (h' : mk n t = mk n' t') :
     (t.val • m ≤ s.val • n) = (t'.val • m' ≤ s'.val • n') := by
@@ -262,10 +261,8 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
     ring_nf
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : LE (DivisibleHull M) where
-  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
+  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) (private lift_aux)
 
 @[simp]
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
@@ -373,7 +370,6 @@ private noncomputable
 def archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (DivisibleHull M) :=
   ArchimedeanClass.orderHom (coeOrderAddMonoidHom M)
 
-set_option backward.privateInPublic true in
 /-- See `archimedeanClassOrderIso_symm_apply` for public API. -/
 private theorem aux_archimedeanClassMk_mk (m : M) (s : ℕ+) :
     ArchimedeanClass.mk (mk m s) = archimedeanClassOrderHom M (ArchimedeanClass.mk m) := by
@@ -407,17 +403,19 @@ set_option backward.privateInPublic.warn false in
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
 noncomputable
-def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) := by
-  apply OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M)
-  · ext a
+def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) :=
+  have h₁ := by
+    ext a
     induction a with | mk a
     induction a with | mk m s
     suffices ArchimedeanClass.mk (mk m 1) = ArchimedeanClass.mk (mk m s) by
       simpa [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
     simp_rw [aux_archimedeanClassMk_mk]
-  · ext a
+  have h₂ := by
+    ext a
     induction a with | mk _
     simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
+  OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M) h₁ h₂
 
 @[simp]
 theorem archimedeanClassOrderIso_apply (a : ArchimedeanClass M) :
