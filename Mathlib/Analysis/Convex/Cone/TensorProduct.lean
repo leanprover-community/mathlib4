@@ -57,7 +57,7 @@ namespace PointedCone
 section BasisCoordDual
 
 variable {R M : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommGroup M] [Module R M]
+variable [AddCommMonoid M] [Module R M]
 
 open Module
 

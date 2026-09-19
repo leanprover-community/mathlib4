@@ -169,7 +169,7 @@ end Semiring
 section Ring
 
 variable {R S}
-variable [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [Algebra R S]
+variable [CommRing R] [NoZeroDivisors R] [Ring S] [Nontrivial S] [Algebra R S]
 
 theorem Module.Basis.algebraMap_injective {ι : Type*} (b : Basis ι R S) :
     Function.Injective (algebraMap R S) :=

@@ -268,7 +268,7 @@ end Semiring
 
 section CommSemigroup
 
-variable [CommSemigroup R] [StarMul R]
+variable [CommMagma R] [StarMul R]
 
 theorem mul {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x * y) := by
   simp only [isSelfAdjoint_iff, star_mul', hx.star_eq, hy.star_eq]

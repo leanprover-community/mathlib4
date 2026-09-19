@@ -60,7 +60,7 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
 section Preorder
 
 variable [Preorder α]
-variable [AddCommMonoid α] [Sub α] [OrderedSub α]
+variable [AddMonoid α] [Sub α] [OrderedSub α]
 
 theorem AddMonoidHom.le_map_tsub [Preorder β] [AddZeroClass β] [Sub β] [OrderedSub β] (f : α →+ β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) :=
