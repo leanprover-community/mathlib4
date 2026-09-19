@@ -274,9 +274,10 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
     congr with i
     simp [field, mul_comm, ← pow_mul]
   have hy₃ : y ^ 2 ≠ 1 := by simp [hy₁.ne', hy₂.ne]
-  have hy₄ : (1 - y) * (1 + y) = 1 - y ^ 2 := by ring
-  simp [this, field, geom_sum_eq hy₃, hy₄]
-  ring
+  norm_num
+  rw [this, geom_sum_eq hy₃]
+  have hy₄ : 0 < 1 + y := by grind
+  field
 
 /-- A lemma estimating the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
 Taylor series at `0`, where the bound tends to `0`. This bound is particularly useful for explicit
