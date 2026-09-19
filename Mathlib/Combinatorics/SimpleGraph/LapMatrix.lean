@@ -315,9 +315,8 @@ theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrdered
   have hxpos : 0 < x ⬝ᵥ x :=
     (Fintype.sum_nonneg (mul_self_nonneg <| x ·)).lt_of_ne'
       (dotProduct_self_eq_zero.not.mpr hx.right)
-  rw [← mul_le_mul_iff_of_pos_right hxpos, ← smul_eq_mul, ← dotProduct_smul,
-    ← hx.apply_eq_smul, toLin'_apply]
-  exact dotProduct_mulVec_lapMatrix_le_card R G x
+  grw [← mul_le_mul_iff_of_pos_right hxpos, ← smul_eq_mul, ← dotProduct_smul,
+    ← hx.apply_eq_smul, toLin'_apply, dotProduct_mulVec_lapMatrix_le_card]
 
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
