@@ -290,15 +290,9 @@ adding edges can only increase the value. -/
 theorem lapMatrix_toLinearMap₂'_mono [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     {G H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj] (hGH : G ≤ H) (x : V → R) :
     toLinearMap₂' R (G.lapMatrix R) x x ≤ toLinearMap₂' R (H.lapMatrix R) x x := by
-  rw [lapMatrix_toLinearMap₂' R G x, lapMatrix_toLinearMap₂' R H x]
-  refine div_le_div_of_nonneg_right ?_ zero_le_two
-  refine sum_le_sum fun i _ => sum_le_sum fun j _ => ?_
-  by_cases hG : G.Adj i j
-  · simp [hG, hGH hG]
-  · simp only [hG, ↓reduceIte]
-    split_ifs with hH
-    · exact sq_nonneg _
-    · rfl
+  simp_rw [lapMatrix_toLinearMap₂']
+  refine div_le_div_of_nonneg_right (sum_le_sum fun i _ ↦ sum_le_sum fun j _ ↦ ?_) zero_le_two
+  grind [sq_nonneg, le_iff_adj]
 
 /-- The quadratic form of a simple-graph Laplacian is at most `|V| · ‖x‖²`.
 
