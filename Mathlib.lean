@@ -696,6 +696,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.HomologyCofork
 public import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 public import Mathlib.Algebra.Homology.ShortComplex.Limits
 public import Mathlib.Algebra.Homology.ShortComplex.Linear
@@ -2548,6 +2549,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HomologyPreservesFilteredColimits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.GabrielPopescu
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms

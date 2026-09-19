@@ -821,6 +821,12 @@ attribute [instance] CategoryWithHomology.hasHomology
 instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
   ⟨fun S => HasHomology.mk' S.unop.homologyData.op⟩
 
+instance (priority := low) [CategoryWithHomology C] : HasKernels C where
+  has_limit {X Y} f := ⟨_, (ShortComplex.mk (0 : X ⟶ X) f).cyclesIsKernel⟩
+
+instance (priority := low) [CategoryWithHomology C] : HasCokernels C where
+  has_colimit {X Y} f := ⟨_, (ShortComplex.mk f (0 : Y ⟶ Y)).opcyclesIsCokernel⟩
+
 /-- The homology functor `ShortComplex C ⥤ C` for a category `C` with homology. -/
 @[simps]
 noncomputable def homologyFunctor [CategoryWithHomology C] :
@@ -952,6 +958,24 @@ lemma homologyι_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHom
   simp only [← cancel_epi S₁.rightHomologyIso.hom, rightHomologyIso_hom_naturality_assoc φ,
     rightHomologyIso_hom_comp_homologyι, rightHomologyι_naturality]
   simp only [homologyι, assoc, Iso.hom_inv_id_assoc]
+
+variable (C) in
+/-- The morphism `S.homologyπ : S.cycles ⟶ S.homology` for any `S : Shortcomplex C`,
+as a natural transformation`. -/
+@[simps]
+noncomputable def homologyπNatTrans [CategoryWithHomology C] :
+    cyclesFunctor C ⟶ homologyFunctor C where
+  app S := S.homologyπ
+  naturality _ _ f := (homologyπ_naturality f).symm
+
+variable (C) in
+/-- The morphism `S.homologyπ : S.cycles ⟶ S.homology` for any `S : Shortcomplex C`,
+as a natural transformation`. -/
+@[simps]
+noncomputable def homologyιNatTrans [CategoryWithHomology C] :
+    homologyFunctor C ⟶ opcyclesFunctor C where
+  app S := S.homologyι
+  naturality _ _ f := homologyι_naturality f
 
 @[reassoc (attr := simp)]
 lemma homology_π_ι :
