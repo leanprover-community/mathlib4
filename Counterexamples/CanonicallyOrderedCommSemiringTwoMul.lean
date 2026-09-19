@@ -148,7 +148,7 @@ instance : PartialOrder L :=
   Subtype.partialOrder _
 
 instance : IsOrderedRing L :=
-  lSubsemiring.toIsOrderedRing
+  SubsemiringClass.toIsOrderedRing lSubsemiring
 
 instance inhabited : Inhabited L :=
   ⟨1⟩
