@@ -237,9 +237,15 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         else
           rargs
     | ``«term_<|_» =>
-      if let some arg := args[2]? then
-        if hasMaxPrec arg || hasArgPrec arg then
-          rargs.push (kind, stx, "The pipe operator `<|` can be omitted.")
+      if h : 3 ≤ args.size then
+        if hasMaxPrec args[2] || hasArgPrec args[2] then
+          -- Trick: manually set the position info of `<|` in order to remove preceding whitespace.
+          let info := match args[0].getTailPos?, args[1].getTailPos? with
+            | some pos, some tailPos => .synthetic pos tailPos
+            | _,        _            => .none
+          rargs.push (kind, args[1].setHeadInfo info,
+            m!"`{args[2]}` can be parsed as a function argument, \
+            so the pipe operator `<|` can be omitted.")
         else
           rargs
       else
@@ -298,7 +304,11 @@ def deprecatedSyntaxLinter : Linter where run stx := do
         else if getLinterValue linter.style.nativeDecide options then
           Linter.logLint linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
-      | ``«term_<|_» => Linter.logLintIf linter.style.pipe stx' msg
+      | ``«term_<|_» =>
+        if getLinterValue linter.style.pipe opts then
+          let sugg ← Command.liftCoreM <|
+            Meta.Hint.mkSuggestionsMessage #[{toTryThisSuggestion := ""}] stx' none false
+          Linter.logLint linter.style.pipe stx' m!"Try this:{sugg}\n\n{msg}"
       | _ => continue) stx
 
 initialize addLinter deprecatedSyntaxLinter

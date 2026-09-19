@@ -265,7 +265,10 @@ section
 set_option linter.style.pipe true
 
 /--
-warning: The pipe operator `<|` can be omitted.
+warning: Try this:
+   ̵<̵|̵
+
+`(0)` can be parsed as a function argument, so the pipe operator `<|` can be omitted.
 
 Note: This linter can be disabled with `set_option linter.style.pipe false`
 -/
@@ -273,7 +276,10 @@ Note: This linter can be disabled with `set_option linter.style.pipe false`
 example : (Nat.succ <| (0)) = 1 := rfl
 
 /--
-warning: The pipe operator `<|` can be omitted.
+warning: Try this:
+   ̵<̵|̵
+
+`0` can be parsed as a function argument, so the pipe operator `<|` can be omitted.
 
 Note: This linter can be disabled with `set_option linter.style.pipe false`
 -/
@@ -281,19 +287,17 @@ Note: This linter can be disabled with `set_option linter.style.pipe false`
 example : (Nat.succ <| 0) = 1 := rfl
 
 /--
-warning: The pipe operator `<|` can be omitted.
+warning: Try this:
+   ̵<̵|̵
+
+`[1]` can be parsed as a function argument, so the pipe operator `<|` can be omitted.
 
 Note: This linter can be disabled with `set_option linter.style.pipe false`
 -/
 #guard_msgs in
 example : (List.cons 0 <| [1]) = [0,1] := rfl
 
-/--
-warning: The pipe operator `<|` can be omitted.
-
-Note: This linter can be disabled with `set_option linter.style.pipe false`
--/
-#guard_msgs in
+-- We currently don't lint agains `<| fun`.
 example : ([0,1].foldl (init := 0) <| fun a b ↦ a + b) = 1 := rfl
 
 end
