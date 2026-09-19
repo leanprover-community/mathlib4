@@ -440,6 +440,34 @@ protected theorem Convex.intrinsicClosure (hs : Convex 𝕜 s) : Convex 𝕜 (in
 
 end Convex
 
+section IntrinsicClosure
+
+variable {E : Type*} [Field 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+
+open Homeomorph in
+/-- If `x ∈ intrinsicInterior 𝕜 C` and `y ∈ intrinsicClosure 𝕜 C`, then the open segment
+from `x` to `y` stays in `intrinsicInterior 𝕜 C`. This is the intrinsic version
+of `Convex.openSegment_interior_closure_subset_interior`. -/
+theorem Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior {C : Set E}
+    (hC : Convex 𝕜 C) {x y : E} (hx : x ∈ intrinsicInterior 𝕜 C) (hy : y ∈ intrinsicClosure 𝕜 C) :
+    openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 C := by
+  rcases mem_intrinsicInterior.1 hx with ⟨xA, hxA, rfl⟩
+  rcases mem_intrinsicClosure.1 hy with ⟨yA, hyA, rfl⟩
+  let : Nonempty (affineSpan 𝕜 C) := ⟨xA⟩
+  let A := (affineSpan 𝕜 C).subtype.comp (AffineEquiv.vaddConst 𝕜 xA).toAffineMap
+  rw [intrinsicInterior, ← image_interior_preimage_comp (vaddConst xA) (vaddConst xA).isHomeomorph]
+  intro _ hz
+  simpa [A] using! Convex.openSegment_image_interior_closure_preimage_subset (A := A)
+    (x := 0) (y := yA -ᵥ xA) hC
+    (by change 0 ∈ interior ((vaddConst xA) ⁻¹' (((↑) : affineSpan 𝕜 C → E) ⁻¹' C))
+        simpa [← (vaddConst xA).preimage_interior] using hxA)
+    (by change yA -ᵥ xA ∈ closure ((vaddConst xA) ⁻¹' (((↑) : affineSpan 𝕜 C → E) ⁻¹' C))
+        simpa [← (vaddConst xA).preimage_closure] using hyA)
+    (by simpa [A] using hz)
+
+end IntrinsicClosure
+
 private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] (φ : α ≃ₜ β)
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
