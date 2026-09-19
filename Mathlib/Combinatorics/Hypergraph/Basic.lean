@@ -122,7 +122,7 @@ the vertex set cannot be incident to any edge.
 -/
 @[expose]
 def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
-  ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
+  ∃ e ∈ E(H), x ≠ y ∧ x ∈ e ∧ y ∈ e
 
 lemma Adj.symm (h : H.Adj x y) : H.Adj y x := by grind [Adj]
 
