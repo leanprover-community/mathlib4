@@ -118,11 +118,16 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
   pure <| MessageData.joinSep diffs.toList "\n\n"
 
 /-- `#whats_new in` executes the following command and then prints the
-declarations that were added to the environment. -/
-elab "#whats_new " "in" ppLine cmd:command : command => do
+declarations that were added to the environment.
+
+`#whats_new` by itself executes all remaining commands of the current section before
+printing all added declarations.
+-/
+elab "#whats_new " ppLine cmds:command* : command => do
   let oldEnv ← getEnv
   try
-    elabCommand cmd
+    for cmd in cmds do
+      elabCommand cmd
   finally
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
