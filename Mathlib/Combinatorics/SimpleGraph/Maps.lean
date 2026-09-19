@@ -572,6 +572,18 @@ def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
     · simp
     · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
 
+noncomputable def induce_image (f : G ↪g G') {s : Set V} : G'.induce (f '' s) ≃g G.induce s where
+  toFun := (Equiv.Set.image f s f.injective).symm
+  invFun := Equiv.Set.image f s f.injective
+  left_inv := (Equiv.Set.image f s f.injective).symm.left_inv
+  right_inv := (Equiv.Set.image f s f.injective).symm.right_inv
+  map_rel_iff' := by
+    intro u v
+    simp only [comap_adj, Embedding.subtype_apply]
+    rw [← f.map_adj_iff]
+    congr! <;>
+      exact congrArg Subtype.val ((Equiv.Set.image f s f.injective).apply_symm_apply _)
+
 end Embedding
 
 section induceHom
