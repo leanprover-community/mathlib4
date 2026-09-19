@@ -58,6 +58,8 @@ inductive StyleError where
   | trailingWhitespace
   /-- A line contains a space before a semicolon -/
   | semicolon
+  /-- A left arrow is missing a space before the following token. -/
+  | missingSpaceAfterLeftArrow
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
   /-- Unicode variant selectors are used in a bad way.
@@ -92,6 +94,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     endings (\\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
+  | StyleError.missingSpaceAfterLeftArrow => "Missing space after '←'"
   | StyleError.unwantedUnicode c => s!"This line contains a unicode character that is not on the \
     allowlist '{c}' ({c.printCodepointHex}). \
     For adding new symbols see `Mathlib.Linter.TextBased.UnicodeLinter.othersInMathlib`."
@@ -127,6 +130,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
+  | StyleError.missingSpaceAfterLeftArrow => "ERR_ARR"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
   | StyleError.unicodeVariant _ _ => "ERR_UNICODE_VARIANT"
 
@@ -218,6 +222,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_ARR" => some (StyleError.missingSpaceAfterLeftArrow)
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
@@ -329,6 +334,39 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
       fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
+/-- Insert a space after a left arrow when it is followed by an ordinary token.
+This preserves the special cases that the legacy Python checker allows: `%`, a bare backtick,
+and `` `( ... )``-style syntax quotations.
+-/
+private def fixMissingSpaceAfterLeftArrow (line : String) : String :=
+  let chars := line.toList
+  let rec loop : List Char → List Char
+    | [] => []
+    | '←' :: [] => ['←']
+    | '←' :: ' ' :: rest => '←' :: ' ' :: loop rest
+    | '←' :: '%' :: rest => '←' :: '%' :: loop rest
+    | '←' :: '`' :: rest => '←' :: '`' :: loop rest
+    | '←' :: next :: rest => '←' :: ' ' :: next :: loop rest
+    | c :: rest => c :: loop rest
+  String.ofList (loop chars)
+
+/-- Lint a collection of input strings for missing spaces after left arrows. -/
+public register_option linter.leftArrowSpacing : Bool := { defValue := true }
+
+@[inherit_doc linter.leftArrowSpacing]
+def leftArrowSpacingLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.leftArrowSpacing opts do return (#[], none)
+
+  let mut errors := Array.mkEmpty 0
+  let mut fixedLines := lines
+  for h : idx in [:lines.size] do
+    let line := lines[idx]
+    let fixedLine := fixMissingSpaceAfterLeftArrow line
+    if fixedLine != line then
+      errors := errors.push (StyleError.missingSpaceAfterLeftArrow, idx + 1)
+      fixedLines := fixedLines.set! idx fixedLine
+  return (errors, if errors.size > 0 then some fixedLines else none)
+
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -437,6 +475,7 @@ def allLinters : Array TextbasedLinter := #[
     adaptationNoteLinter,
     semicolonLinter,
     trailingWhitespaceLinter,
+    leftArrowSpacingLinter,
     unicodeLinter,
   ]
 
