@@ -132,20 +132,20 @@ section
 
 variable [HasColimitsOfShape K C] [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C)
 
-/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as colimits of shape `K`,
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming that `C` as colimits of shape `K`,
 this is the cocone of `F.flip` with point `F ⋙ colim`. -/
 @[simps, implicit_reducible]
 noncomputable def colim.coconeFlip : Cocone F.flip where
   pt := F ⋙ colim
   ι.app k := { app j := colimit.ι (F.obj j) k }
 
-/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as colimits of shape `K`,
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming that `C` as colimits of shape `K`,
 the colimit of `F.flip` is `F ⋙ colim`. -/
 @[no_expose]
 noncomputable def colim.isColimitCoconeFlip : IsColimit (colim.coconeFlip F) :=
   evaluationJointlyReflectsColimits _ (fun _ ↦ colimit.isColimit _)
 
-/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as limits of shape `J`,
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming that `C` as limits of shape `J`,
 this is the cone of `F` with point `F.flip ⋙ lim`. -/
 @[simps, implicit_reducible]
 noncomputable def lim.cone : Cone F where
@@ -153,13 +153,13 @@ noncomputable def lim.cone : Cone F where
   π.app j := { app k := limit.π (F.flip.obj k) j }
   π.naturality _ _ f := by ext k; simpa using (limit.w (F.flip.obj k) f).symm
 
-/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as limits of shape `J`,
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming that `C` as limits of shape `J`,
 the limit of `F` is `F.flip ⋙ lim`. -/
 @[no_expose]
 noncomputable def lim.isLimitCone : IsLimit (lim.cone F) :=
   evaluationJointlyReflectsLimits _ (fun _ ↦ limit.isLimit _)
 
-/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming the `C` as limits of shape `J` and
+/-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming that `C` as limits of shape `J` and
 colimit of shape `K`, this is the canonical morphism from the colimit of `F.flip ⋙ lim`
 and the limit of `F ⋙ colimit`. -/
 @[no_expose]
