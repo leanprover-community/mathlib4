@@ -1,3 +1,4 @@
+import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Functor.CurryingThree
 import Mathlib.CategoryTheory.Products.Associator
@@ -84,6 +85,10 @@ elab_rules : command
 /-- info: `CategoryTheory.Functor.rightUnitor_hom_app` is tagged with @[defeq] -/
 #guard_msgs in
 #ensure_defeq CategoryTheory.Functor.rightUnitor_hom_app
+
+/-- info: `SSet.mapFundamentalGroupoid_obj_mk` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq SSet.mapFundamentalGroupoid_obj_mk
 
 -- Equivalence and product constructions should compute in dependent positions.
 
