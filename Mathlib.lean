@@ -1875,6 +1875,7 @@ public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Calculus.Monotone
+public import Mathlib.Analysis.Calculus.ParametricCircleIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Calculus.Rademacher
