@@ -93,16 +93,18 @@ theorem continuous_apply {α : Type*} [TopologicalSpace α]
 @[fun_prop]
 lemma _root_.Continuous.specialLinearGroup_map (hf : Continuous f) :
     Continuous (map (n := n) f) := by
-  refine IsInducing.subtypeVal.continuous_iff.mpr ?_
+  refine (IsInducing.subtypeVal (t := {A : Matrix n n S | A.det = 1})).continuous_iff.mpr ?_
   exact (continuous_id.matrix_map hf).comp continuous_subtype_val
 
 lemma _root_.Topology.IsInducing.specialLinearGroup_map (hf : IsInducing f) :
     IsInducing (map (n := n) f) :=
-  (hf.matrix_map.comp .subtypeVal).of_comp (by fun_prop) continuous_subtype_val
+  (hf.matrix_map.comp (IsInducing.subtypeVal (t := {A : Matrix n n R | A.det = 1}))).of_comp
+    (by fun_prop) continuous_subtype_val
 
 lemma _root_.Topology.IsEmbedding.specialLinearGroup_map (hf : IsEmbedding f) :
     IsEmbedding (map (n := n) f) :=
-  (hf.matrix_map.comp .subtypeVal).of_comp (by fun_prop) continuous_subtype_val
+  (hf.matrix_map.comp (IsEmbedding.subtypeVal (p := fun A : Matrix n n R ↦ A.det = 1))).of_comp
+    (by fun_prop) continuous_subtype_val
 
 variable [IsTopologicalRing R]
 
