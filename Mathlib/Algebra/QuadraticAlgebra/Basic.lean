@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.DualNumber
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
 
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Quadratic algebras: involution, norm, trace, and change of generator.
+# Quadratic algebras: involution, norm, trace, change of generator, etc.
 
 Let `R` be a commutative ring. We define:
 
@@ -26,6 +27,8 @@ Let `R` be a commutative ring. We define:
 * `QuadraticAlgebra.changeGenerator` and `QuadraticAlgebra.changeGeneratorEquiv`: the `R`-algebra
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
+
+* `QuadraticAlgebra.baseChange`: the `R`-algebra homomorphism induced by a base change `R → S`
 
 We prove:
 
@@ -267,6 +270,10 @@ theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r) = r ^ 2 := by
   simp [norm_def, pow_two]
 
+theorem norm_smul (r : R) (z : QuadraticAlgebra R a b) :
+    norm (r • z) = r ^ 2 * norm z := by
+  rw [Algebra.smul_def, map_mul, norm_algebraMap]
+
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
   simp [norm_def, pow_two]
@@ -426,6 +433,22 @@ theorem sq_eq_trace_smul_sub_norm :
 
 end trace
 
+section equivOfEq
+
+variable [CommSemiring R]
+
+/-- Equal parameters give isomorphic quadratic algebras. -/
+@[simps]
+def equivOfEq {a' b' : R} (ha : a = a') (hb : b = b') :
+    QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a' b' where
+  toFun z := ⟨z.re, z.im⟩
+  invFun z := ⟨z.re, z.im⟩
+  map_mul' _ _ := by ext <;> simp [ha, hb]
+  map_add' _ _ := by ext <;> simp
+  commutes' _ := by ext <;> simp
+
+end equivOfEq
+
 section changeGenerator
 
 variable [CommRing R]
@@ -483,6 +506,64 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 
 end changeGenerator
 
+section baseChange
+
+variable {R S : Type*} (S)
+
+section CommSemiring
+
+variable [CommSemiring R] [CommRing S] [Algebra R S] (a b : R)
+
+/-- The `R`-algebra map between quadratic algebras induced by the base change `R → S`,
+sending `ω` to `ω`. -/
+@[simps!]
+def baseChange :
+    QuadraticAlgebra R a b →ₐ[R] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b) :=
+  lift ⟨omega, by ext <;> simp [Algebra.algebraMap_eq_smul_one]⟩
+
+theorem baseChange_omega :
+    baseChange S a b ω = ω := by
+  ext <;> simp
+
+theorem baseChange_injective [FaithfulSMul R S] :
+    Function.Injective (baseChange S a b) := by
+  intro _ _ h
+  simp only [QuadraticAlgebra.ext_iff, re_baseChange_apply, ← Algebra.algebraMap_eq_smul_one,
+    algebraMap.coe_inj, im_baseChange_apply] at h
+  exact QuadraticAlgebra.ext_iff.mpr h
+
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R] [CommRing S] [Algebra R S] (a b : R)
+
+theorem norm_baseChange (x : QuadraticAlgebra R a b) :
+    norm (baseChange S a b x) = algebraMap R S (norm x) := by
+  simp [norm_def, Algebra.smul_def]
+
+theorem trace_baseChange (x : QuadraticAlgebra R a b) :
+    trace (baseChange S a b x) = algebraMap R S (trace x) := by
+  simp [trace_def, Algebra.smul_def, map_ofNat]
+
+end CommRing
+
+end baseChange
+section dualNumber
+
+open scoped DualNumber
+
+/-- `QuadraticAlgebra R 0 0` is the algebra of dual numbers, with `ω` the nilpotent `ε`. -/
+def algEquivDualNumber (R : Type*) [CommRing R] :
+    QuadraticAlgebra R 0 0 ≃ₐ[R] DualNumber R :=
+  AlgEquiv.ofAlgHom (lift ⟨ε, by simp⟩)
+    (DualNumber.lift ⟨(Algebra.ofId R _, ω), by ext <;> simp,
+      fun _ ↦ Commute.all _ _⟩)
+    (by apply DualNumber.algHom_ext; simp)
+    (by apply algHom_ext; simp)
+
+end dualNumber
+
 section field
 
 variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]
@@ -536,6 +617,11 @@ example {a : K} [Fact (¬ IsSquare a)] : Field (QuadraticAlgebra K a 0) := infer
 -- `Field` structure through `DivisionRing.toRatAlgebra` are the same instance.
 example {a b : ℚ} [Fact (∀ r : ℚ, r ^ 2 ≠ a + b * r)] :
     (DivisionRing.toRatAlgebra : Algebra ℚ (QuadraticAlgebra ℚ a b)) = instAlgebra := by
+  with_implicit rfl
+
+-- Over `ℤ`, the algebra structure of `QuadraticAlgebra.instAlgebra` and the one coming from the
+-- `Ring` structure through `Ring.toIntAlgebra` are the same instance.
+example {a b : ℤ} : (Ring.toIntAlgebra (QuadraticAlgebra ℤ a b)) = instAlgebra := by
   with_implicit rfl
 
 end field

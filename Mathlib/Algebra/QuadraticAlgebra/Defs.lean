@@ -267,7 +267,7 @@ section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne R]
 
 instance : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
-  natCast n := .C n
+  natCast n := ⟨n, 0⟩
   natCast_zero := by ext <;> simp
   natCast_succ n := by ext <;> simp
 
@@ -296,9 +296,9 @@ section AddCommGroupWithOne
 variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
-  intCast n := .C n
+  intCast n := ⟨n, 0⟩
   intCast_ofNat n := by norm_cast
-  intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, C_neg]; norm_cast
+  intCast_negSucc n := by ext <;> simp [Int.negSucc_eq]
 
 @[simp, norm_cast]
 theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
