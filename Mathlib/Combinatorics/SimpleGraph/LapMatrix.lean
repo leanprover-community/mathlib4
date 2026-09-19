@@ -291,14 +291,7 @@ theorem lapMatrix_toLinearMap₂'_mono {R} [Field R] [LinearOrder R] [IsStrictOr
   refine div_le_div_of_nonneg_right (sum_le_sum fun i _ ↦ sum_le_sum fun j _ ↦ ?_) zero_le_two
   grind [sq_nonneg, le_iff_adj]
 
-/-- The quadratic form of a simple-graph Laplacian is at most `|V| · ‖x‖²`.
-
-Proof: by `lapMatrix_toLinearMap₂'_mono` and `le_top`, compare with the complete graph.
-From `lapMatrix_top`, `L(K_V) = |V| - J` where `J` is the all-ones matrix, and the
-corresponding quadratic form is `|V| ‖x‖² - (∑ x)² ≤ |V| ‖x‖²`.
-
-Uses a linearly ordered field (squares nonnegative / ordered arithmetic), the same style as
-`posSemidef_lapMatrix`. -/
+/-- The quadratic form of a simple-graph Laplacian is at most `|V| · ‖x‖²`. -/
 theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     (x : V → R) : x ⬝ᵥ G.lapMatrix R *ᵥ x ≤ Fintype.card V * x ⬝ᵥ x := by
   classical
