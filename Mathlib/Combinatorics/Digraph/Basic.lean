@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # Digraphs
@@ -85,6 +87,19 @@ def mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
 
 instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).Adj :=
   inferInstanceAs <| DecidableRel (fun v w ↦ adj v w)
+
+instance {V : Type*} [Fintype V] [DecidableEq V] : Fintype (Digraph V) := by
+  refine Fintype.ofBijective (fun p : {p : (V → Bool) × (V → V → Bool) //
+    ∀ v w, p.2 v w → p.1 v ∧ p.1 w} =>
+      (⟨{v | p.1.1 v}, fun v w => p.1.2 v w,
+        fun {v w} h => (p.2 v w h).1, fun {v w} h => (p.2 v w h).2⟩ : Digraph V)) ⟨?_, ?_⟩
+  · rintro ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ _
+    simp_all [Digraph.mk.injEq, funext_iff, Set.ext_iff, Bool.coe_iff_coe]
+  · classical
+    intro G
+    refine ⟨⟨(fun v => decide (v ∈ G.verts), fun v w => decide (G.Adj v w)), ?_⟩, ?_⟩
+    · grind
+    · ext <;> simp
 
 /--
 The complete digraph on a type `V` (denoted by `⊤`)
