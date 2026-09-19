@@ -418,6 +418,28 @@ lemma angle_eq_iff_oangle_eq_neg_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ :
   o.angle_eq_iff_oangle_eq_neg_of_sign_eq_neg (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃)
     (vsub_ne_zero.2 hp₄) (vsub_ne_zero.2 hp₆) hs
 
+/-- If two oriented angles are equal, and the four endpoint pairs are nondegenerate, then the
+corresponding unoriented angles are equal. -/
+theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆)
+    (h1 : p₂ ≠ p₁) (h2 : p₂ ≠ p₃) (h3 : p₅ ≠ p₄) (h4 : p₅ ≠ p₆) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
+  rw [angle_eq_abs_oangle_toReal h1.symm h2.symm, angle_eq_abs_oangle_toReal h3.symm h4.symm, h]
+
+/-- If two oriented angles are equal, and the first triple is not collinear, then the
+corresponding unoriented angles are equal. -/
+theorem angle_eq_of_oangle_eq_not_collinear {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h_not_col1 : ¬ Collinear ℝ {p₁, p₂, p₃}) (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
+  have h_ne1: p₂ ≠ p₁ := (ne₁₂_of_not_collinear h_not_col1).symm
+  have h_ne2: p₂ ≠ p₃ := (ne₂₃_of_not_collinear h_not_col1)
+  have h_not_col2: ¬ Collinear ℝ {p₄, p₅, p₆} := by
+    have angle_eq : 2 • ∡ p₁ p₂ p₃ = 2 • ∡ p₄ p₅ p₆ := by simp_rw [h]
+    rw [← collinear_iff_of_two_zsmul_oangle_eq angle_eq]
+    exact h_not_col1
+  have h_ne3: p₅ ≠ p₄ := (ne₁₂_of_not_collinear h_not_col2).symm
+  have h_ne4: p₅ ≠ p₆ := (ne₂₃_of_not_collinear h_not_col2)
+  exact angle_eq_of_oangle_eq h h_ne1 h_ne2 h_ne3 h_ne4
+
 /-- The oriented angle between three points equals the unoriented angle if the sign is
 positive. -/
 theorem oangle_eq_angle_of_sign_eq_one {p₁ p₂ p₃ : P} (h : (∡ p₁ p₂ p₃).sign = 1) :
