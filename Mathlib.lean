@@ -5879,6 +5879,7 @@ public import Mathlib.ModelTheory.Graph
 public import Mathlib.ModelTheory.LanguageMap
 public import Mathlib.ModelTheory.Order
 public import Mathlib.ModelTheory.PartialEquiv
+public import Mathlib.ModelTheory.PartialTypes
 public import Mathlib.ModelTheory.Quotients
 public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.Semantics
