@@ -328,7 +328,10 @@ theorem bot_apply (a : α) : (⊥ : sSupHom α β) a = ⊥ :=
 
 variable {_ : CompleteLattice α}
 
-@[to_dual (attr := simps)]
+/-- Order isomorphisms between domains and codomains gives an equivalence between the types of
+`⨆` preserving maps. -/
+@[to_dual (attr := simps) /-- Order isomorphisms between domains and codomains gives an equivalence
+between the types of `⨅` preserving maps. -/]
 def _root_.OrderIso.sSupHomCongr {α β γ δ : Type*} [CompleteLattice α] [CompleteLattice β]
     [CompleteLattice γ] [CompleteLattice δ] (e : α ≃o γ) (e' : β ≃o δ) :
     sSupHom α β ≃ sSupHom γ δ where
@@ -440,6 +443,8 @@ theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Inje
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
+/-- Order isomorphisms between domains and codomains gives an equivalence between the types of
+frame homomorphisms. -/
 @[simps]
 def _root_.OrderIso.frameHomCongr {α β γ δ : Type*} [CompleteLattice α] [CompleteLattice β]
     [CompleteLattice γ] [CompleteLattice δ] (e : α ≃o γ) (e' : β ≃o δ) :
@@ -560,6 +565,8 @@ theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeH
     (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
+/-- Order isomorphisms between domains and codomains gives an equivalence between the types of
+complete lattice homomorhpisms. -/
 @[simps]
 def _root_.OrderIso.completeLatticeHomCongr {α β γ δ : Type*} [CompleteLattice α]
     [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ] (e : α ≃o γ) (e' : β ≃o δ) :
