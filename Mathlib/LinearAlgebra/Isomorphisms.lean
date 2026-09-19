@@ -21,9 +21,9 @@ public import Mathlib.LinearAlgebra.Quotient.Card
 
 universe u v
 
-variable {R M M₂ : Type*}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R M₂]
+variable {R M M₂ M₃ : Type*}
+variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/
@@ -148,6 +148,30 @@ theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x :
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
 
 end IsomorphismLaws
+
+section Surjective
+
+variable {f} (hf : Function.Surjective f)
+
+/-- Given a surjective `f : M →ₗ[R] M₂` and an `R`-module `M₃`, this is a bijection between
+`R`-linear maps `M₂ →ₗ[R] M₃` and `R`-linear maps `g : M →ₗ[R] M₃` such that `ker f ≤ ker g`. -/
+@[simps apply]
+noncomputable def equivOfSurjective :
+    (M₂ →ₗ[R] M₃) ≃ {g : M →ₗ[R] M₃ // ker f ≤ ker g} where
+  toFun h := ⟨h.comp f, fun x hx ↦ by simp [mem_ker.mp hx]⟩
+  invFun := fun ⟨g, hg⟩ ↦ (ker f).liftQ g hg ∘ₗ (f.quotKerEquivOfSurjective hf).symm
+  left_inv h := by
+    ext n
+    obtain ⟨m, rfl⟩ := hf n
+    simp
+  right_inv := fun ⟨g, hg⟩ ↦ by ext; simp
+
+@[simp]
+theorem equivOfSurjective_symm_apply {g : M →ₗ[R] M₃} (hg : ker f ≤ ker g) {m : M} :
+    (f.equivOfSurjective hf).symm ⟨g, hg⟩ (f m) = g m := by
+  simp [equivOfSurjective]
+
+end Surjective
 
 end LinearMap
 
