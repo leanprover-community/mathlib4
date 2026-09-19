@@ -970,8 +970,10 @@ theorem enorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by
 theorem enorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
   simp [← ENNReal.toReal_eq_one_iff]
 
-/-- Length of the chord from `exp (I * x)` to `1`. For chords from a point of an arbitrary circle
-centered at `0` to an arbitrary point, see `norm_circleMap_zero_sub_sq'`. -/
+/--
+Length of the chord from `exp (I * x)` to `1`. For chords from a point of an arbitrary circle
+centered at `0` to an arbitrary point, see `norm_circleMap_zero_sub_sq'`.
+-/
 theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 * Real.sin (x / 2)‖ := by
   rw [show ‖2 * Real.sin (x / 2)‖ = ‖2 * sin (x / 2)‖ by norm_cast, two_sin]
   nth_rw 2 [← one_mul (_ - _), ← exp_zero]
