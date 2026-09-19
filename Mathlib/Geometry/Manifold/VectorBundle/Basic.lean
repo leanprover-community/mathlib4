@@ -67,7 +67,7 @@ open Bundle Filter Set OpenPartialHomeomorph
 open Function (id_def)
 open scoped Manifold Topology ContDiff
 
-variable {n : ℕ∞ω} {𝕜 B F M : Type*} {E : B → Type*}
+variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
