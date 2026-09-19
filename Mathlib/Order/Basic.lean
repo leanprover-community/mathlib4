@@ -853,7 +853,7 @@ instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
 instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
-  fast_instance% @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
+  @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
     rfl
@@ -1063,6 +1063,7 @@ abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder �
   le_total _ _ := .inl trivial
   lt_iff_le_not_ge _ _ := by simp
   toDecidableLE _ _ := instDecidableTrue
+  toDecidableLT _ _ := instDecidableFalse
 
 instance : LinearOrder Empty := .ofSubsingleton
 instance : LinearOrder PEmpty := .ofSubsingleton
