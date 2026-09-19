@@ -537,7 +537,7 @@ theorem mem_closedEBall' : y ∈ closedEBall x ε ↔ edist x y ≤ ε := by
 
 @[simp]
 theorem closedEBall_top {α : Type*} [EDist α] (x : α) : closedEBall x ∞ = univ :=
-  eq_univ_of_forall fun _ => mem_ofPred.2 le_top
+  eq_univ_of_forall fun _ => mem_ofPred.mpr le_top
 
 theorem eball_subset_closedEBall {α : Type*} [EDist α] {x : α} :
     eball x ε ⊆ closedEBall x ε := fun _ h => le_of_lt h.out

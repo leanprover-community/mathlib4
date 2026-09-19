@@ -110,7 +110,7 @@ noncomputable def riemannianMetricVectorSpace :
     have : Metric.ball (0 : F) 1 = {v : F | ⟪v, v⟫ < 1} := by
       ext v
       simp only [Metric.mem_ball, dist_zero_right, norm_eq_sqrt_re_inner (𝕜 := ℝ),
-        RCLike.re_to_real, Set.mem_ofPred_eq]
+        RCLike.re_to_real, Set.mem_ofPred]
       conv_lhs => rw [show (1 : ℝ) = √1 by simp]
       rw [Real.sqrt_lt_sqrt_iff]
       exact real_inner_self_nonneg
@@ -284,7 +284,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
-  simp only [preimage_ofPred_eq, mem_ofPred_eq] at hy
+  simp only [preimage_ofPred_eq, mem_ofPred] at hy
   convert! hy
 
 set_option backward.isDefEq.respectTransparency false in

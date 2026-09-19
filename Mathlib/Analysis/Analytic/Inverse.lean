@@ -235,7 +235,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   refine sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => ?_
   have : ∀ k, c.blocksFun k < n + 2 := by
     simp only [Set.mem_toFinset (s := {c : Composition (n + 2) | 1 < c.length}),
-      Set.mem_ofPred_eq] at hc
+      Set.mem_ofPred] at hc
     simp [← Composition.ne_single_iff N, Composition.eq_single_iff_length, ne_of_gt hc]
   simp [applyComposition, this]
 
@@ -392,7 +392,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
         exact prod_nonneg fun j _ ↦ (by positivity [ha, hp (x.snd.blocksFun j)])
       rintro ⟨k, c⟩ hd
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
-        Set.mem_ofPred_eq] at hd
+        Set.mem_ofPred] at hd
       simp only [mem_compPartialSumTarget_iff]
       refine ⟨hd.2, c.length_le.trans_lt hd.1.2, fun j => ?_⟩
       have : c ≠ Composition.single k (zero_lt_two.trans_le hd.1.1) := by

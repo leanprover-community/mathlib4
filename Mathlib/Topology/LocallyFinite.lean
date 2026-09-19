@@ -84,7 +84,7 @@ protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     𝓝[⋃ i, f i] a = 𝓝[⋃ i, f i ∩ U] a := by
       rw [← iUnion_inter, ← nhdsWithin_inter_of_mem' (nhdsWithin_le_nhds haU)]
     _ = 𝓝[⋃ i ∈ {j | (f j ∩ U).Nonempty}, (f i ∩ U)] a := by
-      simp only [mem_ofPred_eq, iUnion_nonempty_self]
+      simp only [mem_ofPred, iUnion_nonempty_self]
     _ = ⨆ i ∈ {j | (f j ∩ U).Nonempty}, 𝓝[f i ∩ U] a := nhdsWithin_biUnion hfin _ _
     _ ≤ ⨆ i, 𝓝[f i ∩ U] a := iSup₂_le_iSup _ _
     _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ inter_subset_left

@@ -364,7 +364,7 @@ public theorem minimax
       fun x hx ↦ le_antisymm (hsup_y x hx sup_inf) (hsup_inf (sup_y x))
     suffices {t | ∃ x ∈ X, sup_y x = t} = {sup_inf} from (this ▸ hinf_sup).unique (by simp) |>.le
     ext t
-    simp only [mem_ofPred_eq, mem_singleton_iff]
+    simp only [mem_ofPred, mem_singleton_iff]
     constructor
     · rintro ⟨x, hx, rfl⟩
       exact hsup_y x hx
@@ -381,7 +381,7 @@ public theorem minimax
     simp only [mem_iInter, mem_preimage, mem_Iic] at hx'
     rw [lt_isGLB_iff hinf_sup] at ht
     obtain ⟨c, hc, htc⟩ := ht
-    simp only [mem_lowerBounds, mem_ofPred_eq, forall_exists_index, and_imp,
+    simp only [mem_lowerBounds, mem_ofPred, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂] at hc
     apply not_le.mpr htc (le_trans (hc x hx) _)
     rw [isLUB_le_iff (hsup_y x hx), mem_upperBounds]
@@ -395,7 +395,7 @@ public theorem minimax
         ne_X kX hfy hfy' cY hfx hfx' cX
         (t := t)
         (toFinite _) (Subtype.coe_image_subset Y ↑s)
-  simp only [lt_isLUB_iff hsup_inf, mem_ofPred_eq, exists_exists_and_eq_and]
+  simp only [lt_isLUB_iff hsup_inf, mem_ofPred, exists_exists_and_eq_and]
   use y0 hs', hy0 hs'
   specialize ht0 hs'
   obtain ⟨a, ha, h⟩ := LowerSemicontinuousOn.exists_isMinOn ne_X kX (hfy (y0 hs') (hy0 hs'))

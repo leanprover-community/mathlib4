@@ -70,7 +70,7 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
     simp only [this, interior_iInter_of_finite, ←
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
-      interior_Ici, mem_iInter, mem_ofPred_eq, mem_Ioi, mem_preimage]
+      interior_Ici, mem_iInter, mem_ofPred, mem_Ioi, mem_preimage]
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -127,7 +127,7 @@ theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
 theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : AffineBasis ι ℝ V) :
     Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) := by
   have := b.nonempty
-  simp only [b.interior_convexHull, mem_ofPred_eq, b.coord_apply_centroid (Finset.mem_univ _),
+  simp only [b.interior_convexHull, mem_ofPred, b.coord_apply_centroid (Finset.mem_univ _),
     inv_pos, Nat.cast_pos, Finset.card_pos, Finset.univ_nonempty, forall_true_iff]
 
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :

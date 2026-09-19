@@ -215,7 +215,7 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
     by_contra! h
     have : i ∈ s.toFinset := by
       refine Set.mem_toFinset.mpr ?_
-      simp only [s, ne_eq, Set.mem_ofPred_eq]
+      simp only [s, ne_eq, Set.mem_ofPred]
       use x₀
       simpa using ⟨h, mem_of_mem_nhds hu'⟩
     exact hi this
@@ -224,7 +224,7 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
   by_contra! h
   have : i ∈ s.toFinset := by
     refine Set.mem_toFinset.mpr ?_
-    simp only [s, ne_eq, Set.mem_ofPred_eq]
+    simp only [s, ne_eq, Set.mem_ofPred]
     use y
     simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
   exact hi this

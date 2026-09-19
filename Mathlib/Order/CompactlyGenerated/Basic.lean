@@ -104,7 +104,7 @@ lemma IsCompactElement.exists_le_finsetSup_of_le_isLUB {α : Type*} [Semilattice
     use (t ∪ t').sup id
     grind
   specialize hk {x | ∃ t : Finset α, ↑t ⊆ s ∧ x = t.sup id} u ⟨⊥, ∅, by simp⟩ hdir
-  simp only [Set.mem_ofPred_eq, ↓existsAndEq, and_true] at hk
+  simp only [Set.mem_ofPred, ↓existsAndEq, and_true] at hk
   refine hk ⟨?_, ?_⟩ hle
   · rintro _ ⟨t, ht, rfl⟩
     exact Finset.sup_le fun x hx => hu.1 (ht hx)
@@ -443,7 +443,7 @@ lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
   classical
   have hf : Set.InjOn f {i : ι | f i ≠ ⊥} := by
     by_contra! hf
-    simp_all only [Set.InjOn, ne_eq, Set.mem_ofPred_eq, not_forall]
+    simp_all only [Set.InjOn, ne_eq, Set.mem_ofPred, not_forall]
     obtain ⟨x₁, hx₁, x₂, hx₂, hfeq, hneq⟩ := hf
     specialize h ({x₁, x₂} : Finset ι)
     rw [Finset.supIndep_pair hneq, disjoint_iff, hfeq, inf_idem (f x₂)] at h

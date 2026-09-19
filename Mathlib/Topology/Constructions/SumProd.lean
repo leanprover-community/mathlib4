@@ -309,7 +309,7 @@ theorem prod_mem_nhds {s : Set X} {t : Set Y} {x : X} {y : Y} (hx : s ∈ 𝓝 x
   prod_mem_nhds_iff.2 ⟨hx, hy⟩
 
 theorem isOpen_setOfPred_disjoint_nhds_nhds : IsOpen { p : X × X | Disjoint (𝓝 p.1) (𝓝 p.2) } := by
-  simp only [isOpen_iff_mem_nhds, Prod.forall, mem_ofPred_eq]
+  simp only [isOpen_iff_mem_nhds, Prod.forall, mem_ofPred]
   intro x y h
   obtain ⟨U, hU, V, hV, hd⟩ := ((nhds_basis_opens x).disjoint_iff (nhds_basis_opens y)).mp h
   exact mem_nhds_prod_iff'.mpr ⟨U, V, hU.2, hU.1, hV.2, hV.1, fun ⟨x', y'⟩ ⟨hx', hy'⟩ =>
@@ -470,7 +470,7 @@ theorem map_fst_nhdsWithin (x : X × Y) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
-  simp only [prod_subset_iff, mem_singleton_iff, mem_ofPred_eq, mem_preimage] at H
+  simp only [prod_subset_iff, mem_singleton_iff, mem_ofPred, mem_preimage] at H
   exact mem_of_superset hu fun z hz => H _ hz _ (mem_of_mem_nhds hv) rfl
 
 @[simp]
@@ -488,7 +488,7 @@ theorem map_snd_nhdsWithin (x : X × Y) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
-  simp only [prod_subset_iff, mem_singleton_iff, mem_ofPred_eq, mem_preimage] at H
+  simp only [prod_subset_iff, mem_singleton_iff, mem_ofPred, mem_preimage] at H
   exact mem_of_superset hv fun z hz => H _ (mem_of_mem_nhds hu) _ hz rfl
 
 @[simp]
