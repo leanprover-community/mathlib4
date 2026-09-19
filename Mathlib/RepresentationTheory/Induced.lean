@@ -43,8 +43,7 @@ is used to prove Shapiro's lemma in
 
 @[expose] public section
 
-open Representation
-open scoped MonoidAlgebra
+open Representation 
 
 universe t w w' u u' v v'
 
@@ -57,13 +56,13 @@ variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B :
 `k`-module `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.
 See `Representation.ind` for the induced `H`-representation on `IndV φ ρ`. -/
 @[implicit_reducible]
-def IndV := Coinvariants (Representation.tprod ((leftRegular k H).comp φ) ρ)
+def IndV := Coinvariants (tprod ((leftRegular k H).comp φ) ρ)
 
 noncomputable instance : AddCommGroup (IndV φ ρ) := inferInstanceAs <|
-  AddCommGroup (Coinvariants (Representation.tprod ((leftRegular k H).comp φ) ρ))
+  AddCommGroup (Coinvariants (tprod ((leftRegular k H).comp φ) ρ))
 
 noncomputable instance : Module k (IndV φ ρ) := inferInstanceAs <|
-  Module k (Coinvariants (Representation.tprod ((leftRegular k H).comp φ) ρ))
+  Module k (Coinvariants (tprod ((leftRegular k H).comp φ) ρ))
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `H → A →ₗ[k] (k[H] ⊗[k] A)_G` sending `h, a` to `⟦h ⊗ₜ a⟧`. -/
@@ -80,9 +79,9 @@ variable {φ ρ} in
 @[elab_as_elim]
 lemma IndV.inductionOn {p : IndV φ ρ → Prop} (v : IndV φ ρ) (mk : ∀ h a, p (IndV.mk φ ρ h a))
     (add : ∀ x y : IndV φ ρ, p x → p y → p (x + y)) : p v := by
-  refine Representation.Coinvariants.induction_on v fun w => ?_
+  refine Coinvariants.induction_on v fun w => ?_
   refine w.inductionOn (fun m a => ?_) (fun _ _ hx hy => by simpa [map_add] using add _ _ hx hy)
-  refine MonoidAlgebra.induction_linear m (by simpa using mk 1 0) ?_ ?_
+  refine m.induction_linear (by simpa using mk 1 0) ?_ ?_
   · exact fun _ _ hx hy => by simpa [TensorProduct.add_tmul, map_add] using add _ _ hx hy
   · intro h r
     rw [← mul_one r, ← MonoidAlgebra.smul_single', TensorProduct.smul_tmul]
@@ -187,7 +186,6 @@ noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   map_comp _ _ := by ext; simp
 
 end Ind
-
 section Adjunction
 
 variable (B : Rep k H)
@@ -202,7 +200,7 @@ noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u
     ⟨f.hom.toLinearMap ∘ₗ IndV.mk φ A.ρ 1, fun g => by ext; simp [← f.hom.isIntertwining]⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := Rep.ofHom (Representation.ind.lift φ f.hom)
+  invFun f := Rep.ofHom (ind.lift φ f.hom)
   left_inv f := by ext; simp [← f.hom.isIntertwining]
   right_inv _ := by ext; simp
 
