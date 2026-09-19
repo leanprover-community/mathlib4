@@ -301,7 +301,7 @@ theorem inv_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l
     (hnu_nonzero : s.nu l ≠ 0) :
     (s.selbergTerms l)⁻¹ = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (s.nu e)⁻¹ := by
   simp only [selbergTerms_apply, mul_inv, inv_inv,
-    Finset.prod_inv_distrib, s.nu_mult.prodPrimeFactors_one_sub_of_squarefree _ hl, mul_sum]
+    Finset.prod_inv_distrib, s.nu_mult.prodPrimeFactors_one_sub _ hl.ne_zero, mul_sum]
   rw [← Nat.sum_divisorsAntidiagonal fun i _ : ℕ ↦ (s.nu l)⁻¹ * (↑(μ i) * s.nu i)]
   congr! 1 with ⟨d, e⟩ hd
   obtain ⟨rfl, -⟩ : d * e = l ∧ _ := by simpa using hd
