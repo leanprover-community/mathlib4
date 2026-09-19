@@ -2412,6 +2412,7 @@ public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Log
 public import Mathlib.Analysis.SpecialFunctions.Integrability.PosLog
+public import Mathlib.Analysis.SpecialFunctions.Integrals.ArithmeticGeometricMean
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Log
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
