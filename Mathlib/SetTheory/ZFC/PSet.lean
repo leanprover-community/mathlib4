@@ -43,7 +43,6 @@ universe u v
 structure PSet : Type (u + 1) where
   /-- The underlying type of a pre-set -/
   «Type» : Type u
-
   /-- The underlying pre-set family of a pre-set -/
   Func : «Type» → PSet
 
