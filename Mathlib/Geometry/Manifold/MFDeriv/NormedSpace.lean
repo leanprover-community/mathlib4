@@ -554,6 +554,37 @@ lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffAt[s] x) :
 lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
   simp [mvfderiv, mfderiv_const]
 
+-- TODO move!
+lemma mvfderivWithin_zero_of_not_mdifferentiableWithinAt {f : M → F} (hf : ¬MDiffAt[s] f x) :
+    d[s] f x = 0 := by
+  convert! mfderivWithin_zero_of_not_mdifferentiableWithinAt hf
+
+lemma mvfderiv_zero_of_not_mdifferentiableAt {f : M → F} (hf : ¬MDiffAt f x) :
+    d% f x = 0 := by
+  rw [← mvfderivWithin_univ, mvfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
+
+attribute [simp] mdifferentiableWithinAt_const
+
+@[simp, to_fun mvfderivWithin_const_fun_smul]
+lemma mvfderivWithin_const_smul (c : 𝕜) {f : M → F} (hs : UniqueMDiffAt[s] x) :
+    d[s](c • f) x = c • d[s] f x := by
+  by_cases hf : MDiffAt[s] f x
+  · -- TODO: what's missing to make this work nicely. difference between scalar multiplication
+    -- with a constant and not...
+    erw [mvfderivWithin_smul (by simp) hf hs]
+    simp [mvfderivWithin_const]
+  · rcases eq_or_ne c 0 with rfl | hc; · simp [hs]
+    have hs' : ¬ MDiffAt[s] (c • f) x :=
+      fun h ↦ hf (by simpa [hc] using! h.const_smul c⁻¹)
+    simp [mvfderivWithin_zero_of_not_mdifferentiableWithinAt hs',
+      mvfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
+
+@[simp, to_fun mvfderiv_const_fun_smul]
+lemma mvfderiv_const_smul (c : 𝕜) {f : M → F} :
+    d% (c • f) x = c • d% f x := by
+  rw [← mvfderivWithin_univ, ← mvfderivWithin_univ,
+    mvfderivWithin_const_smul _ (uniqueMDiffWithinAt_univ _)]
+
 @[simp, to_fun mvfderiv_fun_add]
 lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
     d% (g + g') x = d% g x + d% g' x := by
