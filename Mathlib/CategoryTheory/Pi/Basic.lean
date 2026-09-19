@@ -37,6 +37,13 @@ instance pi : Category.{max w₀ v₁} (∀ i, C i) where
 
 namespace Pi
 
+variable {C}
+
+@[ext]
+lemma hom_ext {X Y : ∀ i, C i} (f g : X ⟶ Y) (h : ∀ i, f i = g i) : f = g := funext h
+
+variable (C)
+
 @[simp]
 theorem id_apply (X : ∀ i, C i) (i) : (𝟙 X : ∀ i, X i ⟶ X i) i = 𝟙 (X i) :=
   rfl

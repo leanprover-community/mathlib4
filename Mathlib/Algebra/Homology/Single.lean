@@ -188,6 +188,25 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
   rw [dite_eq_left rfl, comp_id]
   rfl
 
+noncomputable def toSingleEquiv (A : V) (K : HomologicalComplex V c) (i j : ι) (hij : c.Rel i j) :
+    (K ⟶ (single V c j).obj A) ≃ { f : K.X j ⟶ A // K.d i j ≫ f = 0 } where
+  toFun f := ⟨f.f j ≫ (singleObjXSelf c j A).hom, by
+    rw [← Hom.comm_assoc, single_obj_d, zero_comp, comp_zero]⟩
+  invFun f := HomologicalComplex.mkHomToSingle f (fun k hk => by
+    obtain rfl := (c.prev_eq' hij).symm.trans (c.prev_eq' hk)
+    simpa using f.2)
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+noncomputable def fromSingleEquiv (A : V) (K : HomologicalComplex V c) (i j : ι) (hij : c.Rel i j) :
+    ((single V c i).obj A ⟶ K) ≃ { f : A ⟶ K.X i // f ≫ K.d i j = 0 } where
+  toFun f := ⟨(singleObjXSelf c i A).inv ≫ f.f i, by simp⟩
+  invFun f := HomologicalComplex.mkHomFromSingle f (fun k hk => by
+    obtain rfl := (c.next_eq' hij).symm.trans (c.next_eq' hk)
+    simpa using f.2)
+  left_inv f := by aesop_cat
+  right_inv f := by aesop_cat
+
 instance (j : ι) : (single V c j).PreservesZeroMorphisms where
 
 end HomologicalComplex

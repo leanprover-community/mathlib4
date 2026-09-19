@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
@@ -47,6 +48,13 @@ lemma prop_prod [P.IsClosedUnderBinaryProducts] (X Y : C) [HasBinaryProduct X Y]
     (hX : P X) (hY : P Y) :
     P (X ⨯ Y) :=
   P.prop_of_isLimit_binaryFan (limit.isLimit _) hX hY
+
+lemma prop_biprod_of_isClosedUnderBinaryProducts
+    [HasZeroMorphisms C] [P.IsClosedUnderBinaryProducts] (X Y : C)
+    [HasBinaryBiproduct X Y]
+    (hX : P X) (hY : P Y) :
+    P (X ⊞ Y) :=
+  P.prop_of_isLimit (BinaryBiproduct.isLimit X Y) (by rintro ⟨_ | _⟩ <;> assumption)
 
 lemma prop_of_isTerminal [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)]
     (X : C) (hX : IsTerminal X) :

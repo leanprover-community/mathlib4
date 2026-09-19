@@ -123,6 +123,10 @@ instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory 
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
+@[simp]
+lemma _root_.CategoryTheory.ObjectProperty.hom_zero {Z : ObjectProperty C}
+    (X Y : Z.FullSubcategory) : (0 : X ⟶ Y).hom = 0 := rfl
+
 instance (X : C) : AddCommGroup (End X) :=
   inferInstanceAs <| AddCommGroup (X ⟶ X)
 

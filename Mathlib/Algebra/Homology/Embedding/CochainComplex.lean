@@ -5,6 +5,8 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
+public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 public import Mathlib.Algebra.Homology.Embedding.AreComplementary
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
@@ -53,6 +55,34 @@ noncomputable def ιTruncLE (n : ℤ) : K.truncLE n ⟶ K :=
 /-- The canonical map `K ⟶ K.truncGE n` for `K : CochainComplex C ℤ`. -/
 noncomputable def πTruncGE (n : ℤ) : K ⟶ K.truncGE n :=
   HomologicalComplex.πTruncGE K (embeddingUpIntGE n)
+
+instance (n : ℤ) : Mono (K.ιTruncLE n) := by
+  dsimp only [ιTruncLE]
+  infer_instance
+
+instance (n : ℤ) : Epi (K.πTruncGE n) := by
+  dsimp only [πTruncGE]
+  infer_instance
+
+set_option backward.defeqAttrib.useBackward true in
+lemma isIso_ιTruncLE_f (n m : ℤ) (h : m < n) : IsIso ((K.ιTruncLE n).f m) := by
+  obtain ⟨a, rfl⟩ : ∃ a, (embeddingUpIntLE n).f a = m := by
+    obtain ⟨a, ha⟩ := Int.le.dest h.le
+    exact ⟨a, by dsimp; omega⟩
+  apply HomologicalComplex.isIso_ιTruncLE_f
+  simp only [ComplexShape.boundaryLE_embeddingUpIntLE_iff]
+  rintro rfl
+  simp at h
+
+set_option backward.defeqAttrib.useBackward true in
+lemma isIso_πTruncGE_f (n m : ℤ) (h : n < m) : IsIso ((K.πTruncGE n).f m) := by
+  obtain ⟨a, rfl⟩ : ∃ a, (embeddingUpIntGE n).f a = m := by
+    obtain ⟨a, ha⟩ := Int.le.dest h.le
+    exact ⟨a, by dsimp; omega⟩
+  apply HomologicalComplex.isIso_πTruncGE_f
+  simp only [ComplexShape.boundaryGE_embeddingUpIntGE_iff]
+  rintro rfl
+  simp at h
 
 lemma quasiIsoAt_ιTruncLE (n q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (K.ιTruncLE n) q := by

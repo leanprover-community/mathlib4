@@ -5,6 +5,8 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
@@ -40,9 +42,12 @@ along the localization functor `L`.
 
 namespace CategoryTheory
 
+open Category Limits
+
 namespace Functor
 
-variable {C D H H' : Type _} [Category* C] [Category* D] [Category* H] [Category* H']
+variable {C D D' H H' : Type _} [Category* C] [Category* D] [Category* D']
+  [Category* H] [Category* H']
   (RF RF' RF'' : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α : F ⟶ L ⋙ RF) (α' : F' ⟶ L ⋙ RF') (α'' : F'' ⟶ L ⋙ RF'') (α'₂ : F ⟶ L ⋙ RF')
   (W : MorphismProperty C)
@@ -215,6 +220,95 @@ instance : (F.totalRightDerived L W).IsRightDerivedFunctor
     infer_instance
 
 end
+
+set_option backward.defeqAttrib.useBackward true in
+instance [IsIso α] : RF.IsRightDerivedFunctor α W where
+  isLeftKanExtension :=
+    letI lifting : Localization.Lifting L W F RF := ⟨(asIso α).symm⟩
+    ⟨⟨IsInitial.ofUniqueHom
+      (fun G => StructuredArrow.homMk
+        (Localization.liftNatTrans L W F (L ⋙ G.right) RF G.right G.hom) (by
+          ext X
+          dsimp
+          simp only [Localization.liftNatTrans_app, comp_obj]
+          dsimp [Localization.Lifting.iso, lifting]
+          simp only [NatIso.isIso_inv_app, comp_obj, comp_id, IsIso.hom_inv_id_assoc]))
+      (fun G φ => by
+        ext1
+        apply Localization.natTrans_ext L W
+        intro X
+        dsimp
+        simp only [Localization.liftNatTrans_app, comp_obj]
+        dsimp [Localization.Lifting.iso, lifting]
+        simpa using NatTrans.congr_app φ.w X)⟩⟩
+
+example (G : D ⥤ H) : G.IsRightDerivedFunctor (𝟙 (L ⋙ G)) W := inferInstance
+
+instance (G : D ⥤ H) : (L ⋙ G).HasRightDerivedFunctor W :=
+  HasRightDerivedFunctor.mk' G (𝟙 _)
+
+lemma hasRightDerivedFunctor_of_inverts (F : C ⥤ D) (hF : W.IsInvertedBy F) :
+    F.HasRightDerivedFunctor W :=
+  HasRightDerivedFunctor.mk' (Localization.lift F hF W.Q) (Localization.fac F hF W.Q).inv
+
+variable (W)
+
+lemma isIso_rightDerivedFunctor_unit_iff_inverts [RF.IsRightDerivedFunctor α W] :
+    IsIso α ↔ W.IsInvertedBy F := by
+  constructor
+  · intro
+    apply (MorphismProperty.IsInvertedBy.iff_of_iso W (asIso α)).2
+    apply (MorphismProperty.IsInvertedBy.of_comp W L (Localization.inverts L W) RF)
+  · intro hF
+    rw [show α = (Localization.fac F hF L).inv ≫  whiskerLeft L (rightDerivedUnique RF
+          (Localization.lift F hF L) α (Localization.fac F hF L).inv W).inv by simp]
+    infer_instance
+
+lemma isRightDerivedFunctor_iff_postcomp (G : H ⥤ H') [IsEquivalence G] :
+    RF.IsRightDerivedFunctor α W ↔
+      (RF ⋙ G).IsRightDerivedFunctor (whiskerRight α G ≫ (Functor.associator _ _ _).hom) W := by
+  simp only [isRightDerivedFunctor_iff_isLeftKanExtension]
+  apply isLeftKanExtension_iff_postcomp₂
+
+instance isRightDerivedFunctor_postcomp (G : H ⥤ H') [IsEquivalence G]
+    [RF.IsRightDerivedFunctor α W] :
+      (RF ⋙ G).IsRightDerivedFunctor (whiskerRight α G ≫ (Functor.associator _ _ _).hom) W := by
+  rw [← isRightDerivedFunctor_iff_postcomp]
+  infer_instance
+
+lemma isRightDerivedFunctor_of_iso₂ {F F' : C ⥤ H} {RF RF' : D ⥤ H}
+    (α : F ⟶ L ⋙ RF) (α' : F' ⟶ L ⋙ RF') (e₁ : F ≅ F') (e₂ : RF ≅ RF')
+    (h : α ≫ whiskerLeft L e₂.hom = e₁.hom ≫ α') :
+    RF.IsRightDerivedFunctor α W ↔ RF'.IsRightDerivedFunctor α' W := by
+  simp only [isRightDerivedFunctor_iff_isLeftKanExtension]
+  exact Functor.isLeftKanExtension_iff_of_iso₂ _ _ e₁ e₂ h
+
+variable {RF}
+lemma isRightDerivedFunctor_iff_of_isLocalization
+    {L' : C ⥤ D'} [L'.IsLocalization W]
+    (α : F ⟶ L ⋙ RF)
+    {RF' : D' ⥤ H} (α' : F ⟶ L' ⋙ RF') (G : D' ⥤ D) (e : L' ⋙ G ≅ L)
+    (e' : G ⋙ RF ≅ RF')
+    (hα' : α' = α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom ≫
+      whiskerLeft _ e'.hom) :
+    RF.IsRightDerivedFunctor α W ↔ RF'.IsRightDerivedFunctor α' W := by
+  have := Functor.IsEquivalence.of_localization_comparison L' L W G e
+  rw [isRightDerivedFunctor_iff_isLeftKanExtension _ α W,
+    isLeftKanExtension_iff_postcomp₁ G e α,
+    ← isRightDerivedFunctor_iff_isLeftKanExtension _ _ W]
+  exact isRightDerivedFunctor_of_iso₂ W _ _ (Iso.refl _) e' (by simp [hα'])
+
+lemma isRightDerivedFunctor_of_isLocalization
+    {L' : C ⥤ D'} [L'.IsLocalization W]
+    (α : F ⟶ L ⋙ RF)
+    {RF' : D' ⥤ H} (α' : F ⟶ L' ⋙ RF') (G : D' ⥤ D) (e : L' ⋙ G ≅ L)
+    (e' : G ⋙ RF ≅ RF')
+    (hα' : α' = α ≫ whiskerRight e.inv _ ≫ (Functor.associator _ _ _).hom ≫
+      whiskerLeft _ e'.hom)
+    [RF.IsRightDerivedFunctor α W] :
+    RF'.IsRightDerivedFunctor α' W := by
+  rw [← isRightDerivedFunctor_iff_of_isLocalization W α α' G e e' hα']
+  infer_instance
 
 end Functor
 
