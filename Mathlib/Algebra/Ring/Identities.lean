@@ -18,13 +18,13 @@ public section
 
 /-- `(x + y) ^ n` can be expressed as `x ^ n + n * x ^ (n - 1) * y + k * y ^ 2` for some `k` in the
 ring. -/
-def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
-    ∀ n : ℕ, { k // (x + y) ^ n = x ^ n + n * x ^ (n - 1) * y + k * y ^ 2 }
+theorem powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
+    ∀ n : ℕ, ∃ k, (x + y) ^ n = x ^ n + n * x ^ (n - 1) * y + k * y ^ 2
   | 0 => ⟨0, by simp⟩
   | 1 => ⟨0, by simp⟩
   | n + 2 => by
     obtain ⟨z, hz⟩ := powAddExpansion x y (n + 1)
-    exists x * z + (n + 1) * x ^ n + z * y
+    refine ⟨x * z + (n + 1) * x ^ n + z * y, ?_⟩
     calc
       (x + y) ^ (n + 2) = (x + y) * (x + y) ^ (n + 1) := by ring
       _ = (x + y) * (x ^ (n + 1) + ↑(n + 1) * x ^ (n + 1 - 1) * y + z * y ^ 2) := by rw [hz]

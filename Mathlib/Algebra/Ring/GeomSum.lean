@@ -311,6 +311,7 @@ lemma sub_dvd_pow_sub_pow (x y : R) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
 
 /-- `x ^ n - y ^ n` can be expressed as `z * (x - y)` for some `z` in the ring. -/
+@[deprecated geom_sum₂_mul (since := "2026-09-19")]
 def powSubPowFactor (x y : R) (n : ℕ) : { z : R // x ^ n - y ^ n = z * (x - y) } :=
   ⟨∑ i ∈ range n, x ^ i * y ^ (n - 1 - i), (geom_sum₂_mul x y n).symm⟩
 
