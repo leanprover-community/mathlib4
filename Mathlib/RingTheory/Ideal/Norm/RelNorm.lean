@@ -452,14 +452,14 @@ section absNorm
 
 variable [Module.Free ℤ R] [Module.Free ℤ S] [Module.Finite ℤ S]
 
--- A nontrivial free `ℤ`-module is infinite; local to this section to supply `Infinite R`/`S`.
-local instance : Infinite R := Module.Free.infinite ℤ R
-local instance : Infinite S := Module.Free.infinite ℤ S
-
 open UniqueFactorizationMonoid in
 theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
+    haveI : Infinite R := Module.Free.infinite ℤ R
+    haveI : Infinite S := Module.Free.infinite ℤ S
     absNorm (relNorm R I) = absNorm I := by
   have : Module.Finite ℤ R := Module.Finite.left ℤ R S
+  have : Infinite R := Module.Free.infinite ℤ R
+  have : Infinite S := Module.Free.infinite ℤ S
   by_cases hI : I = ⊥
   · simp [hI]
   rw [← prod_normalizedFactors_eq_self hI]
@@ -478,11 +478,17 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
       ← pow_mul, ← inertiaDeg_tower]
 
 theorem relNorm_int (I : Ideal S) :
+    haveI : Infinite S := Module.Free.infinite ℤ S
     relNorm ℤ I = Ideal.span {(absNorm I : ℤ)} := by
+  have : Infinite S := Module.Free.infinite ℤ S
   rw [← Int.ideal_span_absNorm_eq_self (relNorm ℤ I), absNorm_relNorm]
 
 theorem absNorm_algebraMap (I : Ideal R) [Module.Finite ℤ R] :
+    haveI : Infinite R := Module.Free.infinite ℤ R
+    haveI : Infinite S := Module.Free.infinite ℤ S
     absNorm (I.map (algebraMap R S)) = absNorm I ^ finrank R S := by
+  have : Infinite R := Module.Free.infinite ℤ R
+  have : Infinite S := Module.Free.infinite ℤ S
   rw [← absNorm_relNorm ℤ, ← relNorm_relNorm ℤ R, relNorm_algebraMap, absNorm_relNorm, map_pow]
 
 end absNorm
