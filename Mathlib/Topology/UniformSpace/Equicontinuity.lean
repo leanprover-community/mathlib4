@@ -249,12 +249,12 @@ lemma uniformEquicontinuousOn_empty [h : IsEmpty ι] (F : ι → β → α) (S :
 theorem equicontinuousAt_finite [Finite ι] {F : ι → X → α} {x₀ : X} :
     EquicontinuousAt F x₀ ↔ ∀ i, ContinuousAt (F i) x₀ := by
   simp [EquicontinuousAt, ContinuousAt, (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff,
-    UniformSpace.ball, @forall_comm _ ι]
+    SetRel.ball, @forall_comm _ ι]
 
 theorem equicontinuousWithinAt_finite [Finite ι] {F : ι → X → α} {S : Set X} {x₀ : X} :
     EquicontinuousWithinAt F S x₀ ↔ ∀ i, ContinuousWithinAt (F i) S x₀ := by
   simp [EquicontinuousWithinAt, ContinuousWithinAt,
-    (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff, UniformSpace.ball,
+    (nhds_basis_uniformity' (𝓤 α).basis_sets).tendsto_right_iff, SetRel.ball,
     @forall_comm _ ι]
 
 theorem equicontinuous_finite [Finite ι] {F : ι → X → α} :
@@ -324,24 +324,26 @@ theorem equicontinuousAt_iff_pair {F : ι → X → α} {x₀ : X} :
 /-- Uniform equicontinuity implies equicontinuity. -/
 theorem UniformEquicontinuous.equicontinuous {F : ι → β → α} (h : UniformEquicontinuous F) :
     Equicontinuous F := fun x₀ U hU ↦
-  mem_of_superset (ball_mem_nhds x₀ (h U hU)) fun _ hx i ↦ hx i
+  mem_of_superset (mem_nhds_left x₀ (h U hU)) fun _ hx i ↦ hx i
 
 /-- Uniform equicontinuity on a subset implies equicontinuity on that subset. -/
 theorem UniformEquicontinuousOn.equicontinuousOn {F : ι → β → α} {S : Set β}
     (h : UniformEquicontinuousOn F S) :
     EquicontinuousOn F S := fun _ hx₀ U hU ↦
-  mem_of_superset (ball_mem_nhdsWithin hx₀ (h U hU)) fun _ hx i ↦ hx i
+  mem_of_superset (SetRel.inv_ball_mem_nhdsWithin hx₀ (h U hU)) fun _ hx i ↦ hx i
 
 /-- Each function of a family equicontinuous at `x₀` is continuous at `x₀`. -/
 theorem EquicontinuousAt.continuousAt {F : ι → X → α} {x₀ : X} (h : EquicontinuousAt F x₀) (i : ι) :
     ContinuousAt (F i) x₀ :=
-  (UniformSpace.hasBasis_nhds _).tendsto_right_iff.2 fun U ⟨hU, _⟩ ↦ (h U hU).mono fun _x hx ↦ hx i
+  (UniformSpace.hasBasis_nhds _).tendsto_right_iff.2 fun U ⟨hU, _⟩ ↦
+    (h U hU).mono fun _x hx ↦ U.symm (hx i)
 
 /-- Each function of a family equicontinuous at `x₀` within `S` is continuous at `x₀` within `S`. -/
 theorem EquicontinuousWithinAt.continuousWithinAt {F : ι → X → α} {S : Set X} {x₀ : X}
     (h : EquicontinuousWithinAt F S x₀) (i : ι) :
     ContinuousWithinAt (F i) S x₀ :=
-  (UniformSpace.hasBasis_nhds _).tendsto_right_iff.2 fun U ⟨hU, _⟩ ↦ (h U hU).mono fun _x hx ↦ hx i
+  (UniformSpace.hasBasis_nhds _).tendsto_right_iff.2 fun U ⟨hU, _⟩ ↦
+    (h U hU).mono fun _x hx ↦ U.symm (hx i)
 
 protected theorem Set.EquicontinuousAt.continuousAt_of_mem {H : Set <| X → α} {x₀ : X}
     (h : H.EquicontinuousAt x₀) {f : X → α} (hf : f ∈ H) : ContinuousAt f x₀ :=
@@ -908,9 +910,9 @@ theorem Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt {l : Filter 
     ContinuousWithinAt f S x₀ := by
   intro U hU; rw [mem_map]
   rcases UniformSpace.mem_nhds_iff.mp hU with ⟨V, hV, hVU⟩
-  rcases mem_uniformity_isClosed hV with ⟨W, hW, hWclosed, hWV⟩
+  rcases mem_uniformity_isClosed (symm_le_uniformity hV) with ⟨W, hW, hWclosed, hWV⟩
   filter_upwards [h₃ W hW, eventually_mem_nhdsWithin] with x hx hxS using
-    hVU <| ball_mono hWV (f x₀) <| hWclosed.mem_of_tendsto (h₂.prodMk_nhds (h₁ x hxS)) <|
+    hVU <| hWV <| hWclosed.mem_of_tendsto (h₂.prodMk_nhds (h₁ x hxS)) <|
     Eventually.of_forall hx
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
@@ -973,8 +975,8 @@ theorem EquicontinuousAt.tendsto_of_mem_closure {l : Filter ι} {F : ι → X �
   have : ∀ᶠ y in 𝓝[s] x, y ∈ s ∧ (∀ i, (F i x, F i y) ∈ V) ∧ (f y, z) ∈ V :=
     eventually_mem_nhdsWithin.and <| ((hF V hV).filter_mono nhdsWithin_le_nhds).and (hf V hV)
   rcases this.exists with ⟨y, hys, hFy, hfy⟩
-  filter_upwards [hs y hys (ball_mem_nhds _ hV)] with i hi
-  exact hVU ⟨_, ⟨_, hFy i, mem_ball_symmetry.2 hi⟩, hfy⟩
+  filter_upwards [hs y hys (SetRel.ball_mem_nhds _ hV)] with i hi
+  exact hVU ⟨_, ⟨_, hFy i, hi⟩, hfy⟩
 
 /-- If `F : ι → X → α` is an equicontinuous family of functions,
 `f : X → α` is a continuous function, and `l` is a filter on `ι`,

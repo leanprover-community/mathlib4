@@ -105,7 +105,7 @@ lemma IsDynCoverOf.closure (h : Continuous T)
   refine IsDynCoverOf.of_entourage_subset (SetRel.comp_subset_comp_left W_V) fun x hx ↦ ?_
   obtain ⟨y, hxy, hy⟩ := mem_closure_iff_nhds.1 hx _ (ball_dynEntourage_mem_nhds h W_uni n x)
   obtain ⟨z, hz, hyz⟩ := s_cover hy
-  exact ⟨z, hz, dynEntourage_comp_subset _ _ _ _ ⟨y, hxy, hyz⟩⟩
+  exact ⟨z, hz, dynEntourage_comp_subset _ _ _ _ ⟨y, (dynEntourage T W n).symm hxy, hyz⟩⟩
 
 lemma coverMincard_closure_le (h : Continuous T) (F : Set X) (U : SetRel X X)
     (V_uni : V ∈ 𝓤 X) (n : ℕ) :
