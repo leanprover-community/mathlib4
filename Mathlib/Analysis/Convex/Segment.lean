@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
+public import Mathlib.Tactic.CrossRefAttribute
 
 
 /-!
@@ -47,6 +48,7 @@ section SMul
 variable (𝕜) [SMul 𝕜 E] {s : Set E} {x y : E}
 
 /-- Segments in a vector space. Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
+@[wikidata Q166154]
 def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
