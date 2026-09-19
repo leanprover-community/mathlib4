@@ -314,6 +314,9 @@ lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
 lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
   rw [diam, ediam_top, ENat.toNat_one]
 
+lemma natCast_diam_eq_ediam_iff : G.diam = G.ediam ↔ G.ediam ≠ ⊤ :=
+  ENat.natCast_toNat_eq_self
+
 @[simp]
 lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
   rw [diam, ENat.toNat_eq_zero, or_comm, ediam_eq_zero_iff_subsingleton]
