@@ -45,6 +45,8 @@ public import Mathlib.Tactic.MinImports
 public import Mathlib.Util.CodeActions
 
 /-!
+# Mathlib's root file
+
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
 For this reason, the imports of this file are carefully curated.
 Any modification involving a change in the imports of this file should be discussed beforehand.
