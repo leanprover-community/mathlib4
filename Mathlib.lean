@@ -3704,6 +3704,9 @@ public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
 public import Mathlib.Combinatorics.Hindman
 public import Mathlib.Combinatorics.Hypergraph.Basic
+public import Mathlib.Combinatorics.IncidenceGraph.Basic
+public import Mathlib.Combinatorics.IncidenceGraph.Topology.Drawing
+public import Mathlib.Combinatorics.IncidenceHypergraph.Basic
 public import Mathlib.Combinatorics.KatonaCircle
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Combinatorics.Matroid.Circuit
@@ -8397,6 +8400,8 @@ public import Mathlib.Topology.Path
 public import Mathlib.Topology.Perfect
 public import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.PreorderRestrict
+public import Mathlib.Topology.PrimitiveLink
+public import Mathlib.Topology.PrimitivePath
 public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
