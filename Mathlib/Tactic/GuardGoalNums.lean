@@ -9,9 +9,9 @@ public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
 
 /-!
+# The `guard_goal_nums` tactic
 
 A tactic stub file for the `guard_goal_nums` tactic.
-
 -/
 
 public meta section
