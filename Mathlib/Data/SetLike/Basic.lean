@@ -216,7 +216,7 @@ A class to indicate that the order on a type corresponds to set inclusion.
 
 An instance of this class is automatically available on any order defined via `LE.ofMembership`.
 -/
-class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
+class IsConcreteLE (A : Type*) {B : Type*} [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
   le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
@@ -233,7 +233,7 @@ An order defined this way automatically makes available an instance of `IsConcre
 
 @[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
 
-instance [Membership B A] : letI := LE.ofMembership A B; IsConcreteLE A B :=
+instance [Membership B A] : letI := LE.ofMembership A B; IsConcreteLE A :=
   letI := LE.ofMembership A B; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
@@ -260,7 +260,7 @@ variable {A B : Type*} [Membership B A]
 
 section LE
 
-variable [LE A] [IsConcreteLE A B] {p q : A}
+variable [LE A] [IsConcreteLE A] {p q : A}
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
@@ -272,7 +272,7 @@ end LE
 
 section Preorder
 
-variable [Preorder A] [IsConcreteLE A B] {p q : A}
+variable [Preorder A] [IsConcreteLE A] {p q : A}
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -298,7 +298,7 @@ variable {A B : Type*} [SetLike A B]
 
 section LE
 
-variable [LE A] [IsConcreteLE A B] {p q : A}
+variable [LE A] [IsConcreteLE A] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_subset_coe : (p : Set B) ⊆ q ↔ p ≤ q :=
   (IsConcreteLE.le_iff (A := A)).symm
@@ -307,7 +307,7 @@ end LE
 
 section Preorder
 
-variable [Preorder A] [IsConcreteLE A B]
+variable [Preorder A] [IsConcreteLE A]
 
 @[gcongr, mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
@@ -316,7 +316,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
+variable [PartialOrder A] [IsConcreteLE A] {p q : A}
 
 @[simp, norm_cast, gcongr] lemma coe_ssubset_coe : (p : Set B) ⊂ q ↔ p < q := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
