@@ -127,7 +127,8 @@ theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
 
 instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
   of_eq_zero_of_mul_self_of_eq_zero_of_add mul_self_eq_zero.mp <|
-    fun hs₁ hs₂ h ↦ ((add_eq_zero_iff_of_nonneg (IsSumSq.nonneg hs₁) (IsSumSq.nonneg hs₂)).mp h).1
+    fun hs₁ hs₂ h ↦ ((add_eq_zero_iff_of_nonneg_left (IsSumSq.nonneg hs₁)
+      (IsSumSq.nonneg hs₂)).mp h).1
 
 instance [Ring R] [IsFormallyReal R] : IsReduced R := by
   rw [isReduced_iff_pow_one_lt 2 (by lia)]
