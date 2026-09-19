@@ -28,7 +28,6 @@ section starL
 variable (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid A]
     [StarAddMonoid A] [Module R A] [StarModule R A] [TopologicalSpace A] [ContinuousStar A]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `A` is a topological module over a commutative `R` with compatible actions,
 then `star` is a continuous semilinear equivalence. -/
 @[simps! apply]
