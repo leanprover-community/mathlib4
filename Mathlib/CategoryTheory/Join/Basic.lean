@@ -289,8 +289,10 @@ the data of natural transformations between each side that are compatible with t
 action on edge maps. -/
 def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
-    (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch) :
+    (h : (Functor.associator ..).inv ≫ whiskerRight (edgeTransform C D) F ≫
+        (Functor.associator ..).hom ≫ whiskerLeft (Prod.snd C D) αᵣ =
+      whiskerLeft (Prod.fst C D) αₗ ≫ (Functor.associator ..).inv ≫
+        whiskerRight (edgeTransform C D) F' ≫ (Functor.associator ..).hom := by cat_disch) :
     F ⟶ F' where
   app x := match x with
     | left x => αₗ.app x
@@ -299,14 +301,16 @@ def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     cases f with
     | @left x y f => simpa using! αₗ.naturality f
     | @right x y f => simpa using! αᵣ.naturality f
-    | @edge c d => exact funext_iff.mp (NatTrans.ext_iff.mp h) (c, d)
+    | @edge c d => simpa using! NatTrans.congr_app h (c, d)
 
 section
 
 variable {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
-    (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch)
+    (h : (Functor.associator ..).inv ≫ whiskerRight (edgeTransform C D) F ≫
+        (Functor.associator ..).hom ≫ whiskerLeft (Prod.snd C D) αᵣ =
+      whiskerLeft (Prod.fst C D) αₗ ≫ (Functor.associator ..).inv ≫
+        whiskerRight (edgeTransform C D) F' ≫ (Functor.associator ..).hom := by cat_disch)
 
 set_option backward.privateInPublic true in
 @[simp]
@@ -352,11 +356,15 @@ lemma mkNatTransComp
     (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
     (βₗ : inclLeft C D ⋙ F' ⟶ inclLeft C D ⋙ F'')
     (βᵣ : inclRight C D ⋙ F' ⟶ inclRight C D ⋙ F'')
-    (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
-      whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' := by cat_disch)
-    (h' : whiskerRight (edgeTransform C D) F' ≫ whiskerLeft (Prod.snd C D) βᵣ =
-      whiskerLeft (Prod.fst C D) βₗ ≫ whiskerRight (edgeTransform C D) F'' := by cat_disch) :
-    mkNatTrans (αₗ ≫ βₗ) (αᵣ ≫ βᵣ) (by simp [← h', reassoc_of% h]) =
+    (h : (Functor.associator ..).inv ≫ whiskerRight (edgeTransform C D) F ≫
+        (Functor.associator ..).hom ≫ whiskerLeft (Prod.snd C D) αᵣ =
+      whiskerLeft (Prod.fst C D) αₗ ≫ (Functor.associator ..).inv ≫
+        whiskerRight (edgeTransform C D) F' ≫ (Functor.associator ..).hom := by cat_disch)
+    (h' : (Functor.associator ..).inv ≫ whiskerRight (edgeTransform C D) F' ≫
+        (Functor.associator ..).hom ≫ whiskerLeft (Prod.snd C D) βᵣ =
+      whiskerLeft (Prod.fst C D) βₗ ≫ (Functor.associator ..).inv ≫
+        whiskerRight (edgeTransform C D) F'' ≫ (Functor.associator ..).hom := by cat_disch) :
+    mkNatTrans (αₗ ≫ βₗ) (αᵣ ≫ βᵣ) (by simp [h', reassoc_of% h]) =
     mkNatTrans αₗ αᵣ h ≫ mkNatTrans βₗ βᵣ h' := by
   apply natTrans_ext <;> cat_disch
 
@@ -370,12 +378,15 @@ transformation is respected through these isomorphisms. -/
 def mkNatIso {F : C ⋆ D ⥤ E} {G : C ⋆ D ⥤ E}
     (eₗ : inclLeft C D ⋙ F ≅ inclLeft C D ⋙ G)
     (eᵣ : inclRight C D ⋙ F ≅ inclRight C D ⋙ G)
-    (h : whiskerRight (edgeTransform C D) F ≫ (isoWhiskerLeft (Prod.snd C D) eᵣ).hom =
-      (isoWhiskerLeft (Prod.fst C D) eₗ).hom ≫ whiskerRight (edgeTransform C D) G := by cat_disch) :
+    (h : (Functor.associator ..).inv ≫ whiskerRight (edgeTransform C D) F ≫
+        (Functor.associator ..).hom ≫ (isoWhiskerLeft (Prod.snd C D) eᵣ).hom =
+      (isoWhiskerLeft (Prod.fst C D) eₗ).hom ≫ (Functor.associator ..).inv ≫
+        whiskerRight (edgeTransform C D) G ≫ (Functor.associator ..).hom := by cat_disch) :
     F ≅ G where
   hom := mkNatTrans eₗ.hom eᵣ.hom (by simpa using h)
-  inv := mkNatTrans eₗ.inv eᵣ.inv (by rw [Eq.comm, ← isoWhiskerLeft_inv, ← isoWhiskerLeft_inv,
-    Iso.inv_comp_eq, ← Category.assoc, Eq.comm, Iso.comp_inv_eq, h])
+  inv := mkNatTrans eₗ.inv eᵣ.inv (by
+    rw [← isoWhiskerLeft_inv, ← isoWhiskerLeft_inv, Iso.eq_inv_comp, ← reassoc_of% h,
+      Iso.hom_inv_id, Category.comp_id])
 
 /-- A pair of functors ((C ⥤ E), (D ⥤ E')) induces a functor `C ⋆ D ⥤ E ⋆ E'`. -/
 def mapPair (Fₗ : C ⥤ E) (Fᵣ : D ⥤ E') : C ⋆ D ⥤ E ⋆ E' :=
@@ -436,12 +447,14 @@ def mapPairComp (Fₗ : C ⥤ E) (Fᵣ : D ⥤ E') (Gₗ : E ⥤ J) (Gᵣ : E' �
       Functor.associator Fₗ Gₗ (inclLeft J K) ≪≫
       (isoWhiskerLeft Fₗ (mapPairLeft Gₗ Gᵣ).symm) ≪≫
       (Functor.associator Fₗ (inclLeft E E') (mapPair Gₗ Gᵣ)).symm ≪≫
-      isoWhiskerRight (mapPairLeft Fₗ Fᵣ).symm (mapPair Gₗ Gᵣ))
+      isoWhiskerRight (mapPairLeft Fₗ Fᵣ).symm (mapPair Gₗ Gᵣ) ≪≫
+      Functor.associator (inclLeft C D) (mapPair Fₗ Fᵣ) (mapPair Gₗ Gᵣ))
     (mapPairRight (Fₗ ⋙ Gₗ) (Fᵣ ⋙ Gᵣ) ≪≫
       Functor.associator Fᵣ Gᵣ (inclRight J K) ≪≫
       (isoWhiskerLeft Fᵣ (mapPairRight Gₗ Gᵣ).symm) ≪≫
       (Functor.associator Fᵣ (inclRight E E') (mapPair Gₗ Gᵣ)).symm ≪≫
-      isoWhiskerRight (mapPairRight Fₗ Fᵣ).symm (mapPair Gₗ Gᵣ))
+      isoWhiskerRight (mapPairRight Fₗ Fᵣ).symm (mapPair Gₗ Gᵣ) ≪≫
+      Functor.associator (inclRight C D) (mapPair Fₗ Fᵣ) (mapPair Gₗ Gᵣ))
 
 section mapPairComp
 

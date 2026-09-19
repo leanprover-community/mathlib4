@@ -364,6 +364,11 @@ end
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+/-- Reindexing `F.leftOp.op` along `opOp C` recovers `F`. -/
+@[simps!]
+def opOpCompLeftOpOpIso (F : C ⥤ Dᵒᵖ) : opOp C ⋙ F.leftOp.op ≅ F :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
 /-- The isomorphism between `F.rightOp.leftOp` and `F`. -/
 @[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
