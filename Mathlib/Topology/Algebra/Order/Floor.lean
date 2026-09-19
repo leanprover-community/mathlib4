@@ -126,7 +126,7 @@ theorem tendsto_ceil_right' (n : ℤ) :
     Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) :=
   (tendsto_ceil_right n).mono_right inf_le_left
 
-variable [IsStrictOrderedRing α]
+variable [IsOrderedAddMonoid α]
 
 theorem tendsto_ceil_left_pure_ceil (x : α) : Tendsto (ceil : α → ℤ) (𝓝[≤] x) (pure ⌈x⌉) :=
   tendsto_pure.2 <| mem_of_superset
@@ -179,7 +179,7 @@ theorem tendsto_fract_right' [OrderClosedTopology α] [IsTopologicalAddGroup α]
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝 0) :=
   sub_self (n : α) ▸ (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).sub (tendsto_floor_right' n)
 
-variable [IsStrictOrderedRing α]
+variable [IsOrderedAddMonoid α]
 
 theorem tendsto_fract_left' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝 1) := by
