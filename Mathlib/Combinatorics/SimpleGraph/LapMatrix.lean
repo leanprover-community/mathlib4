@@ -281,8 +281,7 @@ noncomputable def lapMatrix_ker_basis :=
 
 end
 
-/-- The Laplacian quadratic form is monotone in the graph: if `G ≤ H`, then
-`xᵀ L(G) x ≤ xᵀ L(H) x`.
+/-- The Laplacian quadratic form is monotone in the graph: if `G ≤ H`, then `xᵀ L(G) x ≤ xᵀ L(H) x`.
 -/
 theorem lapMatrix_toLinearMap₂'_mono {R} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     {G H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj] (hGH : G ≤ H) (x : V → R) :
