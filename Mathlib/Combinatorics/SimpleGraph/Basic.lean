@@ -102,9 +102,13 @@ initialize_simps_projections SimpleGraph (Adj → adj)
 
 attribute [grind ext] SimpleGraph.ext
 
+namespace SimpleGraph
+
+variable {ι : Sort*} {V : Type u} (G H : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
+
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
-def SimpleGraph.mk' {V : Type u} :
+def mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
   toFun x := ⟨fun v w ↦ x.1 v w, ⟨fun v w ↦ by simp [x.2.1]⟩, ⟨fun v ↦ by simp [x.2.2]⟩⟩
   inj' := by
@@ -117,7 +121,7 @@ def SimpleGraph.mk' {V : Type u} :
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
 instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
-  elems := Finset.univ.map SimpleGraph.mk'
+  elems := Finset.univ.map mk'
   complete := by
     classical
     rintro ⟨Adj, hs, hi⟩
@@ -129,24 +133,24 @@ instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) wher
       simp
 
 /-- There are finitely many simple graphs on a given finite type. -/
-instance SimpleGraph.instFinite {V : Type u} [Finite V] : Finite (SimpleGraph V) :=
-  .of_injective SimpleGraph.Adj fun _ _ ↦ SimpleGraph.ext
+instance instFinite {V : Type u} [Finite V] : Finite (SimpleGraph V) :=
+  .of_injective Adj fun _ _ ↦ SimpleGraph.ext
 
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/
-def SimpleGraph.fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V where
+def fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V where
   Adj a b := a ≠ b ∧ (r a b ∨ r b a)
 
 @[simp]
-theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
-    (SimpleGraph.fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
+theorem fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
+    (fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
   Iff.rfl
 
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
 instance {V : Type u} [DecidableEq V] (r : V → V → Prop)
-    [DecidableRel r] : DecidableRel (SimpleGraph.fromRel r).Adj :=
+    [DecidableRel r] : DecidableRel (fromRel r).Adj :=
   inferInstanceAs (DecidableRel fun a b ↦ a ≠ b ∧ (r a b ∨ r b a))
 
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
@@ -156,11 +160,12 @@ Any bipartite graph may be regarded as a subgraph of one of these. -/
 def completeBipartiteGraph (V W : Type*) : SimpleGraph (V ⊕ W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
 
+@[deprecated (since := "2026-09-06")]
+alias _root_.completeBipartiteGraph := SimpleGraph.completeBipartiteGraph
+@[deprecated (since := "2026-09-06")]
+alias _root_.completeBipartiteGraph_adj := SimpleGraph.completeBipartiteGraph_adj
+
 attribute [grind =] completeBipartiteGraph_adj
-
-namespace SimpleGraph
-
-variable {ι : Sort*} {V : Type u} (G H : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
 
 @[simp]
 protected theorem irrefl {v : V} : ¬G.Adj v v :=
