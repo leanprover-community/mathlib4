@@ -192,8 +192,7 @@ theorem hasFPowerSeriesAt_log_one :
   convert ((reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr
     (fun x _ ↦ log_ofReal_re x)).hasFPowerSeriesAt
   ext n
-  simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+  simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply, comp_apply,
     FormalMultilinearSeries.compContinuousLinearMap_apply]
   simp
   norm_cast
