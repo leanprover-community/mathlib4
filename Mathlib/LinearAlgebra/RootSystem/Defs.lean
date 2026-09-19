@@ -107,7 +107,7 @@ concept one must supply the two assumptions `[Module.Finite ℤ X₁] [Module.Fi
 
 Finally note that if `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]` are supplied, one does not need to
 assume freeness since it follows automatically. Moreover Mathlib knows this via
-`PerfectPairing.reflexive_left`, `IsReflexive.to_isTorsionFree`,
+`Module.IsReflexive.of_isPerfPair`, `Module.IsReflexive.to_isTorsionFree`,
 `Module.free_of_finite_type_torsion_free'`. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
