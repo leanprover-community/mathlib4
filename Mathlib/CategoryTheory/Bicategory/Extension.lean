@@ -84,7 +84,7 @@ def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := .mk _ (λ_ g).inv
 instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
 
 /-- Construct a left extension of `g : a ⟶ c` from a left extension of `g ≫ 𝟙 c`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) : LeftExtension f g :=
   mk (extension t) ((ρ_ g).inv ≫ unit t)
 
@@ -99,6 +99,7 @@ f |     \          | unit
       g         h
 ```
 -/
+@[implicit_reducible]
 def whisker (t : LeftExtension f g) {x : B} (h : c ⟶ x) : LeftExtension f (g ≫ h) :=
   .mk _ <| t.unit ▷ h ≫ (α_ _ _ _).hom
 
@@ -113,7 +114,7 @@ theorem whisker_unit (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
   rfl
 
 /-- Whiskering a 1-morphism is a functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g ≫ h) where
   obj t := t.whisker h
   map η := LeftExtension.homMk (η.right ▷ h) <| by
@@ -140,6 +141,7 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
       _ = _ := by simp
 
 /-- Construct an isomorphism between whiskered extensions. -/
+@[simps]
 def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
     s.whisker h ≅ t.whisker h where
   hom := whiskerHom i.hom h
@@ -171,8 +173,7 @@ def mapIso : LeftExtension f g ≌ LeftExtension f' g' :=
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, and a left extension
 `t : LeftExtension f g`, the induced left extension `t.ofIso : LeftExtension f' g'`. -/
-@[implicit_reducible]
-def ofIso (t : LeftExtension f g) : LeftExtension f' g' :=
+abbrev ofIso (t : LeftExtension f g) : LeftExtension f' g' :=
   (mapIso ef eg).functor.obj t
 
 @[simp]
@@ -240,7 +241,7 @@ def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := .mk _ (ρ_ g).inv
 instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
 
 /-- Construct a left lift along `g : c ⟶ a` from a left lift along `𝟙 c ≫ g`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) : LeftLift f g :=
   mk (lift t) ((λ_ _).inv ≫ unit t)
 
@@ -255,6 +256,7 @@ x - - - ▷ c - - - ▷ a
      h         g
 ```
 -/
+@[implicit_reducible]
 def whisker (t : LeftLift f g) {x : B} (h : x ⟶ c) : LeftLift f (h ≫ g) :=
   .mk _ <| h ◁ t.unit ≫ (α_ _ _ _).inv
 
@@ -269,7 +271,7 @@ theorem whisker_unit (t : LeftLift f g) {x : B} (h : x ⟶ c) :
   rfl
 
 /-- Whiskering a 1-morphism is a functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) where
   obj t := t.whisker h
   map η := LeftLift.homMk (h ◁ η.right) <| by
@@ -298,6 +300,7 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
       _ = _ := by simp
 
 /-- Construct an isomorphism between whiskered lifts. -/
+@[simps]
 def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
     s.whisker h ≅ t.whisker h where
   hom := whiskerHom i.hom h
@@ -329,8 +332,7 @@ def mapIso : LeftLift f g ≌ LeftLift f' g' :=
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, and a left lift `t : LeftLift f g`, the
 induced left lift `t.ofIso : LeftLift f' g'`. -/
-@[implicit_reducible]
-def ofIso (t : LeftLift f g) : LeftLift f' g' :=
+abbrev ofIso (t : LeftLift f g) : LeftLift f' g' :=
   (mapIso ef eg).functor.obj t
 
 @[simp]
@@ -480,6 +482,7 @@ variable {f f' : a ⟶ b} (ef : f ≅ f') {g g' : a ⟶ c} (eg : g ≅ g')
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
 categories of right extensions. -/
+@[implicit_reducible]
 def mapIso : RightExtension f g ≌ RightExtension f' g' :=
   (CostructuredArrow.mapNatIso ((precomposing a b c).mapIso ef)).trans (CostructuredArrow.mapIso eg)
 
@@ -553,7 +556,7 @@ def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := .mk _ (ρ_ g).hom
 instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
 
 /-- Construct a right lift along `g : c ⟶ a` from a right lift along `𝟙 c ≫ g`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def ofIdComp (t : RightLift f (𝟙 c ≫ g)) : RightLift f g :=
   mk (lift t) (counit t ≫ (λ_ _).hom)
 
@@ -568,6 +571,7 @@ x - - - ▷ c - - - ▷ a
      h         g
 ```
 -/
+@[implicit_reducible]
 def whisker (t : RightLift f g) {x : B} (h : x ⟶ c) : RightLift f (h ≫ g) :=
   .mk _ <| (α_ _ _ _).hom ≫ h ◁ t.counit
 
@@ -582,7 +586,7 @@ theorem whisker_counit (t : RightLift f g) {x : B} (h : x ⟶ c) :
   rfl
 
 /-- Whiskering a 1-morphism is a functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskering {x : B} (h : x ⟶ c) : RightLift f g ⥤ RightLift f (h ≫ g) where
   obj t := t.whisker h
   map η := RightLift.homMk (h ◁ η.left) <| by
@@ -611,6 +615,7 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
       _ = _ := by simp
 
 /-- Construct an isomorphism between whiskered lifts. -/
+@[simps]
 def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
     s.whisker h ≅ t.whisker h where
   hom := whiskerHom i.hom h
@@ -637,6 +642,7 @@ variable {f f' : b ⟶ a} (ef : f ≅ f') {g g' : c ⟶ a} (eg : g ≅ g')
 
 /-- Given isomorphisms `ef : f ≅ f'` and `eg : g ≅ g'`, the induced equivalence between their
 categories of right lifts. -/
+@[implicit_reducible]
 def mapIso : RightLift f g ≌ RightLift f' g' :=
   (CostructuredArrow.mapNatIso ((postcomposing c b a).mapIso ef)).trans
     (CostructuredArrow.mapIso eg)
