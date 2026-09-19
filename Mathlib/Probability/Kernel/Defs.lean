@@ -89,6 +89,8 @@ initialize_simps_projections Kernel (toFun → apply)
 
 instance instZero : Zero (Kernel α β) where zero := ⟨0, measurable_zero⟩
 noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + η, κ.2.add η.2⟩
+noncomputable instance instSMulPNat : SMul ℕ+ (Kernel α β) where
+  smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 
@@ -97,6 +99,9 @@ instance : IsZeroApply (Kernel α β) α (Measure β) where
 
 instance : IsAddApply (Kernel α β) α (Measure β) where
   add_apply _ _ _ := rfl
+
+instance : IsSMulApply ℕ+ (Kernel α β) α (Measure β) where
+  smul_apply _ _ _ := rfl
 
 instance : IsSMulApply ℕ (Kernel α β) α (Measure β) where
   smul_apply _ _ _ := rfl

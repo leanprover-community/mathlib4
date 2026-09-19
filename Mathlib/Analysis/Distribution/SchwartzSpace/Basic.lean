@@ -267,6 +267,16 @@ private theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
   gcongr
   exact f.le_seminormAux k n x
 
+instance instPSMul : SMul ℕ+ 𝓢(E, F) :=
+  ⟨fun c f =>
+    { toFun := c • (f : E → F)
+      smooth' := by exact (f.smooth _).const_smul c
+      decay' := by
+        simpa [← nsmul_val_eq_psmul, ← Nat.cast_smul_eq_nsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
+
+instance : IsSMulApply ℕ+ 𝓢(E, F) E F where
+  smul_apply _ _ _ := rfl
+
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)

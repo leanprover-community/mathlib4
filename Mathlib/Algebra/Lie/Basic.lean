@@ -203,6 +203,14 @@ theorem sub_lie : ⁅x - y, m⁆ = ⁅x, m⁆ - ⁅y, m⁆ := by simp [sub_eq_ad
 theorem lie_sub : ⁅x, m - n⁆ = ⁅x, m⁆ - ⁅x, n⁆ := by simp [sub_eq_add_neg]
 
 @[simp]
+theorem psmul_lie (n : ℕ+) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
+  AddHom.map_psmul { toFun := fun x : L => ⁅x, m⁆, map_add' := fun _ _ => add_lie _ _ _ } _ _
+
+@[simp]
+theorem lie_psmul (n : ℕ+) : ⁅x, n • m⁆ = n • ⁅x, m⁆ :=
+  AddHom.map_psmul { toFun := fun m : M => ⁅x, m⁆, map_add' := fun _ _ => lie_add _ _ _ } _ _
+
+@[simp]
 theorem nsmul_lie (n : ℕ) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
   AddMonoidHom.map_nsmul
     { toFun := fun x : L => ⁅x, m⁆, map_zero' := zero_lie m, map_add' := fun _ _ => add_lie _ _ _ }
@@ -831,6 +839,16 @@ instance : IsNegApply (M →ₗ⁅R,L⁆ N) M N where
 
 @[deprecated (since := "2026-07-27")] protected alias neg_apply := neg_apply
 
+instance hasPSMul : SMul ℕ+ (M →ₗ⁅R,L⁆ N) where
+  smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
+
+@[norm_cast, simp]
+theorem coe_psmul (n : ℕ+) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
+  rfl
+
+instance : IsSMulApply ℕ+ (M →ₗ⁅R,L⁆ N) M N where
+  smul_apply _ _ _ := rfl
+
 instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 
@@ -851,7 +869,9 @@ instance : IsSMulApply ℤ (M →ₗ⁅R,L⁆ N) M N where
 
 @[deprecated (since := "2026-07-27")] protected alias zsmul_apply := smul_apply
 
-instance : AddCommGroup (M →ₗ⁅R,L⁆ N) := fast_instance% FunLike.addCommGroup
+instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
+  coe_injective.addCommGroup _ FunLike.coe_zero FunLike.coe_add FunLike.coe_neg FunLike.coe_sub
+    (fun _ _ => rfl) (fun _ _ => FunLike.coe_smul _ _) (fun _ _ => FunLike.coe_smul _ _)
 
 variable [LieAlgebra R L] [LieModule R L N]
 

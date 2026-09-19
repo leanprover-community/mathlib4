@@ -44,13 +44,13 @@ instance : Add (ConvexSpace.AffineMap R X M) where
 instance : IsAddApply (ConvexSpace.AffineMap R X M) X M where add_apply _ _ _ := rfl
 
 section SMul
-variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
+variable [DistribSMul S M] [SMulCommClass S R M]
 
 instance : SMul S (ConvexSpace.AffineMap R X M) where smul s f := ⟨s • f, by fun_prop⟩
 
 instance : IsSMulApply S (ConvexSpace.AffineMap R X M) X M where smul_apply _ _ _ := rfl
 
-variable {T : Type*} [Monoid T] [DistribMulAction T M] [SMulCommClass T R M]
+variable {T : Type*} [DistribSMul T M] [SMulCommClass T R M]
 
 instance [SMulCommClass S T M] : SMulCommClass S T (ConvexSpace.AffineMap R X M) where
   smul_comm _ _ _ := ext <| funext fun _ ↦ smul_comm ..
@@ -58,7 +58,7 @@ instance [SMulCommClass S T M] : SMulCommClass S T (ConvexSpace.AffineMap R X M)
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (ConvexSpace.AffineMap R X M) where
   smul_assoc _ _ _ := ext <| funext fun _ ↦ smul_assoc ..
 
-instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
+instance [DistribSMul Sᵐᵒᵖ M] [IsCentralScalar S M] :
     IsCentralScalar S (ConvexSpace.AffineMap R X M) where
   op_smul_eq_smul _ _ := ext <| funext fun _ ↦ op_smul_eq_smul ..
 

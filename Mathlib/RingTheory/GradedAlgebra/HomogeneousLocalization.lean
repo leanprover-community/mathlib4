@@ -242,6 +242,24 @@ instance : CommMonoid (NumDenSameDeg 𝒜 x) where
   mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
   mul_comm _ _ := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
 
+@[simp]
+theorem deg_ppow (c : NumDenSameDeg 𝒜 x) (n : ℕ+) : (c ^ n).deg = n • c.deg := by
+  induction n using Semigroup.ppow_induction c with
+  | h1 => simp
+  | hsucc n IH => simp [IH, succ_psmul]
+
+@[simp]
+theorem num_ppow (c : NumDenSameDeg 𝒜 x) (n : ℕ+) : ((c ^ n).num : A) = (c.num : A) ^ n := by
+  induction n using Semigroup.ppow_induction c with
+  | h1 => simp
+  | hsucc n IH => simp [IH, ppow_succ]
+
+@[simp]
+theorem den_ppow (c : NumDenSameDeg 𝒜 x) (n : ℕ+) : ((c ^ n).den : A) = (c.den : A) ^ n := by
+  induction n using Semigroup.ppow_induction c with
+  | h1 => simp
+  | hsucc n IH => simp [IH, ppow_succ]
+
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=
     ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
@@ -338,6 +356,18 @@ theorem val_smul (n : α) : ∀ y : HomogeneousLocalization 𝒜 x, (n • y).va
 end SMul
 
 section nsmul
+variable [AddMemClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
+
+instance : SMul ℕ+ (HomogeneousLocalization 𝒜 x) :=
+  haveI := AddMemClass.psmulMemClass (S := σ) (M := A)
+  HomogeneousLocalization.instSMul x
+
+theorem val_psmul (n : ℕ+) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
+  rw [val_smul, OreLocalization.psmul_eq_psmul]
+
+end nsmul
+
+section nsmul
 variable [AddSubmonoidClass σ A] {𝒜 : ι → σ} (x : Submonoid A)
 
 instance : SMul ℕ (HomogeneousLocalization 𝒜 x) :=
@@ -380,6 +410,17 @@ end Neg
 
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
 variable {𝒜 : ι → σ} [GradedRing 𝒜] (x : Submonoid A)
+
+instance hasPPow : Pow (HomogeneousLocalization 𝒜 x) ℕ+ where
+  pow z n :=
+    (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+          change Localization.mk _ _ = Localization.mk _ _
+          simp only [num_ppow, den_ppow]
+          convert! congr_arg (fun z : at x => z ^ n) h <;> rw [Localization.mk_ppow] <;> rfl :
+        HomogeneousLocalization 𝒜 x → HomogeneousLocalization 𝒜 x)
+      z
+
+@[simp] lemma mk_ppow (i : NumDenSameDeg 𝒜 x) (n : ℕ+) : mk (i ^ n) = mk i ^ n := rfl
 
 instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
   pow z n :=
@@ -453,6 +494,13 @@ theorem val_sub (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.va
   rw [sub_eq_add_neg, ← val_neg, ← val_add]; rfl
 
 @[simp]
+theorem val_ppow (y : HomogeneousLocalization 𝒜 x) (n : ℕ+) : (y ^ n).val = y.val ^ n := by
+  induction y using Quotient.ind'
+  rw [← mk_ppow, val_mk, val_mk, Localization.mk_ppow]
+  simp only [num_ppow, den_ppow]
+  rfl
+
+@[simp]
 theorem val_pow : ∀ (y : HomogeneousLocalization 𝒜 x) (n : ℕ), (y ^ n).val = y.val ^ n :=
   Quotient.ind' fun y n ↦ by rw [← mk_pow, val_mk, val_mk, Localization.mk_pow]; rfl
 
@@ -472,7 +520,8 @@ theorem val_intCast (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
 
 instance homogeneousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
   (HomogeneousLocalization.val_injective x).commRing _ val_zero val_one val_add val_mul val_neg
-    val_sub (val_nsmul x · ·) (val_zsmul x · ·) val_pow val_natCast val_intCast
+    val_sub (val_psmul x · ·) (val_nsmul x · ·) (val_zsmul x · ·) val_ppow val_pow val_natCast
+    val_intCast
 
 instance homogeneousLocalizationAlgebra :
     Algebra (HomogeneousLocalization 𝒜 x) (Localization x) where

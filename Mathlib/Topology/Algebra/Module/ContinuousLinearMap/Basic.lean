@@ -436,6 +436,17 @@ theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ �
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
+instance instPSMul : SMul ℕ+ (M₁ →SL[σ₁₂] M₂) where
+  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), f.2.const_smul c⟩
+
+instance : IsSMulApply ℕ+ (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+  smul_apply _ _ _ := rfl
+
+@[simp, norm_cast]
+theorem toLinearMap_psmul (c : ℕ+) (f : M₁ →SL[σ₁₂] M₂) :
+    ↑(c • f) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+  rfl
+
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addMonoid
 
@@ -932,13 +943,13 @@ end DivisionRing
 section SMulMonoid
 
 -- The M's are used for semilinear maps, and the N's for plain linear maps
-variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Monoid S] [Monoid S₃]
+variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃]
   {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] {M₂ : Type*}
   [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
   [AddCommMonoid M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddCommMonoid N₂]
   [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddCommMonoid N₃] [Module R N₃]
-  [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃]
-  [DistribMulAction S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃] {σ₁₂ : R →+* R₂}
+  [DistribSMul S₃ M₃] [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃]
+  [DistribSMul S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃] {σ₁₂ : R →+* R₂}
   {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 @[simp]
@@ -946,8 +957,8 @@ theorem smul_comp (c : S₃) (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁�
     (c • h) ∘SL f = c • h ∘SL f :=
   rfl
 
-variable [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
-variable [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
+variable [DistribSMul S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
+variable [DistribSMul S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
 
 @[simp]
 theorem comp_smul [LinearMap.CompatibleSMul N₂ N₃ S R] (hₗ : N₂ →L[R] N₃) (c : S)
@@ -962,10 +973,28 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
   ext x
   simp
 
+instance distribSMul [ContinuousAdd M₂] : DistribSMul S₃ (M →SL[σ₁₂] M₂) :=
+  fast_instance% FunLike.distribSMul
+
+end SMulMonoid
+
+section DistribMulAction
+
+variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Monoid S] [Monoid S₃]
+  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] {M₂ : Type*}
+  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
+  [AddCommMonoid M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddCommMonoid N₂]
+  [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddCommMonoid N₃] [Module R N₃]
+  [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃]
+  [DistribMulAction S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃] {σ₁₂ : R →+* R₂}
+  {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
+  [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
+
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) :=
   fast_instance% FunLike.distribMulAction
 
-end SMulMonoid
+end DistribMulAction
 
 section SMul
 
