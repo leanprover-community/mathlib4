@@ -167,26 +167,24 @@ theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
     ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ - ∫ x in s, f x ∂μ :=
   setIntegral_compl₀ hs.nullMeasurableSet hfi
 
-/-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
-over the whole space is equal to `∫ x in s, f x ∂μ` defined as `∫ x, f x ∂(μ.restrict s)`. -/
-theorem integral_indicator (hs : MeasurableSet s) :
+theorem integral_indicator₀ (hs : NullMeasurableSet s μ) :
     ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ := by
   by_cases hfi : IntegrableOn f s μ; swap
   · rw [integral_undef hfi, integral_undef]
-    rwa [integrable_indicator_iff hs]
+    rwa [integrable_indicator_iff₀ hs]
   calc
     ∫ x, indicator s f x ∂μ = ∫ x in s, indicator s f x ∂μ + ∫ x in sᶜ, indicator s f x ∂μ :=
-      (integral_add_compl hs (hfi.integrable_indicator hs)).symm
+      (integral_add_compl₀ hs (hfi.integrable_indicator₀ hs)).symm
     _ = ∫ x in s, f x ∂μ + ∫ x in sᶜ, 0 ∂μ :=
-      (congr_arg₂ (· + ·) (integral_congr_ae (indicator_ae_eq_restrict hs))
-        (integral_congr_ae (indicator_ae_eq_restrict_compl hs)))
+      congr_arg₂ (· + ·) (integral_congr_ae (indicator_ae_eq_restrict hs))
+        (integral_congr_ae (indicator_ae_eq_restrict_compl hs))
     _ = ∫ x in s, f x ∂μ := by simp
 
-theorem integral_indicator₀ (hs : NullMeasurableSet s μ) :
-    ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ := by
-  rw [← integral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
-    integral_indicator (measurableSet_toMeasurable _ _),
-    Measure.restrict_congr_set hs.toMeasurable_ae_eq]
+/-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
+over the whole space is equal to `∫ x in s, f x ∂μ` defined as `∫ x, f x ∂(μ.restrict s)`. -/
+theorem integral_indicator (hs : MeasurableSet s) :
+    ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ :=
+  integral_indicator₀ hs.nullMeasurableSet
 
 lemma integral_integral_indicator {mY : MeasurableSpace Y} {ν : Measure Y} (f : X → Y → E)
     {s : Set X} (hs : MeasurableSet s) :

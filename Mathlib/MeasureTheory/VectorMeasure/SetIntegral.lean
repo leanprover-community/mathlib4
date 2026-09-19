@@ -179,9 +179,9 @@ theorem integral_indicator (hs : MeasurableSet s) :
     _ = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, 0 ∂[B; μ] := by
       apply congr_arg₂ (· + ·) (integral_congr_ae ?_) (integral_congr_ae ?_)
       · rw [variation_restrict hs]
-        exact indicator_ae_eq_restrict hs
+        exact indicator_ae_eq_restrict hs.nullMeasurableSet
       · rw [variation_restrict hs.compl]
-        exact indicator_ae_eq_restrict_compl hs
+        exact indicator_ae_eq_restrict_compl hs.nullMeasurableSet
     _ = ∫ᵛ x in s, f x ∂[B; μ] := by simp
 
 theorem setIntegral_indicator (hs : MeasurableSet s) (ht : MeasurableSet t) :
