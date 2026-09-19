@@ -74,7 +74,7 @@ def _root_.IsIrreducible.toPTOpens {X : Type*} [TopologicalSpace X] {s : Set X}
   map_top' := by simpa using h.nonempty
   map_sSup' T := by simp [sSup_image, Set.inter_iUnion]
 
-@[simp] lemma toPTOpens_toCloseds {X : Type*} [TopologicalSpace X] (f : PT (Opens X)) :
+lemma toPTOpens_toCloseds {X : Type*} [TopologicalSpace X] (f : PT (Opens X)) :
     f.toIrreducibleCloseds.isIrreducible.toPTOpens = f := by
   ext u
   contrapose!
@@ -99,15 +99,15 @@ lemma toCloseds_injective (X : Type*) [TopologicalSpace X] :
   · grind [Opens.coe_mk, h ⟨u, hu⟩ hx]
   · grind [Opens.coe_mk,h u hu hx]
 
-@[simps]
-def irreducibleClosedsEquiv (X : Type*) [TopologicalSpace X] :
-    IrreducibleCloseds X ≃ PT (Opens X) where
-  toFun | ⟨s, hirred, _⟩ => hirred.toPTOpens
-  invFun := toIrreducibleCloseds
-  left_inv := by
+/-- Points of `Opens X` are equivalent to irreducible closed subsets of `X`. -/
+@[simps] def irreducibleClosedsEquiv (X : Type*) [TopologicalSpace X] :
+    PT (Opens X) ≃ IrreducibleCloseds X where
+  toFun := toIrreducibleCloseds
+  invFun | ⟨s, hirred, _⟩ => hirred.toPTOpens
+  left_inv := toPTOpens_toCloseds
+  right_inv := by
     intro ⟨s, hi, hc⟩
     simp
-  right_inv := toPTOpens_toCloseds
 
 lemma toPT_singleton {X : Type*} [TopologicalSpace X] (x : X) :
     (isIrreducible_singleton (x := x)).toPTOpens = localePointOfSpacePoint X x := by
@@ -124,9 +124,9 @@ theorem localePointOfSpacePoint_surjective_iff_quasiSober (X : Type*) [Topologic
     (localePointOfSpacePoint X).Surjective ↔ QuasiSober X := by
   refine ⟨fun h ↦ ⟨?_⟩, fun _ ↦ localePointOfSpacePoint_surjective X⟩
   intro s hs hs'
-  obtain ⟨x, hx⟩ := h <| irreducibleClosedsEquiv X ⟨s, hs, hs'⟩
+  obtain ⟨x, hx⟩ := h <| (irreducibleClosedsEquiv X).symm ⟨s, hs, hs'⟩
   use x
-  rwa [← toPT_singleton, ← Equiv.symm_apply_eq, irreducibleClosedsEquiv_symm_apply,
+  rwa [← toPT_singleton, Equiv.eq_symm_apply, irreducibleClosedsEquiv_apply,
     toIrreducibleCloseds_toPTOpens, IrreducibleCloseds.ext_iff] at hx
 
 lemma isHomeomorph_localePointOfSpacePoint (X : Type*) [TopologicalSpace X] [T0Space X]
@@ -134,6 +134,7 @@ lemma isHomeomorph_localePointOfSpacePoint (X : Type*) [TopologicalSpace X] [T0S
   isHomeomorph_iff_isEmbedding_surjective.mpr
     ⟨isEmbedding_localePointOfSpacePoint X, localePointOfSpacePoint_surjective X⟩
 
+/-- A sober space is homeomorphic to the space of points of its frame of opens. -/
 noncomputable def homeomorphPtOpens (X : Type*) [TopologicalSpace X] [T0Space X] [QuasiSober X] :
     X ≃ₜ PT (Opens X) := (isHomeomorph_localePointOfSpacePoint X).homeomorph
 
