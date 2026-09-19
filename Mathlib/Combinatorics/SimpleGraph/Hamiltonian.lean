@@ -302,21 +302,20 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
-theorem isHamiltonian_iff_cycleGraph_isContained (h : 2 < Fintype.card α) :
+theorem isHamiltonian_iff_cycleGraph_isContained (h : 3 ≤ Fintype.card α) :
     G.IsHamiltonian ↔ cycleGraph (Fintype.card α) ⊑ G := by
   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩
-  · obtain ⟨a, p, hp⟩ := h' (by grind)
+  · obtain ⟨a, p, hp⟩ := h' (by lia)
     exact cycleGraph_isContained_iff h |>.mpr ⟨a, p, hp.isCycle, hp.length_eq⟩
   · obtain ⟨a, p, hp₁, hp₂⟩ := cycleGraph_isContained_iff h |>.mp h'
     exact fun _ ↦ ⟨a, p, Walk.isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨hp₁, hp₂⟩⟩
 
 @[simp]
-theorem isHamiltonian_cycleGraph {n : ℕ} (hn : 2 < n) : (cycleGraph n).IsHamiltonian :=
-  isHamiltonian_iff_cycleGraph_isContained (by simp [hn]) |>.mpr <|
-    Fintype.card_fin _ ▸ IsContained.rfl
+theorem isHamiltonian_cycleGraph {n : ℕ} (hn : 3 ≤ n) : (cycleGraph n).IsHamiltonian :=
+  isHamiltonian_iff_cycleGraph_isContained (by simpa) |>.mpr <| Fintype.card_fin _ ▸ IsContained.rfl
 
 @[simp]
-theorem isHamiltonian_top (h : 2 < Fintype.card α) : (completeGraph α).IsHamiltonian :=
+theorem isHamiltonian_top (h : 3 ≤ Fintype.card α) : (completeGraph α).IsHamiltonian :=
   isHamiltonian_iff_cycleGraph_isContained h |>.mpr <|
     isContained_top_iff.mpr <| Function.Embedding.nonempty_of_card_le (by simp)
 
