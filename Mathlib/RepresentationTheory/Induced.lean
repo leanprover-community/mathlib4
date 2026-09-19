@@ -242,9 +242,6 @@ lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
       ((IndV.mk φ _ h x) ⊗ₜ[k] y)) = Coinvariants.mk (A.ρ.tprod (res φ B).ρ) (x ⊗ₜ[k] (B.ρ h y))
   := by simp [coinvariantsTensorIndHom]
 
-@[deprecated (since := "2026-09-19")]
-alias coinvariantsTensorIndHom_mk_tmul_indMk := coinvariantsTensorIndHom_mk_tmul_indVMk
-
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
 `(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B))_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
 `a : A`, and `b : B`. -/
@@ -263,6 +260,9 @@ lemma coinvariantsTensorIndInv_mk_tmul_indVMk (x : A) (y : B) :
     coinvariantsTensorIndInv φ A B (Coinvariants.mk (A.ρ.tprod (res φ B).ρ) (x ⊗ₜ y)) =
       Coinvariants.mk ((Representation.ind φ A.ρ).tprod B.ρ) ((IndV.mk φ _ 1 x) ⊗ₜ[k] y) := by
   simp [coinvariantsTensorIndInv, coinvariantsTensorMk]
+
+@[deprecated (since := "2026-09-19")]
+alias coinvariantsTensorIndInv_mk_tmul_indMk := coinvariantsTensorIndInv_mk_tmul_indVMk
 
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
 isomorphism `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
