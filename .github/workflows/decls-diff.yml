@@ -27,7 +27,12 @@ permissions:
   pull-requests: write    # for PATCHing the `### PR summary` comment
 
 jobs:
-  diff:
+  # A `success` conclusion does not imply that a build ran. `build_fork.yml`'s `guard`
+  # job skips the build when the commit has already been superseded, and a run whose
+  # only executed job succeeded still concludes `success`. Such a run uploaded no
+  # `import-graph`, so settle that with one API call before starting `diff`, whose
+  # first act is a full-history checkout of Mathlib.
+  check:
     # The build never runs on a `pull_request` event: non-fork PRs build via
     # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
     # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
@@ -44,6 +49,43 @@ jobs:
           && !startsWith(github.event.workflow_run.head_branch, 'lean-pr-testing-')
         )
       )
+    runs-on: ubuntu-latest
+    # Narrower than the workflow-level block: this job only reads a run's artifact list.
+    permissions:
+      actions: read
+    outputs:
+      built: ${{ steps.artifact.outputs.built }}
+    steps:
+      - name: Check the build uploaded an import-graph
+        id: artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -uo pipefail
+
+          # Fail open: if the API cannot be reached, run `diff` and let it report
+          # the real problem rather than silently dropping a legitimate diff.
+          built=true
+
+          if count="$(gh api "repos/${REPO}/actions/runs/${RUN_ID}/artifacts?per_page=100" \
+                        --jq '[.artifacts[] | select(.name == "import-graph")] | length')"; then
+            if [ "${count}" -eq 0 ]; then
+              echo "Run ${RUN_ID} uploaded no import-graph, so its build did not run" \
+                   "(superseded commit). Nothing to diff."
+              built=false
+            fi
+          else
+            echo "::warning::Could not list artifacts for run ${RUN_ID}; diffing anyway."
+          fi
+
+          echo "built=${built}" >> "$GITHUB_OUTPUT"
+
+  diff:
+    # `check` carries the event filter, so a skipped `check` skips this job too.
+    needs: check
+    if: ${{ needs.check.outputs.built == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Resolve Build run + SHA
