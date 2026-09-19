@@ -77,7 +77,7 @@ theorem iteratedDerivedSet_zero : sᵈ[0] = s := by
   simp [iteratedDerivedSet, gfpApprox_zero]
 
 @[simp]
-theorem iteratedDerivedSet_succ : sᵈ[a + 1] = relDerivedSet (sᵈ[a]) := by
+theorem iteratedDerivedSet_succ : sᵈ[a + 1] = relDerivedSet sᵈ[a] := by
   simpa [iteratedDerivedSet] using
     gfpApprox_add_one relDerivedSet relDerivedSet_subset a
 
