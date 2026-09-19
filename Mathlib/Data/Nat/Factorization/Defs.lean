@@ -98,9 +98,6 @@ theorem prod_factorization_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorizatio
   simp only [← prod_toMultiset, Multiset.prod_coe, Multiset.toFinsupp_toMultiset]
   exact prod_primeFactorsList hn
 
-@[deprecated (since := "2026-03-19")]
-alias factorization_prod_pow_eq_self := prod_factorization_pow_eq_self
-
 theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : ∀ p : ℕ, a.factorization p = b.factorization p) : a = b :=
   eq_of_perm_primeFactorsList ha hb
@@ -256,23 +253,25 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
 
 variable {f : ℕ →₀ ℕ}
 
--- TODO: Rename to `factorization_prod_pow_eq_self`
 /-- Any Finsupp `f : ℕ →₀ ℕ` whose support is in the primes is equal to the factorization of
 the product `∏ (a : ℕ) ∈ f.support, a ^ f a`. -/
-theorem prod_pow_factorization_eq_self (hf : ∀ p ∈ f.support, Prime p) :
+theorem factorization_prod_pow_eq_self (hf : ∀ p ∈ f.support, Prime p) :
     (f.prod (· ^ ·)).factorization = f := by
   rw [Finsupp.prod, factorization_prod (pow_ne_zero _ <| hf · · |>.ne_zero),
     sum_congr rfl (hf · · |>.factorization_pow)]
   exact sum_single f
 
+@[deprecated (since := "2026-09-19")]
+alias prod_pow_factorization_eq_self := factorization_prod_pow_eq_self
+
 theorem eq_factorization_iff (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
     f = n.factorization ↔ f.prod (· ^ ·) = n := by
   constructor <;> rintro rfl
-  exacts [prod_factorization_pow_eq_self hn, prod_pow_factorization_eq_self hf |>.symm]
+  exacts [prod_factorization_pow_eq_self hn, factorization_prod_pow_eq_self hf |>.symm]
 
 theorem factorization_prod_pow_eq_self_of_le_factorization (hf : f ≤ n.factorization) :
     (f.prod (· ^ ·)).factorization = f :=
-  prod_pow_factorization_eq_self fun _ hp ↦ prime_of_mem_primeFactors <| support_mono hf hp
+  factorization_prod_pow_eq_self fun _ hp ↦ prime_of_mem_primeFactors <| support_mono hf hp
 
 theorem prod_pow_dvd_of_le_factorization (hf : f ≤ n.factorization) : f.prod (· ^ ·) ∣ n := by
   rcases eq_or_ne n 0 with (rfl | hn)
@@ -300,7 +299,7 @@ def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ // ∀ p ∈ f.support, P
   invFun := fun ⟨f, hf⟩ =>
     ⟨f.prod _, prod_pow_pos_of_zero_notMem_support fun H => not_prime_zero (hf 0 H)⟩
   left_inv := fun ⟨_, hx⟩ => Subtype.ext <| prod_factorization_pow_eq_self hx.ne.symm
-  right_inv := fun ⟨_, hf⟩ => Subtype.ext <| prod_pow_factorization_eq_self hf
+  right_inv := fun ⟨_, hf⟩ => Subtype.ext <| factorization_prod_pow_eq_self hf
 
 /-! ### Factorization and coprimes -/
 
