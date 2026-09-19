@@ -5,6 +5,8 @@ public meta import Mathlib.Lean.Exception
 public import Mathlib.Tactic.ReduceModChar.Ext
 public import Qq.MetaM
 
+import all Init.Prelude
+
 open Qq Lean Meta Elab Command Mathlib Tactic Translate ToAdditive
 
 public section
@@ -964,12 +966,19 @@ axiom MulAxiom {α} : Mul α
 
 /-! Docstring on `alias` -/
 
-@[to_additive] alias MulClassAlias := MulClass
+@[to_additive] alias HMulAlias := HMul
 
-/-- info: **Alias** of `MulClass`. -/
+/--
+info: **Alias** of `HAdd`.
+
+---
+
+The notation typeclass for heterogeneous addition.
+This enables the notation `a + b : γ` where `a : α`, `b : β`.
+-/
 #guard_msgs in
 run_cmd
-  let some doc ← findDocString? (← getEnv) ``MulClassAlias
+  let some doc ← findDocString? (← getEnv) ``HAddAlias
     | throwError "no `docComment` docstring found"
   logInfo doc
 
