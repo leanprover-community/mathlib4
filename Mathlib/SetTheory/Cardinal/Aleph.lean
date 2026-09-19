@@ -97,12 +97,12 @@ theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
   ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
   fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
 
-theorem isCofinal_setOf_isInitial : IsCofinal {x | IsInitial x} :=
+theorem isCofinal_setOfPred_isInitial : IsCofinal {x | IsInitial x} :=
   fun _ ↦ ⟨_, isInitial_ord _, (lt_ord_succ_card _).le⟩
 
-@[deprecated isCofinal_setOf_isInitial (since := "2026-05-25")]
+@[deprecated isCofinal_setOfPred_isInitial +typeChanged (since := "2026-05-25")]
 theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} :=
-  isCofinal_setOf_isInitial.not_bddAbove
+  isCofinal_setOfPred_isInitial.not_bddAbove
 
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
@@ -118,11 +118,11 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
 
 For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
 def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
-  toFun x := Order.enum _ isCofinal_setOf_isInitial x
+  toFun x := Order.enum _ isCofinal_setOfPred_isInitial x
   inj' _ _ h := Subtype.coe_injective.comp (OrderIso.injective _) h
-  map_rel_iff' := (Order.enum _ isCofinal_setOf_isInitial).le_iff_le
+  map_rel_iff' := (Order.enum _ isCofinal_setOfPred_isInitial).le_iff_le
 
-theorem coe_preOmega : preOmega = Subtype.val ∘ Order.enum _ isCofinal_setOf_isInitial :=
+theorem coe_preOmega : preOmega = Subtype.val ∘ Order.enum _ isCofinal_setOfPred_isInitial :=
   rfl
 
 theorem preOmega_strictMono : StrictMono preOmega :=
@@ -286,7 +286,7 @@ namespace Cardinal
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
 def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
-  (enum _ isCofinal_setOf_isInitial).trans isInitialIso
+  (enum _ isCofinal_setOfPred_isInitial).trans isInitialIso
 
 @[simp]
 theorem _root_.Ordinal.card_preOmega (o : Ordinal) : (preOmega o).card = preAleph o :=
