@@ -16,12 +16,12 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 In this file, we introduce morphisms which allow to study the commutation of limits
 with colimits.
 
-In the uncurried situation of a functor, `F : J × K ⥤ C` there is always a
+In the case of an uncurried functor `F : J × K ⥤ C` there is always a
 morphism $\colim_k \lim_j F(j,k) → \lim_j \colim_k F(j, k)$ (see `colimitLimitToLimitColimit`).
 While it is not usually an isomorphism, with additional hypotheses on `J` and `K` it may be,
 in which case we say that "colimits commute with limits".
 
-The situation appears slightly better for curried bifunctors `F : J ⥤ K ⥤ C`. In this case,
+We also study the case of curried bifunctors `F : J ⥤ K ⥤ C`. In this case,
 we define a morphism `colimitLimToLimitColim : colimit (F.flip ⋙ lim) ⟶ limit (F ⋙ colim)`.
 We show that this morphism is an isomorphism iff `lim : (J ⥤ C) ⥤ C` preserves the
 colimit of `F.flip`, and this is also equivalent to saying that `colim : (K ⥤ C) ⥤ C`
