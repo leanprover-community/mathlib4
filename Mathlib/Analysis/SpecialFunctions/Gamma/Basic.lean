@@ -316,6 +316,19 @@ theorem Gamma_add_one (s : ℂ) (h2 : s ≠ 0) : Gamma (s + 1) = s * Gamma s := 
   rw [Gamma_eq_GammaAux s n t1, Gamma_eq_GammaAux (s + 1) n t2, GammaAux_recurrence1 s n t1]
   field
 
+theorem norm_Gamma_le_norm_Gamma_add_one {s : ℂ} (hs : 1 ≤ ‖s‖) :
+    ‖Gamma s‖ ≤ ‖Gamma (s + 1)‖ := by
+  grw [Gamma_add_one _ (by contrapose hs; simp [hs]), norm_mul, ← hs, one_mul]
+
+/-- This bound is not tight and is provided for convenience. -/
+theorem norm_Gamma_le_norm_Gamma_add_of_one_le_re {s : ℂ} (hs : 1 ≤ s.re) (n : ℕ) :
+    ‖Gamma s‖ ≤ ‖Gamma (s + n)‖ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    grw [ih, norm_Gamma_le_norm_Gamma_add_one (le_trans (by simp; grind) (Complex.re_le_norm _))]
+    simp [add_assoc]
+
 theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s :=
   Gamma_eq_GammaAux s 0 (by norm_cast; linarith)
 

@@ -456,6 +456,24 @@ theorem deriv_regularizedHGFun {z : ℂ} (hz : ‖z‖ₑ < (regularizedHGFunSer
 
 end Derivative
 
+theorem regularizedHGFun_le_exp_of_one_le_re (h : ∀ u ∈ b, 1 ≤ u.re) (z : ℂ) :
+    ‖regularizedHGFun 0 b z‖ ≤ ‖(b.map Gamma).prod‖⁻¹ * Real.exp ‖z‖ := by
+  rw [Real.exp_eq_exp_ℝ]
+  apply HasSum.norm_le_of_bounded ((regularizedHGFunSeries 0 b).hasSum (by simp : z ∈ _))
+    ((NormedSpace.exp_series_hasSum_exp' (𝕂 := ℝ) ‖z‖).mul_left ‖(b.map Gamma).prod‖⁻¹)
+  intro n
+  suffices ‖(Multiset.map (fun x ↦ Gamma (x + ↑n)) b).prod‖⁻¹ ≤ ‖(b.map Gamma).prod‖⁻¹ by
+    grw [← this]
+    apply le_of_eq
+    simp [regularizedHGFunCoeff]
+    ring
+  simp_rw [Multiset.norm_prod_map, ← Multiset.prod_map_inv]
+  apply Multiset.prod_map_le_prod_map₀ _ _ (by simp)
+  intro u hu
+  apply inv_le_of_inv_le₀ (by grind [inv_pos, norm_pos_iff, neg_re, natCast_re])
+  rw [inv_inv]
+  apply norm_Gamma_le_norm_Gamma_add_of_one_le_re (h u hu)
+
 section ZeroZero
 
 /-- The regularized hypergeometric series with `a = b = 0` is exponential series. -/
