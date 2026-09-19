@@ -24,7 +24,7 @@ open Set
 
 namespace Filter
 
-variable {α β γ ι : Type*} {ι' : Sort*}
+variable {α β ι : Type*} {ι' : Sort*}
 
 /-- `IsCountablyGenerated f` means `f = generate s` for some countable `s`. -/
 class IsCountablyGenerated (f : Filter α) : Prop where

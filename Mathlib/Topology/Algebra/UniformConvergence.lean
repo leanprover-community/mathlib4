@@ -47,7 +47,7 @@ open scoped Topology Pointwise UniformConvergence Uniformity
 
 section AlgebraicInstances
 
-variable {α β ι R : Type*} {𝔖 : Set <| Set α} {x : α}
+variable {α β R : Type*} {𝔖 : Set <| Set α} {x : α}
 
 @[to_additive] instance [One β] : One (α →ᵤ β) := inferInstanceAs <| One (α → β)
 

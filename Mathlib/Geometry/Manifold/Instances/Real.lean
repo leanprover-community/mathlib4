@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -55,7 +56,7 @@ open scoped Manifold ContDiff ENNReal
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
 -/
-@[implicit_reducible]
+@[implicit_reducible, wikidata Q644719]
 def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
 deriving TopologicalSpace
@@ -240,6 +241,22 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
+lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
+    (𝓡∂ n : _ → _) = Subtype.val := rfl
+
+@[simp]
+lemma modelWithCornersEuclideanHalfSpace_apply (n : ℕ) [NeZero n] {p : EuclideanHalfSpace n} :
+    (𝓡∂ n) p = p.val := rfl
+
+lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
+    (x : EuclideanSpace ℝ (Fin n)) :
+    (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := rfl
+
+lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
+    {x : EuclideanSpace ℝ (Fin n)} (hx : 0 ≤ x 0) :
+    (𝓡∂ n).symm x = ⟨x, hx⟩ := by
+  simp [modelWithCornersEuclideanHalfSpace_symm_apply, hx]
+
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
@@ -260,6 +277,19 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       congr!
       apply range_euclideanHalfSpace
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
+
+@[simp]
+lemma modelWithCornersEuclideanQuadrant_apply (n : ℕ) {p : EuclideanQuadrant n} :
+    (modelWithCornersEuclideanQuadrant n) p = p.val := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} (x : EuclideanSpace ℝ (Fin n)) :
+    (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 fun i ↦ max (x i) 0,
+    fun i ↦ by simp only [le_sup_right]⟩ := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
+    {x : EuclideanSpace ℝ (Fin n)} (hx : ∀ i, 0 ≤ x i) :
+    (modelWithCornersEuclideanQuadrant n).symm x = ⟨x, hx⟩ := by
+  simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
@@ -298,6 +328,21 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   continuousOn_invFun := by fun_prop
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
+
+lemma IccLeftChart_apply (z : Icc x y) :
+    IccLeftChart x y z = ⟨toLp 2 fun _ ↦ z.val - x, by aesop⟩ :=
+  rfl
+
+lemma IccLeftChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccLeftChart x y).symm z = ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩ :=
+  rfl
+
+lemma IccLeftChart_symm_apply_of_le {z : EuclideanHalfSpace 1} (hz : z.val 0 ≤ y - x) :
+    (IccLeftChart x y).symm z =
+      ⟨z.val 0 + x, by simpa [z.prop, hxy.out.le, ← le_add_neg_iff_add_le]⟩ := by
+  ext
+  simp only [IccLeftChart_symm_apply, inf_eq_left]
+  linarith
 
 namespace Fact.Manifold
 
@@ -362,6 +407,22 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 
+lemma IccRightChart_apply (z : Icc x y) :
+    IccRightChart x y z = ⟨toLp 2 fun _ ↦ y - z.val, by aesop⟩ :=
+  rfl
+
+lemma IccRightChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccRightChart x y).symm z =
+      ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩ :=
+  rfl
+
+lemma IccRightChart_symm_apply_of_le {z : EuclideanHalfSpace 1} (hz : z.val 0 ≤ y - x) :
+    (IccRightChart x y).symm z =
+      ⟨y - z.val 0, by simp [z.prop, sub_eq_add_neg, add_le_of_le_sub_left hz]⟩ := by
+  ext
+  simp only [IccRightChart_symm_apply, sup_eq_left]
+  linarith
+
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
@@ -381,9 +442,9 @@ instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
   mem_chart_source z := by
     by_cases h' : z.val < y
-    · simp only [h', if_true]
+    · simp only [h', ite_true]
       exact h'
-    · simp only [h', if_false]
+    · simp only [h', ite_false]
       apply lt_of_lt_of_le h.out
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']

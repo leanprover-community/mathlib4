@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Tactic.HaveI
+public import Batteries.Lean.Expr
 
 /-! # `mod_cases` tactic
 

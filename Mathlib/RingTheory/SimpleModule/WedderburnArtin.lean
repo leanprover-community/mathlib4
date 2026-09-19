@@ -61,7 +61,7 @@ theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
   tfae_finish
 
 theorem IsSimpleRing.isSemisimpleRing_iff_isArtinianRing [IsSimpleRing R] :
-    IsSemisimpleRing R ↔ IsArtinianRing R := tfae.out 0 1
+    IsSemisimpleRing R ↔ IsArtinianRing R := tfae.out 1 2
 
 theorem isSimpleRing_isArtinianRing_iff :
     IsSimpleRing R ∧ IsArtinianRing R ↔ IsSemisimpleRing R ∧ IsIsotypic R R ∧ Nontrivial R := by
@@ -248,12 +248,3 @@ theorem isSemisimpleRing_iff_pi_matrix_divisionRing : IsSemisimpleRing R ↔
   mp _ := have ⟨n, D, d, _, _, e⟩ := IsSemisimpleRing.exists_ringEquiv_pi_matrix_divisionRing R
     ⟨n, D, d, _, e⟩
   mpr := fun ⟨_, _, _, _, ⟨e⟩⟩ ↦ e.symm.isSemisimpleRing
-
--- Need left-right symmetry of Jacobson radical
-proof_wanted IsSemiprimaryRing.mulOpposite [IsSemiprimaryRing R] : IsSemiprimaryRing Rᵐᵒᵖ
-
-proof_wanted isSemiprimaryRing_mulOpposite_iff : IsSemiprimaryRing Rᵐᵒᵖ ↔ IsSemiprimaryRing R
-
--- A left Artinian ring is right Noetherian iff it is right Artinian. To be left as an `example`.
-proof_wanted IsArtinianRing.isNoetherianRing_iff_isArtinianRing_mulOpposite
-    [IsArtinianRing R] : IsNoetherianRing Rᵐᵒᵖ ↔ IsArtinianRing Rᵐᵒᵖ

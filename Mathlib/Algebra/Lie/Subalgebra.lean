@@ -68,7 +68,7 @@ instance : SetLike (LieSubalgebra R L) L where
     congr
     exact SetLike.coe_injective h
 
-instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
+instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L)
 
 instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
@@ -549,7 +549,7 @@ variable {K K'} in
 variable (R L)
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
-  RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
+  RelHomClass.wellFounded' (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
 
 theorem map_top : f.range = LieSubalgebra.map f ⊤ := by ext; simp
 
@@ -703,7 +703,7 @@ theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
-  eq_top_iff.2 <| SetLike.le_def.2 <| subset_lieSpan
+  eq_top_iff.2 <| IsConcreteLE.le_iff.2 <| subset_lieSpan
 
 variable {L}
 
@@ -773,6 +773,10 @@ lemma comap_lieSpan_range_eq {ι : Type*} (f : ι → K) :
     rintro - ⟨i, rfl⟩
     simp only [SetLike.mem_coe, mem_comap, coe_incl]
     exact subset_lieSpan <| by simp
+
+@[simp] theorem comap_incl_eq_top : K'.comap K.incl = ⊤ ↔ K ≤ K' := by
+  simp only [SetLike.ext_iff, mem_comap, coe_incl, mem_top, iff_true, le_def, Set.subset_def,
+    SetLike.mem_coe, Subtype.forall]
 
 end LieSpan
 

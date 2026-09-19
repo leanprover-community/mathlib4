@@ -77,7 +77,6 @@ noncomputable def InjectiveResolution.isoRightDerivedToHomotopyCategoryObj {X : 
     (F.mapHomotopyCategoryFactors _).app I.cocomplex
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -268,7 +267,6 @@ noncomputable def toRightDerivedZero' {X : C}
     rw [← F.map_comp, HomologicalComplex.Hom.comm, HomologicalComplex.single_obj_d,
       zero_comp, F.map_zero])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
     (P : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
@@ -353,7 +351,6 @@ section
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {X : C} (P : InjectiveResolution X) :
     IsIso (P.toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
