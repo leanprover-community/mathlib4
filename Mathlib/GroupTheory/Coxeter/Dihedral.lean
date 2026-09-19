@@ -154,7 +154,7 @@ private theorem hasDihedralNormalForm (m : ℕ) (w : IGroup m) :
       · refine ⟨-k + 1, Or.inl ?_⟩
         exact c0_mul_rot_zpow_mul_c1 m k
 
-@[simp] private theorem toDihedral_c0 (m : ℕ) : toDihedral m (c0 m) = sr 0 := by
+private theorem toDihedral_c0 (m : ℕ) : toDihedral m (c0 m) = sr 0 := by
   simp [c0]
 
 @[simp] private theorem toDihedral_rot (m : ℕ) : toDihedral m (rot m) = r 1 := by
