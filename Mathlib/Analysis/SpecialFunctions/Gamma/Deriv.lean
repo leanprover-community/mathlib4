@@ -64,10 +64,14 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
     rw [(by simp : (1 : ℂ) = Real.exp (-0))]
     exact (continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)).continuousWithinAt
 
-theorem hasDerivAt_Gamma {s : ℂ} (hs : 0 < s.re) :
+theorem hasDerivAt_Gamma_of_re_pos {s : ℂ} (hs : 0 < s.re) :
     HasDerivAt Gamma (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
   apply (hasDerivAt_GammaIntegral hs).congr_of_eventuallyEq
   filter_upwards [(isOpen_re_gt 0).mem_nhds hs] with a using Gamma_eq_integral
+
+theorem deriv_Gamma_one_eq_integral_log :
+    deriv Gamma 1 = ∫ t : ℝ in Ioi 0, (Real.log t : ℂ) * Real.exp (-t) := by
+  simp [(hasDerivAt_Gamma_of_re_pos (s := 1) (by simp)).deriv]
 
 @[fun_prop]
 theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
@@ -76,7 +80,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     this (⌊-s.re⌋₊ + 1) s (by grind [Nat.lt_floor_add_one (-s.re)]) hs
   intro n s hsre hs
   induction n generalizing s with
-  | zero => exact (hasDerivAt_Gamma (by simpa using hsre)).differentiableAt
+  | zero => exact (hasDerivAt_Gamma_of_re_pos (by simpa using hsre)).differentiableAt
   | succ n IH =>
     -- Induction step: use recurrence relation
     have hsne : s ≠ 0 := by grind [hs 0]
@@ -150,9 +154,9 @@ namespace Real
 
 open Complex MeasureTheory
 
-theorem hasDerivAt_Gamma {s : ℝ} (hs : 0 < s) :
+theorem hasDerivAt_Gamma_of_pos {s : ℝ} (hs : 0 < s) :
     HasDerivAt Gamma (∫ t in Ioi 0, t ^ (s - 1) * (log t * exp (-t))) s := by
-  convert (Complex.hasDerivAt_Gamma (RCLike.ofReal_pos.mp hs)).real_of_complex
+  convert (Complex.hasDerivAt_Gamma_of_re_pos (RCLike.ofReal_pos.mp hs)).real_of_complex
   · simp [Gamma_ofReal]
   convert (ofReal_re ?_).symm
   calc
@@ -163,7 +167,7 @@ theorem hasDerivAt_Gamma {s : ℝ} (hs : 0 < s) :
     _ = _ := by norm_cast
 
 theorem deriv_Gamma_one_eq_integral_log : deriv Gamma 1 = ∫ t in Ioi 0, log t * exp (-t) := by
-  simp [(hasDerivAt_Gamma (one_pos (α := ℝ))).deriv]
+  simp [(hasDerivAt_Gamma_of_pos one_pos).deriv]
 
 theorem integrableOn_log_log_mul_rpow {s : ℝ} (hs : 1 < s) :
     IntegrableOn (fun t ↦ log (log t) * t ^ (-s)) (Ioi 1) := by
