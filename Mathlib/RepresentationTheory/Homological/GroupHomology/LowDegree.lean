@@ -231,8 +231,9 @@ where the vertical arrows are `chainsIso₁` and `chainsIso₀` respectively.
 theorem comp_d₁₀_eq :
     (chainsIso₁ A).hom ≫ d₁₀ A = (inhomogeneousChains A).d 1 0 ≫ (chainsIso₀ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [chainsIso₀, chainsIso₁, d₁₀_single (G := G), ChainComplex.of.d,
-      Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg, inhomogeneousChains.d_single (G := G)]
+    simp [-ChainComplex.of_d, ChainComplex.of_d', chainsIso₁, domLCongr_apply, domCongr_apply,
+      d₁₀_single (G := G), sub_eq_add_neg, chainsIso₀, inhomogeneousChains.d_single (G := G),
+      Unique.eq_default (α := Fin 0 → G), uniqueLinearEquiv_apply _, single_eq_same]
 
 -- @[reassoc (attr := simp), elementwise (attr := simp)]
 @[reassoc, elementwise]
@@ -256,9 +257,10 @@ where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 theorem comp_d₂₁_eq :
     (chainsIso₂ A).hom ≫ d₂₁ A = (inhomogeneousChains A).d 2 1 ≫ (chainsIso₁ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [chainsIso₁, add_assoc, chainsIso₂, d₂₁_single (G := G),
-      -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, ChainComplex.of.d,
-      Fin.contractNth, inhomogeneousChains.d_single (G := G)]
+    simp [-ChainComplex.of_d, -ChainComplex.of_X, ChainComplex.of_d',
+      chainsIso₂, (domLCongr_single), d₂₁_single (G := G), sub_eq_add_neg, add_assoc, chainsIso₁,
+      inhomogeneousChains.d_single (G := G), Fin.contractNth_apply_of_lt,
+      Fin.contractNth_apply_of_eq]
 
 @[reassoc, elementwise]
 theorem eq_d₂₁_comp_inv :
@@ -281,11 +283,12 @@ where the vertical arrows are `chainsIso₃` and `chainsIso₂` respectively.
 theorem comp_d₃₂_eq :
     (chainsIso₃ A).hom ≫ d₃₂ A = (inhomogeneousChains A).d 3 2 ≫ (chainsIso₂ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [chainsIso₂, ChainComplex.of.d, pow_succ, chainsIso₃,
-      -domLCongr_apply, domLCongr_single, d₃₂, Fin.sum_univ_three,
-      Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
+    simp [-ChainComplex.of_d, ChainComplex.of_d', chainsIso₂, (domLCongr_single), pow_succ,
+      chainsIso₃, -domLCongr_apply, d₃₂, Fin.sum_univ_three,
+      Fin.tail_def, sub_eq_add_neg, add_assoc,
       inhomogeneousChains.d_single (G := G), add_rotate' (-(single (_ * _, _) _)),
-      add_left_comm (single (_, _ * _) _)]
+      add_left_comm (single (_, _ * _) _),
+      Fin.contractNth_apply_of_lt, Fin.contractNth_apply_of_eq, Fin.contractNth_apply_of_gt]
 
 @[reassoc, elementwise]
 theorem eq_d₃₂_comp_inv :
@@ -300,7 +303,7 @@ theorem d₂₁_comp_d₁₀ : d₂₁ A ≫ d₁₀ A = 0 := by
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₃₂_comp_d₂₁ : d₃₂ A ≫ d₂₁ A = 0 := by
   simp [← cancel_mono (chainsIso₁ A).inv, ← eq_d₂₁_comp_inv, ← eq_d₃₂_comp_inv_assoc,
-    ChainComplex.of.d, inhomogeneousChains.d_comp_d]
+    ChainComplex.of_d', inhomogeneousChains.d_comp_d]
 
 open ShortComplex
 
@@ -695,7 +698,7 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
 def cyclesIso₀ : cycles A 0 ≅ ↧A.V :=
-  (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp [ChainComplex.of.d]) ≪≫ chainsIso₀ A
+  (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp) ≪≫ chainsIso₀ A
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesIso₀_inv_comp_iCycles :
@@ -729,7 +732,7 @@ lemma coinvariantsMk_comp_opcyclesIso₀_inv :
   (CommSq.vert_inv ⟨pOpcycles_comp_opcyclesIso_hom A⟩).w
 
 lemma cyclesMk₀_eq (x : A) :
-    cyclesMk 0 0 (by simp) ((chainsIso₀ A).inv x) (by simp [ChainComplex.of.d]) =
+    cyclesMk 0 0 (by simp) ((chainsIso₀ A).inv x) (by simp) =
     (cyclesIso₀ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 0).1 inferInstance <| by rw [iCycles_mk]; simp
 
@@ -781,8 +784,7 @@ lemma cyclesMk₁_eq (x : cycles₁ A) :
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]; simp) =
       (isoCycles₁ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
-    rw [iCycles_mk]
-    simp only [ChainComplex.of_X, isoCycles₁_inv_comp_iCycles_apply]
+    rw [iCycles_mk, isoCycles₁_inv_comp_iCycles_apply]
     rfl
 
 end isoCycles₁
@@ -833,8 +835,7 @@ lemma cyclesMk₂_eq (x : cycles₂ A) :
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]
       simp) = (isoCycles₂ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
-    rw [iCycles_mk]
-    simp only [ChainComplex.of_X, isoCycles₂_inv_comp_iCycles_apply]
+    rw [iCycles_mk, isoCycles₂_inv_comp_iCycles_apply]
     rfl
 
 end isoCycles₂
@@ -892,7 +893,7 @@ variable [A.IsTrivial]
 def H0IsoOfIsTrivial :
     H0 A ≅ ↧A.V :=
   ((inhomogeneousChains A).isoHomologyπ 1 0 (by simp) <| by
-    ext; simp [inhomogeneousChains.d_single (G := G), ChainComplex.of.d,
+    ext; simp [inhomogeneousChains.d_single (G := G), -ChainComplex.of_d, ChainComplex.of_d',
        Unique.eq_default (α := Fin 0 → G), isTrivial_apply]).symm ≪≫ cyclesIso₀ A
 
 @[simp]
