@@ -509,6 +509,14 @@ lemma mapHomotopyCategory_obj (x : V _⦋0⦌₂) :
 lemma mapHomotopyCategory_homMk {x y : V _⦋0⦌₂} (e : Edge x y) :
     (mapHomotopyCategory f).map (homMk e) = homMk (e.map f) := rfl
 
+lemma mapHomotopyCategory_id (X : Truncated 2) :
+    mapHomotopyCategory (𝟙 X) = 𝟭 _ :=
+  HomotopyCategory.functor_ext (fun _ ↦ rfl) (fun _ _ _ ↦ rfl)
+
+lemma mapHomotopyCategory_comp {X Y Z : Truncated 2} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    mapHomotopyCategory (f ≫ g) = mapHomotopyCategory f ⋙ mapHomotopyCategory g :=
+  HomotopyCategory.functor_ext (fun _ ↦ rfl) (fun _ _ _ ↦ rfl)
+
 end
 
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
