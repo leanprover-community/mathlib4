@@ -81,7 +81,7 @@ theorem iteratedDerivedSet_succ : sᵈ[a + 1] = relDerivedSet sᵈ[a] := by
   simpa [iteratedDerivedSet] using
     gfpApprox_add_one relDerivedSet relDerivedSet_subset a
 
-theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) : sᵈ[a] = ⋂ b : Set.Iio a, sᵈ[b] := by
+theorem iteratedDerivedSet_limit (ha : Order.IsSuccLimit a) : sᵈ[a] = ⋂ b < a, sᵈ[b] := by
   simpa [iteratedDerivedSet] using gfpApprox_of_isSuccLimit relDerivedSet ha
 
 /-- A set is preperfect if and only if every stage of its iterated relative derived-set sequence
