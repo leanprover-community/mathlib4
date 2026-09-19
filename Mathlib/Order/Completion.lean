@@ -51,28 +51,53 @@ The theorem `DedekindCut.principalEmbedding_trans_factorEmbedding` proves that i
 order and `β` is a complete lattice, any embedding `α ↪o β` factors through `DedekindCut α`. -/
 abbrev DedekindCut [Preorder α] := Concept α α (· ≤ ·)
 
+to_dual_name_hint Left Right
+
 namespace DedekindCut
 
 section Preorder
 variable [Preorder α] [Preorder β]
 
+instance : PartialOrder (DedekindCut α) := inferInstance
+
 /-- The left set of a Dedekind cut. This is an alias for `Concept.extent`. -/
 abbrev left (A : DedekindCut α) : Set α := A.extent
 
 /-- The right set of a Dedekind cut. This is an alias for `Concept.intent`. -/
+@[to_dual existing]
 abbrev right (A : DedekindCut α) : Set α := A.intent
 
 /-- See `DedekindCut.ext'` for a version using the right set instead. -/
 @[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h
 
 /-- See `DedekindCut.ext` for a version using the left set instead. -/
+@[to_dual existing ext]
 theorem ext' {A B : DedekindCut α} (h : A.right = B.right) : A = B := Concept.ext' h
+
+theorem left_subset_left_iff {A B : DedekindCut α} : A.left ⊆ B.left ↔ A ≤ B :=
+  extent_subset_extent_iff
+theorem left_ssubset_left_iff {A B : DedekindCut α} : A.left ⊂ B.left ↔ A < B :=
+  extent_ssubset_extent_iff
+
+@[to_dual existing]
+theorem right_subset_right_iff {A B : DedekindCut α} : A.right ⊆ B.right ↔ B ≤ A :=
+  intent_subset_intent_iff
+@[to_dual existing]
+theorem right_ssubset_right_iff {A B : DedekindCut α} : A.right ⊂ B.right ↔ B < A :=
+  intent_ssubset_intent_iff
+
+theorem isLowerSet_left (A : DedekindCut α) : IsLowerSet A.left := by
+  simp
+
+@[to_dual existing]
+theorem isUpperSet_right (A : DedekindCut α) : IsUpperSet A.right := by
+  simp
 
 @[simp]
 theorem upperBounds_left (A : DedekindCut α) : upperBounds A.left = A.right :=
   A.upperPolar_extent
 
-@[simp]
+@[simp, to_dual existing]
 theorem lowerBounds_right (A : DedekindCut α) : lowerBounds A.right = A.left :=
   A.lowerPolar_intent
 
@@ -81,6 +106,7 @@ theorem image_left_subset_lowerBounds {f : α → β} (hf : Monotone f)
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
   exact hf <| rel_extent_intent hx hy
 
+@[to_dual existing]
 theorem image_right_subset_upperBounds {f : α → β} (hf : Monotone f)
     (A : DedekindCut α) : f '' A.right ⊆ upperBounds (f '' A.left) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
@@ -93,31 +119,27 @@ def principal (a : α) : DedekindCut α :=
     (by ext; simpa [mem_lowerPolar_iff] using! forall_ge_iff_le.symm)
     (by ext; simp)
 
-@[simp] theorem left_principal (a : α) : (principal a).left = Iic a := rfl
-@[simp] theorem right_principal (a : α) : (principal a).right = Ici a := rfl
+@[to_dual (attr := simp)]
+theorem left_principal (a : α) : (principal a).left = Iic a := rfl
 
 @[simp] theorem ofObject_eq_principal (a : α) : ofObject (· ≤ ·) a = principal a :=
   (copy_eq ..).symm
 @[simp] theorem ofAttribute_eq_principal (a : α) : ofAttribute (· ≤ ·) a = principal a := by
   ext; simp
 
-@[simp]
+@[simp, gcongr, to_dual self]
 theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a ≤ b := by
   simpa using ofObject_le_ofAttribute_iff (r := (· ≤ ·)) (a := a)
 
-@[simp]
+@[simp, gcongr, to_dual self]
 theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
   simp [lt_iff_le_not_ge]
 
+@[to_dual le_principal_iff]
 lemma principal_le_iff {a : α} {c : DedekindCut α} :
     principal a ≤ c ↔ a ∈ c.left := by
-  simp only [← extent_subset_extent_iff, left_principal]
-  exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ mem_extent_of_rel_extent hy h⟩
-
-lemma le_principal_iff {a : α} {c : DedekindCut α} :
-    c ≤ principal a ↔ a ∈ c.right := by
-  simp only [← intent_subset_intent_iff, right_principal]
-  exact ⟨fun h ↦ h self_mem_Ici, fun h _y hy ↦ mem_intent_of_intent_rel hy h⟩
+  simp only [← left_subset_left_iff, left_principal]
+  exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ c.isLowerSet_left hy h⟩
 
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
@@ -146,16 +168,11 @@ end PartialOrder
 section CompleteLattice
 variable [CompleteLattice α] [PartialOrder β]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem principal_sSup_left (A : DedekindCut α) : principal (sSup A.left) = A := by
   apply ext'
   ext
   rw [right_principal, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
-
-@[simp]
-theorem principal_sInf_right (A : DedekindCut α) : principal (sInf A.right) = A := by
-  ext
-  rw [left_principal, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
 
 /-- Any order embedding `β ↪o α` into a complete lattice `α` factors through `DedekindCut β`.
 
