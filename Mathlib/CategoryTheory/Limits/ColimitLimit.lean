@@ -151,7 +151,7 @@ this is the cone of `F` with point `F.flip ⋙ lim`. -/
 noncomputable def lim.cone : Cone F where
   pt := F.flip ⋙ lim
   π.app j := { app k := limit.π (F.flip.obj k) j }
-  π.naturality _ _ f := by ext k; simpa using (limit.w (F.flip.obj k) f).symm
+  π.naturality _ _ f := by ext k; simp [dsimp% limit.w (F.flip.obj k) f]
 
 /-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming that `C` as limits of shape `J`,
 the limit of `F` is `F.flip ⋙ lim`. -/
