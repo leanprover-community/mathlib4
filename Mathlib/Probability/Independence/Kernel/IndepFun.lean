@@ -10,6 +10,8 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 public import Mathlib.Probability.ConditionalProbability
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
+import Mathlib.MeasureTheory.Constructions.Cylinders
+
 /-!
 # Independence of random variables with respect to a kernel and a measure
 
@@ -326,9 +328,9 @@ variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω 
 
 
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
-two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
+two disjoint index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
-theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
+theorem iIndepFun.indepFun_set (S T : Set ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
     IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
   rcases eq_or_ne μ 0 with rfl | hμ
@@ -337,81 +339,103 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     exists_ae_eq_isMarkovKernel hf_Indep.ae_isProbabilityMeasure hμ
   apply IndepFun.congr (Filter.EventuallyEq.symm η_eq)
   -- We introduce π-systems, built from the π-system of boxes which generates `MeasurableSpace.pi`.
-  let πSβ := Set.pi (Set.univ : Set S) ''
-    Set.pi (Set.univ : Set S) fun i => { s : Set (β i) | MeasurableSet[m i] s }
+  let πSβ := squareCylinders (fun i : S ↦ {s : Set (β i) | MeasurableSet s})
   let πS := { s : Set Ω | ∃ t ∈ πSβ, (fun a (i : S) => f i a) ⁻¹' t = s }
-  have hπS_pi : IsPiSystem πS := by exact IsPiSystem.comap (@isPiSystem_pi _ _ ?_) _
+  have hπS_pi : IsPiSystem πS := (isPiSystem_squareCylinders (fun _ ↦ isPiSystem_measurableSet)
+    (by simp)).comap _
   have hπS_gen : (MeasurableSpace.pi.comap fun a (i : S) => f i a) = generateFrom πS := by
-    rw [generateFrom_pi.symm, comap_generateFrom]
+    rw [generateFrom_squareCylinders.symm, comap_generateFrom]
     congr
-  let πTβ := Set.pi (Set.univ : Set T) ''
-      Set.pi (Set.univ : Set T) fun i => { s : Set (β i) | MeasurableSet[m i] s }
+  let πTβ := squareCylinders (fun i : T ↦ {s : Set (β i) | MeasurableSet s})
   let πT := { s : Set Ω | ∃ t ∈ πTβ, (fun a (i : T) => f i a) ⁻¹' t = s }
-  have hπT_pi : IsPiSystem πT := by exact IsPiSystem.comap (@isPiSystem_pi _ _ ?_) _
+  have hπT_pi : IsPiSystem πT := (isPiSystem_squareCylinders (fun _ ↦ isPiSystem_measurableSet)
+    (by simp)).comap _
   have hπT_gen : (MeasurableSpace.pi.comap fun a (i : T) => f i a) = generateFrom πT := by
-    rw [generateFrom_pi.symm, comap_generateFrom]
+    rw [generateFrom_squareCylinders.symm, comap_generateFrom]
     congr
   -- To prove independence, we prove independence of the generating π-systems.
   refine IndepSets.indep (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i))
     (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
     ?_
-  rintro _ _ ⟨s, ⟨sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨sets_t, ht1, ht2⟩, rfl⟩
-  simp only [Set.mem_univ_pi, Set.mem_ofPred_eq] at hs1 ht1
-  rw [← hs2, ← ht2]
+  rintro _ _ ⟨s, ⟨s', sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨t', sets_t, ht1, ht2⟩, rfl⟩
+  simp only [mem_pi, mem_univ, mem_ofPred_eq, forall_const, Subtype.forall] at hs1 ht1
+  rw [hs2, ht2]
   classical
   let sets_s' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ S) (fun hi => sets_s ⟨i, hi⟩) fun _ => Set.univ
   have h_sets_s'_eq : ∀ {i} (hi : i ∈ S), sets_s' i = sets_s ⟨i, hi⟩ := by
     intro i hi; simp_rw [sets_s', dite_eq_left hi]
   have h_sets_s'_univ : ∀ {i} (_hi : i ∈ T), sets_s' i = Set.univ := by
-    intro i hi; simp_rw [sets_s', dite_eq_right (Finset.disjoint_right.mp hST hi)]
+    intro i hi; simp_rw [sets_s', dite_eq_right (Set.disjoint_right.mp hST hi)]
   let sets_t' : ∀ i : ι, Set (β i) := fun i =>
     dite (i ∈ T) (fun hi => sets_t ⟨i, hi⟩) fun _ => Set.univ
   have h_sets_t'_univ : ∀ {i} (_hi : i ∈ S), sets_t' i = Set.univ := by
-    intro i hi; simp_rw [sets_t', dite_eq_right (Finset.disjoint_left.mp hST hi)]
+    intro i hi; simp_rw [sets_t', dite_eq_right (Set.disjoint_left.mp hST hi)]
   have h_meas_s' : ∀ i ∈ S, MeasurableSet (sets_s' i) := by
-    intro i hi; rw [h_sets_s'_eq hi]; exact hs1 _
+    intro i hi; rw [h_sets_s'_eq hi]; exact hs1 _ _
   have h_meas_t' : ∀ i ∈ T, MeasurableSet (sets_t' i) := by
-    intro i hi; simp_rw [sets_t', dite_eq_left hi]; exact ht1 _
+    intro i hi; simp_rw [sets_t', dite_eq_left hi]; exact ht1 _ _
   have h_eq_inter_S : (fun (ω : Ω) (i : ↥S) =>
-    f (↑i) ω) ⁻¹' Set.pi Set.univ sets_s = ⋂ i ∈ S, f i ⁻¹' sets_s' i := by
+    f (↑i) ω) ⁻¹' Set.pi s' sets_s = ⋂ i ∈ s', f i ⁻¹' sets_s' i := by
     ext1 x
-    simp_rw [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
+    simp_rw [Set.mem_preimage, Set.mem_pi, Set.mem_iInter]
     grind
-  have h_eq_inter_T : (fun (ω : Ω) (i : ↥T) => f (↑i) ω) ⁻¹' Set.pi Set.univ sets_t
-    = ⋂ i ∈ T, f i ⁻¹' sets_t' i := by
+  have h_eq_inter_T : (fun (ω : Ω) (i : ↥T) => f (↑i) ω) ⁻¹' Set.pi t' sets_t
+    = ⋂ i ∈ t', f i ⁻¹' sets_t' i := by
     ext1 x
-    simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
-    constructor <;> intro h
-    · intro i hi; simp_rw [sets_t', dite_eq_left hi]; exact h ⟨i, hi⟩
-    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dite_eq_left hi] at h; exact h
+    simp_rw [Set.mem_preimage, Set.mem_pi, Set.mem_iInter]
+    grind
   replace hf_Indep := hf_Indep.congr η_eq
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :
-    ((⋂ i ∈ S, f i ⁻¹' sets_s' i) ∩ ⋂ i ∈ T, f i ⁻¹' sets_t' i) =
-      ⋂ i ∈ S ∪ T, f i ⁻¹' (sets_s' i ∩ sets_t' i) := by
+    ((⋂ i ∈ s', f i ⁻¹' sets_s' i) ∩ ⋂ i ∈ t', f i ⁻¹' sets_t' i) =
+      ⋂ i ∈ ((s'.image (↑)) ∪ (t'.image (↑))), f i ⁻¹' (sets_s' i ∩ sets_t' i) := by
     ext1 x
-    simp_rw [Set.mem_inter_iff, Set.mem_iInter, Set.mem_preimage, Finset.mem_union]
-    constructor <;> intro h
-    · grind
-    · exact ⟨fun i hi => (h i (Or.inl hi)).1, fun i hi => (h i (Or.inr hi)).2⟩
+    simp only [iInter_coe_set, mem_inter_iff, mem_iInter, mem_preimage, Finset.mem_union,
+      Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right, preimage_inter]
+    grind
   have h_meas_inter : ∀ i ∈ S ∪ T, MeasurableSet (sets_s' i ∩ sets_t' i) := by
     intro i hi_mem
-    rw [Finset.mem_union] at hi_mem
+    rw [Set.mem_union] at hi_mem
     rcases hi_mem with hi_mem | hi_mem
     · rw [h_sets_t'_univ hi_mem, Set.inter_univ]
       exact h_meas_s' i hi_mem
     · rw [h_sets_s'_univ hi_mem, Set.univ_inter]
       exact h_meas_t' i hi_mem
-  filter_upwards [hf_Indep S h_meas_s', hf_Indep T h_meas_t', hf_Indep (S ∪ T) h_meas_inter]
+  filter_upwards [hf_Indep (s'.image (↑)) (fun i hi ↦ h_meas_s' i (by grind)),
+    hf_Indep (t'.image (↑)) (fun i hi ↦ h_meas_t' i (by grind)),
+    hf_Indep ((s'.image (↑)) ∪ (t'.image (↑))) (fun i hi ↦ h_meas_inter i (by grind))]
     with a h_indepS h_indepT h_indepST
+  rw [Finset.set_biInter_finset_image, Finset.prod_image (by simp)] at h_indepS
+  rw [Finset.set_biInter_finset_image, Finset.prod_image (by simp)] at h_indepT
   rw [h_eq_inter_S, h_eq_inter_T, h_indepS, h_indepT, h_Inter_inter, h_indepST,
-    Finset.prod_union hST]
-  congr 1
-  · refine Finset.prod_congr rfl fun i hi => ?_
-    rw [h_sets_t'_univ hi, Set.inter_univ]
-  · refine Finset.prod_congr rfl fun i hi => ?_
-    rw [h_sets_s'_univ hi, Set.univ_inter]
+    Finset.prod_union, Finset.prod_image (by simp), Finset.prod_image (by simp)]
+  · congr 1
+    · refine Finset.prod_congr rfl fun i hi => ?_
+      rw [h_sets_t'_univ i.2, Set.inter_univ]
+    · refine Finset.prod_congr rfl fun i hi => ?_
+      rw [h_sets_s'_univ i.2, Set.univ_inter]
+  · rw [Finset.disjoint_iff_inter_eq_empty]
+    grind
+
+
+/-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
+two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
+tuple `(f i)_i` for `i ∈ T`. -/
+theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
+    (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
+    IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
+  classical
+  have : Disjoint (S : Set ι) T := by
+    rw [Finset.disjoint_iff_inter_eq_empty] at hST
+    rw [Set.disjoint_iff]
+    intro x hx
+    simp_all
+    have : x ∈ S ∩ T := by grind
+    grind
+  have := hf_Indep.indepFun_set S T this hf_meas
+  intro s t hs ht
+  filter_upwards [this s t hs ht] with ω hω using hω
 
 theorem iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) :
