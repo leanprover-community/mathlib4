@@ -5,8 +5,12 @@ on:
   workflow_call:
     inputs:
       concurrency_group:
+        # Purely informational: echoed by the `job info` step so a run's log records
+        # which concurrency group governs it. Callers that supersede runs themselves
+        # rather than via a `concurrency` block (`build_fork.yml`) leave it unset.
         type: string
-        required: true
+        required: false
+        default: ''
       tools_branch_ref:
         type: string
         required: false
