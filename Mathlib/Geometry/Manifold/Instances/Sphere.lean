@@ -518,7 +518,7 @@ theorem range_mvfderiv_subtypeVal {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
     rw [Submodule.neg_mem_iff]
     exact Submodule.mem_span_singleton_self (v : E)
 
-@[deprecated range_mvfderiv_subtypeVal (since := "2026-08-02")]
+@[deprecated range_mvfderiv_subtypeVal +typeChanged (since := "2026-08-02")]
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E).range =
       (ℝ ∙ (v : E))ᗮ := by
@@ -549,7 +549,7 @@ theorem injective_mvfderiv_subtypeVal_sphere {n : ℕ} [Fact (finrank ℝ E = n 
   set_option backward.isDefEq.respectTransparency false in
   simpa [-Subtype.val_injective] using Subtype.val_injective
 
-@[deprecated injective_mvfderiv_subtypeVal_sphere (since := "2026-08-02")]
+@[deprecated injective_mvfderiv_subtypeVal_sphere +typeChanged (since := "2026-08-02")]
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
   convert! injective_mvfderiv_subtypeVal_sphere v
