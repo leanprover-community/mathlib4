@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
@@ -132,6 +133,7 @@ instance : Qh.IsLocalization (HomotopyCategory.Plus.quasiIso C) := by
 
 /-- The single functors `C ⥤ DerivedCategory.Plus C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
+@[implicit_reducible]
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
   SingleFunctors.lift (DerivedCategory.singleFunctors C) Plus.ι
       (fun n => t.plus.lift (DerivedCategory.singleFunctor C n)
@@ -148,14 +150,19 @@ noncomputable def singleFunctorιIso (n : ℤ) :
     singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n :=
   Iso.refl _
 
-instance (n : ℤ) : (singleFunctor C n).Additive := by
-  dsimp [singleFunctor, singleFunctors]
-  infer_instance
+instance (n : ℤ) : (singleFunctor C n).Additive :=
+  have : (singleFunctor C n ⋙ Plus.ι).Additive :=
+    Functor.additive_of_iso (singleFunctorιIso C n).symm
+  Functor.additive_of_comp_faithful _ Plus.ι
 
 /-- The homology functor `DerivedCategory.Plus C ⥤ C` in degree `n : ℤ`. -/
 noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
   Plus.ι ⋙ DerivedCategory.homologyFunctor C n
 deriving Functor.IsHomological
+
+noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
+    singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 _ :=
+  DerivedCategory.singleFunctorCompHomologyFunctorIso ..
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _
@@ -238,6 +245,10 @@ noncomputable def QCompιIso :
     DerivedCategory.Plus.Q ⋙ Plus.ι ≅ CochainComplex.Plus.ι C ⋙ DerivedCategory.Q :=
   ObjectProperty.liftCompιIso ..
 
+instance : (Q (C := C)).Additive :=
+  have := Functor.additive_of_iso (QCompιIso C).symm
+  Functor.additive_of_comp_faithful _ Plus.ι
+
 instance : NatTrans.CommShift (QCompιIso C).hom ℤ :=
   ObjectProperty.commShift_liftCompιIso_hom ..
 
@@ -276,6 +287,14 @@ example : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
 
 instance : Q.IsLocalization (CochainComplex.Plus.quasiIso C) :=
   Functor.IsLocalization.of_iso _ (quotientCompQhIso C)
+
+lemma singleFunctor_obj (X : C) (n : ℤ) :
+    (singleFunctor C n).obj X =
+      DerivedCategory.Plus.Q.obj ((CochainComplex.Plus.singleFunctor C n).obj X) := rfl
+
+lemma singleFunctor_map {X Y : C} (f : X ⟶ Y) (n : ℤ) :
+    (singleFunctor C n).map f =
+      DerivedCategory.Plus.Q.map ((CochainComplex.Plus.singleFunctor C n).map f) := rfl
 
 end Plus
 

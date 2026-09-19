@@ -297,6 +297,23 @@ lemma isTriangulated_of_precomp_iso {H : C ⥤ E} (e : F ⋙ G ≅ H) [H.CommShi
 
 end Functor
 
+namespace NatTrans
+
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
+  [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
+  {F₁ F₂ : C ⥤ D} [F₁.CommShift ℤ] [F₂.CommShift ℤ] (τ : F₁ ⟶ F₂)
+  [τ.CommShift ℤ]
+
+@[simps, implicit_reducible]
+def mapTriangle : F₁.mapTriangle ⟶ F₂.mapTriangle where
+  app X :=
+    { hom₁ := τ.app _
+      hom₂ := τ.app _
+      hom₃ := τ.app _
+      comm₃ := by simp [NatTrans.shift_app] }
+
+end NatTrans
+
 variable {C D : Type*} [Category* C] [Category* D] [HasShift C ℤ] [HasShift D ℤ]
   [HasZeroObject C] [HasZeroObject D] [Preadditive C] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
