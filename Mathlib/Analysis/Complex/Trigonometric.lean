@@ -59,7 +59,7 @@ def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
 /-- The complex hyperbolic cotangent function, defined as `cosh z / sinh z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E7 "defined as the reciprocal of tanh"]
 def coth (z : ℂ) : ℂ :=
   cosh z / sinh z
 
