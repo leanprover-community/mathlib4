@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux, Scott Morrison, Oliver Nash
+Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
+public import Mathlib.Tactic.Abel
 
 /-! # The `noncomm_ring` tactic
 
@@ -16,39 +18,59 @@ maximum recursion depth.
 
 `noncomm_ring` is just a `simp only [some lemmas]` followed by `abel`. It automatically uses `abel1`
 to close the goal, and if that doesn't succeed, defaults to `abel_nf`.
- -/
+-/
+
+public meta section
 
 namespace Mathlib.Tactic.NoncommRing
 
 section nat_lit_mul
 variable {R : Type*} [NonAssocSemiring R] (r : R) (n : ℕ)
 
-lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : no_index (OfNat.ofNat n) * r = n • r := by
-  simp only [nsmul_eq_mul, Nat.cast_eq_ofNat]
-lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * no_index (OfNat.ofNat n) = n • r := by
-  simp only [nsmul_eq_mul', Nat.cast_eq_ofNat]
+lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : ofNat(n) * r = OfNat.ofNat n • r := by
+  simp only [nsmul_eq_mul, Nat.cast_ofNat]
+lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * ofNat(n) = OfNat.ofNat n • r := by
+  simp only [nsmul_eq_mul', Nat.cast_ofNat]
 
 end nat_lit_mul
 
 open Lean.Parser.Tactic
-/-- A tactic for simplifying identities in not-necessarily-commutative rings.
+/-- `noncomm_ring` simplifies expressions in not-necessarily-commutative rings in the main goal
+then tries closing it by "cheap" (reducible) `rfl`.
+This tactic supports the operators `+`, `*`, `-`, `^` and `•` (for scalar multiplication by
+natural numbers or integers).
 
-An example:
+If the ring is commutative, prefer the `ring` tactic instead, which is more powerful and efficient.
+The tactic is implemented as a combination of `simp only [...]` and `abel`. The precise invocation
+of `simp only` can be customized using the options listed below.
+
+Limitation: numeric powers are unfolded entirely with `pow_succ` and can easily exceed the
+maximum recursion depth.
+
+* `noncomm_ring [h]` adds the term `h` as simplification lemma, rewriting from left to right.
+  Multiple arguments can be combined as `noncomm_ring [h₁, ..., hₙ]`.
+* `noncomm_ring [← h]` adds the term `h` as simplification lemma, rewriting from right to left.
+* `noncomm_ring [*]` simplifies using all hypotheses in the local context.
+* `noncomm_ring (config := cfg)` uses `cfg` as configuration for the simplification step.
+  See `Lean.Meta.Simp.Config` for more details.
+* `noncomm_ring (discharger := tac)` uses the tactic sequence `tac` to discharge assumptions
+  to the simplification lemmas. This only applies to user-supplied lemmas, since the default lemmas
+  used by `noncomm_ring` do not require a discharger.
+
+Example:
 ```lean
 example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2 * a * c := by
   noncomm_ring
 ```
-
-You can use `noncomm_ring [h]` to also simplify using `h`.
 -/
-syntax (name := noncomm_ring) "noncomm_ring"  (config)? (discharger)?
+syntax (name := noncomm_ring) "noncomm_ring" optConfig (discharger)?
   (" [" ((simpStar <|> simpErase <|> simpLemma),*,?) "]")? : tactic
 
 macro_rules
-  | `(tactic| noncomm_ring $[$cfg]? $[$disch]? $[[$rules,*]]?) => do
+  | `(tactic| noncomm_ring $cfg:optConfig $[$disch]? $[[$rules,*]]?) => do
     let rules' := rules.getD ⟨#[]⟩
     let tac ← `(tactic|
-      (first | simp $cfg ? $disch ? only [
+      (first | simp $cfg:optConfig $(disch)? only [
           -- Expand everything out.
           add_mul, mul_add, sub_eq_add_neg,
           -- Right associate all products.
@@ -71,3 +93,10 @@ macro_rules
     if rules.isSome then `(tactic| repeat1 ($tac;)) else `(tactic| $tac)
 
 end Mathlib.Tactic.NoncommRing
+
+/-!
+We register `noncomm_ring` with the `hint` tactic.
+-/
+
+register_hint 1000 noncomm_ring
+register_try?_tactic (priority := 1000) noncomm_ring

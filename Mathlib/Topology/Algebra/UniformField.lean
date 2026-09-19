@@ -3,9 +3,10 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Field.Subfield
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Completion of topological fields
@@ -28,8 +29,10 @@ which implies one is sent to zero and the completion ring is trivial.
 
 The main definition is `CompletableTopField` which packages the assumptions as a Prop-valued
 type class and the main results are the instances `UniformSpace.Completion.Field` and
-`UniformSpace.Completion.TopologicalDivisionRing`.
+`UniformSpace.Completion.IsTopologicalDivisionRing`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -47,7 +50,7 @@ which does not have a cluster point at 0 is a Cauchy filter
 (with respect to the additive uniform structure). This ensures the completion is
 a field.
 -/
-class CompletableTopField extends T0Space K : Prop where
+class CompletableTopField : Prop extends T0Space K where
   nice : ∀ F : Filter K, Cauchy F → 𝓝 0 ⊓ F = ⊥ → Cauchy (map (fun x => x⁻¹) F)
 
 namespace UniformSpace
@@ -55,49 +58,51 @@ namespace UniformSpace
 namespace Completion
 
 instance (priority := 100) [T0Space K] : Nontrivial (hat K) :=
-  ⟨⟨0, 1, fun h => zero_ne_one <| (uniformEmbedding_coe K).inj h⟩⟩
+  (isUniformEmbedding_coe K).injective.nontrivial
 
 variable {K}
 
 /-- extension of inversion to the completion of a field. -/
 def hatInv : hat K → hat K :=
-  denseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
+  isDenseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 
+@[fun_prop]
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     ContinuousAt hatInv x := by
-  refine denseInducing_coe.continuousAt_extend ?_
+  refine isDenseInducing_coe.continuousAt_extend ?_
   apply mem_of_superset (compl_singleton_mem_nhds h)
   intro y y_ne
   rw [mem_compl_singleton_iff] at y_ne
   apply CompleteSpace.complete
   have : (fun (x : K) => (↑x⁻¹ : hat K)) =
-      ((fun (y : K) => (↑y : hat K))∘(fun (x : K) => (x⁻¹ : K))) := by
-    unfold Function.comp
-    simp
+      ((fun (y : K) => (↑y : hat K)) ∘ (fun (x : K) => (x⁻¹ : K))) := by
+    simp [Function.comp_def]
   rw [this, ← Filter.map_map]
   apply Cauchy.map _ (Completion.uniformContinuous_coe K)
   apply CompletableTopField.nice
-  · haveI := denseInducing_coe.comap_nhds_neBot y
+  · have := isDenseInducing_coe.comap_nhds_neBot y
     apply cauchy_nhds.comap
     rw [Completion.comap_coe_eq_uniformity]
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
       by_contra h
       exact y_ne (eq_of_nhds_neBot <| neBot_iff.mpr h).symm
-    erw [denseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf, eq_bot]
+    rw [isDenseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf]
+    norm_cast
+    rw [eq_bot]
     exact comap_bot
 
-open Classical in
-/-
+open scoped Classical in
+/--
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
 instance instInvCompletion : Inv (hat K) :=
   ⟨fun x => if x = 0 then 0 else hatInv x⟩
 
-variable [TopologicalDivisionRing K]
+variable [IsTopologicalDivisionRing K]
 
 theorem hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = ↑(x⁻¹ : K) :=
-  denseInducing_coe.extend_eq_at ((continuous_coe K).continuousAt.comp (continuousAt_inv₀ h))
+  isDenseInducing_coe.extend_eq_at ((continuous_coe K).continuousAt.comp (continuousAt_inv₀ h))
 
 variable [CompletableTopField K]
 
@@ -109,31 +114,27 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
     norm_cast
     simp
   · conv_lhs => dsimp [Inv.inv]
-    rw [if_neg]
+    rw [ite_eq_right]
     · exact hatInv_extends h
-    · exact fun H => h (denseEmbedding_coe.inj H)
+    · exact fun H => h (isDenseEmbedding_coe.injective H)
 
-variable [UniformAddGroup K]
+variable [IsUniformAddGroup K]
 
 theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
-  haveI : T1Space (hat K) := T2Space.t1Space
+  have : T1Space (hat K) := T2Space.t1Space
   let f := fun x : hat K => x * hatInv x
   let c := (fun (x : K) => (x : hat K))
   change f x = 1
-  have cont : ContinuousAt f x := by
-    letI : TopologicalSpace (hat K × hat K) := instTopologicalSpaceProd
-    have : ContinuousAt (fun y : hat K => ((y, hatInv y) : hat K × hat K)) x :=
-      continuous_id.continuousAt.prod (continuous_hatInv x_ne)
-    exact (_root_.continuous_mul.continuousAt.comp this : _)
+  have cont : ContinuousAt f x := by fun_prop
   have clo : x ∈ closure (c '' {0}ᶜ) := by
-    have := denseInducing_coe.dense x
+    have := isDenseInducing_coe.dense x
     rw [← image_univ, show (univ : Set K) = {0} ∪ {0}ᶜ from (union_compl_self _).symm,
       image_union] at this
     apply mem_closure_of_mem_closure_union this
     rw [image_singleton]
     exact compl_singleton_mem_nhds x_ne
-  have fxclo : f x ∈ closure (f '' (c '' {0}ᶜ)) := mem_closure_image cont clo
-  have : f '' (c '' {0}ᶜ) ⊆ {1} := by
+  have fxclo : f x ∈ closure (f '' c '' {0}ᶜ) := mem_closure_image cont clo
+  have : f '' c '' {0}ᶜ ⊆ {1} := by
     rw [image_image]
     rintro _ ⟨z, z_ne, rfl⟩
     rw [mem_singleton_iff]
@@ -145,16 +146,15 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
 instance instField : Field (hat K) where
-  exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
-  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
+  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, ite_eq_right x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun a x => rfl
+  qsmul_def := fun _ _ => rfl
 
-instance : TopologicalDivisionRing (hat K) :=
+instance : IsTopologicalDivisionRing (hat K) :=
   { Completion.topologicalRing with
     continuousAt_inv₀ := by
       intro x x_ne
@@ -163,7 +163,7 @@ instance : TopologicalDivisionRing (hat K) :=
           intro y y_ne
           rw [mem_compl_singleton_iff] at y_ne
           dsimp [Inv.inv]
-          rw [if_neg y_ne]
+          rw [ite_eq_right y_ne]
         mem_of_superset (compl_singleton_mem_nhds x_ne) this
       exact ContinuousAt.congr (continuous_hatInv x_ne) this }
 
@@ -176,16 +176,16 @@ variable (L : Type*) [Field L] [UniformSpace L] [CompletableTopField L]
 instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K where
   nice F F_cau inf_F := by
     let i : K →+* L := K.subtype
-    have hi : UniformInducing i := uniformEmbedding_subtype_val.toUniformInducing
+    have hi : IsUniformInducing i := isUniformEmbedding_subtype_val.isUniformInducing
     rw [← hi.cauchy_map_iff] at F_cau ⊢
     rw [map_comm (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i by ext; rfl)]
     apply CompletableTopField.nice _ F_cau
-    rw [← Filter.push_pull', ← map_zero i, ← hi.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
+    rw [← Filter.push_pull', ← map_zero i, ← hi.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]
 
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
-    [TopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
+    [IsTopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
   nice F cau_F hF := by
-    haveI : NeBot F := cau_F.1
+    have : NeBot F := cau_F.1
     rcases CompleteSpace.complete cau_F with ⟨x, hx⟩
     have hx' : x ≠ 0 := by
       rintro rfl
@@ -201,14 +201,14 @@ variable {α β : Type*} [Field β] [b : UniformSpace β] [CompletableTopField �
 
 /-- The pullback of a completable topological field along a uniform inducing
 ring homomorphism is a completable topological field. -/
-theorem UniformInducing.completableTopField
+theorem IsUniformInducing.completableTopField
     [UniformSpace α] [T0Space α]
-    {f : α →+* β} (hf : UniformInducing f) :
+    {f : α →+* β} (hf : IsUniformInducing f) :
     CompletableTopField α := by
   refine CompletableTopField.mk (fun F F_cau inf_F => ?_)
-  rw [← UniformInducing.cauchy_map_iff hf] at F_cau ⊢
+  rw [← IsUniformInducing.cauchy_map_iff hf] at F_cau ⊢
   have h_comm : (f ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ f := by
-    ext; simp only [Function.comp_apply, map_inv₀, Subfield.coe_inv]
+    ext; simp only [Function.comp_apply, map_inv₀]
   rw [Filter.map_comm h_comm]
   apply CompletableTopField.nice _ F_cau
-  rw [← Filter.push_pull', ← map_zero f, ← hf.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
+  rw [← Filter.push_pull', ← map_zero f, ← hf.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]

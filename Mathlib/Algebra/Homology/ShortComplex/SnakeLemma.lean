@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.Algebra.Homology.ShortComplex.Limits
-import Mathlib.CategoryTheory.Abelian.Refinements
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.Algebra.Homology.ShortComplex.Limits
+public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The snake lemma
@@ -45,11 +47,13 @@ the other half by arguing in the opposite category), and the use of "refinements
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
 namespace ShortComplex
 
@@ -72,8 +76,8 @@ structure SnakeInput where
   v₁₂ : L₁ ⟶ L₂
   /-- the morphism from the second row to the third row -/
   v₂₃ : L₂ ⟶ L₃
-  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by aesop_cat
-  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by aesop_cat
+  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by cat_disch
+  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by cat_disch
   /-- `L₀` is the kernel of `v₁₂ : L₁ ⟶ L₂`. -/
   h₀ : IsLimit (KernelFork.ofι _ w₀₂)
   /-- `L₃` is the cokernel of `v₁₂ : L₁ ⟶ L₂`. -/
@@ -94,6 +98,7 @@ attribute [instance] mono_L₂_f
 variable {C}
 variable (S : SnakeInput C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The snake input in the opposite category that is deduced from a snake input. -/
 @[simps]
 noncomputable def op : SnakeInput Cᵒᵖ where
@@ -223,11 +228,13 @@ noncomputable def P := pullback S.L₁.g S.v₀₁.τ₃
 /-- The canonical map `P ⟶ L₂.X₂`. -/
 noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst _ _ ≫ S.v₁₂.τ₂
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift_φ₂ {A : C} (a : A ⟶ S.L₁.X₂) (b : A ⟶ S.L₀.X₃) (h : a ≫ S.L₁.g = b ≫ S.v₀₁.τ₃) :
     pullback.lift a b h ≫ S.φ₂ = a ≫ S.v₁₂.τ₂ := by
   simp [φ₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `P ⟶ L₂.X₁`. -/
 noncomputable def φ₁ : S.P ⟶ S.L₂.X₁ :=
   S.L₂_exact.lift S.φ₂
@@ -235,6 +242,7 @@ noncomputable def φ₁ : S.P ⟶ S.L₂.X₁ :=
 
 @[reassoc (attr := simp)] lemma φ₁_L₂_f : S.φ₁ ≫ S.L₂.f = S.φ₂ := S.L₂_exact.lift_f _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The short complex that is part of an exact sequence `L₁.X₁ ⟶ P ⟶ L₀.X₃ ⟶ 0`. -/
 noncomputable def L₀' : ShortComplex C where
   X₁ := S.L₁.X₁
@@ -244,16 +252,20 @@ noncomputable def L₀' : ShortComplex C where
   g := pullback.snd _ _
   zero := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)] lemma L₁_f_φ₁ : S.L₀'.f ≫ S.φ₁ = S.v₁₂.τ₁ := by
   dsimp only [L₀']
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, φ₂, pullback.lift_fst_assoc,
     S.v₁₂.comm₁₂]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi S.L₀'.g := by dsimp only [L₀']; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Mono S.L₁.f] : Mono S.L₀'.f :=
   mono_of_mono_fac (show S.L₀'.f ≫ pullback.fst _ _ = S.L₁.f by simp [L₀'])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma L₀'_exact : S.L₀'.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A x₂ hx₂
@@ -262,10 +274,12 @@ lemma L₀'_exact : S.L₀'.Exact := by
     (by rw [assoc, pullback.condition, reassoc_of% hx₂, zero_comp])
   exact ⟨A', π, hπ, x₁, pullback.hom_ext (by simpa [L₀'] using fac) (by simp [L₀', hx₂])⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The connecting homomorphism `δ : L₀.X₃ ⟶ L₃.X₁`. -/
 noncomputable def δ : S.L₀.X₃ ⟶ S.L₃.X₁ :=
   S.L₀'_exact.desc (S.φ₁ ≫ S.v₂₃.τ₁) (by simp only [L₁_f_φ₁_assoc, w₁₃_τ₁])
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed below.
 @[reassoc (attr := simp)]
 lemma snd_δ : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.τ₁ :=
   S.L₀'_exact.g_desc _ _
@@ -273,6 +287,7 @@ lemma snd_δ : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.�
 /-- The pushout of `L₂.X₂` and `L₃.X₁` along `L₂.X₁`. -/
 noncomputable def P' := pushout S.L₂.f S.v₂₃.τ₁
 
+set_option backward.isDefEq.respectTransparency false in
 lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr _ _ : _ ⟶ S.P') =
     pullback.fst _ _ ≫ S.v₁₂.τ₂ ≫ pushout.inl _ _ := by
   simp only [snd_δ_assoc, ← pushout.condition, φ₂, φ₁_L₂_f_assoc, assoc]
@@ -281,21 +296,23 @@ lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr _ _ 
 @[simp]
 noncomputable def L₀X₂ToP : S.L₀.X₂ ⟶ S.P := pullback.lift S.v₀₁.τ₂ S.L₀.g S.v₀₁.comm₂₃
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma L₀X₂ToP_comp_pullback_snd : S.L₀X₂ToP ≫ pullback.snd _ _ = S.L₀.g := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
   simp only [← cancel_mono S.L₂.f, L₀X₂ToP, assoc, φ₂, φ₁_L₂_f,
     pullback.lift_fst_assoc, w₀₂_τ₂, zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
-  erw [← L₀X₂ToP_comp_pullback_snd, assoc, S.L₀'_exact.g_desc,
-    L₀X₂ToP_comp_φ₁_assoc, zero_comp]
+  rw [← L₀X₂ToP_comp_pullback_snd, assoc, S.snd_δ, L₀X₂ToP_comp_φ₁_assoc, zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_L₃_f : S.δ ≫ S.L₃.f = 0 := by
-  erw [← cancel_epi S.L₀'.g, S.L₀'_exact.g_desc_assoc, assoc, S.v₂₃.comm₁₂, S.φ₁_L₂_f_assoc,
-    φ₂, assoc, w₁₃_τ₂, comp_zero, comp_zero]
+  simp [← cancel_epi S.L₀'.g, δ, S.v₂₃.comm₁₂, φ₂]
 
 /-- The short complex `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 @[simps]
@@ -305,6 +322,8 @@ noncomputable def L₁' : ShortComplex C := ShortComplex.mk _ _ S.L₀_g_δ
 @[simps]
 noncomputable def L₂' : ShortComplex C := ShortComplex.mk _ _ S.δ_L₃_f
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Exactness of `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 lemma L₁'_exact : S.L₁'.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
@@ -333,6 +352,7 @@ noncomputable def PIsoUnopOpP' : S.P ≅ Opposite.unop S.op.P' := pullbackIsoUno
 /-- The duality isomorphism `S.P' ≅ Opposite.unop S.op.P`. -/
 noncomputable def P'IsoUnopOpP : S.P' ≅ Opposite.unop S.op.P := pushoutIsoUnopPullback _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
   rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr _ _ : _ ⟶ S.P'),
     ← cancel_epi (pullback.snd _ _ : S.P ⟶ _), S.snd_δ_inr,
@@ -341,11 +361,12 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
     pushoutIsoUnopPullback_inl_hom, pullbackIsoUnopPushout_inv_fst_assoc]
   apply Quiver.Hom.op_inj
-  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using S.op.snd_δ_inr)
+  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using! S.op.snd_δ_inr)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
-  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat)
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
     (by dsimp; simp only [id_comp, comp_id, S.op_δ])
 
 /-- Exactness of `L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂`. -/
@@ -367,6 +388,7 @@ lemma snake_lemma : S.composableArrows.Exact :=
     (exact_of_δ₀ S.L₂'_exact.exact_toComposableArrows
     S.L₃_exact.exact_toComposableArrows))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ : A ⟶ S.L₂.X₁)
     (h₂ : x₂ ≫ S.L₁.g = x₃ ≫ S.v₀₁.τ₃) (h₁ : x₁ ≫ S.L₂.f = x₂ ≫ S.v₁₂.τ₂) :
     x₃ ≫ S.δ = x₁ ≫ S.v₂₃.τ₁ := by
@@ -376,12 +398,26 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ 
   congr 1
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
 
+theorem mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
+  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
+
+theorem epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
+  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
+
+theorem isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
+  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
+
+/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
+noncomputable def δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
+    S.L₀.X₃ ≅ S.L₃.X₁ :=
+  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
+
 variable (S₁ S₂ S₃ : SnakeInput C)
 
 /-- A morphism of snake inputs involve four morphisms of short complexes
 which make the obvious diagram commute. -/
 @[ext]
-structure Hom :=
+structure Hom where
   /-- a morphism between the zeroth lines -/
   f₀ : S₁.L₀ ⟶ S₂.L₀
   /-- a morphism between the first lines -/
@@ -390,9 +426,9 @@ structure Hom :=
   f₂ : S₁.L₂ ⟶ S₂.L₂
   /-- a morphism between the third lines -/
   f₃ : S₁.L₃ ⟶ S₂.L₃
-  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by aesop_cat
-  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by aesop_cat
-  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by aesop_cat
+  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by cat_disch
+  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by cat_disch
+  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by cat_disch
 
 namespace Hom
 
@@ -468,6 +504,7 @@ def functorL₃ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₃
   map f := f.f₃
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends `S : SnakeInput C` to the auxiliary object `S.P`,
 which is `pullback S.L₁.g S.v₀₁.τ₃`. -/
 @[simps]
@@ -475,18 +512,22 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   obj S := S.P
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
       (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
-  map_id _ := by dsimp [P]; aesop_cat
-  map_comp _ _ := by dsimp [P]; aesop_cat
+  map_id _ := by dsimp [P]; simp
+  map_comp _ _ := by dsimp [P]; cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by
   dsimp [φ₂]
   simp only [assoc, pullback.lift_fst_assoc, ← comp_τ₂, f.comm₁₂]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma naturality_φ₁ (f : S₁ ⟶ S₂) : S₁.φ₁ ≫ f.f₂.τ₁ = functorP.map f ≫ S₂.φ₁ := by
   simp only [← cancel_mono S₂.L₂.f, assoc, φ₁_L₂_f, ← naturality_φ₂, f.f₂.comm₁₂, φ₁_L₂_f_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma naturality_δ (f : S₁ ⟶ S₂) : S₁.δ ≫ f.f₃.τ₁ = f.f₀.τ₃ ≫ S₂.δ := by
   rw [← cancel_epi (pullback.snd _ _ : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,

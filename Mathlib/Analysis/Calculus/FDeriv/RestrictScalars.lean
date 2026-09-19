@@ -3,23 +3,24 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 /-!
 # The derivative of the scalar restriction of a linear map
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 the scalar restriction of a linear map.
 -/
 
+public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
 
-open scoped Classical
-open Topology NNReal Filter Asymptotics ENNReal
+open Filter ContinuousLinearMap Set
 
 noncomputable section
 
@@ -42,24 +43,24 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace �
 variable [IsScalarTower 𝕜 𝕜' F]
 variable {f : E → F} {f' : E →L[𝕜'] F} {s : Set E} {x : E}
 
+theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' L) :
+    HasFDerivAtFilter f (f'.restrictScalars 𝕜) L :=
+  .of_isLittleO h.isLittleO
+
 @[fun_prop]
 theorem HasStrictFDerivAt.restrictScalars (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt f (f'.restrictScalars 𝕜) x :=
-  h
-
-theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' x L) :
-    HasFDerivAtFilter f (f'.restrictScalars 𝕜) x L :=
-  .of_isLittleO h.1
+  HasFDerivAtFilter.restrictScalars 𝕜 h
 
 @[fun_prop]
 theorem HasFDerivAt.restrictScalars (h : HasFDerivAt f f' x) :
     HasFDerivAt f (f'.restrictScalars 𝕜) x :=
-  .of_isLittleO h.1
+  HasFDerivAtFilter.restrictScalars 𝕜 h
 
 @[fun_prop]
 theorem HasFDerivWithinAt.restrictScalars (h : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt f (f'.restrictScalars 𝕜) s x :=
-  .of_isLittleO h.1
+  HasFDerivAtFilter.restrictScalars 𝕜 h
 
 @[fun_prop]
 theorem DifferentiableAt.restrictScalars (h : DifferentiableAt 𝕜' f x) : DifferentiableAt 𝕜 f x :=
@@ -82,17 +83,22 @@ theorem Differentiable.restrictScalars (h : Differentiable 𝕜' f) : Differenti
 theorem HasFDerivWithinAt.of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivWithinAt f g' s x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivWithinAt f f' s x := by
   rw [← H] at h
-  exact .of_isLittleO h.1
+  exact .of_isLittleO h.isLittleO
 
 @[fun_prop]
 theorem hasFDerivAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivAt f g' x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivAt f f' x := by
   rw [← H] at h
-  exact .of_isLittleO h.1
+  exact .of_isLittleO h.isLittleO
 
 theorem DifferentiableAt.fderiv_restrictScalars (h : DifferentiableAt 𝕜' f x) :
     fderiv 𝕜 f x = (fderiv 𝕜' f x).restrictScalars 𝕜 :=
   (h.hasFDerivAt.restrictScalars 𝕜).fderiv
+
+theorem DifferentiableWithinAt.restrictScalars_fderivWithin (hf : DifferentiableWithinAt 𝕜' f s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) :
+    (fderivWithin 𝕜' f s x).restrictScalars 𝕜 = fderivWithin 𝕜 f s x :=
+  ((hf.hasFDerivWithinAt.restrictScalars 𝕜).fderivWithin hs).symm
 
 theorem differentiableWithinAt_iff_restrictScalars (hf : DifferentiableWithinAt 𝕜 f s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) : DifferentiableWithinAt 𝕜' f s x ↔

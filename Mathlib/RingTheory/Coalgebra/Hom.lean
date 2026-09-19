@@ -3,7 +3,9 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Basic
+module
+
+public import Mathlib.RingTheory.Coalgebra.Basic
 
 /-!
 # Homomorphisms of `R`-coalgebras
@@ -15,13 +17,15 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 
 * `CoalgHom R A B`: the type of `R`-coalgebra morphisms from `A` to `B`.
 * `Coalgebra.counitCoalgHom R A : A →ₗc[R] R`: the counit of a coalgebra as a coalgebra
-homomorphism.
+  homomorphism.
 
-## Notations
+## Notation
 
 * `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
 -/
+
+@[expose] public section
 
 open TensorProduct Coalgebra
 
@@ -46,8 +50,8 @@ notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 from `A` to `B`. -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends SemilinearMapClass F (RingHom.id R) A B : Prop where
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends SemilinearMapClass F (RingHom.id R) A B where
   counit_comp : ∀ f : F, counit ∘ₗ (f : A →ₗ[R] B) = counit
   map_comp_comul : ∀ f : F, TensorProduct.map (f : A →ₗ[R] B)
     (f : A →ₗ[R] B) ∘ₗ comul = comul ∘ₗ (f : A →ₗ[R] B)
@@ -64,14 +68,15 @@ variable {R A B F : Type*} [CommSemiring R]
 /-- Turn an element of a type `F` satisfying `CoalgHomClass F R A B` into an actual
 `CoalgHom`. This is declared as the default coercion from `F` to `A →ₗc[R] B`. -/
 @[coe]
-def toCoalgHom (f : F) : A →ₗc[R] B :=
+def _root_.CoalgHom.ofClass (f : F) : A →ₗc[R] B :=
   { (f : A →ₗ[R] B) with
     toFun := f
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
-instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
-  ⟨CoalgHomClass.toCoalgHom⟩
+@[deprecated (since := "2026-09-09")] alias toCoalgHom := CoalgHom.ofClass
+
+instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) := ⟨.ofClass⟩
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
@@ -79,7 +84,7 @@ theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
 
 @[simp]
 theorem map_comp_comul_apply (f : F) (x : A) :
-    TensorProduct.map f f (comul x) = comul (R := R) (f x) :=
+    TensorProduct.map f f (σ₁₂ := .id _) (comul x) = comul (R := R) (f x) :=
   LinearMap.congr_fun (map_comp_comul f) _
 
 end CoalgHomClass
@@ -94,9 +99,10 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Modu
   [AddCommMonoid C] [Module R C] [AddCommMonoid D] [Module R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
+@[macro_inline]
 instance funLike : FunLike (A →ₗc[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     rcases g with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     congr
@@ -116,9 +122,11 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 initialize_simps_projections CoalgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₗc[R] B) = f :=
+protected theorem coe_ofClass {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (f : F) :
+    ⇑(ofClass f) = f :=
   rfl
+
+@[deprecated (since := "2026-09-09")] alias coe_coe := CoalgHom.coe_ofClass
 
 @[simp]
 theorem coe_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A →ₗc[R] B) : A → B) = f :=
@@ -133,29 +141,41 @@ theorem coe_linearMap_mk {f : A →ₗ[R] B} (h h₁) : ((⟨f, h, h₁⟩ : A �
   rfl
 
 @[simp]
-theorem toLinearMap_eq_coe (f : A →ₗc[R] B) : f.toLinearMap = f :=
+theorem toLinearMap_eq_ofClass (f : A →ₗc[R] B) : f.toLinearMap = f :=
   rfl
 
+@[deprecated (since := "2026-09-09")] alias toLinearMap_eq_coe := toLinearMap_eq_ofClass
+
 @[simp, norm_cast]
-theorem coe_toLinearMap (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
+theorem coe_linearMapOfClass (f : A →ₗc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
+
+@[deprecated (since := "2026-09-09")] alias coe_toLinearMap := coe_linearMapOfClass
 
 @[norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₗc[R] B) : ⇑(f : A →+ B) = f :=
   rfl
 
-theorem coe_fn_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
+theorem coe_injective : @Function.Injective (A →ₗc[R] B) (A → B) (↑) :=
   DFunLike.coe_injective
 
-theorem coe_fn_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
+theorem coe_inj {φ₁ φ₂ : A →ₗc[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
-  fun φ₁ φ₂ H => coe_fn_injective <|
+@[deprecated (since := "2026-09-09")] alias coe_fn_injective := coe_injective
+@[deprecated (since := "2026-09-09")] alias coe_fn_inj := coe_inj
+
+theorem linearMapOfClass_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →ₗ[R] B) :=
+  fun φ₁ φ₂ H => coe_injective <|
     show ((φ₁ : A →ₗ[R] B) : A → B) = ((φ₂ : A →ₗ[R] B) : A → B) from congr_arg _ H
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
-  LinearMap.toAddMonoidHom_injective.comp coe_linearMap_injective
+@[deprecated (since := "2026-09-09")] alias coe_linearMap_injective := linearMapOfClass_injective
+
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₗc[R] B) → A →+ B) :=
+  LinearMap.toAddMonoidHom_injective.comp linearMapOfClass_injective
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₗc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
   DFunLike.congr_fun H x
@@ -169,7 +189,7 @@ theorem ext {φ₁ φ₂ : A →ₗc[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ�
 
 @[ext high]
 theorem ext_of_ring {f g : R →ₗc[R] A} (h : f 1 = g 1) : f = g :=
-  coe_linearMap_injective (by ext; assumption)
+  linearMapOfClass_injective (by ext; assumption)
 
 @[simp]
 theorem mk_coe {f : A →ₗc[R] B} (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : A →ₗc[R] B) = f :=
@@ -200,7 +220,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
 
@@ -238,13 +258,13 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := CoalgHom.id R A
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul _ := ext fun _ => rfl
+  mul_one _ := ext fun _ => rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₗc[R] A) x = x :=
@@ -260,13 +280,13 @@ end CoalgHom
 
 namespace Coalgebra
 
-variable (R : Type u) (A : Type v) (B : Type w)
+variable (R : Type u) (A : Type v) (B : Type w) {ι : Type*}
 
 variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
 variable [Coalgebra R A] [Coalgebra R B]
 
 /-- The counit of a coalgebra as a `CoalgHom`. -/
-def counitCoalgHom : A →ₗc[R] R :=
+noncomputable def counitCoalgHom : A →ₗc[R] R :=
   { counit with
     counit_comp := by ext; simp
     map_comp_comul := by
@@ -288,8 +308,7 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
   ⟨fun f g => CoalgHom.ext fun x => by
     have hf := CoalgHomClass.counit_comp_apply f x
     have hg := CoalgHomClass.counit_comp_apply g x
-    simp_all only [CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp, CoalgHom.coe_toLinearMap,
-      Function.comp_apply, CommSemiring.counit_apply]⟩
+    simp_all only [CommSemiring.counit_apply]⟩
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
@@ -299,25 +318,13 @@ variable {A B}
 If `φ : A → B` is a coalgebra map and `a = ∑ xᵢ ⊗ yᵢ`, then `φ a = ∑ φ xᵢ ⊗ φ yᵢ`
 -/
 @[simps]
-def Repr.induced {a : A} (repr : Repr R a)
+def Repr.induced {a : A} (repr : Repr R a ι)
     {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
-    (φ : F) : Repr R (φ a) where
+    (φ : F) : Repr R (φ a) ι where
   index := repr.index
   left := φ ∘ repr.left
   right := φ ∘ repr.right
   eq := (congr($((CoalgHomClass.map_comp_comul φ).symm) a).trans <|
       by rw [LinearMap.comp_apply, ← repr.eq, map_sum]; rfl).symm
-
-@[simp]
-lemma sum_tmul_counit_apply_eq
-    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F) {a : A} (repr : Repr R a) :
-    ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ φ (repr.right i) = 1 ⊗ₜ[R] φ a := by
-  simp [← sum_counit_tmul_eq (repr.induced φ)]
-
-@[simp]
-lemma sum_tmul_apply_counit_eq
-    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F) {a : A} (repr : Repr R a) :
-    ∑ i ∈ repr.index, φ (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = φ a ⊗ₜ[R] 1 := by
-  simp [← sum_tmul_counit_eq (repr.induced φ)]
 
 end Coalgebra

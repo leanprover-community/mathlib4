@@ -1,16 +1,20 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Control.EquivFunctor
+module
+
+public import Mathlib.Control.EquivFunctor
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # `EquivFunctor` instances
 
 We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under these functions.
 -/
+
+public section
 
 
 open Equiv
@@ -30,14 +34,9 @@ instance EquivFunctorPerm : EquivFunctor Perm where
 instance EquivFunctorFinset : EquivFunctor Finset where
   map e s := s.map e.toEmbedding
   map_refl' α := by ext; simp
-  map_trans' k h := by
-    ext _ a; simp; constructor <;> intro h'
-    · let ⟨a, ha₁, ha₂⟩ := h'
-      rw [← ha₂]; simp; apply ha₁
-    · exists (Equiv.symm k) ((Equiv.symm h) a)
-      simp [h']
+  map_trans' k h := by ext; simp [-trans_toEmbedding]
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
-  map e s := Fintype.ofBijective e e.bijective
+  map e _ := Fintype.ofBijective e e.bijective
   map_refl' α := by ext; simp [eq_iff_true_of_subsingleton]
   map_trans' := by simp [eq_iff_true_of_subsingleton]

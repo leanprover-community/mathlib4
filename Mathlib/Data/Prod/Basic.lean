@@ -3,38 +3,39 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Inhabit
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Inhabit
+public import Batteries.Tactic.Trans
+
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!
 # Extra facts about `Prod`
 
-This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
+This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+@[expose] public section
 
-@[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
 
+lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by grind
+
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
-    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
+  intros h P w
+  cases h
+  exact w rfl rfl
 
 @[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
   | (_, _) => rfl
-
-@[simp]
-theorem «forall» {p : α × β → Prop} : (∀ x, p x) ↔ ∀ a b, p (a, b) :=
-  ⟨fun h a b ↦ h (a, b), fun h ⟨a, b⟩ ↦ h a b⟩
-
-@[simp]
-theorem «exists» {p : α × β → Prop} : (∃ x, p x) ↔ ∃ a b, p (a, b) :=
-  ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
 
 theorem forall' {p : α → β → Prop} : (∀ x : α × β, p x.1 x.2) ↔ ∀ a b, p a b :=
   Prod.forall
@@ -50,57 +51,33 @@ theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :
 theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
   rfl
 
-@[simp, mfld_simps]
-theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
-  rfl
+attribute [mfld_simps] map_apply
 
 -- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
 --  See `map_apply`, `map_fst`, and `map_snd` for slightly weaker lemmas in the `simp` set.
 theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
   rfl
 
-#adaptation_note
-/--
-After `nightly-2024-06-23`, the explicitness of `map_fst` and `map_snd` will be fixed and we can
-change this back to `funext <| map_fst f g`. Also in `map_snd'` below.
--/
 theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ Prod.fst :=
-  funext <| @map_fst (f := f) (g := g)
+  funext <| map_fst f g
 
 theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
-  funext <| @map_snd (f := f) (g := g)
+  funext <| map_snd f g
 
-/-- Composing a `Prod.map` with another `Prod.map` is equal to
-a single `Prod.map` of composed functions.
--/
-theorem map_comp_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) :
-    Prod.map g g' ∘ Prod.map f f' = Prod.map (g ∘ f) (g' ∘ f') :=
-  rfl
+theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ := by simp
 
-/-- Composing a `Prod.map` with another `Prod.map` is equal to
-a single `Prod.map` of composed functions, fully applied.
--/
-theorem map_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) (x : α × γ) :
-    Prod.map g g' (Prod.map f f' x) = Prod.map (g ∘ f) (g' ∘ f') x :=
-  rfl
-
--- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
--- @[simp]
-theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-  Iff.of_eq (mk.injEq _ _ _ _)
-
-theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
+theorem mk_right_injective {α β : Type*} (a : α) : (mk a : β → α × β).Injective := by
   intro b₁ b₂ h
-  simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
+  simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
 
-theorem mk.inj_right {α β : Type*} (b : β) :
-    Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
+theorem mk_left_injective {α β : Type*} (b : β) : (fun a ↦ mk a b : α → α × β).Injective := by
   intro b₁ b₂ h
-  simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
+  simpa only [and_true, eq_self_iff_true, mk_inj] using h
 
-lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+lemma mk_right_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ :=
+    (mk_right_injective _).eq_iff
 
-lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
+lemma mk_left_inj {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk_left_injective _).eq_iff
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
@@ -108,15 +85,9 @@ theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × �
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
 
-@[simp] lemma map_id : Prod.map (@id α) (@id β) = id := rfl
-
-@[simp] lemma map_id' : Prod.map (fun a : α ↦ a) (fun b : β ↦ b) = fun x ↦ x := rfl
-
 @[simp]
 theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :
     (Prod.map f g)^[n] = Prod.map f^[n] g^[n] := by induction n <;> simp [*, Prod.map_comp_map]
-
-@[deprecated (since := "2024-07-03")] alias iterate_prod_map := Prod.map_iterate
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
@@ -129,29 +100,6 @@ theorem fst_injective [Subsingleton β] : Function.Injective (@fst α β) :=
 
 theorem snd_injective [Subsingleton α] : Function.Injective (@snd α β) :=
   fun _ _ h ↦ Prod.ext (Subsingleton.elim _ _) h
-
-/-- Swap the factors of a product. `swap (a, b) = (b, a)` -/
-def swap : α × β → β × α := fun p ↦ (p.2, p.1)
-
-@[simp]
-theorem swap_swap : ∀ x : α × β, swap (swap x) = x
-  | ⟨_, _⟩ => rfl
-
-@[simp]
-theorem fst_swap {p : α × β} : (swap p).1 = p.2 :=
-  rfl
-
-@[simp]
-theorem snd_swap {p : α × β} : (swap p).2 = p.1 :=
-  rfl
-
-@[simp]
-theorem swap_prod_mk {a : α} {b : β} : swap (a, b) = (b, a) :=
-  rfl
-
-@[simp]
-theorem swap_swap_eq : swap ∘ swap = @id (α × β) :=
-  funext swap_swap
 
 @[simp]
 theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
@@ -170,15 +118,6 @@ theorem swap_surjective : Function.Surjective (@swap α β) :=
 theorem swap_bijective : Function.Bijective (@swap α β) :=
   ⟨swap_injective, swap_surjective⟩
 
-@[simp]
-theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
-  swap_injective.eq_iff
-
-/--For two functions `f` and `g`, the composition of `Prod.map f g` with `Prod.swap`
-is equal to the composition of `Prod.swap` with `Prod.map g f`.-/
-theorem map_comp_swap (f : α → β) (g : γ → δ) :
-    Prod.map f g ∘ Prod.swap = Prod.swap ∘ Prod.map g f := rfl
-
 theorem _root_.Function.Semiconj.swap_map (f : α → α) (g : β → β) :
     Function.Semiconj swap (map f g) (map g f) :=
   Function.semiconj_iff_comp_eq.2 (map_comp_swap g f).symm
@@ -194,30 +133,31 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
-lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
+lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def
 
 instance Lex.decidable [DecidableEq α]
     (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
     DecidableRel (Prod.Lex r s) :=
-  fun _ _ ↦ decidable_of_decidable_of_iff (lex_def r s).symm
+  fun _ _ ↦ decidable_of_decidable_of_iff lex_def.symm
 
 @[refl]
-theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.left _ _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl r] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_left _ _⟩
 
 @[refl]
-theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [Std.Refl s] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.right _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl s] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
 
-instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Prod.Lex r s) :=
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
     ∀ {x y z : α × β}, Prod.Lex r s x y → Prod.Lex r s y z → Prod.Lex r s x z
@@ -227,11 +167,11 @@ theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α 
   | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
-  IsTrans (α × β) (Prod.Lex r s) :=
+    IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
-    IsAntisymm (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [Std.Antisymm s] :
+    Std.Antisymm (Prod.Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
     match x₁, x₂, h₁₂, h₂₁ with
     | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (_root_.trans hr₁ hr₂)).elim
@@ -239,25 +179,34 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
     | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
     | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩
 
-instance isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
-    IsTotal (α × β) (Prod.Lex r s) :=
-  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
+instance total_left {r : α → α → Prop} {s : β → β → Prop} [Std.Total r] :
+    Std.Total (Prod.Lex r s) :=
+  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (Std.Total.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
 
-instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
-    IsTotal (α × β) (Prod.Lex r s) :=
+instance total_right {r : α → α → Prop} {s : β → β → Prop} [Std.Trichotomous r] [Std.Total s] :
+    Std.Total (Prod.Lex r s) :=
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (.left _ _ hij)
     · exact (total_of s a b).imp (.right _) (.right _)
     · exact Or.inr (.left _ _ hji) ⟩
 
-instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
-  IsTrichotomous (α × β) (Prod.Lex r s) :=
-⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
-  obtain hij | rfl | hji := trichotomous_of r i j
-  { exact Or.inl (Lex.left _ _ hij) }
-  { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
-  { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
+instance trichotomous [Std.Trichotomous r] [Std.Trichotomous s] :
+    Std.Trichotomous (Prod.Lex r s) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap <| by
+    intro ⟨i, a⟩ ⟨j, b⟩
+    obtain hij | rfl | hji := trichotomous_of r i j
+    { exact Or.inl (Lex.left _ _ hij) }
+    { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
+    { exact Or.inr (Or.inr <| Lex.left _ _ hji) }
+
+instance [Std.Asymm r] [Std.Asymm s] :
+    Std.Asymm (Prod.Lex r s) where
+  asymm
+  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => Std.Asymm.asymm _ _ h₂ h₁
+  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => Std.Asymm.asymm _ _ h₁ h₁
+  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => Std.Asymm.asymm _ _ h₂ h₂
+  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => Std.Asymm.asymm _ _ h₁ h₂
 
 end Prod
 
@@ -291,13 +240,6 @@ theorem Involutive.prodMap {f : α → α} {g : β → β} :
     Involutive f → Involutive g → Involutive (map f g) :=
   LeftInverse.prodMap
 
-@[deprecated (since := "2024-05-08")] alias Injective.Prod_map := Injective.prodMap
-@[deprecated (since := "2024-05-08")] alias Surjective.Prod_map := Surjective.prodMap
-@[deprecated (since := "2024-05-08")] alias Bijective.Prod_map := Bijective.prodMap
-@[deprecated (since := "2024-05-08")] alias LeftInverse.Prod_map := LeftInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias RightInverse.Prod_map := RightInverse.prodMap
-@[deprecated (since := "2024-05-08")] alias Involutive.Prod_map := Involutive.prodMap
-
 end Function
 
 namespace Prod
@@ -311,10 +253,10 @@ theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
     ⟨fun a₁ a₂ ha => by
       inhabit β
       injection
-        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha : _),
+        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha :),
       fun b₁ b₂ hb => by
       inhabit α
-      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb : _)⟩,
+      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb :)⟩,
     fun h => h.1.prodMap h.2⟩
 
 @[simp]
@@ -334,8 +276,8 @@ theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → �
 @[simp]
 theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
     Bijective (map f g) ↔ Bijective f ∧ Bijective g := by
-  haveI := Nonempty.map f ‹_›
-  haveI := Nonempty.map g ‹_›
+  have := Nonempty.map f ‹_›
+  have := Nonempty.map g ‹_›
   exact (map_injective.and map_surjective).trans and_and_and_comm
 
 @[simp]
@@ -360,21 +302,43 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
     Involutive (map f g) ↔ Involutive f ∧ Involutive g :=
   map_leftInverse
 
-section delaborators
+namespace PrettyPrinting
 open Lean PrettyPrinter Delaborator
 
+/--
+When true, then `Prod.fst x` and `Prod.snd x` pretty print as `x.1` and `x.2`
+rather than as `x.fst` and `x.snd`.
+-/
+meta register_option pp.numericProj.prod : Bool := {
+  defValue := true
+  descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
+}
+
+/-- Tell whether pretty-printing should use numeric projection notations `.1`
+and `.2` for `Prod.fst` and `Prod.snd`. -/
+meta def getPPNumericProjProd (o : Options) : Bool :=
+  o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
+
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
-@[delab app.Prod.fst]
-def delabProdFst : Delab := withOverApp 3 do
-  let x ← SubExpr.withAppArg delab
-  `($(x).1)
+@[app_delab Prod.fst]
+meta def delabProdFst : Delab :=
+  whenPPOption getPPNumericProjProd <|
+  whenPPOption getPPFieldNotation <|
+  whenNotPPOption getPPExplicit <|
+  withOverApp 3 do
+    let x ← SubExpr.withAppArg delab
+    `($(x).1)
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
-@[delab app.Prod.snd]
-def delabProdSnd : Delab := withOverApp 3 do
-  let x ← SubExpr.withAppArg delab
-  `($(x).2)
+@[app_delab Prod.snd]
+meta def delabProdSnd : Delab :=
+  whenPPOption getPPNumericProjProd <|
+  whenPPOption getPPFieldNotation <|
+  whenNotPPOption getPPExplicit <|
+  withOverApp 3 do
+    let x ← SubExpr.withAppArg delab
+    `($(x).2)
 
-end delaborators
+end PrettyPrinting
 
 end Prod

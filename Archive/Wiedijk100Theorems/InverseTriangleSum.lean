@@ -1,12 +1,15 @@
 /-
-Copyright (c) 2020. All rights reserved.
+Copyright (c) 2020 Jalex Stark, Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Sum of the Reciprocals of the Triangular Numbers
@@ -21,16 +24,14 @@ We prove that the sum of the reciprocals of the first `n` triangular numbers is 
 discrete_sum
 -/
 
-
 open Finset
 
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
-theorem Theorems100.inverse_triangle_sum :
-    ∀ n, ∑ k ∈ range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
-  refine sum_range_induction _ _ (if_pos rfl) ?_
-  rintro (_ | n)
-  · rw [if_neg, if_pos] <;> norm_num
-  simp only [Nat.succ_ne_zero, ↓reduceIte, Nat.cast_succ]
-  have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast
-  field_simp
-  ring
+public theorem Theorems100.inverse_triangle_sum (n : ℕ) :
+    ∑ k ∈ range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
+  apply sum_range_induction _ _ rfl
+  rintro (_ | _)
+  · norm_num
+  · simp [field]
+    ring_nf
+    simp

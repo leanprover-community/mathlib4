@@ -3,12 +3,14 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Quasispectrum
-import Mathlib.Algebra.Algebra.Spectrum
-import Mathlib.Algebra.Star.Order
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Tactic.ContinuousFunctionalCalculus
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.StrictPositivity
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.Algebra.Star.Real
+public import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-!
 # The continuous functional calculus
@@ -22,7 +24,7 @@ functions on `spectrum R a`. More precisely, it is a continuous star algebra hom
 `C(spectrum R a, R) →⋆ₐ[R] A` that sends `(ContinuousMap.id R).restrict (spectrum R a)` to
 `a`. In all cases of interest (e.g., when `spectrum R a` is compact and `R` is `ℝ≥0`, `ℝ`, or `ℂ`),
 this is sufficient to uniquely determine the continuous functional calculus which is encoded in the
-`UniqueContinuousFunctionalCalculus` class.
+`ContinuousMap.UniqueHom` class.
 
 Although these properties suffice to uniquely determine the continuous functional calculus, we
 choose to bundle more information into the class itself. Namely, we include that the star algebra
@@ -98,7 +100,7 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 
 ## Main declarations
 
-+ `ContinuousFunctionalCalculus R (p : A → Prop)`: a class stating that every `a : A` satisfying
++ `ContinuousFunctionalCalculus R A (p : A → Prop)`: a class stating that every `a : A` satisfying
   `p a` has a star algebra homomorphism from the continuous `R`-valued functions on the
   `R`-spectrum of `a` into the algebra `A`. This map is a closed embedding, and satisfies the
   **spectral mapping theorem**.
@@ -138,6 +140,11 @@ the predicate `p`, it should be noted that these will only ever be of the form `
 goals, but it can be modified to become more sophisticated as the need arises.
 -/
 
+@[expose] public section
+
+open scoped Ring
+open Topology ContinuousMap
+
 section Basic
 
 /-- A star `R`-algebra `A` has a *continuous functional calculus* for elements satisfying the
@@ -145,7 +152,7 @@ property `p : A → Prop` if
 
 + for every such element `a : A` there is a star algebra homomorphism
   `cfcHom : C(spectrum R a, R) →⋆ₐ[R] A` sending the (restriction of) the identity map to `a`.
-+ `cfcHom` is a closed embedding for which the spectrum of the image of function `f` is its range.
++ `cfcHom` is continuous and injective and the spectrum of the image of function `f` is its range.
 + `cfcHom` preserves the property `p`.
 + `p 0` is true, which ensures among other things that `p ≠ fun _ ↦ False`.
 
@@ -158,13 +165,20 @@ The property `p` is marked as an `outParam` so that the user need not specify it
 Instead of directly providing the data we opt instead for a `Prop` class. In all relevant cases,
 the continuous functional calculus is uniquely determined, and utilizing this approach
 prevents diamonds or problems arising from multiple instances. -/
-class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
-    [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+class ContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
+    [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
   predicate_zero : p 0
+  [compactSpace_spectrum (a : A) : CompactSpace (spectrum R a)]
+  spectrum_nonempty [Nontrivial A] (a : A) (ha : p a) : (spectrum R a).Nonempty
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A,
-    ClosedEmbedding φ ∧ φ ((ContinuousMap.id R).restrict <| spectrum R a) = a ∧
+    Continuous φ ∧ Function.Injective φ ∧ φ ((ContinuousMap.id R).restrict <| spectrum R a) = a ∧
       (∀ f, spectrum R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
+
+-- this instance should not be activated everywhere but it is useful when developing generic API
+-- for the continuous functional calculus
+scoped[ContinuousFunctionalCalculus]
+attribute [instance] ContinuousFunctionalCalculus.compactSpace_spectrum
 
 /-- A class guaranteeing that the continuous functional calculus is uniquely determined by the
 properties that it is a continuous star algebra homomorphism mapping the (restriction of) the
@@ -172,33 +186,37 @@ identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and 
 variant `cfc_comp`.
 
 This class has instances, which can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique`, in each of the common cases
-`ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unique.lean`, in each of the common
+cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem.
 
 This class is separate from `ContinuousFunctionalCalculus` primarily because we will later use
 `SpectrumRestricts` to derive an instance of `ContinuousFunctionalCalculus` on a scalar subring
 from one on a larger ring (i.e., to go from a continuous functional calculus over `ℂ` for normal
 elements to one over `ℝ` for selfadjoint elements), and proving this additional property is
 preserved would be burdensome or impossible. -/
-class UniqueContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+class ContinuousMap.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] : Prop where
   eq_of_continuous_of_map_id (s : Set R) [CompactSpace s]
     (φ ψ : C(s, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (.restrict s <| .id R) = ψ (.restrict s <| .id R)) :
     φ = ψ
-  compactSpace_spectrum (a : A) : CompactSpace (spectrum R a)
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
-variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
+variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
 
-lemma StarAlgHom.ext_continuousMap [UniqueContinuousFunctionalCalculus R A]
-    (a : A) (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
+include instCFC in
+lemma ContinuousFunctionalCalculus.isCompact_spectrum (a : A) :
+    IsCompact (spectrum R a) :=
+  isCompact_iff_compactSpace.mpr inferInstance
+
+lemma StarAlgHom.ext_continuousMap [UniqueHom R A]
+    (a : A) [CompactSpace (spectrum R a)] (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A)
+    (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (.restrict (spectrum R a) <| .id R) = ψ (.restrict (spectrum R a) <| .id R)) :
     φ = ψ :=
-  have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum (R := R) a
-  UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id (spectrum R a) φ ψ hφ hψ h
+  UniqueHom.eq_of_continuous_of_map_id (spectrum R a) φ ψ hφ hψ h
 
 section cfcHom
 
@@ -207,7 +225,7 @@ variable {a : A} (ha : p a)
 -- Note: since `spectrum R a` is closed, we may always extend `f : C(spectrum R a, R)` to a function
 -- of type `C(R, R)` by the Tietze extension theorem (assuming `R` is either `ℝ`, `ℂ` or `ℝ≥0`).
 
-/-- The star algebra homomorphism underlying a instance of the continuous functional calculus;
+/-- The star algebra homomorphism underlying an instance of the continuous functional calculus;
 a version for continuous functions on the spectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`, for otherwise it
@@ -221,30 +239,34 @@ user should instead prefer `cfc` over `cfcHom`.
 noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose
 
-lemma cfcHom_closedEmbedding :
-    ClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+@[fun_prop]
+lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
+
+lemma cfcHom_injective : Function.Injective (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
 lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.1
 
 /-- The **spectral mapping theorem** for the continuous functional calculus. -/
 lemma cfcHom_map_spectrum (f : C(spectrum R a, R)) :
     spectrum R (cfcHom ha f) = Set.range f :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.1 f
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2.1 f
 
 lemma cfcHom_predicate (f : C(spectrum R a, R)) :
     p (cfcHom ha f) :=
-  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2 f
+  (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2.2 f
 
-lemma cfcHom_eq_of_continuous_of_map_id [UniqueContinuousFunctionalCalculus R A]
+open scoped ContinuousFunctionalCalculus in
+lemma cfcHom_eq_of_continuous_of_map_id [UniqueHom R A]
     (φ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ₁ : Continuous φ)
     (hφ₂ : φ (.restrict (spectrum R a) <| .id R) = a) : cfcHom ha = φ :=
-  (cfcHom ha).ext_continuousMap a φ (cfcHom_closedEmbedding ha).continuous hφ₁ <| by
+  (cfcHom ha).ext_continuousMap a φ (cfcHom_continuous ha) hφ₁ <| by
     rw [cfcHom_id ha, hφ₂]
 
-theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a, R))
+theorem cfcHom_comp [UniqueHom R A] (f : C(spectrum R a, R))
     (f' : C(spectrum R a, spectrum R (cfcHom ha f)))
     (hff' : ∀ x, f x = f' x) (g : C(spectrum R (cfcHom ha f), R)) :
     cfcHom ha (g.comp f') = cfcHom (cfcHom_predicate ha f) g := by
@@ -252,7 +274,7 @@ theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a
     (cfcHom ha).comp <| ContinuousMap.compStarAlgHom' R R f'
   suffices cfcHom (cfcHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
   refine cfcHom_eq_of_continuous_of_map_id (cfcHom_predicate ha f) φ ?_ ?_
-  · exact (cfcHom_closedEmbedding ha).continuous.comp f'.continuous_comp_left
+  · exact cfcHom_continuous ha |>.comp f'.continuous_precomp
   · simp only [φ, StarAlgHom.comp_apply, ContinuousMap.compStarAlgHom'_apply]
     congr
     ext x
@@ -267,8 +289,7 @@ section cfcL
 noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
   { cfcHom ha with
     toFun := cfcHom ha
-    map_smul' := map_smul _
-    cont := (cfcHom_closedEmbedding ha).continuous }
+    map_smul' := map_smul _ }
 
 end cfcL
 
@@ -285,49 +306,65 @@ and all the API applies to this declaration. For more information, see the modul
 for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
 noncomputable irreducible_def cfc (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (spectrum R a)
-    then cfcHom h.1 ⟨_, h.2.restrict⟩
+    then cfcHom h.1 ⟨_, h.2.domRestrict⟩
     else 0
 
 variable (f g : R → R) (a : A) (ha : p a := by cfc_tac)
 variable (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
-lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
-  rw [cfc_def, dif_pos ⟨ha, hf⟩]
+set_option backward.privateInPublic true in
+lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.domRestrict⟩ := by
+  rw [cfc_def, dite_eq_left ⟨ha, hf⟩]
 
 lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
+    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).domRestrict⟩) := by
   ext i
   simp only [cfc_apply (f i) a ha (hf i)]
 
 lemma cfc_apply_of_not_and {f : R → R} (a : A) (ha : ¬ (p a ∧ ContinuousOn f (spectrum R a))) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg ha]
+  rw [cfc_def, dite_eq_right ha]
 
 lemma cfc_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg (not_and_of_not_left _ ha)]
+  rw [cfc_def, dite_eq_right (not_and_of_not_left _ ha)]
 
 lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
+  rw [cfc_def, dite_eq_right (not_and_of_not_right _ hf)]
 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
-  have h : f = (spectrum R a).restrict (Function.extend Subtype.val f g) := by
-    ext; simp [Subtype.val_injective.extend_apply]
+  have h : f = (spectrum R a).domRestrict (Function.extend Subtype.val f g) := by
+    ext; simp
   have hg : ContinuousOn (Function.extend Subtype.val f g) (spectrum R a) :=
-    continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
+    continuousOn_iff_continuous_domRestrict.mpr <| h ▸ map_continuous f
   rw [cfc_apply ..]
   congr!
 
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
-    cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
-  rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
+    cfc f a = cfcL ha ⟨_, hf.domRestrict⟩ := by
+  rw [cfc_def, dite_eq_left ⟨ha, hf⟩, cfcL_apply]
+
+set_option backward.privateInPublic true in
+/-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
+lemma cfc_apply_mkD :
+    cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).domRestrict f) 0) := by
+  by_cases hf : ContinuousOn f (spectrum R a)
+  · rw [cfc_apply f a, mkD_of_continuousOn hf]
+  · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
+      map_zero]
+
+set_option backward.privateInPublic true in
+/-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
+lemma cfc_eq_cfcL_mkD :
+    cfc f a = cfcL (a := a) ha (mkD ((spectrum R a).domRestrict f) 0) :=
+  cfc_apply_mkD _ _
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
-    (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :
+    (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.domRestrict⟩)) :
     P (cfc f a) := by
   by_cases h : p a ∧ ContinuousOn f (spectrum R a)
   · rw [cfc_apply f a h.1 h.2]
@@ -336,6 +373,11 @@ lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     obtain (h | h) := h
     · rwa [cfc_apply_of_not_predicate _ h]
     · rwa [cfc_apply_of_not_continuousOn _ h]
+
+lemma cfc_commute_cfc (f g : R → R) (a : A) : Commute (cfc f a) (cfc g a) := by
+  refine cfc_cases (fun x ↦ Commute x (cfc g a)) a f (by simp) fun hf ha ↦ ?_
+  refine cfc_cases (fun x ↦ Commute _ x) a g (by simp) fun hg _ ↦ ?_
+  exact Commute.all _ _ |>.map _
 
 variable (R) in
 lemma cfc_id (ha : p a := by cfc_tac) : cfc (id : R → R) a = a :=
@@ -375,22 +417,27 @@ lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     cfc f a = cfc g a := by
   by_cases h : p a ∧ ContinuousOn g (spectrum R a)
   · rw [cfc_apply (ha := h.1) (hf := h.2.congr hfg), cfc_apply (ha := h.1) (hf := h.2)]
-    congr
-    exact Set.restrict_eq_iff.mpr hfg
+    congr 2
+    exact Set.domRestrict_eq_iff.mpr hfg
   · obtain (ha | hg) := not_and_or.mp h
     · simp [cfc_apply_of_not_predicate a ha]
     · rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn]
       exact fun hf ↦ hg (hf.congr hfg.symm)
+
+/-- A version of `cfc_congr` suitable for `@[congr]`. -/
+@[congr]
+lemma cfc_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ spectrum R a, f x = g x) :
+    cfc f a = cfc g a :=
+  cfc_congr hfg
 
 lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     (spectrum R a).EqOn f g := by
   rw [cfc_apply f a, cfc_apply g a] at h
-  have := (cfcHom_closedEmbedding (show p a from ha) (R := R)).inj h
-  intro x hx
-  congrm($(this) ⟨x, hx⟩)
+  exact fun x hx ↦ congr($(cfcHom_injective ha h) ⟨x, hx⟩)
 
+set_option backward.privateInPublic true in
 variable {a f g} in
 include ha hf hg in
 lemma cfc_eq_cfc_iff_eqOn : cfc f a = cfc g a ↔ (spectrum R a).EqOn f g :=
@@ -398,14 +445,15 @@ lemma cfc_eq_cfc_iff_eqOn : cfc f a = cfc g a ↔ (spectrum R a).EqOn f g :=
 
 variable (R)
 
+set_option backward.privateInPublic true in
 include ha in
 lemma cfc_one : cfc (1 : R → R) a = 1 :=
   cfc_apply (1 : R → R) a ▸ map_one (cfcHom (show p a from ha))
 
+set_option backward.privateInPublic true in
 include ha in
 lemma cfc_const_one : cfc (fun _ : R ↦ 1) a = 1 := cfc_one R a
 
-@[simp]
 lemma cfc_zero : cfc (0 : R → R) a = 0 := by
   by_cases ha : p a
   · exact cfc_apply (0 : R → R) a ▸ map_zero (cfcHom ha)
@@ -455,14 +503,14 @@ lemma cfc_add_const (r : R) (f : R → R) (a : A)
 open Finset in
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
+    cfc (∑ i ∈ s, f i) a = ∑ i ∈ s, cfc (f i) a := by
   by_cases ha : p a
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
       rw [sum_coe_sort s, hsum]
-      exact continuousOn_finset_sum s fun i hi => hf i hi
+      exact continuousOn_finsetSum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
-    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
+    rw [cfc_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
     congr 1
     ext
     simp
@@ -511,15 +559,25 @@ lemma cfc_smul_id {S : Type*} [SMul S R] [ContinuousConstSMul S R]
 lemma cfc_const_mul_id (r : R) (a : A) (ha : p a := by cfc_tac) : cfc (r * ·) a = r • a :=
   cfc_smul_id r a
 
+set_option backward.privateInPublic true in
 include ha in
 lemma cfc_star_id : cfc (star · : R → R) a = star a := by
   rw [cfc_star .., cfc_id' ..]
+
+variable (R) in
+theorem range_cfc_eq_range_cfcHom [StarModule R A] {a : A} (ha : p a) :
+    Set.range (cfc (R := R) · a) = (cfcHom ha (R := R)).range := by
+  ext
+  constructor
+  all_goals rintro ⟨f, rfl⟩
+  · exact cfc_cases _ a f (zero_mem _) fun hf ha ↦ ⟨_, rfl⟩
+  · exact ⟨Subtype.val.extend f 0, cfcHom_eq_cfc_extend _ ha _ |>.symm⟩
 
 section Polynomial
 open Polynomial
 
 lemma cfc_eval_X (ha : p a := by cfc_tac) : cfc (X : R[X]).eval a = a := by
-  simpa using cfc_id R a
+  simpa using! cfc_id R a
 
 lemma cfc_eval_C (r : R) (a : A) (ha : p a := by cfc_tac) :
     cfc (C r).eval a = algebraMap R A r := by
@@ -529,11 +587,11 @@ lemma cfc_map_polynomial (q : R[X]) (f : R → R) (a : A) (ha : p a := by cfc_ta
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc (fun x ↦ q.eval (f x)) a = aeval (cfc f a) q := by
   induction q using Polynomial.induction_on with
-  | h_C r => simp [cfc_const r a]
-  | h_add q₁ q₂ hq₁ hq₂ =>
+  | C r => simp [cfc_const r a]
+  | add q₁ q₂ hq₁ hq₂ =>
     simp only [eval_add, map_add, ← hq₁, ← hq₂, cfc_add a (q₁.eval <| f ·) (q₂.eval <| f ·)]
-  | h_monomial n r _ =>
-    simp only [eval_mul, eval_C, eval_pow, eval_X, map_mul, aeval_C, map_pow, aeval_X]
+  | monomial n r _ =>
+    simp only [eval_mul, eval_C, eval_X_pow, map_mul, aeval_C, map_pow, aeval_X]
     rw [cfc_const_mul .., cfc_pow _ (n + 1) _, ← smul_eq_mul, algebraMap_smul]
 
 lemma cfc_polynomial (q : R[X]) (a : A) (ha : p a := by cfc_tac) :
@@ -544,22 +602,22 @@ end Polynomial
 
 section Comp
 
-variable [UniqueContinuousFunctionalCalculus R A]
+variable [UniqueHom R A]
 
 lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
     (hg : ContinuousOn g (f '' spectrum R a) := by cfc_cont_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc (g ∘ f) a = cfc g (cfc f a) := by
   have := hg.comp hf <| (spectrum R a).mapsTo_image f
-  have sp_eq : spectrum R (cfcHom (show p a from ha) (ContinuousMap.mk _ hf.restrict)) =
+  have sp_eq : spectrum R (cfcHom (show p a from ha) (ContinuousMap.mk _ hf.domRestrict)) =
       f '' (spectrum R a) := by
     rw [cfcHom_map_spectrum (by exact ha) _]
     ext
     simp
   rw [cfc_apply .., cfc_apply f a,
-    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg), ← cfcHom_comp _ _]
+    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert! hg), ← cfcHom_comp _ _]
   swap
-  · exact ContinuousMap.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
+  · exact ContinuousMap.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
   · congr
   · exact fun _ ↦ rfl
 
@@ -599,7 +657,7 @@ end Comp
 
 lemma CFC.eq_algebraMap_of_spectrum_subset_singleton (r : R) (h_spec : spectrum R a ⊆ {r})
     (ha : p a := by cfc_tac) : a = algebraMap R A r := by
-  simpa [cfc_id R a, cfc_const r a] using
+  simpa [cfc_id' R a, cfc_const r a] using
     cfc_congr (f := id) (g := fun _ : R ↦ r) (a := a) fun x hx ↦ by simpa using h_spec hx
 
 lemma CFC.eq_zero_of_spectrum_subset_zero (h_spec : spectrum R a ⊆ {0}) (ha : p a := by cfc_tac) :
@@ -627,13 +685,13 @@ lemma CFC.spectrum_algebraMap_eq [Nontrivial A] (r : R) :
 include instCFC in
 lemma CFC.spectrum_zero_eq [Nontrivial A] :
     spectrum R (0 : A) = {0} := by
-  have : (0 : A) = algebraMap R A 0 := Eq.symm (RingHom.map_zero (algebraMap R A))
+  have : (0 : A) = algebraMap R A 0 := Eq.symm (map_zero (algebraMap R A))
   rw [this, spectrum_algebraMap_eq]
 
 include instCFC in
 lemma CFC.spectrum_one_eq [Nontrivial A] :
     spectrum R (1 : A) = {1} := by
-  have : (1 : A) = algebraMap R A 1 := Eq.symm (RingHom.map_one (algebraMap R A))
+  have : (1 : A) = algebraMap R A 1 := Eq.symm (map_one (algebraMap R A))
   rw [this, spectrum_algebraMap_eq]
 
 @[simp]
@@ -653,14 +711,34 @@ lemma cfc_algebraMap (r : R) (f : R → R) : cfc f (algebraMap R A r) = algebraM
 @[simp] lemma cfc_apply_one {f : R → R} : cfc f (1 : A) = algebraMap R A (f 1) := by
   simpa using cfc_algebraMap (A := A) 1 f
 
+@[simp]
 instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) where
   star_comm_self := by
     rw [Commute, SemiconjBy]
     by_cases h : ContinuousOn f (spectrum R a)
     · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
-      congr! 2
-      exact mul_comm _ _
+      congr! 1 with x hx
+      exact mul_comm ..
     · simp [cfc_apply_of_not_continuousOn a h]
+
+-- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R A IsSelfAdjoint]
+    {f : R → R} {a : A} : IsSelfAdjoint (cfc f a) :=
+  cfc_predicate _ _
+
+@[simp]
+lemma cfc_nonneg_of_predicate [LE A]
+    [ContinuousFunctionalCalculus R A (0 ≤ ·)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
+  cfc_predicate _ _
+
+variable (R) in
+/-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
+has nonempty `R`-spectrum. -/
+@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead."
+  (since := "2026-03-08")]
+lemma CFC.spectrum_nonempty [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
+    (spectrum R a).Nonempty := ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end CFC
 
@@ -669,17 +747,26 @@ end Basic
 section Inv
 
 variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A]
-variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A]
+variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R A p]
 
 lemma isUnit_cfc_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : IsUnit (cfc f a) ↔ ∀ x ∈ spectrum R a, f x ≠ 0 := by
-  rw [← spectrum.zero_not_mem_iff R, cfc_map_spectrum ..]
-  aesop
+  rw [← spectrum.zero_notMem_iff R, cfc_map_spectrum ..]
+  simp
 
 alias ⟨_, isUnit_cfc⟩ := isUnit_cfc_iff
 
-variable [HasContinuousInv₀ R] (f : R → R) (a : A)
+include R in
+variable (R) in
+lemma CFC.pow_eq_zero_iff (a : A) (n : ℕ) (hn : n ≠ 0) (hp : p a := by cfc_tac) :
+    a ^ n = 0 ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, by rintro rfl; simp [hn]⟩
+  refine CFC.eq_zero_of_spectrum_subset_zero (R := R) a fun r hr ↦ ?_
+  rw [← cfc_id' R a, ← cfc_pow .., ← cfc_zero (R := R) a, cfc_eq_cfc_iff_eqOn] at h
+  simpa [hn] using h hr
+
+variable [ContinuousInv₀ R] (f : R → R) (a : A)
 
 /-- Bundle `cfc f a` into a unit given a proof that `f` is nonzero on the spectrum of `a`. -/
 @[simps]
@@ -697,7 +784,7 @@ noncomputable def cfcUnits (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
 lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     (cfcUnits f a hf') ^ n =
-      cfcUnits (forall₂_imp (fun _ _ ↦ pow_ne_zero n) hf') (hf := hf.pow n) := by
+      cfcUnits _ _ (forall₂_imp (fun _ _ ↦ pow_ne_zero n) hf') (hf := hf.fun_pow n) := by
   ext
   cases n with
   | zero => simp [cfc_const_one R a]
@@ -705,40 +792,46 @@ lemma cfcUnits_pow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℕ)
 
 lemma cfc_inv (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ (f x) ⁻¹) a = Ring.inverse (cfc f a) := by
+    cfc (fun x ↦ (f x)⁻¹) a = (cfc f a)⁻¹ʳ := by
   rw [← val_inv_cfcUnits f a hf', ← val_cfcUnits f a hf', Ring.inverse_unit]
 
 lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
     cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ := by
   rw [← Ring.inverse_unit]
-  convert cfc_inv (id : R → R) (a : A) ?_
+  convert! cfc_inv (id : R → R) (a : A) ?_
   · exact (cfc_id R (a : A)).symm
   · rintro x hx rfl
-    exact spectrum.zero_not_mem R a.isUnit hx
+    exact spectrum.zero_notMem R a.isUnit hx
+
+lemma cfc_ringInverse_id (ha_unit : IsUnit a) (ha : p a := by cfc_tac) :
+    cfc (fun x ↦ x⁻¹ : R → R) a = a⁻¹ʳ := by
+  rw [Ring.inverse_of_isUnit ha_unit]
+  change cfc (fun x ↦ x⁻¹ : R → R) (ha_unit.unit : A) = ha_unit.unit⁻¹
+  exact cfc_inv_id _ ha
 
 lemma cfc_map_div (f g : R → R) (a : A) (hg' : ∀ x ∈ spectrum R a, g x ≠ 0)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
-    cfc (fun x ↦ f x / g x) a = cfc f a * Ring.inverse (cfc g a) := by
+    cfc (fun x ↦ f x / g x) a = cfc f a * (cfc g a)⁻¹ʳ := by
   simp only [div_eq_mul_inv]
   rw [cfc_mul .., cfc_inv g a hg']
 
 section ContinuousOnInvSpectrum
 -- TODO: this section should probably be moved to another file altogether
 
-variable {R A : Type*} [Semifield R] [Ring A] [TopologicalSpace R] [HasContinuousInv₀ R]
+variable {R A : Type*} [Semifield R] [Ring A] [TopologicalSpace R] [ContinuousInv₀ R]
 variable [Algebra R A]
 
 @[fun_prop]
 lemma Units.continuousOn_inv₀_spectrum (a : Aˣ) : ContinuousOn (· ⁻¹) (spectrum R (a : A)) :=
   continuousOn_inv₀.mono <| by
-    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_not_mem R a.isUnit
+    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_notMem R a.isUnit
 
 @[fun_prop]
 lemma Units.continuousOn_zpow₀_spectrum [ContinuousMul R] (a : Aˣ) (n : ℤ) :
     ContinuousOn (· ^ n) (spectrum R (a : A)) :=
   (continuousOn_zpow₀ n).mono <| by
-    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_not_mem R a.isUnit
+    simpa only [Set.subset_compl_singleton_iff] using spectrum.zero_notMem R a.isUnit
 
 end ContinuousOnInvSpectrum
 
@@ -748,11 +841,11 @@ lemma cfcUnits_zpow (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℤ)
       cfcUnits (f ^ n) a (forall₂_imp (fun _ _ ↦ zpow_ne_zero n) hf')
         (hf.zpow₀ n (forall₂_imp (fun _ _ ↦ Or.inl) hf')) := by
   cases n with
-  | ofNat _ => simpa using cfcUnits_pow f a hf' _
+  | ofNat _ => simpa using! cfcUnits_pow f a hf' _
   | negSucc n =>
     simp only [zpow_negSucc, ← inv_pow]
     ext
-    exact cfc_pow (hf := hf.inv₀ hf') _ |>.symm
+    exact cfc_pow (hf := hf.inv₀ hf') .. |>.symm
 
 lemma cfc_zpow (a : Aˣ) (n : ℤ) (ha : p a := by cfc_tac) :
     cfc (fun x : R ↦ x ^ n) (a : A) = ↑(a ^ n) := by
@@ -763,10 +856,10 @@ lemma cfc_zpow (a : Aˣ) (n : ℤ) (ha : p a := by cfc_tac) :
     have := cfc_pow (fun x ↦ x⁻¹ : R → R) (n + 1) (a : A)
     exact this.trans <| congr($(cfc_inv_id a) ^ (n + 1))
 
-variable [UniqueContinuousFunctionalCalculus R A]
+variable [UniqueHom R A]
 
 lemma cfc_comp_inv (f : R → R) (a : Aˣ)
-    (hf : ContinuousOn f ((· ⁻¹) '' (spectrum R (a : A))) := by cfc_cont_tac)
+    (hf : ContinuousOn f ((·⁻¹) '' (spectrum R (a : A))) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) :
     cfc (fun x ↦ f x⁻¹) (a : A) = cfc f (↑a⁻¹ : A) := by
   rw [cfc_comp' .., cfc_inv_id _]
@@ -782,11 +875,12 @@ end Inv
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A]
-variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A]
+variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R A p]
 variable (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
+set_option backward.privateInPublic true in
 include hf hg in
 lemma cfc_sub : cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
   by_cases ha : p a
@@ -794,7 +888,7 @@ lemma cfc_sub : cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
     congr
   · simp [cfc_apply_of_not_predicate a ha]
 
-lemma cfc_neg : cfc (fun x ↦ - (f x)) a = - (cfc f a) := by
+lemma cfc_neg : cfc (fun x ↦ -(f x)) a = -(cfc f a) := by
   by_cases h : p a ∧ ContinuousOn f (spectrum R a)
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply f a, ← map_neg, cfc_apply ..]
@@ -802,14 +896,16 @@ lemma cfc_neg : cfc (fun x ↦ - (f x)) a = - (cfc f a) := by
   · obtain (ha | hf) := not_and_or.mp h
     · simp [cfc_apply_of_not_predicate a ha]
     · rw [cfc_apply_of_not_continuousOn a hf, cfc_apply_of_not_continuousOn, neg_zero]
-      exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
+      exact fun hf_neg ↦ hf <| by simpa using hf_neg.fun_neg
+
+lemma cfc_neg' : cfc (-f) = (-cfc f : A → A) := by ext1 a; exact cfc_neg f a
 
 lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (- · : R → R) a = -a := by
   rw [cfc_neg _ a, cfc_id' R a]
 
-variable [UniqueContinuousFunctionalCalculus R A]
+variable [UniqueHom R A]
 
-lemma cfc_comp_neg (hf : ContinuousOn f ((- ·) '' (spectrum R (a : A))) := by cfc_cont_tac)
+lemma cfc_comp_neg (hf : ContinuousOn f ((-·) '' (spectrum R (a : A))) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : cfc (f <| - ·) a = cfc f (-a) := by
   rw [cfc_comp' .., cfc_neg_id _]
 
@@ -819,11 +915,10 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R]
-variable [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [PartialOrder R] [StarRing R] [MetricSpace R]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
+variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
 
 lemma cfcHom_mono {a : A} (ha : p a) {f g : C(spectrum R a, R)} (hfg : f ≤ g) :
     cfcHom ha f ≤ cfcHom ha g :=
@@ -834,6 +929,13 @@ lemma cfcHom_nonneg_iff [NonnegSpectrumClass R A] {a : A} (ha : p a) {f : C(spec
   constructor
   · exact fun hf x ↦ (cfcHom_map_spectrum ha (R := R) _ ▸ spectrum_nonneg_of_nonneg hf) ⟨x, rfl⟩
   · simpa using (cfcHom_mono ha (f := 0) (g := f) ·)
+
+lemma cfcHom_isStrictlyPositive_iff [NonnegSpectrumClass R A] {a : A} (ha : p a)
+    {f : C(spectrum R a, R)} : IsStrictlyPositive (cfcHom ha f) ↔ ∀ x, 0 < f x := by
+  refine ⟨fun hf x => hf.spectrum_pos <| cfcHom_map_spectrum (R := R) ha _ ▸ Set.mem_range_self x,
+    fun h => ⟨cfcHom_nonneg_iff _ |>.mpr fun x => le_of_lt (h x), ?_⟩⟩
+  apply spectrum.isUnit_of_zero_notMem (R := R)
+  grind [cfcHom_map_spectrum, ne_of_lt]
 
 lemma cfc_mono {f g : R → R} {a : A} (h : ∀ x ∈ spectrum R a, f x ≤ g x)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -853,7 +955,18 @@ lemma cfc_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
 lemma StarOrderedRing.nonneg_iff_spectrum_nonneg [NonnegSpectrumClass R A] (a : A)
     (ha : p a := by cfc_tac) : 0 ≤ a ↔ ∀ x ∈ spectrum R a, 0 ≤ x := by
   have := cfc_nonneg_iff (id : R → R) a (by fun_prop) ha
-  simpa [cfc_id _ a ha] using this
+  simpa [cfc_id' _ a ha] using this
+
+lemma cfc_isStrictlyPositive_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+    (ha : p a := by cfc_tac) : IsStrictlyPositive (cfc f a) ↔ ∀ x ∈ spectrum R a, 0 < f x := by
+  rw [cfc_apply .., cfcHom_isStrictlyPositive_iff]
+  simp
+
+lemma StarOrderedRing.isStrictlyPositive_iff_spectrum_pos [NonnegSpectrumClass R A] (a : A)
+    (ha : p a := by cfc_tac) : IsStrictlyPositive a ↔ ∀ x ∈ spectrum R a, 0 < x := by
+  have := cfc_isStrictlyPositive_iff (id : R → R) a (by fun_prop) ha
+  simpa [cfc_id' _ a ha] using this
 
 lemma cfc_nonneg {f : R → R} {a : A} (h : ∀ x ∈ spectrum R a, 0 ≤ f x) :
     0 ≤ cfc f a := by
@@ -898,6 +1011,14 @@ lemma one_le_cfc (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, 1 ≤ f x)
     1 ≤ cfc f a := by
   simpa using algebraMap_le_cfc f 1 a h
 
+lemma CFC.le_one {a : A} (h : ∀ x ∈ spectrum R a, x ≤ 1) (ha : p a := by cfc_tac) :
+    a ≤ 1 := by
+  simpa using le_algebraMap_of_spectrum_le h
+
+lemma CFC.one_le {a : A} (h : ∀ x ∈ spectrum R a, 1 ≤ x) (ha : p a := by cfc_tac) :
+    1 ≤ a := by
+  simpa using algebraMap_le_of_le_spectrum h
+
 end Semiring
 
 section NNReal
@@ -905,23 +1026,22 @@ section NNReal
 open scoped NNReal
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
-  [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
 
 lemma CFC.inv_nonneg_of_nonneg (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) : (0 : A) ≤ a⁻¹ :=
   cfc_inv_id (R := ℝ≥0) a ▸ cfc_predicate _ (a : A)
 
-lemma CFC.inv_nonneg (a : Aˣ)  : (0 : A) ≤ a⁻¹ ↔ (0 : A) ≤ a :=
+lemma CFC.inv_nonneg (a : Aˣ) : (0 : A) ≤ a⁻¹ ↔ (0 : A) ≤ a :=
   ⟨fun _ ↦ inv_inv a ▸ inv_nonneg_of_nonneg a⁻¹, fun _ ↦ inv_nonneg_of_nonneg a⟩
 
 end NNReal
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
-variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
-variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable {R A : Type*} {p : A → Prop} [CommRing R] [PartialOrder R] [StarRing R] [MetricSpace R]
+variable [IsTopologicalRing R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-variable [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
 variable [NonnegSpectrumClass R A]
 
 lemma cfcHom_le_iff {a : A} (ha : p a) {f g : C(spectrum R a, R)} :
@@ -939,6 +1059,95 @@ lemma cfc_nonpos_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) :
   simp_rw [← neg_nonneg, ← cfc_neg]
   exact cfc_nonneg_iff (fun x ↦ -f x) a
 
+lemma cfc_le_algebraMap_iff (f : R → R) (r : R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfc f a ≤ algebraMap R A r ↔ ∀ x ∈ spectrum R a, f x ≤ r := by
+  rw [← cfc_const r a, cfc_le_iff ..]
+
+lemma algebraMap_le_cfc_iff (f : R → R) (r : R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    algebraMap R A r ≤ cfc f a ↔ ∀ x ∈ spectrum R a, r ≤ f x := by
+  rw [← cfc_const r a, cfc_le_iff ..]
+
+lemma le_algebraMap_iff_spectrum_le {r : R} {a : A} (ha : p a := by cfc_tac) :
+    a ≤ algebraMap R A r ↔ ∀ x ∈ spectrum R a, x ≤ r := by
+  nth_rw 1 [← cfc_id R a]
+  exact cfc_le_algebraMap_iff id r a
+
+lemma algebraMap_le_iff_le_spectrum {r : R} {a : A} (ha : p a := by cfc_tac) :
+    algebraMap R A r ≤ a ↔ ∀ x ∈ spectrum R a, r ≤ x := by
+  nth_rw 1 [← cfc_id R a]
+  exact algebraMap_le_cfc_iff id r a
+
+lemma cfc_le_one_iff (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfc f a ≤ 1 ↔ ∀ x ∈ spectrum R a, f x ≤ 1 := by
+  simpa using cfc_le_algebraMap_iff f 1 a
+
+lemma one_le_cfc_iff (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    1 ≤ cfc f a ↔ ∀ x ∈ spectrum R a, 1 ≤ f x := by
+  simpa using algebraMap_le_cfc_iff f 1 a
+
+lemma CFC.le_one_iff (a : A) (ha : p a := by cfc_tac) :
+    a ≤ 1 ↔ ∀ x ∈ spectrum R a, x ≤ 1 := by
+  simpa using le_algebraMap_iff_spectrum_le (r := (1 : R)) (a := a)
+
+lemma CFC.one_le_iff (a : A) (ha : p a := by cfc_tac) :
+    1 ≤ a ↔ ∀ x ∈ spectrum R a, 1 ≤ x := by
+  simpa using algebraMap_le_iff_le_spectrum (r := (1 : R)) (a := a)
+
 end Ring
 
 end Order
+
+/-! ### `cfcHom` on a superset of the spectrum -/
+
+section Superset
+
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [TopologicalSpace A] [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
+
+/-- The composition of `cfcHom` with the natural embedding `C(s, R) → C(spectrum R a, R)`
+whenever `spectrum R a ⊆ s`.
+
+This is sometimes necessary in order to consider the same continuous functions applied to multiple
+distinct elements, with the added constraint that `cfc` does not suffice. This can occur, for
+example, if it is necessary to use uniqueness of this continuous functional calculus. -/
+@[simps!]
+noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    C(s, R) →⋆ₐ[R] A :=
+  cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R <| ⟨_, continuous_id.subtype_map hs⟩
+
+lemma cfcHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    Continuous (cfcHomSuperset ha hs) :=
+  (cfcHom_continuous ha).comp <| ContinuousMap.continuous_precomp _
+
+lemma cfcHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
+    cfcHomSuperset ha hs (.restrict s <| .id R) = a :=
+  cfcHom_id ha
+
+end Superset
+
+section IsClosedEmbedding
+
+/-- A class for the continuous functional calculus which requires the homomorphisms
+`C(spectrum R a, R) → A` to be closed embeddings, as opposed to only continuous and injective.
+
+The primary advantage of this is that one can conclude the range of this map is the closed
+star subalgebra generated by `a`. However, unless the topology on `A` is induced by a C⋆-norm,
+this is unlikely to occur. -/
+class ClosedEmbeddingContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
+    [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+    [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] extends
+    ContinuousFunctionalCalculus R A p where
+  isClosedEmbedding (a : A) (ha : p a) : Topology.IsClosedEmbedding (cfcHom (R := R) ha)
+
+lemma cfcHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A]
+    [StarRing A] [Algebra R A] [instCFC : ClosedEmbeddingContinuousFunctionalCalculus R A p]
+    {a : A} (ha : p a) : IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+  ClosedEmbeddingContinuousFunctionalCalculus.isClosedEmbedding a ha
+
+end IsClosedEmbedding

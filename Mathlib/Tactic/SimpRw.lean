@@ -3,9 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
+module
 
-import Mathlib.Init
-import Lean
+public import Mathlib.Init
 
 /-!
 # The `simp_rw` tactic
@@ -14,18 +14,21 @@ This file defines the `simp_rw` tactic: it functions as a mix of `simp` and `rw`
 Like `rw`, it applies each rewrite rule in the given order, but like `simp` it repeatedly applies
 these rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x ↦ ...`.
 -/
+
+public meta section
 namespace Mathlib.Tactic
 
-open Lean Parser.Tactic Elab.Tactic
+open Lean Elab.Tactic
+open Parser.Tactic (optConfig rwRuleSeq location getConfigItems)
 
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
   passes the rw rules on to `x`. -/
-def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
+def withSimpRWRulesSeq (rwRulesSeqStx : Syntax)
     (x : (symm : Bool) → (term : Syntax) → TacticM Unit) : TacticM Unit := do
   let lbrak := rwRulesSeqStx[0]
   let rules := rwRulesSeqStx[1].getArgs
   -- show initial state up to (incl.) `[`
-  withTacticInfoContext (mkNullNode #[token, lbrak]) (pure ())
+  withTacticInfoContext lbrak (pure ())
   let numRules := (rules.size + 1) / 2
   for i in [:numRules] do
     let rule := rules[i * 2]!
@@ -61,22 +64,14 @@ example {a : ℕ}
   simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
-  let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
-    match cfg with
-    | Option.none =>
-      `(config| (config := ({ failIfUnchanged := false } : Lean.Meta.Simp.Config)))
-    | Option.some c => match c with
-      | `(config| (config := $cfg)) =>
-        `(config| (config := ({ ($cfg : Lean.Meta.Simp.Config) with failIfUnchanged := false })))
-      | _ => throwError "malformed cfg"
-  evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
-  withSimpRWRulesSeq s rws fun symm term => do
+elab s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
+  evalTactic (← `(tactic| simp%$s $[$(getConfigItems cfg)]* (failIfUnchanged := false) only $(g)?))
+  withSimpRWRulesSeq rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
+        `(tactic| simp%$e $cfg only [← $e:term] $g ?)
       else
-        `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))
+        `(tactic| simp%$e $cfg only [$e:term] $g ?))
 
 end Mathlib.Tactic

@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.PowerBasis
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # The minimal polynomial divides the characteristic polynomial of a matrix.
@@ -13,22 +15,20 @@ import Mathlib.RingTheory.PowerBasis
 This also includes some miscellaneous results about `minpoly` on matrices.
 -/
 
+public section
+
 
 noncomputable section
 
-universe u v w
+open Matrix Module Polynomial
 
-open Polynomial Matrix
+universe u v w
 
 variable {R : Type u} [CommRing R]
 variable {n : Type v} [DecidableEq n] [Fintype n]
 variable {N : Type w} [AddCommGroup N] [Module R N]
 
-open Finset
-
 namespace Matrix
-
-open Matrix
 
 variable (M : Matrix n n R)
 
@@ -76,9 +76,7 @@ theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasi
     (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · subsingleton
   apply minpoly.unique' R h.gen (charpoly_monic _)
-  · apply (injective_iff_map_eq_zero (G := S) (leftMulMatrix _)).mp
-      (leftMulMatrix_injective h.basis)
-    rw [← Polynomial.aeval_algHom_apply, aeval_self_charpoly]
+  · exact aeval_charpoly_leftMulMatrix h.basis h.gen
   refine fun q hq => or_iff_not_imp_left.2 fun h0 => ?_
   rw [Matrix.charpoly_degree_eq_dim, Fintype.card_fin] at hq
   contrapose! hq; exact h.dim_le_degree_of_root h0 hq

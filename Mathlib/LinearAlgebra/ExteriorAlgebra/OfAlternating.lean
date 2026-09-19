@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 /-!
 # Extending an alternating map to the exterior algebra
@@ -21,6 +23,8 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
   exterior powers.
 
 -/
+
+@[expose] public section
 
 
 variable {R M N N' : Type*}
@@ -58,16 +62,13 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
     ext
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m) = f 1 ![m] := by
   dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
-  congr
-  -- Porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
-  -- the proof. Here, the instance can be synthesized but `congr` does not use it so the following
-  -- line is provided.
-  rw [Matrix.zero_empty]
+  congr!
 
 theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
     (x : ExteriorAlgebra R M) :
@@ -77,6 +78,7 @@ theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
   rw [foldl_mul, foldl_ι]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem liftAlternating_one (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
     liftAlternating (R := R) (M := M) (N := N) f (1 : ExteriorAlgebra R M) = f 0 0 := by
@@ -93,13 +95,10 @@ theorem liftAlternating_algebraMap (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (r : R)
 theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N)
     (v : Fin n → M) : liftAlternating (R := R) (M := M) (N := N) f (ιMulti R n v) = f n v := by
   rw [ιMulti_apply]
-  -- Porting note: `v` is generalized automatically so it was removed from the next line
-  induction' n with n ih generalizing f
-  · -- Porting note: Lean does not automatically synthesize the instance
-    -- `[Subsingleton (Fin 0 → M)]` which is needed for `Subsingleton.elim 0 v` on line 114.
-    letI : Subsingleton (Fin 0 → M) := by infer_instance
-    rw [List.ofFn_zero, List.prod_nil, liftAlternating_one, Subsingleton.elim 0 v]
-  · rw [List.ofFn_succ, List.prod_cons, liftAlternating_ι_mul, ih,
+  induction n generalizing f with
+  | zero => rw [List.ofFn_zero, List.prod_nil, liftAlternating_one, Subsingleton.elim 0 v]
+  | succ n ih =>
+    rw [List.ofFn_succ, List.prod_cons, liftAlternating_ι_mul, ih,
       AlternatingMap.curryLeft_apply_apply]
     congr
     exact Matrix.cons_head_tail _
@@ -115,11 +114,13 @@ theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, M [⋀^Fin i]→�
     g ∘ₗ liftAlternating (R := R) (M := M) (N := N) f := by
   ext v
   rw [LinearMap.comp_apply]
-  induction' v using CliffordAlgebra.left_induction with r x y hx hy x m hx generalizing f
-  · rw [liftAlternating_algebraMap, liftAlternating_algebraMap, map_smul,
+  induction v using CliffordAlgebra.left_induction generalizing f with
+  | algebraMap =>
+    rw [liftAlternating_algebraMap, liftAlternating_algebraMap, map_smul,
       LinearMap.compAlternatingMap_apply]
-  · rw [map_add, map_add, map_add, hx, hy]
-  · rw [liftAlternating_ι_mul, liftAlternating_ι_mul, ← hx]
+  | add _ _ hx hy => rw [map_add, map_add, map_add, hx, hy]
+  | ι_mul _ _ hx =>
+    rw [liftAlternating_ι_mul, liftAlternating_ι_mul, ← hx]
     simp_rw [AlternatingMap.curryLeft_compAlternatingMap]
 
 @[simp]
@@ -128,10 +129,10 @@ theorem liftAlternating_ιMulti :
     (LinearMap.id : ExteriorAlgebra R M →ₗ[R] ExteriorAlgebra R M) := by
   ext v
   dsimp
-  induction' v using CliffordAlgebra.left_induction with r x y hx hy x m hx
-  · rw [liftAlternating_algebraMap, ιMulti_zero_apply, Algebra.algebraMap_eq_smul_one]
-  · rw [map_add, hx, hy]
-  · simp_rw [liftAlternating_ι_mul, ιMulti_succ_curryLeft, liftAlternating_comp,
+  induction v using CliffordAlgebra.left_induction with
+  | algebraMap => rw [liftAlternating_algebraMap, ιMulti_zero_apply, Algebra.algebraMap_eq_smul_one]
+  | add _ _ hx hy => rw [map_add, hx, hy]
+  | ι_mul _ _ hx => simp_rw [liftAlternating_ι_mul, ιMulti_succ_curryLeft, liftAlternating_comp,
       LinearMap.comp_apply, LinearMap.mulLeft_apply, hx]
 
 /-- `ExteriorAlgebra.liftAlternating` is an equivalence. -/
@@ -141,7 +142,7 @@ def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorA
   map_add' := map_add _
   map_smul' := map_smul _
   invFun F i := F.compAlternatingMap (ιMulti R i)
-  left_inv f := funext fun i => liftAlternating_comp_ιMulti _
+  left_inv _ := funext fun _ => liftAlternating_comp_ιMulti _
   right_inv F :=
     (liftAlternating_comp _ _).trans <| by rw [liftAlternating_ιMulti, LinearMap.comp_id]
 

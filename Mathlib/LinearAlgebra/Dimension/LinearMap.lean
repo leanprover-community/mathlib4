@@ -3,8 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!
 # The rank of a linear map
@@ -13,6 +17,8 @@ import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 -  `LinearMap.rank`: The rank of a linear map.
 -/
 
+public section
+
 
 noncomputable section
 
@@ -20,21 +26,21 @@ universe u v v' v''
 
 variable {K : Type u} {V V₁ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 
-open Cardinal Basis Submodule Function Set
+open Cardinal Submodule Function Set
 
 namespace LinearMap
 
-section Ring
+section Semiring
 
-variable [Ring K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-variable [AddCommGroup V'] [Module K V']
+variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₁] [Module K V₁]
+variable [AddCommMonoid V'] [Module K V']
 
 /-- `rank f` is the rank of a `LinearMap` `f`, defined as the dimension of `f.range`. -/
 abbrev rank (f : V →ₗ[K] V') : Cardinal :=
   Module.rank K (LinearMap.range f)
 
 theorem rank_le_range (f : V →ₗ[K] V') : rank f ≤ Module.rank K V' :=
-  rank_submodule_le _
+  Submodule.rank_le _
 
 theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
   rank_range_le _
@@ -43,10 +49,10 @@ theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
 theorem rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
   rw [rank, LinearMap.range_zero, rank_bot]
 
-variable [AddCommGroup V''] [Module K V'']
+variable [AddCommMonoid V''] [Module K V'']
 
 theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.comp g) ≤ rank f := by
-  refine rank_le_of_submodule _ _ ?_
+  refine Submodule.rank_mono ?_
   rw [LinearMap.range_comp]
   exact LinearMap.map_le_range
 
@@ -72,30 +78,40 @@ theorem rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'₁) :
     rank (f.comp g) ≤ min (rank f) (rank g) := by
   simpa only [Cardinal.lift_id] using lift_rank_comp_le g f
 
-end Ring
+end Semiring
+
+section HasRankNullity
+
+variable [Ring K] [HasRankNullity.{v'} K] [AddCommGroup V] [Module K V] [AddCommGroup V₁]
+  [Module K V₁] [AddCommGroup V'] [Module K V']
+
+theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
+  calc
+    rank (f + g) ≤ Module.rank K (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') := by
+      refine Submodule.rank_mono ?_
+      exact LinearMap.range_le_iff_comap.2 <| eq_top_iff'.2 fun x =>
+        show f x + g x ∈ (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') from
+        mem_sup.2 ⟨_, ⟨x, rfl⟩, _, ⟨x, rfl⟩, rfl⟩
+    _ ≤ rank f + rank g := Submodule.rank_add_le_rank_add_rank _ _
+
+theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
+    rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
+  have := nontrivial_of_hasRankNullity K
+  @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
+    (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
+
+@[deprecated (since := "2026-04-08")] alias rank_finset_sum_le := rank_finsetSum_le
+
+end HasRankNullity
 
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
 variable [AddCommGroup V'] [Module K V']
 
-theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
-  calc
-    rank (f + g) ≤ Module.rank K (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') := by
-      refine rank_le_of_submodule _ _ ?_
-      exact LinearMap.range_le_iff_comap.2 <| eq_top_iff'.2 fun x =>
-        show f x + g x ∈ (LinearMap.range f ⊔ LinearMap.range g : Submodule K V') from
-        mem_sup.2 ⟨_, ⟨x, rfl⟩, _, ⟨x, rfl⟩, rfl⟩
-    _ ≤ rank f + rank g := Submodule.rank_add_le_rank_add_rank _ _
-
-theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
-    rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
-  @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
-    (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (add_le_add_left h _)
-
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,
-    Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndependent K (fun x : s => f x) := by
+    Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndepOn K f s := by
   rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
   have fg : LeftInverse f.rangeRestrict g := LinearMap.congr_fun hg
   refine ⟨fun h => ?_, ?_⟩
@@ -103,14 +119,14 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
     refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
     replace fg : ∀ x, f (g x) = x := by
       intro x
-      convert congr_arg Subtype.val (fg x)
-    replace si : LinearIndependent K fun x : s => f (g x) := by
-      simpa only [fg] using si.map' _ (ker_subtype _)
-    exact si.image_of_comp s g f
+      convert! congr_arg Subtype.val (fg x)
+    replace si : LinearIndepOn K (fun x => f (g x)) s := by
+      simpa only [fg] using! si.map' _ (ker_subtype _)
+    exact si.image_of_comp
   · rintro ⟨s, hsc, si⟩
-    have : LinearIndependent K fun x : s => f.rangeRestrict x :=
-      LinearIndependent.of_comp f.range.subtype (by convert si)
-    convert this.image.cardinal_le_rank
+    have : LinearIndepOn K f.rangeRestrict s :=
+      LinearIndependent.of_comp (LinearMap.range f).subtype (by convert! si)
+    convert! this.id_image.cardinal_le_rank
     rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
     exact injOn_iff_injective.2 this.injective
 
