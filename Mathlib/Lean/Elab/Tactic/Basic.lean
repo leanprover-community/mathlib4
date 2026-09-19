@@ -10,7 +10,7 @@ public import Mathlib.Lean.Meta
 # Additions to `Lean.Elab.Tactic.Basic`
 -/
 
-@[expose] public section
+public section
 
 open Lean Elab Tactic
 
