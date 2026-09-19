@@ -27,7 +27,7 @@ through a point on that sphere.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 
@@ -43,7 +43,6 @@ the second intersection with the sphere through `p` and with center `s.center`. 
 def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
   (-2 * ⟪v, p -ᵥ s.center⟫ / ⟪v, v⟫) • v +ᵥ p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Sphere.secondInter_map (s : Sphere P) (p : P) (v : V) (f : P →ᵃⁱ[ℝ] P₂) :
     Sphere.secondInter ⟨f s.center, s.radius⟩ (f p) (f.linearIsometry v) =
       f (s.secondInter p v) := by
@@ -145,7 +144,37 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   convert! zero_div (G₀ := ℝ) _
   ring
 
-set_option backward.isDefEq.respectTransparency false in
+/-- The difference between the second intersections of two spheres along a common
+direction `v` is `(2 * ⟪v, s₁.center -ᵥ s₂.center⟫ / ⟪v, v⟫) • v`. -/
+theorem Sphere.secondInter_vsub_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫ / ⟪v, v⟫) • v := by
+  rw [Sphere.secondInter, Sphere.secondInter, vadd_vsub_vadd_cancel_right, ← sub_smul,
+    ← vsub_sub_vsub_cancel_left s₁.center s₂.center p, inner_sub_right]
+  grind
+
+/-- The difference between the second intersections of two spheres along a common
+unit direction `v` is `(2 * ⟪v, s₁.center -ᵥ s₂.center⟫) • v`. -/
+theorem Sphere.secondInter_vsub_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫) • v := by
+  simp [hv, secondInter_vsub_secondInter]
+
+/-- The distance between the second intersections of two spheres along a common
+direction `v` is `2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖`. -/
+theorem Sphere.dist_secondInter_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖ := by
+  rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  simp [dist_eq_norm_vsub, secondInter_vsub_secondInter, norm_smul]
+  grind
+
+/-- The distance between the second intersections of two spheres along a common
+unit direction `v` is `2 * |⟪v, s₁.center -ᵥ s₂.center⟫|`. -/
+theorem Sphere.dist_secondInter_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| := by
+  rw [dist_secondInter_secondInter, hv, div_one]
+
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
 theorem Sphere.secondInter_eq_lineMap (s : Sphere P) (p p' : P) :
@@ -214,7 +243,6 @@ lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite {s :
 
 attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
 vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
 subtraction involving that vertex and a point in the interior of the simplex, the given vertex
