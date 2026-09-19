@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Data.Finset.Defs
 
 import Mathlib.Algebra.Group.Subsemigroup.Membership
-import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.CompleteLattice.Finset
 
 /-!
