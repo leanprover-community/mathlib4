@@ -203,4 +203,29 @@ example {a b : ℚ} [Fact (¬ IsSquare (discr a b))] : Field (QuadraticAlgebra �
 
 end field
 
+section degenerate
+
+variable {K : Type*} [Field K]
+
+/-- If the discriminant is zero, `QuadraticAlgebra K a b` is the algebra of dual numbers
+`K[ε] = K[X] / (X ^ 2)`, in which `ε` is nilpotent of order two. -/
+def algEquivDualNumberOfDiscrZero [NeZero (2 : K)] {a b : K} (h : discr a b = 0) :
+    QuadraticAlgebra K a b ≃ₐ[K] DualNumber K :=
+  letI := invertibleOfNonzero (two_ne_zero (α := K))
+  (algEquivDiscrZero a b).trans (by rw [h]; exact algEquivDualNumber K)
+
+/-- If the discriminant is a nonzero square, `QuadraticAlgebra K a b` splits as `K × K`,
+via the two distinct roots `(b ± s) / 2` of `X ^ 2 - b * X - a`. -/
+noncomputable def algEquivProdOfDiscrSq [NeZero (2 : K)] {a b s : K} (hd : discr a b = s ^ 2)
+    (hs : s ≠ 0) : QuadraticAlgebra K a b ≃ₐ[K] K × K :=
+  letI := invertibleOfNonzero (two_ne_zero (α := K))
+  (algEquivDiscrZero a b).trans <| hd ▸ AlgEquiv.ofBijective
+    (lift ⟨(s, -s), by ext <;> simp <;> ring⟩)
+    (Function.bijective_iff_has_inverse.mpr
+      ⟨fun p ↦ ⟨2⁻¹ * (p.1 + p.2), 2⁻¹ * (p.1 - p.2) / s⟩,
+      fun _ ↦ by ext <;> simp [lift_apply_apply] <;> field_simp <;> ring,
+      fun _ ↦ by ext <;> simp [lift_apply_apply] <;> field_simp <;> ring⟩)
+
+end degenerate
+
 end QuadraticAlgebra
