@@ -32,4 +32,4 @@ set_option linter.translate.warnInvalid false in
 attribute [to_additive (reorder := α β)] HPow
 attribute [to_additive existing (reorder := α β, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := α β, hPow (1 2))] HPow.mk
-attribute [to_additive existing] instHPow
+attribute [to_additive existing] instHPow npowRec
