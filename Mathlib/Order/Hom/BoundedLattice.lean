@@ -291,7 +291,10 @@ theorem cancel_left {g : SupBotHom β γ} {f₁ f₂ : SupBotHom α β} (hg : In
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => SupBotHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
-@[to_dual (attr := simps)]
+/-- Order isomorphisms between domains and codomains gives an equivalence between the types of
+`⊔` and `⊥` preserving maps. -/
+@[to_dual (attr := simps) /-- Order isomorphisms between domains and codomains gives an equivalence
+between the types of `⊓` and `⊤` preserving maps. -/]
 def _root_.OrderIso.supBotHomCongr {α β γ δ : Type*} [SemilatticeSup α] [SemilatticeSup β]
     [SemilatticeSup γ] [SemilatticeSup δ] [OrderBot α] [OrderBot β] [OrderBot γ] [OrderBot δ]
     (e : α ≃o γ) (e' : β ≃o δ) : SupBotHom α β ≃ SupBotHom γ δ where
@@ -481,8 +484,9 @@ theorem cancel_left {g : BoundedLatticeHom β γ} {f₁ f₂ : BoundedLatticeHom
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
-@[simps]
-def _root_.OrderIso.boundedLatticeHomCongr (e : α ≃o γ) (e' : β ≃o δ) :
+/-- Order isomorphisms between domains and codomains gives an equivalence between the types of
+bounded lattice homomorphisms. -/
+@[simps] def _root_.OrderIso.boundedLatticeHomCongr (e : α ≃o γ) (e' : β ≃o δ) :
     BoundedLatticeHom α β ≃ BoundedLatticeHom γ δ where
   toFun f := (e' : BoundedLatticeHom β δ).comp (f.comp e.symm)
   invFun f := (e'.symm : BoundedLatticeHom δ β).comp (f.comp e)
