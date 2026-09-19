@@ -170,6 +170,7 @@ section
 
 variable {K K'} [HasColimitsOfShape K' C] [HasLimitsOfShape K C]
 
+-- to be moved
 noncomputable def colimitToLimit (F : K' ⥤ K ⥤ C) :
     colimit (F ⋙ lim) ⟶ limit (F.flip ⋙ colim) :=
   colimit.desc _ (Cocone.mk _
@@ -250,7 +251,7 @@ instance [HasColimitsOfShape K' C] [HasLimitsOfShape K C]
 
 instance [HasColimitsOfShape K' C] [HasExactColimitsOfShape K' C] [HasFiniteLimits C] :
     ObjectProperty.IsClosedUnderFiniteLimits
-    (preservesColimitsOfShape K' : ObjectProperty (J ⥤ C)) where
+      (preservesColimitsOfShape K' : ObjectProperty (J ⥤ C)) where
 
 instance (F : K ⥤ J) [HasColimitsOfShape K' C] :
     ObjectProperty.IsClosedUnderColimitsOfShape
