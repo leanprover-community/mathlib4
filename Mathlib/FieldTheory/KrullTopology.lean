@@ -236,7 +236,7 @@ instance : TotallySeparatedSpace Gal(L/K) := by
 instance krullTopology_t2 : T2Space Gal(L/K) := TotallySeparatedSpace.t2Space
 
 /-- The Krull topology on `Gal(L/K)` is totally separated. -/
-@[deprecated TotallySeparatedSpace.isTotallySeparated_univ (since := "2026-03-05")]
+@[deprecated TotallySeparatedSpace.isTotallySeparated_univ +typeChanged (since := "2026-03-05")]
 theorem krullTopology_isTotallySeparated :
     IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance
@@ -272,7 +272,7 @@ instance krullTopology_discreteUniformity_of_essFiniteType
   have hx : x ∈ (⊤ : IntermediateField K L) := IntermediateField.mem_top
   rw [hpe]
   revert x hx
-  rw [← SetLike.le_def, ← hs, IntermediateField.adjoin_le_iff]
+  rw [← IsConcreteLE.le_iff, ← hs, IntermediateField.adjoin_le_iff]
   intro x hx
   rw [SetLike.mem_coe, ← hpe]
   exact hp x hx

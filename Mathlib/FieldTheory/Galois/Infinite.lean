@@ -59,7 +59,7 @@ open scoped Pointwise
 open FiniteGaloisIntermediateField AlgEquiv
 --Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
-@[deprecated IntermediateField.isClosed_fixingSubgroup (since := "2026-05-14")]
+@[deprecated IntermediateField.isClosed_fixingSubgroup +typeChanged (since := "2026-05-14")]
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set Gal(K/k)) :=
   IntermediateField.isClosed_fixingSubgroup L
