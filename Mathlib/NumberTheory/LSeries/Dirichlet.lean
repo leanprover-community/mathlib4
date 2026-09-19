@@ -161,11 +161,14 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
   simp_all [χ.map_nonunit this, delta]
 
+/-- A Dirichlet character mod `1` takes the value `1` everywhere. -/
+@[simp] lemma modOne_eq_one' {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1}
+    (y : ZMod 1) : χ y = 1 := by
+  rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _)]
+
 /-- The Dirichlet character mod `1` corresponds to the constant function `1`. -/
 lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1} :
-    ((χ ·) : ℕ → R) = 1 := by
-  ext
-  rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
+    ((χ ·) : ℕ → R) = 1 := funext fun _ ↦ modOne_eq_one' _
 
 lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
   congr_arg L modOne_eq_one

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll, David Loeffler
+Authors: Michael Stoll, David Loeffler, Terence Tao
 -/
 module
 
@@ -24,6 +24,13 @@ happens to be non-zero).
 
 These results are prerequisites for the **Prime Number Theorem** and
 **Dirichlet's Theorem** on primes in arithmetic progressions.
+
+Using the functional equation, these results are extended to the left half-plane in
+`LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
+integers and negative even integers respectively.
+
+As a byproduct of the above analysis, non-vanishing theorems for the root number or Gauss sum
+associated to a Dirichlet L-function are also provided.
 
 ## Outline of proofs
 
@@ -415,6 +422,75 @@ lemma _root_.riemannZeta_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hs : 1 ≤ s.re) :
   rcases eq_or_ne s 1 with rfl | hs₀
   · exact riemannZeta_one_ne_zero
   · exact LFunction_modOne_eq (χ := 1) ▸ LFunction_ne_zero_of_one_le_re _ (.inr hs₀) hs
+
+/-- The completed `L`-function of a Dirichlet character does not vanish for `1 ≤ re s`,
+except when `χ` is trivial and `s = 1`. -/
+theorem completedLFunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 1)
+    (hs : 1 ≤ s.re) : completedLFunction χ s ≠ 0 :=
+  fun _ ↦ LFunction_ne_zero_of_one_le_re χ hχs hs (by grind [zero_re,
+    LFunction_eq_completed_div_gammaFactor])
+
+variable {χ}
+
+/-- The root numbers of a primitive Dirichlet character and of its inverse multiply to `1`.
+-/
+theorem rootNumber_mul_rootNumber_inv (hχ : χ.IsPrimitive) :
+    rootNumber χ * rootNumber χ⁻¹ = 1 := by
+  have : completedLFunction χ 2 ≠ 0 :=
+    completedLFunction_ne_zero_of_one_le_re χ (by grind) (by simp)
+  have : completedLFunction χ 2
+      = (N : ℂ) ^ (-(3 / 2 : ℂ)) * rootNumber χ * completedLFunction χ⁻¹ (-1) := by
+    convert hχ.completedLFunction_one_sub (-1) <;> norm_num
+  have : completedLFunction χ⁻¹ (-1)
+      = (N : ℂ) ^ (3 / 2 : ℂ) * rootNumber χ⁻¹ * completedLFunction χ 2 := by
+    have : χ⁻¹.IsPrimitive := by grind [isPrimitive_def, conductor_inv]
+    convert this.completedLFunction_one_sub 2 <;> norm_num
+  grind [cpow_neg]
+
+theorem rootNumber_ne_zero (hχ : χ.IsPrimitive) : rootNumber χ ≠ 0 := by
+  grind [rootNumber_mul_rootNumber_inv]
+
+/-- **The root number of a primitive Dirichlet character has absolute value one.** -/
+theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
+  have : ‖gaussSum χ ZMod.stdAddChar‖ = ‖gaussSum χ⁻¹ ZMod.stdAddChar‖ := by
+    rw [← norm_star, star_gaussSum_eq, AddChar.inv_mulShift,
+      (by simp : (-1 : ZMod N) = ((-1 : (ZMod N)ˣ) : ZMod N)), gaussSum_mulShift_eq]
+    simp_all
+  have : ‖rootNumber χ‖ = ‖rootNumber χ⁻¹‖ := by simp [rootNumber, -pow_ite, this]
+  have : ‖rootNumber χ‖ * ‖rootNumber χ⁻¹‖ = 1 := by simp [← norm_mul,
+    rootNumber_mul_rootNumber_inv hχ]
+  nlinarith [norm_nonneg (rootNumber χ)]
+
+/-- **The Gauss sum of a primitive Dirichlet character has absolute value `√N`.** -/
+theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
+    ‖gaussSum χ ZMod.stdAddChar‖ = .sqrt N := by
+  suffices ‖gaussSum χ ZMod.stdAddChar‖ / .sqrt N = ‖rootNumber χ‖ by grind [norm_rootNumber]
+  simp [rootNumber, -pow_ite, norm_natCast_cpow_of_pos, NeZero.pos, Real.sqrt_eq_rpow]
+
+/-- **The zeros of a primitive Dirichlet `L`-function in the closed left half-plane are exactly
+those of its archimedean Gamma factor**, with the sole exception of `s = 0` for the trivial
+character. -/
+theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs : s.re ≤ 0) :
+    LFunction χ s = 0 ↔ χ.gammaFactor s = 0 ∧ (N ≠ 1 ∨ s ≠ 0):= by
+  have := NeZero.ne N
+  by_cases hχs : χ = 1 ∧ s = 0
+  · rw [hχs.1, hχs.2, ← changeLevel_one (d := 1), LFunction_changeLevel, gammaFactor_eq_zero_even]
+    <;> simp [LFunction_modOne_eq, riemannZeta_zero, this]
+  have : s ≠ 0 ∨ N ≠ 1 := by contrapose! hχs; simp_all [level_one']
+  suffices completedLFunction χ (1 - (1 - s)) ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
+  rw [hχ.completedLFunction_one_sub]
+  apply_rules (transparency := .reducible) [mul_ne_zero, rootNumber_ne_zero,
+    completedLFunction_ne_zero_of_one_le_re]
+  <;> grind [cpow_eq_zero_iff, Nat.cast_eq_zero, sub_re, one_re, inv_eq_one, sub_ne_zero]
+
+/-- **The zeros of `ζ` in the closed left half-plane are exactly the trivial ones**. -/
+theorem _root_.riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
+    riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
+  rw [← LFunction_modOne_eq (χ := 1), LFunction_eq_zero_iff_of_re_nonpos
+    isPrimitive_one_level_one hs, gammaFactor_eq_zero_even (by simp)]
+  constructor
+  · rintro ⟨⟨n, rfl⟩, _⟩; exact ⟨n - 1, by simp_all; norm_cast; grind⟩
+  · rintro ⟨n, rfl⟩; exact ⟨⟨n + 1, by norm_cast⟩, by grind⟩
 
 end nonvanishing
 

@@ -539,6 +539,9 @@ lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
   suffices ψ (-1) ^ 2 = 1 by convert! sq_eq_one_iff.mp this
   rw [← map_pow _, neg_one_sq, map_one]
 
+/-- The trivial Dirichlet character is even. -/
+@[simp] lemma even_one : (1 : DirichletCharacter S m).Even := MulChar.one_apply (by simp)
+
 lemma not_even_and_odd [NeZero (2 : S)] : ¬(ψ.Even ∧ ψ.Odd) := by
   rintro ⟨(h : _ = 1), (h' : _ = -1)⟩
   simp only [h', neg_eq_iff_add_eq_zero, one_add_one_eq_two, two_ne_zero] at h
