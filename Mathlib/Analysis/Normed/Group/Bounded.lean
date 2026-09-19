@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Order.Filter.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Order.Filter.Pointwise
 
 /-!
 # Boundedness in normed groups
@@ -16,6 +18,8 @@ This file rephrases metric boundedness in terms of norms.
 
 normed group
 -/
+
+public section
 
 open Filter Metric Bornology
 open scoped Pointwise Topology
@@ -60,7 +64,7 @@ lemma Filter.inv_cobounded : (cobounded E)⁻¹ = cobounded E := by
   simp only [← comap_norm_atTop', ← Filter.comap_inv, comap_comap, Function.comp_def, norm_inv']
 
 /-- In a (semi)normed group, inversion `x ↦ x⁻¹` tends to infinity at infinity. -/
-@[to_additive "In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity."]
+@[to_additive /-- In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity. -/]
 theorem Filter.tendsto_inv_cobounded : Tendsto Inv.inv (cobounded E) (cobounded E) :=
   inv_cobounded.le
 
@@ -68,11 +72,8 @@ theorem Filter.tendsto_inv_cobounded : Tendsto Inv.inv (cobounded E) (cobounded 
 lemma isBounded_iff_forall_norm_le' : Bornology.IsBounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ ≤ C := by
   simpa only [Set.subset_def, mem_closedBall_one_iff] using isBounded_iff_subset_closedBall (1 : E)
 
+@[to_additive exists_norm_le]
 alias ⟨Bornology.IsBounded.exists_norm_le', _⟩ := isBounded_iff_forall_norm_le'
-
-alias ⟨Bornology.IsBounded.exists_norm_le, _⟩ := isBounded_iff_forall_norm_le
-
-attribute [to_additive existing exists_norm_le] Bornology.IsBounded.exists_norm_le'
 
 @[to_additive exists_pos_norm_le]
 lemma Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
@@ -86,8 +87,8 @@ lemma Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, �
 
 @[to_additive]
 lemma NormedCommGroup.cauchySeq_iff [Nonempty α] [SemilatticeSup α] {u : α → E} :
-    CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → ‖u m / u n‖ < ε := by
-  simp [Metric.cauchySeq_iff, dist_eq_norm_div]
+    CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → ‖(u m)⁻¹ * u n‖ < ε := by
+  simp [Metric.cauchySeq_iff, dist_eq_norm_inv_mul]
 
 @[to_additive IsCompact.exists_bound_of_continuousOn]
 lemma IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
@@ -104,16 +105,16 @@ lemma HasCompactMulSupport.exists_bound_of_continuous [TopologicalSpace α]
 and a bounded function tends to one. This lemma is formulated for any binary operation
 `op : E → F → G` with an estimate `‖op x y‖ ≤ A * ‖x‖ * ‖y‖` for some constant A instead of
 multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/
-@[to_additive "A helper lemma used to prove that the (scalar or usual) product of a function that
+@[to_additive /-- A helper lemma used to prove that the (scalar or usual) product of a function that
 tends to zero and a bounded function tends to zero. This lemma is formulated for any binary
 operation `op : E → F → G` with an estimate `‖op x y‖ ≤ A * ‖x‖ * ‖y‖` for some constant A instead
-of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`."]
+of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/]
 lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
   obtain ⟨A, h_op⟩ := h_op
   rcases hg with ⟨C, hC⟩; rw [eventually_map] at hC
-  rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
+  rw [NormedGroup.tendsto_nhds_one] at hf ⊢
   intro ε ε₀
   rcases exists_pos_mul_lt ε₀ (A * C) with ⟨δ, δ₀, hδ⟩
   filter_upwards [hf δ δ₀, hC] with i hf hg
@@ -130,14 +131,21 @@ lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l 
 and a bounded function tends to one. This lemma is formulated for any binary operation
 `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y‖` instead of multiplication so that it
 can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/
-@[to_additive "A helper lemma used to prove that the (scalar or usual) product of a function that
+@[to_additive /-- A helper lemma used to prove that the (scalar or usual) product of a function that
 tends to zero and a bounded function tends to zero. This lemma is formulated for any binary
 operation `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y‖` instead of multiplication so
-that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`."]
+that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/]
 theorem Filter.Tendsto.op_one_isBoundedUnder_le {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∀ x y, ‖op x y‖ ≤ ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) :=
   hf.op_one_isBoundedUnder_le' hg op ⟨1, fun x y => (one_mul ‖x‖).symm ▸ h_op x y⟩
+
+@[to_additive tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding]
+lemma tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding' {X : Type*} [TopologicalSpace X]
+    [DiscreteTopology X] [ProperSpace E] {e : X → E}
+    (he : Topology.IsClosedEmbedding e) : Tendsto (norm ∘ e) cofinite atTop := by
+  rw [← Filter.cocompact_eq_cofinite X]
+  apply tendsto_norm_cocompact_atTop'.comp (Topology.IsClosedEmbedding.tendsto_cocompact he)
 
 end SeminormedGroup
 

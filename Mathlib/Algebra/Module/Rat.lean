@@ -3,14 +3,17 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Order.Field.Rat
+module
+
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Module.End
+public import Mathlib.Algebra.Field.Rat
 
 /-!
 # Basic results about modules over the rationals.
 -/
+
+public section
 
 universe u v
 
@@ -72,33 +75,51 @@ instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
 
+/-- `nnqsmul` is equal to any other module structure via a cast. -/
+lemma NNRat.cast_smul_eq_nnqsmul (R : Type*) [DivisionSemiring R]
+    [MulAction R M] [MulAction ℚ≥0 M] [IsScalarTower ℚ≥0 R M]
+    (q : ℚ≥0) (x : M) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
+
+/-- `qsmul` is equal to any other module structure via a cast. -/
+lemma Rat.cast_smul_eq_qsmul (R : Type*) [DivisionRing R]
+    [MulAction R M] [MulAction ℚ M] [IsScalarTower ℚ R M]
+    (q : ℚ) (x : M) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
+
 section
 variable {α : Type u} {M : Type v}
 
-instance SMulCommClass.nnrat [Monoid α] [AddCommMonoid M] [DistribMulAction α M] [Module ℚ≥0 M] :
+instance SMulCommClass.nnrat [AddCommMonoid M] [DistribSMul α M] [Module ℚ≥0 M] :
     SMulCommClass ℚ≥0 α M where
-  smul_comm r x y := (map_nnrat_smul (DistribMulAction.toAddMonoidHom M x) r y).symm
+  smul_comm r x y := (map_nnrat_smul (DistribSMul.toAddMonoidHom M x) r y).symm
 
-instance SMulCommClass.rat [Monoid α] [AddCommGroup M] [DistribMulAction α M] [Module ℚ M] :
+instance SMulCommClass.rat [AddCommGroup M] [DistribSMul α M] [Module ℚ M] :
     SMulCommClass ℚ α M where
-  smul_comm r x y := (map_rat_smul (DistribMulAction.toAddMonoidHom M x) r y).symm
+  smul_comm r x y := (map_rat_smul (DistribSMul.toAddMonoidHom M x) r y).symm
 
-instance SMulCommClass.nnrat' [Monoid α] [AddCommMonoid M] [DistribMulAction α M] [Module ℚ≥0 M] :
+instance SMulCommClass.nnrat' [AddCommMonoid M] [DistribSMul α M] [Module ℚ≥0 M] :
     SMulCommClass α ℚ≥0 M :=
   SMulCommClass.symm _ _ _
 
-instance SMulCommClass.rat' [Monoid α] [AddCommGroup M] [DistribMulAction α M] [Module ℚ M] :
+instance SMulCommClass.rat' [AddCommGroup M] [DistribSMul α M] [Module ℚ M] :
     SMulCommClass α ℚ M :=
   SMulCommClass.symm _ _ _
 
 end
 
--- see note [lower instance priority]
-instance (priority := 100) NNRatModule.noZeroSMulDivisors [AddCommMonoid M] [Module ℚ≥0 M] :
-    NoZeroSMulDivisors ℕ M :=
-  ⟨fun {k} {x : M} h => by simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 k x] using h⟩
+variable (M) in
+/-- A `ℚ≥0`-module is torsion-free as a group.
 
--- see note [lower instance priority]
-instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
-    NoZeroSMulDivisors ℤ M :=
-  ⟨fun {k} {x : M} h => by simpa [← Int.cast_smul_eq_zsmul ℚ k x] using h⟩
+This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
+lemma IsAddTorsionFree.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : IsAddTorsionFree M where
+  nsmul_right_injective n hn x y hxy := by
+    simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hxy)
+
+variable (M) in
+/-- A `ℚ≥0`-module is torsion-free as a group.
+
+This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
+lemma IsAddTorsionFree.of_module_rat [AddCommGroup M] [Module ℚ M] : IsAddTorsionFree M where
+  nsmul_right_injective n hn x y hxy := by
+    simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hxy)

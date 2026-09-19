@@ -3,14 +3,18 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 
 /-!
 # HasPullback
-`HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
-pullacks.
 
-# Main definitions
+`HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
+pullbacks.
+
+## Main definitions
 
 * `HasPullback f g`: this is an abbreviation for `HasLimit (cospan f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pullback.
@@ -20,40 +24,40 @@ pullacks.
 
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
-```
-  pullback f g ---pullback.snd f g---> Y
-      |                                |
-      |                                |
-pullback.snd f g                       g
-      |                                |
-      v                                v
-      X --------------f--------------> Z
-```
+  ```
+    pullback f g ---pullback.fst f g---> X
+        |                                |
+        |                                |
+  pullback.snd f g                       f
+        |                                |
+        v                                v
+        Y --------------g--------------> Z
+  ```
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pushout.
 * `HasPushouts`: expresses the fact that `C` admits all pushouts, it is implemented as an
-abbreviation for `HasColimitsOfShape WalkingSpan C`
+  abbreviation for `HasColimitsOfShape WalkingSpan C`
 * `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
   object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
-```
+  ```
       X --------------f--------------> Y
       |                                |
-      g                          pushout.inr f g
+      g                          pushout.inl f g
       |                                |
       v                                v
-      Z ---pushout.inl f g---> pushout f g
-```
+      Z ---pushout.inr f g---> pushout f g
+  ```
 
-# Main results & API
+## Main results & API
 * The following API is available for using the universal property of `pullback f g`:
-`lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
+  `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
 * `pullback.map` is the induced map between pullbacks `W ×ₛ X ⟶ Y ×ₜ Z` given pointwise
-(compatible) maps `W ⟶ Y`, `X ⟶ Z` and `S ⟶ T`.
+  (compatible) maps `W ⟶ Y`, `X ⟶ Z` and `S ⟶ T`.
 
 * `pullbackComparison`: Given a functor `G`, this is the natural morphism
-`G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g)`
+  `G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g)`
 
 * `pullbackSymmetry` provides the natural isomorphism `pullback f g ≅ pullback g f`
 
@@ -63,6 +67,8 @@ abbreviation for `HasColimitsOfShape WalkingSpan C`
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -76,15 +82,13 @@ open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Ho
 
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
-/-- `HasPullback f g` represents a particular choice of limiting cone
-for the pair of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`.
--/
+/-- Two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z` have a pullback if the diagram `cospan f g` has a
+limit. -/
 abbrev HasPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasLimit (cospan f g)
 
-/-- `HasPushout f g` represents a particular choice of colimiting cocone
-for the pair of morphisms `f : X ⟶ Y` and `g : X ⟶ Z`.
--/
+/-- Two morphisms `f : X ⟶ Y` and `g : X ⟶ Z` have a pushout if the diagram `span f g` has a
+colimit. -/
 abbrev HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
   HasColimit (span f g)
 
@@ -100,7 +104,7 @@ abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
 abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 
-/-- The cocone associated to the pullback of `f` and `g` -/
+/-- The cocone associated to the pushout of `f` and `g` -/
 abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
   colimit.cocone (span f g)
 
@@ -121,16 +125,26 @@ abbrev pushout.inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Z 
   colimit.ι (span f g) WalkingSpan.right
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
-    `pullback.lift : W ⟶ pullback f g`. -/
+`pullback.lift : W ⟶ pullback f g`. -/
 abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
-    (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : W ⟶ pullback f g :=
+    (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
 
+lemma pullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) :
+    ∃ (l : W ⟶ pullback f g), l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k :=
+  ⟨pullback.lift h k, by simp⟩
+
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
-    `pushout.desc : pushout f g ⟶ W`. -/
+`pushout.desc : pushout f g ⟶ W`. -/
 abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
-    (w : f ≫ h = g ≫ k) : pushout f g ⟶ W :=
+    (w : f ≫ h = g ≫ k := by cat_disch) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
+
+lemma pushout.exists_desc {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
+    (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k := by cat_disch) :
+    ∃ (l : pushout f g ⟶ W), pushout.inl f g ≫ l = h ∧ pushout.inr f g ≫ l = k :=
+  ⟨pushout.desc h k, by simp⟩
 
 /-- The cone associated to a pullback is a limit cone. -/
 abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
@@ -177,18 +191,20 @@ theorem pushout.inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f
   colimit.ι_desc _ _
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
-    `l : W ⟶ pullback f g` such that `l ≫ pullback.fst = h` and `l ≫ pullback.snd = k`. -/
+`l : W ⟶ pullback f g` such that `l ≫ pullback.fst = h` and `l ≫ pullback.snd = k`. -/
 def pullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) :
-      { l : W ⟶ pullback f g // l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k } :=
+    { l : W ⟶ pullback f g // l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k } :=
   ⟨pullback.lift h k w, pullback.lift_fst _ _ _, pullback.lift_snd _ _ _⟩
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
-    `l : pushout f g ⟶ W` such that `pushout.inl _ _ ≫ l = h` and `pushout.inr _ _ ≫ l = k`. -/
-def pullback.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
+`l : pushout f g ⟶ W` such that `pushout.inl _ _ ≫ l = h` and `pushout.inr _ _ ≫ l = k`. -/
+def pushout.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) :
-      { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
+    { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
   ⟨pushout.desc h k w, pushout.inl_desc _ _ _, pushout.inr_desc _ _ _⟩
+
+@[deprecated (since := "2026-06-25")] alias pullback.desc' := pushout.desc'
 
 @[reassoc]
 theorem pullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] :
@@ -201,7 +217,7 @@ theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f 
   PushoutCocone.condition _
 
 /-- Two morphisms into a pullback are equal if their compositions with the pullback morphisms are
-    equal -/
+equal -/
 @[ext 1100]
 theorem pullback.hom_ext {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] {W : C}
     {k l : W ⟶ pullback f g} (h₀ : k ≫ pullback.fst f g = l ≫ pullback.fst f g)
@@ -214,7 +230,7 @@ def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
   PullbackCone.mkSelfIsLimit <| pullback.isLimit f g
 
 /-- Two morphisms out of a pushout are equal if their compositions with the pushout morphisms are
-    equal -/
+equal -/
 @[ext 1100]
 theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] {W : C}
     {k l : pushout f g ⟶ W} (h₀ : pushout.inl _ _ ≫ k = pushout.inl _ _ ≫ l)
@@ -225,7 +241,7 @@ theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g]
 def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr _ _) pushout.condition) :=
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
-    (by aesop_cat)
+    (by cat_disch)
 
 @[simp]
 lemma pullback.lift_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
@@ -318,8 +334,8 @@ instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) 
   refine ⟨⟨pullback.map _ _ _ _ (inv i₁) (inv i₂) (inv i₃) ?_ ?_, ?_, ?_⟩⟩
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₁, IsIso.inv_hom_id_assoc]
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₂, IsIso.inv_hom_id_assoc]
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pullback f₁ g₁ ≅ pullback f₂ g₂` -/
@@ -342,15 +358,15 @@ instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [
   refine ⟨⟨pushout.map _ _ _ _ (inv i₁) (inv i₂) (inv i₃) ?_ ?_, ?_, ?_⟩⟩
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₁, IsIso.inv_hom_id_assoc]
   · rw [IsIso.comp_inv_eq, Category.assoc, eq₂, IsIso.inv_hom_id_assoc]
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
 
 theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S) (i' : S ⟶ S')
     [HasPullback f g] [HasPullback (f ≫ i) (g ≫ i)] [HasPullback (f ≫ i ≫ i') (g ≫ i ≫ i')]
     [HasPullback ((f ≫ i) ≫ i') ((g ≫ i) ≫ i')] :
     pullback.mapDesc f g (i ≫ i') = pullback.mapDesc f g i ≫ pullback.mapDesc _ _ i' ≫
     (pullback.congrHom (Category.assoc _ _ _) (Category.assoc _ _ _)).hom := by
-  aesop_cat
+  cat_disch
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
 isomorphism `pushout f₁ g₁ ≅ pullback f₂ g₂` -/
@@ -372,7 +388,7 @@ theorem pushout.mapLift_comp {X Y S T S' : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S
     pushout.mapLift f g (i' ≫ i) =
       (pushout.congrHom (Category.assoc _ _ _) (Category.assoc _ _ _)).hom ≫
         pushout.mapLift _ _ i' ≫ pushout.mapLift f g i := by
-  aesop_cat
+  cat_disch
 
 section
 
@@ -396,7 +412,7 @@ theorem pullbackComparison_comp_fst (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
 @[reassoc (attr := simp)]
 theorem pullbackComparison_comp_snd (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPullback (G.map f) (G.map g)] :
-    pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g):=
+    pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g) :=
   pullback.lift_snd _ _ _
 
 @[reassoc (attr := simp)]
@@ -405,6 +421,20 @@ theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
     G.map (pullback.lift _ _ w) ≫ pullbackComparison G f g =
       pullback.lift (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
   ext <;> simp [← G.map_comp]
+
+set_option backward.defeqAttrib.useBackward true in
+@[reassoc]
+lemma pullbackComparison_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X Y S : C}
+    (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] [HasPullback (F.map f) (F.map g)]
+    [HasPullback (G.map (F.map f)) (G.map (F.map g))]
+    [HasPullback ((F ⋙ G).map f) ((F ⋙ G).map g)] :
+    pullbackComparison (F ⋙ G) f g = G.map (pullbackComparison F f g) ≫
+      pullbackComparison G (F.map f) (F.map g) := by
+  ext
+  · rw [pullbackComparison_comp_fst]
+    simp [← Functor.map_comp]
+  · rw [pullbackComparison_comp_snd]
+    simp [← Functor.map_comp]
 
 /-- The comparison morphism for the pushout of `f,g`.
 This is an isomorphism iff `G` preserves the pushout of `f,g`; see
@@ -438,8 +468,6 @@ end
 
 section PullbackSymmetry
 
-open WalkingCospan
-
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- Making this a global instance would make the typeclass search go in an infinite loop. -/
@@ -472,8 +500,6 @@ theorem pullbackSymmetry_inv_comp_snd [HasPullback f g] :
 end PullbackSymmetry
 
 section PushoutSymmetry
-
-open WalkingCospan
 
 variable (f : X ⟶ Y) (g : X ⟶ Z)
 
@@ -510,14 +536,24 @@ theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
 
 end PushoutSymmetry
 
+/-- `HasPullbacksAlong f` states that pullbacks of all morphisms into `Y`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPullbacksAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
+
+/-- `HasPushoutsAlong f` states that pushouts of all morphisms out of `X`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPushoutsAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
+
 variable (C)
 
-/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms. -/
+/-- A category `HasPullbacks` if it has all limits of shape `WalkingCospan`, i.e. if it has a
+pullback for every pair of morphisms with the same codomain. -/
 @[stacks 001W]
 abbrev HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 
-/-- `HasPushouts` represents a choice of pushout for every pair of morphisms -/
+/-- A category `HasPushouts` if it has all colimits of shape `WalkingSpan`, i.e. if it has a
+pushout for every pair of morphisms with the same domain. -/
 abbrev HasPushouts :=
   HasColimitsOfShape WalkingSpan C
 
@@ -544,13 +580,113 @@ def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
 -- see Note [lower instance priority]
 /-- Having wide pullback at any universe level implies having binary pullbacks. -/
 instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Category.{v} D]
-    [HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D :=
+    [HasWidePullbacks.{w} D] : HasPullbacks.{v, u} D :=
   hasWidePullbacks_shrink WalkingPair
 
 -- see Note [lower instance priority]
 /-- Having wide pushout at any universe level implies having binary pushouts. -/
 instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
-    [HasWidePushouts.{w} D] : HasPushouts.{v,u} D :=
+    [HasWidePushouts.{w} D] : HasPushouts.{v, u} D :=
   hasWidePushouts_shrink WalkingPair
+
+theorem hasPullback_symmetry_of_hasPullbacksAlong {S X Y : C} {f : X ⟶ S} [HasPullbacksAlong f]
+    {g : Y ⟶ S} : HasPullback f g :=
+  hasPullback_symmetry g f
+
+theorem hasPushouts_symmetry_of_hasPushoutsAlong {S X Y : C} {f : S ⟶ X} [HasPushoutsAlong f]
+    {g : S ⟶ Y} : HasPushout f g :=
+  hasPushout_symmetry g f
+
+section Products
+
+variable {C}
+
+/-- `X ×[Y] (Y ⨯ Z) ≅ X ⨯ Z` -/
+noncomputable def pullbackProdFstIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
+    [HasBinaryProduct Y Z] [HasBinaryProduct X Z] [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)] :
+    pullback f (prod.fst : Y ⨯ Z ⟶ _) ≅ X ⨯ Z where
+  hom := prod.lift (pullback.fst _ _) (pullback.snd _ _ ≫ prod.snd)
+  inv := pullback.lift prod.fst (prod.map f (𝟙 Z))
+  hom_inv_id := by
+    apply pullback.hom_ext
+    · simp
+    · apply prod.hom_ext <;> simp [pullback.condition]
+
+section
+
+variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Y Z] [HasBinaryProduct X Z]
+  [HasPullback f (prod.fst : Y ⨯ Z ⟶ _)]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_hom_fst :
+    (pullbackProdFstIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_hom_snd :
+    (pullbackProdFstIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ ≫ prod.snd := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_inv_fst :
+    (pullbackProdFstIsoProd f Z).inv ≫ pullback.fst _ _ = prod.fst := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_inv_snd_fst :
+    (pullbackProdFstIsoProd f Z).inv ≫ pullback.snd _ _ ≫ prod.fst = prod.fst ≫ f := by
+  simp [pullbackProdFstIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdFstIsoProd_inv_snd_snd :
+    (pullbackProdFstIsoProd f Z).inv ≫ pullback.snd _ _ ≫ prod.snd = prod.snd := by
+  simp [pullbackProdFstIsoProd]
+
+end
+
+section
+
+/-- `(Z ⨯ Y) ×[Y] X ≅ Z ⨯ X` -/
+noncomputable def pullbackProdSndIsoProd {X Y : C} (f : X ⟶ Y) (Z : C)
+    [HasBinaryProduct Z Y] [HasBinaryProduct Z X] [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f] :
+    pullback (prod.snd : Z ⨯ Y ⟶ Y) f ≅ Z ⨯ X where
+  hom := prod.lift (pullback.fst _ _ ≫ prod.fst) (pullback.snd _ _)
+  inv := pullback.lift (prod.map (𝟙 Z) f) prod.snd
+  hom_inv_id := by
+    apply pullback.hom_ext
+    · apply prod.hom_ext <;> simp [pullback.condition]
+    · simp
+
+variable {X Y : C} (f : X ⟶ Y) (Z : C) [HasBinaryProduct Z Y] [HasBinaryProduct Z X]
+  [HasPullback (prod.snd : Z ⨯ Y ⟶ Y) f]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_hom_fst :
+    (pullbackProdSndIsoProd f Z).hom ≫ prod.fst = pullback.fst _ _ ≫ prod.fst := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_hom_snd :
+    (pullbackProdSndIsoProd f Z).hom ≫ prod.snd = pullback.snd _ _ := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_inv_fst_fst :
+    (pullbackProdSndIsoProd f Z).inv ≫ pullback.fst _ _ ≫ prod.fst = prod.fst := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_inv_fst_snd :
+    (pullbackProdSndIsoProd f Z).inv ≫ pullback.fst _ _ ≫ prod.snd = prod.snd ≫ f := by
+  simp [pullbackProdSndIsoProd]
+
+@[reassoc (attr := simp)]
+lemma pullbackProdSndIsoProd_inv_snd :
+    (pullbackProdSndIsoProd f Z).inv ≫ pullback.snd _ _ = prod.snd := by
+  simp [pullbackProdSndIsoProd]
+
+end
+
+end Products
 
 end CategoryTheory.Limits

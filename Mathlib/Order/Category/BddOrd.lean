@@ -3,15 +3,19 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Bipointed
-import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.Bounded
+module
+
+public import Mathlib.CategoryTheory.Category.Bipointed
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Hom.Bounded
 
 /-!
 # The category of bounded orders
 
 This defines `BddOrd`, the category of bounded orders.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -38,10 +42,15 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddOrd.of X` as `↧X`. -/
+@[app_delab BddOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `BddOrd R`. -/
 @[ext]
 structure Hom (X Y : BddOrd.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedOrderHom`. -/
   hom' : BoundedOrderHom X Y
 
@@ -52,7 +61,7 @@ instance : Category BddOrd.{u} where
 
 instance : ConcreteCategory BddOrd (BoundedOrderHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddOrd` back into a `BoundedOrderHom`. -/
 abbrev Hom.hom {X Y : BddOrd.{u}} (f : Hom X Y) :=
@@ -82,7 +91,7 @@ lemma coe_comp {X Y Z : BddOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : BddOrd} (f : X ⟶ Y) :
-    (forget BddOrd).map f = f := rfl
+    (forget BddOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -113,7 +122,7 @@ lemma hom_ext {X Y : BddOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 @[simp]
 lemma hom_ofHom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y] [BoundedOrder Y]
     (f : BoundedOrderHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BddOrd} (f : X ⟶ Y) :

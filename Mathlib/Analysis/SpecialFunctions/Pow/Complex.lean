@@ -4,14 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 /-! # Power function on `ℂ`
 
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
-open Real Topology Filter ComplexConjugate Finset Set
+@[expose] public section
+
+open Real Topology Filter Finset Set
+
+open scoped ComplexConjugate
 
 namespace Complex
 
@@ -32,7 +38,7 @@ theorem cpow_def (x y : ℂ) : x ^ y = if x = 0 then if y = 0 then 1 else 0 else
   rfl
 
 theorem cpow_def_of_ne_zero {x : ℂ} (hx : x ≠ 0) (y : ℂ) : x ^ y = exp (log x * y) :=
-  if_neg hx
+  ite_eq_right hx
 
 @[simp]
 theorem cpow_zero (x : ℂ) : x ^ (0 : ℂ) = 1 := by simp [cpow_def]
@@ -55,15 +61,8 @@ theorem zero_cpow {x : ℂ} (h : x ≠ 0) : (0 : ℂ) ^ x = 0 := by simp [cpow_d
 theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
   constructor
   · intro hyp
-    simp only [cpow_def, eq_self_iff_true, if_true] at hyp
-    by_cases h : x = 0
-    · subst h
-      simp only [if_true, eq_self_iff_true] at hyp
-      right
-      exact ⟨rfl, hyp.symm⟩
-    · rw [if_neg h] at hyp
-      left
-      exact ⟨h, hyp.symm⟩
+    simp only [cpow_def, ite_true] at hyp
+    grind
   · rintro (⟨h, rfl⟩ | ⟨rfl, rfl⟩)
     · exact zero_cpow h
     · exact cpow_zero _
@@ -74,7 +73,8 @@ theorem eq_zero_cpow_iff {x : ℂ} {a : ℂ} : a = (0 : ℂ) ^ x ↔ x ≠ 0 ∧
 @[simp]
 theorem cpow_one (x : ℂ) : x ^ (1 : ℂ) = x :=
   if hx : x = 0 then by simp [hx, cpow_def]
-  else by rw [cpow_def, if_neg (one_ne_zero : (1 : ℂ) ≠ 0), if_neg hx, mul_one, exp_log hx]
+  else by
+    rw [cpow_def, ite_eq_right (one_ne_zero : (1 : ℂ) ≠ 0), ite_eq_right hx, mul_one, exp_log hx]
 
 @[simp]
 theorem one_cpow (x : ℂ) : (1 : ℂ) ^ x = 1 := by
@@ -82,7 +82,7 @@ theorem one_cpow (x : ℂ) : (1 : ℂ) ^ x = 1 := by
   split_ifs <;> simp_all [one_ne_zero]
 
 theorem cpow_add {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y + z) = x ^ y * x ^ z := by
-  simp only [cpow_def, ite_mul, boole_mul, mul_ite, mul_boole]
+  simp only [cpow_def, ite_mul, mul_ite]
   simp_all [exp_add, mul_add]
 
 theorem cpow_mul {x y : ℂ} (z : ℂ) (h₁ : -π < (log x * y).im) (h₂ : (log x * y).im ≤ π) :
@@ -184,6 +184,8 @@ lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : �
   pow_cpow_ofNat_inv (neg_pi_div_two_lt_arg_iff.2 <| .inl hx)
     (arg_le_pi_div_two_iff.2 <| .inl hx.le)
 
+@[simp] lemma isSquare (x : ℂ) : IsSquare x := ⟨x ^ (2⁻¹ : ℂ), by simp [← sq]⟩
+
 theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
   rcases eq_or_ne r 0 with (rfl | hr)
@@ -213,7 +215,16 @@ theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
   split_ifs with hx hn ha ha <;> rfl
 
 theorem inv_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
-  rw [inv_cpow_eq_ite, if_neg hx]
+  rw [inv_cpow_eq_ite, ite_eq_right hx]
+
+lemma inv_cpow_ofReal_nonneg {a : ℝ} (ha : 0 ≤ a) (r : ℂ) :
+    ((a : ℂ)⁻¹) ^ r = (a ^ r : ℂ)⁻¹ :=
+  inv_cpow _ _ <| by simpa [arg_ofReal_of_nonneg ha] using Real.pi_ne_zero.symm
+
+lemma div_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
+    ((a : ℂ) / (b : ℂ)) ^ r = (a : ℂ) ^ r / (b : ℂ) ^ r := by
+  rw [div_eq_mul_inv, ← ofReal_inv, mul_cpow_ofReal_nonneg ha (inv_nonneg_of_nonneg hb),
+    ofReal_inv, inv_cpow_ofReal_nonneg hb, div_eq_mul_inv]
 
 /-- `Complex.inv_cpow_eq_ite` with the `ite` on the other side. -/
 theorem inv_cpow_eq_ite' (x : ℂ) (n : ℂ) :
@@ -230,7 +241,7 @@ theorem conj_cpow_eq_ite (x : ℂ) (n : ℂ) :
   split_ifs with hcx hn hx <;> rfl
 
 theorem conj_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : conj x ^ n = conj (x ^ conj n) := by
-  rw [conj_cpow_eq_ite, if_neg hx]
+  rw [conj_cpow_eq_ite, ite_eq_right hx]
 
 theorem cpow_conj (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x ^ conj n = conj (conj x ^ n) := by
   rw [conj_cpow _ _ hx, conj_conj]

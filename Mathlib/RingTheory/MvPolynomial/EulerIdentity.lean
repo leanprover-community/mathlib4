@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Euler's homogeneous identity
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 * `IsWeightedHomogeneous.sum_weight_X_mul_pderiv`: the weighted version of Euler's identity.
 -/
 
+public section
+
 namespace MvPolynomial
 
 open Finsupp
@@ -28,13 +32,13 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
     (h : φ.IsWeightedHomogeneous w n) (h' : n' + w i = n) :
     (pderiv i φ).IsWeightedHomogeneous w n' := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
-    Finsupp.supported_eq_span_single] at h
+    AddMonoidAlgebra.supported_eq_span_single] at h
   refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
   · rintro _ ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, pderiv_monomial, one_mul]
     by_cases hi : m i = 0
     · rw [hi, Nat.cast_zero, monomial_zero]; apply isWeightedHomogeneous_zero
-    convert isWeightedHomogeneous_monomial ..
+    convert! isWeightedHomogeneous_monomial ..
     rw [← add_right_cancel_iff (a := w i), h', ← hm, weight_sub_single_add hi]
   · rw [map_zero]; apply isWeightedHomogeneous_zero
   · rw [map_add]; exact hp.add hq
@@ -54,12 +58,12 @@ open Finset in
 theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
     (h : φ.IsWeightedHomogeneous w n) : ∑ i : σ, w i • (X i * pderiv i φ) = n • φ := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
-    supported_eq_span_single] at h
+    AddMonoidAlgebra.supported_eq_span_single] at h
   refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
   · rintro _ ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, X_mul_pderiv_monomial, smul_smul, ← sum_smul, mul_comm (w _)]
     congr
-    rwa [Set.mem_setOf, weight_apply, sum_fintype] at hm
+    rwa [Set.mem_ofPred, weight_apply, sum_fintype] at hm
     intro; apply zero_smul
   · simp
   · simp_rw [map_add, left_distrib, smul_add, sum_add_distrib, hp, hq]

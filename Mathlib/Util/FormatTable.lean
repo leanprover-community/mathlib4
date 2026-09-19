@@ -3,7 +3,10 @@ Copyright (c) 2024 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.String.Defs
+module
+
+public meta import Mathlib.Data.String.Defs
+public import Mathlib.Init
 
 /-!
 # Format Table
@@ -11,6 +14,8 @@ import Mathlib.Data.String.Defs
 This file provides a simple function for formatting a two-dimensional array of `String`s
 into a markdown-compliant table.
 -/
+
+public meta section
 
 /-- Possible alignment modes for each table item: left-aligned, right-aligned and centered. -/
 inductive Alignment where
@@ -29,15 +34,15 @@ def String.justify (s : String) (a : Alignment) (width : Nat) : String :=
     String.replicate pad ' ' ++ s ++ String.replicate (width - s.length - pad) ' '
 
 /--
-Render a two-dimensional array of `String`s` into a markdown-compliant table.
+Render a two-dimensional array of `String`s into a markdown-compliant table.
 `headers` is a list of column headers,
 `table` is a 2D array of cell contents,
-`alignments` describes how to align each table column (default: left-aligned) -/
+`alignments` describes how to align each table column (default: left-aligned). -/
 def formatTable (headers : Array String) (table : Array (Array String))
     (alignments : Option (Array Alignment) := none) :
     String := Id.run do
   -- If no alignments are provided, default to left alignment for all columns.
-  let alignments := alignments.getD (Array.mkArray headers.size Alignment.left)
+  let alignments := alignments.getD (Array.replicate headers.size Alignment.left)
   -- Escape all vertical bar characters inside a table cell,
   -- otherwise these could get interpreted as starting a new row or column.
   let escapedHeaders := headers.map (fun header => header.replace "|" "\\|")

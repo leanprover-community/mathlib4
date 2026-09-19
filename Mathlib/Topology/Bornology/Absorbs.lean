@@ -3,9 +3,11 @@ Copyright (c) 2020 Jean Lo, Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Topology.Bornology.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.Topology.Bornology.Basic
 
 /-!
 # Absorption of sets
@@ -37,6 +39,8 @@ They can be added later when someone needs them.
 absorbs, absorbent
 -/
 
+@[expose] public section
+
 assert_not_exists Real
 
 open Set Bornology Filter
@@ -61,7 +65,7 @@ namespace Absorbs
 
 section SMul
 
-variable {M α : Type*} [Bornology M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set α} {S T : Set (Set α)}
+variable {M α : Type*} [Bornology M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set α} {T : Set (Set α)}
 
 protected lemma empty : Absorbs M s ∅ := by simp [Absorbs]
 

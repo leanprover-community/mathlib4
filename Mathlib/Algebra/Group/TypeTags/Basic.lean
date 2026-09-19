@@ -3,13 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Set
-import Mathlib.Util.AssertExists
-import Mathlib.Logic.Nontrivial.Basic
+module
+
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
@@ -25,9 +25,11 @@ We also define instances `Additive.*` and `Multiplicative.*` that actually trans
 
 ## See also
 
-This file is similar to `Order.Synonym`.
+This file is similar to `Mathlib/Order/Synonym.lean`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered MonoidHom Finite
 
@@ -46,10 +48,12 @@ def Multiplicative (α : Type*) := α
 namespace Additive
 
 /-- Reinterpret `x : α` as an element of `Additive α`. -/
+@[implicit_reducible]
 def ofMul : α ≃ Additive α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Additive α` as an element of `α`. -/
+@[implicit_reducible]
 def toMul : Additive α ≃ α := ofMul.symm
 
 @[simp]
@@ -59,6 +63,8 @@ theorem ofMul_symm_eq : (@ofMul α).symm = toMul :=
 @[simp]
 theorem toMul_symm_eq : (@toMul α).symm = ofMul :=
   rfl
+
+@[ext] lemma ext {a b : Additive α} (hab : a.toMul = b.toMul) : a = b := hab
 
 @[simp]
 protected lemma «forall» {p : Additive α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofMul a) := Iff.rfl
@@ -76,10 +82,12 @@ end Additive
 namespace Multiplicative
 
 /-- Reinterpret `x : α` as an element of `Multiplicative α`. -/
+@[implicit_reducible]
 def ofAdd : α ≃ Multiplicative α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Multiplicative α` as an element of `α`. -/
+@[implicit_reducible]
 def toAdd : Multiplicative α ≃ α := ofAdd.symm
 
 @[simp]
@@ -89,6 +97,8 @@ theorem ofAdd_symm_eq : (@ofAdd α).symm = toAdd :=
 @[simp]
 theorem toAdd_symm_eq : (@toAdd α).symm = ofAdd :=
   rfl
+
+@[ext] lemma ext {a b : Multiplicative α} (hab : a.toAdd = b.toAdd) : a = b := hab
 
 @[simp]
 protected lemma «forall» {p : Multiplicative α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofAdd a) := Iff.rfl
@@ -182,11 +192,11 @@ instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
   ⟨@add_left_cancel α _ _⟩
 
 instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
-  ⟨@mul_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ mul_right_cancel (G := α)⟩
 
 instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
     IsRightCancelMul (Multiplicative α) :=
-  ⟨@add_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ add_right_cancel (G := α)⟩
 
 instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
   ⟨⟩
@@ -248,28 +258,22 @@ lemma toAdd_eq_zero {α : Type*} [Zero α] {x : Multiplicative α} :
   Iff.rfl
 
 instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
-  zero := 0
-  add := (· + ·)
   zero_add := @one_mul α _
   add_zero := @mul_one α _
 
 instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicative α) where
-  one := 1
-  mul := (· * ·)
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 
-instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
-  { Additive.addZeroClass, Additive.addSemigroup with
-    nsmul := @Monoid.npow α h
-    nsmul_zero := @Monoid.npow_zero α h
-    nsmul_succ := @Monoid.npow_succ α h }
+instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) where
+  nsmul n a := ofMul (a.toMul ^ n)
+  nsmul_zero := h.npow_zero
+  nsmul_succ := h.npow_succ
 
-instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
-  { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    npow := @AddMonoid.nsmul α h
-    npow_zero := @AddMonoid.nsmul_zero α h
-    npow_succ := @AddMonoid.nsmul_succ α h }
+instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) where
+  npow n a := ofAdd (n • a.toAdd)
+  npow_zero := h.nsmul_zero
+  npow_succ := h.nsmul_succ
 
 @[simp]
 theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
@@ -286,6 +290,56 @@ theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd 
 @[simp]
 theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : (a ^ n).toAdd = n • a.toAdd :=
   rfl
+
+section Monoid
+variable [Monoid α]
+
+@[simp]
+lemma isAddLeftRegular_ofMul {a : α} : IsAddLeftRegular (Additive.ofMul a) ↔ IsLeftRegular a := .rfl
+
+@[simp]
+lemma isLeftRegular_toMul {a : Additive α} : IsLeftRegular a.toMul ↔ IsAddLeftRegular a := .rfl
+
+@[simp]
+lemma isAddRightRegular_ofMul {a : α} : IsAddRightRegular (Additive.ofMul a) ↔ IsRightRegular a :=
+  .rfl
+
+@[simp]
+lemma isRightRegular_toMul {a : Additive α} : IsRightRegular a.toMul ↔ IsAddRightRegular a := .rfl
+
+@[simp] lemma isAddRegular_ofMul {a : α} : IsAddRegular (Additive.ofMul a) ↔ IsRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+@[simp] lemma isRegular_toMul {a : Additive α} : IsRegular a.toMul ↔ IsAddRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+end Monoid
+
+section AddMonoid
+variable [AddMonoid α]
+
+@[simp]
+lemma isLeftRegular_ofAdd {a : α} : IsLeftRegular (Multiplicative.ofAdd a) ↔ IsAddLeftRegular a :=
+  .rfl
+
+@[simp]
+lemma isAddLeftRegular_toAdd {a : Multiplicative α} : IsAddLeftRegular a.toAdd ↔ IsLeftRegular a :=
+  .rfl
+
+@[simp]
+lemma isRightRegular_ofAdd {a : α} :
+    IsRightRegular (Multiplicative.ofAdd a) ↔ IsAddRightRegular a := .rfl
+
+@[simp] lemma isAddRightRegular_toAdd {a : Multiplicative α} :
+    IsAddRightRegular a.toAdd ↔ IsRightRegular a := .rfl
+
+@[simp] lemma isRegular_ofAdd {a : α} : IsRegular (Multiplicative.ofAdd a) ↔ IsAddRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+@[simp] lemma isAddRegular_toAdd {a : Multiplicative α} : IsAddRegular a.toAdd ↔ IsRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+end AddMonoid
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
   { Additive.addMonoid, Additive.addLeftCancelSemigroup with }
@@ -306,6 +360,12 @@ instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
 
 instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.commSemigroup with }
+
+instance Additive.instAddCancelCommMonoid [CancelCommMonoid α] :
+    AddCancelCommMonoid (Additive α) where
+
+instance Multiplicative.instCancelCommMonoid [AddCancelCommMonoid α] :
+    CancelCommMonoid (Multiplicative α) where
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd x.toMul⁻¹⟩
@@ -357,21 +417,19 @@ instance Additive.involutiveNeg [InvolutiveInv α] : InvolutiveNeg (Additive α)
 instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multiplicative α) :=
   { Multiplicative.inv with inv_inv := @neg_neg α _ }
 
-instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
-  { Additive.neg, Additive.sub, Additive.addMonoid with
-    sub_eq_add_neg := @div_eq_mul_inv α _
-    zsmul := @DivInvMonoid.zpow α _
-    zsmul_zero' := @DivInvMonoid.zpow_zero' α _
-    zsmul_succ' := @DivInvMonoid.zpow_succ' α _
-    zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
+instance Additive.subNegMonoid [h : DivInvMonoid α] : SubNegMonoid (Additive α) where
+  sub_eq_add_neg := h.div_eq_mul_inv
+  zsmul n a := ofMul (a.toMul ^ n)
+  zsmul_zero' := h.zpow_zero'
+  zsmul_succ' := h.zpow_succ'
+  zsmul_neg' := h.zpow_neg'
 
-instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
-  { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
-    div_eq_mul_inv := @sub_eq_add_neg α _
-    zpow := @SubNegMonoid.zsmul α _
-    zpow_zero' := @SubNegMonoid.zsmul_zero' α _
-    zpow_succ' := @SubNegMonoid.zsmul_succ' α _
-    zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
+instance Multiplicative.divInvMonoid [h : SubNegMonoid α] : DivInvMonoid (Multiplicative α) where
+  div_eq_mul_inv := h.sub_eq_add_neg
+  zpow n a := ofAdd (n • a.toAdd)
+  zpow_zero' := h.zsmul_zero'
+  zpow_succ' := h.zsmul_succ'
+  zpow_neg' := h.zsmul_neg'
 
 @[simp]
 theorem ofMul_zpow [DivInvMonoid α] (z : ℤ) (a : α) : ofMul (a ^ z) = z • ofMul a :=
@@ -419,6 +477,12 @@ instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
 instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
+instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
+  nsmul_right_injective _ := pow_left_injective (M := α)
+
+instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
+  pow_left_injective _ := nsmul_right_injective (M := α)
+
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.
 
@@ -441,8 +505,7 @@ instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β]
 
 lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [(i : ι) → AddMonoid (M i)] (i : ι) (a : M i) (j : ι) :
-    Pi.mulSingle (f := fun i ↦ Multiplicative (M i)) i (Multiplicative.ofAdd a) j =
-      Multiplicative.ofAdd ((Pi.single i a) j) := by
+    Pi.mulSingle (M := fun i ↦ Multiplicative (M i)) i (.ofAdd a) j = .ofAdd (Pi.single i a j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
   · simp only [mulSingle, ne_eq, h, not_false_eq_true, Function.update_of_ne, one_apply, single,
@@ -450,8 +513,7 @@ lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι 
 
 lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [(i : ι) → Monoid (M i)] (i : ι) (a : M i) (j : ι) :
-    Pi.single (f := fun i ↦ Additive (M i)) i (Additive.ofMul a) j =
-      Additive.ofMul ((Pi.mulSingle i a) j) := by
+    Pi.single (M := fun i ↦ Additive (M i)) i (.ofMul a) j = .ofMul (Pi.mulSingle i a j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
   · simp only [single, ne_eq, h, not_false_eq_true, Function.update_of_ne, zero_apply, mulSingle,

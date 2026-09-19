@@ -3,23 +3,21 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Tactic.Alias
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Init
 
 /-!
 # Helper definitions and instances for `Ordering`
 -/
 
-universe u
+@[expose] public section
 
-deriving instance Repr for Ordering
+universe u
 
 namespace Ordering
 
 variable {α : Type*}
-
-@[deprecated (since := "2024-09-13")] alias orElse := «then»
 
 /-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
 that the relation `a < b` is defined. -/
@@ -27,8 +25,6 @@ def Compares [LT α] : Ordering → α → α → Prop
   | lt, a, b => a < b
   | eq, a, b => a = b
   | gt, a, b => a > b
-
-@[deprecated (since := "2024-09-13")] alias toRel := Compares
 
 @[simp] lemma compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
 

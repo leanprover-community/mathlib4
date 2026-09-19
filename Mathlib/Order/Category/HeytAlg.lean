@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddDistLat
-import Mathlib.Order.Heyting.Hom
+module
+
+public import Mathlib.Order.Category.BddDistLat
+public import Mathlib.Order.Heyting.Hom
 
 /-!
 # The category of Heyting algebras
@@ -12,10 +14,12 @@ import Mathlib.Order.Heyting.Hom
 This file defines `HeytAlg`, the category of Heyting algebras.
 -/
 
+@[expose] public section
+
 
 universe u
 
-open CategoryTheory Opposite Order
+open CategoryTheory Order
 
 /-- The category of Heyting algebras. -/
 structure HeytAlg where
@@ -37,10 +41,15 @@ attribute [coe] HeytAlg.carrier
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `HeytAlg.of X` as `↧X`. -/
+@[app_delab HeytAlg.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `HeytAlg R`. -/
 @[ext]
 structure Hom (X Y : HeytAlg.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `HeytingHom`. -/
   hom' : HeytingHom X Y
 
@@ -51,7 +60,7 @@ instance : Category HeytAlg.{u} where
 
 instance : ConcreteCategory HeytAlg (HeytingHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `HeytAlg` back into a `HeytingHom`. -/
 abbrev Hom.hom {X Y : HeytAlg.{u}} (f : Hom X Y) :=
@@ -81,7 +90,7 @@ lemma coe_comp {X Y Z : HeytAlg} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : HeytAlg} (f : X ⟶ Y) :
-    (forget HeytAlg).map f = f := rfl
+    (forget HeytAlg).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : HeytAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -111,7 +120,8 @@ lemma hom_ext {X Y : HeytAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [HeytingAlgebra X] [HeytingAlgebra Y] (f : HeytingHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : HeytAlg} (f : X ⟶ Y) :
@@ -141,7 +151,7 @@ instance : Inhabited HeytAlg :=
 
 @[simps]
 instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/

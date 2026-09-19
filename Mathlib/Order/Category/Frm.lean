@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Lat
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+module
+
+public import Mathlib.Order.Category.Lat
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of frames
@@ -17,6 +19,8 @@ This file defines `Frm`, the category of frames.
 * [nLab, *Frm*](https://ncatlab.org/nlab/show/Frm)
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -24,6 +28,8 @@ open CategoryTheory Order
 
 /-- The category of frames. -/
 structure Frm where
+  /-- Construct a bundled `Frm` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying frame. -/
   (carrier : Type*)
   [str : Frame carrier]
@@ -34,18 +40,20 @@ initialize_simps_projections Frm (carrier → coe, -str)
 
 namespace Frm
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Frm.of X` as `↧X`. -/
+@[app_delab Frm.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Frm (Type _) :=
   ⟨Frm.carrier⟩
 
 attribute [coe] Frm.carrier
 
-/-- Construct a bundled `Frm` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [Frame X] : Frm := ⟨X⟩
-
 /-- The type of morphisms in `Frm R`. -/
 @[ext]
 structure Hom (X Y : Frm.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `FrameHom`. -/
   hom' : FrameHom X Y
 
@@ -56,7 +64,7 @@ instance : Category Frm.{u} where
 
 instance : ConcreteCategory Frm (FrameHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Frm` back into a `FrameHom`. -/
 abbrev Hom.hom {X Y : Frm.{u}} (f : Hom X Y) :=
@@ -85,7 +93,7 @@ lemma coe_comp {X Y Z : Frm} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Frm} (f : X ⟶ Y) :
-    (forget Frm).map f = f := rfl
+    (forget Frm).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Frm} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -114,8 +122,7 @@ lemma hom_ext {X Y : Frm} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : Frm} (f : X ⟶ Y) :
@@ -143,7 +150,7 @@ instance : Inhabited Frm :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ Frm Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom f.hom
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/

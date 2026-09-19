@@ -3,30 +3,34 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Dynamics.PeriodicPts.Defs
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extra lemmas about periodic points
 -/
 
+public section
+
 open Nat Set
 
 namespace Function
-variable {α : Type*} {f : α → α} {x y : α}
+variable {α : Type*} {f : α → α} {x : α}
 
 open Function (Commute)
 
-theorem directed_ptsOfPeriod_pNat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
+theorem directed_ptsOfPeriod_pnat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
   fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
 
 variable (f) in
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
-  iUnion_pNat_ptsOfPeriod f ▸
-    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
+  iUnion_pnat_ptsOfPeriod f ▸
+    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pnat f) fun i => bijOn_ptsOfPeriod f i.pos
 
 theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     minimalPeriod f x = p ↔ IsPeriodicPt f p x ∧ ¬IsFixedPt f x := by
@@ -34,6 +38,18 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     ← minimalPeriod_eq_one_iff_isFixedPt.not, or_and_right, and_not_self_iff, false_or,
     iff_self_and]
   exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
+
+theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
+    minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
+  dsimp +instances [minimalPeriod, periodicPts, sInf]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727 (replacing
+  grind's `ToInt` machinery with homomorphism-based translation), `grind` closed this.
+  Both sides are the same `dite`, differing only in the `DecidablePred` instance fed to
+  `Nat.find`: `instDecidableAnd .. (IsPeriodicPt.instDecidableOfDecidableEq ..)` on the
+  left, `Classical.propDecidable` on the right. `grind` cannot do that subsingleton
+  reasoning on its own — an opaque analogue fails on nightly-2026-08-12 too — so it was
+  only ever discharged as a side effect of cutsat internalizing the `Nat.find` term. -/
+  congr!
 
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
@@ -47,14 +63,13 @@ theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPer
 
 theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ minimalPeriod f x * minimalPeriod g x :=
-  dvd_trans h.minimalPeriod_of_comp_dvd_lcm (lcm_dvd_mul _ _)
+  dvd_trans h.minimalPeriod_of_comp_dvd_lcm (Nat.lcm_dvd_mul _ _)
 
 theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Commute f g)
     (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices
-    ∀ {f g : α → α},
+  suffices ∀ {f g : α → α},
       Commute f g →
         Coprime (minimalPeriod f x) (minimalPeriod g x) →
           minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
@@ -64,20 +79,86 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
   · exact (isPeriodicPt_minimalPeriod _ _).mul_const _
 
+section Fintype
+
+open Fintype
+
+theorem minimalPeriod_le_card [Fintype α] : minimalPeriod f x ≤ card α := by
+  rw [← periodicOrbit_length]
+  exact List.Nodup.length_le_card nodup_periodicOrbit
+
+theorem isPeriodicPt_factorial_card_of_mem_periodicPts [Fintype α] (h : x ∈ periodicPts f) :
+    IsPeriodicPt f (card α)! x :=
+  isPeriodicPt_iff_minimalPeriod_dvd.mpr
+    (Nat.dvd_factorial (minimalPeriod_pos_of_mem_periodicPts h) minimalPeriod_le_card)
+
+theorem mem_periodicPts_iff_isPeriodicPt_factorial_card [Fintype α] :
+    x ∈ periodicPts f ↔ IsPeriodicPt f (card α)! x where
+  mp := isPeriodicPt_factorial_card_of_mem_periodicPts
+  mpr h := minimalPeriod_pos_iff_mem_periodicPts.mp
+    (IsPeriodicPt.minimalPeriod_pos (Nat.factorial_pos _) h)
+
+theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈ periodicPts f := by
+  obtain ⟨m, n, heq, hne⟩ : ∃ m n, f^[m] x = f^[n] x ∧ m ≠ n := by
+    simpa [Injective] using not_injective_infinite_finite (f^[·] x)
+  rcases lt_or_gt_of_ne hne with hlt | hlt
+  · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq.symm)
+  · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq)
+
+theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodicPts f = univ := by
+  refine ⟨fun h ↦ eq_univ_iff_forall.mpr h.mem_periodicPts, fun h ↦ ?_⟩
+  rw [Finite.injective_iff_surjective, ← range_eq_univ, ← univ_subset_iff, ← h]
+  apply periodicPts_subset_range
+
+theorem injective_iff_iterate_factorial_card_eq_id [Fintype α] :
+    Injective f ↔ f^[(card α)!] = id := by
+  simp only [injective_iff_periodicPts_eq_univ, mem_periodicPts_iff_isPeriodicPt_factorial_card,
+    funext_iff, eq_univ_iff_forall, IsPeriodicPt, id, IsFixedPt]
+
+end Fintype
+
 end Function
 
 namespace Function
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+section Prod
 
-theorem minimalPeriod_prod_map (f : α → α) (g : β → β) (x : α × β) :
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {m n : ℕ}
+
+theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
-  eq_of_forall_dvd <| by cases x; simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
+  eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
 
 theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map f g) x := by
-  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_left _ _
+  rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_left _ _
 
 theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
-  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_right _ _
+  rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_right _ _
+
+end Prod
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
+
+/-- This `sInf` can be regarded as a generalized version of LCM
+for possibly infinite sets and types. -/
+theorem minimalPeriod_piMap :
+    minimalPeriod (Pi.map f) x = sInf { n > 0 | ∀ i, minimalPeriod (f i) (x i) ∣ n } := by
+  conv_lhs => simp [minimalPeriod_eq_sInf_n_pos_IsPeriodicPt]
+  simp [← isPeriodicPt_iff_minimalPeriod_dvd]
+
+theorem minimalPeriod_piMap_fintype [Fintype ι] :
+    minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
+  eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd]
+
+theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :
+    minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
+  simp only [minimalPeriod_piMap]
+  by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
+  · exact (Nat.sInf_mem h).2 i
+  · simp [not_nonempty_iff_eq_empty.mp h]
+
+end Pi
 
 end Function

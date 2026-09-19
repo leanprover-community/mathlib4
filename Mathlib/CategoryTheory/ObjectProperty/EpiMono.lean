@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Properties of objects that are closed under subobjects and quotients
@@ -14,6 +16,8 @@ Given a category `C` and `P : ObjectProperty C`, we define type classes
 that `P` is closed under subobjects (resp. quotients).
 
 -/
+
+public section
 
 universe v v' u u'
 
@@ -51,6 +55,13 @@ instance (F : D ⥤ C) [F.PreservesMonomorphisms] :
     (P.inverseImage F).IsClosedUnderSubobjects where
   prop_of_mono f _ h := P.prop_of_mono (F.map f) h
 
+instance {ι : Type*} (P : ι → ObjectProperty C) [∀ i, (P i).IsClosedUnderSubobjects] :
+    (⨆ i, P i).IsClosedUnderSubobjects where
+  prop_of_mono f _ h := by
+    simp only [prop_iSup_iff] at h ⊢
+    obtain ⟨i, hi⟩ := h
+    exact ⟨i, (P i).prop_of_mono f hi⟩
+
 end
 
 section
@@ -76,6 +87,13 @@ lemma prop_X₃_of_shortExact [HasZeroMorphisms C] {S : ShortComplex C} (hS : S.
 instance (F : D ⥤ C) [F.PreservesEpimorphisms] :
     (P.inverseImage F).IsClosedUnderQuotients where
   prop_of_epi f _ h := P.prop_of_epi (F.map f) h
+
+instance {ι : Type*} (P : ι → ObjectProperty C) [∀ i, (P i).IsClosedUnderQuotients] :
+    (⨆ i, P i).IsClosedUnderQuotients where
+  prop_of_epi f _ h := by
+    simp only [prop_iSup_iff] at h ⊢
+    obtain ⟨i, hi⟩ := h
+    exact ⟨i, (P i).prop_of_epi f hi⟩
 
 end
 

@@ -3,24 +3,28 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
-import Mathlib.Topology.ContinuousMap.Star
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.ContinuousMap.Star
 
 /-!
 # Star structures on bounded continuous functions
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Topology Bornology NNReal uniformity UniformConvergence RCLike BoundedContinuousFunction
+open BoundedContinuousFunction
 
-open Set Filter Metric Function
+open Set
 
 universe u v w
 
-variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u} {β : Type v}
 
 namespace BoundedContinuousFunction
 
@@ -63,7 +67,7 @@ theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
 theorem star_apply (f : α →ᵇ β) (x : α) : star f x = star (f x) := rfl
 
 instance instNormedStarGroup : NormedStarGroup (α →ᵇ β) where
-  norm_star f := by simp only [norm_eq, star_apply, norm_star]
+  norm_star_le f := by simp only [norm_eq, star_apply, norm_star, le_of_eq]
 
 instance instStarModule : StarModule 𝕜 (α →ᵇ β) where
   star_smul k f := ext fun x => star_smul k (f x)

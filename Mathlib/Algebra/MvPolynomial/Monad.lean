@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 
@@ -44,6 +46,8 @@ since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingC
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -55,7 +59,7 @@ variable {σ : Type*} {τ : Type*}
 variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
-`bind₁` is the "left hand side" bind operation on `MvPolynomial`, operating on the variable type.
+`bind₁` is the "left-hand side" bind operation on `MvPolynomial`, operating on the variable type.
 Given a polynomial `p : MvPolynomial σ R` and a map `f : σ → MvPolynomial τ R` taking variables
 in `p` to polynomials in the variable type `τ`, `bind₁ f p` replaces each variable in `p` with
 its value under `f`, producing a new polynomial in `τ`. The coefficient type remains the same.
@@ -64,7 +68,7 @@ This operation is an algebra hom.
 def bind₁ (f : σ → MvPolynomial τ R) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
   aeval f
 
-/-- `bind₂` is the "right hand side" bind operation on `MvPolynomial`,
+/-- `bind₂` is the "right-hand side" bind operation on `MvPolynomial`,
 operating on the coefficient type.
 Given a polynomial `p : MvPolynomial σ R` and
 a map `f : R → MvPolynomial σ S` taking coefficients in `p` to polynomials over a new ring `S`,
@@ -277,7 +281,7 @@ theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r :
 
 theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r : R) :
     bind₂ f (monomial d r) = f r * monomial d 1 := by
-  simp only [monomial_eq, RingHom.map_mul, bind₂_C_right, Finsupp.prod, map_prod,
+  simp only [monomial_eq, map_mul, bind₂_C_right, Finsupp.prod, map_prod,
     map_pow, bind₂_X_right, C_1, one_mul]
 
 @[simp]
@@ -289,11 +293,11 @@ section
 theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
   calc (bind₁ f φ).vars
-    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars := by
+    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (φ.coeff x))).vars := by
       rw [← map_sum, ← φ.as_sum]
-    _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
+    _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (φ.coeff i))).vars :=
       (vars_sum_subset _ _)
-    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) := by
+    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (φ.coeff d) * ∏ i ∈ d.support, f i ^ d i) := by
       simp only [bind₁_monomial]
     _ ≤ φ.support.biUnion fun d : σ →₀ ℕ => d.support.biUnion fun i => vars (f i) := ?_
     -- proof below
@@ -302,11 +306,11 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · apply Finset.biUnion_mono
     intro d _hd
     calc
-      vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) ≤
-          (C (coeff d φ)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
+      vars (C (φ.coeff d) * ∏ i ∈ d.support, f i ^ d i) ≤
+          (C (φ.coeff d)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
         vars_mul _ _
       _ ≤ (∏ i ∈ d.support, f i ^ d i).vars := by
-        simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
+        simp only [Finset.empty_union, vars_C, Finset.Subset.refl]
       _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := vars_prod _
       _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_
     apply Finset.biUnion_mono
@@ -315,7 +319,7 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · intro j
     simp_rw [Finset.mem_biUnion]
     rintro ⟨d, hd, ⟨i, hi, hj⟩⟩
-    exact ⟨i, (mem_vars _).mpr ⟨d, hd, hi⟩, hj⟩
+    exact ⟨i, (mem_vars_iff_mem_support _).mpr ⟨d, hd, hi⟩, hj⟩
 
 end
 
@@ -331,21 +335,22 @@ instance monad : Monad fun σ => MvPolynomial σ R where
 
 instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
   map_const := by intros; rfl
-  -- Porting note: I guess `map_const` no longer has a default implementation?
   id_map := by intros; simp [(· <$> ·)]
   comp_map := by intros; simp [(· <$> ·)]
 
 instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R where
   pure_bind := by intros; simp [pure, bind]
   bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
-  seqLeft_eq := by intros; simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; rfl
+  seqLeft_eq _ _ := by
+    simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; simp [rename_eq_aeval]; rfl
   seqRight_eq := by intros; simp [SeqRight.seqRight, Seq.seq, (· <$> ·), bind₁_rename]; rfl
   pure_seq := by intros; simp [(· <$> ·), pure, Seq.seq]
-  bind_pure_comp := by aesop
+  bind_pure_comp _ _ := congr(⇑$((rename_eq_aeval ..).symm) _)
   bind_map := by aesop
 
 /-
 Possible TODO for the future:
+
 Enable the following definitions, and write a lot of supporting lemmas.
 
 def bind (f : R →+* mv_polynomial τ S) (g : σ → mv_polynomial τ S) :

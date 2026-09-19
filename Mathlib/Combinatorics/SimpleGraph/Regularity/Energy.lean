@@ -3,10 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.SimpleGraph.Density
-import Mathlib.Data.Rat.BigOperators
+module
+
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.SimpleGraph.Density
+public import Mathlib.Data.Rat.BigOperators
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Energy of a partition
@@ -21,6 +24,8 @@ has an energy greater than the previous one plus some fixed constant.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -52,8 +57,9 @@ theorem energy_le_one : P.energy G ≤ 1 :=
         exact tsub_le_self
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
-    (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (#P.parts : 𝕜) ^ 2 := by
+theorem coe_energy {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] :
+    (P.energy G : 𝕜) =
+      (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (#P.parts : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
 
 end Finpartition

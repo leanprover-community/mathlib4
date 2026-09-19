@@ -3,14 +3,19 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Eval.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Evaluation of polynomials
 
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.coeff`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -36,8 +41,8 @@ variable (f : R →+* S) (x : S)
 @[simp]
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
   simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
-    mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff,
-    RingHom.map_zero, imp_true_iff, eq_self_iff_true]
+    mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff, map_zero,
+    imp_true_iff]
 
 @[simp]
 theorem eval₂_C_X : eval₂ C X p = p :=
@@ -46,13 +51,7 @@ theorem eval₂_C_X : eval₂ C X p = p :=
 
 end
 
-section Eval₂
-
-end Eval₂
-
 section Eval
-
-variable {x : R}
 
 theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
   calc
@@ -62,8 +61,11 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
       rw [eval_eq_sum]
       exact Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow hb]) (by simp)
 
-theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
-  rwa [coeff_zero_eq_eval_zero] at hp
+theorem zero_isRoot_iff_coeff_zero_eq_zero {p : R[X]} : IsRoot p 0 ↔ p.coeff 0 = 0 := by
+  rw [coeff_zero_eq_eval_zero, IsRoot]
+
+alias ⟨coeff_zero_eq_zero_of_zero_isRoot, zero_isRoot_of_coeff_zero_eq_zero⟩ :=
+  zero_isRoot_iff_coeff_zero_eq_zero
 
 end Eval
 
@@ -75,10 +77,7 @@ variable (f : R →+* S)
 @[simp]
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
-  conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
-  refine Finset.sum_congr rfl fun x _hx => ?_
-  simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
-  split_ifs <;> simp [f.map_zero]
+  simp_all
 
 lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by
   ext n; exact coeff_map ..
@@ -93,25 +92,28 @@ theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_
 the product of polynomial rings over individual rings. -/
 def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
     (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
-  .ofBijective (Pi.ringHom fun i ↦ mapRingHom (Pi.evalRingHom R i))
+  .ofBijective (RingHom.pi fun i ↦ mapRingHom (Pi.evalRingHom R i))
     ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,
-      fun p ↦ ⟨.ofFinsupp (.ofSupportFinite (fun n i ↦ coeff (p i) n) <|
+      fun p ↦ ⟨.ofFinsupp <| .ofCoeff <| .ofSupportFinite (fun n i ↦ coeff (p i) n) <|
         (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
           simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
-          contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
+          contrapose! hn; exact funext hn, by ext i n; exact coeff_map _ _⟩⟩
 
 theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
   ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]
 
+theorem map_injective_iff : Function.Injective (map f) ↔ Function.Injective f :=
+  ⟨fun h r r' eq ↦ by simpa using h (a₁ := C r) (a₂ := C r') (by simpa), map_injective f⟩
+
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := fun p =>
-  Polynomial.induction_on' p
-    (fun p q hp hq =>
-      let ⟨p', hp'⟩ := hp
-      let ⟨q', hq'⟩ := hq
-      ⟨p' + q', by rw [Polynomial.map_add f, hp', hq']⟩)
-    fun n s =>
+  p.induction_on'
+    (by rintro _ _ ⟨p, rfl⟩ ⟨q, rfl⟩; exact ⟨p + q, Polynomial.map_add f⟩)
+    fun n s ↦
     let ⟨r, hr⟩ := hf s
     ⟨monomial n r, by rw [map_monomial f, hr]⟩
+
+theorem map_surjective_iff : Function.Surjective (map f) ↔ Function.Surjective f :=
+  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa using congr(coeff $h 0)⟩, map_surjective f⟩
 
 variable {f}
 
@@ -143,28 +145,22 @@ theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 
 @[simp]
 theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [one_pow, mul_one, eval_monomial, map_monomial]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, map_add, eval_add]
+  | monomial n r => simp only [one_pow, mul_one, eval_monomial, map_monomial]
 
 @[simp]
 theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     (p.map f).eval (n : S) = f (p.eval n) := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, map_add, eval_add]
+  | monomial n r => simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
 
 @[simp]
 theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, map_add, eval_add]
+  | monomial n r => simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
 
 end Map
 
@@ -185,7 +181,7 @@ section Eval
 
 section
 
-variable [Semiring R] {p q : R[X]} {x : R} [Semiring S] (f : R →+* S)
+variable [Semiring R] {p : R[X]} {x : R} [Semiring S] (f : R →+* S)
 
 theorem eval₂_hom (x : R) : p.eval₂ f (f x) = f (p.eval x) :=
   RingHom.comp_id f ▸ (hom_eval₂ p (RingHom.id R) f x).symm
@@ -194,7 +190,7 @@ end
 
 section
 
-variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
+variable [CommSemiring R] {p : R[X]} [CommSemiring S]
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
   DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
@@ -208,7 +204,7 @@ section Map
 theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) :
     (map f p).support ⊆ p.support := by
   intro x
-  contrapose!
+  contrapose
   simp +contextual
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}

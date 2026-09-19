@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-! # Continuous functions as a star-ordered ring
 
@@ -13,7 +15,7 @@ The type class `ContinuousSqrt` gives a sufficient condition on `R` to make `C(�
 and `C(α, R)₀` into a `StarOrderedRing` for any topological space `α`, thereby providing a means
 by which we can ensure `C(α, R)` has this property. This condition is satisfied
 by `ℝ≥0`, `ℝ`, and `ℂ`, and the instances can be found in the file
-`Mathlib.Topology.ContinuousMap.ContinuousSqrt`.
+`Mathlib/Topology/ContinuousMap/ContinuousSqrt.lean`.
 
 ## Implementation notes
 
@@ -32,6 +34,8 @@ be a problem since the only purpose is to obtain the instance `StarOrderedRing C
 `Prop`, but we note it for future reference.
 -/
 
+public section
+
 /-- A type class encoding the property that there is a continuous square root function on
 nonnegative elements. This holds for `ℝ≥0`, `ℝ` and `ℂ` (as well as any C⋆-algebra), and this
 allows us to derive an instance of `StarOrderedRing C(α, R)` under appropriate hypotheses.
@@ -48,6 +52,7 @@ namespace ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
     [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [IsTopologicalSemiring R]
     [ContinuousSqrt R] : StarOrderedRing C(α, R) := by
@@ -56,7 +61,7 @@ instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
   constructor
   · rw [ContinuousMap.le_def]
     intro h
-    use (mk _ ContinuousSqrt.continuousOn_sqrt.restrict).comp
+    use (mk _ ContinuousSqrt.continuousOn_sqrt.domRestrict).comp
       ⟨_, map_continuous (f.prodMk g) |>.codRestrict (s := {x | x.1 ≤ x.2}) (by exact h)⟩
     ext x
     simpa [IsSelfAdjoint.star_eq <| .of_nonneg (ContinuousSqrt.sqrt_nonneg (f x, g x) (h x))]
@@ -71,8 +76,8 @@ namespace ContinuousMapZero
 variable {α : Type*} [TopologicalSpace α] [Zero α]
 
 instance instStarOrderedRing {R : Type*}
-    [TopologicalSpace R] [OrderedCommSemiring R] [NoZeroDivisors R] [StarRing R] [StarOrderedRing R]
-    [IsTopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
+    [TopologicalSpace R] [CommSemiring R] [PartialOrder R] [NoZeroDivisors R] [StarRing R]
+    [StarOrderedRing R] [IsTopologicalSemiring R] [ContinuousStar R] [StarOrderedRing C(α, R)] :
     StarOrderedRing C(α, R)₀ where
   le_iff f g := by
     constructor
@@ -80,8 +85,8 @@ instance instStarOrderedRing {R : Type*}
         StarOrderedRing.le_iff]
       rintro ⟨p, hp_mem, hp⟩
       induction hp_mem using AddSubmonoid.closure_induction_left generalizing f g with
-      | one => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
-      | mul_left s s_mem p p_mem hp' =>
+      | zero => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
+      | add_left s s_mem p p_mem hp' =>
         obtain ⟨s, rfl⟩ := s_mem
         simp only at *
         have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
@@ -99,8 +104,8 @@ instance instStarOrderedRing {R : Type*}
       | mem s s_mem =>
         obtain ⟨s, rfl⟩ := s_mem
         exact fun x ↦ le_add_of_nonneg_right (star_mul_self_nonneg (s x))
-      | one => simp
-      | mul g₁ g₂ _ _ h₁ h₂ => calc
+      | zero => simp
+      | add g₁ g₂ _ _ h₁ h₂ => calc
           f ≤ f + g₁ := h₁ f
           _ ≤ (f + g₁) + g₂ := h₂ (f + g₁)
           _ = f + (g₁ + g₂) := add_assoc _ _ _

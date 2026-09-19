@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Zero objects
@@ -16,6 +18,8 @@ see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -33,53 +37,51 @@ namespace CategoryTheory
 
 namespace Limits
 
+to_dual_name_hint To From
+
 /-- An object `X` in a category is a *zero object* if for every object `Y`
 there is a unique morphism `to : X → Y` and a unique morphism `from : Y → X`.
 
-This is a characteristic predicate for `has_zero_object`. -/
+This is a characteristic predicate for `HasZeroObject`. -/
 structure IsZero (X : C) : Prop where
   /-- there are unique morphisms to the object -/
   unique_to : ∀ Y, Nonempty (Unique (X ⟶ Y))
   /-- there are unique morphisms from the object -/
   unique_from : ∀ Y, Nonempty (Unique (Y ⟶ X))
 
+attribute [to_dual existing] IsZero.unique_to
+attribute [to_dual self (reorder := unique_to unique_from)] IsZero.mk
 namespace IsZero
 
 variable {X Y : C}
 
--- Porting note: `to` is a reserved word, it was replaced by `to_`
-/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`. -/
-protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
-  @default _ <| (h.unique_to Y).some.toInhabited
+/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`.
 
+`to` is a reserved word, it was replaced by `to_`
+-/
+@[no_expose, to_dual
+/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`.
+
+`from` is a reserved word, it was replaced by `from_`
+-/]
+protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
+  (h.unique_to Y).some.default
+
+@[to_dual]
 theorem eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to_ Y :=
   @Unique.eq_default _ (id _) _
 
+@[to_dual]
 theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
   (h.eq_to f).symm
 
--- Porting note: `from` is a reserved word, it was replaced by `from_`
-/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`. -/
-protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
-  @default _ <| (h.unique_from Y).some.toInhabited
-
-theorem eq_from (h : IsZero X) (f : Y ⟶ X) : f = h.from_ Y :=
-  @Unique.eq_default _ (id _) _
-
-theorem from_eq (h : IsZero X) (f : Y ⟶ X) : h.from_ Y = f :=
-  (h.eq_from f).symm
-
+@[to_dual eq_of_tgt]
 theorem eq_of_src (hX : IsZero X) (f g : X ⟶ Y) : f = g :=
   (hX.eq_to f).trans (hX.eq_to g).symm
 
-theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
-  (hX.eq_from f).trans (hX.eq_from g).symm
-
+@[to_dual]
 lemma epi (h : IsZero X) {Y : C} (f : Y ⟶ X) : Epi f where
   left_cancellation _ _ _ := h.eq_of_src _ _
-
-lemma mono (h : IsZero X) {Y : C} (f : X ⟶ Y) : Mono f where
-  right_cancellation _ _ _ := h.eq_of_tgt _ _
 
 /-- Any two zero objects are isomorphic. -/
 def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
@@ -88,21 +90,19 @@ def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom_inv_id := hX.eq_of_src _ _
   inv_hom_id := hY.eq_of_src _ _
 
+@[to_dual self (reorder := X Y, hX hY)]
+lemma isIso (hX : IsZero X) (hY : IsZero Y) (f : X ⟶ Y) : IsIso f :=
+  ⟨hY.to_ _, hX.eq_of_src _ _, hY.eq_of_src _ _⟩
+
 /-- A zero object is in particular initial. -/
+@[to_dual /-- A zero object is in particular terminal. -/]
 protected def isInitial (hX : IsZero X) : IsInitial X :=
   @IsInitial.ofUnique _ _ X fun Y => (hX.unique_to Y).some
 
-/-- A zero object is in particular terminal. -/
-protected def isTerminal (hX : IsZero X) : IsTerminal X :=
-  @IsTerminal.ofUnique _ _ X fun Y => (hX.unique_from Y).some
-
 /-- The (unique) isomorphism between any initial object and the zero object. -/
+@[to_dual /-- The (unique) isomorphism between any terminal object and the zero object. -/]
 def isoIsInitial (hX : IsZero X) (hY : IsInitial Y) : X ≅ Y :=
   IsInitial.uniqueUpToIso hX.isInitial hY
-
-/-- The (unique) isomorphism between any terminal object and the zero object. -/
-def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
-  IsTerminal.uniqueUpToIso hX.isTerminal hY
 
 theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
   refine ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => ?_⟩⟩,
@@ -119,6 +119,13 @@ theorem op (h : IsZero X) : IsZero (Opposite.op X) :=
 theorem unop {X : Cᵒᵖ} (h : IsZero X) : IsZero (Opposite.unop X) :=
   ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_tgt _ _)⟩⟩,
     fun Y => ⟨⟨⟨(h.to_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_src _ _)⟩⟩⟩
+
+variable (Y) in
+/-- A zero object is a retract of every object. -/
+def retract (h : IsZero X) : Retract X Y where
+  i := h.to_ Y
+  r := h.from_ Y
+  retract := h.isInitial.hom_ext _ _
 
 end IsZero
 
@@ -171,8 +178,9 @@ section
 variable [HasZeroObject C]
 
 /-- Construct a `Zero C` for a category with a zero object.
-This can not be a global instance as it will trigger for every `Zero C` typeclass search.
+This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
+@[instance_reducible]
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.zero'
@@ -207,71 +215,60 @@ theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZ
   let e : F ≅ G := hF.iso hG
   exact (isZero_zero _).of_iso (e.app X)
 
+lemma IsZero.of_full_of_faithful_of_isZero
+    (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) (hX : IsZero (F.obj X)) :
+    IsZero X := by
+  have h : F.FullyFaithful := .ofFullyFaithful _
+  have (Y : C) := (hX.unique_to (F.obj Y)).some
+  have (Y : C) := (hX.unique_from (F.obj Y)).some
+  exact ⟨fun Y ↦ ⟨h.homEquiv.unique⟩, fun Y ↦ ⟨h.homEquiv.unique⟩⟩
+
 namespace HasZeroObject
 
 variable [HasZeroObject C]
 
 /-- There is a unique morphism from the zero object to any object `X`. -/
+@[to_dual (attr := instance_reducible)
+/-- There is a unique morphism from any object `X` to the zero object. -/]
 protected def uniqueTo (X : C) : Unique (0 ⟶ X) :=
   ((isZero_zero C).unique_to X).some
 
-/-- There is a unique morphism from any object `X` to the zero object. -/
-protected def uniqueFrom (X : C) : Unique (X ⟶ 0) :=
-  ((isZero_zero C).unique_from X).some
-
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.uniqueTo
-
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.uniqueFrom
 
-@[ext]
+@[to_dual (attr := ext)]
 theorem to_zero_ext {X : C} (f g : X ⟶ 0) : f = g :=
   (isZero_zero C).eq_of_tgt _ _
 
-@[ext]
-theorem from_zero_ext {X : C} (f g : 0 ⟶ X) : f = g :=
-  (isZero_zero C).eq_of_src _ _
-
 instance (X : C) : Subsingleton (X ≅ 0) := ⟨fun f g => by ext⟩
 
-instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
-
+@[to_dual]
 instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
-  convert show IsIso (𝟙 (0 : C)) by infer_instance
+  convert! show IsIso (𝟙 (0 : C)) by infer_instance
   subsingleton
 
 /-- A zero object is in particular initial. -/
+@[to_dual /-- A zero object is in particular terminal. -/]
 def zeroIsInitial : IsInitial (0 : C) :=
   (isZero_zero C).isInitial
 
-/-- A zero object is in particular terminal. -/
-def zeroIsTerminal : IsTerminal (0 : C) :=
-  (isZero_zero C).isTerminal
-
 /-- A zero object is in particular initial. -/
+@[to_dual /-- A zero object is in particular terminal. -/]
 instance (priority := 10) hasInitial : HasInitial C :=
   hasInitial_of_unique 0
 
-/-- A zero object is in particular terminal. -/
-instance (priority := 10) hasTerminal : HasTerminal C :=
-  hasTerminal_of_unique 0
-
 /-- The (unique) isomorphism between any initial object and the zero object. -/
+@[to_dual /-- The (unique) isomorphism between any terminal object and the zero object. -/]
 def zeroIsoIsInitial {X : C} (t : IsInitial X) : 0 ≅ X :=
   zeroIsInitial.uniqueUpToIso t
 
-/-- The (unique) isomorphism between any terminal object and the zero object. -/
-def zeroIsoIsTerminal {X : C} (t : IsTerminal X) : 0 ≅ X :=
-  zeroIsTerminal.uniqueUpToIso t
-
 /-- The (unique) isomorphism between the chosen initial object and the chosen zero object. -/
+@[to_dual
+/-- The (unique) isomorphism between the chosen terminal object and the chosen zero object. -/]
 def zeroIsoInitial [HasInitial C] : 0 ≅ ⊥_ C :=
   zeroIsInitial.uniqueUpToIso initialIsInitial
-
-/-- The (unique) isomorphism between the chosen terminal object and the chosen zero object. -/
-def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
-  zeroIsTerminal.uniqueUpToIso terminalIsTerminal
 
 instance (priority := 100) initialMonoClass : InitialMonoClass C :=
   InitialMonoClass.of_isInitial zeroIsInitial fun X => by infer_instance
@@ -286,5 +283,9 @@ open ZeroObject
 
 theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X, IsZero (F.obj X) :=
   ⟨fun hF X => hF.obj X, Functor.isZero _⟩
+
+@[to_dual]
+instance {C : Type*} [Category* C] (A : C) [HasZeroObject C] : Epi (terminalIsTerminal.from A) :=
+  (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
 
 end CategoryTheory

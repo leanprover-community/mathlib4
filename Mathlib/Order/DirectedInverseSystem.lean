@@ -3,11 +3,12 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.Order.Category.Preord
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+module
+
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.Order.Category.Preord
 
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
@@ -50,7 +51,7 @@ to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
-extension of the other) over lowersets (which are all of the form `Iic`, `Iio`, or `univ`),
+extension of the other) over lower sets (which are all of the form `Iic`, `Iio`, or `univ`),
 we can clearly take the union to get a natural family that extends them all. If a maximal
 natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how to extend it
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
@@ -59,7 +60,9 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 -/
 
-open Order Set CategoryTheory
+@[expose] public section
+
+open Order Set
 
 open scoped CategoryTheory
 
@@ -120,6 +123,19 @@ def setoid : Setoid (Σ i, F.obj i) where
   r := Types.FilteredColimit.Rel F
   iseqv := Types.FilteredColimit.rel_equiv F
 
+variable [IsDirectedOrder ι]
+
+/-- The setoid on the sigma type defining the direct limit. -/
+@[instance_reducible]
+def setoid : Setoid (Σ i, F i) where
+  r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
+  iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
+    fun ⟨j, hx, _, jeq⟩ ⟨k, _, hz, keq⟩ ↦
+      have ⟨i, hji, hki⟩ := exists_ge_ge j k
+      ⟨i, hx.trans hji, hz.trans hki, by
+        rw [← map_map' _ hx hji, ← map_map' _ hz hki, jeq, ← keq, map_map', map_map']⟩⟩
+
+
 /-- The canonical cocone of a directed system -/
 def cocone : Cocone F where
   pt := Quotient (setoid F)
@@ -169,6 +185,15 @@ theorem eq_of_le (x : Σ i, F.obj i) (i : ι) (h : x.1 ≤ i) :
 
 @[elab_as_elim] protected theorem induction {C : DirectLimit F → Prop}
     (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F) : C x :=
+
+variable {f} in
+@[simp]
+theorem mk_apply (i j : ι) (x : F i) (h : i ≤ j) :
+    ⟦⟨j, f _ _ h x⟩⟧ = (⟦⟨i, x⟩⟧ : DirectLimit F f) :=
+  eq_of_le ⟨_, x⟩ j h |>.symm
+
+@[elab_as_elim] protected theorem induction {C : DirectLimit F f → Prop}
+    (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F f) : C x :=
   Quotient.ind (fun _ ↦ ih _ _) x
 
 theorem exists_eq_mk (z : DirectLimit F) :
@@ -229,7 +254,8 @@ protected def lift (z : DirectLimit F) : C :=
     simp only [compat (leOfHom hxk), eq_rec_constant, compat (leOfHom hyk)]
     congr
 
-theorem lift_def (x) : DirectLimit.lift ih compat ⟦x⟧ = ih x.1 x.2 := rfl
+@[simp]
+theorem lift_def (x) : DirectLimit.lift f ih compat ⟦x⟧ = ih x.1 x.2 := rfl
 
 theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :
     Function.Injective (DirectLimit.lift ih compat) :=
@@ -268,6 +294,7 @@ private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
 
 /-- To define a binary function from the direct limit, it suffices to provide one binary function
 from each component subject to a compatibility condition. -/
+@[no_expose]
 protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
   z.hrecOn₂ w (φ := fun _ _ ↦ C) (lift₂Aux f₁ f₂ ih compat · ·)
     fun _ _ _ _ ⟨j, hx, hyj, jeq⟩ ⟨k, hyk, hz, keq⟩ ↦ heq_of_eq <| by
@@ -312,11 +339,11 @@ end DirectedSystem
 
 variable (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i) ⦃i j : ι⦄ (h : i ≤ j)
 
-/-- A inverse system indexed by a preorder is a contravariant functor from the preorder
+/-- An inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
 class InverseSystem : Prop where
-  map_self ⦃i⦄ (x : F i) : f le_rfl x = x
-  map_map ⦃k j i⦄ (hkj : k ≤ j) (hji : j ≤ i) (x : F i) : f hkj (f hji x) = f (hkj.trans hji) x
+  map_self ⦃i : ι⦄ (x : F i) : f le_rfl x = x
+  map_map ⦃k j i : ι⦄ (hkj : k ≤ j) (hji : j ≤ i) (x : F i) : f hkj (f hji x) = f (hkj.trans hji) x
 
 namespace InverseSystem
 
@@ -326,7 +353,7 @@ section proj
 def limit (i : ι) : Set (∀ l : Iio i, F l) :=
   {F | ∀ ⦃j k⦄ (h : j.1 ≤ k.1), f h (F k) = F j}
 
-/-- For a family of types `X` indexed by an preorder `ι` and an element `i : ι`,
+/-- For a family of types `X` indexed by a preorder `ι` and an element `i : ι`,
 `piLT X i` is the product of all the types indexed by elements below `i`. -/
 abbrev piLT (X : ι → Type*) (i : ι) := ∀ l : Iio i, X l
 
@@ -349,7 +376,6 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
 @[simps apply] noncomputable def piLTLim : piLT X i ≃ limit (piLTProj (X := X)) i where
   toFun f := ⟨fun j ↦ piLTProj j.2.le f, fun _ _ _ ↦ rfl⟩
   invFun f l := let k := hi.mid l.2; f.1 ⟨k, k.2.2⟩ ⟨l, k.2.1⟩
-  left_inv f := rfl
   right_inv f := by
     ext j l
     set k := hi.mid (l.2.trans j.2)
@@ -373,17 +399,14 @@ variable [PartialOrder ι] [DecidableEq ι]
 def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
   invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
-  left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
-  right_inv f := by
-    ext j; dsimp only; split_ifs with h
-    · cases (Subtype.ext h : j = ⟨i, le_rfl⟩); rfl
-    · rfl
+  left_inv f := by ext j; exacts [dite_eq_right j.2.ne, dite_eq_left rfl]
+  right_inv f := by grind
 
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
 
 theorem piSplitLE_lt {f : piLT X i × X i} {j} (hj : j < i) :
-    piSplitLE f ⟨j, hj.le⟩ = f.1 ⟨j, hj⟩ := dif_neg hj.ne
+    piSplitLE f ⟨j, hj.le⟩ = f.1 ⟨j, hj⟩ := dite_eq_right hj.ne
 
 end
 
@@ -408,6 +431,8 @@ theorem piEquivSucc_self {x} :
   simp [piEquivSucc]
 
 variable {equiv e}
+
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isNatEquiv_piEquivSucc [InverseSystem f] (H : ∀ x, (e x).1 = f (le_succ i) x)
     (nat : IsNatEquiv f equiv) : IsNatEquiv f (piEquivSucc equiv e hi) := fun j k hj hk h x ↦ by
   have lt_succ {j} := (lt_succ_iff_of_not_isMax (b := j) hi).mpr
@@ -431,7 +456,7 @@ induces a bijection at the limit ordinal. -/
 @[simps] def invLimEquiv : limit f i ≃ limit (piLTProj (X := X)) i where
   toFun t := ⟨fun l ↦ equiv l (t.1 l), fun _ _ h ↦ Eq.symm <| by simp_rw [← t.2 h]; apply nat⟩
   invFun t := ⟨fun l ↦ (equiv l).symm (t.1 l),
-    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h]; simp⟩
+    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h] <;> simp⟩
   left_inv t := by ext; apply Equiv.left_inv
   right_inv t := by ext1; ext1; apply Equiv.right_inv
 
@@ -466,7 +491,7 @@ variable [SuccOrder ι] (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F i⁺ ≃ F
   /-- It is a natural family of bijections. -/
   nat : IsNatEquiv f equiv
   /-- It is compatible with a family of bijections relating `F i⁺` to `F i`. -/
-  compat {i} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
+  compat {i : ι} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
     equiv ⟨i⁺, hsi⟩ x ⟨i, lt_succ_of_not_isMax hi⟩ = (equivSucc hi x).2
 
 variable {s t : Set ι} {f equivSucc} [WellFoundedLT ι]
@@ -482,7 +507,7 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
   obtain ⟨e₁, nat₁, compat₁⟩ := e₁
   obtain ⟨e₂, nat₂, compat₂⟩ := e₂
   ext1; ext1 i; dsimp only
-  refine SuccOrder.prelimitRecOn i.1 (C := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
+  refine SuccOrder.prelimitRecOn i.1 (motive := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
     (fun i nmax ih hi ↦ ?_) (fun i lim ih hi ↦ ?_) i.2
   · ext x ⟨j, hj⟩
     obtain rfl | hj := ((lt_succ_iff_of_not_isMax nmax).mp hj).eq_or_lt
@@ -503,6 +528,7 @@ theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
        (e₂.restrict inter_subset_right).equiv ⟨i, his, hit⟩ from
   congr_fun (congr_arg _ <| unique_pEquivOn h) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Extend a partial family of bijections by one step. -/
 def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
     (H : ∀ ⦃i⦄ (hi : ¬ IsMax i) x, (equivSucc hi x).1 = f (le_succ i) x) :
@@ -549,7 +575,7 @@ private noncomputable def globalEquivAux (i : ι) :
     fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.2) (equivLim i hi).1 (equivLim i hi).2
 
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
-noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
+@[no_expose] noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :

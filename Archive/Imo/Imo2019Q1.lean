@@ -3,8 +3,10 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2019 Q1
@@ -20,8 +22,7 @@ Note that there is a much more compact proof of this fact in Isabelle/HOL
   - http://downthetypehole.de/paste/4YbGgqb4
 -/
 
-
-theorem imo2019_q1 (f : ℤ → ℤ) :
+public theorem imo2019_q1 (f : ℤ → ℤ) :
     (∀ a b : ℤ, f (2 * a) + 2 * f b = f (f (a + b))) ↔ f = 0 ∨ ∃ c, f = fun x => 2 * x + c := by
   constructor; swap
   -- easy way: f(x)=0 and f(x)=2x+c work.
@@ -39,10 +40,11 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   -- Hence, `f` is an affine map, `f b = f 0 + m * b`
   obtain ⟨c, H⟩ : ∃ c, ∀ b, f b = c + m * b := by
     refine ⟨f 0, fun b => ?_⟩
-    induction' b with b ihb b ihb
-    · simp
-    · simp [H, ihb, mul_add, add_assoc]
-    · rw [← sub_eq_of_eq_add (H _)]
+    induction b with
+    | zero => simp
+    | succ b ihb => simp [H, ihb, mul_add, add_assoc]
+    | pred b ihb =>
+      rw [← sub_eq_of_eq_add (H _)]
       simp [ihb]; ring
   -- Now use `hf 0 0` and `hf 0 1` to show that `m ∈ {0, 2}`
   have H3 : 2 * c = m * c := by simpa [H, mul_add] using hf 0 0
