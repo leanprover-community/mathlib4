@@ -58,7 +58,6 @@ In texts, this is what the Frobenius equations are usually referred to as.
 * `Bialgebra.nonempty_algEquiv_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the Frobenius
   equations, `R` is isomorphic to `A`
 
-
 ## TODO
 
 * show `IsFrobenius R (A ⊗ B)`
