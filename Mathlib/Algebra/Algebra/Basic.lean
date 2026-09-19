@@ -35,6 +35,172 @@ variable {R A M : Type*}
 
 section Semiring
 
+variable [CommSemiring R] [CommSemiring S]
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+
+-- Porting note: deleted a private lemma
+
+-- We'll later use this to show `Algebra ℤ M` is a subsingleton.
+/-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,
+it suffices to check the `algebraMap`s agree.
+-/
+@[ext]
+theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q : Algebra R A)
+    (h : ∀ r : R, (haveI := P; algebraMap R A r) = haveI := Q; algebraMap R A r) :
+    P = Q := by
+  replace h : P.toRingHom = Q.toRingHom := DFunLike.ext _ _ h
+  have h' : (haveI := P; (· • ·) : R → A → A) = (haveI := Q; (· • ·) : R → A → A) := by
+    funext r a
+    rw [P.smul_def', Q.smul_def', h]
+  rcases P with @⟨⟨P⟩⟩
+  rcases Q with @⟨⟨Q⟩⟩
+  congr
+#align algebra.algebra_ext Algebra.algebra_ext
+
+-- see Note [lower instance priority]
+instance (priority := 200) toModule : Module R A where
+  one_smul _ := by simp [smul_def']
+  mul_smul := by simp [smul_def', mul_assoc]
+  smul_add := by simp [smul_def', mul_add]
+  smul_zero := by simp [smul_def']
+  add_smul := by simp [smul_def', add_mul]
+  zero_smul := by simp [smul_def']
+#align algebra.to_module Algebra.toModule
+
+-- Porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
+-- attribute [instance 0] Algebra.toSMul
+
+theorem smul_def (r : R) (x : A) : r • x = algebraMap R A r * x :=
+  Algebra.smul_def' r x
+#align algebra.smul_def Algebra.smul_def
+
+theorem algebraMap_eq_smul_one (r : R) : algebraMap R A r = r • (1 : A) :=
+  calc
+    algebraMap R A r = algebraMap R A r * 1 := (mul_one _).symm
+    _ = r • (1 : A) := (Algebra.smul_def r 1).symm
+#align algebra.algebra_map_eq_smul_one Algebra.algebraMap_eq_smul_one
+
+theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r => r • (1 : A) :=
+  funext algebraMap_eq_smul_one
+#align algebra.algebra_map_eq_smul_one' Algebra.algebraMap_eq_smul_one'
+
+/-- `mul_comm` for `Algebra`s when one element is from the base ring. -/
+theorem commutes (r : R) (x : A) : algebraMap R A r * x = x * algebraMap R A r :=
+  Algebra.commutes' r x
+#align algebra.commutes Algebra.commutes
+
+@[aesop safe apply]
+lemma commute_algebraMap_left (r : R) (x : A) : Commute (algebraMap R A r) x :=
+  Algebra.commutes r x
+
+@[aesop safe apply]
+lemma commute_algebraMap_right (r : R) (x : A) : Commute x (algebraMap R A r) :=
+  (Algebra.commutes r x).symm
+
+/-- `mul_left_comm` for `Algebra`s when one element is from the base ring. -/
+theorem left_comm (x : A) (r : R) (y : A) :
+    x * (algebraMap R A r * y) = algebraMap R A r * (x * y) := by
+  rw [← mul_assoc, ← commutes, mul_assoc]
+#align algebra.left_comm Algebra.left_comm
+
+/-- `mul_right_comm` for `Algebra`s when one element is from the base ring. -/
+theorem right_comm (x : A) (r : R) (y : A) :
+    x * algebraMap R A r * y = x * y * algebraMap R A r := by
+  rw [mul_assoc, commutes, ← mul_assoc]
+#align algebra.right_comm Algebra.right_comm
+
+instance _root_.IsScalarTower.right : IsScalarTower R A A :=
+  ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
+#align is_scalar_tower.right IsScalarTower.right
+
+@[simp]
+theorem _root_.RingHom.smulOneHom_eq_algebraMap : RingHom.smulOneHom = algebraMap R A :=
+  RingHom.ext fun r => (algebraMap_eq_smul_one r).symm
+
+-- TODO: set up `IsScalarTower.smulCommClass` earlier so that we can actually prove this using
+-- `mul_smul_comm s x y`.
+
+/-- This is just a special case of the global `mul_smul_comm` lemma that requires less typeclass
+search (and was here first). -/
+@[simp]
+protected theorem mul_smul_comm (s : R) (x y : A) : x * s • y = s • (x * y) := by
+  rw [smul_def, smul_def, left_comm]
+#align algebra.mul_smul_comm Algebra.mul_smul_comm
+
+/-- This is just a special case of the global `smul_mul_assoc` lemma that requires less typeclass
+search (and was here first). -/
+@[simp]
+protected theorem smul_mul_assoc (r : R) (x y : A) : r • x * y = r • (x * y) :=
+  smul_mul_assoc r x y
+#align algebra.smul_mul_assoc Algebra.smul_mul_assoc
+
+@[simp]
+theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α A]
+    [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
+  rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
+#align smul_algebra_map smul_algebraMap
+
+section
+
+#noalign algebra.bit0_smul_one
+#noalign algebra.bit0_smul_one'
+#noalign algebra.bit0_smul_bit0
+#noalign algebra.bit0_smul_bit1
+#noalign algebra.bit1_smul_one
+#noalign algebra.bit1_smul_one'
+#noalign algebra.bit1_smul_bit0
+#noalign algebra.bit1_smul_bit1
+
+end
+
+variable (R A)
+
+/-- The canonical ring homomorphism `algebraMap R A : R →+* A` for any `R`-algebra `A`,
+packaged as an `R`-linear map.
+-/
+protected def linearMap : R →ₗ[R] A :=
+  { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
+#align algebra.linear_map Algebra.linearMap
+
+@[simp]
+theorem linearMap_apply (r : R) : Algebra.linearMap R A r = algebraMap R A r :=
+  rfl
+#align algebra.linear_map_apply Algebra.linearMap_apply
+
+theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
+  rfl
+#align algebra.coe_linear_map Algebra.coe_linearMap
+
+/- The identity map inducing an `Algebra` structure. -/
+instance id : Algebra R R where
+  -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
+  -- be made so without a significant performance hit.
+  -- see library note [reducible non-instances].
+  toFun x := x
+  toSMul := Mul.toSMul _
+  __ := (RingHom.id R).toAlgebra
+#align algebra.id Algebra.id
+
+variable {R A}
+
+namespace id
+
+@[simp]
+theorem map_eq_id : algebraMap R R = RingHom.id _ :=
+  rfl
+#align algebra.id.map_eq_id Algebra.id.map_eq_id
+
+theorem map_eq_self (x : R) : algebraMap R R x = x :=
+  rfl
+#align algebra.id.map_eq_self Algebra.id.map_eq_self
+
+@[simp]
+theorem smul_eq_mul (x y : R) : x • y = x * y :=
+  rfl
+#align algebra.id.smul_eq_mul Algebra.id.smul_eq_mul
+
+end id
+
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
 
