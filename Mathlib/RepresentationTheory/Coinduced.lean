@@ -80,7 +80,7 @@ See also `Rep.coind` and `Representation.coind'` for variants involving the cate
 @[simps -isSimp]
 def coind : Representation k H (coindV φ ρ) where
   toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx => (mem_coindV φ ρ _).mpr <| by
-      simp [(mem_coindV φ ρ _).mp hx, mul_assoc]
+    simp [(mem_coindV φ ρ _).mp hx, mul_assoc]
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
