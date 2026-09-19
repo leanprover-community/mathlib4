@@ -161,7 +161,7 @@ noncomputable def lim.isLimitCone : IsLimit (lim.cone F) :=
 
 /-- Given a bifunctor `F : J ⥤ K ⥤ C`, and assuming that `C` has limits of shape `J` and
 colimit of shape `K`, this is the canonical morphism from the colimit of `F.flip ⋙ lim`
-and the limit of `F ⋙ colimit`. -/
+to the limit of `F ⋙ colimit`. -/
 @[no_expose]
 noncomputable def colimitLimToLimitColim :
     colimit (F.flip ⋙ lim) ⟶ limit (F ⋙ colim) :=
