@@ -121,8 +121,8 @@ instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   rw [← this.isQuotientMap.isClosed_preimage]
   convert! ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
-    simp only [mem_preimage, map_apply, mem_diagonal_iff, mem_range, Prod.mk.injEq, Prod.exists,
-      exists_eq_right]
+    simp only [mem_preimage, map_apply, mem_diagonalUniv_iff, mem_range, Prod.mk.injEq,
+      Prod.exists, exists_eq_right]
     rw [Quotient.eq', MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
   all_goals infer_instance
 
@@ -139,8 +139,8 @@ theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G]
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
-  have : g ∘ f = Function.diag := by ext x <;> simp [f, g]
-  have range_gf : range (g ∘ f) = diagonal X := by simp [this]
+  have : g ∘ f = Function.diagonal := by ext x <;> simp [f, g]
+  have range_gf : range (g ∘ f) = diagonalUniv X := by simp [this]
   rw [← range_gf]
   exact (proper_g.comp proper_f).isClosed_range
 
