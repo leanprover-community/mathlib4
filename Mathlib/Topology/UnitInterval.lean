@@ -23,7 +23,7 @@ We provide basic instances, as well as a custom tactic for discharging
 
 noncomputable section
 
-open Topology Filter Set Int Set.Icc
+open Set Int Set.Icc
 
 /-! ### The unit interval -/
 
@@ -44,7 +44,7 @@ theorem one_mem : (1 : ℝ) ∈ I :=
   ⟨zero_le_one, le_rfl⟩
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, mul_le_one₀ hx.2 hy.1 hy.2⟩
+  ⟨mul_nonneg hx.1 hy.1, (mul_le_of_le_one_left hy.1 hx.2).trans hy.2⟩
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
   ⟨div_nonneg hx hy, div_le_one_of_le₀ hxy hy⟩
@@ -530,7 +530,6 @@ section
 variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.
 /-- The image of `[0,1]` under the homeomorphism `fun x ↦ a * x + b` is `[b, a+b]`.

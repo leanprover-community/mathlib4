@@ -52,7 +52,6 @@ variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α}
   [FunLike hom H (α → E)] [LinearMapClass hom 𝕜 H (α → E)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a topological vector space over a normed field `𝕜`, let `α` be any type.
 Let `H` be a submodule of `α →ᵤ E` such that the range of each `f ∈ H` is von Neumann bounded.
 Then `H` is a topological vector space over `𝕜`,
@@ -65,7 +64,7 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     ContinuousSMul 𝕜 H := by
   have : IsTopologicalAddGroup H :=
     let ofFun' : (α → E) →+ (α →ᵤ E) := AddMonoidHom.id _
-    IsInducing.topologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
+    IsInducing.isTopologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
   have hb : (𝓝 (0 : H)).HasBasis (· ∈ 𝓝 (0 : E)) fun V ↦ {u | ∀ x, φ u x ∈ V} := by
     simp only [hφ.nhds_eq_comap, Function.comp_apply, map_zero]
     exact UniformFun.hasBasis_nhds_zero.comap _

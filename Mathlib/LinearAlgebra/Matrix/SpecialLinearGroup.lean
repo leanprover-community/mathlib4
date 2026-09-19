@@ -191,7 +191,7 @@ instance : Group (SpecialLinearGroup n R) :=
 /-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
   toFun A :=
-    LinearEquiv.ofLinear (Matrix.toLin' ↑ₘA) (Matrix.toLin' ↑ₘA⁻¹)
+    LinearEquiv.ofLinearMap (Matrix.toLin' ↑ₘA) (Matrix.toLin' ↑ₘA⁻¹)
       (by rw [← toLin'_mul, ← coe_mul, mul_inv_cancel, coe_one, toLin'_one])
       (by rw [← toLin'_mul, ← coe_mul, inv_mul_cancel, coe_one, toLin'_one])
   map_one' := LinearEquiv.toLinearMap_injective Matrix.toLin'_one
@@ -423,7 +423,9 @@ end Matrix
 
 namespace IsCoprime
 
-open Matrix MatrixGroups SpecialLinearGroup
+open Matrix SpecialLinearGroup
+
+open scoped MatrixGroups
 
 variable {R : Type*} [CommRing R]
 
@@ -512,7 +514,7 @@ lemma transvection_smul_single_fst {i j : ι} (hij : i ≠ j) (b : F) :
   simp [SpecialLinearGroup.smul_def, -mulVec_single, transvection_coe,
     add_mulVec, single_mulVec_eq, hij]
 
-@[deprecated transvection_smul_single_fst (since := "2026-06-22")]
+@[deprecated transvection_smul_single_fst +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_self {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b).1 *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
   rw [transvection_coe]
@@ -524,7 +526,7 @@ lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
   simp [SpecialLinearGroup.smul_def, transvection_coe, -mulVec_single,
     add_mulVec, single_mulVec_eq]
 
-@[deprecated transvection_smul_single_snd (since := "2026-06-22")]
+@[deprecated transvection_smul_single_snd +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b).1 *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
   rw [transvection_coe]
@@ -558,8 +560,6 @@ end SpecialLinearGroup
 
 namespace TransvectionStruct
 
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
-
 /-- Any transvection structure can be converted to a special linear matrix. -/
 def toSpecialLinearGroup (t : TransvectionStruct ι F) :
     SpecialLinearGroup ι F :=
@@ -585,7 +585,7 @@ section SL2
 
 variable {F : Type*} [Field F]
 
-open MatrixGroups
+open scoped MatrixGroups
 
 namespace SpecialLinearGroup
 
@@ -685,7 +685,7 @@ lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1)
   rw [Finset.map_noncommProd]
   simp_rw [coeMonoidHom_apply, apply_dite, coe_one]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
-      (dif_pos (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
+      (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
   simp_rw [← diagonalRingHom_apply]
   rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod]
@@ -812,7 +812,7 @@ end Matrix
 
 namespace ModularGroup
 
-open MatrixGroups
+open scoped MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 

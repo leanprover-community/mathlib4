@@ -31,8 +31,6 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 
 @[expose] public section
 
-open CategoryTheory
-
 universe uR uA uB
 
 variable (R : Type uR) [CommRing R]
@@ -48,6 +46,7 @@ def CharacterModule : Type uA := A →+ AddCircle (1 : ℚ)
 namespace CharacterModule
 
 set_option backward.isDefEq.respectTransparency.types false in
+@[macro_inline]
 instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
   coe_injective _ _ _ := by simp_all
@@ -108,7 +107,7 @@ lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective 
 Two isomorphic modules have isomorphic character modules.
 -/
 def congr (e : A ≃ₗ[R] B) : CharacterModule A ≃ₗ[R] CharacterModule B :=
-  .ofLinear (dual e.symm) (dual e)
+  .ofLinearMap (dual e.symm) (dual e)
     (by ext c _; exact congr(c $(e.right_inv _)))
     (by ext c _; exact congr(c $(e.left_inv _)))
 
@@ -121,9 +120,9 @@ Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ 
 @[simps] noncomputable def uncurry :
     (A →ₗ[R] CharacterModule B) →ₗ[R] CharacterModule (A ⊗[R] B) where
   toFun c := TensorProduct.liftAddHom c.toAddMonoidHom fun r a b ↦ congr($(c.map_smul r a) b)
-  map_add' c c' := DFunLike.ext _ _ fun x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
-  map_smul' r c := DFunLike.ext _ _ fun x ↦ x.induction_on
-    (by simp_rw [map_zero]) (fun a b ↦ congr($(c.map_smul r a) b).symm) (by aesop)
+  map_add' c c' := DFunLike.ext _ _ fun x ↦ by refine x.inductionOn ?_ ?_ <;> aesop
+  map_smul' r c := DFunLike.ext _ _ fun x ↦ x.inductionOn
+    (fun a b ↦ congr($(c.map_smul r a) b).symm) (by aesop)
 
 /--
 Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ b ↦ c (a ⊗ b)`.
@@ -144,7 +143,7 @@ Linear maps into a character module are exactly characters of the tensor product
 -/
 @[simps!] noncomputable def homEquiv :
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
-  .ofLinear uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
+  .ofLinearMap uncurry curry (by ext _ z; refine z.inductionOn ?_ ?_ <;> aesop) (by aesop)
 
 theorem dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
     homEquiv.symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ homEquiv.toLinearMap = f.lcomp R _ := rfl
