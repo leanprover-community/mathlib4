@@ -32,6 +32,7 @@ This file defines rays in modules.
 @[expose] public noncomputable section
 
 open Module
+open scoped Function
 
 section StrictOrderedCommSemiring
 
@@ -214,6 +215,28 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
   (hy.symm.add_left hz.symm).symm
 
 end SameRay
+
+instance : Std.Refl (SameRay R (M := M)) where
+  refl := .refl
+
+instance : Std.Symm (SameRay R (M := M)) where
+  symm _ _ := .symm
+
+/-- If the summands pairwise lie on a common ray, then each of them lies on the same ray as
+their sum. This is the `Finset.sum` version of `SameRay.add_right`. -/
+theorem sameRay_sum_right_of_pairwise {ι : Type*} {s : Finset ι} {i : ι} {v : ι → M}
+    (hp : (s : Set ι).Pairwise (SameRay R on v)) (hi : i ∈ s) :
+    SameRay R (v i) (∑ j ∈ s, v j) :=
+  Finset.sum_induction v _ (fun _ _ ↦ SameRay.add_right) (SameRay.zero_right _)
+    fun _ hj ↦ hp.forall₂ hi hj
+
+theorem SameRay.sum_left {ι : Type*} {s : Finset ι} {v : ι → M}
+    {z : M} (h : ∀ i ∈ s, SameRay R (v i) z) : SameRay R (∑ i ∈ s, v i) z :=
+  Finset.sum_induction v (SameRay R · z) (fun _ _ ↦ .add_left) (.zero_left z) h
+
+theorem SameRay.sum_right {ι : Type*} {s : Finset ι} {v : ι → M}
+    {x : M} (h : ∀ i ∈ s, SameRay R x (v i)) : SameRay R x (∑ i ∈ s, v i) :=
+  Finset.sum_induction v (SameRay R x ·) (fun _ _ ↦ .add_right) (.zero_right x) h
 
 variable (R M)
 
