@@ -25,8 +25,6 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `SimpleGraph.lapMatrix`: The Laplacian matrix of a simple graph, defined as the difference
   between the degree matrix and the adjacency matrix.
 * `posSemidef_lapMatrix`: The Laplacian matrix is positive semidefinite.
-* `lapMatrix_toLinearMap₂'_mono`: The Laplacian quadratic form is monotone in the graph.
-* `dotProduct_mulVec_lapMatrix_le_card`: The Laplacian quadratic form is at most `|V| · ‖x‖²`.
 * `eigenvalues_lapMatrix_le_card`: Every Laplacian eigenvalue (in an ordered field) is at most
   `|V|`.
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
