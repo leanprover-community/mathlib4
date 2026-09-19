@@ -1141,7 +1141,7 @@ instance [Group α] : Mul α := ⟨(· * ·)⟩
 end errors
 
 namespace ModuleSystem
--- Text that `private` and `exposed` are translated correctly.
+-- Test that `private` and `exposed` are translated correctly.
 
 variable {α : Type} [Mul α] (a b : α)
 
