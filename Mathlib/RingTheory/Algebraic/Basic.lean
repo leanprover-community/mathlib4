@@ -175,7 +175,7 @@ theorem IsLocalization.isAlgebraic [Nontrivial R] (M : Submonoid R) [IsLocalizat
     · exact isAlgebraic_zero
     have ⟨⟨r, m⟩, h⟩ := surj M x
     refine ⟨C m.1 * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
-    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(coeff $eq 0), mk'_zero] at h
+    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(($eq).coeff 0), mk'_zero] at h
 
 open IsScalarTower
 

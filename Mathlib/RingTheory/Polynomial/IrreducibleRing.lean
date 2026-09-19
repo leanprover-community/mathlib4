@@ -29,7 +29,7 @@ polynomial, irreducible ring, nilradical, prime ideal
 
 public section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 noncomputable section
 
