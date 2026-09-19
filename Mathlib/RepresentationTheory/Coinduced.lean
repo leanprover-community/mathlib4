@@ -283,12 +283,18 @@ def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functor `Rep k G ⥤ Rep k H` is right
 adjoint to the restriction functor along `φ`. -/
-@[simps!]
+@[simps! unit_app_hom_toFun_coe]
 noncomputable def resCoindAdjunction : resFunctor.{max w t} φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
     homEquiv_naturality_right := by intros; ext; rfl }
+
+@[simp]
+lemma resCoindAdjunction_counit_app_hom_toFun (Y : Rep.{max w t, u, v} k G) (x : coind φ Y) :
+    (Hom.hom (A := of ((Representation.coind φ Y.ρ).comp φ)) (B := Y)
+      ((resCoindAdjunction k φ).counit.app Y)) x = x.val 1 := by
+  simp [resCoindAdjunction, resCoindHomEquiv_symm_apply _]
 
 @[simp]
 lemma resCoindAdjunction_homEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
