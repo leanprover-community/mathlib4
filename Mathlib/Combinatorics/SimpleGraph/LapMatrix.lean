@@ -283,10 +283,7 @@ end
 
 /-- The Laplacian quadratic form is monotone in the graph: if `G ≤ H`, then
 `xᵀ L(G) x ≤ xᵀ L(H) x`.
-
-This holds over any linearly ordered field (same assumptions as `posSemidef_lapMatrix`,
-minus the star data): the quadratic forms expand as a sum of squares over edges, so
-adding edges can only increase the value. -/
+-/
 theorem lapMatrix_toLinearMap₂'_mono {R} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     {G H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj] (hGH : G ≤ H) (x : V → R) :
     toLinearMap₂' R (G.lapMatrix R) x x ≤ toLinearMap₂' R (H.lapMatrix R) x x := by
