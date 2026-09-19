@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Prod
-import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Localization of product categories
@@ -16,9 +18,11 @@ to a class of morphisms `W j : MorphismProperty (C j)`, then the product
 functor `Functor.pi L : (∀ j, C j) ⥤ ∀ j, D j` is a localization
 functor for the product class of morphisms `MorphismProperty.pi W`.
 The proof proceeds by induction on the cardinal of `J` using the
-main result of the file `Mathlib.CategoryTheory.Localization.Prod`.
+main result of the file `Mathlib/CategoryTheory/Localization/Prod.lean`.
 
 -/
+
+public section
 
 universe w v₁ v₂ u₁ u₂
 
@@ -35,7 +39,7 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
     let L₁ := fun j => (L₂ (e j))
     let E := Pi.equivalenceOfEquiv C₂ e
     let E' := Pi.equivalenceOfEquiv D₂ e
-    haveI : CatCommSq E.functor (Functor.pi L₁) (Functor.pi L₂) E'.functor :=
+    have : CatCommSq E.functor (Functor.pi L₁) (Functor.pi L₂) E'.functor :=
       (CatCommSq.hInvEquiv E (Functor.pi L₁) (Functor.pi L₂) E').symm ⟨Iso.refl _⟩
     refine IsLocalization.of_equivalences (Functor.pi L₁)
       (MorphismProperty.pi (fun j => (W₂ (e j)))) (Functor.pi L₂)
@@ -49,31 +53,31 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
       exact hg
     exact H (e.apply_symm_apply i) _ (hf (e.symm i))
   · intro C D _ _ L W _ _
-    haveI : ∀ j, IsEquivalence (L j) := by rintro ⟨⟩
+    have : ∀ j, IsEquivalence (L j) := by rintro ⟨⟩
     refine IsLocalization.of_isEquivalence _ _ (fun _ _ _ _ => ?_)
     rw [MorphismProperty.isomorphisms.iff, isIso_pi_iff]
     rintro ⟨⟩
   · intro J _ hJ C D _ _ L W _ _
     let L₁ := (L none).prod (Functor.pi (fun j => L (some j)))
-    haveI : CatCommSq (Pi.optionEquivalence C).symm.functor L₁ (Functor.pi L)
+    have : CatCommSq (Pi.optionEquivalence C).symm.functor L₁ (Functor.pi L)
       (Pi.optionEquivalence D).symm.functor :=
-        ⟨NatIso.pi' (by rintro (_|i) <;> apply Iso.refl)⟩
+        ⟨NatIso.pi' (by rintro (_ | i) <;> apply Iso.refl)⟩
     refine IsLocalization.of_equivalences L₁
       ((W none).prod (MorphismProperty.pi (fun j => W (some j)))) (Functor.pi L) _
       (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm ?_ ?_
     · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
       refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, ?_, ⟨Iso.refl _⟩⟩
-      rintro (_|i)
+      rintro (_ | i)
       · exact hf₁
       · apply hf₂
     · apply MorphismProperty.IsInvertedBy.pi
-      rintro (_|i) <;> apply Localization.inverts
+      rintro (_ | i) <;> apply Localization.inverts
 
 /-- If `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`, then
 the induced functor `(Discrete J ⥤ C) ⥤ (Discrete J ⥤ D)` is also a localization
 for `W.functorCategory (Discrete J)` if `W` contains identities. -/
 instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
-    (L : C ⥤ D) (W : MorphismProperty C) [W.ContainsIdentities] [L.IsLocalization W]  :
+    (L : C ⥤ D) (W : MorphismProperty C) [W.ContainsIdentities] [L.IsLocalization W] :
     ((whiskeringRight (Discrete J) C D).obj L).IsLocalization
       (W.functorCategory (Discrete J)) := by
   let E := piEquivalenceFunctorDiscrete J C

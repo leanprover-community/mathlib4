@@ -3,15 +3,20 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.Filter.AtTopBot
-import Mathlib.Order.Filter.Subsingleton
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Subsingleton
 /-!
 # Functions that are eventually constant along a filter
 
 In this file we define a predicate `Filter.EventuallyConst f l` saying that a function `f : α → β`
 is eventually equal to a constant along a filter `l`. We also prove some basic properties of these
 functions.
+
+We also define `Filter.EventuallyEmptyOrUniv s l`, the specialization of `EventuallyConst` to a
+set `s : Set α`, saying that `s` is eventually empty or eventually equal to `univ` along `l`.
 
 ## Implementation notes
 
@@ -20,6 +25,8 @@ However, this proposition is false for empty `α`, `β`.
 Instead, we say that `Filter.map f l` is supported on a subsingleton.
 This allows us to drop `[Nonempty _]` assumptions here and there.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -57,20 +64,41 @@ alias ⟨EventuallyConst.eventuallyEq_const, _⟩ := eventuallyConst_iff_exists_
 
 theorem eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
-  simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists_iff]
+  simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists]
 
 theorem eventuallyConst_pred {p : α → Prop} :
     EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
 
+/-- A set `s` is *eventually empty or eventually universal* along a filter `l` if it is eventually
+equal to `∅` or to `univ`.
+
+This is the specialization of `Filter.EventuallyConst` to `s : Set α`. -/
+def EventuallyEmptyOrUniv (s : Set α) (l : Filter α) : Prop := EventuallyConst (· ∈ s) l
+
+theorem eventuallyEmptyOrUniv_iff' {s : Set α} :
+    EventuallyEmptyOrUniv s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
+  eventuallyConst_pred'
+
+@[deprecated eventuallyEmptyOrUniv_iff' +typeChanged (since := "2026-08-25")]
 theorem eventuallyConst_set' {s : Set α} :
     EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
   eventuallyConst_pred'
 
+theorem eventuallyEmptyOrUniv_iff {s : Set α} :
+    EventuallyEmptyOrUniv s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
+  eventuallyConst_pred
+
+@[deprecated eventuallyEmptyOrUniv_iff +typeChanged (since := "2026-08-25")]
 theorem eventuallyConst_set {s : Set α} :
     EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
 
+theorem eventuallyEmptyOrUniv_preimage {s : Set β} {f : α → β} :
+    EventuallyEmptyOrUniv (f ⁻¹' s) l ↔ EventuallyEmptyOrUniv s (map f l) :=
+  .rfl
+
+@[deprecated eventuallyEmptyOrUniv_preimage +typeChanged (since := "2026-08-25")]
 theorem eventuallyConst_preimage {s : Set β} {f : α → β} :
     EventuallyConst (f ⁻¹' s) l ↔ EventuallyConst s (map f l) :=
   .rfl
@@ -118,9 +146,9 @@ lemma apply {ι : Type*} {p : ι → Type*} {g : α → ∀ x, p x}
 lemma comp₂ {g : α → γ} (hf : EventuallyConst f l) (op : β → γ → δ) (hg : EventuallyConst g l) :
     EventuallyConst (fun x ↦ op (f x) (g x)) l :=
   ((hf.prod hg).map op.uncurry).anti <|
-    (tendsto_map (f := op.uncurry)).comp (tendsto_map.prod_mk tendsto_map)
+    (tendsto_map (f := op.uncurry)).comp (tendsto_map.prodMk tendsto_map)
 
-lemma prod_mk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
+lemma prodMk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
     EventuallyConst (fun x ↦ (f x, g x)) l :=
   hf.comp₂ Prod.mk hg
 
@@ -129,33 +157,78 @@ lemma mul [Mul β] {g : α → β} (hf : EventuallyConst f l) (hg : EventuallyCo
     EventuallyConst (f * g) l :=
   hf.comp₂ (· * ·) hg
 
+end EventuallyConst
+
+namespace EventuallyEmptyOrUniv
+
+@[simp] protected lemma bot {s : Set α} : EventuallyEmptyOrUniv s ⊥ :=
+  EventuallyConst.bot
+
+protected lemma congr {s t : Set α} (h : EventuallyEmptyOrUniv s l) (hst : s =ᶠ[l] t) :
+    EventuallyEmptyOrUniv t l :=
+  EventuallyConst.congr h hst
+
+lemma anti {s : Set α} {l'} (h : EventuallyEmptyOrUniv s l) (hl' : l' ≤ l) :
+    EventuallyEmptyOrUniv s l' :=
+  EventuallyConst.anti h hl'
+
 variable [One β] {s : Set α} {c : β}
 
 @[to_additive]
 lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
-    EventuallyConst s l := by
-  simpa [Function.comp_def, hc, imp_false] using h.comp (· = c)
+    EventuallyEmptyOrUniv s l := by
+  simpa [Function.comp_def, hc, imp_false] using! h.comp (· = c)
 
 @[to_additive]
-theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
+theorem mulIndicator_const (h : EventuallyEmptyOrUniv s l) (c : β) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l := by
   classical exact h.comp (if · then c else 1)
 
 @[to_additive]
 theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
-    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst s l :=
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyEmptyOrUniv s l :=
   ⟨(of_mulIndicator_const · hc), (mulIndicator_const · c)⟩
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_const_iff :
-    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst s l := by
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyEmptyOrUniv s l := by
   rcases eq_or_ne c 1 with rfl | hc <;> simp [mulIndicator_const_iff_of_ne, *]
+
+end EventuallyEmptyOrUniv
+
+namespace EventuallyConst
+
+variable [One β] {s : Set α} {c : β}
+
+@[to_additive (attr := deprecated EventuallyEmptyOrUniv.of_mulIndicator_const +typeChanged
+  (since := "2026-08-25"))]
+lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
+    EventuallyConst s l :=
+  EventuallyEmptyOrUniv.of_mulIndicator_const h hc
+
+@[to_additive (attr := deprecated EventuallyEmptyOrUniv.mulIndicator_const +typeChanged
+  (since := "2026-08-25"))]
+theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l :=
+  EventuallyEmptyOrUniv.mulIndicator_const h c
+
+@[to_additive (attr := deprecated EventuallyEmptyOrUniv.mulIndicator_const_iff_of_ne +typeChanged
+  (since := "2026-08-25"))]
+theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst s l :=
+  EventuallyEmptyOrUniv.mulIndicator_const_iff_of_ne hc
+
+@[to_additive (attr := deprecated EventuallyEmptyOrUniv.mulIndicator_const_iff +typeChanged
+  (since := "2026-08-25"))]
+theorem mulIndicator_const_iff :
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst s l :=
+  EventuallyEmptyOrUniv.mulIndicator_const_iff
 
 end EventuallyConst
 
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
-  (atTop_basis.eventuallyConst_iff' fun i _ ↦ left_mem_Ici).trans <| by
+  (atTop_basis.eventuallyConst_iff' fun _ _ ↦ self_mem_Ici).trans <| by
     simp only [true_and, mem_Ici]
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :

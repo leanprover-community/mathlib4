@@ -3,9 +3,10 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.List.FinRange
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` plugin for big operators
@@ -19,7 +20,7 @@ on that subset until the set is completely exhausted.
 
 ## See also
 
- * The `fin_cases` tactic has similar scope: splitting out a finite collection into its elements.
+* The `fin_cases` tactic has similar scope: splitting out a finite collection into its elements.
 
 ## Porting notes
 
@@ -30,15 +31,17 @@ In particular, we can't use the plugin on sums containing variables.
 
 ## TODO
 
- * Support intervals: `Finset.Ico`, `Finset.Icc`, ...
- * To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
-   the sum/prod, without computing its numeric value (using the `ring` tactic to do some
-   normalization?)
+* Support intervals: `Finset.Ico`, `Finset.Icc`, ...
+* To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
+  the sum/prod, without computing its numeric value (using the `ring` tactic to do some
+  normalization?)
 -/
+
+public meta section
 
 namespace Mathlib.Meta
 
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 open Qq
 
@@ -133,13 +136,13 @@ partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     haveI' : $s =Q .finRange $n := ⟨⟩
     return match ← Nat.unifyZeroOrSucc n with -- We want definitional equality on `n`.
     | .zero _pf => .nil q(List.finRange_zero)
-    | .succ n' _pf => .cons _ _ q(List.finRange_succ_eq_map $n')
+    | .succ n' _pf => .cons _ _ q(List.finRange_succ)
   | (.const ``List.map [v, _], _, #[(β : Q(Type v)), _, (f : Q($β → $α)), (xxs : Q(List $β))]) => do
     haveI' : $s =Q ($xxs).map $f := ⟨⟩
     return match ← List.proveNilOrCons xxs with
     | .nil pf => .nil q(($pf ▸ List.map_nil : List.map _ _ = _))
     | .cons x xs pf => .cons q($f $x) q(($xs).map $f)
-      q(($pf ▸ List.map_cons $f $x $xs : List.map _ _ = _))
+      q(($pf ▸ List.map_cons : List.map _ _ = _))
   | (_, fn, args) =>
     throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
 
@@ -240,14 +243,14 @@ def Finset.ProveEmptyOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Finset $α)
 
 lemma Finset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
     insert a s = Finset.cons a s h := by
-  ext; simp
+  simp
 
 lemma Finset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Finset.range n = {} := by rw [pn.out, Nat.cast_zero, Finset.range_zero]
 
 lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
-    Finset.range n = Finset.cons n' (Finset.range n') Finset.not_mem_range_self := by
-  rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
+    Finset.range n = Finset.cons n' (Finset.range n') Finset.notMem_range_self := by
+  rw [pn.out, Nat.cast_id, pn', Finset.range_add_one, Finset.insert_eq_cons]
 
 lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)
     (complete : ∀ x : α, x ∈ elems) :
@@ -262,7 +265,7 @@ partial def Finset.proveEmptyOrCons {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (ProveEmptyOrConsResult s) :=
   match s.getAppFnArgs with
   | (``EmptyCollection.emptyCollection, _) => haveI : $s =Q {} := ⟨⟩; pure (.empty q(rfl))
-  | (``Finset.cons, #[_, (a : Q($α)), (s' : Q(Finset $α)), (h : Q(¬ $a ∈ $s'))]) =>
+  | (``Finset.cons, #[_, (a : Q($α)), (s' : Q(Finset $α)), (h : Q($a ∉ $s'))]) =>
     haveI : $s =Q .cons $a $s' $h := ⟨⟩
     pure (.cons a s' h q(.refl $s))
   | (``Finset.mk, #[_, (val : Q(Multiset $α)), (nd : Q(Multiset.Nodup $val))]) => do
@@ -315,7 +318,8 @@ def Result.eq_trans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b
   Result.isFalse (x := a) q($eq ▸ $proof)
   | .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
-  | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
+  | .isNNRat inst q n d proof => Result.isNNRat inst q n d q($eq ▸ $proof)
+  | .isNegNNRat inst q n d proof => Result.isNegNNRat inst q n d q($eq ▸ $proof)
 
 protected lemma Finset.sum_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.sum ∅ f) 0 :=
@@ -346,6 +350,7 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
       let eq : Q($op $s $f = $op (Finset.cons $a $s' $h) $f) := q(congr_fun (congr_arg _ $pf) _)
       pure (res.eq_trans eq)
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating products of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
@@ -368,13 +373,13 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
 
   evalFinsetBigop q(Finset.prod) f res_empty (fun {a s' h} res_fa res_prod_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res ← evalMul.core q($fa * Finset.prod $s' $f) q(HMul.hMul) _ _ instS res_fa
-        res_prod_s'
+      let res ← res_fa.mul res_prod_s'
       let eq : Q(Finset.prod (Finset.cons $a $s' $h) $f = $fa * Finset.prod $s' $f) :=
         q(Finset.prod_cons $h)
       pure <| res.eq_trans eq)
     s
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- `norm_num` plugin for evaluating sums of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
@@ -389,13 +394,12 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
   have f : Q($α → $β) := f
   let instCS : Q(CommSemiring $β) ← synthInstanceQ q(CommSemiring $β) <|>
     throwError "not a commutative semiring: {β}"
-  let n : Q(ℕ) := mkRawNatLit 0
-  let pf : Q(IsNat (Finset.sum ∅ $f) $n) := q(@Finset.sum_empty $β $α $instCS $f)
-  let res_empty := Result.isNat _ n pf
+  let pf : Q(IsNat (Finset.sum ∅ $f) (nat_lit 0)) := q(@Finset.sum_empty $β $α $instCS $f)
+  let res_empty := Result.isNat _ _ q($pf)
 
   evalFinsetBigop q(Finset.sum) f res_empty (fun {a s' h} res_fa res_sum_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res ← evalAdd.core q($fa + Finset.sum $s' $f) q(HAdd.hAdd) _ _ res_fa res_sum_s'
+      let res ← res_fa.add res_sum_s'
       let eq : Q(Finset.sum (Finset.cons $a $s' $h) $f = $fa + Finset.sum $s' $f) :=
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)

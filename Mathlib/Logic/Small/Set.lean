@@ -3,12 +3,17 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Timothy Carlin-Burns
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.Set.Lattice.Disjoint
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Results about `Small` on coerced sets
 -/
+
+public section
 
 universe u u1 u2 u3 u4
 
@@ -30,16 +35,22 @@ instance small_setPi {β : α → Type u2} (s : (a : α) → Set (β a))
 
 instance small_range (f : α → β) [Small.{u} α] :
     Small.{u} (Set.range f) :=
-  small_of_surjective Set.surjective_onto_range
+  small_of_surjective Set.rangeFactorization_surjective
 
 instance small_image (f : α → β) (s : Set α) [Small.{u} s] :
     Small.{u} (f '' s) :=
-  small_of_surjective Set.surjective_onto_image
+  small_of_surjective Set.imageFactorization_surjective
 
 instance small_image2 (f : α → β → γ) (s : Set α) (t : Set β) [Small.{u} s] [Small.{u} t] :
     Small.{u} (Set.image2 f s t) := by
   rw [← Set.image_uncurry_prod]
   infer_instance
+
+theorem small_univ_iff : Small.{u} (@Set.univ α) ↔ Small.{u} α :=
+  small_congr <| Equiv.Set.univ α
+
+instance small_univ [h : Small.{u} α] : Small.{u} (@Set.univ α) :=
+  small_univ_iff.2 h
 
 instance small_union (s t : Set α) [Small.{u} s] [Small.{u} t] :
     Small.{u} (s ∪ t : Set α) := by
@@ -63,7 +74,7 @@ instance small_insert (x : α) (s : Set α) [Small.{u} s] :
   Set.insert_eq x s ▸ small_union.{u} {x} s
 
 instance small_diff (s t : Set α) [Small.{u} s] : Small.{u} (s \ t : Set α) :=
-  small_subset (Set.diff_subset)
+  small_subset (Set.sdiff_subset)
 
 instance small_sep (s : Set α) (P : α → Prop) [Small.{u} s] :
     Small.{u} { x | x ∈ s ∧ P x} :=

@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Logic.Function.FromTypes
+public import Mathlib.Logic.Function.FromTypes
 
 /-! # Function types of a given arity
 
@@ -16,6 +17,8 @@ Note that it is often preferable to use `(Fin n → α) → β` in place of `OfA
 * `Function.OfArity α β n`: `n`-ary function `α → α → ... → β`. Defined inductively.
 * `Function.OfArity.const α b n`: `n`-ary constant function equal to `b`.
 -/
+
+@[expose] public section
 
 universe u
 

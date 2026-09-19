@@ -3,10 +3,14 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
-import Qq
-import Mathlib.Data.Nat.Notation
-import Mathlib.Util.AtomM
-import Mathlib.Data.List.TFAE
+module
+
+public meta import Qq
+public meta import Mathlib.Util.AtomM
+public import Mathlib.Data.List.Pairwise  -- shake: keep (dependency of Qq output)
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Util.AtomM
 import Mathlib.Tactic.Have
 
 /-!
@@ -27,6 +31,8 @@ Example:
 ```
 See the dosctring for `tfae` for more information.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.TFAE
 
@@ -169,7 +175,7 @@ of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduce
 `tfae_have` can be used to conveniently introduce these hypotheses; see `tfae_have`.
 
 Example:
-```lean
+```lean4
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2 := sorry /- proof of P → Q -/
   tfae_have 2 → 1 := sorry /- proof of Q → P -/
@@ -229,7 +235,7 @@ implications as `tfae_2_to_3 : P₂ → P₃`. If desired, a custom name can be 
 syntax (name := tfaeBlock) "tfae" colGt tfaeFields : tactic
 
 
-/-! # Setup -/
+/-! ### Setup -/
 
 open List Lean Meta Expr Elab Tactic Mathlib.Tactic Qq
 
@@ -249,7 +255,7 @@ where
     | ~q($a :: $l') => return (a :: (← getExplicitList l'))
     | e => throwError "{e} must be an explicit list of propositions"
 
-/-! # Proof construction -/
+/-! ### Proof construction -/
 
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
@@ -277,15 +283,15 @@ def proveImpl (i j : ℕ) (P P' : Q(Prop)) : MetaM Q($P → $P') := do
 /-- Generate a proof of `Chain (· → ·) P l`. We assume `P : Prop` and `l : List Prop`, and that `l`
 is an explicit list. -/
 partial def proveChain (i : ℕ) (is : List ℕ) (P : Q(Prop)) (l : Q(List Prop)) :
-    MetaM Q(Chain (· → ·) $P $l) := do
+    MetaM Q(IsChain (· → ·) ($P :: $l)) := do
   match l with
-  | ~q([]) => return q(Chain.nil)
+  | ~q([]) => return q(.singleton _)
   | ~q($P' :: $l') =>
     -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
     let i' :: is' := id is | unreachable!
-    have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain i' is' q($P') q($l')
+    have cl' : Q(IsChain (· → ·) ($P' :: $l')) := ← proveChain i' is' q($P') q($l')
     let p ← proveImpl hyps atoms i i' P P'
-    return q(Chain.cons $p $cl')
+    return q(.cons_cons $p $cl')
 
 /-- Attempt to prove `getLastD l P' → P` given an explicit list `l`. -/
 partial def proveGetLastDImpl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
@@ -309,7 +315,7 @@ def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
     let il ← proveGetLastDImpl hyps atoms i i' is' P P' l'
     return q(tfae_of_cycle $c $il)
 
-/-! # `tfae_have` components -/
+/-! ### `tfae_have` components -/
 
 /-- Construct a name for a hypothesis introduced by `tfae_have`. -/
 def mkTFAEId : TSyntax ``tfaeType → MacroM Name
@@ -409,18 +415,18 @@ elab_rules : tactic
   goal.withContext do
     let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
     closeMainGoal `tfae_finish <|← AtomM.run .reducible do
-      let is ← tfaeList.mapM AtomM.addAtom
+      let is ← tfaeList.mapM (fun e ↦ Prod.fst <$> AtomM.addAtom e)
       let mut hyps := #[]
       for hyp in ← getLocalHyps do
         let ty ← whnfR <|← instantiateMVars <|← inferType hyp
         if let (``Iff, #[p1, p2]) := ty.getAppFnArgs then
-          let q1 ← AtomM.addAtom p1
-          let q2 ← AtomM.addAtom p2
+          let (q1, _) ← AtomM.addAtom p1
+          let (q2, _) ← AtomM.addAtom p2
           hyps := hyps.push (q1, q2, ← mkAppM ``Iff.mp #[hyp])
           hyps := hyps.push (q2, q1, ← mkAppM ``Iff.mpr #[hyp])
         else if ty.isArrow then
-          let q1 ← AtomM.addAtom ty.bindingDomain!
-          let q2 ← AtomM.addAtom ty.bindingBody!
+          let (q1, _) ← AtomM.addAtom ty.bindingDomain!
+          let (q2, _) ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
 

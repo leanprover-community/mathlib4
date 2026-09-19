@@ -3,14 +3,18 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Data.Set.Pointwise.Interval
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-! # Pointwise operations on intervals
 
-This should be kept in sync with `Mathlib/Data/Set/Pointwise/Interval.lean`.
+This should be kept in sync with `Mathlib/Algebra/Order/Group/Pointwise/Interval.lean`.
 -/
+
+public section
 
 variable {α : Type*}
 
@@ -31,7 +35,7 @@ the unprimed names have been reserved for
 section ContravariantLE
 
 variable [Mul α] [Preorder α] [DecidableEq α]
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
+variable [MulLeftMono α] [MulRightMono α]
 
 @[to_additive Icc_add_Icc_subset]
 theorem Icc_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
@@ -51,7 +55,7 @@ end ContravariantLE
 section ContravariantLT
 
 variable [Mul α] [PartialOrder α] [DecidableEq α]
-variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+variable [MulLeftStrictMono α] [MulRightStrictMono α]
 
 @[to_additive Icc_add_Ico_subset]
 theorem Icc_mul_Ico_subset' [LocallyFiniteOrder α] (a b c d : α) :

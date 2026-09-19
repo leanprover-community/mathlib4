@@ -3,7 +3,10 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 
 /-!
 # Existence of Kan extensions and Kan lifts in bicategories
@@ -27,6 +30,8 @@ These notations are inspired by
 * `ranLift f g` is the right Kan lift of `g` along `f`, and is denoted by `f₊₊ g`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -90,7 +95,7 @@ def lanUnit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ 
 theorem lanLeftExtension_unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] :
     (lanLeftExtension f g).unit = lanUnit f g := rfl
 
-/-- Evidence that the `Lan.extension f g` is a Kan extension. -/
+/-- Evidence that `lanLeftExtension f g` is a Kan extension. -/
 def lanIsKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : (lanLeftExtension f g).IsKan :=
   initialIsInitial
 
@@ -173,7 +178,7 @@ end Lan.CommuteWith
 
 /-- We say that there exists an absolute left Kan extension of `g` along `f` if any 1-morphism `h`
 commutes with the left Kan extension `f⁺ g`. -/
-class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) extends HasLeftKanExtension f g : Prop where
+class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) : Prop extends HasLeftKanExtension f g where
   commute {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h
 
 instance [HasAbsLeftKanExtension f g] {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h :=
@@ -192,7 +197,7 @@ open LeftLift
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
-/-- The existence of a left kan lift of `g` along `f`. -/
+/-- The existence of a left Kan lift of `g` along `f`. -/
 class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
   hasInitial : HasInitial <| LeftLift f g
 
@@ -234,7 +239,7 @@ def lanLiftUnit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g 
 theorem lanLiftLeftLift_unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (lanLiftLeftLift f g).unit = lanLiftUnit f g := rfl
 
-/-- Evidence that the `LanLift.lift f g` is a Kan lift. -/
+/-- Evidence that `lanLiftLeftLift f g` is a Kan lift. -/
 def lanLiftIsKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (lanLiftLeftLift f g).IsKan :=
   initialIsInitial
 
@@ -242,7 +247,7 @@ variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- The family of 2-morphisms out of the left Kan lift `f₊ g`. -/
 def lanLiftDesc [HasLeftKanLift f g] (s : LeftLift f g) :
-    f ₊ g ⟶ s.lift :=
+    f₊ g ⟶ s.lift :=
   (lanLiftIsKan f g).desc s
 
 @[reassoc (attr := simp)]
@@ -319,7 +324,7 @@ end LanLift.CommuteWith
 
 /-- We say that there exists an absolute left Kan lift of `g` along `f` if any 1-morphism `h`
 commutes with the left Kan lift `f₊ g`. -/
-class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) extends HasLeftKanLift f g : Prop where
+class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop extends HasLeftKanLift f g where
   commute : ∀ {x : B} (h : x ⟶ c), LanLift.CommuteWith f g h
 
 instance [HasAbsLeftKanLift f g] {x : B} (h : x ⟶ c) : LanLift.CommuteWith f g h :=

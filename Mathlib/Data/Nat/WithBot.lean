@@ -3,10 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Data.Nat.Cast.WithTop
+public import Mathlib.Data.Nat.Cast.WithTop
+public import Mathlib.Order.Nat
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # `WithBot ℕ`
@@ -14,25 +15,25 @@ import Mathlib.Data.Nat.Cast.WithTop
 Lemmas about the type of natural numbers with a bottom element adjoined.
 -/
 
+public section
+
 
 namespace Nat
 
 namespace WithBot
 
-instance : WellFoundedRelation (WithBot ℕ) where
-  rel := (· < ·)
-  wf := IsWellFounded.wf
+instance : WellFoundedRelation (WithBot ℕ) := WellFoundedLT.toWellFoundedRelation
 
 theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := by
   cases n
   · simp [WithBot.bot_add]
   cases m
   · simp [WithBot.add_bot]
-  simp [← WithBot.coe_add, add_eq_zero_iff_of_nonneg]
+  simp [← WithBot.coe_add]
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   cases n
-  · simp only [WithBot.bot_add, WithBot.bot_ne_one, WithBot.bot_ne_zero, false_and, or_self]
+  · simp
   cases m
   · simp [WithBot.add_bot]
   simp [← WithBot.coe_add, Nat.add_eq_one_iff]

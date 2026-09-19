@@ -3,10 +3,11 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.MinimalAxioms
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.MinimalAxioms
 
 /-!
 # Minimal Axioms for a Ring
@@ -21,6 +22,8 @@ a minimum number of equalities.
   axioms
 
 -/
+
+public section
 
 universe u
 
@@ -52,12 +55,12 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     have : 0 * a = 0 * a + 0 * a :=
       calc 0 * a = (0 + 0) * a := by rw [zero_add]
       _ = 0 * a + 0 * a := by rw [right_distrib]
-    rwa [self_eq_add_right] at this
+    rwa [left_eq_add] at this
   haveI mul_zero : ∀ a, a * (0 : R) = 0 := fun a => by
     have : a * 0 = a * 0 + a * 0 :=
       calc a * 0 = a * (0 + 0) := by rw [zero_add]
       _ = a * 0 + a * 0 := by rw [left_distrib]
-    rwa [self_eq_add_right] at this
+    rwa [left_eq_add] at this
   { add_comm := add_comm
     left_distrib := left_distrib
     right_distrib := right_distrib
@@ -66,8 +69,7 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     mul_assoc := mul_assoc
     one_mul := one_mul
     mul_one := mul_one
-    neg_add_cancel := neg_add_cancel
-    zsmul := (· • ·) }
+    neg_add_cancel := neg_add_cancel }
 
 /-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`

@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
 # Images of (von Neumann) bounded sets under continuous multilinear maps
@@ -24,6 +26,8 @@ the family `∀ i, E i` has to be essentially finite
 (more precisely, all but finitely many `E i` has to be trivial),
 proving theorems without a `[Finite ι]` assumption saves us some typeclass searches here and there.
 -/
+
+public section
 
 open Bornology Filter Set Function
 open scoped Topology
@@ -55,13 +59,13 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
     have : ∀ i, ∃ c : 𝕜, c ≠ 0 ∧ ∀ c' : 𝕜, ‖c'‖ ≤ ‖c‖ → ∀ x ∈ s, c' • x i ∈ t i := fun i ↦ by
       rw [isVonNBounded_pi_iff] at hs
       have := (hs i).tendsto_smallSets_nhds.eventually (mem_lift' (ht₀ i))
-      rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff.1 this with ⟨r, hr₀, hr⟩
+      rcases NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff.1 this with ⟨r, hr₀, hr⟩
       rcases NormedField.exists_norm_lt 𝕜 hr₀ with ⟨c, hc₀, hc⟩
       refine ⟨c, norm_pos_iff.1 hc₀, fun c' hle x hx ↦ ?_⟩
       exact hr (hle.trans_lt hc) ⟨_, ⟨x, hx, rfl⟩, rfl⟩
     choose c hc₀ hc using this
     rw [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV),
-      NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+      NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     have hc₀' : ∏ i ∈ I, c i ≠ 0 := Finset.prod_ne_zero_iff.2 fun i _ ↦ hc₀ i
     refine ⟨‖∏ i ∈ I, c i‖, norm_pos_iff.2 hc₀', fun a ha ↦ mapsTo_image_iff.2 fun x hx ↦ ?_⟩
     let ⟨i₀⟩ := ‹Nonempty ι›
@@ -69,17 +73,17 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
     calc
       f (update y i₀ ((a / ∏ i ∈ I, c i) • y i₀)) ∈ V := hft fun i hi => by
         rcases eq_or_ne i i₀ with rfl | hne
-        · simp_rw [update_same, y, I.piecewise_eq_of_mem _ _ hi, smul_smul]
+        · simp_rw [update_self, y, I.piecewise_eq_of_mem _ _ hi, smul_smul]
           refine hc _ _ ?_ _ hx
           calc
             ‖(a / ∏ i ∈ I, c i) * c i‖ ≤ (‖∏ i ∈ I, c i‖ / ‖∏ i ∈ I, c i‖) * ‖c i‖ := by
               rw [norm_mul, norm_div]; gcongr; exact ha.out.le
             _ ≤ 1 * ‖c i‖ := by gcongr; apply div_self_le_one
             _ = ‖c i‖ := one_mul _
-        · simp_rw [update_noteq hne, y, I.piecewise_eq_of_mem _ _ hi]
+        · simp_rw [update_of_ne hne, y, I.piecewise_eq_of_mem _ _ hi]
           exact hc _ _ le_rfl _ hx
       _ = a • f x := by
-        rw [f.map_smul, update_eq_self, f.map_piecewise_smul, div_eq_mul_inv, mul_smul,
+        rw [f.map_update_smul, update_eq_self, f.map_piecewise_smul, div_eq_mul_inv, mul_smul,
           inv_smul_smul₀ hc₀']
 
 /-- The image of a von Neumann bounded set under a continuous multilinear map

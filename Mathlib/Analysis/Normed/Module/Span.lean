@@ -3,10 +3,11 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # The span of a single vector
@@ -17,11 +18,13 @@ isometry.
 ## Main definitions
 
 * `ContinuousLinearEquiv.toSpanNonzeroSingleton`: The continuous linear equivalence between `𝕜` and
-`𝕜 • x` for `x ≠ 0`.
+  `𝕜 • x` for `x ≠ 0`.
 * `LinearIsometryEquiv.toSpanUnitSingleton`: For `‖x‖ = 1` the continuous linear equivalence is a
-linear isometry equivalence.
+  linear isometry equivalence.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 E : Type*}
 
@@ -31,7 +34,7 @@ variable (𝕜)
 
 section Seminormed
 
-variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem toSpanSingleton_homothety (x : E) (c : 𝕜) :
     ‖LinearMap.toSpanSingleton 𝕜 E x c‖ = ‖x‖ * ‖c‖ := by
@@ -47,7 +50,7 @@ namespace ContinuousLinearEquiv
 variable (𝕜)
 
 section Seminormed
-variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem _root_.LinearEquiv.toSpanNonzeroSingleton_homothety (x : E) (h : x ≠ 0) (c : 𝕜) :
     ‖LinearEquiv.toSpanNonzeroSingleton 𝕜 E x h c‖ = ‖x‖ * ‖c‖ :=
@@ -59,14 +62,15 @@ section Normed
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
-    continuous linear equivalence from `E₁` to the span of `x`. -/
+continuous linear equivalence from `𝕜` to the span of `x`. -/
+@[simps!]
 noncomputable def toSpanNonzeroSingleton (x : E) (h : x ≠ 0) : 𝕜 ≃L[𝕜] 𝕜 ∙ x :=
   ofHomothety (LinearEquiv.toSpanNonzeroSingleton 𝕜 E x h) ‖x‖ (norm_pos_iff.mpr h)
     (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h)
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural continuous
-    linear map from the span of `x` to `𝕜`. -/
-noncomputable def coord (x : E) (h : x ≠ 0) : (𝕜 ∙ x) →L[𝕜] 𝕜 :=
+linear map from the span of `x` to `𝕜`. -/
+noncomputable def coord (x : E) (h : x ≠ 0) : StrongDual 𝕜 (𝕜 ∙ x) :=
   (toSpanNonzeroSingleton 𝕜 x h).symm
 
 @[simp]
@@ -95,10 +99,10 @@ end ContinuousLinearEquiv
 
 namespace LinearIsometryEquiv
 
-variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 /-- Given a unit element `x` of a normed space `E` over a field `𝕜`, the natural
-    linear isometry equivalence from `E` to the span of `x`. -/
+linear isometry equivalence from `𝕜` to the span of `x`. -/
 noncomputable def toSpanUnitSingleton (x : E) (hx : ‖x‖ = 1) :
     𝕜 ≃ₗᵢ[𝕜] 𝕜 ∙ x where
   toLinearEquiv := LinearEquiv.toSpanNonzeroSingleton 𝕜 E x (by aesop)

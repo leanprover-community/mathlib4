@@ -3,8 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # Topological closure of the submonoid closure
@@ -17,6 +20,8 @@ The proof is based on the following observation, see `mapClusterPt_self_zpow_atT
 each `x^m`, `m : ℤ` is a limit point (`MapClusterPt`) of the sequence `x^n`, `n : ℕ`, as `n → ∞`.
 -/
 
+public section
+
 open Filter Function Set
 open scoped Topology
 
@@ -27,7 +32,7 @@ theorem mapClusterPt_atTop_zpow_iff_pow [DivInvMonoid G] [TopologicalSpace G] {x
     MapClusterPt x atTop (y ^ · : ℤ → G) ↔ MapClusterPt x atTop (y ^ · : ℕ → G) := by
   simp_rw [MapClusterPt, ← Nat.map_cast_int_atTop, map_map, comp_def, zpow_natCast]
 
-variable [Group G] [TopologicalSpace G] [CompactSpace G] [TopologicalGroup G]
+variable [Group G] [TopologicalSpace G] [CompactSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem mapClusterPt_self_zpow_atTop_pow (x : G) (m : ℤ) :
@@ -38,7 +43,7 @@ theorem mapClusterPt_self_zpow_atTop_pow (x : G) (m : ℤ) :
   have H : MapClusterPt (x ^ m) (atTop.curry atTop) ↿(fun a b ↦ x ^ (m + b - a)) := by
     have : ContinuousAt (fun yz ↦ x ^ m * yz.2 / yz.1) (y, y) := by fun_prop
     simpa only [comp_def, ← zpow_sub, ← zpow_add, div_eq_mul_inv, Prod.map, mul_inv_cancel_right]
-      using (hy.curry_prodMap hy).continuousAt_comp this
+      using! (hy.curry_prodMap hy).continuousAt_comp this
   suffices Tendsto ↿(fun a b ↦ m + b - a) (atTop.curry atTop) atTop from H.of_comp this
   refine Tendsto.curry <| .of_forall fun a ↦ ?_
   simp only [sub_eq_add_neg] -- TODO: add `Tendsto.atTop_sub_const` etc
@@ -58,24 +63,23 @@ theorem mapClusterPt_atTop_pow_tfae (x y : G) :
       MapClusterPt x atTop (y ^ · : ℕ → G),
       MapClusterPt x atTop (y ^ · : ℤ → G),
       x ∈ closure (range (y ^ · : ℕ → G)),
-      x ∈ closure (range (y ^ · : ℤ → G)),
-    ] := by
-  tfae_have 2 ↔ 1; exact mapClusterPt_atTop_zpow_iff_pow
-  tfae_have 3 → 4
-  · refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h
+      x ∈ closure (range (y ^ · : ℤ → G))] := by
+  tfae_have 2 ↔ 1 := mapClusterPt_atTop_zpow_iff_pow
+  tfae_have 3 → 4 := by
+    refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h
     exact ⟨n, zpow_natCast _ _⟩
-  tfae_have 4 → 1
-  · refine fun h ↦ closure_minimal ?_ isClosed_setOf_clusterPt h
+  tfae_have 4 → 1 := by
+    refine fun h ↦ closure_minimal ?_ isClosed_setOfPred_clusterPt h
     exact range_subset_iff.2 (mapClusterPt_self_zpow_atTop_pow _)
-  tfae_have 1 → 3
-  · rw [mem_closure_iff_clusterPt]
+  tfae_have 1 → 3 := by
+    rw [mem_closure_iff_clusterPt]
     exact (ClusterPt.mono · (le_principal_iff.2 range_mem_map))
   tfae_finish
 
 @[to_additive]
 theorem mapClusterPt_atTop_pow_iff_mem_topologicalClosure_zpowers {x y : G} :
     MapClusterPt x atTop (y ^ · : ℕ → G) ↔ x ∈ (Subgroup.zpowers y).topologicalClosure :=
-  (mapClusterPt_atTop_pow_tfae x y).out 0 3
+  (mapClusterPt_atTop_pow_tfae x y).out 1 4
 
 @[to_additive (attr := simp)]
 theorem mapClusterPt_inv_atTop_pow {x y : G} :
@@ -86,7 +90,7 @@ theorem mapClusterPt_inv_atTop_pow {x y : G} :
 theorem closure_range_zpow_eq_pow (x : G) :
     closure (range (x ^ · : ℤ → G)) = closure (range (x ^ · : ℕ → G)) := by
   ext y
-  exact (mapClusterPt_atTop_pow_tfae y x).out 3 2
+  exact (mapClusterPt_atTop_pow_tfae y x).out 4 3
 
 @[to_additive]
 theorem denseRange_zpow_iff_pow {x : G} :

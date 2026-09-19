@@ -3,11 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Instances.Int
+public import Mathlib.Analysis.Normed.Group.Real
+public import Mathlib.Topology.Instances.Int
 
 /-! # ℤ as a normed group -/
+
+public section
 
 open NNReal
 
@@ -16,7 +19,9 @@ namespace Int
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
   norm n := ‖(n : ℝ)‖
-  dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
+  dist_eq m n := by
+    simp only [dist_eq, norm, cast_add, cast_neg]
+    rw [abs_sub_comm, neg_add_eq_sub]
 
 @[norm_cast]
 theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
@@ -25,10 +30,7 @@ theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
 theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
   rfl
 
-@[simp]
 theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
-
-@[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
 
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|
@@ -38,7 +40,7 @@ theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖�
       _ = ‖n‖ := (norm_eq_abs n).symm
 
 theorem abs_le_floor_nnreal_iff (z : ℤ) (c : ℝ≥0) : |z| ≤ ⌊c⌋₊ ↔ ‖z‖₊ ≤ c := by
-  rw [Int.abs_eq_natAbs, Int.ofNat_le, Nat.le_floor_iff (zero_le c), NNReal.natCast_natAbs z]
+  rw [Int.abs_eq_natAbs, Int.ofNat_le, Nat.le_floor_iff zero_le, NNReal.natCast_natAbs z]
 
 end Int
 
@@ -50,10 +52,10 @@ variable [SeminormedCommGroup α]
 
 @[to_additive norm_zsmul_le]
 theorem norm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖ ≤ ‖n‖ * ‖a‖ := by
-  rcases n.eq_nat_or_neg with ⟨n, rfl | rfl⟩ <;> simpa using norm_pow_le_mul_norm n a
+  rcases n.eq_nat_or_neg with ⟨n, rfl | rfl⟩ <;> simpa [Int.norm_natCast] using norm_pow_le_mul_norm
 
 @[to_additive nnnorm_zsmul_le]
 theorem nnnorm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖₊ ≤ ‖n‖₊ * ‖a‖₊ := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul] using norm_zpow_le_mul_norm n a
+  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul] using! norm_zpow_le_mul_norm n a
 
 end

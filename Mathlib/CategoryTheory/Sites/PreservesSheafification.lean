@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Localization
-import Mathlib.CategoryTheory.Sites.CompatibleSheafification
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
 
-/-! # Functors which preserves sheafification
+public import Mathlib.CategoryTheory.Sites.Localization
+public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.CategoryTheory.Sites.Sheafification
+
+/-! # Functors which preserve sheafification
 
 In this file, given a Grothendieck topology `J` on `C` and `F : A ⥤ B`,
 we define a type class `J.PreservesSheafification F`. We say that `F` preserves
@@ -20,7 +22,7 @@ this property for the map from any presheaf `P` to its associated sheaf, see
 
 In general, we define `Sheaf.composeAndSheafify J F : Sheaf J A ⥤ Sheaf J B` as the functor
 which sends a sheaf `G` to the sheafification of the composition `G.val ⋙ F`.
-It `J.PreservesSheafification F`, we show that this functor can also be thought
+If `J.PreservesSheafification F`, we show that this functor can also be thought of
 as the localization of the functor `_ ⋙ F` on presheaves: we construct an isomorphism
 `presheafToSheafCompComposeAndSheafifyIso` between
 `presheafToSheaf J A ⋙ Sheaf.composeAndSheafify J F` and
@@ -29,7 +31,7 @@ as the localization of the functor `_ ⋙ F` on presheaves: we construct an isom
 Moreover, if we assume `J.HasSheafCompose F`, we obtain an isomorphism
 `sheafifyComposeIso J F P : sheafify J (P ⋙ F) ≅ sheafify J P ⋙ F`.
 
-We show that under suitable assumptions, the forget functor from a concrete
+We show that under suitable assumptions, the forgetful functor from a concrete
 category preserves sheafification; this holds more generally for
 functors between such concrete categories which commute both with
 suitable limits and colimits.
@@ -39,14 +41,16 @@ suitable limits and colimits.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits
+open Category Limits CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-  {A B : Type*} [Category A] [Category B] (F : A ⥤ B)
+  {A B : Type*} [Category* A] [Category* B] (F : A ⥤ B)
 
 namespace GrothendieckTopology
 
@@ -66,6 +70,7 @@ lemma W_of_preservesSheafification
 
 variable [HasWeakSheafify J B]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma W_isInvertedBy_whiskeringRight_presheafToSheaf :
     J.W.IsInvertedBy (((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B) := by
   intro P₁ P₂ f hf
@@ -98,8 +103,8 @@ noncomputable def toPresheafToSheafCompComposeAndSheafify :
 
 variable [J.PreservesSheafification F]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : IsIso (toPresheafToSheafCompComposeAndSheafify J F) := by
-  have : J.PreservesSheafification F := inferInstance
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
   dsimp
@@ -125,6 +130,7 @@ section
 variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPresheaf J A)
   {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     (adj₂ : G₂ ⊣ sheafToPresheaf J B) :
     J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
@@ -140,16 +146,17 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     intro P₁ P₂ f hf
     rw [J.W_iff_isIso_map_of_adjunction adj₁] at hf
     dsimp [MorphismProperty.inverseImage]
-    rw [← MorphismProperty.postcomp_iff _ _ _ (h P₂), ← whiskerRight_comp]
+    rw [← (W _).postcomp_iff _ _ (h P₂), ← whiskerRight_comp]
     erw [adj₁.unit.naturality f]
     dsimp only [Functor.comp_map]
-    rw [whiskerRight_comp, MorphismProperty.precomp_iff _ _ _ (h P₁)]
-    apply Localization.LeftBousfield.W_of_isIso
+    rw [whiskerRight_comp, (W _).precomp_iff _ _ (h P₁)]
+    apply ObjectProperty.isLocal_of_isIso
 
 section HasSheafCompose
 
 variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
 when `F : A ⥤ B` is such that `J.HasSheafCompose F`, and that `G₁` and `G₂` are
@@ -161,16 +168,19 @@ def sheafComposeNatTrans :
     dsimp
     erw [← adj₂.homEquiv_naturality_left_symm,
       ← adj₂.homEquiv_naturality_right_symm]
-    dsimp
-    rw [← whiskerRight_comp, ← whiskerRight_comp]
-    erw [adj₁.unit.naturality f]
-    rfl
+    congr 1
+    ext X
+    have := NatTrans.congr_app (adj₁.unit.naturality f) X
+    dsimp at this ⊢
+    grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
-        whiskerRight (adj₁.unit.app P) F  := by
-  simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map]
+        whiskerRight (adj₁.unit.app P) F := by
+  simp [sheafComposeNatTrans, -ObjectProperty.ι_obj, -ObjectProperty.ι_map,
+    Adjunction.homEquiv_counit]
 
 lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
     (α : G₂.obj (P ⋙ F) ⟶ (sheafCompose J F).obj (G₁.obj P))
@@ -178,20 +188,21 @@ lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
         whiskerRight (adj₁.unit.app P) F) :
     α = (sheafComposeNatTrans J F adj₁ adj₂).app P := by
   apply (adj₂.homEquiv _ _).injective
-  dsimp [sheafComposeNatTrans]
+  dsimp [ObjectProperty.ι_obj, sheafComposeNatTrans, id_obj]
   erw [Equiv.apply_symm_apply]
   rw [← hα]
   apply adj₂.homEquiv_unit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasSheafCompose :
     J.PreservesSheafification F ↔ IsIso (sheafComposeNatTrans J F adj₁ adj₂) := by
   rw [J.preservesSheafification_iff_of_adjunctions F adj₁ adj₂,
     NatTrans.isIso_iff_isIso_app]
   apply forall_congr'
   intro P
-  rw [← J.W_iff_isIso_map_of_adjunction adj₂, ← J.W_sheafToPreheaf_map_iff_isIso,
+  rw [← J.W_iff_isIso_map_of_adjunction adj₂, ← J.W_sheafToPresheaf_map_iff_isIso,
     ← sheafComposeNatTrans_fac J F adj₁ adj₂,
-    MorphismProperty.precomp_iff _ _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
+    (W _).precomp_iff _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
 
 variable [J.PreservesSheafification F]
 
@@ -241,19 +252,25 @@ namespace GrothendieckTopology
 
 section
 
-variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ E)
-  [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
-  [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
+variable {D E : Type*} [Category* D] [Category* E] (F : D ⥤ E)
+  [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
+  [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) E]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
   [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
-  [ConcreteCategory D] [ConcreteCategory E]
+  {FD : D → D → Type*} {CD : D → Type*} {FE : E → E → Type*} {CE : E → Type*}
+  [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [∀ X Y, FunLike (FE X Y) (CE X) (CE Y)]
+  [instCCD : ConcreteCategory D FD] [instCCE : ConcreteCategory E FE]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget D)]
   [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget E)]
-  [PreservesLimits (forget D)] [PreservesLimits (forget E)]
+  [PreservesLimitsOfSize.{max v u, max v u} (forget D)]
+  [PreservesLimitsOfSize.{max v u, max v u} (forget E)]
   [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+include instCCD instCCE in
 lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒᵖ ⥤ D) :
     (sheafToPresheaf J E).map
       ((sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)).app P) =
@@ -263,11 +280,11 @@ lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cᵒ�
     rw [this]
     rfl
   apply ((plusPlusAdjunction J E).homEquiv _ _).injective
-  convert sheafComposeNatTrans_fac J F (plusPlusAdjunction J D) (plusPlusAdjunction J E) P
-  all_goals
-    dsimp [plusPlusAdjunction]
-    simp
+  convert! sheafComposeNatTrans_fac J F (plusPlusAdjunction J D) (plusPlusAdjunction J E) P
+  dsimp [plusPlusAdjunction]
+  simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (P : Cᵒᵖ ⥤ D) :
     IsIso ((sheafComposeNatTrans J F (plusPlusAdjunction J D) (plusPlusAdjunction J E)).app P) := by
   rw [← isIso_iff_of_reflects_iso _ (sheafToPresheaf J E),
@@ -284,13 +301,15 @@ instance : PreservesSheafification J F := by
 
 end
 
-example {D : Type*} [Category.{max v u} D]
-  [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
-  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-  [∀ (α β : Type max u v) (fst snd : β → α),
-      Limits.HasLimitsOfShape (Limits.WalkingMulticospan fst snd) D]
-  [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) := inferInstance
+instance {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → Type (max v u)}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{max v u} D FD]
+    [PreservesLimits (forget D)]
+    [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+    [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+    [∀ (J : MulticospanShape.{max v u, max v u}),
+      Limits.HasLimitsOfShape (Limits.WalkingMulticospan J) D]
+    [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) :=
+  inferInstance
 
 end GrothendieckTopology
 

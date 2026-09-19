@@ -3,7 +3,10 @@ Copyright (c) 2023 Moritz Doll, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
-import Mathlib.Tactic.TermCongr
+module
+
+public import Mathlib.Tactic.Relation.Rfl
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # The `congrm` tactic
@@ -14,13 +17,15 @@ Roughly, `congrm e` is `refine congr(e')`, where `e'` is `e` with every `?m` pla
 replaced by `$(?m)`.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 initialize registerTraceClass `Tactic.congrm
 
 /--
-`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `HEq lhs rhs`,
+`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `lhs ≍ rhs`,
 or `R lhs rhs` when `R` is a reflexive relation.
 The expression `e` is a pattern containing placeholders `?_`,
 and this pattern is matched against `lhs` and `rhs` simultaneously.
@@ -53,6 +58,8 @@ If the goal is an equality, `congrm e` is equivalent to `refine congr(e')` where
 built from `e` by replacing each placeholder `?m` by `$(?m)`.
 The pattern `e` is allowed to contain `$(...)` expressions to immediately substitute
 equality proofs into the congruence, just like for congruence quotations.
+
+[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := congrM) "congrm " term : tactic
 
@@ -70,7 +77,7 @@ elab_rules : tactic
     trace[Tactic.congrm] "pattern: {pattern}"
     -- Chain together transformations as needed to convert the goal to an Eq if possible.
     liftMetaTactic fun g => do
-      return [← (← g.iffOfEq).liftReflToEq]
+      return [← liftReflToEq (← g.iffOfEq)]
     -- Apply `congr(...)`
     withMainContext do
       let gStx ← Term.exprToSyntax (← getMainTarget)

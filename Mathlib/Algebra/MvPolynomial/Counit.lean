@@ -3,17 +3,19 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
-## Counit morphisms for multivariate polynomials
+# Counit morphisms for multivariate polynomials
 
 One may consider the ring of multivariate polynomials `MvPolynomial A R` with coefficients in `R`
 and variables indexed by `A`. If `A` is not just a type, but an algebra over `R`,
 then there is a natural surjective algebra homomorphism `MvPolynomial A R →ₐ[R] A`
 obtained by `X a ↦ a`.
 
-### Main declarations
+## Main declarations
 
 * `MvPolynomial.ACounit R A` is the natural surjective algebra homomorphism
   `MvPolynomial A R →ₐ[R] A` obtained by `X a ↦ a`
@@ -21,6 +23,8 @@ obtained by `X a ↦ a`.
 * `MvPolynomial.counitNat` is an “absolute” variant with `R = ℕ`
 
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial

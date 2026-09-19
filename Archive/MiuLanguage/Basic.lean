@@ -3,7 +3,9 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Tactic.Linarith
 
 /-!
 # An MIU Decision Procedure in Lean
@@ -60,6 +62,7 @@ miu, derivable strings
 
 -/
 
+@[expose] public section
 
 namespace Miu
 
@@ -106,11 +109,7 @@ instance : Repr MiuAtom :=
 
 /-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
 -/
-def Miustr :=
-  List MiuAtom
-deriving Append
-
-instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
+abbrev Miustr := List MiuAtom
 
 /-- For display purposes, an `Miustr` can be represented as a `String`.
 -/
@@ -134,14 +133,13 @@ def lcharToMiustr : List Char → Miustr
     | _ => []
 
 instance stringCoeMiustr : Coe String Miustr :=
-  ⟨fun st => lcharToMiustr st.data⟩
+  ⟨fun st => lcharToMiustr st.toList⟩
 
 /-!
 ### Derivability
 -/
 
 
--- Porting note: Added a lot of `↑` to coerce `List MiuAtom` to `Miustr`
 /--
 The inductive type `Derivable` has five constructors. The nonrecursive constructor `mk` corresponds
 to Hofstadter's axiom that `"MI"` is derivable. Each of the constructors `r1`, `r2`, `r3`, `r4`
@@ -149,10 +147,10 @@ corresponds to the one of Hofstadter's rules of inference.
 -/
 inductive Derivable : Miustr → Prop
   | mk : Derivable "MI"
-  | r1 {x} : Derivable (x ++ ↑[I]) → Derivable (x ++ ↑[I, U])
+  | r1 {x} : Derivable (x ++ [I]) → Derivable (x ++ [I, U])
   | r2 {x} : Derivable (M :: x) → Derivable (M :: x ++ x)
-  | r3 {x y} : Derivable (x ++ ↑[I, I, I] ++ y) → Derivable (x ++ ↑(U :: y))
-  | r4 {x y} : Derivable (x ++ ↑[U, U] ++ y) → Derivable (x ++ y)
+  | r3 {x y} : Derivable (x ++ [I, I, I] ++ y) → Derivable (x ++ (U :: y))
+  | r4 {x y} : Derivable (x ++ [U, U] ++ y) → Derivable (x ++ y)
 
 /-!
 ### Rule usage examples
@@ -183,7 +181,7 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 private theorem MIU_der : Derivable "MIU" := by
   change Derivable ([M] ++ [I, U])
   apply Derivable.r1 -- reduce to deriving `"MI"`,
-  constructor -- which is the base of the inductive construction.
+  constructor! -- which is the base of the inductive construction.
 
 example : Derivable "MIUIU" := by
   change Derivable (M :: [I, U] ++ [I, U])

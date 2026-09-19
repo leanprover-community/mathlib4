@@ -3,8 +3,10 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Tactic.Linarith
 
 /-!
 # IMO 2011 Q3
@@ -15,11 +17,12 @@ Let f : ℝ → ℝ be a function that satisfies
 
 for all x and y. Prove that f(x) = 0 for all x ≤ 0.
 
-# Solution
+## Solution
 
 Direct translation of the solution found in https://www.imo-official.org/problems/IMO2011SL.pdf
 -/
 
+public section
 
 theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f x)) : ∀ x ≤ 0, f x = 0 := by
   -- reparameterize
@@ -43,7 +46,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
     have hp : 0 < f x := not_le.mp h_suppose_not
     calc
       f (min 0 s - 1) ≤ (min 0 s - 1) * f x - x * f x + f (f x) := hxt x (min 0 s - 1)
-      _ < s * f x - x * f x + f (f x) := by linarith [(mul_lt_mul_right hp).mpr hm]
+      _ < s * f x - x * f x + f (f x) := by linarith [mul_lt_mul_of_pos_right hm hp]
       _ = 0 := by rw [(eq_div_iff hp.ne.symm).mp rfl]; linarith
   have h_fx_zero_of_neg : ∀ x < 0, f x = 0 := fun x hxz =>
     (h_f_nonpos x).antisymm (h_f_nonneg_of_pos x hxz)

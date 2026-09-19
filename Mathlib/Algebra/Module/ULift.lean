@@ -1,22 +1,26 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.GroupWithZero.ULift
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.Algebra.GroupWithZero.ULift
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Data.ULift
 
 /-!
 # `ULift` instances for module and multiplicative actions
 
-This file defines instances for module, mul_action and related structures on `ULift` types.
+This file defines instances for `Module`, `MulAction` and related structures on `ULift` types.
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
 We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
 -/
+
+@[expose] public section
 
 
 namespace ULift
@@ -48,16 +52,13 @@ instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
--- Porting note (#11215): TODO this takes way longer to elaborate than it should
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
-  smul := (· • ·)
   mul_smul _ _ := mul_smul _ _
   one_smul := one_smul _
 
 @[to_additive]
 instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
-  smul := (· • ·)
   mul_smul := fun _ _ _ => congr_arg ULift.up <| mul_smul _ _ _
   one_smul := fun _ => congr_arg ULift.up <| one_smul _ _
 
@@ -104,14 +105,12 @@ instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift
     zero_smul := zero_smul _ }
 
 instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M) where
-  smul_zero _ := ULift.ext _ _ <| smul_zero _
-  zero_smul _ := ULift.ext _ _ <| zero_smul _ _
+  smul_zero _ := ULift.ext <| smul_zero _
+  zero_smul _ := ULift.ext <| zero_smul _ _
 
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
     MulActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
-    -- Porting note (#11215): TODO there seems to be a mismatch in whether
-    -- the carrier is explicit here
     one_smul := one_smul _
     mul_smul := mul_smul }
 
@@ -130,7 +129,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M
 
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M) :=
   { ULift.smulWithZero' with
-    add_smul := fun _ _ _ => ULift.ext _ _ <| add_smul _ _ _
+    add_smul := fun _ _ _ => ULift.ext <| add_smul _ _ _
     one_smul := one_smul _
     mul_smul := mul_smul
     smul_add := smul_add }
