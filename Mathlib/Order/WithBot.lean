@@ -253,6 +253,12 @@ theorem unbot_inj {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) :
     a.unbot ha = b.unbot hb ↔ a = b := by
   rw [unbot_eq_iff, coe_unbot]
 
+@[to_dual (attr := simp)]
+theorem map_eq_coe_unbot (f : α → β) {a : WithBot α} (ha : a ≠ ⊥) :
+    WithBot.map f a = f (a.unbot ha) := by
+  lift a to α using ha
+  simp
+
 /-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
 @[to_dual (attr := simps)
 /-- The equivalence between the non-top elements of `WithTop α` and `α`. -/]
