@@ -2549,7 +2549,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HomologyPreservesFilteredColimits
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HomologyFunctorAccessible
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.GabrielPopescu
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
