@@ -459,16 +459,16 @@ section GetElem
 
 theorem sortedLE_iff_getElem_le_getElem_of_le :
     l.SortedLE ↔ ∀ ⦃i j : Nat⦄ ⦃hi : i < l.length⦄ ⦃hj : j < l.length⦄, i ≤ j → l[i] ≤ l[j] :=
-  ⟨fun h _ _ _ _ hij => h.monotone_get hij, fun h => Monotone.sortedLE <| fun _ _ => (h ·)⟩
+  ⟨fun h _ _ _ _ hij => h.monotone_get hij, fun h => Monotone.sortedLE fun _ _ => (h ·)⟩
 theorem sortedGE_iff_getElem_ge_getElem_of_le :
     l.SortedGE ↔ ∀ ⦃i j : Nat⦄ ⦃hi : i < l.length⦄ ⦃hj : j < l.length⦄, j ≤ i → l[i] ≤ l[j] :=
-  ⟨fun h _ _ _ _ hij => h.antitone_get hij, fun h => Antitone.sortedGE <| fun _ _ => (h ·)⟩
+  ⟨fun h _ _ _ _ hij => h.antitone_get hij, fun h => Antitone.sortedGE fun _ _ => (h ·)⟩
 theorem sortedLT_iff_getElem_lt_getElem_of_lt :
     l.SortedLT ↔ ∀ ⦃i j : Nat⦄ ⦃hi : i < l.length⦄ ⦃hj : j < l.length⦄, i < j → l[i] < l[j] :=
-  ⟨fun h _ _ _ _ hij => h.strictMono_get hij, fun h => StrictMono.sortedLT <| fun _ _ => (h ·)⟩
+  ⟨fun h _ _ _ _ hij => h.strictMono_get hij, fun h => StrictMono.sortedLT fun _ _ => (h ·)⟩
 theorem sortedGT_iff_getElem_gt_getElem_of_lt :
     l.SortedGT ↔ ∀ ⦃i j : Nat⦄ ⦃hi : i < l.length⦄ ⦃hj : j < l.length⦄, j < i → l[i] < l[j] :=
-  ⟨fun h _ _ _ _ hij => h.strictAnti_get hij, fun h => StrictAnti.sortedGT <| fun _ _ => (h ·)⟩
+  ⟨fun h _ _ _ _ hij => h.strictAnti_get hij, fun h => StrictAnti.sortedGT fun _ _ => (h ·)⟩
 
 alias ⟨SortedLE.getElem_le_getElem_of_le, sortedLE_of_getElem_le_getElem_of_le⟩ :=
   sortedLE_iff_getElem_le_getElem_of_le

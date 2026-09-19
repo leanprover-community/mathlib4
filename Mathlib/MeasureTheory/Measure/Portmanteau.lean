@@ -457,7 +457,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
   simp only [mem_map, mem_atTop_sets, mem_preimage, mem_Iio] at rs_lim
   obtain ⟨m, hm⟩ := rs_lim
   have aux : (fun i ↦ (μs i F)) ≤ᶠ[L] (fun i ↦ μs i (Metric.thickening (rs m) F)) :=
-    .of_forall <| fun i ↦ measure_mono (Metric.self_subset_thickening (rs_pos m) F)
+    .of_forall fun i ↦ measure_mono (Metric.self_subset_thickening (rs_pos m) F)
   refine (limsup_le_limsup aux).trans ?_
   rw [Tendsto.limsup_eq (key m)]
   apply (measure_mono (Metric.thickening_subset_cthickening (rs m) F)).trans (hm m rfl.le).le
@@ -658,10 +658,10 @@ theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
     Tendsto μs L (𝓝 μ) := by
   obtain rfl | _ := L.eq_or_neBot
   · simp
-  refine tendsto_of_forall_isClosed_limsup_le <| fun F hF_closed ↦ ?_
+  refine tendsto_of_forall_isClosed_limsup_le fun F hF_closed ↦ ?_
   rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
       isBoundedUnder_of_eventually_le (a := 1) (by simp)]
-  refine ENNReal.le_of_forall_pos_le_add <| fun ε hε _ ↦ ?_
+  refine ENNReal.le_of_forall_pos_le_add fun ε hε _ ↦ ?_
   obtain ⟨K, hKc, hK_le⟩ := isTightMeasureSet_iff_exists_isCompact_measure_compl_le.mp
     h₁ ε (by positivity)
   grw [limsup_le_limsup (v := fun i ↦ μs i (F ∩ K) + (ε : ENNReal))]

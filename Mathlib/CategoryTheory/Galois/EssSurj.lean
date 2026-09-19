@@ -177,7 +177,7 @@ private def coconeQuotientDiagDesc
     (s : Cocone (quotientDiag V h u ⋙ functorToAction F)) :
       (coconeQuotientDiag h u hUinV).pt ⟶ s.pt where
   hom := FintypeCat.homMk
-    (Quotient.lift (fun σ ↦ (u.inv ≫ s.ι.app (SingleObj.star _)).hom ⟦σ⟧) <| fun σ τ hst ↦ by
+    (Quotient.lift (fun σ ↦ (u.inv ≫ s.ι.app (SingleObj.star _)).hom ⟦σ⟧) fun σ τ hst ↦ by
       let J' := quotientDiag V h u ⋙ functorToAction F
       let m : End (SingleObj.star (V.toSubgroup ⧸ Subgroup.subgroupOf U V)) :=
         ⟦⟨σ⁻¹ * τ, (QuotientGroup.leftRel_apply).mp hst⟩⟧

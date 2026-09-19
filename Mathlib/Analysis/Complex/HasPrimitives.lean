@@ -139,7 +139,7 @@ lemma IsExactOn.differentiableOn {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f
     DifferentiableOn ℂ f U := by
   obtain ⟨g, hg⟩ := hf
   have hg' : DifferentiableOn ℂ g U := fun z hz ↦ (hg z hz).differentiableAt.differentiableWithinAt
-  exact (differentiableOn_congr <| fun z hz ↦ (hg z hz).deriv).mp <| hg'.deriv hU
+  exact (differentiableOn_congr fun z hz ↦ (hg z hz).deriv).mp <| hg'.deriv hU
 
 section ContinuousOnBall
 

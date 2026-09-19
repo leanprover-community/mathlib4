@@ -419,7 +419,7 @@ lemma reflection_reflection_iterate
 
 lemma infinite_range_reflection_reflection_iterate_iff [IsAddTorsionFree M]
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) :
-    (range <| fun n ↦ ((reflection hgy).trans (reflection hfx))^[n] y).Infinite ↔
+    (range fun n ↦ ((reflection hgy).trans (reflection hfx))^[n] y).Infinite ↔
     f y • x ≠ (2 : R) • y := by
   simp only [reflection_reflection_iterate hfx hgy hgxfy, infinite_range_add_nsmul_iff, sub_ne_zero]
 

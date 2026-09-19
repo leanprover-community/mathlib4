@@ -1136,7 +1136,7 @@ def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (ιCompMap α X) H ≪≫ Functor.associator _ _ _) ≪≫
       Final.colimitIso (α.app X).toFunctor (ι G X ⋙ H))
-    (fun f => colimit.hom_ext <| fun d => by
+    (fun f => colimit.hom_ext fun d => by
       simp only [map, Cat.Hom.comp_toFunctor, comp_obj, ι_obj,
         fiberwiseColimit_map, ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc,
         NatTrans.comp_app, whiskerRight_app, Functor.comp_map, Cat.Hom₂.eqToHom_toNatTrans,
@@ -1206,7 +1206,7 @@ namespace ObjectProperty
 the inclusion functor it is enough to consider arrows to objects outside of the subcategory. -/
 theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
     (h : ∀ d, ¬ P d → IsConnected (CostructuredArrow P.ι d)) :
-    P.ι.Initial := .mk <| fun d => by
+    P.ι.Initial := .mk fun d => by
   by_cases hd : P d
   · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
     refine zigzag_isConnected (fun j₁ j₂ ↦ Zigzag.trans

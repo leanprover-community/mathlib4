@@ -263,7 +263,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :
     (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X :=
-  ChainComplex.ofHom (fun n => (NormalizedMooreComplex.objX X n).arrow) <| fun i ↦ by
+  ChainComplex.ofHom (fun n => (NormalizedMooreComplex.objX X n).arrow) fun i ↦ by
   /- we have to show the compatibility of the differentials on the alternating
            face map complex with those defined on the normalized Moore complex:
            we first get rid of the terms of the alternating sum that are obviously

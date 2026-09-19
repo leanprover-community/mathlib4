@@ -80,7 +80,7 @@ lemma ContinuousMulEquiv.isTopologicalGroup
   continuous_mul := by
     let f := (fun q ↦ q.1 * q.2 : β × β → β)
     have : Continuous (fun p ↦ e.symm <| f (e p.1, e p.2) : (α × α → α)) := by fun_prop
-    exact this.congr <| fun p ↦ by simp [f]
+    exact this.congr fun p ↦ by simp [f]
   continuous_inv := by
     have : Continuous (e.symm ∘ (fun q ↦ q⁻¹) ∘ e) := by fun_prop
     exact this.congr (fun p ↦ by simp)

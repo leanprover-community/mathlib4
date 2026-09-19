@@ -108,7 +108,7 @@ lemma comp_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : f �
   .trans (fun _ _ ↦ hf _ _) h
 
 lemma comp_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : v₁ ≅ f ∘ v₂ :=
-  .trans h (.symm <| fun _ _ ↦ hf _ _)
+  .trans h (.symm fun _ _ ↦ hf _ _)
 
 @[simp]
 lemma comp_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ≅ v₂ ↔ v₁ ≅ v₂ :=

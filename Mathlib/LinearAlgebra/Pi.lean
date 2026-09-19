@@ -638,7 +638,7 @@ lemma Pi.mem_span_range_single_inl_iff
   · have := Fintype.ofFinite ι
     suffices x = ∑ i : ι, x (Sum.inl i) • Pi.single (M := fun _ ↦ R) (Sum.inl i) (1 : R) by
       rw [this]
-      exact sum_mem <| fun i _ ↦ SMulMemClass.smul_mem _ <| subset_span <| Set.mem_range_self i
+      exact sum_mem fun i _ ↦ SMulMemClass.smul_mem _ <| subset_span <| Set.mem_range_self i
     ext (i | i)
     · simp [single_apply]
     · simp [hx i]

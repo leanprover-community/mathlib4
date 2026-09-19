@@ -230,7 +230,7 @@ noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     toFun g := ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
     invFun g := ⟨g.1, X.ρ g.1 g.2⟩
     left_inv _ := Prod.ext rfl <| by simp
-    right_inv _ := Prod.ext rfl <| by simp }) <| fun _ => by
+    right_inv _ := Prod.ext rfl <| by simp }) fun _ => by
       ext _
       simp only [tensorObj_V, tensor_ρ]
       simp [types_tensorObj_def]

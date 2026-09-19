@@ -235,7 +235,7 @@ theorem ne_of_isReal_isComplex {w w' : InfinitePlace K} (h : IsReal w) (h' : IsC
 variable (K) in
 theorem disjoint_isReal_isComplex :
     Disjoint {(w : InfinitePlace K) | IsReal w} {(w : InfinitePlace K) | IsComplex w} :=
-  Set.disjoint_iff.2 <| fun _ hw ↦ not_isReal_iff_isComplex.2 hw.2 hw.1
+  Set.disjoint_iff.2 fun _ hw ↦ not_isReal_iff_isComplex.2 hw.2 hw.1
 
 /-- The real embedding associated to a real infinite place. -/
 noncomputable def embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) : K →+* ℝ :=

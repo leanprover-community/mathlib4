@@ -757,7 +757,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_left
     Nonempty (IsColimit d) := by
   let iso : d ≅ (Cofan.mk _ fun i : ι ↦ PullbackCone.IsLimit.lift ht
       (s i).fst ((s i).snd ≫ a.inj i) (by simp [hu, (s i).condition])) :=
-    Cofan.ext e <| fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
+    Cofan.ext e fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
   rw [(IsColimit.equivIsoColimit iso).nonempty_congr]
   refine hau _ (Discrete.natTrans fun i ↦ (s i.as).snd) t.snd ?_ (.of_discrete _) fun j ↦ ?_
   · ext; simp [Cofan.inj]
@@ -822,7 +822,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_right
     Nonempty (IsColimit d) := by
   let iso : d ≅ (Cofan.mk _ fun i : ι ↦ PullbackCone.IsLimit.lift ht
       ((s i).fst ≫ a.inj i) ((s i).snd) (by simp [hu, (s i).condition])) :=
-    Cofan.ext e <| fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
+    Cofan.ext e fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
   rw [(IsColimit.equivIsoColimit iso).nonempty_congr]
   refine hau _ (Discrete.natTrans fun i ↦ (s i.as).fst) t.fst ?_ (.of_discrete _) fun j ↦ ?_
   · ext; simp [Cofan.inj]
@@ -898,7 +898,7 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone
       PullbackCone.IsLimit.lift ht (pullback.fst _ _ ≫ a.inj i) (pullback.snd _ _)
       (by simp [hu, pullback.condition])
   let iso : d ≅ Cofan.mk c'.pt fun p : ι × ι' ↦ (c p.1).inj p.2 ≫ c'.inj _ := by
-    refine Cofan.ext e <| fun p ↦ PullbackCone.IsLimit.hom_ext ht ?_ ?_
+    refine Cofan.ext e fun p ↦ PullbackCone.IsLimit.hom_ext ht ?_ ?_
     · simp [c', c, he₁]
     · simp [c', c, he₂]
   rw [(IsColimit.equivIsoColimit iso).nonempty_congr]

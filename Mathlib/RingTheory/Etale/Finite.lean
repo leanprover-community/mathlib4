@@ -107,7 +107,7 @@ def FiniteEtale.baseChange : FiniteEtale.{v} R ⥤ FiniteEtale.{max w v} S where
 /-- Base change from `R` to `R` is isomorphic to the identity. -/
 @[expose]
 def FiniteEtale.baseChangeSelfIso : baseChange R R ≅ 𝟭 (FiniteEtale R) :=
-  NatIso.ofComponents (fun A ↦ isoMk (Algebra.TensorProduct.lid _ _)) <| fun {A B} f ↦ by
+  NatIso.ofComponents (fun A ↦ isoMk (Algebra.TensorProduct.lid _ _)) fun {A B} f ↦ by
     dsimp [baseChange]
     ext
     simp

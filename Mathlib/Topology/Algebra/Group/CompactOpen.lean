@@ -192,7 +192,7 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
     LocallyCompactSpace (ContinuousMonoidHom X Y) := by
   obtain ⟨U0, hU0c, hU0o⟩ := exists_compact_mem_nhds (1 : X)
   let U_aux : ℕ → {S : Set X | S ∈ nhds 1} :=
-    Nat.rec ⟨U0, hU0o⟩ <| fun _ S ↦ let h := exists_closed_nhds_one_inv_eq_mul_subset S.2
+    Nat.rec ⟨U0, hU0o⟩ fun _ S ↦ let h := exists_closed_nhds_one_inv_eq_mul_subset S.2
       ⟨Classical.choose h, (Classical.choose_spec h).1⟩
   let U : ℕ → Set X := fun n ↦ (U_aux n).1
   have hU1 : ∀ n, U n ∈ nhds 1 := fun n ↦ (U_aux n).2

@@ -42,8 +42,8 @@ lemma RingHom.HasFiniteProducts.isClosedUnderLimitsOfShape (hQi : RespectsIso Q)
   let e : A ≅ CommRingCat.mkUnder R (Π i, pres.diag.obj ⟨i⟩) :=
     (limit.isoLimitCone ⟨_, pres.isLimit⟩).symm ≪≫
       HasLimit.isoOfNatIso (Discrete.natIso fun i ↦ eqToIso <| by simp) ≪≫
-      limit.isoLimitCone ⟨CommRingCat.Under.piFan <| fun i ↦ (pres.diag.obj ⟨i⟩),
-        CommRingCat.Under.piFanIsLimit <| fun i ↦ (pres.diag.obj ⟨i⟩)⟩
+      limit.isoLimitCone ⟨CommRingCat.Under.piFan fun i ↦ (pres.diag.obj ⟨i⟩),
+        CommRingCat.Under.piFanIsLimit fun i ↦ (pres.diag.obj ⟨i⟩)⟩
   have : (toMorphismProperty Q).RespectsIso := toMorphismProperty_respectsIso_iff.mp hQi
   rw [underObj_iff, ← Under.w e.inv, (toMorphismProperty Q).cancel_right_of_respectsIso]
   exact hQp _ fun i ↦ hpres _

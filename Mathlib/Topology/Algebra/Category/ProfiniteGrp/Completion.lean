@@ -140,7 +140,7 @@ lemma preimage_le {f : G ⟶ ↧P} {H K : OpenNormalSubgroup P}
 @[to_additive /-- The induced map on finite quotients coming from a morphism to `P`. -/]
 def quotientMap (f : G ⟶ ↧P) (H : OpenNormalSubgroup P) :
     FiniteGrp.of (G ⧸ (preimage f H).toSubgroup) ⟶ FiniteGrp.of (P ⧸ H.toSubgroup) :=
-  FiniteGrp.ofHom <| QuotientGroup.map _ _ f.hom <| fun _ h => h
+  FiniteGrp.ofHom <| QuotientGroup.map _ _ f.hom fun _ h => h
 
 /-- The universal morphism from the profinite completion to `P`. -/
 noncomputable

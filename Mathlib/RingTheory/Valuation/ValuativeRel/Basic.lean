@@ -479,10 +479,10 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
     simp [mul_assoc]
   one_mul := ValueGroupWithZero.ind <| by simp [← ValueGroupWithZero.mk_one_one]
   mul_one := ValueGroupWithZero.ind <| by simp [← ValueGroupWithZero.mk_one_one]
-  zero_mul := ValueGroupWithZero.ind <| fun _ _ => by
+  zero_mul := ValueGroupWithZero.ind fun _ _ => by
     rw [← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_mul_mk]
     simp
-  mul_zero := ValueGroupWithZero.ind <| fun _ _ => by
+  mul_zero := ValueGroupWithZero.ind fun _ _ => by
     rw [← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_mul_mk]
     simp
   mul_comm a b := by

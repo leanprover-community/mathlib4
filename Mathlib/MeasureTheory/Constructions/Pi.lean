@@ -911,7 +911,7 @@ theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β 
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
     MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
   measurable :=
-    measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
+    measurable_pi_iff.mpr fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
   map_eq := by
     have (i : ι) : SigmaFinite ((μ i).map (f i)) := (hf i).map_eq ▸ hν i
     rw [pi_map_pi (fun i ↦ (hf i).aemeasurable)]

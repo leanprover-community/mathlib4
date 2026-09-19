@@ -575,12 +575,12 @@ instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreE
     IsIso (Sigma.desc fun (p : ι × ι') ↦
       pullback.map (f p.1) (g p.2) (Sigma.desc f) (Sigma.desc g) (Sigma.ι _ p.1)
         (Sigma.ι _ p.2) (𝟙 S) (by simp) (by simp)) := by
-  let c : Cofan _ := Cofan.mk _ <| fun (p : ι × ι') ↦
+  let c : Cofan _ := Cofan.mk _ fun (p : ι × ι') ↦
       pullback.map (f p.1) (g p.2) (Sigma.desc f) (Sigma.desc g) (Sigma.ι _ p.1)
         (Sigma.ι _ p.2) (𝟙 S) (by simp) (by simp)
   apply c.nonempty_isColimit_iff_isIso_sigmaDesc.mp
   refine IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone
-      (a := Cofan.mk _ <| fun i ↦ Sigma.ι _ i) (b := Cofan.mk _ <| fun i ↦ Sigma.ι _ i)
+      (a := Cofan.mk _ fun i ↦ Sigma.ι _ i) (b := Cofan.mk _ fun i ↦ Sigma.ι _ i)
       ?_ ?_ f g (Sigma.desc f) (Sigma.desc g) (fun i j ↦ (pullback.cone (f i) (g j)))
       (fun i j ↦ pullback.isLimit (f i) (g j)) (pullback.cone _ _) ?_ (Iso.refl _)
   · exact FinitaryPreExtensive.isUniversal_finiteCoproducts (coproductIsCoproduct X)
@@ -602,7 +602,7 @@ lemma FinitaryPreExtensive.isPullback_sigmaDesc [HasPullbacks C] [FinitaryPreExt
     IsUniversalColimit.isPullback_prod_of_isColimit (d :=
       Cofan.mk _ (Sigma.ι fun (p : ι × ι') ↦ pullback (f p.1) (g p.2))) (hd :=
       coproductIsCoproduct (fun (p : ι × ι') ↦ pullback (f p.1) (g p.2))) (a :=
-      Cofan.mk _ <| fun i ↦ Sigma.ι _ i) (b := Cofan.mk _ <| fun i ↦ Sigma.ι _ i) ?_ ?_ f g
+      Cofan.mk _ fun i ↦ Sigma.ι _ i) (b := Cofan.mk _ fun i ↦ Sigma.ι _ i) ?_ ?_ f g
       (Sigma.desc f) (Sigma.desc g) (fun i j ↦ IsPullback.of_hasPullback (f i) (g j))
   · ext
     simp [Cofan.IsColimit.desc, Sigma.ι, coproductIsCoproduct]

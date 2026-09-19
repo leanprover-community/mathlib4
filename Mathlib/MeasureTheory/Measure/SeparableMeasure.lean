@@ -239,7 +239,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                     exact (dist_comm (α := ℝ) .. ▸ hN N (le_refl N))
                   · exact measure_mono <| iUnion_subset <|
                       fun i ↦ iUnion_subset fun _ ↦ subset_iUnion f i
-                  · exact iUnion_subset <| fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i)
+                  · exact iUnion_subset fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i)
                   · exact MeasurableSet.biUnion (countable_coe_iff.1 inferInstance)
                       (fun n _ ↦ (hf n).1.nullMeasurableSet)
                 · calc

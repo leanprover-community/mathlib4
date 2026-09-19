@@ -296,7 +296,7 @@ theorem separating_of_generateFrom (S : Set (Set α))
   let := generateFrom S
   intro x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
-  exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
+  exact separatesPoints_def fun _ hs ↦ (hxy _ hs).mp
 
 theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoints _ m] (h : m ≤ m') :
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦

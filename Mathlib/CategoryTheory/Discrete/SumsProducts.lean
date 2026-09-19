@@ -36,7 +36,7 @@ namespace Discrete
 discrete categories. -/
 @[simps!]
 def productEquiv {J K : Type*} : Discrete (J × K) ≌ Discrete J × Discrete K where
-  functor := Discrete.functor <| fun ⟨j, k⟩ ↦ ⟨.mk j, .mk k⟩
+  functor := Discrete.functor fun ⟨j, k⟩ ↦ ⟨.mk j, .mk k⟩
   inverse := {
     obj := fun ⟨x, y⟩ ↦ .mk (⟨x.as, y.as⟩)
     map := fun ⟨f₁, f₂⟩ ↦ eqToHom (by discrete_cases; dsimp; rw [f₁, f₂]) }
@@ -50,19 +50,19 @@ set_option backward.isDefEq.respectTransparency.types false in
 discrete categories. -/
 @[simps!]
 def sumEquiv {J K : Type*} : Discrete (J ⊕ K) ≌ Discrete J ⊕ Discrete K where
-  functor := Discrete.functor <| fun t ↦
+  functor := Discrete.functor fun t ↦
     match t with
     | .inl j => Sum.inl (Discrete.mk j)
     | .inr k => Sum.inr (Discrete.mk k)
-  inverse := (Discrete.functor <| fun t ↦ Discrete.mk (Sum.inl t)).sum'
-    (Discrete.functor <| fun t ↦ Discrete.mk (Sum.inr t))
+  inverse := (Discrete.functor fun t ↦ Discrete.mk (Sum.inl t)).sum'
+    (Discrete.functor fun t ↦ Discrete.mk (Sum.inr t))
   unitIso := NatIso.ofComponents (fun ⟨x⟩ ↦
     match x with
     | .inl x => Iso.refl _
     | .inr x => Iso.refl _)
   counitIso := Functor.sumIsoExt
-    (Discrete.natIso <| fun _ ↦ Iso.refl _)
-    (Discrete.natIso <| fun _ ↦ Iso.refl _)
+    (Discrete.natIso fun _ ↦ Iso.refl _)
+    (Discrete.natIso fun _ ↦ Iso.refl _)
 
 end Discrete
 

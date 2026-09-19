@@ -726,7 +726,7 @@ instance : BraidedCategory (Rep.{u} k G) where
   braiding_naturality_left _ _ := by ext1; simp [comm_comp_rTensor]
   hexagon_forward _ _ _ := by
     ext : 2
-    exact TensorProduct.ext_threefold <| fun _ _ _ ↦ by simp
+    exact TensorProduct.ext_threefold fun _ _ _ ↦ by simp
   hexagon_reverse X Y Z := by
     ext : 2
     simp only [tensor_V, tensor_ρ, hom_comp, hom_inv_associator, mkIso_hom_hom, comp_toLinearMap,

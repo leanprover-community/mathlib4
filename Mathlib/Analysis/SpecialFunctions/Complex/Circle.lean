@@ -108,13 +108,13 @@ lemma exp_injOn_of_forall_sub_mem_Ioo {s : Set ℝ}
   exact heq.1
 
 lemma exp_injOn_Icc {a b : ℝ} (h : b - a < 2 * π) : InjOn exp (Icc a b) :=
-  exp_injOn_of_forall_sub_mem_Ioo <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+  exp_injOn_of_forall_sub_mem_Ioo fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
 
 lemma exp_injOn_Ico {a b : ℝ} (h : b - a ≤ 2 * π) : InjOn exp (Ico a b) :=
-  exp_injOn_of_forall_sub_mem_Ioo <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+  exp_injOn_of_forall_sub_mem_Ioo fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
 
 lemma exp_injOn_Ioc {a b : ℝ} (h : b - a ≤ 2 * π) : InjOn exp (Ioc a b) :=
-  exp_injOn_of_forall_sub_mem_Ioo <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+  exp_injOn_of_forall_sub_mem_Ioo fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
 
 /-- The image under `Circle.exp` of the interval of angles `(-r, r)`. -/
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
