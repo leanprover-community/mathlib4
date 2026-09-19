@@ -105,7 +105,7 @@ end BottomRow
 
 section TendstoLemmas
 
-open Filter ContinuousLinearMap
+open Filter
 
 attribute [local simp] FunLike.coe_smul
 
@@ -793,7 +793,7 @@ theorem eq_one_or_neg_one_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z 
 /-- This was previously an auxiliary result en route to
 `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. It is now deprecated, since the proof has been
 refactored so this step is no longer needed. -/
-@[deprecated eq_one_or_neg_one_of_mem_fdo_mem_fdo (since := "2026-03-19")]
+@[deprecated eq_one_or_neg_one_of_mem_fdo_mem_fdo +typeChanged (since := "2026-03-19")]
 theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by
   rcases eq_one_or_neg_one_of_mem_fdo_mem_fdo hz hg with rfl | rfl <;> rfl
 

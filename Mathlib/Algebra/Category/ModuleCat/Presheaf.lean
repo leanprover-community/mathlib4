@@ -77,7 +77,6 @@ lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
     M.map (i ≫ j) x = M.map j (M.map i x) := by
   rw [M.map_comp]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The restriction map `M.map f` of a presheaf of modules `M`, bundled as a semilinear map
 along the ring map `R.map f`. -/
 noncomputable def restrictₛₗ {X Y : Cᵒᵖ} (f : X ⟶ Y) :
@@ -199,11 +198,11 @@ restriction maps are semilinear. (This constructor should be used only in cases
 when the preferred constructor `PresheafOfModules.mk` is not as convenient as this one.) -/
 @[simps]
 noncomputable def ofPresheaf : PresheafOfModules.{v} R where
-  obj X := ModuleCat.of _ (M.obj X)
+  obj X := ↧(M.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   map {X Y} f := ModuleCat.ofHom
-      (Y := (ModuleCat.restrictScalars (R.map f).hom).obj (ModuleCat.of _ (M.obj Y)))
+      (Y := (ModuleCat.restrictScalars (R.map f).hom).obj ↧(M.obj Y))
     { toFun := fun x ↦ M.map f x
       map_add' := by simp
       map_smul' := fun r m ↦ map_smul f r m }
@@ -302,11 +301,11 @@ noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The obvious free presheaf of modules of rank `1`. -/
 noncomputable def unit : PresheafOfModules R where
-  obj X := ModuleCat.of _ (R.obj X)
+  obj X := ↧(R.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   map {X Y} f := ModuleCat.ofHom
-      (Y := (ModuleCat.restrictScalars (R.map f).hom).obj (ModuleCat.of (R.obj Y) (R.obj Y)))
+      (Y := (ModuleCat.restrictScalars (R.map f).hom).obj ↧(R.obj Y))
     { toFun := fun x ↦ R.map f x
       map_add' := by simp
       map_smul' := by cat_disch }
@@ -460,7 +459,6 @@ noncomputable def forgetToPresheafModuleCatMap
     ext x
     exact naturality_apply f g x
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The forgetful functor from presheaves of modules over a presheaf of rings `R` to presheaves of
 `R(X)`-modules where `X` is an initial object.

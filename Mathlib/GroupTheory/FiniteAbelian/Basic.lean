@@ -75,7 +75,7 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
     | zero => simp
     | of i x =>
       rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
-        dif_neg i.prop]
+        dite_eq_right i.prop]
     | add x y hx hy => rw [map_add, map_add, hx, hy]
   right_inv x := by
     induction x using DirectSum.induction_on with
@@ -241,7 +241,7 @@ lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ
   have := isFiniteRelIndex_map_nsmulAddMonoidHom_of_fg this hn
   refine isFiniteRelIndex_of_le_left (H := A.toAddSubgroup.map (nsmulAddMonoidHom n))
     A.toAddSubgroup ?_
-  rw [SetLike.le_def] at h ⊢
+  rw [IsConcreteLE.le_iff] at h ⊢
   simpa using h
 
 end Submodule

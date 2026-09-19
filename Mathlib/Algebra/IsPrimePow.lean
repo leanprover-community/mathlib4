@@ -10,6 +10,7 @@ public import Mathlib.Order.Nat
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.Prime.Pow
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Prime powers
@@ -24,6 +25,7 @@ variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
 /-- `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be
 written as `p^k`. -/
+@[wikidata Q1667469]
 def IsPrimePow : Prop :=
   ∃ (p : R) (k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n
 
@@ -37,7 +39,7 @@ theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime 
     ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨p, k - 1, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨_, _, hp, hn⟩ =>
       ⟨_, _, hp, Nat.succ_pos', hn⟩⟩
 
-theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
+theorem not_isPrimePow_zero [IsReduced R] : ¬IsPrimePow (0 : R) := by
   simp only [isPrimePow_def, not_exists, not_and', and_imp]
   intro x n _hn hx
   rw [eq_zero_of_pow_eq_zero hx]
@@ -62,7 +64,7 @@ theorem IsPrimePow.pow {n : R} (hn : IsPrimePow n) {k : ℕ} (hk : k ≠ 0) : Is
   let ⟨p, k', hp, hk', hn⟩ := hn
   ⟨p, k * k', hp, mul_pos hk.bot_lt hk', by rw [pow_mul', hn]⟩
 
-theorem IsPrimePow.ne_zero [NoZeroDivisors R] {n : R} (h : IsPrimePow n) : n ≠ 0 := fun t =>
+theorem IsPrimePow.ne_zero [IsReduced R] {n : R} (h : IsPrimePow n) : n ≠ 0 := fun t =>
   not_isPrimePow_zero (t ▸ h)
 
 theorem IsPrimePow.ne_one {n : R} (h : IsPrimePow n) : n ≠ 1 := fun t =>

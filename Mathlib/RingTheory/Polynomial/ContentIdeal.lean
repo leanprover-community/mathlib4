@@ -111,7 +111,7 @@ variable {R : Type*} [CommSemiring R] {p q : R[X]}
 
 theorem contentIdeal_le_contentIdeal_of_dvd (hpq : p ∣ q) : q.contentIdeal ≤ p.contentIdeal := by
   obtain ⟨p', rfl⟩ := hpq
-  exact le_trans (p.contentIdeal_mul_le_mul_contentIdeal p') mul_le_right
+  exact le_trans (p.contentIdeal_mul_le_mul_contentIdeal p') mul_le_left
 
 theorem _root_.Submodule.IsPrincipal.contentIdeal_generator_dvd_coeff
     (h_prin : p.contentIdeal.IsPrincipal) (n : ℕ) : h_prin.generator ∣ p.coeff n := by
@@ -162,7 +162,7 @@ theorem contentIdeal_eq_top_of_contentIdeal_mul_eq_top
   calc
   ⊤ = (p * q).contentIdeal := h.symm
   _ ≤ p.contentIdeal * q.contentIdeal := contentIdeal_mul_le_mul_contentIdeal p q
-  _ ≤ p.contentIdeal := mul_le_right
+  _ ≤ p.contentIdeal := mul_le_left
 
 end CommSemiring
 

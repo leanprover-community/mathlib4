@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.Torsion
@@ -13,7 +13,6 @@ public import Mathlib.Order.Northcott
 
 import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 
