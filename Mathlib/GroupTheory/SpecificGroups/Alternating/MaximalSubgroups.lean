@@ -28,7 +28,7 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
@@ -175,8 +175,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     (hG : stabilizer (alternatingGroup α) s ≤ G) :
     G = ⊤ := by
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
-  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype,
-    ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_top, Subgroup.range_subtype]
   -- By Jordan's theorem, it suffices to prove that G acts primitively
   apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem _ hg3
   · use ⟨g, hg3.mem_alternatingGroup⟩

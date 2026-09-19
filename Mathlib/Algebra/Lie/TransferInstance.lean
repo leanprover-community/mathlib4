@@ -7,7 +7,7 @@ Authors: Leonid Ryvkin
 module
 
 public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Group.TransferInstance
 
 /-!
 # Transfer Lie brackets along AddEquiv, LinearEquiv and Equiv
@@ -71,12 +71,12 @@ namespace Equiv
 variable {R L' L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (e : L' ≃ L)
 
 /-- Transfer `LieRing` across an `Equiv` -/
-@[deprecated AddEquiv.lieRing (since := "2026-07-30")]
+@[deprecated AddEquiv.lieRing +typeChanged (since := "2026-07-30")]
 protected abbrev lieRing : LieRing L' :=
   letI := e.addCommGroup
   e.addEquiv.lieRing
 
-@[deprecated AddEquiv.bracket_def (since := "2026-07-30")]
+@[deprecated AddEquiv.bracket_def +typeChanged (since := "2026-07-30")]
 lemma bracket_def (x y : L') :
     letI := e.lieRing
     ⁅x, y⁆ = e.symm ⁅e x, e y⁆ := rfl

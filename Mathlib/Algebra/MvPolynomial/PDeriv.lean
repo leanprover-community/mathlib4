@@ -51,7 +51,7 @@ namespace MvPolynomial
 
 open Function Finsupp
 
-variable {R : Type u} {σ : Type v} {a a' a₁ a₂ : R} {s : σ →₀ ℕ}
+variable {R : Type u} {σ : Type v} {a : R} {s : σ →₀ ℕ}
 
 section PDeriv
 
@@ -78,7 +78,7 @@ theorem pderiv_monomial {i : σ} :
 
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
     X i * pderiv i (monomial m r) = m i • monomial m r := by
-  rw [pderiv_monomial, X, monomial_mul, smul_monomial]
+  rw [pderiv_monomial, X, monomial_mul_monomial, smul_monomial]
   by_cases h : m i = 0
   · simp_rw [h, Nat.cast_zero, mul_zero, zero_smul, monomial_zero]
   rw [one_mul, mul_comm, nsmul_eq_mul, add_comm, sub_add_single_one_cancel h]
@@ -119,7 +119,7 @@ theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a
   rw [C_mul', Derivation.map_smul, C_mul']
 
 theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
-    coeff m (pderiv i p) = coeff (m + single i 1) p * (m i + 1) := by
+    (pderiv i p).coeff m = p.coeff (m + single i 1) * (m i + 1) := by
   classical
   induction p using MvPolynomial.induction_on' with
   | add p q hp hq => simp [hp, hq, add_mul]

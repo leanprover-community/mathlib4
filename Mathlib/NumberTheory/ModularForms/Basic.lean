@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Modular forms
@@ -103,6 +102,7 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k 
   holo : ∀ f : F, MDiff (f : ℍ → ℂ)
   zero_at_cusps (f : F) {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsZeroAt f k
 
+@[macro_inline]
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
@@ -120,6 +120,7 @@ lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     Continuous f :=
   (ModularFormClass.holo f).continuous
 
+@[macro_inline]
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
@@ -622,7 +623,7 @@ open Filter SlashInvariantForm
 /-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
 @[simps! -fullyApplied]
-def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
+def prod {ι : Type*} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
   toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i))
@@ -638,7 +639,7 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
 /-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
 those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
-def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
+def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
   prod (s := s) (s.card * k) (by simp) F

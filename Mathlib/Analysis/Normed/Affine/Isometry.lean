@@ -71,6 +71,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   ext
   rfl
 
+@[macro_inline]
 instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ where
   coe f := f.toFun
   coe_injective f g := by cases f; cases g; simp
@@ -159,10 +160,10 @@ theorem map_ne {x y : P₁'} (h : x ≠ y) : f₁ x ≠ f₁ y :=
 end injective
 
 protected theorem lipschitz : LipschitzWith 1 f :=
-  f.isometry.lipschitz
+  f.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.isometry.antilipschitz
+  f.isometry.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
@@ -323,6 +324,7 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   ext
   rfl
 
+@[macro_inline]
 instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -652,10 +654,10 @@ theorem map_ne {x y : P} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
 protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitz
+  e.isometry.lipschitzWith
 
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitz
+  e.isometry.antilipschitzWith
 
 @[simp]
 theorem ediam_image (s : Set P) : ediam (e '' s) = ediam s :=

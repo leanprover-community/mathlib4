@@ -237,7 +237,7 @@ lemma domSMul_apply (μ : Measure A) (g : Gᵈᵐᵃ) (s : Set A) :
   exact Set.preimage_smul_inv (DomMulAct.mk.symm g) s
 
 instance : SMulCommClass ℝ≥0 Gᵈᵐᵃ (Measure A) where
-  smul_comm r g μ := show r • μ.map _ = (r • μ).map _ by simp
+  smul_comm r g μ := show r • μ.map _ = (r • μ).map _ by rw [Measure.map_smul _ (by fun_prop)]
 
 instance : SMulCommClass Gᵈᵐᵃ ℝ≥0 (Measure A) := .symm ..
 

@@ -55,7 +55,7 @@ lemma decomposition_erase_inf {N : Submodule R M}
     refine (IH _ hJ ?_).imp
       fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
     rw [← Finset.insert_erase hJ] at hs
-    simp [← hs, hJ']
+    simp [-Finset.insert_erase_eq_insert, ← hs, hJ']
 
 open scoped Function -- required for scoped `on` notation
 
@@ -137,7 +137,7 @@ lemma image_radical_eq_associated_primes
   ext p
   constructor
   · rintro ⟨q, hqt, rfl⟩
-    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    obtain ⟨x, hxt, hxq⟩ := IsConcreteLE.not_le_iff_exists.mp (ht.minimal hqt)
     use (ht.primary hqt).isPrime_radical_colon, x
     rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
       eq_comm, inf_eq_left, Finset.le_inf_iff]

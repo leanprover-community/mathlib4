@@ -67,7 +67,6 @@ theorem nndist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     nndist (homothety p₁ c p₂) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_homothety_center _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     dist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = dist c₁ c₂ * dist p₁ p₂ := by
@@ -75,57 +74,47 @@ theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
   simp only [lineMap_apply, dist_eq_norm_vsub, vadd_vsub_vadd_cancel_right,
     ← sub_smul, norm_smul, vsub_eq_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     nndist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = nndist c₁ c₂ * nndist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_lineMap _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nndist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
   LipschitzWith.of_dist_le_mul fun c₁ c₂ =>
     ((dist_lineMap_lineMap p₁ p₂ c₁ c₂).trans (mul_comm _ _)).le
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_lineMap_left (p₁ p₂ : P) (c : 𝕜) : dist (lineMap p₁ p₂ c) p₁ = ‖c‖ * dist p₁ p₂ := by
   simpa only [lineMap_apply_zero, dist_zero_right] using dist_lineMap_lineMap p₁ p₂ c 0
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_lineMap_left (p₁ p₂ : P) (c : 𝕜) :
     nndist (lineMap p₁ p₂ c) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_left _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_left_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₁ (lineMap p₁ p₂ c) = ‖c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_left _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_left_lineMap (p₁ p₂ : P) (c : 𝕜) :
     nndist p₁ (lineMap p₁ p₂ c) = ‖c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_left_lineMap _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
     dist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖ * dist p₁ p₂ := by
   simpa only [lineMap_apply_one, dist_eq_norm'] using dist_lineMap_lineMap p₁ p₂ c 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
     nndist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_right _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_right _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nndist_right_lineMap (p₁ p₂ : P) (c : 𝕜) :
     nndist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖₊ * nndist p₁ p₂ :=
@@ -228,7 +217,6 @@ theorem dist_right_pointReflection (p q : P) :
     dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_right 𝕜 _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by

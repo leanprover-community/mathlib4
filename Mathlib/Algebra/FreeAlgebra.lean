@@ -536,7 +536,6 @@ end FreeAlgebra
 `CoeSort` below. Closing it and reopening it fixes it... -/
 namespace FreeAlgebra
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is

@@ -51,7 +51,9 @@ and `L`.
 
 @[expose] public section
 
-open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate WithLp
+open BoundedContinuousFunction Real Complex WithLp
+
+open scoped RealInnerProductSpace ComplexConjugate
 
 open scoped ENNReal
 
@@ -195,6 +197,13 @@ lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : 
     IntervalIntegrable (charFun μ) volume a b :=
   IntervalIntegrable.mono_fun' (g := fun _ ↦ μ.real Set.univ) (by simp)
     stronglyMeasurable_charFun.aestronglyMeasurable (ae_of_all _ norm_charFun_le)
+
+lemma charFun_map_eq_charFun_map_inner_one {α : Type*} {mα : MeasurableSpace α} [BorelSpace E]
+  {μ : Measure α} {Y : α → E} (hY : AEMeasurable Y μ) (t : E) :
+  charFun (μ.map Y) t = charFun (μ.map (⟪Y ·, t⟫)) (1 : ℝ) := by
+  rw [charFun_apply, charFun_apply_real, integral_map, integral_map]
+  · simp
+  all_goals fun_prop
 
 lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     charFun (μ.map (r • ·)) t = charFun μ (r • t) := by

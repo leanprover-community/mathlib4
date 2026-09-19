@@ -167,6 +167,13 @@ theorem hasseDeriv_comp (k l : ℕ) (f : LaurentSeries V) :
   ext n
   simp [hasseDeriv_comp_coeff k l f n]
 
+@[simp]
+theorem hasseDeriv_map {W : Type*} [AddCommGroup W] [Module R W]
+    (g : V →ₗ[R] W) (k : ℕ) (f : LaurentSeries V) :
+    hasseDeriv R k (f.map g) = (hasseDeriv R k f).map g := by
+  ext
+  simp
+
 /-- The derivative of a Laurent series. -/
 def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] :
     LaurentSeries V →ₗ[R] LaurentSeries V :=
@@ -176,6 +183,11 @@ def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
   exact rfl
 
+theorem derivative_map {W : Type*} [AddCommGroup W] [Module R W]
+    (g : V →ₗ[R] W) (f : LaurentSeries V) :
+    derivative R (f.map g) = (derivative R f).map g :=
+  hasseDeriv_map g 1 f
+
 theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
     (derivative R)^[k] f = k.factorial • (hasseDeriv R k f) := by
   ext n
@@ -184,6 +196,15 @@ theorem derivative_iterate (k : ℕ) (f : LaurentSeries V) :
   | succ k ih =>
     rw [Function.iterate_succ, Function.comp_apply, ih, derivative_apply, hasseDeriv_comp,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
+
+@[simp]
+theorem iterate_derivative_map {W : Type*} [AddCommGroup W] [Module R W]
+    (g : V →ₗ[R] W) (k : ℕ) (f : LaurentSeries V) :
+    (derivative R)^[k] (f.map g) = ((derivative R)^[k] f).map g := by
+  induction k generalizing f with
+  | zero => simp
+  | succ k ih =>
+    simp only [Function.iterate_succ, Function.comp_apply, ih, derivative_map]
 
 @[simp]
 theorem derivative_iterate_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
@@ -363,7 +384,7 @@ namespace RatFunc
 
 open scoped LaurentSeries
 
-variable {F : Type u} [Field F] (p q : F[X]) (f g : RatFunc F)
+variable {F : Type u} [Field F] (p q : F[X])
 
 instance : FaithfulSMul F[X] F⸨X⸩ := by
   refine (faithfulSMul_iff_algebraMap_injective F[X] F⸨X⸩).mpr ?_
@@ -653,7 +674,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
       hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
     rw [← hx]
-    nth_rw 2 [← Valuation.coe_ofClass]
+    nth_rw 2 [← Valuation.coe_toMonoidWithZeroHom]
     rw [← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
     simp_rw [← Valued.v.restrict_lt_iff_lt_embedding]
     exact (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem
@@ -685,7 +706,7 @@ result in full generality and deduce the case `Γ = ℤ` from that one. -/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v.restrict (P.snd - P.fst) < 1}
-  let ζ : (MonoidWithZeroHom.ValueGroup₀ <| .ofClass (Valued.v (R := K⸨X⸩)))ˣ :=
+  let ζ : (Valued.v (R := K⸨X⸩)).ValueGroup₀ˣ :=
     Units.mk0 1 (zero_ne_one.symm)
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
@@ -879,9 +900,9 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  have := (embedding γ.1)
+  have := embedding γ.1
   obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f
-    <| γ.map (embedding (f := .ofClass (valued K).v))
+    <| γ.map (embedding (f := ((valued K).v : K⸨X⸩ →*₀ ℤᵐ⁰)))
   use P
   apply hT₁
   apply hγ
@@ -905,7 +926,6 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued
 
 open MonoidWithZeroHom.ValueGroup₀
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
@@ -944,9 +964,8 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
         simp [v_def, valuation_coe_ratFunc]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      rw [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
+      rwa [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
         valuation_eq_LaurentSeries_valuation, map_sub]
-      assumption
 
 theorem uniformContinuous_withVal_equiv :
     UniformContinuous (WithVal.equiv (polynomialValuationX K)) :=
@@ -1145,7 +1164,6 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
     (powerSeriesEquivSubring K f : K⸨X⸩) = ofPowerSeries ℤ K f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the isomorphism `LaurentSeriesRingEquiv`, power series land in the unit ball inside the
 completion of `K⟮X⟯`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
