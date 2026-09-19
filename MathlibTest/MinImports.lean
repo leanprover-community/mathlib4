@@ -277,3 +277,77 @@ inductive ProposeToMoveThisInductive where
 theorem theorem_with_local_inductive : Nonempty ProposeToMoveThisInductive := ⟨.foo 0⟩
 
 end Linter.UpstreamableDecl
+
+section Linter.MinImports.Async
+
+/-!
+The `minImports` linter is a stateful linter: the elaborator threads the linter state through
+the commands of the file, so the accumulated imports are correct under parallel elaboration.
+The tests below run with `Elab.async` explicitly on, and check that `#import_bumps` keeps
+parallel elaboration enabled.
+-/
+
+set_option Elab.async true
+set_option linter.minImports.increases false
+
+-- Earlier sections of this file leave imports in the linter state: start from a clean state.
+set_option linter.minImports false in
+#reset_min_imports
+
+/-- info: Counting imports from here. -/
+#guard_msgs in
+#import_bumps
+
+-- `#import_bumps` must keep parallel elaboration on.
+set_option linter.minImports false in
+run_cmd do
+  unless Lean.Elab.async.get (← Lean.getOptions) do
+    throwError "`#import_bumps` must keep `Elab.async` on"
+
+/--
+warning: Imports increased to
+[Mathlib.Data.Int.Notation]
+
+New imports: [Mathlib.Data.Int.Notation]
+
+
+Note: This linter can be disabled with `set_option linter.minImports false`
+-/
+#guard_msgs in
+#guard (0 : ℤ) = 0
+
+#guard_msgs in
+-- no new imports needed here, so no message
+#guard (0 : ℤ) = 0
+
+/--
+warning: Imports increased to
+[Mathlib.Tactic.NormNum.Basic]
+
+New imports: [Mathlib.Tactic.NormNum.Basic]
+
+Now redundant: [Mathlib.Data.Int.Notation]
+
+
+Note: This linter can be disabled with `set_option linter.minImports false`
+-/
+#guard_msgs in
+lemma async_uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
+
+end Linter.MinImports.Async
+
+section Linter.MinImports.FallbackEoiReport
+
+/-! The `header` linter does not run in this file: the module is not in `headerTestFiles` and
+the file is not imported in a library root. The end-of-file report of the `minImports` linter
+then falls back to a re-parse of the file header. -/
+
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: unneeded import 'Mathlib.Tactic.FunProp.Attr'
+-/
+#guard_msgs in
+set_option linter.minImports true in #exit
+
+end Linter.MinImports.FallbackEoiReport
