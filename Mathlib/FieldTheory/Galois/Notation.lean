@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-public import Lean.PrettyPrinter.Delaborator.Basic
+public meta import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!
 # Notation for Galois group

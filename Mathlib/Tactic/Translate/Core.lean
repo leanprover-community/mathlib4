@@ -13,7 +13,7 @@ public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
-public import Batteries.Lean.NameMapAttribute
+public meta import Batteries.Lean.NameMapAttribute
 public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns

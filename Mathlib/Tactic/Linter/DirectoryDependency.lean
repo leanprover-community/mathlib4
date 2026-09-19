@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Elab.AssertExists
-public import Lean.Message
+public meta import Lean.Message
 
 -- This file is imported by the Header linter, hence has no mathlib imports.
 

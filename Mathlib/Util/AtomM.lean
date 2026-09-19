@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Simp.Types
-public import Qq
-public import Qq.Typ
+public meta import Qq
+public meta import Qq.Typ
 
 /-!
 # A monad for tracking and deduplicating atoms
