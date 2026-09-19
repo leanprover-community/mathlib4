@@ -90,6 +90,36 @@ theorem continuous_precomp (g : P →ᴬ[R] Q) [ContinuousConstSMul R W₂] :
     (fun _ => continuous_eval_const _)
     ((g.contLinear.precomp W₂).continuous.comp continuous_contLinear)
 
+section precompA
+
+variable [IsTopologicalAddGroup W₂] [ContinuousConstSMul R W₂]
+
+variable (W₂) in
+/-- Pre-composition by a fixed continuous affine map, as a continuous linear map. -/
+@[simps]
+def precompL (g : P →ᴬ[R] Q) : (Q →ᴬ[R] W₂) →L[R] (P →ᴬ[R] W₂) where
+  toFun f := f.comp g
+  map_add' _ _:= rfl
+  map_smul' _ _ := rfl
+
+variable (Q₂) in
+/-- Pre-composition by a fixed continuous affine map, as a continuous affine map. -/
+def precompA (g : P →ᴬ[R] Q) : (Q →ᴬ[R] Q₂) →ᴬ[R] (P →ᴬ[R] Q₂) where
+  toFun f := f.comp g
+  linear := g.precompL W₂
+  map_vadd' _ _ := rfl
+  cont := continuous_precomp g
+
+@[simp]
+theorem precompA_apply (g : P →ᴬ[R] Q) (f : Q →ᴬ[R] Q₂) : g.precompA Q₂ f = f.comp g :=
+  rfl
+
+@[simp]
+theorem precompA_contLinear (g : P →ᴬ[R] Q) : (g.precompA Q₂).contLinear = g.precompL W₂ :=
+  rfl
+
+end precompA
+
 @[fun_prop]
 theorem continuous_postcomp (f : Q →ᴬ[R] Q₂) [ContinuousConstSMul R W] [ContinuousConstSMul R W₂] :
     Continuous (fun g : P →ᴬ[R] Q => f.comp g) :=
@@ -98,6 +128,41 @@ theorem continuous_postcomp (f : Q →ᴬ[R] Q₂) [ContinuousConstSMul R W] [Co
   continuous_rng
     (fun _ => (map_continuous f).comp (continuous_eval_const _))
     ((f.contLinear.postcomp V).continuous.comp continuous_contLinear)
+
+section postcompA
+
+variable
+  [IsTopologicalAddGroup W] [ContinuousConstSMul R W]
+  [IsTopologicalAddGroup W₂] [ContinuousConstSMul R W₂]
+
+variable (P) in
+/-- Post-composition of continuous affine maps by a fixed continuous linear map, as a continuous
+linear map. -/
+@[simps]
+def _root_.ContinuousLinearMap.postcompContinuousAffineMap (f : W →L[R] W₂) :
+    (P →ᴬ[R] W) →L[R] (P →ᴬ[R] W₂) where
+  toFun g := f.toContinuousAffineMap.comp g
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+variable (P) in
+/-- Post-composition by a fixed continuous affine map, as a continuous affine map. -/
+def postcompA (f : Q →ᴬ[R] Q₂) : (P →ᴬ[R] Q) →ᴬ[R] (P →ᴬ[R] Q₂) where
+  toFun g := f.comp g
+  linear := f.contLinear.postcompContinuousAffineMap P
+  map_vadd' _ _ := by ext; simp
+  cont := continuous_postcomp f
+
+@[simp]
+theorem postcompA_apply (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) : f.postcompA P g = f.comp g :=
+  rfl
+
+@[simp]
+theorem postcompA_contLinear (f : Q →ᴬ[R] Q₂) :
+    (f.postcompA P).contLinear = f.contLinear.postcompContinuousAffineMap P :=
+  rfl
+
+end postcompA
 
 end Affine
 
