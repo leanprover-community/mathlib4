@@ -69,9 +69,7 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
   assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
-    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
-    we need to re-enable model-based theory combination in `lia` for this to go through. -/
-    lia +mbtc
+    grind
   commShift _ _ := ⟨by cat_disch⟩
   ε p q := (-1) ^ (p * q)
 
