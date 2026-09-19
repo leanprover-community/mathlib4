@@ -68,7 +68,7 @@ theorem reduce_replicate (n : ℕ) (x : α × Bool) :
   maximal reduction. -/]
 theorem reduce.red : Red L (reduce L) := by
   induction L with
-  | nil => constructor
+  | nil => simpa using .refl
   | cons hd1 tl1 ih =>
     dsimp
     revert ih

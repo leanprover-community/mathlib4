@@ -97,7 +97,7 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
     refine fun H ↦ ⟨fun e ↦ ?_, fun I hI ↦ ?_⟩
     · obtain ⟨n, hn⟩ := (Ideal.eq_top_iff_one _).mp e
       exact (H 0).mp .zero ((show (1 : R) = 0 by simpa using hn) ▸ isUnit_one)
-    · obtain ⟨x, hx, hx'⟩ := (SetLike.lt_iff_le_and_exists.mp hI).2
+    · obtain ⟨x, hx, hx'⟩ := (IsConcreteLE.lt_iff_le_and_exists.mp hI).2
       exact Ideal.eq_top_of_isUnit_mem _ hx (not_not.mp ((H x).not.mp hx'))
   tfae_have 4 → 2 := fun H ↦ ⟨_, H.isPrime, fun p (hp : p.IsPrime) ↦
       (H.eq_of_le hp.ne_top (nilradical_le_prime p)).symm⟩
