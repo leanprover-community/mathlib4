@@ -107,6 +107,9 @@ below cochain complexes. -/
 def quasiIso [CategoryWithHomology C] : MorphismProperty (Plus C) :=
   (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).inverseImage (ι C)
 
+lemma quasiIso_iff [CategoryWithHomology C] {X Y : Plus C} (f : X ⟶ Y) :
+    quasiIso C f ↔ QuasiIso f.hom := Iff.rfl
+
 instance [CategoryWithHomology C] : (quasiIso C).HasTwoOutOfThreeProperty := by
   dsimp [quasiIso]
   infer_instance
@@ -137,7 +140,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
 /-- The functor on categories of bounded below cochain complexes that
 is induced by a functor (which preserves zero morphisms). -/
-@[simps!]
+@[implicit_reducible, simps!]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
     obtain ⟨i, hi⟩ := K.2
@@ -148,10 +151,28 @@ def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
 /-- The isomorphism between `F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D`
 and `CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _` when `F : C ⥤ D`
 is a functor which preserves zero morphisms -/
-@[simps!]
+@[simps! hom_app inv_app]
 def mapCochainComplexPlusCompι :
     F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D ≅
       CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _ := Iso.refl _
+
+end
+
+section
+
+variable [Preadditive C] [Preadditive D] [F.Additive]
+
+noncomputable instance : F.mapCochainComplexPlus.CommShift ℤ :=
+  ObjectProperty.commShiftLift ..
+
+instance : NatTrans.CommShift F.mapCochainComplexPlusCompι.hom ℤ :=
+  ObjectProperty.commShift_liftCompιIso_hom ..
+
+open HomologicalComplex in
+lemma homotopyEquivalences_mapCochainComplexPlus_map {K L : CochainComplex.Plus C} (f : K ⟶ L)
+    (hf : homotopyEquivalences C (.up ℤ) f.hom) :
+    homotopyEquivalences D (.up ℤ) (F.mapCochainComplexPlus.map f).hom :=
+  F.homotopyEquivalences_mapHomologicalComplex_map _ hf
 
 end
 

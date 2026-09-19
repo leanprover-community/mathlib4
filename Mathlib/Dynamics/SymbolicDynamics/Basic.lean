@@ -5,7 +5,6 @@ Authors: Silvère Gangloff
 -/
 module
 
-public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Separation.Basic
 
 /-!
@@ -108,7 +107,7 @@ between the two viewpoints, since both may naturally want to reuse names like
 @[expose] public section
 
 noncomputable section
-open Set Topology
+open Set
 
 namespace SymbolicDynamics
 
@@ -158,14 +157,18 @@ def mulShift (g : G) (x : G → A) : G → A :=
   ext h; simp [mulShift]
 
 /-- Composition of left-translation shifts corresponds to multiplication in the monoid `G`. -/
-@[to_additive] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
+@[to_additive
+/-- Composition of left-translation shifts corresponds to addition in the additive monoid `G`. -/]
+lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
     mulShift (g₁ * g₂) x = mulShift g₂ (mulShift g₁ x) := by
   ext h; simp [mulShift, mul_assoc]
 
 variable [TopologicalSpace A]
 
 /-- The left-translation shift is continuous. -/
-@[to_additive (attr := fun_prop)] lemma continuous_mulShift (g : G) :
+@[to_additive (attr := fun_prop)
+/-- The left-translation shift is continuous. -/]
+lemma continuous_mulShift (g : G) :
     Continuous (mulShift (A := A) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   unfold mulShift
@@ -371,7 +374,6 @@ Uniqueness (and the usual equations such as `Pattern.shift p v (v + w) = p.confi
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/]
 protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : G → A := by
-  classical
   intro h
   if hmem : h ∈ p.support.image (v * ·) then
     -- package existence of a preimage under (v * ·)
@@ -392,7 +394,7 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
   classical
   exact { config := fun g => if g ∈ U then x g else default,
           support := U,
-          condition := fun g hg => if_neg hg }
+          condition := fun g hg => ite_eq_right hg }
 
 /-- On the translated support, `p.mulShift v` agrees with `p.config` at the preimage.
 
@@ -513,7 +515,7 @@ variable {A : Type*} [TopologicalSpace A] [Inhabited A]
 variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
 
 /-- Occurrence sets are open. -/
-@[to_additive isOpen_occursInAt]
+@[to_additive isOpen_occursInAt /-- Occurrence sets are open. -/]
 lemma isOpen_mulOccursInAt [DiscreteTopology A] (p : Pattern A G) (g : G) :
     IsOpen { x | p.mulOccursInAt x g } := by
   simpa [mulOccursInAt_eq_cylinder] using isOpen_cylinder _ _
@@ -545,7 +547,7 @@ lemma isClosed_mulForbidden [DiscreteTopology A] (F : Set (Pattern A G)) :
   simpa [this, isClosed_compl_iff] using isOpen_mulOccursInAt (A := A) (G := G) p v
 
 /-- Occurrence sets are closed. -/
-@[to_additive isClosed_occursInAt]
+@[to_additive isClosed_occursInAt /-- Occurrence sets are closed. -/]
 lemma isClosed_mulOccursInAt [T1Space A] (p : Pattern A G) (g : G) :
     IsClosed { x | p.mulOccursInAt x g } := by
   simpa [mulOccursInAt_eq_cylinder] using isClosed_cylinder _ _
@@ -579,11 +581,11 @@ end DefSubshiftByForbidden
 
 section Language
 
-variable {A : Type*} [Fintype A] [Inhabited A]
+variable {A : Type*} [Inhabited A]
 variable {G : Type*}
 
 /-- Patterns with support exactly `U` form a finite set. -/
-lemma finite_setOf_pattern_support_eq
+lemma finite_setOfPred_pattern_support_eq
     {A G : Type*} [Finite A] [Inhabited A]
     (U : Finset G) :
     ({p : Pattern A G | p.support = U}).Finite := by
@@ -609,12 +611,39 @@ lemma finite_setOf_pattern_support_eq
   let : Fintype { p : Pattern A G | p.support = U } := Fintype.ofEquiv (U → A) e.symm
   apply toFinite
 
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_pattern_support_eq := finite_setOfPred_pattern_support_eq
+
 /-- The language of a set of configurations `X` on a finite shape `U`.
 
 This is the set of all finite patterns obtained by restricting some configuration
 `x ∈ X` to `U`. -/
 def LanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, Pattern.fromConfig x U = p }
+
+/-- Considering two sets of configurations `X` and `Y` such that `X ⊆ Y`, the language
+of `X` on (finite) shape `U` is included in the language of `Y` on shape `U`. -/
+lemma languageOn_mono {X Y : Set (G → A)} (h : X ⊆ Y) (U : Finset G) :
+    LanguageOn X U ⊆ LanguageOn Y U := by
+  intro p hp
+  rcases hp with ⟨x, hxX, rfl⟩
+  exact ⟨x, h hxX, rfl⟩
+
+/-- The language of a union of two sets of configurations on a finite shape `U` is the union
+of their languages on `U`. -/
+lemma languageOn_union {X Y : Set (G → A)} (U : Finset G) :
+    LanguageOn (X ∪ Y) U = LanguageOn X U ∪ LanguageOn Y U := by
+  ext p
+  simp only [LanguageOn, mem_union, mem_ofPred_eq]
+  grind
+
+/-- The language of an intersection is contained in the intersection of the languages.
+Equality does not hold in general: a pattern may arise from distinct configurations
+`x ∈ X` and `y ∈ Y` with no common configuration in `X ∩ Y` realising it. -/
+lemma languageOn_inter_subset (X Y : Set (G → A)) (U : Finset G) :
+    LanguageOn (X ∩ Y) U ⊆ LanguageOn X U ∩ LanguageOn Y U := by
+  rintro p ⟨x, ⟨hxX, hxY⟩, hp⟩
+  exact ⟨⟨x, hxX, hp⟩, ⟨x, hxY, hp⟩⟩
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
 def MulSubshift.languageOn {A G} [TopologicalSpace A] [Inhabited A] [Monoid G]

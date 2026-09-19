@@ -88,6 +88,7 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
       intro x hx
       rw [update_of_ne (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
     finsuppAntidiag (insert a s) n = (antidiagonal n).biUnion
@@ -102,7 +103,7 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
           · replace hf := mt (hf.2 ·) h
             replace hg := mt (hg.2 ·) h
             rw [notMem_support_iff.mp hf, notMem_support_iff.mp hg]
-          · simpa only [coe_update, Function.update, dif_neg hx] using hfg x)⟩) := by
+          · simpa only [coe_update, Function.update, dite_eq_right hx] using hfg x)⟩) := by
   ext f
   rw [mem_finsuppAntidiag_insert h, mem_biUnion]
   simp_rw [mem_map, mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk, exists_prop, and_comm,
@@ -118,6 +119,7 @@ theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
 
 variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
+set_option backward.isDefEq.respectTransparency false in
 -- This should work under the assumption that e is an embedding and an AddHom
 lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (finsuppAntidiag s n).map (mapRange.addEquiv e).toEmbedding ⊆ finsuppAntidiag s (e n) := by
@@ -141,9 +143,9 @@ lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     rw [mem_map_equiv, this]
     apply mapRange_finsuppAntidiag_subset
     rw [← mem_map_equiv]
-    convert hf
+    convert! hf
     rw [map_map, hh]
-    convert map_refl
+    convert! map_refl
     apply Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 end AddCommMonoid

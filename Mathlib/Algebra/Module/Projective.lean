@@ -6,8 +6,8 @@ Authors: Kevin Buzzard, Antoine Labelle
 module
 
 public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.Basic.UnivLE
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
-public import Mathlib.Logic.UnivLE
 
 /-!
 
@@ -54,11 +54,12 @@ projective module
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
 open LinearMap hiding id
+open DirectSum hiding id_apply
 open Finsupp
 
 /- The actual implementation we choose: `P` is projective if the natural surjection
@@ -66,6 +67,7 @@ from the free `R`-module on `P` to `P` splits. -/
 /-- An R-module is projective if it is a direct summand of a free module, or equivalently
 if maps from the module lift along surjections. There are several other equivalent
 definitions. -/
+@[wikidata Q942423]
 class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.linearCombination R id) s
@@ -181,13 +183,11 @@ theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
     map_smul' := fun r v ↦ by ext i; simp [e₁, e₂.symm.map_smulₛₗ] }
   refine ⟨⟨g, fun x ↦ ?_⟩⟩
   replace hf := congr(e₂ $(hf (e₂.symm x)))
-  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using hf
+  simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using! hf
 
 theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   .of_equiv e
-
-@[deprecated (since := "2026-02-14")] alias Projective.of_ringEquiv := Projective.of_equiv
 
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm
@@ -286,5 +286,22 @@ theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddCo
   exact ⟨e.toLinearMap ∘ₗ g, hg⟩
 
 end OfLiftingProperty
+
+section DirectSum
+
+variable {R : Type u} [Semiring R]
+variable {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)]
+
+theorem Projective.directSum_iff : Projective R (⨁ i, M i) ↔ ∀ (i : ι), Projective R (M i) := by
+  classical
+  refine ⟨fun H i ↦ ?_, fun H ↦ ?_⟩
+  · exact .of_split (DirectSum.lof ..) (DirectSum.component ..) (by simp)
+  · let e : (⨁ i, M i) ≃ₗ[R] Π₀ i, M i := .refl ..
+    exact Projective.of_equiv' e.symm
+
+instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R (⨁ i, M i) :=
+  directSum_iff.mpr ‹_›
+
+end DirectSum
 
 end Module

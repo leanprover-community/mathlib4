@@ -39,13 +39,11 @@ Concretely, the empty set is star-convex at every point.
 
 ## TODO
 
-Balanced sets are star-convex.
-
 The closure of a star-convex set is star-convex.
 
-Star-convex sets are contractible.
-
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
+
+Replace with `Convexity.IsStarConvexSet`.
 -/
 
 @[expose] public section
@@ -156,7 +154,7 @@ variable [Module 𝕜 E] [Module 𝕜 F] {x y z : E} {s : Set E}
 
 theorem StarConvex.mem [ZeroLEOneClass 𝕜] (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := by
   obtain ⟨y, hy⟩ := h
-  convert hs hy zero_le_one le_rfl (add_zero 1)
+  convert! hs hy zero_le_one le_rfl (add_zero 1)
   rw [one_smul, zero_smul, add_zero]
 
 theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔

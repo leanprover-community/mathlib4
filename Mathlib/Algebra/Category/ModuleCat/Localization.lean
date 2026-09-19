@@ -93,12 +93,20 @@ lemma localizedModuleFunctor_map_exact [Small.{v} R] (S : Submonoid R)
 
 instance [Small.{v} R] (S : Submonoid R) :
     Limits.PreservesFiniteLimits (ModuleCat.localizedModuleFunctor.{v} S) := by
-  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModuleFunctor_map_exact S)
+  have := ((Functor.exact_tfae _).out 2 4).mp (ModuleCat.localizedModuleFunctor_map_exact S)
   exact this.1
 
 instance [Small.{v} R] (S : Submonoid R) :
     Limits.PreservesFiniteColimits (ModuleCat.localizedModuleFunctor.{v} S) := by
-  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModuleFunctor_map_exact S)
+  have := ((Functor.exact_tfae _).out 2 4).mp (ModuleCat.localizedModuleFunctor_map_exact S)
   exact this.2
+
+lemma isIso_of_isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : ModuleCat R} {f₁ : M₁ ⟶ M₂}
+    {f₂ : M₂ ⟶ M₃} (h₁ : IsLocalizedModule S f₁.hom) (h₂ : IsLocalizedModule S (f₁ ≫ f₂).hom) :
+    IsIso f₂ := by
+  have : Function.Bijective f₂.hom := by
+    rw [← IsLocalizedModule.linearEquiv_of_isLocalizedModule_comp S f₁.hom f₂.hom]
+    exact (IsLocalizedModule.linearEquiv ..).bijective
+  simpa [ConcreteCategory.isIso_iff_bijective]
 
 end ModuleCat

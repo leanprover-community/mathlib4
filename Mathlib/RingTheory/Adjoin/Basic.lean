@@ -189,7 +189,7 @@ theorem Subalgebra.adjoin_eq_span_basis {ι : Type*} (bL : Basis ι F L) :
     toSubmodule (adjoin E (L : Set K)) = span E (Set.range fun i : ι ↦ (bL i).1) :=
   L.adjoin_eq_span_of_eq_span E <| by
     simpa only [← L.range_val, Submodule.map_span, Submodule.map_top, ← Set.range_comp]
-      using congr_arg (Submodule.map (L.val : L →ₗ[F] K)) bL.span_eq.symm
+      using! congr_arg (Submodule.map (L.val : L →ₗ[F] K)) bL.span_eq.symm
 
 theorem Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
     [Algebra F E] (K : Subalgebra F E) (S : Set E) :
@@ -205,7 +205,7 @@ theorem Algebra.restrictScalars_adjoin_of_algEquiv
     [IsScalarTower F L E] [IsScalarTower F L' E] (i : L ≃ₐ[F] L')
     (hi : algebraMap L E = (algebraMap L' E) ∘ i) (S : Set E) :
     (Algebra.adjoin L S).restrictScalars F = (Algebra.adjoin L' S).restrictScalars F := by
-  apply_fun Subalgebra.toSubsemiring using fun K K' h ↦ by rwa [SetLike.ext'_iff] at h ⊢
+  apply_fun Subalgebra.toSubsemiring using fun K K' h ↦ by rw [SetLike.ext'_iff] at h ⊢; assumption
   change Subsemiring.closure _ = Subsemiring.closure _
   rw [hi, Set.range_comp, EquivLike.range_eq_univ, Set.image_univ]
 

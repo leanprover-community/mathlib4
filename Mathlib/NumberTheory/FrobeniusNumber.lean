@@ -50,7 +50,7 @@ def FrobeniusNumber (n : ℕ) (s : Set ℕ) : Prop :=
 
 theorem frobeniusNumber_iff {n : ℕ} {s : Set ℕ} :
     FrobeniusNumber n s ↔ n ∉ AddSubmonoid.closure s ∧ ∀ k > n, k ∈ AddSubmonoid.closure s := by
-  simp_rw [FrobeniusNumber, IsGreatest, upperBounds, Set.mem_setOf, not_imp_comm, not_le]
+  simp_rw [FrobeniusNumber, IsGreatest, upperBounds, Set.mem_ofPred, not_imp_comm, not_le]
 
 variable {m n : ℕ}
 
@@ -152,9 +152,10 @@ theorem exists_mem_span_nat_finset_of_ge :
   obtain ⟨rx, hrx⟩ : setGcd s ∣ r := (dvd_mod_iff (setGcd_dvd_of_mem hxs)).mpr <|
     (Nat.dvd_add_right <| dvd_mul_of_dvd_right (Finset.dvd_sum fun i _ ↦
       dvd_mul_of_dvd_right (setGcd_dvd_of_mem (hts i.2)) _) _).mp dvd
-  convert (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
-    -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
-    ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
+  convert!
+    (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
+      -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
+       ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
   simp_rw [← Int.natCast_inj, hrx, n, Finset.mul_sum, mul_comm _ rx, cast_add, cast_sum, cast_mul,
     ← eq, Finset.mul_sum, smul_eq_mul, ← mul_assoc, ← Finset.sum_add_distrib, ← add_mul]
   congr! 2 with i
@@ -172,11 +173,14 @@ theorem exists_mem_closure_of_ge : ∃ n, ∀ m ≥ n, setGcd s ∣ m → m ∈ 
   ⟨n, fun m ge dvd ↦ (Submodule.span_nat_eq_addSubmonoidClosure s).le
     (Submodule.span_mono hts (hn m ge dvd))⟩
 
-theorem finite_setOf_setGcd_dvd_and_mem_span :
+theorem finite_setOfPred_setGcd_dvd_and_mem_span :
     {n | setGcd s ∣ n ∧ n ∉ Ideal.span s}.Finite :=
   have ⟨n, hn⟩ := exists_mem_closure_of_ge s
   (Finset.range n).finite_toSet.subset fun m h ↦ Finset.mem_range.mpr <|
     lt_of_not_ge fun ge ↦ h.2 <| (Submodule.span_nat_eq_addSubmonoidClosure s).ge (hn m ge h.1)
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_setGcd_dvd_and_mem_span := finite_setOfPred_setGcd_dvd_and_mem_span
 
 /-- `ℕ` is a Noetherian `ℕ`-module, i.e., `ℕ` is a Noetherian semiring. -/
 instance : IsNoetherian ℕ ℕ where

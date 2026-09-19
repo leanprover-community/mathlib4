@@ -124,10 +124,11 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
 @[to_additive (attr := simp)]
 lemma mk'_comp_subtype : (mk' N).comp N.subtype = 1 := by ext; simp
 
-/- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
-  modified version of some `range_mk`. -/
 set_option linter.docPrime false in
-@[to_additive (attr := simp)]
+/-- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
+  modified version of some `range_mk`. -/
+@[to_additive (attr := simp) /-- Note: `range_mk'` is a lemma about the primed constructor
+  `QuotientAddGroup.mk'`, not a modified version of some `range_mk`. -/]
 theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
 
@@ -278,6 +279,12 @@ theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
   rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
     Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
 
+@[to_additive]
+lemma injective_lift_iff (φ : G →* M) (HN : N ≤ φ.ker) :
+    Function.Injective (QuotientGroup.lift N φ HN) ↔ N = φ.ker := by
+  rw [← MonoidHom.ker_eq_bot_iff, QuotientGroup.ker_lift, Subgroup.map_eq_bot_iff]
+  grind [QuotientGroup.ker_mk']
+
 /-- A surjective group homomorphism `φ : G →* H` with `N = ker(φ)` descends (i.e. `lift`s) to a
 group isomorphism `G/N ≃* H`. -/
 @[to_additive /-- A surjective `AddGroup` homomorphism `φ : G →+ H` with `N = ker(φ)` descends
@@ -394,13 +401,13 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
     left_inv := fun x => by
       rw [map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H))
         (he ▸ (G'.map_equiv_eq_comap_symm e).le)]
-      simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
-        MulEquiv.coe_monoidHom_refl, map_id_apply]
+      simp only [← MulEquiv.toMonoidHom_trans, MulEquiv.self_trans_symm,
+        MulEquiv.toMonoidHom_refl, map_id_apply]
     right_inv := fun x => by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)
         (he ▸ G'.le_comap_map (e : G →* H))]
-      simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
-        MulEquiv.coe_monoidHom_refl, map_id_apply] }
+      simp only [← MulEquiv.toMonoidHom_trans, MulEquiv.symm_trans_self,
+        MulEquiv.toMonoidHom_refl, map_id_apply] }
 
 @[simp]
 theorem congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he (mk x) = e x :=

@@ -53,7 +53,7 @@ lemma Scheme.exists_hom_isAffine_of_isZariskiLocalAtSource (X : Scheme.{u}) [Com
   refine ⟨_, p, ⟨fun x ↦ ?_⟩, ?_, inferInstance⟩
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
     use Sigma.ι X.affineCover.finiteSubcover.X i x
-    rw [← Scheme.Hom.comp_apply, Sigma.ι_desc]
+    rw [← Scheme.Hom.comp_apply, Sigma.ι_comp_desc]
   · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
     exact fun i ↦ by simpa [p] using IsZariskiLocalAtSource.of_isOpenImmersion _
 
@@ -129,6 +129,7 @@ variable
   (H₁ : (@IsLocalIso ⊓ @Surjective : MorphismProperty Scheme) ≤ P')
   (H₂ : ∀ {R S : CommRingCat.{u}} {f : R ⟶ S}, P' (Spec.map f) → Q' f.hom)
 
+set_option backward.isDefEq.respectTransparency.types false in
 include H₁ in
 lemma IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact [IsZariskiLocalAtTarget P]
     (H : ∀ {R S : CommRingCat.{u}} {Y : Scheme.{u}} (φ : R ⟶ S) (g : Y ⟶ Spec R),
@@ -196,7 +197,7 @@ nonrec lemma HasAffineProperty.descendsAlong_of_affineAnd
   apply IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact _ _ H₁
   introv h hf
   have : IsAffine Y := by
-    convert isAffine_of_isAffineHom g
+    convert! isAffine_of_isAffineHom g
     exact MorphismProperty.of_pullback_fst_of_descendsAlong h <|
       AlgebraicGeometry.HasAffineProperty.affineAnd_le_isAffineHom P inferInstance _ hf
   wlog hY : ∃ S, Y = Spec S generalizing Y

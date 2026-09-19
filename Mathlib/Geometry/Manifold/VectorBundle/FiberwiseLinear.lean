@@ -134,7 +134,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
     rw [← hesu p] at this
     exact this.1
   have he : e.source = (Prod.fst '' e.source) ×ˢ (univ : Set F) := by
-    apply HasSubset.Subset.antisymm
+    apply subset_antisymm
     · intro p hp
       exact ⟨⟨p, hp, rfl⟩, trivial⟩
     · rintro ⟨x, v⟩ ⟨⟨p, hp, rfl : p.fst = x⟩, -⟩
@@ -195,7 +195,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
   let Φ₀ : U → F ≃L[𝕜] F := iUnionLift u (fun x => φ x ∘ (↑)) huφ U hUu'.le
   let Φ : B → F ≃L[𝕜] F := fun y =>
     if hy : y ∈ U then Φ₀ ⟨y, hy⟩ else ContinuousLinearEquiv.refl 𝕜 F
-  have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dif_pos hy
+  have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dite_eq_left hy
   have hΦφ : ∀ x : U, ∀ y ∈ u x, Φ y = φ x y := by
     intro x y hyu
     refine (hΦ y (hUu x hyu)).trans ?_
@@ -235,7 +235,7 @@ private theorem mem_aux {e : OpenPartialHomeomorph (B × F) (B × F)} {n : ℕ�
         (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x).symm : B → F →L[𝕜] F) U),
           e.EqOnSource
             (FiberwiseLinear.openPartialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
-  simp only [mem_iUnion, mem_setOf_eq]
+  simp only [mem_iUnion, mem_ofPred_eq]
 
 variable (F B IB)
 

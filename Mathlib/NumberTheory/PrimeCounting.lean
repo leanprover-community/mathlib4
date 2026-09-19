@@ -77,18 +77,18 @@ theorem monotone_primeCounting : Monotone primeCounting :=
 
 @[simp]
 theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
-  count_nth_of_infinite infinite_setOf_prime _
+  count_nth_of_infinite infinite_setOfPred_prime _
 
 /-- The `n`th prime is greater or equal to `n + 2`. -/
 theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
+  nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOfPred_prime).add_le_nat n 0
 
 theorem surjective_primeCounting' : Function.Surjective π' :=
-  Nat.surjective_count_of_infinite_setOf infinite_setOf_prime
+  Nat.surjective_count_of_infinite_setOfPred infinite_setOfPred_prime
 
 theorem surjective_primeCounting : Function.Surjective π := by
   suffices Function.Surjective (π ∘ fun n => n - 1) from this.of_comp
-  convert surjective_primeCounting'
+  convert! surjective_primeCounting'
   ext
   exact primeCounting_sub_one _
 
@@ -103,7 +103,7 @@ theorem tendsto_primeCounting : Tendsto π atTop atTop :=
 
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
-  nth_mem_of_infinite infinite_setOf_prime _
+  nth_mem_of_infinite infinite_setOfPred_prime _
 
 @[simp]
 lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 := by
@@ -193,6 +193,14 @@ lemma primesLE_eq_filter_Icc_zero (n : ℕ) : primesLE n = filter Nat.Prime (Icc
   ext p
   simp [primesLE_eq_filter_range]
 
+lemma primesBelow_eq_filter_Ioo_zero (n : ℕ) : primesBelow n = filter Nat.Prime (Ioo 0 n) := by
+  ext p
+  simp +contextual [primesBelow_eq_filter_range, Nat.Prime.pos]
+
+lemma primesLE_eq_filter_Ioc_zero (n : ℕ) : primesLE n = filter Nat.Prime (Ioc 0 n) := by
+  ext p
+  simp +contextual [primesLE_eq_filter_range, Nat.Prime.pos]
+
 lemma primesBelow_eq_filter_Ico_one (n : ℕ) : primesBelow n = filter Nat.Prime (Ico 1 n) := by
   ext p
   simp +contextual [primesBelow_eq_filter_range, Nat.Prime.one_le]
@@ -200,6 +208,14 @@ lemma primesBelow_eq_filter_Ico_one (n : ℕ) : primesBelow n = filter Nat.Prime
 lemma primesLE_eq_filter_Icc_one (n : ℕ) : primesLE n = filter Nat.Prime (Icc 1 n) := by
   ext p
   simp +contextual [primesLE_eq_filter_range, Nat.Prime.one_le]
+
+lemma primesBelow_eq_filter_Ioo_one (n : ℕ) : primesBelow n = filter Nat.Prime (Ioo 1 n) := by
+  ext p
+  simp +contextual [primesBelow_eq_filter_range, Nat.Prime.one_lt]
+
+lemma primesLE_eq_filter_Ioc_one (n : ℕ) : primesLE n = filter Nat.Prime (Ioc 1 n) := by
+  ext p
+  simp +contextual [primesLE_eq_filter_range, Nat.Prime.one_lt]
 
 lemma primesBelow_eq_filter_Ico_two (n : ℕ) : primesBelow n = filter Nat.Prime (Ico 2 n) := by
   ext p
@@ -266,7 +282,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
 theorem primeCounting_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a ≤ k) (n : ℕ) :
     π (k + n) ≤ π k + totient a * (n / a + 1) := by
   rw [primeCounting_eq_primeCounting'_succ]
-  convert primeCounting'_add_le h0 (Order.lt_add_one_iff.mpr h1) n using 2
+  convert! primeCounting'_add_le h0 (Order.lt_add_one_iff.mpr h1) n using 2
   omega
 
 end Nat

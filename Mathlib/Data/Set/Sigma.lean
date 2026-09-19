@@ -208,9 +208,11 @@ theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst ''
     let ⟨a, ha⟩ := ht i
     ⟨⟨i, a⟩, ⟨hi, ha⟩, rfl⟩
 
-theorem sigma_diff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ \ t₂) ∪ (s₁ \ s₂).sigma t₁ :=
+theorem sigma_sdiff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ \ t₂) ∪ (s₁ \ s₂).sigma t₁ :=
   ext fun x ↦ by
     by_cases h₁ : x.1 ∈ s₁ <;> by_cases h₂ : x.2 ∈ t₁ x.1 <;> simp [*, ← imp_iff_or_not]
+
+@[deprecated (since := "2026-06-03")] alias sigma_diff_sigma := sigma_sdiff_sigma
 
 lemma sigma_eq_biUnion : s.sigma t = ⋃ i ∈ s, Sigma.mk i '' t i := by
   aesop

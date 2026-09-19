@@ -6,6 +6,7 @@ Authors: Winston Yin
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Integral curves of vector fields on a manifold
@@ -62,21 +63,21 @@ variable
 /-- If `γ : ℝ → M` is $C^1$ on `s : Set ℝ` and `v` is a vector field on `M`,
 `IsMIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
 outside of `s` is irrelevant and considered junk. -/
-def IsMIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (s : Set ℝ) : Prop :=
+def IsMIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace% x) (s : Set ℝ) : Prop :=
   ∀ t ∈ s, HasMFDerivAt[s] γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
 /-- If `v` is a vector field on `M` and `t₀ : ℝ`, `IsMIntegralCurveAt γ v t₀` means `γ : ℝ → M` is a
 local integral curve of `v` in a neighbourhood containing `t₀`. The value of `γ` outside of this
 interval is irrelevant and considered junk. -/
-def IsMIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) : Prop :=
+def IsMIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace% x) (t₀ : ℝ) : Prop :=
   ∀ᶠ t in 𝓝 t₀, HasMFDerivAt% γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
 /-- If `v : M → TM` is a vector field on `M`, `IsMIntegralCurve γ v` means `γ : ℝ → M` is a global
 integral curve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ`. -/
-def IsMIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace I x) : Prop :=
+def IsMIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace% x) : Prop :=
   ∀ t : ℝ, HasMFDerivAt% γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
-variable {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
+variable {γ : ℝ → M} {v : (x : M) → TangentSpace% x} {s s' : Set ℝ} {t₀ : ℝ}
 
 lemma IsMIntegralCurve.isMIntegralCurveOn (h : IsMIntegralCurve γ v) (s : Set ℝ) :
     IsMIntegralCurveOn γ v s := fun t _ ↦ (h t).hasMFDerivWithinAt
@@ -178,7 +179,8 @@ lemma IsMIntegralCurveOn.hasDerivWithinAt (hγ : IsMIntegralCurveOn γ v s) {t :
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
+    ← one_apply_eq_self (F := TangentSpace 𝓘(ℝ, ℝ) t →L[ℝ] TangentSpace 𝓘(ℝ, ℝ) t) a,
+    ← ContinuousLinearMap.smulRight_apply,
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl
 
@@ -196,6 +198,7 @@ lemma IsMIntegralCurveAt.eventually_hasDerivAt (hγ : IsMIntegralCurveAt γ v t�
   rw [ContinuousLinearMap.ext_iff]
   intro a
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
+    ← one_apply_eq_self (F := TangentSpace 𝓘(ℝ, ℝ) t →L[ℝ] TangentSpace 𝓘(ℝ, ℝ) t) a,
+    ← ContinuousLinearMap.smulRight_apply,
     mfderiv_chartAt_eq_tangentCoordChange hsrc]
   rfl

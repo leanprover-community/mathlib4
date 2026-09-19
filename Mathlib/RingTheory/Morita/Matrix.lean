@@ -25,6 +25,8 @@ public import Mathlib.RingTheory.Morita.Basic
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe u v
@@ -37,7 +39,7 @@ open CategoryTheory Matrix.Module
   `Matrix.matrixModule`. -/
 @[simps]
 def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
-  obj M := ModuleCat.of (Matrix ι ι R) (ι → M)
+  obj M := ↧(ι → M)
   map f := ModuleCat.ofHom <| f.hom.mapMatrixModule ι
   map_id _ := ModuleCat.hom_ext <| LinearMap.mapMatrixModule_id
   map_comp f g := ModuleCat.hom_ext (LinearMap.mapMatrixModule_comp f.hom g.hom)
@@ -51,6 +53,7 @@ open Matrix
 variable {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
   [IsScalarTower R (Matrix ι ι R) M]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (M) in
 /-- The image of `Eᵢᵢ` (the elementary matrix) acting on all elements in `M`. -/
 def toModuleCatObj (i : ι) : Submodule R M :=
@@ -98,7 +101,7 @@ lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
 def MatrixModCat.toModuleCat (i : ι) : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
   haveI := MatrixModCat.isScalarTower_toModuleCat
-  { obj M := ModuleCat.of R (MatrixModCat.toModuleCatObj R M i)
+  { obj M := ↧(MatrixModCat.toModuleCatObj R M i)
     map f := ModuleCat.ofHom <| fromMatrixLinear i f.hom
     map_id _ := rfl
     map_comp _ _ := rfl }
@@ -108,7 +111,7 @@ open MatrixModCat Matrix
 /-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = Eᵢᵢ • Mⁿ`. -/
 def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
     (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
-    (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i).obj (.of R M) ≃ₗ[R]
+    (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i).obj ↧M ≃ₗ[R]
     MatrixModCat.toModuleCatObj R (ι → M) i where
   __ := AddEquiv.refl _
   map_smul' _ _ := Subtype.ext <| scalar_smul _ _
@@ -146,8 +149,8 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     simp [← mul_smul]⟩
   map_add' _ _ := by ext; simp
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
-    letI := Module.compHom M (Matrix.scalar (α := R) ι)
-    haveI := MatrixModCat.isScalarTower_toModuleCat R M
+    let := Module.compHom M (Matrix.scalar (α := R) ι)
+    have := MatrixModCat.isScalarTower_toModuleCat R M
     simp only [← mul_smul, RingHom.id_apply, Module.smul_apply,
       AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
@@ -177,7 +180,6 @@ def MatrixModCat.counitIso (i : ι) :
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 400000 in
 -- This declaration has been on the tipping point of timeout ever since nightly-2026-02-23.
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
@@ -191,7 +193,7 @@ def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι 
     ext1
     suffices (toModuleCatFromModuleCatLinearEquiv R ((ModuleCat.toMatrixModCat R ι).obj X)
       i).symm.toLinearMap ∘ₗ LinearMap.mapMatrixModule ι (ModuleCat.Hom.hom
-      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using this
+      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using! this
     ext x
     simp [unitIso, toModuleCatFromModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquiv,
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]
