@@ -125,7 +125,7 @@ jobs:
         # PR-less dispatches sweep instead.
         if: steps.cfg.outputs.present == 'true' &&
             (steps.target.outputs.pr != '' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@5668fbbccf0fecefdfcddf539b8406db197dfc59
+        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           config: ${{ steps.cfg.outputs.config }}
           pr: ${{ steps.target.outputs.pr }}

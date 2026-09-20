@@ -5,12 +5,12 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -137,8 +137,8 @@ theorem birdDet_zero (A : Array R) : birdDet 0 A = 1 := by
 /-- Unfold `birdDet` at a successor dimension. -/
 theorem birdDet_succ (k : ℕ) (A : Array R) :
     birdDet (k + 1) A =
-      (-1 : R) ^ k * (stepEntry (k + 1) A)^[k] (BirdDet.get (k + 1) A) 0 0 :=
-  by rw [birdDet]
+      (-1 : R) ^ k * (stepEntry (k + 1) A)^[k] (BirdDet.get (k + 1) A) 0 0 := by
+  rw [birdDet]
 
 theorem birdDet_eq (n k : ℕ) (A : Array R) (hn : n = k + 1) :
     birdDet n A = (-1 : R) ^ k * (stepEntry n A)^[k] (BirdDet.get n A) 0 0 := by

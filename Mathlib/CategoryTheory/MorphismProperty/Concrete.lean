@@ -114,7 +114,6 @@ end ConcreteCategory
 
 open ConcreteCategory
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- In the category of types, any map can be functorially factored as a surjective
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :

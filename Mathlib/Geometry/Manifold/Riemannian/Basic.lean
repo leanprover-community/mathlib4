@@ -60,7 +60,7 @@ noncomputable section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 section
@@ -139,7 +139,7 @@ lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ₑ = ‖letI V : F := v; V‖ₑ := by
   simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
-open MeasureTheory Measure
+open MeasureTheory
 
 lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
     ∫⁻ t in Icc 0 1, ‖fderivWithin ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) (Icc 0 1) t 1‖ₑ

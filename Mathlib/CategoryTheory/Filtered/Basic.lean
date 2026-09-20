@@ -121,8 +121,8 @@ example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by in
 example (α : Type u) [SemilatticeSup α] [OrderTop α] : IsFiltered α := by infer_instance
 
 instance : IsFiltered (Discrete PUnit) where
-  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨by subsingleton⟩⟩, trivial⟩
-  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by subsingleton⟩
+  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨by trivial⟩, ⟨by subsingleton⟩, trivial⟩
+  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨by trivial⟩, by subsingleton⟩
 
 namespace IsFiltered
 
@@ -620,10 +620,8 @@ example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by 
 example (α : Type u) [SemilatticeInf α] [OrderTop α] : IsCofiltered α := by infer_instance
 
 instance : IsCofiltered (Discrete PUnit) where
-  cone_objs _ Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨by subsingleton⟩⟩, trivial⟩
-  cone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
-    apply ULift.ext
-    subsingleton⟩
+  cone_objs _ Y := ⟨⟨PUnit.unit⟩, ⟨by trivial⟩, ⟨by subsingleton⟩, trivial⟩
+  cone_maps X Y f g := ⟨⟨PUnit.unit⟩, by trivial, by subsingleton⟩
 
 namespace IsCofiltered
 

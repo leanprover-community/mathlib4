@@ -138,7 +138,8 @@ theorem Isometry.euclideanHausdorffMeasure_preimage {f : X → Y} {d : ℕ} (hf 
 theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Isometry f) :
     μHE[d].map f = μHE[d].restrict (Set.range f) := by
   simp_rw [euclideanHausdorffMeasure_def]
-  rw [Measure.map_smul, map_hausdorffMeasure hf (by simp), Measure.restrict_smul]
+  rw [Measure.map_smul _ hf.continuous.aemeasurable, map_hausdorffMeasure hf (by simp),
+    Measure.restrict_smul]
 
 /-!
 ### Applying scalers to `μHE[d]`
@@ -335,7 +336,7 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
       ‖v‖ₑ • (volume : Measure ℝ).map g := by
     unfold g
     rw [euclideanHausdorffMeasure_eq p', ← map_map hadd.measurable hf.measurable,
-      ← Measure.map_smul]
+      ← Measure.map_smul _ (by fun_prop)]
     congr
     let v' : (AffineSubspace.mk' p (ℝ ∙ v)).direction := ⟨v, by simp⟩
     suffices volume = ‖v'‖ₑ • volume.map f by simpa [v']
