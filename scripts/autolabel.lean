@@ -428,7 +428,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     for dir in data.dirs do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| githubAnnotation "error" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is included by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
@@ -436,7 +436,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     for dir in data.exclusions do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| githubAnnotation "error" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is excluded by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
@@ -450,7 +450,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     -- print github annotation warning
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
-    println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
+    println <| githubAnnotation "warning" "scripts/autolabel.lean"
       s!"Incomplete `{ ``AutoLabel.mathlibLabelData }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
@@ -469,18 +469,18 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     let filtered := modifiedFiles.filter fun f => paths.any (·.orderedContainedIn f)
     if ! filtered.isEmpty then
       modifiedFiles := filtered
-      println s!"::notice::used title to filter modified files"
+      println <| githubAnnotation "notice" "" "" "used title to filter modified files"
 
   -- find labels covering the modified files
   let newLabels := dropDependentLabels <| getMatchingLabels modifiedFiles
-  println s!"::notice::Applicable labels: {newLabels}"
+  println <| githubAnnotation "notice" "" "" s!"Applicable labels: {newLabels}"
 
   match newLabels with
   | #[] =>
-    println s!"::warning::no labels to add"
+    println <| githubAnnotation "warning" "" "" "no labels to add"
   | newLabels =>
     if newLabels.size > MAX_LABELS then
-      println s!"::notice::not adding more than {MAX_LABELS} labels: {newLabels}"
+      println <| githubAnnotation "notice" "" "" s!"not adding more than {MAX_LABELS} labels: {newLabels}"
       return 0
     match tool with
     | .gh prNr =>
@@ -494,10 +494,10 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
         let _ ← IO.Process.run {
           cmd := "gh",
           args := #["pr", "edit", s!"{prNr}", "--add-label", ",".intercalate <| newLabels.toList.map (·.toString)] }
-        println s!"::notice::added label: {newLabels}"
+        println <| githubAnnotation "notice" "" "" s!"added label: {newLabels}"
       | t_labels_already_present  =>
-        println s!"::notice::did not add labels '{newLabels}', since {t_labels_already_present} \
-                  were already present"
+        println <| githubAnnotation "notice" "" ""
+          s!"did not add labels '{newLabels}', since {t_labels_already_present} were already present"
     | .curl prNr token =>
       -- TODO: take existing labels on the PR into account
       let _ ← IO.Process.run {
@@ -510,9 +510,9 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
           "--url", s!"https://api.github.com/repos/leanprover-community/mathlib4/issues/{prNr}/labels",
           "--data", "{\"labels\":[\"" ++ s!"{"\",\"".intercalate <| newLabels.toList.map (·.toString)}" ++ "\"]}"
           ]}
-      println s!"::notice::added label: {newLabels}"
+      println <| githubAnnotation "notice" "" "" s!"added label: {newLabels}"
     | .none =>
-      println s!"::notice::github interaction disabled, not adding labels."
+      println <| githubAnnotation "notice" "" "" "github interaction disabled, not adding labels."
   return 0
 
 end AutoLabel
