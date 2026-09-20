@@ -6,10 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Sym.Card
-public import Mathlib.Data.Sym.NatCard
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.Probability.Distributions.Binomial
-public import Mathlib.Probability.Distributions.SetBernoulli
+import Mathlib.Data.Sym.NatCard
 
 /-!
 # Binomial random graphs
@@ -103,13 +102,13 @@ variable (V p) in
 with `(Nat.card V).choose 2` trials. -/
 theorem binomialRandom_map_ncard_edgeSet [Finite V] :
     G(V, p).map (fun G ↦ G.edgeSet.ncard) = binomial ((Nat.card V).choose 2) p := by
-  have hmap : G(V, p).map (fun G ↦ G.edgeSet.ncard)
-      = setBer((Sym2.diagSetᶜ : Set (Sym2 V)), p).map Set.ncard := by
+  have hmap : G(V, p).map (·.edgeSet.ncard) =
+      setBer((Sym2.diagSetᶜ : Set (Sym2 V)), p).map Set.ncard := by
     rw [binomialRandom_eq_map, Measure.map_map (by fun_prop) measurable_fromEdgeSet]
     refine Measure.map_congr ?_
     filter_upwards [setBernoulli_ae_subset] with s hs
-    change (fromEdgeSet s).edgeSet.ncard = s.ncard
-    rw [edgeSet_fromEdgeSet, sdiff_eq_left.mpr (Set.subset_compl_iff_disjoint_right.mp hs)]
+    rw [Function.comp_apply, edgeSet_fromEdgeSet,
+      sdiff_eq_left.mpr (Set.subset_compl_iff_disjoint_right.mp hs)]
   rw [hmap, map_ncard_setBernoulli_eq_binomial (Set.toFinite _), Sym2.ncard_diagSet_compl]
 
 end SimpleGraph

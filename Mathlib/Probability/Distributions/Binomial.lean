@@ -92,9 +92,8 @@ lemma binomial_singleton (n k : ℕ) (p : I) :
 
 /-- The number of successes among `Set.ncard`-many independent Bernoulli trials over a finite
 set `u` follows the binomial distribution with `u.ncard` trials. -/
-lemma map_ncard_setBernoulli_eq_binomial {ι : Type*} [Countable ι] {u : Set ι}
-    (hu : u.Finite) (p : I) :
-    setBer(u, p).map Set.ncard = binomial u.ncard p := by
+lemma map_ncard_setBernoulli_eq_binomial {ι : Type*} [Countable ι] {u : Set ι} (hu : u.Finite)
+    (p : I) : setBer(u, p).map Set.ncard = binomial u.ncard p := by
   refine ext_of_singleton fun k ↦ ?_
   rw [map_ncard_setBernoulli_singleton hu, binomial_singleton]
 
