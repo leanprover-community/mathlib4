@@ -303,13 +303,11 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
     refine h.elim (fun h => ?_) (fun h => ?_)
     · refine le_abs.mpr (.inr (le_neg_of_le_neg ?_))
       have := isMinOn_iff.mp h (cos (1 * π / n)) (by grind [abs_cos_le_one])
-      rw [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
+      rwa [(eval_T_real_eq_neg_one_iff hn (cos (1 * π / n))).mpr ⟨1, Nat.one_le_iff_ne_zero.mpr hn,
         by simp⟩] at this
-      assumption
     · refine le_abs.mpr (.inl ?_)
       have := isMaxOn_iff.mp h (cos (0 * π / n)) (by simp)
-      rw [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
-      assumption
+      rwa [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
   · rintro ⟨k, hk, hx⟩
     rw [hx]
     exact isExtrOn_T_real hn hk
