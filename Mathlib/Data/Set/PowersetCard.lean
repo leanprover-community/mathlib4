@@ -59,6 +59,14 @@ theorem card_eq (s : Set.powersetCard α n) : (s : Finset α).card = n := s.prop
 theorem ncard_eq (s : Set.powersetCard α n) : (s : Set α).ncard = n := by
   rw [← coe_coe, Set.ncard_coe_finset, s.prop]
 
+theorem nonempty_iff [Fintype α] :
+    Nonempty (Set.powersetCard α n) ↔ n ≤ Fintype.card α := by
+  refine ⟨fun ⟨⟨s, hs⟩⟩ ↦ ?_, fun h ↦ ?_⟩
+  · obtain rfl : s.card = n := by simpa using hs
+    exact card_le_univ s
+  · obtain ⟨s, -, rfl⟩ := Finset.exists_subset_card_eq (s := (Finset.univ : Finset α)) (by simpa)
+    exact ⟨s, by simp⟩
+
 theorem coe_nonempty_iff {s : Set.powersetCard α n} :
     (s : Set α).Nonempty ↔ 1 ≤ n := by
   rw [← Set.powersetCard.coe_coe, Finset.coe_nonempty, ← one_le_card, s.prop]
@@ -182,6 +190,11 @@ theorem mem_compl {s : powersetCard α n} {a : α} :
   Finset.mem_compl
 
 theorem compl_symm : (compl hm).symm = compl ((n.add_comm m).trans hm) := rfl
+
+variable (hm) in
+lemma disjoint_iff_eq_compl {s : powersetCard α m} {t : powersetCard α n} :
+    Disjoint s.val t.val ↔ s = powersetCard.compl hm t := by
+  rw [powersetCard.eq_iff_subset, powersetCard.coe_compl, Finset.subset_compl_iff_disjoint_right]
 
 end compl
 

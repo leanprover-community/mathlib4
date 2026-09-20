@@ -106,6 +106,7 @@ section Basic
 
 variable [Zero M]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →₀ M) α M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
@@ -276,13 +277,14 @@ noncomputable def ofSupportFinite (f : α → M) (hf : (Function.support f).Fini
   toFun := f
   mem_support_toFun _ := hf.mem_toFinset
 
+@[simp]
 theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
 
 theorem ofSupportFinite_support {f : α → M} (hf : f.support.Finite) :
     (ofSupportFinite f hf).support = hf.toFinset := by
-  ext; simp [ofSupportFinite_coe]
+  ext; simp
 
 instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
