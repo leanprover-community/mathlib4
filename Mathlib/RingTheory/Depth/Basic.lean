@@ -562,7 +562,7 @@ lemma IsLocalRing.depth_eq_of_algebraMap_surjective [IsLocalRing R] [IsNoetheria
     simpa [← hrs'] using len
 
 omit [Small.{v, u} R] in
-lemma IsLocalRing.depth_quotient_isRegular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R]
+lemma IsLocalRing.depth_quotient_isSMulRegular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
       have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
@@ -580,8 +580,8 @@ lemma IsLocalRing.depth_quotient_isRegular_succ_eq_depth [IsLocalRing R] [IsNoet
   simpa only [Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
 
 omit [Small.{v, u} R] in
-lemma IsLocalRing.depth_quotient_span_isRegular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R]
-    (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
+lemma IsLocalRing.depth_quotient_span_isSMulRegular_succ_eq_depth [IsLocalRing R]
+    [IsNoetherianRing R] (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
       have : Nontrivial (R ⧸ Ideal.span {x}) :=
         Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
@@ -599,7 +599,7 @@ lemma IsLocalRing.depth_quotient_span_isRegular_succ_eq_depth [IsLocalRing R] [I
   have := Submodule.ideal_span_singleton_smul x (⊤ :Ideal R)
   simp only [smul_eq_mul, mul_top] at this
   rw [IsLocalRing.depth_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R this).toRingEquiv,
-    IsLocalRing.depth_quotient_isRegular_succ_eq_depth x reg mem]
+    IsLocalRing.depth_quotient_isSMulRegular_succ_eq_depth x reg mem]
 
 omit [Small.{v, u} R] in
 lemma IsLocalRing.depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
@@ -633,7 +633,7 @@ lemma IsLocalRing.depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
       simp only [List.mem_cons, forall_eq_or_imp] at mem
       simp only [isWeaklyRegular_cons_iff] at reg
       simp only [Nat.cast_add, Nat.cast_one, ← add_assoc,
-        ← depth_quotient_isRegular_succ_eq_depth x reg.1 mem.1]
+        ← depth_quotient_isSMulRegular_succ_eq_depth x reg.1 mem.1]
       have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
         Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul] using mem.1)
       have loc_hom : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
