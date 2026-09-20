@@ -29,7 +29,7 @@ and is closed under subobjects, quotients and extensions.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

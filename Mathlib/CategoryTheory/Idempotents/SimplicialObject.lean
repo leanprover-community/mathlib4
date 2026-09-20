@@ -18,7 +18,7 @@ category `C` is.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

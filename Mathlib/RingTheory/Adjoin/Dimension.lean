@@ -46,7 +46,7 @@ over `R` is less than or equal to the product of that of `A` and `B`. -/
 theorem finrank_sup_le_of_free : finrank R ↥(A ⊔ B) ≤ finrank R A * finrank R B := by
   by_cases h : Module.Finite R A ∧ Module.Finite R B
   · obtain ⟨_, _⟩ := h
-    simpa only [map_mul] using Cardinal.toNat_le_toNat (A.rank_sup_le_of_free B)
+    simpa only [map_mul] using! Cardinal.toNat_le_toNat (A.rank_sup_le_of_free B)
       (Cardinal.mul_lt_aleph0 (rank_lt_aleph0 R A) (rank_lt_aleph0 R B))
   wlog hA : ¬ Module.Finite R A generalizing A B
   · have := this B A (fun h' ↦ h h'.symm) (not_and.1 h (of_not_not hA))

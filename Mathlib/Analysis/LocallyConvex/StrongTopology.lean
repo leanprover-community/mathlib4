@@ -27,10 +27,7 @@ locally convex.
 locally convex, bounded convergence
 -/
 
-@[expose] public section
-
-
-open Topology UniformConvergence
+public section
 
 variable {R 𝕜₁ 𝕜₂ E F : Type*}
 

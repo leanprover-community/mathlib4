@@ -116,7 +116,8 @@ protected theorem lift_apply {X Y Z : TopCat.{u}} {f : X ⟶ Y} {g : X ⟶ Z} {x
   rfl
 
 /-- The unit interval, as an object of `TopCat`. -/
-def I : TopCat.{u} := TopCat.of (ULift unitInterval)
+@[implicit_reducible]
+def I : TopCat.{u} := ↧(ULift unitInterval)
 
 instance : LocallyCompactSpace I :=
   inferInstanceAs (LocallyCompactSpace (ULift unitInterval))
@@ -132,7 +133,7 @@ lemma ext {x y : I.{u}} (h : homeomorph x = homeomorph y) : x = y :=
 
 /-- The symmetrization map `TopCat.I ⟶ TopCat.I`. -/
 def symm : I.{u} ⟶ I :=
-  ofHom ⟨homeomorph.symm ∘ unitInterval.symm ∘ homeomorph, by continuity⟩
+  ofHom ⟨homeomorph.symm ∘ unitInterval.symm ∘ homeomorph, by fun_prop⟩
 
 @[simp]
 lemma homeomorph_symm (x : I) :

@@ -151,6 +151,7 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     intro c hc
     exact hb' _ hc
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
     [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] (b : β)
     [hb₀ : Small.{w} (Set.Iio b)] :
@@ -204,7 +205,7 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
           ← hasCardinalLT_iff_of_equiv (equivShrink.{w} (J a))]
         exact h a
       · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j
-        exact le_ciSup (Ordinal.bddAbove_range _) _
+        exact le_ciSup Ordinal.bddAbove_of_small _
     refine monotone_transfiniteIterate _ _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J) (Order.succ_le_iff.2 hm) _ ?_
     dsimp

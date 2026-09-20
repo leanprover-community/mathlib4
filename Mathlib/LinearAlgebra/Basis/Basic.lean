@@ -35,7 +35,7 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
@@ -63,7 +63,7 @@ theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.re
 @[simp]
 theorem self_mem_span_image [Nontrivial R] {i : ι} {s : Set ι} :
     b i ∈ span R (b '' s) ↔ i ∈ s := by
-  simp [mem_span_image, Finsupp.support_single_ne_zero]
+  simp [mem_span_image, Finsupp.support_single]
 
 protected theorem mem_span (x : M) : x ∈ span R (range b) :=
   span_mono (image_subset_range _ _) (mem_span_repr_support b x)
@@ -92,6 +92,12 @@ protected lemma linearIndepOn (s : Set ι) : LinearIndepOn R b s :=
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
+
+theorem injective_constr_of_linearIndependent
+    [Semiring R₂] [Module R₂ M'] [SMulCommClass R R₂ M'] {v : ι → M'}
+    (hv : LinearIndependent R v) : Injective (b.constr R₂ v) :=
+  fun _ _ hab ↦ b.repr.injective <| hv.finsuppLinearCombination_injective <| by
+    simpa [constr_def] using hab
 
 end Properties
 
@@ -151,8 +157,8 @@ theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i 
 theorem mk_coord_apply [DecidableEq ι] {i j : ι} :
     (Basis.mk hli hsp).coord i (v j) = if j = i then 1 else 0 := by
   rcases eq_or_ne j i with h | h
-  · simp only [h, if_true, mk_coord_apply_eq i]
-  · simp only [h, if_false, mk_coord_apply_ne h]
+  · simp only [h, ite_true, mk_coord_apply_eq i]
+  · simp only [h, ite_false, mk_coord_apply_ne h]
 
 end Coord
 
@@ -204,6 +210,7 @@ lemma span_neg {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 end Span
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any basis is a maximal linear independent set.
 -/
 theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by

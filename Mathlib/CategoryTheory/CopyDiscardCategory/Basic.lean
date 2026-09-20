@@ -38,7 +38,7 @@ The key axioms ensure tensor products respect the comonoid structure.
 copy-discard, comonoid, symmetric monoidal
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

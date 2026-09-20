@@ -190,7 +190,6 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     in `ℓ^∞(ℝ)` and therefore bounded below by the Gromov-Hausdorff-distance. However, `γ` is not
     separable in general. We restrict to the union of the images of `X` and `Y` in `γ`, which is
     separable and therefore embeddable in `ℓ^∞(ℝ)`. -/
-  rcases exists_mem_of_nonempty X with ⟨xX, _⟩
   let s : Set γ := range Φ ∪ range Ψ
   let Φ' : X → s := fun y => ⟨Φ y, mem_union_left _ (mem_range_self _)⟩
   let Ψ' : Y → s := fun y => ⟨Ψ y, mem_union_right _ (mem_range_self _)⟩
@@ -226,7 +225,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     rw [eq_toGHSpace_iff]
     exact ⟨fun x => F (Ψ' x), (kuratowskiEmbedding.isometry _).comp IΨ', range_comp _ _⟩
   refine csInf_le ⟨0, ?_⟩ ?_
-  · simp only [lowerBounds, mem_image, mem_prod, mem_setOf_eq, Prod.exists, and_imp,
+  · simp only [lowerBounds, mem_image, mem_prod, mem_ofPred_eq, Prod.exists, and_imp,
       forall_exists_index]
     intro t _ _ _ _ ht
     rw [← ht]
@@ -259,7 +258,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     rcases eq_toGHSpace_iff.1 hp with ⟨Φ, ⟨Φisom, Φrange⟩⟩
     rcases eq_toGHSpace_iff.1 hq with ⟨Ψ, ⟨Ψisom, Ψrange⟩⟩
     have I : diam (range Φ ∪ range Ψ) ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by
-      rcases exists_mem_of_nonempty X with ⟨xX, _⟩
+      have xX : X := default
       have : ∃ y ∈ range Ψ, dist (Φ xX) y < diam (univ : Set X) + 1 + diam (univ : Set Y) := by
         rw [Ψrange]
         have : Φ xX ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
@@ -289,7 +288,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
       simp only [F, candidates, forall_const,
-        dist_eq_zero, Set.mem_setOf_eq]
+        dist_eq_zero, Set.mem_ofPred_eq]
       repeat' constructor
       · exact fun x y =>
           calc
@@ -398,7 +397,7 @@ instance : MetricSpace GHSpace where
     refine le_antisymm ?_ ?_
     · apply csInf_le
       · exact ⟨0, by rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg⟩
-      · simp only [mem_image, mem_prod, mem_setOf_eq, Prod.exists]
+      · simp only [mem_image, mem_prod, mem_ofPred_eq, Prod.exists]
         exists y, y
         simpa only [and_self_iff, hausdorffDist_self_zero, eq_self_iff_true, and_true]
     · apply le_csInf
@@ -540,7 +539,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     (hs : ∀ x : X, ∃ y ∈ s, dist x y ≤ ε₁) (hs' : ∀ x : Y, ∃ y : s, dist x (Φ y) ≤ ε₃)
     (H : ∀ x y : s, |dist x y - dist (Φ x) (Φ y)| ≤ ε₂) : ghDist X Y ≤ ε₁ + ε₂ / 2 + ε₃ := by
   refine le_of_forall_pos_le_add fun δ δ0 => ?_
-  rcases exists_mem_of_nonempty X with ⟨xX, _⟩
+  obtain ⟨xX⟩ := ‹Nonempty X›
   rcases hs xX with ⟨xs, hxs, Dxs⟩
   have sne : s.Nonempty := ⟨xs, hxs⟩
   let _ : Nonempty s := sne.to_subtype
@@ -600,7 +599,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       exact le_of_eq (glueDist_glued_points (Z := s) Subtype.val Φ (ε₂ / 2 + δ) x)
   have : hausdorffDist (Fr '' range Φ) (range Fr) ≤ ε₃ := by
     rw [← @image_univ _ _ Fr, hausdorffDist_image Ir]
-    rcases exists_mem_of_nonempty Y with ⟨xY, _⟩
+    obtain ⟨xY⟩ := ‹Nonempty Y›
     rcases hs' xY with ⟨xs', Dxs'⟩
     have : 0 ≤ ε₃ := le_trans dist_nonneg Dxs'
     refine hausdorffDist_le_of_mem_dist this
@@ -612,6 +611,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
 
 end --section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gromov-Hausdorff space is second countable. -/
 instance : SecondCountableTopology GHSpace := by
   refine secondCountable_of_countable_discretization fun δ δpos => ?_
@@ -1007,7 +1007,7 @@ instance : CompleteSpace GHSpace := by
     rw [Function.comp_apply, NonemptyCompacts.toGHSpace, ← (u n).toGHSpace_rep,
       toGHSpace_eq_toGHSpace_iff_isometryEquiv]
     constructor
-    convert (isom n).isometryEquivOnRange.symm
+    convert! (isom n).isometryEquivOnRange.symm
   -- the images of `X3 n` in the Gromov-Hausdorff space converge to the image of `L`
   -- so the images of `u n` converge to the image of `L` as well
   use L.toGHSpace

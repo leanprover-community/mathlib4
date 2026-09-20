@@ -33,7 +33,7 @@ public section
 
 open AffineMap
 
-variable {k E PE : Type*}
+variable {k E : Type*}
 
 /-!
 ### Monotonicity of `lineMap`
@@ -87,12 +87,14 @@ theorem lineMap_lt_lineMap_iff_of_lt (h : r < r') : lineMap a b r < lineMap a b 
 theorem left_lt_lineMap_iff_lt (h : 0 < r) : a < lineMap a b r ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_lt_lineMap_iff_of_lt h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_lt_left_iff_lt (h : 0 < r) : lineMap a b r < a ↔ b < a :=
   left_lt_lineMap_iff_lt (E := Eᵒᵈ) h
 
 theorem lineMap_lt_right_iff_lt (h : r < 1) : lineMap a b r < b ↔ a < b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_lt_lineMap_iff_of_lt h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem right_lt_lineMap_iff_lt (h : r < 1) : b < lineMap a b r ↔ b < a :=
   lineMap_lt_right_iff_lt (E := Eᵒᵈ) h
 
@@ -332,4 +334,3 @@ lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRi
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
     (hb : b < x₀) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : f b < 0 := by
   rwa [slope_pos_iff_gt, hf] at hbf
-  exact hb

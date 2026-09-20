@@ -54,11 +54,11 @@ namespace Pushout
 
 /-- The left inclusion in the constructed pushout `Pushout f g`. -/
 @[simp]
-def inl : X₁ ⟶ Pushout f g := TypeCat.ofHom (fun x => Quot.mk _ (Sum.inl x))
+def inl : X₁ ⟶ Pushout f g := ↾fun x => Quot.mk _ (Sum.inl x)
 
 /-- The right inclusion in the constructed pushout `Pushout f g`. -/
 @[simp]
-def inr : X₂ ⟶ Pushout f g := TypeCat.ofHom (fun x => Quot.mk _ (Sum.inr x))
+def inr : X₂ ⟶ Pushout f g := ↾fun x => Quot.mk _ (Sum.inr x)
 
 lemma condition : f ≫ inl f g = g ≫ inr f g := by
   ext x
@@ -70,7 +70,7 @@ def cocone : PushoutCocone f g := PushoutCocone.mk _ _ (condition f g)
 
 /-- The cocone `cocone f g` is colimit. -/
 def isColimitCocone : IsColimit (cocone f g) :=
-  PushoutCocone.IsColimit.mk _ (fun s => TypeCat.ofHom (Quot.lift (fun x => match x with
+  PushoutCocone.IsColimit.mk _ (fun s => ↾(Quot.lift (fun x => match x with
       | Sum.inl x₁ => s.inl x₁
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
@@ -210,7 +210,7 @@ variable {f g}
 lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
-  convert congr_arg e.hom.hom h
+  convert! congr_arg e.hom.hom h
   · exact ConcreteCategory.congr_hom (e.hom.w WalkingSpan.left).symm x₁
   · exact ConcreteCategory.congr_hom (e.hom.w WalkingSpan.right).symm x₂
 
@@ -275,7 +275,7 @@ lemma eq_or_eq_of_isPushout' (h : IsPushout t l r b)
   · exact Or.inl h₁
   · by_cases h₂ : x₃ ∈ Set.range l
     · obtain ⟨x₁, rfl⟩ := h₂
-      exact Or.inl ⟨t x₁, by simpa only [← hx₃] using ConcreteCategory.congr_hom h.w x₁⟩
+      exact Or.inl ⟨t x₁, by simpa only [← hx₃] using! ConcreteCategory.congr_hom h.w x₁⟩
     · exact Or.inr ⟨x₃, hx₃, h₂⟩
 
 /-- A pushout square in `Type` where the top map is injective is a pullback square.

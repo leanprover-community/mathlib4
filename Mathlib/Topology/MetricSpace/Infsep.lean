@@ -154,16 +154,15 @@ theorem Finite.einfsep (hs : s.Finite) : s.einfsep = hs.offDiag.toFinset.inf (un
 
 theorem Finset.coe_einfsep {s : Finset α} :
     (s : Set α).einfsep = s.offDiag.inf (uncurry edist) := by
-  classical simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
+  simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
 
 theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y := by
-  classical
-    cases nonempty_fintype s
-    simp_rw [einfsep_of_fintype]
-    rcases Finset.exists_mem_eq_inf s.offDiag.toFinset (by simpa) (uncurry edist) with ⟨w, hxy, hed⟩
-    simp_rw [mem_toFinset] at hxy
-    exact ⟨w.fst, hxy.1, w.snd, hxy.2.1, hxy.2.2, hed⟩
+  cases nonempty_fintype s
+  simp_rw [einfsep_of_fintype]
+  rcases Finset.exists_mem_eq_inf s.offDiag.toFinset (by simpa) (uncurry edist) with ⟨w, hxy, hed⟩
+  simp_rw [mem_toFinset] at hxy
+  exact ⟨w.fst, hxy.1, w.snd, hxy.2.1, hxy.2.2, hed⟩
 
 theorem Finite.einfsep_exists_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y :=
@@ -178,7 +177,7 @@ variable [PseudoEMetricSpace α] {x y z : α} {s : Set α}
 
 theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := by
   nth_rw 1 [← min_self (edist x y)]
-  convert einfsep_pair_eq_inf hxy using 2
+  convert! einfsep_pair_eq_inf hxy using 2
   rw [edist_comm]
 
 theorem einfsep_insert : einfsep (insert x s) =
@@ -384,7 +383,7 @@ theorem infsep_eq_iInf [Decidable s.Nontrivial] :
 
 theorem Nontrivial.infsep_eq_iInf (hs : s.Nontrivial) :
     s.infsep = ⨅ d : s.offDiag, (uncurry dist) (d : α × α) := by
-  classical rw [Set.infsep_eq_iInf, if_pos hs]
+  classical rw [Set.infsep_eq_iInf, ite_eq_left hs]
 
 theorem infsep_of_fintype [Decidable s.Nontrivial] [Fintype s] : s.infsep =
     if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
@@ -397,7 +396,7 @@ theorem infsep_of_fintype [Decidable s.Nontrivial] [Fintype s] : s.infsep =
 
 theorem Nontrivial.infsep_of_fintype [Fintype s] (hs : s.Nontrivial) :
     s.infsep = s.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
-  classical rw [Set.infsep_of_fintype, dif_pos hs]
+  classical rw [Set.infsep_of_fintype, dite_eq_left hs]
 
 theorem Finite.infsep [Decidable s.Nontrivial] (hsf : s.Finite) :
     s.infsep =
@@ -411,7 +410,7 @@ theorem Finite.infsep [Decidable s.Nontrivial] (hsf : s.Finite) :
 
 theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
     s.infsep = hsf.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
-  classical simp_rw [hsf.infsep, dif_pos hs]
+  classical simp_rw [hsf.infsep, dite_eq_left hs]
 
 theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
     if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 := by
@@ -423,22 +422,21 @@ theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
 
 theorem _root_.Finset.coe_infsep_of_offDiag_nonempty {s : Finset α}
     (hs : s.offDiag.Nonempty) : (s : Set α).infsep = s.offDiag.inf' hs (uncurry dist) := by
-  rw [Finset.coe_infsep, dif_pos hs]
+  rw [Finset.coe_infsep, dite_eq_left hs]
 
 theorem _root_.Finset.coe_infsep_of_offDiag_empty
     {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
   rw [← Finset.not_nonempty_iff_eq_empty] at hs
-  rw [Finset.coe_infsep, dif_neg hs]
+  rw [Finset.coe_infsep, dite_eq_right hs]
 
 theorem Nontrivial.infsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.infsep = dist x y := by
-  classical
-    cases nonempty_fintype s
-    simp_rw [hs.infsep_of_fintype]
-    rcases Finset.exists_mem_eq_inf' (s := s.offDiag.toFinset) (by simpa) (uncurry dist) with
-      ⟨w, hxy, hed⟩
-    simp_rw [mem_toFinset] at hxy
-    exact ⟨w.fst, hxy.1, w.snd, hxy.2.1, hxy.2.2, hed⟩
+  cases nonempty_fintype s
+  simp_rw [hs.infsep_of_fintype]
+  rcases Finset.exists_mem_eq_inf' (s := s.offDiag.toFinset) (by simpa) (uncurry dist) with
+    ⟨w, hxy, hed⟩
+  simp_rw [mem_toFinset] at hxy
+  exact ⟨w.fst, hxy.1, w.snd, hxy.2.1, hxy.2.2, hed⟩
 
 theorem Finite.infsep_exists_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.infsep = dist x y :=

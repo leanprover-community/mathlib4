@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Order
 # Order instances on subalgebras
 -/
 
-@[expose] public section
+public section
 
 namespace Subalgebra
 

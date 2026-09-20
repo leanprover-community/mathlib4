@@ -17,10 +17,7 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe w u
 
@@ -58,7 +55,7 @@ theorem binaryProductLimitCone_cone_π_app_right (G H : AddCommGrpCat.{u}) :
 the Cartesian product of the underlying types:
 -/
 noncomputable def biprodIsoProd (G H : AddCommGrpCat.{u}) :
-    (G ⊞ H : AddCommGrpCat) ≅ AddCommGrpCat.of (G × H) :=
+    (G ⊞ H : AddCommGrpCat) ≅ ↧(G × H) :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit G H) (binaryProductLimitCone G H).isLimit
 
 @[simp, elementwise]
@@ -81,11 +78,12 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → AddCommGrpCat.{max w u})
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/
 @[simps!]
-def lift (s : Fan f) : s.pt ⟶ AddCommGrpCat.of (∀ j, f j) :=
+def lift (s : Fan f) : s.pt ⟶ ↧(∀ j, f j) :=
   ofHom
   { toFun x j := s.π.app ⟨j⟩ x
     map_zero' := by
@@ -101,7 +99,7 @@ def lift (s : Fan f) : s.pt ⟶ AddCommGrpCat.of (∀ j, f j) :=
 @[simps]
 def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   cone :=
-    { pt := AddCommGrpCat.of (∀ j, f j)
+    { pt := ↧(∀ j, f j)
       π := Discrete.natTrans fun j => ofHom <| Pi.evalAddMonoidHom (fun j => f j) j.as }
   isLimit :=
     { lift := lift.{_, u} f
@@ -120,7 +118,7 @@ variable {J : Type} [Finite J]
 on the dependent function type.
 -/
 noncomputable def biproductIsoPi (f : J → AddCommGrpCat.{u}) :
-    (⨁ f : AddCommGrpCat) ≅ AddCommGrpCat.of (∀ j, f j) :=
+    (⨁ f : AddCommGrpCat) ≅ ↧(∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 
 @[simp, elementwise]

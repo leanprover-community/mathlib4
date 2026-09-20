@@ -121,7 +121,7 @@ theorem log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else
   simp_rw [ofReal_neg, conj_I, mul_neg, neg_mul]
 
 theorem log_conj (x : ℂ) (h : x.arg ≠ π) : log (conj x) = conj (log x) := by
-  rw [log_conj_eq_ite, if_neg h]
+  rw [log_conj_eq_ite, ite_eq_right h]
 
 theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x) else -log x := by
   by_cases hx : x = 0
@@ -134,7 +134,8 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   · rwa [inv_pos, Complex.normSq_pos]
   · rwa [map_ne_zero]
 
-theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
+theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by
+  rw [log_inv_eq_ite, ite_eq_right hx]
 
 theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by simp [Real.pi_ne_zero, I_ne_zero]
 
@@ -148,6 +149,22 @@ theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * 
     rw [← log_exp this.1 this.2, exp_periodic.int_mul n, h, log_one]
   · rintro ⟨n, rfl⟩
     exact (exp_periodic.int_mul n).eq.trans exp_zero
+
+theorem exp_eq_one_iff_of_im_nonneg {x : ℂ} (hx : 0 ≤ x.im) :
+    exp x = 1 ↔ ∃ n : ℕ, x = n * (2 * π * I) := by
+  rw [exp_eq_one_iff]
+  refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨n, hn⟩ ↦ ⟨n, by rw [hn]; norm_cast⟩⟩
+  have : 0 ≤ n * (2 * π) := by simpa [hn] using hx
+  lift n to ℕ using by exact_mod_cast nonneg_of_mul_nonneg_left this (by positivity)
+  exact ⟨n, hn⟩
+
+theorem exp_two_pi_mul_I_mul_div_eq_one_iff {k N : ℕ} (hN : N ≠ 0) :
+    exp (2 * π * I * k / N) = 1 ↔ N ∣ k := by
+  rw [exp_eq_one_iff]
+  conv in _ = _ => rw [← mul_comm (2 * π * I), mul_div_assoc, mul_right_inj' (by simp)]
+  field_simp [Nat.cast_ne_zero.mpr hN]
+  norm_cast
+  simp [← dvd_def, Int.ofNat_dvd]
 
 theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y) = 1 := by
   rw [exp_sub, div_eq_one_iff_eq (exp_ne_zero _)]
@@ -169,14 +186,14 @@ theorem log_exp_exists (z : ℂ) :
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine ⟨fun hs => ?_, fun hs => ?_⟩
   · refine ((hs.image exp).insert 0).mono ?_
-    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
-        Set.diff_union_self]
+    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.sdiff_eq, ← Set.union_singleton,
+        Set.sdiff_union_self]
     exact Set.subset_union_left
   · rw [← Set.biUnion_preimage_singleton]
     refine hs.biUnion fun z hz => ?_
     by_cases! h : ∃ w, exp w = z
     · rcases h with ⟨w, rfl⟩
-      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
+      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.ofPred_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
     · simp [Set.preimage, h]
 
@@ -184,9 +201,9 @@ alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log ‖z‖ - π * I) := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_norm.continuousWithinAt.log _)).tendsto.add
+          (continuous_norm.continuousWithinAt.log _)).tendsto.add
       (((continuous_ofReal.tendsto _).comp <|
             tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
@@ -196,9 +213,9 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_norm.continuousWithinAt.log _)).tendsto.add
+          (continuous_norm.continuousWithinAt.log _)).tendsto.add
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
             continuousWithinAt_arg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
@@ -225,7 +242,7 @@ section LogDeriv
 
 open Complex Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type*}
 
@@ -287,7 +304,7 @@ noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
     simp [exp_mem_slitPlane, h₂.ne,
       (toIocMod_eq_self Real.two_pi_pos).mpr ⟨h₁, by simpa [two_mul] using h₂.le⟩]
   map_target' z h := by
-    simp only [mem_setOf, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
+    simp only [mem_ofPred, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
     exact h.imp_left le_of_lt
   left_inv' _x hx := log_exp hx.1 (le_of_lt hx.2)
   right_inv' _x hx := exp_log <| slitPlane_ne_zero hx
@@ -295,8 +312,5 @@ noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
   open_target := isOpen_slitPlane
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := continuousOn_id.clog fun _ ↦ id
-
-@[deprecated (since := "2026-01-13")]
-alias expPartialHomeomorph := expOpenPartialHomeomorph
 
 end Complex

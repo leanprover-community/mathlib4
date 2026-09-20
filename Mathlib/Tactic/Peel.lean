@@ -9,6 +9,7 @@ public meta import Mathlib.Tactic.Basic
 public import Mathlib.Order.Filter.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.Basic
 
 /-!
 # The `peel` tactic
@@ -89,6 +90,8 @@ This tactic works by repeatedly applying lemmas such as `forall_imp`, `Exists.im
 syntax (name := peel)
   "peel" (num)? (ppSpace colGt term)?
   (" with" (ppSpace colGt (ident <|> hole))+)? (usingArg)? : tactic
+
+deprecated_syntax peel "use `gconvert` or `congr!` instead of `peel`" (since := "2026-08-03")
 
 lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 

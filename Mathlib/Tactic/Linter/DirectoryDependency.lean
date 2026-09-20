@@ -7,9 +7,10 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
+meta import Lean.Data.Json.FromToJson.Extra
 public import Lean.Message
+
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -86,6 +87,9 @@ def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
+-- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
+-- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
+-- Fixed in https://github.com/leanprover/lean4/pull/13043
 instance : EmptyCollection NamePrefixRel := inferInstanceAs (EmptyCollection (NameMap _))
 
 /-- Make all names with prefix `n₁` related to names with prefix `n₂`. -/
@@ -143,7 +147,12 @@ def getAllLeft (r : NamePrefixRel) (n : Name) : NameSet := Id.run do
 end NamePrefixRel
 
 -- TODO: add/extend tests for this linter, to ensure the allow-list works
--- TODO: move the following three lists to a JSON file, for easier evolution over time!
+-- TODO: move the two remaining lists below to `scripts/forbiddenDirs.json` as well,
+-- for easier evolution over time! Until then, beware that a rule change in the JSON file
+-- may need a matching update to `overrideAllowedImportDirs` below (and vice versa).
+-- TODO: add these rules to `scripts/forbiddenDirs.json`:
+--   "Mathlib.Data": ["Mathlib.Dynamics"]
+--   "Mathlib.Topology": ["Mathlib.Algebra"]
 -- Future: enforce that allowed and forbidden keys are disjoint
 -- Future: move further directories to use this allow-list instead of the blocklist
 
@@ -200,12 +209,13 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Basic),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data), -- split this up further?
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Algebra.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Notation),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Data.Array),
 
-  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Data),
+  (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Basic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Logic),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
@@ -214,6 +224,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Logic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Trans),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Init),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Basic),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
@@ -224,12 +235,15 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.ContextInfo),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.Tactic.Meta),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
 
   (`Mathlib.Logic, `Batteries),
+  (`Mathlib.Logic, `Mathlib.Basic),
   -- TODO: should the next import direction be flipped?
   (`Mathlib.Logic, `Mathlib.Control),
   (`Mathlib.Logic, `Mathlib.Lean),
@@ -238,6 +252,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
+  (`Mathlib.Logic, `Mathlib.Algebra.Order),
   (`Mathlib.Logic, `Mathlib.Data),
   -- TODO: this next dependency should be made more fine-grained.
   (`Mathlib.Logic, `Mathlib.Order),
@@ -254,330 +269,54 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 
   (`Mathlib.Testing, `Batteries),
   -- TODO: this next import should be eliminated.
-  (`Mathlib.Testing, `Mathlib.GroupTheory),
-  (`Mathlib.Testing, `Mathlib.Control),
   (`Mathlib.Testing, `Mathlib.Algebra),
+  (`Mathlib.Testing, `Mathlib.Basic),
+  (`Mathlib.Testing, `Mathlib.Control),
   (`Mathlib.Testing, `Mathlib.Data),
+  (`Mathlib.Testing, `Mathlib.GroupTheory),
+  (`Mathlib.Testing, `Mathlib.Lean),
   (`Mathlib.Testing, `Mathlib.Logic),
   (`Mathlib.Testing, `Mathlib.Order),
-  (`Mathlib.Testing, `Mathlib.Lean),
   (`Mathlib.Testing, `Mathlib.Tactic),
   (`Mathlib.Testing, `Mathlib.Util),
 ]
+
+/-- The configuration file for `forbiddenImportDirs`, relative to the mathlib root directory.
+
+Each key names a module prefix; modules matching that prefix may not import modules matching any
+of the prefixes in the corresponding list. Exceptions to these rules live in
+`overrideAllowedImportDirs` below. -/
+def forbiddenDirsPath : System.FilePath := "scripts" / "forbiddenDirs.json"
+
+/-- The root modules of the libraries built from the mathlib repository itself.
+When elaborating one of their modules, the linter configuration file must be present. -/
+def mathlibRoots : List Name := [`Mathlib, `MathlibTest, `Archive, `Counterexamples]
+
+/-- Cache for `forbiddenImportDirs`: the configuration file is read at most once per process. -/
+initialize forbiddenImportDirsCache : IO.Ref (Option NamePrefixRel) ← IO.mkRef none
 
 /-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
 should not import modules with the second prefix (except if specifically allowed in
 `overrideAllowedImportDirs`).
 
-For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
-``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
-because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
+For example, `scripts/forbiddenDirs.json` contains the entry
+`"Mathlib.Algebra.Notation": ["Mathlib.Algebra"]` and ``(`Mathlib.Algebra.Notation,
+`Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs` because modules in
+`Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
+
+This relation is read at runtime from `scripts/forbiddenDirs.json`, so that updating the
+configuration does not require recompiling this linter (and everything importing it).
 -/
-def forbiddenImportDirs : NamePrefixRel := .ofArray #[
-  (`Mathlib.Algebra.Notation, `Mathlib.Algebra),
-  (`Mathlib, `Mathlib.Deprecated),
-
-  -- This is used to test the linter.
-  (`MathlibTest.Header, `Mathlib.Deprecated),
-
-  -- TODO:
-  -- (`Mathlib.Data, `Mathlib.Dynamics),
-  -- (`Mathlib.Topology, `Mathlib.Algebra),
-
-  -- The following are a list of existing non-dependent top-level directory pairs.
-  (`Mathlib.Algebra, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Algebra, `Mathlib.Analysis),
-  (`Mathlib.Algebra, `Mathlib.Computability),
-  (`Mathlib.Algebra, `Mathlib.Condensed),
-  (`Mathlib.Algebra, `Mathlib.Geometry),
-  (`Mathlib.Algebra, `Mathlib.InformationTheory),
-  (`Mathlib.Algebra, `Mathlib.ModelTheory),
-  (`Mathlib.Algebra, `Mathlib.RepresentationTheory),
-  (`Mathlib.Algebra, `Mathlib.Testing),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.AlgebraicTopology),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.Analysis),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.Computability),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.Condensed),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.InformationTheory),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.MeasureTheory),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.ModelTheory),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.Probability),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.RepresentationTheory),
-  (`Mathlib.AlgebraicGeometry, `Mathlib.Testing),
-  (`Mathlib.AlgebraicTopology, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.AlgebraicTopology, `Mathlib.Computability),
-  (`Mathlib.AlgebraicTopology, `Mathlib.Condensed),
-  (`Mathlib.AlgebraicTopology, `Mathlib.FieldTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.Geometry),
-  (`Mathlib.AlgebraicTopology, `Mathlib.InformationTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.MeasureTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.ModelTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.NumberTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.Probability),
-  (`Mathlib.AlgebraicTopology, `Mathlib.RepresentationTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.Testing),
-  (`Mathlib.Analysis, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Analysis, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Analysis, `Mathlib.Computability),
-  (`Mathlib.Analysis, `Mathlib.Condensed),
-  (`Mathlib.Analysis, `Mathlib.InformationTheory),
-  (`Mathlib.Analysis, `Mathlib.ModelTheory),
-  (`Mathlib.Analysis, `Mathlib.RepresentationTheory),
-  (`Mathlib.Analysis, `Mathlib.Testing),
-  (`Mathlib.CategoryTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.CategoryTheory, `Mathlib.Analysis),
-  (`Mathlib.CategoryTheory, `Mathlib.Computability),
-  (`Mathlib.CategoryTheory, `Mathlib.Condensed),
-  (`Mathlib.CategoryTheory, `Mathlib.Geometry),
-  (`Mathlib.CategoryTheory, `Mathlib.InformationTheory),
-  (`Mathlib.CategoryTheory, `Mathlib.MeasureTheory),
-  (`Mathlib.CategoryTheory, `Mathlib.ModelTheory),
-  (`Mathlib.CategoryTheory, `Mathlib.Probability),
-  (`Mathlib.CategoryTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.CategoryTheory, `Mathlib.Testing),
-  (`Mathlib.Combinatorics, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Combinatorics, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Combinatorics, `Mathlib.Computability),
-  (`Mathlib.Combinatorics, `Mathlib.Condensed),
-  (`Mathlib.Combinatorics, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.Combinatorics, `Mathlib.Geometry.Group),
-  (`Mathlib.Combinatorics, `Mathlib.Geometry.Manifold),
-  (`Mathlib.Combinatorics, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.Combinatorics, `Mathlib.InformationTheory),
-  (`Mathlib.Combinatorics, `Mathlib.MeasureTheory),
-  (`Mathlib.Combinatorics, `Mathlib.ModelTheory),
-  (`Mathlib.Combinatorics, `Mathlib.Probability),
-  (`Mathlib.Combinatorics, `Mathlib.RepresentationTheory),
-  (`Mathlib.Combinatorics, `Mathlib.Testing),
-  (`Mathlib.Computability, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Computability, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Computability, `Mathlib.CategoryTheory),
-  (`Mathlib.Computability, `Mathlib.Condensed),
-  (`Mathlib.Computability, `Mathlib.FieldTheory),
-  (`Mathlib.Computability, `Mathlib.Geometry),
-  (`Mathlib.Computability, `Mathlib.InformationTheory),
-  (`Mathlib.Computability, `Mathlib.MeasureTheory),
-  (`Mathlib.Computability, `Mathlib.ModelTheory),
-  (`Mathlib.Computability, `Mathlib.Probability),
-  (`Mathlib.Computability, `Mathlib.RepresentationTheory),
-  (`Mathlib.Computability, `Mathlib.Testing),
-  (`Mathlib.Condensed, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Condensed, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Condensed, `Mathlib.Computability),
-  (`Mathlib.Condensed, `Mathlib.FieldTheory),
-  (`Mathlib.Condensed, `Mathlib.Geometry),
-  (`Mathlib.Condensed, `Mathlib.InformationTheory),
-  (`Mathlib.Condensed, `Mathlib.MeasureTheory),
-  (`Mathlib.Condensed, `Mathlib.ModelTheory),
-  (`Mathlib.Condensed, `Mathlib.Probability),
-  (`Mathlib.Condensed, `Mathlib.RepresentationTheory),
-  (`Mathlib.Condensed, `Mathlib.Testing),
-  (`Mathlib.Control, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Control, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Control, `Mathlib.Analysis),
-  (`Mathlib.Control, `Mathlib.Computability),
-  (`Mathlib.Control, `Mathlib.Condensed),
-  (`Mathlib.Control, `Mathlib.FieldTheory),
-  (`Mathlib.Control, `Mathlib.Geometry),
-  (`Mathlib.Control, `Mathlib.GroupTheory),
-  (`Mathlib.Control, `Mathlib.InformationTheory),
-  (`Mathlib.Control, `Mathlib.LinearAlgebra),
-  (`Mathlib.Control, `Mathlib.MeasureTheory),
-  (`Mathlib.Control, `Mathlib.ModelTheory),
-  (`Mathlib.Control, `Mathlib.NumberTheory),
-  (`Mathlib.Control, `Mathlib.Probability),
-  (`Mathlib.Control, `Mathlib.RepresentationTheory),
-  (`Mathlib.Control, `Mathlib.RingTheory),
-  (`Mathlib.Control, `Mathlib.SetTheory),
-  (`Mathlib.Control, `Mathlib.Testing),
-  (`Mathlib.Control, `Mathlib.Topology),
-  (`Mathlib.Data, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Data, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Data, `Mathlib.Analysis),
-  (`Mathlib.Data, `Mathlib.Computability),
-  (`Mathlib.Data, `Mathlib.Condensed),
-  (`Mathlib.Data, `Mathlib.FieldTheory),
-  (`Mathlib.Data, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.Data, `Mathlib.Geometry.Group),
-  (`Mathlib.Data, `Mathlib.Geometry.Manifold),
-  (`Mathlib.Data, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.Data, `Mathlib.InformationTheory),
-  (`Mathlib.Data, `Mathlib.ModelTheory),
-  (`Mathlib.Data, `Mathlib.RepresentationTheory),
-  (`Mathlib.Data, `Mathlib.Testing),
-  (`Mathlib.Dynamics, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Dynamics, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Dynamics, `Mathlib.CategoryTheory),
-  (`Mathlib.Dynamics, `Mathlib.Computability),
-  (`Mathlib.Dynamics, `Mathlib.Condensed),
-  (`Mathlib.Dynamics, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.Dynamics, `Mathlib.Geometry.Group),
-  (`Mathlib.Dynamics, `Mathlib.Geometry.Manifold),
-  (`Mathlib.Dynamics, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.Dynamics, `Mathlib.InformationTheory),
-  (`Mathlib.Dynamics, `Mathlib.ModelTheory),
-  (`Mathlib.Dynamics, `Mathlib.RepresentationTheory),
-  (`Mathlib.Dynamics, `Mathlib.Testing),
-  (`Mathlib.FieldTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.FieldTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.FieldTheory, `Mathlib.Condensed),
-  (`Mathlib.FieldTheory, `Mathlib.Geometry),
-  (`Mathlib.FieldTheory, `Mathlib.InformationTheory),
-  (`Mathlib.FieldTheory, `Mathlib.MeasureTheory),
-  (`Mathlib.FieldTheory, `Mathlib.Probability),
-  (`Mathlib.FieldTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.FieldTheory, `Mathlib.Testing),
-  (`Mathlib.Geometry, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Geometry, `Mathlib.Computability),
-  (`Mathlib.Geometry, `Mathlib.Condensed),
-  (`Mathlib.Geometry, `Mathlib.InformationTheory),
-  (`Mathlib.Geometry, `Mathlib.ModelTheory),
-  (`Mathlib.Geometry, `Mathlib.RepresentationTheory),
-  (`Mathlib.Geometry, `Mathlib.Testing),
-  (`Mathlib.GroupTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.GroupTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.GroupTheory, `Mathlib.Analysis),
-  (`Mathlib.GroupTheory, `Mathlib.Computability),
-  (`Mathlib.GroupTheory, `Mathlib.Condensed),
-  (`Mathlib.GroupTheory, `Mathlib.Geometry),
-  (`Mathlib.GroupTheory, `Mathlib.InformationTheory),
-  (`Mathlib.GroupTheory, `Mathlib.MeasureTheory),
-  (`Mathlib.GroupTheory, `Mathlib.ModelTheory),
-  (`Mathlib.GroupTheory, `Mathlib.Probability),
-  (`Mathlib.GroupTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.GroupTheory, `Mathlib.Testing),
-  (`Mathlib.GroupTheory, `Mathlib.Topology),
-  (`Mathlib.InformationTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.InformationTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.InformationTheory, `Mathlib.CategoryTheory),
-  (`Mathlib.InformationTheory, `Mathlib.Computability),
-  (`Mathlib.InformationTheory, `Mathlib.Condensed),
-  (`Mathlib.InformationTheory, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.InformationTheory, `Mathlib.Geometry.Group),
-  (`Mathlib.InformationTheory, `Mathlib.Geometry.Manifold),
-  (`Mathlib.InformationTheory, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.InformationTheory, `Mathlib.ModelTheory),
-  (`Mathlib.InformationTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.InformationTheory, `Mathlib.Testing),
-  (`Mathlib.LinearAlgebra, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.LinearAlgebra, `Mathlib.AlgebraicTopology),
-  (`Mathlib.LinearAlgebra, `Mathlib.Computability),
-  (`Mathlib.LinearAlgebra, `Mathlib.Condensed),
-  (`Mathlib.LinearAlgebra, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.LinearAlgebra, `Mathlib.Geometry.Group),
-  (`Mathlib.LinearAlgebra, `Mathlib.Geometry.Manifold),
-  (`Mathlib.LinearAlgebra, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.LinearAlgebra, `Mathlib.InformationTheory),
-  (`Mathlib.LinearAlgebra, `Mathlib.MeasureTheory),
-  (`Mathlib.LinearAlgebra, `Mathlib.ModelTheory),
-  (`Mathlib.LinearAlgebra, `Mathlib.Probability),
-  (`Mathlib.LinearAlgebra, `Mathlib.Testing),
-  (`Mathlib.LinearAlgebra, `Mathlib.Topology),
-  (`Mathlib.MeasureTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.MeasureTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.MeasureTheory, `Mathlib.Computability),
-  (`Mathlib.MeasureTheory, `Mathlib.Condensed),
-  (`Mathlib.MeasureTheory, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.MeasureTheory, `Mathlib.Geometry.Group),
-  (`Mathlib.MeasureTheory, `Mathlib.Geometry.Manifold),
-  (`Mathlib.MeasureTheory, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.MeasureTheory, `Mathlib.InformationTheory),
-  (`Mathlib.MeasureTheory, `Mathlib.ModelTheory),
-  (`Mathlib.MeasureTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.MeasureTheory, `Mathlib.Testing),
-  (`Mathlib.ModelTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.ModelTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.ModelTheory, `Mathlib.Analysis),
-  (`Mathlib.ModelTheory, `Mathlib.Condensed),
-  (`Mathlib.ModelTheory, `Mathlib.Geometry),
-  (`Mathlib.ModelTheory, `Mathlib.InformationTheory),
-  (`Mathlib.ModelTheory, `Mathlib.MeasureTheory),
-  (`Mathlib.ModelTheory, `Mathlib.Probability),
-  (`Mathlib.ModelTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.ModelTheory, `Mathlib.Testing),
-  (`Mathlib.ModelTheory, `Mathlib.Topology),
-  (`Mathlib.NumberTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.NumberTheory, `Mathlib.Computability),
-  (`Mathlib.NumberTheory, `Mathlib.Condensed),
-  (`Mathlib.NumberTheory, `Mathlib.InformationTheory),
-  (`Mathlib.NumberTheory, `Mathlib.ModelTheory),
-  (`Mathlib.NumberTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.NumberTheory, `Mathlib.Testing),
-  (`Mathlib.Order, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Order, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Order, `Mathlib.Computability),
-  (`Mathlib.Order, `Mathlib.Condensed),
-  (`Mathlib.Order, `Mathlib.FieldTheory),
-  (`Mathlib.Order, `Mathlib.Geometry),
-  (`Mathlib.Order, `Mathlib.InformationTheory),
-  (`Mathlib.Order, `Mathlib.MeasureTheory),
-  (`Mathlib.Order, `Mathlib.ModelTheory),
-  (`Mathlib.Order, `Mathlib.NumberTheory),
-  (`Mathlib.Order, `Mathlib.Probability),
-  (`Mathlib.Order, `Mathlib.RepresentationTheory),
-  (`Mathlib.Order, `Mathlib.Testing),
-  (`Mathlib.Probability, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Probability, `Mathlib.AlgebraicTopology),
-  (`Mathlib.Probability, `Mathlib.CategoryTheory),
-  (`Mathlib.Probability, `Mathlib.Computability),
-  (`Mathlib.Probability, `Mathlib.Condensed),
-  (`Mathlib.Probability, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.Probability, `Mathlib.Geometry.Group),
-  (`Mathlib.Probability, `Mathlib.Geometry.Manifold),
-  (`Mathlib.Probability, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.Probability, `Mathlib.InformationTheory),
-  (`Mathlib.Probability, `Mathlib.ModelTheory),
-  (`Mathlib.Probability, `Mathlib.RepresentationTheory),
-  (`Mathlib.Probability, `Mathlib.Testing),
-  (`Mathlib.RepresentationTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.RepresentationTheory, `Mathlib.Analysis),
-  (`Mathlib.RepresentationTheory, `Mathlib.Computability),
-  (`Mathlib.RepresentationTheory, `Mathlib.Condensed),
-  (`Mathlib.RepresentationTheory, `Mathlib.Geometry),
-  (`Mathlib.RepresentationTheory, `Mathlib.InformationTheory),
-  (`Mathlib.RepresentationTheory, `Mathlib.MeasureTheory),
-  (`Mathlib.RepresentationTheory, `Mathlib.ModelTheory),
-  (`Mathlib.RepresentationTheory, `Mathlib.Probability),
-  (`Mathlib.RepresentationTheory, `Mathlib.Testing),
-  (`Mathlib.RepresentationTheory, `Mathlib.Topology),
-  (`Mathlib.RingTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.RingTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.RingTheory, `Mathlib.Computability),
-  (`Mathlib.RingTheory, `Mathlib.Condensed),
-  (`Mathlib.RingTheory, `Mathlib.Geometry.Euclidean),
-  (`Mathlib.RingTheory, `Mathlib.Geometry.Group),
-  (`Mathlib.RingTheory, `Mathlib.Geometry.Manifold),
-  (`Mathlib.RingTheory, `Mathlib.Geometry.RingedSpace),
-  (`Mathlib.RingTheory, `Mathlib.InformationTheory),
-  (`Mathlib.RingTheory, `Mathlib.ModelTheory),
-  (`Mathlib.RingTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.RingTheory, `Mathlib.Testing),
-  (`Mathlib.SetTheory, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.SetTheory, `Mathlib.AlgebraicTopology),
-  (`Mathlib.SetTheory, `Mathlib.Analysis),
-  (`Mathlib.SetTheory, `Mathlib.CategoryTheory),
-  (`Mathlib.SetTheory, `Mathlib.Combinatorics),
-  (`Mathlib.SetTheory, `Mathlib.Computability),
-  (`Mathlib.SetTheory, `Mathlib.Condensed),
-  (`Mathlib.SetTheory, `Mathlib.FieldTheory),
-  (`Mathlib.SetTheory, `Mathlib.Geometry),
-  (`Mathlib.SetTheory, `Mathlib.InformationTheory),
-  (`Mathlib.SetTheory, `Mathlib.MeasureTheory),
-  (`Mathlib.SetTheory, `Mathlib.ModelTheory),
-  (`Mathlib.SetTheory, `Mathlib.Probability),
-  (`Mathlib.SetTheory, `Mathlib.RepresentationTheory),
-  (`Mathlib.SetTheory, `Mathlib.Testing),
-  (`Mathlib.Topology, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Topology, `Mathlib.Computability),
-  (`Mathlib.Topology, `Mathlib.Condensed),
-  (`Mathlib.Topology, `Mathlib.Geometry),
-  (`Mathlib.Topology, `Mathlib.InformationTheory),
-  (`Mathlib.Topology, `Mathlib.ModelTheory),
-  (`Mathlib.Topology, `Mathlib.Probability),
-  (`Mathlib.Topology, `Mathlib.RepresentationTheory),
-  (`Mathlib.Topology, `Mathlib.Testing),
-]
+def forbiddenImportDirs : IO NamePrefixRel := do
+  if let some rel ← forbiddenImportDirsCache.get then
+    return rel
+  let json ← IO.ofExcept <| Json.parse (← IO.FS.readFile forbiddenDirsPath)
+  let entries : Std.TreeMap String (Array String) ← IO.ofExcept <| fromJson? json
+  let rel := NamePrefixRel.ofArray <|
+    entries.toArray.flatMap fun (n₁, ns) ↦ ns.map fun n₂ ↦ (n₁.toName, n₂.toName)
+  forbiddenImportDirsCache.set (some rel)
+  return rel
 
 /-- `overrideAllowedImportDirs` relates module prefixes, specifying that modules with the first
 prefix are allowed to import modules with the second prefix, even if disallowed in
@@ -592,6 +331,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
   (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
+  (`Mathlib.AlgebraicGeometry.EllipticCurve, `Mathlib.Probability), -- For L-functions
   (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.AlgebraicTopology), -- Homotopical methods for sheaf cohomology
   (`Mathlib.AlgebraicGeometry.Sites, `Mathlib.NumberTheory), -- For arithmetic applications
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
@@ -608,16 +348,27 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.Basic, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
+  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology), -- For continuous representations
+  (`Mathlib.RepresentationTheory.Homological.ContCohomology, `Mathlib.Topology),  -- For continuous cohomology
+  -- TODO: think about the role of Analysis and Algebra, and perhaps further separation
+  (`Mathlib.Algebra.Order.Archimedean.Real, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Star.CHSH, `Mathlib.Analysis),
+  (`Mathlib.Algebra.Order.Star.Real, `Mathlib.Analysis),
+  (`Mathlib.Topology.ContinuousMap.ContinuousSqrt, `Mathlib.Algebra.Order),
+  (`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus, `Mathlib.Algebra.Order),
+  (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
 ]
 
 end DirectoryDependency
 
 open DirectoryDependency
 
-/-- Check if one of the imports `imports` to `mainModule` is forbidden by `forbiddenImportDirs`;
-if so, return an error describing how the import transitively arises. -/
-private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Array Name) : Option MessageData := Id.run do
-  match forbiddenImportDirs.findAny mainModule imports with
+/-- Check if one of the imports `imports` to `mainModule` is forbidden by the relation
+`forbidden` (see `forbiddenImportDirs`); if so, return an error describing how the import
+transitively arises. -/
+def checkBlocklist (env : Environment) (forbidden : NamePrefixRel) (mainModule : Name)
+    (imports : Array Name) : Option MessageData := Id.run do
+  match forbidden.findAny mainModule imports with
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
@@ -645,14 +396,24 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
   let matchingPrefixes := mainModule.prefixes.filter (fun prf ↦ allowedImportDirs.containsKey prf)
   if matchingPrefixes.isEmpty then
     -- Otherwise, we fall back to the blocklist `forbiddenImportDirs`.
-    if let some msg := checkBlocklist env mainModule imports then return #[msg] else return #[]
+    unless ← forbiddenDirsPath.pathExists do
+      -- When mathlib is used as a dependency, its configuration file is not available;
+      -- in that case, there is nothing to check.
+      -- Within mathlib itself, the file must exist: fail loudly if it does not.
+      if mathlibRoots.contains mainModule.getRoot then
+        throwError "directoryDependency linter: configuration file '{forbiddenDirsPath}' \
+          not found; was mathlib built from its root directory?"
+      return #[]
+    if let some msg := checkBlocklist env (← forbiddenImportDirs) mainModule imports then
+      return #[msg]
+    else return #[]
   else
     -- We always allow imports in the same directory (for each matching prefix),
     -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
-      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames, `Mathlib.Tactic.Linter.DeprecatedModule]
+      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let exclude := [
       `Init, `Std, `Lean,
       `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient

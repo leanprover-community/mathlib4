@@ -24,7 +24,7 @@ prove these cardinality properties.
 These lemmas are separate because they require the development of cardinals.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 
@@ -66,6 +66,7 @@ theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fi
 
 end MulAction
 
+set_option backward.isDefEq.respectTransparency false in
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
     Infinite { p : α × α // Commute p.1 p.2 } :=
   Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)

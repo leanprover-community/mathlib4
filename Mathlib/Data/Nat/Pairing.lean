@@ -140,8 +140,8 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
   rcases lt_or_ge m n with h | h
-  · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
-  rw [if_neg h.not_gt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
+  · rw [ite_eq_left h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
+  rw [ite_eq_right h.not_gt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
     Nat.add_le_add_iff_left]
   exact Nat.le_add_left _ _
 
@@ -161,13 +161,10 @@ open Nat
 
 section CompleteLattice
 
+@[to_dual]
 theorem iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨆ n : ℕ, f n.unpair.1 n.unpair.2 = ⨆ (i : ℕ) (j : ℕ), f i j := by
   rw [← (iSup_prod : ⨆ i : ℕ × ℕ, f i.1 i.2 = _), ← Nat.surjective_unpair.iSup_comp]
-
-theorem iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
-    ⨅ n : ℕ, f n.unpair.1 n.unpair.2 = ⨅ (i : ℕ) (j : ℕ), f i j :=
-  iSup_unpair (show ℕ → ℕ → αᵒᵈ from f)
 
 end CompleteLattice
 

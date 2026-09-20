@@ -46,7 +46,7 @@ a `MulAction` instance.
 graded action
 -/
 
-@[expose] public section
+public section
 
 
 variable {ιA ιB ιM : Type*}

@@ -32,6 +32,7 @@ section Colimits
 variable [∀ {X Y : Cᵒᵖ} (f : X ⟶ Y), PreservesColimit (F ⋙ evaluation R Y)
   (ModuleCat.restrictScalars (R.map f).hom)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A cocone in the category `PresheafOfModules R` is colimit if it is so after the application
 of the functors `evaluation R X` for all `X`. -/
@@ -63,6 +64,7 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   ⟨_, isColimitOfPreserves (ModuleCat.restrictScalars (R.map f).hom)
     (colimit.isColimit (F ⋙ evaluation R Y))⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
 taking a colimit in the category of modules over `R.obj X` for all `X`. -/
@@ -91,6 +93,7 @@ noncomputable def colimitPresheafOfModules : PresheafOfModules R where
     simp only [Functor.map_comp, assoc]
     rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The (colimit) cocone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed from
 the colimit of `F ⋙ evaluation R X` for all `X`. -/
 @[simps]

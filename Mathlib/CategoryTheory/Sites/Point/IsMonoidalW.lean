@@ -22,7 +22,7 @@ category structure on `Sheaf J A`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 

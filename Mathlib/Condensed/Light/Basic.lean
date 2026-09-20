@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 /-!
 
@@ -16,11 +15,11 @@ of Clausen-Scholze (see https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gm
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
-open CategoryTheory Limits
+open CategoryTheory
 
 /--
 `LightCondensed.{u} C` is the category of light condensed objects in a category `C`, which are
@@ -39,15 +38,17 @@ namespace LightCondensed
 
 variable {C : Type w} [Category.{v} C]
 
-@[deprecated ObjectProperty.FullSubcategory.id_hom (since := "2026-04-08")]
+@[deprecated ObjectProperty.FullSubcategory.id_hom +typeChanged (since := "2026-04-08")]
 lemma id_hom (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
 
-@[deprecated ObjectProperty.FullSubcategory.comp_hom (since := "2026-04-08")]
+@[deprecated ObjectProperty.FullSubcategory.comp_hom +typeChanged (since := "2026-04-08")]
 lemma comp_hom {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-05")] alias id_val := id_hom
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-05")] alias comp_val := comp_hom
 
 @[ext]
@@ -61,7 +62,7 @@ end LightCondensed
 
 namespace LightCondSet
 
-@[deprecated NatTrans.naturality_apply (since := "2026-03-19")]
+@[deprecated NatTrans.naturality_apply +typeChanged (since := "2026-03-19")]
 lemma hom_naturality_apply {X Y : LightCondSet.{u}} (f : X ⟶ Y) {S T : LightProfiniteᵒᵖ}
     (g : S ⟶ T) (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) := by
   simp

@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+public import Mathlib.Order.CompleteLattice.Defs
 
 /-!
 # Complete Partial Orders
@@ -98,7 +99,7 @@ instance (priority := 100) CompletePartialOrder.toOmegaCompletePartialOrder :
   ωSup_le c _ := c.directed.iSup_le
 
 /-- A complete partial order is an conditionally complete partial order. -/
-instance (priority := 100) [CompletePartialOrder α] : ConditionallyCompletePartialOrderSup α where
+instance (priority := 100) : ConditionallyCompletePartialOrderSup α where
   isLUB_csSup_of_directed _ h_dir _ _ := h_dir.isLUB_sSup
 
 end CompletePartialOrder

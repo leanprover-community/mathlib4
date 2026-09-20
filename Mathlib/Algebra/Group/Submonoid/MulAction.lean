@@ -18,7 +18,7 @@ These instances work particularly well in conjunction with `Monoid.toMulAction`,
 `s • m` as an alias for `↑s * m`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

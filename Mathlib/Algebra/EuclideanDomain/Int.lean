@@ -12,10 +12,11 @@ public import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Instances for Euclidean domains
+
 * `Int.euclideanDomain`: shows that `ℤ` is a Euclidean domain.
 -/
 
-@[expose] public section
+public section
 
 instance Int.euclideanDomain : EuclideanDomain ℤ :=
   { (inferInstance : CommRing Int), (inferInstance : Nontrivial Int) with

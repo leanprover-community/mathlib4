@@ -116,7 +116,7 @@ def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
       (PullbackCone.mk (l₁ ≫ g₁) l₂
         (show (l₁ ≫ g₁) ≫ f₁ = l₂ ≫ g₃ ≫ f₂ by
           rw [pullback.lift_fst_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
-  simpa using pasteVertIsPullback rfl (pullbackIsPullback _ _)
+  simpa using! pasteVertIsPullback rfl (pullbackIsPullback _ _)
     (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄)
 
 theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ (g₃ ≫ f₂) :=
@@ -135,7 +135,7 @@ def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
       (PullbackCone.mk l₁' (l₂' ≫ g₄)
         (show l₁' ≫ g₂ ≫ f₃ = (l₂' ≫ g₄) ≫ f₄ by
           rw [pullback.lift_snd_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
-  simpa [PullbackCone.pasteHoriz] using pasteHorizIsPullback rfl
+  simpa [PullbackCone.pasteHoriz] using! pasteHorizIsPullback rfl
     (pullbackIsPullback f₃ f₄) (pullbackPullbackRightIsPullback _ _ _ _)
 
 theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback (g₂ ≫ f₃) f₄ :=
@@ -289,7 +289,7 @@ def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
       (PushoutCocone.mk (f₁ ≫ l₁') l₂'
         (show g₁ ≫ f₁ ≫ l₁' = (g₂ ≫ f₃) ≫ l₂' by
           rw [Category.assoc, pushout.inl_desc, pushout.condition_assoc])) := by
-  simpa using pasteHorizIsPushout rfl (pushoutIsPushout g₁ g₂)
+  simpa using! pasteHorizIsPushout rfl (pushoutIsPushout g₁ g₂)
     (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄)
 
 theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g₂ ≫ f₃) :=
@@ -308,7 +308,7 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
       (PushoutCocone.mk l₁ (f₄ ≫ l₂)
         (show (g₃ ≫ f₂) ≫ l₁ = g₄ ≫ f₄ ≫ l₂ by
           rw [Category.assoc, pushout.inr_desc, pushout.condition_assoc])) := by
-  simpa using pasteVertIsPushout rfl (pushoutIsPushout _ _) (pushoutPushoutRightIsPushout _ _ _ _)
+  simpa using! pasteVertIsPushout rfl (pushoutIsPushout _ _) (pushoutPushoutRightIsPushout _ _ _ _)
 
 theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g₃ ≫ f₂) g₄ :=
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩

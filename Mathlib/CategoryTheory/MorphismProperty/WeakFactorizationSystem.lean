@@ -21,7 +21,7 @@ and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

@@ -17,7 +17,7 @@ under coproducts, pushouts, filtered colimits and transfinite compositions.
 
 -/
 
-@[expose] public section
+public section
 
 universe v' u' u
 
