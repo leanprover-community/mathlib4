@@ -22,6 +22,8 @@ In this section, we set `R` be a noetherian commutative ring, all modules refer 
 
 * `Ideal.depth` : The depth of a `R`-module `M` with respect to an ideal `I`,
   defined as `moduleDepth (R⧸ I, M)`.
+  In some texts, only the following `IsLocalRing.depth` is called depth, for example in
+  Bruns–Herzog's **Cohen--Macaulay Rings**, it is called `grade(I,M)` (Definition 1.2.6).
 
 * `IsLocalRing.depth` : For a local ring `R`, the depth of a `R`-module with respect to
   the maximal ideal.
