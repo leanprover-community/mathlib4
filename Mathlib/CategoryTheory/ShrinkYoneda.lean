@@ -260,7 +260,6 @@ lemma uliftYonedaIsoShrinkYoneda_hom_app_app
     shrinkYonedaObjObjEquiv.{max w' v}.symm f.down := by
   rfl
 
-
 omit [LocallySmall.{w} C] in
 @[reassoc (attr := simp)]
 lemma uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm

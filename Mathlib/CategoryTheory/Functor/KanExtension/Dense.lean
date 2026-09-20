@@ -19,7 +19,7 @@ In the file `Mathlib/CategoryTheory/Functor/KanExtension/DenseAtYoneda`,
 we obtain the density of the Yoneda embedding.
 In `Mathlib/CategoryTheory/Functor/KanExtension/DenseIff`, we obtain
 a characterization of the density for a full functor `F : C ⥤ D` in terms
-of the fully faithfulness of the restricted Yoneda functor `D ⥤ Cᵒᵖ ⥤ Type _`.
+of the full faithfulness of the restricted Yoneda functor `D ⥤ Cᵒᵖ ⥤ Type _`.
 In `Mathlib/CategoryTheory/Functor/KanExtension/StrongGenerator`, we show
 that the range of a dense functor is a strong generator.
 

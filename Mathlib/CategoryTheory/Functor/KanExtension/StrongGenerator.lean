@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
-# The range of a dense functor if a strong generator
+# The range of a dense functor is a strong generator
 
 ## References
 
