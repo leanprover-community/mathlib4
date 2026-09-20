@@ -22,7 +22,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {X Y : C} (f g : X ⟶ Y)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equalizer of `f g : X ⟶ Y` is the pullback of the diagonal map `Y ⟶ Y × Y`
 along the map `(f, g) : X ⟶ Y × Y`. -/
 lemma isPullback_equalizer_prod [HasEqualizer f g] [HasBinaryProduct Y Y] :
@@ -36,7 +35,6 @@ lemma isPullback_equalizer_prod [HasEqualizer f g] [HasBinaryProduct Y Y] :
   · exact fun s ↦ by simpa using congr($s.condition ≫ prod.fst)
   · exact fun s m hm _ ↦ by ext; simp [*]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coequalizer of `f g : X ⟶ Y` is the pushout of the diagonal map `X ⨿ X ⟶ X`
 along the map `(f, g) : X ⨿ X ⟶ Y`. -/
 lemma isPushout_coequalizer_coprod [HasCoequalizer f g] [HasBinaryCoproduct X X] :

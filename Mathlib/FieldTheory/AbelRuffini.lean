@@ -195,17 +195,6 @@ is closed under `n`-th roots. -/
 def solvableByRad : IntermediateField F E :=
   sInf {s | ∀ x, ∀ n ≠ 0, x ^ n ∈ s → x ∈ s}
 
-variable (F) in
-/-- Inductive definition of solvable by radicals -/
-@[deprecated solvableByRad (since := "2026-02-28")]
-inductive IsSolvableByRad : E → Prop
-  | base (α : F) : IsSolvableByRad (algebraMap F E α)
-  | add (α β : E) : IsSolvableByRad α → IsSolvableByRad β → IsSolvableByRad (α + β)
-  | neg (α : E) : IsSolvableByRad α → IsSolvableByRad (-α)
-  | mul (α β : E) : IsSolvableByRad α → IsSolvableByRad β → IsSolvableByRad (α * β)
-  | inv (α : E) : IsSolvableByRad α → IsSolvableByRad α⁻¹
-  | rad (α : E) (n : ℕ) (hn : n ≠ 0) : IsSolvableByRad (α ^ n) → IsSolvableByRad α
-
 theorem solvableByRad_le {s : IntermediateField F E} (H : ∀ x, ∀ n ≠ 0, x ^ n ∈ s → x ∈ s) :
     solvableByRad F E ≤ s :=
   sInf_le H
@@ -229,9 +218,6 @@ theorem isAlgebraic_solvableByRad : (solvableByRad F E).IsAlgebraic :=
 
 theorem isIntegral_of_mem_solvableByRad {x : E} (hx : x ∈ solvableByRad F E) : IsIntegral F x :=
   (isAlgebraic_solvableByRad _ hx).isIntegral
-
-@[deprecated (since := "2026-02-28")]
-alias solvableByRad.isIntegral := isIntegral_of_mem_solvableByRad
 
 /-- An induction principle for `solvableByRad`. -/
 @[elab_as_elim]
@@ -323,9 +309,6 @@ theorem isSolvable_gal_minpoly {x : E} (hx : x ∈ solvableByRad F E) :
     apply induction_step hy hz (mul_mem hy hz) hy' hz' (mul_mem ..) <;> apply subset_adjoin <;> simp
   | rad n y hn hy hy' => exact induction_rad (solvableByRad.rad_mem hn hy) hn hy'
 
-@[deprecated (since := "2026-02-28")]
-alias solvableByRad.isSolvable := isSolvable_gal_minpoly
-
 /-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with a `solvableByRad` root
 has a solvable Galois group. -/
 theorem isSolvable_gal_of_irreducible {x : E} (hx : x ∈ solvableByRad F E) {q : F[X]}
@@ -335,6 +318,3 @@ theorem isSolvable_gal_of_irreducible {x : E} (hx : x ∈ solvableByRad F E) {q 
     exact isSolvable_gal_minpoly hx
   refine Group.isSolvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ ?_)
   aesop
-
-@[deprecated (since := "2026-02-28")]
-alias solvableByRad.isSolvable' := isSolvable_gal_of_irreducible

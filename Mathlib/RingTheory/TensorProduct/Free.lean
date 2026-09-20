@@ -58,7 +58,7 @@ theorem basisAux_tmul (a : A) (m : M) :
   simp [basisAux, ← Algebra.commutes, Algebra.smul_def]
 
 theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a • basisAux A b x :=
-  TensorProduct.induction_on x (by simp)
+  TensorProduct.inductionOn x
     (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
     fun x y hx hy => by simp [hx, hy]
 
@@ -72,7 +72,6 @@ theorem basis_repr_tmul (a : A) (m : M) :
     (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
   basisAux_tmul b _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem basis_repr_symm_apply (a : A) (i : ι) :
     (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
   simp [basis, Equiv.uniqueProd_symm_apply, basisAux]

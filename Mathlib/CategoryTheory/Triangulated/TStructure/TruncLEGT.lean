@@ -243,7 +243,6 @@ lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
     t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) :=
   t.isLE_iff_isIso_truncLTι_app n (n + 1) rfl X
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isGE_iff_isIso_truncGTπ_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (X : C) :
     t.IsGE X n₁ ↔ IsIso ((t.truncGTπ n₀).app X) := by
   rw [t.isGE_iff_isIso_truncGEπ_app n₁ X]

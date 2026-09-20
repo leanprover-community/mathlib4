@@ -53,13 +53,13 @@ variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
-  Fintype.ofEquiv (K →ₐ[ℚ] A) RingHom.equivRatAlgHom.symm
+  Fintype.ofEquiv (K →ₐ[ℚ] A) (RingHom.equivRatAlgHom K A).symm
 
 variable [IsAlgClosed A]
 
 /-- The number of embeddings of a number field is equal to its finrank. -/
 theorem card : Fintype.card (K →+* A) = finrank ℚ K := by
-  rw [Fintype.ofEquiv_card RingHom.equivRatAlgHom.symm, AlgHom.card]
+  rw [Fintype.ofEquiv_card (RingHom.equivRatAlgHom K A).symm, AlgHom.card]
 
 instance : Nonempty (K →+* A) := by
   rw [← Fintype.card_pos_iff, NumberField.Embeddings.card K A]

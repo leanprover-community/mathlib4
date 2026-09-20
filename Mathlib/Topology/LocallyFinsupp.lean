@@ -9,9 +9,9 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
+public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
@@ -28,7 +28,9 @@ Throughout the present file, `X` denotes a topologically space and `U` a subset 
 
 @[expose] public section
 
-open Filter Function Set Topology
+open Filter Function Set
+
+open scoped Topology
 
 variable
   {X : Type*} [TopologicalSpace X] {U : Set X}
@@ -93,8 +95,8 @@ def LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop :=
 
 lemma LocallyFiniteSupport.iff_locallyFinite_support [Zero Y] (f : X → Y) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔ LocallyFiniteSupport f := by
-  dsimp only [LocallyFinite]
-  peel with z t ht
+  dsimp only [LocallyFinite, LocallyFiniteSupport]
+  congr! with z t ht
   have aux1 : t ∩ f.support = {i : f.support | ↑i ∈ t} := by aesop
   have aux2 : InjOn Subtype.val {i : f.support | ↑i ∈ t} := by aesop
   simp only [singleton_inter_nonempty, aux1, finite_image_iff aux2]
@@ -122,6 +124,7 @@ namespace Function.locallyFinsuppWithin
 Functions with locally finite support within `U` are `FunLike`: the coercion to functions is
 injective.
 -/
+@[macro_inline]
 instance [Zero Y] : FunLike (locallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
   coe_injective := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
@@ -316,9 +319,6 @@ def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
-
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
@@ -396,6 +396,24 @@ its negative.
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+variable (Y) in
+/--
+`supported Y U s` is the additive subgroup of those functions with locally finite support
+within `U` whose support is contained in `s`.
+
+This is the analogue of `Finsupp.supported`, which cannot be used here: it is a `Submodule` of
+`α →₀ M` and so requires a semiring acting on a commutative `M`, whereas `Y` is an arbitrary
+additive group.
+-/
+def supported [AddGroup Y] (U s : Set X) : AddSubgroup (locallyFinsuppWithin U Y) where
+  carrier := {D | D.support ⊆ s}
+  zero_mem' := by simp
+  add_mem' ha hb := (support_add _ _).trans (Set.union_subset ha hb)
+  neg_mem' ha := by simpa [support_neg] using ha
+
+@[simp] lemma mem_supported [AddGroup Y] {s : Set X} {D : locallyFinsuppWithin U Y} :
+    D ∈ supported Y U s ↔ D.support ⊆ s := Iff.rfl
 
 instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
   le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
@@ -620,13 +638,22 @@ Restriction of the zero function is the zero function.
   rw [restrict_apply]
   aesop
 
+/-- Restriction is monotone -/
+lemma restrict_mono [Zero Y] [LinearOrder Y] {A B : locallyFinsuppWithin U Y} {V : Set X}
+    (hVU : V ⊆ U) (hAB : A ≤ B) :
+    A.restrict hVU ≤ B.restrict hVU := by
+  intro z
+  by_cases hz : z ∈ V
+  · simp_all [restrict_apply, hAB z]
+  · simp_all
+
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
     locallyFinsuppWithin U Y →+ locallyFinsuppWithin V Y where
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
@@ -636,6 +663,25 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
 lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWithin U Y)
     (h : V ⊆ U) :
     restrictMonoidHom h D = D.restrict h := by rfl
+
+/-- Restriction as an ordered group morphism -/
+noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : Set X} (h : V ⊆ U) :
+    locallyFinsuppWithin U Y →+o locallyFinsuppWithin V Y where
+  toFun D := D.restrict h
+  map_zero' := by
+    ext x
+    simp
+  map_add' D₁ D₂ := by
+    ext x
+    by_cases hx : x ∈ V
+    <;> simp [restrict_apply, hx]
+  monotone' _ _ hAB z := by
+    apply restrict_mono h hAB
+
+@[simp]
+lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] {V : Set X}
+    (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
+    restrictOrderMonoidHom h D = D.restrict h := by rfl
 
 /--
 Present a function with with finite support as a finsum of singleton indicator functions.
@@ -655,6 +701,22 @@ Present a function with with finite support as a finsum of singleton indicator f
   by_cases hz : z ∈ F.support
   · aesop
   · aesop
+
+/--
+Represent a function (of locally finite support) that in fact has finite support as a `finsum` of
+singleton indicator functions.
+-/
+@[simp] lemma sum_apply_smul_single_eq_self_on_univ [DecidableEq X] {D : locallyFinsupp X ℤ}
+    (h : D.support.Finite) :
+    ∑ z ∈ h.toFinset, single z (D z) = D := by
+  ext w
+  simp only [coe_sum, Finset.sum_apply, single_apply, Finset.sum_ite_eq]
+  set s := h.toFinset with hs
+  by_cases hw : w ∈ s
+  · simp [hw]
+  · simp only [hw, ite_false]
+    have : w ∉ support D := by simpa only [hs, Set.Finite.mem_toFinset] using hw
+    exact (notMem_support.mp this).symm
 
 /-- Restriction as a lattice morphism -/
 noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :

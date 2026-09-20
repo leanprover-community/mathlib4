@@ -273,13 +273,13 @@ instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
 instance [Semiring S] [Module S R] : Module S (WithVal v) :=
-  fast_instance% (equiv v).module S
+  fast_instance% (equiv v).toAddEquiv.module S
 
 variable [Ring S] [Module R S] (v : Valuation S Γ₀)
 
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
-def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
+def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).toAddEquiv.linearEquiv R
 
 @[simp] theorem linearEquiv_apply (x : WithVal v) : linearEquiv R v x = x.ofVal := rfl
 
@@ -393,49 +393,22 @@ instance [NumberField R] : NumberField (WithVal v) where
 
 end Field
 
-section Ring
-
-variable [Ring R] (v : Valuation R Γ₀)
-
-variable {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
-
-/-- Canonical ring equivalence between `WithVal v` and `WithVal w`. -/
-@[deprecated "Use `WithVal.congr v w (.refl R)` instead" (since := "2026-01-27")]
-def equivWithVal (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
-    WithVal v ≃+* WithVal w :=
-  (equiv v).trans (equiv w).symm
-
-@[deprecated WithVal.congr_symm (since := "2026-01-27")]
-theorem equivWithVal_symm (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
-    (congr v w (.refl R)).symm = congr w v (.refl R) := rfl
-
-@[deprecated "Use `WithVal.congr_apply` instead" (since := "2026-01-27")]
-theorem equivWithVal_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) {x : WithVal v} :
-    congr v w (.refl R) x = (equiv w).symm (equiv v x) := by simp
-
-@[deprecated "Use `WithVal.congr_symm_apply` instead" (since := "2026-01-27")]
-theorem equivWithVal_symm_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) {x : WithVal w} :
-    (congr v w (.refl R)).symm x = (equiv v).symm (equiv w x) := by simp
-
-end Ring
 section ValueGroup₀
 
 variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-theorem valueGroup_eq : valueGroup (.ofClass (Valued.v (R := WithVal v))) =
-    valueGroup (.ofClass v) := by
+theorem valueGroup_eq : (Valued.v (R := WithVal v)).valueGroup = v.valueGroup := by
   simp [valueGroup, valueMonoid, ← (WithVal.ofVal_surjective v).range_comp]
   rfl
 
 /-- The multiplicative equivalence between the `valueGroup` of the valuation on `WithVal v`
 and the valuation `v`. -/
 @[simps! apply symm_apply]
-def valueGroupEquiv :
-    valueGroup (.ofClass (Valued.v (R := WithVal v))) ≃* valueGroup (.ofClass v) where
-  __ := Equiv.setCongr (by simp [valueGroup_eq v])
-  map_mul' := by simp [Equiv.setCongr, Equiv.subtypeEquivProp]
+def valueGroupEquiv : (Valued.v (R := WithVal v)).valueGroup ≃* v.valueGroup where
+  __ := Set.equivOfEq (by simp [valueGroup_eq v])
+  map_mul' := by simp [Set.equivOfEq, Equiv.subtypeEquivProp]
 
 theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
   fun _ _ _ ↦ by simpa
@@ -447,8 +420,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
-def valueGroupOrderIso₀ : ValueGroup₀ (.ofClass (Valued.v (R := WithVal v))) ≃*o
-    ValueGroup₀ (.ofClass v) where
+def valueGroupOrderIso₀ : (Valued.v (R := WithVal v)).ValueGroup₀ ≃*o v.ValueGroup₀ where
   toFun := WithZero.map' (valueGroupEquiv v)
   invFun := WithZero.map' (valueGroupEquiv v).symm
   left_inv x := by
@@ -503,7 +475,7 @@ abbrev Completion := UniformSpace.Completion (WithVal v)
 
 -- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
 instance (priority := 99) : Coe R v.Completion where
-  coe r := (WithVal.equiv v).symm r
+  coe r := toVal v r
 
 section Equivalence
 
@@ -565,8 +537,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by
     simp only [equiv_apply, restrict_def, ne_eq, div_eq_zero_iff, restrict₀_eq_zero_iff, hv,
-      MonoidWithZeroHom.coe_ofClass, not_or, (eq_zero h (r := r.ofVal)).ne,
-      (eq_zero h (r := s.ofVal)).ne]
+      coe_toMonoidWithZeroHom, not_or, (eq_zero h (r := r.ofVal)).ne, (eq_zero h (r := s.ofVal)).ne]
     exact ⟨hr₀.ne', hs₀.ne'⟩)
   intro x hx
   simp only [equiv_symm_apply, Set.mem_ofPred_eq]
@@ -613,9 +584,6 @@ theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :
   exact @UniformContinuous.comp R R (WithVal w) (Valued.mk' w).toUniformSpace
        (Valued.mk' v).toUniformSpace _ (WithVal.equiv w).symm (RingEquiv.refl R) h2 hR
 
-@[deprecated (since := "2026-01-27")]
-  alias IsEquiv.uniformContinuous_equivWithVal := IsEquiv.uniformContinuous_congr
-
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
 def IsEquiv.uniformEquiv (h : v.IsEquiv w) : WithVal v ≃ᵤ WithVal w where
@@ -638,12 +606,11 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
-    (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+    (γ : v.ValueGroup₀ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (.ofClass v) γ
+  obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (v : K →*₀ Γ₀) γ
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
     rw [← map_zero v]

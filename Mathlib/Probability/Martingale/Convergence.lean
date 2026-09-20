@@ -159,14 +159,16 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
   rw [mul_comm, ← ENNReal.le_div_iff_mul_le] at this
   · refine (lt_of_le_of_lt this (ENNReal.div_lt_top ?_ ?_)).ne
     · have hR' : ∀ n, ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ R + ‖a‖₊ * μ Set.univ := by
-        simp_rw [eLpNorm_one_eq_lintegral_enorm] at hbdd
         intro n
+        have hb := hbdd n
+        rw [eLpNorm_one_eq_lintegral_enorm
+          ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable] at hb
         refine (lintegral_mono ?_ : ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ ∫⁻ ω, ‖f n ω‖₊ + ‖a‖₊ ∂μ).trans ?_
         · intro ω
           simp_rw [sub_eq_add_neg, ← nnnorm_neg a, ← ENNReal.coe_add, ENNReal.coe_le_coe]
           exact nnnorm_add_le _ _
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
-          exact add_le_add (hbdd _) le_rfl
+          exact add_le_add hb le_rfl
       refine ne_of_lt (iSup_lt_iff.2 ⟨R + ‖a‖₊ * μ Set.univ, ENNReal.add_lt_top.2
         ⟨ENNReal.coe_lt_top, by finiteness⟩,
         fun n => le_trans ?_ (hR' n)⟩)
@@ -191,7 +193,7 @@ theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartin
 theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   filter_upwards [hf.upcrossings_ae_lt_top hbdd, ae_bdd_liminf_atTop_of_eLpNorm_bdd one_ne_zero
-    (fun n => (hf.stronglyMeasurable n).measurable.mono (ℱ.le n) le_rfl) hbdd] with ω h₁ h₂
+    hbdd] with ω h₁ h₂
   exact tendsto_of_uncrossing_lt_top h₂ h₁
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -212,13 +214,13 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
   classical
   suffices
       ∃ g, StronglyMeasurable[⨆ n, ℱ n] g ∧ ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (g ω)) by
-    rw [limitProcess, dif_pos this]
+    rw [limitProcess, dite_eq_left this]
     exact (Classical.choose_spec this).2
   set g' : Ω → ℝ := fun ω => if h : ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) then h.choose else 0
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hg' : ∀ᵐ ω ∂μ.trim hle, Tendsto (fun n => f n ω) atTop (𝓝 (g' ω)) := by
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
-    simp_rw [g', dif_pos hω]
+    simp_rw [g', dite_eq_left hω]
     exact hω.choose_spec
   have hg'm : AEStronglyMeasurable[⨆ n, ℱ n] g' (μ.trim hle) :=
     (@aemeasurable_of_tendsto_metrizable_ae' _ _ (⨆ n, ℱ n) _ _ _ _ _ _ _
@@ -312,17 +314,17 @@ measurable with respect to the σ-algebra `⨆ n, ℱ n`. -/
 theorem Submartingale.tendsto_eLpNorm_one_limitProcess (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
     Tendsto (fun n => eLpNorm (f n - ℱ.limitProcess f μ) 1 μ) atTop (𝓝 0) := by
-  obtain ⟨R, hR⟩ := hunif.2.2
+  obtain ⟨R, hR⟩ := hunif.2
   have hmeas : ∀ n, AEStronglyMeasurable (f n) μ := fun n =>
     ((hf.stronglyMeasurable n).mono (ℱ.le _)).aestronglyMeasurable
   exact tendsto_Lp_finite_of_tendstoInMeasure le_rfl ENNReal.one_ne_top hmeas
-    (memLp_limitProcess_of_eLpNorm_bdd hmeas hR) hunif.2.1
+    (memLp_limitProcess_of_eLpNorm_bdd hmeas hR) hunif.1
     (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hR)
 
 theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (ℱ.limitProcess f μ ω)) :=
-  let ⟨_, hR⟩ := hunif.2.2
+  let ⟨_, hR⟩ := hunif.2
   hf.ae_tendsto_limitProcess hR
 
 /-- If a martingale `f` strongly adapted to `ℱ` converges in L¹ to `g`, then for all `n`, `f n` is
@@ -330,8 +332,7 @@ almost everywhere equal to `𝔼[g | ℱ n]`. -/
 theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Martingale f ℱ μ)
     (hg : Integrable g μ) (hgtends : Tendsto (fun n => eLpNorm (f n - g) 1 μ) atTop (𝓝 0)) (n : ℕ) :
     f n =ᵐ[μ] μ[g | ℱ n] := by
-  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff (((hf.stronglyMeasurable n).mono (ℱ.le _)).sub
-    (stronglyMeasurable_condExp.mono (ℱ.le _))).aestronglyMeasurable one_ne_zero]
+  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff one_ne_zero]
   have ht : Tendsto (fun m => eLpNorm (μ[f m - g | ℱ n]) 1 μ) atTop (𝓝 0) :=
     haveI hint : ∀ m, Integrable (f m - g) μ := fun m => (hf.integrable m).sub hg
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le)
@@ -347,8 +348,9 @@ strongly adapted to the filtration `ℱ`, then for all `n`, `f n` is almost ever
 conditional expectation of its limiting process w.r.t. `ℱ n`. -/
 theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ | ℱ n] :=
-  let ⟨_, hR⟩ := hbdd.2.2
-  hf.eq_condExp_of_tendsto_eLpNorm ((memLp_limitProcess_of_eLpNorm_bdd hbdd.1 hR).integrable le_rfl)
+  let ⟨_, hR⟩ := hbdd.2
+  hf.eq_condExp_of_tendsto_eLpNorm
+    ((memLp_limitProcess_of_eLpNorm_bdd hbdd.aestronglyMeasurable hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
@@ -363,9 +365,9 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hunif : UniformIntegrable (fun n => μ[g | ℱ n]) 1 μ :=
     hg.uniformIntegrable_condExp_filtration
-  obtain ⟨R, hR⟩ := hunif.2.2
+  obtain ⟨R, hR⟩ := hunif.2
   have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g | ℱ n]) μ) μ :=
-    (memLp_limitProcess_of_eLpNorm_bdd hunif.1 hR).integrable le_rfl
+    (memLp_limitProcess_of_eLpNorm_bdd hunif.aestronglyMeasurable hR).integrable le_rfl
   suffices g =ᵐ[μ] ℱ.limitProcess (fun n x => (μ[g | ℱ n]) x) μ by
     filter_upwards [this, (martingale_condExp g ℱ μ).submartingale.ae_tendsto_limitProcess hR] with
       x heq ht
@@ -416,7 +418,7 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
     Tendsto (fun n => eLpNorm (μ[g | ℱ n] - g) 1 μ) atTop (𝓝 0) :=
   tendsto_Lp_finite_of_tendstoInMeasure le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable)
-    (memLp_one_iff_integrable.2 hg) hg.uniformIntegrable_condExp_filtration.2.1
+    (memLp_one_iff_integrable.2 hg) hg.uniformIntegrable_condExp_filtration.1
     (tendstoInMeasure_of_tendsto_ae
       (fun n => (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable)
       (hg.tendsto_ae_condExp hgmeas))
