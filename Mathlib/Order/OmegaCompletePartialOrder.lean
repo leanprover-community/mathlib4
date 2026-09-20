@@ -6,12 +6,11 @@ Authors: Simon Hudon, Ira Fesefeldt
 module
 
 public import Mathlib.Control.Monad.Basic
-public import Mathlib.Dynamics.FixedPoints.Basic
-public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.Iterate
 public import Mathlib.Order.Part
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.ScottContinuity
+public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Omega Complete Partial Orders
@@ -77,6 +76,7 @@ structure Chain (α : Type u) [Preorder α] extends ℕ →o α
 namespace Chain
 variable [Preorder α] [Preorder β] [Preorder γ]
 
+@[macro_inline]
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
   coe_injective := by rintro ⟨f, hf⟩; congr!
@@ -97,7 +97,7 @@ instance [Inhabited α] : Inhabited (Chain α) :=
 instance : Membership α (Chain α) where
   mem c a := ∃ i, a = c i
 
-variable (c c' : Chain α)
+variable (c : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 
@@ -342,11 +342,11 @@ theorem ωSup_eq_some {c : Chain (Part α)} {a : α} (h : some a ∈ c) : Part.�
   have : ∃ a, some a ∈ c := ⟨a, h⟩
   have a' : some (Classical.choose this) ∈ c := Classical.choose_spec this
   calc
-    Part.ωSup c = some (Classical.choose this) := dif_pos this
+    Part.ωSup c = some (Classical.choose this) := dite_eq_left this
     _ = some a := congr_arg _ (eq_of_chain a' h)
 
 theorem ωSup_eq_none {c : Chain (Part α)} (h : ¬∃ a, some a ∈ c) : Part.ωSup c = none :=
-  dif_neg h
+  dite_eq_right h
 
 theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ωSup c) : some a ∈ c := by
   simp only [Part.ωSup] at h; split_ifs at h with h_1
@@ -381,7 +381,7 @@ theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ 
   · exact fun a ↦ mem_chain_of_mem_ωSup a
   · intro h
     have h' : ∃ a : α, some a ∈ c := ⟨_, h⟩
-    rw [dif_pos h']
+    rw [dite_eq_left h']
     have hh := Classical.choose_spec h'
     rw [eq_of_chain hh h]
     simp
@@ -494,6 +494,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc] infixr:25 " →𝒄 " => ContinuousHom -- Input: \r\MIc
 
+@[macro_inline]
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h

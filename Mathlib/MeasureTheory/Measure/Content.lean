@@ -84,6 +84,7 @@ instance : Inhabited (Content G) :=
 
 namespace Content
 
+@[macro_inline]
 instance : FunLike (Content G) (Compacts G) ℝ≥0∞ where
   coe μ s := μ.toFun s
   coe_injective := by
@@ -243,7 +244,6 @@ theorem outerMeasure_le (U : Opens G) (K : Compacts G) (hUK : (U : Set G) ⊆ K)
     μ.outerMeasure U ≤ μ K :=
   (μ.outerMeasure_opens U).le.trans <| μ.innerContent_le U K hUK
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_outerMeasure_compacts (K : Compacts G) : μ K ≤ μ.outerMeasure K := by
   rw [Content.outerMeasure, inducedOuterMeasure_eq_iInf]
   · exact le_iInf fun U => le_iInf fun hU => le_iInf <| μ.le_innerContent K ⟨U, hU⟩

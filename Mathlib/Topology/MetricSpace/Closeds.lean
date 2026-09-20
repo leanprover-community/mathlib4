@@ -28,7 +28,9 @@ public section
 
 noncomputable section
 
-open Set Function TopologicalSpace Filter Topology ENNReal
+open Set Function TopologicalSpace Filter ENNReal Metric
+
+open scoped Topology
 
 namespace Metric
 
@@ -79,8 +81,6 @@ protected abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set �
 end Metric
 
 namespace TopologicalSpace
-
-open Metric
 
 variable {α β : Type*} [EMetricSpace α] [EMetricSpace β] {s : Set α}
 
@@ -269,14 +269,6 @@ theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
 theorem isometry_toCompacts : Isometry (NonemptyCompacts.toCompacts (α := α)) :=
   fun _ _ => rfl
 
-/-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
-@[deprecated
-  "Use `TopologicalSpace.NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range` instead"
-  (since := "2026-01-28")]
-theorem isClosed_in_closeds [CompleteSpace α] :
-    IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) :=
-  NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range
-
 theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
   fun _ _ => hausdorffEDist_singleton
 
@@ -292,71 +284,23 @@ end NonemptyCompacts
 
 end TopologicalSpace
 
-namespace EMetric
-
-open Metric
-
-@[deprecated (since := "2026-01-08")]
-alias mem_hausdorffEntourage_of_hausdorffEdist_lt :=
-  mem_hausdorffEntourage_of_hausdorffEDist_lt
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_le_of_mem_hausdorffEntourage := hausdorffEDist_le_of_mem_hausdorffEntourage
-
-@[deprecated (since := "2026-01-08")]
-alias continuous_infEdist_hausdorffEdist :=
-  TopologicalSpace.Closeds.continuous_infEDist
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.edist_eq := TopologicalSpace.Closeds.edist_eq
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.isometry_singleton := TopologicalSpace.Closeds.isometry_singleton
-
-@[deprecated (since := "2026-01-08")]
-alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isometry_toCloseds :=
-  TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isClosed_in_closeds :=
-  TopologicalSpace.NonemptyCompacts.isClosed_in_closeds
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.isometry_singleton :=
-  TopologicalSpace.NonemptyCompacts.isometry_singleton
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.lipschitz_sup :=
-  TopologicalSpace.NonemptyCompacts.lipschitz_sup
-
-@[deprecated (since := "2026-01-08")]
-alias NonemptyCompacts.lipschitz_prod :=
-  TopologicalSpace.NonemptyCompacts.lipschitz_prod
-
-end EMetric --namespace
-
-namespace Metric
-
-section
+namespace TopologicalSpace.NonemptyCompacts
 
 variable {α : Type*} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
-instance NonemptyCompacts.instMetricSpace : MetricSpace (NonemptyCompacts α) :=
+instance : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
-    hausdorffEDist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
+    Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
       y.isCompact.isBounded
 
 /-- The distance on `NonemptyCompacts α` is the Hausdorff distance, by construction -/
-theorem NonemptyCompacts.dist_eq {x y : NonemptyCompacts α} :
-    dist x y = hausdorffDist (x : Set α) y :=
+theorem dist_eq {x y : NonemptyCompacts α} : dist x y = hausdorffDist (x : Set α) y :=
   rfl
 
-theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
+theorem lipschitz_infDist_const (x : α) :
+    LipschitzWith 1 fun s : NonemptyCompacts α => infDist x s :=
   LipschitzWith.of_le_add fun s t => by
     rw [dist_comm]
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
@@ -364,12 +308,22 @@ theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompact
 theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
   rw [← one_add_one_eq_two]
   exact LipschitzWith.uncurry
-    (fun s : NonemptyCompacts α => lipschitz_infDist_pt (s : Set α)) lipschitz_infDist_set
+    (fun s : NonemptyCompacts α => lipschitz_infDist_pt (s : Set α)) lipschitz_infDist_const
 
-theorem uniformContinuous_infDist_Hausdorff_dist :
+theorem uniformContinuous_infDist :
     UniformContinuous fun p : α × NonemptyCompacts α => infDist p.1 p.2 :=
   lipschitz_infDist.uniformContinuous
 
-end --section
+end TopologicalSpace.NonemptyCompacts
 
-end Metric --namespace
+@[deprecated (since := "2026-08-24")]
+alias Metric.NonemptyCompacts.dist_eq := NonemptyCompacts.dist_eq
+
+@[deprecated (since := "2026-08-24")]
+alias Metric.lipschitz_infDist_set := NonemptyCompacts.lipschitz_infDist_const
+
+@[deprecated (since := "2026-08-24")]
+alias Metric.lipschitz_infDist := NonemptyCompacts.lipschitz_infDist
+
+@[deprecated (since := "2026-08-24")]
+alias Metric.uniformContinuous_infDist_Hausdorff_dist := NonemptyCompacts.uniformContinuous_infDist

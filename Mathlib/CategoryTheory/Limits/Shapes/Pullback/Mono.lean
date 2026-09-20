@@ -36,7 +36,7 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
-open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Hom PullbackCone
+open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Hom
 
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
@@ -131,7 +131,6 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
     Mono (pullback.snd f g) :=
   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
 instance mono_pullback_to_prod {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
@@ -186,8 +185,6 @@ instance pullback_snd_iso_of_left_factors_mono :
 end
 
 section
-
-open WalkingCospan
 
 variable (f : X ⟶ Y) [Mono f]
 
@@ -312,7 +309,6 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
     Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
 instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
@@ -374,8 +370,6 @@ instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
 end
 
 section
-
-open WalkingSpan
 
 variable (f : X ⟶ Y) [Epi f]
 

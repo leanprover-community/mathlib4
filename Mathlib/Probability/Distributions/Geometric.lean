@@ -13,18 +13,18 @@ import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 /-! # Geometric distributions
 
 We define the geometric distributions over natural numbers. For `0 < p ≤ 1`, `geometricMeasure p`
-is the measure which to `{n}` associates `(1 - p) ^ n * n`.
+is the measure which to `{n}` associates `(1 - p) ^ n * p`.
 
 As the parameter `p` needs to lie between `0` and `1`, we define `geometricMeasure p` with
 `p : unitInterval`.
 
-Imagine a certain experience which has success probability `p`. If you repeat this experience
-infintely many times and independently, the number of failures before the first success
+Imagine a certain experiment which has success probability `p`. If you repeat this experiment
+infinitely many times and independently, the number of failures before the first success
 follows a geometric distribution with parameter `p`.
 
 ## Main definition
 
-* `geometricMeasure p`: a geometric measure on a semiring `R`,
+* `geometricMeasure p`: a geometric measure on `ℕ`,
   parametrized by its success probability `p`.
 
 ## Implementation note
@@ -42,7 +42,7 @@ geometric distribution
 
 open scoped ENNReal NNReal
 
-open MeasureTheory Real Set Filter Topology
+open MeasureTheory Real Set
 
 namespace ProbabilityTheory
 
@@ -58,9 +58,9 @@ noncomputable def geometricMeasure (p : unitInterval) : Measure ℕ := if p ≠ 
 lemma geometricMeasure_eq (hp : p ≠ 0) :
     geometricMeasure p =
       Measure.sum (fun n ↦ ENNReal.ofReal ((1 - p) ^ n * p) • .dirac n) :=
-  if_pos hp
+  ite_eq_left hp
 
-/-- The `positivty` tactic does not work for this goal. Use this lemma to rewrite
+/-- The `positivity` tactic does not work for this goal. Use this lemma to rewrite
 `(ENNReal.ofReal ((1 - p) ^ n * p)).toReal = (1 - p) ^ n * p`. -/
 lemma geometricMeasure_nonneg (p : unitInterval) n :
     0 ≤ (1 - p : ℝ) ^ n * p := mul_nonneg (pow_nonneg (by grind) n) p.2.1
@@ -147,11 +147,11 @@ section GeometricPMF
 variable {p : ℝ}
 
 /-- The pmf of the geometric distribution depending on its success probability. -/
-@[deprecated geometricMeasure (since := "2026-03-08")]
+@[deprecated geometricMeasure +typeChanged (since := "2026-03-08")]
 noncomputable
 def geometricPMFReal (p : ℝ) (n : ℕ) : ℝ := (1 - p) ^ n * p
 
-@[deprecated hasSum_one_geometricMeasure (since := "2026-03-08")]
+@[deprecated hasSum_one_geometricMeasure +typeChanged (since := "2026-03-08")]
 lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     HasSum (fun n ↦ geometricPMFReal p n) 1 := by
   unfold geometricPMFReal
@@ -161,20 +161,20 @@ lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
   rw [inv_mul_eq_div, div_self hp_pos.ne'] at this
   exact this
 
-@[deprecated geometricMeasure_real_singleton_pos (since := "2026-03-08")]
+@[deprecated geometricMeasure_real_singleton_pos +typeChanged (since := "2026-03-08")]
 lemma geometricPMFReal_pos {n : ℕ} (hp_pos : 0 < p) (hp_lt_one : p < 1) :
     0 < geometricPMFReal p n := by
   rw [geometricPMFReal]
   positivity [sub_pos.mpr hp_lt_one]
 
-@[deprecated measureReal_nonneg (since := "2026-03-08")]
+@[deprecated measureReal_nonneg +typeChanged (since := "2026-03-08")]
 lemma geometricPMFReal_nonneg {n : ℕ} (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     0 ≤ geometricPMFReal p n := by
   rw [geometricPMFReal]
   positivity [sub_nonneg.mpr hp_le_one]
 
 /-- Geometric distribution with success probability `p`. -/
-@[deprecated geometricMeasure (since := "2026-03-08")]
+@[deprecated geometricMeasure +typeChanged (since := "2026-03-08")]
 noncomputable
 def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
   ⟨fun n ↦ ENNReal.ofReal (geometricPMFReal p n), by
@@ -183,11 +183,11 @@ def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
     exact (geometricPMFRealSum hp_pos hp_le_one).toNNReal
       (fun n ↦ geometricPMFReal_nonneg hp_pos hp_le_one)⟩
 
-@[deprecated Measurable.of_discrete (since := "2026-03-08")]
+@[deprecated Measurable.of_discrete +typeChanged (since := "2026-03-08")]
 lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
   fun_prop
 
-@[deprecated StronglyMeasurable.of_discrete (since := "2026-03-08")]
+@[deprecated StronglyMeasurable.of_discrete +typeChanged (since := "2026-03-08")]
 lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
   stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal
 

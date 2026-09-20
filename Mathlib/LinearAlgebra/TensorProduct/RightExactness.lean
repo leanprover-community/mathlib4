@@ -118,7 +118,6 @@ theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
   intro z
   induction z with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul q p =>
     obtain ⟨n, rfl⟩ := hg p
     exact ⟨q ⊗ₜ[R] n, rfl⟩
@@ -149,7 +148,6 @@ theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
   intro z
   induction z with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul p q =>
     obtain ⟨n, rfl⟩ := hg p
     exact ⟨n ⊗ₜ[R] q, rfl⟩
@@ -204,7 +202,6 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
@@ -312,7 +309,6 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
@@ -473,14 +469,8 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
-      | zero =>
-        use 0
-        simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
         induction x with
-        | zero =>
-          use 0
-          simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
           simp only [smul_eq_mul]
@@ -497,9 +487,6 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         simp only [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
-    | zero =>
-        rw [map_zero]
-        apply zero_mem
     | tmul a b =>
         simp only [LinearMap.rTensor_tmul, Submodule.coe_subtype]
         suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
@@ -537,14 +524,8 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
-      | zero =>
-        use 0
-        simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
         induction x with
-        | zero =>
-          use 0
-          simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a * x) ⊗ₜ[R] (b • y)
           simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
@@ -561,9 +542,6 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
-    | zero =>
-        rw [map_zero]
-        apply zero_mem
     | tmul a b =>
         simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype]
         suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by

@@ -66,11 +66,11 @@ theorem isClosedEmbedding_subtype (p : Submodule R M) (hp : IsClosed (p : Set M)
 theorem isClosedEmbedding_subtypeL (p : Submodule R M) (hp : IsClosed (p : Set M)) :
     Topology.IsClosedEmbedding p.subtypeL := .subtypeVal hp
 
-@[deprecated range_subtype (since := "2026-05-06")]
+@[deprecated range_subtype +typeChanged (since := "2026-05-06")]
 theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
   Submodule.range_subtype _
 
-@[deprecated ker_subtype (since := "2026-05-06")]
+@[deprecated ker_subtype +typeChanged (since := "2026-05-06")]
 theorem ker_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).ker = ⊥ :=
   Submodule.ker_subtype _
 
@@ -195,7 +195,7 @@ end Restrict
 
 section
 
-variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
+variable {R₁ R₂ : Type*} [Ring R₁] [Ring R₂]
   {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
   {M₁ M₂ : Type*}
   [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]

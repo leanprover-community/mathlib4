@@ -36,9 +36,9 @@ Hölder norm, Hoelder norm, Holder norm
 
 variable {X Y : Type*}
 
-open Filter Set
+open Set
 
-open NNReal ENNReal Topology
+open NNReal ENNReal
 
 section PseudoEMetricSpace
 

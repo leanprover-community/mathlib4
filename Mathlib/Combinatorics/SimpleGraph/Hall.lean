@@ -75,7 +75,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
   · exact ⟨f ⟨v, h'⟩, by simp_all⟩
   · use x
     have := hx₂ ▸ this ⟨x, hx₁⟩
-    simp only [this, ↓reduceDIte, hx₁, hx₂, dite_else_false, forall_exists_index, true_and]
+    simp only [this, ↓reduceDIte, hx₁, hx₂, dite_false_right, forall_exists_index, true_and]
     exact fun _ _ k ↦ Subtype.ext_iff.mp <| hf₁ (hx₂ ▸ k)
 
 lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
@@ -123,7 +123,7 @@ theorem exists_isPerfectMatching_of_forall_ncard_le
     rw [Set.range_comp', hb₁.surjective.range_eq, Subtype.coe_image_univ]
     exact union_eq_univ_of_forall_ncard_le h₁ h₂
   refine ⟨fun v _ ↦ ?_, Subgraph.isSpanning_iff.mpr this⟩
-  simp only [dite_else_false]
+  simp only [dite_false_right]
   split
   · exact existsUnique_eq'
   · obtain ⟨x, _⟩ := hb₁.existsUnique ⟨v, by grind⟩

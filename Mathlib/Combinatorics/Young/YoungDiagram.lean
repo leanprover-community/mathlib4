@@ -5,6 +5,7 @@ Authors: Jake Levinson
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.SetLike.Basic
@@ -75,7 +76,7 @@ instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
   coe_injective μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
-instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
+instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram
 
 @[simp]
 theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c ∈ μ :=
@@ -229,11 +230,14 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
 protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.transpose ≤ ν.transpose :=
   transpose_le_iff.mpr h_le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transposing Young diagrams is an `OrderIso`. -/
 @[simps]
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
   ⟨⟨transpose, transpose, fun _ => by simp, fun _ => by simp⟩, by simp⟩
+
+@[simp]
+lemma card_transpose (μ : YoungDiagram) : μ.transpose.card = μ.card := by
+  simp [transpose, YoungDiagram.card]
 
 end Transpose
 
@@ -380,6 +384,19 @@ theorem pos_of_mem_rowLens (μ : YoungDiagram) (x : ℕ) (hx : x ∈ μ.rowLens)
   rw [rowLens, List.mem_map] at hx
   obtain ⟨i, hi, rfl : μ.rowLen i = x⟩ := hx
   rwa [List.mem_range, ← mem_iff_lt_colLen, mem_iff_lt_rowLen] at hi
+
+@[simp]
+lemma sum_rowLens_eq_card (μ : YoungDiagram) : μ.rowLens.sum = μ.card := by
+  have hf : ∀ c ∈ μ.cells, c.1 ∈ Finset.range (μ.colLen 0) := by
+    intro c hc
+    rw [Finset.mem_range, ← YoungDiagram.mem_iff_lt_colLen]
+    exact μ.up_left_mem (le_refl _) (Nat.zero_le _) hc
+  have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.1 = i}).card = μ.rowLen i := by
+    intro i _hi
+    rw [YoungDiagram.rowLen_eq_card, row]
+  rw [YoungDiagram.card, Finset.card_eq_sum_card_fiberwise hf, Finset.sum_congr rfl hr,
+    YoungDiagram.rowLens, Finset.sum_eq_multiset_sum, Finset.range_val, Multiset.range,
+    Multiset.map_coe, Multiset.sum_coe]
 
 end RowLens
 

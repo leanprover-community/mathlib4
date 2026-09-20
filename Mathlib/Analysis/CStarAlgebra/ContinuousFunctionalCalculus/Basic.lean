@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 public import Mathlib.Analysis.CStarAlgebra.Unitization
@@ -64,17 +65,8 @@ namespace StarAlgebra.elemental
 
 variable [CStarAlgebra A]
 
-instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
-    [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :
-    NormedCommRing (elemental R a) :=
-  { SubringClass.toNormedRing (elemental R a) with
-    mul_comm := mul_comm }
-
-noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
-
 variable (a : A) [IsStarNormal a]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from `characterSpace ℂ (elemental ℂ x)` to `spectrum ℂ x` given
 by evaluating `φ` at `x`. This is essentially just evaluation of the `gelfandTransform` of `x`,
 but because we want something in `spectrum ℂ x`, as opposed to
@@ -92,7 +84,6 @@ theorem continuous_characterSpaceToSpectrum (x : A) :
   continuous_induced_rng.2
     (map_continuous <| gelfandTransform ℂ (elemental ℂ x) ⟨x, self_mem ℂ x⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bijective_characterSpaceToSpectrum :
     Function.Bijective (characterSpaceToSpectrum a) := by
   refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩
@@ -153,14 +144,15 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
   predicate_zero := .zero
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
-    have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp <| continuousFunctionalCalculus a :
-        C(spectrum ℂ a, ℂ) →⋆ₐ[ℂ] A) :=
+    have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp <|
+        (continuousFunctionalCalculus a).toStarAlgHom) :=
       isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
     case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
     case hom_map_spectrum =>
       intro f
-      simp only [StarAlgHom.comp_apply, StarAlgHom.coe_coe, StarSubalgebra.coe_subtype]
+      simp only [StarAlgHom.comp_apply, StarSubalgebra.coe_subtype,
+        StarAlgEquiv.toStarAlgHom_apply]
       rw [← StarSubalgebra.spectrum_eq (hS := StarAlgebra.elemental.isClosed ℂ a),
         AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
     case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
@@ -168,7 +160,8 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
 attribute [local instance] IsStarNormal.instContinuousFunctionalCalculus
 
 lemma cfcHom_eq_of_isStarNormal (a : A) [ha : IsStarNormal a] :
-    cfcHom ha = (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a) := by
+    cfcHom ha =
+      (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a).toStarAlgHom := by
   refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
   · exact continuous_subtype_val.comp <|
       (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
@@ -212,7 +205,8 @@ instance IsStarNormal.instNonUnitalIsometricContinuousFunctionalCalculus :
     rw [← norm_inr (𝕜 := ℂ), ← inrNonUnitalStarAlgHom_apply, ← NonUnitalStarAlgHom.comp_apply,
       inr_comp_cfcₙHom_eq_cfcₙAux a, cfcₙAux]
     simp only [NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply,
-      NonUnitalStarAlgHom.coe_coe]
+      coe_toContinuousMapHom, StarAlgEquiv.toNonUnitalStarAlgHom_apply,
+      StarAlgHom.coe_toNonUnitalStarAlgHom]
     rw [norm_cfcHom (a : Unitization ℂ A), StarAlgEquiv.norm_map]
     rfl
 
@@ -261,7 +255,7 @@ lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
   rintro - ⟨x, -, rfl⟩
   exact sq_nonneg x
 
-open ComplexStarModule
+open scoped ComplexStarModule
 
 lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
     (ha₁ : SpectrumRestricts a ContinuousMap.realToNNReal)
@@ -271,7 +265,7 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
   apply CFC.eq_zero_of_spectrum_subset_zero (R := ℝ) a
   rw [Set.subset_singleton_iff]
   simp only [← spectrum.neg_eq, Set.mem_neg] at ha₂
-  peel ha₁ with x hx _
+  gconvert ha₁ with x hx
   linarith [ha₂ (-x) ((neg_neg x).symm ▸ hx)]
 
 lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a : A}

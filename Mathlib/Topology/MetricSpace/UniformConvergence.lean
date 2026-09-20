@@ -44,8 +44,9 @@ There are a few advantages of equipping this space with this metric structure.
 public section
 
 variable {α β γ : Type*} [PseudoEMetricSpace γ]
-open scoped UniformConvergence NNReal ENNReal
-open Filter Topology Uniformity
+open Filter
+
+open scoped UniformConvergence NNReal ENNReal Topology Uniformity
 
 namespace UniformFun
 
