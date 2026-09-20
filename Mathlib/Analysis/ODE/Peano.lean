@@ -26,8 +26,7 @@ which prepares for Peano existence theorem.
 
 ## Implementation notes
 
-This file contains the first step of the proof outlined below: the construction of Tonelli
-approximations satisfying a delayed integral equation.
+This file constructs the Tonelli approximations and proves their range and Lipschitz bounds.
 
 We first construct a solution on `Icc t₀ tmax` using Tonelli approximations.
 
