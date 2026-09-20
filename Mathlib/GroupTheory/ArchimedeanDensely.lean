@@ -89,8 +89,7 @@ instance : Unique (ℤ ≃+o ℤ) where
 
 namespace WithZero
 
-/-- A multiplicative automorphism of `ℤᵐ⁰` restricts to an additive automorphism of `ℤ`.
-The order plays no role here; it is only used in `orderMonoidIso_int_eq_refl`. -/
+/-- A multiplicative automorphism of `ℤᵐ⁰` restricts to an additive automorphism of `ℤ`. -/
 private def logMapAddEquiv (e : ℤᵐ⁰ ≃* ℤᵐ⁰) : ℤ ≃+ ℤ :=
   AddEquiv.toMultiplicative.symm e.unzero
 
