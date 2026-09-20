@@ -48,6 +48,19 @@ structure PSet : Type (u + 1) where
 
 namespace PSet
 
+@[deprecated "these rules hold by reducible defeq for structure
+projection now" (since := "2026-09-20")]
+theorem mk_type (α A) : «Type» ⟨α, A⟩ = α :=
+  rfl
+
+@[deprecated "these rules hold by reducible defeq for structure
+projection now" (since := "2026-09-20")]
+theorem mk_func (α A) : Func ⟨α, A⟩ = A :=
+  rfl
+
+theorem eta : ∀ x : PSet, mk x.Type x.Func = x
+  | ⟨_, _⟩ => rfl
+
 /-- Two pre-sets are extensionally equivalent if every element of the first family is extensionally
 equivalent to some element of the second family and vice-versa. -/
 def Equiv : PSet → PSet → Prop
