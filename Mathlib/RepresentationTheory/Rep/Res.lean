@@ -34,7 +34,7 @@ abbrev res (f : H →* G) (A : Rep k G) := of (A.ρ.comp f)
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
     res f X ⟶ res f Y :=
-  ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.2 (f h)⟩
+  ofHom ⟨p.hom, fun _ ↦ p.hom.2 _⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
