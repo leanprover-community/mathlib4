@@ -161,7 +161,7 @@ instance : SetLike (AffineSubspace k P) P where
   coe := carrier
   coe_injective p q _ := by cases p; cases q; congr
 
-instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
+instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P)
 
 instance : Singleton P (AffineSubspace k P) where
   singleton x := {
