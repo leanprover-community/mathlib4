@@ -404,7 +404,7 @@ theorem eq_of_of_pow_eq_of_pow {a b : α} (hab : a ≠ b) {n m : ℕ} (h : of a 
   simpa [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
 
 @[to_additive]
-theorem not_commute {a b : α} (h : a ≠ b) : ¬Commute (of a) (of b) := by
+theorem not_commute_of_of {a b : α} (h : a ≠ b) : ¬Commute (of a) (of b) := by
   classical
   simp [commute_iff_eq, ne_of_apply_ne toWord, toWord_mul, h]
 
@@ -415,17 +415,17 @@ private theorem not_isMulCommutative_of_nontrivial [Nontrivial α] :
   simp only [isMulCommutative_iff, not_forall]
   refine ⟨of a, of b, ?_⟩
   rw [← commute_iff_eq]
-  exact not_commute hab
+  exact not_commute_of_of hab
 
-@[to_additive]
-theorem subsingleton_iff_isCyclic : Subsingleton α ↔ IsCyclic (FreeGroup α) := by
-  refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
+@[to_additive (attr := simp)]
+theorem isCyclic_iff_subsingleton : IsCyclic (FreeGroup α) ↔ Subsingleton α := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   by_contra! hh
   exact not_isMulCommutative_of_nontrivial h.isMulCommutative
 
-@[to_additive]
-theorem subsingleton_iff_isMulCommutative : Subsingleton α ↔ IsMulCommutative (FreeGroup α) := by
-  refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
+@[to_additive (attr := simp)]
+theorem isMulCommutative_iff_subsingleton : IsMulCommutative (FreeGroup α) ↔ Subsingleton α := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
   by_contra! hh
   exact not_isMulCommutative_of_nontrivial h
 
