@@ -205,10 +205,14 @@ theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
   convert! h.units_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
+protected theorem LinearIndependent.codRestrict (hs : LinearIndependent R v) (N : Submodule R M)
+    (h : ∀ i, v i ∈ N) : LinearIndependent R (Set.codRestrict v N h) :=
+  LinearIndependent.of_comp N.subtype hs
+
 theorem linearIndependent_span (hs : LinearIndependent R v) :
     LinearIndependent R (M := span R (range v))
       (fun i : ι ↦ ⟨v i, subset_span (mem_range_self i)⟩) :=
-  LinearIndependent.of_comp (span R (range v)).subtype hs
+  hs.codRestrict _ _
 
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)

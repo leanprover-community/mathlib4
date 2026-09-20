@@ -316,7 +316,7 @@ variable (M) in
 @[to_additive (attr := simps)
 /-- If `M` is an additive monoid object, then `Hom(-, M)` is a presheaf of additive monoids. -/]
 def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
-  obj X := MonCat.of (unop X ⟶ M)
+  obj X := ↧(unop X ⟶ M)
   map {X Y₂} φ := MonCat.ofHom
     { toFun := (φ.unop ≫ ·)
       map_one' := by

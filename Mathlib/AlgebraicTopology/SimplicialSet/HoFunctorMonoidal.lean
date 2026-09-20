@@ -110,7 +110,7 @@ instance {n : ℕ} (d : (SimplexCategory.Truncated n)ᵒᵖ) :
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 this is the isomorphism `Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal` in `Cat`. -/
 def isoTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
-    Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal :=
+    ↧X.HomotopyCategory ≅ Cat.chosenTerminal :=
   IsTerminal.uniqueUpToIso (isTerminal _) Cat.chosenTerminalIsTerminal
 
 namespace BinaryProduct
@@ -339,18 +339,11 @@ def associativity'Iso :
     Functor.prod (𝟭 _) (inverse Y Z) ⋙ inverse X (Y ⊗ Z) :=
   Functor.fullyFaithfulCurry₃.preimageIso
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _)
-      (fun z₀ z₁ e ↦ by
-        dsimp
-        rw [Category.comp_id, Category.id_comp, ← prod_id,
-          inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
-          CategoryTheory.Functor.map_id]
-        dsimp [← Edge.id_tensor_id]))
+      (fun z₀ z₁ e ↦ by simp [← prod_id, ← Edge.id_tensor_id]))
       (fun y₀ y₁ e ↦ by
         ext z
         obtain ⟨z, rfl⟩ := z.mk_surjective
-        dsimp
-        rw [Category.comp_id, Category.id_comp,
-          inverse_map_mkHom_homMk_id, inverse_map_mkHom_id_homMk]))
+        simp))
       (fun x₀ x₁ e ↦ by
         ext y z
         obtain ⟨y, rfl⟩ := y.mk_surjective
