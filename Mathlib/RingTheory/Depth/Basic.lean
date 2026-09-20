@@ -131,9 +131,7 @@ lemma moduleDepth_eq_sup_nat (N M : ModuleCat.{v} R) : moduleDepth N M =
   simp only [moduleDepth]
   by_cases h : ⊤ ∈ {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext N M i)}
   · rw [csSup_eq_top_of_top_mem h, eq_comm, ENat.eq_top_iff_forall_ge]
-    intro m
-    apply le_sSup
-    simp only [Set.mem_ofPred_eq, ENat.natCast_lt_top, forall_const] at h
+    refine fun m ↦ le_sSup ?_
     simpa using fun i _ ↦ h i
   · congr
     ext n
