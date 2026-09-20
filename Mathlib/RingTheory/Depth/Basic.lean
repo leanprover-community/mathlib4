@@ -60,7 +60,8 @@ noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
 
 /-- The depth of a `R`-module `M` with respect to an ideal `I`,
 defined as `moduleDepth (R⧸ I, M)`. -/
-@[stacks 00LI "Coincides in the case IM ≠ M."]
+@[stacks 00LI "Here we define depth using vanishing of Ext groups, it coincides with the
+regular sequence characterization in the case R is Noetherian and IM ≠ M."]
 noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
@@ -180,7 +181,7 @@ lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : 
     IsLocalRing.depth M = IsLocalRing.depth M' :=
   (maximalIdeal R).depth_eq_of_iso e
 
-lemma moduleDepth_eq_zero_of_nontrivial_linearMap (N M : ModuleCat.{v} R) :
+lemma moduleDepth_eq_zero_iff_nontrivial_linearMap (N M : ModuleCat.{v} R) :
     moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [moduleDepth] at h
