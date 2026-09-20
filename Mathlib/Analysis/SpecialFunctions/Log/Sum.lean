@@ -65,22 +65,22 @@ theorem sum_log_le' (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * l
 theorem le_sum_log (hx : 1 ≤ x) : x * log x - x - log x + 1 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
   have : 1 ≤ ⌊x⌋₊ := by simpa
   calc
-    _ ≥ ∫ t in 1..⌊x⌋₊, log t := by
-      rw [← Icc_add_one_left_eq_Ioc, zero_add, ← add_sum_Ioc_eq_sum_Icc this, cast_one,
-        log_one, ← Ico_add_one_add_one_eq_Ioc, zero_add, ← sum_Ico_add']
-      exact_mod_cast ((strictMonoOn_log.mono (by grind)).monotoneOn.integral_le_sum_Ico this).ge
-    _ = (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log t := by
-      nth_rw 3 [integral_symm]
-      rw [sub_neg_eq_add, integral_add_adjacent_intervals] <;> simp
-    _ ≥ (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log x := by
-      gcongr
-      apply integral_mono_on (floor_le (by linarith)) (by simp) (by simp)
-      intro _ _; rify at this; gcongr <;> grind
-    _ ≥ _ := by
-      have := log_nonneg hx
+    _ ≤ (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log x := by
       have : x - ⌊x⌋₊ ≤ 1 := by linarith [lt_floor_add_one x]
       grw [integral_log, log_one, intervalIntegral.integral_const, smul_eq_mul]
-      nlinarith
+      nlinarith [log_nonneg hx]
+    _ ≤ (∫ t in 1..x, log t) - ∫ t in ⌊x⌋₊..x, log t := by
+      rify at this
+      gcongr
+      apply integral_mono_on (floor_le (by linarith)) (by simp) (by simp)
+      grind [log_le_log_iff]
+    _ = ∫ t in 1..⌊x⌋₊, log t := by
+      rw [integral_symm _ ⌊x⌋₊, sub_neg_eq_add, integral_add_adjacent_intervals] <;>
+      simp
+    _ ≤ _ := by
+      rw [← Icc_add_one_left_eq_Ioc, zero_add, ← add_sum_Ioc_eq_sum_Icc this, cast_one,
+        log_one, ← Ico_add_one_add_one_eq_Ioc, zero_add, ← sum_Ico_add']
+      exact_mod_cast ((strictMonoOn_log.mono (by grind)).monotoneOn.integral_le_sum_Ico this)
 
 /-- An even cruder lower bound on the partial sum of the logarithm. -/
 theorem le_sum_log' (hx : 1 ≤ x) : x * log x - 2 * x ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
