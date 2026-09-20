@@ -307,6 +307,34 @@ theorem Antitone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedT
     f b ≤ a :=
   hf.dual_right.le_of_tendsto ha b
 
+/- Strict versions of the above theorems. These require extra hypotheses on `β`, such as
+`NoMaxOrder β` or `NoMinOrder β`. -/
+theorem StrictMono.gt_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
+    [Preorder β] [IsDirectedOrder β] [NoMaxOrder β] {f : β → α} {a : α} (hf : StrictMono f)
+    (ha : Tendsto f atTop (𝓝 a)) (b : β) :
+    f b < a := by
+  have : Nonempty β := ⟨b⟩
+  obtain ⟨c, hbc⟩ := exists_gt b
+  exact (hf hbc).trans_le <| ge_of_tendsto ha <| (eventually_gt_atTop c).mono fun _ hx ↦ (hf hx).le
+
+theorem StrictMono.lt_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
+    [Preorder β] [IsCodirectedOrder β] [NoMinOrder β] {f : β → α} {a : α} (hf : StrictMono f)
+    (ha : Tendsto f atBot (𝓝 a)) (b : β) :
+    a < f b :=
+  hf.dual.gt_of_tendsto ha b
+
+theorem StrictAnti.lt_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
+    [Preorder β] [IsDirectedOrder β] [NoMaxOrder β] {f : β → α} {a : α} (hf : StrictAnti f)
+    (ha : Tendsto f atTop (𝓝 a)) (b : β) :
+    a < f b :=
+  hf.dual_right.gt_of_tendsto ha b
+
+theorem StrictAnti.gt_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
+    [Preorder β] [IsCodirectedOrder β] [NoMinOrder β] {f : β → α} {a : α} (hf : StrictAnti f)
+    (ha : Tendsto f atBot (𝓝 a)) (b : β) :
+    f b < a :=
+  hf.dual_right.lt_of_tendsto ha b
+
 theorem isLUB_of_tendsto_atTop [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [Preorder β] [IsDirectedOrder β] [Nonempty β] {f : β → α} {a : α} (hf : Monotone f)
     (ha : Tendsto f atTop (𝓝 a)) : IsLUB (Set.range f) a := by
