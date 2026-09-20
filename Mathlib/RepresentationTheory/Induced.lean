@@ -292,7 +292,7 @@ noncomputable instance : (resFunctor.{max u v' w} (k := k) φ).IsRightAdjoint :=
   (indResAdjunction φ).isRightAdjoint
 
 end Adjunction
-#exit
+
 variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : Rep k H)
 
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
