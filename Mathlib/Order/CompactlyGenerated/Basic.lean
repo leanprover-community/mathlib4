@@ -74,7 +74,7 @@ section Preorder
 variable [Preorder α] (a b : α)
 
 variable {a b} in
-theorem isCompactElement_iff_of_le_of_ge (hab : a ≤ b) (hba : b ≤ a) :
+theorem isCompactElement_congr (hab : a ≤ b) (hba : b ≤ a) :
     IsCompactElement a ↔ IsCompactElement b := by
   grind [IsCompactElement]
 
