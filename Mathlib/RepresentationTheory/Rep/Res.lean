@@ -45,7 +45,7 @@ variable (f : H →* G) (M : Rep k G)
 
 lemma res_id : res (MonoidHom.id G) M = M := rfl
 
-lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
+lemma res_obj_ρ : (res f M).ρ = M.ρ.comp f := rfl
 
 lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 
