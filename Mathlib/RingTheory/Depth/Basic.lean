@@ -89,16 +89,16 @@ lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
   simp [moduleDepth_eq_find N M exist] at h
 
 lemma Ideal.depth_eq_top_of_subsingleton (I : Ideal R)
-    (M : ModuleCat.{v} R) (sub : Subsingleton M) : I.depth M = ⊤ := by
+    (M : ModuleCat.{v} R) [Subsingleton M] : I.depth M = ⊤ := by
   simp only [Ideal.depth, moduleDepth_eq_top_iff]
   intro i
   apply AddCommGrpCat.isZero_of_iff_subsingleton.mp
   apply (extFunctorObj (ModuleCat.of R (Shrink.{v} (R ⧸ I))) i).map_isZero
-  exact ModuleCat.isZero_iff_subsingleton.mpr sub
+  exact ModuleCat.isZero_iff_subsingleton.mpr ‹_›
 
 lemma IsLocalRing.depth_eq_top_of_subsingleton [IsLocalRing R]
-    (M : ModuleCat.{v} R) (sub : Subsingleton M) : IsLocalRing.depth M = ⊤ :=
-  Ideal.depth_eq_top_of_subsingleton _ M sub
+    (M : ModuleCat.{v} R) [Subsingleton M] : IsLocalRing.depth M = ⊤ :=
+  Ideal.depth_eq_top_of_subsingleton _ M
 
 lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M < ⊤ ↔ ∃ n, Nontrivial (Ext N M n) := by
@@ -138,8 +138,8 @@ lemma moduleDepth_eq_sSup_lt_top (N M : ModuleCat.{v} R) : moduleDepth N M =
     exact ⟨fun mem ↦ ⟨top_notMem_iff.mp h n mem, mem⟩, fun mem ↦ mem.2⟩
 
 lemma moduleDepth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
-    (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
-    [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (N M : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N]
+    [Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
     moduleDepth N M = I.depth M := by
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext N M i)) ↔
@@ -148,7 +148,7 @@ lemma moduleDepth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
     · apply ((exists_isRegular_tfae I n M smul_lt).out 2 3).mpr
       use N
     · have rees := ((exists_isRegular_tfae I n M smul_lt).out 1 2).mpr h
-      exact rees N Nntr Nfin (le_of_eq hsupp)
+      exact rees N ‹_› ‹_› (le_of_eq hsupp)
   simp only [moduleDepth_eq_sSup_lt_top, Ideal.depth]
   congr
   ext n
@@ -298,11 +298,11 @@ lemma moduleDepth_min_snd_fst_sub_one_le_trd_right
     (zero2.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
 
 lemma moduleDepth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
-    (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
-    [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
+    (N M : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N]
+    [Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
     moduleDepth N M = sSup {(List.length rs : ℕ∞) | (rs : List R)
-    (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
+      (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
   rw [moduleDepth_eq_sSup_lt_top]
   congr
   ext m
@@ -314,7 +314,7 @@ lemma moduleDepth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     use rs
   · simp only [← len, ENat.natCast_lt_top, Nat.cast_lt, true_and]
     have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 4 1).mp (by use rs)
-    exact rees N Nntr Nfin (le_of_eq hsupp)
+    exact rees N ‹_› ‹_› (le_of_eq hsupp)
 
 @[stacks 00LW]
 lemma IsLocalRing.ideal_depth_eq_sSup_length_isRegular [IsLocalRing R] [IsNoetherianRing R]
