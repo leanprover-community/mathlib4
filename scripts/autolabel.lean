@@ -434,7 +434,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
       s!"Incomplete `{ ``AutoLabel.mathlibLabelData }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
-    -- return 3
+    return 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
@@ -511,7 +511,7 @@ def autolabel : Cli.Cmd := `[Cli|
 
 - `0`: success
 - `2`: invalid labels defined
-- `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
+- `3`: labels do not cover all of `Mathlib/`
 -/
 public def main (args : List String) : IO UInt32 :=
   autolabel.validate args
