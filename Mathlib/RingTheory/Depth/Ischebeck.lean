@@ -172,7 +172,7 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
       (quotient_prime_ringKrullDim_ne_bot ass.1) := by
   have := Quotient.nontrivial_iff.mpr ass.1.ne_top'
   have dep0 : moduleDepth (of R (Shrink.{v} (R ⧸ P))) M = 0 := by
-    rw [moduleDepth_eq_zero_of_nontrivial_linearMap,
+    rw [moduleDepth_eq_zero_iff_nontrivial_linearMap,
       (LinearEquiv.congrLeft M R (Shrink.linearEquiv R (R ⧸ P))).nontrivial_congr]
     rcases ((isAssociatedPrime_iff_exists_injective_linearMap P M).mp
       (AssociatedPrimes.mem_iff.mp ass)).2 with ⟨f, hf⟩
