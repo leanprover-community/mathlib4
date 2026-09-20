@@ -31,7 +31,10 @@ commutative semiring `R` such that both `≺` and `≻` are bilinear.
 
 ## Main results
 Any dendriform ring (algebra) becomes a left or right `PreLieRing` (`PreLieAlgebra`) by
-antisymmetrization of operations: either `a ≻ b - b ≺ a` or `a ≺ b - b ≻ a` gives such a structure.
+antisymmetrization of operations:
+- `fun a b ↦ a ≻ b - b ≺ a` yields a `LeftPreLieRing`
+- `fun a b ↦ a ≺ b - b ≻ a` yields a `RightPreLieRing`.
+These structures are opposite to each other, see for instance `LeftPreLieRing.instRightPreLieRing`.
 
 ## References
 [J.-L. Loday, B. Vallette, *Algebraic Operads*][LV2012]
