@@ -114,7 +114,7 @@ example {x : ℤ} (hx : x ≥ 12) (h : Even x) : Even x := by
 example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x * a + c ≤ x * b + d := by
   success_if_fail_with_msg
     "rel failed, cannot prove goal by 'substituting' the listed relationships. \
-     The steps which could not be automatically justified were:\n0 ≤ x\nc ≤ d"
+    The steps which could not be automatically justified were:\nc ≤ d"
     (rel [h1])
   have : 0 ≤ x := by linarith
   rel [h1, h2]
@@ -162,11 +162,8 @@ example {F : ℕ → ℕ} (le_sum : ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' :
 example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
     ∏ i ∈ range n, (a - 2 ^ i) ≤ ∏ _i ∈ range n, a := by
   gcongr with i
-  · intro i hi
-    simp only [mem_range] at hi
-    linarith [ha i hi]
-  · have : 0 ≤ 2 ^ i := by positivity
-    linarith
+  have : 0 ≤ 2 ^ i := by positivity
+  linarith
 
 -- this tests that the match goes only as deep as is indicated by the template
 example {a b c d e : ℝ} (_h1 : 0 ≤ b) (_h2 : 0 ≤ c) (hac : a * b + 1 ≤ c * d + 1) (_hbd : b ≤ d) :
@@ -295,11 +292,11 @@ example : myCons 6 ≤ myCons 5 := by
 
 attribute [local gcongr] myCons_monotoneOn in
 example : myCons 4 ≤ myCons 5 := by
-  gcongr <;> simp
+  gcongr; simp
 
 attribute [local gcongr] myCons_antitoneOn in
 example : myCons 6 ≤ myCons 5 := by
-  gcongr <;> simp
+  gcongr; simp
 
 def myMono (n : Nat) : Nat := n
 theorem myMono_strictMono : StrictMono myMono := fun _ _ => id
@@ -311,7 +308,7 @@ example : myMono 4 < myMono 5 := by
 
 attribute [local gcongr] myMono_strictMonoOn in
 example : myMono 4 < myMono 5 := by
-  gcongr <;> simp
+  gcongr; simp
 
 def myAnti (n : Int) : Int := -n
 theorem myAnti_strictAnti : StrictAnti myAnti := fun _ _ => neg_lt_neg
@@ -323,6 +320,6 @@ example : myAnti 6 < myAnti 5 := by
 
 attribute [local gcongr] myAnti_strictAntiOn in
 example : myAnti 6 < myAnti 5 := by
-  gcongr <;> simp
+  gcongr; simp
 
 end GCongrTests
