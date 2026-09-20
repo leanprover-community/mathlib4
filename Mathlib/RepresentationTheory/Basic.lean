@@ -185,12 +185,12 @@ lemma asModuleEquiv_apply_single_smul (t : k) (g : G) (v : ρ.asModule) :
 
 @[simp]
 lemma single_smul_asModuleEquiv_symm_apply (t : k) (g : G) (v : V) :
-    MonoidAlgebra.single (g : G) t • ρ.asModuleEquiv.symm v = t • ρ.asModuleEquiv.symm (ρ g v) := by
+    single (g : G) t • ρ.asModuleEquiv.symm v = t • ρ.asModuleEquiv.symm (ρ g v) := by
   rw [← map_smul ρ.asModuleEquiv.symm, ρ.asModuleEquiv.eq_symm_apply,
     asModuleEquiv_apply_single_smul, LinearEquiv.apply_symm_apply]
 
 theorem single_smul (t : k) (g : G) (v : ρ.asModule) :
-    MonoidAlgebra.single (g : G) t • v = t • ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv v)) :=
+    single (g : G) t • v = t • ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv v)) :=
   ρ.single_smul_asModuleEquiv_symm_apply t g (ρ.asModuleEquiv v)
 
 /-- Build a `Representation k G M` from a `[Module k[G] M]`.
