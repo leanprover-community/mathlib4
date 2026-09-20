@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.Presentable.Basic
-public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Accessibly embedded full subcategories
