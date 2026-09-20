@@ -121,11 +121,8 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
 
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
-  match n with
-  | 0 | 1 => simp
-  | n + 2 =>
-    intro u v h
-    grind [pathGraph_adj, cycleGraph_adj, Fin.coe_int_sub_eq_ite, Fin.val_one]
+  intro u v h
+  grind [pathGraph_adj, cycleGraph_adj', Fin.coe_sub_iff_le]
 
 namespace Walk
 
