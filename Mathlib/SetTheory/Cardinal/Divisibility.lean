@@ -59,8 +59,8 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
-  refine Or.inr fun h => ?_
-  simpa [mul_aleph0_eq ha, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using @h a ℵ₀
+  refine .inr fun h => ?_
+  simpa [mul_aleph0_eq ha, (one_lt_aleph0.trans_le ha).ne'] using @h a ℵ₀
 
 @[simp, norm_cast]
 theorem prime_natCast_iff : Prime (n : Cardinal) ↔ n.Prime := by
