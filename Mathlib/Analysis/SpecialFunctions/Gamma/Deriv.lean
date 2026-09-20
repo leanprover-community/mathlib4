@@ -179,7 +179,7 @@ theorem integrableOn_log_log_mul_rpow {s : ℝ} (hs : 1 < s) :
         (by norm_num : -1 < (-1 : ℝ) / 2) one_pos (by linarith : 0 < s - 1)
     · simpa [IntegrableOn] using integrableOn_rpow_mul_exp_neg_mul_rpow
         (by norm_num : -1 < (1 : ℝ)) one_pos (by linarith : 0 < s - 1)
-  · exact Measurable.aestronglyMeasurable (by fun_prop)
+  · fun_prop
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with x (hx : 0 < x)
   simp only [log_exp, smul_eq_mul, norm_mul, norm_eq_abs, abs_exp, neg_sub, ← exp_mul]
   rw [mul_comm, mul_assoc, ← exp_add]
