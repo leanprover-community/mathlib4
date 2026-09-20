@@ -984,7 +984,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
   ext; simp [vecMul, dotProduct]
 
-theorem dotProduct_mulVec_of_one [Fintype n] (x : n → α) :
+theorem dotProduct_of_one_mulVec [Fintype n] (x : n → α) :
     x ⬝ᵥ of 1 *ᵥ x = (∑ i, x i) * ∑ i, x i := by
   simp [mulVec, dotProduct, Finset.sum_mul]
 
