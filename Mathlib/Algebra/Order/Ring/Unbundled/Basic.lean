@@ -680,7 +680,6 @@ lemma max_mul_mul_le_max_mul_max [PosMulMono R] [MulPosMono R] (b c : R) (ha : 0
     max (a * b) (d * c) ≤ max a c * max d b :=
   have ba : b * a ≤ max d b * max c a := by
     grw [← le_max_right c a, ← le_max_right]
-    exact hd.trans <| le_max_left d b
   have cd : c * d ≤ max a c * max b d :=
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)

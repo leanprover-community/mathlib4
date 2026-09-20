@@ -102,7 +102,7 @@ lemma prod_mono_of_subset_of_one_le₀ (h : s ⊆ t) (hf₀ : ∀ i ∈ s, 0 ≤
   classical
   calc
       ∏ i ∈ s, f i
-    _ ≤ ∏ i ∈ s, g i := by gcongr with i hi; exacts [hf₀, hfg i hi]
+    _ ≤ ∏ i ∈ s, g i := by gcongr with i hi; exact hfg i hi
     _ ≤ (∏ i ∈ t \ s, g i) * ∏ i ∈ s, g i :=
       le_mul_of_one_le_left (prod_nonneg fun i hi ↦ (hf₀ i hi).trans (hfg i hi)) <|
         one_le_prod₀ <| by simpa only [mem_sdiff, and_imp]
@@ -120,7 +120,7 @@ lemma prod_mono_of_subset_of_le_one₀ (h : s ⊆ t) (hg₀ : ∀ i ∈ t, 0 ≤
     _ = (∏ i ∈ t \ s, g i) * ∏ i ∈ s, g i := prod_union sdiff_disjoint
     _ ≤ ∏ i ∈ s, g i :=
       mul_le_of_le_one_left (prod_nonneg (by grind)) (prod_le_one₀ (by grind) (by grind))
-    _ ≤ ∏ i ∈ s, f i := by gcongr with i hi; exacts [fun i hi ↦ hg₀ _ <| h hi, hgf i hi]
+    _ ≤ ∏ i ∈ s, f i := by gcongr with i hi; exact hgf i hi
 
 @[gcongr]
 lemma prod_le_prod_of_subset_of_one_le₀ (h : s ⊆ t) (hf₀ : ∀ i ∈ s, 0 ≤ f i)

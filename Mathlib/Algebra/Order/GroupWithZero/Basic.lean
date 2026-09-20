@@ -205,11 +205,9 @@ theorem eq_and_eq_of_pos_of_le_of_mul_le_mul [PosMulReflectLE α] [MulPosReflect
     (h : b * d ≤ a * c) : a = b ∧ c = d := by
   refine ⟨le_antisymm hab ?_, le_antisymm hcd ?_⟩
   · grw [hcd] at h
-    · exact le_of_mul_le_mul_of_pos_right h <| hc.trans_le hcd
-    · exact ha.le
+    exact le_of_mul_le_mul_of_pos_right h <| hc.trans_le hcd
   · grw [hab] at h
-    · exact le_of_mul_le_mul_of_pos_left h <| ha.trans_le hab
-    · exact hc.le
+    exact le_of_mul_le_mul_of_pos_left h <| ha.trans_le hab
 
 theorem PosMulMono.toPosMulStrictMono [IsLeftCancelMulZero α] [PosMulMono α] :
     PosMulStrictMono α where
