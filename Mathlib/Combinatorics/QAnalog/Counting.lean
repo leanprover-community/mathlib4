@@ -50,20 +50,22 @@ def inversions (T : Finset ℕ) : ℕ := ∑ t ∈ T, #{s ∈ range t | s ∉ T}
 /-! ### Splitting subsets of `range (n + 1)` according to whether they contain `0` -/
 
 /-- The shift `n ↦ n + 1`, as an embedding. -/
-def succEmb : ℕ ↪ ℕ := ⟨fun n => n + 1, fun _ _ h => by simpa using h⟩
+def succEmb : ℕ ↪ ℕ := ⟨fun n => n + 1, add_left_injective 1⟩
 
 @[simp] private lemma succEmb_apply (n : ℕ) : succEmb n = n + 1 := rfl
 
 private lemma range_succ_eq_insert_map (n : ℕ) :
     range (n + 1) = insert 0 ((range n).map succEmb) := by
   ext x
-  simp only [mem_range, mem_insert, mem_map, succEmb_apply]
+  simp only [mem_range, mem_insert, mem_map]
   constructor
   · intro h
     rcases Nat.eq_zero_or_pos x with rfl | hx
     · exact Or.inl rfl
-    · exact Or.inr ⟨x - 1, by omega, by omega⟩
-  · rintro (rfl | ⟨a, ha, rfl⟩) <;> omega
+    · exact Or.inr ⟨x - 1, Nat.sub_lt_right_of_lt_add hx h, Nat.succ_pred_eq_of_pos hx⟩
+  · rintro (rfl | ⟨a, ha, rfl⟩)
+    · exact Nat.zero_lt_succ n
+    · exact Order.lt_add_one_iff.mpr ha
 
 /-- Every `(k+1)`-element subset of `range (n + 1)` is either the shift of a `(k+1)`-element
 subset of `range n`, or `0` together with the shift of a `k`-element subset of `range n`. -/
