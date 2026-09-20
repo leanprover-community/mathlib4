@@ -76,6 +76,20 @@ class NonUnitalDendriformAlgebra (R M) [CommSemiring R] extends NonUnitalSemirin
 
 namespace NonUnitalDendriformSemiring
 
+@[instance_reducible]
+def ofAddHom {M} [AddCommMonoid M] (prec : M →+ M →+ M) (succ : M →+ M →+ M)
+  (hss : ∀ a b c, succ a (succ b c) = succ (succ a b + prec a b) c)
+  (hpp : ∀ a b c, prec (prec a b) c = prec a (succ b c + prec b c))
+  (hps : ∀ a b c, prec (succ a b) c = succ a (prec b c)) :
+    NonUnitalDendriformSemiring M where
+  prec := prec
+  succ := succ
+  mul a b := succ a b + prec a b
+  mul_eq a b := by simp [HMul.hMul]
+  succ_succ_eq := hss
+  prec_succ_assoc := hps
+  prec_prec_eq := hpp
+
 variable {M} [NonUnitalDendriformSemiring M]
 variable (a b c : M)
 
