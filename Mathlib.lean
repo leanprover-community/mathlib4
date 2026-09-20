@@ -2128,6 +2128,7 @@ public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.LocallyConvex.Montel
 public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.LocallyConvex.SeminormFamily
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.StrongTopology
@@ -2267,6 +2268,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.Ray
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+public import Mathlib.Analysis.Normed.Module.Seminorm.Bounded
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Span
