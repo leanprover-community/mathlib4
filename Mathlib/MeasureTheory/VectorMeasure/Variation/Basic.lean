@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Measure.Dirac.Basic
+public import Mathlib.MeasureTheory.VectorMeasure.Relations
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 /-!
@@ -147,9 +148,8 @@ theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
   by_cases hE' : (⟨E, hE⟩ : Subtype MeasurableSet) = ⊥
   · simp_all
   simp only [variation_apply, preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
-  calc
-    ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
-    _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
+  grw [← preVariation.sum_le _ _ (Finpartition.indiscrete hE')]
+  simp
 
 @[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
