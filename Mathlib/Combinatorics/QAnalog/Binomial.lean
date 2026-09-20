@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2026 Eugenio Cainelli, Alessandro Iraci, Lorenzo Luccioli, Giovanni Paolini.
+Copyright (c) 2026 Eugenio Cainelli, Nirvana Coppola, Alessandro Iraci, Lorenzo Luccioli,
+Giovanni Paolini.
 All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eugenio Cainelli, Alessandro Iraci, Lorenzo Luccioli, Giovanni Paolini
+Authors: Eugenio Cainelli, Nirvana Coppola, Alessandro Iraci, Lorenzo Luccioli, Giovanni Paolini
 -/
 module
 
@@ -132,25 +133,19 @@ theorem qBinomial_succ_succ' :
     | zero => simp [qNat_succ]
     | succ k =>
       rcases Nat.lt_or_ge k n with h | h
-      · have hL : qBinomial q (n + 1 + 1) (k + 1 + 1)
-            = qBinomial q n (k + 1) + q ^ (n - k) * qBinomial q n k
+      · calc
+          _ = qBinomial q n (k + 1) + q ^ (n - k) * qBinomial q n k
               + q ^ (k + 1 + 1) * qBinomial q n (k + 1 + 1)
-              + q ^ (n + 1) * qBinomial q n (k + 1) := by
-          rw [qBinomial_succ_succ q (n + 1) (k + 1), ih k, ih (k + 1), sub_add_eq n k 1, mul_add,
-            ← mul_assoc, ← pow_add, show k + 1 + 1 + (n - k - 1) = n + 1 by omega]
-          abel
-        have hR : qBinomial q (n + 1) (k + 1 + 1)
-              + q ^ (n + 1 - (k + 1)) * qBinomial q (n + 1) (k + 1)
-            = qBinomial q n (k + 1) + q ^ (n - k) * qBinomial q n k
-              + q ^ (k + 1 + 1) * qBinomial q n (k + 1 + 1)
-              + q ^ (n + 1) * qBinomial q n (k + 1) := by
-          rw [Nat.add_sub_add_right n 1 k, qBinomial_succ_succ q n (k + 1),
-            qBinomial_succ_succ q n k, mul_add, ← mul_assoc, ← pow_add]
-          grind
-        rw [hL, hR]
+              + q ^ (n + 1) * qBinomial q n (k + 1) := by simp [qBinomial_succ_succ q (n + 1)
+                    (k + 1), ih, sub_add_eq, mul_add, ← mul_assoc, ← pow_add,
+                    show k + 1 + 1 + (n - k - 1) = n + 1 by omega, ← add_assoc]
+          _ = qBinomial q (n + 1) (k + 1 + 1)
+              + q ^ (n + 1 - (k + 1)) * qBinomial q (n + 1) (k + 1) := by
+                    rw [← Nat.add_sub_add_right n 1 k, qBinomial_succ_succ q n (k + 1),
+                    qBinomial_succ_succ q n k, mul_add, ← mul_assoc, ← pow_add]; grind
       · rcases eq_or_lt_of_le h with rfl | h'
         · simp [qBinomial_eq_zero_of_lt q (lt_succ_self (n + 1))]
-        · simp [qBinomial_succ_succ q (n + 1) (k + 1),  Nat.sub_eq_zero_of_le h,
+        · simp [qBinomial_succ_succ q (n + 1) (k + 1), Nat.sub_eq_zero_of_le h,
             qBinomial_eq_zero_of_lt q (show n + 1 < k + 1 + 1 by omega)]
 
 /-- The symmetry `[n choose n - k]_q = [n choose k]_q` of the `q`-binomial coefficients. -/
@@ -193,25 +188,15 @@ theorem qBinomial_mul_qNat_sub :
     | zero => simp
     | succ k =>
       rcases Nat.lt_or_ge k n with h | h
-      · have e1 : qNat q (k + 1) + q ^ (k + 1) * qNat q (n - k) = qNat q (n + 1) := by
-          rw [← qNat_add]; congr 1; omega
+      · simp only [reduceSubDiff]
+        have e1 : qNat q (k + 1) + q ^ (k + 1) * qNat q (n - k) = qNat q (n + 1) := by
+          rw [← qNat_add]; grind
         have e2 : qNat q (k + 1 + 1) + q ^ (k + 1 + 1) * qNat q (n - (k + 1))
-            = qNat q (n + 1) := by rw [← qNat_add]; congr 1; omega
-        rw [show n + 1 - (k + 1) = n - k by omega, qBinomial_succ_succ, qBinomial_succ_succ]
-        calc (qBinomial q n k + q ^ (k + 1) * qBinomial q n (k + 1)) * qNat q (n - k)
-            = qBinomial q n k * qNat q (n - k)
-              + q ^ (k + 1) * (qBinomial q n (k + 1) * qNat q (n - k)) := by
-                rw [add_mul, mul_assoc]
-          _ = qBinomial q n (k + 1) * qNat q (k + 1)
-              + qBinomial q n (k + 1) * (q ^ (k + 1) * qNat q (n - k)) := by
-                rw [ih k, ← mul_assoc, qBinomial_commute_pow q (k + 1) n (k + 1), mul_assoc]
-          _ = qBinomial q n (k + 1) * qNat q (n + 1) := by rw [← mul_add, e1]
-          _ = qBinomial q n (k + 1) * qNat q (k + 1 + 1)
-              + q ^ (k + 1 + 1) * (qBinomial q n (k + 1) * qNat q (n - (k + 1))) := by
-                rw [← e2, mul_add, ← mul_assoc, ← qBinomial_commute_pow q (k + 1 + 1) n (k + 1),
-                  mul_assoc]
-          _ = (qBinomial q n (k + 1) + q ^ (k + 1 + 1) * qBinomial q n (k + 1 + 1))
-              * qNat q (k + 1 + 1) := by rw [ih (k + 1), add_mul, mul_assoc]
+            = qNat q (n + 1) := by rw [← qNat_add]; grind
+        rw [qBinomial_succ_succ, qBinomial_succ_succ, add_mul, mul_assoc, ih k, ← mul_assoc,
+          qBinomial_commute_pow q (k + 1) n (k + 1), mul_assoc, ← mul_add, e1, ← e2, mul_add,
+          ← mul_assoc, ← qBinomial_commute_pow q (k + 1 + 1) n (k + 1), mul_assoc, ih (k + 1),
+          add_mul, mul_assoc]
       · rw [show n + 1 - (k + 1) = 0 by omega, qNat_zero, mul_zero,
           qBinomial_eq_zero_of_lt q (show n + 1 < k + 1 + 1 by omega), zero_mul]
 
@@ -225,39 +210,30 @@ theorem qBinomial_mul_qFactorial_mul_qFactorial (h : k ≤ n) :
     cases k with
     | zero => simp
     | succ k =>
-      have hk : k ≤ n := by omega
-      have ih1 := ih k hk
-      have hn : qNat q (k + 1) + q ^ (k + 1) * qNat q (n - k) = qNat q (n + 1) := by
-        rw [← qNat_add]; congr 1; omega
-      rw [show n + 1 - (k + 1) = n - k by omega, qBinomial_succ_succ, qFactorial_succ q k]
-      rcases eq_or_lt_of_le hk with rfl | h'
-      · rw [qBinomial_eq_zero_of_lt q (Nat.lt_succ_self k), Nat.sub_self, qFactorial_zero,
-          qBinomial_self, qFactorial_succ q k, mul_zero, add_zero, mul_one, one_mul]
-      · have ih2 := ih (k + 1) (by omega)
-        rw [qFactorial_succ q k] at ih2
-        rw [show n - k = n - (k + 1) + 1 by omega, qFactorial_succ,
-          show n - (k + 1) + 1 = n - k by omega] at ih1 ⊢
+      simp only [qBinomial_succ_succ, qFactorial_succ q k, show n + 1 - (k + 1) = n - k by omega]
+      rcases eq_or_lt_of_le (show k ≤ n by omega) with rfl | h'
+      · simp [qBinomial_eq_zero_of_lt q (Nat.lt_succ_self k), qFactorial_succ q k]
+      · have ih1 := ih k (by omega)
+        have ih2 := ih (k + 1) (by omega)
+        simp only [qFactorial_succ, show n - k = n - (k + 1) + 1 by omega] at ih1 ih2 ⊢
+        simp only [show n - (k + 1) + 1 = n - k by omega] at ih1 ⊢
         -- abbreviations for the elements involved, all of which commute with each other
-        set B₀ := qBinomial q n k
-        set B₁ := qBinomial q n (k + 1)
         set F := qFactorial q k
-        set G := qFactorial q (n - (k + 1))
         set N := qNat q (k + 1)
         set M := qNat q (n - k)
-        have cB₀N : Commute B₀ N := (qNat_commute_qBinomial q (k + 1) n k).symm
-        have cB₁M : Commute B₁ M := (qNat_commute_qBinomial q (n - k) n (k + 1)).symm
+        have cB₀N : Commute (qBinomial q n k) N := (qNat_commute_qBinomial q (k + 1) n k).symm
+        have cB₁M : Commute (qBinomial q n (k + 1)) M :=
+          (qNat_commute_qBinomial q (n - k) n (k + 1)).symm
         have cFM : Commute F M := (qNat_commute_qFactorial q (n - k) k).symm
         have cNM : Commute N M := qNat_commute_qNat q (k + 1) (n - k)
-        have t1 : B₀ * (N * F * (M * G)) = N * qFactorial q n := by
-          rw [mul_assoc N, cB₀N.left_comm, ih1]
-        have t2 : B₁ * (N * F * (M * G)) = M * qFactorial q n := by
-          rw [← mul_assoc (N * F), (cNM.mul_left cFM).eq, mul_assoc M, cB₁M.left_comm, ih2]
-        calc (B₀ + q ^ (k + 1) * B₁) * (N * F * (M * G))
-            = B₀ * (N * F * (M * G)) + q ^ (k + 1) * (B₁ * (N * F * (M * G))) := by
-              rw [add_mul, mul_assoc (q ^ (k + 1)) B₁]
-          _ = N * qFactorial q n + q ^ (k + 1) * (M * qFactorial q n) := by rw [t1, t2]
-          _ = (N + q ^ (k + 1) * M) * qFactorial q n := by rw [add_mul, mul_assoc]
-          _ = qFactorial q (n + 1) := by rw [hn, qFactorial_succ]
+        have hn : qNat q (k + 1) + q ^ (k + 1) * qNat q (n - k) = qNat q (n + 1) := by
+          rw [← qNat_add]; grind
+        simp [add_mul, show (qBinomial q n k) * (N * F * (M * (qFactorial q (n - (k + 1))))) =
+            N * qFactorial q n by simp [mul_assoc, cB₀N.left_comm, ih1], mul_assoc (q ^ (k + 1)),
+          show (qBinomial q n (k + 1)) * (N * F * (M * (qFactorial q (n - (k + 1))))) =
+            M * qFactorial q n by simp [← mul_assoc (N * F), (cNM.mul_left cFM).eq, mul_assoc M,
+            cB₁M.left_comm, ih2], ← hn]
+        grind
 
 end Semiring
 
@@ -288,38 +264,24 @@ theorem Commute.list_prod_one_add_pow_mul {q x : R} [Semiring R] (h : Commute q 
     have hsplit : ∑ k ∈ range (n + 1), q ^ (k.choose 2) * qBinomial q n k * x ^ k
         = 1 + ∑ k ∈ range (n + 1), q ^ ((k + 1).choose 2) * qBinomial q n (k + 1) * x ^ (k + 1)
         := by
-      rw [sum_range_succ (fun k => q ^ ((k + 1).choose 2) * qBinomial q n (k + 1) * x ^ (k + 1)) n,
-        qBinomial_eq_zero_of_lt q (Nat.lt_succ_self n), mul_zero, zero_mul, add_zero,
-        sum_range_succ' (fun k => q ^ (k.choose 2) * qBinomial q n k * x ^ k) n]
-      simp [add_comm]
+      simp [sum_range_succ, qBinomial_eq_zero_of_lt q (Nat.lt_succ_self n),
+        sum_range_succ' (fun k => q ^ (k.choose 2) * qBinomial q n k * x ^ k) n, add_comm]
     rw [List.prod_range_succ, ih, mul_add, mul_one, sum_mul,
-      sum_range_succ' (fun k =>
-        q ^ (k.choose 2) * qBinomial q (n + 1) k * x ^ k) (n + 1),
-      hsplit]
-    simp only [Nat.choose_zero_succ, pow_zero, qBinomial_zero_right, mul_one]
+      sum_range_succ' (fun k => q ^ (k.choose 2) * qBinomial q (n + 1) k * x ^ k) (n + 1),
+      hsplit, choose_zero_succ, pow_zero, qBinomial_zero_right, mul_one, pow_zero, mul_one]
     abel_nf
     congr 1
     rw [← sum_add_distrib]
-    apply sum_congr rfl
-    intro k hk
-    simp only [Nat.add_comm 1 k]
-    rw [qBinomial_succ_succ' q n k, mul_add, add_mul]
+    refine sum_congr rfl fun k hk ↦ ?_
+    simp only [Nat.add_comm 1 k, qBinomial_succ_succ' q n k, mul_add, add_mul]
     congr 1
-    calc q ^ (k.choose 2) * qBinomial q n k * x ^ k * (q ^ n * x)
-        = q ^ (k.choose 2) * qBinomial q n k * (x ^ k * q ^ n) * x := by
-          simp only [mul_assoc]
-      _ = q ^ (k.choose 2) * qBinomial q n k * (q ^ n * x ^ k) * x := by
-          rw [(h.symm.pow_pow k n).eq]
-      _ = q ^ (k.choose 2) * (qBinomial q n k * q ^ n) * x ^ (k + 1) := by
-          simp only [mul_assoc]; rw [← pow_succ]
-      _ = q ^ (k.choose 2) * (q ^ n * qBinomial q n k) * x ^ (k + 1) := by
-          rw [(qBinomial_commute_pow q n n k).eq.symm]
-      _ = q ^ (k.choose 2 + n) * qBinomial q n k * x ^ (k + 1) := by
-          rw [← mul_assoc, ← pow_add]
-      _ = q ^ ((k + 1).choose 2) * (q ^ (n - k) * qBinomial q n k) * x ^ (k + 1) := by
-          rw [choose_two_right, choose_two_right, triangle_succ k, ← choose_two_right,
-            ← mul_assoc, ← pow_add, add_assoc]
-          congr; exact Eq.symm (add_sub_of_le (mem_range_succ_iff.mp hk))
+    simp only [mul_assoc]
+    rw [choose_two_right, choose_two_right, triangle_succ k, ← choose_two_right, ← mul_assoc,
+      pow_add, ← mul_assoc (x ^ k), h.symm.pow_pow k n, pow_add, pow_one, mul_assoc, mul_assoc,
+      mul_assoc]
+    congr 1
+    rw [← mul_assoc (q ^ k), ← pow_add, show k + (n - k) = n by simp at hk; omega, ← mul_assoc,
+      ← qBinomial_commute_pow, mul_assoc]
 
 /-- **The `q`-binomial theorem** (Rothe's formula) over a commutative semiring:
 `∏_{i < n} (1 + q ^ i x) = ∑_{k ≤ n} q ^ (k choose 2) [n choose k]_q x ^ k`. -/
