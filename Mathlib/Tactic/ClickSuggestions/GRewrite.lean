@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Lean.Meta.ExprLens
+public meta import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
 # Support for `grw` suggestions in `#click_suggestions`
@@ -176,8 +177,8 @@ private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemm
   mkRewrite i.rwKind lem.symm proof (← getHypIdent?) (grw := true)
 
 /-- Generate the suggestion for rewriting with `lem`. -/
-def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwKey) := do
-  withNewMCtxDepth do
+def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) (assignableMVars : Array Expr) :
+    ClickSuggestionsM (Result GrwKey) := do
   let mctx ← getMCtx
   (·.getDM do throwError "no suitable `grw` relation was found") =<< i.gpos.findSomeM? fun pos ↦ do
   unless lem.relName == pos.relName && pos.symm?.all (· == lem.symm) do return none
@@ -195,15 +196,11 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwK
   if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
     throwError "{lhs} and {e} do not match according to the head-constant indexing"
   synthAppInstances `click_suggestions default mvars binderInfos false false
-  let mut extraGoals := #[]
-  for mvar in mvars do
-    unless ← mvar.mvarId!.isAssigned do
-      extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar))
+  let mvars ← mvars.map Expr.mvarId! |>.filterM (not <$> ·.isAssigned)
+  let extraGoals ← mvars.mapM (do instantiateMVars <| ← ·.getType)
 
   let replacement ← instantiateMVars rhs
-  let makesNewMVars :=
-    (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    extraGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
+  let unhelpfulMVars ← hasUnhelpfulMVars mvars assignableMVars (extraGoals.push replacement)
   let proof ← instantiateMVars proof
   let isRefl ← isExplicitEq e replacement
   let justLemmaName ←
@@ -229,10 +226,10 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : ClickSuggestionsM (Result GrwK
     htmls := htmls.push
       <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
-    if !isRefl && !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-    else
+    if isRefl || unhelpfulMVars then
       pure none
+    else
+      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
   let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
   let pattern ← do

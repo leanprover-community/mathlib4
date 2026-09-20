@@ -133,7 +133,7 @@ example : TFAE [P, Q] := by
   tfae_have 2 ← 1 := fun p => ?Qgoal
   case Qgoal => exact pq p
   refine ?a
-  fail_if_success (tfae_have 1 ← 2 := ((?a).out 1 2 sorry sorry).mpr)
+  fail_if_success (tfae_have 1 ← 2 := ((?a).out 2 3 sorry sorry).mpr)
   tfae_have 2 → 1 := qp
   tfae_finish
 

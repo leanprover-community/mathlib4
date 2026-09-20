@@ -481,7 +481,6 @@ section
 
 /-- Get the leading coefficient of an `ExProd`. -/
 def ExProd.coeff {e : Q($α)} :
-    have : Inhabited <| Σ c, bt c := ⟨default, default⟩
   ExProd bt sα e → Σ c, bt c
   | .const q => ⟨_, q⟩
   | .mul _ _ v => v.coeff

@@ -629,6 +629,19 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
   obtain ⟨n, hn⟩ := P.exists_nat
   assumption_mod_cast
 
+lemma toSubmodule_rootSpace_eq_span (α : Weight K H L) (hα : α.IsNonZero) (x : L)
+    (hx₀ : x ≠ 0) (hx : x ∈ rootSpace H α) :
+    (rootSpace H α).toSubmodule = K ∙ x := by
+  have := (finrank_eq_one_iff_of_nonzero' ⟨x, hx⟩ (by simpa)).mp (finrank_rootSpace_eq_one α hα)
+  ext y
+  rw [Submodule.mem_span_singleton]
+  refine ⟨fun hy ↦ ?_, ?_⟩
+  · obtain ⟨t, ht⟩ := this ⟨y, hy⟩
+    use t
+    aesop
+  · rintro ⟨t, rfl⟩
+    exact SMulMemClass.smul_mem t hx
+
 /-- The embedded `sl₂` associated to a root. -/
 noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
     LieSubalgebra K L := by
@@ -733,6 +746,16 @@ lemma sl2SubmoduleOfRoot_ne_bot (α : Weight K H L) (hα : α.IsNonZero) :
 
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
+instance : InvolutiveNeg H.root where
+  neg i := ⟨-i, by aesop⟩
+  neg_neg i := by aesop
+
+omit [CharZero K] in
+lemma neg_root_eq {i : H.root} : -i = ⟨-i, by aesop⟩ := rfl
+
+omit [CharZero K] in
+@[simp] lemma val_neg_root {i : H.root} : (-i).val = -i.val := rfl
 
 omit [IsKilling K L] [IsTriangularizable K H L] [CharZero K] in
 @[simp]

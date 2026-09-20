@@ -157,7 +157,7 @@ theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
 
 theorem integralClosure_subring_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
     (integralClosure S A).toSubring ≤ T ↔ .ofClass S ≤ T := by
-  rw [integralClosure_le_iff, Subtype.forall, SetLike.le_def]; rfl
+  rw [integralClosure_le_iff, Subtype.forall, IsConcreteLE.le_iff]; rfl
 
 end Subring
 
@@ -297,7 +297,8 @@ lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn
   · intro x
     refine ⟨fun h ↦ ?_, ?_⟩
     · obtain ⟨x, rfl⟩ := (IsIntegralClosure.isIntegral_iff (R := T) (A := T)).mp h.tower_top
-      rw [isIntegral_algebraMap_iff (IsIntegralClosure.algebraMap_injective T T U)] at h
+      have := IsIntegralClosure.faithfulSMul T T U
+      rw [isIntegral_algebraMap_iff] at h
       obtain ⟨x, rfl⟩ := (IsIntegralClosure.isIntegral_iff (R := R) (A := S)).mp h
       exact ⟨x, IsScalarTower.algebraMap_apply ..⟩
     · rintro ⟨x, rfl⟩

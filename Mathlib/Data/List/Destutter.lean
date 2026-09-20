@@ -50,11 +50,11 @@ variable {R}
 
 @[simp]
 theorem destutter'_cons_pos (h : R b a) : (a :: l).destutter' R b = b :: l.destutter' R a := by
-  rw [destutter', if_pos h]
+  rw [destutter', ite_eq_left h]
 
 @[simp]
 theorem destutter'_cons_neg (h : ¬R b a) : (a :: l).destutter' R b = l.destutter' R b := by
-  rw [destutter', if_neg h]
+  rw [destutter', ite_eq_right h]
 
 variable (R)
 
@@ -85,10 +85,10 @@ theorem isChain_destutter' (l : List α) (a : α) : (l.destutter' R a).IsChain R
   | nil => simp
   | singleton => simp [apply_ite]
   | cons_cons b c l IH IH2 =>
-    simp_rw [destutter'_cons, apply_ite (IsChain R ·), IH, if_true_right] at IH2
+    simp_rw [destutter'_cons, apply_ite (IsChain R ·), IH, ite_true_right] at IH2
     simp_rw [destutter'_cons, apply_ite (IsChain R ·),
       apply_ite (IsChain R <| a :: ·), IH, isChain_cons_cons,
-      if_true_right, ite_prop_iff_and, imp_and]
+      ite_true_right, ite_prop_iff_and, imp_and]
     exact ⟨⟨⟨Function.swap <| fun _ => id, fun _ => IH2 c b⟩,
       Function.swap <| fun _ => IH2 b a⟩, fun _ => IH2 c a⟩
 
@@ -185,15 +185,15 @@ theorem length_destutter'_cotrans_ge [i : IsTrans α Rᶜ] :
     by_cases hbc : R b c
     case pos =>
       have hac : ¬Rᶜ a c := (mt (_root_.trans hba)) (not_not.2 hbc)
-      simp_rw [destutter', if_pos (not_not.1 hac), if_pos hbc, length_cons, le_refl]
+      simp_rw [destutter', ite_eq_left (not_not.1 hac), ite_eq_left hbc, length_cons, le_refl]
     case neg =>
-      simp only [destutter', if_neg hbc]
+      simp only [destutter', ite_eq_right hbc]
       by_cases hac : R a c
       case pos =>
-        simp only [if_pos hac, length_cons]
+        simp only [ite_eq_left hac, length_cons]
         exact Nat.le_succ_of_le (length_destutter'_cotrans_ge hbc)
       case neg =>
-        simp only [if_neg hac]
+        simp only [ite_eq_right hac]
         exact length_destutter'_cotrans_ge hba
 
 /-- `List.destutter'` on a relation like `≠`, whose negation is an equivalence, gives the same
@@ -214,12 +214,12 @@ theorem le_length_destutter'_cons [IsEquiv α Rᶜ] :
   | [] => by by_cases hab : (R a b) <;> simp_all [Nat.le_succ]
   | c :: cs => by
     by_cases hab : R a b
-    case pos => simp [destutter', if_pos hab, Nat.le_succ]
+    case pos => simp [destutter', ite_eq_left hab, Nat.le_succ]
     obtain hac | hac : R a c ∨ Rᶜ a c := em _
     · have hbc : ¬Rᶜ b c := mt (_root_.trans hab) (not_not.2 hac)
-      simp [destutter', if_pos hac, if_pos (not_not.1 hbc), if_neg hab]
+      simp [destutter', ite_eq_left hac, ite_eq_left (not_not.1 hbc), ite_eq_right hab]
     · have hbc : ¬R b c := trans (symm hab) hac
-      simp only [destutter', if_neg hbc, if_neg hac, if_neg hab]
+      simp only [destutter', ite_eq_right hbc, ite_eq_right hac, ite_eq_right hab]
       exact (length_destutter'_congr cs hab).ge
 
 /-- `List.destutter` on a relation like ≠, whose negation is an equivalence, has length
@@ -284,6 +284,6 @@ lemma Pairwise.destutter_eq_dedup [DecidableEq α] {r : α → α → Prop} [Std
     · simpa using h.2.destutter_eq_dedup
     · simp only [mem_cons, forall_eq_or_imp, pairwise_cons] at h
       have : x ∉ xs := fun hx ↦ hxy (antisymm h.1.1 (h.2.1 x hx))
-      rw [if_pos hxy, dedup_cons_of_notMem (a := x) (by simp [*])]
+      rw [ite_eq_left hxy, dedup_cons_of_notMem (a := x) (by simp [*])]
 
 end List

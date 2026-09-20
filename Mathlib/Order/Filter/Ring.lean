@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public section
 namespace Filter
 
-open Function Filter
+open Filter
 
 universe u v
 

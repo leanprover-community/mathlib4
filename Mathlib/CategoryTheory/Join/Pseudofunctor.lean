@@ -23,7 +23,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory.Join
 
-open Bicategory CategoryTheory.Functor
+open CategoryTheory.Functor
 
 -- The proof gets too slow if we put it in a single `pseudofunctor` constructor,
 -- so we break down the component proofs for the pseudofunctors over several lemmas.
@@ -162,7 +162,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
     Pseudofunctor Cat.{v₂, u₂} Cat.{max v₁ v₂, max u₁ u₂} where
-  obj D := Cat.of (C ⋆ D)
+  obj D := ↧(C ⋆ D)
   map F := (mapPair (𝟭 C) F.toFunctor).toCatHom
   map₂ f := (mapWhiskerLeft (𝟭 C) f.toNatTrans).toCatHom₂
   mapId D := Cat.Hom.isoMk mapPairId
@@ -180,7 +180,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :
     Pseudofunctor Cat.{v₁, u₁} Cat.{max v₁ v₂, max u₁ u₂} where
-  obj C := Cat.of (C ⋆ D)
+  obj C := ↧(C ⋆ D)
   map F := (mapPair F.toFunctor (𝟭 D)).toCatHom
   map₂ := (mapWhiskerRight ·.toNatTrans _ |>.toCatHom₂)
   mapId D := Cat.Hom.isoMk <| mapPairId
