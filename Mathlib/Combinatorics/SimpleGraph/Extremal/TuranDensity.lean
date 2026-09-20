@@ -105,11 +105,9 @@ theorem turanDensity_le_extremalNumber_div_choose_two (H : SimpleGraph W) {n : �
 
 theorem turanDensity_nonneg (H : SimpleGraph W) : 0 ≤ turanDensity H := by
   rw [turanDensity_eq_csInf]
-  refine le_csInf ?_ (fun x ⟨m, hm, hx⟩ ↦ ?_)
-  · rw [← Set.image, Set.image_nonempty]
-    exact Set.nonempty_Ici
-  · rw [← hx]
-    positivity
+  apply le_csInf <| Set.nonempty_Ici.image _
+  rintro _ ⟨m, hm, rfl⟩
+  positivity
 
 theorem turanDensity_le_one (H : SimpleGraph W) : turanDensity H ≤ 1 := by
   rw [turanDensity_eq_csInf]
