@@ -344,14 +344,6 @@ lemma IsLocalRing.ideal_depth_le_depth [IsLocalRing R] [IsNoetherianRing R]
   have : ∀ r ∈ rs, r ∈ maximalIdeal R := fun r a ↦ (le_maximalIdeal netop) (mem r a)
   use rs
 
-omit [Small.{v, u} R] in
-lemma Submodule.comap_lt_top_of_lt_range {M N : Type*} [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) (p : Submodule R N)
-    (lt : p < LinearMap.range f) : Submodule.comap f p < ⊤ := by
-  obtain ⟨x, ⟨y, hy⟩, nmem⟩ : ∃ x ∈ LinearMap.range f, x ∉ p := Set.exists_of_ssubset lt
-  have : y ∉ Submodule.comap f p := by simpa [hy] using nmem
-  exact lt_of_le_not_ge (fun _ a ↦ trivial) fun a ↦ this (a trivial)
-
 section
 
 universe w
@@ -370,9 +362,9 @@ lemma moduleDepth_eq_of_linearEquiv [Nontrivial N] (eM : M ≃ₗ[R] M') (eN : N
   have : Nontrivial N' := eN.injective.nontrivial
   rw [moduleDepth_eq_sSup_length_isRegular I (ModuleCat.of R N) (ModuleCat.of R M) smul_lt hsupp]
   have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
-    apply lt_of_le_of_lt (Submodule.smul_top_le_comap_smul_top I eM.symm.toLinearMap)
-      (Submodule.comap_lt_top_of_lt_range _ _ _)
-    simpa using smul_lt
+    nth_rw 1 [← eM.range, ← Submodule.map_top, ← Submodule.map_smul'', lt_top_iff_ne_top,
+      Submodule.map_ne_top_iff]
+    exact smul_lt.ne
   have hsupp' : Module.support R N' = PrimeSpectrum.zeroLocus I := by rw [← eN.support_eq, hsupp]
   rw [moduleDepth_eq_sSup_length_isRegular I (ModuleCat.of R N') (ModuleCat.of R M') smul_lt'
     hsupp']
