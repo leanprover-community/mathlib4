@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pochhammer
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Zarankiewicz
 
 /-!
@@ -20,7 +17,7 @@ This file proves the **Kővári-Sós-Turán theorem** for the Zarankiewicz funct
 ## Main definitions
 
 * `SimpleGraph.zarankiewicz_le` is the **Kővári-Sós-Turán theorem** upper bounding the
-  zarankiewicz function.
+  Zarankiewicz function.
 
 * `SimpleGraph.extremalNumber_completeBipartiteGraph_le` is the corollary of the
   **Kővári-Sós-Turán theorem** upper bounding the extremal numbers of `completeBipartiteGraph α β`.
@@ -41,12 +38,7 @@ noncomputable abbrev bound (m n s t : ℕ) : ℝ :=
   (t - 1) ^ (s⁻¹ : ℝ) * m * n ^ (1 - (s⁻¹ : ℝ)) + (s - 1) * n
 
 theorem bound_nonneg (m n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : 1 ≤ t) : 0 ≤ bound m n s t := by
-  apply add_nonneg <;> repeat apply mul_nonneg
-  · exact Real.rpow_nonneg (sub_nonneg_of_le (mod_cast ht)) (s : ℝ)⁻¹
-  · exact m.cast_nonneg
-  · exact Real.rpow_nonneg n.cast_nonneg (1 - (s : ℝ)⁻¹)
-  · exact sub_nonneg_of_le (mod_cast hs)
-  · exact n.cast_nonneg
+  positivity [(mod_cast hs : (1 : ℝ) ≤ s), (mod_cast ht : (1 : ℝ) ≤ t)]
 
 /-- `KovariSosTuran.filter` is the finset of pairs `(t, w)` such that `t : Finset V` is an
 `n`-sized subset of the neighbor finset of `w : W` in `G : SimpleGraph V ⊕ W`.
@@ -69,7 +61,7 @@ lemma card_filter_le [Nonempty β] (h : (completeBipartiteGraph α β).Free G) :
     rw [card_map, card_univ]
   simp_rw [card_filter, sum_product, ← card_filter, ← hcard_univ_map_inl, ← card_powersetCard,
     ← nsmul_eq_mul, ← sum_const, ← Nat.cast_pred card_pos, ← Nat.cast_sum, Nat.cast_le]
-  refine sum_le_sum (fun t ht_card ↦ ?_)
+  refine sum_le_sum fun t ht_card ↦ ?_
   contrapose! h
   obtain ⟨_, ht_card⟩ := mem_powersetCard.mp ht_card
   have ⟨t', ht'_sub, ht'_card⟩ := exists_subset_card_eq h
@@ -95,18 +87,15 @@ lemma le_card_filter [Nonempty W] [Nonempty α]
     (card W * ((descPochhammer ℝ (card α)).eval
         ((∑ w : W, G.degree (.inr w) : ℝ) / card W) / (card α).factorial) : ℝ)
       ≤ #(filter G (card α)) := by
-  have h_subset (x) (hx : x ∈ univ.map .inr) :
-      (G.neighborFinset x).powerset ⊆ (map Function.Embedding.inl univ).powerset := by
-    simp_rw [powerset_mono, neighborFinset_eq_filter, subset_iff, mem_filter, mem_univ,
-      mem_map, mem_univ, true_and, Function.Embedding.inl_apply, eq_comm, ← Sum.isLeft_iff]
-    intro y hadj
-    simp_rw [mem_map, mem_univ, Function.Embedding.inr_apply,
-      true_and, eq_comm, ← Sum.isRight_iff] at hx
-    simpa [hx, Sum.not_isLeft.mpr hx] using h_le hadj
   have h_card_filter_subset_eq (x) (hx : x ∈ univ.map .inr) :
       #{x ∈ {y ∈ (univ.map .inl).powerset | y ∈ (G.neighborFinset x).powerset} | #x = card α}
         = #{x ∈ (G.neighborFinset x).powerset | #x = card α} := by
-    simp_rw [filter_mem_eq_inter, inter_eq_right.mpr <| h_subset x hx]
+    simp_rw [filter_mem_eq_inter]
+    congr
+    rw [inter_eq_right, powerset_mono, neighborFinset_eq_filter, subset_iff]
+    simp_rw [mem_filter, mem_map, Function.Embedding.inl_apply]
+    intro _ hadj
+    grind [h_le hadj.right, Function.Embedding.inr_apply]
   simp_rw [card_filter, sum_product_right, ← card_filter, powersetCard_eq_filter,
     filter_comm, ← mem_powerset, sum_congr rfl h_card_filter_subset_eq, ← powersetCard_eq_filter,
     card_powersetCard, card_neighborFinset_eq_degree, Nat.cast_sum,
@@ -116,7 +105,6 @@ lemma le_card_filter [Nonempty W] [Nonempty α]
   exact descPochhammer_eval_div_factorial_le_sum_choose
     (by positivity) _ _ (by simp) (by simp) h_avg
 
-open Classical in
 /-- An upper bound on the number of edges in `completeBipartiteGraph α β`-free bipartite graphs.
 
 This is an auxiliary lemma for the **Kővári-Sós-Turán theorem**. -/
@@ -150,13 +138,9 @@ lemma card_edgeFinset_le_bound_of_completeBipartiteGraph_free [Nonempty α] [Non
         with h_sum_lt | h_avg
     -- if avg degree less than `card a - 1`
     · simp_rw [← Nat.cast_sum, h_sum_degrees_eq_card_edges] at h_sum_lt
-      apply h_sum_lt.le.trans
-      apply le_add_of_nonneg_left
-      repeat apply mul_nonneg
-      · exact Real.rpow_nonneg (sub_nonneg_of_le <| Nat.one_le_cast.mpr card_pos) _
-      · exact (card V).cast_nonneg
-      · exact Real.rpow_nonneg (card W).cast_nonneg _
-    -- -- if avg degree at least `card α - 1`
+      refine h_sum_lt.le.trans <| le_add_of_nonneg_left ?_
+      positivity [(mod_cast card_pos : (1 : ℝ) ≤ Fintype.card β)]
+    -- if avg degree at least `card α - 1`
     · rw [← le_div_iff₀ (mod_cast card_pos)] at h_avg
       suffices h : card W * (#G.edgeFinset / card W - card α + 1) ^ card α / (card α).factorial
           ≤ ((card V ^ card α / (card α).factorial) * (card β - 1) : ℝ) by
@@ -180,7 +164,7 @@ lemma card_edgeFinset_le_bound_of_completeBipartiteGraph_free [Nonempty α] [Non
           mul_assoc (card α - 1 : ℝ), mul_assoc (card α - 1 : ℝ), mul_assoc (card W : ℝ),
           ← Real.rpow_add (by positivity), add_neg_cancel, Real.rpow_zero, mul_one] at h
       -- double-counting `(t, v) ↦ t ⊆ G.neighborSet v`
-      trans (#(filter G (card α)) : ℝ)
+      classical trans (#(filter G (card α)) : ℝ)
       -- counting `t`
       · trans (card W) * ((descPochhammer ℝ (card α)).eval
           ((∑ w : W, G.degree (.inr w) : ℝ) / card W) / (card α).factorial)
@@ -189,10 +173,8 @@ lemma card_edgeFinset_le_bound_of_completeBipartiteGraph_free [Nonempty α] [Non
           exact pow_le_descPochhammer_eval h_avg
         · exact le_card_filter h_le h_avg
       -- counting `v`
-      · trans (card V).choose (card α) * (card β - 1)
-        · exact card_filter_le h_free
-        · exact mul_le_mul_of_nonneg_right (mod_cast Nat.choose_le_pow_div (card α) (card V)) <|
-            sub_nonneg_of_le (mod_cast Nat.succ_le_of_lt card_pos)
+      · grw [card_filter_le h_free, mul_le_mul_of_nonneg_right (Nat.choose_le_pow_div ..) ?_]
+        exact sub_nonneg_of_le <| mod_cast Nat.succ_le_of_lt card_pos
 
 end KovariSosTuran
 
@@ -200,8 +182,8 @@ end KovariSosTuran
 
 This is the **Kővári-Sós-Turán theorem**. -/
 public theorem zarankiewicz_le (m n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
-    zarankiewicz m n s t
-      ≤ ((t - 1) ^ (s⁻¹ : ℝ) * m * n ^ (1 - (s⁻¹ : ℝ)) + (s - 1) * n : ℝ) := by
+    zarankiewicz m n s t ≤
+      ((t - 1) ^ (s⁻¹ : ℝ) * m * n ^ (1 - (s⁻¹ : ℝ)) + (s - 1) * n : ℝ) := by
   have : NeZero s := ⟨Nat.pos_iff_ne_zero.mp hs⟩
   have : NeZero t := ⟨Nat.pos_iff_ne_zero.mp <| hs.trans ht⟩
   rw [← KovariSosTuran.bound, zarankiewicz_le_iff_of_nonneg
@@ -216,12 +198,12 @@ public theorem zarankiewicz_le (m n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s �
 
 This is a corollary of the **Kővári-Sós-Turán theorem**. -/
 public theorem symm_zarankiewicz_le (n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
-    zarankiewicz n n s t
-      ≤ ((t - 1) ^ (s : ℝ)⁻¹ * n ^ (2 - (s : ℝ)⁻¹) + (s - 1) * n : ℝ) := by
+    zarankiewicz n n s t ≤
+      ((t - 1) ^ (s : ℝ)⁻¹ * n ^ (2 - (s : ℝ)⁻¹) + (s - 1) * n : ℝ) := by
   have h_one_add_one_sub_inv_card_ne_zero : 1 + (1 - (s : ℝ)⁻¹) ≠ 0 := by
-      rw [← add_sub_assoc, ← show (2 : ℝ) = (1 : ℝ) + (1 : ℝ) by norm_num]
-      exact sub_ne_zero_of_ne <| ne_of_gt <| s.cast_inv_le_one.trans_lt one_lt_two
-  rw [show (2 : ℝ) = (1 : ℝ) + (1 : ℝ) by norm_num, add_sub_assoc,
+    rw [← add_sub_assoc, one_add_one_eq_two]
+    exact sub_ne_zero_of_ne <| ne_of_gt <| s.cast_inv_le_one.trans_lt one_lt_two
+  rw [← one_add_one_eq_two, add_sub_assoc,
     Real.rpow_one_add' (by positivity) h_one_add_one_sub_inv_card_ne_zero, ← mul_assoc]
   exact zarankiewicz_le n n hs ht
 
@@ -230,8 +212,8 @@ public theorem symm_zarankiewicz_le (n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s
 This is a corollary of the **Kővári-Sós-Turán theorem**. -/
 public theorem extremalNumber_completeBipartiteGraph_le
     (n : ℕ) [Nonempty α] (hcard_le : card α ≤ card β) :
-    (extremalNumber n (completeBipartiteGraph α β) : ℝ)
-      ≤ (card β - 1) ^ (card α : ℝ)⁻¹ * n ^ (2 - (card α : ℝ)⁻¹) / 2 + (card α - 1) * n / 2 := by
+    (extremalNumber n (completeBipartiteGraph α β) : ℝ) ≤
+      (card β - 1) ^ (card α : ℝ)⁻¹ * n ^ (2 - (card α : ℝ)⁻¹) / 2 + (card α - 1) * n / 2 := by
   have : Nonempty β := card_pos_iff.mp <|  card_pos.trans_le hcard_le
   rw [← add_div, le_div_iff₀' zero_lt_two, ← Nat.cast_two, ← Nat.cast_mul]
   exact (symm_zarankiewicz_le n card_pos hcard_le).trans' <|
