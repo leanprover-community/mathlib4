@@ -447,12 +447,9 @@ instance [Fintype S] [DecidableEq V] (x y : SchreierGraph V ι) :
 
 /-- When `S` is finite, the star (set of all outgoing arrows) from any vertex in a Schreier graph
 is finite. -/
-noncomputable instance [Fintype S] (x : SchreierGraph V ι) :
-    Fintype (Σ y, x ⟶ y) := by
-  classical
-  let f : S → Σ y, x ⟶ y := fun s ↦ ⟨ι s • x, s, rfl⟩
-  have hf : Function.Surjective f := fun ⟨y, ⟨s, hs⟩⟩ ↦ ⟨s, by subst hs; rfl⟩
-  exact Fintype.ofSurjective f hf
+instance [Fintype S] (x : SchreierGraph V ι) : Fintype (Σ y, x ⟶ y) :=
+  Fintype.ofBijective (fun s ↦ ⟨ι s • x, s, rfl⟩)
+    ⟨fun _ _ h ↦ congrArg (fun p ↦ p.2.val) h, fun ⟨_, s, hs⟩ ↦ ⟨s, by subst hs; rfl⟩⟩
 
 end Finiteness
 
