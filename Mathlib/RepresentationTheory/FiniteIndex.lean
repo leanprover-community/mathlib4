@@ -190,7 +190,7 @@ noncomputable def indCoindNatIso :
   NatIso.ofComponents (fun (A : Rep k S) => indCoindIso A) fun f => by
     simp only [indFunctor_obj, coindFunctor_obj]
     ext
-    sorry
+    simp [indCoindIso, indToCoindAux_comm]
 
 /-- Given a finite index subgroup `S ≤ G`, `Ind_S^G` is right adjoint to the restriction functor
 `Res k G ⥤ Res k S`, since it is naturally isomorphic to `Coind_S^G`. -/
