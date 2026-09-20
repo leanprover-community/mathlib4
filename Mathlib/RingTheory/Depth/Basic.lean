@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Yi Song
+Authors: Nailin Guan
 -/
 module
 
@@ -61,7 +61,6 @@ noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
     moduleDepth N M = Nat.find h := by
@@ -156,7 +155,6 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
   | top => simp
   | coe n => simpa using this n
 
-open Opposite in
 lemma moduleDepth_eq_of_iso_fst (M : ModuleCat.{v} R) {N N' : ModuleCat.{v} R} (e : N ≅ N') :
     moduleDepth N M = moduleDepth N' M := by
   simp only [moduleDepth]
@@ -181,7 +179,6 @@ lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : 
     IsLocalRing.depth M = IsLocalRing.depth M' :=
   (maximalIdeal R).depth_eq_of_iso e
 
-set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
     moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -297,7 +294,6 @@ lemma moduleDepth_ge_min_of_shortExact_trd_snd
     (Ext.covariant_sequence_exact₃' N hS i (i + 1) rfl)
     (zero2.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
     [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
