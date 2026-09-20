@@ -24,6 +24,36 @@ which prepares for Peano existence theorem.
 - `IsPeanoODE.tonelliIterate`: the recursively defined curves used in the construction.
 - `IsPeanoODE.tonelliApproximation`: the diagonal sequence of Tonelli approximations.
 
+## Implementation notes
+
+This file contains the first step of the proof outlined below: the construction of Tonelli
+approximations satisfying a delayed integral equation.
+
+We first construct a solution on `Icc t₀ tmax` using Tonelli approximations.
+
+* For `N > 0`, `IsPeanoODE.stepSize t₀ tmax N` divides the forward interval into `N` equal steps.
+  The map `IsPeanoODE.delayedInput t₀ tmax N` subtracts one step from its argument, with a lower
+  bound of `t₀`. It therefore maps the first `k + 1` steps into the first `k` steps.
+
+* We construct `IsPeanoODE.tonelliApproximation` by iteration using `IsPeanoODE.tonelliIterate`.
+  Each approximation `αₙ` satisfies the delayed integral equation
+  `αₙ t = x₀ + ∫ s in t₀..t, f s (αₙ (delayedInput t₀ tmax (n + 1) s))` for `t ∈ Icc t₀ tmax`.
+
+* Using the bounds in `IsPeanoODE`, we prove by induction that the iterates take values in
+  `closedBall x₀ r` and are Lipschitz with constant `L` on the forward interval. To apply
+  Arzelà–Ascoli, we restrict the approximations to `Icc t₀ tmax` and regard them as bounded
+  continuous functions. The common Lipschitz bound gives equicontinuity, and finite dimensionality
+  makes the closed ball compact. This gives a uniformly convergent subsequence.
+
+* The step sizes tend to zero, so the delayed inputs tend to the identity. Uniform convergence of
+  the subsequence and continuity of the limit imply that the corresponding delayed curves converge
+  pointwise to the same limit. We then use continuity of the vector field and dominated convergence,
+  with the constant bound `L`, to pass to the limit in the integral equation.
+
+* Applying the forward result to the vector field `fun t x ↦ -f (-t) x` gives a backward solution
+  after reversing time. The two solutions agree at `t₀` and can be glued there. The fundamental
+  theorem of calculus then gives the derivative within `Icc tmin tmax`.
+
 ## Tags
 
 differential equation, initial value problem, Tonelli approximation
@@ -66,11 +96,6 @@ noncomputable def stepSize (t₀ tmax : ℝ) (n : ℕ) : ℝ := (tmax - t₀) / 
 lemma stepSize_nonneg {t₀ tmax : ℝ} (n : ℕ) (ht₀ : t₀ ≤ tmax) :
     0 ≤ stepSize t₀ tmax n :=
   div_nonneg (sub_nonneg.mpr ht₀) (Nat.cast_nonneg n)
-
-lemma add_mul_stepSize_eq_tmax {t₀ tmax : ℝ} (n : ℕ) :
-    t₀ + ((n : ℝ) + 1) * stepSize t₀ tmax (n + 1) = tmax := by
-  rw [stepSize]
-  grind
 
 /-- The delayed time input used in the Tonelli approximations. -/
 noncomputable def delayedInput (t₀ tmax : ℝ) (n : ℕ) : ℝ → ℝ :=
@@ -148,7 +173,10 @@ lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀ 
       tonelliIterate f t₀ tmax x₀ (n + 1) (n + 2) t := by
     intro t ht
     apply tonelliIterate_eq_succ_on_Icc (n + 1) (n + 1) (ht.1.trans ht.2)
-    simpa only [Nat.cast_add, Nat.cast_one, add_mul_stepSize_eq_tmax] using ht
+    have h_end : t₀ + ((n : ℝ) + 1) * stepSize t₀ tmax (n + 1) = tmax := by
+      rw [stepSize]
+      grind
+    simpa only [Nat.cast_add, Nat.cast_one, h_end] using ht
   simp_rw [h_succ t ht, tonelliApproximation, tonelliIterate]
 
 end TonelliApproximation
