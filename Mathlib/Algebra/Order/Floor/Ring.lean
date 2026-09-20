@@ -632,12 +632,6 @@ theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : R) z, ⌈a⌉ = z 
 theorem preimage_ceil_singleton (m : ℤ) : (ceil : R → ℤ) ⁻¹' {m} = Ioc ((m : R) - 1) m :=
   ext fun _ => ceil_eq_iff
 
-theorem floor_neg [IsOrderedAddMonoid R] : ⌊-a⌋ = -⌈a⌉ :=
-  eq_of_forall_le_iff fun z => by rw [le_neg, ceil_le, le_floor, Int.cast_neg, le_neg]
-
-theorem ceil_neg [IsOrderedAddMonoid R] : ⌈-a⌉ = -⌊a⌋ :=
-  eq_of_forall_ge_iff fun z => by rw [neg_le, ceil_le, le_floor, Int.cast_neg, neg_le]
-
 @[simp]
 theorem ceil_intCast (z : ℤ) : ⌈(z : R)⌉ = z :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, FloorRing.intCast_le_iff]
@@ -650,6 +644,12 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : R)⌉ = n :=
 theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(ofNat(n) : R)⌉ = ofNat(n) := ceil_natCast n
 
 variable [IsOrderedAddMonoid R]
+
+theorem floor_neg : ⌊-a⌋ = -⌈a⌉ :=
+  eq_of_forall_le_iff fun z => by rw [le_neg, ceil_le, le_floor, Int.cast_neg, le_neg]
+
+theorem ceil_neg : ⌈-a⌉ = -⌊a⌋ :=
+  eq_of_forall_ge_iff fun z => by rw [neg_le, ceil_le, le_floor, Int.cast_neg, neg_le]
 
 @[simp]
 theorem ceil_add_intCast (a : R) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
