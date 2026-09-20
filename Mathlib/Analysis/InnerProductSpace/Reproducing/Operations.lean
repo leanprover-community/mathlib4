@@ -188,12 +188,15 @@ namespace SMul
 
 variable (c : 𝕜)
 
+/-- Helper space for `c • H` that equals the full space for `c ≠ 0` and otherwise `⊥`. -/
 abbrev auxSmulSpace : Submodule 𝕜 H := if c = 0 then ⊥ else ⊤
 
+/-- The RKHS `c • H`. -/
 def smulSpace : Type _ := auxSmulSpace H c
 deriving NormedAddCommGroup, InnerProductSpace 𝕜
 
 variable {c} in
+/-- When `c ≠ 0`, the RKHS `c • H` is linearly isometrically equivalent to the space `H`. -/
 def equiv (h : c ≠ 0) : smulSpace H c ≃ₗᵢ[𝕜] H :=
   LinearIsometryEquiv.ofTop H (auxSmulSpace H c) (by simp [h])
 
