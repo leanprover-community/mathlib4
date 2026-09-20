@@ -479,7 +479,7 @@ set_option backward.defeqAttrib.useBackward true in
 deprecated shrinkYoneda_map_app_shrinkCoyonedaCocone_ι_app_app +typeChanged (since := "2026-09-20")]
 lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
     {X₁ X₂ : C} (f : X₁ ⟶ X₂) (u : F.Elements) :
-    (shrinkYoneda.{w}.map f).app (op u.obj) ≫
+    dsimp% (shrinkYoneda.{w}.map f).app (op u.obj) ≫
       (coconeπOpCompShrinkYonedaObj F X₂).ι.app (op u) =
     (coconeπOpCompShrinkYonedaObj F X₁).ι.app (op u) ≫ F.map f := by
   ext g

@@ -38,52 +38,6 @@ universe w v u
 
 namespace CategoryTheory
 
-namespace Equivalence -- to be moved
-
-variable {C D : Type*} [Category* C] [Category* D] (e : C ≌ D) (P : D ⥤ Type w)
-
-@[implicit_reducible, simps]
-def congrElements : P.Elements ≌ (e.functor ⋙ P).Elements where
-  functor.obj x :=
-    Functor.elementsMk _ (e.inverse.obj x.1) (P.map (e.counitIso.inv.app x.1) x.2)
-  functor.map f :=
-    Functor.Elements.homMk (e.inverse.map f.1) (by
-      simp only [← f.2, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
-        fun_inv_map, Functor.comp_obj, Functor.id_obj, Iso.inv_hom_id_app_assoc,
-        Functor.comp_map])
-  inverse.obj x := Functor.elementsMk _ (e.functor.obj x.1) x.2
-  inverse.map f := Functor.Elements.homMk (e.functor.map f.1) f.2
-  unitIso :=
-    NatIso.ofComponents
-      (fun x ↦ Functor.Elements.isoMk (e.counitIso.symm.app x.1) (by cat_disch))
-  counitIso :=
-    NatIso.ofComponents
-      (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.1) (by
-        simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
-
-end Equivalence
-
-namespace Limits -- to be moved
-
-variable {C J J' E : Type*} [Category* C] [Category* J] [Category* J'] [Category* E]
-  [HasColimitsOfShape J' E]
-  (F : J' ⥤ J) (G : C ⥤ J ⥤ E)
-
-@[implicit_reducible, simps]
-noncomputable def colim.coconeCompFlip : Cocone (F ⋙ G.flip) where
-  pt := G ⋙ (Functor.whiskeringLeft _ _ _).obj F ⋙ colim
-  ι.app j' := { app X := colimit.ι (F ⋙ G.obj X) j' }
-  ι.naturality j' j'' f := by
-    ext X
-    simpa using colimit.w (F ⋙ G.obj X) f
-
-@[no_expose]
-noncomputable def colim.isColimitCoconeCompFlip :
-    IsColimit (coconeCompFlip F G) :=
-  evaluationJointlyReflectsColimits _ (fun _ ↦ colimit.isColimit _)
-
-end Limits -- to be moved
-
 open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
@@ -100,6 +54,9 @@ noncomputable def shrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type 
   ι.app x := shrinkYonedaEquiv.symm x.unop.val
   ι.naturality x y f := by simp [← shrinkYonedaEquiv_symm_map.{w}]
 
+/-- Let `P : Cᵒᵖ ⥤ Type w` be a presheaf. For any `X : Cᵒᵖ`,
+the cocone `shrinkYonedaCocone P` becomes colimit after applying
+the evaluation functor `(Cᵒᵖ ⥤ Type w) ⥤ Type w` at `X`. -/
 @[no_expose]
 noncomputable def isColimitShrinkYonedaCoconeObj
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (X : Cᵒᵖ) :
@@ -125,7 +82,8 @@ noncomputable def isColimitShrinkYonedaCoconeObj
       simp [shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm.{w}])
 
 /-- Any presheaf `P` is a colimit of representable presheaves
-(defined using `shrinkYoneda`) indexed by the opposite category of elements in `P`. -/
+(defined using `shrinkYoneda`) indexed by the opposite category of
+the category of elements in `P`. -/
 @[no_expose]
 noncomputable def isColimitShrinkYonedaCocone [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) :
     IsColimit (shrinkYonedaCocone.{w} P) :=
@@ -141,6 +99,9 @@ def yonedaCocone (P : Cᵒᵖ ⥤ Type v) :
   ι.app x := yonedaEquiv.symm x.unop.val
   ι.naturality x y f := by simp [yonedaEquiv_symm_naturality_left f.unop.1.unop]
 
+/-- Let `P : Cᵒᵖ ⥤ Type v` be a presheaf. For any `X : Cᵒᵖ`,
+the cocone `yonedaCocone P` becomes colimit after applying
+the evaluation functor `(Cᵒᵖ ⥤ Type w) ⥤ Type w` at `X`. -/
 @[no_expose]
 noncomputable def isColimitYonedaCoconeObj (P : Cᵒᵖ ⥤ Type v) (X : Cᵒᵖ) :
     IsColimit (((evaluation _ _).obj X).mapCocone (yonedaCocone P)) := by
@@ -169,6 +130,9 @@ def uliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
   ι.naturality x y f := by simp [uliftYonedaEquiv_symm_naturality_left f.unop.1.unop]
 
 attribute [local implicit_reducible] Equiv.ulift in
+/-- Let `P : Cᵒᵖ ⥤ Type max w v` be a presheaf. For any `X : Cᵒᵖ`,
+the cocone `uliftYonedaCocone P` becomes colimit after applying
+the evaluation functor `(Cᵒᵖ ⥤ Type w) ⥤ Type w` at `X`. -/
 @[no_expose]
 noncomputable def isColimitUliftYonedaCoconeObj (P : Cᵒᵖ ⥤ Type max w v) (X : Cᵒᵖ) :
     IsColimit (((evaluation _ _).obj X).mapCocone (uliftYonedaCocone.{w} P)) := by
@@ -211,6 +175,9 @@ noncomputable def denseAtShrinkYoneda [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type
     shrinkYoneda.DenseAt P :=
   Functor.denseAt _ _
 
+/-- The functor `yoneda : C ⥤ Cᵒᵖ ⥤ Type v` is dense at any `P : Cᵒᵖ ⥤ Type v`:
+the presheaf `P` identifies to the colimit of the canonical cocone of representable
+presheaves indexed by the category `CostructuredArrow yoneda P`. -/
 @[no_expose]
 noncomputable def denseAtYoneda (P : Cᵒᵖ ⥤ Type v) : yoneda.DenseAt P :=
   Functor.denseAt _ _
@@ -251,3 +218,4 @@ theorem Presheaf.final_toCostructuredArrow_comp_pre
     (Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext (fun i ↦ by simp)))
 
 end CategoryTheory
+#lint

@@ -10,7 +10,22 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 public import Mathlib.CategoryTheory.RestrictedYoneda
 
 /-!
-# ...
+# Pointwise left Kan extension along the Yoneda embedding
+
+Let `A : C ⥤ D` be a functor between locally `w`-small categories.
+In this file, we give a criterion `Presheaf.isPointwiseLeftKanExtensionAlongShrinkYoneda`
+to identify pointwise left Kan extensions of `A` along the Yoneda embedding
+(i.e. given by a natural transformation `α : A ⟶ shrinkYoneda.{w} ⋙ L`
+where `L : (Cᵒᵖ ⥤ Type w) ⥤ D`.): the natural transformation `α` should
+be an isomorphism and `L` should preserves colimits (at least those
+expressing presheaves as colimits of representable presheaves).
+Under such assumptions, we show that `L` has a right adjoint
+`restrictedShrinkYoneda.{w} A : D ⥤ Cᵒᵖ ⥤ Type w`,
+see `Presheaf.restrictedShrinkYonedaAdjunction`.
+
+## References
+* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
+* https://ncatlab.org/nlab/show/Yoneda+extension
 
 -/
 
@@ -32,6 +47,11 @@ variable [LocallySmall.{w} C] [LocallySmall.{w} D] {L : (Cᵒᵖ ⥤ Type w) ⥤
   {A : C ⥤ D} (α : A ⟶ shrinkYoneda.{w} ⋙ L)
 
 open Functor.Elements in
+/-- Given functors `A : C ⥤ D` and `L : (Cᵒᵖ ⥤ Type w) ⥤ D`
+A left extension given by a natural transformation `α : A ⟶ shrinkYoneda.{w} ⋙ L`
+is a pointwise left Kan extension when `α` is an isomorphism and
+`L` preserves suitable colimits (more precisely, the expression of any
+presheaf `P : Cᵒᵖ ⥤ Type w` as a colimit of representable presheaves). -/
 @[no_expose]
 noncomputable def isPointwiseLeftKanExtensionAlongShrinkYoneda [IsIso α]
     [∀ (P : Cᵒᵖ ⥤ Type w),
@@ -104,6 +124,7 @@ private noncomputable def restrictedShrinkYonedaHomEquivAux (P : Cᵒᵖ ⥤ Typ
     simpa [e, shrinkYonedaEquiv_apply] using f.naturality e.inv
   right_inv g := by ext; simp [shrinkYonedaEquiv_symm_comp.{w}]
 
+/-- Auxiliary definition for `Presheaf.restrictedShrinkYonedaAdjunction`. -/
 @[no_expose]
 noncomputable def restrictedShrinkYonedaHomEquiv {P : Cᵒᵖ ⥤ Type w} {E : D} :
     (L.obj P ⟶ E) ≃ (P ⟶ (restrictedShrinkYoneda.{w} A).obj E) :=
@@ -164,6 +185,9 @@ lemma restrictedShrinkYonedaHomEquiv_naturality_right
 
 attribute [local simp] restrictedShrinkYonedaHomEquiv_naturality_right
   restrictedShrinkYonedaHomEquiv_symm_naturality_left in
+/-- Let `α : A ⟶ shrinkYoneda.{w} ⋙ L` be a pointwise left Kan extension
+of `A : C ⥤ D` along the Yoneda embedding. Then, `L` admits
+`restrictedShrinkYoneda.{w} A` as a right adjoint. -/
 noncomputable def restrictedShrinkYonedaAdjunction : L ⊣ restrictedShrinkYoneda.{w} A :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := restrictedShrinkYonedaHomEquiv α }
@@ -279,6 +303,9 @@ section
 
 variable [L.IsLeftKanExtension α]
 
+/-- Let `α : A ⟶ uliftYoneda ⋙ L` be a pointwise left Kan extension
+of `A : C ⥤ D` along the Yoneda embedding. Then, `L` admits
+`restrictedULiftShrinkYoneda.{w} A` as a right adjoint. -/
 @[no_expose]
 noncomputable def restrictedULiftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v₁} A :=
   have := hasPointwiseLeftKanExtension_shrinkYoneda_of_uliftYoneda A
@@ -298,7 +325,7 @@ lemma restrictedULiftYonedaAdjunction_unit_app_app
 @[simp]
 lemma restrictedULiftYonedaAdjunction_homEquiv_app {P : Cᵒᵖ ⥤ Type max w v₁ v₂}
     {Y : D} (f : L.obj P ⟶ Y) {Z : Cᵒᵖ} (z : P.obj Z) :
-    ((restrictedULiftYonedaAdjunction.{w} α).homEquiv P Y f).app Z z =
+    dsimp% ((restrictedULiftYonedaAdjunction.{w} α).homEquiv P Y f).app Z z =
       ULift.up (α.app Z.unop ≫ L.map (uliftYonedaEquiv.symm z) ≫ f) := by
   simp [Adjunction.homEquiv_unit, restrictedULiftYonedaAdjunction_unit_app_app]
 
