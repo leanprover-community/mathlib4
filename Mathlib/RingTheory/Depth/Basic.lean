@@ -106,7 +106,6 @@ lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
   · exact lt_top_iff_ne_top
   · simp [not_subsingleton_iff_nontrivial]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n ↔
     Nontrivial (Ext N M n) ∧ ∀ i < n, Subsingleton (Ext N M i) := by
   classical
