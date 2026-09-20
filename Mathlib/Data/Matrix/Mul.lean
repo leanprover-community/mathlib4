@@ -986,7 +986,7 @@ theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
 
 theorem dotProduct_mulVec_of_one [Fintype n] (x : n → α) :
     x ⬝ᵥ of 1 *ᵥ x = (∑ i, x i) * ∑ i, x i := by
-  simp [mulVec, dotProduct]
+  simp [mulVec, dotProduct, Finset.sum_mul]
 
 lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
     (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :

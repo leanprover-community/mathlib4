@@ -293,10 +293,9 @@ theorem lapMatrix_toLinearMap₂'_mono {R} [Field R] [LinearOrder R] [IsStrictOr
 /-- The quadratic form of a simple-graph Laplacian is at most `|V| · ‖x‖²`. -/
 theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     (x : V → R) : x ⬝ᵥ G.lapMatrix R *ᵥ x ≤ Fintype.card V * x ⬝ᵥ x := by
-  have : x ⬝ᵥ of 1 *ᵥ x = (∑ i, x i) ^ 2 := by simp [mulVec, dotProduct, Finset.sum_mul, sq]
   grw [← toLinearMap₂'_apply', lapMatrix_toLinearMap₂'_mono le_top, lapMatrix_top,
     toLinearMap₂'_apply', sub_mulVec, dotProduct_sub, natCast_mulVec, dotProduct_smul, smul_eq_mul,
-    this, sub_le_self _ <| sq_nonneg _]
+    dotProduct_mulVec_of_one, ← sq, sub_le_self _ <| sq_nonneg _]
 
 /-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
 is at most `|V|`.
