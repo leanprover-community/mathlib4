@@ -124,6 +124,8 @@ protected def symm : PartialDiffeomorph J I N M n where
   contMDiffOn_toFun := Φ.contMDiffOn_invFun
   contMDiffOn_invFun := Φ.contMDiffOn_toFun
 
+@[simp, mfld_simps] theorem coe_toOpenPartialHomeomorph : ⇑Φ.toOpenPartialHomeomorph = ⇑Φ := rfl
+
 protected theorem contMDiffOn : CMDiff[Φ.source] n Φ := Φ.contMDiffOn_toFun
 
 protected theorem mdifferentiableOn (hn : n ≠ 0) : MDiff[Φ.source] Φ :=
