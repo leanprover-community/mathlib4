@@ -160,6 +160,7 @@ example : true ∧ true := by
     trivial
   exact this
 
+-- TODO: there are **way** to many warnings emitted here; not sure why!
 /--
 warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
 'Lean.cdotTk'
@@ -200,6 +201,76 @@ example : 1 = 1 ∧ 1 = 1 ∧ 1 = 1 := by
     · constructor
       · rfl
       · rfl
+
+/--
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdotTk'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdot'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.Parser.Tactic.tacticSeq1Indented'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.Parser.Tactic.tacticSeq'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+example : True := by
+  · trivial
+
+/--
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdotTk'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdotTk'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdot'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.Parser.Tactic.tacticSeq1Indented'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.Parser.Tactic.tacticSeq'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdot'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.Parser.Tactic.tacticSeq1Indented'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.Parser.Tactic.tacticSeq'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+--#guard_msgs in
+example : True := by
+  · · exact .intro
 
 -- Test that `grind` interactive mode is treated properly, following the above tests
 -- we have to pick slightly less trivial goals that `grind only` will not immediately close
