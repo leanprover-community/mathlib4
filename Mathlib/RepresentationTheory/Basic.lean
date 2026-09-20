@@ -157,6 +157,9 @@ def asModuleEquiv (ρ : Representation k G V) : ρ.asModule ≃ₗ[k] V :=
 instance [Module.Finite k V] (ρ : Representation k G V) : Module.Finite k ρ.asModule :=
   .equiv ρ.asModuleEquiv.symm
 
+instance [IsNoetherian k V] (ρ : Representation k G V) : IsNoetherian k ρ.asModule :=
+  ρ.asModuleEquiv.symm.isNoetherian_iff.mp ‹_›
+
 end
 
 /-- A `k`-linear representation of `G` on `V` can be thought of as a module over `k[G]`.

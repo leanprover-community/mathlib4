@@ -51,11 +51,6 @@ instance : IsSimpleModule k[G] ρ.asModule :=
 instance [Finite G] : FiniteDimensional k ρ.asModule :=
   Module.Finite.trans k[G] ρ.asModule
 
-include ρ in
-theorem finiteDimensional [Finite G] : FiniteDimensional k V :=
-  have := Module.Finite.trans (R := k) k[G] ρ.asModule
-  .of_surjective ρ.asModuleEquiv.toLinearMap ρ.asModuleEquiv.surjective
-
 variable {ρ} {σ}
 
 open Function IntertwiningMap
@@ -76,7 +71,7 @@ instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (Intertwining
   ⟨fun f g ↦ sub_eq_zero.mp <| (bijective_or_eq_zero _).resolve_left
     fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
 
-variable [FiniteDimensional k V] [IsAlgClosed k]
+variable [FiniteDimensional k ρ.asModule] [IsAlgClosed k]
 
 variable (f : IntertwiningMap ρ ρ) in
 theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
