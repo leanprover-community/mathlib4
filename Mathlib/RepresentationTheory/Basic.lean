@@ -163,6 +163,9 @@ end
 noncomputable instance : Module k[G] ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 
+instance : IsScalarTower k k[G] ρ.asModule where
+  smul_assoc x y := DFunLike.congr_fun (map_smul ρ.asAlgebraHom x y)
+
 @[simp]
 theorem asModuleEquiv_apply_smul (r : k[G]) (x : ρ.asModule) :
     ρ.asModuleEquiv (r • x) = ρ.asAlgebraHom r (ρ.asModuleEquiv x) :=
@@ -171,12 +174,10 @@ theorem asModuleEquiv_apply_smul (r : k[G]) (x : ρ.asModule) :
 @[deprecated (since := "2026-09-20")]
 alias asModuleEquiv_map_smul := asModuleEquiv_apply_smul
 
-theorem asModuleEquiv_symm_apply_smul (r : k) (x : V) :
-    ρ.asModuleEquiv.symm (r • x) = r • ρ.asModuleEquiv.symm x := by
-  simp
-
-@[deprecated (since := "2026-09-20")]
-alias asModuleEquiv_symm_map_smul := asModuleEquiv_symm_apply_smul
+@[deprecated map_smul +typeChanged (since := "2026-09-20")]
+theorem asModuleEquiv_symm_map_smul (r : k) (x : V) :
+    ρ.asModuleEquiv.symm (r • x) = algebraMap k k[G] r • ρ.asModuleEquiv.symm x := by
+  rw [algebraMap_smul, map_smul]
 
 theorem asModuleEquiv_symm_apply_apply (g : G) (x : V) :
     ρ.asModuleEquiv.symm (ρ g x) = MonoidAlgebra.single g (1 : k) • ρ.asModuleEquiv.symm x := by
@@ -273,17 +274,6 @@ theorem smul_ofModule_asModule (r : k[G]) (m : (ofModule M).asModule) :
   simp only [AddEquiv.apply_symm_apply, ofModule_asAlgebraHom_apply_apply]
 
 end
-
-instance : IsScalarTower k k[G] ρ.asModule where
-  smul_assoc t x v := by
-    revert t
-    apply x.induction_on
-    · simp [← ρ.asModuleEquiv.injective.eq_iff]
-    · intro y z hy hz
-      simp [add_smul, hy, hz]
-    · intro s y hy t
-      rw [← smul_assoc, smul_eq_mul, hy (t * s), ← smul_eq_mul, smul_assoc]
-      aesop
 
 end MonoidAlgebra
 
