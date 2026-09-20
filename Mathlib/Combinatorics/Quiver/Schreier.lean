@@ -353,28 +353,32 @@ lemma cayleyGraph_star_eq (g : CayleyGraph ι) :
   ext h
   exact nonempty_subtype
 
-/-- The set of neighbors (targets of edges) from a vertex in a Cayley graph is contained in
-the orbit under generators `ι s`. -/
-lemma cayleyGraph_neighbor_subset (g : CayleyGraph ι) :
-    {h : CayleyGraph ι | Nonempty (g ⟶ h)} ⊆ (fun m ↦ m • g) '' (Set.range ι) := by
-  rintro h ⟨⟨s, hs⟩⟩
-  exact ⟨ι s, Set.mem_range_self s, hs⟩
+/-- The set of neighbors (targets of edges) from a vertex in a Cayley graph is the orbit of
+that vertex under the generators `ι s`. -/
+lemma cayleyGraph_neighborSet_eq (g : CayleyGraph ι) :
+    {h : CayleyGraph ι | Nonempty (g ⟶ h)} = (fun m ↦ m • g) '' (Set.range ι) := by
+  ext h
+  exact nonempty_subtype.trans (by simp [eq_comm])
 
 /-- In the symmetrified Cayley graph (the undirected version), the neighbors of a vertex `g`
-are contained in the union of forward and backward generator shifts. -/
-lemma cayleyGraph_symmetrify_neighbor_subset (g : CayleyGraph ι) :
+are the union of forward and backward generator shifts. -/
+lemma cayleyGraph_symmetrify_neighborSet_eq (g : CayleyGraph ι) :
     {h : CayleyGraph ι |
-      Nonempty (Symmetrify.of.obj g ⟶ (Symmetrify.of.obj h : Symmetrify (CayleyGraph ι)))} ⊆
+      Nonempty (Symmetrify.of.obj g ⟶ (Symmetrify.of.obj h : Symmetrify (CayleyGraph ι)))} =
     ((fun m ↦ m • g) '' (Set.range ι)) ∪ ((fun m ↦ m⁻¹ • g) '' (Set.range ι)) := by
-  rintro h ⟨e | e⟩
-  · obtain ⟨s, hs⟩ := e
-    exact .inl ⟨ι s, Set.mem_range_self s, hs⟩
-  · obtain ⟨s, hs⟩ := e
-    refine .inr ⟨ι s, Set.mem_range_self s, ?_⟩
-    dsimp
-    -- `Symmetrify` does not unfold during `rw`, so retype `hs` at the Cayley graph first
-    have h_eq : (ι s • h : CayleyGraph ι) = g := hs
-    rw [← h_eq, inv_smul_smul]
+  refine Set.Subset.antisymm ?_ ?_
+  · rintro h ⟨e | e⟩
+    · obtain ⟨s, hs⟩ := e
+      exact .inl ⟨ι s, Set.mem_range_self s, hs⟩
+    · obtain ⟨s, hs⟩ := e
+      refine .inr ⟨ι s, Set.mem_range_self s, ?_⟩
+      dsimp
+      -- `Symmetrify` does not unfold during `rw`, so retype `hs` at the Cayley graph first
+      have h_eq : (ι s • h : CayleyGraph ι) = g := hs
+      rw [← h_eq, inv_smul_smul]
+  · rintro h (⟨m, ⟨s, rfl⟩, rfl⟩ | ⟨m, ⟨s, rfl⟩, rfl⟩)
+    · exact ⟨.inl ⟨s, rfl⟩⟩
+    · exact ⟨.inr ⟨s, smul_inv_smul (ι s) g⟩⟩
 
 /-- A Cayley graph is inhabited by the coset of the identity. -/
 instance : Inhabited (CayleyGraph ι) := ⟨⟨1⟩⟩
