@@ -45,19 +45,17 @@ theorem sum_log_add_one_eq_log_factorial : ∑ n ∈ range N, log (n + 1) = log 
 
 /-- A crude upper bound on the partial sum of the logarithm. -/
 theorem sum_log_le (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x - x + log x + 1 := by
-  have : ⌊x⌋₊ ≤ x := floor_le (by linarith)
-  have : 1 ≤ ⌊x⌋₊ := by simpa
+  have aux1 : ⌊x⌋₊ ≤ x := floor_le (by linarith)
+  have aux2 : 1 ≤ ⌊x⌋₊ := by simpa
   calc
     _ ≤ (∫ t in (1 : ℕ)..⌊x⌋₊, log t) + log x := by
       rw [← Icc_add_one_left_eq_Ioc, ← sum_Ico_add_eq_sum_Icc (by simpa)]
       gcongr
-      exact (strictMonoOn_log.monotoneOn.mono (by grind)).sum_le_integral_Ico ‹_›
+      exact (strictMonoOn_log.monotoneOn.mono (by grind)).sum_le_integral_Ico aux2
     _ ≤ (∫ t in 1..x, log t) + log x := by
-      norm_cast; gcongr
-      exact integral_mono_interval (by rfl) (mod_cast ‹_›) ‹_›
-        (ae_restrict_of_forall_mem measurableSet_Ioc fun _ _ ↦ (log_pos (by grind)).le)
-        intervalIntegrable_log'
-    _ = _ := by simp; ring
+      grw [Nat.cast_one, integral_mono_interval le_rfl (mod_cast aux2) aux1 _ (by simp)]
+      exact ae_restrict_of_forall_mem measurableSet_Ioc fun _ hy ↦ (log_nonneg hy.1.le)
+    _ = _ := by grind [integral_log, log_one]
 
 /-- An even cruder upper bound on the partial sum of the logarithm. -/
 theorem sum_log_le' (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x := by
