@@ -36,7 +36,6 @@ example : True := by
   · trivial
 ```
 
-
 TODO:
 * Custom support for "accumulating side-goals", so that once they are all in scope
   they can be solved in bulk via `all_goals` or a similar tactic.
@@ -216,8 +215,10 @@ def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
     let poss := getNonTerminalCdots _stx
     let trees ← getInfoTrees
     for t in trees do
+      dbg_trace "superfluous cdots: {poss}"
+      dbg_trace "goals info is {getManyGoals poss t}"
       for (s, opt) in getManyGoals poss t do
-        match opt with-- before, after, n
+        match opt with
         | none =>
             Linter.logLint linter.style.multiGoal s
               m!"Unnecessary focusing dot `·`: you should be able to remove it, \
