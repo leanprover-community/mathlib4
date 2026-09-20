@@ -38,25 +38,6 @@ def brackets : BinderInfo → String × String
 
 end BinderInfo
 
-namespace Name
-
-/-! ### Declarations about `name` -/
-
-open Meta
-
--- from Lean.Server.Completion
-def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
-  if declName == ``sorryAx then return true
-  if declName matches .str _ "inj" then return true
-  if declName matches .str _ "noConfusionType" then return true
-  let env ← getEnv
-  pure <| declName.isInternalDetail
-   || isAuxRecursor env declName
-   || isNoConfusion env declName
-  <||> isRec declName <||> isMatcher declName
-
-end Name
-
 namespace ConstantInfo
 
 /-- Checks whether this `ConstantInfo` is a definition. -/

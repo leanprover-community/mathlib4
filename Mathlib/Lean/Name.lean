@@ -51,11 +51,7 @@ def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name))
     else
       return names
 
-/-- Decapitalize the last component of a name. -/
-def Lean.Name.decapitalize (n : Name) : Name :=
-  n.modifyBase fun
-    | .str p s => .str p s.decapitalize
-    | n       => n
+namespace Lean.Name
 
 /--
 Determines if the pretty-printed version of the given name would parse as an
@@ -69,7 +65,7 @@ the name will definitely round trip. (The converse is not guaranteed.) Any devia
 behavior is a bug which should be fixed.
 -/
 -- See also [Zulip](https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/Check.20if.20a.20.60Lean.2EName.60.20is.20roundtrippable/with/565735560)
-meta def Lean.Name.willRoundTrip (n : Name) : Bool :=
+meta def willRoundTrip (n : Name) : Bool :=
   !n.isAnonymous -- anonymous names do not roundtrip
     && !n.hasMacroScopes -- names with macroscopes do not roundtrip
     && !maybePseudoSyntax -- names which might be "pseudo-syntax" do not roundtrip
@@ -98,9 +94,22 @@ where
     else
       false
 
-namespace Lean.Name
+-- from Lean.Server.Completion
+def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
+  if declName == ``sorryAx then return true
+  if declName matches .str _ "inj" then return true
+  if declName matches .str _ "noConfusionType" then return true
+  let env ← getEnv
+  pure <| declName.isInternalDetail
+   || isAuxRecursor env declName
+   || isNoConfusion env declName
+  <||> isRec declName <||> isMatcher declName
 
-/-! ### Declarations about `name` -/
+/-- Decapitalize the last component of a name. -/
+def decapitalize (n : Name) : Name :=
+  n.modifyBase fun
+    | .str p s => .str p s.decapitalize
+    | n       => n
 
 /-- Find the largest prefix `n` of a `Name` such that `f n != none`, then replace this prefix
 with the value of `f n`. -/
