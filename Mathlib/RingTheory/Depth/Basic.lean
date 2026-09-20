@@ -26,9 +26,9 @@ In this section, we set `R` be a noetherian commutative ring, all modules refer 
 * `IsLocalRing.depth` : For a local ring `R`, the depth of a `R`-module with respect to
   the maximal ideal.
 
-* `moduleDepth_eq_depth_of_supp_eq` : For `I : Ideal R`, if support of a finitely generated module
-  `N` is equal to `PrimeSpectrum.zeroLocus I`, then for any finitely generated nontrivial module
-  `M` with `IM < M`, `moduleDepth N M = I.depth M`
+* `moduleDepth_eq_depth_of_support_eq` : For `I : Ideal R`, if support of a finitely generated
+  module `N` is equal to `PrimeSpectrum.zeroLocus I`, then for any finitely generated nontrivial
+  module `M` with `IM < M`, `moduleDepth N M = I.depth M`
 
 * `moduleDepth_eq_sSup_length_isRegular` : For `I : Ideal R`, nontrivial finitely generated module
   `M` and N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
@@ -136,7 +136,7 @@ lemma moduleDepth_eq_sSup_lt_top (N M : ModuleCat.{v} R) : moduleDepth N M =
     ext n
     exact ⟨fun mem ↦ ⟨top_notMem_iff.mp h n mem, mem⟩, fun mem ↦ mem.2⟩
 
-lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
+lemma moduleDepth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
     [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
