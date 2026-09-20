@@ -90,7 +90,7 @@ section LinearOrder
 
 variable [LinearOrder α]
 
-/-- A discrete form of the intemediate value theorem – a walk in a linear graph visits all of
+/-- A discrete form of the intermediate value theorem – a walk in a linear graph visits all of
 the vertices between its endpoints. -/
 theorem mem_support_hasse_of_ge_of_le {u v : α} (w : (hasse α).Walk u v) {x : α}
     (hu : u ≤ x) (hv : x ≤ v) : x ∈ w.support := by
@@ -100,7 +100,7 @@ theorem mem_support_hasse_of_ge_of_le {u v : α} (w : (hasse α).Walk u v) {x : 
     rw [show x = d.fst by grind [not_le, d.adj, hasse, CovBy]]
     exact w.dart_fst_mem_support_of_mem_darts hd
 
-/-- A discrete form of the intemediate value theorem – a walk in a linear graph visits all of
+/-- A discrete form of the intermediate value theorem – a walk in a linear graph visits all of
 the darts between its endpoints, oriented from the walk's start to its end. -/
 theorem mem_darts_hasse_of_ge_of_le_of_le {u v : α} (w : (hasse α).Walk u v) {d : (hasse α).Dart}
     (hu : u ≤ d.fst) (hd : d.fst ≤ d.snd) (hv : d.snd ≤ v) : d ∈ w.darts := by
