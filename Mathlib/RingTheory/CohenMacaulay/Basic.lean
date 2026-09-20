@@ -506,7 +506,7 @@ lemma quotient_isSMulRegular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLoc
   have : ringKrullDim R = ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
     rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
     exact (Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem).symm
-  simp [isCohenMacaulayLocalRing_def, this, ← depth_quotient_isRegular_succ_eq_depth x reg mem,
+  simp [isCohenMacaulayLocalRing_def, this, ← depth_quotient_isSMulRegular_succ_eq_depth x reg mem,
     ENat.WithBot.add_one_cancel]
 
 lemma quotient_span_isSMulRegular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
@@ -518,7 +518,7 @@ lemma quotient_span_isSMulRegular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRi
     IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
   simp [isCohenMacaulayLocalRing_def,
     ← ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim reg mem,
-    ← depth_quotient_span_isRegular_succ_eq_depth x reg mem, ENat.WithBot.add_one_cancel]
+    ← depth_quotient_span_isSMulRegular_succ_eq_depth x reg mem, ENat.WithBot.add_one_cancel]
 
 lemma quotient_isRegular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : IsWeaklyRegular R rs)
