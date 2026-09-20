@@ -30,10 +30,12 @@ change of signs in the "action" part of the Lie bracket.
 * `LieAlgebra.Extension.twoCocycle`: The 2-cocycle attached to an extension with a linear section.
 * `LieAlgebra.Extension.oneCochainOfTwoSplitting`: A 1-cochain attached to a pair of linear sections
   of an extension.
+* `LieAlgebra.Extension.IsCentral`: The property of being a central extension.
+* `LieAlgebra.Extension.Equiv`: An equivalence of extensions.
+* `LieAlgebra.Extension.Equiv.ofCoboundary`: Cohomologous 2-cocycles give equivalent extensions.
 
 ## TODO
-* `IsCentral` - central extensions
-* `Equiv` - equivalence of extensions
+* classification of central extensions by the second cohomology
 
 ## References
 * [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
@@ -463,5 +465,110 @@ lemma d₁₂_oneCochainOfTwoSplitting [IsLieAbelian M] (E : Extension R M L) {s
     LieSubmodule.coe_bracket, lie_sub, this hs₁, this hs₂, ← lie_skew (s₁ x) (s y),
     ← lie_skew (s₂ x) (s y)]
   abel
+
+section Central
+
+/-- An extension of Lie algebras is central when the image of the inclusion lies in the centre of
+the middle algebra. -/
+class IsCentral (E : Extension R M L) : Prop where
+  /-- Elements coming from the kernel have vanishing bracket with everything. -/
+  lie_incl : ∀ (x : M) (y : E.L), ⁅E.incl x, y⁆ = 0
+
+@[simp]
+lemma lie_incl (E : Extension R M L) [IsCentral E] (x : M) (y : E.L) : ⁅E.incl x, y⁆ = 0 :=
+  IsCentral.lie_incl x y
+
+@[simp]
+lemma incl_lie (E : Extension R M L) [IsCentral E] (x : M) (y : E.L) : ⁅y, E.incl x⁆ = 0 := by
+  rw [← lie_skew, lie_incl, neg_zero]
+
+/-- The kernel of a central extension is abelian. -/
+lemma isLieAbelian_of_isCentral (E : Extension R M L) [IsCentral E] : IsLieAbelian M :=
+  ⟨fun x y ↦ E.incl_injective (by rw [LieHom.map_lie, lie_incl, map_zero])⟩
+
+/-- The module structure that a central extension induces on its kernel is trivial. -/
+lemma isTrivial_ringModuleOf (E : Extension R M L) [IsLieAbelian M] [IsCentral E] :
+    let _ := E.ringModuleOf
+    LieModule.IsTrivial L M := by
+  let _ := E.ringModuleOf
+  refine ⟨fun {x m} ↦ ?_⟩
+  obtain ⟨z, rfl⟩ := E.proj_surjective x
+  have h0 : ⁅z, E.toKer m⁆ = 0 := by ext; simp
+  rw [ringModuleOf_bracket_proj, h0, map_zero]
+
+variable [LieRingModule L M] [LieModule R L M] [LieModule.IsTrivial L M]
+
+/-- The extension defined by a 2-cocycle with coefficients in a trivial module is central. -/
+instance isCentral_ofTwoCocycle [IsLieAbelian M] (c : twoCocycle R L M) :
+    IsCentral (ofTwoCocycle c) where
+  lie_incl x y := by
+    have h (z : LieAlgebra.ofTwoCocycle c) :
+        ⁅(⟨(0, x)⟩ : LieAlgebra.ofTwoCocycle c), z⁆ = 0 := by
+      rw [bracket_ofTwoCocycle]
+      simp only [ofProd, Equiv.coe_fn_symm_mk, zero_lie, map_zero,
+        LinearMap.zero_apply, trivial_lie_zero, add_zero, sub_zero, Equiv.coe_fn_mk]
+      rfl
+    exact h y
+
+end Central
+
+section Equiv
+
+variable {E E' E'' : Extension R M L}
+
+/-- An equivalence of two extensions of `L` by `M`: an equivalence of the middle Lie algebras
+that commutes with the inclusions and with the projections. -/
+structure Equiv (E E' : Extension R M L) where
+  /-- The underlying equivalence of Lie algebras. -/
+  toLieEquiv : E.L ≃ₗ⁅R⁆ E'.L
+  /-- The equivalence commutes with the inclusions. -/
+  toLieEquiv_incl : ∀ x : M, toLieEquiv (E.incl x) = E'.incl x
+  /-- The equivalence commutes with the projections. -/
+  proj_toLieEquiv : ∀ x : E.L, E'.proj (toLieEquiv x) = E.proj x
+
+namespace Equiv
+
+/-- The identity equivalence of an extension with itself. -/
+@[refl]
+def refl (E : Extension R M L) : Equiv E E where
+  toLieEquiv := LieEquiv.refl
+  toLieEquiv_incl _ := rfl
+  proj_toLieEquiv _ := rfl
+
+/-- The inverse of an equivalence of extensions. -/
+@[symm]
+def symm (e : Equiv E E') : Equiv E' E where
+  toLieEquiv := e.toLieEquiv.symm
+  toLieEquiv_incl x := by
+    rw [LieEquiv.symm_apply_eq, e.toLieEquiv_incl]
+  proj_toLieEquiv x := by
+    have h := e.proj_toLieEquiv (e.toLieEquiv.symm x)
+    rw [e.toLieEquiv.apply_symm_apply] at h
+    exact h.symm
+
+/-- The composition of two equivalences of extensions. -/
+@[trans]
+def trans (e : Equiv E E') (e' : Equiv E' E'') : Equiv E E'' where
+  toLieEquiv := e.toLieEquiv.trans e'.toLieEquiv
+  toLieEquiv_incl x := by
+    rw [LieEquiv.trans_apply, e.toLieEquiv_incl, e'.toLieEquiv_incl]
+  proj_toLieEquiv x := by
+    rw [LieEquiv.trans_apply, e'.proj_toLieEquiv, e.proj_toLieEquiv]
+
+end Equiv
+
+variable [IsLieAbelian M] [LieRingModule L M] [LieModule R L M]
+
+/-- Cohomologous 2-cocycles give equivalent extensions. -/
+def Equiv.ofCoboundary (c c' : twoCocycle R L M) (x : oneCochain R L M)
+    (h : c' = c + d₁₂ R L M x) : Equiv (ofTwoCocycle c) (ofTwoCocycle c') where
+  toLieEquiv := LieAlgebra.LieEquiv.ofCoboundary c c' x h
+  toLieEquiv_incl y := by
+    change ofProd c' ((0 : L), y - x (0 : L)) = (ofTwoCocycle c').incl y
+    rw [map_zero, sub_zero, ofTwoCocycle_incl_apply]
+    rfl
+  proj_toLieEquiv _ := rfl
+
+end Equiv
 
 end LieAlgebra.Extension
