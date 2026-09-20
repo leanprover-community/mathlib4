@@ -15,6 +15,7 @@ import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Archimedean groups and fields
@@ -460,14 +461,14 @@ instance : Archimedean ℤ :=
 
 instance Nonneg.instArchimedean [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [Archimedean M] :
-    Archimedean { x : M // 0 ≤ x } :=
+    Archimedean (Nonneg M) :=
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : M) (hy : (0 : M) < y)
     ⟨n, mod_cast hr⟩⟩
 
 instance Nonneg.instMulArchimedean [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
     [Archimedean R] [ExistsAddOfLE R] :
-    MulArchimedean { x : R // 0 ≤ x } :=
+    MulArchimedean (Nonneg R) :=
   ⟨fun x _ hy ↦ (pow_unbounded_of_one_lt x hy).imp fun _ h ↦ h.le⟩
 
 instance : Archimedean NNRat := Nonneg.instArchimedean

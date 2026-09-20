@@ -1,5 +1,5 @@
 import Mathlib.Util.Delaborators
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 
 section PiNotation
 variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)

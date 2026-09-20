@@ -6,7 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Yoneda preserves certain colimits
@@ -62,27 +62,25 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
     (colimitObjIsoColimitCompEvaluation _ _).hom ≫
       (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by
   dsimp [yonedaYonedaColimit]
-  simp only [Iso.cancel_iso_hom_left]
+  simp only [Category.assoc, Iso.cancel_iso_hom_left]
   apply colimit.hom_ext
   intro j
-  rw [colimit.ι_post, ι_colimMap_assoc]
+  rw [HasColimit.ι_isoOfNatIso_hom_assoc, ι_colimMap_assoc]
+  change _ = colimit.ι (F ⋙ coyoneda.obj (op (yoneda.obj X))) j ≫
+    colimit.post F (coyoneda.obj (op (yoneda.obj X)))
+  rw [colimit.ι_post]
   simp only [← CategoryTheory.Functor.assoc, comp_evaluation]
   rw [ι_preservesColimitIso_inv_assoc]
   simp only [← comp_evaluation, comp_obj, evaluation_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
     whiskerLeft_app, uliftFunctor_map, Functor.comp_map, evaluation_obj_map, yoneda_map_app]
   ext η Y f
   dsimp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, yonedaEquiv]
-  simp only [← comp_apply, Category.assoc, colimitObjIsoColimitCompEvaluation_ι_inv,
-    ← NatTrans.naturality, ← NatTrans.naturality_assoc, yoneda_obj_obj, yoneda_obj_map,
-    Quiver.Hom.unop_op]
-  simp
+  simp only [← comp_apply, Category.assoc]
+  simp [← NatTrans.naturality_apply]
 
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
   suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
     preservesColimit_of_isIso_post _ _
-  suffices colimit.post F (coyoneda.obj (op (yoneda.obj X))) =
-      (colimitObjIsoColimitCompEvaluation _ _).inv ≫ ((yonedaYonedaColimit F).app (op X)).inv from
-    this ▸ inferInstance
-  rw [yonedaYonedaColimit_app_inv, Iso.inv_hom_id_assoc]
+  exact IsIso.of_isIso_fac_left (yonedaYonedaColimit_app_inv (F := F) (X := X)).symm
 
 end CategoryTheory

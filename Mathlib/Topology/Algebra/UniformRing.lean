@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
@@ -25,7 +24,7 @@ Moreover, if a topological ring is an algebra over a commutative semiring, then 
 
 The last part of the file builds a ring structure on the biggest separated quotient of a ring.
 
-## Main declarations:
+## Main declarations
 
 Beyond the instances explained above (that don't have to be explicitly invoked),
 the main constructions deal with continuous ring morphisms.

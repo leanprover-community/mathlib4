@@ -100,8 +100,8 @@ given by a kernel and a quotient given by the `LinearMap` API. The projections t
 not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
 @[simps! K H i_hom π_hom]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
-  K := ModuleCat.of R (LinearMap.ker S.g.hom)
-  H := ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)
+  K := ↧S.g.hom.ker
+  H := ↧(S.g.hom.ker ⧸ S.moduleCatToCycles.range)
   i := ModuleCat.ofHom (LinearMap.ker S.g.hom).subtype
   π := ModuleCat.ofHom (LinearMap.range S.moduleCatToCycles).mkQ
   wi := by aesop
@@ -148,8 +148,7 @@ lemma toCycles_moduleCatCyclesIso_hom :
 
 /-- Given a short complex `S` of modules, this is the isomorphism between the abstract `S.opcycles`
 of the homology API and the more concrete description as `S.X₂ ⧸ LinearMap.range S.f.hom`. -/
-noncomputable def moduleCatOpcyclesIso :
-    S.opcycles ≅ ModuleCat.of R (S.X₂ ⧸ LinearMap.range S.f.hom) :=
+noncomputable def moduleCatOpcyclesIso : S.opcycles ≅ ↧(S.X₂ ⧸ S.f.hom.range) :=
   S.opcyclesIsoCokernel ≪≫ ModuleCat.cokernelIsoRangeQuotient _
 
 @[reassoc (attr := simp), elementwise (attr := simp)]

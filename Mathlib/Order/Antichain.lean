@@ -289,7 +289,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+variable [PartialOrder α] [Preorder β] {f : α → β} {s : Set α}
 
 lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
     IsAntichain (· ≤ ·) s :=
@@ -411,6 +411,12 @@ protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
   ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩
 
 end IsMaxAntichain
+
+theorem maximal_isAntichain_iff : Maximal (IsAntichain r) s ↔ IsMaxAntichain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isAntichain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
+alias ⟨_, IsMaxAntichain.maximal_isAntichain⟩ := maximal_isAntichain_iff
 
 end General
 

@@ -1,5 +1,8 @@
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
+public import Mathlib.Tactic.SetLike
 
 deprecated_module (since := "2026-07-12")
