@@ -593,16 +593,19 @@ lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g
   simp only [mvfderiv, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
 
-attribute [simp] mdifferentiableWithinAt_const
+-- TODO: should this be simp?
+-- attribute [simp] mdifferentiableWithinAt_const
+
+-- TODO: generalise and move to better location
+lemma foo {𝕜 F M : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    (c : 𝕜) (f : M → F) : (fun (_x : M) ↦ c) • f = c • f := rfl
 
 @[simp, to_fun mvfderivWithin_const_fun_smul]
 lemma mvfderivWithin_const_smul (c : 𝕜) {f : M → F} (hs : UniqueMDiffAt[s] x) :
     d[s](c • f) x = c • d[s] f x := by
   by_cases hf : MDiffAt[s] f x
-  · -- TODO: what's missing to make this work nicely. difference between scalar multiplication
-    -- with a constant and not...
-    erw [mvfderivWithin_smul (by simp) hf hs]
-    simp [mvfderivWithin_const]
+  · -- Need to translate from scalar multiplication with a constant to with a constant function.
+    simp [← foo c f, mvfderivWithin_smul mdifferentiableWithinAt_const hf hs, mvfderivWithin_const]
   · rcases eq_or_ne c 0 with rfl | hc; · simp
     have hs' : ¬ MDiffAt[s] (c • f) x :=
       fun h ↦ hf (by simpa [hc] using! h.const_smul c⁻¹)
