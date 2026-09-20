@@ -222,7 +222,6 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Tactic" / "Linter",
       "MathlibTest" / "Linter",
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py",
     ] }
   | .«t-logic» => {
     dirs := #[
@@ -261,7 +260,6 @@ def mathlibLabelData : (l : Label) → LabelData l
     ],
     exclusions := #[
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py",
       "scripts" / "noshake.json",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
@@ -341,7 +339,7 @@ section Tests
 #guard getMatchingLabels #["scripts" / "add_deprecations.sh"] == #[.«CI»]
 #guard getMatchingLabels #["scripts" / "lint-style.lean"] == #[.«t-linter»]
 #guard getMatchingLabels #["Mathlib" / "Tactic" / "Linter" / "TextBased.lean",
-  "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #[.«t-linter»]
+  "scripts" / "lint-style.lean"] == #[.«t-linter»]
 #guard getMatchingLabels #["scripts" / "noshake.json"] == #[]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
