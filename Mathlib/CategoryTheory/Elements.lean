@@ -280,9 +280,7 @@ noncomputable def costructuredArrowShrinkYonedaEquivalence
     simp [← shrinkYonedaEquiv_symm_map.{w}])
   inverse.obj x := Opposite.op (Functor.elementsMk _ _ (shrinkYonedaEquiv x.hom))
   inverse.map f := (homMk f.left.op (by simp [shrinkYonedaEquiv_naturality])).op
-  unitIso :=
-    NatIso.ofComponents (fun x ↦ Iso.op (isoMk (Iso.refl _) (by simp)))
-      (fun _ ↦ Quiver.Hom.unop_inj (by cat_disch))
+  unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun x ↦ CostructuredArrow.isoMk (Iso.refl _))
 
 /-- The functor of the equivalence `costructuredArrowShrinkYonedaEquivalence F` followed
@@ -292,6 +290,22 @@ noncomputable def costructuredArrowShrinkYonedaEquivalenceFunctorCompProjIso
     (costructuredArrowShrinkYonedaEquivalence.{w} F).functor ⋙ CostructuredArrow.proj _ _ ≅
       (π F).leftOp :=
   Iso.refl _
+
+/-- Given `F : C ⥤ Type w` where `C` is a locally `w`-small category, this is the
+equivalence between the opposite of the category of elements of `F` and
+`CostructuredArrow shrinkCoyoneda.{w} F`. -/
+@[implicit_reducible, simps]
+noncomputable def costructuredArrowShrinkCoyonedaEquivalence
+    [LocallySmall.{w} C] (F : C ⥤ Type w) :
+    F.Elementsᵒᵖ ≌ CostructuredArrow shrinkCoyoneda.{w} F where
+  functor.obj x :=
+    CostructuredArrow.mk (Y := Opposite.op x.unop.obj) (shrinkCoyonedaEquiv.symm x.unop.val)
+  functor.map f :=
+    CostructuredArrow.homMk f.unop.hom.op (by simp [← shrinkCoyonedaEquiv_symm_map.{w}])
+  inverse.obj x := Opposite.op (Functor.elementsMk _ _ (shrinkCoyonedaEquiv x.hom))
+  inverse.map f := (homMk f.left.unop (by simp [shrinkCoyonedaEquiv_naturality])).op
+  unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun x ↦ CostructuredArrow.isoMk (Iso.refl _))
 
 /-- The initial object in `F.Elements` if `F` is representable. -/
 abbrev initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
@@ -318,16 +332,44 @@ def isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.Corepresentabl
     (fun _ m ↦ by ext; simp [← m.map_val, ← h.homEquiv_comp])
 
 /--
-The initial object in the category of elements for a representable functor. In `isInitial` it is
-shown that this is initial.
+The initial object in the category of elements for a representable functor.
+In `isInitialYonedaObj` it is shown that this is initial.
 -/
 abbrev initialYonedaObj (A : C) : (yoneda.obj A).Elements :=
   .mk (𝟙 A)
 
-/-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
--/
+/-- Show that `Elements.initialYonedaObj A` is initial in the category of elements
+for the `yoneda` functor. -/
 def isInitialYonedaObj (A : C) : Limits.IsInitial (Elements.initialYonedaObj A) :=
   isInitialOfRepresentableBy (.yoneda A)
+
+/--
+The initial object in the category of elements for a representable functor.
+In `isInitialShrinkYonedaObj` it is shown that this is initial.
+-/
+noncomputable abbrev initialShrinkYonedaObj [LocallySmall.{w} C] (A : C) :
+    (shrinkYoneda.{w}.obj A).Elements :=
+  .mk (shrinkYonedaObjObjEquiv.symm (𝟙 A))
+
+/-- Show that `Elements.initialShrinkYonedaObj A` is initial in the category of elements
+for the `shrinkYoneda` functor. -/
+noncomputable def isInitialShrinkYonedaObj [LocallySmall.{w} C] (A : C) :
+    Limits.IsInitial (Elements.initialShrinkYonedaObj.{w} A) :=
+  isInitialOfRepresentableBy (shrinkYonedaRepresentableBy A)
+
+/--
+The initial object in the category of elements for a corepresentable functor.
+In `isInitialShrinkCoyonedaObj` it is shown that this is initial.
+-/
+noncomputable abbrev initialShrinkCoyonedaObj [LocallySmall.{w} C] (A : Cᵒᵖ) :
+    (shrinkCoyoneda.{w}.obj A).Elements :=
+  .mk (shrinkCoyonedaObjObjEquiv.symm (𝟙 A.unop))
+
+/-- Show that `Elements.initialShrinkCoyonedaObj A` is initial in the category of elements
+for the `shrinkCoyoneda` functor. -/
+noncomputable def isInitialShrinkCoyonedaObj [LocallySmall.{w} C] (A : Cᵒᵖ) :
+    Limits.IsInitial (Elements.initialShrinkCoyonedaObj.{w} A) :=
+  isInitialOfCorepresentableBy (shrinkCoyonedaCorepresentableBy A)
 
 @[deprecated (since := "2026-08-30")] alias yoneda := initialYonedaObj
 @[deprecated (since := "2026-08-30")] alias isInitial := isInitialYonedaObj

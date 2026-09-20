@@ -436,12 +436,18 @@ lemma shrinkCoyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {P : C ⥤ Type w} (t
     rw [← shrinkCoyonedaEquiv_naturality]
     simp)
 
-lemma shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm {X : Cᵒᵖ} {P : C ⥤ Type w}
-    (s : P.obj X.unop) {Y : Cᵒᵖ} (f : Y ⟶ X) :
-    (shrinkCoyonedaEquiv.symm s).app Y.unop (shrinkCoyonedaObjObjEquiv.symm f.unop) =
-      P.map f.unop s := by
+lemma shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm {X : C} {P : C ⥤ Type w}
+    (s : P.obj X) {Y : C} (f : X ⟶ Y) :
+    (shrinkCoyonedaEquiv.symm s).app Y (shrinkCoyonedaObjObjEquiv.symm f) =
+      P.map f s := by
   obtain ⟨g, rfl⟩ := shrinkCoyonedaEquiv.surjective s
-  simp [map_shrinkCoyonedaEquiv]
+  simp [dsimp% map_shrinkCoyonedaEquiv g f.op]
+
+lemma shrinkCoyonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm_comp
+    {X Y Z : C} {P : C ⥤ Type w} (x : P.obj X) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (shrinkCoyonedaEquiv.symm x).app Z (shrinkYonedaObjObjEquiv.symm (f ≫ g)) =
+    P.map g ((shrinkCoyonedaEquiv.symm x).app Y (shrinkYonedaObjObjEquiv.symm f)) := by
+  simp [shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm.{w}]
 
 variable (C) in
 /-- The functor `shrinkCoyoneda : Cᵒᵖ ⥤ C ⥤ Type w` for a locally `w`-small category `C`
