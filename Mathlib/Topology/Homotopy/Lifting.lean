@@ -628,12 +628,15 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* Gᵐᵒᵖ where
     exact Subtype.ext (fiberEquivGroup_smul_self ..).symm
 
 variable {e} in
-theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : Gᵐᵒᵖ} :
+theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : Gᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e := by
   rw [fundamentalGroupToMulOpposite, ← MulOpposite.unop_injective.eq_iff, iff_comm, eq_comm,
     ← hp.fiberEquivGroup_smul_self e]
   have := hp.isCancelSMul.right_cancel'
   aesop
+
+@[deprecated (since := "2026-09-20")] alias fundamentalGroupToMulOpposite_apply_eq_Iff :=
+  fundamentalGroupToMulOpposite_apply_eq_iff
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
@@ -664,7 +667,7 @@ theorem fundamentalGroupToMulOpposite_surjective [PathConnectedSpace E] :
   set γ : Path x x := (Γ.map hp.continuous).cast
     (by simpa using e.property.symm) (by simpa using e'.property.symm)
   use .fromPath ⟦γ⟧
-  rw [fundamentalGroupToMulOpposite_apply_eq_Iff]
+  rw [fundamentalGroupToMulOpposite_apply_eq_iff]
   change (e' : E) = _
   rw [← hp.isCoveringMap.monodromy_eq_of_map_eq (γ := ⟦γ⟧) (Γ := ⟦Γ⟧) rfl]
 
@@ -729,9 +732,12 @@ def fundamentalGroupToMulOpposite : FundamentalGroup X x →* (Multiplicative G)
   hp.toMultiplicative.fundamentalGroupToMulOpposite e
 
 variable {e} in
-theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : (Multiplicative G)ᵐᵒᵖ} :
+theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : (Multiplicative G)ᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e :=
-  hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_Iff
+  hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_iff
+
+@[deprecated (since := "2026-09-20")] alias fundamentalGroupToMulOpposite_apply_eq_Iff :=
+  fundamentalGroupToMulOpposite_apply_eq_iff
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
