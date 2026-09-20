@@ -80,11 +80,17 @@ instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
 instance (α : Sort*) : Std.Symm (α := α) Ne where
   symm _ _ := Ne.symm
 
+instance (α : Sort*) : Std.Irrefl (α := α) Ne where
+  irrefl _ := Ne.irrefl
+
 /-- `Iff` is an equivalence relation. -/
 instance iff_isEquiv : IsEquiv Prop Iff where
   symm := @Iff.symm
   trans := @Iff.trans
   refl := @Iff.refl
+
+instance : IsTrans Prop And where
+  trans _ _ _ := fun ⟨a, _⟩ ⟨_, b⟩ ↦ ⟨a, b⟩
 
 section
 
