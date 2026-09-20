@@ -28,8 +28,8 @@ needs to be updated here if necessary:
 files have been modified and then finds all labels which should be added based on these changes.
 These are printed for testing purposes.
 
-`lake exe autolabel --title="feat(Algebra): yada yada"` will not look at the `git diff` and
-instead extract the comma-separated list of paths from the provided PR title.
+`lake exe autolabel --title="feat(Algebra): yada yada"` will extract the comma-separated
+list of paths from the provided PR title, and use these to filter the modified files.
 
 See `lake exe autolabel --help` for all arguments available.
 
@@ -531,9 +531,9 @@ def autolabel : Cli.Cmd := `[Cli|
     "curl" : String; "apply label(s) using `curl`. \
                       Usage: `lake exe autolabel --pr 20156 --curl <ACCESS_TOKEN>`. \
                       (currently, this implies `--force`)"
-    "title": String; "Provided a PR title following the mathlib convention \
-                      (e.g. \"xxx(Folder/Or/File,Another/One): yada yada\"), it will try to \
-                      extract paths from it and use them to filter the current changes."
+    "title": String; "use the provided PR title, following the mathlib convention, \
+                      to filter the modified files. Usage: \
+                      `lake exe autolabel --title \"xxx(Folder/Or/File,Another/One): yada yada\"`"
     "force";         "apply labels even if there are already labels on the PR."
 ]
 
