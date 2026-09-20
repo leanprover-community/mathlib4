@@ -117,6 +117,9 @@ is not present. -/
 if this is not present. -/]
 instance hasSMul {α : Type*} [SMul M α] : SMul M (ι → α) := Pi.instSMul
 
+lemma smul_def {R E X : Type*} [SMul R E] (c : R) (f : X → E) : (fun (_ : X) ↦ c) • f = c • f :=
+  rfl
+
 /-- Non-dependent version of `Pi.smulCommClass`. Lean gets confused by the dependent instance if
 this is not present. -/
 @[to_additive
