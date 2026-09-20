@@ -602,7 +602,6 @@ lemma IsLocalRing.depth_quotient_span_isRegular_succ_eq_depth [IsLocalRing R] [I
   rw [IsLocalRing.depth_eq_of_ringEquiv (Ideal.quotientEquivAlgOfEq R this).toRingEquiv,
     IsLocalRing.depth_quotient_isRegular_succ_eq_depth x reg mem]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v, u} R] in
 lemma IsLocalRing.depth_quotient_isRegular_sequence_add_length_eq_depth [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
