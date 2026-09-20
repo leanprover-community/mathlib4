@@ -31,6 +31,18 @@ In the `HyperGraphLike` scope:
 
 Both relations follow the order from source to target and need not be symmetric.
 
+The connection with `SetRel` notation, after importing `Mathlib.Basic.Rel`, is:
+
+```lean
+open scoped HyperGraphLike SetRel
+
+example {ν ι ε Gr : Type*} [HyperGraphLike ν ι ε Gr] (G : Gr) (u v : ν) :
+    u ~[G] v ↔ u ~[{(a, b) | a ~[G] b}] v := Iff.rfl
+```
+
+`HyperGraphLike.Adj G` takes two vertices as arguments, whereas `SetRel` expects a set of pairs.
+The outer notation on the right uses `SetRel`; the set consists of adjacent vertex pairs.
+
 ## Implementation notes
 
 `HypergraphLike` abstracts a graph-like structure using separate types for vertices, incidences, and
