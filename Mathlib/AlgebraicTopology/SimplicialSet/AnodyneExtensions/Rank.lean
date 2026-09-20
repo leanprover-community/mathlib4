@@ -127,7 +127,6 @@ structure WeakRankFunction where
   rank : h.ι → α
   lt {x y : h.ι} : h.AncestralRel x y → h.dim x = h.dim y → rank x < rank y
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Rank functions for `h : A.PairingCore` correspond to
 rank functions for `h.pairing : A.Pairing`. -/
 noncomputable def rankFunctionEquiv :
@@ -147,7 +146,6 @@ noncomputable def rankFunctionEquiv :
   left_inv _ := by simp
   right_inv _ := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Weak rank functions for `h : A.PairingCore` correspond to
 weak rank functions for `h.pairing : A.Pairing`. -/
 noncomputable def weakRankFunctionEquiv :

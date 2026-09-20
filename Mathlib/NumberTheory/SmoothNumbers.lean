@@ -367,9 +367,9 @@ given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` 
 when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
-  ((prodCongrRight fun _ ↦ Equiv.Set.congr <| smoothNumbers_eq_factoredNumbers p).trans <|
+  ((prodCongrRight fun _ ↦ Set.equivOfEq <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
-    Equiv.Set.congr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
+    Set.equivOfEq <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
@@ -446,7 +446,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
     refine LE.le.trans ?_ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
     gcongr
-    exact Finset.one_le_prod' fun p hp ↦
+    exact Finset.one_le_prod fun p hp ↦
       (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_le
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/

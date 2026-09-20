@@ -131,9 +131,6 @@ lemma Scheme.Hom.isCompact_preimage_singleton (f : X ⟶ Y) [QuasiCompact f] (y 
     IsCompact (f ⁻¹' {y}) :=
   f.range_fiberι y ▸ isCompact_range (f.fiberι y).continuous
 
-@[deprecated (since := "2026-02-05")]
-alias QuasiCompact.isCompact_preimage_singleton := Scheme.Hom.isCompact_preimage_singleton
-
 set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) [IsAffineHom f] (y : Y) : IsAffine (f.fiber y) :=
   haveI : IsAffineHom (f.fiberToSpecResidueField y) :=

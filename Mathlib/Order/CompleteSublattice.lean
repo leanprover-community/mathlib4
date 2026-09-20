@@ -64,7 +64,7 @@ instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
   coe_injective L M h := by cases L; cases M; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α) α
+instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α)
 
 theorem top_mem : ⊤ ∈ L := by simpa using! L.sInfClosed' <| empty_subset _
 
@@ -121,7 +121,7 @@ def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
   map_sSup' _ := rfl
 
 @[simp, norm_cast] lemma coe_subtype (L : CompleteSublattice α) : L.subtype = ((↑) : L → α) := rfl
-lemma subtype_apply (L : Sublattice α) (a : L) : L.subtype a = a := rfl
+lemma subtype_apply (L : CompleteSublattice α) (a : L) : L.subtype a = a := rfl
 
 lemma subtype_injective (L : CompleteSublattice α) :
     Injective <| subtype L := Subtype.coe_injective
