@@ -148,21 +148,47 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     `Mathlib.Tactic.successIfFailWithMsg
   ]
 
+/--
+`getNonTerminalCdots stx` extracts the position of the syntax nodes contained in `stx`
+whose `SyntaxNodeKind` is `cdot` and that are not preceded by a `cdot`s.
+These are candidates for unnecessary uses of `cdot`:
+if there is only one active goal before placing `·`, then they will be flagged.
+-/
+partial
+def getNonTerminalCdots : Syntax → Array String.Pos.Raw
+  | .node _ _ args =>
+    Id.run do
+    let mut nonCDotFollowers := #[]
+    let mut wasCDot? := false
+    for i in [:args.size] do
+      if i % 2 == 1 then continue
+      let argi := args[i]!
+      if (! wasCDot?) && argi.isOfKind ``cdot then
+        nonCDotFollowers := nonCDotFollowers.push (argi.getPos?.getD default)
+      wasCDot? := argi.isOfKind `cdot
+    return nonCDotFollowers ++ (args.map getNonTerminalCdots).flatten
+  | _ => default
+
+variable (unCDots : Array String.Pos.Raw) in
 /-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
 which
 * leave at least one goal that was present before it ran
   (with the exception of tactics that leave the sole goal unchanged);
-* are not excluded through `exclusions` or `ignoreBranch`;
+* are not excluded through `exclusions` or `ignoreBranch`.
 
-together with the number of goals before the tactic,
-the number of goals after the tactic, and the number of unaffected goals.
+The `Option` value is `none` if the linter should flag the node as an unnecessary `·`.
+Otherwise, it is `some (n, m, k)`, where `n` is the number of active goals before the tactic,
+`m` the number of active goals after applying the tactic, and `k` the number of unaffected goals.
 -/
 partial
-def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
+def getManyGoals : InfoTree → Array (Syntax × Option (Nat × Nat × Nat))
   | .node info args =>
     let kargs := (args.map getManyGoals).toArray.flatten
     if let .ofTacticInfo info := info then
       if ignoreBranch.contains info.stx.getKind then #[]
+      -- Record unnecessary uses of `·`.
+      else if unCDots.contains (info.stx.getPos?.getD default) && info.goalsBefore.length == 1 then
+        kargs.push (info.stx, none)
       -- Ideal case: one goal, and it might or might not be closed.
       else if info.goalsBefore.length == 1 && info.goalsAfter.length ≤ 1 then kargs
       else if let .original .. := info.stx.getHeadInfo then
@@ -182,17 +208,24 @@ def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
       return
     if (← get).messages.hasErrors then
       return
+    let poss := getNonTerminalCdots _stx
     let trees ← getInfoTrees
     for t in trees do
-      for (s, before, after, n) in getManyGoals t do
-        let goals (k : Nat) := if k == 1 then f!"1 goal" else f!"{k} goals"
-        let fmt ← Command.liftCoreM
-          try PrettyPrinter.ppTactic ⟨s⟩ catch _ => pure f!"(failed to pretty print)"
-        Linter.logLint linter.style.multiGoal s m!"\
-          The following tactic starts with {goals before} and ends with {goals after}, \
-          {n} of which {if n == 1 then "is" else "are"} not operated on.\
-          {indentD fmt}\n\
-          Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
+      for (s, opt) in getManyGoals poss t do
+        match opt with-- before, after, n
+        | none =>
+            Linter.logLint linter.style.multiGoal s
+              m!"Unnecessary focusing dot `·`: you should be able to remove it, \
+                or move it earlier up in the proof, as necessary.\n'{s.getKind}'"
+        | some (before, after, n) =>
+            let goals (k : Nat) := if k == 1 then f!"1 goal" else f!"{k} goals"
+            let fmt ← Command.liftCoreM
+              try PrettyPrinter.ppTactic ⟨s⟩ catch _ => pure f!"(failed to pretty print)"
+            Linter.logLint linter.style.multiGoal s m!"\
+              The following tactic starts with {goals before} and ends with {goals after}, \
+              {n} of which {if n == 1 then "is" else "are"} not operated on.\
+              {indentD fmt}\n\
+              Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
 
 initialize addLinter multiGoalLinter
 

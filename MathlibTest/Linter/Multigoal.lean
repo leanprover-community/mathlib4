@@ -36,6 +36,7 @@ Please focus on the current goal, for instance using `·` (typed as "\.").
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 -/
 #guard_msgs in
+-- the linter keeps linting after ignoring a `conv`, `conv_lhs`, `conv_rhs`
 example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   conv =>
     congr
@@ -63,6 +64,7 @@ Please focus on the current goal, for instance using `·` (typed as "\.").
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 -/
 #guard_msgs in
+-- the linter allows `iterate` and `repeat'`, but continues to lint.
 example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   iterate left; decide
   repeat' left; decide
@@ -157,6 +159,47 @@ example : true ∧ true := by
     trivial
     trivial
   exact this
+
+/--
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdotTk'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdotTk'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdotTk'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdot'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdot'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
+warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
+'Lean.cdot'
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+-/
+#guard_msgs in
+-- Test linting for superfluous focusing dots.
+example : 1 = 1 ∧ 1 = 1 ∧ 1 = 1 := by
+  refine ?_
+  · constructor
+    · rfl
+    · constructor
+      · rfl
+      · rfl
 
 -- Test that `grind` interactive mode is treated properly, following the above tests
 -- we have to pick slightly less trivial goals that `grind only` will not immediately close
