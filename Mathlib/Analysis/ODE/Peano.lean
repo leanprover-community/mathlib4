@@ -28,7 +28,8 @@ convergent subsequence using the Arzelà–Ascoli theorem.
 
 ## Implementation notes
 
-This file constructs Tonelli approximations, proves their bounds, and applies Arzelà–Ascoli to extract a convergent subsequence in the space of bounded continuous functions.
+This file constructs Tonelli approximations, proves their bounds, and applies Arzelà–Ascoli to
+extract a convergent subsequence in the space of bounded continuous functions.
 
 We first construct a solution on `Icc t₀ tmax` using Tonelli approximations.
 
