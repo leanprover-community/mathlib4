@@ -41,7 +41,7 @@ In this section, we set `R` be a noetherian commutative ring, all modules refer 
   `M`-regular element `x` in `maximalIdeal R`,
   `IsLocalRing.depth (QuotSMulTop x M) + 1 = IsLocalRing.depth M`
 
-* `moduleDepth_quotient_isRegular_sequence_add_length_eq_moduleDepth` : For `R` local, a `R`-module
+* `moduleDepth_quotient_isRegular_add_length_eq_moduleDepth` : For `R` local, a `R`-module
   `M` and a `M`-regular sequence `rs` in `maximalIdeal R`,
   `moduleDepth N (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length = moduleDepth N M`
 
@@ -465,7 +465,7 @@ lemma IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth [IsLocalRing R] (M : Mod
     IsLocalRing.depth (ModuleCat.of R (QuotSMulTop x M)) + 1 = IsLocalRing.depth M :=
   (maximalIdeal R).depth_quotSMulTop_succ_eq_moduleDepth M x reg mem
 
-lemma moduleDepth_quotient_isRegular_sequence_add_length_eq_moduleDepth (N M : ModuleCat.{v} R)
+lemma moduleDepth_quotient_isRegular_add_length_eq_moduleDepth (N M : ModuleCat.{v} R)
     (rs : List R) (reg : IsWeaklyRegular M rs) (h : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
     moduleDepth N (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     moduleDepth N M := by
@@ -487,18 +487,18 @@ lemma moduleDepth_quotient_isRegular_sequence_add_length_eq_moduleDepth (N M : M
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
         (fun r hr ↦ h r (List.mem_cons_of_mem x hr)) len, add_assoc]
 
-lemma ideal_depth_quotient_isRegular_sequence_add_length_eq_ideal_depth (I : Ideal R)
+lemma ideal_depth_quotient_isRegular_add_length_eq_ideal_depth (I : Ideal R)
     (M : ModuleCat.{v} R) (rs : List R) (reg : IsWeaklyRegular M rs) (h : ∀ r ∈ rs, r ∈ I) :
     I.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     I.depth M := by
-  apply moduleDepth_quotient_isRegular_sequence_add_length_eq_moduleDepth _ M rs reg
+  apply moduleDepth_quotient_isRegular_add_length_eq_moduleDepth _ M rs reg
   simpa [(Shrink.linearEquiv R (R ⧸ I)).annihilator_eq , Ideal.annihilator_quotient] using h
 
-lemma depth_quotient_isRegular_sequence_add_length_eq_depth [IsLocalRing R]
+lemma depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
     (M : ModuleCat.{v} R) (rs : List R) (reg : IsRegular M rs) :
     IsLocalRing.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     IsLocalRing.depth M := by
-  apply ideal_depth_quotient_isRegular_sequence_add_length_eq_ideal_depth _ M rs reg.1
+  apply ideal_depth_quotient_isRegular_add_length_eq_ideal_depth _ M rs reg.1
   intro r hr
   simp only [mem_maximalIdeal, mem_nonunits_iff]
   by_contra isu
@@ -602,7 +602,7 @@ lemma IsLocalRing.depth_quotient_span_isRegular_succ_eq_depth [IsLocalRing R] [I
     IsLocalRing.depth_quotient_isRegular_succ_eq_depth x reg mem]
 
 omit [Small.{v, u} R] in
-lemma IsLocalRing.depth_quotient_isRegular_sequence_add_length_eq_depth [IsLocalRing R]
+lemma IsLocalRing.depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ Ideal.ofList rs) :=
