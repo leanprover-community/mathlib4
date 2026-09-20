@@ -36,6 +36,8 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
 * `SchreierCosetGraph ι H` - The Schreier graph of the action of `M` on cosets `M ⧸ H`.
 * `CayleyGraph ι` - The Cayley graph of a group with generators, defined as the Schreier
   coset graph with trivial subgroup `H = ⊥`.
+* `SchreierCosetGraph.asAutom` - The prefunctor on a Schreier coset graph induced by right
+  multiplication by `g⁻¹`, for a normal subgroup.
 
 ## Main results
 
@@ -55,8 +57,8 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
   weakly connected component when the generators generate the entire group.
 * `Quiver.cayleyUniqueWeaklyConnectedComponent` - A Cayley graph has exactly one weakly
   connected component when the generators generate the entire group.
-* `Quiver.SchreierCosetGraph.asAutom_comp_inv` - Each of these prefunctors is invertible,
-  `asAutom ι N g⁻¹` being inverse to `asAutom ι N g`, so they are automorphisms.
+* `Quiver.SchreierCosetGraph.asAutom_comp_inv` - Right multiplication by `g⁻¹` is invertible,
+  `asAutom ι N g⁻¹` being inverse to `asAutom ι N g`, so these prefunctors are automorphisms.
 * `Quiver.SchreierCosetGraph.asAutom_labelling` - Right multiplication by `g⁻¹` induces an
   automorphism of the Schreier coset graph preserving labels.
 * `Quiver.SchreierCosetGraph.exists_asAutom_obj_eq` - These automorphisms act transitively on
@@ -67,6 +69,11 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
 
 Although referred to informally as graphs, Schreier graphs have multiple, directed, labelled
 edges between nodes and so are implemented here as quivers.
+
+`CayleyGraph ι` is defined as `SchreierCosetGraph ι ⊥` rather than directly as the Schreier
+graph of `M` acting on itself. Cosets of the trivial subgroup are singletons, so the two agree
+up to `QuotientGroup.quotientBot`, and routing through the coset graph means vertex-transitivity
+is proved once, for normal subgroups, and specialises to Cayley graphs at the trivial subgroup.
 
 ## References
 
