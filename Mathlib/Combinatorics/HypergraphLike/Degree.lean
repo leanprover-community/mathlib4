@@ -132,7 +132,6 @@ lemma eorder_eq_top_iff : eorder G e = ⊤ ↔ (edgeFiber G e).Infinite := by
 lemma eorder_lt_top_of_finite (hI : I(G).Finite) : eorder G e < ⊤ :=
   eorder_lt_top_iff.mpr (hI.subset edgeFiber_subset_incs)
 
-/-- Every edge has positive order exactly when `edgeMap` maps the incidences onto the edges. -/
 lemma edgeMap_surjOn_iff [Nonempty E] :
     SurjOn (edgeMap G) I(G) E(G) ↔ ∀ e ∈ E(G), 0 < eorder G e := by
   simp only [SurjOn, subset_def, mem_image, eorder_eq_encard_edgeFiber, encard_pos, nonempty_def,
@@ -226,10 +225,10 @@ lemma sum_edegree_eq_sum_eorder (G : Gr) [Fintype V(G)] [Fintype E(G)] :
 
 /-! ### Natural-number degree and order -/
 
-/-- The number of incidences of an edge, with value zero for an infinite fiber. -/
+/-- The number of incidences of an edge. Returns zero for an infinite fiber. -/
 noncomputable def order (G : Gr) (e : E) : ℕ := (eorder G e).toNat
 
-/-- The number of incidences attached to a vertex, with value zero for an infinite fiber. -/
+/-- The number of incidences attached to a vertex. Returns zero for an infinite fiber. -/
 noncomputable def degree (G : Gr) (v : V) : ℕ := (edegree G v).toNat
 
 @[simp]
@@ -407,8 +406,8 @@ lemma sum_order (G : Gr) [Fintype E(G)] (hI : I(G).Finite := by toFinite_tac) :
       (fun _ ↦ hI.subset edgeFiber_subset_incs)
       ((pairwise_disjoint_edgeFiber G).comp_of_injective Subtype.val_injective)).symm
 
-/-- The degree sum equals the edge order sum when the vertex, edge, and incidence sets
-are finite. -/
+/-- The degree sum equals the edge order sum when the vertex, edge, and incidence sets are finite.
+-/
 lemma sum_degree_eq_sum_order (G : Gr) [Fintype V(G)] [Fintype E(G)]
     (hI : I(G).Finite := by toFinite_tac) :
     ∑ v : V(G), degree G (v : V) = ∑ e : E(G), order G (e : E) :=
