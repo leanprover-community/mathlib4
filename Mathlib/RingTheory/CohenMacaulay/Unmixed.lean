@@ -96,7 +96,7 @@ lemma isCohenMacaulayRing_of_unmixed
           List.take_of_length_le (ge_of_eq eq)]
         exact hr
   apply le_antisymm _ (depth_le_ringKrullDim _)
-  rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, IsLocalRing.depth_eq_sSup_length_regular,
+  rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, IsLocalRing.depth_eq_sSup_length_isRegular,
     WithBot.coe_le_coe]
   apply le_sSup
   rcases this p.height.natCast_toNat_le_self with ⟨rs, mem, reg, len⟩
