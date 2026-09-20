@@ -659,7 +659,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
       have := Finsupp.ext_iff.1 (congr($((mapShortComplexH1 (B := toCoinvariants A S)
         (MonoidHom.id G) (toCoinvariantsMkQ A S)).comm₁₂.symm) W)) g
       simp only [shortComplexH1, mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, MonoidHom.coe_id,
-        lmapDomain_id, ModuleCat.ofHom_id, res_obj_ρ, hom_ofHom, Category.id_comp,
+        lmapDomain_id, ModuleCat.ofHom_id, hom_ofHom, Category.id_comp,
         mapShortComplexH1_τ₁, Prod.map_id, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
         LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply, mapRange_apply] at this
       simp only [← mapRange_apply (f := Coinvariants.mk <| A.ρ.comp S.subtype)
