@@ -11,6 +11,7 @@ on:
 # Limit permissions for GH_TOKEN for the entire workflow
 permissions:
   pull-requests: write  # Only allow PR comments/labels
+  issues: write
   # All other permissions are implicitly 'none'
 
 env:
@@ -34,22 +35,22 @@ jobs:
     steps:
       - name: Sync draft state and WIP label
         run: |
-          set -euo pipefail
-          case "$ACTION" in
-            converted_to_draft)
-              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --add-label 'WIP'
-              ;;
-            ready_for_review)
-              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label 'WIP'
-              ;;
-            labeled)
-              if [ "${IS_DRAFT}" != "true" ]; then
-                gh pr ready "${PR_NUMBER}" --repo "${REPO}" --undo
-              fi
-              ;;
-            unlabeled)
-              if [ "${IS_DRAFT}" = "true" ]; then
-                gh pr ready "${PR_NUMBER}" --repo "${REPO}"
-              fi
-              ;;
-          esac
+set -euo pipefail
+case "$ACTION" in
+  converted_to_draft)
+    gh pr edit "${PR_NUMBER}" --repo "${REPO}" --add-label 'WIP'
+    ;;
+  ready_for_review)
+    gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label 'WIP'
+    ;;
+  labeled)
+    if [ "${IS_DRAFT}" != "true" ]; then
+      gh pr ready "${PR_NUMBER}" --repo "${REPO}" --undo
+    fi
+    ;;
+  unlabeled)
+    if [ "${IS_DRAFT}" = "true" ]; then
+      gh pr ready "${PR_NUMBER}" --repo "${REPO}"
+    fi
+    ;;
+esac
