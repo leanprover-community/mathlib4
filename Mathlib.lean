@@ -3330,6 +3330,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLim
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.ObjectProperty.InheritedFromHom
+public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
 public import Mathlib.CategoryTheory.ObjectProperty.Kernels
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
