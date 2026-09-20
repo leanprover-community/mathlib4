@@ -35,7 +35,7 @@ Try this:
 
   [apply] theorem add_even_theorem {n m : Nat} (hn : ∃ k, n = k + k) (hm : ∃ k, m = k + k) :
       ∃ k, n + m = k + k := by
-    obtain ⟨n, rfl⟩ := /- have a comment here (to test preserving whitespace) -/ hn;
+    obtain ⟨n, rfl /- have a comment here (to test preserving whitespace) -/⟩ := hn;
         -- and some weird indentation
       obtain ⟨m, rfl⟩ := hm
     refine ⟨n + m, ?_⟩
