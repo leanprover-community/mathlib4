@@ -643,6 +643,47 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : R)⌉ = n :=
 @[simp]
 theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(ofNat(n) : R)⌉ = ofNat(n) := ceil_natCast n
 
+@[simp]
+theorem ceil_zero : ⌈(0 : R)⌉ = 0 := by rw [← cast_zero, ceil_intCast]
+
+@[simp]
+theorem ceil_one : ⌈(1 : R)⌉ = 1 := by rw [← cast_one, ceil_intCast]
+
+theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : R) z, (⌈a⌉ : R) = z :=
+  fun a ha => congrArg Int.cast (ceil_eq_on_Ioc z a ha)
+
+lemma ceil_eq_self_iff_mem (a : R) : ⌈a⌉ = a ↔ a ∈ Set.range Int.cast := by
+  aesop
+
+@[bound]
+theorem floor_le_ceil (a : R) : ⌊a⌋ ≤ ⌈a⌉ :=
+  FloorRing.intCast_le_iff.1 <| (floor_le _).trans <| le_ceil _
+
+@[bound]
+theorem floor_lt_ceil_of_lt {a b : R} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
+  FloorRing.intCast_lt_iff.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
+
+lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
+  refine ⟨fun h ht => ?_, fun h => ?_⟩
+  · have h0 := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
+    rw [h, cast_add, cast_one, left_eq_add] at h0
+    exact one_ne_zero h0
+  · apply le_antisymm (Int.ceil_le_floor_add_one _)
+    rw [add_one_le_iff, lt_ceil]
+    exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
+
+theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
+  refine (em (a ∈ Set.range Int.cast)).imp fract_eq_zero_iff.mpr fun ha ↦ ?_
+  simp [(ceil_eq_floor_add_one_iff_notMem a).mpr ha]
+
+theorem ceil_eq_add_one_sub_fract (ha : fract a ≠ 0) : (⌈a⌉ : R) = a + 1 - fract a := by
+  rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
+  abel
+
+theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : R) - a = 1 - fract a := by
+  rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
+  abel
+
 variable [IsOrderedAddMonoid R]
 
 theorem floor_neg : ⌊-a⌋ = -⌈a⌉ :=
@@ -719,49 +760,6 @@ theorem ceil_add_ceil_le (a b : R) : ⌈a⌉ + ⌈b⌉ ≤ ⌈a + b⌉ + 1 := by
   refine (ceil_lt_add_one _).le.trans ?_
   rw [le_sub_iff_add_le', ← add_assoc, add_le_add_iff_right]
   exact le_ceil _
-
-omit [IsOrderedAddMonoid R]
-
-@[simp]
-theorem ceil_zero : ⌈(0 : R)⌉ = 0 := by rw [← cast_zero, ceil_intCast]
-
-@[simp]
-theorem ceil_one : ⌈(1 : R)⌉ = 1 := by rw [← cast_one, ceil_intCast]
-
-theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : R) z, (⌈a⌉ : R) = z :=
-  fun a ha => congrArg Int.cast (ceil_eq_on_Ioc z a ha)
-
-lemma ceil_eq_self_iff_mem (a : R) : ⌈a⌉ = a ↔ a ∈ Set.range Int.cast := by
-  aesop
-
-@[bound]
-theorem floor_le_ceil (a : R) : ⌊a⌋ ≤ ⌈a⌉ :=
-  FloorRing.intCast_le_iff.1 <| (floor_le _).trans <| le_ceil _
-
-@[bound]
-theorem floor_lt_ceil_of_lt {a b : R} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
-  FloorRing.intCast_lt_iff.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
-
-lemma ceil_eq_floor_add_one_iff_notMem (a : R) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
-  refine ⟨fun h ht => ?_, fun h => ?_⟩
-  · have h0 := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
-    rw [h, cast_add, cast_one, left_eq_add] at h0
-    exact one_ne_zero h0
-  · apply le_antisymm (Int.ceil_le_floor_add_one _)
-    rw [add_one_le_iff, lt_ceil]
-    exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
-
-theorem fract_eq_zero_or_add_one_sub_ceil (a : R) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : R) := by
-  refine (em (a ∈ Set.range Int.cast)).imp fract_eq_zero_iff.mpr fun ha ↦ ?_
-  simp [(ceil_eq_floor_add_one_iff_notMem a).mpr ha]
-
-theorem ceil_eq_add_one_sub_fract (ha : fract a ≠ 0) : (⌈a⌉ : R) = a + 1 - fract a := by
-  rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
-  abel
-
-theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : R) - a = 1 - fract a := by
-  rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
-  abel
 
 end ceil
 
