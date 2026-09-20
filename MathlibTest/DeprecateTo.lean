@@ -2,6 +2,7 @@ import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.ToAdditive
 
 set_option linter.translateRedundant false in
+-- TODO: fix weird trailing whitespace between original theorem and deprecated aliases
 /--
 info: * Pairings:
 #[(new_name_mul, mul_easy_deprecated), (new_name_add, add_easy_deprecated)]
