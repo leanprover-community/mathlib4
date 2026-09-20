@@ -37,10 +37,10 @@ jobs:
           set -euo pipefail
           case "$ACTION" in
             converted_to_draft)
-              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --add-label "WIP"
+              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --add-label 'WIP'
               ;;
             ready_for_review)
-              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label "WIP"
+              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label 'WIP'
               ;;
             labeled)
               if [ "${PR_DRAFT}" != "true" ]; then
