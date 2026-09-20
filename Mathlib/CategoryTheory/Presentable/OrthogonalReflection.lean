@@ -92,6 +92,7 @@ lemma MorphismProperty.isClosedUnderCardinalFilteredColimits_isLocal
       exact ⟨g ≫ p.ι.app j, by simp⟩⟩
 
 open ObjectProperty in
+@[deprecated isClosedUnderCardinalFilteredColimits_isLocal +typeChanged (since := "2026-09-20")]
 lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
     (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
