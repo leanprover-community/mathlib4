@@ -101,7 +101,7 @@ def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] G) (hbound : ∀ (f :
   __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
     (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
   cont := by
-    apply PointwiseConvergenceCLM.withSeminorms.continuous_of_isBounded
+    apply PointwiseConvergenceCLM.withSeminorms.continuous_of_isBoundedBy
       PointwiseConvergenceCLM.withSeminorms A
     intro f
     obtain ⟨s, C, h⟩ := hbound f
