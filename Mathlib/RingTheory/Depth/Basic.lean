@@ -60,7 +60,8 @@ noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
 
 /-- The depth of a `R`-module `M` with respect to an ideal `I`,
 defined as `moduleDepth (R⧸ I, M)`. -/
-@[stacks 00LI "Coincides in the case IM ≠ M."]
+@[stacks 00LI "Here we define depth using vanishing of Ext groups, it coincides with the
+regular sequence characterization in the case R is Noetherian and IM ≠ M."]
 noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
