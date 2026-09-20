@@ -798,14 +798,10 @@ lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
 lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
     IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
 
+@[to_dual]
 theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
     IsLUB s a ↔ IsLUB s b := by
   simp [isLUB_iff_le_iff, h.le_congr_left]
-
--- TODO: `to_dual` doesn't work with `AntisymmRel`.
-theorem isGLB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
-    IsGLB s a ↔ IsGLB s b := by
-  simp [isGLB_iff_le_iff, h.le_congr_right]
 
 end Preorder
 

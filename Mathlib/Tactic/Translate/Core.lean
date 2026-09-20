@@ -621,13 +621,34 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
       return e
     return (e, relevantArg?.map .arg)
 
+/-- The swap equations registered for `t`, see `UnfoldBoundaries.swaps`. -/
+def TranslateData.swapBoundaries (t : TranslateData) : CoreM UnfoldBoundary.UnfoldBoundaries := do
+  let some ext := t.unfoldBoundaries? | return {}
+  return { swaps := (ext.getState (← getEnv)).swaps }
+
+/-- Fold `C (fun x y ↦ r y x)` back to `C r` in the translated type `type`, for the constants with
+a registered swap equation; see `elabSwapCast`. -/
+def foldSwapsType (t : TranslateData) (type : Expr) : MetaM Expr := do
+  let b ← t.swapBoundaries
+  if b.hasSwapConst type then b.foldSwaps type else return type
+
+/-- Fold `C (fun x y ↦ r y x)` back to `C r` in the translated `type`, and cast the translated
+`value` to it, for the constants with a registered swap equation; see `elabSwapCast`. -/
+def foldSwaps (t : TranslateData) (type value : Expr) : MetaM (Expr × Expr) := do
+  let b ← t.swapBoundaries
+  unless b.hasSwapConst type || b.hasSwapConst value do return (type, value)
+  let type ← b.foldSwaps type
+  return (type, ← b.cast (← b.insertBoundaries value t.attrName) type t.attrName)
+
 /-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : ArgReorder) (dont : List Nat)
-    (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) (rename : NameMap Name) :
-    MetaM (ConstantInfo × Option RelevantArg) := do
+    (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) (rename : NameMap Name)
+    (fold : Bool) : MetaM (ConstantInfo × Option RelevantArg) := do
   unless srcDecl.all == [srcDecl.name] do
     throwError "`{t.attrName}` does not support mutually recursive declarations."
+  -- The swap equations are only used after translating, see `foldSwaps`.
+  let unfoldBoundaries? := unfoldBoundaries?.map ({ · with swaps := {} })
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
   let mut value := decl.value! (allowOpaque := true)
@@ -647,7 +668,10 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   type ← reorderForall reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
-  return (decl.updateType type, .merge .min relevantArg₁ relevantArg₂)
+  unless fold do return (decl.updateType type, .merge .min relevantArg₁ relevantArg₂)
+  let (foldedType, foldedValue) ← foldSwaps t type (decl.value! (allowOpaque := true))
+  return ((decl.updateType foldedType).updateValue foldedValue,
+    .merge .min relevantArg₁ relevantArg₂)
 
 /-- Translate the source declaration and then run `addDecl`. If the kernel throws an error,
 try to emit a better error message.
@@ -658,7 +682,10 @@ The reason is that in the most common case, `to_dual` succeeds without needing t
 unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
 def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : ArgReorder) (dont : List Nat) (rename : NameMap Name) :
-    MetaM (ConstantInfo × Option RelevantArg) :=
+    MetaM (ConstantInfo × Option RelevantArg) := do
+  -- Only user-facing propositions are folded with the swap equations, see `foldSwaps`; the value
+  -- of a definition or of an auxiliary declaration such as a matcher is never cast.
+  let fold := (← isProp srcDecl.type) && !(privateToUserName srcDecl.name).isInternalDetail
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
   /- `addDecl` infers visibility from whether the name `tgt` is private, and exposure
@@ -670,17 +697,17 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     if let some unfoldBoundaries := t.unfoldBoundaries? then
       let env ← getEnv
       -- First attempt to generate the translation without unfold boundaries.
-      let declAttempt ← updateDecl t tgt srcDecl reorder dont none rename
       try
+        let declAttempt ← updateDecl t tgt srcDecl reorder dont none rename fold
         addDecl declAttempt.1.toDeclaration!
         trace[translate_detail] "generating\n{tgt} : {declAttempt.1.type} :=\
           {indentExpr <| declAttempt.1.value! (allowOpaque := true)}"
         return declAttempt -- early return
       catch _ =>
         setEnv env
-        updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState env) rename
+        updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState env) rename fold
     else
-      updateDecl t tgt srcDecl reorder dont none rename
+      updateDecl t tgt srcDecl reorder dont none rename fold
   let value := decl.1.value! (allowOpaque := true)
   trace[translate_detail] "generating\n{tgt} : {decl.1.type} :={indentExpr value}"
   try
@@ -989,7 +1016,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.numLevelParams} \
       universe levels, but '{tgt}' has {tgtDecl.numLevelParams} universe levels"
   let mut srcType := srcDecl.type
-  let unfoldBoundaries? ← t.unfoldBoundaries?.mapM (return ·.getState (← getEnv))
+  let unfoldBoundaries? ← t.unfoldBoundaries?.mapM
+    (return { ·.getState (← getEnv) with swaps := {} })
   if let some b := unfoldBoundaries? then
     srcType ← b.insertBoundaries srcType t.attrName
   let (srcType', relevantArg?) ← applyReplacementForall t cfg.dontTranslate srcType
@@ -1027,6 +1055,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
+  if isMainTranslation && (← isProp srcDecl.type) then
+    srcType ← foldSwapsType t srcType
   -- We rely on unification to determine how the universe parameters need to be reordered.
   let levels ← mkFreshLevelMVars srcDecl.numLevelParams
   srcType := srcType.instantiateLevelParams srcDecl.levelParams levels

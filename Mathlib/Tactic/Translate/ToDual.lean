@@ -100,11 +100,12 @@ Some definitions are dual to something other than the dual of their value. Some 
 - `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
 - `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
 - `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself.
+- `AntisymmRel (· ≤ ·) a b := a ≤ b ∧ b ≤ a` is dual to itself.
 
 To be able to translate a term involving such constants, `to_dual` needs to insert casts,
 so that the term's correctness doesn't rely on unfolding them.
 You can instruct `to_dual` to do this using the `to_dual_insert_cast` or `to_dual_insert_cast_fun`
-commands.
+commands, or `to_dual_swap_cast` for a constant applied to a relation, such as `AntisymmRel`.
 
 When troubleshooting `to_dual`, you can see what it is doing by replacing it with `to_dual?` and/or
 by using `set_option trace.translate_detail true`.
@@ -310,6 +311,13 @@ proof that is translated. Instead, a casting function is inserted. This casting 
 translated by the translation attribute. -/
 elab "to_dual_insert_cast_fun" declName:ident " := " valStx₁:term ", " valStx₂:term : command =>
   elabInsertCastFun declName valStx₁ valStx₂ data
+
+/-- The `to_dual_swap_cast` command is used to tag constants `foo` with a binary relation argument
+`r` such that `foo (fun x y ↦ r y x) = foo r`, such as `AntisymmRel`. The translation of `(· ≤ ·)`
+is `fun x y ↦ y ≤ x`, and this equation lets `to_dual` state the dual of `foo (· ≤ ·) a b` as
+`foo (· ≤ ·) a b`, casting the translated proof through it where needed. -/
+elab "to_dual_swap_cast" declName:ident " := " valStx:term : command =>
+  elabSwapCast declName valStx data
 
 initialize registerBuiltinAttribute {
     name := `to_dual

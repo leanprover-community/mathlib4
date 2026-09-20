@@ -43,6 +43,8 @@ def AntisymmRel (a b : α) : Prop :=
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext₂ fun _ _ ↦ propext and_comm
 
+to_dual_swap_cast AntisymmRel := antisymmRel_swap _
+
 theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
   and_comm
 
@@ -107,6 +109,7 @@ section LE
 variable [LE α]
 
 theorem AntisymmRel.le (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
+@[to_dual existing AntisymmRel.le]
 theorem AntisymmRel.ge (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
 
 end LE
@@ -194,6 +197,7 @@ alias AntisymmRel.trans_lt := lt_of_antisymmRel_of_lt
 theorem not_lt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ a < b :=
   h.ge.not_gt
 
+@[to_dual existing not_lt_of_antisymmRel]
 theorem not_gt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ b < a :=
   h.le.not_gt
 
@@ -203,6 +207,7 @@ alias AntisymmRel.not_gt := not_gt_of_antisymmRel
 theorem not_antisymmRel_of_lt : a < b → ¬ AntisymmRel (· ≤ ·) a b :=
   imp_not_comm.1 not_lt_of_antisymmRel
 
+@[to_dual existing not_antisymmRel_of_lt]
 theorem not_antisymmRel_of_gt : b < a → ¬ AntisymmRel (· ≤ ·) a b :=
   imp_not_comm.1 not_gt_of_antisymmRel
 
@@ -221,6 +226,7 @@ instance : @Trans α α α (· < ·) (AntisymmRel (· ≤ ·)) (· < ·) where
 instance : @Trans α α α (AntisymmRel (· ≤ ·)) (· < ·) (· < ·) where
   trans := lt_of_antisymmRel_of_lt
 
+@[to_dual self (reorder := a c, b d, h₁ h₂)]
 theorem AntisymmRel.le_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
     a ≤ c ↔ b ≤ d where
   mp h := (h₁.symm.trans_le h).trans_antisymmRel h₂
@@ -229,9 +235,11 @@ theorem AntisymmRel.le_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
 theorem AntisymmRel.le_congr_left (h : AntisymmRel (· ≤ ·) a b) : a ≤ c ↔ b ≤ c :=
   h.le_congr .rfl
 
+@[to_dual existing AntisymmRel.le_congr_left]
 theorem AntisymmRel.le_congr_right (h : AntisymmRel (· ≤ ·) b c) : a ≤ b ↔ a ≤ c :=
   AntisymmRel.rfl.le_congr h
 
+@[to_dual self (reorder := a c, b d, h₁ h₂)]
 theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
     a < c ↔ b < d where
   mp h := (h₁.symm.trans_lt h).trans_antisymmRel h₂
@@ -240,6 +248,7 @@ theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : Antisy
 theorem AntisymmRel.lt_congr_left (h : AntisymmRel (· ≤ ·) a b) : a < c ↔ b < c :=
   h.lt_congr .rfl
 
+@[to_dual existing AntisymmRel.lt_congr_left]
 theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔ a < c :=
   AntisymmRel.rfl.lt_congr h
 

@@ -42,7 +42,20 @@ public structure UnfoldBoundaries where
   casts : NameMap (Name × Name) := {}
   /-- The functions that we want to unfold again after the translation has happened. -/
   insertionFuns : NameSet := {}
+  /-- For a constant `C` with a binary relation argument at index `i` such that
+  `C (fun x y ↦ r y x) = C r`, the index `i` and the name of that equation. -/
+  swaps : NameMap (Nat × Name) := {}
   deriving Inhabited
+
+/-- If `e` is `fun x y ↦ r y x` for a homogeneous relation `r`, return `fun x y ↦ r x y`; if it is
+`Function.swap r`, return `r`. -/
+def unswap? (e : Expr) : Option Expr := do
+  if e.isAppOfArity `Function.swap 4 then
+    return e.appArg!
+  let .lam x tx (.lam y ty b bi') bi := e | none
+  let .app (.app r (.bvar 0)) (.bvar 1) := b.consumeMData | none
+  guard (tx == ty && !r.hasLooseBVar 0 && !r.hasLooseBVar 1)
+  return .lam x tx (.lam y ty (.app (.app r (.bvar 1)) (.bvar 0)) bi') bi
 
 /--
 Set up the monadic context:
@@ -57,6 +70,17 @@ def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
   x (Simp.Methods.toMethodsRef { pre }) ctx |>.run' {}
 where
   pre (e : Expr) : SimpM Simp.Step := do
+    -- Fold `C (fun x y ↦ r y x) args` back to `C r args` for the constants in `b.swaps`.
+    if let .const c us := e.getAppFn then
+      if let some (i, thm) := b.swaps.find? c then
+        let args := e.getAppArgs
+        if h : i < args.size then
+          if let some r := unswap? args[i] then
+            let args := args.set i r
+            let mut proof := mkAppN (.const thm us) (args.extract 0 (i + 1))
+            for arg in args[i + 1:] do
+              proof ← mkCongrFun proof arg
+            return .visit { expr := mkAppN (.const c us) args, proof? := proof }
     let .const c _ ← whnf e.getAppFn | return .continue
     let some thm := b.unfolds.find? c | return .continue
     let some r ← Simp.tryTheorem? e thm | return .continue
@@ -146,6 +170,14 @@ public def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (
       throwError "@[{attr}] failed to insert a cast to make `{f}` applied to `{args.toList}` \
         well typed\n\n{ex.toMessageData}")
 
+/-- Whether `e` mentions a constant of `b.swaps`. -/
+public def UnfoldBoundaries.hasSwapConst (b : UnfoldBoundaries) (e : Expr) : Bool :=
+  (e.find? fun s ↦ s.isConst && b.swaps.contains s.constName!).isSome
+
+/-- Rewrite `e` with the equations of `b.swaps`, see `unswap?`. -/
+public def UnfoldBoundaries.foldSwaps (b : UnfoldBoundaries) (e : Expr) : MetaM Expr :=
+  run b do return (← Simp.simp e).expr
+
 /-- Unfold all of the auxiliary functions that were inserted as unfold boundaries. -/
 public def UnfoldBoundaries.unfoldInsertions (e : Expr) (b : UnfoldBoundaries) : CoreM Expr :=
   -- This is the same as `Meta.deltaExpand`, but with an extra beta reduction.
@@ -163,14 +195,22 @@ where
 public inductive UnfoldEntry where
   | unfold (declName : Name) (unfold : Name)
   | cast (declName : Name) (unfold refold unfold' refold' : Name)
+  | swap (declName : Name) (i : Nat) (thm unfold : Name)
 
-def UnfoldBoundaries.insert (b : UnfoldBoundaries) : UnfoldEntry → UnfoldBoundaries
-  | .unfold declName unfold => { b with
+/-- Record the equation `unfold` for unfolding `declName`. -/
+def UnfoldBoundaries.insertUnfold (b : UnfoldBoundaries) (declName unfold : Name) :
+    UnfoldBoundaries :=
+  { b with
     unfolds := b.unfolds.insert declName
       { origin := .decl unfold, proof := mkConst unfold, rfl := false } }
+
+def UnfoldBoundaries.insert (b : UnfoldBoundaries) : UnfoldEntry → UnfoldBoundaries
+  | .unfold declName unfold => b.insertUnfold declName unfold
   | .cast declName unfold refold unfold' refold' => { b with
     casts := b.casts.insert declName (unfold, refold)
     insertionFuns := b.insertionFuns.insertMany [unfold, refold, unfold', refold'] }
+  | .swap declName i thm unfold =>
+    { b.insertUnfold declName unfold with swaps := b.swaps.insert declName (i, thm) }
 
 /-- Extensions for handling abstraction boundaries for definitions that shouldn't be unfolded. -/
 public abbrev UnfoldBoundaryExt := SimplePersistentEnvExtension UnfoldEntry UnfoldBoundaries

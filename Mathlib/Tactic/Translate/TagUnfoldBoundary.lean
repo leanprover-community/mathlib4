@@ -129,4 +129,45 @@ public def elabInsertCastFun (declName : Ident) (valStx₁ valStx₂ : Term) (t 
   let some ext := t.unfoldBoundaries? | throwError "{t.attrName} doesn't support unfold boundaries"
   modifyEnv (ext.addEntry · (.cast declName name₁ name₂ translatedName₁ translatedName₂))
 
+/-- `to_dual_swap_cast foo := h` registers a constant `foo` whose first binary relation argument
+`r` satisfies `foo (fun x y ↦ r y x) = foo r`, with `h` a proof of that equation, for example
+`to_dual_swap_cast AntisymmRel := antisymmRel_swap _`. Translating `(· ≤ ·)` gives
+`fun x y ↦ y ≤ x`, and this equation lets the dual of a statement about `foo (· ≤ ·)` be stated
+with `foo (· ≤ ·)` again, casting the proof where it unfolds `foo`; see `foldSwaps`. -/
+public def elabSwapCast (declName : Ident) (valStx : Term) (t : TranslateData) :
+    CommandElabM Unit := do
+  let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName
+  let (thm, i) ← Command.liftTermElabM do withDeclNameForAuxNaming declName do withExporting do
+    let info ← getConstInfo declName
+    let f := Lean.mkConst declName (info.levelParams.map mkLevelParam)
+    forallTelescope info.type fun xs _ ↦ do
+      let some i ← xs.findIdxM? (liftM ∘ isHomogeneousRelation) |
+        throwError "`{.ofConstName declName}` has no binary relation argument."
+      let xs := xs.extract 0 (i + 1)
+      let r := xs[i]!
+      let swapR ← forallBoundedTelescope (← inferType r) (some 2) fun ys _ ↦
+        mkLambdaFVars ys (mkApp2 r ys[1]! ys[0]!)
+      let lhs := mkAppN f (xs.set! i swapR)
+      let rhs := mkAppN f xs
+      unless ← isDefEq (← inferType lhs) (← inferType rhs) do
+        throwError "the arguments of `{.ofConstName declName}` after `{r}` depend on it."
+      let goal ← mkEq lhs rhs
+      let value ← withoutErrToSorry do
+        elabTermEnsuringType valStx goal <* synthesizeSyntheticMVarsNoPostponing
+      let name ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_swap_cast")
+      let type ← mkForallFVars xs goal
+      let value ← mkLambdaFVars xs (← instantiateMVars value)
+      addDecl (← mkThmOrUnsafeDef { name, type, value, levelParams := info.levelParams })
+      return (name, i)
+  -- The constant is also an unfold boundary, so that a translated proof mentions it where it
+  -- unfolded it and the equation applies there.
+  let (cast, _) ← elabInsertCastAux declName .eq (← `(rfl)) t
+  let some ext := t.unfoldBoundaries? | throwError "{t.attrName} doesn't support unfold boundaries"
+  modifyEnv (ext.addEntry · (.swap declName i thm cast))
+where
+  -- whether `x` is a relation `α → α → Sort _`
+  isHomogeneousRelation (x : Expr) : MetaM Bool := do
+    let .forallE _ a (.forallE _ b _ _) _ ← whnfR (← inferType x) | return false
+    return a == b && !b.hasLooseBVars
+
 end Mathlib.Tactic.Translate
