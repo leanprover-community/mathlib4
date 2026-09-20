@@ -34,6 +34,10 @@ In this section, we set `R` be a noetherian commutative ring, all modules refer 
   `M` and N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
   `moduleDepth N M` is equal to the supremum of length of `M`-regular sequence in `I`
 
+## References
+
+* [Commutative Algebra, Theorem 28][matsumuraCommAlg]
+
 -/
 
 @[expose] public section
@@ -54,10 +58,12 @@ noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
 
 /-- The depth of a `R`-module `M` with respect to an ideal `I`,
 defined as `moduleDepth (R⧸ I, M)`. -/
+@[stacks 00LI "Coincides in the case IM ≠ M."]
 noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
 /-- For a local ring `R`, the depth of a `R`-module with respect to the maximal ideal. -/
+@[stacks 00LI "The local ring case."]
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
@@ -245,6 +251,7 @@ lemma moduleDepth_ge_min_of_shortExact_trd_fst
       (Ext.contravariant_sequence_exact₃' hS N i (i + 1) (by omega))
       (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
 
+@[stacks 00LX "(1)"]
 lemma moduleDepth_ge_min_of_shortExact_snd_snd
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
     (hS : S.ShortExact) : moduleDepth N S.X₂ ≥ moduleDepth N S.X₁ ⊓ moduleDepth N S.X₃ := by
@@ -259,6 +266,7 @@ lemma moduleDepth_ge_min_of_shortExact_snd_snd
     (Ext.covariant_sequence_exact₂' N hS i)
     (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
 
+@[stacks 00LX "(3)"]
 lemma moduleDepth_ge_min_of_shortExact_fst_snd
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
     (hS : S.ShortExact) : moduleDepth N S.X₁ ≥ moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₃ + 1) := by
@@ -279,6 +287,7 @@ lemma moduleDepth_ge_min_of_shortExact_fst_snd
       (Ext.covariant_sequence_exact₁' N hS i (i + 1) (by omega))
       (zero3.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
 
+@[stacks 00LX "(2)"]
 lemma moduleDepth_ge_min_of_shortExact_trd_snd
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
     (hS : S.ShortExact) : moduleDepth N S.X₃ ≥ moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₁ - 1) := by
@@ -313,6 +322,7 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 4 1).mp (by use rs)
     exact rees N Nntr Nfin (le_of_eq hsupp)
 
+@[stacks 00LW]
 lemma IsLocalRing.ideal_depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetherianRing R]
     (I : Ideal R) (netop : I ≠ ⊤) (M : ModuleCat.{v} R) [Module.Finite R M]
     [Nontrivial M] : I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
