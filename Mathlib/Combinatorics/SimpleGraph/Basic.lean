@@ -1129,7 +1129,7 @@ theorem IsUniversal.not_isIsolated [Nontrivial V] (h : G.IsUniversal v) (w : V) 
 
 theorem IsIsolated.not_isUniversal [Nontrivial V] (h : G.IsIsolated v) (w : V) :
     ¬G.IsUniversal w := by
-  contrapose! h
+  contrapose h
   exact h.not_isIsolated v
 
 @[simp]
