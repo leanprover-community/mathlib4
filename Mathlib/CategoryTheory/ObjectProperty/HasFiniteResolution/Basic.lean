@@ -133,9 +133,6 @@ theorem eq_of_isClosedUnderQuotients [P.IsClosedUnderQuotients] :
 instance [P.IsClosedUnderIsomorphisms] : P.hasFiniteResolution.IsClosedUnderIsomorphisms :=
   inferInstanceAs (⨆ n : ℕ, P.hasFiniteResolutionOfLength n).IsClosedUnderIsomorphisms
 
-instance [P.IsClosedUnderIsomorphisms] : P.hasFiniteResolution.IsClosedUnderIsomorphisms :=
-  ⟨fun {_ _} e hX => P.hasFiniteResolution.prop_of_iso e hX⟩
-
 theorem of_shortExact {S : ShortComplex C} (hS : S.ShortExact) (h₂ : P S.X₂)
     (h₁ : P.hasFiniteResolution S.X₁) : P.hasFiniteResolution S.X₃ := by
   obtain ⟨n, h₁⟩ := hasFiniteResolution_iff.mp h₁
