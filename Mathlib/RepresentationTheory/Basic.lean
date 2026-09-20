@@ -124,7 +124,7 @@ theorem asAlgebraHom_def : asAlgebraHom ρ = lift k _ G ρ := rfl
 @[simp]
 theorem asAlgebraHom_single (g : G) (r : k) :
     asAlgebraHom ρ (MonoidAlgebra.single g r) = r • ρ g := by
-  simp only [asAlgebraHom_def, MonoidAlgebra.lift_single]
+  simp [asAlgebraHom_def]
 
 theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (MonoidAlgebra.single g 1) = ρ g := by simp
 
@@ -173,7 +173,6 @@ alias asModuleEquiv_map_smul := asModuleEquiv_apply_smul
 
 theorem asModuleEquiv_symm_apply_smul (r : k) (x : V) :
     ρ.asModuleEquiv.symm (r • x) = r • ρ.asModuleEquiv.symm x := by
-  rw [LinearEquiv.symm_apply_eq]
   simp
 
 @[deprecated (since := "2026-09-20")]
