@@ -36,7 +36,12 @@ instance (X : Locale) : Frame X :=
 
 /-- Construct a bundled `Locale` from a `Frame`. -/
 def of (α : Type*) [Frame α] : Locale :=
-  op <| Frm.of α
+  op ↧α
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Locale.of X` as `↧X`. -/
+@[app_delab Locale.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=

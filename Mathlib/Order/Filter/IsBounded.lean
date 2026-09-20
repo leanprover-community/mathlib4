@@ -452,6 +452,7 @@ end Order
 
 section MinMax
 
+@[to_dual isCoboundedUnder_ge_min]
 theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → β}
     (h : f.IsCoboundedUnder (· ≤ ·) u ∨ f.IsCoboundedUnder (· ≤ ·) v) :
     f.IsCoboundedUnder (· ≤ ·) (fun a ↦ max (u a) (v a)) := by

@@ -177,7 +177,7 @@ section Group
 
 variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -486,6 +486,7 @@ section AddGroup
 
 variable [AddGroup E] {p q : NonarchAddGroupSeminorm E}
 
+@[macro_inline]
 instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
@@ -728,7 +729,7 @@ section Group
 
 variable [Group E] {p q : GroupNorm E}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
@@ -857,6 +858,7 @@ section AddGroup
 
 variable [AddGroup E] {p q : NonarchAddGroupNorm E}
 
+@[macro_inline]
 instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr

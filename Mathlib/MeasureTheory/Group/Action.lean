@@ -70,8 +70,8 @@ theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s)
 
 /-- See also `smul_ae`. -/
 @[to_additive /-- See also `vadd_ae`. -/]
-theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
-  eq_bot_mono (measure_preimage_smul_le μ c _) hs
+theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun s hs ↦
+  eq_bot_mono (measure_preimage_smul_le μ c sᶜ) hs
 
 variable {μ}
 
@@ -154,9 +154,9 @@ theorem smul_ae (c : G) : c • ae μ = ae μ := by
   simp only [mem_smul_filter, preimage_smul, smul_mem_ae]
 
 @[to_additive (attr := simp)]
-theorem eventuallyConst_smul_set_ae (c : G) {s : Set α} :
-    EventuallyConst (c • s : Set α) (ae μ) ↔ EventuallyConst s (ae μ) := by
-  rw [← preimage_smul_inv, eventuallyConst_preimage, Filter.map_smul, smul_ae]
+theorem eventuallyEmptyOrUniv_smul_set_ae (c : G) {s : Set α} :
+    EventuallyEmptyOrUniv (c • s : Set α) (ae μ) ↔ EventuallyEmptyOrUniv s (ae μ) := by
+  rw [← preimage_smul_inv, eventuallyEmptyOrUniv_preimage, Filter.map_smul, smul_ae]
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
