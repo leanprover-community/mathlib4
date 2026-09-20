@@ -45,7 +45,7 @@ variable (f : H →* G) (M : Rep k G)
 
 lemma res_id : res (MonoidHom.id G) M = M := rfl
 
-@[simp] lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
+lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
 
 lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 
@@ -108,7 +108,7 @@ instance : Limits.PreservesColimits (resFunctor.{w} (k := k) f) :=
 /-- An object of `Rep k G` is zero iff its restriction to `H` is zero. -/
 lemma isZero_res_iff (M : Rep k G) :
     IsZero (res f M) ↔ IsZero M := by
-  rw [isZero_iff, isZero_iff, Rep.res_obj_V]
+  rw [isZero_iff, isZero_iff]
 
 /--
 The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
