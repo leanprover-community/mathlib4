@@ -31,7 +31,8 @@ abbrev res (f : H →* G) (A : Rep k G) := of (A.ρ.comp f)
 
 /-- The map induced by a monoid homomorphism `f : H →* G` on morphisms between
 `G`-representations. -/
-abbrev resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
+@[expose, implicit_reducible]
+def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
     res f X ⟶ res f Y := ofHom ⟨p.hom, fun _ ↦ p.hom.2 _⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
@@ -50,12 +51,14 @@ lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 
 lemma res_obj_V : (res f M).V = M.V := rfl
 
+@[simp]
 lemma resMap_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
     (resMap f p).hom.toLinearMap = p.hom.toLinearMap := rfl
 
 @[deprecated (since := "2026-06-26")]
 alias res_map_hom_toLinearMap := resMap_hom_toLinearMap
 
+@[simp]
 lemma resMap_hom_apply {M N : Rep k G} (p : M ⟶ N) (x : M.V) :
     @DFunLike.coe (Representation.IntertwiningMap (M.ρ.comp f) (N.ρ.comp f)) _ _ _
       (resMap f p).hom x = p.hom x := rfl
