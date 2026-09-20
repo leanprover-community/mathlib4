@@ -4606,6 +4606,7 @@ public import Mathlib.Dynamics.Ergodic.Action.Regular
 public import Mathlib.Dynamics.Ergodic.AddCircle
 public import Mathlib.Dynamics.Ergodic.AddCircleAdd
 public import Mathlib.Dynamics.Ergodic.Conservative
+public import Mathlib.Dynamics.Ergodic.EmpiricalMeasure
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.Dynamics.Ergodic.Extreme
 public import Mathlib.Dynamics.Ergodic.Function
@@ -6705,6 +6706,7 @@ public import Mathlib.RingTheory.Coalgebra.Convolution
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.IsFrobenius
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.Primitive
