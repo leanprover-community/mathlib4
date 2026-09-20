@@ -359,6 +359,8 @@ theorem eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path x₀ x�
     Path.Homotopic.Quotient.mk f = .mk g ↔ f.Homotopic g :=
   Quotient.eq
 
+@[deprecated (since := "2026-09-20")] alias fromPath_eq_iff_homotopic := eq_iff_homotopic
+
 lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
     eqToHom congr(mk $h) = (Path.Homotopic.Quotient.refl x₁).cast h rfl := by subst h; rfl
 
