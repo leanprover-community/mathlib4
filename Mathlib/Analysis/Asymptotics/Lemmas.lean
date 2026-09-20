@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Asymptotics.Ring
 public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
@@ -19,7 +19,9 @@ public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 public section
 
-open Set Topology Filter
+open Set Filter
+
+open scoped Topology
 
 namespace Asymptotics
 

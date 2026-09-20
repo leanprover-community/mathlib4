@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProductMeasure
 public import Mathlib.Probability.HasLaw
 
@@ -42,8 +43,7 @@ on `Set V` such that each element of `u` is taken with probability `p`, and the 
 `u` are never taken. -/
 @[expose]
 noncomputable def setBernoulli : Measure (Set ι) :=
-  .comap (fun s i ↦ i ∈ s) <| infinitePi fun i : ι ↦
-    toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False
+  .comap (fun s i ↦ i ∈ s) <| infinitePi fun i : ι ↦ Ber(i ∈ u, False, p)
 
 @[inherit_doc] scoped notation "setBer(" u ", " p ")" => setBernoulli u p
 
@@ -54,16 +54,16 @@ instance : IsProbabilityMeasure setBer(u, p) :=
 variable (u p) in
 lemma setBernoulli_eq_map :
     setBer(u, p) = .map (fun p : ι → Prop ↦ {i | p i})
-      (infinitePi fun i : ι ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False) :=
+      (infinitePi fun i : ι ↦ Ber(i ∈ u, False, p)) :=
   MeasurableEquiv.setOfPred.comap_symm
 
 lemma setBernoulli_apply (S : Set (Set ι)) :
-    setBer(u, p) S = (infinitePi fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False)
-      ((fun t i ↦ i ∈ t) '' S) := MeasurableEquiv.setOfPred.symm.measurableEmbedding.comap_apply ..
+    setBer(u, p) S = (infinitePi fun i ↦ Ber(i ∈ u, False, p)) ((fun t i ↦ i ∈ t) '' S) :=
+  MeasurableEquiv.setOfPred.symm.measurableEmbedding.comap_apply ..
 
 lemma setBernoulli_apply' (S : Set (Set ι)) :
-    setBer(u, p) S = (infinitePi fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False)
-      ((fun p ↦ {i | p i}) ⁻¹' S) := MeasurableEquiv.setOfPred.symm.comap_apply ..
+    setBer(u, p) S = (infinitePi fun i ↦ Ber(i ∈ u, False, p)) ((fun p ↦ {i | p i}) ⁻¹' S) :=
+  MeasurableEquiv.setOfPred.symm.comap_apply ..
 
 variable (u) in
 @[simp] lemma setBernoulli_zero : setBer(u, 0) = dirac ∅ := by simp [setBernoulli_eq_map]
@@ -83,8 +83,7 @@ lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
   calc
     setBer(u, p) ({s | i ∈ s} ∩ {s | i ∉ u})
     _ = setBer(u, p) {s | i ∈ s} := by simp [hi]
-    _ = infinitePi (fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False)
-          (cylinder {i} {fun _ ↦ True}) := by
+    _ = infinitePi (fun i ↦ Ber(i ∈ u, False, p)) (cylinder {i} {fun _ ↦ True}) := by
       rw [setBernoulli_apply']; congr!; ext; simp [funext_iff]
     _ = 0 := by simp [infinitePi_cylinder, hi]
 
@@ -113,7 +112,7 @@ variable (p) in
     setBer(u, p) {s}
     _ = ∏' i, ((if i ∈ u ↔ i ∈ s then (toNNReal p : ℝ≥0∞) else 0) +
           if i ∈ s then 0 else (toNNReal (σ p) : ℝ≥0∞)) := by
-      simp [setBernoulli_apply, Set.image_singleton, Set.indicator]
+      simp [setBernoulli_apply, Set.image_singleton, Set.indicator, bernoulliMeasure_def]
     _ = ∏ i ∈ u, (if i ∈ s then (toNNReal p : ℝ≥0∞) else (toNNReal (σ p) : ℝ≥0∞)) := by
       rw [tprod_eq_prod, Finset.prod_congr rfl] <;>
         simp +contextual [ite_add_ite, mt (@hsu _), ← ENNReal.coe_add]

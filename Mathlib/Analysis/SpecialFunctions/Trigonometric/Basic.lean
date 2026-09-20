@@ -49,7 +49,9 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open Topology Filter Set
+open Filter Set
+
+open scoped Topology
 
 namespace Complex
 
@@ -168,6 +170,8 @@ theorem pi_div_two_pos : 0 < π / 2 :=
   half_pos pi_pos
 
 theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
+
+@[simp] theorem abs_pi : |π| = π := abs_of_pos pi_pos
 
 end Real
 
@@ -419,6 +423,21 @@ theorem sin_nonneg_of_mem_Icc {x : ℝ} (hx : x ∈ Icc 0 π) : 0 ≤ sin x := b
 
 theorem sin_nonneg_of_nonneg_of_le_pi {x : ℝ} (h0x : 0 ≤ x) (hxp : x ≤ π) : 0 ≤ sin x :=
   sin_nonneg_of_mem_Icc ⟨h0x, hxp⟩
+
+theorem sin_add_le_sin_add_sin {x y : ℝ} (hx : 0 ≤ sin x) (hy : 0 ≤ sin y) :
+    sin (x + y) ≤ sin x + sin y := by
+  grw [sin_add, cos_le_one, cos_le_one, mul_one, one_mul]
+
+theorem abs_sin_add_le (x y : ℝ) : |sin (x + y)| ≤ |sin x| + |sin y| := by
+  grw [sin_add, abs_add_le, abs_mul, abs_mul, abs_cos_le_one, abs_cos_le_one, mul_one, one_mul]
+
+theorem abs_sin_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℝ) :
+    |sin (∑ i ∈ s, f i)| ≤ ∑ i ∈ s, |sin (f i)| := by
+  classical
+  induction s using Finset.induction_on' with
+  | empty => simp
+  | insert i _ hi ht hit h =>
+    grw [Finset.sum_insert hit, abs_sin_add_le, h, Finset.sum_insert hit]
 
 theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : sin x < 0 :=
   neg_pos.1 <| sin_neg x ▸ sin_pos_of_pos_of_lt_pi (neg_pos.2 hx0) (neg_lt.1 hpx)
@@ -861,7 +880,7 @@ end CosDivSq
 
 /-- `Real.sin` as an `OrderIso` between `[-(π / 2), π / 2]` and `[-1, 1]`. -/
 def sinOrderIso : Icc (-(π / 2)) (π / 2) ≃o Icc (-1 : ℝ) 1 :=
-  (strictMonoOn_sin.orderIso _ _).trans <| OrderIso.setCongr _ _ bijOn_sin.image_eq
+  (strictMonoOn_sin.orderIso _ _).trans <| Set.orderIsoOfEq _ _ bijOn_sin.image_eq
 
 @[simp]
 theorem coe_sinOrderIso_apply (x : Icc (-(π / 2)) (π / 2)) : (sinOrderIso x : ℝ) = sin x :=

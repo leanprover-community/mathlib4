@@ -94,7 +94,9 @@ theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := b
 
 @[to_additive]
 theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrder g :=
-  isOfFinOrder_iff_pow_eq_one.mpr <| by peel 2 h; exact this g
+  isOfFinOrder_iff_pow_eq_one.mpr <| by
+    unfold ExponentExists at h
+    gconvert h; exact this g
 
 @[to_additive]
 theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
@@ -567,8 +569,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push Not at hj ⊢
-  peel hj with n hn _
-  obtain ⟨m, hm⟩ := this
+  gconvert hj with n hn ⟨m, hm⟩
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
   simpa using congr_fun h j
 
@@ -696,3 +697,12 @@ lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
 end Group
 
 end ExponentTwo
+
+theorem ringChar_eq_addMonoidExponent (R : Type*) [NonAssocSemiring R] :
+    ringChar R = AddMonoid.exponent R := by
+  apply dvd_antisymm
+  · apply ringChar.dvd
+    rw [← nsmul_one, AddMonoid.exponent_nsmul_eq_zero]
+  · rw [AddMonoid.exponent_dvd_iff_forall_nsmul_eq_zero]
+    intro g
+    rw [nsmul_eq_mul, ringChar.Nat.cast_ringChar, zero_mul]

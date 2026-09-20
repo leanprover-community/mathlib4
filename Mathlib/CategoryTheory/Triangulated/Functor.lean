@@ -37,7 +37,7 @@ variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapTriangle : Triangle C ⥤ Triangle D where
   obj T := Triangle.mk (F.map T.mor₁) (F.map T.mor₂)
     (F.map T.mor₃ ≫ (F.commShiftIso (1 : ℤ)).hom.app T.obj₁)
@@ -59,7 +59,6 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₂ h
     · exact congr_arg TriangleMorphism.hom₃ h
 
-set_option backward.defeqAttrib.useBackward true in
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
     ⟨{hom₁ := F.preimage f.hom₁
@@ -142,23 +141,17 @@ noncomputable def mapTriangleInvRotateIso :
       (by simp) (by simp) (by simp)) (by cat_disch)
 
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The canonical isomorphism `(𝟭 C).mapTriangle ≅ 𝟭 (Triangle C)`. -/
 @[simps!]
 def mapTriangleIdIso : (𝟭 C).mapTriangle ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T ↦ Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `(F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle`. -/
 @[simps!]
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
 `F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
 with the shifts. -/
@@ -245,7 +238,6 @@ instance [F.IsTriangulated] [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
 
 end IsTriangulated
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triangle C) :
     (F.mapTriangle.obj T ∈ distTriang D) ↔ T ∈ distTriang C := by
   refine ⟨fun hT ↦ ?_, F.map_distinguished T⟩
@@ -322,7 +314,6 @@ variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   (h : Octahedron comm h₁₂ h₂₃ h₁₃)
   (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The image of an octahedron by a triangulated functor. -/
 @[simps]
 def map : Octahedron (by dsimp; rw [← F.map_comp, comm])

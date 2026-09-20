@@ -14,11 +14,11 @@ public import Mathlib.Topology.Algebra.Affine
 
 This file defines a type of bundled continuous affine maps.
 
-## Main definitions:
+## Main definitions
 
 * `ContinuousAffineMap`
 
-## Notation:
+## Notation
 
 We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not to be confused with the
 notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`
@@ -54,6 +54,7 @@ theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (
   cases g
   congr
 
+@[macro_inline]
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
