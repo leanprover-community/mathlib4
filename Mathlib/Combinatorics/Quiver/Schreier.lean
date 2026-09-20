@@ -55,9 +55,11 @@ vertices `V` and a directed edge `x → ι(s) • x` for each `x : V` and `s : S
   weakly connected component when the generators generate the entire group.
 * `Quiver.cayleyUniqueWeaklyConnectedComponent` - A Cayley graph has exactly one weakly
   connected component when the generators generate the entire group.
+* `Quiver.SchreierCosetGraph.asAutom_comp_inv` - Each of these prefunctors is invertible,
+  `asAutom ι N g⁻¹` being inverse to `asAutom ι N g`, so they are automorphisms.
 * `Quiver.SchreierCosetGraph.asAutom_labelling` - Right multiplication by `g⁻¹` induces an
-  endomorphism of the Schreier coset graph preserving labels.
-* `Quiver.SchreierCosetGraph.exists_asAutom_obj_eq` - These endomorphisms act transitively on
+  automorphism of the Schreier coset graph preserving labels.
+* `Quiver.SchreierCosetGraph.exists_asAutom_obj_eq` - These automorphisms act transitively on
   the vertices: any coset can be carried to any other.
 * `Quiver.CayleyGraph.exists_asAutom_obj_eq` - Vertex-transitivity of Cayley graphs.
 
@@ -519,6 +521,19 @@ theorem SchreierCosetGraph.asAutom_mul (g h : M) :
       rw [mul_inv_rev, mul_assoc]
   refine Prefunctor.ext' h_obj (fun X Y ⟨s, hs⟩ ↦ ?_)
   exact Subtype.ext (by rw [SchreierGraph.homOfEq_val]; rfl)
+
+/-- Right multiplication by `g⁻¹` followed by right multiplication by `g` is the identity,
+so each `SchreierCosetGraph.asAutom ι N g` is invertible. -/
+theorem SchreierCosetGraph.asAutom_comp_inv (g : M) :
+    SchreierCosetGraph.asAutom ι N g ⋙q SchreierCosetGraph.asAutom ι N g⁻¹ =
+      .id (SchreierCosetGraph ι N) := by
+  rw [← SchreierCosetGraph.asAutom_mul, inv_mul_cancel, SchreierCosetGraph.asAutom_one]
+
+/-- Right multiplication by `g` followed by right multiplication by `g⁻¹` is the identity. -/
+theorem SchreierCosetGraph.asAutom_inv_comp (g : M) :
+    SchreierCosetGraph.asAutom ι N g⁻¹ ⋙q SchreierCosetGraph.asAutom ι N g =
+      .id (SchreierCosetGraph ι N) := by
+  rw [← SchreierCosetGraph.asAutom_mul, mul_inv_cancel, SchreierCosetGraph.asAutom_one]
 
 /-- Right multiplication preserves the edge labelling of the Schreier coset graph. -/
 theorem SchreierCosetGraph.asAutom_labelling (g : M) :
