@@ -68,12 +68,6 @@ jobs:
                 --url "https://api.github.com/repos/${REPO}/issues/${ISSUE_NUMBER}/labels/${label}" \
                 --header 'authorization: Bearer ${TOKEN}'
 
-              # synchronyse "WIP" label with draft status
-              if [ "${label}" == "WIP" ]
-              then
-                gh pr ready "$PR_NUMBER" --undo
-              fi
-
               printf $'%s DELETE done\n' "${inComment}"
 
             else
@@ -87,12 +81,6 @@ jobs:
                 --header 'X-GitHub-Api-Version: 2022-11-28' \
                 --url "https://api.github.com/repos/${REPO}/issues/${ISSUE_NUMBER}/labels" \
                 --data "${data}"
-
-              # synchronyse "WIP" label with draft status
-              if [ "${label}" == "WIP" ]
-              then
-                gh pr ready "$PR_NUMBER"
-              fi
 
               printf $'%s POST done\n' "${inComment}"
 
