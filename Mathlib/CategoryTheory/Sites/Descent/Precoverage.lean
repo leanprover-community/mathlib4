@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Descent.IsStack
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 # Characterization of (pre)stacks for a precoverage
@@ -64,7 +66,7 @@ public lemma faithful_pullFunctor :
     refine F.presheafHomObjHomEquiv.injective ?_i
     have : (Sieve.overEquiv (Over.mk (𝟙 (X i)))).symm
       (Sieve.pullback (f i) (Sieve.ofArrows X' f')) ∈ J.over (X i) _ := by
-      simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
+      simpa only [J.mem_over_iff, OrderIso.apply_symm_apply] using! J.pullback_stable (f i) hf'
     refine (((isSheaf_iff_isSheaf_of_type _ _).1
       (IsPrestack.isSheaf _ _ _)).isSeparated _ this).ext ?_
     rintro Z g ⟨Y, p, c, ⟨j⟩, hp⟩
@@ -104,7 +106,7 @@ abbrev sieve (i : ι) : Sieve (Over.mk (𝟙 (X i))) :=
 include hf' in
 variable (f) in
 lemma sieve_mem (i : ι) : sieve f f' i ∈ J.over _ _ := by
-  simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using! J.pullback_stable (f i) hf'
+  simpa only [J.mem_over_iff, OrderIso.apply_symm_apply] using! J.pullback_stable (f i) hf'
 
 set_option backward.defeqAttrib.useBackward true in
 lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
@@ -219,7 +221,6 @@ lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X 
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
   mor_unique _ _ _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma compatible_familyOfElements (i : ι) :
     (familyOfElements w φ i).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac
@@ -275,7 +276,7 @@ lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
     Category.assoc, DescentData.hom_comp, D₂.hom_self _ _ hf₁, Category.comp_id]
   have H : (Sieve.overEquiv (Over.mk f₁)).symm
       (Sieve.pullback q (Sieve.ofArrows X' f')) ∈ J.over _ _ := by
-    rw [J.mem_over_iff, Equiv.apply_symm_apply]
+    rw [J.mem_over_iff, OrderIso.apply_symm_apply]
     exact J.pullback_stable _ hf'
   refine ((isSheaf_iff_isSheaf_of_type _ _).1
     (IsPrestack.isSheaf J (D₁.obj i₁) (D₂.obj i₁)) _ H).isSeparatedFor.ext ?_
@@ -299,6 +300,7 @@ end full_pullFunctor
 
 public section
 
+set_option backward.isDefEq.respectTransparency.types false in
 open full_pullFunctor in
 include w hf' in
 lemma full_pullFunctor :
@@ -397,7 +399,7 @@ lemma IsPrestack.of_precoverage
     obtain ⟨R', hR'⟩ := (Sieve.overEquiv _).symm.surjective (Sieve.generate R)
     rw [Presieve.isSheafFor_iff_generate]
     apply IsPrestackFor.isSheafFor'
-    simpa [Sieve.overEquiv_generate, Presieve.functorPushforward_overForget]
+    simpa [Sieve.overEquiv_generate, ← Sieve.arrows_generate_map_eq_functorPushforward]
       using hF _ _ hR
 
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and

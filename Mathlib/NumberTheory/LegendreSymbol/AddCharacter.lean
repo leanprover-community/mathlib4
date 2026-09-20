@@ -173,7 +173,7 @@ theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine fun a ha hf => ?_
+  intro a ha hf
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h
@@ -279,7 +279,7 @@ character. -/
 lemma starComp_eq_inv (hR : 0 < ringChar R) {φ : AddChar R ℂ} :
     (starRingEnd ℂ).compAddChar φ = φ⁻¹ := by
   ext1 a
-  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_compAddChar, MonoidHom.coe_coe,
+  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_compAddChar, MonoidHom.coe_ofClass,
     Function.comp_apply, inv_apply']
   have H := Complex.norm_eq_one_of_mem_rootsOfUnity <| φ.val_mem_rootsOfUnity a hR
   exact (Complex.inv_eq_conj H).symm

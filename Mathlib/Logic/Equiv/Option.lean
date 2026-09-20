@@ -162,7 +162,7 @@ def optionSubtype [DecidableEq β] (x : β) :
         get _
           (ne_none_iff_isSome.1
             (((EquivLike.injective _).ne_iff'
-              ((apply_eq_iff_eq_symm_apply _).1 e.property).symm).2 b.property)),
+              ((eq_symm_apply _).2 e.property).symm).2 b.property)),
       left_inv := fun a => by
         rw [← some_inj, some_get]
         exact symm_apply_apply (e : Option α ≃ β) a,
@@ -178,7 +178,7 @@ def optionSubtype [DecidableEq β] (x : β) :
           | some a =>
             simp only [casesOn'_some, Function.comp_apply, Subtype.coe_eta,
               symm_apply_apply, dite_eq_ite]
-            exact if_neg (e a).property,
+            exact ite_eq_right (e a).property,
         right_inv := fun b => by
           by_cases h : b = x <;> simp [h] },
       rfl⟩
@@ -235,9 +235,7 @@ theorem optionSubtype_symm_apply_apply_none
 @[simp]
 theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
     (b : { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β).symm b = e.symm b := by
-  simp only [optionSubtype, coe_fn_symm_mk, Subtype.coe_mk,
-             Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
-  exact fun h => False.elim (b.property h)
+  simp [optionSubtype, b.property]
 
 variable [DecidableEq α] {a b : α}
 
@@ -288,5 +286,9 @@ def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
   invFun x := ⟨some x, rfl⟩
   left_inv _ := Subtype.ext <| Option.some_get _
   right_inv _ := Option.get_some _ _
+
+/-- The bijection `{ i // i ≠ i₀ } ⊕ PUnit ≃ α` for any `i₀ : α`. -/
+abbrev subtypeNeSumPUnit (i₀ : α) : { i // i ≠ i₀ } ⊕ PUnit.{u + 1} ≃ α :=
+  (Equiv.optionEquivSumPUnit.{u} _).symm.trans (Equiv.optionSubtypeNe i₀)
 
 end Equiv

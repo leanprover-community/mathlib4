@@ -25,11 +25,10 @@ public noncomputable section
 
 namespace CategoryTheory.Over
 
-open Functor Limits CartesianMonoidalCategory
+open CategoryTheory.Functor Limits CartesianMonoidalCategory
 
 variable {C : Type*} [Category* C] [HasPullbacks C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
 abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
   .ofChosenFiniteProducts
@@ -201,13 +200,11 @@ instance : (Over.pullback f).Braided := .ofChosenFiniteProducts _
 @[simp]
 lemma η_pullback_left : (OplaxMonoidal.η (Over.pullback f)).left = (pullback.snd (𝟙 _) f) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ε_pullback_left : (LaxMonoidal.ε (Over.pullback f)).left = inv (pullback.snd (𝟙 _) f) := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← η_pullback_left, ← Over.comp_left, Monoidal.η_ε, Over.id_left]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma μ_pullback_left_fst_fst (R S : Over X) :
     (LaxMonoidal.μ (Over.pullback f) R S).left ≫
@@ -217,7 +214,6 @@ lemma μ_pullback_left_fst_fst (R S : Over X) :
     Iso.hom_inv_id]
   simp [CartesianMonoidalCategory.prodComparison, fst]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma μ_pullback_left_fst_snd (R S : Over X) :
     (LaxMonoidal.μ (Over.pullback f) R S).left ≫
@@ -256,14 +252,12 @@ lemma μ_pullback_left_snd' (g₁ : Y ⟶ X) (g₂ : Z ⟶ X) :
       pullback.snd (pullback.fst g₁ g₂ ≫ g₁) f =
         pullback.snd _ _ ≫ pullback.snd _ _ := μ_pullback_left_snd ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preservesTerminalIso_pullback (f : R ⟶ S) :
     preservesTerminalIso (Over.pullback f) =
       Over.isoMk (asIso (pullback.snd (𝟙 _) f)) (by simp) := by
   ext1; exact toUnit_unique _ _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma prodComparisonIso_pullback_inv_left_fst_fst (f : X ⟶ Y) (A B : Over Y) :
@@ -281,7 +275,6 @@ lemma prodComparisonIso_pullback_Spec_inv_left_fst_fst' (f : X ⟶ Y) (gA : A �
         pullback.fst (pullback.snd gA f) (pullback.snd gB f) ≫ pullback.fst _ _ :=
   prodComparisonIso_pullback_inv_left_fst_fst ..
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma prodComparisonIso_pullback_inv_left_fst_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :

@@ -38,7 +38,7 @@ instance instTopologicalSpace : TopologicalSpace (E [⋀^ι]→L[𝕜] F) :=
 lemma isClosed_range_toContinuousMultilinearMap [ContinuousSMul 𝕜 E] [T2Space F] :
     IsClosed (Set.range (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) →
       ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)) := by
-  simp only [range_toContinuousMultilinearMap, setOf_forall]
+  simp only [range_toContinuousMultilinearMap, ofPred_forall]
   repeat refine isClosed_iInter fun _ ↦ ?_
   exact isClosed_singleton.preimage (continuous_eval_const _)
 
@@ -139,7 +139,7 @@ lemma isEmbedding_toContinuousMultilinearMap :
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
-  isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
+  isEmbedding_toContinuousMultilinearMap.isTopologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
 @[continuity, fun_prop]

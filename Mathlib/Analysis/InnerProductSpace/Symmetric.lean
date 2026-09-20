@@ -40,7 +40,7 @@ self-adjoint, symmetric
 
 open RCLike
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 section Seminormed
 
@@ -373,9 +373,5 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
     (forall_comm.eq ▸ hf')] using! h
 
 end LinearMap
-
-@[deprecated (since := "2025-12-28")] alias
-  ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
 
 end Normed

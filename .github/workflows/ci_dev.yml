@@ -28,6 +28,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
   # By default let's remove this permission (which is present in the other build pipelines)
   # from the CI experimentation runs to avoid unwitting side effects
   # pull-requests: write

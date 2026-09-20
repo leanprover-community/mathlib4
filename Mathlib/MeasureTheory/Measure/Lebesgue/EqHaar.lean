@@ -5,11 +5,6 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Group.Pointwise
-public import Mathlib.MeasureTheory.Measure.Doubling
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
@@ -99,8 +94,10 @@ theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [Normed
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
-    (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
-  erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
+    (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map,
+    ← addHaar_self b, ← f.toEquiv.preimage_image (_root_.parallelepiped ⇑b)]
+  have := image_parallelepiped f.toLinearMap (⇑b : ι → E)
+  simp_all
 
 end Module.Basis
 
@@ -225,7 +222,7 @@ theorem map_linearMap_addHaar_pi_eq_smul_addHaar {ι : Type*} [Finite ι] {f : (
   /- We have already proved the result for the Lebesgue product measure, using matrices.
     We deduce it for any Haar measure by uniqueness (up to scalar multiplication). -/
   have := addHaarMeasure_unique μ (piIcc01 ι)
-  rw [this, addHaarMeasure_eq_volume_pi, Measure.map_smul,
+  rw [this, addHaarMeasure_eq_volume_pi, Measure.map_smul _ (by fun_prop),
     Real.map_linearMap_volume_pi_eq_smul_volume_pi hf, smul_comm]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
@@ -236,7 +233,7 @@ theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : Linear
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `map_linearMap_addHaar_pi_eq_smul_addHaar`.
   let ι := Fin (finrank ℝ E)
-  haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
+  have : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [ι]
   have e : E ≃ₗ[ℝ] ι → ℝ := LinearEquiv.ofFinrankEq E (ι → ℝ) this
   -- next line is to avoid `g` getting reduced by `simp`.
@@ -252,10 +249,10 @@ theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : Linear
   have Cg : Continuous g := LinearMap.continuous_of_finiteDimensional g
   have Cesymm : Continuous e.symm := (e.symm : (ι → ℝ) →ₗ[ℝ] E).continuous_of_finiteDimensional
   rw [← map_map Cesymm.measurable (Cg.comp Ce).measurable, ← map_map Cg.measurable Ce.measurable]
-  haveI : IsAddHaarMeasure (map e μ) := (e : E ≃+ (ι → ℝ)).isAddHaarMeasure_map μ Ce Cesymm
+  have : IsAddHaarMeasure (map e μ) := (e : E ≃+ (ι → ℝ)).isAddHaarMeasure_map μ Ce Cesymm
   have ecomp : e.symm ∘ e = id := by
     ext x; simp only [id, Function.comp_apply, LinearEquiv.symm_apply_apply]
-  rw [map_linearMap_addHaar_pi_eq_smul_addHaar hf (map e μ), Measure.map_smul,
+  rw [map_linearMap_addHaar_pi_eq_smul_addHaar hf (map e μ), Measure.map_smul _ (by fun_prop),
     map_map Cesymm.measurable Ce.measurable, ecomp, Measure.map_id]
 
 /-- The preimage of a set `s` under a linear map `f` with nonzero determinant has measure
@@ -370,10 +367,10 @@ theorem addHaar_smul (r : ℝ) (s : Set E) :
   · simp only [measure_empty, mul_zero, smul_set_empty]
   rw [zero_smul_set hs, ← singleton_zero]
   by_cases h : finrank ℝ E = 0
-  · haveI : Subsingleton E := finrank_zero_iff.1 h
+  · have : Subsingleton E := finrank_zero_iff.1 h
     simp only [h, one_mul, ENNReal.ofReal_one, abs_one, Subsingleton.eq_univ_of_nonempty hs,
       pow_zero, Subsingleton.eq_univ_of_nonempty (singleton_nonempty (0 : E))]
-  · haveI : Nontrivial E := nontrivial_of_finrank_pos (bot_lt_iff_ne_bot.2 h)
+  · have : Nontrivial E := nontrivial_of_finrank_pos (bot_lt_iff_ne_bot.2 h)
     simp only [h, zero_mul, ENNReal.ofReal_zero, abs_zero, Ne, not_false_iff,
       zero_pow, measure_singleton]
 
@@ -420,7 +417,7 @@ general Haar measures on general commutative groups. -/
 
 theorem addHaar_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
     (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) : μ (ball x r) = μ (ball (0 : E) r) := by
-  have : ball (0 : E) r = (x + ·) ⁻¹' ball x r := by simp [preimage_add_ball]
+  have : ball (0 : E) r = (x + ·) ⁻¹' ball x r := by simp
   rw [this, measure_preimage_add]
 
 theorem addHaar_real_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
@@ -431,7 +428,7 @@ theorem addHaar_real_ball_center {E : Type*} [NormedAddCommGroup E] [MeasurableS
 theorem addHaar_closedBall_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (closedBall (0 : E) r) := by
-  have : closedBall (0 : E) r = (x + ·) ⁻¹' closedBall x r := by simp [preimage_add_closedBall]
+  have : closedBall (0 : E) r = (x + ·) ⁻¹' closedBall x r := by simp
   rw [this, measure_preimage_add]
 
 theorem addHaar_real_closedBall_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]

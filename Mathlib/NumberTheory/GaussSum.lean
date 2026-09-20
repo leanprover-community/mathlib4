@@ -96,6 +96,49 @@ lemma star_gaussSum_eq (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
 end GaussSumDef
 
 /-!
+### Gauss sums of trivial characters
+-/
+
+section GaussSumTrivial
+
+variable {R R' : Type*} [CommRing R] [Fintype R] [CommRing R']
+
+/-- The Gauss sum of the two trivial characters is the cardinality of the unit group of `R`. -/
+@[simp]
+theorem gaussSum_one_one : gaussSum (1 : MulChar R R') (1 : AddChar R R') = Nat.card Rˣ := by
+  classical
+  simp [gaussSum, MulChar.sum_one_eq_card_units]
+
+/-- The Gauss sum of a nontrivial multiplicative character and the trivial additive character
+vanishes. -/
+theorem gaussSum_one_right [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1) :
+    gaussSum χ (1 : AddChar R R') = 0 := by
+  simpa [gaussSum] using MulChar.sum_eq_zero_of_ne_one hχ
+
+end GaussSumTrivial
+
+section GaussSumTrivialField
+
+variable {R R' : Type*} [Field R] [Fintype R] [CommRing R'] [IsDomain R']
+
+/-- The Gauss sum of the trivial multiplicative character and a nontrivial additive character,
+over a finite field, is `-1`. -/
+theorem gaussSum_one_left {ψ : AddChar R R'} (hψ : ψ ≠ 1) :
+    gaussSum (1 : MulChar R R') ψ = -1 := by
+  classical
+  simp only [gaussSum, ← add_eq_zero_iff_eq_neg]
+  calc ∑ a, (1 : MulChar R R') a * ψ a + 1
+  _ = ∑ a ∈ {0}ᶜ, (1 : MulChar R R') a * ψ a + 1 := by
+    simp [← ({0} : Finset R).sum_compl_add_sum]
+  _ = ∑ a ∈ {0}ᶜ, ψ a + ψ 0 := by
+    congr! <;> aesop (add simp MulChar.one_apply)
+  _ = 0 := by
+    rw [← AddChar.sum_eq_zero_of_ne_one hψ, ← Finset.sum_compl_add_sum (s := {0})]
+    simp
+
+end GaussSumTrivialField
+
+/-!
 ### The product of two Gauss sums
 -/
 
@@ -155,7 +198,7 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : χ ≠ 1) {ψ :
   classical -- to get `[DecidableEq R]` for `sum_mulShift`
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
-  simp only [Finset.mem_univ, map_one, one_mul, if_true]
+  simp only [Finset.mem_univ, map_one, one_mul, ite_true]
 
 /-- If `χ` is a multiplicative character of order `n` on a finite field `F`,
 then `g(χ) * g(χ^(n-1)) = χ(-1)*#F` -/

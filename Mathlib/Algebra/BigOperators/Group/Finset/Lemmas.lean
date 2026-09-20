@@ -19,7 +19,7 @@ The lemmas in this file have been moved out of
 
 public section
 
-variable {ι κ M N β : Type*}
+variable {ι κ M N : Type*}
 
 @[to_additive]
 theorem MonoidHom.coe_finsetProd [MulOneClass M] [CommMonoid N] (f : ι → M →* N) (s : Finset ι) :

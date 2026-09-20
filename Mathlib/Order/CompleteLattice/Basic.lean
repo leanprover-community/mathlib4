@@ -47,7 +47,7 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 
 section
 
-variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
+variable [CompleteSemilatticeSup α] {s t : Set α} {a : α}
 
 @[to_dual]
 theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t :=
@@ -314,8 +314,6 @@ theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
 lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
   (isLUB_sSup _).unique (isGLB_sInf _).isLUB
 
-@[deprecated (since := "2026-02-01")] alias sInf_upperBounds_eq_csSup := sInf_upperBounds_eq_sSup
-
 @[to_dual map_iInf_le]
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
@@ -363,7 +361,7 @@ theorem OrderIso.map_sSup [CompleteLattice β] (f : α ≃o β) (s : Set α) :
   simp only [sSup_eq_iSup, OrderIso.map_iSup]
 
 @[to_dual le_iInf_comp]
-theorem iSup_comp_le {ι' : Sort*} (f : ι' → α) (g : ι → ι') : ⨆ x, f (g x) ≤ ⨆ y, f y :=
+theorem iSup_comp_le (f : ι' → α) (g : ι → ι') : ⨆ x, f (g x) ≤ ⨆ y, f y :=
   iSup_mono' fun _ => ⟨_, le_rfl⟩
 
 @[to_dual]
@@ -440,19 +438,12 @@ theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι
   simp only [@iSup_comm _ (κ₁ _), @iSup_comm _ ι₁]
 
 @[to_dual (attr := simp)]
-theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
-  (le_iSup₂ (f := f) b rfl).antisymm'
-    (iSup_le fun c =>
-      iSup_le <| by
-        rintro rfl
-        rfl)
+theorem iSup_iSup_eq_left {b : ι} {f : ∀ x : ι, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
+  le_antisymm (iSup₂_le fun _ h => by simp [h]) (le_iSup₂ (f := f) b rfl)
 
 @[to_dual (attr := simp)]
-theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
-  (le_iSup₂ b rfl).antisymm'
-    (iSup₂_le fun c => by
-      rintro rfl
-      rfl)
+theorem iSup_iSup_eq_right {b : ι} {f : ∀ x : ι, b = x → α} : ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
+  le_antisymm (iSup₂_le fun _ h => by simp [h]) (le_iSup₂ (f := f) b rfl)
 
 @[to_dual]
 theorem iSup_subtype {p : ι → Prop} {f : Subtype p → α} : iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ :=
@@ -465,12 +456,12 @@ theorem iSup_subtype' {p : ι → Prop} {f : ∀ i, p i → α} :
   (@iSup_subtype _ _ _ p fun x => f x.val x.property).symm
 
 @[to_dual]
-theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
+theorem iSup_subtype'' (s : Set β) (f : β → α) : ⨆ i : s, f i = ⨆ (t : β) (_ : t ∈ s), f t :=
   iSup_subtype
 
 @[to_dual]
 theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
-  haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
+  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 
 @[to_dual]
@@ -502,7 +493,7 @@ theorem sup_iSup [Nonempty ι] {f : ι → α} {a : α} : (a ⊔ ⨆ x, f x) = �
 @[to_dual]
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
-  haveI : Nonempty { i // p i } :=
+  have : Nonempty { i // p i } :=
     let ⟨i, hi⟩ := h
     ⟨⟨i, hi⟩⟩
   rw [iSup_subtype', iSup_subtype', iSup_sup]
@@ -639,12 +630,14 @@ theorem iSup_union {f : β → α} {s t : Set β} :
   simp_rw [mem_union, iSup_or, iSup_sup_eq]
 
 @[to_dual]
-theorem iSup_split (f : β → α) (p : β → Prop) :
+theorem iSup_split (f : ι → α) (p : ι → Prop) :
     ⨆ i, f i = (⨆ (i) (_ : p i), f i) ⊔ ⨆ (i) (_ : ¬p i), f i := by
-  simpa [Classical.em] using @iSup_union _ _ _ f { i | p i } { i | ¬p i }
+  rw [← iSup_sup_eq]
+  refine iSup_congr fun i => (iSup_true (s := fun _ => f i)).symm.trans ?_
+  rw [← eq_true (em (p i)), iSup_or]
 
 @[to_dual]
-theorem iSup_split_single (f : β → α) (i₀ : β) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
+theorem iSup_split_single (f : ι → α) (i₀ : ι) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
   convert! iSup_split f (fun i => i = i₀)
   simp
 
@@ -665,7 +658,7 @@ theorem iSup_pair {f : β → α} {a b : β} : ⨆ x ∈ ({a, b} : Set β), f x 
   rw [iSup_insert, iSup_singleton]
 
 @[to_dual]
-theorem iSup_image {γ} {f : β → γ} {g : γ → α} {t : Set β} :
+theorem iSup_image {f : β → γ} {g : γ → α} {t : Set β} :
     ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by
   rw [← sSup_image, ← sSup_image, ← image_comp, comp_def]
 
@@ -708,8 +701,10 @@ end le
 ### `iSup` and `iInf` under `Type`
 -/
 
-@[to_dual iInf_of_isEmpty]
-theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
+theorem iSup_of_empty' {α : Type*} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 
 @[to_dual]
@@ -730,12 +725,12 @@ lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
     (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 := (iSup_sigma (f := fun x ↦ f x.1 x.2)).symm
 
 @[to_dual]
-lemma iSup_psigma {ι : Sort*} {κ : ι → Sort*} (f : (Σ' i, κ i) → α) :
+lemma iSup_psigma (f : (Σ' i, κ i) → α) :
     ⨆ ij, f ij = ⨆ i, ⨆ j, f ⟨i, j⟩ :=
   eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, PSigma.forall]
 
 @[to_dual]
-lemma iSup_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
+lemma iSup_psigma' (f : ∀ i, κ i → α) :
     (⨆ i, ⨆ j, f i j) = ⨆ ij : Σ' i, κ i, f ij.1 ij.2 := (iSup_psigma fun x ↦ f x.1 x.2).symm
 
 @[to_dual]
@@ -818,7 +813,12 @@ instance Prop.instCompleteLattice : CompleteLattice Prop where
   sInf s := ∀ a ∈ s, a
   isGLB_sInf _ := ⟨fun a h p ↦ p a h, fun _ h p _ hb ↦ h hb p⟩
 
-noncomputable instance Prop.instCompleteLinearOrder : CompleteLinearOrder Prop where
+/-- The order on `Prop` is a `CompleteLinearOrder`.
+
+This is not an instance since `CompleteLinearOrder` includes decidability instances, which we want
+to avoid for `Prop`. -/
+@[expose, instance_reducible]
+noncomputable def Prop.completeLinearOrder : CompleteLinearOrder Prop where
   __ := Prop.instCompleteLattice
   __ := Prop.linearOrder
   __ := BooleanAlgebra.toBiheytingAlgebra

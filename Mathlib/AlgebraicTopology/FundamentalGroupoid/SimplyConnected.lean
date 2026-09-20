@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
+
 This file defines simply connected spaces.
 A topological space is simply connected if its fundamental groupoid is equivalent to `Unit`.
 
@@ -39,9 +40,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 
-@[deprecated (since := "2026-01-08")]
-alias simply_connected_def := simplyConnectedSpace_iff
-
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
@@ -67,7 +65,7 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
 instance (x : X) : Subsingleton (FundamentalGroup X x) :=
-  show Subsingleton (Path.Homotopic.Quotient x x) from inferInstance
+  inferInstanceAs <| Subsingleton (Path.Homotopic.Quotient x x)
 
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance

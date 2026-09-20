@@ -17,19 +17,19 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 # Existence of bases for crystallographic root systems
 
 ## Main results:
- * `RootPairing.Base.mk'`: an alternate constructor for `RootPairing.Base` which demands the axioms
-   for roots but not for coroots.
- * `RootPairing.nonempty_base`: base existence proof for reduced crystallographic root systems.
+* `RootPairing.Base.mk'`: an alternate constructor for `RootPairing.Base` which demands the axioms
+  for roots but not for coroots.
+* `RootPairing.nonempty_base`: base existence proof for reduced crystallographic root systems.
 
 ## Implementation details
 
 The proof needs a set of ordered coefficients, even though the ultimate existence statement does
 not. There are at least two ways to deal with this:
- (a) Using the fact that a crystallographic root system induces a `ℚ`-structure, pass to the root
-     system over `ℚ` defined by `RootPairing.restrictScalarsRat`, and develop a theory of base
-     change for root system bases.
- (b) Introduce a second set of ordered coefficients (ultimately taken to be `ℚ`) and develop a
-     theory with two sets of coefficients simultaneously in play.
+(a) Using the fact that a crystallographic root system induces a `ℚ`-structure, pass to the root
+    system over `ℚ` defined by `RootPairing.restrictScalarsRat`, and develop a theory of base
+    change for root system bases.
+(b) Introduce a second set of ordered coefficients (ultimately taken to be `ℚ`) and develop a
+    theory with two sets of coefficients simultaneously in play.
 
 It is not really clear which is the better approach but here we opt for approach (b) as it seems
 to yield slightly more general results.
@@ -53,7 +53,7 @@ variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
 lemma baseOf_pairwise_pairing_le_zero [CharZero R] [IsDomain R] [P.IsCrystallographic]
     (hf : ∀ i, f (P.root i) ≠ 0) :
     (baseOf P.root f).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0 := by
-  letI _i := P.indexNeg
+  let _i := P.indexNeg
   intro i hi j hj hne
   have := IsAddIndecomposable.pairwise_baseOf_sub_notMem P.root (by simp) f hf hi hj hne
   contrapose! this
@@ -113,11 +113,12 @@ section Field
 variable [Field R] [CharZero R] [Module R M] [Module R N] (P : RootPairing ι R M N)
   [P.IsRootSystem] [P.IsCrystallographic]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0) :
     LinearIndepOn R P.root (baseOf P.root f) := by
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)
   let _i : Module ℚ N := Module.compHom N (algebraMap ℚ R)
-  letI := P.indexNeg
+  let := P.indexNeg
   have : Fintype (baseOf P.root f) := Fintype.ofFinite _
   let v (i : baseOf P.root f) : P.rootSpan ℚ := P.rootSpanMem ℚ i
   change LinearIndependent R ((P.rootSpan ℚ).subtype ∘ v)
@@ -155,7 +156,7 @@ lemma eq_baseOf_of_linearIndepOn_of_mem_or_neg_mem_closure
                -P.root i ∈ AddSubmonoid.closure (P.root '' s))
     (f : M →+ ℚ) (hf : ∀ i ∈ s, f (P.root i) = 1) :
     s = baseOf P.root f := by
-  letI _i := P.indexNeg
+  let _i := P.indexNeg
   have h_card : (baseOf P.root f).ncard = s.ncard := by
     have hf' (i : ι) : f (P.root i) ≠ 0 := AddSubmonoid.apply_ne_zero_of_mem_or_neg_mem_closure
       P.root f s (by aesop) i (P.ne_zero i) (by simp) (hsp i)
@@ -187,7 +188,7 @@ lemma eq_baseOf_iff (s : Set ι) (f : M →+ ℚ)
       LinearIndepOn R P.root s ∧
         ∀ i, P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
             -P.root i ∈ AddSubmonoid.closure (P.root '' s) := by
-  letI := P.indexNeg
+  let := P.indexNeg
   refine ⟨?_, fun ⟨hli, sp⟩ ↦ P.eq_baseOf_of_linearIndepOn_of_mem_or_neg_mem_closure s hli sp f hf⟩
   rintro rfl
   exact ⟨P.linearIndepOn_root_baseOf f hf', fun i ↦
@@ -281,8 +282,8 @@ lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
     (i : ι) :
      P.coroot i ∈ AddSubmonoid.closure (P.coroot '' s) ∨
     -P.coroot i ∈ AddSubmonoid.closure (P.coroot '' s) := by
-  letI _i := P.indexNeg
-  letI _i : Fintype ι := Fintype.ofFinite ι
+  let _i := P.indexNeg
+  let _i : Fintype ι := Fintype.ofFinite ι
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)
   let _i : Module ℚ N := Module.compHom N (algebraMap ℚ R)
   obtain ⟨f, hf'⟩ := exists_dual_forall_apply_eq_one (hli.restrict_scalars' ℚ)
@@ -320,10 +321,9 @@ noncomputable def Base.mk' (s : Set ι)
 
 lemma nonempty_base : Nonempty P.Base := by
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)
-  let _i : Module ℚ N := Module.compHom N (algebraMap ℚ R)
   obtain ⟨f, hf⟩ : ∃ f : Dual ℚ M, ∀ i, f (P.root i) ≠ 0 :=
     exists_dual_forall_apply_ne_zero P.root <| by simp [P.ne_zero]
-  letI := P.indexNeg
+  let := P.indexNeg
   exact ⟨Base.mk' P (baseOf P.root (f : M →+ ℚ)) (P.linearIndepOn_root_baseOf f hf)
     (fun i ↦ mem_or_neg_mem_closure_baseOf P.root (f : M →+ ℚ) i (hf i) (by simp))⟩
 

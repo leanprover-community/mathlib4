@@ -176,6 +176,7 @@ def flipFunctor :
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
@@ -185,6 +186,7 @@ def flipEquivalenceUnitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
@@ -194,6 +196,7 @@ def flipEquivalenceCounitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]

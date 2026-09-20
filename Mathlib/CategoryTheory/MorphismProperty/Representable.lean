@@ -213,10 +213,12 @@ case when the cone point is in the image of `F.obj`. -/
 noncomputable def lift [Full F] : c ⟶ hf.pullback g :=
   F.preimage <| PullbackCone.IsLimit.lift (hf.isPullback g).isLimit _ _ hi
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma lift_fst [Full F] : F.map (hf.lift i h hi) ≫ hf.fst g = i := by
   simpa [lift] using! PullbackCone.IsLimit.lift_fst _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma lift_snd [Full F] [Faithful F] : hf.lift i h hi ≫ hf.snd g = h :=
   F.map_injective <| by simpa [lift] using! PullbackCone.IsLimit.lift_snd _ _ _ _
@@ -499,6 +501,7 @@ noncomputable def pullback₃.π : F.obj (pullback₃ hf₁ f₂ f₃) ⟶ X :=
 lemma pullback₃.map_p₁_comp : F.map (p₁ hf₁ f₂ f₃) ≫ f₁ = π _ _ _ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma pullback₃.map_p₂_comp : F.map (p₂ hf₁ f₂ f₃) ≫ f₂ = π _ _ _ := by
   simp [π, p₁, p₂, ← hf₁.w f₂]
@@ -550,6 +553,7 @@ lemma pullback₃.snd_fst'_eq_p₁ :
     pullback.snd (hf₁.fst' f₂) (hf₁.fst' f₃) ≫ hf₁.fst' f₃ = pullback₃.p₁ hf₁ f₂ f₃ :=
   pullback.condition.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {hf₁ f₂ f₃} in
 @[ext]
 lemma pullback₃.hom_ext [Faithful F] {Z : C} {φ φ' : Z ⟶ pullback₃ hf₁ f₂ f₃}

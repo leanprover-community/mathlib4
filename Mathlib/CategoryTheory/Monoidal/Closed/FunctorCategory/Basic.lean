@@ -89,6 +89,7 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
     congr
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma homEquiv_naturality_two_symm (f₂ : F₂ ⟶ F₂') (g : F₂' ⟶ functorEnrichedHom C F₁ F₃) :
     homEquiv.symm (f₂ ≫ g) = F₁ ◁ f₂ ≫ homEquiv.symm g := by
   dsimp [homEquiv]
@@ -134,7 +135,7 @@ noncomputable def adj (F : J ⥤ C) :
 
 /-- When `C` is monoidal closed and has suitable limits,
 then for any `F : J ⥤ C`, `tensorLeft F` has a right adjoint. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def closed (F : J ⥤ C) : Closed F where
   rightAdj := (eHomFunctor _ _).obj ⟨F⟩
   adj := adj F

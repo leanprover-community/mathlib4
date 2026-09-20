@@ -35,7 +35,7 @@ open Limits
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
-open Opposite Presieve Functor
+open Opposite Presieve CategoryTheory.Functor
 
 /-- A presieve is *regular* if it consists of a single effective epimorphism. -/
 class Presieve.regular {X : C} (R : Presieve X) : Prop where
@@ -89,9 +89,7 @@ def mapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
     P.obj (op B) ⟶ { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
   ↾fun t ↦
-    ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← comp_apply, ← Functor.map_comp, ← op_comp, w]⟩
-
-@[deprecated (since := "2025-11-23")] alias MapToEqualizer := mapToEqualizer
+    ⟨P.map f.op t, by simp only [Set.mem_ofPred_eq, ← comp_apply, ← Functor.map_comp, ← op_comp, w]⟩
 
 theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ Type*}
     (hP : EqualizerCondition P) {X B : C} {π : X ⟶ B} [EffectiveEpi π]
@@ -107,7 +105,7 @@ theorem EqualizerCondition.bijective_mapToEqualizer_pullback' {P : Cᵒᵖ ⥤ T
     simpa [mapToEqualizer] using! ha₁
   · intro y h
     apply ha₂ y
-    simpa [mapToEqualizer, Subtype.ext_iff] using! h
+    simpa [mapToEqualizer] using Subtype.ext_iff.1 h
 
 theorem EqualizerCondition.bijective_mapToEqualizer_pullback {P : Cᵒᵖ ⥤ Type*}
     (hP : EqualizerCondition P) {X B : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
@@ -126,10 +124,11 @@ theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ Type*)
   intro b hb
   obtain ⟨a, ha₁, ha₂⟩ := hP ⟨b, hb⟩
   refine ⟨a, ?_, ?_⟩
-  · simpa [Subtype.ext_iff, mapToEqualizer] using! ha₁
+  · simpa [mapToEqualizer] using Subtype.ext_iff.1 ha₁
   · intro y h
     apply ha₂ y
-    simpa [mapToEqualizer, Subtype.ext_iff] using! h
+    ext
+    simpa [mapToEqualizer] using h
 
 set_option backward.isDefEq.respectTransparency false in
 theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
@@ -157,7 +156,6 @@ lemma equalizerCondition_w' (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     P.map π.op ≫ P.map (pullback.snd π π).op := by
   simp only [← Functor.map_comp, ← op_comp, pullback.condition]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [HasPullback π π] :
     mapToEqualizer P π (pullback.fst π π) (pullback.snd π π) pullback.condition =
     equalizer.lift (P.map π.op) (equalizerCondition_w' P π) ≫
@@ -166,7 +164,6 @@ lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B) [H
   apply equalizer.hom_ext
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π],
@@ -191,7 +188,6 @@ theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open WalkingParallelPair WalkingParallelPairHom in
 theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     (c : PullbackCone π π) (hc : IsLimit c) :
@@ -215,6 +211,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     refine ⟨Quiver.Hom.op (ObjectProperty.homMk (Over.homMk ij)), ?_, ?_⟩
     all_goals congr; aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram

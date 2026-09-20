@@ -49,13 +49,13 @@ scoped[ProbabilityTheory] infixl:100 " ⊗ₘ " => MeasureTheory.Measure.compPro
 @[simp]
 lemma compProd_of_not_sfinite (μ : Measure α) (κ : Kernel α β) (h : ¬ SFinite μ) :
     μ ⊗ₘ κ = 0 := by
-  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_left, Kernel.zero_apply]
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_left, zero_apply]
   rwa [Kernel.isSFiniteKernel_const]
 
 @[simp]
 lemma compProd_of_not_isSFiniteKernel (μ : Measure α) (κ : Kernel α β) (h : ¬ IsSFiniteKernel κ) :
     μ ⊗ₘ κ = 0 := by
-  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_right, Kernel.zero_apply]
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_right, zero_apply]
   rwa [Kernel.isSFiniteKernel_prodMkLeft_unit]
 
 lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs : MeasurableSet s) :
@@ -99,14 +99,14 @@ lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectR {γ : Typ
   ext s hs
   simp_rw [Kernel.compProd_apply hs, compProd_apply hs, Kernel.sectR_apply]
 
-lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map (fun x ↦ (x, x)) := by
+lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map Function.diag := by
   ext s hs
   rw [compProd_apply hs, map_apply (measurable_id.prod measurable_id) hs]
   have h_meas a : MeasurableSet (Prod.mk a ⁻¹' s) := measurable_prodMk_left hs
   simp_rw [Kernel.id_apply, dirac_apply' _ (h_meas _)]
   calc ∫⁻ a, (Prod.mk a ⁻¹' s).indicator 1 a ∂μ
-  _ = ∫⁻ a, ((fun x ↦ (x, x)) ⁻¹' s).indicator 1 a ∂μ := rfl
-  _ = μ ((fun x ↦ (x, x)) ⁻¹' s) := by
+  _ = ∫⁻ a, (Function.diag ⁻¹' s).indicator 1 a ∂μ := rfl
+  _ = μ (Function.diag ⁻¹' s) := by
     rw [lintegral_indicator_one]
     exact (measurable_id.prod measurable_id) hs
 
@@ -146,14 +146,14 @@ lemma compProd_const {ν : Measure β} [SFinite μ] [SFinite ν] :
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Kernel α β) :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
-  · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, Kernel.add_apply]
+  · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, _root_.add_apply]
   · simp [hκ]
 
 lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
   by_cases hμ : SFinite μ
-  · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, Kernel.add_apply]
+  · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, _root_.add_apply]
   · simp [hμ]
 
 lemma compProd_sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} [∀ i, SFinite (μ i)] :

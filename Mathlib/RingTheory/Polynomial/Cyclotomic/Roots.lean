@@ -98,7 +98,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     IsRoot (cyclotomic n R) μ ↔ IsPrimitiveRoot μ n := by
   have hf : Function.Injective _ := IsFractionRing.injective R (FractionRing R)
-  haveI : NeZero (n : FractionRing R) := NeZero.nat_of_injective hf
+  have : NeZero (n : FractionRing R) := NeZero.nat_of_injective hf
   rw [← isRoot_map_iff hf, ← IsPrimitiveRoot.map_iff_of_injective hf, map_cyclotomic, ←
     isRoot_cyclotomic_iff']
 
@@ -137,7 +137,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
   · rw [cyclotomic_zero] at hnm
     replace hnm := congr_arg natDegree hnm
     rwa [natDegree_one, natDegree_cyclotomic, eq_comm, Nat.totient_eq_zero, eq_comm] at hnm
-  · haveI := NeZero.mk hzero
+  · have := NeZero.mk hzero
     rw [← map_cyclotomic_int _ R, ← map_cyclotomic_int _ R] at hnm
     replace hnm := map_injective (Int.castRingHom R) Int.cast_injective hnm
     replace hnm := congr_arg (map (Int.castRingHom ℂ)) hnm
@@ -145,7 +145,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
     have hprim := Complex.isPrimitiveRoot_exp _ hzero
     have hroot := isRoot_cyclotomic_iff (R := ℂ).2 hprim
     rw [hnm] at hroot
-    haveI hmzero : NeZero m := ⟨fun h => by simp [h] at hroot⟩
+    have hmzero : NeZero m := ⟨fun h => by simp [h] at hroot⟩
     rw [isRoot_cyclotomic_iff (R := ℂ)] at hroot
     replace hprim := hprim.eq_orderOf
     rwa [← IsPrimitiveRoot.eq_orderOf hroot] at hprim
@@ -163,7 +163,7 @@ open IsPrimitiveRoot Complex
 theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} [Field K]
     {R : Type*} [CommRing R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
-  haveI := NeZero.of_faithfulSMul K R n
+  have := NeZero.of_faithfulSMul K R n
   refine minpoly.eq_of_irreducible_of_monic h ?_ (cyclotomic.monic n K)
   rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 
@@ -221,7 +221,7 @@ coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-
 polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
 lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
-  haveI : Fact p.Prime := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   let P : ℚ[X] := ∑ i, C (α i) * X ^ i.1
   have hP (i : Fin p) : α i = P.coeff i := by simp [P, ← Fin.ext_iff]
   have hP' : P.degree ≤ ↑(p - 1) :=

@@ -217,6 +217,8 @@ example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x �
   | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
+@[to_additive /-- The `AddSubmonoid.closure` of a set is the union of `{0}` and its
+`AddSubsemigroup.closure`. -/]
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by
   apply le_antisymm
@@ -292,7 +294,7 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
 @[to_additive]
 theorem disjoint_def {p₁ p₂ : Submonoid M} :
     Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 := by
-  simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
+  simp_rw [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_inf, and_imp, mem_bot]
 
 @[to_additive]
 theorem disjoint_def' {p₁ p₂ : Submonoid M} :
@@ -346,20 +348,24 @@ section IsUnit
 /-- The submonoid consisting of the units of a monoid -/
 @[to_additive /-- The additive submonoid consisting of the additive units of an additive monoid -/]
 def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
-  carrier := setOf IsUnit
-  one_mem' := by simp only [isUnit_one, Set.mem_setOf_eq]
+  carrier := Set.ofPred IsUnit
+  one_mem' := by simp only [isUnit_one, Set.mem_ofPred_eq]
   mul_mem' := by
     intro a b ha hb
-    rw [Set.mem_setOf_eq] at *
+    rw [Set.mem_ofPred_eq] at *
     exact IsUnit.mul ha hb
 
 @[to_additive]
 theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
     a ∈ IsUnit.submonoid M ↔ IsUnit a := by
-  change a ∈ setOf IsUnit ↔ IsUnit a
-  rw [Set.mem_setOf_eq]
+  change a ∈ Set.ofPred IsUnit ↔ IsUnit a
+  rw [Set.mem_ofPred_eq]
 
 end IsUnit
+
+@[simp] lemma Submonoid.commute_coe_coe {S M : Type*} [Mul M] [SetLike S M]
+    [MulMemClass S M] {s : S} {x y : s} : Commute (x : M) (y : M) ↔ Commute x y := by
+  simp [commute_iff_eq, Subtype.ext_iff]
 
 namespace MonoidHom
 

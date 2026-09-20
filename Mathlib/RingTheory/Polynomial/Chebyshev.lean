@@ -164,7 +164,6 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -338,7 +337,6 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -498,6 +496,7 @@ theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := 
     show n + 2 + 1 - 2 = n + 1 by ring] at h
   linear_combination (norm := ring_nf) h
 
+@[dlmf 18.9.E9]
 theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
   linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
 
@@ -595,7 +594,6 @@ theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
   | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
@@ -705,7 +703,6 @@ theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
       sub_add_cancel]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -850,6 +847,7 @@ theorem algebraMap_eval_S [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((S R n).eval x) = (S R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
+@[dlmf 18.9.E21]
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -1082,6 +1080,7 @@ variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
 polynomials. -/
+@[dlmf 18.18.E21]
 theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
   induction k using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]

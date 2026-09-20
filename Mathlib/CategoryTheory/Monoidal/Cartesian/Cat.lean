@@ -25,14 +25,13 @@ open Limits
 
 attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat`. -/
-abbrev chosenTerminal : Cat.{v, u} := Cat.of (ULift (ULiftHom (Discrete Unit)))
+abbrev chosenTerminal : Cat.{v, u} := ↧(ULift (ULiftHom (Discrete Unit)))
 
 attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal chosenTerminal.{v, u} :=
   IsTerminal.ofUniqueHom (fun C ↦ ((Functor.const C).obj ⟨⟨⟨⟩⟩⟩).toCatHom) fun _ _ ↦ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The type of functors out of the chosen terminal category is equivalent to the type of objects
 in the target category. TODO: upgrade to an equivalence of categories. -/
 def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal ⥤ C ≃ C where
@@ -48,7 +47,7 @@ def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal �
 
 /-- The chosen product of categories `C × D` yields a product cone in `Cat`. -/
 def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
-  .mk (P := .of (C × D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
+  .mk (P := ↧(C × D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
 
 /-- The product cone in `Cat` is indeed a product. -/
 def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk

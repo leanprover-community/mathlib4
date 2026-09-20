@@ -5,7 +5,6 @@ Authors: Heather Macbeth
 -/
 module
 
-import all Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.Ring.Basic
 
@@ -134,8 +133,8 @@ def evalLE {v : Level} {α : Q(Type v)}
   let ⟨_, pz⟩ ← NormNum.mkOfNat α q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
     NormNum.Result.isNat q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
-      (q(NormNum.isNat_ofNat $α $pz):)
-  match va, vb with
+                        (q(NormNum.isNat_ofNat $α $pz):)
+  match (dependent := true) va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
   /- For numerals `ca` and `cb`, `ca + x ≤ cb + x` if `ca ≤ cb` -/
@@ -173,8 +172,8 @@ def evalLT {v : Level} {α : Q(Type v)}
   let ⟨_, pz⟩ ← NormNum.mkOfNat α q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
     NormNum.Result.isNat q(addMonoidWithOneOfCommSemiring $α) q(nat_lit 0)
-      (q(NormNum.isNat_ofNat $α $pz):)
-  match va, vb with
+                        (q(NormNum.isNat_ofNat $α $pz):)
+  match (dependent := true) va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall
   /- For numerals `ca` and `cb`, `ca + x < cb + x` if `ca < cb` -/

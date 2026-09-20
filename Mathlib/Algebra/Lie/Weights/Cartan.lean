@@ -290,7 +290,7 @@ lemma mem_corootSpace {x : H} :
     rfl
   simp_rw [this, corootSpace, ← LieModuleHom.map_top, ← LieSubmodule.mem_toSubmodule,
     LieSubmodule.toSubmodule_map, LieSubmodule.top_toSubmodule, ← TensorProduct.span_tmul_eq_top,
-    LinearMap.map_span, Set.image, Set.mem_setOf_eq, exists_exists_exists_and_eq]
+    LinearMap.map_span, Set.image, Set.mem_ofPred_eq, exists_exists_exists_and_eq]
   change (x : L) ∈ Submodule.span R
     {x | ∃ (a : rootSpace H α) (b : rootSpace H (-α)), ⁅(a : L), (b : L)⁆ = x} ↔ _
   simp
@@ -306,7 +306,7 @@ lemma mem_corootSpace' {x : H} :
     rw [← Submodule.mem_map, Submodule.coe_subtype, Submodule.map_span, mem_corootSpace, ← this]
   ext u
   simp only [Submodule.coe_subtype, mem_image, Subtype.exists, LieSubalgebra.mem_toSubmodule,
-    exists_and_right, exists_eq_right, mem_setOf_eq, s]
+    exists_and_right, exists_eq_right, mem_ofPred_eq, s]
   refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
   convert!
@@ -330,7 +330,7 @@ lemma lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace (I : LieIdeal K L) :
   conv_lhs => rw [lieIdeal_eq_iSup_inf_genWeightSpace]
   exact iSup_le fun α ↦ by
     by_cases hα : α.IsZero
-    · rw [show genWeightSpace L (α : H → K) = H.toLieSubmodule from by ext; simp [hα.eq]]
+    · rw [show genWeightSpace L (α : H → K) = H.toLieSubmodule by ext; simp [hα.eq]]
       exact le_sup_left
     · exact le_sup_of_le_right (le_iSup₂_of_le α hα le_rfl)
 

@@ -10,7 +10,9 @@ public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Small.Basic
-public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Injective modules
@@ -422,7 +424,7 @@ lemma Module.ulift_injective_of_injective [Small.{v} R]
     (inj : Module.Injective R M) :
     Module.Injective R (ULift.{v'} M) := Module.Baer.injective fun I g ↦
   have ⟨g', hg'⟩ := Module.Baer.iff_injective.mpr inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
-  ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
+  ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext <| hg' r hr⟩
 
 lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
@@ -473,6 +475,7 @@ instance Module.Injective.pi
     ext i
     exact DFunLike.congr_fun (hl i) x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 universe u' in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : Type u'} [Ring S]

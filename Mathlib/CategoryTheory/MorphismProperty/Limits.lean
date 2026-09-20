@@ -183,7 +183,7 @@ theorem IsStableUnderBaseChange.mk' [RespectsIso P]
       P (pullback.fst f g)) :
     IsStableUnderBaseChange P where
   of_isPullback {X Y Y' S f g f' g'} sq hg := by
-    haveI : HasPullback f g := sq.flip.hasPullback
+    have : HasPullback f g := sq.flip.hasPullback
     let e := sq.flip.isoPullback
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
@@ -311,7 +311,7 @@ theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
       P (pushout.inr f g)) :
     IsStableUnderCobaseChange P where
   of_isPushout {A A' B B' f g f' g'} sq hf := by
-    haveI : HasPushout f g := sq.flip.hasPushout
+    have : HasPushout f g := sq.flip.hasPushout
     let e := sq.flip.isoPushout
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
@@ -532,7 +532,6 @@ lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W�
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {J} in
 lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
     W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
@@ -621,7 +620,6 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
     (isomorphisms C).IsStableUnderColimitsOfShape J where
@@ -706,7 +704,6 @@ abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape 
 /-- The property that a morphism property `W` is stable under coproducts indexed by a type `J`. -/
 abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
@@ -728,7 +725,6 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     rintro ⟨j⟩
     simp [φ, hα]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasCoproduct X₁] [HasCoproduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
@@ -832,7 +828,6 @@ instance [P.ContainsIdentities] [P.RespectsIso] : P.diagonal.ContainsIdentities 
 
 instance [P.IsMultiplicative] [P.IsStableUnderBaseChange] : P.diagonal.IsMultiplicative where
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.RespectsIso] :
     P.diagonal.IsStableUnderBaseChange :=
   IsStableUnderBaseChange.mk'
