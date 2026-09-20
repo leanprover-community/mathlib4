@@ -122,8 +122,8 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   have h := setDiffEquiv (Fintype.card_congr e)
   have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
-  let epc := (Equiv.Set.congr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
-  let eqc := (Equiv.Set.congr hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let epc := (Set.equivOfEq hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let eqc := (Set.equivOfEq hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
   epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
