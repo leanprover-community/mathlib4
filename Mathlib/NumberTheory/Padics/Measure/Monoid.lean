@@ -52,8 +52,10 @@ lemma convolveFunRight_dirac_apply (x : G) (f : C(G, R)) (y : G) :
 
 lemma convolveFunRight_apply_one (μ : D(G, R)) (f : C(G, R)) :
     convolveFunRight μ f 1 = μ f := by
-  simp only [convolveFunRight_apply, one_mul]
-  rfl
+  simp only [convolveFunRight_apply]
+  apply congr_arg
+  ext
+  simp only [one_mul, ContinuousMap.coe_mk]
 
 /--
 We define `1 : D(G, R)` to be the Dirac measure at `1 : G` (since we are writing convolution as
@@ -79,18 +81,21 @@ variable [LocallyCompactSpace G]
 /-!
 ### Convolution of two measures
 -/
-
-instance : NonUnitalNonAssocRing D(G, R) where
+@[simps! (isSimp := false)]
+instance : Mul D(G, R) where
   mul μ ν := map ⟨fun p : G × G ↦ p.1 * p.2, continuous_mul⟩ (μ.prodMk' ν)
-  zero_mul ν := show map _ _ = 0 by simp
-  mul_zero μ := show map _ _ = 0 by simp
-  right_distrib μ ν ν' := show map _ _ = map _ _ + map _ _ by simp
-  left_distrib μ ν ν' := show map _ _ = map _ _ + map _ _ by simp
+
+
+-- initialize_simps_projections NonUnitalNonAssocRing (-mul)
+-- @[simps!]
+instance : NonUnitalNonAssocRing D(G, R) where
+  zero_mul ν := by simp [mul_def]
+  mul_zero μ := by simp [mul_def]
+  right_distrib μ ν ν' := by simp [mul_def]
+  left_distrib μ ν ν' := by simp [mul_def]
 
 lemma mul_apply (μ ν : D(G, R)) (f : C(G, R)) : (μ * ν) f = μ (convolveFunRight ν f) := by
-  change (map _ _) f = _
-  simp only [map_apply, prodMk'_apply]
-  rfl
+  simp [mul_def, map_apply, prodMk'_apply, convolveFunRight]
 
 /-- Convolution of Dirac measures corresponds to addition in the group. -/
 lemma dirac_mul_dirac (x y : G) : dirac R x * dirac R y = dirac R (x * y) :=  by
@@ -105,7 +110,9 @@ lemma convolveFunRight_mul (μ ν : D(G, R)) (f : C(G, R)) :
   simp [mul_assoc, convolveFunRight_apply]
 
 instance : Ring D(G, R) where
-  mul_assoc _ _ _ := by ext; simp [mul_apply, convolveFunRight_mul]
+  mul_assoc _ _ _ := by
+    ext
+    simp [mul_apply, convolveFunRight_mul]
   one_mul _ := by ext; simp [mul_apply, convolveFunRight_apply_one]
   mul_one _ := by ext; simp [mul_apply]
 
@@ -130,21 +137,21 @@ def monoidAlgebraHom : MonoidAlgebra R G →ₐ[R] D(G, R) :=
     monoidAlgebraHom (.single g 1) = dirac R g := by
   simp [monoidAlgebraHom]
 
-instance : Module D(G, R) C(G, R) where
+@[simps!]
+instance : SMul D(G, R) C(G, R) where
   smul μ := μ.convolveFunRight
+
+instance : Module D(G, R) C(G, R) where
   one_smul := convolveFunRight_one
   smul_zero _ := map_zero _
-  zero_smul f := show convolveFunRight 0 f = 0 by simp
+  zero_smul f := by simp
   smul_add _ := map_add _
-  add_smul _ _ _ := by
-    change convolveFunRight _ _ = convolveFunRight _ _ + convolveFunRight _ _
-    simp only [map_add, LinearMap.add_apply]
+  add_smul _ _ _ := by simp
   mul_smul _ _ _ := by
-    change convolveFunRight _ _ = convolveFunRight _ (convolveFunRight _ _)
     ext _
-    simp only [convolveFunRight_apply, mul_apply]
+    simp only [smul_def, convolveFunRight_apply, mul_apply]
     congr 1 with
-    simp only [convolveFunRight_apply, ContinuousMap.coe_mk, mul_assoc]
+    simp [convolveFunRight_apply, mul_assoc]
 
 end LocallyCompact
 
