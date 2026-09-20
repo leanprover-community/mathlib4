@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
@@ -590,6 +591,15 @@ theorem _root_.LinearIndependent.mulVec_surjective [Ring R] [IsSemisimpleRing R]
     (vecMul_injective_iff.mpr h) .id
   have : M * f.toMatrixRight' = 1 := toLinearMapRight'.injective <| by simpa using hf
   exact fun v ↦ ⟨f.toMatrixRight' *ᵥ v, by simp [this]⟩
+
+/-- A square matrix over a commutative artinian ring with linearly independent rows has
+surjective `mulVec`. -/
+theorem _root_.LinearIndependent.mulVec_surjective_of_isArtinianRing
+    [CommRing R] [IsArtinianRing R] [Fintype m] {M : Matrix m m R}
+    (h : LinearIndependent R M.row) : M.mulVec.Surjective := by
+  classical
+  rwa [mulVec_surjective_iff_isUnit, IsArtinianRing.isUnit_iff_isRightRegular,
+    isRightRegular_iff_vecMul_injective, vecMul_injective_iff]
 
 /-- `M.vecMul` is surjective iff `M` has full column rank. -/
 theorem vecMul_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
