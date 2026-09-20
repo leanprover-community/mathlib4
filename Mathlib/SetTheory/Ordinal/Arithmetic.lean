@@ -179,31 +179,23 @@ theorem limitRecOn_limit {motive} (o H₁ H₂ H₃ h) :
 instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).ToType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
+-- TODO: replace this with an `OrderTop` instance
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (α := (succ o).ToType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
+    enum (α := (succ o).ToType) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
-@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
-theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
-    (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
-  use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
-  convert! enum_lt_enum.mpr _
-  · rw [enum_typein]
-  · rw [Subtype.mk_lt_mk, lt_succ_iff]
-
-@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
-theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
-  ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
-
+-- TODO: replace this with a `NoMaxOrder` instance
 set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
-  refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
+  classical
+  let := linearOrderOfSTO r
+  refine ⟨enum ⟨succ (typein x), hr.succ_lt (typein_lt_type x)⟩, ?_⟩
   intro b hb
+  change b < _
   rw [mem_singleton_iff.1 hb]
-  nth_rw 1 [← enum_typein r x]
-  rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
+  nth_rw 1 [← enum_typein x]
+  rw [OrderIso.lt_iff_lt, Subtype.mk_lt_mk]
   apply lt_succ
 
 /-! ### The predecessor of an ordinal -/
@@ -457,23 +449,33 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
   convert! mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
-set_option backward.isDefEq.respectTransparency false in
-private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
-    (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
+private theorem mul_le_of_limit_aux {α β} [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] {c}
+    (h : IsSuccLimit (typeLT β)) (H : ∀ b' < typeLT β, (typeLT α) * b' ≤ c)
+    (l : c ∈ Iio (typeLT (β ×ₗ α))) :
     False := by
-  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) from irrefl _ (this _ _)
+  suffices ∀ a b, toLex (b, a) < enum ⟨_, l⟩ from irrefl _ (this _ _)
   intro a b
-  rw [← typein_lt_typein (Prod.Lex s r), typein_enum]
-  have := H _ (h.succ_lt (typein_lt_type s b))
+  rw [← typein.lt_iff_lt, typein_enum]
+  have := H _ (h.succ_lt (typein_lt_type b))
   rw [mul_succ] at this
-  have := ((add_lt_add_iff_left _).2 (typein_lt_type _ a)).trans_le this
+  apply (((add_lt_add_iff_left _).2 (typein_lt_type a)).trans_le this).trans_le'
+  have e : Iio (toLex (b, a)) ↪o Iio b ×ₗ α ⊕ₗ Iio a := sorry
+  have : WellFoundedLT (Iio b ×ₗ α ⊕ₗ Iio a) := sorry
+  exact e.ordinal_type_le
   refine (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_).ordinal_type_le.trans_lt this
-  · rcases a with ⟨⟨b', a'⟩, h⟩
+  · rcases a with ⟨⟨b', a'⟩, h : toLex _ < _⟩
     by_cases e : b = b'
-    · exact .inr ⟨a', by grind [asymm_of s]⟩
-    · exact .inl (⟨b', by grind⟩, a')
-  · grind [subrel_val, Sum.Lex.sep, asymm_of s]
+    · refine .inr ⟨a', ?_⟩
+      subst e
+      simpa [Prod.Lex.lt_iff] using h
+    · refine .inl (⟨b', ?_⟩, a')
+      simpa [Prod.Lex.lt_iff, Ne.symm e] using h
+  · intro h
+    simp at *
+    -- grind [subrel_val, Sum.Lex.sep]
 
+#exit
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
   refine ⟨fun h _ l ↦ (mul_le_mul_right l.le _).trans h, fun H ↦ le_of_not_gt ?_⟩

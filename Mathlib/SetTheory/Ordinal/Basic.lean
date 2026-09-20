@@ -300,6 +300,10 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 
+theorem _root_.OrderEmbedding.ordinal_type_le {α β} [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] (h : α ↪o β) : typeLT α ≤ typeLT β :=
+  h.ltEmbedding.ordinal_type_le
+
 instance : OrderBot Ordinal where
   bot := 0
   bot_le o := inductionOn o fun _ r _ ↦ (InitialSeg.ofIsEmpty _ r).ordinal_type_le
@@ -516,7 +520,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 variable (r) in
 /-- The cardinality of a set is an upper-bound for the cardinality of the order type of the set's
-mex (minimum excluded value). See `not_lt_enum_ord_mk_min_compl` for the `α` version. -/
+mex (minimum excluded value). See `min_compl_le_enum_ord_mk` for the `α` version. -/
 theorem card_typein_min_le_mk [LinearOrder α] [WellFoundedLT α] {s : Set α} (hs : sᶜ.Nonempty) :
     (typein <| WellFoundedLT.min sᶜ hs).card ≤ #s :=
   WellFounded.cardinalMk_subtype_lt_min_compl_le _ hs
@@ -547,10 +551,9 @@ theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → 
   ((RelIso.preimage Equiv.ulift r).trans <|
       f.trans (RelIso.preimage Equiv.ulift s).symm).ordinalType_congr
 
-theorem _root_.OrderIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → β → Prop}
-    [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) : lift.{v} (type r) = lift.{u} (type s) :=
-  ((RelIso.preimage Equiv.ulift r).trans <|
-      f.trans (RelIso.preimage Equiv.ulift s).symm).ordinalType_congr
+theorem _root_.OrderIso.ordinal_lift_type_eq [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] (f : α ≃o β) : lift.{v} (typeLT α) = lift.{u} (typeLT β) :=
+  f.toRelIsoLT.ordinal_lift_type_eq
 
 @[simp]
 theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
@@ -629,7 +632,7 @@ theorem lift_typein_top [LinearOrder α] [LinearOrder β] [WellFoundedLT α] [We
 
 @[simp]
 theorem typein_ordinal (o : Ordinal.{u}) : typein o = lift.{u + 1} o := by
-  refine inductionOn o fun α r _ => ?_
+  induction o using inductionOnWellOrder with | type α
   rw [← type_Iio_lt, ← enum.ordinal_lift_type_eq, lift_id'.{u, u + 1}]
 
 theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by simp
@@ -671,7 +674,7 @@ noncomputable instance (o : Ordinal) : CoeOut o.ToType Ordinal where
 
 @[simp]
 theorem type_toType (o : Ordinal.{u}) : typeLT o.ToType = o := by
-  rw [← lift_inj.{u + 1, u}, ← (orderIsoShrink (Iio o)).toRelIsoLT.ordinal_lift_type_eq,
+  rw [← lift_inj.{u + 1, u}, ← (orderIsoShrink (Iio o)).ordinal_lift_type_eq,
     lift_id'.{u, u + 1}, type_lt_Iio]
 
 @[simp]
@@ -685,20 +688,19 @@ instance isEmpty_toType_zero : IsEmpty (ToType 0) :=
 theorem nonempty_toType_iff {o : Ordinal} : Nonempty o.ToType ↔ o ≠ 0 := by
   rw [← @type_ne_zero_iff_nonempty o.ToType (· < ·), type_toType]
 
-theorem typein_lt_self {o : Ordinal} (i : o.ToType) : typein (α := o.ToType) (· < ·) i < o := by
+theorem typein_lt_self {o : Ordinal} (i : o.ToType) : typein i < o := by
   simp_rw [← type_toType o]
   apply typein_lt_type
 
--- TODO: generalize to other well-orders
-@[simp]
-theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
-    enum (· < ·) o₁ ≤ enum (α := a.ToType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
-  rw [← enum_le_enum, not_lt]
+@[deprecated OrderIso.le_iff_le +typeChanged (since := "2026-09-20")]
+theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (typeLT a.ToType)} :
+    enum o₁ ≤ enum o₂ ↔ o₁ ≤ o₂ := by
+  simp
 
+@[deprecated enum_zero_le +typeChanged (since := "2026-09-20")]
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
-    enum (α := o.ToType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
-  rw [← not_lt]
-  apply enum_zero_le
+    enum ⟨0, show 0 ∈ Iio (typeLT o.ToType) by simpa⟩ ≤ a :=
+  enum_zero_le ..
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.ToType` into `β.ToType`. -/
@@ -714,20 +716,6 @@ noncomputable def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]
 
-/-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
-@[instance_reducible, deprecated WellFoundedLT.toOrderBot +typeChanged (since := "2026-04-12")]
-noncomputable def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
-
-@[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"
-(since := "2026-04-12")]
-theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (α := o.ToType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
-      have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
-      (⊥ : o.ToType) :=
-  rfl
-
 @[simp]
 theorem _root_.Cardinal.mk_toType (o : Ordinal) : #o.ToType = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
@@ -735,12 +723,13 @@ theorem _root_.Cardinal.mk_toType (o : Ordinal) : #o.ToType = o.card :=
 /-- Initial segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
 `Ordinal.{v}` as an initial segment when `u ≤ v`. -/
 def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
-  refine ⟨RelEmbedding.ofMonotone lift.{u} (by simp),
-    fun a b ↦ Ordinal.inductionOn₂ a b fun α r _ β s _ h ↦ ?_⟩
-  rw [RelEmbedding.ofMonotone_coe, ← lift_id'.{max u v} (type s),
+  refine ⟨RelEmbedding.ofMonotone lift.{u} (by simp), fun a b h ↦ ?_⟩
+  induction a using inductionOnWellOrder with | type α
+  induction b using inductionOnWellOrder with | type β
+  rw [RelEmbedding.ofMonotone_coe, ← lift_id'.{max u v} (typeLT β),
     ← lift_umax.{v, u}, lift_type_lt] at h
   obtain ⟨f⟩ := h
-  use typein r f.top
+  use typein f.top
   rw [RelEmbedding.ofMonotone_coe, ← lift_umax, lift_typein_top, lift_id']
 
 @[simp]
@@ -937,30 +926,28 @@ theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' 
   rfl
 
 instance uniqueToTypeOne : Unique (ToType 1) where
-  default := enum (α := ToType 1) (· < ·) ⟨0, by simp⟩
+  default := enum ⟨0, by simp⟩
   uniq a := by
-    rw [← enum_typein (α := ToType 1) (· < ·) a]
+    rw [← enum_typein a]
     congr
     rw [← lt_one_iff]
     apply typein_lt_self
 
-theorem one_toType_eq (x : ToType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
+theorem one_toType_eq (x : ToType 1) : x = enum ⟨0, by simp⟩ :=
   Unique.eq_default x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem type_lt_mem_range_succ_iff [LinearOrder α] [WellFoundedLT α] :
     typeLT α ∈ range succ ↔ ∃ x : α, IsMax x := by
   simp_rw [← isTop_iff_isMax]
   constructor <;> intro ⟨a, ha⟩
-  · refine ⟨enum (α := α) (· < ·) ⟨a, ?_⟩, fun b ↦ ?_⟩
+  · refine ⟨enum ⟨a, ?_⟩, fun b ↦ ?_⟩
     · rw [mem_Iio, ← ha, lt_succ_iff]
-    · rw [← enum_typein (α := α) (· < ·) b, ← not_lt, enum_le_enum (r := (· < ·)),
-        Subtype.mk_le_mk, ← lt_succ_iff, ha]
+    · rw [← enum_typein b, OrderIso.le_iff_le, Subtype.mk_le_mk, ← lt_succ_iff, ha]
       exact typein_lt_type ..
-  · refine ⟨typein (α := α) (· < ·) a, eq_of_forall_lt_iff fun o ↦ ?_⟩
+  · refine ⟨typein a, eq_of_forall_lt_iff fun o ↦ ?_⟩
     rw [lt_succ_iff]
-    refine ⟨fun h ↦ h.trans_lt (typein_lt_type _ _), fun h ↦ ?_⟩
-    rw [← typein_enum _ h, typein_le_typein, not_lt]
+    refine ⟨fun h ↦ h.trans_lt (typein_lt_type _), fun h ↦ ?_⟩
+    rw [← typein_enum h, PrincipalSeg.le_iff_le]
     apply ha
 
 theorem type_lt_mem_range_succ [LinearOrder α] [WellFoundedLT α] [OrderTop α] :
@@ -981,20 +968,19 @@ theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrd
 
 -- TODO: use `ToType.mk` for lemmas on `ToType` rather than `enum` and `typein`.
 
-set_option backward.isDefEq.respectTransparency false in
+-- TODO: replace this with a lemma `IsBot x → typein x = 0`.
 @[simp]
-theorem typein_one_toType (x : ToType 1) : typein (α := ToType 1) (· < ·) x = 0 := by
+theorem typein_one_toType (x : ToType 1) : typein (α := ToType 1) x = 0 := by
   rw [one_toType_eq x, typein_enum]
 
 theorem typein_le_typein' (o : Ordinal) {x y : o.ToType} :
-    typein (α := o.ToType) (· < ·) x ≤ typein (α := o.ToType) (· < ·) y ↔ x ≤ y := by
+    typein (α := o.ToType) x ≤ typein (α := o.ToType) y ↔ x ≤ y := by
   simp
 
+-- TODO: replace this with some kind of `OrderTop` instance?
 set_option backward.isDefEq.respectTransparency false in
-theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) :
-    a ≤ enum (α := (succ o).ToType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
-  rw [← enum_typein (α := (succ o).ToType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
-    ← lt_succ_iff]
+theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) : a ≤ enum ⟨o, by simp⟩ := by
+  rw [← enum_typein (α := (succ o).ToType) a, OrderIso.le_iff_le, Subtype.mk_le_mk, ← lt_succ_iff]
   apply typein_lt_self
 
 end Ordinal
@@ -1141,7 +1127,7 @@ theorem isNormal_ord : Order.IsNormal ord where
 theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by
   refine le_antisymm (ord_le.2 le_rfl) <| le_of_forall_lt fun o h ↦ ?_
   rcases Ordinal.lt_lift_iff.1 h with ⟨o, ho, rfl⟩
-  rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum _ ho]
+  rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum ho]
   exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 
 @[simp]
@@ -1153,15 +1139,15 @@ theorem lift_ord (c) : Ordinal.lift.{u, v} (ord c) = ord (lift.{u, v} c) := by
 
 theorem mk_ord_toType (c : Cardinal) : #c.ord.ToType = c := by simp
 
-theorem card_typein_lt {r : α → α → Prop} [IsWellOrder α r] (x : α) (h : ord #α = type r) :
-    card (typein r x) < #α := by
+theorem card_typein_lt [LinearOrder α] [WellFoundedLT α] (x : α) (h : ord #α = typeLT α) :
+    card (typein x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 
 @[simp]
 theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = typeLT α) :
     #(Iio i) < #α :=
-  card_typein_lt (r := LT.lt) i h
+  card_typein_lt i h
 
 theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
     #(Ioi i) < #α :=
@@ -1173,11 +1159,6 @@ theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c :=
 
 set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
-
-@[deprecated mk_Iio_lt +typeChanged (since := "2026-03-20")]
-theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
-    card (typein (α := c.ord.ToType) (· < ·) x) < c :=
-  mk_Iio_toType_ord_lt x
 
 @[simp]
 theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
@@ -1339,14 +1320,20 @@ theorem ord_mk_lt_type [IsWellOrder α r] {s : Set α} (hfin : s.Finite) (h : s�
   grw [← ord_le_type, ord_lt_ord, ← mk_univ (α := α)]
   exact card_lt_card_of_left_finite hfin h.ssubset_univ
 
-variable (r) in
 /-- The `#s`-th element of `α` is an upper-bound for the set's mex (minimum excluded value),
 ordered by `r`, when `s` is finite. See `card_typein_min_le_mk` for the `Ordinal` version. -/
-theorem not_lt_enum_ord_mk_min_compl [IsWellOrder α r] {s : Set α} (hfin : s.Finite)
+theorem min_compl_le_enum_ord_mk [LinearOrder α] [WellFoundedLT α] {s : Set α} (hfin : s.Finite)
     (h : sᶜ.Nonempty) :
-    ¬r (enum r ⟨#s |>.ord, ord_mk_lt_type r hfin h⟩) (IsWellOrder.wf.min (r := r) sᶜ h) := by
-  grw [← typein_le_typein, typein_enum, Cardinal.le_ord_iff_card_le_of_lt_aleph0 _ hfin.lt_aleph0,
+    WellFoundedLT.min sᶜ h ≤ enum ⟨#s |>.ord, by exact ord_mk_lt_type LT.lt hfin h⟩ := by
+  grw [← typein.le_iff_le, typein_enum, Cardinal.le_ord_iff_card_le_of_lt_aleph0 _ hfin.lt_aleph0,
     card_typein_min_le_mk]
+
+@[deprecated min_compl_le_enum_ord_mk +typeChanged (since := "2026-09-20")]
+theorem not_lt_enum_ord_mk_min_compl [LinearOrder α] [WellFoundedLT α] {s : Set α} (hfin : s.Finite)
+    (h : sᶜ.Nonempty) :
+    ¬ (enum ⟨#s |>.ord, by exact ord_mk_lt_type LT.lt hfin h⟩) < WellFoundedLT.min sᶜ h := by
+  rw [not_lt]
+  exact min_compl_le_enum_ord_mk hfin h
 
 theorem finite_toType_of_lt_omega0 {o} (h : o < ω) : Finite (ToType o) := by
   rwa [← mk_lt_aleph0_iff, mk_toType, card_lt_aleph0]
@@ -1361,8 +1348,8 @@ end Ordinal
 
 theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List α}
     {o : Ordinal} (hl : l.SortedGT) (hm : m.SortedGT) (hmltl : m < l)
-    (hlt : ∀ i ∈ l, Ordinal.typein (α := α) (· < ·) i < o) :
-      ∀ i ∈ m, Ordinal.typein (α := α) (· < ·) i < o := by
+    (hlt : ∀ i ∈ l, Ordinal.typein i < o) :
+      ∀ i ∈ m, Ordinal.typein i < o := by
   replace hmltl : List.Lex (· < ·) m l := hmltl
   cases l with
   | nil => simp at hmltl
