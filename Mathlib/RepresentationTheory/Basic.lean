@@ -180,17 +180,17 @@ theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
   simp
 
 lemma asModuleEquiv_apply_single_smul (t : k) (g : G) (v : ρ.asModule) :
-    ρ.asModuleEquiv (single (g : G) t • v) = t • ρ g (ρ.asModuleEquiv v) := by
+    ρ.asModuleEquiv (single g t • v) = t • ρ g (ρ.asModuleEquiv v) := by
   simp
 
 @[simp]
 lemma single_smul_asModuleEquiv_symm_apply (t : k) (g : G) (v : V) :
-    single (g : G) t • ρ.asModuleEquiv.symm v = t • ρ.asModuleEquiv.symm (ρ g v) := by
+    single g t • ρ.asModuleEquiv.symm v = t • ρ.asModuleEquiv.symm (ρ g v) := by
   rw [← map_smul ρ.asModuleEquiv.symm, ρ.asModuleEquiv.eq_symm_apply,
     asModuleEquiv_apply_single_smul, LinearEquiv.apply_symm_apply]
 
 theorem single_smul (t : k) (g : G) (v : ρ.asModule) :
-    single (g : G) t • v = t • ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv v)) :=
+    single g t • v = t • ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv v)) :=
   ρ.single_smul_asModuleEquiv_symm_apply t g (ρ.asModuleEquiv v)
 
 /-- Build a `Representation k G M` from a `[Module k[G] M]`.
