@@ -71,12 +71,24 @@ command with the new name.
 If the input command is neither a `theorem` nor a `lemma`, then it returns
 `.missing` and the unchanged command.
 -/
-def renameTheorem : TSyntax `command → TSyntax `Lean.Parser.Command.declId × TSyntax `command
-  | `(command| $dm:declModifiers theorem $id:declId $d:declSig $v:declVal) => Unhygienic.run do
-    return (id, ← `($dm:declModifiers theorem $newName:declId $d:declSig $v:declVal))
-  | `(command| $dm:declModifiers lemma $id:declId $d:declSig $v:declVal) => Unhygienic.run do
-    return (id, ← `($dm:declModifiers lemma $newName:declId $d:declSig $v:declVal))
-  | a => (default, a)
+def renameTheorem (stx : TSyntax `command) :
+    TSyntax `Lean.Parser.Command.declId × TSyntax `command :=
+  -- TODO: also support definitions
+  match stx with
+  | `(command| $dm:declModifiers theorem $id:declId $d:declSig $v:declVal) =>
+    -- declaration := declModifiers theorem
+    -- theorem := "theorem " declId declSig declVal
+    -- declId := ident (".{" ident,+ "}")?
+    let oldTheorem := stx.raw[1]
+    let newDeclId := id.raw.setArg 0 (newName.raw.setInfo id.raw[0].getHeadInfo)
+    let newTheorem := oldTheorem.setArg 1 newDeclId
+    (id, ⟨stx.raw.setArg 1 newTheorem⟩)
+  | `(command| $dm:declModifiers lemma $id:declId $d:declSig $v:declVal) =>
+    -- lemma := "lemma " declId declSig declVal
+    -- declId := ident (".{" ident,+ "}")?
+    let newDeclId := id.raw.setArg 0 (newName.raw.setInfo id.raw[0].getHeadInfo)
+    (id, ⟨stx.raw.setArg 1 newDeclId⟩)
+  | a => (⟨.missing⟩, a)
 
 open Meta.Tactic.TryThis in
 /--
@@ -130,9 +142,9 @@ elab tk:"deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command
     let (oldId, newCmd) := renameTheorem id[0]! cmd
     let oldNames ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
     let fil := news.filter fun n => n.toString.endsWith oldNames[0]!.1.toString
-    if fil.size != 1 && oldId != default then
+    if fil.size != 1 && oldId.raw != .missing then
       logError m!"Expected to find one declaration called {oldNames[0]!.1}, found {fil.size}"
-    if oldId != default then
+    if oldId.raw != .missing then
       news := #[fil[0]!] ++ (news.erase fil[0]!)
     let pairs := id.zip news
     let msg := s!"* Pairings:\n{pairs.map fun (l, r) => (l.getId, r)}" ++
@@ -141,13 +153,13 @@ elab tk:"deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command
     let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n dat
     if newCmd == cmd then
       logWarningAt cmd m!"New declaration uses the old name {oldId.raw.getArg 0}!"
-    let stxs := #[newCmd] ++ stxs
     if warn != #[] then
       logWarningAt tk m!"{warn.foldl (· ++ "\n" ++ ·) "Warnings:\n"}"
     liftTermElabM do
-      let prettyStxs ← stxs.mapM (SuggestionText.prettyExtra <|.tsyntax ·)
-      let toMessageData := (prettyStxs.toList.drop 1).foldl
-        (fun x y => x ++ "\n\n" ++ y) prettyStxs[0]!
+      let prettyNewCmd ← newCmd.raw.reprint.getDM (SuggestionText.prettyExtra <| .tsyntax newCmd)
+      let prettyStxs ← stxs.mapM (SuggestionText.prettyExtra <| .tsyntax ·)
+      let toMessageData := prettyStxs.foldl
+        (fun x y => x ++ "\n\n" ++ y) prettyNewCmd
 
       addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
         toMessageData
