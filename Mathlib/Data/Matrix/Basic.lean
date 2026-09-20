@@ -306,7 +306,7 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
       ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
-        (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
+        (AddMonoidHom.ofClass ofAddEquiv.symm) := by
   rfl
 
 @[simp] lemma evalAddMonoidHom_comp_diagAddMonoidHom (i : m) :

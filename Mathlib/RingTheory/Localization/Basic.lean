@@ -704,7 +704,8 @@ def AlgHom.extendScalarsOfIsLocalization (f : A →ₐ[R] B) : A →ₐ[S] B whe
     have : f.toRingHom.comp (algebraMap R S) = g.toRingHom.comp (algebraMap R S) := by simp
     suffices f = g by rwa [DFunLike.ext_iff] at this
     apply IsLocalization.algHom_ext M
-    rwa [DFunLike.ext_iff] at this ⊢
+    rw [DFunLike.ext_iff] at this ⊢
+    assumption
 
 @[simp]
 theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :

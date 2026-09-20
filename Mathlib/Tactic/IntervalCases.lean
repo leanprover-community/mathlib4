@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.NormNum
+public meta import Mathlib.Tactic.Simps
 
 /-!
 # Case bash on variables in finite intervals
