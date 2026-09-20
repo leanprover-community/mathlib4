@@ -98,7 +98,7 @@ theorem exists_sum_posLog_inv_norm_sub_le (s : Finset 𝕜) :
         rw [inv_div, hcaste] at h1
         have hd2 : (0 : ℝ) < 2 / δ := by positivity
         apply h1.trans
-        gcongr <;> linarith
+        gcongr; linarith
       -- Head estimate: the singular term `(w - a₀)⁻¹` dominates `∑ a ∈ s, (w - a)⁻¹`, so
       -- its `log⁺` is controlled by the right-hand side.
       have hhead : log⁺ ‖w - a₀‖⁻¹ ≤ log #s + log⁺ ‖∑ a ∈ s, (w - a)⁻¹‖ := by
@@ -135,7 +135,6 @@ theorem exists_sum_posLog_inv_norm_sub_le (s : Finset 𝕜) :
           calc log⁺ ‖w - a₀‖⁻¹ ≤ log⁺ (#s * ‖∑ a ∈ s, (w - a)⁻¹‖) := by
                 have : (0 : ℝ) ≤ ‖w - a₀‖⁻¹ := by positivity
                 gcongr
-                linarith
             _ ≤ log #s + log⁺ ‖∑ a ∈ s, (w - a)⁻¹‖ := posLog_nat_mul
       -- Assemble the two estimates.
       rw [← add_sum_erase s (fun a ↦ log⁺ ‖w - a‖⁻¹) ha₀]
