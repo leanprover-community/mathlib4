@@ -59,7 +59,7 @@ theorem sum_log_le (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * lo
 
 /-- An even cruder upper bound on the partial sum of the logarithm. -/
 theorem sum_log_le' (hx : 1 ≤ x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, log n ≤ x * log x := by
-  linarith [sum_log_le hx, log_le_sub_one_of_pos (by linarith)]
+  linarith [sum_log_le hx, log_le_sub_one_of_pos (show 0 < x by linarith)]
 
 /-- A crude lower bound on the partial sum of the logarithm. -/
 theorem le_sum_log (hx : 1 ≤ x) : x * log x - x - log x + 1 ≤ ∑ n ∈ Ioc 0 ⌊x⌋₊, log n := by
