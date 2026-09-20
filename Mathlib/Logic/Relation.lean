@@ -867,26 +867,32 @@ lemma eqvGen_mono {r r' : α → α → Prop} (h : r ≤ r') : EqvGen r ≤ EqvG
 
 end EqvGen
 
-lemma reflGen_le_eqvGen (r : α → α → Prop) : ReflGen r ≤ EqvGen r
+section
+
+variable (r : α → α → Prop)
+
+lemma reflGen_le_eqvGen : ReflGen r ≤ EqvGen r
   |  _, _, .refl => .refl _
   |  _, _, .single h => .rel _ _ h
 
-lemma symmGen_le_eqvGen (r : α → α → Prop) : SymmGen r ≤ EqvGen r
+lemma symmGen_le_eqvGen : SymmGen r ≤ EqvGen r
   | _, _, .inl h => .rel _ _ h
   | _, _, .inr h => _root_.symm <| .rel _ _ h
 
-lemma transGen_le_eqvGen (r : α → α → Prop) : TransGen r ≤ EqvGen r := by
+lemma transGen_le_eqvGen : TransGen r ≤ EqvGen r := by
   intro _ _ h
   induction h using TransGen.trans_induction_on with
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
 
-lemma reflTransGen_le_eqvGen (r : α → α → Prop) : ReflTransGen r ≤ EqvGen r := by
+lemma reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
   intro _ _ h
   induction h using ReflTransGen.trans_induction_on with
   | refl => exact .refl _
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
+
+end
 
 namespace EqvGen
 
