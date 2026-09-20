@@ -24,17 +24,13 @@ We model this by defining `ZFClass` as `Set ZFSet`.
 
 universe u
 
-/-- The collection of all classes.
-
-Since the `A ∈ B` notation expects the type of `A` to be determined uniquely by the type of `B`,
-we cannot allow both `A : ZFSet` and `A : ZFClass` for `B : ZFClass`. We give the `A ∈ B` notation
-to the first and spell the second as `A ∈ᶜ B`. -/
+/-- The collection of all classes. -/
 @[pp_with_univ] abbrev ZFClass := Set ZFSet
 
 namespace ZFClass
 variable {A B C : ZFClass.{u}} {x y : ZFSet.{u}}
 
-/-- Membership of classes. `A ∈ᶜ B` if `A` is a ZFC set which satisfies `B`.
+/-- Membership of classes. `A ᶜ∈ B` if `A` is a ZFC set which satisfies `B`.
 
 Note that the `A ∈ B` notation is already taken for the case where `A : ZFSet` instead
 (the `OutParam` in `Mem` forces the type of `A` to be uniquely inferrable from the type of `B`). -/
@@ -42,41 +38,43 @@ protected def CMem (A B : ZFClass.{u}) : Prop :=
   ∃ x : ZFSet, ↑x = A ∧ x ∈ B
 
 @[inherit_doc]
-scoped notation:50 A:50 " ∈ᶜ " B:50 => ZFClass.CMem A B
+scoped notation:50 A:50 " ᶜ∈ " B:50 => ZFClass.CMem A B
 
 /-- Negated membership of classes, see `ZFClass.CMem`. -/
-scoped notation:50 A:50 " ∉ᶜ " B:50 => ¬ ZFClass.CMem A B
+scoped notation:50 A:50 " ᶜ∉ " B:50 => ¬ ZFClass.CMem A B
 
-@[simp, norm_cast] lemma coe_cmem : x ∈ᶜ A ↔ x ∈ A := by simp [ZFClass.CMem]
+recommended_spelling "notCMem" for "ᶜ∉" in [«term_ᶜ∉_»]
 
-@[simp] lemma not_cmem_empty : A ∉ᶜ ∅ := by simp [ZFClass.CMem]
+@[simp, norm_cast] lemma coe_cmem : x ᶜ∈ A ↔ x ∈ A := by simp [ZFClass.CMem]
 
-@[simp] lemma cmem_univ : A ∈ᶜ .univ ↔ ∃ x : ZFSet.{u}, ↑x = A := by simp [ZFClass.CMem]
+@[simp] lemma not_cmem_empty : A ᶜ∉ ∅ := by simp [ZFClass.CMem]
 
-instance wellFounded_cmem : WellFounded (· ∈ᶜ ·) := by
+@[simp] lemma cmem_univ : A ᶜ∈ .univ ↔ ∃ x : ZFSet.{u}, ↑x = A := by simp [ZFClass.CMem]
+
+instance wellFounded_cmem : WellFounded (· ᶜ∈ ·) := by
   refine ⟨fun A ↦ ⟨A, ?_⟩⟩
   rintro B ⟨x, rfl, _⟩
   refine x.inductionOn fun x IH => ⟨_, ?_⟩
   rintro A ⟨z, rfl, hz⟩
   exact IH z hz
 
-instance : WellFoundedRelation ZFClass := ⟨(· ∈ᶜ ·), inferInstance⟩
+instance : WellFoundedRelation ZFClass := ⟨(· ᶜ∈ ·), inferInstance⟩
 
-lemma cmem_asymm : A ∈ᶜ B → B ∉ᶜ A := asymm_of ZFClass.CMem
+lemma cmem_asymm : A ᶜ∈ B → B ᶜ∉ A := asymm_of ZFClass.CMem
 
-lemma cmem_irrefl : A ∉ᶜ A := irrefl_of _ _
+lemma cmem_irrefl : A ᶜ∉ A := irrefl_of _ _
 
 /-- **There is no universal set.**
 
-This is stated as `univ ∉ᶜ univ`, meaning that `univ` (the class of all sets) is proper
+This is stated as `univ ᶜ∉ univ`, meaning that `univ` (the class of all sets) is proper
 (does not belong to the class of all sets). -/
-lemma univ_notCMem_univ : (.univ : ZFClass) ∉ᶜ .univ := cmem_irrefl
+lemma univ_notCMem_univ : .univ ᶜ∉ .univ := cmem_irrefl
 
 /-- Convert a conglomerate (a collection of classes) into a class -/
 def congToClass (x : Set ZFClass.{u}) : ZFClass.{u} := SetLike.coe ⁻¹' x
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
-def classToCong (x : ZFClass.{u}) : Set ZFClass.{u} := {y | y ∈ᶜ x}
+def classToCong (x : ZFClass.{u}) : Set ZFClass.{u} := {y | y ᶜ∈ x}
 
 @[simp] lemma congToClass_empty : congToClass ∅ = ∅ := by rfl
 @[simp] lemma classToCong_empty : classToCong ∅ = ∅ := by simp [classToCong]
@@ -124,7 +122,7 @@ lemma coe_powerset (x : ZFSet.{u}) : ↑x.powerset = powerset.{u} x := by ext; s
 open scoped ZFSet in
 lemma coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : ZFClass.{u}) := by ext; simp
 
-@[simp] lemma cmem_sUnion : B ∈ᶜ ⋃₀ A ↔ ∃ C, C ∈ᶜ A ∧ B ∈ᶜ C := by
+@[simp] lemma cmem_sUnion : B ᶜ∈ ⋃₀ A ↔ ∃ C, C ᶜ∈ A ∧ B ᶜ∈ C := by
   simp [sUnion, ZFClass.CMem, classToCong]; grind
 
 lemma mem_sInter : y ∈ ⋂₀ A ↔ ∀ z ∈ A, y ∈ z := by
@@ -134,11 +132,11 @@ open scoped ZFSet in
 lemma coe_sInter (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : ZFClass.{u}) := by
   ext; simp [ZFSet.mem_sInter h, mem_sInter]
 
-lemma cmem_of_cmem_sInter (hy : B ∈ᶜ ⋂₀ A) (hz : C ∈ᶜ A) : B ∈ᶜ C := by
+lemma cmem_of_cmem_sInter (hy : B ᶜ∈ ⋂₀ A) (hz : C ᶜ∈ A) : B ᶜ∈ C := by
   obtain ⟨w, rfl, hw⟩ := hy
   exact coe_cmem.2 (hw C hz)
 
-lemma cmem_sInter (h : A.Nonempty) : B ∈ᶜ ⋂₀ A ↔ ∀ z, z ∈ᶜ A → B ∈ᶜ z := by
+lemma cmem_sInter (h : A.Nonempty) : B ᶜ∈ ⋂₀ A ↔ ∀ z, z ᶜ∈ A → B ᶜ∈ z := by
   refine ⟨fun hy z ↦ cmem_of_cmem_sInter hy, fun H ↦ ?_⟩
   simp_rw [ZFClass.CMem]
   obtain ⟨z, hz⟩ := h
@@ -159,28 +157,28 @@ lemma eq_univ_of_powerset_subset (hA : powerset A ⊆ A) : A = .univ := by
   exact WellFounded.not_lt_min ZFSet.mem_wf {x | x ∉ A} hB hx
 
 /-- The definite description operator, which is `{x}` if `A = {x}` and `∅` otherwise. -/
-def iota (A : ZFClass) : ZFClass := ⋃₀ {x : ZFSet | ∀ y : ZFSet, ↑y ∈ᶜ A ↔ y = x}
+def iota (A : ZFClass) : ZFClass := ⋃₀ {x : ZFSet | ∀ y : ZFSet, ↑y ᶜ∈ A ↔ y = x}
 
-lemma iota_val (A : ZFClass) (x : ZFSet) (H : ∀ y : ZFSet, ↑y ∈ᶜ A ↔ y = x) : iota A = ↑x :=
+lemma iota_val (A : ZFClass) (x : ZFSet) (H : ∀ y : ZFSet, ↑y ᶜ∈ A ↔ y = x) : iota A = ↑x :=
   Set.ext fun y =>
     ⟨fun ⟨_, ⟨x', rfl, h⟩, yx'⟩ => by rwa [← (H x').1 <| (h x').2 rfl], fun yx =>
       ⟨_, ⟨x, rfl, H⟩, yx⟩⟩
 
 /-- Unlike the other set constructors, the `iota` definite descriptor is a set for any set input,
 but not constructively so, so there is no associated `ZFClass → Set` function. -/
-lemma iota_ex (A) : iota.{u} A ∈ᶜ .univ :=
+lemma iota_ex (A) : iota.{u} A ᶜ∈ .univ :=
   cmem_univ.2 <|
-    Or.elim (Classical.em <| ∃ x : ZFSet, ∀ y : ZFSet, ↑y ∈ᶜ A ↔ y = x)
+    Or.elim (Classical.em <| ∃ x : ZFSet, ∀ y : ZFSet, ↑y ᶜ∈ A ↔ y = x)
       (fun ⟨x, h⟩ => ⟨x, Eq.symm <| iota_val A x h⟩) fun hn =>
       ⟨∅, Set.ext fun _ => coe_empty.symm ▸ ⟨False.rec, fun ⟨_, ⟨x, rfl, H⟩, _⟩ => hn ⟨x, H⟩⟩⟩
 
 /-- Function value -/
-def fval (F A : ZFClass.{u}) : ZFClass.{u} := iota {y | A ∈ᶜ {x | ↑(ZFSet.pair x y) ∈ᶜ F}}
+def fval (F A : ZFClass.{u}) : ZFClass.{u} := iota {y | A ᶜ∈ {x | ↑(ZFSet.pair x y) ᶜ∈ F}}
 
 @[inherit_doc]
 infixl:100 " ′ " => fval
 
-lemma fval_ex (F A : ZFClass.{u}) : F ′ A ∈ᶜ .univ := iota_ex _
+lemma fval_ex (F A : ZFClass.{u}) : F ′ A ᶜ∈ .univ := iota_ex _
 
 end ZFClass
 
@@ -506,7 +504,7 @@ namespace ZFSet
 variable {x y : ZFSet.{u}}
 
 @[simp]
-lemma map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] (h : y ∈ x) :
+theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] (h : y ∈ x) :
     (ZFSet.map f x ′ y : ZFClass.{u}) = f y :=
   ZFClass.iota_val _ _ fun z => by
     simp only [ZFClass.coe_cmem, Set.mem_ofPred_eq, SetLike.mem_coe, mem_map]
@@ -523,21 +521,21 @@ variable (x : ZFSet.{u})
 noncomputable def choice : ZFSet :=
   @map (fun y => Classical.epsilon fun z => z ∈ y) (Classical.allZFSetDefinable _) x
 
-lemma choice_mem_aux (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
+theorem choice_mem_aux (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
     (Classical.epsilon fun z : ZFSet.{u} => z ∈ y) ∈ y :=
   (@Classical.epsilon_spec _ fun z : ZFSet.{u} => z ∈ y) <|
     by_contradiction fun n => h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
 
-lemma choice_isFunc (h : ∅ ∉ x) : IsFunc x (⋃₀ x) (choice x) :=
+theorem choice_isFunc (h : ∅ ∉ x) : IsFunc x (⋃₀ x) (choice x) :=
   (@map_isFunc _ (Classical.allZFSetDefinable _) _ _).2 fun y yx =>
     mem_sUnion.2 ⟨y, yx, choice_mem_aux x h y yx⟩
 
-lemma choice_cmem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) : choice x ′ y ∈ᶜ y := by
+theorem choice_cmem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) : choice x ′ y ᶜ∈ y := by
   delta choice
   rw [@map_fval x y _ (Classical.allZFSetDefinable _) yx, ZFClass.coe_cmem, SetLike.mem_coe]
   exact choice_mem_aux x h y yx
 
-private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
+private theorem coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
     (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out) = s := by
   ext x
   rw [SetLike.mem_coe, ← mk_out x, mk_mem_iff, mk_out]
@@ -557,7 +555,7 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
   right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.2
 
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-lemma isOrdinal_notCMem_univ : {x | IsOrdinal x} ∉ᶜ (.univ : ZFClass.{u}) := by
+theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ (.univ : ZFClass.{u}) := by
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
     apply ZFClass.cmem_irrefl (A := (x : ZFClass.{u}))
