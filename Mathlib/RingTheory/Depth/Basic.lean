@@ -516,7 +516,6 @@ lemma IsLocalRing.depth_eq_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R'
     IsLocalRing.depth (ModuleCat.of R R) = IsLocalRing.depth (ModuleCat.of R' R') := by
   simp only [depth_eq_sSup_length_isRegular]
   congr!
-  rename_i n
   refine ⟨fun ⟨rs, reg, mem, len⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
   · use rs.map e.toRingHom, (e.toSemilinearEquiv.isRegular_congr' rs).mp reg
     simpa [len]
@@ -551,8 +550,7 @@ lemma IsLocalRing.depth_eq_of_algebraMap_surjective [IsLocalRing R] [IsNoetheria
       intro r hr
       have : algebraMap R S r ∈ maximalIdeal S := by
         apply mem
-        simp only [← hrs', List.mem_map]
-        use r
+        simpa only [← hrs'] using List.mem_map_of_mem hr
       simpa using this
     have reg' : IsRegular M rs' := by
       refine ⟨(isWeaklyRegular_map_algebraMap_iff S M rs').mp (by simpa [hrs'] using reg.1), ?_⟩
@@ -650,12 +648,10 @@ lemma IsLocalRing.depth_quotient_isRegular_sequence_add_length_eq_depth [IsLocal
         ((isWeaklyRegular_map_algebraMap_iff (R ⧸ x • (⊤ : Ideal R)) _ rs').mpr reg.2) mem'
           ((rs'.length_map _).trans len)]
       congr 2
-      have eq1 : x • (⊤ : Ideal R) = span {x} := by simp [← Submodule.ideal_span_singleton_smul]
-      have eq2 : ofList (rs'.map (Ideal.Quotient.mk (span {x}))) =
-        (ofList rs').map (Ideal.Quotient.mk (span {x})) := by simp
       let e : R ⧸ ofList (x :: rs') ≃+* ((R ⧸ x • (⊤ : Ideal R)) ⧸
         ofList (rs'.map (Ideal.Quotient.mk (x • (⊤ : Ideal R))))) := by
-        rw [Ideal.ofList_cons, eq1, eq2]
+        rw [Ideal.ofList_cons, ← Submodule.ideal_span_singleton_smul, smul_eq_mul, Ideal.mul_top,
+          ← map_ofList]
         exact (DoubleQuot.quotQuotEquivQuotSup _ _).symm
       have := e.isLocalRing
       exact IsLocalRing.depth_eq_of_ringEquiv e
