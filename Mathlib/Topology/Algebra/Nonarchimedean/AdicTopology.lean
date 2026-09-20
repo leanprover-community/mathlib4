@@ -53,7 +53,9 @@ variable {R : Type*} [CommRing R]
 
 open Set IsTopologicalAddGroup Submodule Filter
 
-open Topology Pointwise
+open Pointwise
+
+open scoped Topology
 
 namespace Ideal
 
@@ -174,7 +176,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
       simpa using J.hasBasis_nhds_zero_adic.mem_iff.mp hs
   · rintro ⟨H₁, H₂⟩
     apply IsTopologicalAddGroup.ext
-    · apply @IsTopologicalRing.to_topologicalAddGroup
+    · apply IsTopologicalRing.isTopologicalAddGroup
     · apply (RingSubgroupsBasis.toRingFilterBasis _).toAddGroupFilterBasis.isTopologicalAddGroup
     · ext s
       let := Ideal.adic_basis J

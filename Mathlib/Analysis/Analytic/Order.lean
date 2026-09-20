@@ -62,7 +62,7 @@ noncomputable def analyticOrderNatAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ := (an
 
 @[simp]
 lemma analyticOrderAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) : analyticOrderAt f z₀ = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 @[simp]
 lemma analyticOrderNatAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) :
@@ -75,6 +75,10 @@ lemma analyticOrderNatAt_of_not_analyticAt (hf : ¬ AnalyticAt 𝕜 f z₀) :
 lemma analyticOrderAt_eq_top : analyticOrderAt f z₀ = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 where
   mp hf := by unfold analyticOrderAt at hf; split_ifs at hf with h <;> simp [*] at *
   mpr hf := by unfold analyticOrderAt; simp [hf, analyticAt_congr hf, analyticAt_const]
+
+@[simp]
+lemma analyticOrderAt_zero : analyticOrderAt (0 : 𝕜 → E) z₀ = ⊤ := by
+  simp [analyticOrderAt_eq_top]
 
 lemma eventuallyConst_iff_analyticOrderAt_sub_eq_top :
     EventuallyConst f (𝓝 z₀) ↔ analyticOrderAt (f · - f z₀) z₀ = ⊤ := by
@@ -411,7 +415,7 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
   · exact hFa.congr (by filter_upwards [hU0] using by simp +contextual)
   · by_cases hz : z ∈ U
     · simpa [hz] using hU' z hz
-    · simp only [if_neg hz]
+    · simp only [ite_eq_right hz]
       rw [smul_inv_smul₀]
       · module
       · contrapose hz
@@ -483,6 +487,18 @@ lemma analyticOrderAt_centeredMonomial {z₀ : 𝕜} {n : ℕ} :
     analyticOrderAt ((· - z₀) ^ n) z₀ = n := by
   rw [AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)]
   exact ⟨1, by simp [Pi.one_def, analyticAt_const]⟩
+
+/-- The analytic order of the function `(· - c)` at `x` is one if `x = c`. -/
+@[simp] theorem analyticOrderAt_id_sub_const_self {c : 𝕜} :
+    analyticOrderAt (· - c) c = 1 := by
+  have := analyticOrderAt_centeredMonomial (n := 1) (z₀ := c)
+  simp_all [pow_one]
+
+/-- The analytic order of the function `(· - c)` at `x` is zero if `x ≠ c`. -/
+@[simp] theorem analyticOrderAt_id_sub_const_of_ne {c x : 𝕜} (h : x ≠ c) :
+    analyticOrderAt (· - c) x = 0 := by
+  apply analyticOrderAt_eq_zero.2
+  grind
 
 section NontriviallyNormedField
 variable {f g : 𝕜 → 𝕜} {z₀ : 𝕜}

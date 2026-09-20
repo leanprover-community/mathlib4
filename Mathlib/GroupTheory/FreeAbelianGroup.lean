@@ -150,9 +150,9 @@ theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := b
   classical
   exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
-    have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| if_pos rfl
+    have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| ite_eq_left rfl
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
-    have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| if_neg hxy
+    have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| ite_eq_right hxy
     one_ne_zero <| hfy1.symm.trans hfy0
 
 @[simp]
@@ -502,16 +502,19 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
       | add y1 y2 ih1 ih2 => rw [mul_add, map_add, map_add, mul_add, ih1, ih2] }
   invFun F := MonoidHom.comp (↑F) ofMulHom
   left_inv f := MonoidHom.ext <| by
-    simp only [RingHom.coe_monoidHom_mk, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
+    simp only [RingHom.toMonoidHom_mk, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
       ofMulHom_coe, Function.comp_apply, lift_apply_of, forall_const]
-  right_inv F := RingHom.coe_addMonoidHom_injective <| by
+  right_inv F := RingHom.toAddMonoidHom_injective <| by
     simp only
     rw [← lift.apply_symm_apply (↑F : FreeAbelianGroup α →+ R)]
     rfl
 
 @[simp]
-theorem liftMonoid_coe_addMonoidHom (f : α →* R) : ↑(liftMonoid f) = lift f :=
+theorem toAddMonoidHom_liftMonoid (f : α →* R) : ↑(liftMonoid f) = lift f :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias liftMonoid_coe_addMonoidHom := toAddMonoidHom_liftMonoid
 
 @[simp]
 theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=

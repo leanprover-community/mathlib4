@@ -101,8 +101,8 @@ theorem disjoint_inv_left_iff : Disjoint f⁻¹ g ↔ Disjoint f g := by
 theorem disjoint_inv_right_iff : Disjoint f g⁻¹ ↔ Disjoint f g := by
   rw [disjoint_comm, disjoint_inv_left_iff, disjoint_comm]
 
-theorem Disjoint.mul_left (H1 : Disjoint f h) (H2 : Disjoint g h) : Disjoint (f * g) h := fun x =>
-  by cases H1 x <;> cases H2 x <;> simp [*]
+theorem Disjoint.mul_left (H1 : Disjoint f h) (H2 : Disjoint g h) : Disjoint (f * g) h := fun x ↦ by
+  cases H1 x <;> cases H2 x <;> simp [*]
 
 theorem Disjoint.mul_right (H1 : Disjoint f g) (H2 : Disjoint f h) : Disjoint f (g * h) := by
   rw [disjoint_comm]
@@ -576,7 +576,6 @@ theorem card_support_swap_mul {f : Perm α} {x : α} (hx : f x ≠ x) :
     ⟨fun _ hz => (mem_support_swap_mul_imp_mem_support_ne hz).left, fun h =>
       absurd (h (mem_support.2 hx)) (mt mem_support.1 (by simp))⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_support_swap {x y : α} (hxy : x ≠ y) : #(swap x y).support = 2 :=
   show #(swap x y).support = #⟨x ::ₘ y ::ₘ 0, by simp [hxy]⟩ from
     congr_arg card <| by simp [support_swap hxy, *, Finset.ext_iff]

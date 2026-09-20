@@ -38,7 +38,7 @@ notation:25 𝒜 " →ₐᵍ[" R "] " ℬ => GradedAlgHom R 𝒜 ℬ
 
 namespace GradedAlgHom
 
-variable {R S T U V A B C D ι : Type*}
+variable {R A B C D ι : Type*}
   [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
   [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [DecidableEq ι] [AddMonoid ι]
@@ -53,10 +53,11 @@ variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [AlgHomClass F R
 
 In future mathlib this will be deprioritised in favour of using structural projections. -/
 def ofClass (f : F) : 𝒜 →ₐᵍ[R] ℬ :=
-  { (AlgHomClass.toAlgHom f : A →ₐ[R] B), (.ofClass f : 𝒜 →+*ᵍ ℬ) with }
+  { (AlgHom.ofClass f), (.ofClass f : 𝒜 →+*ᵍ ℬ) with }
 
 end ofClass
 
+@[macro_inline]
 instance : FunLike (𝒜 →ₐᵍ[R] ℬ) A B where
   coe f := f.toFun
   coe_injective f g h := by
@@ -79,7 +80,7 @@ attribute [coe] GradedAlgHom.toAlgHom
 instance : CoeOut (𝒜 →ₐᵍ[R] ℬ) (A →ₐ[R] B) := ⟨toAlgHom⟩
 
 @[simp] lemma toAlgHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
-    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHomClass.toAlgHom f := rfl
+    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHom.ofClass f := rfl
 
 @[simp] lemma toGradedRingHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
     [AlgHomClass F R A B] (f : F) :
@@ -125,11 +126,17 @@ theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R]
 theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
   AlgHom.coe_ringHom_injective.comp coe_toAlgHom_injective
 
-theorem coe_monoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
-  AlgHom.coe_monoidHom_injective.comp coe_toAlgHom_injective
+theorem toMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
+  AlgHom.toMonoidHom_injective.comp coe_toAlgHom_injective
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
-  AlgHom.coe_addMonoidHom_injective.comp coe_toAlgHom_injective
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_injective := toMonoidHom_injective
+
+theorem toAddMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
+  AlgHom.toAddMonoidHom_injective.comp coe_toAlgHom_injective
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 /-- Consider using `congr($H x)` instead. -/
 protected theorem congr_fun {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : f₁ = f₂) (x : A) : f₁ x = f₂ x :=
@@ -202,7 +209,7 @@ theorem id_comp : (GradedAlgHom.id R ℬ).comp f = f := rfl
 theorem comp_assoc (fCD : 𝒞 →ₐᵍ[R] 𝒟) (fBC : ℬ →ₐᵍ[R] 𝒞) (fAB : 𝒜 →ₐᵍ[R] ℬ) :
     (fCD.comp fBC).comp fAB = fCD.comp (fBC.comp fAB) := rfl
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance : Monoid (𝒜 →ₐᵍ[R] 𝒜) where
   mul := comp
   one := .id R 𝒜

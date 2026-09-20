@@ -183,7 +183,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top �
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
-  obj U := CommRingCat.of ((structureSheafInType 𝒜).1.obj U)
+  obj U := ↧((structureSheafInType 𝒜).1.obj U)
   map i := CommRingCat.ofHom
     { toFun := (structureSheafInType 𝒜).1.map i
       map_zero' := rfl
@@ -236,7 +236,7 @@ end
 
 /-- `Proj` of a graded ring as a `SheafedSpace` -/
 def Proj.toSheafedSpace : SheafedSpace CommRingCat where
-  carrier := TopCat.of (ProjectiveSpectrum 𝒜)
+  carrier := ↧(ProjectiveSpectrum 𝒜)
   presheaf := (Proj.structureSheaf 𝒜).1
   IsSheaf := (Proj.structureSheaf 𝒜).2
 
@@ -245,7 +245,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 implemented as a subtype of dependent functions to localizations at homogeneous prime ideals, and
 evaluates the section on the point corresponding to a given homogeneous prime ideal. -/
 def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : ProjectiveSpectrum.top 𝒜)
-    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ CommRingCat.of (at x) :=
+    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ ↧(at x) :=
   CommRingCat.ofHom
   { toFun s := (s.1 ⟨x, hx⟩ :)
     map_one' := rfl
@@ -258,7 +258,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 to a homogeneous prime ideal `x` to the *homogeneous localization* at `x`,
 formed by gluing the `openToLocalization` maps. -/
 def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
-    (Proj.structureSheaf 𝒜).presheaf.stalk x ⟶ CommRingCat.of (at x) :=
+    (Proj.structureSheaf 𝒜).presheaf.stalk x ⟶ ↧(at x) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).1)
     { pt := _
       ι :=

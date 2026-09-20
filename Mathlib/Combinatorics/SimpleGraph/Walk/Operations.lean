@@ -358,7 +358,7 @@ theorem dropLast_support_concat (p : G.Walk u v) : p.support.dropLast ++ [v] = p
   have ⟨_, _, _, hp⟩ := p.exists_cons_eq_concat h
   simp [hp]
 
-@[deprecated dropLast_support_concat (since := "2026-03-16")]
+@[deprecated dropLast_support_concat +typeChanged (since := "2026-03-16")]
 theorem support_eq_concat (p : G.Walk u v) : p.support = p.support.dropLast.concat v := by
   simp
 
@@ -699,7 +699,8 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
 theorem drop_drop (p : G.Walk u v) (n m : ℕ) :
     (p.drop n).drop m = (p.drop (n + m)).copy (drop_getVert ..).symm rfl := by
   apply ext_support
-  grind [support_copy, drop_support_eq_support_drop_min, drop_length, List.drop_drop]
+  simp_rw [support_copy, drop_support_eq_support_drop_min, drop_length, List.drop_drop]
+  grind
 
 @[simp]
 theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by

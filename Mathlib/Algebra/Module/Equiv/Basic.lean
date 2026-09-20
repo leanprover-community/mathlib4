@@ -499,7 +499,7 @@ theorem symm_ofLinearMap (h₁ h₂) :
 @[deprecated ofLinearMap (since := "2026-06-23")]
 abbrev ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂ := ofLinearMap f g h₁ h₂
 
-@[deprecated coe_ofLinearMap (since := "2026-06-23")]
+@[deprecated coe_ofLinearMap +typeChanged (since := "2026-06-23")]
 theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
 
@@ -580,7 +580,6 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     ext x
     simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.
 
@@ -683,7 +682,6 @@ variable [RingHomCompTriple σ₂'₂'' σ₂''₁'' σ₂'₁''] [RingHomCompTr
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
 variable [RingHomCompTriple σ₁'₂' σ₂'₃' σ₁'₃'] [RingHomCompTriple σ₃'₂' σ₂'₁' σ₃'₁']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism between the two function spaces.
 
@@ -767,6 +765,7 @@ end arrowCongr
 
 /-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M` into `M₂`
 and `M` into `M₃` are linearly isomorphic. -/
+@[simps!]
 def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
   arrowCongr (LinearEquiv.refl R M) f
 
@@ -785,8 +784,6 @@ section Field
 
 variable [Field K] [AddCommGroup M] [Module K M]
 variable (K) (M)
-
-open LinearMap
 
 /-- Multiplying by a nonzero element `a` of the field `K` is a linear equivalence. -/
 @[simps!]

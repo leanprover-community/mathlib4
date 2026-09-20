@@ -31,7 +31,6 @@ section NoetherianDimLEOne
 
 variable {R : Type*} [CommRing R]
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
-variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 /--
@@ -191,7 +190,7 @@ lemma ordFrac_irreducible
     IsDiscreteValuationRing.intValuation_maximalIdeal,
     IsDiscreteValuationRing.addVal_uniformizer hϖ, ← WithZero.exp_eq_coe_ofAdd]
 
-open IsDedekindDomain HeightOneSpectrum
+open IsDedekindDomain
 
 lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
