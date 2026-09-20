@@ -84,8 +84,7 @@ lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M = ⊤ ↔ ∀ i, Subsingleton (Ext N M i) := by
   refine ⟨fun h ↦ ?_, fun h ↦ csSup_eq_top_of_top_mem (fun i _ ↦ h i)⟩
   by_contra! exist
-  rw [moduleDepth_eq_find N M exist] at h
-  simp at h
+  simp [moduleDepth_eq_find N M exist] at h
 
 lemma Ideal.depth_eq_top_of_subsingleton (I : Ideal R)
     (M : ModuleCat.{v} R) (sub : Subsingleton M) : I.depth M = ⊤ := by
