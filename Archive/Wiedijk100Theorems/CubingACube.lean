@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.Interval.Set.Group
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Order.Interval.Set.Disjoint
 

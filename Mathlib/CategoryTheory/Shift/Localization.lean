@@ -154,7 +154,6 @@ noncomputable def iso (a : A) :
         F.commShiftIso a ≪≫
         isoWhiskerRight (Lifting.iso L W F F').symm _ ≪≫ Functor.associator _ _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma iso_hom_app (a : A) (X : C) :
     (commShiftOfLocalization.iso L W F F' a).hom.app (L.obj X) =
@@ -164,7 +163,6 @@ lemma iso_hom_app (a : A) (X : C) :
           (shiftFunctor E a).map ((Lifting.iso L W F F').inv.app X) := by
   simp [commShiftOfLocalization.iso]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma iso_inv_app (a : A) (X : C) :
     (commShiftOfLocalization.iso L W F F' a).inv.app (L.obj X) =
@@ -176,7 +174,6 @@ lemma iso_inv_app (a : A) (X : C) :
 
 end commShiftOfLocalization
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
 this functor commutes with the shift. -/
@@ -241,7 +238,6 @@ lemma commShiftOfLocalization_iso_inv_app (a : A) (X : C) :
 
 end Functor
 
-set_option backward.defeqAttrib.useBackward true in
 instance NatTrans.commShift_iso_hom_of_localization :
     letI := Functor.commShiftOfLocalization L W A F F'
     NatTrans.CommShift (Lifting.iso L W F F').hom A := by
@@ -284,7 +280,6 @@ noncomputable def commShift : G.CommShift M := by
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   exact Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) G
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma commShift_iso_hom_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -295,7 +290,6 @@ lemma commShift_iso_hom_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_hom_app,
     Functor.commShiftIso_comp_hom_app]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma commShift_iso_inv_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -306,7 +300,6 @@ lemma commShift_iso_inv_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_inv_app,
     Functor.commShiftIso_comp_inv_app]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma natTransCommShift_hom :
     letI := Φ.commShift M L₁ L₂ G e
     NatTrans.CommShift e.hom M := by
@@ -329,5 +322,31 @@ instance :
   natTransCommShift_hom ..
 
 end LocalizerMorphism
+
+namespace NatTrans.CommShift
+
+open Localization
+
+variable [HasShift D A] [L.CommShift A]
+
+instance : NatTrans.CommShift (Lifting.iso L W L (𝟭 D)).hom A := by
+  dsimp [Lifting.iso]
+  infer_instance
+
+instance liftNatTrans [HasShift E A]
+    (F₁ F₂ : C ⥤ E) [F₁.CommShift A] [F₂.CommShift A]
+    (F₁' F₂' : D ⥤ E) [F₁'.CommShift A] [F₂'.CommShift A]
+    [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
+    [NatTrans.CommShift (Lifting.iso L W F₁ F₁').hom A]
+    [NatTrans.CommShift (Lifting.iso L W F₂ F₂').hom A]
+    (τ : F₁ ⟶ F₂) [NatTrans.CommShift τ A] :
+    NatTrans.CommShift (Localization.liftNatTrans L W F₁ F₂ F₁' F₂' τ) A where
+  shift_comm m :=
+    Localization.natTrans_ext L W (fun X ↦ by
+      simp [← cancel_epi (F₁'.map ((L.commShiftIso m).hom.app X)),
+        shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
+        ← Functor.map_comp_assoc])
+
+end NatTrans.CommShift
 
 end CategoryTheory
