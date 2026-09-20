@@ -90,6 +90,9 @@ def ofAddHom {M} [AddCommMonoid M] (prec : M →+ M →+ M) (succ : M →+ M →
   prec_succ_assoc := hps
   prec_prec_eq := hpp
 
+class IsComm (M) [NonUnitalDendriformSemiring M] : Prop where
+  prec_eq_succ (a b : M) : a ≺ b = b ≻ a
+
 variable {M} [NonUnitalDendriformSemiring M]
 variable (a b c : M)
 
@@ -106,6 +109,9 @@ instance : NonUnitalSemiring M where
   mul_zero a := by simp [mul_eq]
   mul_assoc a b c := by
     simpa [mul_eq, succ_prec_assoc, prec_prec_eq_prec_mul, succ_succ_eq_mul_succ] using by abel_nf
+
+instance [IsComm M] : NonUnitalCommSemiring M where
+  mul_comm a b := by simp [mul_eq, IsComm.prec_eq_succ, add_comm]
 
 end NonUnitalDendriformSemiring
 
@@ -129,6 +135,8 @@ lemma sub_succ : (a - b) ≻ c = a ≻ c - b ≻ c := by simp [sub_eq_add_neg]
 lemma succ_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg]
 
 instance : NonUnitalRing M where
+
+instance [IsComm M] : NonUnitalCommRing M where
 
 /-- The antisymmetrization of `≻` and `≺` yield a pre-Lie product. -/
 def preLieLR := a ≻ b - b ≺ a

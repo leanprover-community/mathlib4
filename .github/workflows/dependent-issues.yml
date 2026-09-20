@@ -7,6 +7,8 @@ on:
 
 jobs:
   cancel:
+    permissions:
+      actions: write
     name: 'Cancel Previous Runs (dependent issues)'
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
