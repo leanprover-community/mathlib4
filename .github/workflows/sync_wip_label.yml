@@ -17,40 +17,23 @@ permissions:
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   REPO: ${{ github.repository }}
-  ACTION: ${{ github.event.action }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
-  IS_DRAFT: ${{ github.event.pull_request.draft }}
-  CHANGED_LABEL: ${{ github.event.label.name }}
 
 jobs:
   sync-wip-label:
     runs-on: ubuntu-latest
     # Don't run on forks, where we wouldn't have permissions to add the label anyway.
-    # Also dont run on actions which aren't handled by this script
-    if: >
-      github.repository == 'leanprover-community/mathlib4' && (
-      github.event.action == 'converted_to_draft' ||
-      github.event.action == 'ready_for_review' ||
-      github.event.label.name == 'WIP')
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
-      - name: Sync draft state and WIP label
-        run: |
-          set -euo pipefail
-          case "$ACTION" in
-            converted_to_draft)
-              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --add-label 'WIP'
-              ;;
-            ready_for_review)
-              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label 'WIP'
-              ;;
-            labeled)
-              if [ "${IS_DRAFT}" != "true" ]; then
-                gh pr ready "${PR_NUMBER}" --repo "${REPO}" --undo
-              fi
-              ;;
-            unlabeled)
-              if [ "${IS_DRAFT}" = "true" ]; then
-                gh pr ready "${PR_NUMBER}" --repo "${REPO}"
-              fi
-              ;;
-          esac
+      - name: add label WIP
+        if: github.event.action == converted_to_draft
+        run: gh pr edit "${PR_NUMBER}" --repo "${REPO}" --add-label 'WIP'
+      - name: remove label WIP
+        if: github.event.action == ready_for_review
+        run: gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label 'WIP'
+      - name: mark as draft
+        if: github.event.action == labeled && github.event.label.name == 'WIP' && github.event.pull_request.draft != true
+        run: gh pr ready "${PR_NUMBER}" --repo "${REPO}" --undo
+      - name: mark ready to review
+        if: github.event.action == unlabeled && github.event.label.name == 'WIP' && github.event.pull_request.draft == true
+        run: gh pr ready "${PR_NUMBER}" --repo "${REPO}"
