@@ -70,7 +70,7 @@ noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ�
   (IsLocalRing.maximalIdeal R).depth M
 
 open Classical in
-lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
+private lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
     moduleDepth N M = Nat.find h := by
   apply le_antisymm
   · simp only [moduleDepth, sSup_le_iff, Set.mem_ofPred_eq]
