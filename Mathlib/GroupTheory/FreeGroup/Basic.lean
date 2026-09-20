@@ -216,7 +216,7 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
       | refl =>
         subst_vars
         cases eq₂
-        constructor
+        rfl
       | head h₁₂ h ih =>
         subst_vars
         obtain ⟨a, b⟩ := p
