@@ -267,7 +267,7 @@ the `H`-representation morphisms `B ⟶ coind φ A`.
 Note `Rep.resCoindHomEquiv.{t, u, v, w}` has the property that
 even with all inputs explicitly given, the first universe cannot be synthesized.
 -/
-@[simps -isSimp, pp_with_univ]
+@[simps, pp_with_univ]
 def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
     (res φ B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
   toFun f := resCoindToHom φ B A f
