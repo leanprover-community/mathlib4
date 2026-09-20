@@ -46,18 +46,10 @@ These structures are opposite to each other, see for instance `LeftPreLieRing.in
 satisfying certain axioms, such that `a * b = prec a b + succ a b` is associative. -/
 class NonUnitalDendriformSemiring (M) extends AddCommMonoid M, Mul M where
   /-- The "left" operation splitting the associative product -/
-  prec : M → M → M
+  prec : M →+ M →+ M
   /-- The "right" operation splitting the associative product -/
-  succ : M → M → M
+  succ : M →+ M →+ M
   mul_eq a b : a * b = succ a b + prec a b
-  add_prec a b c : prec (a + b) c = prec a c + prec b c
-  prec_add a b c : prec a (b + c) = prec a b + prec a c
-  add_succ a b c : succ (a + b) c = succ a c + succ b c
-  succ_add a b c : succ a (b + c) = succ a b + succ a c
-  prec_zero a : prec a 0 = 0
-  zero_prec a : prec 0 a = 0
-  succ_zero a : succ a 0 = 0
-  zero_succ a : succ 0 a = 0
   succ_succ_eq a b c : succ a (succ b c) = succ (succ a b + prec a b) c
   prec_succ_assoc a b c : prec (succ a b) c = succ a (prec b c)
   prec_prec_eq a b c : prec (prec a b) c = prec a (succ b c + prec b c)
@@ -85,8 +77,6 @@ class NonUnitalDendriformAlgebra (R M) [CommSemiring R] extends
 
 namespace NonUnitalDendriformSemiring
 
-attribute [simp] prec_zero zero_prec succ_zero zero_succ
-
 variable {M} [NonUnitalDendriformSemiring M]
 variable (a b c : M)
 
@@ -97,13 +87,12 @@ lemma prec_prec_eq_prec_mul : (a ≺ b) ≺ c = a ≺ (b * c) := by simp [mul_eq
 lemma succ_succ_eq_mul_succ : a ≻ (b ≻ c) = (a * b) ≻ c := by simp [mul_eq, succ_succ_eq]
 
 instance : NonUnitalSemiring M where
-  left_distrib a b c := by simpa [mul_eq, succ_add, prec_add] using by abel_nf
-  right_distrib a b c := by simpa [mul_eq, add_prec, add_succ] using by abel_nf
+  left_distrib a b c := by simpa [mul_eq] using by abel_nf
+  right_distrib a b c := by simpa [mul_eq] using by abel_nf
   zero_mul a := by simp [mul_eq]
   mul_zero a := by simp [mul_eq]
   mul_assoc a b c := by
-    simpa [mul_eq, add_succ, add_prec, prec_add, succ_add, succ_prec_assoc, prec_prec_eq_prec_mul,
-    succ_succ_eq_mul_succ] using by abel_nf
+    simpa [mul_eq, succ_prec_assoc, prec_prec_eq_prec_mul, succ_succ_eq_mul_succ] using by abel_nf
 
 end NonUnitalDendriformSemiring
 
@@ -117,16 +106,16 @@ variable {M} [NonUnitalDendriformRing M]
 variable (a b c : M)
 
 @[simp]
-lemma sub_prec : (a - b) ≺ c = a ≺ c - b ≺ c := by simp [sub_eq_add_neg, add_prec]
+lemma sub_prec : (a - b) ≺ c = a ≺ c - b ≺ c := by simp [sub_eq_add_neg]
 
 @[simp]
-lemma prec_sub : a ≺ (b - c) = a ≺ b - a ≺ c := by simp [sub_eq_add_neg, prec_add]
+lemma prec_sub : a ≺ (b - c) = a ≺ b - a ≺ c := by simp [sub_eq_add_neg]
 
 @[simp]
-lemma sub_succ : (a - b) ≻ c = a ≻ c - b ≻ c := by simp [sub_eq_add_neg, add_succ]
+lemma sub_succ : (a - b) ≻ c = a ≻ c - b ≻ c := by simp [sub_eq_add_neg]
 
 @[simp]
-lemma succ_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg, succ_add]
+lemma succ_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg]
 
 instance : NonUnitalRing M where
 
@@ -141,9 +130,9 @@ See note [reducible non-instances] -/
 abbrev toNonUnitalNonAssocRingLR : NonUnitalNonAssocRing M where
   mul := preLieLR
   left_distrib a b c := by
-    simpa [HMul.hMul, preLieLR, succ_add, add_succ, add_prec] using by abel_nf
+    simpa [HMul.hMul, preLieLR] using by abel_nf
   right_distrib a b c := by
-    simpa [HMul.hMul, preLieLR, add_succ, prec_add] using by abel_nf
+    simpa [HMul.hMul, preLieLR] using by abel_nf
   zero_mul a := by simp [HMul.hMul, preLieLR]
   mul_zero a := by simp [HMul.hMul, preLieLR]
 
@@ -152,17 +141,17 @@ See note [reducible non-instances] -/
 abbrev toLeftPreLieRing : LeftPreLieRing M where
   __ := toNonUnitalNonAssocRingLR
   assoc_symm' x y z := by
-    simpa [associator, HMul.hMul, Mul.mul, preLieLR, succ_add, prec_add, add_succ, add_prec,
-    succ_prec_assoc, prec_prec_eq, succ_succ_eq] using by abel_nf
+    simpa [associator, HMul.hMul, Mul.mul, preLieLR, prec_prec_eq, succ_succ_eq, succ_prec_assoc]
+      using by abel_nf
 
 /-- The antisymmetrization `a ≺ b - b ≻ a` yields a `NonUnitalNonAssocRing`.
 See note [reducible non-instances] -/
 abbrev toNonUnitalNonAssocRingRL : NonUnitalNonAssocRing M where
   mul := preLieRL
   left_distrib a b c := by
-    simpa [HMul.hMul, preLieRL, prec_add, add_succ] using by abel_nf
+    simpa [HMul.hMul, preLieRL] using by abel_nf
   right_distrib a b c := by
-    simpa [HMul.hMul, preLieRL, add_prec, succ_add] using by abel_nf
+    simpa [HMul.hMul, preLieRL] using by abel_nf
   zero_mul a := by simp [HMul.hMul, preLieRL]
   mul_zero a := by simp [HMul.hMul, preLieRL]
 
@@ -171,8 +160,8 @@ See note [reducible non-instances] -/
 abbrev toRightPreLieRing : RightPreLieRing M where
   __ := toNonUnitalNonAssocRingRL
   assoc_symm' x y z := by
-    simpa [associator_apply, HMul.hMul, Mul.mul, preLieRL, succ_add, prec_add, add_succ, add_prec,
-    succ_prec_assoc, succ_succ_eq, prec_prec_eq] using by abel_nf
+    simpa [associator_apply, HMul.hMul, Mul.mul, preLieRL, succ_prec_assoc, succ_succ_eq,
+    prec_prec_eq] using by abel_nf
 
 scoped[DendriformLR] attribute [instance] NonUnitalDendriformRing.toLeftPreLieRing
 scoped[DendriformRL] attribute [instance] NonUnitalDendriformRing.toRightPreLieRing
