@@ -73,10 +73,12 @@ section Preorder
 
 variable [Preorder α] (a b : α)
 
+variable {a b} in
 theorem isCompactElement_iff_of_le_of_ge (hab : a ≤ b) (hba : b ≤ a) :
     IsCompactElement a ↔ IsCompactElement b := by
   grind [IsCompactElement]
 
+variable {a} in
 theorem IsBot.isCompactElement (h : IsBot a) : IsCompactElement a :=
   fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, h x⟩
 
