@@ -180,7 +180,7 @@ theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
   simp
 
 lemma asModuleEquiv_apply_single_smul (t : k) (g : G) (v : ρ.asModule) :
-    ρ.asModuleEquiv (MonoidAlgebra.single (g : G) t • v) = t • ρ g (ρ.asModuleEquiv v) := by
+    ρ.asModuleEquiv (single (g : G) t • v) = t • ρ g (ρ.asModuleEquiv v) := by
   simp
 
 @[simp]
