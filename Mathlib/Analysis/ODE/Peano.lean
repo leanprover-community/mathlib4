@@ -36,11 +36,7 @@ integral equation.
 
 ## Implementation notes
 
-The proof first constructs the solution forward in time. The backward solution
-is obtained by reversing time, and the two solutions are then glued at the initial point.
-
-This file constructs and bounds Tonelli approximations, extracts a uniformly convergent subsequence,
-and passes to the limit to obtain a solution of the integral equation on `Icc t₀ tmax`.
+This file proves the integral and differential forms of Peano's theorem on `Icc tmin tmax`.
 
 We first construct a solution on `Icc t₀ tmax` using Tonelli approximations.
 
