@@ -472,7 +472,7 @@ lemma moduleDepth_quotient_isRegular_sequence_add_length_eq_moduleDepth (N M : M
   induction n generalizing M rs with
   | zero =>
     rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
-    simpa using moduleDepth_eq_of_iso_snd N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
+    simpa using moduleDepth_eq_of_iso_right N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
   | succ n hn =>
     match rs with
     | [] => simp at len
@@ -480,7 +480,7 @@ lemma moduleDepth_quotient_isRegular_sequence_add_length_eq_moduleDepth (N M : M
       simp only [Nat.cast_add, Nat.cast_one]
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1
-      rw [moduleDepth_eq_of_iso_snd N
+      rw [moduleDepth_eq_of_iso_right N
         (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x rs').toModuleIso,
         ← moduleDepth_quotSMulTop_succ_eq_moduleDepth N M x this (h x List.mem_cons_self),
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
