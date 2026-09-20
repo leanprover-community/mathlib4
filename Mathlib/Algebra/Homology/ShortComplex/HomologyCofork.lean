@@ -34,7 +34,6 @@ section
 
 variable [HasZeroMorphisms C] [HasKernels C] [HasCokernels C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The limit kernel fork expressing `cyclesFunctor C : ShortComplex C ⥤ C`
 as the kernel of `π₂Toπ₃ : π₂ ⟶ π₃`. -/
 @[implicit_reducible]
@@ -49,7 +48,6 @@ noncomputable def isLimitCyclesFunctorFork :
   evaluationJointlyReflectsLimits _
     (fun S ↦ (KernelFork.isLimitMapConeEquiv _ _).2 S.cyclesIsKernel)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cokernel cofork expressing `opcyclesFunctor C : ShortComplex C ⥤ C`
 as the cokernel of `π₁Toπ₂ : π₁ ⟶ π₂`. -/
 @[implicit_reducible]
@@ -70,7 +68,6 @@ section
 
 variable [HasZeroMorphisms C] [CategoryWithHomology C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cokernel cofork expressing `homologyFunctor C : ShortComplex C ⥤ C`
 as the cokernel of `toCyclesNatTrans C : π₁ ⟶ cyclesFunctor C`. -/
 @[implicit_reducible]
@@ -85,7 +82,6 @@ noncomputable def isColimitHomologyFunctorCofork :
   evaluationJointlyReflectsColimits _
     (fun S ↦ (CokernelCofork.isColimitMapCoconeEquiv _ _).2 S.homologyIsCokernel)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The limit kernel fork expressing `homologyFunctor C : ShortComplex C ⥤ C`
 as the kernel of `fromOpcyclesNatTrans C : opcyclesFunctor C ⟶ π₃`. -/
 @[implicit_reducible]
