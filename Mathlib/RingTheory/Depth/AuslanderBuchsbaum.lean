@@ -322,7 +322,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         have : IsLocalRing.depth S.X₂ ≠ 0 := by
           simpa only [IsLocalRing.depth, Ideal.depth, free_depth_eq_ring_depth S.X₂ _]
         simp only [IsLocalRing.depth, Ideal.depth, ne_eq,
-          moduleDepth_eq_zero_of_hom_nontrivial, not_nontrivial_iff_subsingleton] at this ⊢
+          moduleDepth_eq_zero_of_nontrivial_linearMap, not_nontrivial_iff_subsingleton] at this ⊢
         apply subsingleton_of_forall_eq 0 (fun F ↦ LinearMap.ext (fun x ↦ ?_))
         apply (LinearMap.ker f).subtype_injective
         rw [← LinearMap.comp_apply, Subsingleton.eq_zero ((LinearMap.ker f).subtype.comp F)]
@@ -333,10 +333,10 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         · apply (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl).mono_g
           apply (AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_src
           simpa [finte_free_ext_vanish_iff] using
-            ext_subsingleton_of_lt_moduleDepth (lt_of_le_of_lt (le_self_add) lt)
+            subsingleton_ext_of_lt_moduleDepth (lt_of_le_of_lt (le_self_add) lt)
         · apply (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl).epi_f
           apply (AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_tgt
-          simpa [finte_free_ext_vanish_iff] using ext_subsingleton_of_lt_moduleDepth lt
+          simpa [finte_free_ext_vanish_iff] using subsingleton_ext_of_lt_moduleDepth lt
       have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
         by_cases eqtop : IsLocalRing.depth S.X₁ = ⊤
         · --might be able to removed using Ischbeck theorem
@@ -346,7 +346,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
             have := ext_iso i (by simp [← h_ker', ENat.add_lt_top])
             rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
               (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
-            apply ext_subsingleton_of_lt_moduleDepth
+            apply subsingleton_ext_of_lt_moduleDepth
             exact lt_of_lt_of_eq (ENat.natCast_lt_top (i + 1)) eqtop.symm
           simp [M_depth_eqtop, eqtop]
         · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
