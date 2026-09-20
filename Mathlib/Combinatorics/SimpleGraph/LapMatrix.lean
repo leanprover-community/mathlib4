@@ -304,9 +304,6 @@ theorem dotProduct_mulVec_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictO
 /-- Every eigenvalue of the Laplacian of a finite simple graph (in a linearly ordered field)
 is at most `|V|`.
 
-Proof: Rayleigh quotient via `dotProduct_mulVec_lapMatrix_le_card`. This is a uniform
-upper bound; it does not assert that `|V|` lies in the spectrum.
-
 Stated via `Module.End.HasEigenvalue` of `toLin'` rather than `IsHermitian.eigenvalues`,
 to avoid importing `Analysis.Matrix.Spectrum`. -/
 theorem eigenvalues_lapMatrix_le_card [Field R] [LinearOrder R] [IsStrictOrderedRing R] {μ : R}
