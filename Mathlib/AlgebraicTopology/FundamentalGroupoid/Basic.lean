@@ -343,20 +343,21 @@ abbrev fromTop {X : TopCat.{u}} (x : X) : πₓ X := ⟨x⟩
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
+@[deprecated "Simply remove." (since := "2026-09-20")]
 abbrev toPath {X : TopCat.{u}} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
     Path.Homotopic.Quotient x₀.as x₁.as :=
   p
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
+@[deprecated "Simply remove." (since := "2026-09-20")]
 abbrev fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 
 /-- Two paths are equal in the fundamental groupoid if and only if they are homotopic. -/
-theorem fromPath_eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path x₀ x₁) :
-    fromPath (Path.Homotopic.Quotient.mk f) = fromPath (Path.Homotopic.Quotient.mk g) ↔
-      f.Homotopic g :=
-  ⟨fun ih ↦ Quotient.exact ih, fun h ↦ Quotient.sound h⟩
+theorem eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path x₀ x₁) :
+    Path.Homotopic.Quotient.mk f = .mk g ↔ f.Homotopic g :=
+  Quotient.eq
 
 lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
     eqToHom congr(mk $h) = (Path.Homotopic.Quotient.refl x₁).cast h rfl := by subst h; rfl

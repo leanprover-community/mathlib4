@@ -507,7 +507,7 @@ theorem existsUnique_continuousMap_lifts_of_range_le
   conv_rhs => rw [← eq.2 ⟨.reflTransSymm _⟩, mk_refl, monodromy_refl]
   rw [Path.map_symm, ← Path.map_trans]
   set pγγ' : Path a₀ a₀ := pγ.trans pγ'.symm
-  obtain ⟨⟨pΓΓ'⟩, eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
+  obtain ⟨⟨pΓΓ'⟩, eq⟩ := le ⟨.mk pγγ', rfl⟩
   rw [mapOfEq_apply, map_apply, ← mk_map] at eq
   exact eq ▸ Subtype.ext congr($(cov.monodromy_map <| .mk _))
 
@@ -666,10 +666,10 @@ theorem fundamentalGroupToMulOpposite_surjective [PathConnectedSpace E] :
       target' := by simp }
   set γ : Path x x := (Γ.map hp.continuous).cast
     (by simpa using e.property.symm) (by simpa using e'.property.symm)
-  use .fromPath ⟦γ⟧
+  use .mk γ
   rw [fundamentalGroupToMulOpposite_apply_eq_iff]
   change (e' : E) = _
-  rw [← hp.isCoveringMap.monodromy_eq_of_map_eq (γ := ⟦γ⟧) (Γ := ⟦Γ⟧) rfl]
+  rw [← hp.isCoveringMap.monodromy_eq_of_map_eq (γ := .mk γ) (Γ := .mk Γ) rfl]
 
 lemma fundamentalGroupToMulOpposite_injective [SimplyConnectedSpace E] :
     Injective (hp.fundamentalGroupToMulOpposite e) := by
