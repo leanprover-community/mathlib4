@@ -1,0 +1,56 @@
+name: Synchronise WIP label
+
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - converted_to_draft
+      - ready_for_review
+
+# Limit permissions for GH_TOKEN for the entire workflow
+permissions:
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  REPO: ${{ github.repository }}
+  ACTION: ${{ github.event.action }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  PR_DRAFT: ${{ github.event.pull_request.draft }}
+  CHANGED_LABEL: ${{ github.event.label.name }}
+  WIP_LABEL: "WIP"
+
+jobs:
+  sync-wip-label:
+    runs-on: ubuntu-latest
+    # Don't run on forks, where we wouldn't have permissions to add the label anyway.
+    # Also dont run on actions which aren't handled by this script
+    if: >
+      github.repository == 'leanprover-community/mathlib4' && (
+      github.event.action == 'converted_to_draft' ||
+      github.event.action == 'ready_for_review' ||
+      github.event.label.name == 'WIP')
+    steps:
+      - name: Sync draft state and WIP label
+        run: |
+          set -euo pipefail
+          case "$ACTION" in
+            converted_to_draft)
+              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --add-label "${WIP_LABEL}"
+              ;;
+            ready_for_review)
+              gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label "${WIP_LABEL}"
+              ;;
+            labeled)
+              if [ "${PR_DRAFT}" != "true" ]; then
+                gh pr ready "${PR_NUMBER}" --repo "${REPO}" --undo
+              fi
+              ;;
+            unlabeled)
+              if [ "${PR_DRAFT}" = "true" ]; then
+                gh pr ready "${PR_NUMBER}" --repo "${REPO}"
+              fi
+              ;;
+          esac
