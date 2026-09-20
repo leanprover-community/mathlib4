@@ -496,12 +496,6 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
 
-/-- Enables the old Python-based style linters. -/
--- TODO: these linters assume they are being run in `./scripts` and do not work on
--- downstream projects. Fix this before re-enabling them by default.
--- Or better yet: port them to Lean 4.
-public register_option linter.pythonStyle : Bool := { defValue := false }
-
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
 correct automatically fixable style errors if configured so.
