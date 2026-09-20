@@ -181,10 +181,10 @@ theorem separableClosure.normalClosure_eq_self :
       (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
-/-- Let $E / K / F$ be a tower of field extensions. If $K$ is separable over $F$,
-then the normal closure of $K$ over $F$ in $E$ is separable over $F$. -/
-instance IntermediateField.normalClosure.isSeparable [Algebra K E] [IsScalarTower F K E]
-    [Algebra.IsSeparable F K] : Algebra.IsSeparable F (normalClosure F K E) := by
+/-- If `K / F` is separable, then the normal closure of `K` over `F` in `E`
+is separable over `F`. -/
+instance IntermediateField.normalClosure.isSeparable [Algebra.IsSeparable F K] :
+    Algebra.IsSeparable F (normalClosure F K E) := by
   refine (le_separableClosure_iff _ _ _).mp <| normalClosure_le_iff.mpr fun f ↦ ?_
   have : Algebra.IsSeparable F f.fieldRange :=
     AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField f)
