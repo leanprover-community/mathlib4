@@ -18,7 +18,7 @@ env:
   REPO: ${{ github.repository }}
   ACTION: ${{ github.event.action }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
-  PR_DRAFT: ${{ github.event.pull_request.draft }}
+  IS_DRAFT: ${{ github.event.pull_request.draft }}
   CHANGED_LABEL: ${{ github.event.label.name }}
 
 jobs:
@@ -43,12 +43,12 @@ jobs:
               gh pr edit "${PR_NUMBER}" --repo "${REPO}" --remove-label 'WIP'
               ;;
             labeled)
-              if [ "${PR_DRAFT}" != "true" ]; then
+              if [ "${IS_DRAFT}" != "true" ]; then
                 gh pr ready "${PR_NUMBER}" --repo "${REPO}" --undo
               fi
               ;;
             unlabeled)
-              if [ "${PR_DRAFT}" = "true" ]; then
+              if [ "${IS_DRAFT}" = "true" ]; then
                 gh pr ready "${PR_NUMBER}" --repo "${REPO}"
               fi
               ;;
