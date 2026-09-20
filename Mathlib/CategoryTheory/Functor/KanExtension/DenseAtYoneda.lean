@@ -218,4 +218,3 @@ theorem Presheaf.final_toCostructuredArrow_comp_pre
     (Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext (fun i ↦ by simp)))
 
 end CategoryTheory
-
