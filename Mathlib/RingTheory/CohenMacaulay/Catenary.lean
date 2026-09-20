@@ -295,7 +295,7 @@ lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
   simpa [← len, ← ofList_height_eq_length_of_isWeaklyRegular' rs reg.1
     (fun r hr ↦ le_maximalIdeal netop (mem r hr))] using! Ideal.height_mono (span_le.mpr mem)
 
-lemma Ideal.exist_regular_sequence_length_eq_height [IsCohenMacaulayLocalRing R]
+lemma Ideal.exist_isRegular_length_eq_height [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) :
     ∃ rs : List R, IsRegular R rs ∧ (∀ r ∈ rs, r ∈ I) ∧ rs.length = I.height := by
   rcases Ideal.exists_spanRank_eq_and_height_eq I netop with ⟨J, le, rank, ht⟩
@@ -320,12 +320,12 @@ lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : 
   apply le_antisymm (I.depth_le_height netop)
   rw [IsLocalRing.ideal_depth_eq_sSup_length_isRegular I netop]
   apply le_sSup
-  rcases Ideal.exist_regular_sequence_length_eq_height I netop with ⟨rs, reg, mem, len⟩
+  rcases Ideal.exist_isRegular_length_eq_height I netop with ⟨rs, reg, mem, len⟩
   use rs
 
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim_of_isPrime [IsCohenMacaulayLocalRing R]
     (p : Ideal R) [p.IsPrime] : p.height + ringKrullDim (R ⧸ p) = ringKrullDim R := by
-  rcases Ideal.exist_regular_sequence_length_eq_height p IsPrime.ne_top' with ⟨rs, reg, mem, len⟩
+  rcases Ideal.exist_isRegular_length_eq_height p IsPrime.ne_top' with ⟨rs, reg, mem, len⟩
   have mem' := (fun r hr ↦ le_maximalIdeal_of_isPrime p (mem r hr))
   have CM := (quotient_regular_isCohenMacaulay_iff_isCohenMacaulay (ModuleCat.of R R) rs reg).mp
     ((isCohenMacaulayLocalRing_iff R).mp ‹_›)
