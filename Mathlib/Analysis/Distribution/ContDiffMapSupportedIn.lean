@@ -728,8 +728,10 @@ protected noncomputable def mkCLM (A : 𝓓^{n₁}_{K₁}(E, F) → E → F')
       map_smul' c f := ext (hsmul c f) }
   { toLinearMap := Φ
     cont := show Continuous Φ by
-      refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
-        (ContDiffMapSupportedIn.withSeminorms ..) _ (.of_real fun i ↦ ?_)
+      apply continuous_of_isBoundedBy (ContDiffMapSupportedIn.withSeminorms ..)
+        (ContDiffMapSupportedIn.withSeminorms ..)
+      rw [SeminormFamily.isBoundedBy_iff_exists_real]
+      intro i
       by_cases hi : i ≤ n₂
       · obtain ⟨s, C, hC, h⟩ := hbound i hi
         exact ⟨s, C, fun f ↦ ((Φ f).seminorm_le_iff 𝕜 (mul_nonneg hC (apply_nonneg _ _)) i).2
@@ -749,15 +751,15 @@ protected noncomputable def mkCLMtoNormedSpace {G : Type*} [NormedAddCommGroup G
   { toLinearMap := Φ
     cont := show Continuous Φ by
       obtain ⟨s, C, hC, h⟩ := hbound
-      exact continuous_normedSpace_rng G (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K)
-        Φ ⟨s, ⟨C, hC⟩, h⟩ }
+      exact continuous_of_isBoundedBy (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K)
+        (norm_withSeminorms 𝕜 _) Φ fun _ ↦ ⟨s, ⟨C, hC⟩, h⟩ }
 
 /-- The inclusion of the space `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
   toLinearMap := toBoundedContinuousFunctionLM 𝕜
   cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
-    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
+    refine continuous_of_isBoundedBy (ContDiffMapSupportedIn.withSeminorms ..)
       (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
     simp [norm_toBoundedContinuousFunction 𝕜 f]
 
@@ -806,9 +808,12 @@ noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F �
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}_{K}(E, F') where
   toLinearMap := postcompLM T
   cont := show Continuous (postcompLM T) by
-    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
-      (ContDiffMapSupportedIn.withSeminorms ..) _ (.of_real fun i ↦ ⟨{i}, ‖T‖, fun f ↦ ?_⟩)
-    simpa using seminorm_postcompLM_le 𝕜 T f
+    apply continuous_of_isBoundedBy (ContDiffMapSupportedIn.withSeminorms ..)
+      (ContDiffMapSupportedIn.withSeminorms ..)
+    rw [SeminormFamily.isBoundedBy_iff_exists_real]
+    intro i
+    use {i}, ‖T‖
+    simpa using seminorm_postcompLM_le 𝕜 T
 
 @[simp]
 lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
@@ -845,7 +850,7 @@ noncomputable def monoCLM :
     𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
   toLinearMap := monoLM 𝕜
   cont := show Continuous (monoLM 𝕜) by
-    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+    refine continuous_of_isBoundedBy (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, 1, fun f ↦ ?_⟩)
     simpa using seminorm_monoLM_le 𝕜 f
 
@@ -887,7 +892,7 @@ noncomputable def fderivCLM :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
   toLinearMap := fderivLM 𝕜 n k
   cont := show Continuous (fderivLM 𝕜 n k) by
-    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
+    refine continuous_of_isBoundedBy (ContDiffMapSupportedIn.withSeminorms ..)
       (ContDiffMapSupportedIn.withSeminorms ..) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
     simpa using seminorm_fderivLM_le 𝕜 f
 
