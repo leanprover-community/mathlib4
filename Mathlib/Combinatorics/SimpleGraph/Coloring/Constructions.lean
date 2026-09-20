@@ -115,7 +115,7 @@ def cycleGraph.tricoloring (n : ℕ) : Coloring (cycleGraph n) (Fin 3) :=
     | n + 2 =>
       split_ifs with hu hv
       · simp [Fin.eq_mk_iff_val_eq.mpr hu, Fin.eq_mk_iff_val_eq.mpr hv] at hadj
-      · exact .symm <| Fin.ne_of_lt <| Fin.mk_lt_of_lt_val (v.val.mod_lt Nat.zero_lt_two :)
+      · exact Fin.ne_of_gt <| Fin.mk_lt_of_lt_val (v.val.mod_lt Nat.zero_lt_two :)
       · exact Fin.ne_of_lt <| Fin.mk_lt_of_lt_val (u.val.mod_lt Nat.zero_lt_two :)
       · have h2 (x y : ℕ) : x % 2 = y % 2 ↔ (x % 2 = 0 ↔ y % 2 = 0) := by lia
         have hu' : u.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
