@@ -180,7 +180,7 @@ lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : 
     IsLocalRing.depth M = IsLocalRing.depth M' :=
   (maximalIdeal R).depth_eq_of_iso e
 
-lemma moduleDepth_eq_zero_of_nontrivial_linearMap (N M : ModuleCat.{v} R) :
+lemma moduleDepth_eq_zero_iff_nontrivial_linearMap (N M : ModuleCat.{v} R) :
     moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [moduleDepth] at h
