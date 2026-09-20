@@ -255,6 +255,9 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
     (Representation.mem_coindV φ A.ρ _).mpr <| fun g h => by
       simpa using hom_comm_apply f g ((B.ρ h) b), fun _ ↦ by ext; simp⟩
 
+lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
+    (i : H) : (resCoindToHom φ B A f).hom c i = (Hom.hom f) ((B.ρ i) c) := rfl
+
 attribute [pp_with_univ] Rep coind
 
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
