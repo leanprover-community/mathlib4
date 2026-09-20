@@ -78,9 +78,7 @@ lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N 
     exact not_nontrivial_iff_subsingleton.mpr (hn (Nat.find h) (not_le.mp gt))
   · simp only [moduleDepth]
     apply le_sSup
-    simp only [Set.mem_ofPred_eq, Nat.cast_lt, Nat.lt_find_iff]
-    intro i hi
-    exact not_nontrivial_iff_subsingleton.mp (hi i (le_refl i))
+    simpa using fun i hi ↦ not_nontrivial_iff_subsingleton.mp (hi i (le_refl i))
 
 lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M = ⊤ ↔ ∀ i, Subsingleton (Ext N M i) := by
@@ -117,9 +115,8 @@ lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n
     refine ⟨h ▸ Nat.find_spec exist, fun i hi ↦ ?_⟩
     exact not_nontrivial_iff_subsingleton.mp (Nat.find_min exist (lt_of_lt_of_eq hi h.symm))
   · have exist : ∃ n, Nontrivial (Ext N M n) := by use n
-    simp only [moduleDepth_eq_find _ _ exist, Nat.cast_inj, Nat.find_eq_iff, ntr, true_and]
-    intro i hi
-    exact not_nontrivial_iff_subsingleton.mpr (h i hi)
+    simpa [moduleDepth_eq_find _ _ exist, Nat.find_eq_iff, ntr] using
+      fun i hi ↦ not_nontrivial_iff_subsingleton.mpr (h i hi)
 
 lemma ext_subsingleton_of_lt_moduleDepth {N M : ModuleCat.{v} R} {i : ℕ}
     (lt : i < moduleDepth N M) : Subsingleton (Ext N M i) := by
@@ -193,14 +190,13 @@ lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
       by_contra mem
       absurd le_sSup mem
       simp [h]
-    simp only [Set.mem_ofPred_eq, Nat.cast_lt_one, forall_eq,
-      not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr] at this
-    exact (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mp this
+    simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr,
+      (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr] using this
   · apply nonpos_iff_eq_zero.mp (sSup_le (fun n mem ↦ ?_))
     by_contra pos
     absurd mem 0 (lt_of_not_ge pos)
-    simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr]
-      using (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mpr h
+    simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr,
+      (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr] using h
 
 lemma moduleDepth_ge_min_of_shortExact_snd_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
