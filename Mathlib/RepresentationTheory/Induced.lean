@@ -55,34 +55,40 @@ variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B :
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `k`-module `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.
-See `Representation.ind` for the induced `H`-representation on `IndV φ ρ`. -/
-abbrev IndV := Coinvariants (V := TensorProduct k k[H] A)
+See `Representation.ind` for the induced `H`-representation on `indV φ ρ`. -/
+abbrev indV := Coinvariants (V := TensorProduct k k[H] A)
   (Representation.tprod ((leftRegular k H).comp φ) ρ)
+
+@[deprecated (sin := "2026-09-20")] alias IndV := indV
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `H → A →ₗ[k] (k[H] ⊗[k] A)_G` sending `h, a` to `⟦h ⊗ₜ a⟧`. -/
-noncomputable abbrev IndV.mk (h : H) : A →ₗ[k] IndV φ ρ :=
+noncomputable abbrev indV.mk (h : H) : A →ₗ[k] indV φ ρ :=
   Coinvariants.mk _ ∘ₗ TensorProduct.mk k _ _ (.single h 1)
 
+@[deprecated (sin := "2026-09-20")] alias IndV.mk := indV.mk
+
 @[ext]
-lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
-    (hfg : ∀ h : H, f ∘ₗ IndV.mk φ ρ h = g ∘ₗ IndV.mk φ ρ h) : f = g :=
+lemma indV.hom_ext {f g : indV φ ρ →ₗ[k] B}
+    (hfg : ∀ h : H, f ∘ₗ indV.mk φ ρ h = g ∘ₗ indV.mk φ ρ h) : f = g :=
   Coinvariants.hom_ext <| TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
     LinearMap.ext_ring <| hfg h
+
+@[deprecated (sin := "2026-09-20")] alias IndV.hom_ext := indV.hom_ext
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
 `(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
 @[simps]
-noncomputable def ind : Representation k H (IndV φ ρ) where
+noncomputable def ind : Representation k H (indV φ ρ) where
   toFun h :=
     Coinvariants.map _ _ ⟨(MonoidAlgebra.mapDomainLinearMap k k fun x => x * h⁻¹).rTensor _,
     fun _ => by ext; simp [mul_assoc]⟩
   map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp [IndV, mul_assoc]
+  map_mul' _ _ := by ext; simp [indV, mul_assoc]
 
 lemma ind_mk (h₁ h₂ : H) (a : A) :
-    ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
+    ind φ ρ h₁ (indV.mk _ _ h₂ a) = indV.mk _ _ (h₂ * h₁⁻¹) a := by
   simp
 
 end Representation
@@ -131,9 +137,9 @@ the `G`-representation morphisms `A ⟶ B`. -/
 @[simps]
 noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) where
-  toFun f := Rep.ofHom ⟨f.hom.toLinearMap ∘ₗ IndV.mk φ A.ρ 1, fun g ↦ by
+  toFun f := Rep.ofHom ⟨f.hom.toLinearMap ∘ₗ indV.mk φ A.ρ 1, fun g ↦ by
     ext x
-    have := (hom_comm_apply f (φ g) (IndV.mk φ A.ρ 1 x)).symm
+    have := (hom_comm_apply f (φ g) (indV.mk φ A.ρ 1 x)).symm
     simp_all [← Coinvariants.mk_inv_tmul] ⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -146,7 +152,7 @@ noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u
       simp [ofMulAction_single, mul_inv_rev, hom_comm_apply f g], fun g ↦ by ext; simp⟩
   left_inv f := by
     ext h a
-    simpa using (hom_comm_apply f h⁻¹ (IndV.mk φ A.ρ 1 a)).symm
+    simpa using (hom_comm_apply f h⁻¹ (indV.mk φ A.ρ 1 a)).symm
   right_inv _ := by ext; simp
 
 variable (k) in
@@ -195,7 +201,7 @@ noncomputable def coinvariantsTensorIndHom :
 set_option backward.defeqAttrib.useBackward true in
 variable {A B} in
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
-    coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
+    coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (indV.mk φ _ h x) y) =
       coinvariantsTensorMk _ _ x (B.ρ h y) := by
   simp [coinvariantsTensorIndHom, coinvariantsTensorMk]
 
@@ -207,12 +213,12 @@ noncomputable def coinvariantsTensorIndInv :
     ((coinvariantsTensor k G).obj A).obj (res φ B) ⟶
       ((coinvariantsTensor k H).obj (ind φ A)).obj B :=
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
-    (coinvariantsTensorMk (ind (k := k) φ A) B) ∘ₗ IndV.mk _ _ 1) fun s ↦ by
+    (coinvariantsTensorMk (ind (k := k) φ A) B) ∘ₗ indV.mk _ _ 1) fun s ↦ by
     simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V, tensor_ρ, tprod_apply,
       MonoidHom.coe_comp, Function.comp_apply]
     ext x y
     simpa [Coinvariants.mk_eq_iff, coinvariantsTensorMk] using
-      Coinvariants.mem_ker_of_eq (φ s) (IndV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _ <| by
+      Coinvariants.mem_ker_of_eq (φ s) (indV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _ <| by
       simp [← Coinvariants.mk_inv_tmul]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -220,7 +226,7 @@ variable {A B} in
 lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
     coinvariantsTensorIndInv φ A B (Coinvariants.mk
       (A.ρ.tprod (Rep.ρ (res φ B))) <| x ⊗ₜ y) =
-      coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := by
+      coinvariantsTensorMk _ _ (indV.mk φ _ 1 x) y := by
   simp [coinvariantsTensorIndInv, coinvariantsTensorMk]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -237,7 +243,7 @@ noncomputable def coinvariantsTensorIndIso :
     ext h a b
     simpa [coinvariantsTensorIndInv, coinvariantsTensorMk,
       coinvariantsTensorIndHom, Coinvariants.mk_eq_iff] using
-        Coinvariants.mem_ker_of_eq h (IndV.mk φ _ h a ⊗ₜ[k] b) _ <| by simp
+        Coinvariants.mem_ker_of_eq h (indV.mk φ _ h a ⊗ₜ[k] b) _ <| by simp
   inv_hom_id := by
     ext
     simp [coinvariantsTensorIndInv, coinvariantsTensorMk, coinvariantsTensorIndHom]
