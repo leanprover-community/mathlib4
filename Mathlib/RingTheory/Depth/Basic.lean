@@ -165,7 +165,7 @@ lemma moduleDepth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
   | top => simp
   | coe n => simpa using this n
 
-lemma moduleDepth_eq_of_iso_fst (M : ModuleCat.{v} R) {N N' : ModuleCat.{v} R} (e : N ≅ N') :
+lemma moduleDepth_eq_of_iso_left (M : ModuleCat.{v} R) {N N' : ModuleCat.{v} R} (e : N ≅ N') :
     moduleDepth N M = moduleDepth N' M := by
   simp only [moduleDepth]
   congr
@@ -173,7 +173,7 @@ lemma moduleDepth_eq_of_iso_fst (M : ModuleCat.{v} R) {N N' : ModuleCat.{v} R} (
   exact forall₂_congr fun i _ ↦
     (((extFunctor.{v} i).mapIso e.symm.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr
 
-lemma moduleDepth_eq_of_iso_snd (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
+lemma moduleDepth_eq_of_iso_right (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
     moduleDepth N M = moduleDepth N M' := by
   simp only [moduleDepth]
   congr
@@ -183,7 +183,7 @@ lemma moduleDepth_eq_of_iso_snd (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (
 
 lemma Ideal.depth_eq_of_iso (I : Ideal R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
     I.depth M = I.depth M' :=
-  moduleDepth_eq_of_iso_snd (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) e
+  moduleDepth_eq_of_iso_right (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) e
 
 lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : M ≅ M') :
     IsLocalRing.depth M = IsLocalRing.depth M' :=
