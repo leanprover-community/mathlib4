@@ -188,8 +188,8 @@ variable (k S)
 noncomputable def indCoindNatIso :
     indFunctor k S.subtype ≅ coindFunctor.{max w u} k S.subtype :=
   NatIso.ofComponents (fun (A : Rep k S) => indCoindIso A) fun f => by
-    simp only [indFunctor_obj, coindFunctor_obj]
-    ext
+    simp only [indFunctor_obj, coindFunctor_obj, indFunctor_map, coindFunctor_map]
+    ext a g
     simp [indCoindIso, indToCoindAux_comm]
 
 /-- Given a finite index subgroup `S ≤ G`, `Ind_S^G` is right adjoint to the restriction functor
