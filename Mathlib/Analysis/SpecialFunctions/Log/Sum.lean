@@ -25,6 +25,8 @@ number theory (for instance in the proof of Mertens' theorems).
 * `le_sum_log_nat`: a sharper lower bound `N * log N - N ≤ ∑ n ∈ Ioc 0 N, log n` via Stirling.
 -/
 
+public section
+
 open Nat hiding log log_pos
 open Finset intervalIntegral MeasureTheory
 
