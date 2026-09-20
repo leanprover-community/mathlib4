@@ -59,14 +59,14 @@ See `Representation.ind` for the induced `H`-representation on `indV φ ρ`. -/
 abbrev indV := Coinvariants (V := TensorProduct k k[H] A)
   (Representation.tprod ((leftRegular k H).comp φ) ρ)
 
-@[deprecated (sin := "2026-09-20")] alias IndV := indV
+@[deprecated (since := "2026-09-20")] alias IndV := indV
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `H → A →ₗ[k] (k[H] ⊗[k] A)_G` sending `h, a` to `⟦h ⊗ₜ a⟧`. -/
 noncomputable abbrev indV.mk (h : H) : A →ₗ[k] indV φ ρ :=
   Coinvariants.mk _ ∘ₗ TensorProduct.mk k _ _ (.single h 1)
 
-@[deprecated (sin := "2026-09-20")] alias IndV.mk := indV.mk
+@[deprecated (since := "2026-09-20")] alias IndV.mk := indV.mk
 
 @[ext]
 lemma indV.hom_ext {f g : indV φ ρ →ₗ[k] B}
@@ -74,7 +74,7 @@ lemma indV.hom_ext {f g : indV φ ρ →ₗ[k] B}
   Coinvariants.hom_ext <| TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
     LinearMap.ext_ring <| hfg h
 
-@[deprecated (sin := "2026-09-20")] alias IndV.hom_ext := indV.hom_ext
+@[deprecated (since := "2026-09-20")] alias IndV.hom_ext := indV.hom_ext
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
 `(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
