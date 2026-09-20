@@ -127,7 +127,7 @@ def cycleGraph.tricoloring (n : ℕ) : Coloring (cycleGraph n) (Fin 3) :=
 theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
   apply cycleGraph.tricoloring n |>.colorable.chromaticNumber_le.antisymm
-  have hn3 : n - 3 + 3 = n := by grind
+  have hn3 : n - 3 + 3 = n := by lia
   rw [Fintype.card_fin, Nat.cast_ofNat, ← hn3]
   apply cycleGraph.cycle (n - 3) |>.three_le_chromaticNumber_of_odd_loop
   rwa [cycleGraph.length_cycle, hn3]
