@@ -747,7 +747,7 @@ def fromRelOrderIso : { r : α → α → Prop // Std.Symm r } ≃o Set (Sym2 α
   map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-@[deprecated fromRelOrderIso (since := "2026-03-11")]
+@[deprecated fromRelOrderIso +typeChanged (since := "2026-03-11")]
 def fromRelOrderEmbedding : { r : α → α → Prop // Std.Symm r } ↪o Set (Sym2 α) :=
   fromRelOrderIso α |>.toOrderEmbedding
 
@@ -844,7 +844,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]
-          first | done | constructor }
+          first | done | apply List.Perm.swap }
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -854,7 +854,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
       (by
         rintro _ _ ⟨_⟩
-        · constructor; apply List.Perm.refl
+        · apply List.Perm.cons; apply List.Perm.refl
         apply List.Perm.swap'
         rfl)
   invFun :=
@@ -1010,7 +1010,7 @@ variable {s : Set α}
 /--
 For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
 -/
-def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) inferInstance
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
 

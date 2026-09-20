@@ -493,7 +493,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
@@ -731,7 +731,7 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
   obtain rfl | hs := Set.eq_empty_or_nonempty s
   · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_notMem] using h
     rfl
-  refine le_antisymm ?_ (by gcongr; exacts [ht, hs.image f])
+  refine le_antisymm ?_ (by gcongr; exact hs.image f)
   refine le_csInf ((hs.mono hst).image f) ?_
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro a ha

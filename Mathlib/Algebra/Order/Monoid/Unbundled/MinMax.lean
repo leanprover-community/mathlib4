@@ -25,7 +25,7 @@ variable [LinearOrder α] [CommSemigroup β]
 lemma fn_min_mul_fn_max (f : α → β) (a b : α) : f (min a b) * f (max a b) = f a * f b := by
   grind
 
-@[to_additive]
+@[to_additive (attr := to_dual existing)]
 lemma fn_max_mul_fn_min (f : α → β) (a b : α) : f (max a b) * f (min a b) = f a * f b := by
   grind
 
@@ -34,7 +34,7 @@ variable [CommSemigroup α]
 @[to_additive (attr := simp)]
 lemma min_mul_max (a b : α) : min a b * max a b = a * b := fn_min_mul_fn_max id _ _
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, to_dual existing)]
 lemma max_mul_min (a b : α) : max a b * min a b = a * b := fn_max_mul_fn_min id _ _
 
 end CommSemigroup
@@ -55,7 +55,7 @@ variable [MulLeftMono α]
 theorem min_mul_mul_left (a b c : α) : min (a * b) (a * c) = a * min b c :=
   (monotone_id.const_mul' a).map_min.symm
 
-@[to_additive]
+@[to_additive (attr := to_dual existing)]
 theorem max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
   (monotone_id.const_mul' a).map_max.symm
 
@@ -69,37 +69,37 @@ variable [MulRightMono α]
 theorem min_mul_mul_right (a b c : α) : min (a * c) (b * c) = min a b * c :=
   (monotone_id.mul_const' c).map_min.symm
 
-@[to_additive]
+@[to_additive (attr := to_dual existing)]
 theorem max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
   (monotone_id.mul_const' c).map_max.symm
 
 end Right
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem lt_or_lt_of_mul_lt_mul [MulLeftMono α] [MulRightMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ < a₂ * b₂ → a₁ < a₂ ∨ b₁ < b₂ := by
   contrapose!
   exact fun h => mul_le_mul' h.1 h.2
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem le_or_lt_of_mul_le_mul [MulLeftMono α] [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ < b₂ := by
   contrapose!
   exact fun h => mul_lt_mul_of_lt_of_le h.1 h.2
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem lt_or_le_of_mul_le_mul [MulLeftStrictMono α] [MulRightMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ < a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
   exact fun h => mul_lt_mul_of_le_of_lt h.1 h.2
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem le_or_le_of_mul_le_mul [MulLeftStrictMono α] [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
   exact fun h => mul_lt_mul_of_lt_of_lt h.1 h.2
 
-@[to_additive]
+@[to_additive (attr := to_dual self)]
 theorem mul_lt_mul_iff_of_le_of_le [MulLeftMono α]
     [MulRightMono α] [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂)

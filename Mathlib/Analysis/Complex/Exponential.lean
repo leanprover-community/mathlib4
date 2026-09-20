@@ -642,8 +642,7 @@ lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
 
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-    rwa [Nat.cast_zero] at ht'
+  · simp_all
   calc
     (1 - t / n) ^ n ≤ rexp (-(t / n)) ^ n := by
       gcongr
@@ -682,7 +681,7 @@ lemma exp_le_two_add_div_two_sub {x : ℝ} (hx : 0 ≤ x) (hx' : x < 2) :
 
 theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
     (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
-  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+  (Finset.prod_le_prod₀ (fun i _ ↦ add_nonneg zero_le_one (hf i))
     fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
     (exp_sum s f).symm.le
 
