@@ -197,9 +197,9 @@ lemma moduleDepth_eq_zero_of_nontrivial_linearMap (N M : ModuleCat.{v} R) :
     simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr,
       (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr] using h
 
-lemma moduleDepth_min_le_of_shortExact_snd_fst
-    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
-    (N : ModuleCat.{v} R) : moduleDepth S.X₁ N ⊓ moduleDepth S.X₃ N ≤ moduleDepth S.X₂ N:= by
+lemma moduleDepth_min_fst_trd_le_snd_left
+    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
+    moduleDepth S.X₁ N ⊓ moduleDepth S.X₃ N ≤ moduleDepth S.X₂ N := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi1 hi3
@@ -211,9 +211,9 @@ lemma moduleDepth_min_le_of_shortExact_snd_fst
     (Ext.contravariant_sequence_exact₂' hS N i)
     (zero3.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
 
-lemma moduleDepth_min_le_of_shortExact_fst_fst
-    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
-    (N : ModuleCat.{v} R) : moduleDepth S.X₂ N ⊓ (moduleDepth S.X₃ N - 1) ≤ moduleDepth S.X₁ N := by
+lemma moduleDepth_min_snd_trd_sub_one_le_fst_left
+    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
+    moduleDepth S.X₂ N ⊓ (moduleDepth S.X₃ N - 1) ≤ moduleDepth S.X₁ N := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi3
@@ -226,9 +226,9 @@ lemma moduleDepth_min_le_of_shortExact_fst_fst
     (Ext.contravariant_sequence_exact₁' hS N i (i + 1) (add_comm _ _))
     (zero2.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
 
-lemma moduleDepth_min_le_of_shortExact_trd_fst
-    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
-    (N : ModuleCat.{v} R) : moduleDepth S.X₂ N ⊓ (moduleDepth S.X₁ N + 1) ≤ moduleDepth S.X₃ N := by
+lemma moduleDepth_min_snd_fst_add_one_le_trd_left
+    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
+    moduleDepth S.X₂ N ⊓ (moduleDepth S.X₁ N + 1) ≤ moduleDepth S.X₃ N := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi1
@@ -247,9 +247,9 @@ lemma moduleDepth_min_le_of_shortExact_trd_fst
       (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
 
 @[stacks 00LX "(1)"]
-lemma moduleDepth_min_le_of_shortExact_snd_snd
-    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
-    (hS : S.ShortExact) : moduleDepth N S.X₁ ⊓ moduleDepth N S.X₃ ≤ moduleDepth N S.X₂ := by
+lemma moduleDepth_min_fst_trd_le_snd_right
+    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
+    moduleDepth N S.X₁ ⊓ moduleDepth N S.X₃ ≤ moduleDepth N S.X₂ := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi1 hi3
@@ -262,9 +262,9 @@ lemma moduleDepth_min_le_of_shortExact_snd_snd
     (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
 
 @[stacks 00LX "(3)"]
-lemma moduleDepth_min_le_of_shortExact_fst_snd
-    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
-    (hS : S.ShortExact) : moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₃ + 1) ≤ moduleDepth N S.X₁:= by
+lemma moduleDepth_min_snd_trd_add_one_le_fst_right
+    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
+    moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₃ + 1) ≤ moduleDepth N S.X₁ := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi3
@@ -283,9 +283,9 @@ lemma moduleDepth_min_le_of_shortExact_fst_snd
       (zero3.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
 
 @[stacks 00LX "(2)"]
-lemma moduleDepth_min_le_of_shortExact_trd_snd
-    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
-    (hS : S.ShortExact) : moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₁ - 1) ≤ moduleDepth N S.X₃ := by
+lemma moduleDepth_min_snd_fst_sub_one_le_trd_right
+    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
+    moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₁ - 1) ≤ moduleDepth N S.X₃ := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi1
