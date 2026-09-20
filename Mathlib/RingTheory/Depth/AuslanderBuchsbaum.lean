@@ -322,7 +322,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         have : IsLocalRing.depth S.X₂ ≠ 0 := by
           simpa only [IsLocalRing.depth, Ideal.depth, free_depth_eq_ring_depth S.X₂ _]
         simp only [IsLocalRing.depth, Ideal.depth, ne_eq,
-          moduleDepth_eq_zero_of_nontrivial_linearMap, not_nontrivial_iff_subsingleton] at this ⊢
+          moduleDepth_eq_zero_iff_nontrivial_linearMap, not_nontrivial_iff_subsingleton] at this ⊢
         apply subsingleton_of_forall_eq 0 (fun F ↦ LinearMap.ext (fun x ↦ ?_))
         apply (LinearMap.ker f).subtype_injective
         rw [← LinearMap.comp_apply, Subsingleton.eq_zero ((LinearMap.ker f).subtype.comp F)]
