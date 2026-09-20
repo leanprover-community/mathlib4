@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.CharP.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.Echelon.Core
 
 /-!
 # The rational model for the Bareiss elimination
