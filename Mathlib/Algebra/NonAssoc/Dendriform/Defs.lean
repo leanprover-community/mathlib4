@@ -60,20 +60,19 @@ infixr:75 " ≻ " => NonUnitalDendriformSemiring.succ
 infixr:75 " ≺ " => NonUnitalDendriformSemiring.prec
 
 /-- A dendriform ring has a `Neg` instance compatible with both `≺` and `≻`. -/
-class NonUnitalDendriformRing (M) extends NonUnitalDendriformSemiring M, AddCommGroup M where
-  prec_neg a b : prec a (-b) = - prec a b
-  neg_prec a b : prec (-a) b = - prec a b
-  succ_neg a b : succ a (-b) = - succ a b
-  neg_succ a b : succ (-a) b = - succ a b
+class NonUnitalDendriformRing (M) extends NonUnitalDendriformSemiring M,
+  AddCommGroup M where
 
 /-- A dendriform algebra is a `DendriformSemiring` with a `Module` structure compatible with `≺` and
 `≻`. -/
-class NonUnitalDendriformAlgebra (R M) [CommSemiring R] extends
-    NonUnitalDendriformSemiring M, Module R M where
-  smul_prec (r : R) (a b : M) : (r • a) ≺ b = r • a ≺ b
-  prec_smul (r : R) (a b : M) : a ≺ (r • b) = r • a ≺ b
-  smul_succ (r : R) (a b : M) : (r • a) ≻ b = r • a ≻ b
-  succ_smul (r : R) (a b : M) : a ≻ (r • b) = r • a ≻ b
+class NonUnitalDendriformAlgebra (R M) [CommSemiring R] extends NonUnitalSemiring M,
+    Module R M where
+  succ : M →ₗ[R] M →ₗ[R] M
+  prec : M →ₗ[R] M →ₗ[R] M 
+  mul_eq a b : a * b = succ a b + prec a b
+  succ_succ_eq a b c : succ a (succ b c) = succ (succ a b + prec a b) c
+  succ_prec_assoc a b c : succ a (prec b c) = prec (succ a b) c
+  prec_prec_eq a b c : prec (prec a b) c = prec a (succ a b + prec a b)
 
 namespace NonUnitalDendriformSemiring
 
@@ -99,8 +98,6 @@ end NonUnitalDendriformSemiring
 namespace NonUnitalDendriformRing
 
 open NonUnitalDendriformSemiring
-
-attribute [simp] prec_neg neg_prec succ_neg neg_succ
 
 variable {M} [NonUnitalDendriformRing M]
 variable (a b c : M)
