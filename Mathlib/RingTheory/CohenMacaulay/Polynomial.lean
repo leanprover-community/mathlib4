@@ -34,7 +34,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
   have qle : q ≤ p := by simpa [q, ← max] using map_comap_le
   have cm := (isCohenMacaulayLocalRing_def R).mp ‹_›
   have ne := (depth_ne_top (ModuleCat.of R R)).lt_top
-  rw [depth_eq_sSup_length_regular] at cm ne ⊢
+  rw [depth_eq_sSup_length_isRegular] at cm ne ⊢
   rcases @ENat.sSup_mem_of_nonempty_of_lt_top _ (by
     use 0, []
     simpa using IsRegular.nil _ _ ) ne with ⟨rs, reg, mem, len⟩
