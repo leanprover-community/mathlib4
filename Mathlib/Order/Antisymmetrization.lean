@@ -459,11 +459,11 @@ theorem Maximal.antisymmRel_of_le (ha : Maximal P a) (hb : P b) (hle : a ≤ b) 
 
 theorem Minimal.antisymmRel_of_symmGen (ha : Minimal P a) (hb : Minimal P b)
     (hab : SymmGen (· ≤ ·) a b) : AntisymmRel (· ≤ ·) a b :=
-  ⟨hab.elim id (ha.le_of_le hb.prop), hab.elim (hb.le_of_le ha.prop) id⟩
+  hab.elim (fun h ↦ (hb.antisymmRel_of_ge ha.prop h).symm) (ha.antisymmRel_of_ge hb.prop)
 
 theorem Maximal.antisymmRel_of_symmGen (ha : Maximal P a) (hb : Maximal P b)
     (hab : SymmGen (· ≤ ·) a b) : AntisymmRel (· ≤ ·) a b :=
-  ⟨hab.elim id (hb.le_of_ge ha.prop), hab.elim (ha.le_of_ge hb.prop) id⟩
+  hab.elim (ha.antisymmRel_of_le hb.prop) fun h ↦ (hb.antisymmRel_of_le ha.prop h).symm
 
 end Minimal
 
