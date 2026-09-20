@@ -396,6 +396,11 @@ theorem coe_monodromy_mk {x y : X} (γ : Path x y) (e : p ⁻¹' {x}) :
     (cov.monodromy (.mk γ) e : E) = cov.liftPath γ e (γ.source.trans e.2.symm) 1 :=
   rfl
 
+lemma monodromy_eq_apply_one {x y : X} {γ : Path x y} {e : p ⁻¹' {x}} {Γ : C(I, E)}
+    (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) : cov.monodromy (.mk γ) e = Γ 1 := by
+  rw [show Γ = cov.liftPath γ e (γ.source.trans e.2.symm) from (eq_liftPath_iff' ..).mpr ⟨hpΓ, Γ_0⟩,
+    coe_monodromy_mk]
+
 /-- Lift a homotopy class of paths to a covering space. -/
 def liftPathQuotient {x y : X} (γ : Path.Homotopic.Quotient x y) (e : p ⁻¹' {x}) :
     Path.Homotopic.Quotient e.1 (cov.monodromy γ e) :=
@@ -652,6 +657,13 @@ theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : Gᵐᵒᵖ} :
   aesop
 
 variable {e} in
+theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : G} {Γ : C(I, E)}
+    (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
+    hp.fundamentalGroupToMulOpposite e (.mk γ) = .op g :=
+  hp.fundamentalGroupToMulOpposite_apply_eq_Iff.mpr <| by
+    simp [hp.isCoveringMap.monodromy_eq_apply_one hpΓ Γ_0, Γ_1]
+
+variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
     (hp.fundamentalGroupToMulOpposite e γ).unop • e.1 = hp.isCoveringMap.monodromy γ e := by
   simp [fundamentalGroupToMulOpposite, fiberEquivGroup_smul_self]
@@ -773,6 +785,13 @@ variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : (Multiplicative G)ᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e :=
   hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_Iff
+
+variable {e} in
+theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplicative G} {Γ : C(I, E)}
+    (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
+    hp.fundamentalGroupToMulOpposite e (.mk γ) = .op g :=
+  hp.fundamentalGroupToMulOpposite_apply_eq_Iff.mpr <| by
+    rw [hp.isCoveringMap.monodromy_eq_apply_one hpΓ Γ_0, Γ_1]; rfl
 
 variable {e} in
 theorem unop_fundamentalGroupToMulOpposite_smul :
