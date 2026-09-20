@@ -100,7 +100,7 @@ instance [Std.Trichotomous r] [Std.Trichotomous s] : Std.Trichotomous (Lex r s) 
   grind [Std.Trichotomous, Lex]
 
 instance [IsWellOrder α r] [IsWellOrder β s] :
-    IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellFounded.wf IsWellFounded.wf
+    IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellOrder.wf IsWellOrder.wf
 
 theorem lex_flip_iff (a b : α ⊕ β) : Lex (flip r) (flip s) a b ↔ Lex s r b.swap a.swap := by
   revert a b
@@ -266,6 +266,12 @@ theorem swap_le_swap_iff [LE α] [LE β] {a b : α ⊕ β} : a.swap ≤ b.swap �
 @[simp]
 theorem swap_lt_swap_iff [LT α] [LT β] {a b : α ⊕ β} : a.swap < b.swap ↔ a < b :=
   liftRel_swap_iff
+
+theorem swap_monotone [Preorder α] [Preorder β] : Monotone (α := α ⊕ β) Sum.swap :=
+  fun _ _ ↦ swap_le_swap_iff.2
+
+theorem swap_strictMono [Preorder α] [Preorder β] : StrictMono (α := α ⊕ β) Sum.swap :=
+  fun _ _ ↦ swap_lt_swap_iff.2
 
 end Disjoint
 

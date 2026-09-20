@@ -107,6 +107,11 @@ theorem mul_le_mul_of_nonpos_of_nonneg' [ExistsAddOfLE R] [PosMulMono R] [MulPos
     (hca : c ≤ a) (hbd : b ≤ d) (ha : 0 ≤ a) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonneg_left hbd ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
+theorem mul_le_mul_of_nonpos_of_nonneg'' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
+    [AddRightMono R] [AddRightReflectLE R]
+    (hac : a ≤ c) (hdb : d ≤ b) (ha : a ≤ 0) (hd : 0 ≤ d) : a * b ≤ c * d :=
+  (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonneg_right hac hd
+
 theorem mul_le_mul_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hdb : d ≤ b) (hc : c ≤ 0) (hb : b ≤ 0) : a * b ≤ c * d :=
@@ -712,7 +717,7 @@ lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMul
   rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
   grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
 
-@[deprecated two_mul_le_add_of_sq_le_mul (since := "2026-04-20")]
+@[deprecated two_mul_le_add_of_sq_le_mul +typeChanged (since := "2026-04-20")]
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
     (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=

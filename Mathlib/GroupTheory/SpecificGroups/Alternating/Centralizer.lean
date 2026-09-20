@@ -218,7 +218,7 @@ theorem centralizer_le_alternating_iff :
     Subgroup.centralizer {g} ≤ alternatingGroup α ↔
       (∀ c ∈ g.cycleType, Odd c) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
         ∀ i, g.cycleType.count i ≤ 1 := by
-  rw [SetLike.le_def]
+  rw [IsConcreteLE.le_iff]
   constructor
   · intro h
     exact ⟨odd_of_centralizer_le_alternatingGroup h,

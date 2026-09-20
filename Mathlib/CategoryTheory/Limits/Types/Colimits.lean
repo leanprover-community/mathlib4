@@ -183,18 +183,18 @@ attribute [elementwise] colimit.ι_map
 attribute [simp] colimit.ι_map_apply
 
 variable {F} in
-@[deprecated colimit.w_apply (since := "2026-03-06")]
+@[deprecated colimit.w_apply +typeChanged (since := "2026-03-06")]
 theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x := by
   rw [← comp_apply]
   exact congr_hom (colimit.w F f) x
 
-@[deprecated colimit.ι_desc_apply (since := "2026-03-06")]
+@[deprecated colimit.ι_desc_apply +typeChanged (since := "2026-03-06")]
 theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
   congr_hom (colimit.ι_desc s j) x
 
-@[deprecated colimit.ι_map_apply (since := "2026-03-06")]
+@[deprecated colimit.ι_map_apply +typeChanged (since := "2026-03-06")]
 theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)]
     (α : F ⟶ G) (j : J) (x : F.obj j) :
     colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
