@@ -56,6 +56,7 @@ Additionally, the script does a few consistency checks:
 open Lean System
 
 namespace AutoLabel
+open AutoLabel
 
 /-- Maximal number of labels which can be added. If more are applicable, nothing will be added. -/
 def MAX_LABELS := 1
@@ -394,6 +395,22 @@ inductive GithubInteraction where
 /-- use `curl` with an access token -/
 | curl (pr : Nat) (token : String)
 
+/-- returns `true` if every component of `p₁` appears in order in `p₂`. This
+function is case-insensitive -/
+def System.FilePath.orderedContainedIn (p₁ p₂ : FilePath) : Bool :=
+  go p₁.components p₂.components
+where go : List String → List String → Bool
+  | [], _ => true
+  | _ :: _, [] => false
+  | p₁@(head₁ :: tail₁), head₂ :: tail₂ =>
+    if head₁.toLower == head₂.toLower then go tail₁ tail₂ else go p₁ tail₂
+
+#guard ("C.lean" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ("B" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ("A" / "C.lean" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ("A" / "B" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ! ("B" / "A" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+
 open IO in
 def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
   let force := args.hasFlag "force"
@@ -439,23 +456,20 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
     -- return 3
 
-  -- get the modified files: if a valid PR title `...(Folder/Name, Another/Folder): ...`
-  -- is provided, use the paths from it. Otherwise, look at `git diff` to figure out the changes
-  let mut modifiedFiles : Array FilePath := #[]
+  -- get the modified files
+  let gitDiff ← IO.Process.run {
+    cmd := "git",
+    args := #["diff", "--name-only", "origin/master...HEAD"] }
+  let mut modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
   if let some title := (args.flag? "title").map (·.as! String) then
     let paths : Array FilePath := title.splitOn ":" |>.getD 0 ""
       |>.splitOn "(" |>.getD 1 ""
       |>.splitOn ")" |>.getD 0 ""
-      |>.splitOn "," |>.toArray.map ("Mathlib" / ⟨·.trimAscii.toString⟩)
-    if ! paths.isEmpty then
-      println s!"::notice::used title to find labels"
-      modifiedFiles := paths
-  if modifiedFiles.isEmpty then
-    println s!"::notice::used diff to find labels"
-    let gitDiff ← IO.Process.run {
-      cmd := "git",
-      args := #["diff", "--name-only", "origin/master...HEAD"] }
-    modifiedFiles := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
+      |>.splitOn "," |>.toArray.map (⟨·.trimAscii.toString⟩)
+    let filtered := modifiedFiles.filter fun f => paths.any (·.orderedContainedIn f)
+    if ! filtered.isEmpty then
+      modifiedFiles := filtered
+      println s!"::notice::used title to filter modified files"
 
   -- find labels covering the modified files
   let newLabels := dropDependentLabels <| getMatchingLabels modifiedFiles
@@ -519,7 +533,7 @@ def autolabel : Cli.Cmd := `[Cli|
                       (currently, this implies `--force`)"
     "title": String; "Provided a PR title following the mathlib convention \
                       (e.g. \"xxx(Folder/Or/File,Another/One): yada yada\"), it will try to \
-                      extract a folder name from it and use it instead of looking at the git diff."
+                      extract paths from it and use them to filter the current changes."
     "force";         "apply labels even if there are already labels on the PR."
 ]
 
