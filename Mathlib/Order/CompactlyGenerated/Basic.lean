@@ -71,7 +71,11 @@ def IsCompactElement [Preorder α] (k : α) :=
 
 section Preorder
 
-variable [Preorder α] (a : α)
+variable [Preorder α] (a b : α)
+
+theorem isCompactElement_iff_of_le_of_ge (hab : a ≤ b) (hba : b ≤ a) :
+    IsCompactElement a ↔ IsCompactElement b := by
+  grind [IsCompactElement]
 
 theorem IsBot.isCompactElement (h : IsBot a) : IsCompactElement a :=
   fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, h x⟩
