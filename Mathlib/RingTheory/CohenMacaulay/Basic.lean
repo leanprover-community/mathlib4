@@ -155,7 +155,7 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
   simp only [isCohenMacaulay_iff, ← not_nontrivial_iff_subsingleton, ntr1, not_true_eq_false,
     false_or, ntr2]
   rw [← Module.supportDim_add_length_eq_supportDim_of_isRegular rs reg,
-    ← depth_quotient_regular_sequence_add_length_eq_depth M rs reg, WithBot.coe_add]
+    ← depth_quotient_isRegular_add_length_eq_depth M rs reg, WithBot.coe_add]
   exact ENat.WithBot.add_natCast_cancel
 
 variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
@@ -243,7 +243,7 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
     rw [IsLocalizedModule.subsingleton_iff_ker_eq_top p.primeCompl f]
     have := (Submodule.subsingleton_iff R).mpr (not_nontrivial_iff_subsingleton.mp h)
     apply Subsingleton.elim
-  simp only [IsLocalRing.depth_eq_sSup_length_regular, Ideal.depth]
+  simp only [IsLocalRing.depth_eq_sSup_length_isRegular, Ideal.depth]
   have smul_lt : p • (⊤ : Submodule R M) < ⊤ :=
     Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       ((IsLocalRing.le_maximalIdeal (Ideal.IsPrime.ne_top')).trans
@@ -251,7 +251,7 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
   have h_supp : Module.support R (of R (Shrink.{v, u} (R ⧸ p))) = PrimeSpectrum.zeroLocus p := by
     rw [(Shrink.linearEquiv R (R ⧸ p)).support_eq, Module.support_eq_zeroLocus,
       Ideal.annihilator_quotient]
-  rw [moduleDepth_eq_sSup_length_regular p _ _ smul_lt h_supp]
+  rw [moduleDepth_eq_sSup_length_isRegular p _ _ smul_lt h_supp]
   apply sSup_le (fun n hn ↦ le_sSup ?_)
   rcases hn with ⟨rs, reg, mem, len⟩
   refine ⟨rs.map (algebraMap R Rₚ), reg.isRegular_of_isLocalizedModule_of_mem Rₚ p f mem,
@@ -279,7 +279,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     simp only [← hn, CharP.cast_eq_zero, WithBot.coe_zero]
     have min : p ∈ (Module.annihilator R M).minimalPrimes := by
       simp only [CharP.cast_eq_zero, Ideal.depth] at hn
-      rw [Eq.comm, moduleDepth_eq_zero_of_hom_nontrivial,
+      rw [Eq.comm, moduleDepth_eq_zero_iff_nontrivial_linearMap,
         ((Shrink.linearEquiv R (R ⧸ p)).congrLeft M R).nontrivial_congr] at hn
       obtain ⟨g, hg⟩ : ∃ g : R ⧸ p →ₗ[R] M, g ≠ 0 := exists_ne 0
       have : g 1 ≠ 0 := by
@@ -332,7 +332,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
   | succ n ih =>
     have : Subsingleton ((ModuleCat.of R (Shrink.{v} (R ⧸ p))) →ₗ[R] M) := by
       by_contra ntr
-      rw [not_subsingleton_iff_nontrivial, ← moduleDepth_eq_zero_of_hom_nontrivial] at ntr
+      rw [not_subsingleton_iff_nontrivial, ← moduleDepth_eq_zero_iff_nontrivial_linearMap] at ntr
       simp [Ideal.depth, ntr] at hn
     rcases IsSMulRegular.subsingleton_linearMap_iff.mp
       (((Shrink.linearEquiv R (R ⧸ p)).congrLeft M R).symm.subsingleton) with ⟨a, mem, reg⟩
@@ -496,7 +496,7 @@ lemma IsCohenMacaulayLocalRing.of_isLocalRing_of_isCohenMacaulayRing [IsLocalRin
 open Ideal
 
 open Pointwise in
-lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
+lemma quotient_isSMulRegular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
     [IsNoetherianRing R] (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     IsCohenMacaulayLocalRing R ↔ IsCohenMacaulayLocalRing (R ⧸ x • (⊤ : Ideal R)) := by
   have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
@@ -506,7 +506,7 @@ lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
   have : ringKrullDim R = ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
     rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
     exact (Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem).symm
-  simp [isCohenMacaulayLocalRing_def, this, ← depth_quotient_regular_succ_eq_depth x reg mem,
+  simp [isCohenMacaulayLocalRing_def, this, ← depth_quotient_isRegular_succ_eq_depth x reg mem,
     ENat.WithBot.add_one_cancel]
 
 lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
@@ -532,5 +532,5 @@ lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
     ⟨reg, by simpa using! ((span_le.mpr mem).trans_lt IsPrime.ne_top'.lt_top).ne_top.symm⟩
   simp only [isCohenMacaulayLocalRing_def,
     ← ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg',
-    ← depth_quotient_regular_sequence_add_length_eq_depth rs reg mem, WithBot.coe_add]
+    ← depth_quotient_isRegular_add_length_eq_depth rs reg mem, WithBot.coe_add]
   exact ENat.WithBot.add_natCast_cancel
