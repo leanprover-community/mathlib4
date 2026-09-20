@@ -26,20 +26,20 @@ open CategoryTheory
 
 namespace Rep
 
+/-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
+abbrev res (f : H →* G) (A : Rep k G) := of (A.ρ.comp f)
+
 /-- The map induced by a monoid homomorphism `f : H →* G` on morphisms between
 `G`-representations. -/
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
-    of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
+    res f X ⟶ res f Y :=
   ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.2 (f h)⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
-  obj A := of (X := A.V) (A.ρ.comp f)
+  obj A := res f A
   map f' := resMap f f'
-
-/-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
-abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 
 variable (f : H →* G) (M : Rep k G)
 
