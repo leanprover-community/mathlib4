@@ -529,6 +529,22 @@ theorem card_typein_min_le_mk [LinearOrder α] [WellFoundedLT α] {s : Set α} (
     (typein <| WellFoundedLT.min sᶜ hs).card ≤ #s :=
   WellFounded.cardinalMk_subtype_lt_min_compl_le _ hs
 
+/-- If `α` can be embedded in a well-order such that any initial segment has cardinal less than `c`,
+then `α` has cardinal at most `c`. -/
+theorem mk_le_of_forall_mk_setOfPred_lt {α β : Type u} {c : Cardinal}
+    [LinearOrder β] [WellFoundedLT β] (f : α → β) (hf : Function.Injective f)
+    (H : ∀ x, #{y | f y < f x} < c) : #α ≤ c := by
+  induction c using Cardinal.inductionOn with | mk γ
+  obtain ⟨_, _⟩ := exists_wellFoundedLT γ
+  let : LinearOrder α := LinearOrder.lift' f hf
+  have := OrderEmbedding.wellFoundedLT ⟨⟨f, hf⟩, .rfl⟩
+  have hi (x) : #(Iio x) ≤ #(Iio (f x)) :=
+    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.2⟩, fun _ ↦ by grind⟩
+  rw [← card_type (· < ·), ← card_type (· < ·)]
+  refine Ordinal.card_le_card <| le_of_forall_lt fun d hd ↦ ?_
+  obtain ⟨a, rfl⟩ := mem_range_typein hd
+  exact Ordinal.card_monotone.reflect_lt (H a)
+
 /-! ### Lifting ordinals to a higher universe -/
 
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as

@@ -27,49 +27,28 @@ cardinal arithmetic (for infinite cardinals)
 
 assert_not_exists Module Finsupp Ordinal.log
 
-noncomputable section
+public noncomputable section
 
 open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
-
-public section
 
 namespace Cardinal
 
 /-! ### Properties of `mul` -/
 section mul
 
-private theorem lemmaa {α β : Type u} {c : Cardinal} [LinearOrder β] [WellFoundedLT β]
-    (f : α → β) (hf : Function.Injective f) (H : ∀ x, #{y | f y < f x} < c) : #α ≤ c := by
-  induction c using Cardinal.inductionOn with | mk γ
-  obtain ⟨_, _⟩ := exists_wellFoundedLT γ
-  let : LinearOrder α := LinearOrder.lift' f hf
-  have := OrderEmbedding.wellFoundedLT ⟨⟨f, hf⟩, .rfl⟩
-  have hi (x) : #(Iio x) ≤ #(Iio (f x)) :=
-    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.2⟩, fun _ ↦ by grind⟩
-  rw [← card_type (· < ·), ← card_type (· < ·)]
-  refine Ordinal.card_le_card <| le_of_forall_lt fun d hd ↦ ?_
-  obtain ⟨a, rfl⟩ := mem_range_typein hd
-  exact Ordinal.card_monotone.reflect_lt (H a)
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
-  -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
   induction c using WellFoundedLT.induction with | ind c IH
   refine le_antisymm ?_ (by simpa using mul_le_mul_right (one_le_aleph0.trans hc) c)
-  -- Consider the minimal well-order on `α` (a type with cardinality `c`).
   induction c using Cardinal.inductionOn with | mk α
   obtain ⟨_, _, hα⟩ := exists_ord_eq_type_lt α
   have : NoMaxOrder α := by
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord hc).isSuccPrelimit
-  -- Every initial segment of `ProdAux α` is contained in `β × β` for some `β` of cardinality `< c`.
-  -- By the inductive hypothesis, this means `#(β × β) < c`. Thus, `α × α` must have
-  -- cardinality `≤ c`.
-  rw [mul_def]
-  apply lemmaa (β := α ×ₗ (α ×ₗ α))
+  apply mk_le_of_forall_mk_setOfPred_lt (β := α ×ₗ (α ×ₗ α))
     (fun p ↦ toLex (uncurry max p, toLex p)) (fun _ _ ↦ congrArg Prod.snd)
   intro ⟨a, b⟩
   obtain ⟨q, hq'⟩ := exists_gt (max a b)
