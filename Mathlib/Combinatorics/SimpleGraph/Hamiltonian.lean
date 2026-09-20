@@ -311,12 +311,29 @@ theorem isHamiltonian_iff_cycleGraph_isContained (h : 3 ≤ Fintype.card α) :
     exact fun _ ↦ ⟨a, p, Walk.isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨hp₁, hp₂⟩⟩
 
 @[simp]
-theorem isHamiltonian_cycleGraph {n : ℕ} (hn : 3 ≤ n) : (cycleGraph n).IsHamiltonian :=
-  isHamiltonian_iff_cycleGraph_isContained (by simpa) |>.mpr <| Fintype.card_fin _ ▸ IsContained.rfl
+theorem isHamiltonian_cycleGraph_iff {n : ℕ} : (cycleGraph n).IsHamiltonian ↔ n = 1 ∨ 3 ≤ n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    rcases show n = 0 ∨ n = 2 by lia with rfl | rfl
+    · exact not_isHamiltonian_of_isEmpty
+    · exact not_isHamiltonian_of_card_eq_two rfl
+  · rcases h with rfl | h
+    · exact IsHamiltonian.of_card_eq_one rfl
+    · exact isHamiltonian_iff_cycleGraph_isContained (by simpa) |>.mpr <|
+        Fintype.card_fin _ ▸ IsContained.rfl
 
 @[simp]
-theorem isHamiltonian_top (h : 3 ≤ Fintype.card α) : (completeGraph α).IsHamiltonian :=
-  isHamiltonian_iff_cycleGraph_isContained h |>.mpr <|
-    isContained_top_iff.mpr <| Function.Embedding.nonempty_of_card_le (by simp)
+theorem isHamiltonian_top_iff :
+    (completeGraph α).IsHamiltonian ↔ Fintype.card α = 1 ∨ 3 ≤ Fintype.card α := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    rcases show Fintype.card α = 0 ∨ Fintype.card α = 2 by lia with h | h
+    · rw [Fintype.card_eq_zero_iff] at h
+      exact not_isHamiltonian_of_isEmpty
+    · exact not_isHamiltonian_of_card_eq_two h
+  · rcases h with h | h
+    · exact IsHamiltonian.of_card_eq_one h
+    · exact isHamiltonian_iff_cycleGraph_isContained h |>.mpr <|
+        isContained_top_iff.mpr <| Function.Embedding.nonempty_of_card_le (by simp)
 
 end SimpleGraph
