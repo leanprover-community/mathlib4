@@ -401,6 +401,7 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
     [IsWellOrder β s] : type (Prod.Lex s r) = type r * type s :=
   rfl
 
+-- TODO: fix precedence of `typeLT` so that `typeLT β * typeLT α` parses correctly
 @[simp]
 theorem type_lt_prod_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
     [WellFoundedLT α] [WellFoundedLT β] : typeLT (α ×ₗ β) = (typeLT β) * (typeLT α) :=
