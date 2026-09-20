@@ -514,10 +514,10 @@ instance denselyOrdered_of_noMinOrder [LT α] [LT β] [DenselyOrdered α] [Dense
       ⟨toLex (inr c), inr_lt_inr_iff.2 ha, inr_lt_inr_iff.2 hb⟩⟩
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ⊕ₗ β) :=
-  ⟨Sum.lex_wf wellFounded_lt wellFounded_lt⟩
+  Sum.lex_wf wellFounded_lt wellFounded_lt
 
 instance [LT α] [LT β] [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α ⊕ₗ β) := by
-  constructor
+  unfold WellFoundedGT at *
   conv =>
     enter [1, a, b]
     equals Lex (fun u v => v < u) (fun u v => v < u) (ofLex a).swap (ofLex b).swap =>

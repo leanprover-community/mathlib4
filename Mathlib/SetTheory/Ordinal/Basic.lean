@@ -400,13 +400,14 @@ theorem typein_inj {a b : α} : typein a = typein b ↔ a = b := by
 theorem range_typein : Set.range (typein (α := α)) = Iio (typeLT α) := by
   ext; exact typein.mem_range_iff_rel
 
+theorem mem_range_typein {o} (h : o < typeLT α) : o ∈ Set.range (typein (α := α)) := by
+  simpa
+
+@[deprecated (since := "2026-09-20")] alias typein_surj := mem_range_typein
+
 @[deprecated range_typein +typeChanged (since := "2026-09-20")]
 theorem mem_range_typein_iff {o : Ordinal} : o ∈ Set.range (typein (α := α)) ↔ o < typeLT α := by
   simp
-
-@[deprecated range_typein +typeChanged (since := "2026-09-20")]
-theorem typein_surj {o} (h : o < typeLT α) : o ∈ Set.range (typein (α := α)) := by
-  simpa
 
 @[deprecated range_typein +typeChanged (since := "2026-09-20")]
 theorem typein_surjOn : Set.SurjOn (typein (α := α)) Set.univ (Set.Iio (typeLT α)) :=
@@ -511,6 +512,9 @@ theorem card_typein [LinearOrder α] [WellFoundedLT α] (x : α) : (typein x).ca
 @[gcongr]
 theorem card_le_card {o₁ o₂ : Ordinal} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
   inductionOn o₁ fun _ _ _ => inductionOn o₂ fun _ _ _ ⟨⟨⟨f, _⟩, _⟩⟩ => ⟨f⟩
+
+theorem card_monotone : Monotone card :=
+  fun _ _ ↦ card_le_card
 
 @[simp]
 theorem card_zero : card 0 = 0 := mk_eq_zero _

@@ -454,6 +454,7 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
   convert! mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
+set_option backward.isDefEq.respectTransparency.types false in
 private theorem mul_le_of_limit_aux {α β} [LinearOrder α] [LinearOrder β]
     [WellFoundedLT α] [WellFoundedLT β] {c}
     (h : IsSuccLimit (typeLT β)) (H : ∀ b' < typeLT β, (typeLT α) * b' ≤ c)
@@ -465,26 +466,30 @@ private theorem mul_le_of_limit_aux {α β} [LinearOrder α] [LinearOrder β]
   have := H _ (h.succ_lt (typein_lt_type b))
   rw [mul_succ] at this
   apply (((add_lt_add_iff_left _).2 (typein_lt_type a)).trans_le this).trans_le'
-  have e : Iio (toLex (b, a)) ↪o Iio b ×ₗ α ⊕ₗ Iio a := sorry
-  have : WellFoundedLT (Iio b ×ₗ α ⊕ₗ Iio a) := sorry
-  exact e.ordinal_type_le
-  refine (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_).ordinal_type_le.trans_lt this
-  · rcases a with ⟨⟨b', a'⟩, h : toLex _ < _⟩
-    by_cases e : b = b'
-    · refine .inr ⟨a', ?_⟩
-      subst e
-      simpa [Prod.Lex.lt_iff] using h
-    · refine .inl (⟨b', ?_⟩, a')
-      simpa [Prod.Lex.lt_iff, Ne.symm e] using h
-  · intro h
-    simp at *
-    -- grind [subrel_val, Sum.Lex.sep]
+  suffices e : Iio (toLex (b, a)) ↪o Iio b ×ₗ α ⊕ₗ Iio a from e.ordinal_type_le
+  refine OrderEmbedding.ofStrictMono (fun a ↦ ?_) ?_
+  · by_cases e : b = (ofLex a.1).1
+    · exact toLex <| .inr ⟨(ofLex a.1).2, by
+        cases a with | mk a h
+        simpa [Prod.Lex.lt_iff, e] using h⟩
+    · exact toLex <| .inl <| toLex (⟨(ofLex a.1).1, by
+        cases a with | mk a h
+        simpa [Prod.Lex.lt_iff, Ne.symm e] using h⟩, (ofLex a.1).2)
+  · simp_rw [StrictMono, Subtype.forall, Lex.forall]
+    intro ⟨a₁, b₁⟩ h₁ ⟨a₂, b₂⟩ h₂ h
+    rw [mem_Iio] at h₁ h₂
+    simp [Prod.Lex.lt_iff] at *
+    split_ifs with h
+    · simp; grind
+    · simp; grind
+    · simp
+    · simp [Prod.Lex.lt_iff]; grind
 
-#exit
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
   refine ⟨fun h _ l ↦ (mul_le_mul_right l.le _).trans h, fun H ↦ le_of_not_gt ?_⟩
-  induction a, b using inductionOn₂ with | type α r β s
+  induction a using inductionOnWellOrder with | type α
+  induction b using inductionOnWellOrder with | type β
   exact mul_le_of_limit_aux h H
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
@@ -872,23 +877,6 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
-@[simp]
-theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
-  have : Fintype <| Iio x := Nat.fintypeIio x
-  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
-  nth_rw 2 [← Fintype.card_fin x]
-  exact Fintype.card_congr Fin.equivSubtype.symm
-
-@[simp]
-theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
-  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
-  exact Fintype.card_fin_lt_of_le x.is_le'
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
-  simp [← typein_inj LT.lt]
-
 /-! ### Properties of `ω` -/
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
@@ -900,10 +888,25 @@ theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
 
 @[deprecated (since := "2026-03-08")] alias nat_lt_omega0 := natCast_lt_omega0
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
-  simp [← typein_inj LT.lt]
+theorem typein_lt_nat (x : ℕ) : typein x = x := by
+  have : Fintype <| Iio x := Nat.fintypeIio x
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  nth_rw 2 [← Fintype.card_fin x]
+  exact Fintype.card_congr Fin.equivSubtype.symm
+
+@[simp]
+theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein x = x := by
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  exact Fintype.card_fin_lt_of_le x.is_le'
+
+@[simp]
+theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum ⟨x, by simp⟩ = x := by
+  rw [← typein.inj, typein_enum, typein_lt_fin]
+
+@[simp]
+theorem enum_lt_nat (x : ℕ) : enum ⟨x, by simp⟩ = x := by
+  rw [← typein.inj, typein_enum, typein_lt_nat]
 
 theorem eq_natCast_of_le_natCast {a : Ordinal} {b : ℕ} (h : a ≤ b) : ∃ c : ℕ, a = c :=
   lt_omega0.1 (h.trans_lt (natCast_lt_omega0 b))

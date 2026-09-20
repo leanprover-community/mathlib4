@@ -69,26 +69,26 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
 `Ordinal.{v}` as a principal segment when `u < v`. -/
 def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
-    refine fun b => inductionOn b ?_; intro β s _
+    intro b
+    induction b using inductionOnWellOrder with | type β
     rw [univ, ← lift_umax]; constructor <;> intro h
     · obtain ⟨a, e⟩ := h
       rw [← e]
-      refine inductionOn a ?_
-      intro α r _
-      exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein r⟩
-    · rw [← lift_id (type s)] at h ⊢
+      induction a using inductionOnWellOrder with | type α
+      exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein⟩
+    · rw [← lift_id (typeLT β)] at h ⊢
       obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
       obtain ⟨f, a, hf⟩ := f
       exists a
-      induction a using inductionOn with | type α r
+      induction a using inductionOnWellOrder with | type α
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
-      · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
-      · refine fun a b h => (typein_lt_typein r).1 ?_
-        rw [typein_enum, typein_enum]
+      · exact fun b => enum ⟨f b, by simpa using (hf _).1 ⟨_, rfl⟩⟩
+      · intro a b h
+        rw [← typein.lt_iff_lt, typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
-        obtain ⟨b, e⟩ := (hf _).2 (typein_lt_type _ a')
+        obtain ⟨b, e⟩ := (hf _).2 (typein_lt_type a')
         exists b
         simp only [RelEmbedding.ofMonotone_coe]
         simp [e]⟩
