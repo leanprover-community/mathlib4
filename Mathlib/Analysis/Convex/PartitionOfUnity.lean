@@ -31,7 +31,7 @@ public section
 
 open Set Function
 
-open Topology
+open scoped Topology
 
 variable {ι X E : Type*} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
 

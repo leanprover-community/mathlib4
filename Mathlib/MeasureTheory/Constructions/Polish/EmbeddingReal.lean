@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 @[expose] public section
 
-open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
+open Set Function PolishSpace TopologicalSpace Topology MeasureTheory
 
 namespace MeasureTheory
 variable (α : Type*) [MeasurableSpace α] [StandardBorelSpace α]

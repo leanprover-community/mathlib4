@@ -172,6 +172,7 @@ section DFunLike
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {Q Q' : QuadraticMap R M N}
 
+@[macro_inline]
 instance instFunLike : FunLike (QuadraticMap R M N) M N where
   coe := toFun
   coe_injective x y h := by cases x; cases y; congr
@@ -671,7 +672,6 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x

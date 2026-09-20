@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
@@ -121,8 +120,5 @@ theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α �
     apply fun b => (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
-
-@[deprecated (since := "2026-01-17")] alias le_range_of_union_finset_eq_top :=
-  le_range_of_union_finset_eq_univ
 
 end Cardinal

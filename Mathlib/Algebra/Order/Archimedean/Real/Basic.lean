@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
@@ -51,10 +51,6 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
       abs_eq_zero.1 <|
         (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
-
-@[deprecated _root_.exists_floor (since := "2026-01-29")]
-theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
-  ⟨⌊x⌋, Int.floor_le x, fun _ ↦ Int.le_floor.mpr⟩
 
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
@@ -148,8 +144,9 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
 theorem lt_sInf_add_pos (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) : ∃ a ∈ s, a < sInf s + ε :=
   exists_lt_of_csInf_lt h <| lt_add_of_pos_right _ hε
 
+-- TODO: shouldn't this be named `sSup_add_neg_lt`?
 theorem add_neg_lt_sSup (h : s.Nonempty) {ε : ℝ} (hε : ε < 0) : ∃ a ∈ s, sSup s + ε < a :=
-  exists_lt_of_lt_csSup h <| add_lt_iff_neg_left.2 hε
+  exists_lt_of_lt_csSup h <| add_lt_of_neg_right _ hε
 
 theorem sInf_le_iff (h : BddBelow s) (h' : s.Nonempty) :
     sInf s ≤ a ↔ ∀ ε, 0 < ε → ∃ x ∈ s, x < a + ε := by
@@ -174,11 +171,8 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
 theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
   simp [sInf_def]
 
-@[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
-  dsimp [iSup]
-  convert! Real.sSup_empty
-  rw [Set.range_eq_empty_iff]
-  infer_instance
+lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iSup_const_zero : ⨆ _ : ι, (0 : ℝ) = 0 := by
@@ -194,8 +188,8 @@ theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bd
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 
-@[simp] nonrec lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
-  rw [iInf_of_isEmpty, sInf_empty]
+lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iInf_const_zero : ⨅ _ : ι, (0 : ℝ) = 0 := by

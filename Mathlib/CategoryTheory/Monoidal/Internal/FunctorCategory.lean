@@ -305,7 +305,6 @@ end CommMonFunctorCategoryEquivalence
 
 open CommMonFunctorCategoryEquivalence
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `D` is a braided monoidal category,
 commutative monoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the commutative monoid objects of `D`.

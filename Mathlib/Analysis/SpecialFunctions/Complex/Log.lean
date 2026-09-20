@@ -242,7 +242,7 @@ section LogDeriv
 
 open Complex Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type*}
 
@@ -312,8 +312,5 @@ noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
   open_target := isOpen_slitPlane
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := continuousOn_id.clog fun _ ↦ id
-
-@[deprecated (since := "2026-01-13")]
-alias expPartialHomeomorph := expOpenPartialHomeomorph
 
 end Complex

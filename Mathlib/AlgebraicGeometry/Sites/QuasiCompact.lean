@@ -23,7 +23,7 @@ The fpqc precoverage is the precoverage by flat covers that are quasi-compact in
 
 universe w' w v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 

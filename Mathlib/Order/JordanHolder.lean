@@ -79,8 +79,8 @@ class JordanHolderLattice (X : Type u) [Lattice X] where
 
 namespace JordanHolderLattice
 
-/-- Every modular lattice is a Jordan Hölder lattice. -/
-instance (X : Type u) [Lattice X] [IsModularLattice X] : JordanHolderLattice X where
+/-- Every weakly lower modular lattice is a Jordan Hölder lattice. -/
+instance (X : Type u) [Lattice X] [IsWeakLowerModularLattice X] : JordanHolderLattice X where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := hxz.wcovBy.sup_eq hyz.wcovBy
@@ -247,7 +247,6 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
   ext x
@@ -412,7 +411,6 @@ theorem eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero {s₁ s₂ : Compos
   ext
   simp [*]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `CompositionSeries`, `s`, and an element `x`
 such that `x` is maximal inside `s.last` there is a series, `t`,
 such that `t.last = x`, `t.head = s.head`

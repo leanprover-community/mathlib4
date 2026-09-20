@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
@@ -123,7 +123,7 @@ namespace MvPowerSeries
 
 noncomputable section
 
-open ENat WithTop Finsupp
+open ENat Finsupp
 
 variable {σ R : Type*} [Semiring R]
 
@@ -376,9 +376,6 @@ end WeightedOrder
 section Order
 
 variable {f g : MvPowerSeries σ R}
-
-@[deprecated (since := "2026-01-06")]
-alias eq_zero_iff_forall_coeff_eq_zero_and := eq_zero_iff_forall_coeff_zero
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ degree d = n) := by
