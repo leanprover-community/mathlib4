@@ -125,7 +125,7 @@ def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   comm := by
     intro
     ext u
-    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
+    refine TensorProduct.inductionOn u (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
     simp only [map_add, hx, hy]
 
 /-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/

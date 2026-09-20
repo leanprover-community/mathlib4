@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.DivInvMonoid
+public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
 
@@ -101,15 +101,9 @@ lemma «forall» {p : WithOne α → Prop} : (∀ x, p x) ↔ p 1 ∧ ∀ a : α
 @[to_additive]
 lemma «exists» {p : WithOne α → Prop} : (∃ x, p x) ↔ p 1 ∨ ∃ a : α, p a := Option.exists
 
-/-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def _root_.WithZero.recZeroCoe {motive : WithZero α → Sort*} (zero : motive 0)
-    (coe : ∀ a : α, motive a) : ∀ n : WithZero α, motive n
-  | Option.none => zero
-  | Option.some x => coe x
-
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
-@[to_additive existing, elab_as_elim, induction_eliminator, cases_eliminator]
+@[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)
+/-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/]
 def recOneCoe {motive : WithOne α → Sort*} (one : motive 1) (coe : ∀ a : α, motive a) :
     ∀ n : WithOne α, motive n
   | Option.none => one
@@ -163,7 +157,8 @@ lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
   Option.some_injective _
 
 @[to_additive (attr := elab_as_elim)]
-protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
+protected theorem cases_on {motive : WithOne α → Prop} :
+    ∀ x : WithOne α, (one : motive 1) → (coe : ∀ a : α, motive a) → motive x :=
   Option.casesOn
 
 @[to_additive]

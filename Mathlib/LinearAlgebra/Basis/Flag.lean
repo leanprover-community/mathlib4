@@ -6,9 +6,8 @@ Authors: Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Fin.FlagRange
-public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -16,7 +15,8 @@ public import Mathlib.Tactic.NormNum.Basic
 In this file we define `Basis.flag b k`, where `b : Basis (Fin n) R M`, `k : Fin (n + 1)`,
 to be the subspace spanned by the first `k` vectors of the basis `b`.
 
-We also prove some lemmas about this definition.
+We also prove some lemmas about this definition, including `flag_map`, `Basis.mkFinCons`, and
+`mem_flag_iff_repr_eq_zero`.
 -/
 
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
@@ -52,6 +52,17 @@ theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
   simp [flag, Fin.castSucc_lt_castSucc_iff, le_iff_eq_or_lt, ofPred_or, span_insert]
 
+/-- `flag` commutes with `Basis.map`. -/
+theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
+    (b : Basis (Fin n) R M) (e : M ≃ₗ[R] M₂) (k : Fin (n + 1)) :
+    (b.map e).flag k = (b.flag k).map (e : M →ₗ[R] M₂) := by
+  simp [flag, Submodule.map_span, Set.image_image, coe_map]
+
+/-- `x ∈ b.flag k` iff `b.repr x i = 0` for `k ≤ i.castSucc`. -/
+theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) R M) {k : Fin (n + 1)} {x : M} :
+    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
+  simp [flag, mem_span_image, Finsupp.support_subset_iff]
+
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
   subset_span <| mem_image_of_mem _ h
@@ -73,6 +84,32 @@ theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.fl
   Fin.strictMono_iff_lt_succ.2 fun _ ↦ by simp [flag_succ]
 
 end Semiring
+
+section Ring
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {n : ℕ}
+
+/-- The span of the new head vector lies in the successor flag of `Basis.mkFinCons`. -/
+theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    R ∙ v ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.span_singleton_le_iff_mem]
+  convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := 0) (k := k.succ) ?_
+  · simp [coe_mkFinCons, Fin.cons_zero]
+  · simp
+
+/-- The image of a flag under `Submodule.subtype` lies in the successor flag of
+`Basis.mkFinCons`. -/
+theorem map_flag_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    (bW.flag k).map W.subtype ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.map_le_iff_le_comap]
+  exact bW.flag_le_iff.2 fun i hi => by
+    convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := i.succ) (k := k.succ)
+      (Fin.succ_lt_succ_iff.mpr hi) using 1
+    · simp [coe_mkFinCons, Fin.cons_succ]
+
+end Ring
 
 section CommRing
 

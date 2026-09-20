@@ -51,6 +51,28 @@ attribute [nolint unusedArguments] Mathlib.Tactic.RingNF.instReprConfig.repr
 declare_config_elab elabConfig Config
 
 /--
+Evaluates an expression `e` into a normalized representation as a polynomial, returning `none` when
+the type of `e` is not a commutative semiring, or when `e` is an atom for the `ring` tactic.
+
+This is a variant of `Mathlib.Tactic.Ring.eval`, the main driver of the `ring` tactic, operating on
+`Expr` (input) and `Simp.Result` (output) rather than typed `Qq` versions of these.
+-/
+def evalExpr? (e : Expr) : AtomM (Option Simp.Result) := do
+  let e ← withReducible <| whnf e
+  unless e.isApp do return none -- all interesting ring expressions are applications
+  let ⟨u, α, e⟩ ← inferTypeQ' e
+  let .some sαe ← trySynthInstance q(CommSemiring $α) | return none
+  have sα : Q(CommSemiring $α) := sαe
+  let c ← Common.mkCache sα
+  let ⟨a, _, pa⟩ ← match
+    (← Common.isAtomOrDerivable (ringCompute c) c q($e)) with
+  | none => Common.eval rcℕ (ringCompute c) c e
+    -- `none` indicates that `eval` will find something algebraic.
+  | some none => return none -- No point rewriting atoms
+  | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
+  return some { expr := a, proof? := pa }
+
+/--
 Evaluates an expression `e` into a normalized representation as a polynomial.
 
 This is a variant of `Mathlib.Tactic.Ring.eval`, the main driver of the `ring` tactic.
@@ -59,18 +81,8 @@ It differs in
 * throwing an error if the expression `e` is an atom for the `ring` tactic.
 -/
 def evalExpr (e : Expr) : AtomM Simp.Result := do
-  let e ← withReducible <| whnf e
-  guard e.isApp -- all interesting ring expressions are applications
-  let ⟨u, α, e⟩ ← inferTypeQ' e
-  let sα ← synthInstanceQ q(CommSemiring $α)
-  let c ← Common.mkCache sα
-  let ⟨a, _, pa⟩ ← match
-    (← Common.isAtomOrDerivable (ringCompute c) c q($e)) with
-  | none => Common.eval rcℕ (ringCompute c) c e
-    -- `none` indicates that `eval` will find something algebraic.
-  | some none => failure -- No point rewriting atoms
-  | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
-  pure { expr := a, proof? := pa }
+  let some r ← evalExpr? e | failure
+  pure r
 
 variable {R : Type*} [CommSemiring R] {n d : ℕ}
 

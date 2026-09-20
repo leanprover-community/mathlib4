@@ -299,7 +299,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   apply (toFinsuppIso R).injective
   simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
     RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
+    AddMonoidHom.coe_ofClass, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
   split_ifs with hn
   · lift n to ℕ using hn
     simp [toFinsupp_monomial, -single_eq_C_mul_T]
