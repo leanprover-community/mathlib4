@@ -429,18 +429,16 @@ namespace UniformSpace
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
 used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
 notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
-@[deprecated SetRel.ball (since := "2026-09-01")]
+@[deprecated SetRel.ball +typeChanged (since := "2026-09-01")]
 protected def ball (x : β) (V : Set (β × β)) : Set β := Prod.mk x ⁻¹' V
 
 open UniformSpace (ball)
 
-set_option linter.deprecated false in
-@[deprecated SetRel.refl (since := "2026-09-01")]
+@[deprecated SetRel.refl +typeChanged (since := "2026-09-01")]
 lemma mem_ball_self (x : α) {V : SetRel α α} : V ∈ 𝓤 α → x ∈ ball x V := refl_mem_uniformity
 
-set_option linter.deprecated false in
 /-- The triangle inequality for `SetRel.ball` -/
-@[deprecated SetRel.prodMk_mem_comp (since := "2026-09-01")]
+@[deprecated SetRel.prodMk_mem_comp +typeChanged (since := "2026-09-01")]
 theorem mem_ball_comp {V W : Set (β × β)} {x y z} (h : y ∈ ball x V) (h' : z ∈ ball y W) :
     z ∈ ball x (V ○ W) :=
   SetRel.prodMk_mem_comp h h'
@@ -448,50 +446,42 @@ theorem mem_ball_comp {V W : Set (β × β)} {x y z} (h : y ∈ ball x V) (h' : 
 @[deprecated (since := "2026-09-01")]
 alias ball_subset_of_comp_subset := SetRel.ball_subset_ball_of_comp_subset
 
-set_option linter.deprecated false in
-@[deprecated SetRel.ball_mono (since := "2026-09-01")]
+@[deprecated SetRel.ball_mono +typeChanged (since := "2026-09-01")]
 theorem ball_mono {V W : Set (β × β)} (h : V ⊆ W) (x : β) : ball x V ⊆ ball x W :=
   preimage_mono h
 
-set_option linter.deprecated false in
-@[deprecated SetRel.ball_inter (since := "2026-09-01")]
+@[deprecated SetRel.ball_inter +typeChanged (since := "2026-09-01")]
 theorem ball_inter (x : β) (V W : Set (β × β)) : ball x (V ∩ W) = ball x V ∩ ball x W :=
   preimage_inter
 
-set_option linter.deprecated false in
-@[deprecated SetRel.ball_mono (since := "2026-09-01")]
+@[deprecated SetRel.ball_mono +typeChanged (since := "2026-09-01")]
 theorem ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x V :=
   ball_mono inter_subset_left x
 
-set_option linter.deprecated false in
-@[deprecated SetRel.ball_mono (since := "2026-09-01")]
+@[deprecated SetRel.ball_mono +typeChanged (since := "2026-09-01")]
 theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
   ball_mono inter_subset_right x
 
-set_option linter.deprecated false in
-@[deprecated SetRel.ball_iInter (since := "2026-09-01")]
+@[deprecated SetRel.ball_iInter +typeChanged (since := "2026-09-01")]
 theorem ball_iInter {x : β} {V : ι → Set (β × β)} : ball x (⋂ i, V i) = ⋂ i, ball x (V i) :=
   preimage_iInter
 
-set_option linter.deprecated false in
-@[deprecated SetRel.symm (since := "2026-09-01")]
+@[deprecated SetRel.symm +typeChanged (since := "2026-09-01")]
 theorem mem_ball_symmetry {V : SetRel β β} [V.IsSymm] {x y} : x ∈ ball y V ↔ y ∈ ball x V := V.comm
 
-set_option linter.deprecated false in
-@[deprecated SetRel.inv_eq_self (since := "2026-09-01")]
+@[deprecated SetRel.inv_eq_self +typeChanged (since := "2026-09-01")]
 theorem ball_eq_of_symmetry {V : SetRel β β} [V.IsSymm] {x} : ball x V = { y | (y, x) ∈ V } := by
   ext y
   rw [mem_ball_symmetry]
   exact Iff.rfl
 
-set_option linter.deprecated false in
-@[deprecated SetRel.prodMk_mem_comp (since := "2026-09-01")]
+@[deprecated SetRel.prodMk_mem_comp +typeChanged (since := "2026-09-01")]
 theorem mem_comp_of_mem_ball {V W : SetRel β β} {x y z : β} [V.IsSymm] (hx : x ∈ ball z V)
     (hy : y ∈ ball z W) : (x, y) ∈ V ○ W := by
   rw [mem_ball_symmetry] at hx
   exact ⟨z, hx, hy⟩
 
-@[deprecated SetRel.mem_comp_comp (since := "2026-09-01")]
+@[deprecated SetRel.mem_comp_comp +typeChanged (since := "2026-09-01")]
 theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   obtain ⟨x, y⟩ := p
@@ -502,7 +492,7 @@ theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
     rw [mem_ball_symmetry] at z_in
     exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
 
-@[deprecated SetRel.isCover_iff_subset_iUnion_ball (since := "2026-09-01")]
+@[deprecated SetRel.isCover_iff_subset_iUnion_ball +typeChanged (since := "2026-09-01")]
 lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β} :
     U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, ball y U := by
   simp [SetRel.IsCover, subset_def, ball, U.comm]
@@ -574,15 +564,13 @@ lemma SetRel.inv_ball_mem_nhdsWithin {x : α} {S : Set α} ⦃V : SetRel α α�
   rw [nhdsWithin_eq_comap_uniformity_of_mem x_in, mem_comap]
   exact ⟨V, V_in, Subset.rfl⟩
 
-set_option linter.deprecated false in
-@[deprecated SetRel.ball_mem_nhds (since := "2026-09-01")]
+@[deprecated SetRel.ball_mem_nhds +typeChanged (since := "2026-09-01")]
 lemma UniformSpace.ball_mem_nhds (x : α) ⦃V : SetRel α α⦄ (V_in : V ∈ 𝓤 α) :
     UniformSpace.ball x V ∈ 𝓝 x := by
   rw [nhds_eq_comap_uniformity]
   exact preimage_mem_comap V_in
 
-set_option linter.deprecated false in
-@[deprecated SetRel.inv_ball_mem_nhdsWithin (since := "2026-09-01")]
+@[deprecated SetRel.inv_ball_mem_nhdsWithin +typeChanged (since := "2026-09-01")]
 theorem UniformSpace.ball_mem_nhdsWithin {x : α} {S : Set α} ⦃V : SetRel α α⦄ (x_in : x ∈ S)
     (V_in : V ∈ 𝓤 α ⊓ 𝓟 (S ×ˢ S)) : UniformSpace.ball x V ∈ 𝓝[S] x := by
   rw [nhdsWithin_eq_comap_uniformity_of_mem x_in, mem_comap]
