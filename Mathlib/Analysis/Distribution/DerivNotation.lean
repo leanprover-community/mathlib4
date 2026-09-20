@@ -20,9 +20,6 @@ We also define the iterated line derivative and prove elementary properties.
 We define a Laplacian based on the sum of second derivatives formula and prove that the Laplacian
 thus defined is independent of the choice of basis.
 
-Currently, this type class is only used by Schwartz functions. Future uses include derivatives on
-test functions, distributions, tempered distributions, and Sobolev spaces (and other generalized
-function spaces).
 -/
 
 @[expose] public noncomputable section
