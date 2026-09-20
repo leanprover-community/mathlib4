@@ -444,7 +444,7 @@ of the real line. If `f` is differentiable on the interior of `D` and `f'` is ne
 theorem strictAntiOn_of_deriv_neg {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : ∀ x ∈ interior D, deriv f x < 0) : StrictAntiOn f D :=
   fun x hx y => by
-  simpa only [zero_mul, sub_lt_zero] using
+  simpa only [zero_mul, sub_neg] using
     hD.image_sub_lt_mul_sub_of_deriv_lt hf
       (fun z hz => (differentiableAt_of_deriv_ne_zero (hf' z hz).ne).differentiableWithinAt) hf' x
       hx y

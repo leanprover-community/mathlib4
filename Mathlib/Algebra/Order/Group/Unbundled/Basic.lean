@@ -610,7 +610,7 @@ theorem div_lt_one' : a / b < 1 ↔ a < b := by
 
 alias ⟨lt_of_sub_neg, sub_neg_of_lt⟩ := sub_neg
 
-alias sub_lt_zero := sub_neg
+@[deprecated (since := "2026-09-20")] alias sub_lt_zero := sub_neg
 
 @[to_additive]
 theorem lt_div_iff_mul_lt : a < c / b ↔ a * b < c := by

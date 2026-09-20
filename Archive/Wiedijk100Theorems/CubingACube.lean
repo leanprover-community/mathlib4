@@ -364,7 +364,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   rw [mem_singleton_iff] at h2i'
   let x := c.b j.succ + c.w - (cs i').w
   have hx : x < (cs i).b j.succ := by
-    dsimp only [x]; rw [← bi, add_sub_assoc, add_lt_iff_neg_left, sub_lt_zero]
+    dsimp only [x]; rw [← bi, add_sub_assoc, add_lt_iff_neg_left, sub_neg]
     apply mi_strict_minimal (Ne.symm h2i') hi'
   refine ⟨x, ⟨?_, ?_⟩, ?_⟩
   · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true, mem_Ico, sub_eq_add_neg, x]

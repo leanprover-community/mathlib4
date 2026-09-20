@@ -51,7 +51,7 @@ theorem valMinAbs_inj : a.valMinAbs = b.valMinAbs ↔ a = b :=
 lemma valMinAbs_nonneg_iff [NeZero n] (x : ZMod n) : 0 ≤ x.valMinAbs ↔ x.val ≤ n / 2 := by
   rw [valMinAbs_def_pos]; split_ifs with h
   · exact iff_of_true (Nat.cast_nonneg _) h
-  · exact iff_of_false (sub_lt_zero.2 <| Int.ofNat_lt.2 x.val_lt).not_ge h
+  · exact iff_of_false (sub_neg.2 <| Int.ofNat_lt.2 x.val_lt).not_ge h
 
 set_option backward.isDefEq.respectTransparency false in
 lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val = n := by

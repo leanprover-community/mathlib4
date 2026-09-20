@@ -550,7 +550,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
 omit [PosMulReflectLT α] in
 theorem mul_sub_mul_div_mul_neg_iff (hc : c ≠ 0) (hd : d ≠ 0) :
     (a * d - b * c) / (c * d) < 0 ↔ a / c < b / d := by
-  rw [mul_comm b c, ← div_sub_div _ _ hc hd, sub_lt_zero]
+  rw [mul_comm b c, ← div_sub_div _ _ hc hd, sub_neg]
 
 omit [PosMulReflectLT α] in
 theorem mul_sub_mul_div_mul_nonpos_iff (hc : c ≠ 0) (hd : d ≠ 0) :
