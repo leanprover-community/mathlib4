@@ -228,7 +228,7 @@ lemma mk_mul_eq_iff {a b c : α} :
   simp [QuotientGroup.eq, mul_assoc]
 
 @[to_additive (attr := simp)]
-lemma mk_mul_eq_mk_mul {a b c : α} :
+lemma mk_mul_left_cancel_iff {a b c : α} :
     (mk (a * b) : α ⧸ s) = mk (a * c) ↔ (mk b : α ⧸ s) = mk c := by
   simp [mk_mul_eq_iff]
 
