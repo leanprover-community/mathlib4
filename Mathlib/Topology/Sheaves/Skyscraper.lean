@@ -233,7 +233,8 @@ def skyscraperPresheafStalkOfNotSpecializesIsTerminal [HasColimits C] {y : X} (h
   IsTerminal.ofIso terminalIsTerminal (skyscraperPresheafStalkOfNotSpecializes _ _ h).symm
 
 theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
-  classical exact
+  classical
+  exact
     (Presheaf.isSheaf_iso_iff (eqToIso <| skyscraperPresheaf_eq_pushforward p₀ A)).mpr
       (Sheaf.pushforward_sheaf_of_sheaf _
         (Presheaf.isSheaf_on_punit_of_isTerminal _ (by
