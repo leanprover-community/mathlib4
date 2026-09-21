@@ -48,12 +48,10 @@ lemma equalizer_le : Subfunctor.equalizer f g ≤ A :=
 @[simp]
 lemma equalizer_self : Subfunctor.equalizer f f = A := by aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_equalizer_iff {i : C} (x : A.toFunctor.obj i) :
     x.1 ∈ (Subfunctor.equalizer f g).obj i ↔ f.app i x = g.app i x := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor) :
     range (φ ≫ A.ι) ≤ Subfunctor.equalizer f g ↔ φ ≫ f = φ ≫ g := by
   rw [NatTrans.ext_iff]

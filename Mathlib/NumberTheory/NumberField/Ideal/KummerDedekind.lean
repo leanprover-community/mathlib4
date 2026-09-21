@@ -151,7 +151,7 @@ private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :
     (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset :=
   (normalizedFactorsEquiv (f := (mapEquiv (Int.quotientSpanNatEquivZMod p)).toMulEquiv)
     (by simp) (map (Ideal.Quotient.mk (span {(p : ℤ)})) A)).trans
-      (Equiv.subtypeEquivRight (fun _ ↦ by simp [Polynomial.map_map]))
+      (Equiv.subtypeEquivRight (fun _ ↦ by simp [Polynomial.map_map, mem_primeFactors]))
 
 private theorem primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q : (ZMod p)[X]}
     (hQ : Q ∈ (normalizedFactors (map (Int.castRingHom (ZMod p)) A)).toFinset) :
@@ -169,7 +169,7 @@ with the monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
     primesOver (span {(p : ℤ)}) (𝓞 K) ≃ monicFactorsMod θ p :=
   have h : span {(p : ℤ)} ≠ ⊥ := by simp [NeZero.ne p]
-  ((Equiv.Set.congr (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
+  ((Set.equivOfEq (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
     (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
     (Int.ideal_span_isMaximal_of_prime p) h
       (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans <|

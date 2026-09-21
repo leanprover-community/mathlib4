@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fin.Rotate
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.NormNum.Ineq
 
@@ -360,7 +361,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   suffices LinearIndependent R ![(a * d - b * c) • x, (a * d - b * c) • y] by
     rwa [pair_smul_iff (sub_ne_zero_of_ne h)] at this
   convert! pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
-  ext i; fin_cases i <;> simp <;> module
+  module_nf
 
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
     LinearIndependent R ![x, c • x + y] ↔ LinearIndependent R ![x, y] := by

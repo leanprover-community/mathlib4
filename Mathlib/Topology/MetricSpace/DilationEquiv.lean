@@ -54,6 +54,7 @@ section PseudoEMetricSpace
 
 variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
+@[macro_inline]
 instance : EquivLike (X ≃ᵈ Y) X Y where
   coe f := f.1
   inv f := f.1.symm

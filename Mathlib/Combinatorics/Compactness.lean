@@ -6,7 +6,7 @@ Authors: Bhavik Mehta
 module
 
 import Mathlib.Topology.Compactness.Compact
-public import Mathlib.Data.Finite.Defs
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Tactic.ToAdditive
