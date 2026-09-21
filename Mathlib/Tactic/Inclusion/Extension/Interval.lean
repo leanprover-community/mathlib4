@@ -367,14 +367,12 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
   · simp only [Interval.map_map, Interval.mem_map_iff, Function.comp_apply, map_pow]
     obtain hn | hpos : Odd n ∨ 0 ≤ I.lb := by simpa [Nat.odd_iff] using hsign
     · simpa [hn.pow_le_pow] using And.intro hl hu
-    · have hx0 : 0 ≤ x := by
-        simpa [map_zero] using (f.monotone.withBot_map hpos).trans hx.1
+    · have hx0 : 0 ≤ x := by simpa [map_zero] using (f.monotone.withBot_map hpos).trans hx.1
       constructor <;> intro a ha
       · apply pow_le_pow_left₀ _ (hl _ ha) n
         simpa [ha, map_zero] using f.monotone.withBot_map hpos
       · exact pow_le_pow_left₀ hx0 (hu _ ha) n
-  all_goals
-    obtain ⟨hn, _⟩ : Even n ∧ ¬0 ≤ I.lb := by simpa [← Nat.odd_iff] using hsign
+  all_goals obtain ⟨hn, _⟩ : Even n ∧ ¬0 ≤ I.lb := by grind
   · obtain ⟨ub, hub, hub0⟩ := WithTop.le_coe_iff.mp hneg
     have hub0 : f ub ≤ 0 := by simpa [map_zero] using f.monotone hub0
     constructor
