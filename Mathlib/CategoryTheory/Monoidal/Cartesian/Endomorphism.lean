@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.Algebra.Ring.Defs
 
 /-!
-# Endomorphism ring (resp. semiring) of a commutative group (resp. monoid) object
+# Endomorphism semiring (resp. ring) of a commutative monoid (resp. group) object
 
 Given an additive monoid object `G : AddMon C`, whose underlying structure is commutative, we
 show that its endomorphism type `End G` is a semiring. If this object is a group object,
@@ -30,8 +30,8 @@ variable {G : AddMon C} {H : AddMon C}
 
 instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (G ⟶ G) := Hom.addCommMonoid
 
-lemma AddMon.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
-    : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
+lemma AddMon.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H) :
+    (f + g).hom = lift f.hom g.hom ≫ σ := rfl
 
 namespace AddMon.End
 
@@ -56,15 +56,15 @@ lemma toHom_eq (f g : End G) : f = g ↔ End.toHom f = End.toHom g := by
   · exact AddMon.Hom.ext' (congrArg AddMon.Hom.hom h)
   · exact End.ext h
 
-lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X]
-  : toHom (f + g) = toHom f + toHom g := rfl
+lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
+  toHom (f + g) = toHom f + toHom g := rfl
 
 lemma toHom_zero : toHom (0 : End G) = 0 := rfl
 
 lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rfl
 
 
-/-- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
+/-- For a commutative addtitive monoid object `G`, the endomorphisms `End G` has
 an additive commutative monoid structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G) where
   add_assoc f g h := by
@@ -81,7 +81,7 @@ scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (End G
     simp only [toHom_eq, toHom_add]
     exact add_comm (toHom f) (toHom g)
 
-/-- For a commutaive addtitive monoid object `G`, the endomorphisms `End G` has
+/-- For a commutative addtitive monoid object `G`, the endomorphisms `End G` has
 an semiring structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Semiring (End G) where
   zero_add := zero_add
@@ -113,8 +113,8 @@ open AddMonObj CartesianMonoidalCategory
 
 variable {G : AddGrp C} {H : AddGrp C}
 
-lemma AddGrp.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H)
-    : (f + g).hom = lift f.hom g.hom ≫ σ := rfl
+lemma AddGrp.add_hom [BraidedCategory C] [IsCommAddMonObj H.X] (f g : G ⟶ H) :
+    (f + g).hom = lift f.hom g.hom ≫ σ := rfl
 
 namespace AddGrp.End
 
@@ -137,8 +137,8 @@ lemma toHom_eq (f g : End G) : f = g ↔ End.toHom f = End.toHom g := by
   · exact AddGrp.hom_ext_iff.mpr (congrArg AddMon.Hom.hom (congrArg InducedCategory.Hom.hom h))
   · exact End.ext h
 
-lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X]
-  : toHom (f + g) = toHom f + toHom g := rfl
+lemma toHom_add (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
+  toHom (f + g) = toHom f + toHom g := rfl
 
 lemma toHom_zero : toHom (0 : End G) = 0 := rfl
 
@@ -146,7 +146,7 @@ lemma toHom_comp (f g : End G) : toHom (f ≫ g) = (toHom f) ≫ (toHom g) := rf
 
 
 
-/-- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
+/-- For a commutative addtitive group object `G`, the endomorphisms `End G` has
 an additive commutative group structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G) where
   add_assoc f g h := by
@@ -172,7 +172,7 @@ scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommGroup (End G)
     simp only [toHom_eq, toHom_add]
     exact add_comm (toHom f) (toHom g)
 
-/-- For a commutaive addtitive group object `G`, the endomorphisms `End G` has
+/-- For a commutative addtitive group object `G`, the endomorphisms `End G` has
 an ring structure -/
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Ring (End G) where
   zero_add := zero_add

@@ -11,8 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 
-
-
 /-!
 # Yoneda embedding of `Mon C`
 
