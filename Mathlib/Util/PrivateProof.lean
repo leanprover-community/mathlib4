@@ -32,6 +32,9 @@ friction that `by exact` avoids.
 
 `private%` was considered, but this interferes with the parsing of antiquotations like
 `$[private%$tk]` (for e.g. `private` modifiers on declarations).
+
+TODO: is there a way to avoid the need for `(_ :)` when using dot notation (e.g.
+`(private exists_foo x :).choose`)?
 -/
 
 namespace Mathlib.Tactic.PrivateProof
@@ -50,6 +53,14 @@ Note that `by ...` already wraps terms in auxiliary lemmas if possible; `private
 on bare terms over `by exact` to communicate intent.
 
 If the term is not known to be a proof, `private` fails.
+
+If the type of the proof term itself uses private definitions, `private` will fail, as a wrapped
+proof's type is unavoidably public. If wrapping a nested proof term, however, consider trying to
+wrap an outer proof term which has a public type instead. (If this is not possible, `private` is is
+likely insufficient.)
+
+If dot notation is used on the wrapped proof, elaborating without the expected type via `(_ :)` may
+be necessary, e.g. `(private exists_foo x :).choose`.
 
 Note that `field := private ...` for structure instances is distinct, and allows wrapping data in
 auxiliary definitions as well. See also `private_decl%` for similar behavior that also includes
