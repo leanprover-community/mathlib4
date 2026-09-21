@@ -94,7 +94,6 @@ theorem approx_parallelogram_law [DecidableEq F] :
   generalize (P + Q).naiveHeight + (P - Q).naiveHeight = A at haddsub ⊢
   generalize logHeight ((P + Q).sym2x (P - Q)) = B at hC haddsub
   generalize logHeight (P.sym2x Q) = B' at hPQ hC
-  generalize P.naiveHeight + Q.naiveHeight = A' at hPQ ⊢
   grind only [= abs.eq_1, = max_def]
 
 end NaiveHeight

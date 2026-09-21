@@ -139,7 +139,7 @@ theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l �
       (not_congr this).trans Nat.not_lt
 
 theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
-  nodup_iff_count_le_one.trans <| forall_congr' fun x => by rw [← count_pos_iff]; grind
+  nodup_iff_count_le_one.trans <| forall_congr' fun x => by grind
 
 theorem get_bijective_iff [BEq α] [LawfulBEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
   ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)

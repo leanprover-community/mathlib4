@@ -165,13 +165,7 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
   have : _ = _ := p.adj_snd hp.not_nil
   have : _ = _ := p.adj_penultimate hp.not_nil
-  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
-  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-  canonicalizer; a minimization would help. The original proof was:
-  `grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]` -/
-  simp_all
-  grind [IsCycle.snd_ne_penultimate]
+  grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_isBridge : G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ G.edgeSet → G.IsBridge e where
   mp hG e he := isBridge_iff_forall_cycle_notMem he |>.mpr fun v p hc ↦ hG p hc |>.elim

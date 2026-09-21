@@ -229,7 +229,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
         htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h)] at hnxb
     have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
       apply Walk.toSubgraph_adj_snd
-      rw [Walk.nil_takeUntil]
       grind
     rwa [Walk.snd_takeUntil, hp'.2.1] at this
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx'

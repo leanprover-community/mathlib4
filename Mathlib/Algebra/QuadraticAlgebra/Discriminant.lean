@@ -157,7 +157,6 @@ theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
   refine ⟨fun ⟨u, hu, _⟩ ↦ by rwa [Int.isUnit_sq u.isUnit, one_mul] at hu, fun h ↦ ?_⟩
   obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := by
     rw [← Prime.dvd_mul Int.prime_two, ← sq_sub_sq]
-    refine ⟨2 * a' - 2 * a, ?_⟩
     grind [discr]
   · exact ⟨-1, by simpa, by simpa⟩
   · exact ⟨1, by simpa, by simpa⟩
