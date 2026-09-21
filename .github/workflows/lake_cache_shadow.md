@@ -8,7 +8,7 @@ which only this pipeline reads.
 The pipeline caches mathlib and every git dependency in its manifest. mathlib
 goes to `revisions/<SCOPE>/<mathlib-sha>.jsonl`, and each dependency goes under
 that same commit, at
-`revisions/by-sha/<mathlib-sha>/<SCOPE>/<DEP>/<R-DEP>.jsonl`. `<DEP>` is the
+`revisions/deps/<mathlib-sha>/<SCOPE>/<DEP>/<R-DEP>.jsonl`. `<DEP>` is the
 dependency, `<R-DEP>` is its revision from the manifest, and `<SCOPE>` is
 `mathlib4-master-shadow`. One mathlib commit therefore names one complete set
 of packages. A dispatched run can set `cache_deps` to false, which leaves the
@@ -43,7 +43,7 @@ differ in where they look for a revision file:
     name = "shadow-deps"
     type = "s3"
     artifactEndpoint = "https://<host>/cache/artifacts"
-    revisionEndpoint = "https://<host>/cache/revisions/by-sha/<mathlib-sha>"
+    revisionEndpoint = "https://<host>/cache/revisions/deps/<mathlib-sha>"
 
 A job that fetches writes the public read endpoints, as above. The upload job
 writes the authenticated S3 endpoints, and `LAKE_CACHE_KEY` signs its requests.
@@ -112,7 +112,7 @@ package.
 One bucket holds these keys:
 
     revisions/mathlib4-master-shadow/<mathlib-sha>.jsonl
-    revisions/by-sha/<mathlib-sha>/mathlib4-master-shadow/<DEP>/<R-DEP>.jsonl
+    revisions/deps/<mathlib-sha>/mathlib4-master-shadow/<DEP>/<R-DEP>.jsonl
     artifacts/mathlib4-master-shadow/<content-hash>.art
     artifacts/mathlib4-master-shadow/<DEP>/<content-hash>.art
     analysis/<toolchain-slug>/_latest.txt
@@ -127,7 +127,7 @@ names. The workflow owns the `analysis/` prefix; Lake owns the other two.
 
 The revision keys carry the mathlib sha and the artifact keys leave it out. An
 old commit therefore stays replayable for as long as its revision files live,
-and the artifacts stay shared. `revisions/by-sha/<mathlib-sha>/` is one prefix
+and the artifacts stay shared. `revisions/deps/<mathlib-sha>/` is one prefix
 per commit, so a lifecycle rule can evict a commit as a unit. A lifecycle rule can
 expire an artifact by age instead: Lake re-uploads every artifact a run uses, so an object that
 stops being written is an object no recent run references.
@@ -192,7 +192,7 @@ that do not match, and the modules rebuild.
   and leaves the checkout untouched. Every package in the workspace inherits
   it, dependencies included.
 - The export of each dependency, with `--package`.
-- The `by-sha` revision endpoint, which pairs a dependency's revision with the
+- The `deps` revision endpoint, which pairs a dependency's revision with the
   upstreams it was built against.
 
 ## Toolchain override

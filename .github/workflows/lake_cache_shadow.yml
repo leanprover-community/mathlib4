@@ -280,7 +280,7 @@ jobs:
               "$LAKE_CACHE_ARTIFACT_ENDPOINT" "$LAKE_CACHE_REVISION_ENDPOINT"
             if [ -n "$prev" ]; then
               printf '[[cache.service]]\nname = "shadow-deps-prev"\ntype = "s3"\n'
-              printf 'artifactEndpoint = "%s"\nrevisionEndpoint = "%s/by-sha/%s"\n' \
+              printf 'artifactEndpoint = "%s"\nrevisionEndpoint = "%s/deps/%s"\n' \
                 "$LAKE_CACHE_ARTIFACT_ENDPOINT" "$LAKE_CACHE_REVISION_ENDPOINT" "$prev"
             fi
           } > .lake/shadow-services.toml
@@ -521,7 +521,7 @@ jobs:
           name = "shadow-deps"
           type = "s3"
           artifactEndpoint = "$ARTIFACT_ENDPOINT"
-          revisionEndpoint = "$REVISION_ENDPOINT/by-sha/$MATHLIB_SHA"
+          revisionEndpoint = "$REVISION_ENDPOINT/deps/$MATHLIB_SHA"
           EOF
 
       - name: Checkout mathlib (workspace for put-staged)
@@ -576,7 +576,7 @@ jobs:
             --scope="$CACHE_SCOPE" \
             --rev="$MATHLIB_SHA" 2>&1 | tee /tmp/put.log
 
-      # One upload per dependency, into `revisions/by-sha/<mathlib sha>/`.
+      # One upload per dependency, into `revisions/deps/<mathlib sha>/`.
       # Every dependency of this mathlib commit lands under that one prefix,
       # so the commit names a complete, self-consistent set. The artifacts go
       # to `artifacts/<scope>/`, which carries no sha, so a dependency whose
@@ -742,7 +742,7 @@ jobs:
           name = "shadow-deps"
           type = "s3"
           artifactEndpoint = "$ARTIFACT_ENDPOINT"
-          revisionEndpoint = "$REVISION_ENDPOINT/by-sha/$MATHLIB_SHA"
+          revisionEndpoint = "$REVISION_ENDPOINT/deps/$MATHLIB_SHA"
           EOF
 
       - name: Checkout mathlib
@@ -915,7 +915,7 @@ jobs:
           name = "shadow-deps"
           type = "s3"
           artifactEndpoint = "$ARTIFACT_ENDPOINT"
-          revisionEndpoint = "$REVISION_ENDPOINT/by-sha/$MATHLIB_SHA"
+          revisionEndpoint = "$REVISION_ENDPOINT/deps/$MATHLIB_SHA"
           EOF
 
       - name: install elan
