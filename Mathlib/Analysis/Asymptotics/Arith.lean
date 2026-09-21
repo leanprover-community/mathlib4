@@ -42,40 +42,40 @@ section Abs
 variable {u v : α → ℝ}
 
 @[simp]
-theorem isBigOWith_abs_right : (IsBigOWith c l f fun x => |u x|) ↔ IsBigOWith c l f u :=
-  by simpa only [Real.norm_eq_abs] using
+theorem isBigOWith_abs_right : (IsBigOWith c l f fun x => |u x|) ↔ IsBigOWith c l f u := by
+  simpa only [Real.norm_eq_abs] using
     (isBigOWith_norm_right (c := c) (l := l) (f := f) (g' := u))
 
 alias ⟨IsBigOWith.of_abs_right, IsBigOWith.abs_right⟩ := isBigOWith_abs_right
 
 @[simp]
-theorem isBigO_abs_right : (f =O[l] fun x => |u x|) ↔ f =O[l] u :=
-  by simpa only [Real.norm_eq_abs] using (isBigO_norm_right (l := l) (f := f) (g' := u))
+theorem isBigO_abs_right : (f =O[l] fun x => |u x|) ↔ f =O[l] u := by
+  simpa only [Real.norm_eq_abs] using (isBigO_norm_right (l := l) (f := f) (g' := u))
 
 alias ⟨IsBigO.of_abs_right, IsBigO.abs_right⟩ := isBigO_abs_right
 
 @[simp]
-theorem isLittleO_abs_right : (f =o[l] fun x => |u x|) ↔ f =o[l] u :=
-  by simpa only [Real.norm_eq_abs] using (isLittleO_norm_right (l := l) (f := f) (g' := u))
+theorem isLittleO_abs_right : (f =o[l] fun x => |u x|) ↔ f =o[l] u := by
+  simpa only [Real.norm_eq_abs] using (isLittleO_norm_right (l := l) (f := f) (g' := u))
 
 alias ⟨IsLittleO.of_abs_right, IsLittleO.abs_right⟩ := isLittleO_abs_right
 
 @[simp]
-theorem isBigOWith_abs_left : IsBigOWith c l (fun x => |u x|) g ↔ IsBigOWith c l u g :=
-  by simpa only [Real.norm_eq_abs] using
+theorem isBigOWith_abs_left : IsBigOWith c l (fun x => |u x|) g ↔ IsBigOWith c l u g := by
+  simpa only [Real.norm_eq_abs] using
     (isBigOWith_norm_left (c := c) (l := l) (f' := u) (g := g))
 
 alias ⟨IsBigOWith.of_abs_left, IsBigOWith.abs_left⟩ := isBigOWith_abs_left
 
 @[simp]
-theorem isBigO_abs_left : (fun x => |u x|) =O[l] g ↔ u =O[l] g :=
-  by simpa only [Real.norm_eq_abs] using (isBigO_norm_left (l := l) (f' := u) (g := g))
+theorem isBigO_abs_left : (fun x => |u x|) =O[l] g ↔ u =O[l] g := by
+  simpa only [Real.norm_eq_abs] using (isBigO_norm_left (l := l) (f' := u) (g := g))
 
 alias ⟨IsBigO.of_abs_left, IsBigO.abs_left⟩ := isBigO_abs_left
 
 @[simp]
-theorem isLittleO_abs_left : (fun x => |u x|) =o[l] g ↔ u =o[l] g :=
-  by simpa only [Real.norm_eq_abs] using (isLittleO_norm_left (l := l) (f' := u) (g := g))
+theorem isLittleO_abs_left : (fun x => |u x|) =o[l] g ↔ u =o[l] g := by
+  simpa only [Real.norm_eq_abs] using (isLittleO_norm_left (l := l) (f' := u) (g := g))
 
 alias ⟨IsLittleO.of_abs_left, IsLittleO.abs_left⟩ := isLittleO_abs_left
 

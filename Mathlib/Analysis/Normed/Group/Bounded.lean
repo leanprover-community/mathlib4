@@ -72,11 +72,8 @@ theorem Filter.tendsto_inv_cobounded : Tendsto Inv.inv (cobounded E) (cobounded 
 lemma isBounded_iff_forall_norm_le' : Bornology.IsBounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ ≤ C := by
   simpa only [Set.subset_def, mem_closedBall_one_iff] using isBounded_iff_subset_closedBall (1 : E)
 
+@[to_additive exists_norm_le]
 alias ⟨Bornology.IsBounded.exists_norm_le', _⟩ := isBounded_iff_forall_norm_le'
-
-alias ⟨Bornology.IsBounded.exists_norm_le, _⟩ := isBounded_iff_forall_norm_le
-
-attribute [to_additive existing exists_norm_le] Bornology.IsBounded.exists_norm_le'
 
 @[to_additive exists_pos_norm_le]
 lemma Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
