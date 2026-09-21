@@ -51,7 +51,7 @@ theorem dotProduct_add_one [Mul α] [Add α] [Zero α] (n : Nat) (l₁ l₂ : Li
 requiring `Eq.trans` and `congrArg` glue at each step. -/
 theorem dotProduct_add_one_cons_cons [Mul α] [Add α] [Zero α] {n : Nat} (a b : α) {l₁ l₂ : List α}
     {c : α} (h : dotProduct n l₁ l₂ = c) : dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + c := by
-  rw [dotProduct_add_one, List.headD_cons, List.headD_cons, List.tail_cons, List.tail_cons, h]
+  simp [dotProduct_add_one, h]
 
 /-- The transpose of a list of rows as `n` rows, where row `j` collects the `j`-th entries of
 the input rows padded with `0`. Defined by recursion on the rows with explicit padding rather than
@@ -81,7 +81,7 @@ theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (
     · simpa using hj
 
 /-- The product of two lists of rows as `l` rows of `n` entries.
-Each entry is a dot product of `m` terms, with `A`/`B` read as an `l × m` and an `m × n` matrix
+Each entry is a dot product of `m` terms, with `A` and `B` read as an `l × m` and an `m × n` matrix
 respectively. -/
 @[expose] def mul [Mul α] [Add α] [Zero α] (l m n : Nat) (A B : List (List α)) : List (List α) :=
   let Bt := transpose n B
