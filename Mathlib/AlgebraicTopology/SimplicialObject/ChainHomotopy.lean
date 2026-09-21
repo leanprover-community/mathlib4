@@ -119,10 +119,7 @@ private lemma comm_succ (n : ℕ) :
     rw [Finset.disjoint_iff_ne]
     grind
   have h₃ : Disjoint (Finset.disjUnion _ _ h₂) {(0, 0), (Fin.last _, Fin.last _)} := by
-    rw [Finset.disjoint_iff_ne]
-    simp only [Finset.mem_insert, forall_eq_or_imp, Prod.forall]
-    rintro ⟨a, _⟩ ⟨b, _⟩
-    grind
+    grind [Finset.disjoint_iff_ne]
   have h₄ : Disjoint (Finset.disjUnion _ _ h₁) (Finset.disjUnion _ _ h₃) := by
     rw [Finset.disjoint_iff_ne]
     simp only [Finset.compl_filter, not_lt, Finset.disjUnion_eq_union, Finset.mem_union,
