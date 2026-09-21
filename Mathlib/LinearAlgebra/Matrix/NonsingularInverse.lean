@@ -401,8 +401,8 @@ theorem linearIndependent_row_of_invertible {R : Type*} [Ring R] [IsArtinianRing
 @[deprecated (since := "2026-09-21")] alias linearIndependent_rows_of_invertible :=
   linearIndependent_row_of_invertible
 
-theorem linearIndependent_col_of_invertible {R : Type*} [CommRing R] [IsArtinianRing R]
-    (A : Matrix m m R) [Invertible A] : LinearIndependent R A.col :=
+theorem linearIndependent_col_of_invertible [IsArtinianRing R] (A : Matrix m m R) [Invertible A] :
+    LinearIndependent R A.col :=
   linearIndependent_col_iff_isUnit.2 <| isUnit_of_invertible A
 
 @[deprecated (since := "2026-09-21")] alias linearIndependent_cols_of_invertible :=
