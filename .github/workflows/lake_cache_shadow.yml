@@ -2,14 +2,12 @@ name: Lake cache shadow (master)
 
 # A shadow pipeline for Lake's built-in artifact cache. It runs against the
 # live mathlib4 master branch, beside the regular master CI and independent
-# of it. It writes to an isolated `mathlib4-master-shadow` scope, so no other
-# consumer reads what it produces.
+# of it. It writes to the isolated `mathlib4-master-shadow` scope, which only
+# this pipeline reads.
 #
-# `lake_cache_shadow.md`, beside this file, documents the design: the cache
-# service configuration, the push and pull sequences, what a warm run adds,
-# the storage layout, the scope, and what a full cache hit
-# requires. It also lists the secrets and variables the pipeline needs. The
-# comments below cover what each step does.
+# `lake_cache_shadow.md`, beside this file, documents the design and lists the
+# secrets and variables the pipeline needs. The comments below cover what each
+# step does.
 
 on:
   schedule:
@@ -71,9 +69,8 @@ env:
   # artifacts apart from the rest of the bucket.
   SHADOW_SCOPE: mathlib4-master-shadow
   # Dependencies to exclude from caching, separated by spaces. It is empty:
-  # the pipeline caches all of them, proofwidgets included. proofwidgets
-  # commits its npm output and the Lake traces that guard the npm steps, so a
-  # build at a pinned revision never calls npm.
+  # the pipeline caches all of them. See "Dependency skip list" in
+  # `lake_cache_shadow.md`.
   DEP_SKIP: ''
   # Whether this run caches dependencies. A scheduled run always does. A
   # dispatched run follows the `cache_deps` input.
@@ -94,18 +91,17 @@ jobs:
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
-      # The scope qualifiers, so the later jobs use these values and do not
-      # derive them again.
+      # The toolchain slug keys the analysis chain. The upload job reads it
+      # from here rather than deriving it again.
       tcslug: ${{ steps.plan.outputs.tcslug }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
       # Let every package in the workspace write Lake's artifact cache.
-      # mathlib does not set `enableArtifactCache` in its lakefile, and this
-      # takes precedence over the lakefile anyway: Lake reads the environment
-      # first, then the workspace root's configuration. It leaves the checkout
-      # untouched, so the artifacts match an unpatched mathlib, which is what
-      # the `downstream` job replays.
+      # mathlib leaves `enableArtifactCache` unset, and Lake reads the
+      # environment before the workspace root's configuration. The checkout
+      # stays untouched, so the artifacts match the mathlib that `downstream`
+      # resolves from git.
       LAKE_ARTIFACT_CACHE: true
       STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
     defaults:
@@ -150,8 +146,8 @@ jobs:
         run: |
           mkdir -p pr-branch/.lake/
           # The landrun ruleset mounts $HOME/.cache/mathlib read-only, and
-          # landrun fails if that path does not exist. A run that skips legacy
-          # hydration never creates it, so this step does.
+          # landrun requires that path to exist. Legacy hydration creates it,
+          # and a run that skips hydration needs this step instead.
           mkdir -p "$HOME/.cache/mathlib/"
           mkdir -p _work
 
@@ -382,10 +378,9 @@ jobs:
       # workspace root, and `--package` points it at a dependency instead, so
       # every export runs in this workspace and replays what the build above
       # produced. `@<DEP>` names the default targets of the dependency, which
-      # reach the modules mathlib does not import; that costs seconds here and
-      # makes the bucket serve a consumer that uses more of the dependency
-      # than mathlib does. A failure leaves that one dependency out of this
-      # run's mappings, and `consume` reports the rebuild.
+      # reach the modules mathlib leaves unimported. A failure leaves that one
+      # dependency out of this run's mappings, and `consume` reports the
+      # rebuild.
       - name: Export dependency mappings
         run: |
           cd pr-branch
