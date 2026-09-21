@@ -699,10 +699,22 @@ instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
 
 omit [NeZero n]
 
-instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
+instance isCyclotomicExtension_of_charZero [CharZero K] :
+    IsCyclotomicExtension {n} K (CyclotomicField n K) :=
   match n with
   | 0 => inferInstance
   | _ + 1 => inferInstance
+
+-- Ensure that there are no diamonds with `ℚ`,
+-- but there is at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
+example : CyclotomicField.algebra n ℚ = DivisionRing.toRatAlgebra := rfl
+
+/-- Instance search resolves `Algebra ℚ (CyclotomicField n ℚ)` to `DivisionRing.toRatAlgebra`,
+which is not defeq to `CyclotomicField.algebra n ℚ` at `reducible_and_instances` transparency, so
+`CyclotomicField.isCyclotomicExtension_of_charZero` does not apply to goals stated over `ℚ`. This
+instance restates it in the form expected by instance search. -/
+instance isCyclotomicExtension_rat : IsCyclotomicExtension {n} ℚ (CyclotomicField n ℚ) :=
+  isCyclotomicExtension_of_charZero n ℚ
 
 instance [NumberField K] : NumberField (CyclotomicField n K) :=
   IsCyclotomicExtension.numberField {n} K _
