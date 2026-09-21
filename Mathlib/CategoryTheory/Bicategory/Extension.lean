@@ -120,7 +120,6 @@ def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g 
   map η := LeftExtension.homMk (η.right ▷ h) <| by
     simp [-LeftExtension.w, ← LeftExtension.w η]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between left extensions by cancelling the whiskered identities. -/
 @[simps! right]
 def whiskerIdCancel
@@ -128,12 +127,12 @@ def whiskerIdCancel
     s.ofCompId ⟶ t :=
   LeftExtension.homMk (τ.right ≫ (ρ_ _).hom)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered extensions. -/
 @[simps! right]
 def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
     s.whisker h ⟶ t.whisker h :=
   StructuredArrow.homMk (i.right ▷ h) <| by
+    dsimp only [precomp]
     rw [← cancel_mono (α_ _ _ _).inv]
     calc
       _ = (s.unit ≫ f ◁ i.right) ▷ h := by simp [-LeftExtension.w]
@@ -276,7 +275,6 @@ def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) whe
   map η := LeftLift.homMk (h ◁ η.right) <| by
     simp [-LeftLift.w, ← LeftLift.w η]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between left lifts by cancelling the whiskered identities. -/
 @[simps! right]
 def whiskerIdCancel
@@ -284,12 +282,12 @@ def whiskerIdCancel
     s.ofIdComp ⟶ t :=
   LeftLift.homMk (τ.right ≫ (λ_ _).hom)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered lifts. -/
 @[simps! right]
 def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
     s.whisker h ⟶ t.whisker h :=
   StructuredArrow.homMk (h ◁ i.right) <| by
+    dsimp only [postcomp]
     rw [← cancel_mono (α_ _ _ _).hom]
     calc
       _ = h ◁ (s.unit ≫ i.right ▷ f) := by simp [-LeftLift.w]
@@ -432,7 +430,6 @@ def whiskering {x : B} (h : c ⟶ x) : RightExtension f g ⥤ RightExtension f (
   map η := RightExtension.homMk (η.left ▷ h) <| by
     simp [-RightExtension.w, ← RightExtension.w η]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between right extensions by cancelling the whiskered identities. -/
 @[simps! left]
 def whiskerIdCancel
@@ -440,12 +437,12 @@ def whiskerIdCancel
     s ⟶ t.ofCompId :=
   RightExtension.homMk ((ρ_ _).inv ≫ τ.left)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered extensions. -/
 @[simps! left]
 def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
     s.whisker h ⟶ t.whisker h :=
   CostructuredArrow.homMk (i.left ▷ h) <| by
+    dsimp only [precomp]
     rw [← cancel_epi (α_ _ _ _).hom]
     calc
       _ = (f ◁ i.left ≫ t.counit) ▷ h := by simp [-RightExtension.w]
@@ -588,7 +585,6 @@ def whiskering {x : B} (h : x ⟶ c) : RightLift f g ⥤ RightLift f (h ≫ g) w
   map η := RightLift.homMk (h ◁ η.left) <| by
     simp [-RightLift.w, ← RightLift.w η]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between right lifts by cancelling the whiskered identities. -/
 @[simps! left]
 def whiskerIdCancel
@@ -596,12 +592,12 @@ def whiskerIdCancel
     s ⟶ t.ofIdComp :=
   RightLift.homMk ((λ_ _).inv ≫ τ.left)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered lifts. -/
 @[simps! left]
 def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
     s.whisker h ⟶ t.whisker h :=
   CostructuredArrow.homMk (h ◁ i.left) <| by
+    dsimp only [postcomp]
     rw [← cancel_epi (α_ _ _ _).inv]
     calc
       _ = h ◁ (i.left ▷ f ≫ t.counit) := by simp [-RightLift.w]
