@@ -174,7 +174,7 @@ lemma of_apply_affineCombination
   (H : ∀ {ι : Type u_6} (s : Finset ι) (p : ι → P) (w : ι → k),
       ∑ i ∈ s, w i = 1 →
       f ((affineCombination k s p) w) = (affineCombination k s (f ∘ p)) w) :
-  IsAffineMap k f where
+    IsAffineMap k f where
   map_sConvexComb s := by
     rw [sConvexComb_eq_affineCombination, H s.weights.support _root_.id s.weights s.total,
       ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
