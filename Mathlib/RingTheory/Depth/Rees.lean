@@ -27,9 +27,9 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
   * for any `N : ModuleCat R` finitely generated and nontrivial such that `Supp N ⊆ V(I)`,
     `∀ i < n, Ext N M i = 0`
   * `∀ i < n, Ext (R ⧸ I) M i = 0`
-  * there exists a `N : ModuleCat R` finitely generated and nontrivial with `Supp N = V(I)`
+  * there exists an `N : ModuleCat R` finitely generated and nontrivial with `Supp N = V(I)`
     such that `∀ i < n, Ext N M i = 0`
-  * there exists a `M`-regular sequence of length `n` with every element in `I`
+  * there exists an `M`-regular sequence of length `n` with every element in `I`
 
 ## References
 
@@ -152,9 +152,9 @@ For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated an
 * for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 * `∀ i < n, Ext (R ⧸ I) M i = 0`
-* there exists a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+* there exists an `N : ModuleCat R` finitely generated and nontrivial with support equal to the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
-* there exists a `M`-regular sequence of length `n` with every element in `I`
+* there exists an `M`-regular sequence of length `n` with every element in `I`
 -/
 lemma exists_isRegular_tfae [Small.{v} R] [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
