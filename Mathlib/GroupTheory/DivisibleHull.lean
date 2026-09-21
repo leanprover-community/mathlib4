@@ -404,14 +404,14 @@ variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
 noncomputable
 def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) :=
-  have h₁ := by
+  have h₁ : (archimedeanClassOrderHom M).comp (archimedeanClassOrderHomInv M) = .id := by
     ext a
     induction a with | mk a
     induction a with | mk m s
     suffices ArchimedeanClass.mk (mk m 1) = ArchimedeanClass.mk (mk m s) by
       simpa [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
     simp_rw [aux_archimedeanClassMk_mk]
-  have h₂ := by
+  have h₂ : (archimedeanClassOrderHomInv M).comp (archimedeanClassOrderHom M) = .id := by
     ext a
     induction a with | mk _
     simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
