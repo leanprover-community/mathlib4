@@ -21,8 +21,15 @@ for all `a` and `b`, we have `dual (nakayamaAlgEquiv R A b * a) = dual (a * b)`.
 
 ## Main definitions and results
 
-
-
+* `FrobeniusAlgebra`: the **Frobenius algebra** class, which contains a `dual : Dual R A` such that
+  `mul.compr₂ dual` is bijective
+* `FrobeniusAlgebra.equivDual`: the isomorphism of a Frobenius algebra with its dual
+* `FrobeniusAlgebra.ofLinearEquiv` and `FrobeniusAlgebra.ofBilinForm`: inducing a Frobenius algebra
+  via a linear equivalence `σ : A ≃ₗ[R] Dual R A` or, respectively, via a left-separating bilinear
+  form `σ` such that `σ (a * b) c = σ a (b * c)`
+* `FrobeniusAlgebra.instFiniteDimensional`: a Frobenius algebra over a field is finite-dimensional
+* `FrobeniusAlgebra.nakayamaAlgEquiv`: the Nakayama automorphism such that
+  `dual (nakayamaAlgEquiv R A b * a) = dual (a * b)`
 -/
 
 variable {R A : Type*} [CommSemiring R]
@@ -108,13 +115,6 @@ noncomputable abbrev ofBilinForm {K A : Type*} [Field K] [Ring A] [Algebra K A]
 instance instFiniteDimensional {K A : Type*} [Field K] [Ring A] [Algebra K A]
     [FrobeniusAlgebra K A] : FiniteDimensional K A :=
   Basis.linearEquiv_dual_iff_finiteDimensional.mp ⟨equivDual K A⟩
-
-variable [FrobeniusAlgebra R A]
-
--- move
-lemma _root_.Module.Dual.eval_injective (R M : Type*) [CommSemiring R] [AddCommMonoid M]
-    [Module R M] : Function.Injective (Module.Dual.eval R (Module.Dual R M)) :=
-  Function.LeftInverse.injective (g := (Module.Dual.eval R M).dualMap) fun _ ↦ by ext; simp
 
 end NonAssoc
 

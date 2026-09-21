@@ -70,11 +70,8 @@ lemma comulLeft_eq_comulRight : comulLeft K A = comulRight K A := by
   calc
     _ = ∑ p ∈ S, p.1 ⊗ₜ[K] (p.2 * a) := by simp [hS, sum_tmul]
     _ = ∑ q ∈ S, (∑ p ∈ S, dual (p.2 * (a * q.1)) • p.1) ⊗ₜ[K] q.2 := by
-      simp_rw [sum_tmul]
-      rw [Finset.sum_comm]
-      apply Finset.sum_congr
-      · rfl
-      intro s hs
+      simp_rw +singlePass [sum_tmul, Finset.sum_comm]
+      refine Finset.sum_congr rfl fun s hs ↦ ?_
       have : ∑ x ∈ S, dual (R := K) (s.2 * a * x.1) • x.2 = s.2 * a := by
         simpa [hS, tmul_sum] using
           congr(β ($rTensor_comp_comulRight_comp_rid ((s.2 * a) ⊗ₜ[K] 1)))
@@ -112,22 +109,23 @@ noncomputable abbrev toCoalgebra : Coalgebra K A where
       lTensor_dual_comp_comulLeft_comp_lid]
     ext; simp
 
+open Coalgebra
+
 variable (K A) in
 attribute [local instance] toCoalgebra in
 /-- The coalgebra coming from a Frobenius algebra satisfies the Frobenius equations. -/
-theorem isFrobenius_toCoalgebra : Coalgebra.IsFrobenius K A where
+theorem isFrobenius_toCoalgebra : IsFrobenius K A where
   left_eq_right := by
-    simp only [Coalgebra.IsFrobenius.left, Coalgebra.IsFrobenius.right, CoalgebraStruct.comul]
+    simp only [IsFrobenius.left_def, IsFrobenius.right_def, comul]
     nth_rw 1 [comulLeft_eq_comulRight]
     ext
     simp [coevaluation_apply_one, tmul_sum, sum_tmul]
 
-open Coalgebra in
 /-- A coalgebra that satisfies the Frobenius equations is a Frobenius algebra with the counit
 as its dual. -/
 abbrev ofIsFrobenius (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Coalgebra R A]
     [IsFrobenius R A] : FrobeniusAlgebra R A where
   dual := counit
-  bijective_compr₂_mul := IsFrobenius.bijective_compr₂_mul_counit
+  bijective_compr₂_mul := IsFrobenius.compr₂_mul_counit_bijective
 
 end FrobeniusAlgebra
