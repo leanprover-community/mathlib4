@@ -18,7 +18,9 @@ pointwise dominated by a fixed function. This file provides a few variants of th
 
 public section
 
-open Filter ENNReal Topology
+open Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -104,8 +106,7 @@ theorem tendsto_lintegral_filter_of_dominated_convergence' {ι} {l : Filter ι}
   · refine h_lim.mono fun a h_lim => ?_
     apply @Tendsto.comp _ _ _ (fun n => x (n + k)) fun n => F n a
     · assumption
-    rw [tendsto_add_atTop_iff_nat]
-    assumption
+    rwa [tendsto_add_atTop_iff_nat]
 
 /-- **Dominated convergence theorem** for filters with a countable basis. -/
 theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
@@ -144,7 +145,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
@@ -223,7 +224,7 @@ lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpa
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto

@@ -5,7 +5,6 @@ Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.FieldTheory.Minpoly.Field

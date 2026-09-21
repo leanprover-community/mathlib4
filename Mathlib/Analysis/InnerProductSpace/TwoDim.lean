@@ -171,7 +171,6 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,

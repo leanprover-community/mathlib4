@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
 public import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.Algebra.Ring.Aut
 public import Mathlib.Algebra.Ring.Equiv
 
 /-!
@@ -25,7 +26,24 @@ variable (R : Type*) [Semiring R]
 
 /-- Each element of the group defines a semiring isomorphism. -/
 @[simps!]
-def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
-  { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
+def MulSemiringAction.toRingEquiv [MulSemiringAction G R] : G →* (R ≃+* R) where
+  toFun x := { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
+  map_one' := by ext; simp
+  map_mul' x y := by ext; simp [mul_smul]
+
+@[deprecated (since := "2026-06-19")] alias MulSemiringAction.toRingEquiv_apply :=
+MulSemiringAction.toRingEquiv_apply_apply
+
+@[deprecated (since := "2026-06-19")] alias MulSemiringAction.toRingEquiv_symm_apply :=
+MulSemiringAction.toRingEquiv_apply_symm_apply
+
+instance : MulSemiringAction (R ≃+* R) R where
+  smul := (· ·)
+  mul_smul _ _ _ := rfl
+  one_smul _ := rfl
+  smul_zero := map_zero
+  smul_one := map_one
+  smul_add := map_add
+  smul_mul := map_mul
 
 end Semiring

@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Big operators for Pi Types
@@ -141,7 +142,7 @@ variable [∀ i, NonAssocSemiring (R i)]
 @[ext]
 theorem RingHom.functions_ext [Finite I] (S : Type*) [NonAssocSemiring S] (g h : (∀ i, R i) →+* S)
     (H : ∀ (i : I) (x : R i), g (single i x) = h (single i x)) : g = h :=
-  RingHom.coe_addMonoidHom_injective <|
+  RingHom.toAddMonoidHom_injective <|
     @AddMonoidHom.functions_ext I _ R _ _ S _ (g : (∀ i, R i) →+ S) h H
 
 end RingHom
@@ -182,7 +183,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
   right_inv φ := by
     ext i m
     simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.finsetProd_apply, evalMonoidHom_apply, ]
+      MonoidHom.finsetProd_apply, evalMonoidHom_apply]
     let φ' i : M i → M' := ⇑(φ i)
     conv =>
       enter [1, 2, j]
@@ -198,16 +199,7 @@ end MulEquiv
 
 variable [Finite ι] [DecidableEq ι] {M : ι → Type*}
 
--- manually additivized to fix variable names
--- See https://github.com/leanprover-community/mathlib4/issues/11462
-lemma Pi.single_induction [∀ i, AddCommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
-    (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
-    (single : ∀ i m, p (Pi.single i m)) : p f := by
-  cases nonempty_fintype ι
-  rw [← Finset.univ_sum_single f]
-  exact Finset.sum_induction _ _ add zero (by simp [single])
-
-@[to_additive existing (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim)]
 lemma Pi.mulSingle_induction [∀ i, CommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
@@ -230,3 +222,21 @@ theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
   convert! eqOn_finsetProd h v <;> simp
 
 end EqOn
+
+section FunLike
+
+variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+  [IsOneApply F α β] [IsMulApply F α β]
+
+@[to_additive (attr := simp, grind =)]
+theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h => simp [his, h]
+
+@[to_additive (attr := norm_cast)]
+theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
+  ext; simp
+
+end FunLike

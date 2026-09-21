@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Util.Notation3
-public import Init.NotationExtra
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
@@ -15,6 +14,7 @@ public import Mathlib.Order.Lex
 
 /-!
 # Lexicographic order on a sigma type
+
 This file defines the lexicographic order on `Σₗ' i, α i`. `a` is less than `b` if its summand is
 strictly less than the summand of `b` or they are in the same summand and `a` is less than `b`
 there.

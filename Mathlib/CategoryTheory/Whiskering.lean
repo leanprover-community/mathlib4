@@ -41,30 +41,26 @@ section
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
   [Category.{v₃} E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerLeft F α : F ⋙ G ⟶ F ⋙ H` has components `α.app (F.obj X)`. -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
   app X := α.app (F.obj X)
   naturality X Y f := by rw [Functor.comp_map, Functor.comp_map, α.naturality]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, to_dual self]
 lemma id_hcomp (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) : 𝟙 F ◫ α = whiskerLeft F α := by
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerRight α F : G ⋙ F ⟶ H ⋙ F` has components `F.map (α.app X)`. -/
-@[to_dual self, simps (attr := to_dual self)]
+@[implicit_reducible, to_dual self, simps (attr := to_dual self)]
 def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
     G ⋙ F ⟶ H ⋙ F where
   app X := F.map (α.app X)
   naturality X Y f := by
     rw [Functor.comp_map, Functor.comp_map, ← F.map_comp, ← F.map_comp, α.naturality]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, to_dual self]
 lemma hcomp_id {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) : α ◫ 𝟙 F = whiskerRight α F := by
   ext
@@ -78,7 +74,7 @@ set_option backward.defeqAttrib.useBackward true in
 `(whiskeringLeft.obj F).obj G` is `F ⋙ G`, and
 `(whiskeringLeft.obj F).map α` is `whiskerLeft F α`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
   obj F :=
     { obj := fun G => F ⋙ G
@@ -95,7 +91,7 @@ set_option backward.defeqAttrib.useBackward true in
 `(whiskeringRight.obj H).obj F` is `F ⋙ H`, and
 `(whiskeringRight.obj H).map α` is `whiskerRight α H`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
   obj H :=
     { obj := fun F => F ⋙ H
@@ -203,7 +199,6 @@ theorem whiskerRight_comp {G H K : C ⥤ D} (α : G ⟶ H) (β : H ⟶ K) (F : D
     whiskerRight (α ≫ β) F = whiskerRight α F ≫ whiskerRight β F :=
   ((whiskeringRight C D E).obj F).map_comp α β
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none, reassoc]
 theorem whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α : F ⟶ G) (β : H ⟶ K) :
     whiskerLeft F β ≫ whiskerRight α K = whiskerRight α H ≫ whiskerLeft G β := by
@@ -301,7 +296,6 @@ theorem isoWhiskerRight_trans {G H K : C ⥤ D} (α : G ≅ H) (β : H ≅ K) (F
     isoWhiskerRight (α ≪≫ β) F = isoWhiskerRight α F ≪≫ isoWhiskerRight β F :=
   ((whiskeringRight C D E).obj F).mapIso_trans α β
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem isoWhiskerLeft_trans_isoWhiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α : F ≅ G) (β : H ≅ K) :
     isoWhiskerLeft F β ≪≫ isoWhiskerRight α K = isoWhiskerRight α H ≪≫ isoWhiskerLeft G β := by
@@ -310,21 +304,18 @@ theorem isoWhiskerLeft_trans_isoWhiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α
 
 variable {B : Type u₄} [Category.{v₄} B]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, to_dual none]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) =
     (Functor.associator _ _ _).inv ≫ whiskerLeft (F ⋙ G) α ≫ (Functor.associator _ _ _).hom := by
   cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, to_dual none]
 theorem whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
     whiskerRight (whiskerRight α F) G =
     (Functor.associator _ _ _).hom ≫ whiskerRight α (F ⋙ G) ≫ (Functor.associator _ _ _).inv := by
   cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none]
 theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
     whiskerRight (whiskerLeft F α) K =
@@ -344,7 +335,6 @@ theorem isoWhiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : 
     Functor.associator _ _ _ ≪≫ isoWhiskerRight α (F ⋙ G) ≪≫ (Functor.associator _ _ _).symm := by
   cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem isoWhiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
     isoWhiskerRight (isoWhiskerLeft F α) K =
@@ -352,7 +342,6 @@ theorem isoWhiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D
       (Functor.associator _ _ _).symm := by
   cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem isoWhiskerLeft_right (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
     isoWhiskerLeft F (isoWhiskerRight α K) =
@@ -368,25 +357,21 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
   {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D] {E : Type u₅} [Category.{v₅} E]
   (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem triangleIso :
     associator F (𝟭 B) G ≪≫ isoWhiskerLeft F (leftUnitor G) =
       isoWhiskerRight (rightUnitor F) G := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem pentagonIso :
     isoWhiskerRight (associator F G H) K ≪≫
         associator F (G ⋙ H) K ≪≫ isoWhiskerLeft F (associator G H K) =
       associator (F ⋙ G) H K ≪≫ associator F G (H ⋙ K) := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 theorem triangle :
     (associator F (𝟭 B) G).hom ≫ whiskerLeft F (leftUnitor G).hom =
       whiskerRight (rightUnitor F).hom G := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 theorem pentagon :
     whiskerRight (associator F G H).hom K ≫
         (associator F (G ⋙ H) K).hom ≫ whiskerLeft F (associator G H K).hom =
@@ -395,9 +380,8 @@ theorem pentagon :
 variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
   [Category* D₁] [Category* D₂] [Category* D₃] (E : Type*) [Category* E]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def whiskeringLeft₂ :
     (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E) where
   obj F₁ :=
@@ -410,15 +394,14 @@ def whiskeringLeft₂ :
     { app := fun F₂ ↦ whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }
 
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def whiskeringLeft₃ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃) :
     (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E :=
   (whiskeringRight _ _ _).obj (((whiskeringLeft₂ E).obj F₂).obj F₃) ⋙
     (whiskeringLeft C₁ D₁ _).obj F₁
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskeringLeft₃ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) {F₃ F₃' : C₃ ⥤ D₃} (τ₃ : F₃ ⟶ F₃') :
     whiskeringLeft₃ObjObjObj E F₁ F₂ F₃ ⟶
       whiskeringLeft₃ObjObjObj E F₁ F₂ F₃' where
@@ -426,39 +409,37 @@ def whiskeringLeft₃ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) {F�
 
 variable (C₃ D₃) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskeringLeft₃ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
     (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
   obj F₃ := whiskeringLeft₃ObjObjObj E F₁ F₂ F₃
   map τ₃ := whiskeringLeft₃ObjObjMap E F₁ F₂ τ₃
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C₃ D₃) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskeringLeft₃ObjMap (F₁ : C₁ ⥤ D₁) {F₂ F₂' : C₂ ⥤ D₂} (τ₂ : F₂ ⟶ F₂') :
     whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂ ⟶ whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂' where
   app F₃ := whiskerRight ((whiskeringRight _ _ _).map (((whiskeringLeft₂ E).map τ₂).app F₃)) _
 
 variable (C₂ C₃ D₂ D₃) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskeringLeft₃Obj (F₁ : C₁ ⥤ D₁) :
     (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
   obj F₂ := whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂
   map τ₂ := whiskeringLeft₃ObjMap C₃ D₃ E F₁ τ₂
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C₂ C₃ D₂ D₃) in
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
-@[simps]
+@[implicit_reducible, simps]
 def whiskeringLeft₃Map {F₁ F₁' : C₁ ⥤ D₁} (τ₁ : F₁ ⟶ F₁') :
     whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁ ⟶ whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁' where
   app F₂ := { app F₃ := whiskerLeft _ ((whiskeringLeft _ _ _).map τ₁) }
 
 /-- The obvious functor
 `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def whiskeringLeft₃ :
     (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
   obj F₁ := whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁
@@ -468,14 +449,14 @@ variable {E}
 
 /-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
 `(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E'`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def postcompose₂ {E' : Type*} [Category* E'] :
     (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E' :=
   whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
 
 /-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
 `(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E'`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def postcompose₃ {E' : Type*} [Category* E'] :
     (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E' :=
   whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _

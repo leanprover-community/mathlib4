@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 
 /-!
 # Long exact sequence in group cohomology
@@ -20,10 +21,14 @@ complexes
 Since the cohomology of `inhomogeneousCochains Xᵢ` is the group cohomology of `Xᵢ`, this allows us
 to specialize API about long exact sequences to group cohomology.
 
-## Main definitions
+## Main Definitions
 
 * `groupCohomology.δ hX i j hij`: the connecting homomorphism `Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
+
+## Main Statements
+
+* `groupCohomology.δ_naturality`: naturality of the connecting homomorphism.
 
 -/
 
@@ -136,6 +141,7 @@ theorem mem_cocycles₁_of_comp_eq_d₀₁
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z : X₃ᴳ` and `y : X₂` be such that `g(y) = z`.
@@ -180,5 +186,20 @@ theorem δ₁_apply
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₂_comp_inv]
       simpa [← hx] using! congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x)) g
+
+/-- `S.map (cochainsFunctor k G)` is short exact in each degree. -/
+lemma map_cochainsFunctor_eval_shortExact (n : ℕ) :
+    ShortExact (X.map <| cochainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.up ℕ) n) :=
+  (map_cochainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
+
+omit hX in
+/-- The connecting homomorphism `δ` is actually a natural transformation between
+  `groupCohomology.funtor`s. -/
+theorem δ_naturality {X1 X2 : ShortComplex (Rep k G)} (hX1 : X1.ShortExact)
+    (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
+    (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=
+  HomologicalComplex.HomologySequence.δ_naturality
+    ((cochainsFunctor k G).mapShortComplex.map F)
+    (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
 
 end groupCohomology

@@ -56,7 +56,7 @@ theorem Metric.exists_isLocalMin_mem_ball [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by
-  simp_rw [← closedBall_diff_ball] at hf1
+  simp_rw [← closedBall_sdiff_ball] at hf1
   exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
 

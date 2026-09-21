@@ -195,6 +195,7 @@ namespace IsKilling
 
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [IsKilling K L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- If a Lie algebra `L` has non-degenerate Killing form, the only element of a Cartan subalgebra
 whose adjoint action on `L` is nilpotent, is the zero element.
@@ -306,7 +307,7 @@ lemma span_weight_isNonZero_eq_top :
     insert 0 ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) by
     simpa only [Submodule.span_insert_zero] using Submodule.span_mono this
   rintro - ⟨α, rfl⟩
-  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_setOf_eq]
+  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_ofPred_eq]
   tauto
 
 @[simp]
@@ -523,7 +524,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     refine le_antisymm (fun x hx ↦ ?_) (fun x hx y hy ↦ ?_)
     · simp only [LinearMap.BilinForm.mem_orthogonal_iff] at hx
       specialize hx (coroot α) (Submodule.mem_span_singleton_self _)
-      simp only [LinearMap.BilinForm.isOrtho_def, traceForm_coroot, smul_eq_mul, nsmul_eq_mul,
+      simp only [traceForm_coroot, smul_eq_mul, nsmul_eq_mul,
         Nat.cast_ofNat, mul_eq_zero, OfNat.ofNat_ne_zero, inv_eq_zero, false_or] at hx
       simpa using hx.resolve_left (root_apply_cartanEquivDual_symm_ne_zero hα)
     · have := traceForm_eq_zero_of_mem_ker_of_mem_span_coroot hx hy
@@ -608,7 +609,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
-      convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
+      convert_to! finrank K (rootSpace H α).toSubmodule ≠ 0
       simpa using! α.genWeightSpace_ne_bot
     lia
   intro contra
@@ -627,6 +628,19 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
       lie_e := by rw [← lie_skew, hy, neg_zero] }
   obtain ⟨n, hn⟩ := P.exists_nat
   assumption_mod_cast
+
+lemma toSubmodule_rootSpace_eq_span (α : Weight K H L) (hα : α.IsNonZero) (x : L)
+    (hx₀ : x ≠ 0) (hx : x ∈ rootSpace H α) :
+    (rootSpace H α).toSubmodule = K ∙ x := by
+  have := (finrank_eq_one_iff_of_nonzero' ⟨x, hx⟩ (by simpa)).mp (finrank_rootSpace_eq_one α hα)
+  ext y
+  rw [Submodule.mem_span_singleton]
+  refine ⟨fun hy ↦ ?_, ?_⟩
+  · obtain ⟨t, ht⟩ := this ⟨y, hy⟩
+    use t
+    aesop
+  · rintro ⟨t, rfl⟩
+    exact SMulMemClass.smul_mem t hx
 
 /-- The embedded `sl₂` associated to a root. -/
 noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
@@ -692,6 +706,7 @@ lemma coe_coroot_mem_corootSubmodule (α : Weight K H L) :
   (LieSubmodule.mem_map _).mpr
     ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot hα = genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := by
@@ -731,6 +746,16 @@ lemma sl2SubmoduleOfRoot_ne_bot (α : Weight K H L) (hα : α.IsNonZero) :
 
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
+instance : InvolutiveNeg H.root where
+  neg i := ⟨-i, by aesop⟩
+  neg_neg i := by aesop
+
+omit [CharZero K] in
+lemma neg_root_eq {i : H.root} : -i = ⟨-i, by aesop⟩ := rfl
+
+omit [CharZero K] in
+@[simp] lemma val_neg_root {i : H.root} : (-i).val = -i.val := rfl
 
 omit [IsKilling K L] [IsTriangularizable K H L] [CharZero K] in
 @[simp]

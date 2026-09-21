@@ -63,9 +63,10 @@ namespace ContinuousOpenMap
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →CO β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr

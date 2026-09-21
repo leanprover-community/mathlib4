@@ -41,6 +41,17 @@ lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P �
     ObjectProperty.Small.{w} P :=
   small_of_injective (Subtype.map_injective h Function.injective_id)
 
+lemma Small.exists_eq_ofObj (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
+    ∃ (ι : Type w) (X : ι → C), P = .ofObj X :=
+  ⟨Shrink.{w} (Subtype P), fun i ↦ ((equivShrink _).symm i).val,
+    le_antisymm (fun X hX ↦ by
+      rw [ofObj_iff]
+      exact ⟨equivShrink _ ⟨X, hX⟩, by simp⟩) (by
+      rw [ofObj_le_iff]
+      intro i
+      obtain ⟨X, rfl⟩ := (equivShrink _).surjective i
+      simpa using X.prop)⟩
+
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     ObjectProperty.Small.{w} P.op :=
   small_of_injective P.subtypeOpEquiv.injective
@@ -141,6 +152,14 @@ lemma EssentiallySmall.exists_small (P : ObjectProperty C) [P.IsClosedUnderIsomo
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_small_le P
   exact ⟨Q, inferInstance, le_antisymm hQ₂ (by rwa [isoClosure_le_iff])⟩
 
+lemma EssentiallySmall.exists_eq_isoClosure_ofObj
+    (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms]
+    [ObjectProperty.EssentiallySmall.{w} P] :
+    ∃ (ι : Type w) (X : ι → C), P = (ObjectProperty.ofObj X).isoClosure := by
+  obtain ⟨P₀, _, h⟩ := exists_small.{w} P
+  obtain ⟨ι, X, rfl⟩ := Small.exists_eq_ofObj.{w} P₀
+  exact ⟨ι, X, h⟩
+
 lemma EssentiallySmall.of_le {P Q : ObjectProperty C}
     [ObjectProperty.EssentiallySmall.{w} Q] (h : P ≤ Q) :
     ObjectProperty.EssentiallySmall.{w} P where
@@ -217,6 +236,11 @@ instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P]
     (F : C ⥤ D) : ObjectProperty.EssentiallySmall.{w} (P.map F) := by
   obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
   exact ⟨Q.strictMap F, inferInstance, (map_monotone h₂ F).trans (by simp)⟩
+
+instance [EssentiallySmall.{w} C] (F : C ⥤ D) :
+    ObjectProperty.EssentiallySmall.{w} F.essImage := by
+  rw [← ObjectProperty.map_top]
+  infer_instance
 
 instance (P : ObjectProperty C) [LocallySmall.{w} C]
     [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by

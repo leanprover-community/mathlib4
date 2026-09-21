@@ -137,7 +137,6 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
       ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) HasSolidNorm.continuousSup {α : Type*}
     [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α] : ContinuousSup α :=
@@ -185,7 +184,7 @@ theorem isClosed_le_of_isClosed_nonneg {G}
     [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
     IsClosed { p : G × G | p.fst ≤ p.snd } := by
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G ↦ p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } := by
-    ext1 p; simp only [sub_nonneg, Set.preimage_setOf_eq]
+    ext1 p; simp only [sub_nonneg, Set.preimage_ofPred_eq]
   rw [this]
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
 

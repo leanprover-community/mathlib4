@@ -6,15 +6,13 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Order.Filter.Ker
 public import Mathlib.Order.Filter.Pi
 public import Mathlib.Order.Filter.Prod
-public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Heyting.Boundary
 
 /-!
@@ -198,9 +196,12 @@ lemma Set.Finite.cofinite_inf_principal_compl {s : Set α} (hs : s.Finite) :
     cofinite ⊓ 𝓟 sᶜ = cofinite := by
   simpa using hs.compl_mem_cofinite
 
-lemma Set.Finite.cofinite_inf_principal_diff {s t : Set α} (ht : t.Finite) :
+lemma Set.Finite.cofinite_inf_principal_sdiff {s t : Set α} (ht : t.Finite) :
     cofinite ⊓ 𝓟 (s \ t) = cofinite ⊓ 𝓟 s := by
-  rw [diff_eq, ← inf_principal, ← inf_assoc, inf_right_comm, ht.cofinite_inf_principal_compl]
+  rw [sdiff_eq, ← inf_principal, ← inf_assoc, inf_right_comm, ht.cofinite_inf_principal_compl]
+
+@[deprecated (since := "2026-06-03")]
+alias Set.Finite.cofinite_inf_principal_diff := Set.Finite.cofinite_inf_principal_sdiff
 
 /-- For natural numbers the filters `Filter.cofinite` and `Filter.atTop` coincide. -/
 theorem Nat.cofinite_eq_atTop : @cofinite ℕ = atTop := by

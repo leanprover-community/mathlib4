@@ -161,9 +161,11 @@ theorem image_eq_isOpen_inter_range (hf : IsInducing f) {s : Set X} (hs : IsOpen
   obtain ⟨c, hc, rfl⟩ := hf.isOpen_iff.1 hs
   exact ⟨c, hc, image_preimage_eq_inter_range⟩
 
-theorem setOf_isOpen (hf : IsInducing f) :
+theorem setOfPred_isOpen (hf : IsInducing f) :
     {s : Set X | IsOpen s} = preimage f '' {t | IsOpen t} :=
   Set.ext fun _ ↦ hf.isOpen_iff
+
+@[deprecated (since := "2026-07-09")] alias setOf_isOpen := setOfPred_isOpen
 
 theorem dense_iff (hf : IsInducing f) {s : Set X} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by
@@ -176,7 +178,7 @@ theorem indiscreteTopology [IndiscreteTopology Y] {f : X → Y} (hf : IsInducing
     IndiscreteTopology X where
   eq_top := by
     cases IndiscreteTopology.eq_top Y
-    letI : TopologicalSpace Y := ⊤
+    let : TopologicalSpace Y := ⊤
     rw [hf.eq_induced, induced_top]
 
 theorem nontrivialTopology [NontrivialTopology X] {f : X → Y} (hf : IsInducing f) :
@@ -222,6 +224,13 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
     (hg : Continuous g) : IsEmbedding g := .of_comp hg hf <| h.comp_eq_id.symm ▸ .id
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
+
+lemma of_leftInverse_of_isInducing {f : X → Y} {g : Y → X}
+    (h : LeftInverse f g) (hf : IsInducing f) :
+    IsEmbedding g := by
+  apply of_leftInverse h hf.continuous <| continuous_def.mpr fun s hs ↦ ?_
+  obtain ⟨t, _, ts⟩ := hf.isOpen_iff.mp hs
+  rwa [← ts, h.preimage_preimage t]
 
 lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
@@ -368,6 +377,12 @@ protected theorem id : IsOpenMap (@id X) := fun s hs => by rwa [image_id]
 
 protected theorem comp (hg : IsOpenMap g) (hf : IsOpenMap f) :
     IsOpenMap (g ∘ f) := fun s hs => by rw [image_comp]; exact hg _ (hf _ hs)
+
+/-- If `g ∘ f` is open, where `f` is continuous and surjective, then `g` is open. -/
+theorem of_comp (hf : Continuous f) (f_surj : Surjective f) (h : IsOpenMap (g ∘ f)) :
+    IsOpenMap g := fun s hs => by
+  rw [← f_surj.image_preimage s, ← image_comp]
+  exact h _ (hs.preimage hf)
 
 theorem isOpen_range (hf : IsOpenMap f) : IsOpen (range f) := by
   rw [← image_univ]

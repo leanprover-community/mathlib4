@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Data.ENat.Lattice
 
@@ -106,7 +107,7 @@ In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ�
 
 noncomputable section
 
-open ENat NNReal Topology Filter Set Fin Filter Function
+open ENat Topology Filter Set Fin Filter Function
 
 /-- The type of smoothness exponents, consisting of all natural numbers and two special terms `∞`
 and `ω`.
@@ -620,7 +621,8 @@ theorem ftaylorSeriesWithin_insert :
 `s` with a neighborhood of `x` within `s`. -/
 theorem iteratedFDerivWithin_inter' {n : ℕ} (hu : u ∈ 𝓝[s] x) :
     iteratedFDerivWithin 𝕜 n f (s ∩ u) x = iteratedFDerivWithin 𝕜 n f s x :=
-  iteratedFDerivWithin_congr_set (nhdsWithin_eq_iff_eventuallyEq.1 <| nhdsWithin_inter_of_mem' hu) _
+  iteratedFDerivWithin_congr_set
+    (nhdsWithin_eq_iff_eventuallyEqSet.1 <| nhdsWithin_inter_of_mem' hu) _
 
 /-- The iterated differential within a set `s` at a point `x` is not modified if one intersects
 `s` with a neighborhood of `x`. -/
@@ -829,6 +831,14 @@ theorem iteratedFDeriv_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
       (fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x : E → E [×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
 
+/-- The iterated derivative is given by the derivative of the `n-1` iterated derivative. -/
+theorem DifferentiableAt.iteratedFDeriv_succ_apply_left' {n : ℕ} {m : Fin (n + 1) → E}
+    (hf : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) x) :
+    iteratedFDeriv 𝕜 (n + 1) f x m =
+    fderiv 𝕜 (fun y ↦ iteratedFDeriv 𝕜 n f y (Fin.tail m)) x (m 0) := by
+  convert iteratedFDeriv_succ_apply_left m
+  simp [fderiv_continuousMultilinear_apply_const hf]
+
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the derivative of the `n`-th derivative. -/
 theorem iteratedFDeriv_succ_eq_comp_left {n : ℕ} :
@@ -899,7 +909,7 @@ theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
     EqOn (iteratedFDerivWithin 𝕜 n f s) (iteratedFDeriv 𝕜 n f) s := by
   intro x hx
   rw [← iteratedFDerivWithin_univ]
-  exact iteratedFDerivWithin_congr_set (Filter.eventuallyEq_univ.mpr <| hs.mem_nhds hx) n
+  exact iteratedFDerivWithin_congr_set (Filter.eventuallyEqSet_univ.mpr <| hs.mem_nhds hx) n
 
 theorem ftaylorSeriesWithin_univ : ftaylorSeriesWithin 𝕜 f univ = ftaylorSeries 𝕜 f := by
   ext1 x; ext1 n
