@@ -50,12 +50,12 @@ lemma convolveFunRight_dirac_apply (x : G) (f : C(G, R)) (y : G) :
     convolveFunRight (dirac R x) f y = f (y * x) := by
   simp [convolveFunRight_apply]
 
+@[simp]
 lemma convolveFunRight_apply_one (μ : D(G, R)) (f : C(G, R)) :
     convolveFunRight μ f 1 = μ f := by
   simp only [convolveFunRight_apply]
-  apply congr_arg
-  ext
-  simp only [one_mul, ContinuousMap.coe_mk]
+  congr with
+  simp
 
 /--
 We define `1 : D(G, R)` to be the Dirac measure at `1 : G` (since we are writing convolution as
@@ -85,9 +85,6 @@ variable [LocallyCompactSpace G]
 instance : Mul D(G, R) where
   mul μ ν := map ⟨fun p : G × G ↦ p.1 * p.2, continuous_mul⟩ (μ.prodMk' ν)
 
-
--- initialize_simps_projections NonUnitalNonAssocRing (-mul)
--- @[simps!]
 instance : NonUnitalNonAssocRing D(G, R) where
   zero_mul ν := by simp [mul_def]
   mul_zero μ := by simp [mul_def]
@@ -110,10 +107,8 @@ lemma convolveFunRight_mul (μ ν : D(G, R)) (f : C(G, R)) :
   simp [mul_assoc, convolveFunRight_apply]
 
 instance : Ring D(G, R) where
-  mul_assoc _ _ _ := by
-    ext
-    simp [mul_apply, convolveFunRight_mul]
-  one_mul _ := by ext; simp [mul_apply, convolveFunRight_apply_one]
+  mul_assoc _ _ _ := by ext; simp [mul_apply, convolveFunRight_mul]
+  one_mul _ := by ext; simp [mul_apply]
   mul_one _ := by ext; simp [mul_apply]
 
 /-- The Dirac map `G → D(G, R)`, packaged as a multiplicative homomorphism. -/
@@ -150,7 +145,7 @@ instance : Module D(G, R) C(G, R) where
   mul_smul _ _ _ := by
     ext _
     simp only [smul_def, convolveFunRight_apply, mul_apply]
-    congr 1 with
+    congr with
     simp [convolveFunRight_apply, mul_assoc]
 
 end LocallyCompact
