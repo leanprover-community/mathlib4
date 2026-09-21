@@ -24,6 +24,7 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
   `S ≤ G` and a `k`-linear `S`-representation `A`.
 * `Rep.indCoindNatIso k S`: A natural isomorphism between the functors `Ind_S^G` and `Coind_S^G`.
 
+TODO: remove the universe constraint `Rep.{max w u}`.
 -/
 
 @[expose] public section
@@ -41,7 +42,7 @@ def indToCoindAux (g : G) : Module.End k V := if hg : g ∈ S then ρ ⟨g, hg�
 lemma indToCoindAux_coe (s : S) : ρ.indToCoindAux (s : G) = ρ s := dite_eq_left s.prop
 
 @[simp]
-lemma indToCoindAux_one : ρ.indToCoindAux 1 = 1 := by simpa using ρ.indToCoindAux_coe 1
+lemma indToCoindAux_one : ρ.indToCoindAux 1 = 1 := (ρ.indToCoindAux_coe 1).trans ρ.map_one
 
 @[simp]
 lemma indToCoindAux_of_notMem {g : G} (hg : g ∉ S) : ρ.indToCoindAux g = 0 := dite_eq_right hg
@@ -62,16 +63,14 @@ lemma indToCoindAux_mul_coe (s : S) (g : G) :
 
 lemma indToCoindAux_comm {σ : Representation k S W} (f : ρ.IntertwiningMap σ) (g : G) (v : V) :
     σ.indToCoindAux g (f v) = f (ρ.indToCoindAux g v) := by
-  by_cases hg : g ∈ S
-  · simp [f.isIntertwining, indToCoindAux_coe ⟨g, hg⟩]
-  · simp [hg]
+  by_cases hg : g ∈ S <;> simp [indToCoindAux, hg, f.isIntertwining]
 
 variable (ρ) in
-/-- Let `S ≤ G` be a subgroup and `A` a `k`-linear `S`-representation. This is the intertwining map
-`Hom_G(Ind_S^G(A), Coind_S^G(A))` sending `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`. -/
+/-- Let `S ≤ G` be a subgroup and `V` a `k`-linear `S`-representation. This is the intertwining map
+`Ind_S^G(V) → Coind_S^G(V)` sending `(⟦g ⊗ₜ[k] v⟧, sg) ↦ ρ(s)(v)`. -/
 noncomputable def indToCoind :
     (ind S.subtype ρ).IntertwiningMap (coind S.subtype ρ) :=
-  ind.lift _ ⟨(LinearMap.pi (ρ.indToCoindAux)).codRestrict _ (by simp), (fun _ => by ext; simp)⟩
+  ind.lift _ ⟨(LinearMap.pi ρ.indToCoindAux).codRestrict _ (by simp), fun _ => by ext; simp⟩
 
 @[simp]
 lemma indToCoind_apply_mk (g h : G) (v : V) :
@@ -84,7 +83,8 @@ noncomputable def coindToIndAux (c : G ⧸ S) :
     coindV S.subtype ρ →ₗ[k] IndV S.subtype ρ :=
   Quotient.liftOn c (fun g => IndV.mk _ ρ g⁻¹ ∘ₗ LinearMap.proj g⁻¹ ∘ₗ (coindV _ ρ).subtype)
     fun g₁ g₂ hrel => LinearMap.ext fun f => by
-      have : g₂ = g₁ * S.subtype ⟨_, QuotientGroup.leftRel_apply.mp hrel⟩ := by simp
+      have : g₂ = g₁ * S.subtype ⟨_, QuotientGroup.leftRel_apply.mp hrel⟩ :=
+        (mul_inv_cancel_left _ _).symm
       simp only [LinearMap.comp_apply, LinearMap.proj_apply, Submodule.subtype_apply]
       rw [this, mul_inv_rev, IndV.mk_map_inv_mul, ← mem_coindV.mp f.prop]
       simp
@@ -100,11 +100,12 @@ attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
 variable (ρ) in
 /-- Let `S ≤ G` be a finite index subgroup and `ρ` a `k`-linear `S`-representation. This is the
-equivariant map `Coind_S^G(ρ) → Ind_S^G(ρ)` sending `f` to `∑_{gS ∈ G ⧸ S} ⟦g⁻¹ ⊗ₜ f g⁻¹⟧`. -/
+intertwining map `Coind_S^G(ρ) → Ind_S^G(ρ)` sending `f` to `∑_{gS ∈ G ⧸ S} ⟦g⁻¹ ⊗ₜ f g⁻¹⟧`. -/
 noncomputable def coindToInd : (coind S.subtype ρ).IntertwiningMap (ind S.subtype ρ) where
   toLinearMap := ∑ c : G ⧸ S, coindToIndAux ρ c
   isIntertwining' g := LinearMap.ext fun _ => by
-    simpa using Fintype.sum_equiv (MulAction.toPerm g⁻¹) _ _ fun c => c.inductionOn (by simp)
+    simpa only [LinearMap.comp_apply, LinearMap.sum_apply, map_sum] using
+      Fintype.sum_equiv (MulAction.toPerm g⁻¹) _ _ fun c => c.inductionOn (by simp)
 
 omit [DecidablePred (· ∈ S)] in
 lemma coindToInd_apply (f : coindV S.subtype ρ) :
@@ -132,7 +133,7 @@ namespace Rep
 
 universe w u v
 
-open CategoryTheory Finsupp TensorProduct Representation
+open CategoryTheory Representation
 
 variable {k : Type u} {G : Type v} [CommRing k] [Group G] {S : Subgroup G} [DecidablePred (· ∈ S)]
   [S.FiniteIndex]
@@ -141,33 +142,27 @@ variable {k : Type u} {G : Type v} [CommRing k] [Group G] {S : Subgroup G} [Deci
 `S`, and `A` a `k`-linear `S`-representation. This is an isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)`.
 The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse sends `f : G → A` to
 `∑ᵢ ⟦gᵢ ⊗ₜ[k] f(gᵢ)⟧` for `1 ≤ i ≤ n`. -/
+@[simps]
 noncomputable def indCoindIso (A : Rep.{max w u} k S) :
-    ind S.subtype A ≅ coind S.subtype A :=
-  mkIso { toLinearMap := A.ρ.indToCoind.toLinearMap, invFun := A.ρ.coindToInd,
-          left_inv := A.ρ.coindToInd_indToCoind, right_inv := A.ρ.indToCoind_coindToInd
-          isIntertwining' := A.ρ.indToCoind.isIntertwining' }
-
-@[simp]
-lemma indCoindIso_hom (A : Rep.{max w u} k S) :
-    (indCoindIso.{w} A).hom.hom = A.ρ.indToCoind := rfl
-
-@[simp]
-lemma indCoindIso_inv (A : Rep.{max w u} k S) :
-    (indCoindIso.{w} A).inv.hom = A.ρ.coindToInd := rfl
+    ind S.subtype A ≅ coind S.subtype A where
+  hom := ofHom A.ρ.indToCoind
+  inv := ofHom A.ρ.coindToInd
+  hom_inv_id := hom_ext (IntertwiningMap.ext (LinearMap.ext A.ρ.coindToInd_indToCoind))
+  inv_hom_id := hom_ext (IntertwiningMap.ext (LinearMap.ext A.ρ.indToCoind_coindToInd))
 
 variable (k S)
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_S^G` functors `Rep k S ⥤ Rep k G`. -/
-@[implicit_reducible, simps! hom_app inv_app]
+@[implicit_reducible, simps (rhsMd := .default) hom_app inv_app]
 noncomputable def indCoindNatIso :
     indFunctor.{max w u} k S.subtype ≅ coindFunctor.{max w u} k S.subtype :=
-  NatIso.ofComponents (fun (A : Rep k S) => indCoindIso.{w} A) fun f => by
-    simp only [indFunctor_obj, coindFunctor_obj, indFunctor_map, coindFunctor_map]
+  NatIso.ofComponents indCoindIso.{w} fun f => by
+    simp only [indFunctor_obj, coindFunctor_obj]
     ext
     simp [indToCoindAux_comm]
 
 /-- Given a finite index subgroup `S ≤ G`, `Ind_S^G` is right adjoint to the restriction functor
-`Res k G ⥤ Res k S`, since it is naturally isomorphic to `Coind_S^G`. -/
+`res : Res k G ⥤ Res k S`, since it is naturally isomorphic to `Coind_S^G`. -/
 noncomputable def resIndAdjunction :
     resFunctor.{max w u v} S.subtype ⊣ indFunctor.{max w u v} k S.subtype :=
   (resCoindAdjunction.{max w u v} k S.subtype).ofNatIsoRight (indCoindNatIso.{max w u v} k S).symm
@@ -183,35 +178,33 @@ variable {k S}
 @[simp]
 lemma resIndAdjunction_counit_app (A : Rep.{max w u v} k S) :
     (resIndAdjunction.{w, u, v} k S).counit.app A =
-      (resFunctor S.subtype).map (indCoindIso.{max w (max u v)} A).hom ≫
-      (resCoindAdjunction.{max w u} k S.subtype).counit.app A := rfl
+      (resFunctor.{max w u v} S.subtype).map (indCoindIso.{max w u v} A).hom ≫
+      (resCoindAdjunction.{max w u v} k S.subtype).counit.app A := rfl
 
 @[simp]
 lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
     (resIndAdjunction.{w, u, v} k S).unit.app B =
-      (resCoindAdjunction.{max w u} k S.subtype).unit.app B ≫
+      (resCoindAdjunction.{max w u v} k S.subtype).unit.app B ≫
       (indCoindIso.{max w (max u v)} (res S.subtype B)).inv := rfl
 
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res.{u} S.subtype B ⟶ A) :
-    (resIndAdjunction.{w, u, v} k S).homEquiv _ _ f =
-      resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv := by
-  rw [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
-  simp
+    (resIndAdjunction.{w, u, v} k S).homEquiv B A f =
+      resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv :=
+  Adjunction.homEquiv_ofNatIsoRight_apply _ _ _
 
 lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G}
-    (f : B ⟶ (indFunctor k S.subtype).obj A) :
+    (f : B ⟶ ind S.subtype A) :
     ((resIndAdjunction.{w} k S).homEquiv _ _).symm f =
-      (resCoindHomEquiv.{max w u v} S.subtype B A).symm (f ≫ (indCoindIso.{max w u v} A).hom) :=
-  rfl
+      (resCoindHomEquiv.{max w u v} S.subtype B A).symm (f ≫ (indCoindIso.{max w u v} A).hom) := rfl
 
 variable (k S) in
 /-- Given a finite index subgroup `S ≤ G`, `Coind_S^G` is left adjoint to the restriction functor
-`Res k G ⥤ Res k S`, since it is naturally isomorphic to `Ind_S^G`. -/
+`res : Rep k G ⥤ Rep k S`, since it is naturally isomorphic to `Ind_S^G`. -/
 noncomputable def coindResAdjunction :
     coindFunctor.{max w u v} k S.subtype ⊣ resFunctor.{max w u v} S.subtype :=
-  (indResAdjunction S.subtype).ofNatIsoLeft (indCoindNatIso.{max w u v} k S)
+  (indResAdjunction.{max w u v} S.subtype).ofNatIsoLeft (indCoindNatIso.{max w u v} k S)
 
 omit [DecidablePred (· ∈ S)] in
 @[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
@@ -227,21 +220,19 @@ lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
 
 @[simp]
 lemma coindResAdjunction_unit_app (A : Rep.{max w u v} k S) :
-    (coindResAdjunction k S).unit.app A = (indResAdjunction S.subtype).unit.app A ≫
-      (resFunctor.{max w u v} S.subtype).map (indCoindIso.{max w u v} A).hom := by
-  ext
-  simp [coindResAdjunction]
+    (coindResAdjunction.{w} k S).unit.app A = (indResAdjunction.{max w u v} S.subtype).unit.app A ≫
+      (resFunctor.{max w u v} S.subtype).map (indCoindIso.{max w u v} A).hom := rfl
 
 lemma coindResAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
-    {B : Rep k G} (f : coind S.subtype A ⟶ B) :
+    {B : Rep.{max w u v} k G} (f : coind S.subtype A ⟶ B) :
     (coindResAdjunction.{w} k S).homEquiv _ _ f =
-      indResHomEquiv S.subtype A B ((indCoindIso.{max w u v} A).hom ≫ f) := rfl
+      indResHomEquiv.{max w u v} S.subtype A B ((indCoindIso.{max w u v} A).hom ≫ f) := rfl
 
 lemma coindResAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
-    {B : Rep k G} (f : A ⟶ res S.subtype B) :
-    ((coindResAdjunction.{max w u v} k S).homEquiv _ _).symm f =
-      (indCoindIso.{max w u v} A).inv ≫ (indResHomEquiv S.subtype A B).symm f := by
-  ext
-  simp [coindResAdjunction, Adjunction.homEquiv_ofNatIsoLeft_symm_apply _]
+    {B : Rep.{max w u v} k G} (f : A ⟶ res S.subtype B) :
+    ((coindResAdjunction.{w} k S).homEquiv _ _).symm f =
+      (indCoindIso.{max w u v} A).inv ≫ (indResHomEquiv.{max w u v} S.subtype A B).symm f := by
+  simp_rw [coindResAdjunction, Adjunction.homEquiv_ofNatIsoLeft_symm_apply,
+    indResAdjunction_homEquiv, indCoindNatIso_inv_app, LinearEquiv.coe_symm_toEquiv]
 
 end Rep
