@@ -37,7 +37,7 @@ variable (G) (A)
 @[mk_iff, wikidata Q571124]
 class IsSimpleGroup : Prop extends Nontrivial G where
   /-- Any normal subgroup is either `⊥` or `⊤` -/
-  eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤
+  eq_bot_or_eq_top_of_normal : ∀ (H : Subgroup G) [H.Normal], H = ⊥ ∨ H = ⊤
 
 attribute [instance 100] IsSimpleGroup.toNontrivial
 
@@ -54,9 +54,9 @@ attribute [to_additive existing] IsSimpleGroup isSimpleGroup_iff
 variable {G} {A}
 
 @[to_additive]
-theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn : H.Normal) :
+theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] (H : Subgroup G) [H.Normal] :
     H = ⊥ ∨ H = ⊤ :=
-  IsSimpleGroup.eq_bot_or_eq_top_of_normal H Hn
+  IsSimpleGroup.eq_bot_or_eq_top_of_normal H
 
 @[to_additive]
 protected lemma Subgroup.isSimpleGroup_iff {H : Subgroup G} :

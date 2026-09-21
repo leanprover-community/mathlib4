@@ -499,7 +499,7 @@ theorem symm_ofLinearMap (h₁ h₂) :
 @[deprecated ofLinearMap (since := "2026-06-23")]
 abbrev ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂ := ofLinearMap f g h₁ h₂
 
-@[deprecated coe_ofLinearMap (since := "2026-06-23")]
+@[deprecated coe_ofLinearMap +typeChanged (since := "2026-06-23")]
 theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
 
@@ -765,6 +765,7 @@ end arrowCongr
 
 /-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M` into `M₂`
 and `M` into `M₃` are linearly isomorphic. -/
+@[simps!]
 def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
   arrowCongr (LinearEquiv.refl R M) f
 
