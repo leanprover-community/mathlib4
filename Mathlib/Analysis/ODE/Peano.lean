@@ -172,7 +172,7 @@ private lemma tonelliIterate_bounds (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) 
   induction k with
   | zero =>
     exact
-      ⟨fun _ _ ↦ by simp [tonelliIterate, mem_closedBall],
+      ⟨fun _ _ ↦ by simp [mem_closedBall],
         (LipschitzWith.const x₀).weaken L.2 |>.lipschitzOnWith⟩
   | succ k hk =>
     have h_delayed : MapsTo (delayedInput t₀ tmax n) (Icc t₀ tmax) (Icc t₀ tmax) :=
@@ -199,7 +199,7 @@ private lemma tonelliIterate_bounds (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) 
     have h_lip : LipschitzOnWith L (tonelliIterate f t₀ tmax x₀ n (k + 1)) (Icc t₀ tmax) := by
       rw [lipschitzOnWith_iff_dist_le_mul]
       intro a ha b hb
-      rw [Real.dist_eq, dist_eq_norm, tonelliIterate, add_sub_add_left_eq_sub,
+      rw [Real.dist_eq, dist_eq_norm, tonelliIterate_succ, add_sub_add_left_eq_sub,
         intervalIntegral.integral_interval_sub_left]
       · refine intervalIntegral.norm_integral_le_of_norm_le_const fun t ht ↦ ?_
         have ht' := uIoc_subset_uIcc.trans (uIcc_subset_Icc hb ha) ht
