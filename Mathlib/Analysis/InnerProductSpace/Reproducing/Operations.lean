@@ -231,7 +231,6 @@ theorem kernel_smul_eq_norm_sq_smul_kernel :
     kernel (smulSpace H c) = (‖(c : 𝕜)‖ : 𝕜) ^ 2 • kernel H := by
   ext
   refine ext_inner_right 𝕜 fun v ↦ ?_
-  simp only [Matrix.smul_apply, smul_apply, inner_smul_left]
   simp_rw [kernel_inner, kerFun_eq]
   by_cases h : c = 0
   · simp [h]
