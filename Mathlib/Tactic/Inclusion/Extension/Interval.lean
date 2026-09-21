@@ -24,15 +24,6 @@ type represents a possibly unbounded interval with closed endpoints.
 
 namespace Inclusion
 
--- local `grind` rules
-attribute [local grind unfold] WithBot.some WithTop.some
-attribute [local grind norm ←] WithBot.coe_zero WithTop.coe_zero
-  WithBot.none_eq_bot WithTop.none_eq_top
-attribute [local grind norm] WithBot.coe_le_coe WithTop.coe_le_coe
-attribute [local grind =] WithBot.coe_le_iff WithTop.le_coe_iff
-
-local grind_pattern OrderEmbedding.le_iff_le => a ≤ b, f a, f b
-
 variable {α β : Type*}
 
 /-- An `Interval` represents a possibly unbounded interval with closed endpoints. -/
@@ -62,6 +53,15 @@ theorem Interval.mem_map_iff [Preorder β] (f : α → β) {x : β} {I : Interva
       (∀ a : α, I.ub = ↑a → x ≤ f a) := by
   simp [Interval.map, WithBot.le_coe_iff, WithTop.coe_le_iff,
     WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
+
+-- local `grind` rules
+attribute [local grind unfold] WithBot.some WithTop.some
+attribute [local grind norm ←] WithBot.coe_zero WithTop.coe_zero
+  WithBot.none_eq_bot WithTop.none_eq_top
+attribute [local grind norm] WithBot.coe_le_coe WithTop.coe_le_coe Interval.mem_map_iff
+attribute [local grind =] WithBot.coe_le_iff WithTop.le_coe_iff
+
+local grind_pattern OrderEmbedding.le_iff_le => a ≤ b, f a, f b
 
 /-- The interval unbounded on both sides. -/
 def Interval.univ (α : Type*) : Interval α := ⟨⊥, ⊤⟩
@@ -242,10 +242,6 @@ theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrdere
     (f : α →+ β) {x : β} {I : Interval α} (hx : x ∈ I.map f) : -x ∈ I.neg.map f := by
   grind [Interval.neg, neg_le_neg_iff]
 
-section
-
-attribute [local grind norm] Interval.mem_map_iff
-
 /-- Take the absolute value of an interval. -/
 def Interval.abs [Zero α] [Neg α] [LinearOrder α] (I : Interval α) : Interval α :=
   match I.lb with
@@ -267,8 +263,6 @@ theorem Interval.abs_mem [Zero α] [Neg α] [LinearOrder α] [AddCommGroup β]
     (map_neg : ∀ a, f (-a) = -f a) {x : β} {I : Interval α} (hx : x ∈ I.map f) :
     |x| ∈ I.abs.map f := by
   fun_cases Interval.abs with grind [Interval.Ici, abs_le']
-
-end
 
 /-- Subtract one interval from another. -/
 def Interval.sub [Sub α] (I J : Interval α) : Interval α where
