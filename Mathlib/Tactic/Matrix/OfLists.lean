@@ -73,8 +73,8 @@ theorem ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : Fin m) 
 theorem ListMatrix.dotProduct_eq [Mul α] [AddCommMonoid α] (n : ℕ) (l₁ l₂ : List α) :
     ListMatrix.dotProduct n l₁ l₂ = ofList n l₁ ⬝ᵥ ofList n l₂ := by
   induction n generalizing l₁ l₂ with
-  | zero => simp [ListMatrix.dotProduct]
-  | succ n ih => cases l₁ <;> cases l₂ <;> simp [ofList, ListMatrix.dotProduct, ← ih]
+  | zero => simp [ListMatrix.dotProduct_zero]
+  | succ n ih => cases l₁ <;> cases l₂ <;> simp [ofList, ListMatrix.dotProduct_add_one, ← ih]
 
 @[simp]
 theorem ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :
