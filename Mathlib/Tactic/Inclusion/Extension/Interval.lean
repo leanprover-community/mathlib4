@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Ring.Defs
@@ -241,6 +241,34 @@ def Interval.neg [Neg α] (I : Interval α) : Interval α where
 theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x : β} {I : Interval α} (hx : x ∈ I.map f) : -x ∈ I.neg.map f := by
   grind [Interval.neg, neg_le_neg_iff]
+
+section
+
+attribute [local grind norm] Interval.mem_map_iff
+
+/-- Take the absolute value of an interval. -/
+def Interval.abs [Zero α] [Neg α] [LinearOrder α] (I : Interval α) : Interval α :=
+  match I.lb with
+  | some lb =>
+    if 0 ≤ lb then
+      I
+    else
+      match I.ub with
+      | some ub => if ub ≤ 0 then  ⟨some (-ub), some (-lb)⟩ else ⟨0, some (max (-lb) ub)⟩
+      | ⊤ => Interval.Ici 0
+  | ⊥ =>
+    let lb := match I.ub with
+      | some ub => if ub ≤ 0 then some (-ub) else 0
+      | ⊤ => 0
+    Interval.Ici lb
+
+theorem Interval.abs_mem [Zero α] [Neg α] [LinearOrder α] [AddCommGroup β]
+    [LinearOrder β] [IsOrderedAddMonoid β] (f : α ↪o β) (map_zero : f 0 = 0)
+    (map_neg : ∀ a, f (-a) = -f a) {x : β} {I : Interval α} (hx : x ∈ I.map f) :
+    |x| ∈ I.abs.map f := by
+  fun_cases Interval.abs with grind [Interval.Ici, abs_le']
+
+end
 
 /-- Subtract one interval from another. -/
 def Interval.sub [Sub α] (I J : Interval α) : Interval α where
