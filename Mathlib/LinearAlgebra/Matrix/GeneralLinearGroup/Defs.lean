@@ -208,8 +208,7 @@ theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
 
 variable (n) in
 /-- The `MulEquiv` induces by a `RingEquiv` on the coefficents. -/
-@[simps!]
-def mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
+abbrev mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
   Units.mapEquiv f.mapMatrix.toMulEquiv
 
 section Pi
@@ -218,8 +217,7 @@ variable (n) {ι : Type*} (R : ι → Type*)
 
 /-- The monoid equivalence between `GL n` of a product of rings,
 and the product of the `GL n` of each ring. -/
-@[simps!]
-def piEquiv [Π i, CommRing (R i)] : GL n (Π i, R i) ≃* Π i, GL n (R i) :=
+abbrev piEquiv [Π i, CommRing (R i)] : GL n (Π i, R i) ≃* Π i, GL n (R i) :=
   (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
 
 end Pi
