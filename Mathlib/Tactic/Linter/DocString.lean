@@ -135,10 +135,11 @@ def lintVersoSyntax (docComment : String) (fileName : Option String := none) :
   -- and so we'd need to build an actual parser to figure out if they are in a snippet or not.
   let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
     trimmedStr.split "$$"
-      |>.zip (0...docComment.length).iter
+      |>.zip (0...*).iter
       |>.map fun (str, i) =>
-        -- The `LL`s stand in for the two `$$` delimiters that `split` removed.
-        if i % 2 == 0 then str.toString else "LL" ++ blankOut 'L' str.toString ++ "LL"
+        -- Each `LL` stands in for a `$$` delimiter that `split` removed.
+        let str := if i % 2 == 0 then str.toString else "".pushn 'L' str.utf8ByteSize
+        if i == 0 then str else "LL" ++ str
   let errs ← checkVersoSyntax trimmedStr fileName
   return errs.filter fun (_, _, err) => !isSilencedVersoWarning err
 
@@ -148,19 +149,14 @@ Log the Verso parse errors `errs` found in the text of the doc-string `docStx` (
 `moduleDoc` node), at their positions in the file.
 
 The positions in `errs` are relative to the text of the doc-string, which starts at the second
-child of `docStx`. Each error is reported on the range from the start of the syntax that Verso was
-parsing when it failed to the position of the failure.
+child of `docStx`.
 -/
 def logVersoErrors (docStx : Syntax) (errs : Array (String.Pos.Raw × SyntaxStack × Error)) :
     CommandElabM Unit := do
-  for (pos, stxStack, err) in errs do
-    let ref := match docStx[1].getPos? with
-      | some start =>
-        let stop := start.offsetBy pos
-        let first := (stxStack.back.getPos?.map start.offsetBy).getD stop
-        .ofRange ⟨if first ≤ stop then first else stop, stop⟩
-      | none => stxStack.back
-    Linter.logLint linter.style.docStringVerso ref m!"{err}"
+  let some start := docStx[1].getPos? | return
+  for (pos, _, err) in errs do
+    let pos := pos.offsetBy start
+    Linter.logLint linter.style.docStringVerso (.ofRange ⟨pos, pos⟩) m!"{err}"
 
 namespace Style
 
