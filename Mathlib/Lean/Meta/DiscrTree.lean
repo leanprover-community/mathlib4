@@ -14,7 +14,7 @@ public import Lean.Meta.DiscrTree.Types
 # Additions to `Lean.Meta.DiscrTree`
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Meta.DiscrTree
 

@@ -12,7 +12,7 @@ public import Lean.CoreM
 # Additional functions using `CoreM` state.
 -/
 
-@[expose] public section
+public section
 
 open Lean Core
 
