@@ -47,7 +47,7 @@ namespace Convexity
 variable {I X : Type*}
 
 variable (X) in
-/-- Typeclass for a A convex metric space is a real convex space with a compatible metric structure.
+/-- A convex metric space is a real convex space with a compatible metric structure.
 Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
 which is what one would expect from the triangle inequality.
 
@@ -256,15 +256,6 @@ lemma continuous_convexCombPair' [BoundedSpace X]
 
 @[deprecated (since := "2026-05-15")]
 alias continuous_convexComboPair' := continuous_convexCombPair'
-
-@[simp]
-lemma ConvexSpace.ofConvex.coe_iConvexCombo
-      {R I E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
-      [AddCommGroup E] [Module R E] (S : Set E) (H : Convex R S) (f : StdSimplex R I) (g : I → S) :
-    letI : ConvexSpace R S := .ofConvex H
-    (↑(f.iConvexCombo g) : E) = f.iConvexCombo fun x ↦ ↑(g x) :=
-  letI : ConvexSpace R S := .ofConvex H
-  (isAffineMap_coe S H).map_iConvexCombo f g
 
 instance (priority := low) {V P : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
