@@ -182,8 +182,8 @@ platform segment.
 
 ## Hydration
 
-Three optimizations decide how much a run compiles. None of them changes the
-keys or the content that a run writes.
+Two fetches decide how much a run compiles. Neither changes the keys or the
+content that a run writes.
 
 - The warm start. `lake cache get --service=shadow --scope=<SCOPE>
   --rev=<previous-sha>` seeds the local cache from the previous run on this
@@ -192,9 +192,9 @@ keys or the content that a run writes.
 - The dependency warm start, the same fetch per dependency with the previous
   sha. A dependency that this run bumps is absent from that set and misses at
   once, because the lookup is exact.
-- The legacy cache, a bootstrap fallback. A run uses it only when the analysis
-  chain holds no previous run, which is the first run on a toolchain. The legacy cache is keyed to the repo pin, so only a pinned run
-  uses it.
+
+The first run on a toolchain has no pointer to start from, and builds mathlib
+and every dependency from source.
 
 ## What a full cache hit requires
 
@@ -223,9 +223,8 @@ valid example.
 
 The analysis chain is per toolchain, under `analysis/<slug>/`. A pinned run and
 an override run therefore warm start from their own lineage, and compare
-against it. The first override run on a toolchain has no lineage to start
-from, and costs one full source build of mathlib and its dependencies. A republished
-pr-release tag costs the same.
+against it. A republished pr-release tag reads as a new toolchain, and costs
+the same full source build as any first run.
 
 The override is the one case that breaks "a commit determines its toolchain",
 which is why its scope carries the slug. Two lanes that shared a scope would
@@ -269,8 +268,6 @@ Variables:
   `LAKE_CACHE_REVISION_ENDPOINT_PUBLIC` — the public read endpoints, for
   anonymous GETs. On R2 these use a different host than the S3 API endpoints.
   For example `https://pub-<hash>.r2.dev/<prefix>/artifacts`.
-- `MATHLIB_CACHE_BASE_URL` — optional. The legacy cache reads it during the
-  bootstrap fallback.
 - `LAKE_SHADOW_TOOLCHAIN_OVERRIDE` — optional. It sets the toolchain override
   for every run. The dispatch input takes precedence. Leave it unset to run on
   the repo pin.
