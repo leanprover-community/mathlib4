@@ -199,7 +199,7 @@ theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f
     _ = b * a := by group
 
 @[to_additive (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
-  (since := "2026-05-26"))]
+  +typeChanged (since := "2026-05-26"))]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b

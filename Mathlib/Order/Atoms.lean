@@ -500,17 +500,17 @@ theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → 
     IsStronglyAtomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
   (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)

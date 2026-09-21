@@ -484,7 +484,8 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
   rcases hx with hx | hx
   · obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨a, ha.1⟩ ⟨x, hx⟩
     use ⟨k, fun ⟨y, hy⟩ ↦ hk ⟨y, hy.1⟩⟩
-    rwa [Subtype.ext_iff] at hkax ⊢
+    rw [Subtype.ext_iff] at hkax ⊢
+    exact hkax
   · have hg'x : g⁻¹ • x ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr hx
     have hg'a : g⁻¹ • a ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr ha.2
     obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨g⁻¹ • a, hg'a⟩ ⟨g⁻¹ • x, hg'x⟩

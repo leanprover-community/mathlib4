@@ -236,7 +236,35 @@ set_option backward.isDefEq.respectTransparency false in
 def basisRight : Module.Basis Unit S D.presRight.toExtension.Cotangent :=
   Generators.basisCotangentAway S D.gbar
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`AddCommMonoid D.presRight.toExtension.Cotangent`
+It is needed by the `Module.Basis.prod` below.
+
+The search reduces via `@AddCommGroup.toAddCommMonoid` to
+`AddCommGroup D.presRight.toExtension.Cotangent`, and the failure happens while applying
+`@Extension.instAddCommGroupCotangent`: assigning one of its instance-implicit-argument
+metavariables is rejected because the metavariable's type and the type of the assigned value do not
+match at `.instances` transparency. The metavariable's expected type is `CommRing D.T`, whereas the
+assigned value `Ideal.Quotient.commRing (Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))` has type
+`CommRing (MvPolynomial ι R ⧸ Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))`. `T` is an `abbrev`,
+so it unfolds and both sides become that same quotient; but the two ideals are taken over different
+rings, `P.toExtension.Ring` on one side and `MvPolynomial ι R` on the other. Comparing those bumps
+the transparency to `.implicit` and bottoms out at
+`P.toExtension.1 =?= AddMonoidAlgebra R (ι →₀ ℕ)`, where `Algebra.Generators.toExtension` is a plain
+semireducible `def` and therefore does not unfold. Lean falls back to synthesize an instance of the
+correct type, which succeeds, but it returns the same `Ideal.Quotient.commRing` term with the ideal
+over `P.toExtension.Ring`, which is again not defeq to the assigned value, for the same reason.
+
+Potential fix: make `Algebra.Generators.toExtension` implicit-reducible.
+Then both backward compatibility options can go.
+-/
 set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 /-- The basis on the cotangent space of the constructed presentation. -/
 def basis [Nontrivial S] : Module.Basis (Unit ⊕ σ) S D.pres.toExtension.Cotangent :=
   (Module.Basis.prod D.basisRight D.basisLeft).map D.cotangentEquivProd.symm
@@ -247,7 +275,30 @@ lemma basis_inl [Nontrivial S] :
       D.cotangentEquivProd.symm (Generators.cMulXSubOneCotangent S D.gbar, 0) := by
   simpa [basis] using! Generators.basisCotangentAway_apply _ _
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following two instances cannot be synthesized:
+`OfNat D.presRight.toExtension.Cotangent 0`
+`AddCommMonoid (D.presRight.toExtension.Cotangent × S ⊗[D.T] D.presLeft.toExtension.Cotangent)`
+Both are needed by the pair `(0, D.basisLeft i)` below.
+
+Both searches reduce to `AddCommGroup D.presRight.toExtension.Cotangent` and then fail exactly as
+in `basis` above: applying `@Extension.instAddCommGroupCotangent`, the assignment to the
+instance-implicit-argument metavariable of type `CommRing D.T` is rejected, the assigned value
+`Ideal.Quotient.commRing (Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))` having type
+`CommRing (MvPolynomial ι R ⧸ Ideal.span (Set.range (Subtype.val ∘ D.f ∘ ⇑b)))`, with the two ideals
+taken over different rings; the comparison bottoms out at
+`P.toExtension.1 =?= AddMonoidAlgebra R (ι →₀ ℕ)`, and the fallback synthesis returns a term that is
+again not defeq to the assigned value.
+
+Potential fix: make `Algebra.Generators.toExtension` implicit-reducible.
+Then both backward compatibility options can go.
+-/
 set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 lemma basis_inr [Nontrivial S] (i : σ) :
     D.basis (.inr i) = D.cotangentEquivProd.symm (0, D.basisLeft i) := by
   simp [basis]
@@ -273,6 +324,31 @@ end PresentationOfFreeCotangent.Aux
 
 end
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`LE (Submodule P.Ring P.toExtension.Cotangent)`
+It is needed by the `refine le_trans le_top (top_le_iff.mpr ?_)` below, as are the `Preorder`,
+`PartialOrder` and `OrderTop` instances on the same type, which fail in the same way.
+
+The failure happens while applying `@Submodule.completeLattice`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `Semiring P.Ring`, whereas the assigned value `CommRing.toCommSemiring.toSemiring` has type
+`Semiring P.toExtension.Ring`. The comparison bottoms out at
+`AddMonoidAlgebra R (α →₀ ℕ) =?= P.toExtension.1`, where `Algebra.Generators.toExtension` is a plain
+semireducible `def` and therefore does not unfold at the `.instances` transparency that instance
+search runs at. Lean falls back to synthesize an instance of the correct type, which succeeds, but
+it returns `AddMonoidAlgebra.semiring`, which is again not defeq to the assigned value; that second
+comparison also runs at `.instances`, `respectTransparency false` suppressing the transparency bump.
+
+Potential fix: make `Algebra.Generators.toExtension` implicit-reducible.
+Then `respectTransparency false` and `instanceSearchTypes false` can both go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open PresentationOfFreeCotangent in

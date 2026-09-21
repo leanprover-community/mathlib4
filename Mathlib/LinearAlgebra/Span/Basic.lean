@@ -612,7 +612,7 @@ lemma comap_covBy_of_surjective {f : M →ₛₗ[τ₁₂] M₂} (hf : Surjectiv
   rwa [← comap_lt_comap_iff_of_surjective hf, comap_map_eq, sup_eq_left.mpr]
   refine (LinearMap.ker_le_comap (f : M →ₛₗ[τ₁₂] M₂)).trans h₁.le
 
-@[deprecated map_eq_range_iff (since := "2026-07-01")]
+@[deprecated map_eq_range_iff +typeChanged (since := "2026-07-01")]
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ Codisjoint S f.ker := by
   simp [map_eq_range_iff]

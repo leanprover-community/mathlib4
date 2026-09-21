@@ -558,7 +558,7 @@ instance : IsBotOneClass (Associates M) where
 instance instOrderBot : OrderBot (Associates M) where
   bot_le _ := one_le
 
-@[deprecated _root_.one_le (since := "2026-05-07")]
+@[deprecated _root_.one_le +typeChanged (since := "2026-05-07")]
 protected theorem one_le {a : Associates M} : 1 ≤ a :=
   one_le
 
