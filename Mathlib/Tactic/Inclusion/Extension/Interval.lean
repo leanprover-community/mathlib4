@@ -259,40 +259,6 @@ theorem Interval.sub_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrdere
   rw [_root_.sub_eq_add_neg, Interval.sub_eq_add_neg]
   exact Interval.add_mem f hx (Interval.neg_mem f hy)
 
-/- For correctness proofs, replace a missing endpoint by a finite bound containing the particular
-value being considered. These bounds retain the weak sign inequalities needed by the operation's
-branches; they do not replace the computational interval. -/
-
-/-- Complete a missing lower endpoint by `min x 0` for a proof about `x`. -/
-private def lowerBound [Zero β] [LinearOrder β] (f : α → β) (lb : WithBot α) (x : β) : β :=
-  (lb.map f).unbotD (min x 0)
-
-private theorem lowerBound_le [Zero β] [LinearOrder β] (f : α → β) (lb : WithBot α)
-    (x : β) (h : lb.map f ≤ x) : lowerBound f lb x ≤ x :=
-  (WithBot.unbotD_le_iff fun _ => min_le_left x 0).mpr h
-
-private theorem lowerBound_nonneg [Zero α] [LinearOrder α] [Zero β] [LinearOrder β]
-    (f : α ↪o β) (map_zero : f 0 = 0) (lb : WithBot α) (x : β) (h : 0 ≤ lb) :
-    0 ≤ lowerBound f lb x := by
-  cases lb with
-  | bot => simp at h
-  | coe lb => simpa [lowerBound, ← map_zero] using h
-
-/-- Complete a missing upper endpoint by `max x 0` for a proof about `x`. -/
-private def upperBound [Zero β] [LinearOrder β] (f : α → β) (ub : WithTop α) (x : β) : β :=
-  (ub.map f).untopD (max x 0)
-
-private theorem le_upperBound [Zero β] [LinearOrder β] (f : α → β) (ub : WithTop α)
-    (x : β) (h : x ≤ ub.map f) : x ≤ upperBound f ub x :=
-  (WithTop.le_untopD_iff fun _ => le_max_left x 0).mpr h
-
-private theorem upperBound_nonpos [Zero α] [LinearOrder α] [Zero β] [LinearOrder β]
-    (f : α ↪o β) (map_zero : f 0 = 0) (ub : WithTop α) (x : β) (h : ub ≤ 0) :
-    upperBound f ub x ≤ 0 := by
-  cases ub with
-  | top => simp at h
-  | coe ub => simpa [upperBound, ← map_zero] using h
-
 /-- Multiply two finite or infinite interval bounds. -/
 def Interval.mulBound [Mul α] [Zero α] [DecidableEq α] :
     Option α → Option α → Option α
@@ -387,46 +353,49 @@ def Interval.pow [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
 
 @[to_dual le_map_of_untopD]
 private theorem map_le_of_unbotD [Preorder β] {f : α → β} {g : α → α} {φ : β → β}
-    (map_g : ∀ a, f (g a) = φ (f a)) {a : WithBot α} (d : β) {z : β}
+    (map_g : ∀ a, f (g a) = φ (f a)) {a : WithBot α} {d z : β}
     (h : φ ((a.map f).unbotD d) ≤ z) : (a.map g).map f ≤ z := by
   cases a with
   | bot => exact bot_le
   | coe a => simpa [map_g] using h
-
-private theorem even_pow_le [Ring β] [LinearOrder β] [IsStrictOrderedRing β]
-    {n : ℕ} (hn : Even n) {lb x ub : β} (hl : lb ≤ x) (hu : x ≤ ub) :
-    x ^ n ≤ (max (-lb) ub) ^ n := by
-  rw [← hn.pow_abs x]
-  apply pow_le_pow_left₀ (abs_nonneg x)
-  grind [abs_le']
 
 theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
     [Ring β] [LinearOrder β] [IsStrictOrderedRing β] (f : α ↪o β)
     (map_zero : f 0 = 0) (map_one : f 1 = 1) (map_neg : ∀ a, f (-a) = -f a)
     (map_pow : ∀ a n, f (a ^ n) = f a ^ n) (n : ℕ) {x : β} {I : Interval α}
     (hx : x ∈ I.map f) : x ^ n ∈ (I.pow n).map f := by
-  let lb' := lowerBound f I.lb x
-  let ub' := upperBound f I.ub x
+  let lb' := (I.lb.map f).unbotD x
+  let ub' := (I.ub.map f).untopD x
   replace hx : lb' ≤ x ∧ x ≤ ub' :=
-    ⟨lowerBound_le f I.lb x hx.1, le_upperBound f I.ub x hx.2⟩
+    ⟨(WithBot.unbotD_le_iff fun _ => le_rfl).mpr hx.1,
+      (WithTop.le_untopD_iff fun _ => le_rfl).mpr hx.2⟩
   unfold Interval.pow
   split_ifs with h0 hsign hneg
   · simp [h0, Interval.singleton, Interval.map, map_one]
-  · have hpow : lb' ^ n ≤ x ^ n ∧ x ^ n ≤ ub' ^ n := by
-      grind [Odd.pow_le_pow, pow_le_pow_left₀, lowerBound_nonneg]
-    exact ⟨map_le_of_unbotD (fun a => map_pow a n) (min x 0) hpow.1,
-      le_map_of_untopD (fun a => map_pow a n) (max x 0) hpow.2⟩
-  · have hpow : ub' ^ n ≤ x ^ n ∧ x ^ n ≤ lb' ^ n := by
-      grind [Even.pow_le_pow_of_nonpos, upperBound_nonpos]
-    exact ⟨map_le_of_unbotD (fun a => map_pow a n) (max x 0) hpow.1,
-      le_map_of_untopD (fun a => map_pow a n) (min x 0) hpow.2⟩
+  · have hl : 0 ≤ I.lb → 0 ≤ lb' := by
+      intro h
+      apply WithBot.le_unbotD
+      simpa [map_zero] using f.monotone.withBot_map h
+    have hpow : lb' ^ n ≤ x ^ n ∧ x ^ n ≤ ub' ^ n := by
+      grind [Odd.pow_le_pow, pow_le_pow_left₀]
+    exact ⟨map_le_of_unbotD (fun a => map_pow a n) hpow.1,
+      le_map_of_untopD (fun a => map_pow a n) hpow.2⟩
+  · have hu : ub' ≤ 0 := by
+      apply WithTop.untopD_le
+      simpa [map_zero] using f.monotone.withTop_map hneg
+    have hpow : ub' ^ n ≤ x ^ n ∧ x ^ n ≤ lb' ^ n := by
+      grind [Even.pow_le_pow_of_nonpos]
+    exact ⟨map_le_of_unbotD (fun a => map_pow a n) hpow.1,
+      le_map_of_untopD (fun a => map_pow a n) hpow.2⟩
   · have hn : Even n := by grind
     constructor
     · simpa [Interval.map, map_zero] using hn.pow_nonneg x
     · rcases I with ⟨_ | lb, _ | ub⟩ <;> try exact le_top
       apply WithTop.coe_le_coe.mpr
-      rw [map_pow, f.monotone.map_max, map_neg]
-      exact even_pow_le hn hx.1 hx.2
+      rw [map_pow, f.monotone.map_max, map_neg, ← hn.pow_abs x]
+      apply pow_le_pow_left₀ (abs_nonneg x)
+      exact abs_le'.mpr
+        ⟨hx.2.trans (le_max_right _ _), (neg_le_neg hx.1).trans (le_max_left _ _)⟩
 
 /-- Check if `r x y` is false is implied by `x ∈ I` and `y ∈ J` -/
 def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
