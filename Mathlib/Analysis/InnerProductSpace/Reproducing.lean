@@ -171,8 +171,7 @@ lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x 
 lemma norm_kerFun_sub_kerFun_sq (x y : X) :
     ‖kerFun H x - kerFun H y‖ ^ 2
       = ‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
-  rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self]
-  simp [← kernel_apply, ← sub_add]
+  simp [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, ← kernel_apply, ← sub_add]
 
 lemma norm_kerFun_sub_kerFun (x y : X) :
     ‖kerFun H x - kerFun H y‖ = √‖kernel H x x - kernel H y x - kernel H x y + kernel H y y‖ := by
