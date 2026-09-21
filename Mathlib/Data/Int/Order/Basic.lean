@@ -5,10 +5,10 @@ Authors: Jeremy Avigad
 -/
 module
 
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.Defs.LinearOrder
-public import Mathlib.Logic.Basic
 
 /-!
 # The order relation on the integers
@@ -41,6 +41,10 @@ instance instLinearOrder : LinearOrder ℤ where
   toDecidableEq := instDecidableEq
   toDecidableLE := decLe
   toDecidableLT := decLt
+
+-- Shortcut instances
+instance : Preorder ℤ := inferInstance
+instance : PartialOrder ℤ := inferInstance
 
 protected alias ⟨eq_zero_or_eq_zero_of_mul_eq_zero, _⟩ := Int.mul_eq_zero
 

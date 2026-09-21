@@ -43,8 +43,8 @@ variable {𝕜 E F : Type*}
   [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {n m k : ℕ} {r : WithTop ℕ∞}
-  {s t : Set E} {x : E}
+  {n : ℕ}
+  {s : Set E} {x : E}
 
 /--
 If `ω` is a differentiable `(n + 1)`-form and `V i` are `n + 2` differentiable vector fields, then

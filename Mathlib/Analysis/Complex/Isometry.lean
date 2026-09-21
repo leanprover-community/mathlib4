@@ -39,7 +39,7 @@ open Complex
 
 open CharZero
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 local notation "|" x "|" => Complex.abs x
 
@@ -81,7 +81,6 @@ unit circle. -/
 def rotationOf (e : ℂ ≃ₗᵢ[ℝ] ℂ) : Circle :=
   ⟨e 1 / ‖e 1‖, by simp [Submonoid.unitSphere]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rotationOf_rotation (a : Circle) : rotationOf (rotation a) = a :=
   Subtype.ext <| by simp

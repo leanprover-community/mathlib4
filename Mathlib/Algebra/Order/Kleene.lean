@@ -72,7 +72,7 @@ class KStar (α : Type*) where
 
 @[inherit_doc] scoped[Computability] postfix:1024 "∗" => KStar.kstar
 
-open Computability
+open scoped Computability
 
 /-- A Kleene algebra is an idempotent semiring with an additional unary operator `kstar`
 (for Kleene star) that satisfies the following properties:

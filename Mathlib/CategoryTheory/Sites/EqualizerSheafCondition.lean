@@ -260,7 +260,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
 
 namespace Arrows
 
-variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
+variable (P : Cᵒᵖ ⥤ Type w) {X : C} (S : Sieve X)
 
 open Presieve
 
