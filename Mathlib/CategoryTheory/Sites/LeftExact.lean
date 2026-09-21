@@ -224,9 +224,6 @@ instance preservesFiniteLimits_plusFunctor
   have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply preservesLimitsOfShape_plusFunctor
 
-@[deprecated (since := "2026-09-17")]
-alias preserveFiniteLimits_plusFunctor := preservesFiniteLimits_plusFunctor
-
 instance preservesLimitsOfShape_sheafification
     (K : Type t) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
