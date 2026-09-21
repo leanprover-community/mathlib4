@@ -154,7 +154,7 @@ theorem ae_bdd_abs_condExp_of_ae_bdd_abs {R : E} {f : α → E} (hbdd : ∀ᵐ x
 
 /-- If the real-valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/
-@[deprecated ae_bdd_abs_condExp_of_ae_bdd_abs (since := "2026-05-05")]
+@[deprecated ae_bdd_abs_condExp_of_ae_bdd_abs +typeChanged (since := "2026-05-05")]
 theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
     ∀ᵐ x ∂μ, |(μ[f | m]) x| ≤ R := by
   by_cases hnm : m ≤ m0
@@ -293,7 +293,7 @@ theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p
   · simp only [MemLp, not_lt, top_le_iff] at hf
     simp [hf]
 
-@[deprecated eLpNorm_condExp_le_eLpNorm (since := "2026-07-01")]
+@[deprecated eLpNorm_condExp_le_eLpNorm +typeChanged (since := "2026-07-01")]
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ :=
     eLpNorm_condExp_le_eLpNorm f (refl 1)
 
