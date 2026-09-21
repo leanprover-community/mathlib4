@@ -115,6 +115,9 @@ def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
   continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
 
+@[simp, mfld_simps] theorem toFun'_toOpenPartialHomeomorph : ⇑Φ.toOpenPartialHomeomorph = Φ :=
+  rfl
+
 /-- The inverse of a local diffeomorphism. -/
 @[expose, simps toPartialEquiv]
 protected def symm : PartialDiffeomorph J I N M n where
