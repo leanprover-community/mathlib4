@@ -17,7 +17,8 @@ A simple elaborator that wraps term-mode proofs in auxiliary lemmas if possible.
 user to reference private declarations in term-mode proofs.
 
 `private_decl%` exists in core, but (1) does not have the syntax we want (2) does not warn if
-unnecessary (3) also produces definitions, and thus is more "dangerous".
+unnecessary (3) also produces definitions, and thus is more "dangerous" (4) has different
+(non-postponing) behavior from `by exact`, meaning that it fails in some more places.
 
 ## Implementation notes
 
