@@ -510,26 +510,26 @@ theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
   simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
 
-theorem eq_snd_or_eq_penultimate_of_mem_edges_of_isPath_dropLast (hp : p.dropLast.IsPath)
+theorem IsPath.eq_snd_or_eq_penultimate_of_mem_edges (hp : p.dropLast.IsPath)
     (hmem : s(u, w) ∈ p.edges) : w = p.snd ∨ w = p.penultimate := by
   by_cases hl : p.length = 1
   · grind [length_edges, List.length_eq_one_iff, mk_start_snd_mem_edges]
-  · by_cases h : s(u, w) = p.edges.getLast (List.ne_nil_of_mem hmem)
-    · grind [getLast_edges_eq_mk_penultimate_end, hp.nil_iff_eq, length_dropLast]
-    · left
-      rw [← p.snd_dropLast_eq_snd hl, ← hp.eq_snd_of_mem_edges ?_]
-      rw [edges_dropLast]
-      exact List.mem_dropLast_of_mem_of_ne_getLast hmem h
+  by_cases h : s(u, w) = p.edges.getLast (List.ne_nil_of_mem hmem)
+  · grind [getLast_edges_eq_mk_penultimate_end, hp.nil_iff_eq, length_dropLast]
+  left
+  rw [← p.snd_dropLast_eq_snd hl, ← hp.eq_snd_of_mem_edges ?_]
+  rw [edges_dropLast]
+  exact List.mem_dropLast_of_mem_of_ne_getLast hmem h
 
-theorem eq_snd_of_mem_darts_of_isPath_dropLast {d : G.Dart} (hd : d ∈ p.darts)
+theorem IsPath.eq_snd_of_mem_darts {d : G.Dart} (hd : d ∈ p.darts)
     (hp : p.dropLast.IsPath) (hu : u = d.fst) : p.snd = d.snd := by
   by_cases h : p.darts.getLast (List.ne_nil_of_mem hd) = d
-  · grind [darts_getElem_eq_getVert, p.dropLast.getVert_length, hp.getVert_eq_start_iff_of_not_nil,
-           length_dropLast]
-  · have hl : p.length ≠ 1 := by grind [List.length_eq_one_iff]
-    rw [← p.snd_dropLast_eq_snd hl, ← hp.eq_snd_of_mem_edges ?_]
-    have : d.edge = s(d.fst, d.snd) := rfl
-    grind [edge_mem_edges_of_mem_darts, darts_dropLast, List.mem_dropLast_of_mem_of_ne_getLast]
+  · grind [darts_getElem_eq_getVert, getVert_length, length_dropLast,
+      hp.getVert_eq_start_iff_of_not_nil]
+  have hl : p.length ≠ 1 := by grind [List.length_eq_one_iff]
+  rw [← p.snd_dropLast_eq_snd hl, ← hp.eq_snd_of_mem_edges ?_]
+  grind [edge_mem_edges_of_mem_darts, darts_dropLast, List.mem_dropLast_of_mem_of_ne_getLast,
+    d.symMk_fst_snd]
 
 theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
     Set.InjOn f {w | w ∈ p.support} := by
