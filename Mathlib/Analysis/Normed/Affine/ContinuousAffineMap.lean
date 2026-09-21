@@ -93,7 +93,7 @@ theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * �
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by grw [f.norm_contLinear_le, g.norm_image_zero_le]
   · calc
       ‖(f.comp g).contLinear‖ ≤ ‖f.contLinear‖ * ‖g.contLinear‖ :=
-        (g.comp_contLinear f).symm ▸ f.contLinear.opNorm_comp_le _
+        (g.contLinear_comp f).symm ▸ f.contLinear.opNorm_comp_le _
       _ ≤ ‖f‖ * ‖g‖ := by grw [f.norm_contLinear_le, g.norm_contLinear_le]
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by rw [le_add_iff_nonneg_right]; apply norm_nonneg
 
@@ -125,7 +125,7 @@ theorem decompLinearIsometryEquiv_symm_apply (p : W × (V →L[𝕜] W)) (x : V)
 theorem decompLinearIsometryEquiv_symm_contLinear (p : W × (V →L[𝕜] W)) :
     ((decompLinearIsometryEquiv 𝕜 R V W).symm p).contLinear = p.2 := by
   rw [decompLinearIsometryEquiv, ← LinearIsometryEquiv.coe_symm_toLinearEquiv,
-    decompLinearEquiv_symm_contLinear]
+    contLinear_decompLinearEquiv_symm]
 
 @[deprecated decompLinearIsometryEquiv +typeChanged (since := "2026-03-03"),
   inherit_doc decompLinearIsometryEquiv]

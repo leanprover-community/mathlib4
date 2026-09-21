@@ -91,10 +91,13 @@ theorem orthogonalProjection_linear {s : AffineSubspace 𝕜 P} [Nonempty s]
 
 /-- The continuous linear map corresponding to `orthogonalProjection`. -/
 @[simp]
-theorem orthogonalProjection_contLinear {s : AffineSubspace 𝕜 P} [Nonempty s]
+theorem contLinear_orthogonalProjection {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] :
     (orthogonalProjection s).contLinear = s.direction.orthogonalProjectionOnto :=
   rfl
+
+@[deprecated (since := "2026-09-22")]
+alias orthogonalProjection_contLinear := contLinear_orthogonalProjection
 
 /-- The `orthogonalProjection` lies in the given subspace. -/
 theorem orthogonalProjection_mem {s : AffineSubspace 𝕜 P} [Nonempty s]

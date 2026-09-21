@@ -66,13 +66,13 @@ theorem continuous_rng_of_exists [IsTopologicalAddGroup W] [ContinuousSMul R V] 
 @[fun_prop]
 protected theorem continuous_const : Continuous (const R P (Q := Q)) :=
   have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
-  continuous_rng (by simp_rw [coe_const]; fun_prop) (by simp_rw [const_contLinear]; fun_prop)
+  continuous_rng (by simp_rw [coe_const]; fun_prop) (by simp_rw [contLinear_const]; fun_prop)
 
 instance [IsTopologicalAddGroup W] : IsTopologicalAddTorsor (P →ᴬ[R] Q) where
   continuous_vadd :=
-    continuous_rng (by simp_rw [vadd_apply]; fun_prop) (by simp_rw [vadd_contLinear]; fun_prop)
+    continuous_rng (by simp_rw [vadd_apply]; fun_prop) (by simp_rw [contLinear_vadd]; fun_prop)
   continuous_vsub :=
-    continuous_rng (by simp_rw [vsub_apply]; fun_prop) (by simp_rw [vsub_contLinear]; fun_prop)
+    continuous_rng (by simp_rw [vsub_apply]; fun_prop) (by simp_rw [contLinear_vsub]; fun_prop)
 
 instance [T0Space W] : T0Space (P →ᴬ[R] Q) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
@@ -93,11 +93,11 @@ instance : IsTopologicalAddGroup (P →ᴬ[R] W) :=
 instance {S : Type*} [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
     [ContinuousConstSMul S W] : ContinuousConstSMul S (P →ᴬ[R] W) where
   continuous_const_smul _ :=
-    continuous_rng (by simp_rw [coe_smul]; fun_prop) (by simp_rw [smul_contLinear]; fun_prop)
+    continuous_rng (by simp_rw [coe_smul]; fun_prop) (by simp_rw [contLinear_smul]; fun_prop)
 
 instance [ContinuousSMul R W] : ContinuousSMul R (P →ᴬ[R] W) where
   continuous_smul :=
-    continuous_rng (by simp_rw [coe_smul]; fun_prop) (by simp_rw [smul_contLinear]; fun_prop)
+    continuous_rng (by simp_rw [coe_smul]; fun_prop) (by simp_rw [contLinear_smul]; fun_prop)
 
 end LinearCodomain
 
@@ -110,7 +110,7 @@ theorem _root_.ContinuousLinearMap.continuous_toContinuousAffineMap :
     Continuous (ContinuousLinearMap.toContinuousAffineMap : (V →L[R] W) → V →ᴬ[R] W) :=
   continuous_rng
     (by simp_rw [ContinuousLinearMap.coe_toContinuousAffineMap]; fun_prop)
-    (by simp_rw [ContinuousLinearMap.toContinuousAffineMap_contLinear]; fun_prop)
+    (by simp_rw [ContinuousLinearMap.contLinear_toContinuousAffineMap]; fun_prop)
 
 end Linear
 
@@ -128,7 +128,7 @@ def decompHomeomorph : (V →ᴬ[R] Q) ≃ₜ (Q × (V →L[R] W)) where
   continuous_toFun := (continuous_eval_const 0).prodMk continuous_contLinear
   continuous_invFun := continuous_rng
     (by simp_rw [Equiv.invFun_as_coe, decompEquiv_symm_apply]; fun_prop)
-    (by simp_rw [Equiv.invFun_as_coe, decompEquiv_symm_contLinear]; fun_prop)
+    (by simp_rw [Equiv.invFun_as_coe, contLinear_decompEquiv_symm]; fun_prop)
 
 @[simp]
 theorem fst_decompHomeomorph (f : V →ᴬ[R] Q) : (decompHomeomorph R V Q f).1 = f 0 :=
@@ -144,9 +144,12 @@ theorem decompHomeomorph_symm_apply (p : Q × (V →L[R] W)) (x : V) :
   rfl
 
 @[simp]
-theorem decompHomeomorph_symm_contLinear (p : Q × (V →L[R] W)) :
+theorem contLinear_decompHomeomorph_symm (p : Q × (V →L[R] W)) :
     ((decompHomeomorph R V Q).symm p).contLinear = p.2 :=
-  decompEquiv_symm_contLinear ..
+  contLinear_decompEquiv_symm ..
+
+@[deprecated (since := "2026-09-22")]
+alias decompHomeomorph_symm_contLinear := contLinear_decompHomeomorph_symm
 
 end LinearDomain
 
@@ -177,9 +180,12 @@ theorem decompContinuousLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) 
   rfl
 
 @[simp]
-theorem decompContinuousLinearEquiv_symm_contLinear (p : W × (V →L[R] W)) :
+theorem contLinear_decompContinuousLinearEquiv_symm (p : W × (V →L[R] W)) :
     ((decompContinuousLinearEquiv R V W).symm p).contLinear = p.2 :=
-  decompEquiv_symm_contLinear ..
+  contLinear_decompEquiv_symm ..
+
+@[deprecated (since := "2026-09-22")]
+alias decompContinuousLinearEquiv_symm_contLinear := contLinear_decompContinuousLinearEquiv_symm
 
 end Linear
 
@@ -210,9 +216,12 @@ theorem decompContinuousAffineEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) 
   rfl
 
 @[simp]
-theorem decompContinuousAffineEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+theorem contLinear_decompContinuousAffineEquiv_symm (p : Q × (V →L[R] W)) :
     ((decompContinuousAffineEquiv R V Q).symm p).contLinear = p.2 :=
-  decompHomeomorph_symm_contLinear ..
+  contLinear_decompHomeomorph_symm ..
+
+@[deprecated (since := "2026-09-22")]
+alias decompContinuousAffineEquiv_symm_contLinear := contLinear_decompContinuousAffineEquiv_symm
 
 end LinearDomain
 

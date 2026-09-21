@@ -200,18 +200,23 @@ theorem coe_contLinear_eq_linear (f : P →ᴬ[R] Q) :
   rfl
 
 @[simp]
-theorem coe_mk_contLinear_eq_linear (f : P →ᵃ[R] Q) (h) :
+theorem coe_contLinear_mk_eq_linear (f : P →ᵃ[R] Q) (h) :
     ((⟨f, h⟩ : P →ᴬ[R] Q).contLinear : V → W) = f.linear :=
   rfl
+
+@[deprecated (since := "2026-09-22")]
+alias coe_mk_contLinear_eq_linear := coe_contLinear_mk_eq_linear
 
 theorem coe_linear_eq_coe_contLinear (f : P →ᴬ[R] Q) :
     ((f : P →ᵃ[R] Q).linear : V → W) = (⇑f.contLinear : V → W) :=
   rfl
 
 @[simp]
-theorem comp_contLinear (f : P →ᴬ[R] Q) (g : Q →ᴬ[R] Q₂) :
+theorem contLinear_comp (f : P →ᴬ[R] Q) (g : Q →ᴬ[R] Q₂) :
     (g.comp f).contLinear = g.contLinear.comp f.contLinear :=
   rfl
+
+@[deprecated (since := "2026-09-22")] alias comp_contLinear := contLinear_comp
 
 @[simp]
 theorem map_vadd (f : P →ᴬ[R] Q) (p : P) (v : V) : f (v +ᵥ p) = f.contLinear v +ᵥ f p :=
@@ -222,8 +227,10 @@ theorem contLinear_map_vsub (f : P →ᴬ[R] Q) (p₁ p₂ : P) : f.contLinear (
   f.toAffineMap.linearMap_vsub p₁ p₂
 
 @[simp]
-theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=
+theorem contLinear_const (q : Q) : (const R P q).contLinear = 0 :=
   rfl
+
+@[deprecated (since := "2026-09-22")] alias const_contLinear := contLinear_const
 
 theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
     f.contLinear = 0 ↔ ∃ q, f = const R P q := by
@@ -276,8 +283,10 @@ instance : MulAction S (P →ᴬ[R] W) :=
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup W]
 
 @[simp]
-theorem smul_contLinear (t : S) (f : P →ᴬ[R] W) : (t • f).contLinear = t • f.contLinear :=
+theorem contLinear_smul (t : S) (f : P →ᴬ[R] W) : (t • f).contLinear = t • f.contLinear :=
   rfl
+
+@[deprecated (since := "2026-09-22")] alias smul_contLinear := contLinear_smul
 
 end MulAction
 
@@ -323,20 +332,28 @@ instance [Semiring S] [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 
 @[simp]
-theorem zero_contLinear : (0 : P →ᴬ[R] W).contLinear = 0 :=
+theorem contLinear_zero : (0 : P →ᴬ[R] W).contLinear = 0 :=
   rfl
 
-@[simp]
-theorem add_contLinear (f g : P →ᴬ[R] W) : (f + g).contLinear = f.contLinear + g.contLinear :=
-  rfl
+@[deprecated (since := "2026-09-22")] alias zero_contLinear := contLinear_zero
 
 @[simp]
-theorem sub_contLinear (f g : P →ᴬ[R] W) : (f - g).contLinear = f.contLinear - g.contLinear :=
+theorem contLinear_add (f g : P →ᴬ[R] W) : (f + g).contLinear = f.contLinear + g.contLinear :=
   rfl
 
+@[deprecated (since := "2026-09-22")] alias add_contLinear := contLinear_add
+
 @[simp]
-theorem neg_contLinear (f : P →ᴬ[R] W) : (-f).contLinear = -f.contLinear :=
+theorem contLinear_sub (f g : P →ᴬ[R] W) : (f - g).contLinear = f.contLinear - g.contLinear :=
   rfl
+
+@[deprecated (since := "2026-09-22")] alias sub_contLinear := contLinear_sub
+
+@[simp]
+theorem contLinear_neg (f : P →ᴬ[R] W) : (-f).contLinear = -f.contLinear :=
+  rfl
+
+@[deprecated (since := "2026-09-22")] alias neg_contLinear := contLinear_neg
 
 end ModuleValuedMaps
 
@@ -377,13 +394,17 @@ lemma lineMap_apply' [ContinuousConstSMul R W] [SMulCommClass R R W] (f g : P �
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 
-@[simp] lemma vadd_contLinear (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
+@[simp] lemma contLinear_vadd (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
     (f +ᵥ g).contLinear = f.contLinear + g.contLinear :=
   rfl
 
-@[simp] lemma vsub_contLinear (f g : P →ᴬ[R] Q) :
+@[deprecated (since := "2026-09-22")] alias vadd_contLinear := contLinear_vadd
+
+@[simp] lemma contLinear_vsub (f g : P →ᴬ[R] Q) :
     (f -ᵥ g).contLinear = f.contLinear - g.contLinear :=
   rfl
+
+@[deprecated (since := "2026-09-22")] alias vsub_contLinear := contLinear_vsub
 
 end
 
@@ -428,14 +449,18 @@ variable
   [TopologicalSpace V₄] [IsTopologicalAddTorsor P₄]
 
 @[simp]
-theorem prod_contLinear (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) :
+theorem contLinear_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) :
     (f.prod g).contLinear = f.contLinear.prod g.contLinear :=
   rfl
 
+@[deprecated (since := "2026-09-22")] alias prod_contLinear := contLinear_prod
+
 @[simp]
-theorem prodMap_contLinear (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) :
+theorem contLinear_prodMap (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) :
     (f.prodMap g).contLinear = f.contLinear.prodMap g.contLinear :=
   rfl
+
+@[deprecated (since := "2026-09-22")] alias prodMap_contLinear := contLinear_prodMap
 
 end Prod
 
@@ -463,13 +488,16 @@ theorem toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineM
 variable [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
 
 @[simp]
-theorem toContinuousAffineMap_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f :=
+theorem contLinear_toContinuousAffineMap (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f :=
   rfl
+
+@[deprecated (since := "2026-09-22")]
+alias toContinuousAffineMap_contLinear := contLinear_toContinuousAffineMap
 
 theorem _root_.ContinuousAffineMap.decomp (f : V →ᴬ[R] W) :
     (f : V → W) = f.contLinear + Function.const V (f 0) := by
   rcases f with ⟨f, h⟩
-  rw [ContinuousAffineMap.coe_mk_contLinear_eq_linear, ContinuousAffineMap.coe_mk, f.decomp,
+  rw [ContinuousAffineMap.coe_contLinear_mk_eq_linear, ContinuousAffineMap.coe_mk, f.decomp,
     Pi.add_apply, LinearMap.map_zero, zero_add, ← Function.const_def]
 
 end ContinuousLinearMap
@@ -518,10 +546,13 @@ theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
   rfl
 
 @[simp]
-theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+theorem contLinear_decompEquiv_symm (p : Q × (V →L[R] W)) :
     ((decompEquiv R V Q).symm p).contLinear = p.2 := by
   have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
   ext; simp [decompEquiv]
+
+@[deprecated (since := "2026-09-22")]
+alias decompEquiv_symm_contLinear := contLinear_decompEquiv_symm
 
 end
 
@@ -553,9 +584,12 @@ theorem decompLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) :
   rfl
 
 @[simp]
-theorem decompLinearEquiv_symm_contLinear (p : W × (V →L[R] W)) :
+theorem contLinear_decompLinearEquiv_symm (p : W × (V →L[R] W)) :
     ((decompLinearEquiv R S V W).symm p).contLinear = p.2 := by
   ext; simp [decompLinearEquiv]
+
+@[deprecated (since := "2026-09-22")]
+alias decompLinearEquiv_symm_contLinear := contLinear_decompLinearEquiv_symm
 
 end
 
@@ -588,9 +622,12 @@ theorem decompAffineEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
   rfl
 
 @[simp]
-theorem decompAffineEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+theorem contLinear_decompAffineEquiv_symm (p : Q × (V →L[R] W)) :
     ((decompAffineEquiv R S V Q).symm p).contLinear = p.2 := by
-  rw [decompAffineEquiv, ← AffineEquiv.coe_symm_toEquiv, decompEquiv_symm_contLinear]
+  rw [decompAffineEquiv, ← AffineEquiv.coe_symm_toEquiv, contLinear_decompEquiv_symm]
+
+@[deprecated (since := "2026-09-22")]
+alias decompAffineEquiv_symm_contLinear := contLinear_decompAffineEquiv_symm
 
 end
 
