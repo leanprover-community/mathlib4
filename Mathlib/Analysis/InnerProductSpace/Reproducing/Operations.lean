@@ -207,8 +207,7 @@ instance : RKHS 𝕜 (smulSpace H c) X V where
   coeCLM := if h : c = 0 then 0 else (c : 𝕜) • (coeCLM (H:=H) 𝕜 ∘L equiv H h)
   coeCLM_injective := fun f g hfg => by
     by_cases h : c = 0
-    · let : Subsingleton (smulSpace H c) := by
-        simp [smulSpace, auxSmulSpace, h, Unique.instSubsingleton]
+    · subst h
       exact Subsingleton.elim f g
     · simp_all
 
