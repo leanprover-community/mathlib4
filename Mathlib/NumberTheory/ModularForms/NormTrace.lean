@@ -141,7 +141,7 @@ end ModularForm
 
 namespace CuspForm
 
-/-- Regard a modular form as a form for a subgroup of its level. -/
+/-- Regard a cusp form as a form for a subgroup of its level. -/
 @[simps -fullyApplied]
 def restrict (hGH : 𝒢 ≤ ℋ) (f : CuspForm ℋ k) : CuspForm 𝒢 k where
   toFun := f
@@ -277,6 +277,35 @@ lemma ModularForm.norm_eq_zero_iff [ℋ.HasDetPlusMinusOne] [ModularFormClass F 
   · ext τ
     simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk]
       using ⟨1, by simpa using congr_fun hf τ⟩
+
+section norm_trace_restrict
+
+variable {ℋ} (f : ModularForm ℋ k)
+
+omit [Subgroup.IsFiniteRelIndex 𝒢 ℋ] in
+lemma quotientFunc_restrict (hGH : 𝒢 ≤ ℋ) (q : ℋ ⧸ 𝒢.subgroupOf ℋ) :
+    quotientFunc (f.restrict hGH) q = f := by
+  induction q using QuotientGroup.induction_on' with
+  | H g => simp [slash_action_eqn _ _ (inv_mem g.2)]
+
+/-- Composite of trace and restriction maps. -/
+lemma trace_restrict (hGH : 𝒢 ≤ ℋ) :
+    .trace ℋ (f.restrict hGH) = 𝒢.relIndex ℋ • f := by
+  let : Fintype 𝒬 := Fintype.ofFinite _
+  ext
+  rw [ModularForm.coe_trace, Finset.sum_apply]
+  simp [quotientFunc_restrict, Subgroup.index_eq_card, Subgroup.relIndex]
+
+/-- Composite of norm and restriction maps. Formulated as an equality after coercing to functions,
+to avoid issues with type equality. -/
+lemma norm_restrict (hGH : 𝒢 ≤ ℋ) [ℋ.HasDetPlusMinusOne] :
+    ModularForm.norm ℋ (f.restrict hGH) = (f : ℍ → ℂ) ^ 𝒢.relIndex ℋ := by
+  let : Fintype 𝒬 := Fintype.ofFinite _
+  ext
+  rw [ModularForm.coe_norm, Finset.prod_apply]
+  simp [quotientFunc_restrict, Subgroup.index_eq_card, Subgroup.relIndex]
+
+end norm_trace_restrict
 
 open scoped MatrixGroups
 
