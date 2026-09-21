@@ -58,14 +58,14 @@ lemma isCardinalClosedUnderColimitsOfShape
   have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
   exact isCardinalClosedUnderColimitsOfShape' P κ _
 
-instance [HasCardinalFilteredColimits.{w} C κ] :
-    HasCardinalFilteredColimits.{w} P.FullSubcategory κ where
+instance [HasCardinalFilteredColimits C κ] :
+    HasCardinalFilteredColimits P.FullSubcategory κ where
   hasColimitsOfShape J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     have := isCardinalClosedUnderColimitsOfShape P κ J
     infer_instance
 
-instance [HasCardinalFilteredColimits.{w} C κ] :
+instance [HasCardinalFilteredColimits C κ] :
     P.ι.IsCardinalAccessible κ where
   preservesColimitOfShape J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
