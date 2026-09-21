@@ -171,7 +171,7 @@ lemma exists_colimitsOfShape_splitMonomorphisms_of_isCardinalPure
 ```
   The morphisms `l j` allow to show that the bottom maps
   `X ⟶ (pushout t u).obj j` are split monomorphisms, and the colimit
-  of `pushout t u` idenfities to `Y`, so that the morphism `f` is
+  of `pushout t u` identifies to `Y`, so that the morphism `f` is
   a colimit of split monomorphisms. -/
   let t : p.diag ⋙ Arrow.leftFunc ⟶ p.diag ⋙ Arrow.rightFunc :=
     Functor.whiskerLeft _ Arrow.leftToRight
