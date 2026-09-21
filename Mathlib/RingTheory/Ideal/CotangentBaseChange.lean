@@ -70,7 +70,6 @@ lemma tensorCotangentHom_surjective :
   obtain ⟨y, rfl⟩ := I.map_includeRight_eq.le hx
   obtain rfl : hx = I.map_includeRight_eq.ge ⟨y, rfl⟩ := rfl
   induction y with
-  | zero => exact ⟨0, by simp only [map_zero]; exact (map_zero _).symm⟩
   | add x y hx hy =>
     obtain ⟨a, ha⟩ := hx
     obtain ⟨b, hb⟩ := hy

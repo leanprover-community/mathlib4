@@ -5,10 +5,11 @@ Authors: Gregory Wickham
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Topology.Algebra.LinearMapCompletion
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-!
 # The GNS (Gelfand-Naimark-Segal) construction
@@ -117,6 +118,10 @@ lemma norm_map_star_mul_le (f : F) (x y : A) :
 
 alias cauchy_schwarz_star_mul := norm_map_star_mul_le
 
+lemma norm_map_star_mul_sq_le (f : F) (x y : A) :
+    ‖f (star x * y)‖ ^ 2 ≤ ‖f (star x * x)‖ * ‖f (star y * y)‖ := by
+  grw [norm_map_star_mul_le, mul_pow]; simp
+
 /-- The **Cauchy--Schwarz** lemma for positive linear functionals on a non-unital
 star-ordered `ℂ`-algebra. -/
 lemma norm_map_mul_star_le (f : F) (x y : A) :
@@ -124,6 +129,10 @@ lemma norm_map_mul_star_le (f : F) (x y : A) :
   simpa using cauchy_schwarz_star_mul f (star x) (star y)
 
 alias cauchy_schwarz_mul_star := norm_map_mul_star_le
+
+lemma norm_map_mul_star_sq_le (f : F) (x y : A) :
+    ‖f (x * star y)‖ ^ 2 ≤ ‖f (x * star x)‖ * ‖f (y * star y)‖ := by
+  grw [norm_map_mul_star_le, mul_pow]; simp
 
 end PreGNS
 
@@ -155,7 +164,7 @@ noncomputable def leftMulMapPreGNS (a : A) : f.PreGNS →L[ℂ] f.PreGNS :=
         ‖a‖ ^ 2 • star (f.ofPreGNS x) * f.ofPreGNS x := by
       rw [← mul_assoc, mul_assoc _ (star a), sq, ← CStarRing.norm_star_mul_self (x := a),
         smul_mul_assoc]
-      exact CStarAlgebra.star_left_conjugate_le_norm_smul
+      exact CStarAlgebra.star_left_conjugate_le_norm_smul ..
     calc
       _ ≤ f (‖a‖ ^ 2 • star (f.ofPreGNS x) * f.ofPreGNS x) := by
         simpa using OrderHomClass.mono f this

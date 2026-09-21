@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.Sites.Coverage
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 
 /-!
 # 1-hypercovers
@@ -86,11 +86,11 @@ variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma toPullback_fst (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.fst _ _ = E.p₁ k := by
   rw [pullback.lift_fst]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma toPullback_snd (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.snd _ _ = E.p₂ k := by
   rw [pullback.lift_snd]
 
@@ -99,7 +99,6 @@ variable (i₁ i₂) in
 noncomputable def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
   Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) => E.toPullback j)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
     (w : p₁ ≫ E.f i₁ = p₂ ≫ E.f i₂) :
     E.sieve₁ p₁ p₂ = (E.sieve₁' i₁ i₂).pullback (pullback.lift _ _ w) := by

@@ -96,6 +96,7 @@ namespace Poly
 
 section
 
+@[macro_inline]
 instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
 
