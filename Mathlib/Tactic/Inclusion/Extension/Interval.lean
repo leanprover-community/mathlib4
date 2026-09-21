@@ -51,6 +51,10 @@ instance [Preorder α] : ToSet (Interval α) α := ⟨Interval.toSet⟩
 theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
     x ∈ I ↔ I.lb ≤ x ∧ x ≤ I.ub := Iff.rfl
 
+theorem Interval.mem_iff_unbotD_untopD [Preorder α] {x : α} {I : Interval α} :
+    x ∈ I ↔ I.lb.unbotD x ≤ x ∧ x ≤ I.ub.untopD x := by
+  simp [WithBot.unbotD_le_iff, WithTop.le_untopD_iff]
+
 /-- Apply a function to the finite endpoints of an interval. -/
 def Interval.map (I : Interval α) (f : α → β) : Interval β :=
   ⟨WithBot.map f I.lb, WithTop.map f I.ub⟩
@@ -366,9 +370,7 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
     (hx : x ∈ I.map f) : x ^ n ∈ (I.pow n).map f := by
   let lb' := (I.lb.map f).unbotD x
   let ub' := (I.ub.map f).untopD x
-  replace hx : lb' ≤ x ∧ x ≤ ub' :=
-    ⟨(WithBot.unbotD_le_iff fun _ => le_rfl).mpr hx.1,
-      (WithTop.le_untopD_iff fun _ => le_rfl).mpr hx.2⟩
+  rw [Interval.mem_iff_unbotD_untopD, Interval.map] at hx
   unfold Interval.pow
   split_ifs with h0 hsign hneg
   · simp [h0, Interval.singleton, Interval.map, map_one]
