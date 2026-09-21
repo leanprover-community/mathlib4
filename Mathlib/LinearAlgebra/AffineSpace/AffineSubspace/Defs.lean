@@ -224,6 +224,10 @@ instance : Coe (Submodule k V) (AffineSubspace k V) := ⟨toAffineSubspace⟩
 theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
     x ∈ (p : AffineSubspace k V) ↔ x ∈ p := Iff.rfl
 
+@[simp]
+theorem coe_toAffineSubspace (p : Submodule k V) : ((p : AffineSubspace k V) : Set V) = p :=
+  rfl
+
 end Submodule
 
 namespace AffineSubspace
