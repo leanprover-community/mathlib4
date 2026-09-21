@@ -60,9 +60,8 @@ theorem mem_cycleFactorsFinset_conj' (k g c : Perm α) :
 
 theorem cycleFactorsFinset_conj_eq (k g : Perm α) :
     cycleFactorsFinset (MulAut.conj k g) = MulAut.conj k • cycleFactorsFinset g := by
-  rw [cycleFactorsFinset_conj, Finset.smul_finset_def, Finset.map_eq_image]
-  rw [coe_toEmbedding, MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
-  simp only [MulAut.smul_def]
+  rw [cycleFactorsFinset_conj]
+  apply Finset.map_eq_image
 
 omit [Fintype α] in
 theorem conj_smul_range_ofSubtype [Finite α] (g : Perm α) (s : Finset α) :
