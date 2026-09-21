@@ -65,8 +65,7 @@ theorem cycleFactorsFinset_conj_eq (k g : Perm α) :
 
 omit [Fintype α] in
 theorem conj_smul_range_ofSubtype [Finite α] (g : Perm α) (s : Finset α) :
-    MulAut.conj g • (ofSubtype (p := (· ∈ s))).range =
-      (ofSubtype (p := (· ∈ g • s))).range := by
+    MulAut.conj g • (ofSubtype (p := (· ∈ s))).range = (ofSubtype (p := (· ∈ g • s))).range := by
   have : Fintype α := Fintype.ofFinite α
   ext k
   simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff, MulAut.smul_def,
