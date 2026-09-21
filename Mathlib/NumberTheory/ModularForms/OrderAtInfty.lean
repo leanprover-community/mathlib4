@@ -141,74 +141,13 @@ private lemma orderAtInfty_eq_of_isTheta
 
 end SeminormedAddCommGroup
 
-section SeminormedRing
-variable [SeminormedCommRing E]
--- commutativity is not needed, but it shortens the proof, and we only really need `E = ℂ` anyway
-
-lemma le_orderAtInfty_mul : orderAtInfty f + orderAtInfty g ≤ orderAtInfty (f * g) := by
-  wlog! hfg : orderAtInfty g ≤ orderAtInfty f
-  · simpa [add_comm, mul_comm] using this hfg.le
-  have aux {a b c : ℝ} {f g : ℍ → E} (hf : f =O[atImInfty] fun τ ↦ exp (-2 * π * τ.im * a))
-      (hg : g =O[atImInfty] fun τ ↦ exp (-2 * π * τ.im * b)) (habc : a + b = c) :
-      (f * g) =O[atImInfty] fun τ ↦ exp (-2 * π * τ.im * c) := by
-    convert! hf.mul hg using 1
-    ext τ
-    rw [← exp_add, exp_eq_exp, ← habc]
-    ring
-  generalize hs : orderAtInfty f = s
-  generalize ht : orderAtInfty g = t
-  rw [hs, ht] at hfg
-  cases s with
-  | bot => simp
-  | top => cases t with
-    | bot => simp
-    | coe t =>
-      -- Exactly one of `s, t` is `⊤` and the other is finite.
-      simp only [EReal.top_add_coe, top_le_iff, orderAtInfty_eq_top_iff] at hs ⊢
-      intro u
-      obtain ⟨v, hv⟩ := exists_lt t
-      refine aux (hs (u - v)) (le_orderAtInfty_iff.mp ht.ge v hv) (by abel)
-    | top =>
-      -- Both of `s, t` are `⊤`.
-      simp only [EReal.top_add_top, top_le_iff, orderAtInfty_eq_top_iff] at hs ht ⊢
-      exact fun u ↦ aux (hs _) (ht _) (add_halves u)
-  | coe s => cases t with
-    | bot => simp
-    | top => grind [EReal.coe_ne_top]
-    | coe t =>
-      -- Both `s, t` are finite.
-      replace hs := hs.ge
-      replace ht := ht.ge
-      simp only [← EReal.coe_add, le_orderAtInfty_iff] at hs ht ⊢
-      refine fun u hu ↦ aux (hs ((u + s - t) / 2) ?_) (ht ((u - s + t) / 2) ?_) ?_ <;>
-      grind
-
-/-- The order of a finite product is at least the sum of the orders of its factors. -/
-lemma le_orderAtInfty_prod {ι : Type*} (s : Finset ι) (F : ι → ℍ → E) :
-    ∑ i ∈ s, orderAtInfty (F i) ≤ orderAtInfty (∏ i ∈ s, F i) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty =>
-    simpa using IsBoundedAtImInfty.orderAtInfty_nonneg
-      (Filter.const_boundedAtFilter atImInfty (1 : E))
-  | @insert i s hi ih =>
-    rw [Finset.sum_insert hi, Finset.prod_insert hi]
-    exact (add_le_add le_rfl ih).trans (le_orderAtInfty_mul (f := F i) (g := ∏ j ∈ s, F j))
-
-end SeminormedRing
-
 /-- Taking norms preserves the order at infinity. -/
 lemma orderAtInfty_norm [SeminormedAddCommGroup E] (f : ℍ → E) :
     orderAtInfty (fun τ ↦ ‖f τ‖) = orderAtInfty f := by
   have hiff (t : ℝ) : t < orderAtInfty (fun τ ↦ ‖f τ‖) ↔ t < orderAtInfty f := by
     simp only [lt_orderAtInfty_iff, Asymptotics.isBigO_norm_left]
-  apply le_antisymm
-  · by_contra! h
-    obtain ⟨t, ht, ht'⟩ := EReal.lt_iff_exists_real_btwn.mp h
-    exact ht.not_gt ((hiff t).mp ht')
-  · by_contra! h
-    obtain ⟨t, ht, ht'⟩ := EReal.lt_iff_exists_real_btwn.mp h
-    exact ht.not_gt ((hiff t).mpr ht')
+  apply le_antisymm <;>
+  grind [EReal.ge_of_forall_gt_iff_ge, le_orderAtInfty_iff]
 
 /-- A change of variables which scales imaginary parts scales the order by the same factor. -/
 lemma orderAtInfty_comp_equiv [Norm E] (f : ℍ → E) (e : ℍ ≃ ℍ) {a : ℝ} (ha : 0 < a)
@@ -235,7 +174,7 @@ lemma orderAtInfty_comp_equiv [Norm E] (f : ℍ → E) (e : ℍ ≃ ℍ) {a : �
     exact le_orderAtInfty_of_isBigO ((hbigO _).mpr (by rwa [mul_div_cancel_right₀ _ ha.ne']))
 
 /-- Scalar multiplication by a nonzero constant preserves the order. -/
-lemma orderAtInfty_const_mul [NormedRing E] [NormMulClass E] (c : E) (hc : c ≠ 0)
+lemma orderAtInfty_const_mul [NormedRing E] [NormMulClass E] {c : E} (hc : c ≠ 0)
     (f : ℍ → E) :
     orderAtInfty (fun τ ↦ c * f τ) = orderAtInfty f := by
   have hiff (t : ℝ) : t < orderAtInfty (fun τ ↦ c * f τ) ↔ t < orderAtInfty f := by
@@ -277,10 +216,9 @@ lemma orderAtInfty_slash_of_upperTriangular (f : ℍ → ℂ) (k : ℤ) (g : GL 
     ext τ
     simp [ModularForm.slash_def, denom, hg, mul_assoc, mul_comm ‖f _‖]
   rw [← orderAtInfty_norm (f ∣[k] g), hnorm,
-    orderAtInfty_const_mul _ (by simp [hd, g.det_ne_zero, zpow_ne_zero])]
+    orderAtInfty_const_mul (by simp [hd, g.det_ne_zero, zpow_ne_zero])]
   simpa only [Function.comp_def, MulAction.toPerm_apply, orderAtInfty_norm] using
     orderAtInfty_comp_equiv (fun τ ↦ ‖f τ‖) (MulAction.toPerm g) ha him
-
 
 /-!
 ## Theory for periodic holomorphic functions
