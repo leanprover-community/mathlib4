@@ -34,12 +34,8 @@ variable (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
 
 include h₁₂ h₁₃ h₂₃ in
 theorem volume_eq_height_mul : t.volume = 2⁻¹ * t.height i₁ * dist (t.points i₂) (t.points i₃) := by
-  let e : Fin 3 ≃ Fin 3 := {
-    toFun x := if x = i₁ then 0 else if x = i₂ then 1 else 2
-    invFun := ![i₁, i₂, i₃]
-    left_inv x := by fin_cases x <;> fin_cases i₁ <;> fin_cases i₂ <;> simp <;> grind
-    right_inv x := by fin_cases x <;> simp <;> grind
-  }
+  let e : Fin 3 ≃ Fin 3 :=
+    .symm <| List.Nodup.getEquivOfForallMemList [i₁, i₂, i₃] (by grind) (by grind)
   let s := t.reindex e
   suffices s.volume = 2⁻¹ * s.height 0 * dist (s.points 1) (s.points 2) by
     simpa [e, s] using this

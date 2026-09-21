@@ -47,7 +47,7 @@ theorem dist_orthogonalProjection_eq_sin_mul_dist (p : P) {q : P} {s : AffineSub
     [s.direction.HasOrthogonalProjection] (h : q ∈ s) :
     haveI : Nonempty s := ⟨q, h⟩
     dist p (orthogonalProjection s p) =
-    Real.sin (∠ p q (orthogonalProjection s p).val) * dist p q := by
+      Real.sin (∠ p q (orthogonalProjection s p).val) * dist p q := by
   rw [angle_comm]
   refine (sin_angle_mul_dist_of_angle_eq_pi_div_two ?_).symm
   exact angle_self_orthogonalProjection p h
