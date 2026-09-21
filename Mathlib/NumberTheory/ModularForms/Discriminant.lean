@@ -168,8 +168,7 @@ theorem normalizedDerivOfComplex_discriminant : D Δ = E2 * Δ := by
     rw [← logDeriv_eta_eq_E2, logDeriv_apply, div_mul_cancel₀ _ (eta_ne_zero z.2)]
   simp only [normalizedDerivOfComplex, Pi.mul_apply, hΔ.deriv_eq, deriv_fun_pow hη, h1,
     discriminant]
-  field_simp
-  ring
+  field
 
 open Derivative in
 /-- `Δ` is annihilated by the weight-12 Serre derivative `∂₁₂ = D - E₂`. -/
