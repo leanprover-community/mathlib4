@@ -96,7 +96,7 @@ theorem isBoundedBy_self : p.IsBoundedBy p := by
   use {i}
   grind [Finset.sup_singleton]
 
-@[grind →, trans]
+@[trans]
 theorem IsBoundedBy.trans {q' : SeminormFamily 𝕜 E ι''} (h : p.IsBoundedBy q)
     (h' : q.IsBoundedBy q') : p.IsBoundedBy q' := by
   intro i

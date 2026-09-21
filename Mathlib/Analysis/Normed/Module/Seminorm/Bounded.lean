@@ -158,7 +158,7 @@ theorem IsEquivalent.symm (h : p.IsEquivalent q) : q.IsEquivalent p := by
   obtain ⟨C, h⟩ := h
   exact ⟨C, h.symm⟩
 
-@[trans, grind →]
+@[trans]
 theorem IsEquivalent.trans (h : p.IsEquivalent q) (h' : q.IsEquivalent q') : p.IsEquivalent q' := by
   obtain ⟨C, h⟩ := h
   obtain ⟨C', h'⟩ := h'
@@ -170,12 +170,10 @@ theorem IsEquivalent.trans (h : p.IsEquivalent q) (h' : q.IsEquivalent q') : p.I
     simp [← smul_assoc, mul_comm]
 
 variable (p q) in
-@[grind =]
 theorem isEquivalent_comm : p.IsEquivalent q ↔ q.IsEquivalent p :=
   ⟨(·.symm), (·.symm)⟩
 
 variable (p q) in
-@[grind =]
 theorem isEquivalent_iff_isBoundedBy : p.IsEquivalent q ↔ p.IsBoundedBy q ∧ q.IsBoundedBy p := by
   constructor
   · intro ⟨C, h₁, h₂⟩
@@ -192,7 +190,7 @@ theorem isEquivalent_iff_isBoundedBy : p.IsEquivalent q ↔ p.IsBoundedBy q ∧ 
 
 variable (p) in
 @[refl]
-theorem isEquivalent_self : p.IsEquivalent p := by grind
+theorem isEquivalent_self : p.IsEquivalent p := by grind [isEquivalent_iff_isBoundedBy]
 
 end IsEquivalent
 
