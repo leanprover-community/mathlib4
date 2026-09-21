@@ -562,7 +562,7 @@ lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZer
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H
-    · exact (not_isUnit_zero <| H ▸ IsUnit.map χ x.isUnit).elim
+    · exact (not_isUnit_zero <| H ▸ IsUnit.map χ <| x.isUnit).elim
     · simp only [H, one_pow]
     · simp only [H, even_two, Even.neg_pow, one_pow]
   · by_cases hx : IsUnit x

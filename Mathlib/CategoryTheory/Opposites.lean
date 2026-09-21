@@ -246,7 +246,7 @@ def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
   map α :=
     Quiver.Hom.op
       { app := fun X => (α.app (op X)).unop
-        naturality := fun _ _ f => Quiver.Hom.op_inj (α.naturality f.op).symm }
+        naturality := fun _ _ f => Quiver.Hom.op_inj <| (α.naturality f.op).symm }
 
 variable {C D}
 

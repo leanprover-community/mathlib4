@@ -274,7 +274,7 @@ lemma IsRamified.isMixed_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
 lemma IsRamified.isMixed_conjugate_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
     IsMixed k (conjugate w.embedding) :=
   ⟨h.comap_embedding_conjugate ▸ isReal_iff.1 h.isReal,
-    by simpa using isComplex_iff.1 h.isComplex⟩
+    by simpa using isComplex_iff.1 <| h.isComplex⟩
 
 theorem isRamified_mk_iff_isMixed {φ : K →+* ℂ} :
     (mk φ).IsRamified k ↔ IsMixed k φ := by

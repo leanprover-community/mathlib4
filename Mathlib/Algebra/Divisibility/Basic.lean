@@ -120,7 +120,7 @@ infix:50 " ∣ᵣ " => RightDvd
 
 @[trans]
 protected theorem RightDvd.trans : a ∣ᵣ b → b ∣ᵣ c → a ∣ᵣ c
-  | ⟨d, h₁⟩, ⟨e, h₂⟩ => ⟨e * d, h₁ ▸ h₂.trans (mul_assoc e d a).symm⟩
+  | ⟨d, h₁⟩, ⟨e, h₂⟩ => ⟨e * d, h₁ ▸ h₂.trans <| (mul_assoc e d a).symm⟩
 
 /-- Transitivity of `RightDvd` for use in `calc` blocks. -/
 instance : IsTrans α RightDvd :=
@@ -145,7 +145,7 @@ theorem RightDvd.mul_const (a : α) (h : b ∣ᵣ c) : b * a ∣ᵣ c * a := by
 theorem IsRightRegular.rightDvd_cancel_right (h : IsRightRegular a) :
     b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
   ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd
-    ⟨d, h (eq.trans (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
+    ⟨d, h (eq.trans <| (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
 
 theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
   ⟨fun ⟨c, hc⟩ => ⟨MulOpposite.op c, by simp [hc]⟩,

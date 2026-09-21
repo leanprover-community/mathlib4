@@ -182,7 +182,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     fun c hext hc ↦ (isEmpty_or_nonempty c).elim
       (fun _ ↦ ⟨⊥, this, fun ϕ hϕ ↦ isEmptyElim (⟨ϕ, hϕ⟩ : c)⟩)
       fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
-  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp ((equivOfEq this).trans topEquiv).symm⟩
+  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
   by_contra!
   obtain ⟨α, -, hα⟩ := IsConcreteLE.exists_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra

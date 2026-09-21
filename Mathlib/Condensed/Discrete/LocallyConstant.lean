@@ -389,9 +389,9 @@ noncomputable instance : functor.Faithful := functorFullyFaithful.faithful
 
 noncomputable instance : functor.Full := functorFullyFaithful.full
 
-instance : (discrete Type _).Faithful := Functor.Faithful.of_iso iso
+instance : (discrete <| Type _).Faithful := Functor.Faithful.of_iso iso
 
-noncomputable instance : (discrete Type _).Full := Functor.Full.of_iso iso
+noncomputable instance : (discrete <| Type _).Full := Functor.Full.of_iso iso
 
 end CondensedSet.LocallyConstant
 
@@ -423,9 +423,9 @@ instance : functor.{u}.Faithful := functorFullyFaithful.faithful
 
 instance : LightCondSet.LocallyConstant.functor.Full := functorFullyFaithful.full
 
-instance : (LightCondensed.discrete Type u).Faithful := Functor.Faithful.of_iso iso.{u}
+instance : (LightCondensed.discrete <| Type u).Faithful := Functor.Faithful.of_iso iso.{u}
 
-instance : (LightCondensed.discrete Type u).Full := Functor.Full.of_iso iso.{u}
+instance : (LightCondensed.discrete <| Type u).Full := Functor.Full.of_iso iso.{u}
 
 end LightCondSet.LocallyConstant
 

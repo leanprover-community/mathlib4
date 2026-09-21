@@ -212,7 +212,7 @@ of unity. -/
 noncomputable def modularCyclotomicCharacter {n : ℕ} [NeZero n]
     (hn : Nat.card { x // x ∈ rootsOfUnity n L } = n) :
     (L ≃+* L) →* (ZMod n)ˣ :=
-  (Units.mapEquiv (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
+  (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
   (modularCyclotomicCharacter' L n)
 
 namespace modularCyclotomicCharacter

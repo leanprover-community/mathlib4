@@ -54,7 +54,7 @@ This is generalized to bundled endomorphisms by:
 * `RelIso.applyMulAction`
 -/
 instance applyMulAction : MulAction (Function.End α) α where
-  smul := (· ·)
+  smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -110,7 +110,7 @@ variable [Monoid M]
 /-- The tautological action by `MulAut M` on `M`. -/
 @[to_additive /-- The tautological action by `AddAut M` on `M`. -/]
 instance applyMulAction : MulAction (MulAut M) M where
-  smul := (· ·)
+  smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

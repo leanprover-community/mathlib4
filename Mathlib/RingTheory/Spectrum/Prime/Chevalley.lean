@@ -91,7 +91,7 @@ theorem isOpenMap_comap_algebraMap_tensorProduct_of_field
   have hψeq : ψ = (Algebra.TensorProduct.comm _ _ _ |>.toAlgHom.comp <|
     Algebra.TensorProduct.cancelBaseChange K A A _ B |>.symm.toAlgHom.comp <|
     Algebra.TensorProduct.map (.id _ _) B'.val |>.comp <|
-    Algebra.TensorProduct.cancelBaseChange K A A _ B' |>.toAlgHom.comp
+    Algebra.TensorProduct.cancelBaseChange K A A _ B' |>.toAlgHom.comp <|
     (Algebra.TensorProduct.comm _ _ _).toAlgHom) := by ext; simp [ψ]
   have hψ : Function.Injective ψ := by
     rw [hψeq]

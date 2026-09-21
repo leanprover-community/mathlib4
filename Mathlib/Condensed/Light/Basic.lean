@@ -32,7 +32,7 @@ abbrev LightCondensed (C : Type w) [Category.{v} C] :=
 Light condensed sets. Because `LightProfinite` is an essentially small category, we don't need the
 same universe bump as in `CondensedSet`.
 -/
-abbrev LightCondSet := LightCondensed.{u} Type u
+abbrev LightCondSet := LightCondensed.{u} <| Type u
 
 namespace LightCondensed
 

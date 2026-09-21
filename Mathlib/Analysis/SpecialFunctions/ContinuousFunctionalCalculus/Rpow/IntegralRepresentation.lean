@@ -473,7 +473,7 @@ lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
           congr! 1
           refine cfcₙ_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_
-          exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one |>.mono
+          exact continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one |>.mono <|
             (h_mapsTo.mono_left hspec).image_subset
 
 variable (A) in

@@ -172,7 +172,7 @@ def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
   ((Set.equivOfEq (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
     (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
     (Int.ideal_span_isMaximal_of_prime p) h
-      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans
+      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans <|
         (primesOverSpanEquivMonicFactorsModAux _)
 
 theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)

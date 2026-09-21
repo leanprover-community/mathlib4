@@ -46,7 +46,7 @@ open Limits
 section Definitions
 
 variable {J : Type u₁} [Category.{v₁} J]
-variable (V : outParam Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 variable {C} in

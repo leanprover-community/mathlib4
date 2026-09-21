@@ -150,7 +150,7 @@ theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
 
 @[simp]
 theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
-  isUnit_iff_isUnit_det _ |>.mp (Unitary.toUnits A).isUnit
+  isUnit_iff_isUnit_det _ |>.mp <| (Unitary.toUnits A).isUnit
 
 section CoeLemmas
 

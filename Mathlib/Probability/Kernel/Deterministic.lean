@@ -85,7 +85,8 @@ lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel �
   constructor
   · intro h a
     refine ⟨fun s hs ↦ ?_⟩
-    have := DFunLike.congr_fun κ.parallelComp_self_comp_copy a |> DFunLike.congr_fun (s ×ˢ s)
+    have := DFunLike.congr_fun κ.parallelComp_self_comp_copy a |> DFunLike.congr_fun
+      <| (s ×ˢ s)
     rw [parallelComp_comp_copy, prod_apply_prod, copy_comp_apply_prod, inter_self] at this
     · by_cases hκ : κ a s = 0
       · simp [hκ]
