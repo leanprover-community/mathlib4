@@ -41,7 +41,9 @@ uniformly integrable, uniformly tight, Vitali convergence theorem
 
 namespace MeasureTheory
 
-open Set Filter Topology MeasureTheory NNReal ENNReal
+open Set Filter ENNReal
+
+open scoped Topology
 
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
 
@@ -56,32 +58,38 @@ variable {f g : ι → α → β} {p : ℝ≥0∞}
 exists some measurable set `s` with finite measure such that the Lp-norm of
 `f i` restricted to `sᶜ` is smaller than `ε` for all `i`. -/
 def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
-  ∀ ⦃ε : ℝ≥0⦄, 0 < ε → ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε
+  ∀ ε > 0, ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε
 
+@[deprecated "This is a duplicate of the new definition of UnifTight." (since := "2026-07-24")]
 theorem unifTight_iff_ennreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε := by
-  simp only [ENNReal.forall_ennreal, ENNReal.coe_pos]
-  refine (and_iff_left ?_).symm
-  simp only [zero_lt_top, le_top, implies_true, and_true, true_implies]
-  use ∅; simpa only [measure_empty] using zero_ne_top
+  rfl
 
 theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
-    UnifTight f p μ ↔ ∀ ⦃ε : ℝ⦄, 0 < ε → ∃ s : Set α,
+    UnifTight f p μ ↔ ∀ (ε : ℝ), 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ .ofReal ε := by
-  refine ⟨fun hut rε hrε ↦ hut (Real.toNNReal_pos.mpr hrε), fun hut ε hε ↦ ?_⟩
-  obtain ⟨s, hμs, hfε⟩ := hut hε
-  use s, hμs; intro i
-  exact (hfε i).trans_eq (ofReal_coe_nnreal (p := ε))
+  refine ⟨fun hut ε hε ↦ hut (ENNReal.ofReal ε) (ofReal_pos.2 hε), fun hut ε hε ↦ ?_⟩
+  rcases eq_top_or_lt_top ε with rfl | hε_top
+  · exact ⟨∅, by simp⟩
+  obtain ⟨s, hμs, hfε⟩ := hut ε.toReal (ε.toReal_pos hε.ne' hε_top.ne)
+  exact ⟨s, hμs, fun i ↦ (hfε i).trans ofReal_toReal_le⟩
+
+theorem unifTight_iff_nnreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+    UnifTight f p μ ↔ ∀ ⦃ε : NNReal⦄, 0 < ε → ∃ s : Set α,
+      μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε := by
+  refine ⟨fun hut ε hε ↦ hut ε (coe_pos.2 hε), fun hut ε hε ↦ ?_⟩
+  rcases eq_top_or_lt_top ε with rfl | hε_top
+  · exact ⟨∅, by simp⟩
+  obtain ⟨s, hμs, hfε⟩ := hut (toNNReal_pos hε.ne' hε_top.ne)
+  exact ⟨s, hμs, fun i ↦ (hfε i).trans coe_toNNReal_le_self⟩
 
 namespace UnifTight
 
 theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∀ᶠ s in μ.cofinite.smallSets, ∀ i, eLpNorm (s.indicator (f i)) p μ ≤ ε := by
-  by_cases hε_top : ε = ∞
-  · subst hε_top; simp
-  rcases hf (pos_iff_ne_zero.2 (toNNReal_ne_zero.mpr ⟨hε,hε_top⟩)) with ⟨s, hμs, hfs⟩
-  refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ (coe_toNNReal hε_top) ▸ hfs i⟩
+  rcases hf ε hε.bot_lt with ⟨s, hμs, hfs⟩
+  refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ hfs i⟩
   · intro s t hst ht i
     exact (eLpNorm_mono <| norm_indicator_le_of_subset hst _).trans (ht i)
   · rwa [Measure.compl_mem_cofinite, lt_top_iff_ne_top]
@@ -94,12 +102,7 @@ protected theorem exists_measurableSet_indicator (hf : UnifTight f p μ) {ε : �
 protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
     UnifTight (f + g) p μ := fun ε hε ↦ by
-  rcases exists_Lp_half β μ p (coe_ne_zero.mpr hε.ne') with ⟨η, hη_pos, hη⟩
-  by_cases hη_top : η = ∞
-  · replace hη := hη_top ▸ hη
-    refine ⟨∅, (by simp), fun i ↦ ?_⟩
-    simp only [compl_empty, indicator_univ, Pi.add_apply]
-    exact (hη (f i) (g i) (hf_meas i) (hg_meas i) le_top le_top).le
+  rcases exists_Lp_half β μ p hε.ne' with ⟨η, hη_pos, hη⟩
   obtain ⟨s, hμs, hsm, hfs, hgs⟩ :
       ∃ s ∈ μ.cofinite, MeasurableSet s ∧
         (∀ i, eLpNorm (s.indicator (f i)) p μ ≤ η) ∧
@@ -107,13 +110,11 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     ((hf.eventually_cofinite_indicator hη_pos.ne').and
       (hg.eventually_cofinite_indicator hη_pos.ne')).exists_measurable_mem_of_smallSets
   refine ⟨sᶜ, ne_of_lt hμs, fun i ↦ ?_⟩
-  have η_cast : ↑η.toNNReal = η := coe_toNNReal hη_top
   calc
     eLpNorm (indicator sᶜᶜ (f i + g i)) p μ
       = eLpNorm (indicator s (f i) + indicator s (g i)) p μ := by rw [compl_compl, indicator_add']
     _ ≤ ε := le_of_lt <|
-      hη _ _ ((hf_meas i).indicator hsm) ((hg_meas i).indicator hsm)
-        (η_cast ▸ hfs i) (η_cast ▸ hgs i)
+      hη _ _ ((hf_meas i).indicator hsm) ((hg_meas i).indicator hsm) (hfs i) (hgs i)
 
 protected theorem neg (hf : UnifTight f p μ) : UnifTight (-f) p μ := by
   simp_rw [UnifTight, Pi.neg_apply, Set.indicator_neg', eLpNorm_neg]
@@ -128,10 +129,16 @@ protected theorem sub (hf : UnifTight f p μ) (hg : UnifTight g p μ)
 protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
     UnifTight g p μ := by
   intro ε hε
-  obtain ⟨s, hμs, hfε⟩ := hf hε
+  obtain ⟨s, hμs, hfε⟩ := hf ε hε
   refine ⟨s, hμs, fun n => (le_of_eq <| eLpNorm_congr_ae ?_).trans (hfε n)⟩
   filter_upwards [hfg n] with x hx
   simp only [indicator, mem_compl_iff, hx]
+
+protected theorem comp {ι' : Type*} (g : ι' → ι) (hf : UnifTight f p μ) :
+    UnifTight (f ∘ g) p μ := by
+  intro ε hε
+  obtain ⟨s, hμs, hs⟩ := hf ε hε
+  exact ⟨s, hμs, fun i ↦ hs (g i)⟩
 
 end UnifTight
 
@@ -144,20 +151,16 @@ theorem unifTight_congr_ae {g : ι → α → β} (hfg : ∀ n, f n =ᵐ[μ] g n
 theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : MemLp g p μ) :
     UnifTight (fun _ : ι => g) p μ := by
   intro ε hε
-  by_cases hε_top : ε = ∞
-  · exact ⟨∅, (by simp), fun _ => hε_top.symm ▸ le_top⟩
-  obtain ⟨s, _, hμs, hgε⟩ := hg.exists_eLpNorm_indicator_compl_lt hp_ne_top (coe_ne_zero.mpr hε.ne')
+  obtain ⟨s, _, hμs, hgε⟩ := hg.exists_eLpNorm_indicator_compl_lt hp_ne_top hε.ne'
   exact ⟨s, ne_of_lt hμs, fun _ => hgε.le⟩
 
 /-- A single function is tight. -/
 theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
     {f : ι → α → β} (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
-  by_cases hε_top : ε = ∞
-  · exact ⟨∅, by simp, fun _ => hε_top.symm ▸ le_top⟩
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by simp), fun i => False.elim <| hι <| Nonempty.intro i⟩
   obtain ⟨i⟩ := hι
-  obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
+  obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top hε.ne'
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert! hfε.le
 
@@ -174,9 +177,9 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     · exact ⟨∅, (by simp), fun _ => hε_top.symm ▸ le_top⟩
     let g : Fin n → α → β := fun k => f k.castSucc
     have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i.castSucc
-    obtain ⟨S, hμS, hFε⟩ := h hgLp hε
+    obtain ⟨S, hμS, hFε⟩ := h hgLp ε hε
     obtain ⟨s, _, hμs, hfε⟩ :=
-      (hfLp (Fin.last n)).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
+      (hfLp (Fin.last n)).exists_eLpNorm_indicator_compl_lt hp_top hε.ne'
     refine ⟨s ∪ S, (by finiteness), fun i => ?_⟩
     by_cases! hi : i.val < n
     · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
@@ -192,7 +195,7 @@ theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
   obtain ⟨n, hn⟩ := Finite.exists_equiv_fin ι
   set g : Fin n → α → β := f ∘ hn.some.symm
   have hg : ∀ i, MemLp (g i) p μ := fun _ => hf _
-  obtain ⟨s, hμs, hfε⟩ := unifTight_fin hp_top hg hε
+  obtain ⟨s, hμs, hfε⟩ := unifTight_fin hp_top hg ε hε
   refine ⟨s, hμs, fun i => ?_⟩
   simpa only [g, Function.comp_apply, Equiv.symm_apply_apply] using hfε (hn.some i)
 
@@ -214,10 +217,10 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemL
     (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := by
   intro ε hε
   rw [ENNReal.tendsto_atTop_zero] at hf_tendsto
-  obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, ENNReal.coe_pos])
+  obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, coe_pos])
   let F : Fin N → α → β := fun n => f n
   have hF : ∀ n, MemLp (F n) p μ := fun n => hf n
-  obtain ⟨s, hμs, hFε⟩ := unifTight_fin hp' hF hε
+  obtain ⟨s, hμs, hFε⟩ := unifTight_fin hp' hF ε hε
   refine ⟨s, hμs, fun n => ?_⟩
   by_cases! hn : n < N
   · exact hFε ⟨n, hn⟩
@@ -247,8 +250,6 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
     Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
   rw [ENNReal.tendsto_atTop_zero]
   intro ε hε
-  by_cases hfinε : ε ≠ ∞; swap
-  · rw [not_ne_iff.mp hfinε]; exact ⟨0, fun n _ => le_top⟩
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
   have hε' : 0 < ε / 3 := ENNReal.div_pos hε.ne' (ofNat_ne_top)
@@ -311,7 +312,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
     _ ≤ eLpNorm (indicator Eᶜ (f n - g)) p μ + eLpNorm (indicator E (f n - g)) p μ := by
         apply eLpNorm_add_le (by assumption) (by assumption) hp
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
-    _ = ε := by simp only [ENNReal.add_thirds]
+    _ = ε := by simp only [add_thirds]
 
 /-- Lemma used in `tendsto_Lp_of_tendsto_ae`. -/
 private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}
@@ -352,18 +353,11 @@ measure to some function `g` in a finite measure space, then `f` converge in Lp 
 theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : MemLp g p μ)
     (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
-    (hfg : TendstoInMeasure μ f atTop g) : Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
-  refine tendsto_of_subseq_tendsto fun ns hns => ?_
-  obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε => (hfg ε hε).comp hns
-  exact ⟨ms,
-    tendsto_Lp_of_tendsto_ae hp hp' (fun _ => hf _) hg
-      (fun ε hε => -- `UnifIntegrable` on a subsequence
-        let ⟨δ, hδ, hδ'⟩ := hui hε
-        ⟨δ, hδ, fun i s hs hμs => hδ' _ s hs hμs⟩)
-      (fun ε hε => -- `UnifTight` on a subsequence
-        let ⟨s, hμs, hfε⟩ := hut hε
-        ⟨s, hμs, fun i => hfε _⟩)
-      hms'⟩
+    (hfg : TendstoInMeasure μ f atTop g) :
+    Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
+  refine tendsto_of_subseq_tendsto fun ns hns ↦ ?_
+  obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε ↦ (hfg ε hε).comp hns
+  exact ⟨ms, tendsto_Lp_of_tendsto_ae hp hp' (fun _ ↦ hf _) hg (hui.comp _) (hut.comp _) hms'⟩
 
 /-- **Vitali's convergence theorem** (non-finite measure version).
 
@@ -371,8 +365,8 @@ A sequence of functions `f` converges to `g` in Lp
 if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure. -/
 theorem tendstoInMeasure_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, MemLp (f n) p μ) (hg : MemLp g p μ) :
-    TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
-      ↔ Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) where
+    TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ ↔
+      Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) where
   mp h := tendsto_Lp_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1
   mpr h := ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne'
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,

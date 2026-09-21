@@ -33,7 +33,7 @@ namespace Finsupp
 
 section uniqueLinearEquiv
 
-variable (R : Type*) {S α : Type*} (M : Type*)
+variable (R : Type*) {α : Type*} (M : Type*)
 variable [AddCommMonoid M] [Semiring R] [Module R M]
 
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
@@ -71,10 +71,8 @@ theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
 
 end uniqueLinearEquiv
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M : Type*} {R : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Forget that a function is finitely supported.
 
@@ -285,7 +283,7 @@ lemma map_id [Finite X] : map (_root_.id : X → X) (M := M) = _root_.id := by
 lemma map_comp [Finite X] [Finite Y] [Finite Z] (g : Y → Z) (f : X → Y) :
     map (g.comp f) (M := M) = (map g).comp (map f) := by
   ext s
-  simp [map, Finsupp.mapDomain_comp]
+  simp [map, Finsupp.mapDomain_fun_comp]
 
 end
 

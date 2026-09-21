@@ -55,11 +55,11 @@ instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
   ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 
 /-- The opposite of an arrow in `V`. -/
-@[to_dual self]
+@[implicit_reducible, to_dual self]
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
-@[to_dual self]
+@[implicit_reducible, to_dual self]
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 
 /-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/

@@ -27,7 +27,7 @@ presheafs `Cᵒᵖ ⥤ Type max u v`. We then show that this implies that the co
 for all presheafs `Cᵒᵖ ⥤ Type w`.
 -/
 
-@[expose] public section
+public section
 
 universe t t' w v u
 
@@ -74,7 +74,7 @@ lemma Generates.isSheaf_of_forall (h : K.Generates J) (F : Cᵒᵖ ⥤ Type w)
   /- By assumption, the statement holds for `w = max u v`. The idea of the proof is
   to construct a suitable `Type max u v` valued subsheaf of `F` for each covering sieve `S` in
   `J` and every family of sections over `S` to check the necessary conditions.
-  We explain existence below, uniqueness works similary. -/
+  We explain existence below, uniqueness works similarly. -/
   intro X S hS
   rw [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
   refine ⟨?_, ?_⟩

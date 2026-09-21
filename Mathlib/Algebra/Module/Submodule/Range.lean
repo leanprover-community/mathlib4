@@ -352,7 +352,6 @@ lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScala
     [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M) :
     (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
 See also `Submodule.mapIic`. -/
@@ -391,6 +390,11 @@ lemma codisjoint_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M�
     {p q : Submodule R M} (hpq : Codisjoint p q) : Codisjoint (p.map f) (q.map f) := by
   rw [codisjoint_iff, ← Submodule.map_sup, codisjoint_iff.mp hpq, map_top,
     LinearMap.range_eq_top_of_surjective f hf]
+
+theorem isCompl_map [Module R M₂] (f : M ≃ₗ[R] M₂)
+    {p q : Submodule R M} (hpq : IsCompl p q) :
+    IsCompl (p.map f.toLinearMap) (q.map f.toLinearMap) :=
+  ⟨disjoint_map f.injective hpq.disjoint, (codisjoint_map f.surjective hpq.codisjoint)⟩
 
 end AddCommMonoid
 
@@ -461,6 +465,10 @@ theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRest
 
 @[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
   Set.injective_codRestrict _
+
+theorem subtype_comp_rangeRestrict :
+    f.range.subtype.comp f.rangeRestrict = f := by
+  rw [rangeRestrict, subtype_comp_codRestrict]
 
 end rangeRestrict
 

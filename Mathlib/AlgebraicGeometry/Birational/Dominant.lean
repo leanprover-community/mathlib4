@@ -20,7 +20,7 @@ This file defines `RationalMap.IsDominant` and establishes its connection to
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

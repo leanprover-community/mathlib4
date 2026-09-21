@@ -88,6 +88,21 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
+lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
+  rw [show {A | A.PosSemidef} = {A : Matrix n n 𝕜 | A.IsHermitian} ∩
+    ⋂ x : n →₀ 𝕜, {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} by aesop]
+  refine IsClosed.inter ?_ ?_
+  · exact isClosed_eq (by fun_prop) (by fun_prop)
+  · refine isClosed_iInter <| fun _ ↦ isClosed_le continuous_const ?_
+    simp only [Finsupp.sum]
+    fun_prop
+
+lemma instOrderClosedTopology : OrderClosedTopology (Matrix n n 𝕜) where
+  isClosed_le' := isClosed_le_of_isClosed_nonneg <| by
+    simpa [nonneg_iff_posSemidef] using posSemidef_is_closed
+
+scoped[MatrixOrder] attribute [instance] Matrix.instOrderClosedTopology
+
 variable [Fintype n]
 
 lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
@@ -339,7 +354,6 @@ def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
   InnerProductSpace.ofCore _
 
 open scoped Norms.L2Operator in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
 given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
@@ -355,7 +369,7 @@ instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
     rw [ContinuousMap.norm_eq_norm_coeFn]
     refine Function.Surjective.pi_norm_comp ?_ _
     rw [← Function.Surjective.of_comp_iff'
-      (Equiv.setCongr hA.spectrum_real_eq_range_eigenvalues).bijective]
+      (Set.equivOfEq hA.spectrum_real_eq_range_eigenvalues).bijective]
     exact Set.codRestrict_range_surjective hA.eigenvalues
 
 scoped[Matrix.Norms.L2Operator] attribute [instance]

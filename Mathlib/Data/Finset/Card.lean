@@ -35,7 +35,7 @@ assert_not_exists Monoid
 
 open Function Multiset Nat
 
-variable {α β R : Type*}
+variable {α β : Type*}
 
 namespace Finset
 
@@ -203,6 +203,9 @@ theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
 theorem Multiset.toFinset_card_eq_card_iff_nodup {m : Multiset α} :
     #m.toFinset = card m ↔ m.Nodup := dedup_card_eq_card_iff_nodup
 
+theorem nodup_iff_le_length_dedup : m.Nodup ↔ m.card ≤ m.dedup.card := by
+  rw [← dedup_card_eq_card_iff_nodup, card_le_card m.dedup_le |>.ge_iff_eq]
+
 theorem List.card_toFinset : #l.toFinset = l.dedup.length :=
   rfl
 
@@ -211,6 +214,11 @@ theorem List.toFinset_card_le : #l.toFinset ≤ l.length :=
 
 theorem List.toFinset_card_of_nodup {l : List α} (h : l.Nodup) : #l.toFinset = l.length :=
   Multiset.toFinset_card_of_nodup h
+
+lemma List.Nodup.card_eq_countP {l : List α} {P : α → Prop} [DecidablePred P] (h : l.Nodup) :
+    (l.toFinset.filter P).card = countP P l := by
+  rw [l.countP_eq_length_filter, l.filter_toFinset P]
+  exact toFinset_card_of_nodup (h.filter P)
 
 end ToMultiset
 
@@ -443,6 +451,17 @@ grind_pattern card_le_card_of_injective => f.Injective, #t
 
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
+
+lemma card_le_card_of_surjective {f : s → t} (hf : f.Surjective) : #t ≤ #s := by
+  rcases t.eq_empty_or_nonempty with rfl | ⟨b₀, hb₀⟩
+  · simp
+  · classical apply card_le_card_of_surjOn (fun a ↦ if ha : a ∈ s then (f ⟨a, ha⟩ : β) else b₀)
+    intro b hb
+    obtain ⟨⟨a, ha⟩, hab⟩ := hf ⟨b, hb⟩
+    grind
+
+grind_pattern card_le_card_of_surjective => f.Surjective, #s
+grind_pattern card_le_card_of_surjective => f.Surjective, #t
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
 
@@ -931,5 +950,39 @@ only requires removing single elements at a time.
 theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
     (H : (S : Finset α) → (∀ s ∈ S, p (S.erase s)) → p S) (S : Finset α) : p S :=
   S.strongInduction fun S ih => H S fun _ hs => ih _ (erase_ssubset hs)
+
+/--
+Given a function `f` which sends the finite set `s` to itself, the sequence of images of `s` under
+iterates of `f` is eventually constant. Furthermore, the sequence of images stabilises in fewer
+than `#s` steps.
+-/
+theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : Finset α}
+    (hs : Set.MapsTo f s s) (hs₀ : s.Nonempty) :
+    ∃ n < #s, ∀ m, n ≤ m → s.image f^[m] = s.image f^[n] := by
+  let g (i : ℕ) : Finset α := s.image f^[i]
+  have (i : ℕ) : 0 < #(g i) := (hs₀.image _).card_pos
+  have hg : Antitone g := antitone_nat_of_succ_le <| fun i ↦ by
+    simp_rw [g, Function.iterate_succ, ← image_image]
+    grw [hs.finsetImage_subset]
+  have eq_iff (i j : ℕ) : #(g i) - 1 = #(g j) - 1 ↔ g i = g j := by
+    wlog hij : j ≤ i generalizing i j
+    · grind
+    exact ⟨fun h ↦ eq_of_subset_of_card_le (hg hij) (by grind), by grind⟩
+  have hG : Antitone (fun i ↦ #(g i) - 1) := fun i j h ↦ by dsimp; gcongr #?_ - 1; exact hg h
+  rcases Nat.stabilises_of_antitone hG (by grind [=_ image_image, iterate_succ']) with ⟨n, hn, hn'⟩
+  exact ⟨n, by grind⟩
+
+/--
+Given a function `f` which sends the finite set `s` to itself, the sequence of images of `s` under
+iterates of `f` is eventually constant. Furthermore, the sequence of images stabilises in at most
+`#s` steps.
+-/
+theorem image_iterate_stabilises_le_card [DecidableEq α] {f : α → α} {s : Finset α}
+    (hs : Set.MapsTo f s s) :
+    ∃ n ≤ #s, ∀ m, n ≤ m → s.image f^[m] = s.image f^[n] := by
+  obtain rfl | hs₀ := s.eq_empty_or_nonempty
+  · simp
+  obtain ⟨n, hn', hn⟩ := image_iterate_stabilises_lt_card hs hs₀
+  exact ⟨n, hn'.le, hn⟩
 
 end Finset

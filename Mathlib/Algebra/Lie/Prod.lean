@@ -209,4 +209,10 @@ theorem prodMap_zero : (0 : L₁ →ₗ⁅R⁆ L₃).prodMap (0 : L₂ →ₗ⁅
 
 end LieHom
 
+variable (R L₁ L₂) in
+/-- The map `(x, y) ↦ (y, x)` as a Lie equivalence. -/
+@[simps!] def LieEquiv.prodComm : (L₁ × L₂) ≃ₗ⁅R⁆ L₂ × L₁ where
+  __ := LinearEquiv.prodComm R L₁ L₂
+  map_lie' := by simp
+
 end

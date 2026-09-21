@@ -132,7 +132,7 @@ theorem exponent_eq_sInf :
     Monoid.exponent G = sInf {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1} := by
   by_cases h : Monoid.ExponentExists G
   · have h' : {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1}.Nonempty := h
-    rw [Monoid.exponent, dif_pos h, Nat.sInf_def h']
+    rw [Monoid.exponent, dite_eq_left h, Nat.sInf_def h']
     congr
   · have : {d | 0 < d ∧ ∀ (x : G), x ^ d = 1} = ∅ :=
       Set.eq_empty_of_forall_notMem fun n hn ↦ h ⟨n, hn⟩
@@ -150,9 +150,9 @@ theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
   classical
   by_cases h : ExponentExists G
-  · simp_rw [exponent, dif_pos h]
+  · simp_rw [exponent, dite_eq_left h]
     exact (Nat.find_spec h).2 g
-  · simp_rw [exponent, dif_neg h, pow_zero]
+  · simp_rw [exponent, dite_eq_right h, pow_zero]
 
 @[to_additive]
 theorem pow_eq_mod_exponent {n : ℕ} (g : G) : g ^ n = g ^ (n % exponent G) :=
@@ -168,7 +168,7 @@ theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n =
 @[to_additive]
 theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exponent G ≤ n := by
   classical
-  rw [exponent, dif_pos]
+  rw [exponent, dite_eq_left]
   · apply Nat.find_min'
     exact ⟨hpos, hG⟩
   · exact ⟨n, hpos, hG⟩
@@ -300,7 +300,8 @@ theorem _root_.Commute.exists_orderOf_eq_lcm {x y : G} (h : Commute x y) :
 
 /-- A nontrivial monoid has prime exponent `p` if and only if every non-identity element has
 order `p`. -/
-@[to_additive]
+@[to_additive /-- A nontrivial additive monoid has prime exponent `p` if and only if every
+non-identity element has order `p`. -/]
 lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
     Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
   refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
@@ -572,7 +573,8 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   simpa using congr_fun h j
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
-@[to_additive]
+@[to_additive /-- If `f : M₁ →+ M₂` is surjective, then the exponent of `M₂` divides the exponent of
+`M₁`. -/]
 theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
@@ -640,7 +642,7 @@ theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣
     _ = a * (b * a) * b := by simp [pow_two, mul_assoc]
 
 /-- In a cancellative monoid of exponent two, all elements commute. -/
-@[to_additive]
+@[to_additive /-- In a cancellative additive monoid of exponent two, all elements commute. -/]
 lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b : G) :
     a * b = b * a :=
   Commute.of_orderOf_dvd_two (fun g => hG ▸ Monoid.order_dvd_exponent g) a b
@@ -667,13 +669,13 @@ theorem Group.exponent_quotient_dvd (H : Subgroup G) [H.Normal] :
   MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)
 
 /-- In a group of exponent two, every element is its own inverse. -/
-@[to_additive]
+@[to_additive /-- In an additive group of exponent two, every element is its own negation. -/]
 lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hG ▸ Monoid.pow_exponent_eq_one x
 
 /-- If an element in a group has order two, then it is its own inverse. -/
-@[to_additive]
+@[to_additive /-- If an element in an additive group has order two, then it is its own negation. -/]
 lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x

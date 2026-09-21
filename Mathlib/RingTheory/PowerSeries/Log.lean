@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.RingTheory.PowerSeries.Substitution
+public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Logarithmic Power Series
@@ -28,8 +29,15 @@ over ℚ-algebras and establishes its key properties.
 * `PowerSeries.map_log`: `log` is preserved by ring homomorphisms between ℚ-algebras.
 * `PowerSeries.coeff_one_log`: The coefficient of `log A` at `1` is `1`.
 * `PowerSeries.order_log`: The order of `log A` is `1`.
-* `PowerSeries.deriv_log`: The derivative of `log(1+X)` is the geometric series
+* `PowerSeries.derivative_log`: The derivative of `log(1+X)` is the geometric series
   `∑ (-1)^n · Xⁿ = 1/(1+X)`.
+* `PowerSeries.derivative_log_mul_one_add_X`: `(log(1+X))' · (1 + X) = 1`.
+* `PowerSeries.subst_exp_log`: `exp` and `log` are mutually inverse:
+  substituting `log(1+X)` into `exp` yields `1 + X`.
+* `PowerSeries.subst_log_exp_sub_one`: Substituting `exp X - 1` into `log(1+X)`
+  yields `X`.
+* `PowerSeries.logOf_exp`: The reformulation `logOf (exp X) = X`, where `logOf f` is
+  `log(1+X)` evaluated at `f - 1`.
 -/
 
 @[expose] public section
@@ -64,11 +72,17 @@ theorem order_log [Nontrivial A] : (log A).order = 1 :=
   order_eq_nat.mpr ⟨by simp, fun i hi ↦ by simp [Nat.lt_one_iff.mp hi]⟩
 
 /-- The derivative of `log(1+X)` is the geometric series `1 - X + X² - X³ + ⋯ = 1/(1+X)`. -/
-theorem deriv_log : d⁄dX A (log A) = mk fun n ↦ algebraMap ℚ A ((-1 : ℚ) ^ n) := by
+theorem derivative_log : d⁄dX A (log A) = mk fun n ↦ (-1 : A) ^ n := by
   ext n
   have : (n + 1) = algebraMap ℚ A (n + 1) := by simp
   rw [coeff_derivative, coeff_log, coeff_mk]
   grind
+
+@[deprecated (since := "2026-08-29")] alias deriv_log := derivative_log
+
+/-- The derivative of `log(1+X)` is the inverse of `1 + X`. -/
+theorem derivative_log_mul_one_add_X : d⁄dX A (log A) * (1 + X) = 1 := by
+  rw [derivative_log, mk_neg_one_pow_mul_one_add_eq_one]
 
 /-! ## Substitution -/
 
@@ -95,6 +109,54 @@ variable (A) in
 @[simp]
 theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
   rw [logOf_eq, add_sub_cancel_left, X_subst]
+
+/-! ## Log and exp as inverses -/
+
+omit [Algebra ℚ A] in
+theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
+    {g : A⟦X⟧} (hderiv : d⁄dX A g * (1 + X) = g) :
+    g = constantCoeff g • (1 + X) := by
+  have : Invertible (1 + X : A⟦X⟧) := (isUnit_iff_constantCoeff.mpr (by simp)).invertible
+  have hcu : constantCoeff (⅟(1 + X) : A⟦X⟧) = 1 := by
+    have h := congrArg (constantCoeff (R := A)) (mul_invOf_self (1 + X : A⟦X⟧))
+    rw [map_mul] at h
+    simpa using h
+  have hg : g * ⅟(1 + X) = d⁄dX A g := by
+    conv_lhs => rw [← hderiv]
+    rw [mul_assoc, mul_invOf_self, mul_one]
+  have key : g * ⅟(1 + X) = C (constantCoeff g) := by
+    refine derivative.ext ?_ ?_
+    · simp only [Derivation.leibniz, derivative_invOf, map_add, derivative_one, derivative_X,
+        zero_add, derivative_C, mul_one, smul_eq_mul, ← hg]
+      ring
+    · simp [hcu]
+  rw [smul_eq_C_mul, ← key, mul_assoc, invOf_mul_self, mul_one]
+
+variable (A) in
+theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
+  have : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
+  have hderiv : d⁄dX A ((exp A).subst (log A)) * (1 + X) = (exp A).subst (log A) := by
+    rw [derivative_subst (hg := HasSubst.log), derivative_exp, mul_assoc,
+      derivative_log_mul_one_add_X, mul_one]
+  have hconst : constantCoeff ((exp A).subst (log A)) = 1 := by
+    rw [constantCoeff_eq, constantCoeff_subst_of_constantCoeff_zero constantCoeff_log,
+      constantCoeff_exp, map_one]
+  have h := eq_of_derivative_mul_one_add_X_eq_self hderiv
+  rwa [hconst, one_smul] at h
+
+variable (A) in
+theorem subst_log_exp_sub_one : (log A).subst (exp A - 1) = X := by
+  apply subst_eq_X_of_subst_eq_X (P := exp A - 1)
+  · simp [constantCoeff_exp]
+  · simp [coeff_exp]
+  · exact HasSubst.log
+  · rw [subst_sub HasSubst.log, subst_exp_log A, ← coe_substAlgHom HasSubst.log (R := A), map_one]
+    ring
+
+variable (A) in
+@[simp]
+theorem logOf_exp : logOf (exp A) = X :=
+  subst_log_exp_sub_one A
 
 end PowerSeries
 

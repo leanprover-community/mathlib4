@@ -54,6 +54,11 @@ instance (X : NonemptyFinLinOrd) : BoundedOrder X :=
 abbrev of (α : Type*) [Nonempty α] [Fintype α] [LinearOrder α] : NonemptyFinLinOrd where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `NonemptyFinLinOrd.of X` as `↧X`. -/
+@[app_delab NonemptyFinLinOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 theorem coe_of (α : Type*) [Nonempty α] [Fintype α] [LinearOrder α] : ↥(of α) = α :=
   rfl
 
@@ -98,7 +103,7 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
   inferInstanceAs <| HasForget₂ (InducedCategory _ toLinOrd) _
 
 instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := FinPartOrd.ofHom f.hom.hom
 
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
@@ -228,4 +233,7 @@ def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
   inv.app X := FinPartOrd.ofHom OrderHom.id
 
 /-- The generating arrow `i ⟶ i+1` in the category `Fin n` -/
-def Fin.hom_succ {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.castSucc_le_succ i)
+def Fin.homSucc {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.castSucc_le_succ i)
+
+@[deprecated (since := "2026-07-18")]
+alias Fin.hom_succ := Fin.homSucc

@@ -59,11 +59,9 @@ def mkQ : G →+ ModN G n := (LinearMap.range (LinearMap.lsmul ℤ G n)).mkQ
 
 variable [NeZero n]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a free module `G` over `ℤ`, construct the corresponding basis
 of `G / ⟨n⟩` over `ℤ / nℤ`. -/
 noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (ModN G n) := by
-  set ψ : G →+ G := zsmulAddGroupHom n
   set nG := LinearMap.range (LinearMap.lsmul ℤ G n)
   set H := G ⧸ nG
   set φ : G →ₗ[ℤ] H := nG.mkQ

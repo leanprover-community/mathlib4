@@ -46,7 +46,9 @@ lemma sqrt_mul_lt_half_add_of_ne {x y : ℝ≥0} (h : x ≠ y) : sqrt (x * y) < 
     show (2 : ℝ≥0) ^ 2 * (x * y) = 2 * x * y + 2 * x * y by ring, add_sq, add_right_comm]
   gcongr
 
-open Function Filter Topology
+open Function Filter
+
+open scoped Topology
 
 /-- `agmSequences x y` is the sequence of (geometric, arithmetic) means
 converging to the arithmetic-geometric mean starting from `x` and `y`. -/

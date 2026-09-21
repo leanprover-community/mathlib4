@@ -1,4 +1,4 @@
-# Single source of truth mapping (repo, branch) → (upload container,
+# Single source of truth mapping (repo, ref) → (upload container,
 # read fallback chain) for Mathlib's multi-container cache.
 #
 # Called by build, upload_cache, and post_steps in build_template.yml so
@@ -14,7 +14,10 @@ inputs:
     description: GitHub repo full name (`owner/name`).
     required: true
   branch:
-    description: Branch name (`github.head_ref || github.ref_name`).
+    description: |
+      Branch name (`github.head_ref || github.ref_name`); on tag-triggered
+      runs this is the tag name, distinguished via `github.ref_type` inside
+      the dispatch step.
     required: true
   head-sha:
     description: |
@@ -55,6 +58,10 @@ runs:
         REPO="${{ inputs.repo }}"
         BRANCH="${{ inputs.branch }}"
         HEAD_SHA="${{ inputs.head-sha }}"
+        # Whether `branch` names a branch or a tag. Read from the run context
+        # rather than an input: unlike `repo`/`branch`, the value does not
+        # depend on which event shape (PR vs push) the caller handles.
+        REF_TYPE="${{ github.ref_type }}"
         PRIMARY=""
         READ_CHAIN=""
         REPO_SCOPE=""
@@ -80,30 +87,55 @@ runs:
         else
         case "$REPO" in
           "leanprover-community/mathlib4")
-            case "$BRANCH" in
-              "master"|"staging")
-                # Master / staging are the only writers that feed `master`
-                # (`staging` is bors's merge candidate, which fast-forwards to
-                # `master`). Read `master` only, not the default [master,
-                # legacy]: files the read chain serves are skipped at stage
-                # time, so keeping `legacy` would leave legacy-only files out of
-                # `master` for good. Reading `master` alone turns them into
-                # misses that get rebuilt and uploaded, so `master` fills itself
-                # into a standalone cache. (Only PRIMARY=master does this; other
-                # runs write to `forks` and keep the wider chain.)
-                PRIMARY="master"
-                READ_CHAIN="master"
-                ;;
-              *)
-                # `bors trying`, `ci-dev/*`, maintainer dev branches on the
-                # canonical repo: trust level is fork-equivalent (the OIDC
-                # token's RBAC scopes them to `forks`). Reads must widen
-                # past the default [master, legacy] so the post-build
-                # verification finds the just-uploaded fork-trust artifacts.
-                PRIMARY="forks"
-                READ_CHAIN="master,forks,legacy"
-                ;;
-            esac
+            if [ "$REF_TYPE" = "tag" ]; then
+              case "$BRANCH" in
+                v4.*)
+                  # `v4.*` release tags: release_cache.yml rebuilds off-master
+                  # release commits (patch releases, patched release
+                  # candidates) and publishes them into `master`, the container
+                  # canonical checkouts read. Tag creation is restricted to
+                  # release managers by a tag ruleset, and the
+                  # `cache-upload-master` environment admits `v4.*` tag refs,
+                  # so these builds carry master trust. Reads are `master`-only
+                  # for the same fill-in reason as the master/staging arm
+                  # below.
+                  PRIMARY="master"
+                  READ_CHAIN="master"
+                  ;;
+                *)
+                  # Other tags have no trust class of their own:
+                  # fork-equivalent, like the dev-branch arm below.
+                  PRIMARY="forks"
+                  READ_CHAIN="master,forks,legacy"
+                  ;;
+              esac
+            else
+              case "$BRANCH" in
+                "master"|"staging")
+                  # Master, staging, and `v4.*` release tags (above) are the
+                  # only writers that feed `master` (`staging` is bors's merge
+                  # candidate, which fast-forwards to `master`). Read `master`
+                  # only, not the default [master, legacy]: files the read
+                  # chain serves are skipped at stage time, so keeping `legacy`
+                  # would leave legacy-only files out of `master` for good.
+                  # Reading `master` alone turns them into misses that get
+                  # rebuilt and uploaded, so `master` fills itself into a
+                  # standalone cache. (Only PRIMARY=master does this; other
+                  # runs write to `forks` and keep the wider chain.)
+                  PRIMARY="master"
+                  READ_CHAIN="master"
+                  ;;
+                *)
+                  # `bors trying`, `ci-dev/*`, maintainer dev branches on the
+                  # canonical repo: trust level is fork-equivalent (the OIDC
+                  # token's RBAC scopes them to `forks`). Reads must widen
+                  # past the default [master, legacy] so the post-build
+                  # verification finds the just-uploaded fork-trust artifacts.
+                  PRIMARY="forks"
+                  READ_CHAIN="master,forks,legacy"
+                  ;;
+              esac
+            fi
             ;;
           "leanprover-community/mathlib4-nightly-testing")
             case "$BRANCH" in

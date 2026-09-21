@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 public import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -31,7 +32,7 @@ assert_not_exists Ideal TwoSidedIdeal
 open QuotientAddGroup Set ZMod
 open scoped IsMulCommutative
 
-variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
+variable (n : ℕ) {A : Type*} [AddGroup A]
 
 namespace Int
 
@@ -47,6 +48,14 @@ def quotientZMultiplesEquivZMod (a : ℤ) : ℤ ⧸ AddSubgroup.zmultiples a ≃
 @[simp]
 lemma index_zmultiples (a : ℤ) : (AddSubgroup.zmultiples a).index = a.natAbs := by
   rw [AddSubgroup.index, Nat.card_congr (quotientZMultiplesEquivZMod a).toEquiv, Nat.card_zmod]
+
+open AddSubgroup in
+/-- The relative index of `zmultiples a` in `zmultiples b` (as subgroups of `ℤ`, `a b : ℕ`),
+multiplied by `gcd a b`, is `a`. -/
+lemma relIndex_zmultiples_mul (a b : ℕ) :
+    (zmultiples (a : ℤ)).relIndex (zmultiples (b : ℤ)) * a.gcd b = a := by
+  rw [show a.gcd b = (zmultiples (a : ℤ) ⊔ zmultiples (b : ℤ)).index by simp [Int.zmultiples_sup],
+    ← relIndex_sup_left, relIndex_mul_index le_sup_left, index_zmultiples, Int.natAbs_natCast]
 
 end Int
 
@@ -194,7 +203,7 @@ lemma quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G �
 
 lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
     quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
-  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
+  rw [← eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
 set_option backward.isDefEq.respectTransparency false in

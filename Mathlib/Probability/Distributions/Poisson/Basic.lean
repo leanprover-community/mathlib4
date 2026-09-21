@@ -68,10 +68,6 @@ lemma hasSum_one_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^
 instance (r : ℝ≥0) : IsProbabilityMeasure Po(r) :=
   (hasSum_one_poissonMeasure r).isProbabilityMeasure_sum_dirac (fun _ ↦ by positivity)
 
-instance (r : ℝ≥0) {R : Type*} [NatCast R] [MeasurableSpace R] :
-    IsProbabilityMeasure Po(R, r) :=
-  Measure.isProbabilityMeasure_map .of_discrete
-
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]

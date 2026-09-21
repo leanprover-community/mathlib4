@@ -142,8 +142,6 @@ theorem ebound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
 
 section
 
-open Filter
-
 variable (𝕜 E)
 
 /-- Given a unit-length element `x` of a normed space `E` over a field `𝕜`, the natural linear

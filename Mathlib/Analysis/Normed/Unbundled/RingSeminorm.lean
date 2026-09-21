@@ -43,9 +43,6 @@ ring_seminorm, ring_norm
 
 @[expose] public section
 
-
-open NNReal
-
 variable {R : Type*}
 
 /-- A seminorm on a ring `R` is a function `f : R → ℝ` that preserves zero, takes nonnegative
@@ -124,12 +121,12 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine (if_pos h).trans_le (mul_nonneg ?_ ?_) <;>
+        · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_) <;>
             · change _ ≤ ite _ _ _
               split_ifs
               exacts [le_rfl, zero_le_one]
         · change ite _ _ _ ≤ ite _ _ _ * ite _ _ _
-          simp only [if_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
+          simp only [ite_false, h, left_ne_zero_of_mul h, right_ne_zero_of_mul h, mul_one,
             le_refl] }⟩
 
 @[simp]
@@ -168,7 +165,7 @@ variable [CommRing R] (p : RingSeminorm R)
 theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
     ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
-  obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
+  obtain ⟨m, hm_lt, hm⟩ := hna.add_pow_le x y n (map_mul_le_mul p)
   exact ⟨m, hm_lt, by gcongr⟩
 
 end CommRing
@@ -245,6 +242,10 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
 
 theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
 
+@[simp]
+theorem toRingSeminorm_apply (p : RingNorm R) (x : R) : p.toRingSeminorm x = p x :=
+  rfl
+
 @[ext]
 theorem ext {p q : RingNorm R} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
@@ -308,7 +309,7 @@ variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 every other element. -/
 instance : One (MulRingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
-      map_one' := if_neg one_ne_zero
+      map_one' := ite_eq_right one_ne_zero
       map_mul' := fun x y => by
         obtain rfl | hx := eq_or_ne x 0
         · simp
@@ -348,6 +349,10 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
 
 theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
 
+@[simp]
+theorem toMulRingSeminorm_apply (p : MulRingNorm R) (x : R) : p.toMulRingSeminorm x = p x :=
+  rfl
+
 @[ext]
 theorem ext {p q : MulRingNorm R} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
@@ -371,32 +376,33 @@ section MulRingNorm_equiv_AbsoluteValue
 
 variable {R : Type*} [Ring R] [Nontrivial R]
 
+/-- A multiplicative ring norm defines an absolute value. -/
+@[simps]
+def toAbsoluteValue (N : MulRingNorm R) : AbsoluteValue R ℝ where
+  toFun := N.toFun
+  map_mul' := N.map_mul'
+  nonneg' := apply_nonneg N
+  eq_zero' x := ⟨N.eq_zero_of_map_eq_zero' x, fun h ↦ h ▸ N.map_zero'⟩
+  add_le' := N.add_le'
+
+/-- An absolute value defines a multiplicative ring norm. -/
+@[simps]
+def ofAbsoluteValue (v : AbsoluteValue R ℝ) : MulRingNorm R where
+  toFun := v.toFun
+  map_zero' := (v.eq_zero' 0).mpr rfl
+  add_le' := v.add_le'
+  neg' := v.map_neg
+  map_one' := v.map_one
+  map_mul' := v.map_mul'
+  eq_zero_of_map_eq_zero' x := (v.eq_zero' x).mp
+
 /-- The equivalence of `MulRingNorm R` and `AbsoluteValue R ℝ` when `R` is a nontrivial ring. -/
+@[simps]
 def mulRingNormEquivAbsoluteValue : MulRingNorm R ≃ AbsoluteValue R ℝ where
-  toFun N := {
-    toFun := N.toFun
-    map_mul' := N.map_mul'
-    nonneg' := apply_nonneg N
-    eq_zero' x := ⟨N.eq_zero_of_map_eq_zero' x, fun h ↦ h ▸ N.map_zero'⟩
-    add_le' := N.add_le'
-  }
-  invFun v := {
-    toFun := v.toFun
-    map_zero' := (v.eq_zero' 0).mpr rfl
-    add_le' := v.add_le'
-    neg' := v.map_neg
-    map_one' := v.map_one
-    map_mul' := v.map_mul'
-    eq_zero_of_map_eq_zero' x := (v.eq_zero' x).mp
-  }
+  toFun := toAbsoluteValue
+  invFun := ofAbsoluteValue
   left_inv N := by constructor
   right_inv v := by ext1 x; simp
-
-lemma mulRingNormEquivAbsoluteValue_apply (N : MulRingNorm R) (x : R) :
-    mulRingNormEquivAbsoluteValue N x = N x := rfl
-
-lemma mulRingNormEquivAbsoluteValue_symm_apply (v : AbsoluteValue R ℝ) (x : R) :
-    mulRingNormEquivAbsoluteValue.symm v x = v x := rfl
 
 end MulRingNorm_equiv_AbsoluteValue
 
@@ -424,10 +430,9 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
 def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
 
-open Int
-
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
+@[simps]
 def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm R where
   toFun     := norm
   map_zero' := norm_zero
@@ -458,6 +463,7 @@ theorem NormedRing.toRingNorm_apply (R : Type*) [NormedRing R] (x : R) :
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The norm on a `NormedField`, as a `MulRingNorm`. -/
+@[simps]
 def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
   toFun     := norm
   map_zero' := norm_zero
@@ -469,6 +475,7 @@ def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The norm on a `NormedField`, as an `AbsoluteValue`. -/
+@[simps]
 def NormedField.toAbsoluteValue (R : Type*) [NormedField R] : AbsoluteValue R ℝ where
   toFun     := norm
   map_mul'  := norm_mul

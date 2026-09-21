@@ -283,7 +283,6 @@ instance specializingMap_respectsIso : (topologically @SpecializingMap).Respects
   · introv hf hg
     exact hf.comp hg
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance specializingMap_isZariskiLocalAtTarget :
     IsZariskiLocalAtTarget (topologically @SpecializingMap) := by
   apply topologically_isZariskiLocalAtTarget

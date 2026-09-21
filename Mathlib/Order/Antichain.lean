@@ -71,8 +71,6 @@ protected theorem eq' (hs : IsAntichain r s) {a b : α} (ha : a ∈ s) (hb : b �
 protected theorem antisymm (h : IsAntichain r univ) : Std.Antisymm r :=
   ⟨fun _ _ ha _ => h.eq trivial trivial ha⟩
 
-@[deprecated (since := "2026-01-06")] protected alias isAntisymm := antisymm
-
 protected theorem subsingleton [Std.Trichotomous r] (h : IsAntichain r s) : s.Subsingleton := by
   rintro a ha b hb
   obtain hab | hab | hab := trichotomous_of r a b
@@ -413,6 +411,12 @@ protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
   ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩
 
 end IsMaxAntichain
+
+theorem maximal_isAntichain_iff : Maximal (IsAntichain r) s ↔ IsMaxAntichain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isAntichain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
+alias ⟨_, IsMaxAntichain.maximal_isAntichain⟩ := maximal_isAntichain_iff
 
 end General
 

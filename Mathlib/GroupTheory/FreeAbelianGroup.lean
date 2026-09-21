@@ -150,9 +150,9 @@ theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := b
   classical
   exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
-    have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| if_pos rfl
+    have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| ite_eq_left rfl
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
-    have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| if_neg hxy
+    have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| ite_eq_right hxy
     one_ne_zero <| hfy1.symm.trans hfy0
 
 @[simp]

@@ -33,7 +33,7 @@ open Function
 
 universe u'' u' u v w
 
-variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
+variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v}
 
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
@@ -198,7 +198,7 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-variable {p q : Submodule R M}
+variable {p : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
@@ -313,7 +313,7 @@ section AddCommGroup
 variable [Ring R] [AddCommGroup M]
 variable {module_M : Module R M}
 variable (p p' : Submodule R M)
-variable {r : R} {x y : M}
+variable {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }

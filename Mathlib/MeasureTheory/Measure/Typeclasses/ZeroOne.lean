@@ -7,7 +7,7 @@ Authors: Gaëtan Serré
 module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
 
@@ -25,7 +25,7 @@ We introduce the typeclass `IsZeroOneMeasure` for measures that only take the va
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 
