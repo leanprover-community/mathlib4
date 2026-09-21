@@ -817,6 +817,22 @@ theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChart
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
 
+theorem writtenInExtChartAt_apply_extChartAt {x y : M} {f : M → M'}
+    (hy : y ∈ (extChartAt I x).source) :
+    writtenInExtChartAt I I' x f (extChartAt I x y) = extChartAt I' (f x) (f y) := by
+  simp only [writtenInExtChartAt, comp_apply, (extChartAt I x).left_inv hy]
+
+theorem extChartAt_symm_writtenInExtChartAt {x : M} {z : E} {f : M → M'}
+    (hz : f ((extChartAt I x).symm z) ∈ (extChartAt I' (f x)).source) :
+    (extChartAt I' (f x)).symm (writtenInExtChartAt I I' x f z) =
+      f ((extChartAt I x).symm z) := by
+  simp only [writtenInExtChartAt, comp_apply, (extChartAt I' (f x)).left_inv hz]
+
+theorem extChartAt_symm_writtenInExtChartAt_extChartAt {x y : M} {f : M → M'}
+    (hy : y ∈ (extChartAt I x).source) (hfy : f y ∈ (extChartAt I' (f x)).source) :
+    (extChartAt I' (f x)).symm (writtenInExtChartAt I I' x f (extChartAt I x y)) = f y := by
+  rw [writtenInExtChartAt_apply_extChartAt hy, (extChartAt I' (f x)).left_inv hfy]
+
 theorem writtenInExtChartAt_mapsTo {x : M} {f : M → M'} :
     MapsTo (writtenInExtChartAt I I' x f)
       ((extChartAt I x).target ∩ f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source)
