@@ -77,6 +77,14 @@ theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
   simp +contextual [mem_reesAlgebra_iff_support, coeff_monomial, ←
     imp_iff_not_or]
 
+lemma reesAlgebra.monomial_coeff_mem {I : Ideal R} (f : reesAlgebra I) (i : ℕ) :
+    (monomial i) (f.1.coeff i) ∈ reesAlgebra I :=
+  reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp f.2 i)
+
+lemma reesAlgebra.as_sum_support {I : Ideal R} (f : reesAlgebra I) :
+    f = ∑ i ∈ f.1.support, ⟨monomial i (f.1.coeff i), reesAlgebra.monomial_coeff_mem f i⟩ :=
+  SetCoe.ext (by simpa using f.1.as_sum_support)
+
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :
     monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) := by
   induction n generalizing r with
@@ -144,11 +152,7 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     | smul r hr m hm =>
       simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.2 n)
     | add x hx y hy memx memy => simpa using add_mem memx memy
-  · have mem (i : ℕ) : (monomial i) (f.1.coeff i) ∈ reesAlgebra I :=
-      reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp f.2 i)
-    have : f = ∑ i ∈ f.1.support, ⟨monomial i (f.1.coeff i), mem i⟩ :=
-      SetCoe.ext (by simpa using f.1.as_sum_support)
-    rw [this]
+  · rw [reesAlgebra.as_sum_support f]
     apply sum_mem (fun i hi ↦ ?_)
     have {r : R} (h' : r ∈ I * I ^ i) :
       ⟨monomial i r, reesAlgebra.monomial_mem.mpr (Ideal.mul_le_right h')⟩
