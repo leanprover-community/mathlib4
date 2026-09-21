@@ -5092,6 +5092,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Range
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
