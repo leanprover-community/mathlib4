@@ -234,7 +234,7 @@ theorem degree_eq_degree_of_associated (h : Associated p q) : degree p = degree 
 
 theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
   ⟨X_sub_C_ne_zero r, not_isUnit_X_sub_C r, fun _ _ => by
-    simp_rw [dvd_iff_isRoot, IsRoot.def, eval_mul, mul_eq_zero]
+    simp_rw [dvd_iff_isRoot, IsRoot, eval_mul, mul_eq_zero]
     exact id⟩
 
 theorem prime_X : Prime (X : R[X]) := by

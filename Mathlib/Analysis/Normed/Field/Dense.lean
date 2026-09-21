@@ -108,7 +108,7 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
     obtain ⟨bCp, _, hbCp⟩ := hb
     rw [IntermediateField.mem_bot]
     exact ⟨bCp, hbCp⟩
-  simp only [Polynomial.mem_roots', ne_eq, Polynomial.map_eq_zero, Polynomial.IsRoot.def,
+  simp only [Polynomial.mem_roots', ne_eq, Polynomial.map_eq_zero, Polynomial.IsRoot,
     Polynomial.eval_map_algebraMap] at hb
   -- By Krasner's lemma, `a ∈ L(b) = L`. Thus `f` has a root in `L`.
   have abot : a ∈ (⊥ : IntermediateField L F) := by

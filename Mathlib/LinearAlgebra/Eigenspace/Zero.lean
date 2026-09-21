@@ -97,7 +97,7 @@ lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
   tfae_have 1 ↔ 2 := Module.End.hasEigenvalue_iff_isRoot
   tfae_have 2 → 3 := by
     obtain ⟨F, hF⟩ := minpoly_dvd_charpoly φ
-    simp only [IsRoot.def, constantCoeff_apply, coeff_zero_eq_eval_zero, hF, eval_mul]
+    simp only [constantCoeff_apply, coeff_zero_eq_eval_zero, hF, eval_mul]
     intro h; rw [h, zero_mul]
   tfae_have 3 → 4 := by
     rw [← LinearMap.det_toMatrix (chooseBasis K M), Matrix.det_eq_sign_charpoly_coeff,

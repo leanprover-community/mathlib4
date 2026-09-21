@@ -228,7 +228,7 @@ theorem charPoly_monic : charPoly E |>.Monic := by
   `q` is a root of `E`'s characteristic polynomial. -/
 theorem geom_sol_iff_root_charPoly (q : R) :
     (E.IsSolution fun n ↦ q ^ n) ↔ E.charPoly.IsRoot q := by
-  rw [charPoly, Polynomial.IsRoot.def, Polynomial.eval]
+  rw [charPoly, Polynomial.IsRoot, Polynomial.eval]
   simp only [Polynomial.eval₂_finsetSum, one_mul, RingHom.id_apply, Polynomial.eval₂_monomial,
     Polynomial.eval₂_sub]
   constructor

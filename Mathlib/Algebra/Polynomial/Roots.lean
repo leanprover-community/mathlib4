@@ -188,7 +188,7 @@ theorem roots.le_of_dvd (h : q ≠ 0) : p ∣ q → roots p ≤ roots q := by
   exact Multiset.le_iff_exists_add.mpr ⟨k.roots, roots_mul h⟩
 
 theorem mem_roots_sub_C' {p : R[X]} {a x : R} : x ∈ (p - C a).roots ↔ p ≠ C a ∧ p.eval x = a := by
-  rw [mem_roots', IsRoot.def, sub_ne_zero, eval_sub, sub_eq_zero, eval_C]
+  rw [mem_roots', IsRoot, sub_ne_zero, eval_sub, sub_eq_zero, eval_C]
 
 theorem mem_roots_sub_C {p : R[X]} {a x : R} (hp0 : 0 < degree p) :
     x ∈ (p - C a).roots ↔ p.eval x = a :=
@@ -364,7 +364,7 @@ def nthRoots (n : ℕ) (a : R) : Multiset R :=
 
 @[simp]
 theorem mem_nthRoots {n : ℕ} (hn : 0 < n) {a x : R} : x ∈ nthRoots n a ↔ x ^ n = a := by
-  rw [nthRoots, mem_roots (X_pow_sub_C_ne_zero hn a), IsRoot.def, eval_sub, eval_C, eval_pow,
+  rw [nthRoots, mem_roots (X_pow_sub_C_ne_zero hn a), IsRoot, eval_sub, eval_C, eval_pow,
     eval_X, sub_eq_zero]
 
 @[simp]
@@ -487,7 +487,7 @@ theorem aroots_def (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
 
 theorem mem_aroots' [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {a : S} :
     a ∈ p.aroots S ↔ p.map (algebraMap T S) ≠ 0 ∧ aeval a p = 0 := by
-  rw [mem_roots', IsRoot.def, ← eval₂_eq_eval_map, aeval_def]
+  rw [mem_roots', IsRoot, ← eval₂_eq_eval_map, aeval_def]
 
 theorem mem_aroots [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {p : T[X]} {a : S} : a ∈ p.aroots S ↔ p ≠ 0 ∧ aeval a p = 0 := by
@@ -751,7 +751,7 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
     _ ≤ #p.roots.toFinset := Finset.card_mono ?_
   intro _
   simp only [Finset.mem_image, Finset.mem_univ, true_and, Multiset.mem_toFinset, mem_roots', ne_eq,
-    IsRoot.def, forall_exists_index, hp, not_false_eq_true]
+    IsRoot, forall_exists_index, hp, not_false_eq_true]
   rintro x rfl
   exact heval _
 

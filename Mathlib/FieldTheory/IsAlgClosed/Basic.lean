@@ -84,7 +84,7 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
     exact ne_of_gt (WithBot.coe_lt_coe.2 hn)
   obtain ⟨z, hz⟩ := exists_root (X ^ n - C x) this
   use z
-  simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
+  simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot] at hz
   exact sub_eq_zero.1 hz
 
 theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by

@@ -85,7 +85,7 @@ theorem zero_lt_negOnePow_mul_eval_of_lt_roots_of_leadingCoeff_nonneg
     (hroots : ∀ y, P.IsRoot y → x < y) (hlc : 0 ≤ P.leadingCoeff) :
       0 < Int.negOnePow P.natDegree * P.eval x := by
   have hroots' y (hy : (P.comp (-X)).IsRoot y) : y < -x := by
-    grind [show P.IsRoot (-y) by rwa [IsRoot.def, eval_comp, eval_neg, eval_X, ← IsRoot.def] at hy]
+    grind [show P.IsRoot (-y) by rwa [IsRoot, eval_comp, eval_neg, eval_X, ← IsRoot] at hy]
   have hlc' : 0 ≤ Int.negOnePow (P.comp (-X)).natDegree * (P.comp (-X)).leadingCoeff := by
     rw [show (P.comp (-X)).leadingCoeff = P.leadingCoeff * Int.negOnePow P.natDegree by simp; ring,
       show (P.comp (-X)).natDegree = P.natDegree by simp [natDegree_comp], mul_comm, mul_assoc]

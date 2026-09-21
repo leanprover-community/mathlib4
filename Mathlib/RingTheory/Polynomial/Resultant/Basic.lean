@@ -456,7 +456,7 @@ lemma resultant_eq_prod_roots_sub
       trans (g.roots.map ((f %ₘ g).leadingCoeff * eval · r)).prod
       · congr 1
         refine Multiset.map_congr rfl ?_
-        simp only [mem_roots', ne_eq, IsRoot.def, eval_mul, eval_C, leadingCoeff_eq_zero, hr₀,
+        simp only [mem_roots', ne_eq, eval_mul, eval_C, leadingCoeff_eq_zero, hr₀,
           not_false_eq_true, mul_inv_cancel_left₀, and_imp, r]
         intro x hx hxg
         conv_lhs => rw [← f.modByMonic_add_div, eval_add, eval_mul, hxg, zero_mul, add_zero]

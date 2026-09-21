@@ -435,7 +435,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     simp only [mem_ofPred_eq]
     rw [isRoot_of_unity_iff (NeZero.pos n)]
     refine ⟨NeZero.ne n, n, Nat.mem_divisors_self n (NeZero.ne n), ?_⟩
-    rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map_algebraMap]
+    rw [IsRoot, ← map_cyclotomic n (algebraMap A B), eval_map_algebraMap]
     exact hx.2
   · simp only [mem_ofPred_eq] at hx
     obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx.2
@@ -679,7 +679,7 @@ instance isCyclotomicExtension [NeZero (n : K)] :
   have := (degree_cyclotomic_pos n K (NeZero.pos n)).ne'
   obtain ⟨ζ, hζ⟩ :=
     Splits.exists_eval_eq_zero (SplittingField.splits (cyclotomic n K)) (by rwa [degree_map])
-  rw [eval_map, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
+  rw [eval_map, ← eval_map, ← IsRoot, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
   refine ⟨?_, ?_⟩
   · simp only [mem_singleton_iff, forall_eq]
     exact fun _ ↦ ⟨ζ, hζ⟩
@@ -852,7 +852,7 @@ theorem IsSepClosed.isCyclotomicExtension (h : ∀ a ∈ S, a ≠ 0 → NeZero (
   have := h a ha ha'
   obtain ⟨r, hr⟩ := IsSepClosed.exists_aeval_eq_zero K _
     (degree_cyclotomic_pos a K (Nat.pos_of_ne_zero ha')).ne' (separable_cyclotomic a K)
-  exact ⟨r, by rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr⟩
+  exact ⟨r, by rwa [coe_aeval_eq_eval, ← IsRoot, isRoot_cyclotomic_iff] at hr⟩
 
 instance IsSepClosedOfCharZero.isCyclotomicExtension [CharZero K] :
     ∀ S, IsCyclotomicExtension S K K := fun S => by

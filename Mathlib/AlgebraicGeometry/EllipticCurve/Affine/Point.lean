@@ -722,7 +722,7 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
 a root of `W.twoTorsionPolynomial`. -/
 theorem isRoot_twoTorsionPolynomial_of_add_self {x y : F} (h : W.Nonsingular x y)
     (hP : some x y h + some x y h = 0) : W.twoTorsionPolynomial.toPoly.IsRoot x := by
-  rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆]
+  rw [IsRoot, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆]
   have hy : y = W.negY x y := by
     by_contra hne
     rw [add_self_of_Y_ne hne] at hP
@@ -737,7 +737,7 @@ theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0)
       ∃ y, ∃ h : W.Nonsingular x y, some x y h + some x y h = 0 := by
   constructor
   · intro hroot
-    rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆] at hroot
+    rw [IsRoot, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆] at hroot
     set y := (-W.a₁ * x - W.a₃) / 2
     have heq : W.Equation x y := by grind [NeZero.out, equation_iff]
     refine ⟨y, (equation_iff_nonsingular_of_Δ_ne_zero hΔ).mp heq, add_self_of_Y_eq ?_⟩

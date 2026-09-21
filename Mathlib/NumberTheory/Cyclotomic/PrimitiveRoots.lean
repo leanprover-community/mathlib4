@@ -96,12 +96,12 @@ theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
 
 theorem aeval_zeta [IsDomain B] [NeZero (n : B)] :
     aeval (zeta n A B) (cyclotomic n A) = 0 := by
-  rw [← eval_map_algebraMap, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
+  rw [← eval_map_algebraMap, ← IsRoot, map_cyclotomic, isRoot_cyclotomic_iff]
   exact zeta_spec n A B
 
 theorem zeta_isRoot [IsDomain B] [NeZero (n : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by
   convert! aeval_zeta n A B using 0
-  rw [IsRoot.def, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
+  rw [IsRoot, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
 
 theorem zeta_pow : zeta n A B ^ n = 1 :=
   (zeta_spec n A B).pow_eq_one
@@ -150,7 +150,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
         haveI hn := NeZero.of_faithfulSMul K C n
         refine ⟨x.1, ?_⟩
         cases x
-        rwa [mem_primitiveRoots (NeZero.pos _), ← isRoot_cyclotomic_iff, IsRoot.def,
+        rwa [mem_primitiveRoots (NeZero.pos _), ← isRoot_cyclotomic_iff, IsRoot,
           ← map_cyclotomic _ (algebraMap K C), hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
           ← eval₂_eq_eval_map, ← aeval_def]
       invFun := fun x => by
@@ -159,7 +159,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
         refine ⟨x.1, ?_⟩
         cases x
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
-          hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot.def,
+          hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_cyclotomic, ← IsRoot,
           isRoot_cyclotomic_iff, ← mem_primitiveRoots (NeZero.pos _)] }
 
 -- Porting note: renamed argument `φ`: "expected '_' or identifier"

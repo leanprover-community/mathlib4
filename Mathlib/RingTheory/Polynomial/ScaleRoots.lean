@@ -339,8 +339,8 @@ lemma rootMultiplicity_scaleRoots (p : R[X]) {r a : R} (hr : IsLeftRegular r) :
   conv_lhs => rw [e]
   rw [mul_scaleRoots', pow_scaleRoots', X_sub_C_scaleRoots, mul_comm, mul_comm _ (q.scaleRoots r),
     rootMultiplicity_mul_X_sub_C_pow (q.scaleRoots_ne_zero hq0 _)]
-  · rw [dvd_iff_isRoot, IsRoot.def] at hq
-    simp only [Nat.add_eq_right, rootMultiplicity_eq_zero_iff, IsRoot.def]
+  · rw [dvd_iff_isRoot, IsRoot] at hq
+    simp only [Nat.add_eq_right, rootMultiplicity_eq_zero_iff, IsRoot]
     rw [mul_comm, scaleRoots_eval_mul, (hr.pow q.natDegree).mul_left_eq_zero_iff]
     tauto
   · simp

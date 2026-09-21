@@ -614,11 +614,9 @@ theorem modByMonic_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p %ₘ (X - C a) = C (
   rw [eq_C_of_degree_le_zero this, h]
 
 theorem mul_divByMonic_eq_iff_isRoot : (X - C a) * (p /ₘ (X - C a)) = p ↔ IsRoot p a :=
-  .trans
-    ⟨fun h => by rw [← h, eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul],
-    fun h => by
-      conv_rhs => rw [← modByMonic_add_div p, modByMonic_X_sub_C_eq_C_eval, h, C_0, zero_add]⟩
-    IsRoot.def.symm
+  ⟨fun h => by rw [← h, IsRoot, eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul],
+  fun h => by
+    conv_rhs => rw [← modByMonic_add_div p, modByMonic_X_sub_C_eq_C_eval, h, C_0, zero_add]⟩
 
 theorem dvd_iff_isRoot : X - C a ∣ p ↔ IsRoot p a :=
   ⟨fun h => by

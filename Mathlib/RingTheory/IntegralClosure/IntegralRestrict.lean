@@ -558,9 +558,9 @@ theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intN
       · replace ha := Multiset.erase_subset _ _ ha
         suffices (aeval a) ((minpoly A x).map (algebraMap A K)) = 0 by simpa
         rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (IsIntegral.isIntegral x)]
-        simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot.def, eval_map_algebraMap] at ha
+        simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot, eval_map_algebraMap] at ha
         exact ha.2
     · exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B E)).mpr hx
-  · simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot.def, eval_map_algebraMap]
+  · simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot, eval_map_algebraMap]
     refine ⟨minpoly.ne_zero (IsIntegral.isIntegral _), ?_⟩
     simp [algebraMap_apply B L E, aeval_algebraMap_apply]

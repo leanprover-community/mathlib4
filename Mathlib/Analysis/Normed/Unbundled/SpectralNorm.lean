@@ -923,7 +923,7 @@ lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra 
     (spectralMulAlgNorm K E) a = (spectralMulAlgNorm K E) ((algebraMap L E) x) := by
   simp only [spectralMulAlgNorm_def, spectralNorm]
   have : (aeval a) (minpoly K ((algebraMap L E) x)) = 0 := by
-    simp only [mem_roots', IsRoot.def] at ha
+    simp only [mem_roots'] at ha
     rw [← ha.2, mapAlg_eq_map, minpoly.algebraMap_eq (algebraMap L E).injective, aeval_def,
       eval_map]
   rw [← minpoly.eq_of_root (Algebra.IsAlgebraic.isAlgebraic ((algebraMap L E) x)) this]

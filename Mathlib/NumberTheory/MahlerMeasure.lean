@@ -158,7 +158,7 @@ theorem isIntegral_of_mahlerMeasure_eq_one : IsIntegral ℤ z := by
   have : p.leadingCoeff = 1 ∨ p.leadingCoeff = -1 := abs_eq_abs.mp <|
     abs_leadingCoeff_eq_one_of_mahlerMeasure_eq_one h
   have : (C (1 / p.leadingCoeff) * p).Monic := by aesop (add safe (by simp [Monic.def]))
-  grind [IsIntegral, RingHom.IsIntegralElem, mem_roots', IsRoot.def, eval₂_mul, eval_map]
+  grind [IsIntegral, RingHom.IsIntegralElem, mem_roots', IsRoot, eval₂_mul, eval_map]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 open Multiset in

@@ -420,7 +420,7 @@ lemma Q₂_natDegree (h : E ≠ ⊥) : (Q₂ h).natDegree = 0 := by
   rw [natDegree_eq_zero_iff_degree_le_zero.not, ← degree_map _ (algebraMap K F)] at H
   obtain ⟨α, hα⟩ := IsAlgClosed.exists_root ((Q₂ h).map (algebraMap K F)) (ne_of_not_ge H).symm
   -- Evaluate at the root, get that f(α)*g(Y) = g(α)*f(Y)
-  rw [IsRoot.def, eval_map_algebraMap] at hα
+  rw [IsRoot, eval_map_algebraMap] at hα
   have eq :
       (Polynomial.mapRingHom (algebraMap K F)) (g E) * Polynomial.C ((aeval α) (f E)) =
       (Polynomial.mapRingHom (algebraMap K F)) (f E) * Polynomial.C ((aeval α) (g E)) := by

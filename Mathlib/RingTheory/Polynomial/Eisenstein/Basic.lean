@@ -143,7 +143,7 @@ theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
   obtain ⟨k, hk⟩ := exists_add_of_le hi
   rw [hk, pow_add]
   suffices x ^ f.natDegree ∈ 𝓟 by exact mul_mem_right (x ^ k) 𝓟 this
-  rw [IsRoot.def, eval_eq_sum_range, Finset.range_add_one,
+  rw [IsRoot, eval_eq_sum_range, Finset.range_add_one,
     Finset.sum_insert Finset.notMem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
   rw [eq_neg_of_add_eq_zero_left hroot, neg_mem_iff]
@@ -157,7 +157,7 @@ theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map (hf : f.IsWeaklyEisenste
     obtain ⟨k, hk⟩ := exists_add_of_le hi
     rw [hk, pow_add]
     exact mul_mem_right _ _ this
-  rw [aeval_def, eval₂_eq_eval_map, ← IsRoot.def] at hx
+  rw [aeval_def, eval₂_eq_eval_map, ← IsRoot] at hx
   exact pow_natDegree_le_of_root_of_monic_mem (hf.map _) hx (hmo.map _) _ rfl.le
 
 end CommRing
