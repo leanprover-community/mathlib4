@@ -496,7 +496,8 @@ lemma prod_primeFactors_coe_pow_factorization (hn : n ≠ 0) :
 alias prod_pow_primeFactors_factorization := prod_primeFactors_coe_pow_factorization
 
 lemma pairwise_coprime_pow_primeFactors_factorization :
-    Pairwise (Function.onFun Nat.Coprime fun (p : n.primeFactors) ↦ p ^ n.factorization p) := by
+    Pairwise' (Function.onFun Nat.Coprime fun (p : n.primeFactors) ↦ p ^ n.factorization p) := by
+  rw [pairwise'_iff]
   intro p1 p2 hp
   refine Nat.Coprime.pow (n.factorization p1) (n.factorization p2) ?_
   refine (Nat.coprime_primes ?_ ?_).mpr <| Subtype.coe_ne_coe.mpr hp

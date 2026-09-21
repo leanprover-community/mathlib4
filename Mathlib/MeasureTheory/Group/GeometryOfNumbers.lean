@@ -55,7 +55,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddGroup L] [Countable L] [Ad
     ∃ x y : L, x ≠ y ∧ ¬Disjoint (x +ᵥ s) (y +ᵥ s) := by
   contrapose! h
   exact ((fund.measure_eq_tsum _).trans (measure_iUnion₀
-    (Pairwise.mono h fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
+    (Pairwise.mono (pairwise'_mk h) fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
       fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
       (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right)
 

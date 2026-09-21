@@ -404,7 +404,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           intro i hi
           constructor <;> exact this (hp₂ _)
         · rw [PairwiseDisjoint]
-          convert! hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
+          convert! hp₁.pairwise'_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
           rw [uIoc_of_le (hp₁ (by lia)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
           convert! this

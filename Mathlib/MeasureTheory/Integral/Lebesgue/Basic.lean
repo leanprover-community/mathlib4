@@ -577,12 +577,12 @@ open Measure
 open scoped Function -- required for scoped `on` notation
 
 theorem lintegral_iUnion₀ [Countable β] {s : β → Set α} (hm : ∀ i, NullMeasurableSet (s i) μ)
-    (hd : Pairwise (AEDisjoint μ on s)) (f : α → ℝ≥0∞) :
+    (hd : Pairwise' (AEDisjoint μ on s)) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ i, s i, f a ∂μ = ∑' i, ∫⁻ a in s i, f a ∂μ := by
   simp only [Measure.restrict_iUnion_ae hd hm, lintegral_sum_measure]
 
 theorem lintegral_iUnion [Countable β] {s : β → Set α} (hm : ∀ i, MeasurableSet (s i))
-    (hd : Pairwise (Disjoint on s)) (f : α → ℝ≥0∞) :
+    (hd : Pairwise' (Disjoint on s)) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ i, s i, f a ∂μ = ∑' i, ∫⁻ a in s i, f a ∂μ :=
   lintegral_iUnion₀ (fun i => (hm i).nullMeasurableSet) hd.aedisjoint f
 

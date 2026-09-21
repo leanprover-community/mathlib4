@@ -304,7 +304,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         simp only [measureReal_def, h]
         exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ hE' n
       dsimp [K]; rw [hE.1]
-      rw [measure_iUnion (fun m n hmn ↦ hE.2.1 trivial trivial hmn) hE.2.2.2]
+      rw [measure_iUnion (fun m _ n _ hmn ↦ hE.2.1 trivial trivial hmn) hE.2.2.2]
       exact tsum_fintype fun b ↦ μ (E b)
     rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, this, ← Finset.sum_mul]
     linarith
@@ -321,7 +321,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     calc
       _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
       _ = ∫ x in (⋃ n, E n), f x ∂μ := by
-        refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
+        refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ _ _ ↦ hE.2.1 trivial trivial) ?_
         dsimp [μ, rieszMeasure]
         exact fun _ ↦
           Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2

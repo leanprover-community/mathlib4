@@ -45,8 +45,8 @@ section gammaSet_def
 def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (v 0).gcd (v 1) = r}
 
 open scoped Function in -- required for scoped `on` notation
-lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N r) := by
-  refine fun u v huv ↦ ?_
+lemma pairwise_disjoint_gammaSet : Pairwise' (Disjoint on gammaSet N r) := by
+  refine fun u _ v _ huv ↦ ?_
   contrapose huv
   obtain ⟨f, hf⟩ := Set.not_disjoint_iff.mp huv
   exact hf.1.1.symm.trans hf.2.1

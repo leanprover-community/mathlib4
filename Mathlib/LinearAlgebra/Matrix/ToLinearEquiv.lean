@@ -230,8 +230,9 @@ section Determinant
 column positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
     {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
-    {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
+    {A : Matrix n n S} (h1 : Pairwise' fun i j => A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
     A.det ≠ 0 := by
+  rw [pairwise'_iff] at h1
   cases isEmpty_or_nonempty n
   · simp
   · contrapose! h2
@@ -258,12 +259,13 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
 row positive has nonzero determinant. -/
 lemma det_ne_zero_of_sum_row_pos [DecidableEq n]
     {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
-    {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
+    {A : Matrix n n S} (h1 : Pairwise' fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
     A.det ≠ 0 := by
+  rw [pairwise'_iff] at h1
   rw [← Matrix.det_transpose]
   refine det_ne_zero_of_sum_col_pos ?_ ?_
   · simp_rw [Matrix.transpose_apply]
-    exact fun i j h => h1 h.symm
+    exact fun i _ j _ h => h1 h.symm
   · simp_rw [Matrix.transpose_apply]
     exact h2
 

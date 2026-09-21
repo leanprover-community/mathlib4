@@ -55,7 +55,7 @@ lemma exists_finite_clopen_cover (hU : IsOpenCover U) : ∃ (n : ℕ) (V : Fin n
 nonempty clopens. -/
 lemma exists_finite_nonempty_disjoint_clopen_cover (hU : IsOpenCover U) :
     ∃ (n : ℕ) (W : Fin n → Clopens X), (∀ j, W j ≠ ⊥ ∧ ∃ i, (W j : Set X) ⊆ U i)
-    ∧ (univ : Set X) ⊆ ⋃ j, ↑(W j) ∧ Pairwise (Disjoint on W) := by
+    ∧ (univ : Set X) ⊆ ⋃ j, ↑(W j) ∧ Pairwise' (Disjoint on W) := by
   classical
   obtain ⟨n, V, hVle, hVun⟩ := hU.exists_finite_clopen_cover
   obtain ⟨W, hWle, hWun, hWd⟩ := Fintype.exists_disjointed_le V
@@ -105,7 +105,7 @@ exists a finite cover of `X` by disjoint nonempty clopens `U i` with `U i ×ˢ U
 private lemma exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_profinite
     (hS : S ∈ nhdsSet (diagonal X)) :
     ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧ (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (y, z) ∈ S)
-    ∧ (univ : Set X) ⊆ ⋃ i, D i ∧ Pairwise (Disjoint on D) := by
+    ∧ (univ : Set X) ⊆ ⋃ i, D i ∧ Pairwise' (Disjoint on D) := by
   obtain ⟨t, U, hUc, hUS⟩ := exists_finite_open_cover_prod_subset_of_mem_nhds_diagonal_of_compact hS
   -- Now refine it to a disjoint covering.
   obtain ⟨n, W, hW₁, hW₂, hW₃⟩ := hUc.exists_finite_nonempty_disjoint_clopen_cover
@@ -126,7 +126,7 @@ each of which `f` varies within `S`.
 -/
 lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧ (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (f y, f z) ∈ S)
-    ∧ (univ : Set X) ⊆ ⋃ i, D i ∧ Pairwise (Disjoint on D) := by
+    ∧ (univ : Set X) ⊆ ⋃ i, D i ∧ Pairwise' (Disjoint on D) := by
   have : (f.prodMap f) ⁻¹' S ∈ nhdsSet (diagonal X) := by
     rw [mem_nhdsSet_iff_forall] at hS ⊢
     rintro ⟨x, y⟩ (rfl : x = y)

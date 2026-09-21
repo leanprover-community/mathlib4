@@ -247,7 +247,7 @@ protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
     exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
   · rcases exists_ne (0 : E) with ⟨x, hx⟩
     suffices IsClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
-    refine isClosedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
+    refine isClosedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k _ n _ hne ↦ ?_
     simp only [dist_eq_norm, ← sub_smul, norm_smul]
     rw [H, one_mul]
     rwa [sub_ne_zero, (Embedding.injective _).ne_iff]

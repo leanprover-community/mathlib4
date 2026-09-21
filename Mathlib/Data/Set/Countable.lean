@@ -315,7 +315,7 @@ theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Co
 /-- If a family of disjoint sets is included in a countable set, then only countably many of
 them are nonempty. -/
 theorem countable_ofPred_nonempty_of_disjoint {f : β → Set α}
-    (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
+    (hf : Pairwise' (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
     Set.Countable {t | (f t).Nonempty} := by
   rw [← Set.countable_coe_iff] at hs ⊢
   have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.1 ∈ f t := by
@@ -330,7 +330,7 @@ theorem countable_ofPred_nonempty_of_disjoint {f : β → Set α}
       exact hF ⟨t', _⟩
     simp only [Subtype.mk.injEq]
     by_contra H
-    exact not_disjoint_iff_nonempty_inter.2 A (hf H)
+    exact not_disjoint_iff_nonempty_inter.2 A (pairwise'_apply hf H)
   exact Injective.countable A
 
 @[deprecated (since := "2026-07-09")]

@@ -151,7 +151,8 @@ theorem labelGraph_le (C : EdgeLabeling G K) {k : K} : C.labelGraph k ≤ G := b
   grind [labelGraph_adj]
 
 theorem pairwise_disjoint_labelGraph {C : EdgeLabeling G K} :
-    Pairwise fun k l ↦ Disjoint (C.labelGraph k) (C.labelGraph l) := by
+    Pairwise' fun k l ↦ Disjoint (C.labelGraph k) (C.labelGraph l) := by
+  rw [pairwise'_iff]
   intro _ _ h
   rw [disjoint_left]
   grind [labelGraph_adj]
@@ -159,7 +160,7 @@ theorem pairwise_disjoint_labelGraph {C : EdgeLabeling G K} :
 theorem pairwiseDisjoint_univ_labelGraph {C : EdgeLabeling G K} :
     Set.PairwiseDisjoint (@Set.univ K) C.labelGraph := by
   intro _ _ _ _ h
-  exact pairwise_disjoint_labelGraph h
+  exact pairwise'_apply pairwise_disjoint_labelGraph h
 
 theorem iSup_labelGraph (C : EdgeLabeling G K) : ⨆ k : K, C.labelGraph k = G := by
   ext x y

@@ -642,16 +642,16 @@ section Pairwise
 
 variable {s : Finset α}
 
-theorem pairwise_cons' {a : α} (ha : a ∉ s) (r : β → β → Prop) (f : α → β) :
-    Pairwise (r on fun a : s.cons a ha => f a) ↔
-    Pairwise (r on fun a : s => f a) ∧ ∀ b ∈ s, r (f a) (f b) ∧ r (f b) (f a) := by
-  simp only [pairwise_subtype_iff_pairwise_finset', Finset.coe_cons, Set.pairwise_insert]
+theorem pairwise'_cons' {a : α} (ha : a ∉ s) (r : β → β → Prop) (f : α → β) :
+    Pairwise' (r on fun a : s.cons a ha => f a) ↔
+    Pairwise' (r on fun a : s => f a) ∧ ∀ b ∈ s, r (f a) (f b) ∧ r (f b) (f a) := by
+  simp only [pairwise'_subtype_iff_pairwise_finset', Finset.coe_cons, Set.pairwise_insert]
   grind
 
-theorem pairwise_cons {a : α} (ha : a ∉ s) (r : α → α → Prop) :
-    Pairwise (r on fun a : s.cons a ha => a) ↔
-      Pairwise (r on fun a : s => a) ∧ ∀ b ∈ s, r a b ∧ r b a :=
-  pairwise_cons' ha r id
+theorem pairwise'_cons {a : α} (ha : a ∉ s) (r : α → α → Prop) :
+    Pairwise' (r on fun a : s.cons a ha => a) ↔
+      Pairwise' (r on fun a : s => a) ∧ ∀ b ∈ s, r a b ∧ r b a :=
+  pairwise'_cons' ha r id
 
 end Pairwise
 

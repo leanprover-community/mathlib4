@@ -184,7 +184,7 @@ theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field
 /-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : T2Space Gal(L/K) :=
-  { t2 := fun f g hfg => by
+  { t2 := fun f _ g _ hfg => by
       let φ := f⁻¹ * g
       obtain ⟨x, hx⟩ := DFunLike.exists_ne hfg
       have hφx : φ x ≠ x := by
@@ -223,7 +223,7 @@ section TotallySeparated
 instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
     TotallySeparatedSpace Gal(L/K) := by
   rw [totallySeparatedSpace_iff_exists_isClopen]
-  intro σ τ h_diff
+  intro σ _ τ _ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne, inv_mul_eq_one]
   rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
   let E := IntermediateField.adjoin K ({x} : Set L)

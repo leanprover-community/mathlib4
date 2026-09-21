@@ -371,13 +371,13 @@ section Pairwise
 
 variable {s : Finset α}
 
-theorem pairwise_subtype_iff_pairwise_finset' (r : β → β → Prop) (f : α → β) :
-    Pairwise (r on fun x : s => f x) ↔ (s : Set α).Pairwise (r on f) :=
-  pairwise_subtype_iff_pairwise_set (s : Set α) (r on f)
+theorem pairwise'_subtype_iff_pairwise_finset' (r : β → β → Prop) (f : α → β) :
+    Pairwise' (r on fun x : s => f x) ↔ (s : Set α).Pairwise (r on f) :=
+  pairwise'_subtype_iff_pairwise_set (s : Set α) (r on f)
 
-theorem pairwise_subtype_iff_pairwise_finset (r : α → α → Prop) :
-    Pairwise (r on fun x : s => x) ↔ (s : Set α).Pairwise r :=
-  pairwise_subtype_iff_pairwise_finset' r id
+theorem pairwise'_subtype_iff_pairwise_finset (r : α → α → Prop) :
+    Pairwise' (r on fun x : s => x) ↔ (s : Set α).Pairwise r :=
+  pairwise'_subtype_iff_pairwise_finset' r id
 
 end Pairwise
 

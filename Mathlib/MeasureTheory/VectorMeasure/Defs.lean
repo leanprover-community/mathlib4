@@ -56,7 +56,7 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
   /-- Non-measurable sets have measure zero -/
   not_measurable' ⦃i : Set α⦄ : ¬MeasurableSet i → measureOf' i = 0
   /-- The measure is σ-additive -/
-  m_iUnion' ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
+  m_iUnion' ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise' (Disjoint on f) →
     HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
 
 /-- A `SignedMeasure` is an `ℝ`-vector measure. -/

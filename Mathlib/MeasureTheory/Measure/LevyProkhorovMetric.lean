@@ -540,10 +540,10 @@ disjoint Borel measurable subsets of diameter at most ε that cover the whole sp
 lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 < ε) :
     ∃ (As : ℕ → Set Ω), (∀ n, MeasurableSet (As n)) ∧ (∀ n, Bornology.IsBounded (As n)) ∧
         (∀ n, diam (As n) ≤ ε) ∧ (⋃ n, As n = univ) ∧
-        (Pairwise (fun (n m : ℕ) ↦ Disjoint (As n) (As m))) := by
+        (Pairwise' (fun (n m : ℕ) ↦ Disjoint (As n) (As m))) := by
   cases isEmpty_or_nonempty Ω
   · refine ⟨fun _ ↦ ∅, fun _ ↦ MeasurableSet.empty, fun _ ↦ Bornology.isBounded_empty, ?_, ?_,
-            fun _ _ _ ↦ disjoint_of_subsingleton⟩
+            fun _ _ _ _ _ ↦ disjoint_of_subsingleton⟩
     · intro n
       simpa only [diam_empty] using ε_pos.le
     · subsingleton
@@ -592,7 +592,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
     refine ⟨N, ?_⟩
     have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ := by
       simpa only [mem_Iio, compl_Iio, mem_Ici] using
-        (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ Es_cover Es_disjoint (Iio N)).symm
+        (biUnion_compl_eq_of_pairwise'_disjoint_of_iUnion_eq_univ Es_cover Es_disjoint (Iio N)).symm
     simpa only [mem_Iio, ← rewr, gt_iff_lt] using hN N le_rfl
   -- With the finite `N` fixed above, consider the finite collection of open sets of the form
   -- `Gs J = thickening (ε/3) (⋃ j ∈ J, Es j)`, where `J ⊆ {0, 1, ..., N-1}`.
@@ -633,6 +633,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
       simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
                   exists_prop] at con
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
+      rw [pairwise'_iff] at Es_disjoint
       exact disjoint_left.mp (Es_disjoint (show j ≠ i by lia)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
     obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]

@@ -402,7 +402,7 @@ theorem disjoint_lift'_closure_nhds [T25Space X] {x y : X} :
 
 -- see Note [lower instance priority]
 instance (priority := 100) T25Space.t2Space [T25Space X] : T2Space X :=
-  t2Space_iff_disjoint_nhds.2 fun _ _ hne =>
+  t2Space_iff_disjoint_nhds.2 fun _ _ _ _ hne =>
     (disjoint_lift'_closure_nhds.2 hne).mono (le_lift'_closure _) (le_lift'_closure _)
 
 theorem exists_nhds_disjoint_closure [T25Space X] {x y : X} (h : x ≠ y) :
@@ -450,7 +450,7 @@ instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
   refine ⟨fun x y hne => ?_⟩
   rw [lift'_nhds_closure, lift'_nhds_closure]
   have : x ∉ closure {y} ∨ y ∉ closure {x} :=
-    (t0Space_iff_or_notMem_closure X).mp inferInstance hne
+    (pairwise'_apply <| (t0Space_iff_or_notMem_closure X).mp inferInstance) hne
   simp only [← disjoint_nhds_nhdsSet, nhdsSet_singleton] at this
   exact this.elim id fun h => h.symm
 
@@ -812,7 +812,9 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
 @[stacks 0900 "The Stacks entry proves profiniteness."]
 instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by
   -- Fix 2 distinct connected components, with points a and b
-  refine ⟨ConnectedComponents.surjective_coe.forall₂.2 fun a b ne => ?_⟩
+  refine ⟨?_⟩
+  rw [pairwise'_iff]
+  refine ConnectedComponents.surjective_coe.forall₂.2 fun a b ne => ?_
   rw [ConnectedComponents.coe_ne_coe] at ne
   have h := connectedComponent_disjoint ne
   -- write ↑b as the intersection of all clopen subsets containing it

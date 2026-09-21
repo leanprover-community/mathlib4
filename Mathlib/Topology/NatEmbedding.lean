@@ -27,25 +27,27 @@ variable (X : Type*) [TopologicalSpace X] [T2Space X] [Infinite X]
 /-- In an infinite Hausdorff topological space, there exists a sequence of pairwise disjoint
 infinite open sets. -/
 theorem exists_seq_infinite_isOpen_pairwise_disjoint :
-    ∃ U : ℕ → Set X, (∀ n, (U n).Infinite) ∧ (∀ n, IsOpen (U n)) ∧ Pairwise (Disjoint on U) := by
+    ∃ U : ℕ → Set X, (∀ n, (U n).Infinite) ∧ (∀ n, IsOpen (U n)) ∧ Pairwise' (Disjoint on U) := by
   suffices ∃ U : ℕ → Set X, (∀ n, (U n).Nonempty) ∧ (∀ n, IsOpen (U n)) ∧
-      Pairwise (Disjoint on U) by
+      Pairwise' (Disjoint on U) by
     rcases this with ⟨U, hne, ho, hd⟩
+    simp only [pairwise'_iff]
     refine ⟨fun n ↦ ⋃ m, U (.pair n m), ?_, fun _ ↦ isOpen_iUnion fun _ ↦ ho _, ?_⟩
     · refine fun n ↦ infinite_iUnion fun i j hij ↦ ?_
       suffices n.pair i = n.pair j by simpa
       apply hd.eq
       simpa [hij, onFun] using (hne _).ne_empty
-    · refine fun n n' hne ↦ disjoint_iUnion_left.2 fun m ↦ disjoint_iUnion_right.2 fun m' ↦ hd ?_
+    · rw [pairwise'_iff] at hd
+      refine fun n n' hne ↦ disjoint_iUnion_left.2 fun m ↦ disjoint_iUnion_right.2 fun m' ↦ hd ?_
       simp [hne]
   by_cases h : DiscreteTopology X
   · refine ⟨fun n ↦ {Infinite.natEmbedding X n}, fun _ ↦ singleton_nonempty _,
-      fun _ ↦ isOpen_discrete _, fun _ _ h ↦ ?_⟩
+      fun _ ↦ isOpen_discrete _, fun _ _ _ _ h ↦ ?_⟩
     simpa using h
   · simp only [discreteTopology_iff_nhds_ne, not_forall, ← ne_eq, ← neBot_iff] at h
     rcases h with ⟨x, hx⟩
     suffices ∃ U : ℕ → Set X, (∀ n, (U n).Nonempty ∧ IsOpen (U n) ∧ (U n)ᶜ ∈ 𝓝 x) ∧
-        Pairwise (Disjoint on U) by
+        Pairwise' (Disjoint on U) by
       rcases this with ⟨U, hU, hd⟩
       exact ⟨U, fun n ↦ (hU n).1, fun n ↦ (hU n).2.1, hd⟩
     have : Std.Symm (α := Set X) Disjoint := ⟨fun _ _ h ↦ h.symm⟩

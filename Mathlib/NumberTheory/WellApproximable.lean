@@ -326,8 +326,8 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
   let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ / 2)
   have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_closedBall
-  suffices ¬ Pairwise (Disjoint on B) by
-    obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise_disjoint this
+  suffices ¬ Pairwise' (Disjoint on B) by
+    obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise'_disjoint this
     refine ⟨j - i, ⟨le_tsub_of_add_le_left hij, ?_⟩, ?_⟩
     · simpa only [tsub_le_iff_right] using j.property.2.trans le_self_add
     · rw [sub_nsmul _ (Subtype.coe_le_coe.mpr hij.le), ← sub_eq_add_neg, ← dist_eq_norm]

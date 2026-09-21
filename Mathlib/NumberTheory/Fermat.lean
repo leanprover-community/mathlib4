@@ -111,8 +111,8 @@ theorem coprime_fermatNumber_fermatNumber {m n : ℕ} (hmn : m ≠ n) :
   exact (odd_fermatNumber _).not_two_dvd_nat (h_two ▸ h_n)
 
 lemma pairwise_coprime_fermatNumber :
-    Pairwise fun m n ↦ Coprime (fermatNumber m) (fermatNumber n) :=
-  fun _m _n ↦ coprime_fermatNumber_fermatNumber
+    Pairwise' fun m n ↦ Coprime (fermatNumber m) (fermatNumber n) :=
+  fun _ _ _ _ ↦ coprime_fermatNumber_fermatNumber
 
 open ZMod
 

@@ -137,6 +137,7 @@ theorem areaForm_le (x y : E) : ω x y ≤ ‖x‖ * ‖y‖ := by
 theorem abs_areaForm_of_orthogonal {x y : E} (h : ⟪x, y⟫ = 0) : |ω x y| = ‖x‖ * ‖y‖ := by
   rw [o.areaForm_to_volumeForm, o.abs_volumeForm_apply_of_pairwise_orthogonal]
   · simp [Fin.prod_univ_succ]
+  rw [pairwise'_iff]
   intro i j hij
   fin_cases i <;> fin_cases j
   · simp_all
@@ -331,6 +332,7 @@ def basisRightAngleRotation (x : E) (hx : x ≠ 0) : Basis (Fin 2) ℝ E :=
   @basisOfLinearIndependentOfCardEqFinrank ℝ _ _ _ _ _ _ _ ![x, J x]
     (linearIndependent_of_ne_zero_of_inner_eq_zero (fun i => by fin_cases i <;> simp [hx])
       (by
+        rw [pairwise'_iff]
         intro i j hij
         fin_cases i <;> fin_cases j <;> simp_all))
     (@Fact.out (finrank ℝ E = 2)).symm
