@@ -65,8 +65,9 @@ env:
   # The effective toolchain override. The dispatch input wins, then the
   # repository variable, then the repo pin.
   TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE || '' }}
-  # The scope prefix for every put and get in this workflow. It keeps these
-  # artifacts apart from the rest of the bucket.
+  # The base scope for every put and get in this workflow. It keeps these
+  # artifacts apart from the rest of the bucket. An override run appends its
+  # toolchain slug; see the plan step.
   SHADOW_SCOPE: mathlib4-master-shadow
   # Dependencies to exclude from caching, separated by spaces. It is empty:
   # the pipeline caches all of them. See "Dependency skip list" in
@@ -91,9 +92,11 @@ jobs:
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
-      # The toolchain slug keys the analysis chain. The upload job reads it
-      # from here rather than deriving it again.
+      # The toolchain slug keys the analysis chain, and the effective scope
+      # keys the bucket. The later jobs read both from here rather than
+      # deriving them again.
       tcslug: ${{ steps.plan.outputs.tcslug }}
+      scope: ${{ steps.plan.outputs.scope }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
@@ -106,7 +109,7 @@ jobs:
       STAGE_TARGETS: ${{ inputs.targets || 'Mathlib' }}
     defaults:
       run:
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env LAKE_ARTIFACT_CACHE --env STAGE_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env LAKE_ARTIFACT_CACHE --env STAGE_TARGETS --env CACHE_SCOPE -- bash -euxo pipefail {0}
     steps:
       - name: job info
         shell: bash -euo pipefail {0}
@@ -236,6 +239,19 @@ jobs:
           tcslug="$(printf %s "$(cat lean-toolchain)" | tr -c 'A-Za-z0-9._-' '-')"
           echo "TCSLUG=$tcslug" >> "$GITHUB_ENV"
           echo "tcslug=$tcslug" >> "$GITHUB_OUTPUT"
+          # A pinned run owns the base scope. An override run runs a commit on
+          # a second toolchain, and a commit keys the bucket, so the two would
+          # write each other's revision files. The slug gives the override its
+          # own namespace. It loses no hits: the analysis chain is already per
+          # toolchain, so an override run only ever warm starts from its own
+          # lineage.
+          scope="$SHADOW_SCOPE"
+          if [ -n "$TOOLCHAIN_OVERRIDE" ]; then
+            scope="$SHADOW_SCOPE/$tcslug"
+            echo "::notice::override run: writing to scope $scope"
+          fi
+          echo "CACHE_SCOPE=$scope" >> "$GITHUB_ENV"
+          echo "scope=$scope" >> "$GITHUB_OUTPUT"
           # `analysis/<tcslug>/_latest.txt` holds the mathlib sha of the
           # previous run on this toolchain. It returns 404 on a chain that has
           # never run, and that run has no warm start.
@@ -330,7 +346,7 @@ jobs:
             exit 0
           fi
           cd pr-branch
-          lake cache get --service=shadow --scope="$SHADOW_SCOPE" --rev="$CHAIN_PREV" \
+          lake cache get --service=shadow --scope="$CACHE_SCOPE" --rev="$CHAIN_PREV" \
             || echo "::warning::warm start from rev ${CHAIN_PREV:0:12} failed; proceeding without it"
 
       # The dependency half of the warm start. It reads the previous run's
@@ -347,7 +363,7 @@ jobs:
           cd pr-branch
           while read -r name rev; do
             lake cache get --service=shadow-deps-prev --package="$name" \
-              --scope="$SHADOW_SCOPE/$name" --rev="$rev" \
+              --scope="$CACHE_SCOPE/$name" --rev="$rev" \
               || echo "::warning::dep warm start missed for $name@${rev:0:12}; it will build from source"
           done < .lake/dep-plan/deps.txt
 
@@ -494,6 +510,7 @@ jobs:
       # service configuration" in `lake_cache_shadow.md`.
       LAKE_CONFIG: ${{ github.workspace }}/shadow-services.toml
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
+      CACHE_SCOPE: ${{ needs.build_and_stage.outputs.scope }}
     steps:
       - name: Write cache services config
         env:
@@ -567,7 +584,7 @@ jobs:
           # segment instead.
           lake cache put-staged ../lake-cache-staging \
             --service=shadow \
-            --scope="$SHADOW_SCOPE" \
+            --scope="$CACHE_SCOPE" \
             --rev="$MATHLIB_SHA" 2>&1 | tee /tmp/put.log
 
       # One upload per dependency, into `revisions/by-sha/<mathlib sha>/`.
@@ -594,7 +611,7 @@ jobs:
           while read -r name rev; do
             if lake cache put-staged "../lake-cache-staging/deps/$name" \
                 --service=shadow-deps \
-                --scope="$SHADOW_SCOPE/$name" \
+                --scope="$CACHE_SCOPE/$name" \
                 --rev="$rev" 2>&1 | tee -a /tmp/dep-put.log; then
               ok=$((ok+1))
             else
@@ -717,6 +734,7 @@ jobs:
       LAKE_ARTIFACT_CACHE: true
       LAKE_CACHE_DIR: .lake/cache
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
+      CACHE_SCOPE: ${{ needs.build_and_stage.outputs.scope }}
     steps:
       - name: Write cache services config
         env:
@@ -776,7 +794,7 @@ jobs:
           cd pr-branch
           lake cache get \
             --service=shadow \
-            --scope="$SHADOW_SCOPE" \
+            --scope="$CACHE_SCOPE" \
             --rev="$MATHLIB_SHA"
 
       # One fetch per dependency, from the set this run published under the
@@ -793,7 +811,7 @@ jobs:
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
             if lake cache get --service=shadow-deps --package="$name" \
-                --scope="$SHADOW_SCOPE/$name" --rev="$rev"; then
+                --scope="$CACHE_SCOPE/$name" --rev="$rev"; then
               hits=$((hits+1))
             else
               echo "::warning::dep cache miss for $name@${rev:0:12}; it will build from source"
@@ -891,6 +909,7 @@ jobs:
       MATHLIB_NO_CACHE_ON_UPDATE: "1"
       EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
+      CACHE_SCOPE: ${{ needs.build_and_stage.outputs.scope }}
       # `cache get` saves the revision file it fetched under this directory.
       LAKE_CACHE_DIR: .lake/cache
     steps:
@@ -975,9 +994,9 @@ jobs:
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
             if [ "$name" = mathlib ]; then
-              svc=shadow; scope="$SHADOW_SCOPE"
+              svc=shadow; scope="$CACHE_SCOPE"
             else
-              svc=shadow-deps; scope="$SHADOW_SCOPE/$name"
+              svc=shadow-deps; scope="$CACHE_SCOPE/$name"
             fi
             if lake cache get --service="$svc" --package="$name" --scope="$scope" --rev="$rev"; then
               hits=$((hits+1))

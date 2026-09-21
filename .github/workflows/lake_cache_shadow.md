@@ -134,16 +134,24 @@ and therefore in key, and both generations coexist.
 ## The scope
 
 Lake requires `--scope` or `--repo` on every put and get against a custom
-endpoint. The pipeline passes `mathlib4-master-shadow` for mathlib and
+endpoint. A pinned run passes `mathlib4-master-shadow` for mathlib and
 `mathlib4-master-shadow/<DEP>` for a dependency, which Lake uses verbatim. The
 prefix keeps this pipeline's artifacts apart from the rest of the bucket. The
 package segment gives each package its own artifact namespace, which bounds
 where a content hash is trusted.
 
+An override run appends its toolchain slug, so it writes to
+`mathlib4-master-shadow/<toolchain-slug>` and
+`mathlib4-master-shadow/<toolchain-slug>/<DEP>`. A commit keys the bucket, and
+an override run builds one commit on a second toolchain, so without the slug
+the two lanes would write each other's revision files. The slug costs the
+override run nothing: the analysis chain is already per toolchain, so an
+override run only ever warm starts from its own lineage.
+
 The scope carries no other qualifier. It needs no pin hash, because the
-revision endpoint already names the commit that pins the whole set. It needs no
-toolchain segment, because mathlib declares `fixedToolchain`, so one commit
-means one build.
+revision endpoint already names the commit that pins the whole set. A pinned
+run needs no toolchain segment, because mathlib declares `fixedToolchain`, so
+one commit means one build.
 
 `--repo=<owner>/<name>` would make Lake append the toolchain and the platform
 itself. A repo scope takes exactly one `/`, which leaves no room for the
@@ -204,14 +212,14 @@ against it. The first run on a toolchain has no lineage to start from, and
 costs one full source build of mathlib and its dependencies. A republished
 pr-release tag costs the same.
 
-The override is also the one case that breaks "a commit determines its
-toolchain". It runs one commit on a second toolchain, and both runs write that
-commit's keys. The later run wins, and the other lineage's next warm start
-fetches mappings that match nothing and rebuilds from source. Master moves
-between runs, so two lineages rarely land on one commit, but an override run
-given an explicit `mathlib_ref` can. A toolchain segment on the scope fixes
-this and orphans everything already in the bucket, so it belongs in a change of
-its own.
+The override is the one case that breaks "a commit determines its toolchain",
+which is why its scope carries the slug. Two lanes that shared a scope would
+write one commit's keys twice, and the later run would win. The other lineage's
+next warm start would then fetch mappings that match nothing and build mathlib
+from source. That build can exceed the job timeout, and the analysis pointer
+only advances after a successful upload, so the lineage would keep reading the
+same commit and keep failing. A run pinned to an explicit `mathlib_ref` reaches
+this state directly, which is the ordinary way to compare two toolchains.
 
 ## Dependency skip list
 
