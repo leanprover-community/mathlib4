@@ -164,9 +164,9 @@ theorem asq_pos : 0 < a * a :=
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem dz_val : ↑(d a1) = az a * az a - 1 :=
+theorem dz_val : ↑(d a1) = az a * az a - 1 := by
   have : 1 ≤ a * a := asq_pos a1
-  by rw [Pell.d, Int.ofNat_sub this]; rfl
+  rw [Pell.d, Int.ofNat_sub this]; rfl
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
