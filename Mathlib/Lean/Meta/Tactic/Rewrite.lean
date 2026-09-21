@@ -12,7 +12,7 @@ public meta import Lean.Meta.Tactic.Rewrite
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`
 -/
 
-@[expose] public meta section
+public meta section
 
 namespace Lean.Expr
 

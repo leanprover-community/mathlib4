@@ -26,7 +26,7 @@ whether this is the case.
 
 -/
 
-@[expose] public meta section
+public meta section
 
 namespace Lean.Meta
 

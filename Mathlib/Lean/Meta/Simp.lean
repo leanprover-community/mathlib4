@@ -15,7 +15,7 @@ public meta import Lean.Meta.DiscrTree
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
-@[expose] public meta section
+public meta section
 
 open Lean Elab.Tactic
 

@@ -12,7 +12,7 @@ public meta import Lean.PrettyPrinter.Delaborator.Basic
 # Additions to the delaborator
 -/
 
-@[expose] public meta section
+public meta section
 
 namespace Lean.PrettyPrinter.Delaborator
 

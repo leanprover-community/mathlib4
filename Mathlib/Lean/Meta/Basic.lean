@@ -15,7 +15,7 @@ public meta import Lean.Meta.Coe
 Likely these already exist somewhere. Pointers welcome.
 -/
 
-@[expose] public meta section
+public meta section
 
 /--
 Restore the metavariable context after execution.
