@@ -68,7 +68,7 @@ def normMatMulCore : Simp.Simproc := fun e => do
   let entries := (entriesList.map List.toArray).toArray
   let C := Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (entries[i]!)[j]!)
   let pf ← mkAppM ``ofLists_mul #[← mkEqTrans r.proof (← res.getProof)]
-  -- `ofLists` on the row lists unfolds to the `!![…]` literals
+  -- `ofLists` on the row lists unfolds to the `!![…]` literals.
   return .done { expr := C, proof? := some (mkExpectedPropHint pf q($e = $C)) }
 
 end Mathlib.Tactic.Matrix

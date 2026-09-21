@@ -38,8 +38,8 @@ namespace Mathlib.Tactic.Matrix
 with `closed`, only a literal without free variables or metavariables. -/
 def matchMatrixLit? (A : Expr) (closed := true) :
     MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
-  -- a literal with free variables (hypothesis- or let-bound) or metavariables is not evaluable
-  -- by a tactic computing with its entries; unfold or substitute such variables before calling it
+  -- A literal with free variables (hypothesis- or let-bound) or metavariables is not evaluable
+  -- by a tactic computing with its entries; unfold or substitute such variables before calling it.
   if closed && (A.hasFVar || A.hasMVar) then return none
   let_expr Matrix finM finN R := ← inferType A | return none
   let_expr Fin mE := finM | return none

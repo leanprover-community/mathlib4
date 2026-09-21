@@ -29,8 +29,8 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Matrix
 
--- the classes are parameters so that every quotation references the one instance term the
--- caller synthesised, rather than rebuilding a projection path in every cell
+-- The classes are parameters so that every quotation references the one instance term the
+-- caller synthesised, rather than rebuilding a projection path in every cell.
 variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
 
 /-- Construct a proof term that `[a₀, …] = [b₀, …]` in `List α` from proofs of `aᵢ = bᵢ`.
@@ -76,7 +76,7 @@ where
     | a :: as, b :: bs =>
       let ⟨n, l₁, l₂, fold, h⟩ := go as bs
       ⟨q($n + 1), q($a :: $l₁), q($b :: $l₂), q($a * $b + $fold),
-        q(ListMatrix.dotProduct_succ_cons_cons $a $b $h)⟩
+        q(ListMatrix.dotProduct_add_one_cons_cons $a $b $h)⟩
     | _, _ => ⟨q(0), q([]), q([]), q(0), q(ListMatrix.dotProduct_zero [] [])⟩
 
 /-- The expansion of the product `ListMatrix.mul l m n A B` of two list literals with the

@@ -45,7 +45,8 @@ theorem dotProduct_zero [Mul α] [Add α] [Zero α] (l₁ l₂ : List α) : dotP
 /- This is shaped to take the proof for the smaller dot product as an argument to produce a
 smaller proof term for the kernel check, as this avoids requiring `Eq.trans` and `congrArg` glue
 at each step. -/
-theorem dotProduct_succ_cons_cons [Mul α] [Add α] [Zero α] {n : Nat} (a b : α) {l₁ l₂ : List α}
+theorem dotProduct_add_one_cons_cons [Mul α] [Add α] [Zero α] {n : Nat} (a b : α)
+    {l₁ l₂ : List α}
     {c : α} (h : dotProduct n l₁ l₂ = c) : dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + c :=
   congrArg (a * b + ·) h
 
