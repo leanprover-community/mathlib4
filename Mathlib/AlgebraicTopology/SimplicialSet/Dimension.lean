@@ -73,7 +73,6 @@ namespace Subcomplex
 
 variable {X : SSet.{u}}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (d : ℕ) [X.HasDimensionLT d] (A : X.Subcomplex) : HasDimensionLT A d where
   degenerate_eq_top (n : ℕ) (hd : d ≤ n) := by
     ext x
@@ -92,7 +91,6 @@ lemma eq_top_iff_of_hasDimensionLT (A : X.Subcomplex) (d : ℕ) [X.HasDimensionL
 
 end Subcomplex
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_mono {X Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (d : ℕ)
     [Y.HasDimensionLT d] : X.HasDimensionLT d where
   degenerate_eq_top n hn := by
