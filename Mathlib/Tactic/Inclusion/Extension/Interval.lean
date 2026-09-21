@@ -364,48 +364,35 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
   unfold Interval.pow
   split_ifs with h0 hsign hneg
   · simp [h0, Interval.singleton, Interval.map, map_one]
-  · rw [Interval.map_map, Interval.mem_map_iff]
-    simp only [Function.comp_apply, map_pow]
-    have hsign : Odd n ∨ 0 ≤ I.lb := by simpa [Nat.odd_iff] using hsign
-    rcases hsign with hn | hpos
+  · simp only [Interval.map_map, Interval.mem_map_iff, Function.comp_apply, map_pow]
+    obtain hn | hpos : Odd n ∨ 0 ≤ I.lb := by simpa [Nat.odd_iff] using hsign
     · simpa [hn.pow_le_pow] using And.intro hl hu
     · have hx0 : 0 ≤ x := by
         simpa [map_zero] using (f.monotone.withBot_map hpos).trans hx.1
-      constructor
-      · intro a ha
-        apply pow_le_pow_left₀ _ (hl _ ha) n
+      constructor <;> intro a ha
+      · apply pow_le_pow_left₀ _ (hl _ ha) n
         simpa [ha, map_zero] using f.monotone.withBot_map hpos
-      · intro a ha
-        exact pow_le_pow_left₀ hx0 (hu _ ha) n
-  · obtain ⟨hn, _⟩ : Even n ∧ ¬0 ≤ I.lb := by
-      simpa [← Nat.odd_iff] using hsign
-    have hx0 : x ≤ 0 := by
-      simpa [map_zero] using hx.2.trans (f.monotone.withTop_map hneg)
+      · exact pow_le_pow_left₀ hx0 (hu _ ha) n
+  all_goals
+    obtain ⟨hn, _⟩ : Even n ∧ ¬0 ≤ I.lb := by simpa [← Nat.odd_iff] using hsign
+  · obtain ⟨ub, hub, hub0⟩ := WithTop.le_coe_iff.mp hneg
+    have hub0 : f ub ≤ 0 := by simpa [map_zero] using f.monotone hub0
     constructor
-    · cases h : I.ub with
-      | top => simp [h] at hneg
-      | coe ub =>
-        apply WithBot.coe_le_coe.mpr
-        rw [map_pow]
-        apply hn.pow_le_pow_of_nonpos _ (hu _ h)
-        simpa [h, map_zero] using f.monotone.withTop_map hneg
+    · simpa [hub, Interval.map, WithBot.some_eq_coe, map_pow] using
+        hn.pow_le_pow_of_nonpos hub0 (hu _ hub)
     · cases h : I.lb with
       | bot => exact le_top
       | coe lb =>
-        apply WithTop.coe_le_coe.mpr
-        rw [map_pow]
-        exact hn.pow_le_pow_of_nonpos hx0 (hl _ h)
-  · obtain ⟨hn, _⟩ : Even n ∧ ¬0 ≤ I.lb := by
-      simpa [← Nat.odd_iff] using hsign
-    constructor
+        simpa [Interval.map, WithTop.some_eq_coe, map_pow] using
+          hn.pow_le_pow_of_nonpos ((hu _ hub).trans hub0) (hl _ h)
+  · constructor
     · simpa [Interval.map, map_zero] using hn.pow_nonneg x
     · rcases I with ⟨_ | lb, _ | ub⟩ <;> try exact le_top
       apply WithTop.coe_le_coe.mpr
       rw [map_pow, f.monotone.map_max, map_neg, ← hn.pow_abs x]
       apply pow_le_pow_left₀ (abs_nonneg x)
-      exact abs_le'.mpr
-        ⟨(hu _ rfl).trans (le_max_right _ _),
-          (neg_le_neg (hl _ rfl)).trans (le_max_left _ _)⟩
+      rw [abs_le']
+      simp [le_max_iff, hl _ rfl, hu _ rfl]
 
 /-- Check if `r x y` is false is implied by `x ∈ I` and `y ∈ J` -/
 def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
