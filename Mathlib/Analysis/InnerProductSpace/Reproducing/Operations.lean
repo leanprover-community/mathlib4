@@ -220,12 +220,11 @@ instance : CompleteSpace (smulSpace H c) := if h : c = 0 then (by rw [h]; infer_
 theorem kerFun_eq (x : X) (v : V) :
     kerFun (smulSpace H c) x v = if h : c = 0 then 0 else
       (equiv H h).symm (starRingEnd 𝕜 c • kerFun H x v) := by
-  rw [ext_iff_inner_right (𝕜 := 𝕜)]
+  refine ext_inner_right 𝕜 fun v ↦ ?_
   simp_rw [kerFun_def, coeCLM]
   by_cases h : c = 0
   · simp [h]
-  · intro u
-    simp [h, ContinuousLinearMap.adjoint_inner_left, inner_smul_left, inner_smul_right,
+  · simp [h, ContinuousLinearMap.adjoint_inner_left, inner_smul_left, inner_smul_right,
       LinearIsometryEquiv.inner_map_eq_flip]
 
 theorem kernel_smul_eq_norm_sq_smul_kernel :
