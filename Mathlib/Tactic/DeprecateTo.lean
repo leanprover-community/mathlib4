@@ -48,7 +48,7 @@ open Lean Elab Term Command
 def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := none) :
     CommandElabM (TSyntax `command) := do
   let dat ← dat.getDM (toString <$> Std.Time.PlainDate.now)
-  let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
+  let nd := Syntax.mkStrLit dat
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
 /-- Returns the array of names that are in `new` but not in `old`. -/
