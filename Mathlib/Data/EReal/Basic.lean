@@ -302,11 +302,19 @@ theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
   rfl
 
+/-- The additive homomorphism from `ℝ` to `EReal`. -/
+def _root_.Real.toERealAddHom : ℝ →+ EReal where
+  toFun := Real.toEReal
+  map_zero' := coe_zero
+  map_add' := coe_add
+
+@[simp] lemma _root_.Real.coe_toERealAddHom : ⇑Real.toERealAddHom = Real.toEReal := rfl
+
 -- `coe_mul` moved up
 
 @[norm_cast]
 theorem coe_nsmul (n : ℕ) (x : ℝ) : (↑(n • x) : EReal) = n • (x : EReal) :=
-  map_nsmul (⟨⟨Real.toEReal, coe_zero⟩, coe_add⟩ : ℝ →+ EReal) _ _
+  map_nsmul Real.toERealAddHom _ _
 
 @[simp, norm_cast]
 theorem coe_eq_zero {x : ℝ} : (x : EReal) = 0 ↔ x = 0 :=
@@ -782,8 +790,10 @@ lemma toENNReal_lt_toENNReal {x y : EReal} (hx : 0 ≤ x) (hxy : x < y) :
 
 theorem coe_coe_eq_natCast (n : ℕ) : (n : ℝ) = (n : EReal) := rfl
 
+@[simp]
 theorem natCast_ne_bot (n : ℕ) : (n : EReal) ≠ ⊥ := Ne.symm (ne_of_beq_false rfl)
 
+@[simp]
 theorem natCast_ne_top (n : ℕ) : (n : EReal) ≠ ⊤ := Ne.symm (ne_of_beq_false rfl)
 
 @[norm_cast]
