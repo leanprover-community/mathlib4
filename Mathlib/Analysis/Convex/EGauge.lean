@@ -324,13 +324,13 @@ lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) :
       gcongr
       simpa [Real.toNNReal_le_iff_le_coe] using hy
 
-lemma le_egauge_closedBall_one (x : E) : (p x).toNNReal ≤ egauge 𝕜 (p.closedBall 0 1) x := by
+lemma le_egauge_unitClosedBall (x : E) : (p x).toNNReal ≤ egauge 𝕜 (p.closedBall 0 1) x := by
   simpa using div_le_egauge_closedBall p 1 x
 
 lemma div_le_egauge_ball (r : ℝ≥0) (x : E) : (p x).toNNReal / r ≤ egauge 𝕜 (p.ball 0 r) x :=
   (div_le_egauge_closedBall p r x).trans <| egauge_anti _ (p.ball_subset_closedBall _ _) _
 
-lemma le_egauge_ball_one (x : E) : (p x).toNNReal ≤ egauge 𝕜 (p.ball 0 1) x := by
+lemma le_egauge_unitBall (x : E) : (p x).toNNReal ≤ egauge 𝕜 (p.ball 0 1) x := by
   simpa using div_le_egauge_ball p 1 x
 
 variable {c : 𝕜} {x : E} {r : ℝ≥0}
@@ -361,7 +361,7 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ p x �
           have hr' : r ≠ 0 := by positivity
           simp [ENNReal.coe_div hr', enorm_eq_nnnorm]
 
-lemma egauge_ball_one_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
+lemma egauge_unitBall_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (p.ball 0 1) x ≤ ‖c‖ₑ * (p x).toNNReal := by
   simpa using p.egauge_ball_le_of_one_lt_norm hc (.inl one_ne_zero)
 
@@ -374,13 +374,13 @@ variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   simpa [enorm_eq_nnnorm] using (normSeminorm 𝕜 E).div_le_egauge_closedBall r x
 
-lemma le_egauge_closedBall_one (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (closedBall 0 1) x := by
+lemma le_egauge_unitClosedBall (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (closedBall 0 1) x := by
   simpa using div_le_egauge_closedBall 𝕜 1 x
 
 lemma div_le_egauge_ball (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (ball 0 r) x :=
   (div_le_egauge_closedBall 𝕜 r x).trans <| egauge_anti _ ball_subset_closedBall _
 
-lemma le_egauge_ball_one (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (ball 0 1) x := by
+lemma le_egauge_unitBall (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (ball 0 1) x := by
   simpa using div_le_egauge_ball 𝕜 1 x
 
 variable {𝕜}
@@ -390,7 +390,7 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x�
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖ₑ * ‖x‖ₑ / r := by
   simpa [enorm_eq_nnnorm] using (normSeminorm 𝕜 E).egauge_ball_le_of_one_lt_norm hc h₀
 
-lemma egauge_ball_one_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
+lemma egauge_unitBall_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (ball 0 1) x ≤ ‖c‖ₑ * ‖x‖ₑ := by
   simpa using egauge_ball_le_of_one_lt_norm hc (.inl one_ne_zero)
 
