@@ -165,11 +165,8 @@ lemma CommShift.of_isRightDerivedFunctor [τ.CommShift A] {τ' : RF₁ ⟶ RF₂
     Functor.rightDerived_ext _ (precomposeShiftNatTrans RF₁ α₁ _) W _ _ _ (by
       ext X
       replace h := NatTrans.congr_app h
-      dsimp at h
-      simp only [Functor.comp_obj, Functor.whiskerLeft_comp, comp_app, precomposeShiftNatTrans_app,
-        Functor.whiskerLeft_app, Functor.whiskerRight_app, Category.assoc,
-        Functor.whiskerLeft_twice, Functor.associator_inv_app, Functor.associator_hom_app,
-        Category.id_comp, naturality_assoc]
+      dsimp at h ⊢
+      simp only [precomposeShiftNatTrans_app, Category.assoc, naturality_assoc]
       calc
         _ = (F₁.commShiftIso a).hom.app X ≫ (τ.app X)⟦a⟧' ≫ (α₂.app X)⟦a⟧' := by
           simp [NatTrans.app_shift_assoc α₁, h,

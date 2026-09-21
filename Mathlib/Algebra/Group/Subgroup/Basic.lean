@@ -414,7 +414,7 @@ alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
 theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg
   rw [mem_normalizer_iff_conj_image_eq] at hg
-  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_coe, hg]
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_ofClass, hg]
 
 variable {H}
 
