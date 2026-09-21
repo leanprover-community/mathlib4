@@ -69,6 +69,14 @@ def deindentString (currIndent : Nat) (docString : String) : String :=
   let indent : String := String.ofList ('\n' :: List.replicate currIndent ' ')
   docString.replace indent " "
 
+/--
+Replace every non-whitespace character of `s` by `c`, preserving the byte length of `s`.
+`c` should be an ASCII character.
+-/
+def blankOut (c : Char) (s : String) : String :=
+  s.foldl (init := "") fun acc ch =>
+    if ch.isWhitespace then acc.push ch else acc.pushn c ch.utf8Size
+
 open Command Parser in
 /--
 Try to parse `docComment` as a Verso docstring, and report any parse errors.
@@ -113,11 +121,14 @@ elaborated).
 -/
 def lintVersoSyntax (docComment : String) (fileName : Option String := none) :
     CommandElabM (Array (String.Pos.Raw × SyntaxStack × Error)) := do
+  -- The replacements below preserve the byte length of the docstring, so that the positions of
+  -- the parse errors are positions in `docComment`.
   -- Drop anything that looks like an autolink: this is not supported by Verso. Adding full links
   -- everywhere would be very noisy.
   let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
     docComment.splitInclusive Char.isWhitespace |>.map fun str =>
-      if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then "URL"
+      if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then
+        blankOut 'U' str.toString
       else str.toString
   -- Drop anything between LaTeX `$$`s.
   -- We keep single `$`s, since those also occur in `backquoted` code snippets (e.g. as `· <$> ·`),
@@ -125,9 +136,31 @@ def lintVersoSyntax (docComment : String) (fileName : Option String := none) :
   let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
     trimmedStr.split "$$"
       |>.zip (0...docComment.length).iter
-      |>.map fun (str, i) => if i % 2 == 0 then str.toString else "LaTeX"
+      |>.map fun (str, i) =>
+        -- The `LL`s stand in for the two `$$` delimiters that `split` removed.
+        if i % 2 == 0 then str.toString else "LL" ++ blankOut 'L' str.toString ++ "LL"
   let errs ← checkVersoSyntax trimmedStr fileName
   return errs.filter fun (_, _, err) => !isSilencedVersoWarning err
+
+open Command Parser in
+/--
+Log the Verso parse errors `errs` found in the text of the doc-string `docStx` (a `docComment` or
+`moduleDoc` node), at their positions in the file.
+
+The positions in `errs` are relative to the text of the doc-string, which starts at the second
+child of `docStx`. Each error is reported on the range from the start of the syntax that Verso was
+parsing when it failed to the position of the failure.
+-/
+def logVersoErrors (docStx : Syntax) (errs : Array (String.Pos.Raw × SyntaxStack × Error)) :
+    CommandElabM Unit := do
+  for (pos, stxStack, err) in errs do
+    let ref := match docStx[1].getPos? with
+      | some start =>
+        let stop := start.offsetBy pos
+        let first := (stxStack.back.getPos?.map start.offsetBy).getD stop
+        .ofRange ⟨if first ≤ stop then first else stop, stop⟩
+      | none => stxStack.back
+    Linter.logLint linter.style.docStringVerso ref m!"{err}"
 
 namespace Style
 
@@ -185,9 +218,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- If Verso is already enabled for docstrings, then this check would be superfluous.
     if !doc.verso.get (← getOptions) &&
         getLinterValue linter.style.docStringVerso (← getLinterOptions) then do
-      let errs ← lintVersoSyntax docString
-      for (pos, stxStack, err) in errs do
-        Linter.logLint linter.style.docStringVerso stxStack.back m!"{err}"
+      logVersoErrors docStx (← lintVersoSyntax docString)
 
 initialize addLinter docStringLinter
 
@@ -208,9 +239,7 @@ def moduleDocVersoLinter : Linter where run := withSetOptionIn fun stx ↦ do
   | _ => none) | return
   try
     let docString ← getDocStringText ⟨moduleDoc⟩
-    let errs ← lintVersoSyntax docString
-    for (pos, stxStack, err) in errs do
-      Linter.logLint linter.style.docStringVerso stxStack.back m!"{err}"
+    logVersoErrors moduleDoc (← lintVersoSyntax docString)
   catch _ => return
 
 initialize addLinter moduleDocVersoLinter
