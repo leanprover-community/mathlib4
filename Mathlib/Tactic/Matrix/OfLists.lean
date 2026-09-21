@@ -39,6 +39,8 @@ namespace Mathlib.Tactic.Matrix
 
 variable {α : Type*}
 
+-- TODO: when `!![…]` elaborates to a list or array literal, define the matrix from that literal
+-- directly (`Matrix.ofArray` or its list form) and drop `ofList` and `ofLists`.
 /-- Construct a vector from the first `n` elements of a list, padded with `0`. -/
 def ofList [Zero α] : (n : ℕ) → List α → Fin n → α
   | 0, _ => ![]
