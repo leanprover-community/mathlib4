@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Extended non-negative reals

@@ -6,8 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.NumberTheory.Padics.Measure.Basic
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Distributions on a topological monoid

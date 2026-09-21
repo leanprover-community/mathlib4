@@ -11,7 +11,6 @@ public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Bornology.Basic
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Pseudo-metric spaces

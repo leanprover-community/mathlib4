@@ -12,6 +12,7 @@ public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.SetTheory.Cardinal.Subfield
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Adjoining Elements to Fields

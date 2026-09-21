@@ -6,9 +6,12 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Tactic.Basify.Attr
-public import Mathlib.Tactic.Cases
 public import Mathlib.Util.AtomM
 public meta import Lean.Meta.Tactic.Generalize
+public import Lean.Elab.Tactic.Induction
+public meta import Lean.Elab.Tactic.Induction
+public meta import Mathlib.Tactic.Basify.Attr
+public meta import Mathlib.Util.AtomM
 
 /-!
 # The `basify` tactic

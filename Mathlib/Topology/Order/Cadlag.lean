@@ -5,8 +5,11 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.Topology.Order.LeftRightLim
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-! # Càdlàg functions
 

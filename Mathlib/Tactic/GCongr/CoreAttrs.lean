@@ -5,6 +5,6 @@ Authors: Yury Kudryashov, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Init
 
 deprecated_module "use Mathlib.Tactic.GCongr instead" (since := "2026-09-09")
