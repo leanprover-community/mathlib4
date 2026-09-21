@@ -58,7 +58,7 @@ lemma isSymmetric_toEuclideanLin_iff [Fintype n] [DecidableEq n] :
   isSymmetric_toLin_iff (EuclideanSpace.basisFun n 𝕜)
 
 @[deprecated isSymmetric_toEuclideanLin_iff "use isSymmetric_toEuclideanLin_iff.symm"
-  (since := "2026-03-30")]
+  +typeChanged (since := "2026-03-30")]
 lemma isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := isSymmetric_toEuclideanLin_iff.symm
 

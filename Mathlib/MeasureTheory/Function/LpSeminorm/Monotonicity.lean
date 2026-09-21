@@ -253,8 +253,8 @@ theorem AEEqFun.eLpNorm_star {p : ℝ≥0∞} {f : α →ₘ[μ] R} : eLpNorm (s
     eLpNorm f p μ :=
   (eLpNorm_congr_ae (coeFn_star f)).trans <| MeasureTheory.eLpNorm_star
 
-protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ :=
-  by simpa [MemLp, eLpNorm_star] using hf
+protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ := by
+  simpa [MemLp, eLpNorm_star] using hf
 
 end Star
 
