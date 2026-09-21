@@ -227,7 +227,8 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     (φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A) {f : C(S, R)} (h : QuasispectrumRestricts a f) :
     C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
   (φ.restrictScalars R).comp <|
-    (nonUnitalStarAlgHom_postcomp (σₙ S a) (StarAlgHom.ofId R S) (algebraMapCLM R S).continuous)
+    (nonUnitalStarAlgHom_postcomp (σₙ S a) (StarAlgHom.ofId R S).toNonUnitalStarAlgHom
+        (algebraMapCLM R S).continuous)
       |>.comp <| nonUnitalStarAlgHom_precomp R
         ⟨⟨Subtype.map f h.subset_preimage, (map_continuous f).subtype_map
           fun x (hx : x ∈ σₙ S a) => h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩

@@ -138,7 +138,7 @@ lemma affineSpan_singleton (x : P) : affineSpan k ({x} : Set P) = {x} := by
   simp [← vsub_right_mem_direction_iff_mem (mem_affineSpan k _) _, direction_affineSpan]
 
 /-- The affine span of a single point, coerced to a set, contains just that point. -/
-@[deprecated affineSpan_singleton (since := "2026-09-01")]
+@[deprecated affineSpan_singleton +typeChanged (since := "2026-09-01")]
 theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
   simp
 
@@ -201,7 +201,7 @@ theorem direction_lt_of_nonempty {s₁ s₂ : AffineSubspace k P} (h : s₁ < s�
   obtain ⟨p, hp⟩ := hn
   rw [lt_iff_le_and_exists] at h
   rcases h with ⟨hle, p₂, hp₂, hp₂s₁⟩
-  rw [SetLike.lt_iff_le_and_exists]
+  rw [IsConcreteLE.lt_iff_le_and_exists]
   use direction_le hle, p₂ -ᵥ p, vsub_mem_direction hp₂ (hle hp)
   intro hm
   rw [vsub_right_mem_direction_iff_mem hp p₂] at hm

@@ -6,11 +6,11 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Action.End
-public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -231,8 +231,8 @@ lemma pow_subset {H : Subgroup G} {n : ℕ} (hs : s ⊆ H) : s ^ n ⊆ H := by
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
-    (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
-      (SetLike.le_def.mp le_sup_right <| subset_closure ht)
+    (closure S ⊔ closure T).mul_mem (mem_of_le_of_mem le_sup_left <| subset_closure hs)
+      (mem_of_le_of_mem le_sup_right <| subset_closure ht)
 
 @[to_additive]
 lemma closure_pow_le {n : ℕ} : closure (s ^ n) ≤ closure s := by simp
