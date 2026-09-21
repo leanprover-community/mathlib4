@@ -260,6 +260,40 @@ theorem Interval.sub_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrdere
   rw [_root_.sub_eq_add_neg, Interval.sub_eq_add_neg]
   exact Interval.add_mem f hx (Interval.neg_mem f hy)
 
+/- For correctness proofs, replace a missing endpoint by a finite bound containing the particular
+value being considered. These bounds retain the weak sign inequalities needed by the operation's
+branches; they do not replace the computational interval. -/
+
+/-- Complete a missing lower endpoint by `min x 0` for a proof about `x`. -/
+private def lowerBound [Zero β] [LinearOrder β] (f : α → β) (lb : WithBot α) (x : β) : β :=
+  (lb.map f).unbotD (min x 0)
+
+private theorem lowerBound_le [Zero β] [LinearOrder β] (f : α → β) (lb : WithBot α)
+    (x : β) (h : lb.map f ≤ x) : lowerBound f lb x ≤ x :=
+  (WithBot.unbotD_le_iff fun _ => min_le_left x 0).mpr h
+
+private theorem lowerBound_nonneg [Zero α] [LinearOrder α] [Zero β] [LinearOrder β]
+    (f : α ↪o β) (map_zero : f 0 = 0) (lb : WithBot α) (x : β) (h : 0 ≤ lb) :
+    0 ≤ lowerBound f lb x := by
+  cases lb with
+  | bot => simp at h
+  | coe lb => simpa [lowerBound, ← map_zero] using h
+
+/-- Complete a missing upper endpoint by `max x 0` for a proof about `x`. -/
+private def upperBound [Zero β] [LinearOrder β] (f : α → β) (ub : WithTop α) (x : β) : β :=
+  (ub.map f).untopD (max x 0)
+
+private theorem le_upperBound [Zero β] [LinearOrder β] (f : α → β) (ub : WithTop α)
+    (x : β) (h : x ≤ ub.map f) : x ≤ upperBound f ub x :=
+  (WithTop.le_untopD_iff fun _ => le_max_left x 0).mpr h
+
+private theorem upperBound_nonpos [Zero α] [LinearOrder α] [Zero β] [LinearOrder β]
+    (f : α ↪o β) (map_zero : f 0 = 0) (ub : WithTop α) (x : β) (h : ub ≤ 0) :
+    upperBound f ub x ≤ 0 := by
+  cases ub with
+  | top => simp at h
+  | coe ub => simpa [upperBound, ← map_zero] using h
+
 /-- Multiply two finite or infinite interval bounds. -/
 def Interval.mulBound [Mul α] [Zero α] [DecidableEq α] :
     Option α → Option α → Option α
