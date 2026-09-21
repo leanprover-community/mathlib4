@@ -155,6 +155,10 @@ def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [IsCommMonObj G] [GrpObj H] [IsCom
 
 section
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable {G H : CommGrp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
   (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch)
 

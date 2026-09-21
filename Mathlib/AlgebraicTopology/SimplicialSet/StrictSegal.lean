@@ -120,6 +120,10 @@ lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _⦋m⦌ₙ
 
 section autoParam
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable (m : ℕ) (h : m ≤ n + 1 := by lia)
 
 set_option backward.privateInPublic true in

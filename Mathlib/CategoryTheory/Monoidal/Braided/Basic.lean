@@ -494,6 +494,10 @@ def fullyFaithfulForget : (forget (C := C) (D := D)).FullyFaithful :=
 
 section
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable {F G : LaxBraidedFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f := by
       cat_disch)
