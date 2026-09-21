@@ -221,7 +221,7 @@ protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
   ext
   simp only [map,
-    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
+    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_ofClass]
   exact Eq.symm (RingHom.map_det f g.1)
 
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
@@ -295,6 +295,22 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 
 @[simp]
 lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R) = g := rfl
+
+lemma range_toGL_eq_ker_det :
+    (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
+  ext A
+  simp only [MonoidHom.mem_range, MonoidHom.mem_ker]
+  refine ⟨fun ⟨g, hg⟩ ↦ by simp [← hg], fun hA ↦ ⟨⟨A, ?_⟩, by ext; rfl⟩⟩
+  rw [← GeneralLinearGroup.val_det_apply, hA, Units.val_one]
+
+/-- `Matrix.SpecialLinearGroup` is isomorphic to `GeneralLinearGroup.det.ker`. -/
+@[simps]
+def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
+  toFun g := ⟨toGL g, coeToGL_det g⟩
+  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.2⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
+  map_mul' _ _ := by ext; rfl
 
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over

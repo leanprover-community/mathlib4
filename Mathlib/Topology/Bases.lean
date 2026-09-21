@@ -255,7 +255,7 @@ protected lemma _root_.Topology.IsInducing.isTopologicalBasis [TopologicalSpace 
     convert! (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
     aesop
 
-@[deprecated Topology.IsInducing.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated Topology.IsInducing.isTopologicalBasis +typeChanged (since := "2026-08-21")]
 protected lemma IsTopologicalBasis.isInducing [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
     (hf : IsInducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
   hf.isTopologicalBasis h
@@ -766,7 +766,7 @@ theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x
   subseq_tendsto_of_neBot hx
 
 @[deprecated MapClusterPt.tendsto_subseq (since := "2026-03-29")]
-theorem FirstCountableTopology.tendsto_subseq {u : ℕ → α} {x : α}
+theorem FirstCountableTopology.tendsto_subseq {x : α} {u : ℕ → α}
     (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 
@@ -1132,7 +1132,7 @@ theorem _root_.IsOpenQuotientMap.isTopologicalBasis (h : IsOpenQuotientMap π)
   · rintro - ⟨⟨s, hs, rfl⟩, hxs⟩
     exact h.isOpenMap s (hV.isOpen hs) |>.mem_nhds hxs
 
-@[deprecated IsOpenQuotientMap.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated IsOpenQuotientMap.isTopologicalBasis +typeChanged (since := "2026-08-21")]
 theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
     (h' : IsQuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) :=
   IsOpenQuotientMap.isTopologicalBasis (.of_isOpenMap_isQuotientMap h h') hV
@@ -1145,7 +1145,8 @@ theorem _root_.Topology.IsOpenQuotientMap.secondCountableTopology [SecondCountab
     exact ⟨Set.image π '' V, V_countable.image (Set.image π),
       (h.isTopologicalBasis V_generates).eq_generateFrom⟩
 
-@[deprecated IsOpenQuotientMap.isTopologicalBasis (since := "2026-08-21")]
+@[deprecated Topology.IsOpenQuotientMap.secondCountableTopology +typeChanged
+  (since := "2026-08-21")]
 theorem _root_.Topology.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
     (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y :=
   IsOpenQuotientMap.secondCountableTopology ⟨h'.surjective, h'.continuous, h⟩
