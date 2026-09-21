@@ -24,6 +24,15 @@ type represents a possibly unbounded interval with closed endpoints.
 
 namespace Inclusion
 
+-- local `grind` rules
+attribute [local grind unfold] WithBot.some WithTop.some
+attribute [local grind norm ←] WithBot.coe_zero WithTop.coe_zero
+  WithBot.none_eq_bot WithTop.none_eq_top
+attribute [local grind norm] WithBot.coe_le_coe WithTop.coe_le_coe
+attribute [local grind =] WithBot.coe_le_iff WithTop.le_coe_iff
+
+local grind_pattern OrderEmbedding.le_iff_le => a ≤ b, f a, f b
+
 variable {α β : Type*}
 
 /-- An `Interval` represents a possibly unbounded interval with closed endpoints. -/
@@ -47,21 +56,12 @@ theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
 def Interval.map (I : Interval α) (f : α → β) : Interval β :=
   ⟨WithBot.map f I.lb, WithTop.map f I.ub⟩
 
-@[grind =]
+@[grind =, local grind norm]
 theorem Interval.mem_map_iff [Preorder β] (f : α → β) {x : β} {I : Interval α} :
     x ∈ I.map f ↔ (∀ a : α, I.lb = ↑a → f a ≤ x) ∧
       (∀ a : α, I.ub = ↑a → x ≤ f a) := by
   simp [Interval.map, WithBot.le_coe_iff, WithTop.coe_le_iff,
     WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
-
--- local `grind` rules
-attribute [local grind unfold] WithBot.some WithTop.some
-attribute [local grind norm ←] WithBot.coe_zero WithTop.coe_zero
-  WithBot.none_eq_bot WithTop.none_eq_top
-attribute [local grind norm] WithBot.coe_le_coe WithTop.coe_le_coe Interval.mem_map_iff
-attribute [local grind =] WithBot.coe_le_iff WithTop.le_coe_iff
-
-local grind_pattern OrderEmbedding.le_iff_le => a ≤ b, f a, f b
 
 /-- The interval unbounded on both sides. -/
 def Interval.univ (α : Type*) : Interval α := ⟨⊥, ⊤⟩
