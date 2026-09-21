@@ -5,10 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Tactic.Inclusion.Core.ToSet
@@ -368,6 +367,66 @@ theorem Interval.mul_mem [Mul α] [Zero α] [LinearOrder α] [Ring β] [LinearOr
       apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg']
     · apply (f.monotone.withTop_map (le_max_left _ _)).trans'
       apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos]
+
+/-- Raise an interval to a natural-number power. -/
+def Interval.pow [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
+    (I : Interval α) (n : ℕ) : Interval α :=
+  if n = 0 then
+    Interval.singleton 1
+  else if n % 2 = 1 || 0 ≤ I.lb then
+    I.map (· ^ n)
+  else if I.ub ≤ 0 then
+    let lb := match I.ub with | some ub => some (ub ^ n) | ⊤ => ⊥
+    let ub := match I.lb with | some lb => some (lb ^ n) | ⊥ => ⊤
+    ⟨lb, ub⟩
+  else
+    let ub := match I.lb, I.ub with
+      | some lb, some ub => some (max (-lb) ub ^ n)
+      | _, _ => ⊤
+    ⟨0, ub⟩
+
+@[to_dual le_map_of_untopD]
+private theorem map_le_of_unbotD [Preorder β] {f : α → β} {g : α → α} {φ : β → β}
+    (map_g : ∀ a, f (g a) = φ (f a)) {a : WithBot α} (d : β) {z : β}
+    (h : φ ((a.map f).unbotD d) ≤ z) : (a.map g).map f ≤ z := by
+  cases a with
+  | bot => exact bot_le
+  | coe a => simpa [map_g] using h
+
+private theorem even_pow_le [Ring β] [LinearOrder β] [IsStrictOrderedRing β]
+    {n : ℕ} (hn : Even n) {lb x ub : β} (hl : lb ≤ x) (hu : x ≤ ub) :
+    x ^ n ≤ (max (-lb) ub) ^ n := by
+  rw [← hn.pow_abs x]
+  apply pow_le_pow_left₀ (abs_nonneg x)
+  grind [abs_le']
+
+theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
+    [Ring β] [LinearOrder β] [IsStrictOrderedRing β] (f : α ↪o β)
+    (map_zero : f 0 = 0) (map_one : f 1 = 1) (map_neg : ∀ a, f (-a) = -f a)
+    (map_pow : ∀ a n, f (a ^ n) = f a ^ n) (n : ℕ) {x : β} {I : Interval α}
+    (hx : x ∈ I.map f) : x ^ n ∈ (I.pow n).map f := by
+  let lb' := lowerBound f I.lb x
+  let ub' := upperBound f I.ub x
+  replace hx : lb' ≤ x ∧ x ≤ ub' :=
+    ⟨lowerBound_le f I.lb x hx.1, le_upperBound f I.ub x hx.2⟩
+  unfold Interval.pow
+  split_ifs with h0 hsign hneg
+  · simp [h0, Interval.singleton, Interval.map, map_one]
+  · have hpow : lb' ^ n ≤ x ^ n ∧ x ^ n ≤ ub' ^ n := by
+      grind [Odd.pow_le_pow, pow_le_pow_left₀, lowerBound_nonneg]
+    exact ⟨map_le_of_unbotD (fun a => map_pow a n) (min x 0) hpow.1,
+      le_map_of_untopD (fun a => map_pow a n) (max x 0) hpow.2⟩
+  · have hpow : ub' ^ n ≤ x ^ n ∧ x ^ n ≤ lb' ^ n := by
+      grind [Even.pow_le_pow_of_nonpos, upperBound_nonpos]
+    exact ⟨map_le_of_unbotD (fun a => map_pow a n) (max x 0) hpow.1,
+      le_map_of_untopD (fun a => map_pow a n) (min x 0) hpow.2⟩
+  · have hn : Even n := by grind
+    constructor
+    · simpa [Interval.map, map_zero] using hn.pow_nonneg x
+    · rcases I with ⟨_ | lb, _ | ub⟩ <;> try exact le_top
+      apply WithTop.coe_le_coe.mpr
+      rw [map_pow, f.monotone.map_max, map_neg]
+      exact even_pow_le hn hx.1 hx.2
 
 /-- Check if `r x y` is false is implied by `x ∈ I` and `y ∈ J` -/
 def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
