@@ -635,10 +635,10 @@ alias coe_addMonoidHom_refl := toAddMonoidHom_refl
 in higher generality -/
 
 @[simp]
-theorem coe_toRingHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
+theorem toRingHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_refl := coe_toRingHom_refl
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_refl := toRingHom_refl
 
 @[simp]
 theorem toMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
@@ -658,13 +658,6 @@ alias coe_addMonoidHom_trans := toAddMonoidHom_trans
 
 /-! `RingEquiv.coe_mulEquiv_trans` and `RingEquiv.coe_addEquiv_trans` are proved above
 in higher generality -/
-
-@[simp]
-theorem toRingHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
-    (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
-  rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans
 
 @[simp]
 theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
@@ -814,8 +807,9 @@ theorem toMonoidHom_commutes (f : R ≃+* S) :
 theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
   rfl
 
+-- TODO: remove lemma when we remove the RingHom.ofClass coercion
 @[simp]
-theorem toRingHom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
+theorem toRingHom_refl' : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 
 -- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
@@ -837,9 +831,11 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
   Equiv.symm_apply_apply e.toEquiv
 
 @[simp]
-theorem coe_toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans
 
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
