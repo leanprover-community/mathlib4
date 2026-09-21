@@ -222,10 +222,15 @@ variable {s} {a b : α}
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
   rwa [QuotientGroup.eq, mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma mk_mul_eq_iff {a b c : α} :
+    (mk (a * b) : α ⧸ s) = mk c ↔ (mk b : α ⧸ s) = mk (a⁻¹ * c) := by
+  simp [QuotientGroup.eq, mul_assoc]
+
+@[to_additive (attr := simp)]
+lemma mk_mul_eq_mk_mul {a b c : α} :
     (mk (a * b) : α ⧸ s) = mk (a * c) ↔ (mk b : α ⧸ s) = mk c := by
-  simp [QuotientGroup.eq]
+  simp [mk_mul_eq_iff]
 
 @[to_additive]
 theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
