@@ -80,24 +80,17 @@ jobs:
         # Use a temporary file to ensure we don't overflow max variable size.
         lean_outfile=$(mktemp)
         # Show the stdout in the GitHub build logs, while we process it from the file.
-        if lake build | tee "${lean_outfile}"; then
-          success=true
-        else
-          success=false
-        fi
+        success=true
+        lake build | tee "${lean_outfile}" || success=false
 
         # Process output for posting to Zulip.
         # The description links to the linter set, this workflow and the reporting script.
         blob="https://github.com/${{ github.repository }}/blob/${{ github.sha }}"
-        line=$(grep -n '^register_linter_set linter.weeklyLintSet' Mathlib/Init.lean | cut -d: -f1)
-        SHA=${{ github.sha }} \
-        REPO=${{ github.repository }} \
-        RUN_ID=${{ github.run_id }} \
         SUCCESS="${success}" \
         INFO=true \
         LOCATIONS_MAX_COUNT=2 \
         MAX_ROWS=20 \
-        DESCRIPTION="\`lake build\` with the [\`linter.weeklyLintSet\`](${blob}/Mathlib/Init.lean#L${line}) linters enabled; see the [workflow](${blob}/.github/workflows/weekly-lints.yml) and the [reporting script](https://github.com/leanprover-community/mathlib-ci/blob/${{ steps.mathlib-ci.outputs.ref }}/scripts/reporting/zulip_build_report.sh)." \
+        DESCRIPTION="\`lake build\` with [\`linter.weeklyLintSet\`](${blob}/Mathlib/Init.lean) enabled ([workflow](${blob}/.github/workflows/weekly-lints.yml), [reporting script](https://github.com/leanprover-community/mathlib-ci/blob/${{ steps.mathlib-ci.outputs.ref }}/scripts/reporting/zulip_build_report.sh))." \
           "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
