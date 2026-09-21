@@ -11,6 +11,7 @@ public import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Multisets
@@ -61,9 +62,9 @@ assert_not_exists Monoid OrderHom
 
 universe v
 
-open List Subtype Nat Function
+open List Subtype Nat
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*} {β : Type v}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed. -/
@@ -242,7 +243,7 @@ lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
-  ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩
+  Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2
 
 @[simp]
 theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
@@ -340,9 +341,9 @@ theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
     Multiset.Pairwise r l ↔ ∃ l' : List α, l ~ l' ∧ l'.Pairwise r :=
   exists_congr <| by simp
 
-theorem pairwise_coe_iff_pairwise {r : α → α → Prop} (hr : Symmetric r) {l : List α} :
+theorem pairwise_coe_iff_pairwise {r : α → α → Prop} [Std.Symm r] {l : List α} :
     Multiset.Pairwise r l ↔ l.Pairwise r :=
-  Iff.intro (fun ⟨_l', Eq, h⟩ => ((Quotient.exact Eq).pairwise_iff @hr).2 h) fun h => ⟨l, rfl, h⟩
+  ⟨fun ⟨_l', Eq, h⟩ ↦ Quotient.exact Eq |>.pairwise_iff symm |>.mpr h, fun h ↦ ⟨l, rfl, h⟩⟩
 
 section Nodup
 

@@ -66,23 +66,51 @@ bijections on the middle and on the right. Then, the exactness of the first
 sequence shall follow from the exactness of the second which is
 `Algebra.Extension.exact_cotangentComplex_toKaehler`. -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Same as `comm₂₃` below, but here we have not yet constructed `differentialsSolution`. -/
 lemma comm₂₃' : pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.repr.symm.toLinearMap =
     Finsupp.linearCombination S (fun g ↦ D _ _ (pres.val g)) := by
   ext
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `(σ →₀ S) →ₗ[S] pres.toExtension.Cotangent`. -/
 noncomputable def hom₁ : (σ →₀ S) →ₗ[S] pres.toExtension.Cotangent :=
   Finsupp.linearCombination S (fun r ↦ Extension.Cotangent.mk ⟨pres.relation r, by simp⟩)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hom₁_single (r : σ) :
     hom₁ pres (Finsupp.single r 1) = Extension.Cotangent.mk ⟨pres.relation r, by simp⟩ := by
   simp [hom₁]
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`RingHomSurjective (RingHom.id pres.Ring)`
+It is needed by the `rw [Submodule.map_span_le]` below.
+
+The failure happens while applying `@RingHomSurjective.ids`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+`Semiring pres.Ring`, whereas the assigned value `CommRing.toCommSemiring.toSemiring` has type
+`Semiring pres.toExtension.Ring`. The comparison bottoms out at
+`AddMonoidAlgebra R (ι →₀ ℕ) =?= pres.toExtension.1`: the left-hand side is what `pres.Ring` reduces
+to, while the right-hand side is stuck, since `Generators.toExtension` is a semireducible `def` and
+therefore does not unfold at the `.instances` transparency instance search runs at. Lean
+falls back to synthesize an instance of the correct type, which succeeds and returns
+`AddMonoidAlgebra.semiring`, but that is again not defeq to the assigned value, stalling at the same
+boundary. That comparison, too, runs at `.instances`, since `respectTransparency false` suppresses
+the transparency bump that instance-implicit arguments would otherwise receive.
+
+Potential fix: Mark `Generators.toExtension` implicit-reducible; then `respectTransparency false`
+and `instanceSearchTypes false` can both go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
   let φ : (σ →₀ S) →ₗ[pres.Ring] pres.toExtension.Cotangent :=
@@ -110,6 +138,7 @@ lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
   simp only [LinearMap.coe_mk, AddHom.coe_mk, hom₁_single, φ]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma comm₁₂_single (r : σ) :
     pres.toExtension.cotangentComplex (hom₁ pres (Finsupp.single r 1)) =
@@ -118,6 +147,7 @@ lemma comm₁₂_single (r : σ) :
     Basis.repr_symm_apply, Extension.cotangentComplex_mk]
   exact pres.cotangentSpaceBasis.repr.injective (by ext; simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma comm₁₂ : pres.toExtension.cotangentComplex.comp (hom₁ pres) =
     pres.cotangentSpaceBasis.repr.symm.comp (differentialsRelations pres).map := by
@@ -137,7 +167,7 @@ noncomputable def differentialsSolution :
     pres.differentialsRelations.Solution Ω[S⁄R] where
   var g := D _ _ (pres.val g)
   linearCombination_var_relation r := by
-    simp only [differentialsRelations_G, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
       Function.comp_apply, ← comm₂₃', ← comm₁₂_single]
     apply DFunLike.congr_fun (Function.Exact.linearMap_comp_eq_zero
       (pres.toExtension.exact_cotangentComplex_toKaehler))
@@ -147,6 +177,7 @@ lemma differentials.comm₂₃ :
       pres.differentialsSolution.π :=
   comm₂₃' pres
 
+set_option backward.isDefEq.respectTransparency.types false in
 open differentials in
 lemma differentialsSolution_isPresentation :
     pres.differentialsSolution.IsPresentation := by

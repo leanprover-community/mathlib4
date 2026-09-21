@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 
-import Mathlib.Data.Fintype.Order
+public import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Convex sets
@@ -16,32 +17,18 @@ This file defines convex sets in a convex space.
 
 ## Implementation notes
 
-To allow full generality on the coefficients, for `s` to be convex we require that all finitary
-convex combinations of points of `s` lie in `s`, instead of merely binary ones as is customary.
+To support non-field coefficients, for `s` to be convex we require that all finitary convex
+combinations of points of `s` lie in `s`, instead of merely binary ones as is customary.
 
 Since its body is an implementation detail, the predicate `IsConvexSet` is unexposed.
-
-## TODO
-
-Prove that cartesian products of convex sets are convex.
 -/
-
-namespace Finsupp
-variable {α M N : Type*} [AddCommMonoid M] [CommMonoid N]
-
-@[to_additive (attr := simp)]
-lemma prod_onFinset (s : Finset α) (f : α → M) (hf) (g : α → M → N) (hg : ∀ i ∈ s, g i 0 = 1) :
-    (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
-  prod_of_support_subset _ support_onFinset_subset _ hg
-
-end Finsupp
 
 open Finsupp Set
 
-public section
+public noncomputable section
 
 namespace Convexity
-variable {ι R K X Y : Type*}
+variable {ι I R K X Y : Type*}
 
 section Semiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] [ConvexSpace R Y]
@@ -52,27 +39,27 @@ variable (R s) in
 in `s`.
 
 When the scalars form a field, this is equivalent to the definition in terms of binary combinations.
-See `IsConvexSet.of_convexComboPair_mem`. -/
-def IsConvexSet : Prop := ∀ ⦃w : StdSimplex R X⦄, ↑w.weights.support ⊆ s → w.sConvexCombo ∈ s
+See `IsConvexSet.of_convexCombPair_mem`. -/
+def IsConvexSet : Prop := ∀ ⦃w : StdSimplex R X⦄, ↑w.weights.support ⊆ s → w.sConvexComb ∈ s
 
-lemma IsConvexSet.of_sConvexCombo_mem
-    (hs : ∀ w : StdSimplex R X, ↑w.weights.support ⊆ s → w.sConvexCombo ∈ s) : IsConvexSet R s :=
+lemma IsConvexSet.of_sConvexComb_mem
+    (hs : ∀ w : StdSimplex R X, ↑w.weights.support ⊆ s → w.sConvexComb ∈ s) : IsConvexSet R s :=
   hs
 
-lemma IsConvexSet.sConvexCombo_mem (hs : IsConvexSet R s) (hw : ↑w.weights.support ⊆ s) :
-    w.sConvexCombo ∈ s := hs hw
+lemma IsConvexSet.sConvexComb_mem (hs : IsConvexSet R s) (hw : ↑w.weights.support ⊆ s) :
+    w.sConvexComb ∈ s := hs hw
 
-lemma IsConvexSet.iConvexCombo_mem (hs : IsConvexSet R s) {w : StdSimplex R ι} {f : ι → X}
-    (hf : ∀ i, w.weights i ≠ 0 → f i ∈ s) : w.iConvexCombo f ∈ s := by
+lemma IsConvexSet.iConvexComb_mem (hs : IsConvexSet R s) {w : StdSimplex R ι} {f : ι → X}
+    (hf : ∀ i, w.weights i ≠ 0 → f i ∈ s) : w.iConvexComb f ∈ s := by
   classical
   refine hs ?_
   grw [StdSimplex.weights_map, mapDomain_support]
   simpa [subset_def]
 
-lemma IsConvexSet.convexComboPair_mem (hs : IsConvexSet R s) (hx : x ∈ s) (hy : y ∈ s)
-    {a b : R} (ha hb hab) : convexComboPair a b ha hb hab x y ∈ s := by
+lemma IsConvexSet.convexCombPair_mem (hs : IsConvexSet R s) (hx : x ∈ s) (hy : y ∈ s)
+    {a b : R} (ha hb hab) : convexCombPair a b ha hb hab x y ∈ s := by
   classical
-  refine hs.sConvexCombo_mem ?_
+  refine hs.sConvexComb_mem ?_
   grw [StdSimplex.weights_duple, support_add, support_single_subset, support_single_subset]
   simp [*, insert_subset_iff]
 
@@ -87,13 +74,13 @@ lemma IsConvexSet.of_subsingleton (hs : s.Subsingleton) : IsConvexSet R s := by
 
 protected lemma IsConvexSet.inter (hs : IsConvexSet R s) (ht : IsConvexSet R t) :
     IsConvexSet R (s ∩ t) := by
-  simp +contextual [IsConvexSet, hs.sConvexCombo_mem, ht.sConvexCombo_mem]
+  simp +contextual [IsConvexSet, hs.sConvexComb_mem, ht.sConvexComb_mem]
 
 protected lemma IsConvexSet.sInter {S : Set (Set X)} (hS : ∀ s ∈ S, IsConvexSet R s) :
-    IsConvexSet R (⋂₀ S) := by simp +contextual [IsConvexSet, (hS _ _).sConvexCombo_mem]
+    IsConvexSet R (⋂₀ S) := by simp +contextual [IsConvexSet, (hS _ _).sConvexComb_mem]
 
 protected lemma IsConvexSet.iInter {ι : Sort*} {s : ι → Set X} (hs : ∀ i, IsConvexSet R (s i)) :
-    IsConvexSet R (⋂ i, s i) := by simp +contextual [IsConvexSet, (hs _).sConvexCombo_mem]
+    IsConvexSet R (⋂ i, s i) := by simp +contextual [IsConvexSet, (hs _).sConvexComb_mem]
 
 lemma IsConvexSet.iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set X}
     (h : ∀ i j, IsConvexSet R (s i j)) : IsConvexSet R (⋂ (i) (j), s i j) :=
@@ -114,25 +101,24 @@ protected lemma IsConvexSet.iUnion {ι : Sort*} {s : ι → Set X} (hs : Directe
 
 protected lemma IsConvexSet.preimage {s : Set Y} (hf : IsAffineMap R f) (hs : IsConvexSet R s) :
     IsConvexSet R (f ⁻¹' s) := by
-  classical
   rintro w hw
-  simp only [mem_preimage, hf.map_sConvexCombo, sConvexCombo_map]
-  exact hs.iConvexCombo_mem fun x hx ↦ hw <| by simpa
+  simp only [mem_preimage, hf.map_sConvexComb, sConvexComb_map]
+  exact hs.iConvexComb_mem fun x hx ↦ hw <| by simpa
 
 protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) :
     IsConvexSet R (f '' s) := by
   classical
   rintro w hw
   obtain ⟨u, hus, hfu, huw⟩ := Finset.exists_subset_injOn_image_eq_of_surjOn _ _ hw
-  refine ⟨sConvexCombo {
+  refine ⟨sConvexComb {
       weights := .onFinset u (fun x ↦ if x ∈ u then w.weights (f x) else 0) <| by simp +contextual
       nonneg x := by simp; split <;> simp
       total := by
         simp only [implies_true, sum_onFinset, Finset.sum_ite_mem, Finset.inter_self,
         ← Finset.sum_image hfu, huw]
         exact w.total
-    }, hs.sConvexCombo_mem <| by grw [support_onFinset_subset, hus], ?_⟩
-  rw [hf.map_sConvexCombo]
+    }, hs.sConvexComb_mem <| by grw [support_onFinset_subset, hus], ?_⟩
+  rw [hf.map_sConvexComb]
   congr
   ext y
   rw [StdSimplex.weights_map]
@@ -140,9 +126,55 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
   · rw [← huw, Finset.mem_image] at hy
     obtain ⟨x, hx, rfl⟩ := hy
     convert mapDomain_apply' _ _ support_onFinset_subset hfu hx
-    exact (if_pos hx).symm
+    exact (ite_eq_left hx).symm
   · rw [mapDomain_of_not_mem_image_support (by simp [← huw] at ⊢ hy; tauto)]
     simp_all
+
+/-- A convex subset of a convex space is a convex space. -/
+@[expose, implicit_reducible]
+def ConvexSpace.subtype (s : Set X) (hs : IsConvexSet R s) : ConvexSpace R s := .mk
+  (fun w ↦ ⟨w.iConvexComb (↑), hs.iConvexComb_mem <| by simp⟩)
+  (fun x ↦ by simp)
+  (fun w ↦ by ext; simp [iConvexComb_assoc])
+
+lemma isAffineMap_subtypeVal (s : Set X) (hs : IsConvexSet R s) :
+    letI : ConvexSpace R s := .subtype s hs
+    IsAffineMap R ((↑) : s → X) :=
+  letI : ConvexSpace R s := .subtype s hs
+  ⟨fun _ ↦ rfl⟩
+
+@[simp]
+lemma subtypeVal_sConvexComb (s : Set X) (hs : IsConvexSet R s) (w : StdSimplex R s) :
+    letI : ConvexSpace R s := .subtype s hs
+    (w.sConvexComb : X) = w.iConvexComb (↑) := rfl
+
+@[simp]
+lemma subtypeVal_iConvexComb (s : Set X) (hs : IsConvexSet R s) (w : StdSimplex R I) (f : I → s) :
+    letI : ConvexSpace R s := .subtype s hs
+    (↑(w.iConvexComb f) : X) = w.iConvexComb (fun i ↦ (f i).val) :=
+  letI : ConvexSpace R s := .subtype s hs
+  (isAffineMap_subtypeVal ..).map_iConvexComb ..
+
+@[simp]
+lemma subtypeVal_convexCombPair (s : Set X) (hs : IsConvexSet R s) (a b : R) (ha hb hab) (x y : s) :
+    letI : ConvexSpace R s := .subtype s hs
+    (↑(convexCombPair a b ha hb hab x y) : X) = convexCombPair a b ha hb hab x.val y.val :=
+  letI : ConvexSpace R s := .subtype s hs
+  (isAffineMap_subtypeVal ..).map_convexCombPair ..
+
+protected lemma IsConvexSet.prod {Y : Type*} [ConvexSpace R Y] {t : Set Y}
+    (hs : IsConvexSet R s) (ht : IsConvexSet R t) : IsConvexSet R (s ×ˢ t) := by
+  classical
+  rintro w hw
+  refine ⟨hs ?_, ht ?_⟩
+  · grw [StdSimplex.weights_map, mapDomain_support, Finset.coe_image, hw, fst_image_prod_subset]
+  · grw [StdSimplex.weights_map, mapDomain_support, Finset.coe_image, hw, snd_image_prod_subset]
+
+protected lemma IsConvexSet.pi {X : ι → Type*} [∀ i, ConvexSpace R (X i)] {s : Set ι}
+    {t : ∀ i, Set (X i)} (ht : ∀ i ∈ s, IsConvexSet R (t i)) : IsConvexSet R (s.pi t) := by
+  classical
+  refine fun w hw i hi ↦ ht i hi ?_
+  grw [StdSimplex.weights_map, mapDomain_support, Finset.coe_image, hw, eval_image_pi_subset hi]
 
 end Semiring
 
@@ -150,9 +182,10 @@ section Field
 variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {w : StdSimplex K X}
   {s t : Set X} {x y : X}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Convexity of a set can be checked via binary combinations if the scalars form a field. -/
-lemma IsConvexSet.of_convexComboPair_mem
-    (hs : ∀ a b : K, ∀ ha hb hab, ∀ x ∈ s, ∀ y ∈ s, convexComboPair a b ha hb hab x y ∈ s) :
+lemma IsConvexSet.of_convexCombPair_mem
+    (hs : ∀ a b : K, ∀ ha hb hab, ∀ x ∈ s, ∀ y ∈ s, convexCombPair a b ha hb hab x y ∈ s) :
     IsConvexSet K s := by
   classical
   rintro w hw
@@ -166,9 +199,9 @@ lemma IsConvexSet.of_convexComboPair_mem
   have hwx' : ∃ y ≠ x, w.weights y ≠ 0 := by
     obtain ⟨y, hy⟩ := ht
     exact ⟨y, ne_of_mem_of_not_mem hy hx, by simpa [hy] using congr(y ∈ $hsw)⟩
-  rw [← w.convexComboPair_restrict_restrict_compl {x} (by simpa) hwx']
-  simp only [mem_singleton_iff, StdSimplex.restrict_singleton, sConvexCombo_convexComboPair,
-    sConvexCombo_single]
+  rw [← w.convexCombPair_restrict_restrict_compl {x} (by simpa) hwx']
+  simp only [mem_singleton_iff, StdSimplex.restrict_singleton, sConvexComb_convexCombPair,
+    sConvexComb_single]
   exact hs _ _ _ _ _ _ (hw <| by simp) _ <| ih (by grw [← hw, ← Finset.subset_cons])
     (by simp [← hsw]; grind)
 
@@ -189,7 +222,7 @@ namespace ConvexSet
 
 instance : SetLike (ConvexSet R X) X where
   coe := ConvexSet.carrier
-  coe_injective' K₁ K₂ _ := by cases K₁; cases K₂; congr
+  coe_injective K₁ K₂ _ := by cases K₁; cases K₂; congr
 
 instance : PartialOrder (ConvexSet R X) := .ofSetLike ..
 
@@ -204,8 +237,7 @@ variable (K) in
 
 @[simp] theorem mk_eq {s h} : (⟨s, h⟩ : ConvexSet R X) = s := by ext; simp
 
-example : (K₁ : Set X) ≤ K₂ ↔ K₁ ≤ K₂ := by simp only [le_eq_subset,
-  SetLike.coe_subset_coe]
+example : (K₁ : Set X) ≤ K₂ ↔ K₁ ≤ K₂ := by simp only [SetLike.coe_subset_coe]
 
 /-!
 ### Infimum, supremum and lattice

@@ -59,6 +59,7 @@ def refl (f : X ⟶ Y) : P.LeftHomotopy f f where
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` and `g` are homotopic relative to a precylinder `P`, then `g` and `f`
 are homotopic relative to `P.symm` -/
 @[simps]
@@ -82,6 +83,7 @@ def postcomp {f g : X ⟶ Y} (h : P.LeftHomotopy f g) {Z : C} (p : Y ⟶ Z) :
     P.LeftHomotopy (f ≫ p) (g ≫ p) where
   h := h.h ≫ p
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left homotopies in a full subcategory identify to left homotopies in the
 ambient category. -/
 noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}
@@ -167,7 +169,7 @@ lemma exists_good_cylinder {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
       i₁ := coprod.inr ≫ d.i
       π := d.p ≫ P.π }, ⟨by
         rw [cofibration_iff]
-        convert d.hi
+        convert! d.hi
         aesop⟩, ⟨{ h := d.p ≫ h.h }⟩⟩
 
 /-- The covering homotopy theorem: if `p : E ⟶ B` is a fibration,
@@ -265,7 +267,6 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsCofibrant X] :
   symm h := h.symm
   trans h h' := h.trans h'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma precomp [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g)
     {Z : C} (i : Z ⟶ X) : LeftHomotopyRel (i ≫ f) (i ≫ g) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_cylinder

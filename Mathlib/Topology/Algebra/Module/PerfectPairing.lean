@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Continuous perfect pairings

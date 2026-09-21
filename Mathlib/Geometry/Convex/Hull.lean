@@ -9,7 +9,7 @@ public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Order.Closure
 
 /-!
-# IsConvexSet hull
+# Convex hull
 
 This file defines the convex hull of a set in a convex space. `convexHull R s` is the smallest
 convex set containing `s`. In order theory speak, this is a closure operator.
@@ -25,9 +25,10 @@ variable {R X Y : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [
 
 variable (R) in
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
-def convexHull (s : Set X) : Set X :=
-  ClosureOperator.ofCompletePred (IsConvexSet R) (fun _ ↦ .sInter) s
+def convexHull : ClosureOperator (Set X) :=
+  .ofCompletePred (IsConvexSet R) (fun _ ↦ .sInter)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma subset_convexHull_iff : t ⊆ convexHull R s ↔ ∀ C, s ⊆ C → IsConvexSet R C → t ⊆ C := by
   simp [convexHull, iInter_subtype, iInter_and]
 
@@ -36,6 +37,7 @@ lemma subset_convexHull_iff : t ⊆ convexHull R s ↔ ∀ C, s ⊆ C → IsConv
 protected lemma IsConvexSet.convexHull : IsConvexSet R (convexHull R s) :=
   ClosureOperator.isClosed_closure (.ofCompletePred (IsConvexSet R) _) s
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma convexHull_eq_iInter :
     convexHull R s = ⋂ (t : Set X) (_ : s ⊆ t) (_ : IsConvexSet R t), t := by
   simp [convexHull, iInter_subtype, iInter_and]
@@ -89,12 +91,14 @@ variable (R x) in
   mpr hs := by simp [hs]
 
 variable (R s t) in
+@[simp]
 lemma convexHull_convexHull_union :
     convexHull R (convexHull R s ∪ t) = convexHull R (s ∪ t) :=
   ClosureOperator.closure_sup_closure_left ..
 
 variable (R s t) in
-lemma convexHull_union_convexHull_right :
+@[simp]
+lemma convexHull_union_convexHull :
     convexHull R (s ∪ convexHull R t) = convexHull R (s ∪ t) :=
   ClosureOperator.closure_sup_closure_right ..
 
@@ -106,7 +110,7 @@ lemma IsConvexSet.sdiff_singleton_iff_notMem_convexHull (hs : IsConvexSet R s) :
   mpr hx := by
     rw [← convexHull_subset_self]
     rintro y hy
-    exact ⟨convexHull_min diff_subset hs hy, by rintro rfl; exact hx hy⟩
+    exact ⟨convexHull_min sdiff_subset hs hy, by rintro rfl; exact hx hy⟩
 
 lemma IsAffineMap.image_convexHull {f : X → Y} (hf : IsAffineMap R f) (s : Set X) :
     f '' convexHull R s = convexHull R (f '' s) := by
@@ -115,45 +119,4 @@ lemma IsAffineMap.image_convexHull {f : X → Y} (hf : IsAffineMap R f) (s : Set
     ← image_subset_iff, (IsConvexSet.convexHull.image hf).convexHull_subset_iff]
   exact ⟨subset_convexHull_self, image_mono subset_convexHull_self⟩
 
-namespace ConvexSet
-
-variable {K K₁ K₂ : ConvexSet R X}
-
-variable (R) in
-/-- The convex hull of a set `s`, bundled as a `ConvexSet`. -/
-def convexHull (s : Set X) : ConvexSet R X := ⟨Convexity.convexHull R s, .convexHull⟩
-
-instance : Max (ConvexSet R X) where
-  max K₁ K₂ := convexHull R (K₁ ∪ K₂)
-
-lemma sup_eq_convexHull_union : (K₁ ⊔ K₂).carrier = Convexity.convexHull R (K₁ ∪ K₂) := by rfl
-
-instance : SemilatticeSup (ConvexSet R X) where
-  sup := max
-  le_sup_left _ _ _ hs := by
-    apply subset_convexHull_self
-    simp [hs]
-  le_sup_right _ _ _ hs := by
-    apply subset_convexHull_self
-    simp [hs]
-  sup_le K₁ K₂ K₃ h₁₂ h₂₃ x hx := by
-    rw [mem_mk, sup_eq_convexHull_union, mem_convexHull_iff] at hx
-    refine hx K₃ ?_ K₃.isConvexSet
-    simp [h₂₃, h₁₂]
-
-instance : SupSet (ConvexSet R X) where
-  sSup S := convexHull R (⋃ s ∈ S, s)
-
-instance : CompleteSemilatticeSup (ConvexSet R X) where
-  __ := instSemilatticeSup
-  isLUB_sSup K := by
-    constructor <;> intro L hL
-    · intro l hl
-      exact (subset_iUnion₂_of_subset _ hL fun ⦃_⦄ a ↦ a).trans subset_convexHull_self hl
-    · simp only [sSup, convexHull, Convexity.convexHull, ClosureOperator.ofCompletePred_apply,
-      le_eq_subset, iInf_eq_iInter]
-      intro x xm
-      simp only [mem_mk, mem_iInter, Subtype.forall, iUnion_subset_iff, and_imp] at xm
-      exact xm _ hL L.isConvexSet
-
-end Convexity.ConvexSet
+end Convexity

@@ -50,7 +50,7 @@ transform of `log t * exp (-t)`. -/
 theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
     HasDerivAt GammaIntegral (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
   rw [GammaIntegral_eq_mellin]
-  convert (mellin_hasDerivAt_of_isBigO_rpow (E := ℂ) _ _ (lt_add_one _) _ hs).2
+  convert! (mellin_hasDerivAt_of_isBigO_rpow (E := ℂ) _ _ (lt_add_one _) _ hs).2
   · refine (Continuous.continuousOn ?_).locallyIntegrableOn measurableSet_Ioi
     exact continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)
   · rw [← isBigO_norm_left]
@@ -80,7 +80,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     specialize IH (s + 1) (by grind [add_re, one_re]) (fun m ↦ by grind [hs (m + 1)])
     have := IH.comp s (show DifferentiableAt ℂ (fun s ↦ s + 1) s by fun_prop)
     apply (this.fun_div differentiableAt_id hsne).congr_of_eventuallyEq
-    filter_upwards [isOpen_ne.mem_nhds hsne] using by grind [Gamma_add_one]
+    filter_upwards [isOpen_ne.mem_nhds hsne] using by grind
 
 theorem differentiableAt_Gamma_one : DifferentiableAt ℂ Gamma 1 :=
   differentiableAt_Gamma 1 (by norm_cast; simp)
@@ -136,7 +136,7 @@ theorem deriv_Gamma_add_one (s : ℂ) (hs : s ≠ 0) :
       rw [← deriv_comp_add_const]
       exact (this.hasDerivAt (compl_singleton_mem_nhds hs)).deriv
     refine HasDerivWithinAt.congr ?_ Gamma_add_one (Gamma_add_one s hs)
-    simpa using HasDerivWithinAt.mul (hasDerivWithinAt_id s {0}ᶜ)
+    simpa using! HasDerivWithinAt.mul (hasDerivWithinAt_id s {0}ᶜ)
       (differentiableAt_Gamma s h).hasDerivAt.hasDerivWithinAt
 
 end GammaHasDeriv

@@ -71,6 +71,20 @@ instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ ⊓ Γ') where
 instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ' ⊓ Γ) where
   det_eq hg := HasDetOne.det_eq hg.2
 
+open scoped Pointwise in
+instance (Γ : Subgroup (GL n R)) [HasDetOne Γ] (g : ConjAct <| GL n R) :
+    HasDetOne (g • Γ) where
+  det_eq {h} hh := by
+    rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
+    simpa [ConjAct.smul_def] using HasDetOne.det_eq hh
+
+open scoped Pointwise in
+instance (Γ : Subgroup (GL n R)) [HasDetPlusMinusOne Γ] (g : ConjAct <| GL n R) :
+    HasDetPlusMinusOne (g • Γ) where
+  det_eq {h} hh := by
+    rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
+    simpa [ConjAct.smul_def] using HasDetPlusMinusOne.det_eq hh
+
 end det_typeclasses
 
 section SL2Z_in_GL2R
@@ -84,6 +98,7 @@ instance : Coe (Subgroup SL(2, ℤ)) (Subgroup (GL (Fin 2) ℝ)) where
   coe := map (mapGL ℝ)
 
 /-- A subgroup of `GL(2, ℝ)` is arithmetic if it is commensurable with the image of `SL(2, ℤ)`. -/
+@[mk_iff]
 class IsArithmetic (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop where
   is_commensurable : Commensurable 𝒢 𝒮ℒ
 
@@ -91,10 +106,8 @@ class IsArithmetic (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop where
 instance : IsArithmetic 𝒮ℒ where is_commensurable := .refl 𝒮ℒ
 
 lemma isArithmetic_iff_finiteIndex {Γ : Subgroup SL(2, ℤ)} : IsArithmetic Γ ↔ Γ.FiniteIndex := by
-  constructor <;>
-  · refine fun ⟨h⟩ ↦ ⟨?_⟩
-    simpa [Commensurable, MonoidHom.range_eq_map, ← relIndex_comap,
-      comap_map_eq_self_of_injective mapGL_injective] using h
+  rw [isArithmetic_iff, MonoidHom.range_eq_map, Commensurable.map_injective_iff mapGL_injective,
+    Commensurable.top_right_iff]
 
 /-- Images in `GL(2, ℝ)` of finite-index subgroups of `SL(2, ℤ)` are arithmetic. -/
 instance (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] : IsArithmetic Γ :=
@@ -103,13 +116,13 @@ instance (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] : IsArithmetic Γ :=
 /-- If `Γ` is arithmetic, its preimage in `SL(2, ℤ)` has finite index. -/
 instance IsArithmetic.finiteIndex_comap (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
     (𝒢.comap (mapGL (R := ℤ) ℝ)).FiniteIndex :=
-  ⟨𝒢.index_comap (mapGL (R := ℤ) ℝ) ▸ IsArithmetic.is_commensurable.1⟩
+  ⟨𝒢.index_comap (mapGL (R := ℤ) ℝ) ▸ is_commensurable.1.relIndex_ne_zero⟩
 
 instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinusOne Γ := by
   rw [hasDetPlusMinusOne_iff_abs_det]
   intro g hg
   obtain ⟨n, hn, _, hgn⟩ := Subgroup.exists_pow_mem_of_relIndex_ne_zero
-    Subgroup.IsArithmetic.is_commensurable.2 hg
+    IsArithmetic.is_commensurable.2.relIndex_ne_zero hg
   suffices |(g.det ^ n).val| = 1 by simpa [← abs_pow, abs_pow_eq_one _ (Nat.ne_zero_of_lt hn)]
   obtain ⟨t, ht⟩ := hgn.1
   have := congr_arg Matrix.GeneralLinearGroup.det ht.symm
@@ -118,15 +131,10 @@ instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinu
 
 instance IsArithmetic.isFiniteRelIndexSL (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
     𝒢.IsFiniteRelIndex 𝒮ℒ :=
-  ⟨IsArithmetic.is_commensurable.1⟩
+  ⟨is_commensurable.1.relIndex_ne_zero⟩
 
-instance IsArithmetic.inter {Γ Γ'} [IsArithmetic Γ] [IsArithmetic Γ'] : IsArithmetic (Γ ⊓ Γ') := by
-  constructor
-  constructor
-  · apply relIndex_inf_ne_zero <;> exact IsArithmetic.is_commensurable.1
-  · apply relIndex_ne_zero_trans (K := Γ) IsArithmetic.is_commensurable.2
-    rw [relIndex_eq_one.mpr inf_le_left]
-    simp
+instance IsArithmetic.inter {Γ Γ'} [IsArithmetic Γ] [IsArithmetic Γ'] : IsArithmetic (Γ ⊓ Γ') :=
+  ⟨is_commensurable.inf_left is_commensurable⟩
 
 end SL2Z_in_GL2R
 
@@ -203,7 +211,7 @@ instance (𝒢 : Subgroup (GL n R)) : Subgroup.IsFiniteRelIndex 𝒢 𝒢.adjoin
 
 lemma Subgroup.commensurable_adjoinNegOne_self (𝒢 : Subgroup (GL n R)) :
     Commensurable 𝒢.adjoinNegOne 𝒢 :=
-  ⟨by simp [Subgroup.relIndex_eq_one.mpr 𝒢.le_adjoinNegOne], 𝒢.relIndex_adjoinNegOne_ne_zero⟩
+  ⟨⟨by simp [Subgroup.relIndex_eq_one.mpr 𝒢.le_adjoinNegOne]⟩, ⟨𝒢.relIndex_adjoinNegOne_ne_zero⟩⟩
 
 instance [TopologicalSpace R] [IsTopologicalRing R] [T2Space R]
     (𝒢 : Subgroup (GL n R)) [DiscreteTopology 𝒢] :
@@ -220,9 +228,9 @@ variable {R : Type*} [CommRing R]
   rintro g (hg | hg)
   · exact HasDetPlusMinusOne.det_eq hg
   · by_cases hn : Even (Fintype.card n)
-    · convert HasDetPlusMinusOne.det_eq hg using 1 <;>
+    · convert! HasDetPlusMinusOne.det_eq hg using 1 <;>
         simp [Units.ext_iff, det_neg, hn]
-    · convert (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
+    · convert! (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
         simp [Units.ext_iff, det_neg, Nat.not_even_iff_odd.mp hn, neg_eq_iff_eq_neg]
 
 lemma Subgroup.hasDetOne_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} (hn : Even (Fintype.card n)) :

@@ -5,8 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
-public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
@@ -26,7 +25,7 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
 * `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,13 +45,13 @@ theorem MemLp.integrable_sq {f : α → ℝ} (h : MemLp f 2 μ) : Integrable (fu
 theorem memLp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
   rw [← memLp_one_iff_integrable]
-  convert (memLp_norm_rpow_iff hf two_ne_zero ENNReal.ofNat_ne_top).symm
+  convert! (memLp_norm_rpow_iff hf two_ne_zero ENNReal.ofNat_ne_top).symm
   · simp
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
 theorem memLp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
-  convert memLp_two_iff_integrable_sq_norm hf using 3
+  convert! memLp_two_iff_integrable_sq_norm hf using 3
   simp
 
 end
@@ -65,11 +64,12 @@ variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpac
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 theorem MemLp.const_inner (c : E) {f : α → E} (hf : MemLp f p μ) : MemLp (fun a => ⟪c, f a⟫) p μ :=
-  hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.1)
+  hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.aestronglyMeasurable)
     (Eventually.of_forall fun _ => norm_inner_le_norm _ _)
 
 theorem MemLp.inner_const {f : α → E} (hf : MemLp f p μ) (c : E) : MemLp (fun a => ⟪f a, c⟫) p μ :=
-  hf.of_le_mul (c := ‖c‖) (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
+  hf.of_le_mul (c := ‖c‖)
+    (AEStronglyMeasurable.inner hf.aestronglyMeasurable aestronglyMeasurable_const)
     (Eventually.of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
 
 variable {f : α → E}
@@ -100,7 +100,7 @@ end InnerProductSpace
 
 namespace L2
 
-variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
+variable {α E F 𝕜 : Type*} [RCLike 𝕜] {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -108,7 +108,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
     eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
   have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp
-  rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
+  rw [eLpNorm_norm_rpow f (Lp.aestronglyMeasurable f) zero_lt_two, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
 
 theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
@@ -120,11 +120,9 @@ theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => �
       _ ≤ 2 * ‖f x‖ * ‖g x‖ := by
         gcongr
         exact le_mul_of_one_le_left (norm_nonneg _) one_le_two
-      -- TODO(kmill): the type ascription is getting around an elaboration error
-      _ ≤ ‖(‖f x‖ ^ 2 + ‖g x‖ ^ 2 : ℝ)‖ := (two_mul_le_add_sq _ _).trans (le_abs_self _)
-  refine (eLpNorm_mono_ae (ae_of_all _ h)).trans_lt ((eLpNorm_add_le ?_ ?_ le_rfl).trans_lt ?_)
-  · exact ((Lp.aestronglyMeasurable f).norm.aemeasurable.pow_const _).aestronglyMeasurable
-  · exact ((Lp.aestronglyMeasurable g).norm.aemeasurable.pow_const _).aestronglyMeasurable
+      _ ≤ ‖‖f x‖ ^ 2 + ‖g x‖ ^ 2‖ := (two_mul_le_add_sq _ _).trans (le_abs_self _)
+  refine (eLpNorm_mono_ae ((Lp.aestronglyMeasurable f).inner
+    (Lp.aestronglyMeasurable g)) (ae_of_all _ h)).trans_lt ((eLpNorm_add_le le_rfl).trans_lt ?_)
   rw [ENNReal.add_lt_top]
   exact ⟨eLpNorm_rpow_two_norm_lt_top f, eLpNorm_rpow_two_norm_lt_top g⟩
 
@@ -150,18 +148,20 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
   ext1 x
   have h_two : (2 : ℝ) = ((2 : ℕ) : ℝ) := by simp
   rw [← Real.rpow_natCast _ 2, ← h_two, ←
-    ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_enorm]
+    ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm]
   norm_cast
 
 private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
   rw [inner_def, integral_inner_eq_sq_eLpNorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
     ENNReal.toReal_eq_toReal_iff' (ENNReal.pow_ne_top (Lp.eLpNorm_ne_top f)) _]
-  · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top, eLpNorm', ←
+  · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top
+      (Lp.aestronglyMeasurable f), eLpNorm', ←
       ENNReal.rpow_mul, one_div, h_two]
     simp [enorm_eq_nnnorm]
-  · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε := E) ?_).ne
-    rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top]
+  · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε' := E) ?_).ne
+    rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top
+      (Lp.aestronglyMeasurable f)]
     finiteness
 
 theorem mem_L1_inner (f g : α →₂[μ] E) :
@@ -250,6 +250,13 @@ lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
     (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
     ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
   simp [inner_indicatorConstLp_indicatorConstLp]
+
+lemma _root_.MeasureTheory.posSemidef_matrix_measure_inter {ι : Type*} [Finite ι] {s : ι → (Set α)}
+    (mv : ∀ j, MeasurableSet (s j)) (hv : ∀ j, μ (s j) ≠ ∞ := by finiteness) :
+    Matrix.PosSemidef (Matrix.of fun i j : ι ↦ μ.real (s i ∩ s j)) := by
+  simp only [mv, ne_eq, hv, not_false_eq_true,
+    ← real_inner_indicatorConstLp_one_indicatorConstLp_one]
+  exact Matrix.posSemidef_gram _ _
 
 end IndicatorConstLp
 

@@ -25,7 +25,7 @@ variable {α G M : Type*}
 namespace Finset
 
 section Generic
-variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
+variable [CommMonoid M] {s : Finset α} {a : α} {f : α → M}
 
 @[to_additive]
 theorem prod_Ico_add' [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
@@ -38,7 +38,7 @@ theorem prod_Ico_add' [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMo
 theorem prod_Ico_add [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → M) (a b c : α) : (∏ x ∈ Ico a b, f (c + x)) = ∏ x ∈ Ico (a + c) (b + c), f x := by
-  convert prod_Ico_add' f a b c using 2
+  convert! prod_Ico_add' f a b c using 2
   rw [add_comm]
 
 @[to_additive (attr := simp)]
@@ -132,6 +132,7 @@ theorem prod_Ico_eq_prod_range (f : ℕ → M) (m n : ℕ) :
   · replace h := h.le
     rw [Ico_eq_empty_of_le h, tsub_eq_zero_iff_le.mpr h, range_zero, prod_empty, prod_empty]
 
+@[to_additive]
 theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1) :
     (∏ j ∈ Ico k m, f (n - j)) = ∏ j ∈ Ico (n + 1 - m) (n + 1 - k), f j := by
   have : ∀ i < m, i ≤ n := by
@@ -148,10 +149,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
       exact hkm
     simp only [hkm, Ico_eq_empty_of_le, prod_empty, Ico_eq_empty_of_le this]
 
-theorem sum_Ico_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (k : ℕ) {m n : ℕ}
-    (h : m ≤ n + 1) : (∑ j ∈ Ico k m, f (n - j)) = ∑ j ∈ Ico (n + 1 - m) (n + 1 - k), f j :=
-  @prod_Ico_reflect (Multiplicative δ) _ f k m n h
-
+@[to_additive]
 theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :
     (∏ j ∈ range n, f (n - 1 - j)) = ∏ j ∈ range n, f j := by
   cases n
@@ -159,10 +157,6 @@ theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :
   · simp only [← Nat.Ico_zero_eq_range, Nat.succ_sub_succ_eq_sub, tsub_zero]
     rw [prod_Ico_reflect _ _ le_rfl]
     simp
-
-theorem sum_range_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (n : ℕ) :
-    (∑ j ∈ range n, f (n - 1 - j)) = ∑ j ∈ range n, f j :=
-  @prod_range_reflect (Multiplicative δ) _ f n
 
 @[simp]
 theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n !
@@ -205,7 +199,7 @@ end Generic
 section Nat
 
 variable {M : Type*}
-variable (f g : ℕ → M) {m n : ℕ}
+variable (f : ℕ → M) {m n : ℕ}
 
 section Group
 
@@ -256,8 +250,8 @@ lemma Finset.prod_fin_Icc_eq_prod_nat_Icc [CommMonoid α] {n : ℕ} (a b : Fin n
 lemma Fin.prod_Iic_div [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → M) :
     ∏ i ∈ Iic a, (f i.succ / f i.castSucc) = f a.succ / f 0 := by
   rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
-  convert prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1)
-    using 1 with k hk
+  convert! prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1) using 1 with k
+    hk
   · exact prod_congr_of_eq_on_inter (by grind) (by grind) (by simp_all; grind)
   · grind
 
@@ -267,7 +261,7 @@ lemma Fin.prod_Icc_div [CommGroup M] {n : ℕ} {a b : Fin n} (hab : a ≤ b)
     (f : Fin (n + 1) → M) :
     ∏ i ∈ Icc a b, (f i.succ / f i.castSucc) = f b.succ / f a.castSucc := by
   rw [prod_fin_Icc_eq_prod_nat_Icc]
-  convert Finset.prod_Icc_div (Fin.le_def.1 hab) (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1)
+  convert! Finset.prod_Icc_div (Fin.le_def.1 hab) (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1)
   · simp_all
     grind
   · grind

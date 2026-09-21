@@ -38,13 +38,13 @@ example : True := .intro
 example : True := .intro
 
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "A05"
 
 /-- error: <input>:1:4: Stacks tags must consist only of digits and uppercase letters. -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05b"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "A05b"
 
 /-- info: 0BD5 -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "0BD5"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "0BD5"
 
 /--
 info:
@@ -63,15 +63,153 @@ True
 
 /--
 info:
-[Stacks Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
 True
 -/
 #guard_msgs in
 #kerodon_tags!
 
+namespace W
+
+@[wikidata Q12345 "A Wikidata comment"]
+theorem wikiTagged : True := .intro
+
+end W
+
+/-- info: some ([Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) (A Wikidata comment)) -/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `W.wikiTagged}"
+
+/--
+info:
+[Wikidata Q12345](https://www.wikidata.org/wiki/Q12345) corresponds to declaration 'W.wikiTagged'. (A Wikidata comment)
+-/
+#guard_msgs in
+#wikidata_tags
+
+/-- error: <input>:1:5: Wikidata ids must consist of the letter Q followed by digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q12X3"
+
+/-- error: <input>:1:6: Wikidata ids must start with the letter Q followed by one or more digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "P12345"
+
+/-- info: Q42 -/
+#guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q42"
+
+namespace LMFDB
+
+@[lmfdb group.abelian "A vacuous comment"]
+theorem IsAbelian : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.IsAbelian}"
+
+/--
+error: <input>:1:9: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB.tag"
+
+/-- info: lmfdb.tag_99 -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "lmfdb.tag_99"
+
+/--
+error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB&tag"
+
+/--
+info:
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacuous comment)
+-/
+#guard_msgs in
+#lmfdb_tags
+
+end LMFDB
+
+namespace Pibase
+
+@[pibase topology P000001 "A vacuous comment"]
+theorem p : True := .intro
+
+@[pibase topology S000023]
+theorem s : True := .intro
+
+@[pibase topology T000001]
+theorem t : True := .intro
+
+/--
+info: some ([π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `Pibase.p}"
+
+/--
+info:
+[π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'. (A vacuous comment)
+[π-Base (Topology) S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration 's'.
+[π-Base (Topology) T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration 't'.
+-/
+#guard_msgs in
+#pibase_tags topology
+
+-- The `topology` topic token is non-reserved: `topology` must remain usable as an identifier
+-- (it appears as one throughout Mathlib, e.g. `AlgebraicGeometry.ProEt.topology`).
+example (topology : Nat) : Nat := topology
+
+/-- error: <input>:1:3: π-Base ids must have exactly six digits after P/S/T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P42"
+
+/-- error: <input>:1:7: π-Base ids must consist of P, S, or T followed by six digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P00001X"
+
+/-- error: <input>:1:7: π-Base ids must start with P, S, or T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "Q000001"
+
+/-- info: S000023 -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "S000023"
+
+end Pibase
+
+namespace DLMF
+
+@[dlmf 5.5.E1 "A vacuous comment"]
+theorem test : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: some ([DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `DLMF.test}"
+
+/--
+error: <input>:1:6: DLMF references must consist only of (lowercase) roman numerals, the letters E/T/F, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "random*string"
+
+/-- info: 18.30.iv -/
+#guard_msgs in #parse Mathlib.CrossRef.dlmfIdFn => "18.30.iv"
+
+/--
+info:
+[DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) corresponds to declaration 'test'. (A vacuous comment)
+-/
+#guard_msgs in
+#dlmf_tags
+
+end DLMF
+
 section errors
 
-open Lean Parser Mathlib.StacksTag
+open Lean Parser Mathlib.CrossRef
 
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"

@@ -5,11 +5,12 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Std.Data.Iterators.Combinators.Zip
 public import Lean.Parser.Command
 meta import Std.Data.Iterators.Producers.Range
-import Std.Data.Iterators
 
 /-!
 # The "DocString" style linter
@@ -148,6 +149,8 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let currIndent := fm.toPosition pos |>.column
 
     if docStx.isMissing then continue -- this is probably superfluous, thanks to `some pos` above.
+    -- ignore antiquotations from syntax patterns like `$(_)?`
+    unless docStx.getKind == ``Parser.Command.docComment do continue
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue

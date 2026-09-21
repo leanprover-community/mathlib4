@@ -44,7 +44,7 @@ variable [IsFiltered J] {c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)}
 
 include hc hf
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, `c` is a colimit cocone for the corresponding
 functor `J ⥤ C`, and `f : c.pt ⟶ X` is induced by the inclusions,
@@ -55,7 +55,7 @@ lemma mono_of_isColimit_monoOver : Mono f := by
   have := NatTrans.mono_of_mono_app α
   exact colim.map_mono' α hc (isColimitConstCocone J X) f (by simpa using hf)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, the colimit of `F` (computed in `C`) gives
 a subobject of `F` which is a supremum of the subobjects corresponding to
@@ -63,7 +63,7 @@ the objects in the image of the functor `F`. -/
 lemma subobjectMk_of_isColimit_eq_iSup :
     haveI := mono_of_isColimit_monoOver F hc f hf
     Subobject.mk f = ⨆ j, Subobject.mk (F.obj j).obj.hom := by
-  haveI := mono_of_isColimit_monoOver F hc f hf
+  have := mono_of_isColimit_monoOver F hc f hf
   apply le_antisymm
   · rw [le_iSup_iff]
     intro s H
@@ -82,7 +82,7 @@ lemma subobjectMk_of_isColimit_eq_iSup :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `X : C` be an object in a Grothendieck abelian category,
 `F : J ⥤ MonoOver X` a functor from a filtered category, `c` a cocone for
 the composition `F ⋙ MonoOver.forget _ : J ⥤ Over X`. We assume

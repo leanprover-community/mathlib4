@@ -78,7 +78,7 @@ lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   refine Module.flat_of_isLocalized_span _ _ s hsp _
     (fun r ↦ Algebra.linearMap S <| Localization.Away r.1) ?_
   dsimp only [RingHom.Flat] at h
-  convert h; ext
+  convert! h; ext
   apply Algebra.smul_def
 
 /-- Flat is a local property of ring homomorphisms. -/
@@ -243,7 +243,6 @@ end CommRingCat
 
 open CategoryTheory Limits
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S ⊗[R] S → S` is flat, then also `T ⊗[R] A → T ⊗[S] A` is flat. -/
 -- TODO: If necessary, generalize the universes here by composing with suitable `ULift`
 -- isomorphisms.
