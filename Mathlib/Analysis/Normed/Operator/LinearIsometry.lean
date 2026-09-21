@@ -1037,7 +1037,7 @@ theorem symm_prodComm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E�
   rfl
 
 @[simp]
-theorem prodComm_trans_prodComm [Module R M₂] :
+theorem prodComm_trans_prodComm [Module R E₂] :
     (prodComm R E E₂).trans (prodComm R E₂ E) = .refl _ _ := by
   ext <;> simp
 
