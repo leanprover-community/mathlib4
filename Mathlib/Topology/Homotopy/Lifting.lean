@@ -787,8 +787,8 @@ theorem fundamentalGroupToMulOpposite_apply_eq_Iff {g : (Multiplicative G)ᵐᵒ
   hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_Iff
 
 variable {e} in
-theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplicative G} {Γ : C(I, E)}
-    (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
+theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplicative G}
+    {Γ : C(I, E)} (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
     hp.fundamentalGroupToMulOpposite e (.mk γ) = .op g :=
   hp.fundamentalGroupToMulOpposite_apply_eq_Iff.mpr <| by
     rw [hp.isCoveringMap.monodromy_eq_apply_one hpΓ Γ_0, Γ_1]; rfl
