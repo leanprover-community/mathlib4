@@ -759,8 +759,12 @@ variable {f} in
 theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
   rfl
 
-theorem ker_eq_comap_bot (f : F) : ker f = Ideal.comap f ⊥ :=
+theorem ker_eq_comap_bot : ker f = Ideal.comap f ⊥ :=
   rfl
+
+@[simp]
+theorem map_ker : (ker f).map f = ⊥ :=
+  Ideal.map_comap_bot
 
 theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.comp g) := by
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
