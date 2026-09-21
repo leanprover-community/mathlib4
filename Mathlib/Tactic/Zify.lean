@@ -120,10 +120,6 @@ attribute [zify_simps ←] Int.ofNat_inj Int.ofNat_le Int.ofNat_lt Int.ofNat_dvd
 
 variable {R : Type*} [AddGroupWithOne R]
 
-@[deprecated "use Nat.cast_sub" (since := "2026-02-21"), norm_cast]
-theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
-    ((n - m : ℕ) : R) = n - m := Nat.cast_sub (m.le_add_right k |>.trans h)
-
 @[norm_cast] theorem Nat.cast_sub_of_lt {m n} (h : m < n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub h.le
 

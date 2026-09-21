@@ -186,6 +186,9 @@ theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff ψ ≠ 0) :
 protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ :=
   MvPowerSeries.mul_inv_rev _ _
 
+protected theorem inv_pow (φ : k⟦X⟧) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹ :=
+  MvPowerSeries.inv_pow _
+
 @[simp]
 theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=
   MvPowerSeries.C_inv _
@@ -250,7 +253,7 @@ theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divXPowOrder f ↔ IsUnit f :=
   ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order = 0 := by
-      simp [order_zero_of_unit h]
+      simp [order_zero_of_isUnit h]
     conv_lhs => rw [← X_pow_order_mul_divXPowOrder (f := f), this, ENat.toNat_zero,
       pow_zero, one_mul]⟩
 

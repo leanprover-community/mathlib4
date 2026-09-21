@@ -10,6 +10,8 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
 
 /-!
+# The type `List.Vector`
+
 The type `List.Vector` represents lists with fixed length.
 
 TODO: The API of `List.Vector` is quite incomplete relative to `Vector`,
@@ -124,11 +126,10 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Map a vector under a partial function. -/
 def pmap (f : (a : α) → p a → β) :
     (v : Vector α n) → (∀ x ∈ v.toList, p x) → Vector β n
-  | ⟨l, h⟩, hp => ⟨List.pmap f l hp, by simp [h]⟩
+  | ⟨l, h⟩, hp => ⟨List.pmap f l hp, h ▸ length_pmap⟩
 
 @[simp]
 theorem pmap_nil (f : (a : α) → p a → β) (hp : ∀ x ∈ nil.toList, p x) :

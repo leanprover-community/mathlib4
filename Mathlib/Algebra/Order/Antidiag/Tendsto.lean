@@ -23,7 +23,7 @@ namespace Finset.HasAntidiagonal
 
 open Filter
 
-variable {M R : Type*} [AddMonoid M] [HasAntidiagonal M] {f : M × M → R} [LinearOrder R]
+variable {M R : Type*} [AddZeroClass M] [HasAntidiagonal M] {f : M × M → R} [LinearOrder R]
   {F : Filter R}
 
 lemma tendsto_sup'_antidiagonal_cofinite (hf : Tendsto f cofinite F) : Tendsto

@@ -6,7 +6,6 @@ Authors: Yoh Tanimoto, Yongxi Lin, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
@@ -733,8 +732,10 @@ lemma tendsto_integral_of_L1' {ι} (f : X → E)
     (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 μ.variation) l (𝓝 0)) :
     Tendsto (fun i ↦ ∫ᵛ x, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x, f x ∂[B; μ])) := by
   refine tendsto_integral_of_L1 f hfi hFi ?_
-  simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
-  exact hF
+  apply hF.congr'
+  filter_upwards [hFi] with i hi
+  rw [eLpNorm_one_eq_lintegral_enorm (hi.aestronglyMeasurable.sub hfi)]
+  rfl
 
 variable {Y : Type*} [TopologicalSpace Y] [FirstCountableTopology Y]
 
