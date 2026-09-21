@@ -214,7 +214,7 @@ def mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
 
 section Pi
 
-variable {ι : Type*} (R : ι → Type*) (n)
+variable (n) {ι : Type*} (R : ι → Type*)
 
 /-- The monoid equivalence between `GL n` of a product of rings,
 and the product of the `GL n` of each ring. -/
