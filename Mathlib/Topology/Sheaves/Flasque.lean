@@ -238,11 +238,15 @@ instance of_injective {X : TopCat.{u}}
     simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Flasque sheaves have no higher cohomology. For most applications, it is probably better to use
-`Subsingleton (H F (n + 1))` which can be proven by `TopCat.Sheaf.IsFlasque.subsingleton_H` -/
-theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
-    IsZero (AddCommGrpCat.of (H F (n+1))) := by
-  let : HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{u} := inferInstance
+/-- Flasque sheaves have no higher cohomology. -/
+instance subsingleton_H {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) [NeZero n] :
+    Subsingleton (H F n) := by
+  suffices h : ∀(F : Sheaf AddCommGrpCat X) [F.IsFlasque] (n : ℕ),
+      IsZero <| AddCommGrpCat.of (F.H (n + 1)) by
+    have := NeZero.ne n
+    rw [show n = n - 1 + 1 by lia]
+    exact AddCommGrpCat.subsingleton_of_isZero (h F _)
+  intro F _ n
   induction n generalizing F with
   | zero =>
     obtain ⟨I, _, f, hf⟩ := EnoughInjectives.presentation F
@@ -267,10 +271,6 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     exact ShortComplex.Exact.isZero_of_both_isZero
       (Sheaf.H.longSequence_exact₁' hS (n+1) (n+2) rfl) (hn _)
       (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
-
-instance subsingleton_H {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) :
-    Subsingleton (H F (n + 1)) :=
-  AddCommGrpCat.subsingleton_of_isZero (H_isZero F n)
 
 end TopCat.Sheaf.IsFlasque
 
