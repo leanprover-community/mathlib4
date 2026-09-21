@@ -113,8 +113,8 @@ lemma stepSize_nonneg {t₀ tmax : ℝ} (n : ℕ) (ht₀ : t₀ ≤ tmax) :
   div_nonneg (sub_nonneg.mpr ht₀) (Nat.cast_nonneg n)
 
 /-- The delayed time input used in the Tonelli approximations. -/
-noncomputable def delayedInput (t₀ tmax : ℝ) (n : ℕ) : ℝ → ℝ :=
-  fun t ↦ max (t - stepSize t₀ tmax n) t₀
+noncomputable def delayedInput (t₀ tmax : ℝ) (n : ℕ) (t : ℝ) : ℝ :=
+  max (t - stepSize t₀ tmax n) t₀
 
 /-- The delayed input maps the first `k + 1` time steps into the first `k` time steps. -/
 lemma mapsTo_delayedInput_previous_interval
@@ -150,11 +150,20 @@ noncomputable def tonelliIterate (f : ℝ → E → E) (t₀ tmax : ℝ) (x₀ :
       fun t ↦ x₀ + ∫ s in t₀..t,
         f s (tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s))
 
+@[simp]
+lemma tonelliIterate_zero (f : ℝ → E → E) (t₀ tmax : ℝ) (x₀ : E) (n : ℕ) :
+    tonelliIterate f t₀ tmax x₀ n 0 = fun _ ↦ x₀ := rfl
+
+lemma tonelliIterate_succ (f : ℝ → E → E) (t₀ tmax : ℝ) (x₀ : E) (n k : ℕ) :
+    tonelliIterate f t₀ tmax x₀ n (k + 1) =
+      fun t ↦ x₀ + ∫ s in t₀..t,
+        f s (tonelliIterate f t₀ tmax x₀ n k (delayedInput t₀ tmax n s)) := rfl
+
 /-- Every recursively defined curve takes the value `x₀` at `t₀`. -/
 lemma tonelliIterate_apply_t₀
     (f : ℝ → E → E) {t₀ tmax : ℝ} (x₀ : E) (n : ℕ) (k : ℕ) :
     tonelliIterate f t₀ tmax x₀ n k t₀ = x₀ := by
-  induction k <;> simp [tonelliIterate]
+  cases k <;> simp [tonelliIterate_succ]
 
 /-- Every recursively defined curve stays in the cylinder and has Lipschitz constant `L`. -/
 private lemma tonelliIterate_bounds (hf : IsPeanoODE f tmin tmax t₀ x₀ r L) (n k : ℕ) :
@@ -223,12 +232,10 @@ lemma tonelliIterate_eq_succ_on_Icc (n : ℕ) (k : ℕ) (ht₀ : t₀ ≤ tmax) 
   induction k generalizing t with
   | zero =>
     obtain rfl : t = t₀ := by simp_all
-    unfold tonelliIterate
-    simp
+    simp [tonelliIterate_succ]
   | succ k ih =>
     push_cast at ht
-    unfold tonelliIterate
-    simp only [add_right_inj]
+    rw [tonelliIterate_succ, tonelliIterate_succ, add_right_inj]
     apply intervalIntegral.integral_congr
     intro s hs
     simp only [ih _ (mapsTo_delayedInput_previous_interval n k ht₀
@@ -270,7 +277,8 @@ lemma tonelliApproximation_eq_integral (n : ℕ) (t : ℝ) (ht : t ∈ Icc t₀ 
       rw [stepSize]
       grind
     simpa only [Nat.cast_add, Nat.cast_one, h_end] using ht
-  simp_rw [h_succ t ht, tonelliApproximation, tonelliIterate]
+  rw [h_succ t ht, tonelliIterate_succ]
+  rfl
 
 end TonelliApproximation
 
