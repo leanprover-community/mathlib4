@@ -146,7 +146,7 @@ elab tk:"deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command
     let pairs := id.zip news
     let msg := s!"* Pairings:\n{pairs.map fun (l, r) => (l.getId, r)}" ++
       if skip.size != 0 then s!"\n\n* Ignoring: {skip}" else ""
-    let dat := if dat.isSome then some dat.get!.getString else none
+    let dat := dat.map (·.getString)
     let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n dat
     if newCmd == cmd then
       logWarningAt cmd m!"New declaration uses the old name {oldId.raw.getArg 0}!"
