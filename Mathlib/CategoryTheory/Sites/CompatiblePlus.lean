@@ -98,8 +98,8 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
       slice_lhs 2 3 =>
         erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P Y.unop))).fac]
       dsimp
-      simp only [HasColimit.isoOfNatIso_ι_hom_assoc, GrothendieckTopology.diagramPullback_app,
-        colimit.ι_pre, HasColimit.isoOfNatIso_ι_hom, ι_colimMap_assoc]
+      simp only [HasColimit.ι_isoOfNatIso_hom_assoc, GrothendieckTopology.diagramPullback_app,
+        colimit.ι_pre, HasColimit.ι_isoOfNatIso_hom, ι_colimMap_assoc]
       simp only [← Category.assoc]
       dsimp
       congr 1

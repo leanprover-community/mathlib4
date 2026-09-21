@@ -407,13 +407,13 @@ lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (�
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
   simp only [IsBasis] at H ⊢
-  convert! H.isInducing h
+  convert! h.isTopologicalBasis H
   ext; simp
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
     IsCompactElement s ↔ IsCompact (s : Set α) := by
-  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup]
+  rw [isCompact_iff_finite_subcover, isCompactElement_iff_exists_le_iSup_of_le_iSup]
   refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
