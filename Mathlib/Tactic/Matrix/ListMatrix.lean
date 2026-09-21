@@ -16,7 +16,7 @@ facts about matrix literals.
 ## Implementation notes
 
 `dotProduct` is sealed, and its expansion into the sum of products is reached only through
-`dotProduct_add_one_cons_cons`. Checking that expansion by kernel unfolding would make the kernel
+the rewrite lemmas. Checking that expansion by kernel unfolding would make the kernel
 unfold `+` and `*` as well. For computable rings it then wastefully evaluates the entries, and
 for noncomputable rings it probes many nodes of opaque operations, which brings a worse constant.
 
@@ -47,11 +47,9 @@ theorem dotProduct_add_one [Mul α] [Add α] [Zero α] (n : Nat) (l₁ l₂ : Li
     dotProduct (n + 1) l₁ l₂ = l₁.headD 0 * l₂.headD 0 + dotProduct n l₁.tail l₂.tail := by
   rw [dotProduct]
 
-/- This is shaped to take the proof for the smaller dot product as an argument to produce a
-smaller proof term for the kernel check, as this avoids requiring `Eq.trans` and `congrArg` glue
-at each step. -/
-theorem dotProduct_add_one_cons_cons [Mul α] [Add α] [Zero α] {n : Nat} (a b : α)
-    {l₁ l₂ : List α}
+/- This is shaped to take the proof for the smaller dot product as an argument, as this avoids
+requiring `Eq.trans` and `congrArg` glue at each step. -/
+theorem dotProduct_add_one_cons_cons [Mul α] [Add α] [Zero α] {n : Nat} (a b : α) {l₁ l₂ : List α}
     {c : α} (h : dotProduct n l₁ l₂ = c) : dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + c := by
   rw [dotProduct_add_one, List.headD_cons, List.headD_cons, List.tail_cons, List.tail_cons, h]
 
@@ -82,8 +80,9 @@ theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (
         exact ih k
     · simpa using hj
 
-/-- The product of two lists of rows as `l` rows of `n` entries, each entry a dot product of
-`m` terms, with `A` read as an `l × m` matrix and `B` as an `m × n` matrix. -/
+/-- The product of two lists of rows as `l` rows of `n` entries.
+Each entry is a dot product of `m` terms, with `A`/`B` read as an `l × m` and an `m × n` matrix
+respectively. -/
 @[expose] def mul [Mul α] [Add α] [Zero α] (l m n : Nat) (A B : List (List α)) : List (List α) :=
   let Bt := transpose n B
   (A.rightpad l []).map fun row ↦ Bt.map (dotProduct m row)

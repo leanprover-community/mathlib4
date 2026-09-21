@@ -85,14 +85,15 @@ structure MulEq (l m n : Nat) where
   B : Q(List (List $α))
   /-- The rows of the product, each entry the sum of the products of the entries. -/
   rows : List (List Q($α))
-  /-- The list literal of `rows` as built by `mkListLitQ`. -/
+  /-- The list literal of `rows`. -/
   expr : Q(List (List $α))
   /-- The proof. -/
   proof : Q(ListMatrix.mul $l $m $n $A $B = $expr)
 
-/-- Rewrite `ListMatrix.mul l m n A B`, for `A` the list literal of the `l` rows `listA` of `m`
-entries and `B` that of the `m` rows `listB` of `n` entries over `α`, to the literal whose entries
-are the sums of products of the entries. The rows are not checked against `l`, `m` and `n`. -/
+/-- Rewrite `ListMatrix.mul l m n A B` to the literal whose entries are the sums of products of
+the entries.
+`listA`/`listB` are the rows of the `l × m` and `m × n` matrix respectively.
+The rows are not checked against `l`, `m` and `n`. -/
 def proveMul (l m n : Nat) (listA listB : List (List Q($α))) : MulEq zα aα mα l m n :=
   let Bt := letI : Zero Q($α) := ⟨q(0)⟩; ListMatrix.transpose n listB
   let mulEntryEqs := listA.map fun row => Bt.map fun col => proveDotProduct zα aα mα m row col

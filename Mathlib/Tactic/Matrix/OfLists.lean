@@ -24,9 +24,6 @@ operations to the matrix ones.
 The definitions recurse on the dimensions, so on literals they reduce in the kernel to the
 `vecCons` form of the `!![…]` notation, and a literal in that notation is definitionally an
 `ofLists` term.
-
-When the elaboration of the `!![…]` notation changes to list-based, `ofList` and `ofLists` will
-become unnecessary.
 -/
 
 @[expose] public section
