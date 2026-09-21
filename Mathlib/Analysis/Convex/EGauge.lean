@@ -377,11 +377,15 @@ lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge
 lemma le_egauge_unitClosedBall (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (closedBall 0 1) x := by
   simpa using div_le_egauge_closedBall 𝕜 1 x
 
+@[deprecated (since := "2026-09-21")] alias le_egauge_closedBall_one := le_egauge_unitClosedBall
+
 lemma div_le_egauge_ball (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (ball 0 r) x :=
   (div_le_egauge_closedBall 𝕜 r x).trans <| egauge_anti _ ball_subset_closedBall _
 
 lemma le_egauge_unitBall (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (ball 0 1) x := by
   simpa using div_le_egauge_ball 𝕜 1 x
+
+@[deprecated (since := "2026-09-21")] alias le_egauge_ball_one := le_egauge_unitBall
 
 variable {𝕜}
 variable {c : 𝕜} {x : E} {r : ℝ≥0}
@@ -393,5 +397,9 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x�
 lemma egauge_unitBall_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (ball 0 1) x ≤ ‖c‖ₑ * ‖x‖ₑ := by
   simpa using egauge_ball_le_of_one_lt_norm hc (.inl one_ne_zero)
+
+@[deprecated (since := "2026-09-21")] alias egauge_ball_one_le_of_one_lt_norm :=
+  egauge_unitBall_le_of_one_lt_norm
+
 
 end SeminormedAddCommGroup
