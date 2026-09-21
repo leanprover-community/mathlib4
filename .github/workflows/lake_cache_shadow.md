@@ -5,11 +5,12 @@ live mathlib4 master branch. It runs beside the regular master CI and stays
 independent of it. It writes to an isolated `mathlib4-master-shadow` scope, so
 no other consumer reads what it produces.
 
-The pipeline caches mathlib and every git dependency in its manifest as one
-unit. A run publishes a single revision file per mathlib commit, holding the
-whole cone of artifacts that commit builds, and a consumer replays all of it
-from that one file. `<DEP>` below is one dependency, and every put and get uses
-one scope, `mathlib4-master-shadow`.
+The pipeline caches mathlib and every git dependency in its manifest. mathlib
+goes to `revisions/<SCOPE>/<mathlib-sha>.jsonl`, and the dependencies go under
+that same commit, at `revisions/by-sha/<mathlib-sha>/<SCOPE>/<DEP>/<R-DEP>.jsonl`,
+where `<DEP>` is the dependency, `<R-DEP>` is its revision from the manifest and
+`<SCOPE>` is `mathlib4-master-shadow`. A mathlib commit therefore names one
+complete, self-consistent set of packages.
 
 ## Jobs
 
@@ -26,81 +27,83 @@ one scope, `mathlib4-master-shadow`.
 
 ## Cache service configuration
 
-Every `lake cache` call passes `--service=shadow`. Each job writes that service
-definition itself, into the file `LAKE_CONFIG` names, because each job runs on
-its own runner:
+Each job writes its own service definitions, into the file `LAKE_CONFIG` names,
+because each job runs on its own runner. There are two, and they differ only in
+where they look for a revision file:
 
     [[cache.service]]
     name = "shadow"
     type = "s3"
-    artifactEndpoint = "https://pub-<hash>.r2.dev/<prefix>/artifacts"
-    revisionEndpoint = "https://pub-<hash>.r2.dev/<prefix>/revisions"
+    artifactEndpoint = "https://<host>/cache/artifacts"
+    revisionEndpoint = "https://<host>/cache/revisions"
+
+    [[cache.service]]
+    name = "shadow-deps"
+    type = "s3"
+    artifactEndpoint = "https://<host>/cache/artifacts"
+    revisionEndpoint = "https://<host>/cache/revisions/by-sha/<mathlib-sha>"
 
 A job that fetches writes the public read endpoints, as above. The upload job
 writes the authenticated S3 endpoints, and `LAKE_CACHE_KEY` signs its requests.
-A services file is the supported way to configure a cache service, and Lake
-deprecates the endpoint environment variables.
+
+The two endpoints are what make the dependency keys exact. A dependency's
+revision does not say which upstreams it was built against, and a run of
+mathlib that bumps one dependency changes the correct mappings for every
+dependency downstream of it. The mathlib commit does determine the whole set,
+through its manifest, so it qualifies the revision endpoint. It does not
+qualify the artifact endpoint, so a dependency whose content did not change
+overwrites its own artifacts instead of leaving a copy under every commit.
+
+`build_and_stage` also writes a `shadow-deps-prev` service, pointing at the
+previous run's commit, which is what its dependency warm start reads.
 
 ## Push
 
 Every run publishes every package. A dependency costs seconds to export once
-its artifacts are in the local cache, and the run writes one revision file
-either way, so the pipeline does not ask the bucket what it already holds.
+its artifacts are in the local cache, and the run writes one revision file per
+package either way, so the pipeline does not ask the bucket what it already
+holds.
 
-1. `lake build Mathlib -o .lake/dep-outputs/mathlib.jsonl` builds mathlib and
-   every dependency, writes the artifacts into the local Lake cache, and
-   records mathlib's own mappings. Lake tracks every target the build covers,
-   whether it compiled it or replayed it.
+1. `lake build Mathlib -o .lake/outputs.jsonl` builds mathlib and every
+   dependency, writes the artifacts into the local Lake cache, and records
+   mathlib's own mappings. Lake tracks every target the build covers, whether
+   it compiled it or replayed it.
 2. `lake build @<DEP> --package=<DEP> -o .lake/dep-outputs/<DEP>.jsonl`, once
    per dependency. `-o` records the mappings of the workspace root, and
    `--package` points it at a dependency instead, so the export runs in
    mathlib's own workspace and replays what step 1 produced. `@<DEP>` names
    the default targets of the dependency, which reach the modules mathlib
    does not import.
-3. Merge. Lake builds the map in pieces and offers no way to combine them:
-   `-o` writes exactly one package's mappings, and `cache stage` copies one
-   mappings file over the staging directory's `outputs.jsonl`, so staging
-   twice accumulates the artifacts but keeps only the second map. The
-   workflow merges on the file format instead: a mappings file is a schema
-   version line followed by one flat input-hash-keyed entry per target, with
-   no per-package partition, so keeping one header and concatenating the
-   entries yields a valid map. Lake skips a repeated schema line with a
-   warning and takes the last of a repeated entry, so this is about not
-   shipping a file that warns on every load, not about correctness. It is
-   the one place the pipeline reads the mappings format. A `-o` that covered
-   the whole workspace, or a `cache stage` that took several mappings files,
-   would remove the need for it.
-4. `lake cache stage .lake/outputs.jsonl lake-cache-staging` copies the map and
-   every artifact it names into one flat directory. The tree travels to the
-   `upload` job as a GitHub artifact, because the build runs in a sandbox
+3. `lake cache stage`, once per package, each into its own directory, because
+   `cache stage` writes one `outputs.jsonl` per directory. The tree travels to
+   the `upload` job as a GitHub artifact, because the build runs in a sandbox
    without the credentials.
-5. `lake cache put-staged lake-cache-staging --service=shadow --scope=<SCOPE>
-   --rev=<mathlib-sha>`. Lake PUTs the artifacts first and the revision file
-   last, so a reader never sees a map whose artifacts are missing.
+4. `lake cache put-staged`, once per package. mathlib goes to
+   `--service=shadow --scope=<SCOPE> --rev=<mathlib-sha>`, and each dependency
+   to `--service=shadow-deps --scope=<SCOPE>/<DEP> --rev=<R-DEP>`. Lake PUTs
+   the artifacts first and the revision file last.
 
 ## Pull
 
 The `consume` job builds mathlib from the bucket alone. It sets
 `LAKE_NO_CACHE`, so the bucket accounts for every replay.
 
-1. `lake cache get --service=shadow --scope=<SCOPE> --rev=<mathlib-sha>`. The
-   revision file maps every input hash in the workspace, so this one fetch
-   downloads every artifact the replay needs, mathlib's and its dependencies'.
-   Lake saves the file at
-   `$LAKE_CACHE_DIR/revisions/mathlib/<mathlib-sha>.jsonl`.
-2. `lake cache add <that file> --package=<DEP> --service=shadow
-   --scope=<SCOPE>`, once per dependency. Lake resolves an input hash under
-   the owning package's local scope, and step 1 registered the map under the
-   root's only. This step is offline: the artifacts are already on disk.
-   `--service` and `--scope` record where they came from, so one that goes
-   missing is re-fetched rather than rebuilt.
-3. `lake build Mathlib` replays the whole cone.
+1. `lake cache get --service=shadow --scope=<SCOPE> --rev=<mathlib-sha>`.
+2. `lake cache get --service=shadow-deps --package=<DEP> --scope=<SCOPE>/<DEP>
+   --rev=<R-DEP>`, once per dependency, with the revisions from mathlib's
+   manifest.
+3. `lake build Mathlib` replays both.
 
-The `downstream` job runs the same two steps for a small project that requires
-mathlib, with `--package=mathlib` on the fetch. It derives no scope of its own
-beyond the toolchain slug, which it reads off its own `lean-toolchain`. A real
-downstream project holds mathlib's sha and nothing else, and that is all the
-bucket asks for.
+The `downstream` job runs the same sequence for a small project that requires
+mathlib. It holds mathlib's sha and its own manifest, and derives no scope or
+qualifier of its own.
+
+Every fetch passes `--rev`, so each is one exact request. Without `--rev` Lake
+lists the package's own HEAD and up to `--max-revs` ancestors, default 100, and
+probes them in order until one has a published map. That walk cannot help here:
+one mathlib commit pins one revision of each dependency, so its revision
+endpoint holds exactly one revision per package and the other 99 requests would
+find nothing.
 
 ## What a warm run adds
 
@@ -111,43 +114,49 @@ keys or the content that a run writes.
   --rev=<previous-sha>` seeds the local cache from the previous run on this
   toolchain, so step 1 compiles the churn since that run only.
   `analysis/<toolchain-slug>/_latest.txt` holds the previous sha.
-- The dependency half of the warm start. The fetch above already downloaded
-  every dependency artifact, so this is a `lake cache add` per dependency
-  against the previous run's file, which lets step 1 replay them instead of
-  compiling them.
+- The dependency warm start, `--service=shadow-deps-prev` for each dependency,
+  which reads the previous run's published set. A dependency this run bumps is
+  not in it and misses at once, because the lookup is exact.
 - The legacy cache, for a cold analysis chain only, where no previous run
   exists to warm start from.
-
-The `--rev` arguments are an optimization too. Without them Lake searches back
-through the ancestors of the checkout's HEAD.
 
 ## Storage layout
 
 One bucket holds these keys:
 
     revisions/mathlib4-master-shadow/<mathlib-sha>.jsonl
+    revisions/by-sha/<mathlib-sha>/mathlib4-master-shadow/<DEP>/<R-DEP>.jsonl
     artifacts/mathlib4-master-shadow/<content-hash>.art
+    artifacts/mathlib4-master-shadow/<DEP>/<content-hash>.art
     analysis/<toolchain-slug>/_latest.txt
     analysis/<toolchain-slug>/<mathlib-sha>.txt
 
 `lake cache get --scope=<SCOPE> --rev=<REV>` reads
-`revisions/<SCOPE>/<REV>.jsonl`, which maps input hashes to artifacts, and
-downloads the `artifacts/<SCOPE>/<content-hash>.art` files it names. Lake does
-not know the `analysis/` prefix; the workflow owns it. `_latest.txt` holds the
-sha the next run warm starts from, and `<mathlib-sha>.txt` holds its carryover
-baseline.
+`<revisionEndpoint>/<SCOPE>/<REV>.jsonl`, which maps input hashes to artifacts,
+and downloads the `<artifactEndpoint>/<SCOPE>/<content-hash>.art` files it
+names. Lake does not know the `analysis/` prefix; the workflow owns it.
+`_latest.txt` holds the sha the next run warm starts from, and
+`<mathlib-sha>.txt` holds its carryover baseline.
 
-One revision file per mathlib commit is the whole cone for that commit, so an
-old commit stays replayable for as long as its file and artifacts live. The
-artifacts are content-addressed under a constant scope, so a run that rebuilds
-unchanged bytes overwrites them rather than adding a copy.
+The revision keys carry the mathlib sha and the artifact keys do not, so an old
+commit stays replayable for as long as its revision files live, while the
+artifacts stay shared. A toolchain bump is itself a mathlib commit, so it writes
+new revision keys and leaves the previous toolchain's set in place; its
+artifacts differ in content and therefore in key, and both coexist.
 
 ## The scope
 
 Lake requires `--scope` or `--repo` on every put and get against a custom
-endpoint; there is no unscoped form. The pipeline passes the one string
-`mathlib4-master-shadow` to `--scope`, which Lake uses verbatim, to keep this
-experiment's artifacts apart from the rest of the bucket.
+endpoint; there is no unscoped form. The pipeline passes
+`mathlib4-master-shadow` for mathlib and `mathlib4-master-shadow/<DEP>` for a
+dependency, which Lake uses verbatim. The prefix keeps this experiment apart
+from the rest of the bucket, and the package segment gives each package its own
+artifact namespace, which is where a content hash is trusted.
+
+The scope carries no other qualifier. It needs no pin hash, because the
+revision endpoint already names the commit that pins the whole set. It needs no
+toolchain segment, because mathlib declares `fixedToolchain` and one commit
+therefore means one build.
 
 `--repo=<owner>/<name>` would make Lake append the toolchain and the platform
 itself, but a repo scope takes exactly one `/` and has no room for the
@@ -156,32 +165,27 @@ the same `fixedToolchain` and `platformIndependent` nullification the consumer
 applies, and the two sides could disagree on the path. Every job runs on Linux,
 so the scope carries no platform segment.
 
-Nothing in the bucket is keyed by a dependency's own revision. A dependency is
-reachable through the mathlib commit that pins it, which is what a consumer of
-this cache has.
-
-The scope carries no toolchain segment either, because mathlib declares
-`fixedToolchain` and one commit therefore means one build. The
-`toolchain_override` input breaks that declaration: it runs one commit on a
-second toolchain, and both runs write `revisions/mathlib4-master-shadow/<that
-commit>.jsonl`. The later run wins, and the other lineage's next warm start
+The `toolchain_override` input is the one case that breaks "a commit determines
+its toolchain": it runs one commit on a second toolchain, and both runs write
+that commit's keys. The later run wins, and the other lineage's next warm start
 fetches mappings that match nothing and rebuilds from source. Master moves
 between runs, so two lineages rarely land on one commit, but an override run
-given an explicit `mathlib_ref` can. Adding a toolchain segment to the scope
-fixes it and orphans everything already in the bucket, so it wants its own
-change.
+given an explicit `mathlib_ref` can. Adding a toolchain segment fixes it and
+orphans everything already in the bucket, so it wants its own change.
 
 ## What a full cache hit requires
 
 Three things are necessary. Without any one of them a fetch returns mappings
 that do not match, and the modules rebuild.
 
-- The lakefile patch, which lets the workspace write to Lake's artifact cache
-  at all. mathlib does not set `enableArtifactCache` itself yet, so the
-  pipeline injects it. Every dependency inherits the setting from the root.
+- `LAKE_ARTIFACT_CACHE=true`, which lets the workspace write to Lake's
+  artifact cache at all. mathlib does not set `enableArtifactCache` in its
+  lakefile, and Lake reads the environment before the lakefile, so the
+  pipeline sets the variable and leaves the checkout untouched. Every package
+  in the workspace inherits it, dependencies included.
 - The export of each dependency, with `--package`.
-- The `lake cache add` per dependency on the consumer, which is what makes the
-  merged map resolvable under each package's own local scope.
+- The `by-sha` revision endpoint, which is what pairs a dependency's revision
+  with the upstreams it was built against.
 
 Everything in "What a warm run adds" is speed. A run without those parts writes
 the same keys with the same content, and takes longer.
@@ -230,8 +234,8 @@ Every per-dependency step tolerates failure. A miss, or a failed export, makes
 that dependency build from source, and the consume health line reports it. A
 toolchain older than v4.35.0-rc1 has no `build --package` and behaves the same
 way. A dependency that sets `enableArtifactCache := false` in its own lakefile
-would export mappings whose artifacts are not in the cache, which fails
-`lake cache stage`; put it on the skip list.
+overrides the environment, so it would export mappings whose artifacts are not
+in the cache, which fails `lake cache stage`; put it on the skip list.
 
 ## Required repository configuration
 
