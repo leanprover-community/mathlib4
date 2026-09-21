@@ -939,10 +939,10 @@ lemma IsPushout.iff_app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
 /-- Consider a pushout square in a category of functors `J ⥤ C`, where `C` has pushouts:
 ```
    t
-F₁ ⇨ F₂
+F₁ → F₂
 l|    |r
  v    v
-F₃ ⇨ F₄
+F₃ → F₄
    b
 ```
 Assume that we have cocones `c₁`, `c₂`, `c₃`, and `c₄` for these functors,
