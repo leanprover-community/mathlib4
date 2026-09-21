@@ -590,7 +590,6 @@ theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
   ((equivMonoOver Y).inverse.mapIso
     (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (pullback f).obj x = mk (pullback.snd x.arrow f) := by
   obtain ⟨Z, i, _, rfl⟩ := mk_surjective x

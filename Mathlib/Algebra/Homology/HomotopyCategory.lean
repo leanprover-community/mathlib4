@@ -124,7 +124,6 @@ lemma quotient_map_eq_zero_iff {C D : HomologicalComplex V c} (f : C ⟶ D) :
   ⟨fun h ↦ ⟨homotopyOfEq _ _ (by simpa using h)⟩,
     fun ⟨h⟩ ↦ by simpa using eq_of_homotopy _ _ h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrarily chosen representation of the image of a chain map in the homotopy category
 is homotopic to the original chain map.
 -/
@@ -150,7 +149,6 @@ def isoOfHomotopyEquiv {C D : HomologicalComplex V c} (f : HomotopyEquiv C D) :
     rw [← (quotient V c).map_comp, ← (quotient V c).map_id]
     exact eq_of_homotopy _ _ f.homotopyInvHomId
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two complexes become isomorphic in the homotopy category,
   then they were homotopy equivalent. -/
 def homotopyEquivOfIso {C D : HomologicalComplex V c}
@@ -255,7 +253,6 @@ lemma Functor.mapHomotopyCategoryFactors_hom_app (F : V ⥤ W) [F.Additive] {c :
     (K : HomologicalComplex V c) :
     (F.mapHomotopyCategoryFactors c).hom.app K = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO develop lifting of natural transformations for general quotient categories so that
 -- `NatTrans.mapHomotopyCategory` become a particular case of it
 /-- A natural transformation induces a natural transformation between

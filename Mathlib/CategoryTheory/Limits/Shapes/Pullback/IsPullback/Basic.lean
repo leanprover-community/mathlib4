@@ -406,7 +406,6 @@ lemma paste_twist_right {X Y Z S : C} {f : X ⟶ S} {g : Y ⟶ S} {i : Z ⟶ S}
   rw [← hrw, ht₁]
   exact .paste_horiz hsndfgr hfg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a `HasPullback` variant of `CategoryTheory.IsPullback.paste_twist_right` -/
 lemma map_fst_comp_fst_snd_comp_fst {X Y Z U S : C} (f : X ⟶ S) (g : Y ⟶ S) (i : Z ⟶ S)
     [HasPullback i g] (h : U ⟶ pullback i g) [HasPullback f g] [HasPullback (pullback.snd f g)

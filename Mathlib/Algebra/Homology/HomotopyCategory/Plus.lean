@@ -309,7 +309,6 @@ noncomputable instance :
   inferInstanceAs (((HomotopyCategory.plus D).lift (HomotopyCategory.Plus.ι C ⋙
     F.mapHomotopyCategory (.up ℤ)) _).CommShift ℤ)
 
-set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] [HasZeroObject D] [HasBinaryBiproducts D] :
     (F.mapHomotopyCategoryPlus).IsTriangulated := by
   dsimp only [mapHomotopyCategoryPlus]
