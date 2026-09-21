@@ -31,6 +31,8 @@ order on matrices on `ℝ` or `ℂ`.
 
 ## Main results
 
+* `Matrix.PosSemidef.dotProduct_mulVec_zero_iff`: for a positive semi-definite matrix `A`,
+  we have `x⋆ A x = 0` iff `A x = 0`.
 * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
   positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
   positive semidefinite.
@@ -350,6 +352,33 @@ protected lemma zpow [StarOrderedRing R'] [DecidableEq n]
 lemma trace_nonneg [AddLeftMono R] {A : Matrix n n R} (hA : A.PosSemidef) : 0 ≤ A.trace :=
   Fintype.sum_nonneg fun _ ↦ hA.diag_nonneg
 
+/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
+theorem dotProduct_mulVec_zero_iff [StarOrderedRing R'] [NoZeroDivisors R']
+    {A : Matrix n n R'} (hA : A.PosSemidef) {x : n → R'} :
+    star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
+  refine ⟨fun hx ↦ ?_, fun hx ↦ by simp [hx]⟩
+  suffices h : ∀ y, star x ⬝ᵥ A *ᵥ y = 0 by
+    refine dotProduct_star_self_eq_zero.mp ?_
+    simpa [dotProduct_mulVec, star_mulVec, hA.isHermitian.eq] using h (A *ᵥ x)
+  intro y
+  set z := star x ⬝ᵥ A *ᵥ y with hz
+  suffices h : star z * z ≤ 0 by simpa using le_antisymm h (by simp)
+  calc star z * z ≤ 2 • (star z * z) + star z * z * (star y ⬝ᵥ A *ᵥ y) := by
+        rw [two_smul, add_assoc]
+        apply le_add_of_nonneg_right (add_nonneg (by simp) _)
+        exact mul_nonneg (by simp) (hA.dotProduct_mulVec_nonneg y)
+    _ ≤ 0 := neg_nonneg.mp <| le_of_le_of_eq
+        (hA.dotProduct_mulVec_nonneg (-(1 + star y ⬝ᵥ A *ᵥ y) • x + star z • y)) <| by
+      simp [mulVec_add, mulVec_smul, hx, ← hz, ← hA.isHermitian.star_dotProduct_mulVec_comm x y,
+        hA.isHermitian.star_dotProduct_mulVec_comm y y]
+      ring
+
+/-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
+theorem toLinearMap₂'_zero_iff [StarOrderedRing R'] [NoZeroDivisors R'] [DecidableEq n]
+    {A : Matrix n n R'} (hA : PosSemidef A) {x : n → R'} :
+    Matrix.toLinearMap₂' R' A (star x) x = 0 ↔ A *ᵥ x = 0 := by
+  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff
+
 end PosSemidef
 
 omit [Fintype n] in variable [Finite n] in
@@ -469,6 +498,23 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
   classical
   simpa using mul_mul_conjTranspose_same .one hA
 
+lemma mulVec_injective {M : Matrix n n R} (hM : M.PosDef) : Function.Injective M.mulVec := by
+  intro _ _ hxy; by_contra h
+  simpa [mulVec_sub, hxy] using hM.dotProduct_mulVec_pos (sub_ne_zero_of_ne h)
+
+lemma _root_.Matrix.posDef_iff_posSemidef_and_mulVec_injective [StarOrderedRing R']
+    [NoZeroDivisors R'] {A : Matrix n n R'} :
+    PosDef A ↔ A.PosSemidef ∧ Function.Injective A.mulVec := by
+  refine ⟨fun hA ↦ ⟨hA.posSemidef, hA.mulVec_injective⟩, fun ⟨hA, hA'⟩ ↦ ?_⟩
+  refine posDef_iff_dotProduct_mulVec.mpr ⟨hA.isHermitian, fun x hx ↦ lt_of_le_of_ne' ?_ ?_⟩
+  · exact hA.dotProduct_mulVec_nonneg x
+  simpa [hA.dotProduct_mulVec_zero_iff, hx] using hA'.eq_iff (a := x) (b := 0)
+
+lemma _root_.Matrix.PosSemidef.posDef_iff_mulVec_injective [StarOrderedRing R']
+    [NoZeroDivisors R'] {A : Matrix n n R'} (hA : A.PosSemidef) :
+    PosDef A ↔ Function.Injective A.mulVec := by
+  simp [posDef_iff_posSemidef_and_mulVec_injective, hA]
+
 theorem of_toQuadraticForm' {R : Type*} [CommRing R] [PartialOrder R] [StarRing R] [TrivialStar R]
     [DecidableEq n] {M : Matrix n n R} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
@@ -496,7 +542,6 @@ theorem _root_.LinearMap.BilinForm.posDef_toQuadraticMap_iff_matrix
   · rw [B.toQuadraticMap_apply, ← b.linearCombination_repr (x := v)]
     simpa [Finsupp.linearCombination_apply, map_finsuppSum, Finsupp.mul_sum, aux]
       using h.2 (b.repr.map_ne_zero_iff.mpr hv)
-
 
 lemma trace_pos [Nontrivial R] [IsOrderedCancelAddMonoid R] [Nonempty n] {A : Matrix n n R}
     (hA : A.PosDef) : 0 < A.trace :=
@@ -528,12 +573,8 @@ theorem det_pos [DecidableEq n] [Nontrivial R'] [IsOrderedRing R'] [PosMulReflec
 section Field
 variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
 
-theorem isUnit [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : IsUnit M := by
-  by_contra h
-  obtain ⟨a, ha, ha2⟩ : ∃ a ≠ 0, M *ᵥ a = 0 := by
-    obtain ⟨a, b, ha⟩ := Function.not_injective_iff.mp <| mulVec_injective_iff_isUnit.not.mpr h
-    exact ⟨a - b, by simp [sub_eq_zero, ha, mulVec_sub]⟩
-  simpa [ha2] using hM.dotProduct_mulVec_pos ha
+theorem isUnit [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : IsUnit M :=
+  mulVec_injective_iff_isUnit.mp hM.mulVec_injective
 
 protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻¹.PosDef := by
   have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
@@ -547,6 +588,16 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
   ⟨fun h =>
     letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
+
+/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
+@[grind =]
+theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] [StarOrderedRing K]
+    {A : Matrix n n K} (hA : A.PosSemidef) : A.PosDef ↔ IsUnit A := by
+  rw [hA.posDef_iff_mulVec_injective, mulVec_injective_iff_isUnit]
+
+lemma _root_.Matrix.PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] [StarOrderedRing K]
+    {A : Matrix n n K} (hA : A.PosSemidef) : A.PosDef ↔ A.det ≠ 0 := by
+  simp [hA.posDef_iff_isUnit, isUnit_iff_isUnit_det]
 
 end Field
 

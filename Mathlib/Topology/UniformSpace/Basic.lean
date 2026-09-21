@@ -727,6 +727,16 @@ theorem uniformContinuous_unop [UniformSpace α] : UniformContinuous (unop : α�
 theorem uniformContinuous_op [UniformSpace α] : UniformContinuous (op : α → αᵐᵒᵖ) :=
   uniformContinuous_comap' uniformContinuous_id
 
+@[to_additive (attr := fun_prop)]
+theorem isUniformEmbedding_unop [UniformSpace α] : IsUniformEmbedding (unop : αᵐᵒᵖ → α) where
+  injective := unop_injective
+  comap_uniformity := uniformity_mulOpposite.symm
+
+@[to_additive (attr := fun_prop)]
+theorem isUniformEmbedding_op [UniformSpace α] : IsUniformEmbedding (op : α → αᵐᵒᵖ) where
+  injective := op_injective
+  comap_uniformity := comap_uniformity_mulOpposite
+
 end MulOpposite
 
 section Prod

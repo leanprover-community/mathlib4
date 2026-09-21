@@ -90,7 +90,7 @@ variable {ι ι' G H : Type*} [Group G] [Group H]
 
 /-- A free group basis for `G` over `ι` is associated to a map `ι → G` recording the images of
 the generators. -/
-@[to_additive
+@[to_additive (attr := macro_inline)
 /-- An additive free group basis for `G` over `ι` is associated to a map `ι → G` recording the
 images of the generators. -/]
 instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where

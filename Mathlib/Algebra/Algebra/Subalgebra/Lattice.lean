@@ -384,7 +384,7 @@ variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
 
 theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
     Set.EqOn φ ψ ↑(S ⊔ T) := by
-  rw [← AlgHom.coe_coe φ, ← AlgHom.coe_coe ψ, ← le_equalizer] at hS hT ⊢
+  rw [← AlgHom.coe_ofClass φ, ← AlgHom.coe_ofClass ψ, ← le_equalizer] at hS hT ⊢
   exact sup_le hS hT
 
 theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S T)
@@ -769,7 +769,7 @@ open scoped IsMulCommutative in
 semiring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
 abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     CommSemiring (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
@@ -849,7 +849,7 @@ variable (R)
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
 abbrev adjoinCommRingOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     CommRing (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
@@ -977,7 +977,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
   toFun := toNonUnitalSubalgebra
   inj' := toNonUnitalSubalgebra_injective
-  map_rel_iff' := by simp [SetLike.le_def]
+  map_rel_iff' := by simp [IsConcreteLE.le_iff]
 
 @[simp]
 lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
