@@ -3328,6 +3328,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
+public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.ObjectProperty.InheritedFromHom
 public import Mathlib.CategoryTheory.ObjectProperty.Kernels
@@ -3412,6 +3413,7 @@ public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Profunctor.Basic
+public import Mathlib.CategoryTheory.Profunctor.Comp
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
 public import Mathlib.CategoryTheory.Quotient.LocallySmall
@@ -3983,6 +3985,7 @@ public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.EReal.Basic
+public import Mathlib.Data.EReal.BigOperators
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Data.Erased
@@ -4604,6 +4607,7 @@ public import Mathlib.Dynamics.Ergodic.Action.Regular
 public import Mathlib.Dynamics.Ergodic.AddCircle
 public import Mathlib.Dynamics.Ergodic.AddCircleAdd
 public import Mathlib.Dynamics.Ergodic.Conservative
+public import Mathlib.Dynamics.Ergodic.EmpiricalMeasure
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.Dynamics.Ergodic.Extreme
 public import Mathlib.Dynamics.Ergodic.Function
@@ -4776,7 +4780,10 @@ public import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Geometry.Euclidean.Volume.Basic
+public import Mathlib.Geometry.Euclidean.Volume.Def
 public import Mathlib.Geometry.Euclidean.Volume.Measure
+public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Group.WordMetric
@@ -5450,6 +5457,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Free
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
+public import Mathlib.LinearAlgebra.TensorProduct.Lift
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
@@ -6087,6 +6095,7 @@ public import Mathlib.NumberTheory.Padics.LocalField
 public import Mathlib.NumberTheory.Padics.MahlerBasis
 public import Mathlib.NumberTheory.Padics.Measure.AmiceTransform
 public import Mathlib.NumberTheory.Padics.Measure.Basic
+public import Mathlib.NumberTheory.Padics.Measure.Monoid
 public import Mathlib.NumberTheory.Padics.Measure.Topology
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.NumberTheory.Padics.PadicNorm
@@ -6655,6 +6664,7 @@ public import Mathlib.RingTheory.Adjoin.Field
 public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 public import Mathlib.RingTheory.Adjoin.PowerBasis
 public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.Adjoin.Tower
@@ -6703,6 +6713,7 @@ public import Mathlib.RingTheory.Coalgebra.Convolution
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.IsFrobenius
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.Primitive
@@ -7440,6 +7451,8 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.BDSimp
 public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basify
+public import Mathlib.Tactic.Basify.Attr
 public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Bound.Init
@@ -7754,6 +7767,7 @@ public import Mathlib.Tactic.SetLike
 public import Mathlib.Tactic.SetNotationForOrder
 public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
+public import Mathlib.Tactic.SimpLibraryNote
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
