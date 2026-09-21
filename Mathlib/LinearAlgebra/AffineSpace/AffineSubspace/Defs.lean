@@ -1173,4 +1173,6 @@ theorem affineSpan_eq_span_iff_zero_mem {s : Set V} :
   refine ⟨by simp +contextual, fun h ↦ ?_⟩
   rw [← affineSpan_insert_eq_affineSpan _ h, affineSpan_insert_zero]
 
+@[simp] alias ⟨_, affineSpan_eq_span_of_zero_mem⟩ := affineSpan_eq_span_iff_zero_mem
+
 end AffineSpace'
