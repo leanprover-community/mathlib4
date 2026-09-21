@@ -162,7 +162,7 @@ lemma cfc_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
   by_cases hg : ContinuousOn g (spectrum R a)
   · rw [cfc_apply g a, cfcHom_eq_restrict f hpa hqa h, SpectrumRestricts.starAlgHom_apply,
       cfcHom_eq_cfc_extend 0]
-    apply cfc_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     lift x to spectrum S a using hx
     simp [Function.comp]
   · have : ¬ ContinuousOn (fun x ↦ algebraMap R S (g (f x)) : S → S) (spectrum S a) := by
@@ -333,7 +333,7 @@ lemma cfcₙ_eq_restrict (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S
   · obtain ⟨hg, hg0⟩ := hg
     rw [cfcₙ_apply g a, cfcₙHom_eq_restrict f hpa hqa h, nonUnitalStarAlgHom_apply,
       cfcₙHom_eq_cfcₙ_extend 0]
-    apply cfcₙ_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     lift x to σₙ S a using hx
     simp
   · simp only [not_and_or] at hg

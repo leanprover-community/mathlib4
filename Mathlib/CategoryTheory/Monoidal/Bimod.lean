@@ -770,7 +770,6 @@ noncomputable def rightUnitorBimod {X Y : Mon C} (M : Bimod X Y) : M.tensorBimod
     (RightUnitorBimod.hom_right_act_hom' M)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem whiskerLeft_id_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerLeft M (𝟙 N) = 𝟙 (M.tensorBimod N) := by
   ext
@@ -778,7 +777,6 @@ theorem whiskerLeft_id_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
   simp [TensorBimod.X]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem id_whiskerRight_bimod {X Y Z : Mon C} {M : Bimod X Y} {N : Bimod Y Z} :
     whiskerRight (𝟙 M) N = 𝟙 (M.tensorBimod N) := by
   ext

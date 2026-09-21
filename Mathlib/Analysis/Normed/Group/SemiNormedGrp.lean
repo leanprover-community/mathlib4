@@ -342,7 +342,7 @@ def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.hom.NormNoninc) (i' : f
 
 instance : HasForget₂ SemiNormedGrp₁ SemiNormedGrp where
   forget₂ :=
-    { obj := fun X => SemiNormedGrp.of X
+    { obj := fun X => ↧X
       map := fun f => SemiNormedGrp.ofHom f.1 }
 
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp₁.of V : Type u) = V :=
@@ -385,3 +385,23 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 
 end SemiNormedGrp₁
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `SemiNormedGrp₁.of X` as `↧X`. -/
+@[app_delab SemiNormedGrp₁.of]
+meta def SemiNormedGrp₁.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `SemiNormedGrp.of X` as `↧X`. -/
+@[app_delab SemiNormedGrp.of]
+meta def SemiNormedGrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

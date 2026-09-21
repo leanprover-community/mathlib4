@@ -220,7 +220,7 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   have e' :=
     FormallyUnramified.lift_unique I ⟨2, hI⟩ (f₁.comp <| IsScalarTower.toAlgHom R A B)
       (f₂.comp <| IsScalarTower.toAlgHom R A B) (by rw [← AlgHom.comp_assoc, e, AlgHom.comp_assoc])
-  let := (f₁.restrictDomain A).toAlgebra
+  let := (f₁.domRestrict A).toAlgebra
   let F₁ : B →ₐ[A] C := { f₁ with commutes' := fun r => rfl }
   let F₂ : B →ₐ[A] C := { f₂ with commutes' := AlgHom.congr_fun e'.symm }
   ext1 x

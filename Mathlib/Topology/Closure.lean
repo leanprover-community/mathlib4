@@ -186,7 +186,7 @@ end Interior
 
 section Closure
 
-@[simp]
+@[simp, closedness ., grind .]
 theorem isClosed_closure : IsClosed (closure s) :=
   isClosed_sInter fun _ => And.left
 
@@ -207,7 +207,8 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
     Disjoint s (closure t) :=
   (hd.symm.closure_left hs).symm
 
-@[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
+@[simp, closedness =]
+theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
 
 theorem forall_isClosed_iff {p : Set X → Prop} :

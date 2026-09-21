@@ -78,6 +78,10 @@ theorem Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
 theorem Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
   ⟨hxy.somePath.trans hyz.somePath⟩
 
+theorem Joined.map {x y : X} {f : X → Y} (h : Joined x y) (hf : Continuous f) :
+    Joined (f x) (f y) :=
+  ⟨h.somePath.map hf⟩
+
 @[to_additive]
 theorem Joined.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
     {a b c d : M} (hs : Joined a b) (ht : Joined c d) : Joined (a * c) (b * d) :=
@@ -238,18 +242,17 @@ theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : Joine
 theorem Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y :=
   h.specializes.joinedIn hx hy
 
-theorem JoinedIn.map_continuousOn (h : JoinedIn F x y) {f : X → Y} (hf : ContinuousOn f F) :
+theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : ContinuousOn f F) :
     JoinedIn (f '' F) (f x) (f y) :=
   let ⟨γ, hγ⟩ := h
   ⟨γ.map' <| hf.mono (range_subset_iff.mpr hγ), fun t ↦ mem_image_of_mem _ (hγ t)⟩
 
-theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : Continuous f) :
-    JoinedIn (f '' F) (f x) (f y) :=
-  h.map_continuousOn hf.continuousOn
+@[deprecated (since := "2026-08-08")]
+alias JoinedIn.map_continuousOn := JoinedIn.map
 
 theorem Topology.IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx : x ∈ F)
     (hy : y ∈ F) : JoinedIn (f '' F) (f x) (f y) ↔ JoinedIn F x y := by
-  refine ⟨?_, (.map · hf.continuous)⟩
+  refine ⟨?_, (.map · hf.continuous.continuousOn)⟩
   rintro ⟨γ, hγ⟩
   choose γ' hγ'F hγ' using hγ
   have h₀ : x ⤳ γ' 0 := by rw [← hf.specializes_iff, hγ', γ.source]
@@ -292,6 +295,14 @@ theorem mem_pathComponent_of_mem (h : x ∈ pathComponent y) : y ∈ pathCompone
 
 theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
   ⟨fun h => mem_pathComponent_of_mem h, fun h => mem_pathComponent_of_mem h⟩
+
+theorem Continuous.mapsTo_pathComponent {f : X → Y} (hf : Continuous f) (x : X) :
+    MapsTo f (pathComponent x) (pathComponent (f x)) :=
+  fun _ hy ↦ hy.map hf
+
+theorem Continuous.image_pathComponent_subset {f : X → Y} (hf : Continuous f) (x : X) :
+    f '' (pathComponent x) ⊆ pathComponent (f x) :=
+  hf.mapsTo_pathComponent x |>.image_subset
 
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z
@@ -437,7 +448,8 @@ theorem IsPathConnected.inv {G : Type*} [InvolutiveInv G] [TopologicalSpace G] [
     {s : Set G} (hs : IsPathConnected s) :
     IsPathConnected s⁻¹ :=
   let ⟨a, ha_mem, ha⟩ := hs
-  ⟨a⁻¹, inv_mem_inv.mpr ha_mem, fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv⟩
+  ⟨a⁻¹, inv_mem_inv.mpr ha_mem,
+    fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv.continuousOn⟩
 
 /-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
@@ -457,6 +469,17 @@ theorem Homeomorph.isPathConnected_image {s : Set X} (h : X ≃ₜ Y) :
 theorem Homeomorph.isPathConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsPathConnected (h ⁻¹' s) ↔ IsPathConnected s := by
   rw [← Homeomorph.image_symm]; exact h.symm.isPathConnected_image
+
+/-- A homeomorphism maps path components onto path components. -/
+theorem Homeomorph.image_pathComponent (h : X ≃ₜ Y) (x : X) :
+    h '' pathComponent x = pathComponent (h x) := by
+  apply (h.continuous.image_pathComponent_subset x).antisymm
+  simpa [image_image] using
+    image_mono (f := h) <| h.symm.continuous.image_pathComponent_subset (h x)
+
+theorem Homeomorph.preimage_pathComponent (h : X ≃ₜ Y) (y : Y) :
+    h ⁻¹' pathComponent y = pathComponent (h.symm y) := by
+  rw [← h.symm.image_pathComponent, h.image_symm]
 
 theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
     y ∈ pathComponent x :=
@@ -591,6 +614,10 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
 
+theorem Homeomorph.pathConnectedSpace [PathConnectedSpace X] (h : X ≃ₜ Y) :
+    PathConnectedSpace Y :=
+  h.surjective.pathConnectedSpace h.continuous
+
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
   Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
@@ -607,11 +634,25 @@ section Prod
 
 variable {s : Set X} {t : Set Y}
 
+/-- If `x₁` is joined to `x₂` and `y₁` is joined to `y₂`, then `(x₁, y₁)` is joined to
+`(x₂, y₂)` in the product space. -/
+theorem Joined.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : Joined x₁ x₂) (hy : Joined y₁ y₂) :
+    Joined (x₁, y₁) (x₂, y₂) :=
+  ⟨hx.somePath.prod hy.somePath⟩
+
 /-- If `x₁` is joined to `x₂` within `s` and `y₁` to `y₂` within `t`, then `(x₁, y₁)` is joined
 to `(x₂, y₂)` within `s ×ˢ t`. -/
 theorem JoinedIn.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : JoinedIn s x₁ x₂) (hy : JoinedIn t y₁ y₂) :
     JoinedIn (s ×ˢ t) (x₁, y₁) (x₂, y₂) :=
   ⟨hx.somePath.prod hy.somePath, by simp⟩
+
+/-- The path component of `(x, y)` in the product space is the product of the path components
+of `x` and `y`. -/
+theorem pathComponent_prod (x : X) (y : Y) :
+    pathComponent (x, y) = pathComponent x ×ˢ pathComponent y := by
+  ext ⟨a, b⟩
+  simp only [Set.mem_prod, mem_pathComponent_iff]
+  exact ⟨fun h ↦ ⟨h.map continuous_fst, h.map continuous_snd⟩, fun ⟨h₁, h₂⟩ ↦ h₁.prod h₂⟩
 
 /-- The product of two path-connected sets is path-connected. -/
 theorem IsPathConnected.prod (hs : IsPathConnected s) (ht : IsPathConnected t) :
@@ -631,11 +672,23 @@ section Pi
 
 variable {Z : ι → Type*} [∀ i, TopologicalSpace (Z i)]
 
+/-- If for each `i`, `x i` is joined to `y i`, then `x` is joined to `y` in the product space. -/
+theorem Joined.pi {x y : ∀ i, Z i} (h : ∀ i, Joined (x i) (y i)) : Joined x y :=
+  ⟨.pi fun i ↦ (h i).somePath⟩
+
 /-- If for each `i`, `x i` is joined to `y i` within `s i`, then `x` is joined to `y` within the
 product set `Set.univ.pi s`. -/
 theorem JoinedIn.pi {s : ∀ i, Set (Z i)} {x y : ∀ i, Z i}
     (h : ∀ i, JoinedIn (s i) (x i) (y i)) : JoinedIn (Set.univ.pi s) x y :=
   ⟨.pi (fun i ↦ (h i).somePath), by simp⟩
+
+/-- The path component of `x` in a product space is the product of the path components of its
+coordinates. -/
+theorem pathComponent_pi (x : ∀ i, Z i) :
+    pathComponent x = Set.univ.pi fun i ↦ pathComponent (x i) := by
+  ext y
+  simp only [Set.mem_univ_pi, mem_pathComponent_iff]
+  exact ⟨fun h i ↦ h.map (continuous_apply i), fun h ↦ .pi h⟩
 
 /-- The product of a family of path-connected sets is path-connected. -/
 theorem IsPathConnected.pi {s : ∀ i, Set (Z i)} (h : ∀ i, IsPathConnected (s i)) :

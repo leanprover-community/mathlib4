@@ -214,7 +214,7 @@ variable (F : C ⥤ FintypeCat.{u₂})
 as an object of `C`. -/
 @[simps]
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GrpCat.{u₂} where
-  obj := fun A ↦ GrpCat.of <| Aut (A : C)
+  obj := fun A ↦ ↧(Aut (A : C))
   map := fun {A B} f ↦ GrpCat.ofHom (autMapHom f)
 
 /-- The limit of `autGaloisSystem`. -/

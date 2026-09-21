@@ -55,7 +55,7 @@ variable {𝕜 E F G : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {n m k : ℕ} {r : WithTop ℕ∞}
+  {n m : ℕ} {r : WithTop ℕ∞}
   {ω ω₁ ω₂ : E → E [⋀^Fin n]→L[𝕜] F} {s t : Set E} {x : E}
 
 /-- Exterior derivative of a differential form.

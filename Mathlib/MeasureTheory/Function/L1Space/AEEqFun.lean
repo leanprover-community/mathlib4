@@ -31,9 +31,9 @@ function space, l1
 
 noncomputable section
 
-open EMetric ENNReal Filter MeasureTheory NNReal Set
+open ENNReal Filter MeasureTheory Set
 
-variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α}
 variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
   [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 

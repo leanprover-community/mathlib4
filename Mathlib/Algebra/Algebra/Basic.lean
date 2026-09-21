@@ -488,12 +488,6 @@ lemma isTorsionFree_iff_algebraMap_injective : IsTorsionFree R A ↔ Injective (
 
 end Module
 
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_algebraMap_injective := isTorsionFree_iff_algebraMap_injective
-
-@[deprecated (since := "2026-01-21")]
-alias NoZeroSMulDivisors.iff_faithfulSMul := isTorsionFree_iff_faithfulSMul
-
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=
   Algebra.ofModule smul_mul_assoc mul_smul_comm

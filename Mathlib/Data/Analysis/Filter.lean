@@ -214,7 +214,6 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       exact ⟨fun ⟨s, h⟩ ↦ ⟨_, ⟨s, Subset.refl _⟩, h⟩,
         fun ⟨_, ⟨s, h⟩, h₂⟩ ↦ ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a realizer for the sup of two filters -/
 protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g).Realizer :=
   ⟨F.σ × G.σ,

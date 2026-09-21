@@ -41,7 +41,6 @@ def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
   map φ :=
     { app := fun j => ((evaluation J C).obj j).mapShortComplex.map φ }
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `(J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C)`. -/
 @[simps]

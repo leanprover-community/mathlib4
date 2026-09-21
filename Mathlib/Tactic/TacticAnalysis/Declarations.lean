@@ -223,6 +223,24 @@ def omegaToLia :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
+/-- Suggest `rwa` for `rw` followed by `assumption`. -/
+register_option linter.tacticAnalysis.rwaSuggestion : Bool := {
+  defValue := true
+}
+@[tacticAnalysis linter.tacticAnalysis.rwaSuggestion,
+  inherit_doc linter.tacticAnalysis.rwaSuggestion]
+def Mathlib.TacticAnalysis.rwaSuggestion : TacticAnalysis.Config where
+  run seq := do
+    for first in seq.toList, second in seq.toList.tail do
+      match first.tacI.stx, second.tacI.stx with
+      | `(tactic| rw $rws:rwRuleSeq $[$loc:location]?), `(tactic| assumption) => do
+        if let some start := first.tacI.stx.getPos? then
+        if let some stop := second.tacI.stx.getTailPos? then
+          let span := Syntax.setInfo (SourceInfo.synthetic start stop) first.tacI.stx
+          Elab.Command.liftCoreM <|
+            Tactic.TryThis.addSuggestion span (← `(tactic| rwa $rws:rwRuleSeq $[$loc:location]?))
+      | _, _ => pure ()
+
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {
   defValue := false
@@ -239,15 +257,11 @@ def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
   test ctxI i ctx goal := do
     let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
     let tac ← `(tactic| rw [$ctxT,*])
-    let oldMessages := (← get).messages
     try
       let goals ← ctxI.runTacticCode i goal tac
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
-    finally
-      -- Drop any messages, since they will appear as if they are genuine errors.
-      modify fun s => { s with messages := oldMessages }
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if new.1.isEmpty then
       m!"Try this: rw {new.2}"
@@ -676,13 +690,11 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
             then
               continue
 
-            -- Verify suggestion works (suppress any messages from verification)
-            let savedMessages2 := (← get).messages
+            -- Verify suggestion works
             let verifyGoals ← try
               i.runTacticCode goal suggestedTac
             catch _e =>
               pure [goal]  -- Treat exception as failure
-            modify fun s => { s with messages := savedMessages2 }
 
             if !verifyGoals.isEmpty then
               logWarningAt i.tacI.stx

@@ -42,7 +42,7 @@ abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
 
 theorem basisMatrix_eq_embeddingsMatrixReindex :
     basisMatrix K = Algebra.embeddingsMatrixReindex ℚ ℂ
-      (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom := by
+      (integralBasis K ∘ (equivReindex K)) (RingHom.equivRatAlgHom K ℂ) := by
   ext; simp [Algebra.embeddingsMatrixReindex]
 
 open ComplexConjugate in
@@ -58,7 +58,7 @@ theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
   rw [← Algebra.discr_reindex ℚ (integralBasis K) (equivReindex K).symm]
   exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-    (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom).symm
+    (integralBasis K ∘ (equivReindex K)) (RingHom.equivRatAlgHom K ℂ)).symm
 
 instance [DecidableEq (K →+* ℂ)] : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (Ne.isUnit (det_of_basisMatrix_non_zero K))
@@ -70,9 +70,7 @@ theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
       (fun i ↦ (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
   ext i
   rw [← (latticeBasis K).sum_repr (canonicalEmbedding K α), ← Equiv.sum_comp (equivReindex K)]
-  simp only [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct,
-    transpose_apply, of_apply, Fintype.sum_apply, mul_comm, Basis.repr_reindex,
-    Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Pi.smul_apply, smul_eq_mul]
+  simp [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct, mul_comm]
 
 theorem inverse_basisMatrix_mulVec_eq_repr [DecidableEq (K →+* ℂ)] (α : 𝓞 K) :
     ∀ i, ((basisMatrix K).transpose)⁻¹.mulVec (fun j =>

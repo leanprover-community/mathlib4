@@ -84,8 +84,8 @@ private theorem trunc_pderivFun [DecidableEq σ] {i : σ} (f : MvPowerSeries σ 
   ext
   rw [coeff_trunc]
   split_ifs with h
-  · rw [coeff_pderivFun, coeff_pderiv, coeff_trunc, if_pos (add_lt_add_left h _)]
-  · rw [coeff_pderiv, coeff_trunc, if_neg ((add_lt_add_iff_right _).not.mpr h), zero_mul]
+  · rw [coeff_pderivFun, coeff_pderiv, coeff_trunc, ite_eq_left (add_lt_add_left h _)]
+  · rw [coeff_pderiv, coeff_trunc, ite_eq_right ((add_lt_add_iff_right _).not.mpr h), zero_mul]
 
 -- A special case of `pderivFun_mul`, used in its proof.
 private theorem pderivFun_coe_mul_coe {i : σ} (f g : MvPolynomial σ R) :
@@ -145,7 +145,7 @@ theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv R i (X j) = 0 := by
   classical
   ext n
   simpa only [coeff_pderiv, coeff_X, boole_mul, coeff_zero] using
-    if_neg (ne_iff.mpr ⟨i, by grind [Finsupp.add_apply]⟩)
+    ite_eq_right (ne_iff.mpr ⟨i, by grind [Finsupp.add_apply]⟩)
 
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
     pderiv R i (X j) = Pi.single (M := fun _ => MvPowerSeries σ R) i 1 j := by

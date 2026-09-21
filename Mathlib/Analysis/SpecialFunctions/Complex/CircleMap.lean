@@ -24,7 +24,9 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 @[expose] public section
 noncomputable section circleMap
 
-open Complex ComplexConjugate Function Metric Real
+open Complex Function Metric Real
+
+open scoped ComplexConjugate
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
@@ -55,6 +57,27 @@ theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
 theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ closedBall c R :=
   sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
+
+theorem norm_circleMap_sub_le (c : ℂ) (R : ℝ) (θ : ℝ) (x : ℂ) :
+    ‖circleMap c R θ - x‖ ≤ |R| + dist c x := by
+  rw [← dist_eq_norm, ← mem_sphere.1 (circleMap_mem_sphere' c R θ)]
+  exact dist_triangle _ _ _
+
+/-- If `w` does not lie on the circle `sphere c |R|`, there is a radius `d > 0` such that all
+points of `ball w d` keep distance at least `d` from every point `circleMap c R θ` of the circle. -/
+theorem exists_ball_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ} (hw : w ∉ sphere c |R|) :
+    ∃ d > 0, ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ := by
+  have hd₀ : 0 < abs (dist w c - |R|) :=
+    abs_pos.2 (sub_ne_zero.2 fun h ↦ hw (mem_sphere.2 h))
+  refine ⟨abs (dist w c - |R|) / 2, by positivity, fun x hx θ ↦ ?_⟩
+  rw [mem_ball] at hx
+  have h₁ : dist (circleMap c R θ) c = |R| := mem_sphere.1 (circleMap_mem_sphere' c R θ)
+  have h₂ : abs (dist w c - |R|) ≤ dist (circleMap c R θ) w := by
+    calc abs (dist w c - |R|) = |dist (circleMap c R θ) c - dist w c| := by rw [h₁, abs_sub_comm]
+      _ ≤ dist (circleMap c R θ) w := abs_dist_sub_le _ _ _
+  have h₃ := dist_triangle (circleMap c R θ) x w
+  rw [← dist_eq_norm]
+  linarith
 
 @[simp]
 theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by

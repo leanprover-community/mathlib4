@@ -11,6 +11,8 @@ public import Mathlib.Tactic.ClickSuggestions.Apply
 public import Mathlib.Tactic.ClickSuggestions.ApplyAt
 public meta import Mathlib.Lean.FoldEnvironment
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Lean.FoldEnvironment
+public import Mathlib.Lean.Meta.RefinedDiscrTree
 
 /-!
 # Generating a shortlist of candidate lemmas for suggestions
@@ -269,7 +271,7 @@ public def computeModuleDiscrTrees (choice : Choice) (parentDecl? : Option Name)
   return .append {} pre
 
 /-- Compute the discrimination trees for the local variables in `lctx`.
-We restrict to the varaibles in `lctx` to avoid using introduced bound variables. -/
+We restrict to the variables in `lctx` to avoid using introduced bound variables. -/
 public def computeLCtxDiscrTrees (choice : Choice) (lctx : LocalContext) (fvarId? : Option FVarId) :
     MetaM PreDiscrTrees := do
   let mut entries : Entries := {}

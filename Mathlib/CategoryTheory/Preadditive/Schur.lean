@@ -64,10 +64,10 @@ the endomorphisms of a simple object form a division ring. -/
 noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) where
   inv f := if h : f = 0 then 0 else haveI := isIso_of_hom_simple h; inv f
   exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
-  inv_zero := dif_pos rfl
+  inv_zero := dite_eq_left rfl
   mul_inv_cancel f hf := by
     dsimp
-    rw [dif_neg hf]
+    rw [dite_eq_right hf]
     have := isIso_of_hom_simple hf
     exact IsIso.inv_hom_id f
   nnqsmul := _
@@ -98,7 +98,6 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
-set_option backward.isDefEq.respectTransparency false in
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.

@@ -77,7 +77,7 @@ attribute [local ext] TensorProduct.ext in
 -/
 noncomputable def directLimitLeft :
     DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) :=
-  LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) (by ext; simp) (by ext; simp)
+  LinearEquiv.ofLinearMap (toDirectLimit f M) (fromDirectLimit f M) (by ext; simp) (by ext; simp)
 
 @[simp] lemma directLimitLeft_tmul_of {i : ι} (g : G i) (m : M) :
     directLimitLeft f M (of _ _ _ _ _ g ⊗ₜ m) = of _ _ _ (f ▷ M) _ (g ⊗ₜ m) :=

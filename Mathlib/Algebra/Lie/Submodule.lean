@@ -521,11 +521,8 @@ variable (R L M)
 instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
   RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
 
-theorem wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
+instance wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
   RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding
-
-instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
-  isAtomic_of_orderBot_wellFounded_lt <| (wellFoundedLT_of_isArtinian R L M).wf
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
@@ -716,8 +713,8 @@ end LieSubmodule
 
 section LieSubmoduleMapAndComap
 
-variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
-variable [CommRing R] [LieRing L] [LieRing L'] [LieAlgebra R L']
+variable {R : Type u} {L : Type v} {M : Type w} {M' : Type w₁}
+variable [CommRing R] [LieRing L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable [AddCommGroup M'] [Module R M'] [LieRingModule L M']
 
@@ -851,7 +848,7 @@ Submodules. -/
   toFun := map e
   invFun := comap e
   left_inv := fun N ↦ by ext; simp
-  right_inv := fun N ↦ by ext; simp [e.apply_eq_iff_eq_symm_apply]
+  right_inv := fun N ↦ by ext; simp [← e.eq_symm_apply]
   map_rel_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule

@@ -376,6 +376,15 @@ def comap : LieSubalgebra R L :=
 
 @[simp] lemma mem_comap {x : L} : x ∈ K₂.comap f ↔ f x ∈ K₂ := Iff.rfl
 
+/-- A Lie subalgebra is equivalent to its push forward along an injective linear map. -/
+@[simps!] noncomputable def equivMapOfInjective (hf : Function.Injective f) :
+    K ≃ₗ⁅R⁆ K.map f where
+  __ := Submodule.equivMapOfInjective f.toLinearMap hf K
+  map_lie' {x y} := by
+    ext
+    change f ⁅(x : L), (y : L)⁆ = ⁅f (x : L), f (y : L)⁆
+    simp
+
 section LatticeStructure
 
 open Set
@@ -542,6 +551,8 @@ variable (R L)
 instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
   RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
 
+theorem map_top : f.range = LieSubalgebra.map f ⊤ := by ext; simp
+
 variable {R L K K' f}
 
 section NestedSubalgebras
@@ -670,6 +681,13 @@ theorem coe_lieSpan_eq_span_of_forall_lie_eq_zero
   | smul_left r x y _ _ h => simp [smul_mem _ r h]
   | smul_right r x y _ _ h => simp [smul_mem _ r h]
 
+theorem map_lieSpan :
+    (lieSpan R L s).map f = lieSpan R L₂ (f '' s) := by
+  refine le_antisymm ?_ (lieSpan_le.mpr <| Set.image_mono subset_lieSpan)
+  rw [map_le_iff_le_comap, lieSpan_le]
+  change s ⊆ f ⁻¹' (lieSpan R L₂ (f '' s))
+  exact image_subset_iff.mp <| subset_lieSpan
+
 variable (R L)
 
 /-- `lieSpan` forms a Galois insertion with the coercion from `LieSubalgebra` to `Set`. -/
@@ -755,6 +773,10 @@ lemma comap_lieSpan_range_eq {ι : Type*} (f : ι → K) :
     rintro - ⟨i, rfl⟩
     simp only [SetLike.mem_coe, mem_comap, coe_incl]
     exact subset_lieSpan <| by simp
+
+@[simp] theorem comap_incl_eq_top : K'.comap K.incl = ⊤ ↔ K ≤ K' := by
+  simp only [SetLike.ext_iff, mem_comap, coe_incl, mem_top, iff_true, le_def, Set.subset_def,
+    SetLike.mem_coe, Subtype.forall]
 
 end LieSpan
 

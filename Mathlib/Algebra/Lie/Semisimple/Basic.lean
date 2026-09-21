@@ -87,6 +87,13 @@ instance : LieModule.IsIrreducible R L L := by
   contrapose _i
   infer_instance
 
+include R in
+/-- A simple lie algebra is non-trivial. -/
+lemma nontrivial : Nontrivial L := by
+  have := IsSimple.non_abelian R (L := L)
+  contrapose! this
+  infer_instance
+
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
 
 variable {R L} in
@@ -189,7 +196,6 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     rcases hx with ⟨y, hy, rfl⟩
     exact hy
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a semisimple Lie algebra,
 Lie ideals that are contained in the supremum of a finite collection of atoms
@@ -270,11 +276,11 @@ lemma booleanGenerators : BooleanGenerators {I : LieIdeal R L | IsAtom I} where
   finitelyAtomistic _ _ hs _ hIs := finitelyAtomistic _ hs _ hIs
 
 instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) :=
-  (booleanGenerators R L).distribLattice_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).distribLatticeOfSSupEqTop sSup_atoms_eq_top
 
 noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
-  (booleanGenerators R L).booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).booleanAlgebraOfSSupEqTop sSup_atoms_eq_top
 
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by

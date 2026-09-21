@@ -65,7 +65,6 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
   [BialgHomClass F R A B]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   map_mul := map_mul
   map_one := map_one
@@ -295,7 +294,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps -isSimp toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toMul_mul toOne_one]
 instance End : Monoid (A →ₐc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl

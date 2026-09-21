@@ -58,6 +58,8 @@ If the goal is an equality, `congrm e` is equivalent to `refine congr(e')` where
 built from `e` by replacing each placeholder `?m` by `$(?m)`.
 The pattern `e` is allowed to contain `$(...)` expressions to immediately substitute
 equality proofs into the congruence, just like for congruence quotations.
+
+[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := congrM) "congrm " term : tactic
 

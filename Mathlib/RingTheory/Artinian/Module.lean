@@ -57,7 +57,7 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 @[expose] public section
 
-open Set Filter Pointwise
+open Set Filter
 
 section Semiring
 

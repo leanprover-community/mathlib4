@@ -632,17 +632,24 @@ instance (priority := 100) [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
     ZeroLEOneClass R where
   zero_le_one := by simpa only [one_mul] using mul_self_nonneg (1 : R)
 
-/-- The sum of two squares is zero iff both elements are zero. -/
-lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
-    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
+section SumOfSquares
+
+variable [NoZeroDivisors R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
+/-- The sum of two terms of the form x * x is zero iff both elements are zero. -/
+lemma mul_self_add_mul_self_eq_zero :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := R), mul_self_eq_zero (M₀ := R)] <;>
     apply mul_self_nonneg
 
-lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
-    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
+/-- The sum of two squares is zero iff both elements are zero -/
+lemma sq_add_sq_eq_zero : a ^ 2 + b ^ 2 = 0 ↔ a = 0 ∧ b = 0 := by
+  simpa [pow_two] using mul_self_add_mul_self_eq_zero
+
+lemma eq_zero_of_mul_self_add_mul_self_eq_zero
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
+
+end SumOfSquares
 
 theorem pos_of_right_mul_lt_le [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]

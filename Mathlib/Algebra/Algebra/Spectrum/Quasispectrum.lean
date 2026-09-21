@@ -186,7 +186,7 @@ def IsQuasiregular (x : R) : Prop :=
   ∃ u : (PreQuasiregular R)ˣ, equiv.symm u.val = x
 
 @[simp]
-lemma isQuasiregular_zero : IsQuasiregular 0 := ⟨1, rfl⟩
+lemma isQuasiregular_zero : IsQuasiregular (0 : R) := ⟨1, rfl⟩
 
 lemma isQuasiregular_iff {x : R} :
     IsQuasiregular x ↔ ∃ y, y + x + x * y = 0 ∧ x + y + y * x = 0 := by
@@ -266,9 +266,22 @@ theorem quasispectrum.nonempty [Nontrivial R] (a : A) : (quasispectrum R a).None
 instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a) where
   zero := ⟨0, quasispectrum.zero_mem R a⟩
 
-variable {R}
+lemma quasispectrum.zero_eq_nonunits :
+    quasispectrum R (0 : A) = nonunits R := by
+  simp [quasispectrum, nonunits]
 
-set_option backward.isDefEq.respectTransparency false in
+variable {R}
+@[simp]
+lemma quasispectrum.zero_eq {R A : Type*} [Semifield R] [NonUnitalRing A] [Module R A] :
+    quasispectrum R (0 : A) = {0} := by
+  simp [quasispectrum]
+
+@[simp]
+theorem quasispectrum.of_subsingleton {R A : Type*} [Semifield R] [NonUnitalRing A]
+    [Module R A] [Subsingleton A] (a : A) :
+    quasispectrum R a = {0} := by
+  rw [Subsingleton.elim a 0, zero_eq]
+
 /-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
 where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
 need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
@@ -288,10 +301,25 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
 /-- If `φ` is non-unital algebra homomorphism over a scalar ring `R`, then
 `quasispectrum R (φ a) ⊆ quasispectrum R a`. -/
 lemma NonUnitalAlgHom.quasispectrum_apply_subset {F R A B : Type*}
-    [CommRing R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
+    [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a :=
   NonUnitalAlgHom.quasispectrum_apply_subset' R φ a
+
+@[simp]
+lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRing A]
+    [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
+    (f : F) (a : A) : quasispectrum R (f a) = quasispectrum R a := by
+  /- the `Star` material is here because `AlgEquiv` only exists for unital algebras,
+  and we have no `NonUnitalAlgEquiv` type, so we use `StarAlgEquiv` instead because that allows
+  for non-unital algebras -/
+  let : Star A := ⟨id⟩
+  let : Star B := ⟨id⟩
+  have : StarHomClass F A B := ⟨fun _ _ ↦ rfl⟩
+  let e := StarAlgEquivClass.toStarAlgEquiv f
+  apply subset_antisymm
+  · exact NonUnitalAlgHom.quasispectrum_apply_subset' R e a
+  · simpa using! NonUnitalAlgHom.quasispectrum_apply_subset' R e.symm (e a)
 
 @[simp]
 lemma quasispectrum.coe_zero [Nontrivial R] (a : A) : (0 : quasispectrum R a) = (0 : R) := rfl

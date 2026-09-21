@@ -56,7 +56,9 @@ is obtained by removing `x (l.pred _)` from the walk.
 
 universe u
 
-open CategoryTheory MonoidalCategory Simplicial
+open CategoryTheory MonoidalCategory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -325,7 +327,7 @@ lemma φ_succAbove (i : Fin (d + 1)) :
 
 lemma φ_of_ne (i : Fin (d + 2)) (hi : i ≠ (min x hd).castSucc) :
     φ x hd i = objEquiv (x.cast hd).simplex ((min x hd).predAbove i) :=
-  if_neg hi
+  ite_eq_right hi
 
 lemma φ_of_lt (i : Fin (d + 2)) (hi : i < (min x hd).castSucc) :
     φ x hd i = objEquiv (x.cast hd).simplex (i.castPred (by grind)) := by
@@ -404,10 +406,9 @@ lemma simplex_mem_nonDegenerate :
   exact hx.strictMono_φ hd
 
 lemma δ_simplex :
-    (Δ[m + 1] ⊗ Δ[n]).δ (min x hd).castSucc (hx.simplex hd) = (x.cast hd).simplex := by
+    dsimp% (Δ[m + 1] ⊗ Δ[n]).δ (min x hd).castSucc (hx.simplex hd) = (x.cast hd).simplex := by
   apply objEquiv.injective
   ext i : 2
-  dsimp only [simplex]
   rw [objEquiv_δ_apply, Equiv.apply_symm_apply, OrderHom.coe_mk, φ_succAbove]
 
 lemma notMem_simplex :
@@ -689,7 +690,7 @@ noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
 
 lemma pairing_castSucc {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     pairing.{u} k.castSucc n = (pairingCore.{u} k n).pairing :=
-  dif_neg (by grind)
+  dite_eq_right (by grind)
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
@@ -697,7 +698,7 @@ instance {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
   by_cases! hk : k = Fin.last (m + 1)
   · subst hk
     dsimp only [pairing]
-    rw [dif_pos rfl]
+    rw [dite_eq_left rfl]
     infer_instance
   · obtain ⟨k, rfl⟩ := Fin.eq_castSucc_of_ne_last hk
     rw [pairing_castSucc]

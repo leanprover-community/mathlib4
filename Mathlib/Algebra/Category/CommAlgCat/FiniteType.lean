@@ -20,7 +20,7 @@ We define the category of finitely generated `R`-algebras and show it is essenti
 
 universe w v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (R : Type u) [CommRing R]
 
@@ -39,7 +39,7 @@ structure FGAlgCatSkeleton : Type u where
 
 /-- (Implementation detail): Realisation of a `FGAlgCatSkeleton`. -/
 noncomputable def FGAlgCatSkeleton.eval (A : FGAlgCatSkeleton R) : FGAlgCat.{u} R :=
-  ⟨CommAlgCat.of R (MvPolynomial (Fin A.n) R ⧸ A.I), inferInstanceAs <| Algebra.FiniteType _ _⟩
+  ⟨↧(MvPolynomial (Fin A.n) R ⧸ A.I), inferInstanceAs <| Algebra.FiniteType _ _⟩
 
 lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Algebra R A]
     [h : Algebra.FiniteType R A] :

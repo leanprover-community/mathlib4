@@ -62,7 +62,6 @@ instance (priority := 100) [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] 
     P.Nonempty :=
   nonempty_of_prop P.prop_terminal
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
     [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryProducts] :
     P.IsClosedUnderIsomorphisms where
