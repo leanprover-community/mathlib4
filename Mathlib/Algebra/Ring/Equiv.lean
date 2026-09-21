@@ -746,10 +746,14 @@ theorem toNonUnitalRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
   rfl
 
 @[simp]
-theorem toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
+theorem toNonUnitalRingHom_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
     e.toNonUnitalRingHom.comp e.symm.toNonUnitalRingHom = NonUnitalRingHom.id _ := by
   ext
   simp
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom :=
+  toNonUnitalRingHom_comp_symm_toNonUnitalRingHom
 
 @[simp]
 theorem symm_toNonUnitalRingHom_comp_toNonUnitalRingHom (e : R ≃+* S) :
@@ -796,9 +800,11 @@ abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
   e.toRingHom.toAddMonoidHom
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
-theorem toAddMonoidMom_commutes (f : R ≃+* S) :
+theorem toAddMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
+
+@[deprecated (since := "2026-09-17")] alias toAddMonoidMom_commutes := toAddMonoidHom_commutes
 
 /-- The two paths coercion can take to a `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :

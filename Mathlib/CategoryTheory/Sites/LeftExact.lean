@@ -216,13 +216,16 @@ instance preservesLimitsOfShape_plusFunctor
     rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]
     rfl
 
-instance preserveFiniteLimits_plusFunctor
+instance preservesFiniteLimits_plusFunctor
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{t}
   intro K _ _
   have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply preservesLimitsOfShape_plusFunctor
+
+@[deprecated (since := "2026-09-17")]
+alias preserveFiniteLimits_plusFunctor := preservesFiniteLimits_plusFunctor
 
 instance preservesLimitsOfShape_sheafification
     (K : Type t) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]

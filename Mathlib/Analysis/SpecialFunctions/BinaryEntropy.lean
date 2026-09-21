@@ -266,7 +266,7 @@ open Filter Set
 
 open scoped Topology
 
-private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
+private lemma tendsto_log_one_sub_sub_log_nhdsGT_atTop :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1 / 2) : ℝ)
   · have h₁ : (0 : ℝ) < 1 / 2 := by simp
@@ -274,6 +274,9 @@ private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     gcongr
     linarith [hx.2]
   · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsGT_zero
+
+@[deprecated (since := "2026-09-17")]
+private alias tendsto_log_one_sub_sub_log_nhdsGT_atAtop := tendsto_log_one_sub_sub_log_nhdsGT_atTop
 
 private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[<] 1) atBot := by
@@ -317,7 +320,7 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
     have : (fun p ↦ log (q - 1) + log (1 - p) - log p)
         = (fun p ↦ log (q - 1) + (log (1 - p) - log p)) := by ext; ring
     rw [this]
-    exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsGT_atAtop
+    exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsGT_atTop
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
   · simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by norm_num)]

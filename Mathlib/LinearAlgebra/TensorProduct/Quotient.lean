@@ -234,13 +234,16 @@ variable (S : Type*) [CommRing S] [Algebra R S]
 
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, then `S ⧸ IS` is
   isomorphic to `S ⊗[R] (R ⧸ I)` as `S` modules. -/
-noncomputable def _root_.Ideal.qoutMapEquivTensorQout {I : Ideal R} :
+noncomputable def _root_.Ideal.quotMapEquivTensorQuot {I : Ideal R} :
     (S ⧸ I.map (algebraMap R S)) ≃ₗ[S] S ⊗[R] (R ⧸ I) where
   __ := LinearEquiv.symm <| tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp)
     ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R _
   map_smul' := by
     rintro _ ⟨_⟩
     congr
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.Ideal.qoutMapEquivTensorQout := _root_.Ideal.quotMapEquivTensorQuot
 
 variable (M) in
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`,
@@ -250,7 +253,7 @@ noncomputable def tensorQuotMapSMulEquivTensorQuot (I : Ideal R) :
     S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
   (tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).symm ≪≫ₗ
     TensorProduct.comm S (S ⊗[R] M) _ ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S _ M ≪≫ₗ
-      AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (LinearEquiv.refl R M) ≪≫ₗ
+      AlgebraTensorModule.congr (I.quotMapEquivTensorQuot S) (LinearEquiv.refl R M) ≪≫ₗ
         AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
           (tensorQuotEquivQuotSMul M I).baseChange R S _ _
 

@@ -6,6 +6,7 @@ Authors: Yuma Mizuno
 module
 
 public meta import Lean.Meta.Basic
+public meta import Batteries.Tactic.Alias
 public import Mathlib.Init
 
 /-!
@@ -166,9 +167,11 @@ inductive Mor₂Iso : Type where
   deriving Inhabited
 
 /-- A monad equipped with the ability to unfold `BicategoricalCoherence.iso`. -/
-class MonadCoherehnceHom (m : Type → Type) where
+class MonadCoherenceHom (m : Type → Type) where
   /-- Unfold a coherence isomorphism. -/
   unfoldM (α : CoherenceHom) : m Mor₂Iso
+
+@[deprecated (since := "2026-09-17")] alias MonadCoherehnceHom := MonadCoherenceHom
 
 /-- The underlying lean expression of a 2-isomorphism. -/
 def StructuralAtom.e : StructuralAtom → Expr
