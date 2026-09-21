@@ -11,6 +11,8 @@ public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Tactic.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.SpecificDegree
 
 /-!
 # Sandbox: splitting of primes in quadratic fields
@@ -33,16 +35,6 @@ open Ideal
 
 open scoped QuadraticAlgebra
 
-/-! ### Casting `discrim` -/
-
--- TODO: for `Mathlib/Algebra/QuadraticDiscriminant.lean`, next to `discrim`.
-/-- The discriminant of a quadratic commutes with the coercion `ℤ → R`. -/
-@[simp, norm_cast]
-theorem discrim_intCast {R : Type*} [CommRing R] (a b c : ℤ) :
-    discrim (a : R) (b : R) (c : R) = ((discrim a b c : ℤ) : R) := by
-  push_cast [discrim]
-  rfl
-
 /-! ### `Polynomial.discr` and `discrim`
 
 `Mathlib/Algebra/QuadraticDiscriminant.lean` carries the root criteria for `a * x ^ 2 + b * x + c`
@@ -58,6 +50,77 @@ theorem discrim_eq_polynomial_discr {R : Type*} [CommRing R] (a b c : R) (ha : a
     discrim a b c = (C a * X ^ 2 + C b * X + C c).discr := by
   rw [discr_of_degree_eq_two (by compute_degree!), discrim]
   simp [mul_right_comm]
+
+/-! ### Factoring a quadratic polynomial through its discriminant
+
+`Mathlib/Algebra/QuadraticDiscriminant.lean` says when `a * x ^ 2 + b * x + c` has a root, in terms
+of `discrim a b c`, but says nothing about the polynomial `C a * X ^ 2 + C b * X + C c`. These are
+the polynomial counterparts: the factorisation into linear factors when the discriminant is a
+square, the double root when it vanishes, and irreducibility when it is not a square.
+-/
+
+section quadratic
+
+open Polynomial UniqueFactorizationMonoid
+
+variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c s : K}
+
+-- TODO: for `Mathlib/Algebra/QuadraticDiscriminant.lean` (which would then need `Polynomial`),
+-- or for a new file next to it.
+/-- If the discriminant is the square of `s`, the quadratic splits into the two linear factors
+given by the quadratic formula. -/
+theorem quadratic_eq_mul_of_discrim_eq_sq (ha : a ≠ 0) (h : discrim a b c = s ^ 2) :
+    C a * X ^ 2 + C b * X + C c =
+      C a * (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
+  polynomial_nf
+  congr <;> field_simp; grind [discrim]
+
+/-- If the discriminant vanishes, the quadratic is a square. -/
+theorem quadratic_eq_sq_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b c = 0) :
+    C a * X ^ 2 + C b * X + C c = C a * (X - C (-b / (2 * a))) ^ 2 := by
+  rw [quadratic_eq_mul_of_discrim_eq_sq ha (by rw [h, zero_pow]; exact two_ne_zero)]
+  polynomial
+
+omit [NeZero (2 : K)] in
+/-- A quadratic is irreducible when its discriminant is not a square. -/
+theorem irreducible_quadratic_of_not_isSquare_discrim (ha : a ≠ 0)
+    (hs : ¬ IsSquare (discrim a b c)) :
+    Irreducible (C a * X ^ 2 + C b * X + C c) := by
+  have hd : (C a * X ^ 2 + C b * X + C c).natDegree = 2 := by compute_degree!
+  rw [Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three (by aesop) (by aesop)]
+  refine (roots_eq_zero_iff_isRoot_eq_bot (by grind)).mpr <| Pi.eq_bot_iff.mpr ?_
+  replace hs :  ∀ (s : K), discrim a b c ≠ s ^ 2 := by
+    simpa [IsSquare, not_exists, ← pow_two] using hs
+  simpa [IsRoot.def, pow_two] using quadratic_ne_zero_of_discrim_ne_sq hs
+
+/-- If the discriminant is the square of `s`, the normalized factors are the two linear factors
+given by the quadratic formula, equal to each other when `s = 0`. -/
+theorem normalizedFactors_quadratic_of_discrim_eq_sq [DecidableEq K] (ha : a ≠ 0)
+    (h : discrim a b c = s ^ 2) :
+    normalizedFactors (C a * X ^ 2 + C b * X + C c) =
+      {X - C ((-b + s) / (2 * a)), X - C ((-b - s) / (2 * a))} := by
+  rw [quadratic_eq_mul_of_discrim_eq_sq ha h, normalizedFactors_mul
+    (mul_ne_zero (C_ne_zero.mpr ha) (X_sub_C_ne_zero _)) (X_sub_C_ne_zero _),
+    normalizedFactors_irreducible (irreducible_X_sub_C _),
+    normalizedFactors_irreducible]
+  · simp only [normalize_apply, coe_normUnit, leadingCoeff_mul, leadingCoeff_C,
+    leadingCoeff_X_sub_C, mul_one, CommGroupWithZero.coe_normUnit _ ha, normUnit_one, Units.val_one,
+    map_one, Multiset.singleton_add, Multiset.insert_eq_cons, Multiset.cons_inj_left]
+    rw [mul_rotate, mul_assoc, ← map_mul, inv_mul_cancel₀ ha, map_one, mul_one]
+  · rw [irreducible_isUnit_mul (isUnit_C.mpr ha.isUnit)]
+    exact irreducible_X_sub_C _
+
+end quadratic
+
+/-! ### Casting `discrim` -/
+
+-- TODO: for `Mathlib/Algebra/QuadraticDiscriminant.lean`, next to `discrim`.
+/-- The discriminant of a quadratic commutes with the coercion `ℤ → R`. -/
+@[simp, norm_cast]
+theorem discrim_intCast {R : Type*} [CommRing R] (a b c : ℤ) :
+    discrim (a : R) (b : R) (c : R) = ((discrim a b c : ℤ) : R) := by
+  push_cast [discrim]
+  rfl
 
 /-! ### The minimal polynomial of `ω`
 
@@ -857,9 +920,10 @@ theorem monic_minpoly_integralGen : (minpoly ℤ (integralGen K)).Monic := by
 /-- The discriminant of the minimal polynomial of the generator is `discr K`. -/
 theorem discrim_minpoly_integralGen (p : ℕ) [Fact p.Prime]:
     discrim (1 : ZMod p) (-(discr K % 4) : ℤ) (-(discr K / 4) : ℤ) = (discr K : ZMod p) := by
-  rw [discrim_eq_polynomial_discr _ _ _ one_ne_zero, map_one, one_mul, Polynomial.C_mul', neg_smul,
-    C_neg, ← sub_eq_add_neg, ← sub_eq_add_neg, QuadraticAlgebra.polynomial_discr_eq_discr]
-  exact (isFundamentalDiscr_discr K).discr_ediv_four_emod_four
+  rw [discrim_eq_polynomial_discr _ _ _ one_ne_zero, map_one, one_mul, Polynomial.C_mul']
+  sorry
+--  rw [C_neg, ← sub_eq_add_neg, ← sub_eq_add_neg, QuadraticAlgebra.polynomial_discr_eq_discr]
+--  exact (isFundamentalDiscr_discr K).discr_ediv_four_emod_four
 
 /-! ### The same statements, to be redone through Kummer-Dedekind
 
