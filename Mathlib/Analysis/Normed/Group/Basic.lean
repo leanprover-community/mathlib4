@@ -6,9 +6,10 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Defs
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: basic theory
@@ -334,12 +335,6 @@ theorem NormedGroup.tendsto_nhds_one {f : α → E} {l : Filter α} :
     Tendsto f l (𝓝 1) ↔ ∀ ε > 0, ∀ᶠ x in l, ‖f x‖ < ε :=
   Metric.tendsto_nhds.trans <| by simp only [dist_one_right]
 
-@[deprecated (since := "2026-02-17")]
-alias NormedCommGroup.tendsto_nhds_one := NormedGroup.tendsto_nhds_one
-
-@[deprecated (since := "2026-02-17")]
-alias NormedAddCommGroup.tendsto_nhds_zero := NormedAddGroup.tendsto_nhds_zero
-
 @[to_additive]
 theorem NormedGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
     Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x'⁻¹ * x‖ < δ → ‖(f x')⁻¹ * y‖ < ε := by
@@ -356,12 +351,6 @@ theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
   convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
-
-@[deprecated (since := "2026-02-17")]
-alias NormedCommGroup.nhds_one_basis_norm_lt := NormedGroup.nhds_one_basis_norm_lt
-
-@[deprecated (since := "2026-02-17")]
-alias NormedAddCommGroup.nhds_zero_basis_norm_lt := NormedAddGroup.nhds_zero_basis_norm_lt
 
 @[to_additive]
 theorem NormedGroup.uniformity_basis_dist :
@@ -380,7 +369,7 @@ section NNNorm
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
   ⟨fun a => .mk ‖a‖ (norm_nonneg' a)⟩
 
-@[to_additive (attr := simp, norm_cast) coe_nnnorm]
+@[to_additive (attr := simp, norm_cast, basify_op) coe_nnnorm, basify_op]
 theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 
 @[to_additive (attr := simp) coe_comp_nnnorm]
@@ -561,19 +550,13 @@ theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ �
 theorem IndiscreteTopology.nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
   indiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
 
+@[to_additive of_exists_nnnorm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_nnnorm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_nnnorm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_nnnorm_ne_zero]
-  NontrivialTopology.of_exists_nnnorm_ne_zero'
 
+@[to_additive of_forall_nnnorm_eq_zero]
 alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero'⟩ :=
   indiscreteTopology_iff_forall_nnnorm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_nnnorm_eq_zero]
-  IndiscreteTopology.of_forall_nnnorm_eq_zero'
 
 @[to_additive nontrivialTopology_iff_exists_norm_ne_zero]
 theorem nontrivialTopology_iff_exists_norm_ne_zero' :
@@ -594,19 +577,13 @@ theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :
 theorem IndiscreteTopology.norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
   indiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
 
+@[to_additive of_exists_norm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_norm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_norm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_norm_ne_zero]
-  NontrivialTopology.of_exists_norm_ne_zero'
 
+@[to_additive of_forall_norm_eq_zero]
 alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero'⟩ :=
   indiscreteTopology_iff_forall_norm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_norm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_norm_eq_zero]
-  IndiscreteTopology.of_forall_norm_eq_zero'
 
 end NNNorm
 
@@ -629,10 +606,6 @@ lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 @[to_additive]
 theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
-
-@[deprecated (since := "2026-02-11")] alias edist_one_eq_enorm := edist_one_right
-
-@[deprecated (since := "2026-02-11")] alias edist_zero_eq_enorm := edist_zero_right
 
 @[to_additive]
 lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
@@ -884,6 +857,14 @@ theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r :
 @[to_additive mem_closedBall_iff_norm']
 theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
   rw [mem_closedBall', dist_eq_norm_div]
+
+@[to_additive mem_closedBall_iff_nnnorm]
+theorem mem_closedBall_iff_nnnorm'' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖b / a‖₊ ≤ r :=
+  mem_closedBall_iff_norm''
+
+@[to_additive mem_closedBall_iff_nnnorm']
+theorem mem_closedBall_iff_nnnorm''' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖a / b‖₊ ≤ r :=
+  mem_closedBall_iff_norm'''
 
 /-- A scaled closed ball is a closed ball. -/
 @[to_additive setOf_sub_mem_closedBall_eq_closedBall

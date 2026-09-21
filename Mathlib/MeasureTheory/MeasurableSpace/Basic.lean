@@ -323,8 +323,9 @@ protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : Meas
 `exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const`,
 but replacing `Measurable.ite` by `Measurable.piecewise` in that example proof does not work. -/
 @[fun_prop]
-theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableSet { a : α | p a })
-    (hf : Measurable f) (hg : Measurable g) : Measurable fun x => ite (p x) (f x) (g x) :=
+protected lemma Measurable.ite {p : α → Prop} {_ : DecidablePred p}
+    (hp : MeasurableSet {a : α | p a}) (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun x ↦ ite (p x) (f x) (g x) :=
   Measurable.piecewise hp hf hg
 
 @[fun_prop]

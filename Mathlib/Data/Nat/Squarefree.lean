@@ -54,7 +54,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
   rw [squarefree_iff_emultiplicity_le_one] at hn
   by_cases hp : p.Prime
   · have := hn p
-    rw [← multiplicity_eq_factorization hp hn']
+    rw [← multiplicity_eq_factorization hp]
     simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
     exact multiplicity_le_of_emultiplicity_le this
   · rw [factorization_eq_zero_of_not_prime _ hp]
@@ -342,6 +342,20 @@ lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime
 lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFactors, p = n := by
   rw [← toFinset_factors, List.prod_toFinset _ hn.nodup_primeFactorsList,
     List.map_id', Nat.prod_primeFactorsList hn.ne_zero]
+
+theorem squarefree_and_primeFactors_card_eq_two_iff (n : ℕ) :
+    Squarefree n ∧ (primeFactors n).card = 2 ↔
+      ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
+  refine ⟨fun ⟨sq, nc⟩ ↦ ?_, fun ⟨p, q, pq, hp, hq, hn⟩ ↦ ?_⟩
+  · obtain ⟨p, q, pq, eq⟩ := Finset.card_eq_two.mp nc
+    wlog pq' : p < q
+    · exact this n ⟨sq, nc⟩ sq nc q p pq.symm (by grind) (by grind)
+    refine ⟨p, q, pq', prime_of_mem_primeFactors (n := n) (by grind),
+      prime_of_mem_primeFactors (n := n) (by grind), ?_⟩
+    rw [← prod_primeFactors_of_squarefree sq, eq, prod_insert (by simp [pq]), prod_singleton]
+  · rw [← hn, squarefree_mul <| (coprime_primes hp hq).mpr pq.ne,
+      primeFactors_mul hp.ne_zero hq.ne_zero, hp.primeFactors, hq.primeFactors]
+    exact ⟨⟨hp.squarefree, hq.squarefree⟩, by grind⟩
 
 lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s, p) = s := by
   have hn : ∏ p ∈ s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero

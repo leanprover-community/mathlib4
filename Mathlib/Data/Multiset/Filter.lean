@@ -277,9 +277,7 @@ theorem countP_filter (q) [DecidablePred q] (s : Multiset α) :
 
 theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     countP p s = (filter q s).countP p + (filter (fun a => ¬q a) s).countP p :=
-  Quot.inductionOn s fun l => by
-    convert! l.countP_eq_countP_filter_add (p ·) (q ·)
-    simp
+  Quot.inductionOn s fun l => l.countP_eq_countP_filter_add (p ·) (q ·)
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countP p (map f s) = card (s.filter fun a => p (f a)) := by
@@ -413,8 +411,8 @@ See [here](https://github.com/leanprover-community/mathlib/pull/11306#discussion
 for more discussion.
 -/
 @[simp]
-theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
-    (s.map p).count True = card (s.filter p) := by
+theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p]
+    [DecidableEq Prop] : (s.map p).count True = card (s.filter p) := by
   simp only [count_eq_card_filter_eq, eq_iff_iff, true_iff, filter_map, comp_apply, card_map]
 
 section Map
