@@ -20,7 +20,7 @@ Follows `LinearMap.range`.
 
 @[expose] public section
 
-open Affine Module AffineMap AffineSubspace
+open Affine AffineMap AffineSubspace
 
 section
 
