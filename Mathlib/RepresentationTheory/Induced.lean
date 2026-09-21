@@ -203,6 +203,7 @@ lemma indResHomEquiv_symm_apply_mk (f : ρ.IntertwiningMap (σ.comp φ)) (h : H)
     (indResHomEquiv φ ρ σ).symm f (IndV.mk φ ρ h a) = σ h⁻¹ (f a) :=
   ind.lift_apply_mk φ f h a
 
+/-- tbd -/
 noncomputable def indMap (f : IntertwiningMap ρ τ) :
     (ind φ ρ).IntertwiningMap (ind φ τ) :=
   ind.lift φ ⟨IndV.mk φ τ 1 ∘ₗ f, fun g => by ext; simp [IntertwiningMap.isIntertwining]⟩
