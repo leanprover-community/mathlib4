@@ -172,8 +172,6 @@ partial def hasMaxPrec : Syntax → Bool
     -- tuples/lists: `(⋯, ⋯)`, `⟨...⟩`, `{ ... }`, `[...]`, `#[...]`, `#v[...]`
     | ``Parser.Term.tuple | ``Parser.Term.anonymousCtor | ``Parser.Term.structInst
     | ``«term[_]» | ``«term#[_,]» | ``Vector.«term#v[_,]»
-    -- sorts: `Type u`, `Sort u`, `Prop`
-    | ``Parser.Term.type | ``Parser.Term.sort | ``Parser.Term.prop
     -- `getElem` notation
     | ``«term__[_]» | ``«term__[_]'_» | ``«term__[_]_!» | ``«term__[_]_?»
     -- miscellaneous: `·`, `.foo`,
