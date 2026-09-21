@@ -57,23 +57,49 @@ protected def comp (fi : Isotopy f₀ f₁) (gi : Isotopy g₀ g₁) :
 
 end Isotopy
 
-/-- Being isotopic is a congruence relation on the self-homeomorphisms of a topological space. -/
-def Isotopic : Con (X ≃ₜ X) where
-  r f₀ f₁ := Nonempty (f₀.Isotopy f₁)
-  iseqv.refl _ := ⟨.refl _⟩
-  iseqv.symm := fun ⟨i⟩ ↦ ⟨i.symm⟩
-  iseqv.trans := fun ⟨i₀⟩ ⟨i₁⟩ ↦ ⟨i₀.trans i₁⟩
-  mul' := fun ⟨fi⟩ ⟨gi⟩ ↦ ⟨gi.comp fi⟩
+/-- Two homeomorphisms `f₀` and `f₁` are isotopic if there exists an isotopy between them. -/
+def Isotopic (f₀ f₁ : X ≃ₜ Y) : Prop :=
+  Nonempty (Isotopy f₀ f₁)
+
+namespace Isotopic
 
 -- dot notation doesn't work for some reason
-lemma Isotopic.homotopic {f₀ f₁ : X ≃ₜ X} (i : f₀.Isotopic f₁) : (f₀ : C(X, X)).Homotopic f₁ := by
-  obtain ⟨i⟩ := i; exact ⟨i.toHomotopy⟩
+theorem homotopic {f₀ f₁ : X ≃ₜ X} (h : Isotopic f₀ f₁) : (f₀ : C(X, X)).Homotopic f₁ := by
+  obtain ⟨i⟩ := h; exact ⟨i.toHomotopy⟩
+
+@[refl]
+theorem refl (f : X ≃ₜ Y) : Isotopic f f :=
+  ⟨Isotopy.refl f⟩
+
+@[symm]
+theorem symm ⦃f g : X ≃ₜ Y⦄ (h : Isotopic f g) : Isotopic g f :=
+  h.map Isotopy.symm
+
+@[trans]
+theorem trans ⦃f g h : X ≃ₜ Y⦄ (h₀ : Isotopic f g) (h₁ : Isotopic g h) : Isotopic f h :=
+  h₀.map2 Isotopy.trans h₁
+
+theorem comp {f₀ f₁ : X ≃ₜ Y} {g₀ g₁ : Y ≃ₜ Z} (hg : Isotopic g₀ g₁) (hf : Isotopic f₀ f₁) :
+    Isotopic (f₀.trans g₀) (f₁.trans g₁) :=
+  hf.map2 Isotopy.comp hg
+
+theorem equivalence : Equivalence (@Isotopic X Y _ _) :=
+  ⟨refl, by apply symm, by apply trans⟩
+
+end Isotopic
+
+variable (X) in
+/-- Being isotopic is a congruence relation on the self-homeomorphisms of a topological space. -/
+def con : Con (X ≃ₜ X) where
+  r f₀ f₁ := Nonempty (f₀.Isotopy f₁)
+  iseqv := Isotopic.equivalence
+  mul' := fun ⟨fi⟩ ⟨gi⟩ ↦ ⟨gi.comp fi⟩
 
 end Homeomorph
 
 variable (X) in
 /-- The mapping class group of a topological space. -/
-abbrev MappingClassGroup : Type _ := (Homeomorph.Isotopic (X := X)).Quotient
+abbrev MappingClassGroup : Type _ := (Homeomorph.con X).Quotient
 
 open ContinuousMap.Monoid in
 /-- The homomorphism from the mapping class group of a space to the monoid of continuous self-maps

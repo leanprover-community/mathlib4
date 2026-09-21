@@ -380,19 +380,22 @@ protected theorem piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 end Homotopic
 
+section Monoid
+
 variable (X)
 
+open scoped ContinuousMap.Monoid
+
 /-- Being homotopic defines a congruence relation. -/
-def Monoid.con : Con C(X, X) where
+def con : Con C(X, X) where
   r := Homotopic
-  iseqv := ⟨.refl, fun f ↦ .symm f, fun f ↦ .trans f⟩
+  iseqv := Homotopic.equivalence
   mul' := fun ⟨f⟩ ⟨g⟩ ↦ ⟨f.comp g⟩
 
-open scoped ContinuousMap.Monoid in
 /-- The monoid of continuous self-maps up to homotopy. -/
-abbrev _root_.MappingClassMonoid : Type _ := (Monoid.con X).Quotient
+abbrev _root_.MappingClassMonoid : Type _ := (con X).Quotient
 
-variable {X}
+end Monoid
 
 /--
 The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate maps satisfy the predicate
