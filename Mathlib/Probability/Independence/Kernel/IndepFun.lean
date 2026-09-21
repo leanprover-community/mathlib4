@@ -424,7 +424,7 @@ tuple `(f i)_i` for `i ∈ T`. -/
 theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
     IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ :=
-  hf_Indep.indepFun_set S T (Finset.disjoint_coe_iff.2 hST) hf_meas
+  hf_Indep.indepFun_set S T (by simpa) hf_meas
 
 theorem iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) :

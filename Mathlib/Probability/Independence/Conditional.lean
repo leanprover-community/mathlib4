@@ -913,6 +913,15 @@ lemma iCondIndepFun.of_subsingleton [Subsingleton ι] : iCondIndepFun m' hm' f �
   Kernel.iIndepFun.of_subsingleton
 
 /-- If `f` is a family of mutually conditionally independent random variables
+(`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint index sets, then the tuple formed
+by `f i` for `i ∈ S` is conditionally independent of the tuple `(f i)_i` for `i ∈ T`. -/
+theorem iCondIndepFun.condIndepFun_set {β : ι → Type*}
+    {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Set ι) (hST : Disjoint S T)
+    (hf_Indep : iCondIndepFun m' hm' f μ) (hf_meas : ∀ i, Measurable (f i)) :
+    CondIndepFun m' hm' (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ :=
+  Kernel.iIndepFun.indepFun_set S T hST hf_Indep hf_meas
+
+/-- If `f` is a family of mutually conditionally independent random variables
 (`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint finite index sets, then the tuple formed
 by `f i` for `i ∈ S` is conditionally independent of the tuple `(f i)_i` for `i ∈ T`. -/
 theorem iCondIndepFun.condIndepFun_finset {β : ι → Type*}

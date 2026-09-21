@@ -46,6 +46,7 @@ theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 
 omit [DecidableEq α] in
+@[simp]
 theorem disjoint_coe_iff : Disjoint (s : Set α) t ↔ Disjoint s t := by
   classical
   rw [disjoint_iff_inter_eq_empty, Set.disjoint_iff_inter_eq_empty, ← coe_inter, coe_eq_empty]
