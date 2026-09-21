@@ -405,7 +405,7 @@ theorem three_le_four_mul_im_sq_of_mem_fd {τ : ℍ} (h : τ ∈ 𝒟) : 3 ≤ 4
 theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   rw [coe_T_zpow_smul_eq]
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1
-  have hzn := Int.nneg_mul_add_sq_of_abs_le_one n (abs_two_mul_re_lt_one_of_mem_fdo hz).le
+  have hzn := Int.nonneg_mul_add_sq_of_abs_le_one n (abs_two_mul_re_lt_one_of_mem_fdo hz).le
   have : 1 < (z.re + ↑n) * (z.re + ↑n) + z.im * z.im := by linarith
   simpa [normSq, num, denom]
 
