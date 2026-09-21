@@ -153,39 +153,39 @@ def usesNativeConfig : Syntax → Bool
   | _ => false
 
 /-- Return `true` for some common syntaxes that parse at `max` precedence.
-Exclude notations `fun`, `¬` and `!` since users might think these have a lower precedence. -/
+This excludes syntaxes that can parse subsequent expressions, like `fun`, `¬` and `!`.
+For example, `foo !bar baz` parses as `foo !(bar baz)` instead of `foo (!bar) baz`. -/
 partial def hasMaxPrec : Syntax → Bool
   | .ident .. | .atom .. => true
-  | .node _ kind args => match kind with
+  | .node _ kind args =>
+    match kind with
+    -- ambiguous notations
     | `choice => args.any hasMaxPrec
+    -- prefix notation: `@⋯`
+    | ``Parser.Term.explicit => args[1]?.any hasMaxPrec
+     -- postfix notation: `⋯.1`/`⋯.foo`, `⋯.{u}`, `⋯⁻¹`
+    | ``Parser.Term.proj | ``Parser.Term.explicitUniv | ``«term_⁻¹»
     -- literals
     | `num | `scientific | `str | `char | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName
-    -- universes
-    | ``Parser.Term.type | ``Parser.Term.sort | ``Parser.Term.prop
-    -- brackets
+    -- brackets: `(⋯)`, `(⋯ : ⋯)`, `(⋯ :)`
     | ``Parser.Term.paren | ``Parser.Term.typeAscription
-    -- miscellaneous: `·`, `@x`, `x.1`, `.x`, `x.{u}`
-    | ``Parser.Term.cdot | ``Parser.Term.explicit
-    | ``Parser.Term.proj | ``Parser.Term.dotIdent | ``Parser.Term.explicitUniv
-    -- `getElem` notation
-    | ``«term__[_]» | ``«term__[_]'_» | ``«term__[_]_!» | ``«term__[_]_?»
-    -- tuples/lists
+    -- tuples/lists: `(⋯, ⋯)`, `⟨...⟩`, `{ ... }`, `[...]`, `#[...]`, `#v[...]`
     | ``Parser.Term.tuple | ``Parser.Term.anonymousCtor | ``Parser.Term.structInst
     | ``«term[_]» | ``«term#[_,]» | ``Vector.«term#v[_,]»
-    -- atomic notation
-    | ``«term∅» | `«term⊤» | `«term⊥»
-    | `termℕ | `termℤ | `termℚ | `termℝ | `termℂ
-    -- postfix notation
-    | ``«term_⁻¹» => true
-    -- prefix notation (omitted)
-    -- | ``«term¬_» | ``term!_
-    -- lambda (omitted)
-    -- | ``Parser.Term.fun | ``Parser.Term.nofun
-    | _ => false
+    -- sorts: `Type u`, `Sort u`, `Prop`
+    | ``Parser.Term.type | ``Parser.Term.sort | ``Parser.Term.prop
+    -- `getElem` notation
+    | ``«term__[_]» | ``«term__[_]'_» | ``«term__[_]_!» | ``«term__[_]_?»
+    -- miscellaneous: `·`, `.foo`,
+    | ``Parser.Term.cdot | ``Parser.Term.dotIdent
+      => true
+    | _ =>
+      -- atomic notation such as `ℕ`
+      if h : args.size = 1 then args[0].isAtom else false
   | _ => false
 
-/-- Return `true` for some common syntaxes that parse at `arg` precedence. -/
-def hasArgPrec : Syntax → Bool
+/-- Return `true` if the syntax is a `do` block. -/
+def isDoBlock : Syntax → Bool
   | .node _ kind _ => (kind matches ``Parser.Term.do)
   | _ => false
 
@@ -238,7 +238,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
           rargs
     | ``«term_<|_» =>
       if h : 3 ≤ args.size then
-        if hasMaxPrec args[2] || hasArgPrec args[2] then
+        if hasMaxPrec args[2] || isDoBlock args[2] then
           -- Trick: manually set the position info of `<|` in order to remove preceding whitespace.
           let info := match args[0].getTailPos?, args[1].getTailPos? with
             | some pos, some tailPos => .synthetic pos tailPos
