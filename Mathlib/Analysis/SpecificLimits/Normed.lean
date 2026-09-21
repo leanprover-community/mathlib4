@@ -172,7 +172,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
     {r₁ : R} {r₂ : ℝ} (h : ‖r₁‖ < r₂) :
     (fun n ↦ n ^ k * r₁ ^ n : ℕ → R) =o[atTop] fun n ↦ r₂ ^ n := by
   by_cases h0 : r₁ = 0
-  · refine (isLittleO_zero _ _).congr' (mem_atTop_sets.2 <| ⟨1, fun n hn ↦ ?_⟩) EventuallyEq.rfl
+  · refine (isLittleO_zero _ _).congr' (mem_atTop_sets.2 ⟨1, fun n hn ↦ ?_⟩) EventuallyEq.rfl
     simp [zero_pow (one_le_iff_ne_zero.1 hn), h0]
   rw [← Ne, ← norm_pos_iff] at h0
   have A : (fun n ↦ n ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=

@@ -144,7 +144,7 @@ theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) 
 
 theorem Fintype.card_subtype_eq_or_eq_of_ne {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
     (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 :=
-  Fintype.card_subtype_or_disjoint _ _ fun _ ha hb _ hc ↦ ha _ hc ▸ hb _ hc ▸ h <| rfl
+  Fintype.card_subtype_or_disjoint _ _ fun _ ha hb _ hc ↦ ha _ hc ▸ hb _ hc ▸ h rfl
 
 attribute [local instance] Fintype.ofFinite in
 @[simp]

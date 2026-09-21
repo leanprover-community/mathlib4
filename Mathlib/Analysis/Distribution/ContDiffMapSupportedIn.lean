@@ -114,7 +114,7 @@ open scoped Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
-class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
+class ContDiffMapSupportedInClass (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     extends FunLike B E F where
@@ -125,14 +125,14 @@ open ContDiffMapSupportedInClass
 
 namespace ContDiffMapSupportedInClass
 
-instance (B : Type*) (E F : outParam <| Type*)
+instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
-instance (B : Type*) (E F : outParam <| Type*)
+instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :

@@ -321,7 +321,7 @@ theorem eLpNormEssSup_congr_ae {f g : α → ε'} (hfg : f =ᵐ[μ] g) :
 
 theorem eLpNormEssSup_mono_enorm_ae {f : α → ε'} {g : α → ε''} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
-  essSup_mono_ae <| hfg
+  essSup_mono_ae hfg
 
 theorem eLpNormEssSup_mono_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
@@ -432,7 +432,7 @@ theorem eLpNorm_congr_enorm_ae [TopologicalSpace ε']
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_enorm_ae hf <| EventuallyEq.le hfg)
-    (eLpNorm_mono_enorm_ae hg <| (EventuallyEq.symm hfg).le)
+    (eLpNorm_mono_enorm_ae hg (EventuallyEq.symm hfg).le)
 
 /-- See also `eLpNorm_zero_of_ae_enorm_zero` dropping the measurability assumption
 but assuming that the space is an enormed monoid. -/
@@ -447,7 +447,7 @@ theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMe
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_nnnorm_ae hf <| EventuallyEq.le hfg)
-    (eLpNorm_mono_nnnorm_ae hg <| (EventuallyEq.symm hfg).le)
+    (eLpNorm_mono_nnnorm_ae hg (EventuallyEq.symm hfg).le)
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :

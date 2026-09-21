@@ -45,7 +45,7 @@ such as groups, modules and rings.
 
 `A` is a parameter, despite being unused in the definition below, so it appears in the notation.
 -/
-class HasQuotient (A : outParam <| Type u) (B : Type v) where
+class HasQuotient (A : outParam Type u) (B : Type v) where
   /-- `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`. -/
   Quotient (A) : B → Type max u v
 

@@ -111,7 +111,7 @@ lemma IsSubgraph.isLink_iff' (hHG : H ≤ G) : H.IsLink e x y ↔ G.IsLink e x y
 
 /-- Two subgraphs of the same graph are compatible. -/
 lemma Compatible.of_le_le (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=
-  fun _ he₁ he₂ _ _ ↦ hH₁G.isLink_iff he₁ |>.trans <| (hH₂G.isLink_iff he₂).symm
+  fun _ he₁ he₂ _ _ ↦ hH₁G.isLink_iff he₁ |>.trans (hH₂G.isLink_iff he₂).symm
 
 lemma Compatible.of_le (hHG : H ≤ G) : H.Compatible G := .of_le_le hHG le_rfl
 lemma Compatible.of_ge (hHG : G ≤ H) : H.Compatible G := .of_le_le le_rfl hHG

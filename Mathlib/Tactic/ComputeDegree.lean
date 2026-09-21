@@ -416,7 +416,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
     return dispatchLemma (twoHeadsArgs (← mv.getType'')) != ``id
   let progress ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
-    mv.applyConst <| lem
+    mv.applyConst lem
   return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input

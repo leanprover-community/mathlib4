@@ -45,7 +45,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : S} (x 
       · subst heq
         simp
       · simpa [heq] using h1 j (by simpa [heq] using hj)
-    · have : j ≠ i := fun h => h ▸ hnotMem <| hj
+    · have : j ≠ i := fun h => h ▸ hnotMem hj
       simp only [ne_eq, this, not_false_eq_true, Function.update_of_ne]
       exact h2 _ (Finset.mem_insert_of_mem hj)
 

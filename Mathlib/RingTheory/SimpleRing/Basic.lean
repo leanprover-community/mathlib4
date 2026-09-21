@@ -83,7 +83,7 @@ universe u in
 lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :
     IsSimpleRing R ↔
     ∀ {S : Type u} [NonAssocSemiring S] [Nontrivial S] (f : R →+* S), Function.Injective f :=
-  iff_injective_ringHom_or_subsingleton_codomain R |>.trans <|
+  iff_injective_ringHom_or_subsingleton_codomain R |>.trans
     ⟨fun H _ _ _ f => H f |>.resolve_right (by simpa [not_subsingleton_iff_nontrivial]),
       fun H S _ f => subsingleton_or_nontrivial S |>.recOn Or.inr fun _ => Or.inl <| H f⟩
 

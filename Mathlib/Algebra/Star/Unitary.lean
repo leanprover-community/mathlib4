@@ -180,7 +180,7 @@ protected lemma _root_.Units.inv_mul_mem_unitary (a b : Rˣ) :
   simp [← inv_mul_mem_iff, Units.unitary_eq]
 
 instance instIsStarNormal (u : unitary R) : IsStarNormal u where
-  star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
+  star_comm_self := star_mul_self u |>.trans (mul_star_self u).symm
 
 instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
   star_comm_self := congr(Subtype.val $(star_comm_self' u))

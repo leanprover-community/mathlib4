@@ -170,7 +170,7 @@ lemma factorization_prodComparison_colim :
     (HasColimit.isoOfNatIso ((externalProductCompDiagIso _ _).app (X, Y)).symm).hom ≫
       colimit.pre (X ⊠ Y) (diag C) ≫
         (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <|
-          curriedTensor <| Type u).hom =
+          curriedTensor Type u).hom =
     CartesianMonoidalCategory.prodComparison colim X Y := by
   apply colimit.hom_ext
   intro j

@@ -48,7 +48,7 @@ abbrev Condensed (C : Type w) [Category.{v} C] :=
 Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
 sheaves on `CompHaus.{u}`.
 -/
-abbrev CondensedSet := Condensed.{u} <| Type (u + 1)
+abbrev CondensedSet := Condensed.{u} Type (u + 1)
 
 namespace Condensed
 

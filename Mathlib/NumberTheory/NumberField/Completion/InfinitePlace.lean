@@ -228,7 +228,7 @@ def extensionEmbedding : v.Completion →+* ℂ :=
 
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
-  extensionHom _ (v.isometry_embedding_of_isReal hv).continuous |>.comp <|
+  extensionHom _ (v.isometry_embedding_of_isReal hv).continuous |>.comp
     (equiv v).toRingHom
 
 @[simp]

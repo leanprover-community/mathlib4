@@ -136,7 +136,7 @@ theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
 @[fun_prop]
 theorem continuous_postcomp (g : C(Y, R)₀) : Continuous (g.comp : C(X, Y)₀ → C(X, R)₀) := by
   rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
-  exact g.toContinuousMap.continuous_postcomp |>.comp <|
+  exact g.toContinuousMap.continuous_postcomp |>.comp
     ContinuousMapZero.isEmbedding_toContinuousMap.continuous
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/

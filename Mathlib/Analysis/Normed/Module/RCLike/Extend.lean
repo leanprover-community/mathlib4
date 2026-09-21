@@ -51,7 +51,7 @@ noncomputable def extendRCLikeL {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace
     let mulI : 𝕜 →L[ℝ] 𝕜 := ContinuousLinearMap.mul ℝ 𝕜 (I : 𝕜)
     exact ofRealCLM.postcomp F - mulI.postcomp F ∘L smulI.precomp 𝕜 ∘L ofRealCLM.postcomp F
       |>.continuous
-  continuous_invFun := reCLM.postcomp F |>.continuous.comp <|
+  continuous_invFun := reCLM.postcomp F |>.continuous.comp
     (ContinuousLinearMap.isEmbedding_restrictScalars ℝ).continuous
 
 @[simp]

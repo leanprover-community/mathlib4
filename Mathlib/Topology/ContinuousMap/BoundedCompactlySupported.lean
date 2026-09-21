@@ -38,7 +38,7 @@ lemma mem_compactlySupported {f : α →ᵇ γ} :
 lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) : ∃ (x : α),
     ‖f x‖ = ‖f‖ := by
   by_cases hs : (tsupport f).Nonempty
-  · obtain ⟨x, _, hmax⟩ := mem_compactlySupported.mp h |>.exists_isMaxOn hs <|
+  · obtain ⟨x, _, hmax⟩ := mem_compactlySupported.mp h |>.exists_isMaxOn hs
       (map_continuous f).norm.continuousOn
     refine ⟨x, le_antisymm (norm_coe_le_norm f x) (norm_le (norm_nonneg _) |>.mpr fun y ↦ ?_)⟩
     by_cases hy : y ∈ tsupport f
@@ -86,7 +86,7 @@ def ofCompactSupport (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactS
   map_bounded' := by
     obtain (hs | hs) := (tsupport g).eq_empty_or_nonempty
     · exact ⟨0, by simp [tsupport_eq_empty_iff.mp hs]⟩
-    · obtain ⟨z, _, hmax⟩ := hg₂.exists_isMaxOn hs <| hg₁.norm.continuousOn
+    · obtain ⟨z, _, hmax⟩ := hg₂.exists_isMaxOn hs hg₁.norm.continuousOn
       refine ⟨2 * ‖g z‖, dist_le_two_norm' fun x ↦ ?_⟩
       by_cases hx : x ∈ tsupport g
       · exact isMaxOn_iff.mp hmax x hx
