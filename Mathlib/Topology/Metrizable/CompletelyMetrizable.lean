@@ -55,9 +55,13 @@ class IsCompletelyPseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : P
   complete : ∃ m : PseudoMetricSpace X, m.toUniformSpace.toTopologicalSpace = t ∧
     @CompleteSpace X m.toUniformSpace
 
-instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace
+instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace
     [PseudoMetricSpace X] [CompleteSpace X] : IsCompletelyPseudoMetrizableSpace X :=
   ⟨⟨‹_›, rfl, ‹_›⟩⟩
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace :=
+  _root_.PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace
 
 /-- A convenience class, for a completely pseudometrizable space endowed with a complete
 pseudometric. No instance of this class should be registered: It should be used as

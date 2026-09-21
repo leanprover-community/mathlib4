@@ -563,7 +563,9 @@ noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := 
     exact ⟨1 ⊗ₜ x, by simp⟩
 
 @[simp]
-lemma contangentEquiv_tmul (s : S) (x : P.ker) : P.cotangentEquiv (s ⊗ₜ x) = s • .mk x := rfl
+lemma cotangentEquiv_tmul (s : S) (x : P.ker) : P.cotangentEquiv (s ⊗ₜ x) = s • .mk x := rfl
+
+@[deprecated (since := "2026-09-17")] alias contangentEquiv_tmul := cotangentEquiv_tmul
 
 end Cotangent
 
