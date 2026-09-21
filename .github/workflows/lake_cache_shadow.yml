@@ -264,39 +264,29 @@ jobs:
             echo "CHAIN_COLD=true" >> "$GITHUB_ENV"
             echo "::notice::cold chain for $tcslug; pinned runs fall back to legacy hydration"
           fi
-          # The services this job reads, with the public read endpoints. See
-          # "Cache service configuration" in `lake_cache_shadow.md`. They
-          # share one artifact endpoint and differ only in where they look
-          # for a revision file:
-          #   shadow            mathlib itself, under its own sha
-          #   shadow-deps-prev  the dependencies as the previous run on this
-          #                     toolchain published them
-          # A dependency's revision does not say which upstreams it was built
-          # against, so the mathlib sha that pins the whole set supplies that,
-          # as a segment of the revision endpoint.
-          {
-            printf '[[cache.service]]\nname = "shadow"\ntype = "s3"\n'
-            printf 'artifactEndpoint = "%s"\nrevisionEndpoint = "%s"\n\n' \
-              "$LAKE_CACHE_ARTIFACT_ENDPOINT" "$LAKE_CACHE_REVISION_ENDPOINT"
-            if [ -n "$prev" ]; then
-              printf '[[cache.service]]\nname = "shadow-deps-prev"\ntype = "s3"\n'
-              printf 'artifactEndpoint = "%s"\nrevisionEndpoint = "%s/deps/%s"\n' \
-                "$LAKE_CACHE_ARTIFACT_ENDPOINT" "$LAKE_CACHE_REVISION_ENDPOINT" "$prev"
-            fi
-          } > .lake/shadow-services.toml
+          # The cache service this job reads, with the public read
+          # endpoints. See "Cache service configuration" in
+          # `lake_cache_shadow.md`.
+          cat > .lake/shadow-services.toml <<EOF
+          [[cache.service]]
+          name = "shadow"
+          type = "s3"
+          artifactEndpoint = "$LAKE_CACHE_ARTIFACT_ENDPOINT"
+          revisionEndpoint = "$LAKE_CACHE_REVISION_ENDPOINT"
+          EOF
           if [ "$CACHE_DEPS" != "true" ]; then
             echo "::notice::dependency caching disabled for this run (cache_deps input)"
             exit 0
           fi
-          # The packages this run exports, as "<name> <rev>". Every run
+          # The packages this run exports, one name per line. Every run
           # exports every one of them; see "Push" in `lake_cache_shadow.md`.
-          while read -r name rev; do
+          while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then
               echo "::notice::dep $name: on the skip list; not cached"
               continue
             fi
-            echo "$name $rev" >> .lake/dep-plan/deps.txt
-          done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
+            echo "$name" >> .lake/dep-plan/deps.txt
+          done < <(jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json)
           echo "::notice::caching $(wc -l < .lake/dep-plan/deps.txt) dependencies"
 
       # The bootstrap fallback, an optimization for a cold chain. A pinned run
@@ -357,10 +347,10 @@ jobs:
           LAKE_CONFIG: .lake/shadow-services.toml
         run: |
           cd pr-branch
-          while read -r name rev; do
-            lake cache get --service=shadow-deps-prev --package="$name" \
-              --scope="$CACHE_SCOPE/$name" --rev="$rev" \
-              || echo "::warning::dep warm start missed for $name@${rev:0:12}; it will build from source"
+          while read -r name; do
+            lake cache get --service=shadow --package="$name" \
+              --scope="$CACHE_SCOPE/$name" --rev="$CHAIN_PREV" \
+              || echo "::warning::dep warm start missed for $name; it will build from source"
           done < .lake/dep-plan/deps.txt
 
       # The incremental build. The warm start, or the legacy fallback, has
@@ -405,7 +395,7 @@ jobs:
           #
           #   "2026-03-17"
           #   ["40621d85d988875e","b219d1b135ae613c.ltar"]
-          while read -r name rev; do
+          while read -r name; do
             echo "::group::export $name"
             if lake build "@$name" --package="$name" -o ".lake/dep-outputs/$name.jsonl"; then
               echo "exported $name: $(wc -l < ".lake/dep-outputs/$name.jsonl") mapping lines"
@@ -438,7 +428,7 @@ jobs:
           #   lake-cache-staging/
           #     outputs.jsonl               mathlib's mappings
           #     <content-hash>.ltar         mathlib's artifacts, flat
-          #     deps/manifest.txt           "<name> <rev>" staged here
+          #     deps/manifest.txt           the packages staged here
           #     deps/batteries/outputs.jsonl
           #     deps/batteries/<content-hash>.ltar
           #     deps/aesop/…
@@ -450,12 +440,12 @@ jobs:
           # that; put it in DEP_SKIP.
           lake cache stage .lake/outputs.jsonl ../lake-cache-staging
           mkdir -p ../lake-cache-staging/deps
-          while read -r name rev; do
+          while read -r name; do
             # A dependency whose export failed has no mappings file. Skip it
             # instead of staging a part of it.
             [ -f ".lake/dep-outputs/$name.jsonl" ] || continue
             lake cache stage ".lake/dep-outputs/$name.jsonl" "../lake-cache-staging/deps/$name"
-            echo "$name $rev" >> ../lake-cache-staging/deps/manifest.txt
+            echo "$name" >> ../lake-cache-staging/deps/manifest.txt
           done < .lake/dep-plan/deps.txt
           du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
           echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
@@ -516,12 +506,6 @@ jobs:
           type = "s3"
           artifactEndpoint = "$ARTIFACT_ENDPOINT"
           revisionEndpoint = "$REVISION_ENDPOINT"
-
-          [[cache.service]]
-          name = "shadow-deps"
-          type = "s3"
-          artifactEndpoint = "$ARTIFACT_ENDPOINT"
-          revisionEndpoint = "$REVISION_ENDPOINT/deps/$MATHLIB_SHA"
           EOF
 
       - name: Checkout mathlib (workspace for put-staged)
@@ -576,12 +560,13 @@ jobs:
             --scope="$CACHE_SCOPE" \
             --rev="$MATHLIB_SHA" 2>&1 | tee /tmp/put.log
 
-      # One upload per dependency, into `revisions/deps/<mathlib sha>/`.
-      # Every dependency of this mathlib commit lands under that one prefix,
-      # so the commit names a complete, self-consistent set. The artifacts go
-      # to `artifacts/<scope>/`, which carries no sha, so a dependency whose
-      # content did not change overwrites itself instead of accumulating a
-      # copy per commit.
+      # One upload per dependency, under the same revision as mathlib: the
+      # commit is what determines a dependency's outputs, through the
+      # manifest that pins it and its upstreams. Lake takes a full sha
+      # verbatim, so it needs no commit of the dependency's own. The
+      # artifacts go to `artifacts/<scope>/<DEP>/`, which carries no sha, so
+      # a dependency whose content holds steady overwrites itself instead of
+      # leaving a copy under every commit.
       #
       # `continue-on-error` keeps a failed dependency upload from failing the
       # run: the root upload has already succeeded, and the run still carries
@@ -597,15 +582,15 @@ jobs:
           fi
           ok=0 fail=0
           : > /tmp/dep-put.log
-          while read -r name rev; do
+          while read -r name; do
             if lake cache put-staged "../lake-cache-staging/deps/$name" \
-                --service=shadow-deps \
+                --service=shadow \
                 --scope="$CACHE_SCOPE/$name" \
-                --rev="$rev" 2>&1 | tee -a /tmp/dep-put.log; then
+                --rev="$MATHLIB_SHA" 2>&1 | tee -a /tmp/dep-put.log; then
               ok=$((ok+1))
             else
               fail=$((fail+1))
-              echo "::warning::dep upload failed for $name@${rev:0:12}"
+              echo "::warning::dep upload failed for $name"
             fi
           done < ../lake-cache-staging/deps/manifest.txt
           arts=$(grep -c 'uploaded artifact' /tmp/dep-put.log || true)
@@ -737,12 +722,6 @@ jobs:
           type = "s3"
           artifactEndpoint = "$ARTIFACT_ENDPOINT"
           revisionEndpoint = "$REVISION_ENDPOINT"
-
-          [[cache.service]]
-          name = "shadow-deps"
-          type = "s3"
-          artifactEndpoint = "$ARTIFACT_ENDPOINT"
-          revisionEndpoint = "$REVISION_ENDPOINT/deps/$MATHLIB_SHA"
           EOF
 
       - name: Checkout mathlib
@@ -783,26 +762,24 @@ jobs:
             --scope="$CACHE_SCOPE" \
             --rev="$MATHLIB_SHA"
 
-      # One fetch per dependency, from the set this run published under the
-      # mathlib sha. The lookup is exact and walks no history: `--rev` names
-      # the manifest revision, and the endpoint names the commit that pins
-      # it. A miss builds that dependency from source, and the provenance
-      # step reports the counts.
+      # One fetch per dependency, under the same revision as mathlib. The
+      # lookup is exact and walks no history. A miss builds that dependency
+      # from source, and the provenance step reports the counts.
       - name: lake cache get dependencies
         if: ${{ env.CACHE_DEPS == 'true' }}
         run: |
           cd pr-branch
           total=0 hits=0
-          while read -r name rev; do
+          while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
-            if lake cache get --service=shadow-deps --package="$name" \
-                --scope="$CACHE_SCOPE/$name" --rev="$rev"; then
+            if lake cache get --service=shadow --package="$name" \
+                --scope="$CACHE_SCOPE/$name" --rev="$MATHLIB_SHA"; then
               hits=$((hits+1))
             else
-              echo "::warning::dep cache miss for $name@${rev:0:12}; it will build from source"
+              echo "::warning::dep cache miss for $name; it will build from source"
             fi
-          done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
+          done < <(jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json)
           echo "DEP_TOTAL=$total" >> "$GITHUB_ENV"
           echo "DEP_HITS=$hits" >> "$GITHUB_ENV"
           echo "::notice::dep cache: ${hits}/${total} fetched for this sha"
@@ -910,12 +887,6 @@ jobs:
           type = "s3"
           artifactEndpoint = "$ARTIFACT_ENDPOINT"
           revisionEndpoint = "$REVISION_ENDPOINT"
-
-          [[cache.service]]
-          name = "shadow-deps"
-          type = "s3"
-          artifactEndpoint = "$ARTIFACT_ENDPOINT"
-          revisionEndpoint = "$REVISION_ENDPOINT/deps/$MATHLIB_SHA"
           EOF
 
       - name: install elan
@@ -972,20 +943,16 @@ jobs:
         run: |
           cd downstream
           total=0 hits=0
-          while read -r name rev; do
+          while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
-            if [ "$name" = mathlib ]; then
-              svc=shadow; scope="$CACHE_SCOPE"
-            else
-              svc=shadow-deps; scope="$CACHE_SCOPE/$name"
-            fi
-            if lake cache get --service="$svc" --package="$name" --scope="$scope" --rev="$rev"; then
+            if [ "$name" = mathlib ]; then scope="$CACHE_SCOPE"; else scope="$CACHE_SCOPE/$name"; fi
+            if lake cache get --service=shadow --package="$name" --scope="$scope" --rev="$MATHLIB_SHA"; then
               hits=$((hits+1))
             else
-              echo "::warning::downstream cache miss for $name@${rev:0:12}; it will build from source"
+              echo "::warning::downstream cache miss for $name; it will build from source"
             fi
-          done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
+          done < <(jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json)
           echo "PKG_TOTAL=$total" >> "$GITHUB_ENV"
           echo "PKG_HITS=$hits" >> "$GITHUB_ENV"
           echo "::notice::downstream cache: ${hits}/${total} packages fetched from the shadow bucket"
