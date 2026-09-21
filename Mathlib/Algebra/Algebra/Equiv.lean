@@ -172,7 +172,7 @@ theorem coe_toRingEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e := rfl
 @[deprecated (since := "2026-05-05")] alias coe_ringEquiv := coe_toRingEquiv
 @[deprecated (since := "2026-05-05")] alias coe_ringEquiv' := coe_toRingEquiv
 
-theorem toRingEquiv_injective : Function.Injective (toRingEquiv : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
+theorem toRingEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
 
 @[deprecated toRingEquiv_injective (since := "2026-05-05")]

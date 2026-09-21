@@ -660,11 +660,11 @@ alias coe_addMonoidHom_trans := toAddMonoidHom_trans
 in higher generality -/
 
 @[simp]
-theorem coe_toRingHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toRingHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
   rfl
 
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := coe_toRingHom_trans
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans
 
 @[simp]
 theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
@@ -837,7 +837,7 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
   Equiv.symm_apply_apply e.toEquiv
 
 @[simp]
-theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem coe_toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
 

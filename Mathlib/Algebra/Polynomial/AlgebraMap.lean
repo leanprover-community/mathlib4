@@ -222,10 +222,7 @@ theorem toRingHom_mapAlgEquiv (f : A ≃ₐ[R] B) :
     ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
   rfl
 
-@[deprecated toRingHom_mapAlgEquiv (since := "2026-05-05")]
-theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
-    ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
-  rfl
+@[deprecated (since := "2026-05-05")] alias mapAlgEquiv_coe_ringHom := toRingHom_mapAlgEquiv
 
 @[simp]
 theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :

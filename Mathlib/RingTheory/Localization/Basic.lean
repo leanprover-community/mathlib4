@@ -675,8 +675,7 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
     [Algebra R A] [Algebra R L] [IsScalarTower R A L] [Algebra R B]
     {f g : L →ₐ[R] B} (h : f.comp (Algebra.algHom R A L) = g.comp (Algebra.algHom R A L)) :
     f = g :=
-  AlgHom.toRingHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <|
-    AlgHom.ext_iff.mp h
+  AlgHom.toRingHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <| AlgHom.ext_iff.mp h
 
 -- This is a more specific case where the domain is `Localization W`, so this is tagged
 -- `@[ext high]` so that it will be automatically applied before the default extensionality lemmas
