@@ -113,35 +113,38 @@ namespace OnCycleFactors
 variable (g)
 
 variable {g} in
-lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
+lemma Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset {k c : Perm α}
     (k_mem : k ∈ centralizer {g}) (c_mem : c ∈ g.cycleFactorsFinset) :
-    ConjAct.toConjAct k • c ∈ g.cycleFactorsFinset := by
-  suffices (g.cycleFactorsFinset : Set (Perm α)) =
-    (ConjAct.toConjAct k) • g.cycleFactorsFinset by
+    MulAut.conj k • c ∈ g.cycleFactorsFinset := by
+  suffices (g.cycleFactorsFinset : Set (Perm α)) = MulAut.conj k • g.cycleFactorsFinset by
     rw [← Finset.mem_coe, this]
     simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, c_mem]
-  have := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
-  rw [ConjAct.toConjAct_smul, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
+  have := cycleFactorsFinset_conj_eq k g
+  rw [MulAut.conj_apply, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
   simp only [mul_inv_cancel, mul_one] at this
   conv_lhs => rw [this]
   simp only [Finset.coe_smul_finset]
+
+@[deprecated (since := "2026-09-21")]
+alias Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset :=
+  Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
 @[instance_reducible]
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
-  smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
-    Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩
+  smul k c := ⟨MulAut.conj (k : Perm α) c.val,
+    Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset k.prop c.prop⟩
   one_smul c := by
     rw [← Subtype.coe_inj]
-    change ConjAct.toConjAct (1 : Perm α) • c.val = c
-    simp only [map_one, one_smul]
+    change MulAut.conj 1 c.val = c
+    simp
   mul_smul k l c := by
     simp only [← Subtype.coe_inj]
-    change ConjAct.toConjAct (k * l : Perm α) • c.val =
-      ConjAct.toConjAct (k : Perm α) • (ConjAct.toConjAct (l : Perm α)) • c.val
-    simp only [map_mul, mul_smul]
+    change MulAut.conj (k * l : Perm α) c.val =
+      MulAut.conj (k : Perm α) • (MulAut.conj (l : Perm α)) • c.val
+    simp [mul_assoc]
 
 /-- The conjugation action of `Subgroup.centralizer {g}` on `g.cycleFactorsFinset` -/
 scoped instance : MulAction (centralizer {g}) (g.cycleFactorsFinset) :=
@@ -153,7 +156,7 @@ def toPermHom := MulAction.toPermHom (centralizer {g}) g.cycleFactorsFinset
 
 theorem centralizer_smul_def (k : centralizer {g}) (c : g.cycleFactorsFinset) :
     k • c = ⟨k * c * k⁻¹,
-      Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩ :=
+      Subgroup.Centralizer.conj_smul_mem_cycleFactorsFinset k.prop c.prop⟩ :=
   rfl
 
 @[simp]
