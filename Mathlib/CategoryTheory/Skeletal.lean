@@ -28,7 +28,7 @@ definitionally on the nose which is convenient in practice.
 ## Main declarations
 
 * `Skeleton C`: the skeleton of a category `C`, defined as the quotient of objects by isomorphism.
-* `Functor.isEquivalence_iff_isIso_between_skeletal`: a functor between skeletal categories is an
+* `Functor.isEquivalence_iff_isIso_of_skeletal`: a functor between skeletal categories is an
   equivalence if and only if it is an isomorphism.
 * `skeletonEquivalence C : Skeleton C ≌ C`: the canonical equivalence between a category and its
   skeleton.
@@ -70,7 +70,7 @@ def Skeletal : Prop :=
 
 /-- A functor between skeletal categories is an equivalence if and only if it is an isomorphism.
 -/
-theorem Functor.isEquivalence_iff_isIso_between_skeletal
+theorem Functor.isEquivalence_iff_isIso_of_skeletal
     (F : C ⥤ D) (hC : Skeletal C) (hD : Skeletal D) : F.IsEquivalence ↔ F.IsIso :=
   ⟨fun _ ↦
     { bijective_obj :=
@@ -247,8 +247,6 @@ lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj
   fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage F.mapSkeleton Y; ⟨X, skeleton_skeletal D h⟩
 
 instance mapSkeleton_isIso_of_isEquivalence [F.IsEquivalence] : F.mapSkeleton.IsIso where
-  faithful := inferInstance
-  full := inferInstance
   bijective_obj := ⟨F.mapSkeleton_injective, F.mapSkeleton_surjective⟩
 
 /-- A functor is an equivalence if and only if its induced functor on skeletons is an isomorphism.
@@ -263,6 +261,7 @@ theorem isEquivalence_iff_mapSkeletonIsIso :
 end Functor
 
 /-- An equivalence of categories induces an isomorphism between their skeletons. -/
+@[implicit_reducible]
 noncomputable def Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C) (Skeleton D) :=
   e.functor.mapSkeleton.asIsomorphism
 
