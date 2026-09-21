@@ -17,6 +17,8 @@ split monomorphisms and is stable under `κ`-filtered colimits.
 When `C` is a `κ`-accessible category, we show that `κ`-pure
 morphisms are monomorphisms, and that a `κ`-accessible functor
 `F : C ⥤ D` preserves `κ`-pure morphisms.
+We show that in a locally `κ`-presentable category, `κ`-pure morphisms
+are `κ`-filtered colimits of split monomorphisms.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
