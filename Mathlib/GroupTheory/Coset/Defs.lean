@@ -223,8 +223,7 @@ theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a :
   rwa [QuotientGroup.eq, mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
 
 @[to_additive]
-theorem mk_mul_eq_iff {a b c : α} :
-    (mk (a * b) : α ⧸ s) = mk c ↔ (mk b : α ⧸ s) = mk (a⁻¹ * c) := by
+theorem mk_mul_eq_iff : (mk (a * b) : α ⧸ s) = mk c ↔ (mk b : α ⧸ s) = mk (a⁻¹ * c) := by
   simp [QuotientGroup.eq, mul_assoc]
 
 @[to_additive (attr := simp)]
