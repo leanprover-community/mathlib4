@@ -45,11 +45,22 @@ protected def sum (G : SimpleGraph V) (H : SimpleGraph W) : SimpleGraph (V ⊕ W
 
 @[inherit_doc] infixl:60 " ⊕g " => SimpleGraph.sum
 
+attribute [grind =] sum_adj
+
 theorem sum_adj_inl : (G ⊕g H).Adj (.inl v) (.inl v') ↔ G.Adj v v' := by
   simp
 
 theorem sum_adj_inr : (G ⊕g H).Adj (.inr w) (.inr w') ↔ H.Adj w w' := by
   simp
+
+theorem map_inl_sup_map_inr : G.map .inl ⊔ H.map .inr = G ⊕g H := by
+  grind
+
+theorem map_inl : G.map .inl = G ⊕g (⊥ : SimpleGraph W) := by
+  grind
+
+theorem map_inr : G.map .inr = (⊥ : SimpleGraph W) ⊕g G := by
+  grind
 
 /-- The disjoint sum is commutative up to isomorphism. `Iso.sumComm` as a graph isomorphism. -/
 @[simps!]

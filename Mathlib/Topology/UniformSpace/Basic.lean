@@ -959,8 +959,6 @@ variable [UniformSpace α] [UniformSpace β]
 
 open Sum
 
--- Obsolete auxiliary definitions and lemmas
-
 /-- Uniformity on a disjoint union. Entourages of the diagonal in the union are obtained
 by taking independently an entourage of the diagonal in the first part, and an entourage of
 the diagonal in the second part. -/
