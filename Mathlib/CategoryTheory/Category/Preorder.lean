@@ -50,7 +50,7 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   comp f g := ⟨⟨le_trans f.down.down g.down.down⟩⟩
 
 instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) : Subsingleton (U ⟶ V) :=
-  ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
+  ⟨fun _ _ => ULift.ext (Subsingleton.elim _ _ )⟩
 
 end Preorder
 
