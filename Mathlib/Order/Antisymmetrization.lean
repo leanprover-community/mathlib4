@@ -37,6 +37,7 @@ variable (r : α → α → Prop)
 
 /-- The antisymmetrization relation `AntisymmRel r` is defined so that
 `AntisymmRel r a b ↔ r a b ∧ r b a`. -/
+@[to_dual self (reorder := r (1 2), a b)]
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
@@ -448,31 +449,21 @@ section Minimal
 
 variable [Preorder α] {P : α → Prop}
 
--- TODO: `to_dual` doesn't work with `AntisymmRel` or `SymmGen`.
+@[to_dual (rename := hge → hle) antisymmRel_of_le]
 theorem Minimal.antisymmRel_of_ge (ha : Minimal P a) (hb : P b) (hge : b ≤ a) :
     AntisymmRel (· ≤ ·) a b :=
   ⟨ha.le_of_le hb hge, hge⟩
 
-theorem Maximal.antisymmRel_of_le (ha : Maximal P a) (hb : P b) (hle : a ≤ b) :
-    AntisymmRel (· ≤ ·) a b :=
-  ⟨hle, ha.le_of_ge hb hle⟩
-
+@[to_dual]
 theorem Minimal.antisymmRel_of_symmGen (ha : Minimal P a) (hb : Minimal P b)
     (hab : SymmGen (· ≤ ·) a b) : AntisymmRel (· ≤ ·) a b :=
   hab.elim (fun h ↦ (hb.antisymmRel_of_ge ha.prop h).symm) (ha.antisymmRel_of_ge hb.prop)
 
-theorem Maximal.antisymmRel_of_symmGen (ha : Maximal P a) (hb : Maximal P b)
-    (hab : SymmGen (· ≤ ·) a b) : AntisymmRel (· ≤ ·) a b :=
-  hab.elim (ha.antisymmRel_of_le hb.prop) fun h ↦ (hb.antisymmRel_of_le ha.prop h).symm
-
 end Minimal
 
+@[to_dual]
 theorem Minimal.eq_of_symmGen [PartialOrder α] {P : α → Prop} (ha : Minimal P a)
     (hb : Minimal P b) (hab : SymmGen (· ≤ ·) a b) : a = b :=
-  (ha.antisymmRel_of_symmGen hb hab).eq
-
-theorem Maximal.eq_of_symmGen [PartialOrder α] {P : α → Prop} (ha : Maximal P a)
-    (hb : Maximal P b) (hab : SymmGen (· ≤ ·) a b) : a = b :=
   (ha.antisymmRel_of_symmGen hb hab).eq
 
 section Prod
