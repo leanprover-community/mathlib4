@@ -9,6 +9,8 @@ public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.RingTheory.ZMod.LocalRing
+public import Mathlib.Data.ZMod.QuotientRing
 /-!
 # Cardinal of the general linear group over finite rings
 
@@ -19,6 +21,9 @@ This file computes the cardinal of the general linear group over finite rings.
 * `card_linearIndependent` gives the cardinal of the set of linearly independent vectors over a
   finite-dimensional vector space over a finite field.
 * `Matrix.card_GL_field` gives the cardinal of the general linear group over a finite field.
+* `Matrix.card_GL_eq_of_isLocalHom`: for a surjective local ring hom `f : R →+* S`,
+  `Nat.card (GL (Fin n) R) = Nat.card (RingHom.ker f) ^ (n ^ 2) * Nat.card (GL (Fin n) S)`.
+* `Matrix.card_GL_zmod` gives the cardinal of the general linear group over `ZMod N`.
 -/
 
 @[expose] public section
@@ -165,5 +170,32 @@ theorem card_GL_eq_of_isLocalHom (n : ℕ) (hf : Function.Surjective f) :
     Nat.card_congr (GeneralLinearGroup.kerMapEquivMatrixKer _), card_matrix, Nat.card_fin, sq]
 
 end IsLocalHom
+
+section ZMod
+
+/-- The cardinal of the general linear group over `ZMod (p ^ r)`, for `p` prime and `r ≠ 0`. -/
+theorem card_GL_zmod_prime_pow {p r n : ℕ} [hp : Fact p.Prime] (hr : r ≠ 0) :
+    Nat.card (GL (Fin n) (ZMod (p ^ r))) =
+      (∏ i : Fin n, (p ^ n - p ^ (i : ℕ))) * (p ^ (r - 1)) ^ (n ^ 2) := by
+  have := ZMod.isLocalHom_castHom_pow (n := p) hr
+  let f := ZMod.castHom (dvd_pow_self p hr) (ZMod p)
+  have hf : Function.Surjective f := ZMod.castHom_surjective _
+  obtain ⟨r, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hr
+  have hker : Nat.card (RingHom.ker f) = p ^ r := mul_right_cancel₀ hp.out.ne_zero <| by
+    simpa [pow_succ] using AddSubgroup.card_ker_mul_card_of_surjective (f := f.toAddMonoidHom) hf
+  rw [card_GL_eq_of_isLocalHom f n hf, card_GL_field, ZMod.card, hker, Nat.add_sub_cancel,
+    mul_comm]
+
+/-- The cardinal of the general linear group over `ZMod N`, for `N ≠ 0`. -/
+theorem card_GL_zmod {N n : ℕ} (hN : N ≠ 0) :
+    Nat.card (GL (Fin n) (ZMod N)) = ∏ p ∈ N.primeFactors,
+      (∏ i : Fin n, (p ^ n - p ^ (i : ℕ))) * (p ^ (N.factorization p - 1)) ^ (n ^ 2) := by
+  rw [Nat.card_congr ((GeneralLinearGroup.mapEquiv (ZMod.equivPi N hN)).trans
+    (GeneralLinearGroup.piEquiv _)).toEquiv, Nat.card_pi, ← N.primeFactors.prod_coe_sort]
+  exact Fintype.prod_congr _ _ fun ⟨p, hp⟩ ↦
+    have := Fact.mk (Nat.prime_of_mem_primeFactors hp)
+    card_GL_zmod_prime_pow (Finsupp.mem_support_iff.mp hp)
+
+end ZMod
 
 end Matrix
