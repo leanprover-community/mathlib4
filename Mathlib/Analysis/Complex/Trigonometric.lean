@@ -987,4 +987,19 @@ theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
 theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
 
+theorem abs_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := calc
+  _ = ‖exp (x.re * I + -x.im)‖ := by
+    conv_lhs => rw [← x.re_add_im, add_mul, mul_assoc, I_mul_I]
+    ring_nf
+  _ = Real.exp (-x.im) := by
+    rw [exp_add, Complex.norm_mul]
+    norm_cast
+    simp
+
+theorem one_sub_rexp_re_le_abs_one_sub_cexp (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ := calc
+  ‖1 - exp x‖ ≥ ‖(1 : ℂ)‖ - ‖exp x‖ := norm_sub_norm_le (1 : ℂ) (exp x)
+  _ = 1 - Real.exp x.re := by
+    rw [norm_exp x]
+    norm_cast
+
 end Complex
