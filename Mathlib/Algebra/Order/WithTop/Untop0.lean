@@ -92,7 +92,7 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup α] [PartialOrder α] {a b : WithTop α}
+variable [AddCommMonoid α] [PartialOrder α] {a b : WithTop α}
 
 /--
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
@@ -126,7 +126,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup α] [LinearOrder α] {a b : WithTop α}
+variable [AddCommMonoid α] [LinearOrder α] {a b : WithTop α}
 
 @[simp] theorem untop₀_max (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (max a b).untop₀ = max a.untop₀ b.untop₀ := by

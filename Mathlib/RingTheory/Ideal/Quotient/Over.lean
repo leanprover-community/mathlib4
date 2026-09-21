@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Ideal.Over
 
 public section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+variable {R S T : Type*} [CommSemiring R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
 /-- Given a prime `P` of `R` and an ideal `I` in an `R`-algebra `S`.
 Suppose we can find a prime `P'` over `P`, not containing `I`,
