@@ -113,7 +113,7 @@ theorem isBounded_image (f : α →ᵇ β) (s : Set α) : IsBounded (f '' s) :=
   f.isBounded_range.subset <| image_subset_range _ _
 
 theorem eq_of_empty [h : IsEmpty α] (f g : α →ᵇ β) : f = g :=
-  ext <| h.elim
+  ext h.elim
 
 /-- A continuous function with an explicit bound is a bounded continuous function. -/
 def mkOfBound (f : C(α, β)) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) : α →ᵇ β :=
@@ -462,7 +462,7 @@ end Extend
 @[simps]
 noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
   toFun := s.indicator 1
-  continuous_toFun := continuous_indicator (by simp [hs]) <| continuous_const.continuousOn
+  continuous_toFun := continuous_indicator (by simp [hs]) continuous_const.continuousOn
   map_bounded' := ⟨1, fun x y ↦ by by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp [hx, hy]⟩
 
 end Basics

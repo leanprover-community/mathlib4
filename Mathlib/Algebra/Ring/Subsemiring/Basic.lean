@@ -753,7 +753,7 @@ theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
 
 theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
     Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s :=
-  (Set.surjective_codRestrict h).trans <| .symm <| SetLike.coe_set_eq.symm
+  (Set.surjective_codRestrict h).trans <| .symm SetLike.coe_set_eq.symm
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=
@@ -844,11 +844,11 @@ theorem rangeS_subtype (s : Subsemiring R) : s.subtype.rangeS = s :=
 
 @[simp]
 theorem range_fst : (fst R S).rangeS = ⊤ :=
-  (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
+  (fst R S).rangeS_top_of_surjective Prod.fst_surjective
 
 @[simp]
 theorem range_snd : (snd R S).rangeS = ⊤ :=
-  (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
+  (snd R S).rangeS_top_of_surjective Prod.snd_surjective
 
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subsemiring R) (t : Subsemiring S) :

@@ -265,7 +265,7 @@ variable (G) in
 `β` has at least as large a cardinality as `α`. -/
 noncomputable def recolorOfCardLE {α β : Type*} [Fintype α] [Fintype β]
     (hn : Fintype.card α ≤ Fintype.card β) : G.Coloring α ↪ G.Coloring β :=
-  G.recolorOfEmbedding <| (Function.Embedding.nonempty_of_card_le hn).some
+  G.recolorOfEmbedding (Function.Embedding.nonempty_of_card_le hn).some
 
 variable (G) in
 @[simp] lemma coe_recolorOfCardLE [Fintype α] [Fintype β] (hαβ : card α ≤ card β) :

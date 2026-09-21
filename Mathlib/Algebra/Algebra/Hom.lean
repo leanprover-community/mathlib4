@@ -217,7 +217,7 @@ theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
 theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
-  RingHom.ext <| φ.commutes
+  RingHom.ext φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=

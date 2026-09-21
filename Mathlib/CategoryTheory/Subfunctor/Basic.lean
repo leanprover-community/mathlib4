@@ -160,7 +160,7 @@ def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor 
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
   ⟨fun _ _ e => NatTrans.ext <| funext fun U => hom_ext _ _ fun x => by
-    exact Subtype.ext (congr_arg Subtype.val <| (congr_hom (congr_app e U) x) :)⟩
+    exact Subtype.ext (congr_arg Subtype.val (congr_hom (congr_app e U) x) :)⟩
 
 @[reassoc (attr := simp)]
 theorem homOfLe_ι {G G' : Subfunctor F} (h : G ≤ G') :

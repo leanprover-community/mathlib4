@@ -266,7 +266,7 @@ theorem contMDiffWithinAt_iff' :
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
           (extChartAt I x x) := by
   simp only [ContMDiffWithinAt, liftPropWithinAt_iff']
-  exact and_congr_right fun hc => contDiffWithinAt_congr_set <|
+  exact and_congr_right fun hc => contDiffWithinAt_congr_set
     hc.extChartAt_symm_preimage_inter_range_eventuallyEqSet
 
 /-- One can reformulate being `Cⁿ` within a set at a point as continuity within this set at this
@@ -278,7 +278,7 @@ theorem contMDiffWithinAt_iff_target :
   have cont :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
-      and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
+      and_iff_left_of_imp (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, ContDiffWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
     PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
     OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,

@@ -927,7 +927,7 @@ theorem IsCyclotomicExtension.Rat.torsionOrder_eq [NeZero n] [NumberField K]
     rwa [Set.union_comm, ← IsCyclotomicExtension.iff_union_of_dvd] at this
     exact ⟨n.lcm (torsionOrder K), by simp, NeZero.ne _, Nat.dvd_lcm_left _ _⟩
   -- We deduce the identity `φ(n) = φ(lcm (n, torsionOrder K))`.
-  have h_main := (IsCyclotomicExtension.Rat.finrank n K).symm.trans <|
+  have h_main := (IsCyclotomicExtension.Rat.finrank n K).symm.trans
     (IsCyclotomicExtension.Rat.finrank (n.lcm (torsionOrder K)) K)
   obtain hn | hn := Nat.even_or_odd n
   · rw [ite_eq_left hn]

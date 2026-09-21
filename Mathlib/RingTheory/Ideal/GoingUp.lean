@@ -436,7 +436,7 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
 variable (A) in
 theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
     P = ⊥ :=
-  eq_bot_of_under_eq_bot <| ((liesOver_iff _ _).mp h).symm
+  eq_bot_of_under_eq_bot ((liesOver_iff _ _).mp h).symm
 
 variable (A) {P} in
 theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=
