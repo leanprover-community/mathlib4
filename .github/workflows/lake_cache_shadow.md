@@ -51,7 +51,24 @@ its manifest.
 Lake accepts this because `GitRepo.resolveRevision` returns a full SHA-1
 unchanged, without looking it up, and `cache put-staged` loads no workspace and
 resolves nothing. So a dependency's revision file lands under the mathlib
-commit even though that commit belongs to another repository.
+commit even though that commit belongs to another repository. A revision that
+is not 40 hexadecimal characters takes the other branch and has to resolve in
+the package's own repository, so the mathlib commit works and a decorated form
+of it does not.
+
+Lake's own model is that a revision belongs to the package: `cache put` derives
+it from the package's checkout and rejects `--rev`, and a fetch without `--rev`
+walks the package's own history. `put-staged` is the exception, because it
+loads no workspace and therefore asks the caller. This pipeline answers with
+the mathlib commit, on the grounds that a dependency's own revision does not
+determine its outputs. The same revision of a dependency, under another
+toolchain or against other upstreams, produces different artifacts, and the
+mathlib commit is the smallest identifier that fixes all three.
+
+Two things follow. A caller that omits `--rev` for a dependency walks that
+dependency's history and finds nothing, so a consumer of this cache needs the
+mathlib commit. Non-staged `cache put` cannot write this layout at all, because
+it derives the revision itself.
 
 The revision reaches only the revision file's name. Artifacts are content
 addressed under `artifacts/<SCOPE>/<DEP>/`, so a dependency whose content holds
