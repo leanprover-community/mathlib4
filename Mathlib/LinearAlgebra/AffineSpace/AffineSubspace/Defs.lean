@@ -232,6 +232,24 @@ theorem coe_toAffineSubspace (p : Submodule k V) : (p.toAffineSubspace : Set V) 
 theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
     x ∈ (p : AffineSubspace k V) ↔ x ∈ p := Iff.rfl
 
+/-- Reinterprets a `p : AffineSubspace k V` that includes `0` as a `Submodule k V`. -/
+def ofAffineSubspace {p : AffineSubspace k V} (hp : 0 ∈ p) : Submodule k V where
+  carrier := p
+  add_mem' ha hb := by simpa using p.smul_vsub_vadd_mem' 1 ha hp hb
+  zero_mem' := by simpa
+  smul_mem' c x hx := by simpa using p.smul_vsub_vadd_mem' c hx hp hp
+
+@[simp]
+theorem ofAffineSubspace_toAffineSubspace {p : AffineSubspace k V} (hp : 0 ∈ p) :
+    ↑(ofAffineSubspace hp) = p := rfl
+
+@[simp]
+theorem toAffineSubspace_ofAffineSubspace {p : Submodule k V} (hp : 0 ∈ p) :
+    ↑(ofAffineSubspace (p := p) hp) = p := rfl
+
+instance : CanLift (AffineSubspace k V) (Submodule k V) toAffineSubspace (0 ∈ ·) where
+  prf _ hp := ⟨ofAffineSubspace hp, ofAffineSubspace_toAffineSubspace hp⟩
+
 end Submodule
 
 namespace AffineSubspace
@@ -1169,10 +1187,10 @@ lemma affineSpan_insert_zero (s : Set V) :
   exact subset_sub_left <| mem_insert ..
 
 theorem affineSpan_eq_span_iff_zero_mem {s : Set V} :
-    affineSpan k s = Submodule.span k s ↔ 0 ∈ affineSpan k s := by
+    affineSpan k s = ↑(Submodule.span k s) ↔ 0 ∈ affineSpan k s := by
   refine ⟨by simp +contextual, fun h ↦ ?_⟩
   rw [← affineSpan_insert_eq_affineSpan _ h, affineSpan_insert_zero]
 
-@[simp] alias ⟨_, affineSpan_eq_span_of_zero_mem⟩ := affineSpan_eq_span_iff_zero_mem
+alias ⟨_, affineSpan_eq_span_of_zero_mem⟩ := affineSpan_eq_span_iff_zero_mem
 
 end AffineSpace'
