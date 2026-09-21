@@ -218,9 +218,6 @@ jobs:
       #     cache stays unused.
       #   * Decide which dependencies to stage. A revision file that is
       #     already in the bucket ends the work for that dependency.
-      #   * Write the `--packages` overrides for the export builds.
-      # This step writes the overrides because jq is not available inside
-      # landrun.
       - name: Plan hydration & dependency caching
         id: plan
         shell: bash -euo pipefail {0}
@@ -340,25 +337,6 @@ jobs:
               echo "$name $rev $ph" >> .lake/dep-plan/cached.txt
             else
               echo "$name $rev $ph" >> .lake/dep-plan/stage.txt
-              # The overrides for the export build of this dependency. They
-              # rewrite every other workspace package as a path entry into this
-              # checkout, so the standalone load resolves the upstreams to
-              # mathlib's pins. The manifest of the dependency pins other
-              # revisions, which produce mappings this workspace never matches.
-              # `aesop-overrides.json` renders as:
-              #
-              #   {"version": "1.2.0",
-              #    "packages": [
-              #      {"name": "batteries", "scope": "leanprover-community",
-              #       "configFile": "lakefile.toml", "inherited": false,
-              #       "type": "path",
-              #       "dir": "/…/pr-branch/.lake/packages/batteries"},
-              #      … one entry per other package …
-              #    ]}
-              jq --arg pfx "$PWD/.lake/packages" --arg self "$name" \
-                '{version, packages: [.packages[] | select(.name != $self)
-                  | {name, scope, configFile, inherited, type: "path", dir: ($pfx + "/" + .name)}]}' \
-                lake-manifest.json > ".lake/dep-plan/$name-overrides.json"
             fi
           done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
           echo "::notice::deps already cached: $(wc -l < .lake/dep-plan/cached.txt), to stage: $(wc -l < .lake/dep-plan/stage.txt)"
@@ -466,9 +444,9 @@ jobs:
       # The incremental build. The warm start, or the legacy fallback, has
       # hydrated the artifact cache, and the lakefile patch enables it. This
       # step compiles the churn since the previous run: the root modules that
-      # changed, and any dependency the bucket did not hold. It also packs and
-      # caches everything `-o` records. Dependency mappings do not reach `-o`,
-      # which covers the root only; the export step below writes them.
+      # changed, and any dependency the bucket did not hold. It also writes
+      # every artifact it produces into the local Lake cache, which the
+      # staging step below copies from.
       - name: Incremental build (populate Lake's cache)
         run: |
           cd pr-branch
@@ -489,32 +467,22 @@ jobs:
 
       # Export the mappings of the dependencies the bucket does not hold. This
       # step is required for a dependency to hit at all; see "What a full
-      # cache hit requires" in `lake_cache_shadow.md`. The incremental build
-      # above put every dependency artifact in the shared local cache, so
-      # these loads replay instead of compiling, as long as the input hashes
-      # of the two workspace shapes agree. A disagreement appears as compile
-      # time here, and as dependency rebuilds in `consume`.
-      #
-      # LAKE_ARTIFACT_CACHE=true makes these workspaces cache-writable,
-      # because the lakefile patch covers the mathlib workspace only. A
-      # failure leaves that one dependency uncached for this run.
+      # cache hit requires" in `lake_cache_shadow.md`. `--package` selects the
+      # package whose mappings `-o` records, so each export runs in this
+      # workspace and replays what the incremental build above produced.
+      # `@<DEP>` names the default targets of the dependency, which reach the
+      # modules mathlib does not import. A failure leaves that one dependency
+      # uncached for this run.
       - name: Export dependency mappings
-        # This overrides the default landrun shell, to pass LAKE_ARTIFACT_CACHE.
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env LAKE_ARTIFACT_CACHE -- bash -euxo pipefail {0}
-        env:
-          LAKE_ARTIFACT_CACHE: true
         run: |
           cd pr-branch
-          # These loads run in other workspace directories, so the cache
-          # directory must not be relative to the working directory.
-          export LAKE_CACHE_DIR="$PWD/.lake/cache"
           mkdir -p .lake/dep-outputs
           if [ ! -s .lake/dep-plan/stage.txt ]; then
             echo "no deps to export"
             exit 0
           fi
-          # `-o` writes the mappings of the loaded workspace root as JSON
-          # Lines: a schema version, then one entry per module.
+          # `-o` writes the mappings of the selected package as JSON Lines: a
+          # schema version, then one entry per module.
           # `.lake/dep-outputs/batteries.jsonl` starts:
           #
           #   "2026-03-17"
@@ -525,9 +493,7 @@ jobs:
           # names to artifacts/<dep scope>/.
           while read -r name _ _; do
             echo "::group::export $name"
-            if lake -d ".lake/packages/$name" build \
-                --packages="$PWD/.lake/dep-plan/$name-overrides.json" \
-                -o "$PWD/.lake/dep-outputs/$name.jsonl"; then
+            if lake build "@$name" --package="$name" -o ".lake/dep-outputs/$name.jsonl"; then
               echo "exported $name: $(wc -l < ".lake/dep-outputs/$name.jsonl") mapping lines"
             else
               echo "::warning::failed to export mappings for dep $name; it will not be cached this run"

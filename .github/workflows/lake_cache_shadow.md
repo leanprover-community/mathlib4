@@ -50,39 +50,22 @@ deprecates the endpoint environment variables.
 
 ## Push, from a clean cache
 
-Lake's `-o` records the mappings of the workspace root only, so step 3 loads
-each dependency as its own root. Step 1 runs once, and steps 2 to 5 run once
-per dependency.
+Step 1 runs once, and steps 2 to 4 run once per dependency.
 
 1. `lake build Mathlib` builds mathlib and every dependency from source, and
    writes the artifacts into the local Lake cache.
-2. Write `<DEP>-overrides.json`. A `jq` filter reads mathlib's
-   `lake-manifest.json`, drops the entry for `<DEP>` itself, and rewrites each
-   remaining package as a path entry into this checkout. It keeps the `name`,
-   `scope`, `configFile` and `inherited` fields, sets `type` to `path`, and
-   sets `dir` to `.lake/packages/<name>`. For aesop it renders:
-
-       {"version": "1.2.0",
-        "packages": [
-          {"name": "batteries", "scope": "leanprover-community",
-           "configFile": "lakefile.toml", "inherited": false, "type": "path",
-           "dir": "<checkout>/.lake/packages/batteries"},
-          ... one entry per other package ...
-        ]}
-
-   The file pins the dependencies of `<DEP>` to mathlib's. Without it Lake uses
-   the manifest of `<DEP>`, and the mappings never match this workspace's input
-   hashes.
-3. Export: `lake -d .lake/packages/<DEP> build
-   --packages=.lake/dep-plan/<DEP>-overrides.json -o
-   .lake/dep-outputs/<DEP>.jsonl`. This load replays instead of compiling,
-   because step 1 filled the local cache.
-4. Stage: `lake cache stage .lake/dep-outputs/<DEP>.jsonl
+2. Export: `lake build @<DEP> --package=<DEP> -o
+   .lake/dep-outputs/<DEP>.jsonl`. `-o` records the mappings of the workspace
+   root, and `--package` points it at a dependency instead. The export
+   therefore runs in mathlib's own workspace, and replays from the local cache
+   that step 1 filled. `@<DEP>` names the default targets of the dependency,
+   so the mappings also cover the modules mathlib does not import.
+3. Stage: `lake cache stage .lake/dep-outputs/<DEP>.jsonl
    lake-cache-staging/deps/<DEP>`. Each dependency needs its own directory,
    because `cache stage` writes one `outputs.jsonl` per directory. The staging
    tree travels to the `upload` job as a GitHub artifact, because the build
    runs in a sandbox without the credentials.
-5. Upload: `lake cache put-staged lake-cache-staging/deps/<DEP>
+4. Upload: `lake cache put-staged lake-cache-staging/deps/<DEP>
    --service=shadow --scope=<S-DEP> --rev=<R-DEP>`. Lake PUTs the artifacts
    first and the revision file last.
 
@@ -110,7 +93,7 @@ changes the keys or the content that a run writes.
 
 - The probe. Before the build, `curl -fsS -o /dev/null
   "$REVISION_ENDPOINT/<S-DEP>/<R-DEP>.jsonl"` asks whether the bucket already
-  holds this dependency. If it does, steps 2 to 5 skip it. A revision, a
+  holds this dependency. If it does, steps 2 to 4 skip it. A revision, a
   toolchain and a pin set determine the content, so a dependency uploads once.
   Later runs skip it, until a manifest bump or a toolchain bump changes the
   scope.
@@ -212,7 +195,7 @@ that do not match, and the modules rebuild.
 - The lakefile patch, which lets the workspace write to Lake's artifact cache
   at all. mathlib does not set `enableArtifactCache` itself yet, so the
   pipeline injects it.
-- The export build of each dependency, with its `--packages` overrides.
+- The export build of each dependency, with `--package`.
 - The two scope qualifiers.
 - One `lake cache get`, `stage` and `put-staged` call per package. Lake has no
   workspace-wide form of these against a custom endpoint.
@@ -262,8 +245,8 @@ at a pinned revision never calls npm.
 
 Every per-dependency step tolerates failure. A miss, or a failed export, makes
 that dependency build from source, and the consume health line reports it. A
-toolchain older than v4.34.0-rc2 has no `cache get --package` and behaves the
-same way.
+toolchain older than v4.35.0-rc1 has neither `build --package` nor `cache get
+--package`, and behaves the same way.
 
 ## Required repository configuration
 
