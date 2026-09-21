@@ -14,13 +14,11 @@ public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
 
 public section
 
-universe v u
-
 namespace CategoryTheory.ObjectProperty.hasFiniteResolutionOfLength
 
 open Limits
 
-variable {A : Type u} [Category.{v} A] [Abelian A] {X : A} {n : ℕ}
+variable {A : Type*} [Category* A] [Abelian A] {X : A} {n : ℕ}
 
 theorem hasProjectiveDimensionLE (hX : (isProjective A).hasFiniteResolutionOfLength n X) :
     HasProjectiveDimensionLE X n := by
