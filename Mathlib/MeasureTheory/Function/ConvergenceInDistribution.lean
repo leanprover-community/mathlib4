@@ -67,7 +67,7 @@ structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i 
   forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i)
   aemeasurable_limit : AEMeasurable Z μ' := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨(μ n).map (X n), inferInstance⟩) l (𝓝 (μ'.map Z).toProbabilityMeasure)
+      (fun n ↦ ((μ n).map (X n)).toProbabilityMeasure) l (𝓝 (μ'.map Z).toProbabilityMeasure)
 
 theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
     (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
@@ -90,6 +90,15 @@ lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z 
   forall_aemeasurable := fun _ ↦ by fun_prop
   tendsto := tendsto_const_nhds
 
+@[simp]
+lemma tendstoInDistribution_const_const [OpensMeasurableSpace E] (c : E) :
+    TendstoInDistribution (fun _ _ ↦ c) l (fun _ ↦ c) μ μ' where
+  forall_aemeasurable := fun _ ↦ by fun_prop
+  tendsto := by
+    simpa using (tendsto_const_nhds :
+      Tendsto (fun _ : ι ↦ (Measure.dirac c).toProbabilityMeasure) l
+        (𝓝 (Measure.dirac c).toProbabilityMeasure))
+
 set_option backward.isDefEq.respectTransparency.types false in
 lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
     (hX : ∀ j, IdentDistrib (X i) (X j) (μ i) (μ j)) (hZ : IdentDistrib (X i) Z (μ i) μ') :
@@ -108,7 +117,7 @@ protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' �
   aemeasurable_limit := h.aemeasurable_limit.congr hZT
   tendsto := by
     convert! h.tendsto using 2 with n
-    · simpa using Measure.map_congr (hXY n).symm
+    · exact Subtype.ext (Measure.map_congr (hXY n).symm)
     · rw! [Measure.map_congr hZT]
       rfl
 
@@ -141,8 +150,9 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, Subtype.mk.injEq]
-      rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable (h.forall_aemeasurable _)]
+    · exact Subtype.ext
+        (AEMeasurable.map_map_of_aemeasurable hg.aemeasurable
+          (h.forall_aemeasurable _)).symm
     · simp only [ProbabilityMeasure.map, Measure.coe_toProbabilityMeasure]
       congr
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
@@ -157,7 +167,7 @@ theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
   forall_aemeasurable := hX₁
   aemeasurable_limit := hZ
   tendsto := by
-    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, ProbabilityMeasure.coe_mk,
+    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto,
       Measure.coe_toProbabilityMeasure]
     intro f
     rw [lintegral_map' (by fun_prop) hZ]
