@@ -773,13 +773,13 @@ protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnno
   map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 
 @[simp]
-theorem List.norm_prod_map (s : List β) (f : β → α) :
-    ‖(s.map f).prod‖ = (s.map (‖f ·‖)).prod := by
+theorem List.norm_prod_map (l : List β) (f : β → α) :
+    ‖(l.map f).prod‖ = (l.map (‖f ·‖)).prod := by
   aesop (add simp List.norm_prod)
 
 @[simp]
-theorem List.nnnorm_prod_map (s : List β) (f : β → α) :
-    ‖(s.map f).prod‖₊ = (s.map (‖f ·‖₊)).prod := by
+theorem List.nnnorm_prod_map (l : List β) (f : β → α) :
+    ‖(l.map f).prod‖₊ = (l.map (‖f ·‖₊)).prod := by
   aesop (add simp List.nnnorm_prod)
 
 end SeminormedRing
@@ -796,10 +796,10 @@ theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏
 theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
   map_prod nnnormHom.toMonoidHom f s
 
-protected theorem Multiset.norm_prod (l : Multiset α) : ‖l.prod‖ = (l.map norm).prod :=
+protected theorem Multiset.norm_prod (s : Multiset α) : ‖s.prod‖ = (s.map norm).prod :=
   map_multiset_prod (normHom.toMonoidHom : α →* ℝ) _
 
-protected theorem Multiset.nnnorm_prod (l : Multiset α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
+protected theorem Multiset.nnnorm_prod (s : Multiset α) : ‖s.prod‖₊ = (s.map nnnorm).prod :=
   map_multiset_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 
 @[simp]
