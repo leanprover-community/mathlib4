@@ -48,7 +48,7 @@ def Interval.toSet [Preorder α] (I : Interval α) : Set α := {a | I.lb ≤ a �
 
 instance [Preorder α] : ToSet (Interval α) α := ⟨Interval.toSet⟩
 
-@[simp, grind =]
+@[simp]
 theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
     x ∈ I ↔ I.lb ≤ x ∧ x ≤ I.ub := Iff.rfl
 
@@ -56,7 +56,7 @@ theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
 def Interval.map (I : Interval α) (f : α → β) : Interval β :=
   ⟨WithBot.map f I.lb, WithTop.map f I.ub⟩
 
-@[grind =, local grind norm]
+@[grind =]
 theorem Interval.mem_map_iff [Preorder β] (f : α → β) {x : β} {I : Interval α} :
     x ∈ I.map f ↔ (∀ a : α, I.lb = ↑a → f a ≤ x) ∧
       (∀ a : α, I.ub = ↑a → x ≤ f a) := by
@@ -102,16 +102,16 @@ def Interval.Ici (lb : WithBot α) : Interval α := ⟨lb, ⊤⟩
 
 theorem Interval.mem_Iic_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub := by
-  grind [Interval.Iic, WithBot.le_coe_iff, WithTop.coe_le_iff]
+  grind [Interval.mem_def, Interval.Iic, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Ici_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hx : x ∈ I) : y ∈ Interval.Ici I.lb := by
-  grind [Interval.Ici, WithBot.le_coe_iff, WithTop.coe_le_iff]
+  grind [Interval.mem_def, Interval.Ici, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Icc_of_le [Preorder α] {a b x : α} {I J : Interval α}
     (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) :
     x ∈ Interval.Icc I.lb J.ub := by
-  grind [Interval.Icc, WithBot.le_coe_iff, WithTop.coe_le_iff]
+  grind [Interval.mem_def, Interval.Icc, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Iic_of_lt [Preorder α] {x y : α} {I : Interval α}
     (hxy : x < y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub :=
@@ -182,11 +182,11 @@ def Interval.hull [LinearOrder α] (I J : Interval α) : Interval α :=
 
 theorem Interval.mem_hull_left [LinearOrder α] {x : α} {I J : Interval α} (hx : x ∈ I) :
     x ∈ I.hull J := by
-  grind [Interval.hull, min_le_left, le_max_left]
+  grind [Interval.mem_def, Interval.hull, min_le_left, le_max_left]
 
 theorem Interval.mem_hull_right [LinearOrder α] {x : α} {I J : Interval α} (hx : x ∈ J) :
     x ∈ I.hull J := by
-  grind [Interval.hull, min_le_right, le_max_right]
+  grind [Interval.mem_def, Interval.hull, min_le_right, le_max_right]
 
 instance [LinearOrder α] : Coarsen (Interval α) α where
   coarsen := Interval.hull
