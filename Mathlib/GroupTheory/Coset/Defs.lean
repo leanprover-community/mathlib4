@@ -227,8 +227,7 @@ theorem mk_mul_eq_iff : (mk (a * b) : α ⧸ s) = mk c ↔ (mk b : α ⧸ s) = m
   simp [QuotientGroup.eq, mul_assoc]
 
 @[to_additive (attr := simp)]
-theorem mk_mul_left_cancel_iff {a b c : α} :
-    (mk (a * b) : α ⧸ s) = mk (a * c) ↔ (mk b : α ⧸ s) = mk c := by
+theorem mk_mul_left_cancel_iff : (mk (a * b) : α ⧸ s) = mk (a * c) ↔ (mk b : α ⧸ s) = mk c := by
   simp [mk_mul_eq_iff]
 
 @[to_additive]
