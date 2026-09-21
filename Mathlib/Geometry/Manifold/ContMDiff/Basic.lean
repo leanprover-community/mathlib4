@@ -61,8 +61,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   refine ⟨hg.1.comp hf.1 st, ?_⟩
   set e := extChartAt I x
   set e' := extChartAt I' (f x)
-  have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [e, e', mfld_simps]
-  rw [this] at hg
+  rw [← writtenInExtChartAt_apply_extChartAt (I := I) (mem_extChartAt_source x)] at hg
   have A : ∀ᶠ y in 𝓝[e.symm ⁻¹' s ∩ range I] e x, f (e.symm y) ∈ t ∧ f (e.symm y) ∈ e'.source := by
     simp only [e, ← map_extChartAt_nhdsWithin, eventually_map]
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
