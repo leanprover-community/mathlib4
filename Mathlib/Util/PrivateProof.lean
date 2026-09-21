@@ -65,7 +65,7 @@ be necessary, e.g. `(private exists_foo x :).choose`.
 Note that `field := private ...` for structure instances is distinct, and allows wrapping data in
 auxiliary definitions as well. See also `private_decl%` for similar behavior that also includes
 non-proof declarations. -/
-syntax (name := privateElab) "private " term : term
+syntax (name := privateElab) "private " colGt term : term
 
 open Lean Meta Elab Term in
 elab_rules : term <= ty
