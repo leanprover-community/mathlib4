@@ -527,13 +527,26 @@ lemma mappingCone_triangleh_distinguished {X Y : CochainComplex C ℤ} (f : X �
     CochainComplex.mappingCone.triangleh f ∈ distTriang (HomotopyCategory _ _) :=
   ⟨_, _, f, ⟨Iso.refl _⟩⟩
 
+lemma functor_from_isTriangulated_iff {D : Type*} [Category D] [HasZeroObject D]
+    [HasShift D ℤ] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+    [Pretriangulated D] (F : HomotopyCategory C (.up ℤ) ⥤ D) [F.CommShift ℤ] :
+    F.IsTriangulated ↔ ∀ ⦃K L : CochainComplex C ℤ⦄ (f : K ⟶ L),
+      F.mapTriangle.obj (CochainComplex.mappingCone.triangleh f) ∈ distTriang D := by
+  constructor
+  · intro _ _ _ f
+    exact F.map_distinguished _ (mappingCone_triangleh_distinguished f)
+  · intro hF
+    constructor
+    rintro T ⟨K, L, f, ⟨e⟩⟩
+    exact isomorphic_distinguished _ (hF f) _ (F.mapTriangle.mapIso e)
+
 variable [HasZeroObject D]
 
 instance (G : C ⥤ D) [G.Additive] :
-    (G.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated where
-  map_distinguished := by
-    rintro T ⟨K, L, f, ⟨e⟩⟩
-    exact ⟨_, _, _, ⟨(G.mapHomotopyCategory (ComplexShape.up ℤ)).mapTriangle.mapIso e ≪≫
-      CochainComplex.mappingCone.mapTrianglehIso f G⟩⟩
+    (G.mapHomotopyCategory (ComplexShape.up ℤ)).IsTriangulated := by
+  rw [functor_from_isTriangulated_iff]
+  intro _ _ f
+  exact isomorphic_distinguished _ (mappingCone_triangleh_distinguished _) _
+    (CochainComplex.mappingCone.mapTrianglehIso f G)
 
 end HomotopyCategory

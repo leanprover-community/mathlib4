@@ -219,18 +219,18 @@ lemma weakEquivalences_eq_unop : weakEquivalences C = (weakEquivalences Cᵒᵖ)
 
 variable {C}
 
-lemma weakEquivalences_op_iff : WeakEquivalence f.op ↔ WeakEquivalence f := by
+lemma weakEquivalence_op_iff : WeakEquivalence f.op ↔ WeakEquivalence f := by
   simp [weakEquivalence_iff, weakEquivalences_op]
 
-lemma weakEquivalences_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+lemma weakEquivalence_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     WeakEquivalence f.unop ↔ WeakEquivalence f :=
-  (weakEquivalences_op_iff f.unop).symm
+  (weakEquivalence_op_iff f.unop).symm
 
 instance [WeakEquivalence f] : WeakEquivalence f.op := by
-  rwa [weakEquivalences_op_iff]
+  rwa [weakEquivalence_op_iff]
 
 instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [WeakEquivalence f] : WeakEquivalence f.unop := by
-  rwa [weakEquivalences_unop_iff]
+  rwa [weakEquivalence_unop_iff]
 
 end
 

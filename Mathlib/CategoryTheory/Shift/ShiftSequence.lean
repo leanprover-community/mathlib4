@@ -282,6 +282,11 @@ end
 
 namespace ShiftSequence
 
+variable {M} in
+@[simp]
+lemma tautological_sequence (n : M) :
+    @Functor.shift _ _ _ _ _ _ _ _ (tautological F M) n = shiftFunctor C n ⋙ F := rfl
+
 variable {F} in
 /-- Given an isomorphism `π ⋙ H ≅ F`, where `π` is a functor which commutes
 with the shift by `M` and `H` is equipped with a shift sequence,

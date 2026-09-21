@@ -27,9 +27,11 @@ assert_not_exists TwoSidedIdeal
 
 universe w v u
 
-namespace CategoryTheory
+open CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+
+namespace CategoryTheory
 
 open Category DerivedCategory Pretriangulated
 
@@ -76,7 +78,7 @@ variable {S₁ S₂ : ShortComplex C} (h₁ : S₁.ShortExact) (h₂ : S₂.Shor
 /-- The morphism `h₁.singleTriangle h₁ ⟶ h₂.singleTriangle` that is induced by a
 map of short exact sequences of objects of `C`.
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def singleTriangle.map : h₁.singleTriangle ⟶ h₂.singleTriangle where
   hom₁ := (singleFunctor C 0).map f.τ₁
   hom₂ := (singleFunctor C 0).map f.τ₂

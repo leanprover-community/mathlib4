@@ -349,7 +349,7 @@ lemma isQuasicoherent_pushforward_of_isLeftAdjoint (η : (pushforward φ).obj (u
   intro X Y f
   let G' := Over.post (X := X) G ⋙ Over.map f
   have : G'.IsContinuous (K.over X) (J.over Y) := Functor.isContinuous_comp _ _ _ (J.over _) _
-  have : G'.IsCocontinuous (K.over X) (J.over Y) := isCocontinuous_comp _ _ _ (J.over _)
+  have : G'.IsCocontinuous (K.over X) (J.over Y) := Functor.isCocontinuous_comp _ _ _ (J.over _) _
   let a : S.over X ⟶
       (G'.sheafPushforwardContinuous RingCat.{u} (K.over X) (J.over Y)).obj (R.over Y) :=
     ((Over.forget X).sheafPushforwardContinuous RingCat.{u} (K.over X) K).map φ

@@ -314,10 +314,9 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
   have ⟨R, x, y, _, ey, comm⟩ := Quotient.exact this
   apply @epi_of_epi_fac _ _ _ _ _ (x ≫ p.hom) f y ey
   dsimp at comm
-  rw [Category.assoc, comm]
-  apply Category.comp_id
+  rw [Category.assoc, comm, Category.comp_id]
 
-section
+/- should be refactored using `ShortComplex.Exact`
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms in an exact sequence are exact on pseudoelements. -/
@@ -388,7 +387,7 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]
       simp only [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero])
 
-end
+-/
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If two pseudoelements `x` and `y` have the same image under some morphism `f`, then we can form

@@ -250,6 +250,18 @@ def functorPushforward (R : Sieve X) : Sieve (F.obj X) where
     obtain ⟨X, α, β, hα, rfl⟩ := h
     exact ⟨X, α, g ≫ β, hα, by simp⟩
 
+lemma functorPushforward_eq_of_iso {F G : C ⥤ D} (e : F ≅ G) (R : Sieve X) :
+    Sieve.pullback (e.inv.app X) (Sieve.functorPushforward F R) =
+      Sieve.functorPushforward G R := by
+  ext Y f
+  constructor
+  · rintro ⟨W, a, b, ha, fac⟩
+    refine ⟨W, a, b ≫ e.hom.app W, ha, ?_⟩
+    rw [← cancel_mono (e.inv.app X), fac, assoc, assoc,
+      NatTrans.naturality, Iso.hom_inv_id_app_assoc]
+  · rintro ⟨W, a, b, ha, rfl⟩
+    exact ⟨W, a, b ≫ e.inv.app W, ha, by simp⟩
+
 theorem generate_map_eq_functorPushforward {s : Presieve X} :
     generate (s.map F) = (generate s).functorPushforward F := by
   ext

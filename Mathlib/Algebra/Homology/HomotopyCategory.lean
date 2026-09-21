@@ -49,6 +49,10 @@ def HomotopyCategory :=
 instance : Category (HomotopyCategory V c) :=
   inferInstanceAs <| Category (CategoryTheory.Quotient (homotopic V c))
 
+instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+  exact ⟨Homotopy.add h h'⟩)
+
 namespace HomotopyCategory
 
 instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
@@ -68,7 +72,7 @@ instance : (quotient V c).Full := Quotient.full_functor _
 
 instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
-instance : (quotient V c).Additive where
+instance quotient_additive : (quotient V c).Additive where
 
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 
@@ -278,6 +282,12 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
     [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomotopyCategory (α ≫ β) c =
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
+
+instance (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful] : (F.mapHomotopyCategory c).Full where
+  map_surjective := by
+    rintro ⟨K⟩ ⟨L⟩ ⟨f⟩
+    obtain ⟨g : K ⟶ L, rfl⟩ := (F.mapHomologicalComplex c).map_surjective f
+    exact ⟨(HomotopyCategory.quotient V c).map g, rfl⟩
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     (F.mapHomotopyCategory c).Additive :=

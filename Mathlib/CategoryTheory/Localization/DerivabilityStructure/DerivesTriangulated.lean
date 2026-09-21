@@ -76,8 +76,8 @@ lemma isTriangulated_of_isLeftDerivedFunctor
     let R : Φ.arrow.LeftResolution φ := Classical.arbitrary _
     obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle R.X₁.hom
     refine ⟨_, Φ.functor.map_distinguished _ hT,
-      hF.isIso' _ _, hF.isIso' _ _, hF.isIso' _ _,
-      ⟨?_ ≪≫ eφ⟩⟩
+      hF.isIso_of_isLeftDerivedFunctor _ _, hF.isIso_of_isLeftDerivedFunctor _ _,
+      hF.isIso_of_isLeftDerivedFunctor _ _, ⟨?_ ≪≫ eφ⟩⟩
     exact Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
       (Localization.isoOfHom L _ _ R.hw.2)
       (by simp [← Functor.map_comp])

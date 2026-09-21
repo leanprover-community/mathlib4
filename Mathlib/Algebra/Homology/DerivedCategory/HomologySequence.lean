@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-!
@@ -197,6 +198,16 @@ lemma epi_homologyMap_mor₂_iff (h : n₀ + 1 = n₁ := by lia) :
 lemma mono_homologyMap_mor₂_iff :
     Mono ((homologyFunctor C n₀).map T.mor₂) ↔ (homologyFunctor C n₀).map T.mor₁ = 0 :=
   (homologyFunctor C 0).homologySequence_mono_shift_map_mor₂_iff _ hT n₀
+
+lemma isIso_homologyMap_mor₁_iff (h : n₀ + 1 = n₁ := by lia) :
+    IsIso ((homologyFunctor C n₁).map T.mor₁) ↔
+      δ T n₀ n₁ h  = 0 ∧ (homologyFunctor C n₁).map T.mor₂ = 0 :=
+  (homologyFunctor C 0).homologySequence_isIso_shift_map_mor₁_iff _ hT _ _ h
+
+lemma isIso_homologyMap_mor₂_iff (h : n₀ + 1 = n₁ := by lia) :
+    IsIso ((homologyFunctor C n₀).map T.mor₂) ↔
+      δ T n₀ n₁ h  = 0 ∧ (homologyFunctor C n₀).map T.mor₁ = 0 :=
+  (homologyFunctor C 0).homologySequence_isIso_shift_map_mor₂_iff _ hT _ _ h
 
 end HomologySequence
 

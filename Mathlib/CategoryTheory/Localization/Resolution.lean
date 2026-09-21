@@ -127,6 +127,19 @@ lemma hom_ext {R R' : Φ.RightResolution X₂} {φ₁ φ₂ : R ⟶ R'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+@[simps]
+def isoMk {R R' : Φ.RightResolution X₂} (e : R.X₁ ≅ R'.X₁)
+    (comm : R.w ≫ Φ.functor.map e.hom = R'.w := by aesop_cat) : R ≅ R' where
+  hom :=
+    { f := e.hom
+      --hf := W₁.of_isIso _
+      comm := comm }
+  inv :=
+    { f := e.inv
+      --hf := W₁.of_isIso _
+      comm := by
+        rw [← comm, Category.assoc, Iso.map_hom_inv_id, Category.comp_id] }
+
 end RightResolution
 
 namespace LeftResolution
@@ -170,6 +183,41 @@ lemma comp_f {L L' L'' : Φ.LeftResolution X₂} (φ : L ⟶ L') (ψ : L' ⟶ L'
 lemma hom_ext {L L' : Φ.LeftResolution X₂} {φ₁ φ₂ : L ⟶ L'} (h : φ₁.f = φ₂.f) :
     φ₁ = φ₂ :=
   Hom.ext h
+
+@[simps]
+def isoMk {L L' : Φ.LeftResolution X₂} (e : L.X₁ ≅ L'.X₁)
+    (comm : Φ.functor.map e.hom ≫ L'.w = L.w := by aesop_cat) : L ≅ L' where
+  hom :=
+    { f := e.hom
+      --hf := W₁.of_isIso _
+      comm := comm }
+  inv :=
+    { f := e.inv
+      --hf := W₁.of_isIso _
+      comm := by
+        rw [← comm, Iso.map_inv_hom_id_assoc] }
+
+variable (Φ)
+
+@[simps!]
+def chgObj {X₂' : C₂} [W₂.IsStableUnderComposition] (π : X₂ ⟶ X₂') (hπ : W₂ π) :
+    Φ.LeftResolution X₂ ⥤ Φ.LeftResolution X₂' where
+  obj R :=
+    { X₁ := R.X₁
+      w := R.w ≫ π
+      hw := W₂.comp_mem _ _ R.hw hπ }
+  map φ :=
+    { f := φ.f }
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[simps]
+def chgObjEquivalence {X₂' : C₂} (e : X₂ ≅ X₂') [W₂.IsMultiplicative] [W₂.RespectsIso] :
+    Φ.LeftResolution X₂ ≌ Φ.LeftResolution X₂' where
+  functor := chgObj Φ e.hom (W₂.of_isIso _)
+  inverse := chgObj Φ e.inv (W₂.of_isIso _)
+  unitIso := NatIso.ofComponents (fun R ↦ isoMk (Iso.refl _))
+  counitIso := NatIso.ofComponents (fun R ↦ isoMk (Iso.refl _))
 
 end LeftResolution
 
@@ -307,6 +355,12 @@ lemma isIso_iff_of_hasLeftResolutions [Φ.HasLeftResolutions] {F G : D₂ ⥤ H}
 
 end
 
+lemma hasRightResolutions_of_arrow [Φ.arrow.HasRightResolutions] :
+    Φ.HasRightResolutions := fun X₂ => by
+  let R : Φ.arrow.RightResolution (Arrow.mk (𝟙 X₂)) := Classical.arbitrary _
+  exact
+   ⟨{ w := R.w.left
+      hw := R.hw.1 } ⟩
 section
 
 variable {T : LocalizerMorphism W₁ W₂} {L : LocalizerMorphism W₁ W₁'}

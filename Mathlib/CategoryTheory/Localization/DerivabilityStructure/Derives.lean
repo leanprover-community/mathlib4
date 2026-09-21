@@ -54,6 +54,17 @@ namespace Derives
 
 variable {Φ F} (h : Φ.Derives F)
 
+variable (Φ) in
+lemma of_isIso_app_functor_obj
+    {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H} (α : F ⟶ L₂ ⋙ RF)
+    (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    Φ.Derives F := by
+  intro X₁ X₂ f hf
+  have := Localization.inverts L₂ W₂ _ (Φ.map f hf)
+  rw [Functor.comp_map, ← isIso_comp_right_iff _ (α.app _), α.naturality (Φ.functor.map f),
+    isIso_comp_left_iff, Functor.comp_map]
+  infer_instance
+
 section
 
 variable [Φ.IsRightDerivabilityStructure]
@@ -63,6 +74,10 @@ include h
 lemma hasPointwiseRightDerivedFunctor : F.HasPointwiseRightDerivedFunctor W₂ := by
   rw [hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure Φ F]
   exact Functor.hasPointwiseRightDerivedFunctor_of_inverts _ h
+
+lemma hasRightDerivedFunctor : F.HasRightDerivedFunctor W₂ := by
+  have := h.hasPointwiseRightDerivedFunctor
+  infer_instance
 
 variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H} (α : F ⟶ L₂ ⋙ RF)
 
@@ -103,6 +118,17 @@ lemma isRightDerivedFunctor_iff_isIso :
 
 end
 
+variable (Φ) in
+lemma of_isIso_app_functor_obj'
+    {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {LF : D₂ ⥤ H} (α : L₂ ⋙ LF ⟶ F)
+    (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    Φ.Derives F := by
+  intro X₁ X₂ f hf
+  have := Localization.inverts L₂ W₂ _ (Φ.map f hf)
+  rw [Functor.comp_map, ← isIso_comp_left_iff (α.app _),
+    ← α.naturality (Φ.functor.map f), isIso_comp_right_iff, Functor.comp_map]
+  infer_instance
+
 section
 
 variable [Φ.IsLeftDerivabilityStructure]
@@ -113,9 +139,13 @@ lemma hasPointwiseLeftDerivedFunctor : F.HasPointwiseLeftDerivedFunctor W₂ := 
   rw [hasPointwiseLeftDerivedFunctor_iff_of_isLeftDerivabilityStructure Φ F]
   exact Functor.hasPointwiseLeftDerivedFunctor_of_inverts _ h
 
+lemma hasLeftDerivedFunctor : F.HasLeftDerivedFunctor W₂ := by
+  have := h.hasPointwiseLeftDerivedFunctor
+  infer_instance
+
 variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {LF : D₂ ⥤ H} (α : L₂ ⋙ LF ⟶ F)
 
-lemma isIso' (X₁ : C₁) [LF.IsLeftDerivedFunctor α W₂] :
+lemma isIso_of_isLeftDerivedFunctor (X₁ : C₁) [LF.IsLeftDerivedFunctor α W₂] :
     IsIso (α.app (Φ.functor.obj X₁)) := by
   let G : W₁.Localization ⥤ H := Localization.lift (Φ.functor ⋙ F) h W₁.Q
   let eG := Localization.Lifting.iso W₁.Q W₁ (Φ.functor ⋙ F) G
@@ -127,7 +157,7 @@ lemma isIso' (X₁ : C₁) [LF.IsLeftDerivedFunctor α W₂] :
 lemma isLeftDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     LF.IsLeftDerivedFunctor α W₂ := by
   have := h.hasPointwiseLeftDerivedFunctor
-  have := h.isIso' (F.totalLeftDerivedCounit L₂ W₂)
+  have := h.isIso_of_isLeftDerivedFunctor (F.totalLeftDerivedCounit L₂ W₂)
   have := Φ.essSurj_of_hasLeftResolutions L₂
   let φ := (F.totalLeftDerived L₂ W₂).leftDerivedLift (F.totalLeftDerivedCounit L₂ W₂) W₂ LF α
   have hφ : Functor.whiskerLeft L₂ φ ≫ F.totalLeftDerivedCounit L₂ W₂ = α :=
@@ -145,11 +175,27 @@ lemma isLeftDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.
 
 lemma isLeftDerivedFunctor_iff_isIso :
     LF.IsLeftDerivedFunctor α W₂ ↔ ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁)) :=
-  ⟨fun _ _ ↦ h.isIso' α _, h.isLeftDerivedFunctor_of_isIso α⟩
+  ⟨fun _ _ ↦ h.isIso_of_isLeftDerivedFunctor α _, h.isLeftDerivedFunctor_of_isIso α⟩
 
 end
 
 end Derives
+
+variable {F}
+
+lemma isRightDerivedFunctor_of_isRightDerivabilityStructure
+    [Φ.IsRightDerivabilityStructure]
+    {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H}
+    (α : F ⟶ L₂ ⋙ RF) (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    RF.IsRightDerivedFunctor α W₂ :=
+  (Derives.of_isIso_app_functor_obj Φ α hα).isRightDerivedFunctor_of_isIso _ hα
+
+lemma isLeftDerivedFunctor_of_isLeftDerivabilityStructure
+    [Φ.IsLeftDerivabilityStructure]
+    {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {LF : D₂ ⥤ H}
+    (α : L₂ ⋙ LF ⟶ F) (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    LF.IsLeftDerivedFunctor α W₂ :=
+  (Derives.of_isIso_app_functor_obj' Φ α hα).isLeftDerivedFunctor_of_isIso _ hα
 
 end LocalizerMorphism
 
