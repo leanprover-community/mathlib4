@@ -431,7 +431,7 @@ theorem mem_mul_span_singleton {x y : R} {I : Ideal R} [I.IsTwoSided] :
 
 theorem span_singleton_mul_left_mono [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
     {x : R} (hx : x ≠ 0) : I * span {x} ≤ J * span {x} ↔ I ≤ J := by
-  simp [SetLike.le_def, mem_mul_span_singleton, hx]
+  simp [IsConcreteLE.le_iff, mem_mul_span_singleton, hx]
 
 theorem span_singleton_mul_left_inj [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
     {x : R} (hx : x ≠ 0) : I * span {x} = J * span {x} ↔ I = J := by
@@ -596,7 +596,7 @@ theorem le_span_singleton_mul_iff {x : R} {I J : Ideal R} :
 
 theorem span_singleton_mul_le_iff {x : R} {I J : Ideal R} :
     span {x} * I ≤ J ↔ ∀ z ∈ I, x * z ∈ J := by
-  simp [SetLike.le_def, mem_span_singleton_mul]
+  simp [IsConcreteLE.le_iff, mem_span_singleton_mul]
 
 theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
     span {x} * I ≤ span {y} * J ↔ ∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ := by
@@ -605,7 +605,7 @@ theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
 theorem span_singleton_mul_right_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I ≤ span {x} * J ↔ I ≤ J := by
   simp_rw [span_singleton_mul_le_span_singleton_mul, mul_right_inj' hx,
-    exists_eq_right', SetLike.le_def]
+    exists_eq_right', IsConcreteLE.le_iff]
 
 theorem span_singleton_mul_right_inj [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I = span {x} * J ↔ I = J := by
@@ -779,7 +779,7 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
 
-@[deprecated mul_eq_inf_of_isCoprime (since := "2026-03-10")]
+@[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-03-10")]
 theorem inf_eq_mul_of_isCoprime (coprime : IsCoprime I J) : I ⊓ J = I * J :=
   (Ideal.mul_eq_inf_of_coprime coprime.sup_eq).symm
 
@@ -891,7 +891,7 @@ theorem IsRadical.inf (hI : IsRadical I) (hJ : IsRadical J) : IsRadical (I ⊓ J
   rw [IsRadical, radical_inf]; exact inf_le_inf hI hJ
 
 lemma isRadical_bot_iff : (⊥ : Ideal R).IsRadical ↔ IsReduced R := by
-  simp only [IsRadical, SetLike.le_def, Ideal.mem_radical_iff, Ideal.mem_bot,
+  simp only [IsRadical, IsConcreteLE.le_iff, Ideal.mem_radical_iff, Ideal.mem_bot,
     forall_exists_index, isReduced_iff, IsNilpotent]
 
 lemma isRadical_bot [IsReduced R] : (⊥ : Ideal R).IsRadical := by rwa [isRadical_bot_iff]
@@ -967,7 +967,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
-@[deprecated isRadical_bot (since := "2026-08-03")]
+@[deprecated isRadical_bot +typeChanged (since := "2026-08-03")]
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
     (⊥ : Ideal R).IsRadical := isRadical_bot
 
@@ -990,7 +990,8 @@ lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
 
 theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P := by
   rw [or_comm, Ideal.mul_le]
-  simp_rw [hp.mul_mem_iff_mem_or_mem, SetLike.le_def, ← forall_or_left, or_comm, forall_or_left]
+  simp_rw [hp.mul_mem_iff_mem_or_mem, IsConcreteLE.le_iff, ← forall_or_left, or_comm,
+    forall_or_left]
 
 theorem IsPrime.inf_le {I J P : Ideal R} (hp : IsPrime P) : I ⊓ J ≤ P ↔ I ≤ P ∨ J ≤ P :=
   ⟨fun h ↦ hp.mul_le.1 <| mul_le_inf.trans h, fun h ↦ h.elim inf_le_left.trans inf_le_right.trans⟩
@@ -1095,8 +1096,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         exact ⟨hp.1, hp.2.2⟩
       have hiu : i ∉ u := mt Finset.mem_insert_of_mem hit
       have hn' : (insert i u).card = n := by
-        rwa [Finset.card_insert_of_notMem] at hn ⊢
-        exacts [hiu, hju]
+        rw [Finset.card_insert_of_notMem] at hn ⊢
+        exacts [hn, hiu, hju]
       have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k := by
         rw [Finset.coe_insert] at h ⊢
         rw [Finset.coe_insert] at h
