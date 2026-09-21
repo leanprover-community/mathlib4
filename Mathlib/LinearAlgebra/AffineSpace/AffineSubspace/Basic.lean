@@ -816,6 +816,10 @@ lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injecti
     (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
   (gciMapComap hf).u_l_eq _
 
+lemma comap_mk' (f : P₁ →ᵃ[k] P₂) (p : P₁) (s : Submodule k V₂) :
+    (mk' (f p) s).comap f = mk' p (s.comap f.linear) := by
+  aesop
+
 end AffineSubspace
 
 end MapComap
