@@ -7,7 +7,7 @@ name: Lake cache shadow (master)
 #
 # `lake_cache_shadow.md`, beside this file, documents the design: the cache
 # service configuration, the push and pull sequences, what a warm run adds,
-# the storage layout, the scope qualifiers, and what a full cache hit
+# the storage layout, the scope, and what a full cache hit
 # requires. It also lists the secrets and variables the pipeline needs. The
 # comments below cover what each step does.
 
@@ -44,10 +44,10 @@ on:
         default: ''
       cache_deps:
         description: >-
-          also cache dependencies (see "Dependency caching" at the top of
-          this file). Disabling skips the dep export/upload/fetch legs; note
-          that on a warm chain the deps then build from source in
-          build_and_stage (the legacy cache only runs on a cold chain).
+          also cache dependencies (see "Dependency skip list" in
+          `lake_cache_shadow.md`). Disabling leaves the dependencies out of
+          the run's mappings; on a warm chain they then build from source in
+          build_and_stage, because the legacy cache only runs on a cold chain.
         required: false
         type: boolean
         default: true
@@ -97,7 +97,6 @@ jobs:
       # The scope qualifiers, so the later jobs use these values and do not
       # derive them again.
       tcslug: ${{ steps.plan.outputs.tcslug }}
-      pins: ${{ steps.plan.outputs.pins }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
@@ -206,19 +205,16 @@ jobs:
           cd pr-branch
           lake env
 
-      # Plan the hydration and the dependency caching of this run. The plan
-      # itself is an optimization: it decides what this run can skip. It has to
-      # run after `lake env`, because it reads the manifest of each dependency
-      # to derive that dependency's upstream closure, and `lake env` is what
-      # materializes the dependency checkouts.
-      #   * Write the Lake services file that the `lake cache get` steps read
+      # Plan the hydration of this run.
+      #   * Write the Lake services file that the `lake cache` steps read
       #     through LAKE_CONFIG.
+      #   * Derive the toolchain slug that qualifies the scope.
+      #   * List the packages this run caches. `jq` is not on the PATH inside
+      #     landrun, so the later steps read this file instead of the
+      #     manifest.
       #   * Resolve the analysis-chain pointer of this toolchain. A warm chain
-      #     hydrates the root package from the shadow scope, and the legacy
-      #     cache stays unused.
-      #   * Decide which dependencies to stage. A revision file that is
-      #     already in the bucket ends the work for that dependency.
-      - name: Plan hydration & dependency caching
+      #     hydrates from the shadow scope, and the legacy cache stays unused.
+      - name: Plan hydration
         id: plan
         shell: bash -euo pipefail {0}
         env:
@@ -227,11 +223,10 @@ jobs:
         run: |
           cd pr-branch
           mkdir -p .lake/dep-plan
-          : > .lake/dep-plan/stage.txt
-          : > .lake/dep-plan/cached.txt
+          : > .lake/dep-plan/deps.txt
           # The services file for the warm-start steps of this job. It renders
-          # the block under "Cache service configuration" at the top of this
-          # file, with the public read endpoints.
+          # the block under "Cache service configuration" in
+          # `lake_cache_shadow.md`, with the public read endpoints.
           cat > .lake/shadow-services.toml <<EOF
           [[cache.service]]
           name = "shadow"
@@ -239,71 +234,14 @@ jobs:
           artifactEndpoint = "$LAKE_CACHE_ARTIFACT_ENDPOINT"
           revisionEndpoint = "$LAKE_CACHE_REVISION_ENDPOINT"
           EOF
-          # The two qualifiers that make a dependency scope exact. They are
-          # required for a hit. This step is the only place that derives them:
-          # the upload and consume jobs read them from this job's outputs, so
-          # the two cannot drift apart.
-          #   tcslug  The toolchain, with each character outside A-Za-z0-9._-
-          #           replaced by '-'. "leanprover/lean4:v4.34.0-rc2" becomes
-          #           "leanprover-lean4-v4.34.0-rc2".
-          #   pins    One hash per dependency, over the pins of that
-          #           dependency's transitive upstreams. A dependency with no
-          #           upstream gets the constant "noup".
+          # The toolchain, with each character outside A-Za-z0-9._- replaced
+          # by '-'. "leanprover/lean4:v4.35.0-rc2" becomes
+          # "leanprover-lean4-v4.35.0-rc2". It keys the analysis chain, which
+          # is per toolchain: a pinned run and an override run warm start from
+          # their own lineage and compare against it.
           tcslug="$(printf %s "$(cat lean-toolchain)" | tr -c 'A-Za-z0-9._-' '-')"
-          # The input hashes of a dependency cover the artifacts of its
-          # upstreams, so its scope must change when an upstream pin changes.
-          # A hash of the whole manifest would do that, but it would also
-          # re-key every dependency whose upstreams did not move, and mathlib
-          # bumps a dependency about every other day. This hashes the upstream
-          # closure of each dependency instead. Where the closure is unknown,
-          # because a manifest is missing or names a package this workspace
-          # does not pin, the whole manifest is hashed for that dependency:
-          # that over-keys, which costs an upload, where under-keying would
-          # cost a silent miss.
-          pins="$(python3 - <<'PY'
-          import hashlib, json, pathlib, sys
-          root = sys.argv[1] if len(sys.argv) > 1 else "lake-manifest.json"
-          pins = {q["name"]: q["rev"] for q in json.load(open(root))["packages"]
-                  if q.get("type") == "git"}
-          def h(lines):
-              return hashlib.sha256("\n".join(sorted(lines)).encode()).hexdigest()[:8]
-          whole = h(f"{n} {r}" for n, r in pins.items())
-          def direct(name):
-              mf = pathlib.Path(".lake/packages") / name / "lake-manifest.json"
-              if not mf.exists():
-                  return None
-              return [q["name"] for q in json.load(open(mf)).get("packages", [])
-                      if q.get("type") == "git"]
-          out = {}
-          for name in pins:
-              closure, queue, known = set(), [name], True
-              while queue and known:
-                  ds = direct(queue.pop())
-                  if ds is None:
-                      known = False
-                      break
-                  for d in ds:
-                      if d not in pins:
-                          known = False
-                          break
-                      if d not in closure:
-                          closure.add(d)
-                          queue.append(d)
-              if not known:
-                  out[name] = whole
-                  print(f"::warning::{name}: upstream closure unknown; "
-                        "keyed by the whole manifest", file=sys.stderr)
-              elif closure:
-                  out[name] = h(f"{d} {pins[d]}" for d in closure)
-              else:
-                  out[name] = "noup"
-          print(json.dumps(out, sort_keys=True, separators=(",", ":")))
-          PY
-          )"
           echo "TCSLUG=$tcslug" >> "$GITHUB_ENV"
           echo "tcslug=$tcslug" >> "$GITHUB_OUTPUT"
-          echo "pins=$pins" >> "$GITHUB_OUTPUT"
-          echo "::notice::upstream pin hashes: $pins"
           # `analysis/<tcslug>/_latest.txt` holds the mathlib sha of the
           # previous run on this toolchain. It returns 404 on a chain that has
           # never run, and that run has no warm start.
@@ -321,25 +259,19 @@ jobs:
             echo "::notice::dependency caching disabled for this run (cache_deps input)"
             exit 0
           fi
-          # Each dependency goes into one of two plan files, which both hold
-          # "<name> <rev> <pin-hash>" per line. cached.txt lists what the
-          # bucket serves, and the warm start reads it. stage.txt lists what
-          # this run must build, export and upload. The hash travels with the
-          # name, so the later steps and the upload job do not derive it again.
-          while read -r name rev; do
+          # The packages this run exports, one name per line. Every run
+          # exports every one of them. An export costs seconds once the
+          # artifacts are in the local cache, and the run writes one revision
+          # file either way, so there is nothing to gain by asking the bucket
+          # what it already holds.
+          while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then
               echo "::notice::dep $name: on the skip list; not cached"
               continue
             fi
-            ph="$(jq -r --arg d "$name" '.[$d]' <<< "$pins")"
-            url="$LAKE_CACHE_REVISION_ENDPOINT/$SHADOW_SCOPE/deps/$tcslug/$ph/$name/$rev.jsonl"
-            if curl -fsS -o /dev/null "$url" 2>/dev/null; then
-              echo "$name $rev $ph" >> .lake/dep-plan/cached.txt
-            else
-              echo "$name $rev $ph" >> .lake/dep-plan/stage.txt
-            fi
-          done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
-          echo "::notice::deps already cached: $(wc -l < .lake/dep-plan/cached.txt), to stage: $(wc -l < .lake/dep-plan/stage.txt)"
+            echo "$name" >> .lake/dep-plan/deps.txt
+          done < <(jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json)
+          echo "::notice::caching $(wc -l < .lake/dep-plan/deps.txt) dependencies"
 
       # The bootstrap fallback, an optimization for a cold chain. A pinned run
       # normally hydrates from the shadow
@@ -412,34 +344,31 @@ jobs:
           lake cache get --service=shadow --scope="$SHADOW_SCOPE" --rev="$CHAIN_PREV" \
             || echo "::warning::warm start from rev ${CHAIN_PREV:0:12} failed; proceeding without it"
 
-      # The primary dependency hydration, an optimization. It fetches the
-      # dependencies the bucket serves, and the main build replays them. The step is skipped
-      # only when the legacy fallback already hydrated everything, on a pinned
-      # run with a cold chain. A dependency the plan step found missing builds
-      # from source below, and the export step then records it.
-      - name: Warm start dependencies from shadow scope
-        if: ${{ env.TOOLCHAIN_OVERRIDE != '' || env.CHAIN_COLD == 'false' }}
+      # The dependency half of the warm start. The fetch above already
+      # downloaded every dependency artifact, because the revision file it
+      # read covers the whole workspace. Lake looks an input hash up under
+      # the owning package's local scope, though, so each dependency needs
+      # the mappings registered against its own name before the build can
+      # replay them. `cache add` does that offline; `--service` and `--scope`
+      # record where the artifacts came from, so a missing one is re-fetched
+      # instead of rebuilt.
+      - name: Register warm-start mappings per dependency
+        if: ${{ env.CHAIN_PREV != '' && env.CACHE_DEPS == 'true' }}
         shell: bash -euo pipefail {0}
         env:
           LAKE_CONFIG: .lake/shadow-services.toml
         run: |
           cd pr-branch
-          if [ ! -s .lake/dep-plan/cached.txt ]; then
-            echo "::notice::no cached deps to warm start"
+          map=".lake/cache/revisions/mathlib/$CHAIN_PREV.jsonl"
+          if [ ! -f "$map" ]; then
+            echo "::notice::no warm-start map at $map; dependencies build from source"
             exit 0
           fi
-          # TCSLUG arrives from the plan step through $GITHUB_ENV, and the
-          # third column of cached.txt is that dependency's upstream pin hash.
-          # For batteries the scope below is
-          #   mathlib4-master-shadow/deps/leanprover-lean4-v4.34.0-rc2/2d10dd67/batteries
-          # and `--rev` is the manifest revision of batteries. The lookup is
-          # exact, so a miss returns at once and does not walk `--max-revs`
-          # ancestors.
-          while read -r name rev ph; do
-            lake cache get --service=shadow --package="$name" \
-              --scope="$SHADOW_SCOPE/deps/$TCSLUG/$ph/$name" --rev="$rev" \
-              || echo "::warning::dep warm start failed for $name@${rev:0:12}; it will build from source"
-          done < .lake/dep-plan/cached.txt
+          while read -r name; do
+            lake cache add "$map" --package="$name" \
+              --service=shadow --scope="$SHADOW_SCOPE" \
+              || echo "::warning::could not register warm-start mappings for $name; it will build from source"
+          done < .lake/dep-plan/deps.txt
 
       # The incremental build. The warm start, or the legacy fallback, has
       # hydrated the artifact cache, and the lakefile patch enables it. This
@@ -447,10 +376,16 @@ jobs:
       # changed, and any dependency the bucket did not hold. It also writes
       # every artifact it produces into the local Lake cache, which the
       # staging step below copies from.
+      #
+      # `-o` records the root package's mappings during this build. Lake
+      # tracks every target the build covers, whether it compiled it or
+      # replayed it, so a separate `--no-build -o` pass would walk the whole
+      # workspace again for the same bytes.
       - name: Incremental build (populate Lake's cache)
         run: |
           cd pr-branch
-          lake build $STAGE_TARGETS 2>&1 | tee .lake/lake-build.log
+          mkdir -p .lake/dep-outputs
+          lake build $STAGE_TARGETS -o .lake/dep-outputs/mathlib.jsonl 2>&1 | tee .lake/lake-build.log
           echo "::group::build summary"
           # A non-verbose `lake build` replays a cached output in silence, so
           # no line counts it. The count below is the churn of the day, plus
@@ -458,26 +393,18 @@ jobs:
           echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/lake-build.log || true)"
           echo "::endgroup::"
 
-      - name: Emit root-package mappings
-        run: |
-          cd pr-branch
-          lake build --no-build $STAGE_TARGETS -o .lake/outputs.jsonl
-          echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
-          head -3 .lake/outputs.jsonl
-
-      # Export the mappings of the dependencies the bucket does not hold. This
-      # step is required for a dependency to hit at all; see "What a full
-      # cache hit requires" in `lake_cache_shadow.md`. `--package` selects the
-      # package whose mappings `-o` records, so each export runs in this
-      # workspace and replays what the incremental build above produced.
-      # `@<DEP>` names the default targets of the dependency, which reach the
-      # modules mathlib does not import. A failure leaves that one dependency
-      # uncached for this run.
+      # Export each dependency's mappings. `-o` records the mappings of the
+      # workspace root, and `--package` points it at a dependency instead, so
+      # every export runs in this workspace and replays what the build above
+      # produced. `@<DEP>` names the default targets of the dependency, which
+      # reach the modules mathlib does not import; that costs seconds here and
+      # makes the bucket serve a consumer that uses more of the dependency
+      # than mathlib does. A failure leaves that one dependency out of this
+      # run's mappings, and `consume` reports the rebuild.
       - name: Export dependency mappings
         run: |
           cd pr-branch
-          mkdir -p .lake/dep-outputs
-          if [ ! -s .lake/dep-plan/stage.txt ]; then
+          if [ ! -s .lake/dep-plan/deps.txt ]; then
             echo "no deps to export"
             exit 0
           fi
@@ -487,11 +414,7 @@ jobs:
           #
           #   "2026-03-17"
           #   ["40621d85d988875e","b219d1b135ae613c.ltar"]
-          #
-          # The upload job pushes this file to
-          # revisions/<dep scope>/<dep rev>.jsonl, and the .ltar files it
-          # names to artifacts/<dep scope>/.
-          while read -r name _ _; do
+          while read -r name; do
             echo "::group::export $name"
             if lake build "@$name" --package="$name" -o ".lake/dep-outputs/$name.jsonl"; then
               echo "exported $name: $(wc -l < ".lake/dep-outputs/$name.jsonl") mapping lines"
@@ -500,7 +423,7 @@ jobs:
               rm -f ".lake/dep-outputs/$name.jsonl"
             fi
             echo "::endgroup::"
-          done < .lake/dep-plan/stage.txt
+          done < .lake/dep-plan/deps.txt
 
       # The staging directory is created outside landrun, so the step below
       # can write to it. build_template.yml uses the same pattern for the
@@ -515,36 +438,32 @@ jobs:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw lake-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
         run: |
           cd pr-branch
+          # One map for the whole workspace. A Lake mappings file is a schema
+          # version followed by one flat input-hash-keyed entry per target,
+          # with no per-package partition, so the root's file and the
+          # dependencies' concatenate: keep one header, then every entry. That
+          # single map is the whole cone of artifacts for this mathlib sha,
+          # which is what a consumer needs to replay it.
+          { head -1 .lake/dep-outputs/mathlib.jsonl
+            for f in .lake/dep-outputs/*.jsonl; do tail -n +2 "$f"; done
+          } > .lake/outputs.jsonl
+          echo "merged mappings entries: $(wc -l < .lake/outputs.jsonl)"
           # This copies the mappings and the artifacts out of the local Lake
           # cache, into the tree the upload job consumes. The tree travels
-          # between the jobs as a GitHub artifact. Each dependency gets its own
-          # subdirectory, because `cache stage` writes one outputs.jsonl per
-          # directory. The result:
+          # between the jobs as a GitHub artifact. The result is flat:
           #
           #   lake-cache-staging/
-          #     outputs.jsonl               root mappings
-          #     <content-hash>.ltar         root artifacts, flat
-          #     deps/cached.txt             "<name> <rev>" already in the bucket
-          #     deps/manifest.txt           "<name> <rev>" staged here now
-          #     deps/batteries/outputs.jsonl
-          #     deps/batteries/<content-hash>.ltar
-          #     deps/aesop/…
+          #     outputs.jsonl               the merged map
+          #     <content-hash>.ltar         every artifact it names
           #
-          # The upload job reads deps/manifest.txt for the list to push, and
-          # deps/cached.txt for the count it reports as skipped.
+          # `cache stage` fails if the map names an artifact the local cache
+          # does not hold. Every package inherits `enableArtifactCache` from
+          # mathlib's patched lakefile, so its artifacts are there. A
+          # dependency that sets `enableArtifactCache := false` in its own
+          # lakefile would produce mappings without artifacts and fail this
+          # step; put it in DEP_SKIP.
           lake cache stage .lake/outputs.jsonl ../lake-cache-staging
-          mkdir -p ../lake-cache-staging/deps
-          cp .lake/dep-plan/cached.txt ../lake-cache-staging/deps/cached.txt
-          while read -r name rev ph; do
-            # A dependency whose export failed has no mappings file, but
-            # stage.txt still lists it. Skip it instead of staging a part of
-            # it.
-            [ -f ".lake/dep-outputs/$name.jsonl" ] || continue
-            lake cache stage ".lake/dep-outputs/$name.jsonl" "../lake-cache-staging/deps/$name"
-            echo "$name $rev $ph" >> ../lake-cache-staging/deps/manifest.txt
-          done < .lake/dep-plan/stage.txt
           du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
-          du -sh ../lake-cache-staging/deps | awk '{print "deps staging total:", $1}'
           echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
 
       # The safety valve. The staged bytes are the bytes that reach R2, so this
@@ -584,7 +503,6 @@ jobs:
     outputs:
       carryover: ${{ steps.carryover.outputs.summary }}
       new_content: ${{ steps.carryover.outputs.new_content }}
-      dep_uploads: ${{ steps.depupload.outputs.summary }}
     env:
       # The uploads go through a generated Lake services file with the
       # authenticated S3 endpoints, and LAKE_CACHE_KEY signs them. See "Cache
@@ -641,66 +559,21 @@ jobs:
           echo "::add-mask::$KEY"
           echo "LAKE_CACHE_KEY=$KEY" >> "$GITHUB_ENV"
 
+      # One upload for the whole cone: the merged map goes to
+      # revisions/<scope>/<mathlib sha>.jsonl and every artifact it names to
+      # artifacts/<scope>/. Lake PUTs the artifacts first and the revision
+      # file last, so a reader never sees a map whose artifacts are missing.
       - name: lake cache put-staged
         run: |
           cd pr-branch
           # `--toolchain` has no effect with a string scope: Lake's revision
-          # URL ignores it there. It applies to the `--repo` form of a scope.
+          # URL ignores it there. It applies to the `--repo` form of a scope,
+          # which cannot carry this pipeline's prefix, so the slug is a scope
+          # segment instead.
           lake cache put-staged ../lake-cache-staging \
             --service=shadow \
-            --scope="${{ env.SHADOW_SCOPE }}" \
-            --rev="${{ needs.build_and_stage.outputs.sha }}" \
-            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
-
-      # Upload each staged dependency to its own scope, under its manifest
-      # revision. See `lake_cache_shadow.md`. The plan
-      # step already removed the dependencies the bucket holds. The log is
-      # separate from /tmp/put.log, so these artifacts stay out of the root
-      # carryover analysis below.
-      # `continue-on-error` keeps a failed dependency upload from failing the
-      # run: the root upload has already succeeded, and the run still carries
-      # useful data. The summary reports the count as FAILED, and the consume
-      # job then reports the miss and the rebuild.
-      - name: Upload dependency caches
-        id: depupload
-        continue-on-error: true
-        env:
-          TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
-        run: |
-          cd pr-branch
-          skipped=0
-          if [ -f ../lake-cache-staging/deps/cached.txt ]; then
-            skipped=$(wc -l < ../lake-cache-staging/deps/cached.txt)
-          fi
-          # No manifest.txt means the stage step staged nothing, which is the
-          # steady state: the bucket already holds every dependency.
-          if [ ! -f ../lake-cache-staging/deps/manifest.txt ]; then
-            echo "summary=0 uploaded, ${skipped} already cached" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          ok=0 fail=0
-          : > /tmp/dep-put.log
-          # The third column is the upstream pin hash the plan step derived.
-          while read -r name rev ph; do
-            if lake cache put-staged "../lake-cache-staging/deps/$name" \
-                --service=shadow \
-                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$ph/$name" \
-                --rev="$rev" 2>&1 | tee -a /tmp/dep-put.log; then
-              ok=$((ok+1))
-            else
-              fail=$((fail+1))
-              echo "::warning::dep upload failed for $name@${rev:0:12}"
-            fi
-          done < ../lake-cache-staging/deps/manifest.txt
-          arts=$(grep -c 'uploaded artifact' /tmp/dep-put.log || true)
-          bytes=$(du -sb ../lake-cache-staging/deps | cut -f1)
-          failnote=""
-          if [ "$fail" -gt 0 ]; then
-            failnote=", ${fail} FAILED"
-          fi
-          summary="${ok} uploaded ($(numfmt --to=iec-i --suffix=B "$bytes") staged, ${arts} artifacts)${failnote}, ${skipped} already cached"
-          echo "::notice::dep uploads: ${summary}"
-          echo "summary=${summary}" >> "$GITHUB_OUTPUT"
+            --scope="$SHADOW_SCOPE" \
+            --rev="${{ needs.build_and_stage.outputs.sha }}" 2>&1 | tee /tmp/put.log
 
       # The carryover analysis. It compares the artifacts this run uploaded
       # against those of the previous run on the same toolchain, through the
@@ -804,6 +677,10 @@ jobs:
       # Disable the barrel and build-cache auto-fetch, so the shadow bucket
       # accounts for every replay in this job.
       LAKE_NO_CACHE: true
+      # `cache get` saves the revision file it fetched under this directory,
+      # and the step below reads it back to register the dependencies.
+      LAKE_CACHE_DIR: .lake/cache
+      MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
     steps:
       - name: Write cache services config
         env:
@@ -864,42 +741,41 @@ jobs:
           p.write_text(src.replace(marker, inject, 1))
           PY
 
+      # One fetch for the whole cone. The revision file for this mathlib sha
+      # maps every input hash in the workspace, mathlib's and its
+      # dependencies', so this downloads every artifact the replay needs.
       - name: lake cache get
         run: |
           cd pr-branch
           lake cache get \
             --service=shadow \
             --scope="$SHADOW_SCOPE" \
-            --rev="${{ needs.build_and_stage.outputs.sha }}"
+            --rev="$MATHLIB_SHA"
 
-      # Fetch the outputs of each dependency from its own scope, under its
-      # manifest revision. The lookup is exact and walks no history. A miss
-      # builds that dependency from source, and the provenance step reports
-      # the counts.
-      - name: lake cache get dependencies
+      # Lake resolves an input hash under the owning package's local scope,
+      # and the fetch above registered the map under the root's. This
+      # registers the same map against each dependency, which is offline: the
+      # artifacts are already on disk. `--service` and `--scope` record their
+      # origin, so an artifact that goes missing is re-fetched, not rebuilt.
+      - name: Register mappings per dependency
         if: ${{ env.CACHE_DEPS == 'true' }}
-        env:
-          TCSLUG: ${{ needs.build_and_stage.outputs.tcslug }}
-          PINS: ${{ needs.build_and_stage.outputs.pins }}
         run: |
           cd pr-branch
-          # PINS maps each dependency to the hash of its upstream pins, as the
-          # plan step derived it.
-          total=0 hits=0
-          while read -r name rev; do
+          map=".lake/cache/revisions/mathlib/$MATHLIB_SHA.jsonl"
+          total=0 ok=0
+          while read -r name; do
             if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
-            ph="$(jq -r --arg d "$name" '.[$d]' <<< "$PINS")"
-            if lake cache get --service=shadow --package="$name" \
-                --scope="$SHADOW_SCOPE/deps/$TCSLUG/$ph/$name" --rev="$rev"; then
-              hits=$((hits+1))
+            if lake cache add "$map" --package="$name" \
+                --service=shadow --scope="$SHADOW_SCOPE"; then
+              ok=$((ok+1))
             else
-              echo "::warning::dep cache miss for $name@${rev:0:12}; it will build from source"
+              echo "::warning::could not register mappings for $name; it will build from source"
             fi
-          done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
+          done < <(jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json)
           echo "DEP_TOTAL=$total" >> "$GITHUB_ENV"
-          echo "DEP_HITS=$hits" >> "$GITHUB_ENV"
-          echo "::notice::dep cache: ${hits}/${total} fetched from shadow scope"
+          echo "DEP_HITS=$ok" >> "$GITHUB_ENV"
+          echo "::notice::dep mappings: ${ok}/${total} registered from the run's revision file"
 
       - name: lake build
         run: |
@@ -909,7 +785,7 @@ jobs:
           # them before the build, which adds ltars of its own, and pass the
           # count to the provenance step. `|| true` keeps this count from
           # failing the step if find errors.
-          FETCHED=$(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l || true)
+          FETCHED=$(find .lake/cache -name '*.ltar' 2>/dev/null | wc -l || true)
           echo "ltar count after gets: $FETCHED"
           echo "FETCHED_ARTIFACTS=$FETCHED" >> "$GITHUB_ENV"
           read -ra TARGETS <<< "$STAGE_TARGETS"
@@ -937,7 +813,7 @@ jobs:
           # A skip-list dependency and a bucket miss also build, and count
           # here.
           BUILT_DEP=$((BUILT_TOTAL - BUILT_ROOT))
-          dep_health="📚 deps: ${DEP_HITS:-0}/${DEP_TOTAL:-0} fetched from shadow scope, ${BUILT_DEP} dep module(s) rebuilt (skip list: ${DEP_SKIP:-none})"
+          dep_health="📚 deps: ${DEP_HITS:-0}/${DEP_TOTAL:-0} registered from the run's revision file, ${BUILT_DEP} dep module(s) rebuilt (skip list: ${DEP_SKIP:-none})"
           echo "dep_health=${dep_health}" >> "$GITHUB_OUTPUT"
           echo "::notice::${dep_health}"
           if [ "$BUILT_ROOT" -ne 0 ]; then
@@ -989,6 +865,8 @@ jobs:
       MATHLIB_NO_CACHE_ON_UPDATE: "1"
       EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
       MATHLIB_SHA: ${{ needs.build_and_stage.outputs.sha }}
+      # `cache get` saves the revision file it fetched under this directory.
+      LAKE_CACHE_DIR: .lake/cache
     steps:
       - name: Write cache services config
         env:
@@ -1049,86 +927,36 @@ jobs:
           EOF
           lake update --keep-toolchain
 
-      # Hydrate mathlib from the root scope, and each transitive dependency
-      # from its own scope. Every revision comes from the manifest of the
-      # downstream project: the mathlib entry holds the pinned sha, and the
-      # rest hold the inherited pins. A miss builds from source, and the step
-      # below reports it.
+      # Hydrate the whole cone from the one revision file mathlib's sha
+      # names. This is the point of the job: a real downstream project holds
+      # mathlib's sha and nothing else, and that is all the bucket asks for.
+      # It derives no scope of its own beyond the toolchain slug, which it
+      # reads off its own `lean-toolchain`.
       - name: lake cache get (mathlib + transitive deps)
         run: |
           cd downstream
-          # This job derives the qualifiers itself, where the other jobs read
-          # them from build_and_stage. That is the point of the job: a real
-          # downstream project has no access to mathlib's CI outputs, and must
-          # arrive at the same scope from what it holds locally. The derivation
-          # below is therefore a copy of the plan step's, rooted at mathlib's
-          # manifest, which this workspace holds at .lake/packages/mathlib/.
-          # The dependency manifests sit at .lake/packages/<name>/ in both
-          # workspaces, so the rest of the computation is identical.
-          tcslug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
-          pins="$(python3 - .lake/packages/mathlib/lake-manifest.json <<'PY'
-          import hashlib, json, pathlib, sys
-          root = sys.argv[1] if len(sys.argv) > 1 else "lake-manifest.json"
-          pins = {q["name"]: q["rev"] for q in json.load(open(root))["packages"]
-                  if q.get("type") == "git"}
-          def h(lines):
-              return hashlib.sha256("\n".join(sorted(lines)).encode()).hexdigest()[:8]
-          whole = h(f"{n} {r}" for n, r in pins.items())
-          def direct(name):
-              mf = pathlib.Path(".lake/packages") / name / "lake-manifest.json"
-              if not mf.exists():
-                  return None
-              return [q["name"] for q in json.load(open(mf)).get("packages", [])
-                      if q.get("type") == "git"]
-          out = {}
-          for name in pins:
-              closure, queue, known = set(), [name], True
-              while queue and known:
-                  ds = direct(queue.pop())
-                  if ds is None:
-                      known = False
-                      break
-                  for d in ds:
-                      if d not in pins:
-                          known = False
-                          break
-                      if d not in closure:
-                          closure.add(d)
-                          queue.append(d)
-              if not known:
-                  out[name] = whole
-                  print(f"::warning::{name}: upstream closure unknown; "
-                        "keyed by the whole manifest", file=sys.stderr)
-              elif closure:
-                  out[name] = h(f"{d} {pins[d]}" for d in closure)
-              else:
-                  out[name] = "noup"
-          print(json.dumps(out, sort_keys=True, separators=(",", ":")))
-          PY
-          )"
-          # Two manifests are in play. The pin hash above comes from
-          # mathlib's, and the loop below reads the downstream project's, which
-          # lists mathlib and the 8 dependencies it inherited. mathlib
-          # therefore comes from the root scope, under its sha, and every other
-          # package from its own dependency scope.
-          total=0 hits=0
-          while read -r name rev; do
-            if [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
+          lake cache get --service=shadow --package=mathlib \
+            --scope="$SHADOW_SCOPE" --rev="$MATHLIB_SHA"
+          # `--package=mathlib` saved the map under mathlib's local scope.
+          # Register it against each inherited dependency too, so Lake
+          # resolves their input hashes as well. The loop reads the downstream
+          # project's own manifest, which lists mathlib and the packages it
+          # inherited.
+          map=".lake/cache/revisions/mathlib/$MATHLIB_SHA.jsonl"
+          total=0 ok=0
+          while read -r name; do
+            if [ "$name" = mathlib ] || [[ " $DEP_SKIP " == *" $name "* ]]; then continue; fi
             total=$((total+1))
-            if [ "$name" = mathlib ]; then
-              scope="$SHADOW_SCOPE"
+            if lake cache add "$map" --package="$name" \
+                --service=shadow --scope="$SHADOW_SCOPE"; then
+              ok=$((ok+1))
             else
-              scope="$SHADOW_SCOPE/deps/$tcslug/$(jq -r --arg d "$name" '.[$d]' <<< "$pins")/$name"
+              echo "::warning::downstream could not register mappings for $name"
             fi
-            if lake cache get --service=shadow --package="$name" --scope="$scope" --rev="$rev"; then
-              hits=$((hits+1))
-            else
-              echo "::warning::downstream cache miss for $name@${rev:0:12}; it will build from source"
-            fi
-          done < <(jq -r '.packages[] | select(.type == "git") | "\(.name) \(.rev)"' lake-manifest.json)
-          echo "PKG_TOTAL=$total" >> "$GITHUB_ENV"
-          echo "PKG_HITS=$hits" >> "$GITHUB_ENV"
-          echo "::notice::downstream cache: ${hits}/${total} packages fetched from shadow scope"
+          done < <(jq -r '.packages[] | select(.type == "git") | .name' lake-manifest.json)
+          echo "PKG_TOTAL=$((total+1))" >> "$GITHUB_ENV"
+          echo "PKG_HITS=$((ok+1))" >> "$GITHUB_ENV"
+          echo "::notice::downstream cache: $((ok+1))/$((total+1)) packages resolved from one revision file"
 
       - name: lake build (downstream)
         run: |
@@ -1171,7 +999,6 @@ jobs:
           DOWNSTREAM_HEALTH: ${{ needs.downstream.outputs.health }}
           CARRYOVER: ${{ needs.upload.outputs.carryover }}
           NEW_CONTENT: ${{ needs.upload.outputs.new_content }}
-          DEP_UPLOADS: ${{ needs.upload.outputs.dep_uploads }}
           CACHE_HEALTH: ${{ needs.consume.outputs.cache_health }}
           DEP_HEALTH: ${{ needs.consume.outputs.dep_health }}
           SHA: ${{ needs.build_and_stage.outputs.sha }}
@@ -1201,7 +1028,6 @@ jobs:
             echo "- ${DOWNSTREAM_HEALTH:-⬇️ downstream: n/a (skipped)}"
             echo "- 🔁 cache carryover: ${CARRYOVER:-n/a}"
             echo "- 📦 new content uploaded: ${NEW_CONTENT:-n/a}"
-            echo "- 🗂️ dep uploads: ${DEP_UPLOADS:-n/a}"
             echo "MSG_EOF"
           } >> "$GITHUB_OUTPUT"
 
