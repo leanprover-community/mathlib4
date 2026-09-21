@@ -26,7 +26,7 @@ This postpones until the expected type is available (`<= ty`). `withSynthesize` 
 since this would let through a public term under `backward.proofsInPublic`, which we want to ignore.
 
 We use `withSynthesize (postpone := .partial)` because `postpone := .yes` allows nested `by`'s
-within the wrapped term to escape, and thus they may still error when useing private definitions
+within the wrapped term to escape, and thus they may still error when using private definitions
 (if used to construct data within the wrapped proof), and `postpone := .no` can cause timing
 friction that `by exact` avoids.
 
