@@ -438,16 +438,19 @@ jobs:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw lake-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
         run: |
           cd pr-branch
-          # One map for the whole workspace. A Lake mappings file is a schema
-          # version followed by one flat input-hash-keyed entry per target,
-          # with no per-package partition, so the root's file and the
-          # dependencies' concatenate: keep one header, then every entry. That
-          # single map is the whole cone of artifacts for this mathlib sha,
-          # which is what a consumer needs to replay it.
-          { head -1 .lake/dep-outputs/mathlib.jsonl
-            for f in .lake/dep-outputs/*.jsonl; do tail -n +2 "$f"; done
-          } > .lake/outputs.jsonl
-          echo "merged mappings entries: $(wc -l < .lake/outputs.jsonl)"
+          # One map for the whole workspace, which is what a consumer needs
+          # to replay this mathlib sha. Lake builds it in pieces and offers
+          # no way to combine them: `-o` writes exactly one package's
+          # mappings, and `cache stage` takes one mappings file and copies it
+          # over the staging directory's `outputs.jsonl`, so staging twice
+          # accumulates the artifacts but keeps only the second map. The
+          # merge is therefore done here, on the file format: a mappings file
+          # is a schema version line followed by one flat input-hash-keyed
+          # entry per target, with no per-package partition. Lake skips a
+          # repeated schema line with a warning and takes the last of a
+          # repeated entry, so dropping the extra headers is about not
+          # shipping a file that warns on every load.
+          echo "merged mappings entries: $(( $(wc -l < .lake/outputs.jsonl) - 1 ))"
           # This copies the mappings and the artifacts out of the local Lake
           # cache, into the tree the upload job consumes. The tree travels
           # between the jobs as a GitHub artifact. The result is flat:

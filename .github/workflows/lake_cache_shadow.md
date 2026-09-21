@@ -57,10 +57,19 @@ either way, so the pipeline does not ask the bucket what it already holds.
    mathlib's own workspace and replays what step 1 produced. `@<DEP>` names
    the default targets of the dependency, which reach the modules mathlib
    does not import.
-3. Merge. A mappings file is a schema version followed by one flat
-   input-hash-keyed entry per target, with no per-package partition, so the
-   files concatenate into one map: keep one header, then every entry. That map
-   is the whole cone for this mathlib sha.
+3. Merge. Lake builds the map in pieces and offers no way to combine them:
+   `-o` writes exactly one package's mappings, and `cache stage` copies one
+   mappings file over the staging directory's `outputs.jsonl`, so staging
+   twice accumulates the artifacts but keeps only the second map. The
+   workflow merges on the file format instead: a mappings file is a schema
+   version line followed by one flat input-hash-keyed entry per target, with
+   no per-package partition, so keeping one header and concatenating the
+   entries yields a valid map. Lake skips a repeated schema line with a
+   warning and takes the last of a repeated entry, so this is about not
+   shipping a file that warns on every load, not about correctness. It is
+   the one place the pipeline reads the mappings format. A `-o` that covered
+   the whole workspace, or a `cache stage` that took several mappings files,
+   would remove the need for it.
 4. `lake cache stage .lake/outputs.jsonl lake-cache-staging` copies the map and
    every artifact it names into one flat directory. The tree travels to the
    `upload` job as a GitHub artifact, because the build runs in a sandbox
