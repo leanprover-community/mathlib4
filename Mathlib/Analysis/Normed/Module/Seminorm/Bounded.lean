@@ -36,12 +36,14 @@ class LES where
   /-- The less-sim relation: `a ≲ b`. -/
   les : α → β → Prop
 
-@[inherit_doc] infix:50 " ≲ " => LES.les
+open scoped LES
+
+@[inherit_doc] scoped[LES] infix:50 " ≲ " => LES.les
 
 /-- The approx relation: `a ≈ b`. -/
 def approx [LES α β] [LES β α] (a : α) (b : β) : Prop := a ≲ b ∧ b ≲ a
 
-@[inherit_doc] infix:50 " ≈ " => approx
+@[inherit_doc] scoped[LES] infix:50 " ≈ " => approx
 
 section refl
 
@@ -104,6 +106,8 @@ end abstract
 variable {ι 𝕜 E : Type*}
 
 namespace Seminorm
+
+open scoped LES
 
 section IsBoundedBy
 
@@ -238,6 +242,33 @@ theorem approx_iff_exists : p ≈ q ↔ ∃ (C : ℝ≥0), p ≤ C • q ∧ q �
       simp
   · intro ⟨C, h₁, h₂⟩
     exact ⟨⟨C, h₁⟩, ⟨C, h₂⟩⟩
+
+variable (p q) in
+theorem approx_iff_exists_real : p ≈ q ↔ ∃ C : ℝ, ∀ x, p x ≤ C * q x ∧ q x ≤ C * p x := by
+  rw [approx_iff_exists]
+  constructor
+  · intro ⟨C, h₁, h₂⟩
+    use C
+    intro x
+    simp only [le_def, smul_apply, NNReal.smul_def] at h₁ h₂
+    constructor
+    · grw [h₁]
+      simp
+    · grw [h₂]
+      simp
+  · intro ⟨C, h⟩
+    use C.toNNReal
+    constructor
+    · intro x
+      grw [(h x).1]
+      simp only [smul_apply, smul_def, Real.coe_toNNReal', smul_eq_mul]
+      gcongr
+      simp
+    · intro x
+      grw [(h x).2]
+      simp only [smul_apply, smul_def, Real.coe_toNNReal', smul_eq_mul]
+      gcongr
+      simp
 
 end IsEquivalent
 
