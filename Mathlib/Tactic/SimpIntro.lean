@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
+import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Simp
 import Mathlib.Init
 
