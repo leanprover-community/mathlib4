@@ -10,7 +10,6 @@ public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Tactic.Zify
 
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Factorial with big operators

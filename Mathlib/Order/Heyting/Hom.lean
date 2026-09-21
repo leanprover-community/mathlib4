@@ -240,6 +240,7 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
+@[macro_inline]
 instance instFunLike : FunLike (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
@@ -345,6 +346,7 @@ namespace CoheytingHom
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingAlgebra γ] [CoheytingAlgebra δ]
 
+@[macro_inline]
 instance : FunLike (CoheytingHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
@@ -450,6 +452,7 @@ namespace BiheytingHom
 
 variable [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingAlgebra γ] [BiheytingAlgebra δ]
 
+@[macro_inline]
 instance : FunLike (BiheytingHom α β) α β where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr

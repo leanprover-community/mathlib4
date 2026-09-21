@@ -791,11 +791,10 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici
     rcases hx.out.eq_or_lt with rfl | hx
     · exact hcont
     · exact (hderiv x hx).continuousAt.continuousWithinAt
-  refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi a f'int tendsto_id) ?_
-  apply Tendsto.congr' _ (hf.sub_const _)
+  refine tendsto_nhds_unique_of_eventuallyEq
+    (intervalIntegral_tendsto_integral_Ioi a f'int tendsto_id) (hf.sub_const _) ?_
   filter_upwards [Ioi_mem_atTop a] with x hx
   have h'x : a ≤ id x := le_of_lt hx
-  symm
   apply
     intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x (hcont.mono Icc_subset_Ici_self)
       fun y hy => hderiv y hy.1
@@ -988,10 +987,9 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
     rcases hx.out.eq_or_lt with rfl | hx
     · exact hcont
     · exact (hderiv x hx).continuousAt.continuousWithinAt
-  refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Iic a f'int tendsto_id) ?_
-  apply Tendsto.congr' _ (hf.const_sub _)
+  refine tendsto_nhds_unique_of_eventuallyEq
+    (intervalIntegral_tendsto_integral_Iic a f'int tendsto_id) (hf.const_sub _) ?_
   filter_upwards [Iic_mem_atBot a] with x hx
-  symm
   apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hx
     (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
@@ -1111,7 +1109,7 @@ theorem integral_deriv_smul_comp_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
       IsPreconnected.intermediate_value_Ici isPreconnected_Ici self_mem_Ici
         (le_principal_iff.mpr <| Ici_mem_atTop _) hf hft
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
-  exact tendsto_nhds_unique (Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop a) eq) t2) t1
+  exact tendsto_nhds_unique_of_eventuallyEq t2 t1 (eventuallyEq_of_mem (Ioi_mem_atTop a) eq)
 
 @[deprecated (since := "2026-03-19")]
 alias integral_comp_smul_deriv_Ioi := integral_deriv_smul_comp_Ioi

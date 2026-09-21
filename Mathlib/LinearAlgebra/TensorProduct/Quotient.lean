@@ -274,7 +274,6 @@ noncomputable def tensorQuotientEquiv (n : Submodule B N) :
   map_smul' m x := by
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe]
     induction x with
-    | zero => simp
     | add x y hx hy => simp [hx, hy]
     | tmul x y =>
       obtain ⟨y, rfl⟩ := Submodule.Quotient.mk_surjective _ y
