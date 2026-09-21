@@ -11,7 +11,8 @@ that same commit, at
 `revisions/by-sha/<mathlib-sha>/<SCOPE>/<DEP>/<R-DEP>.jsonl`. `<DEP>` is the
 dependency, `<R-DEP>` is its revision from the manifest, and `<SCOPE>` is
 `mathlib4-master-shadow`. One mathlib commit therefore names one complete set
-of packages.
+of packages. A dispatched run can set `cache_deps` to false, which leaves the
+dependencies out of that run's mappings.
 
 ## Jobs
 
@@ -22,7 +23,8 @@ of packages.
 - `consume` fetches every package into a fresh checkout, builds against them,
   and verifies the result with `--rehash`.
 - `downstream` builds a small project that requires mathlib, from mathlib's sha
-  alone.
+  alone. It runs when the targets are `Mathlib` and the run caches
+  dependencies.
 - `report` posts a summary of the run to Zulip.
 
 ## Cache service configuration
@@ -45,8 +47,9 @@ differ in where they look for a revision file:
 
 A job that fetches writes the public read endpoints, as above. The upload job
 writes the authenticated S3 endpoints, and `LAKE_CACHE_KEY` signs its requests.
-`build_and_stage` writes a third service, `shadow-deps-prev`, which points at
-the previous run's commit and serves its dependency warm start.
+`build_and_stage` writes `shadow` and, on a warm chain, a second service,
+`shadow-deps-prev`. That one points at the previous run's commit and serves
+the dependency warm start.
 
 The split makes the dependency keys exact. A dependency's revision leaves open
 which upstreams it was built against, and a mathlib commit that bumps one
@@ -62,7 +65,7 @@ Every run publishes every package. An export costs seconds once the artifacts
 are in the local cache, and the run writes one revision file per package either
 way. The pipeline therefore skips asking the bucket what it already holds.
 
-1. `lake build Mathlib -o .lake/outputs.jsonl` builds mathlib and every
+1. `lake build <targets> -o .lake/outputs.jsonl` builds mathlib and every
    dependency, writes the artifacts into the local Lake cache, and records
    mathlib's own mappings. Lake tracks every target the build covers, whether
    it compiled that target or replayed it.
@@ -81,6 +84,9 @@ way. The pipeline therefore skips asking the bucket what it already holds.
    to `--service=shadow-deps --scope=<SCOPE>/<DEP> --rev=<R-DEP>`. Lake PUTs
    the artifacts first and the revision file last.
 
+A run whose staging tree exceeds 2 GB fails before the upload. The cap protects
+the R2 free tier and the lifecycle budget.
+
 ## Pull
 
 The `consume` job builds mathlib from the bucket alone. It sets
@@ -90,17 +96,16 @@ The `consume` job builds mathlib from the bucket alone. It sets
 2. `lake cache get --service=shadow-deps --package=<DEP> --scope=<SCOPE>/<DEP>
    --rev=<R-DEP>`, once per dependency, with the revisions from mathlib's
    manifest.
-3. `lake build Mathlib` replays both.
+3. `lake build <targets>` replays both.
 
 The `downstream` job runs the same sequence for a small project that requires
 mathlib. It holds mathlib's sha and its own manifest, and derives no scope or
 qualifier of its own.
 
-Every fetch passes `--rev`, so each one is a single exact request. Without
-`--rev`, Lake lists the package's own HEAD and up to `--max-revs` ancestors,
-default 100, then probes them in order until one has a published map. That walk
-finds nothing here: one mathlib commit pins one revision of each dependency, so
-its revision endpoint holds exactly one revision per package.
+Every fetch passes `--rev`, so each one is a single exact request. A fetch
+without `--rev` backtracks up to `--max-revs` commits, 100 by default, and
+finds nothing here: a revision endpoint holds exactly one revision per
+package.
 
 ## Storage layout
 
@@ -116,15 +121,15 @@ One bucket holds these keys:
 `lake cache get --scope=<SCOPE> --rev=<REV>` reads
 `<revisionEndpoint>/<SCOPE>/<REV>.jsonl`, which maps input hashes to artifacts,
 and downloads the `<artifactEndpoint>/<SCOPE>/<content-hash>.art` files it
-names. The workflow owns the `analysis/` prefix; Lake reads the other two.
+names. The workflow owns the `analysis/` prefix; Lake owns the other two.
 `_latest.txt` holds the sha the next run warm starts from, and
 `<mathlib-sha>.txt` holds its carryover baseline.
 
 The revision keys carry the mathlib sha and the artifact keys leave it out. An
 old commit therefore stays replayable for as long as its revision files live,
 and the artifacts stay shared. `revisions/by-sha/<mathlib-sha>/` is one prefix
-per commit, so a lifecycle rule can evict a commit as a unit. An artifact expires
-by age instead: Lake re-uploads every artifact a run uses, so an object that
+per commit, so a lifecycle rule can evict a commit as a unit. A lifecycle rule can
+expire an artifact by age instead: Lake re-uploads every artifact a run uses, so an object that
 stops being written is an object no recent run references.
 
 A toolchain bump is itself a mathlib commit, so it writes new revision keys and
@@ -142,23 +147,23 @@ where a content hash is trusted.
 
 An override run appends its toolchain slug, so it writes to
 `mathlib4-master-shadow/<toolchain-slug>` and
-`mathlib4-master-shadow/<toolchain-slug>/<DEP>`. A commit keys the bucket, and
-an override run builds one commit on a second toolchain, so without the slug
-the two lanes would write each other's revision files. The slug costs the
-override run nothing: the analysis chain is already per toolchain, so an
-override run only ever warm starts from its own lineage.
+`mathlib4-master-shadow/<toolchain-slug>/<DEP>`. An override run builds one
+commit on a second toolchain, so the slug keeps the two lanes from writing each
+other's revision files. It costs the override run nothing: the analysis chain
+is already per toolchain, so an override run only ever warm starts from its own
+lineage. "Toolchain override" below describes what a shared scope would do.
 
 The scope carries no other qualifier. It needs no pin hash, because the
 revision endpoint already names the commit that pins the whole set. A pinned
 run needs no toolchain segment, because mathlib declares `fixedToolchain`, so
 one commit means one build.
 
-`--repo=<owner>/<name>` would make Lake append the toolchain and the platform
-itself. A repo scope takes exactly one `/`, which leaves no room for the
-pipeline's prefix. `put-staged` also loads no workspace, so it could not apply
-the `fixedToolchain` and `platformIndependent` nullification that the consumer
-applies, and the two sides could disagree on the path. Every job runs on Linux,
-so the scope carries no platform segment.
+The scope is a plain string, not `--repo=<owner>/<name>`. A repo scope takes
+exactly one `/`, which leaves no room for the pipeline's prefix, and Lake
+appends the toolchain and the platform to it. `put-staged` loads no workspace,
+so it cannot apply the `fixedToolchain` and `platformIndependent` nullification
+that the consumer applies. Every job runs on Linux, so the scope carries no
+platform segment.
 
 ## Hydration
 
@@ -173,8 +178,7 @@ keys or the content that a run writes.
   reads the previous run's published set. A dependency that this run bumps is
   absent from that set and misses at once, because the lookup is exact.
 - The legacy cache, a bootstrap fallback. A run uses it only when the analysis
-  chain holds no previous run, which happens on a fresh toolchain generation of
-  the repo pin. The legacy cache is keyed to the repo pin, so only a pinned run
+  chain holds no previous run, which is the first run on a toolchain. The legacy cache is keyed to the repo pin, so only a pinned run
   uses it.
 
 ## What a full cache hit requires
@@ -191,9 +195,6 @@ that do not match, and the modules rebuild.
 - The `by-sha` revision endpoint, which pairs a dependency's revision with the
   upstreams it was built against.
 
-Everything under "Hydration" is speed. A run without those parts writes the
-same keys with the same content, and takes longer.
-
 ## Toolchain override
 
 The `toolchain_override` input, or the `LAKE_SHADOW_TOOLCHAIN_OVERRIDE`
@@ -203,13 +204,12 @@ into their checkouts, so every job runs the same lake.
 
 The lean of the override must behave like the repo pin. A Lake change,
 cherry-picked onto the lineage of the pinned release as a pr-release, is a
-valid example. Input hashes cover the toolchain, so all runs share one artifact
-scope safely.
+valid example.
 
 The analysis chain is per toolchain, under `analysis/<slug>/`. A pinned run and
 an override run therefore warm start from their own lineage, and compare
-against it. The first run on a toolchain has no lineage to start from, and
-costs one full source build of mathlib and its dependencies. A republished
+against it. The first override run on a toolchain has no lineage to start
+from, and costs one full source build of mathlib and its dependencies. A republished
 pr-release tag costs the same.
 
 The override is the one case that breaks "a commit determines its toolchain",
@@ -218,8 +218,8 @@ write one commit's keys twice, and the later run would win. The other lineage's
 next warm start would then fetch mappings that match nothing and build mathlib
 from source. That build can exceed the job timeout, and the analysis pointer
 only advances after a successful upload, so the lineage would keep reading the
-same commit and keep failing. A run pinned to an explicit `mathlib_ref` reaches
-this state directly, which is the ordinary way to compare two toolchains.
+same commit and keep failing. To compare two toolchains, dispatch both lanes
+with the same explicit `mathlib_ref`.
 
 ## Dependency skip list
 
@@ -228,7 +228,8 @@ empty: the pipeline caches all of them, proofwidgets included. proofwidgets
 commits its npm output and the Lake traces that guard the npm steps, so a build
 at a pinned revision skips npm entirely.
 
-Every per-dependency step tolerates failure. A miss, or a failed export, makes
+The warm start, the export, the upload and the fetch tolerate a per-dependency
+failure. A miss, or a failed export, makes
 that dependency build from source, and the consume health line reports it. A
 toolchain older than v4.35.0-rc1 has no `build --package` and behaves the same
 way. A dependency that sets `enableArtifactCache := false` in its own lakefile
@@ -253,6 +254,8 @@ Variables:
   `LAKE_CACHE_REVISION_ENDPOINT_PUBLIC` — the public read endpoints, for
   anonymous GETs. On R2 these use a different host than the S3 API endpoints.
   For example `https://pub-<hash>.r2.dev/<prefix>/artifacts`.
+- `MATHLIB_CACHE_BASE_URL` — optional. The legacy cache reads it during the
+  bootstrap fallback.
 - `LAKE_SHADOW_TOOLCHAIN_OVERRIDE` — optional. It sets the toolchain override
   for every run. The dispatch input takes precedence. Leave it unset to run on
   the repo pin.
