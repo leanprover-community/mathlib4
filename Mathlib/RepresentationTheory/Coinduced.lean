@@ -67,8 +67,9 @@ def coindV : Submodule k (H → A) where
 
 instance : CoeFun (coindV φ σ) (fun _ => H → A) := ⟨Subtype.val⟩
 
+variable {φ σ} in
 @[simp]
-lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
+lemma mem_coindV {f : H → A} : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
 
 /--
@@ -81,8 +82,8 @@ See also `Rep.coind` and `Representation.coind'` for variants involving the cate
 -/
 @[simps -isSimp]
 def coind : Representation k H (coindV φ ρ) where
-  toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx => (mem_coindV φ ρ _).mpr <| by
-    simp [(mem_coindV φ ρ _).mp hx, mul_assoc]
+  toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx => mem_coindV.mpr <| by
+    simp [mem_coindV.mp hx, mul_assoc]
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
@@ -250,8 +251,7 @@ noncomputable section Adjunction
 @[simps!]
 def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coind φ A) :=
   Rep.ofHom ⟨(LinearMap.pi fun h => f.hom.toLinearMap ∘ₗ Rep.ρ B h).codRestrict _ fun b =>
-    (Representation.mem_coindV φ A.ρ _).mpr <| fun g h => by
-      simpa using hom_comm_apply f g ((B.ρ h) b), fun _ ↦ by ext; simp⟩
+    A.ρ.mem_coindV.mpr <| fun g h => by simpa using hom_comm_apply f g _, fun _ ↦ by ext; simp⟩
 
 lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : B.V) (i : H) :
     (resCoindToHom φ B A f).hom c i = (Hom.hom f) ((B.ρ i) c) := rfl
