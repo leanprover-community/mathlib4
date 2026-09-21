@@ -659,6 +659,14 @@ alias coe_addMonoidHom_trans := toAddMonoidHom_trans
 /-! `RingEquiv.coe_mulEquiv_trans` and `RingEquiv.coe_addEquiv_trans` are proved above
 in higher generality -/
 
+-- TODO: remove lemma when we remove the RingHom.ofClass coercion
+@[simp]
+theorem toRingHom_trans' [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+    (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
+  rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans'
+
 @[simp]
 theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
   RingHom.ext e.apply_symm_apply
@@ -779,6 +787,7 @@ theorem toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_inj_iff := toRingHom_inj_iff
 
+-- TODO : rename lemma when we remove the RingHom.ofClass coercion
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]
 theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
@@ -793,16 +802,19 @@ abbrev toMonoidHom (e : R ≃+* S) : R →* S :=
 abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
   e.toRingHom.toAddMonoidHom
 
+-- TODO : rename lemma when we remove the RingHom.ofClass coercion
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidMom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
 
+-- TODO : rename lemma when we remove the RingHom.ofClass coercion
 /-- The two paths coercion can take to a `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
 
+-- TODO : rename lemma when we remove the RingHom.ofClass coercion
 /-- The two paths coercion can take to an `Equiv` are equivalent -/
 theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
   rfl
@@ -811,14 +823,6 @@ theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* 
 @[simp]
 theorem toRingHom_refl' : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
-
--- TODO: remove lemma when we remove the RingHom.ofClass coercion
-@[simp]
-theorem toRingHom_trans' (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
-    (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
-  rfl
-
-@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans'
 
 -- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
 @[simp]
