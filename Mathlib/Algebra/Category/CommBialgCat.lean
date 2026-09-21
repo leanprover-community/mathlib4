@@ -53,6 +53,11 @@ variable (R) in
 This is the preferred way to construct a term of `CommBialgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CommBialgCat.of R X` as `↧X`. -/
+@[app_delab CommBialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
 
@@ -115,7 +120,7 @@ instance : Inhabited (CommBialgCat R) := ⟨of R R⟩
 lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A :=
   rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-06")]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom +typeChanged (since := "2026-03-06")]
 lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| CommRing A
