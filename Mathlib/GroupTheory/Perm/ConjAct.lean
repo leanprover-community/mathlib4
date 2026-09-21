@@ -55,7 +55,6 @@ theorem cycleFactorsFinset_conj (g k : Perm α) :
 @[simp]
 theorem mem_cycleFactorsFinset_conj' (k g c : Perm α) :
     MulAut.conj k c ∈ (MulAut.conj k g).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
-  simp only [MulAut.conj_apply]
   apply mem_cycleFactorsFinset_conj g k
 
 theorem cycleFactorsFinset_conj_eq (k g : Perm α) :
