@@ -205,16 +205,22 @@ theorem continuous_kernel_tfae : List.TFAE [
     fun_prop
   tfae_finish
 
-theorem continuous_kernel_iff :
+theorem continuous_kernel_iff_continuous_kerFun :
     Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (kerFun H) :=
   (continuous_kernel_tfae H).out 1 2
 
-theorem continuous_eval_iff : Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) :=
+theorem continuous_eval_iff_continuous_kerFun :
+    Continuous (fun x : X => eval H x) ↔ Continuous (kerFun H) :=
   (continuous_kernel_tfae H).out 3 2
 
+theorem continuous_kernel_iff_continuous_eval :
+    Continuous (fun p : X × X => kernel H p.1 p.2) ↔ Continuous (fun x : X => eval H x) :=
+  (continuous_kernel_tfae H).out 1 3
+
+variable {H} in
 theorem continuous_of_continuous_kernel (h : Continuous (fun p : X × X => kernel H p.1 p.2))
     (f : H) : Continuous f :=
-  Continuous.clm_apply (((continuous_kernel_tfae H).out 1 3).mp h) continuous_const
+  Continuous.clm_apply ((continuous_kernel_iff_continuous_eval H).mp h) continuous_const
 
 end continuous
 
