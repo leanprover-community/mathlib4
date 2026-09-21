@@ -371,8 +371,8 @@ theorem linearIndependent_row_iff_isUnit {R : Type*} [Ring R] [IsArtinianRing R]
 @[deprecated (since := "2026-09-21")] alias linearIndependent_rows_iff_isUnit :=
   linearIndependent_row_iff_isUnit
 
-theorem linearIndependent_col_iff_isUnit {R : Type*} [CommRing R] [IsArtinianRing R]
-    {A : Matrix m m R} : LinearIndependent R A.col ↔ IsUnit A := by
+theorem linearIndependent_col_iff_isUnit [IsArtinianRing R] {A : Matrix m m R} :
+    LinearIndependent R A.col ↔ IsUnit A := by
   rw [← row_transpose, linearIndependent_row_iff_isUnit, isUnit_transpose]
 
 @[deprecated (since := "2026-09-21")] alias linearIndependent_cols_iff_isUnit :=
