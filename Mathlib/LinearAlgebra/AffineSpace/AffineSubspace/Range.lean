@@ -67,8 +67,8 @@ theorem range_direction_eq_linear_range : f.range.direction = f.linear.range := 
 /-- Restrict the codomain of an affine map `f` to `f.range`. -/
 def rangeRestrict : P₁ →ᵃ[R] f.range where
   toFun p := ⟨f p, p, rfl⟩
-  linear := (LinearEquiv.ofEq _ _ f.range_direction_eq_linear_range.symm).toLinearMap ∘ₗ
-    f.linear.rangeRestrict
+  linear := f.linear.codRestrict f.range.direction
+    (f.range_direction_eq_linear_range ▸ f.linear.mem_range_self)
   map_vadd' _ _ := by ext; simp [map_vadd]
 
 theorem surjective_rangeRestrict : Function.Surjective ⇑f.rangeRestrict :=
