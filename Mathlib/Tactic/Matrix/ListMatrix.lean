@@ -15,16 +15,17 @@ facts about matrix literals.
 
 ## Implementation notes
 
-The definitions in this file are intended for defining reflection certificates only and should
-not be used for any theory.
+`dotProduct` is sealed, and its expansion into the sum of products is reached only through
+`dotProduct_add_one_cons_cons`. Checking that expansion by kernel unfolding would make the kernel
+unfold `+` and `*` as well. For computable rings it then wastefully evaluates the entries, and
+for noncomputable rings it probes many nodes of opaque operations, which brings a worse constant.
 
 `ListMatrix` namespace is used to avoid accidental collision with other downstream definitions.
 
 Lean's `Array` is essentially a `List` within the kernel, so random access is slow; the `List`
-carrier is chosen for easier inductive operations.
-
-Reading an entry by position costs the kernel a walk of that length. Therefore, operations on
-this representation need to be mindful of traversing the structure in an efficient order.
+carrier is chosen for easier inductive operations. Reading an entry by position costs the kernel a
+walk of that length. Therefore, operations on this representation need to be mindful of traversing
+the structure in an efficient order.
 -/
 
 public section
