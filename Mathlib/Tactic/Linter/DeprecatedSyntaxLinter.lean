@@ -182,11 +182,6 @@ partial def hasMaxPrec : Syntax → Bool
       if h : args.size = 1 then args[0].isAtom else false
   | _ => false
 
-/-- Return `true` if the syntax is a `do` block. -/
-def isDoBlock : Syntax → Bool
-  | .node _ kind _ => (kind matches ``Parser.Term.do)
-  | _ => false
-
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
 def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
@@ -235,8 +230,9 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         else
           rargs
     | ``«term_<|_» =>
-      if h : 3 ≤ args.size then
-        if hasMaxPrec args[2] || isDoBlock args[2] then
+      if h : args.size = 3 then
+        if (hasMaxPrec args[2] || args[2].isOfKind ``Parser.Term.do) &&
+          (hasMaxPrec args[0] || args[0].isOfKind ``Parser.Term.app) then
           -- Trick: manually set the position info of `<|` in order to remove preceding whitespace.
           let info := match args[0].getTailPos?, args[1].getTailPos? with
             | some pos, some tailPos => .synthetic pos tailPos
