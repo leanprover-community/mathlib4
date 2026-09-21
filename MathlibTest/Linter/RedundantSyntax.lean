@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+import Mathlib.Init
 
 section
 set_option linter.style.redundantSyntax true
@@ -90,6 +90,17 @@ Note: This linter can be disabled with `set_option linter.style.redundantSyntax 
 -/
 #guard_msgs (positions := true) in
 example := id <| @ℕ
+
+/--
+warning: Try this:
+   ̵<̵|̵
+
+`Type*` can be parsed as a function argument, so the pipe operator `<|` can be omitted.
+
+Note: This linter can be disabled with `set_option linter.style.redundantSyntax false`
+-/
+#guard_msgs in
+example := outParam <| Type*
 
 -- We currently don't lint against `<| fun` or `<| ¬`.
 example : Nat → Nat := id <| fun x ↦ x
