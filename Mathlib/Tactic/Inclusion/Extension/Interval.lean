@@ -372,19 +372,13 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
   unfold Interval.pow
   split_ifs with h0 hsign hneg
   · simp [h0, Interval.singleton, Interval.map, map_one]
-  · have hl : 0 ≤ I.lb → 0 ≤ lb' := by
-      intro h
-      apply WithBot.le_unbotD
-      simpa [map_zero] using f.monotone.withBot_map h
-    have hpow : lb' ^ n ≤ x ^ n ∧ x ^ n ≤ ub' ^ n := by
-      grind [Odd.pow_le_pow, pow_le_pow_left₀]
+  · have hl (h : 0 ≤ I.lb) : 0 ≤ lb' := by
+      simpa [map_zero] using WithBot.le_unbotD (f.monotone.withBot_map h)
+    have hpow : lb' ^ n ≤ x ^ n ∧ x ^ n ≤ ub' ^ n := by grind [Odd.pow_le_pow, pow_le_pow_left₀]
     exact ⟨map_le_of_unbotD (fun a => map_pow a n) hpow.1,
       le_map_of_untopD (fun a => map_pow a n) hpow.2⟩
-  · have hu : ub' ≤ 0 := by
-      apply WithTop.untopD_le
-      simpa [map_zero] using f.monotone.withTop_map hneg
-    have hpow : ub' ^ n ≤ x ^ n ∧ x ^ n ≤ lb' ^ n := by
-      grind [Even.pow_le_pow_of_nonpos]
+  · have hu : ub' ≤ 0 := by simpa [map_zero] using WithTop.untopD_le (f.monotone.withTop_map hneg)
+    have hpow : ub' ^ n ≤ x ^ n ∧ x ^ n ≤ lb' ^ n := by grind [Even.pow_le_pow_of_nonpos]
     exact ⟨map_le_of_unbotD (fun a => map_pow a n) hpow.1,
       le_map_of_untopD (fun a => map_pow a n) hpow.2⟩
   · have hn : Even n := by grind
@@ -394,8 +388,7 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
       apply WithTop.coe_le_coe.mpr
       rw [map_pow, f.monotone.map_max, map_neg, ← hn.pow_abs x]
       apply pow_le_pow_left₀ (abs_nonneg x)
-      exact abs_le'.mpr
-        ⟨hx.2.trans (le_max_right _ _), (neg_le_neg hx.1).trans (le_max_left _ _)⟩
+      exact abs_le'.mpr ⟨hx.2.trans (le_max_right _ _), (neg_le_neg hx.1).trans (le_max_left _ _)⟩
 
 /-- Check if `r x y` is false is implied by `x ∈ I` and `y ∈ J` -/
 def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
