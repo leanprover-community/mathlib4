@@ -5,6 +5,7 @@ Authors: Shing Tak Lam
 -/
 module
 
+public import Mathlib.GroupTheory.Congruence.Defs
 public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.CompactOpen
@@ -378,6 +379,20 @@ protected theorem piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
   .pi fun i ↦ .comp (F i) (.refl <| .eval i)
 
 end Homotopic
+
+variable (X)
+
+/-- Being homotopic defines a congruence relation. -/
+def Monoid.con : Con C(X, X) where
+  r := Homotopic
+  iseqv := ⟨.refl, fun f ↦ .symm f, fun f ↦ .trans f⟩
+  mul' := fun ⟨f⟩ ⟨g⟩ ↦ ⟨f.comp g⟩
+
+open scoped ContinuousMap.Monoid in
+/-- The monoid of continuous self-maps up to homotopy. -/
+abbrev _root_.MappingClassMonoid : Type _ := (Monoid.con X).Quotient
+
+variable {X}
 
 /--
 The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate maps satisfy the predicate

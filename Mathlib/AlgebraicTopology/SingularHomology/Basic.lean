@@ -53,6 +53,31 @@ def singularHomologyFunctor [CategoryWithHomology C] : C ⥤ TopCat.{w} ⥤ C :=
   singularChainComplexFunctor C ⋙
     (Functor.whiskeringRight _ _ _).obj (HomologicalComplex.homologyFunctor _ _ n)
 
+section TopologicalSpace
+
+variable {C} [CategoryWithHomology C] (X : Type w) [TopologicalSpace X] (c : C)
+
+/-- The `n`th singular homology of `X` with coefficients in `c`. -/
+abbrev singularHomology : C :=
+  ((singularHomologyFunctor C n).obj c).obj (.of X)
+
+variable {X c}
+
+open scoped ContinuousMap.Monoid
+
+/-- Continuous self-maps act on the singular homology. -/
+def _root_.ContinuousMap.toEndSingularHomology : C(X, X) →* End (singularHomology n X c) where
+  toFun f := ((singularHomologyFunctor C n).obj c).map (TopCat.ofHom f)
+  map_one' := CategoryTheory.Functor.map_id ..
+  map_mul' _ _ := Functor.map_comp ..
+
+/-- Homeomorphisms act on the singular homology. -/
+def _root_.Homeomorph.toAutSingularHomology : (X ≃ₜ X) →* Aut (singularHomology n X c) :=
+  (Aut.unitsEndEquivAut _).toMonoidHom.comp <|
+    (Units.map <| ContinuousMap.toEndSingularHomology n).comp (ContinuousMap.Monoid.ofHomeomorph X)
+
+end TopologicalSpace
+
 section Adjunction
 
 open Limits _root_.SSet
