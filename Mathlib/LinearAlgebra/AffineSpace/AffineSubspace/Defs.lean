@@ -244,8 +244,8 @@ theorem ofAffineSubspace_toAffineSubspace {p : AffineSubspace k V} (hp : 0 ∈ p
     ↑(ofAffineSubspace hp) = p := rfl
 
 @[simp]
-theorem toAffineSubspace_ofAffineSubspace {p : Submodule k V} (hp : 0 ∈ p) :
-    ↑(ofAffineSubspace (p := p) hp) = p := rfl
+theorem toAffineSubspace_ofAffineSubspace {p : Submodule k V} :
+    ofAffineSubspace (mem_toAffineSubspace.mpr p.zero_mem) = p := rfl
 
 instance : CanLift (AffineSubspace k V) (Submodule k V) toAffineSubspace (0 ∈ ·) where
   prf _ hp := ⟨ofAffineSubspace hp, ofAffineSubspace_toAffineSubspace hp⟩
