@@ -34,11 +34,15 @@ variable (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
 
 include h₁₂ h₁₃ h₂₃ in
 theorem volume_eq_height_mul : t.volume = 2⁻¹ * t.height i₁ * dist (t.points i₂) (t.points i₃) := by
-  let e : Fin 3 ≃ Fin 3 :=
-    .symm <| List.Nodup.getEquivOfForallMemList [i₁, i₂, i₃] (by grind) (by grind)
-  let s := t.reindex e
+  let e : Fin 3 ≃ Fin 3 := List.Nodup.getEquivOfForallMemList [i₁, i₂, i₃] (by grind) (by grind)
+  let s := t.reindex e.symm
   suffices s.volume = 2⁻¹ * s.height 0 * dist (s.points 1) (s.points 2) by
-    simpa [e, s] using this
+    simp only [volume_reindex, height_reindex, Equiv.symm_symm,
+      Function.comp_apply, reindex_points, s, e] at this
+    rw [List.Nodup.getEquivOfForallMemList_apply] at this -- For some reason simp doesn't work
+    rw [List.Nodup.getEquivOfForallMemList_apply] at this
+    rw [List.Nodup.getEquivOfForallMemList_apply] at this
+    simpa using this
   simp [s.volume_eq 0, volume_eq_dist, faceOpposite_point_eq_point_succAbove]
 
 include h₁₂ h₁₃ h₂₃ in
