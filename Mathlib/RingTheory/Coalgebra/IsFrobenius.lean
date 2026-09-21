@@ -55,8 +55,8 @@ In texts, this is what the Frobenius equations are usually referred to as.
 * `Coalgebra.IsFrobenius.instFinite`: a coalgebra satisfying the Frobenius equations is finite
 * `Coalgebra.IsFrobenius.instProjective`: a coalgebra satisfying the Frobenius equations is
   projective
-* `Bialgebra.algebraOfId_bijective_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the Frobenius
-  equations, `R` is isomorphic to `A`
+* `Bialgebra.algebraOfId_bijective_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the
+  Frobenius equations, `R` is isomorphic to `A`
 
 ## TODO
 
