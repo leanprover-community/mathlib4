@@ -6,10 +6,7 @@ Authors: Alastair Irving, Terry Tao, Ruben Van de Velde
 module
 
 import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
-import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 

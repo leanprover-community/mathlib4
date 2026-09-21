@@ -9,7 +9,6 @@ public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.ToAdditive
 
 /-!
 # Definitions about filters in topological spaces

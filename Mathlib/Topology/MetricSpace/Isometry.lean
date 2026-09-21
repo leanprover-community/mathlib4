@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Data.Fintype.Sum
-import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!

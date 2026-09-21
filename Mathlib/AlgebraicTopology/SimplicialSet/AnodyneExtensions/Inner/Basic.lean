@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
-import Mathlib.CategoryTheory.SmallObject.Basic
 
 /-!
 # Inner anodyne extensions

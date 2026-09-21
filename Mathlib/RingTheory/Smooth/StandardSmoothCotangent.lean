@@ -6,9 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Etale.Basic
 
 /-!

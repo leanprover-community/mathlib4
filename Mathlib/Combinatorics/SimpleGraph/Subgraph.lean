@@ -6,7 +6,6 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph

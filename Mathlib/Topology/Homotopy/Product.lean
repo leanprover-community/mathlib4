@@ -5,7 +5,6 @@ Authors: Praneeth Kolichala
 -/
 module
 
-import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Homotopy.Path
 
 /-!

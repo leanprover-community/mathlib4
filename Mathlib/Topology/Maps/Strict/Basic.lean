@@ -5,10 +5,7 @@ Authors: Ziyan Wei, Anatole Dedecker
 -/
 module
 
-import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Homeomorph.Quotient
-import Mathlib.Topology.Constructions
-import Mathlib.Data.Setoid.Basic
 import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!

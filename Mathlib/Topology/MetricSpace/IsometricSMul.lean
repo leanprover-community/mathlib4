@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.MetricSpace.Isometry

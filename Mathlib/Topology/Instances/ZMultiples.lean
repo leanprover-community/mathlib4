@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Multiples of a real number form a discrete subgroup of `ℝ`

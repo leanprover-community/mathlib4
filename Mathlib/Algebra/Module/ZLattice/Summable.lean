@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Analysis.PSeries
 import Mathlib.LinearAlgebra.Dual.Lemmas
 

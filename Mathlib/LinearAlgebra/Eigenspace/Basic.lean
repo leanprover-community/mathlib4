@@ -6,9 +6,7 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas

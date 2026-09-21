@@ -6,8 +6,6 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Logic.Function.DependsOn
 
 /-!
 # Update a function on a set of values

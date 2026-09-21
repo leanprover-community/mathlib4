@@ -5,7 +5,6 @@ Authors: Jz Pan
 -/
 module
 
-import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 

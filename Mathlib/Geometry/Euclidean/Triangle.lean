@@ -7,8 +7,6 @@ module
 
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Tactic.IntervalCases
 
 /-!
 # Triangles

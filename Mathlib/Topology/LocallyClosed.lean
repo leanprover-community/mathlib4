@@ -5,7 +5,6 @@ Authors: Andrew Yang, Anatole Dedecker
 -/
 module
 
-import Mathlib.Topology.Constructions
 public import Mathlib.Topology.NhdsWithin
 import Mathlib.Tactic.TFAE
 

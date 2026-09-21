@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Data.List.GetD
 import Mathlib.Algebra.Group.Int.Defs

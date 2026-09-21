@@ -6,7 +6,6 @@ Authors: Hannah Fechtner
 module
 
 import Mathlib.Data.List.Lex
-import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.NormNum
 
 /-!

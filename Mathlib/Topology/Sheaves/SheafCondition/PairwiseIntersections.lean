@@ -6,9 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.Pairwise
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!

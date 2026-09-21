@@ -5,9 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Subfunctor.Image
-import Mathlib.Tactic.CategoryTheory.CategoryStar
 
 /-!
 

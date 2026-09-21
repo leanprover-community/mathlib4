@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!

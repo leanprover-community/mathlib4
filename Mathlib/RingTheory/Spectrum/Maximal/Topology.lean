@@ -5,7 +5,6 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!

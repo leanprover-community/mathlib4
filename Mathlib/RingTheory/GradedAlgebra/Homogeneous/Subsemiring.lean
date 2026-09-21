@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Fangming Li
 -/
 module
 
-import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!

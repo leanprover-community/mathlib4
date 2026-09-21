@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 

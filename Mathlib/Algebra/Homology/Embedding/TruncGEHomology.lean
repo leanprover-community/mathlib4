@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncGE
 import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
-import Mathlib.Algebra.Homology.QuasiIso
 
 /-! # The homology of a canonical truncation
 

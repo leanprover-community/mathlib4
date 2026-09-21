@@ -8,11 +8,8 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.Fuglede
-import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Normed.Algebra.Basic
 public import Mathlib.Topology.ContinuousMap.Units
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Topology.ContinuousMap.Ideals
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 

@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.SimpleModule.Basic

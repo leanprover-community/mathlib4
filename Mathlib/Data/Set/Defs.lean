@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 module
 
-import Batteries.Tactic.Alias
 public import Batteries.Util.ExtendedBinder
 public import Mathlib.Tactic.SetNotationForOrder
 

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Elements
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 

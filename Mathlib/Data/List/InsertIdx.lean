@@ -5,7 +5,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
 /-!

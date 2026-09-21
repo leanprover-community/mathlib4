@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!

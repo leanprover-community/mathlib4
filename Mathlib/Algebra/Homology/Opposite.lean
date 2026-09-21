@@ -5,10 +5,7 @@ Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!

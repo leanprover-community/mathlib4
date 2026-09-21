@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.Data.Set.Card
 public import Mathlib.RingTheory.Ideal.Over
 
 /-! # Lemmas about `primesOver` in quotient rings. -/

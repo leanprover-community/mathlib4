@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Analysis.Convex.PartitionOfUnity
 
 /-!

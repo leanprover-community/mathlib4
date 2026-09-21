@@ -5,7 +5,6 @@ Authors: Dexin Zhang
 -/
 module
 
-import Mathlib.Basic.UnivLE
 public import Mathlib.SetTheory.Ordinal.Rank
 public import Mathlib.SetTheory.ZFC.Basic
 

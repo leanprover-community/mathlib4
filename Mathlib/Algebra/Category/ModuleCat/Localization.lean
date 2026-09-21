@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.RingTheory.Localization.Module

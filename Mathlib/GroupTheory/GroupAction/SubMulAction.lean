@@ -6,8 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom

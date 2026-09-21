@@ -5,7 +5,6 @@ Authors: Alex Keizer
 -/
 module
 
-import Mathlib.Data.Vector.Basic
 public import Mathlib.Data.Vector.Snoc
 
 /-!

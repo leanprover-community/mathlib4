@@ -11,8 +11,6 @@ import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.ZMod.Defs
 import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.RingTheory.FreeCommRing
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!

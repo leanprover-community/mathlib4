@@ -5,10 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.ZMod
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
-import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Quotienting out a free `ℤ`-module

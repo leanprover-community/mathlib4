@@ -5,9 +5,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-import Mathlib.Data.Finset.Basic
 public import Mathlib.ModelTheory.Syntax
-import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics

@@ -6,9 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Sets.Compacts
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 

@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
 public import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Multisets

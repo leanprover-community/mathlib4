@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.Prod.Lex.Hom
 
 /-!

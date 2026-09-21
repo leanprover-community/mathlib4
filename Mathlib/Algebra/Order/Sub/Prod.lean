@@ -6,8 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Products of `OrderedSub` types.

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 import Mathlib.CategoryTheory.Comma.LocallySmall

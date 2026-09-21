@@ -5,7 +5,6 @@ Authors: Kevin Buzzard, Antoine Labelle
 -/
 module
 
-import Mathlib.Algebra.Module.Shrink
 import Mathlib.Basic.UnivLE
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 

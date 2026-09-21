@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.DFinsupp.Interval
 public import Mathlib.Data.DFinsupp.Multiset
-import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.Lattice.Nat
 import Mathlib.Algebra.Order.Group.Nat
 

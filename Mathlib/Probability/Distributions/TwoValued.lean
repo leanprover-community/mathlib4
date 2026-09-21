@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.CondVar
 
 

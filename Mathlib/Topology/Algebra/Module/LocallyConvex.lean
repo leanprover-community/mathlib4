@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Topology
-import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Connected.LocallyPathConnected
 import Mathlib.Analysis.Convex.PathConnected
 

@@ -5,10 +5,8 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
-import Mathlib.Tactic.GCongr
 import Mathlib.RingTheory.Polynomial.IsIntegral
 
 /-!

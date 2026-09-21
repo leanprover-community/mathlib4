@@ -9,7 +9,6 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Data.ENat.Lattice
 
 /-!
 # Iterated derivatives of a function

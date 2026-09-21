@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Locally uniform limits of holomorphic functions

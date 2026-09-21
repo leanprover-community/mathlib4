@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.MetricSpace.IsometricSMul
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Hausdorff distance

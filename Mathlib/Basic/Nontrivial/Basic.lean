@@ -5,10 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Basic.Unique
 public import Mathlib.Data.Prod.Basic
-import Mathlib.Logic.Function.Basic
 public import Mathlib.Order.Defs.LinearOrder
 
 /-!

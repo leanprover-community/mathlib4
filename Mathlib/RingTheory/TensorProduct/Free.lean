@@ -5,9 +5,7 @@ Authors: Kim Morrison, Johan Commelin
 -/
 module
 
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!

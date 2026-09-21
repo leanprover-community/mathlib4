@@ -8,7 +8,6 @@ module
 import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
-import Mathlib.Order.Fin.Basic
 
 /-!
 # Sorting algorithms on lists

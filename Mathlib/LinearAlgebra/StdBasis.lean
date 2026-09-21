@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # The standard basis

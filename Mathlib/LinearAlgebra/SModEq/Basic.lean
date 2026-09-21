@@ -5,10 +5,8 @@ Authors: Kenny Lau
 -/
 module
 
-import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!

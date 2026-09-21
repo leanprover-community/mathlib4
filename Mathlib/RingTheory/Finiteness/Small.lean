@@ -5,15 +5,8 @@ Authors: Antoine Chambert-Loir, Maria-Inés de Frutos-Fernandez
 -/
 module
 
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.FiniteType
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.DFinsupp.Small
 
 /-! # Smallness properties of modules and algebras -/
 

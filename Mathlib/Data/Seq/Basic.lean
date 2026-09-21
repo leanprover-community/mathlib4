@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Vasilii Nesterov
 module
 
 public import Mathlib.Data.Seq.Defs
-import Mathlib.Data.ENat.Basic
 public import Mathlib.Tactic.ENatToNat
 import Mathlib.Tactic.ApplyFun
 

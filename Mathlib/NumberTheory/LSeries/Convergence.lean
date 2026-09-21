@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Data.EReal.Basic
 public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!

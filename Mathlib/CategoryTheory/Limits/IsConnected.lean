@@ -5,8 +5,6 @@ Authors: Paul Reichert
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.HomCongr
 

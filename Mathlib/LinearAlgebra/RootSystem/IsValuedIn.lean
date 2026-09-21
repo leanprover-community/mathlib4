@@ -6,7 +6,6 @@ Authors: Scott Carnahan, Oliver Nash
 module
 
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 

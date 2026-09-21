@@ -6,10 +6,7 @@ Authors: Shing Tak Lam
 module
 
 import Mathlib.Basic.Finite.Sum
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!

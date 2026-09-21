@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.Adjunction.Parametrized
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 
 /-!

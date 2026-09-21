@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Probability.Martingale.Basic
 
 /-!

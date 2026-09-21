@@ -6,9 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Basic.NNReal.Basic
-import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Metrizable uniform spaces

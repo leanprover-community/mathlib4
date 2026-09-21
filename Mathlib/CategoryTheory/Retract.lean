@@ -5,7 +5,6 @@ Authors: Jack McKoen
 -/
 module
 
-import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.EpiMono
 
 /-!

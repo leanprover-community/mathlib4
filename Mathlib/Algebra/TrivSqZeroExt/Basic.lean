@@ -5,8 +5,6 @@ Authors: Kenny Lau, Eric Wieser, Antoine Chambert-Loir, María-Inés de Frutos-F
 -/
 module
 
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Order.Group.Nat

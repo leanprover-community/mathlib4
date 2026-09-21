@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
-import Mathlib.Probability.Notation
 public import Mathlib.Probability.Notation
 
 /-!

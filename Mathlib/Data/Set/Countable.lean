@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Basic.Countable.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Logic.Equiv.List
 public import Mathlib.Order.Preorder.Finite
 

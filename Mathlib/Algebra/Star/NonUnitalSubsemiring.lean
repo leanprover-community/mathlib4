@@ -5,8 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Algebra.Star.Center
 

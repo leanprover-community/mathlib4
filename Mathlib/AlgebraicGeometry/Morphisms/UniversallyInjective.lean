@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.PurelyInseparable
-import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Universally injective morphism

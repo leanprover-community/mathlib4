@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Ring
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic

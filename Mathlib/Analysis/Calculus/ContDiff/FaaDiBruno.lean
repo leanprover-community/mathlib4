@@ -7,8 +7,6 @@ module
 
 import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
-import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 # Faa di Bruno formula

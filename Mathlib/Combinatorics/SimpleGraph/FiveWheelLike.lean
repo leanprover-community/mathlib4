@@ -5,8 +5,6 @@ Authors: John Talbot, Lian Bremner Tattersall
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 import Mathlib.Tactic.Linarith
 /-!

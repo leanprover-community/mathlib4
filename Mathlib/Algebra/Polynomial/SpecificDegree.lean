@@ -5,7 +5,6 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!

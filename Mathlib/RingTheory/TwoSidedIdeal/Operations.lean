@@ -5,13 +5,8 @@ Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
 module
 
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Congruence.Opposite
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals

@@ -6,9 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Gauss's Lemma

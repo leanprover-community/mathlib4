@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
-import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
 # Right homotopies in model categories

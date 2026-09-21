@@ -5,7 +5,6 @@ Authors: Luke Kershaw
 -/
 module
 
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Triangulated.Basic
 
 /-!

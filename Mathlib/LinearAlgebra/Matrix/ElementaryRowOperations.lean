@@ -6,7 +6,6 @@ Authors: Junye Ji, Joseph Qian, Veer Shukla, Dhruv Bhatia, Zheng Wu
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Swap
-import Mathlib.LinearAlgebra.Matrix.Transvection
 
 /-!
 # Elementary row operations

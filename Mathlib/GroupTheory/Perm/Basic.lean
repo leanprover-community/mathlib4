@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.End
-import Mathlib.Tactic.Common
 import Mathlib.Data.Set.Function
 
 /-!

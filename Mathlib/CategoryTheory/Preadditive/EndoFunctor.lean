@@ -5,7 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Endofunctor.Algebra
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 

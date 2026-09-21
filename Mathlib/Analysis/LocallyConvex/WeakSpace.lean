@@ -5,9 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces

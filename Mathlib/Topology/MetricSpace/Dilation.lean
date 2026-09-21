@@ -5,10 +5,8 @@ Authors: Hanting Zhang
 -/
 module
 
-import Mathlib.Topology.MetricSpace.Antilipschitz
 public import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Data.FunLike.Basic
 
 /-!
 # Dilations

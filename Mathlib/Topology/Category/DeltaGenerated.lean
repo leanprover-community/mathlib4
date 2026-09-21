@@ -5,8 +5,6 @@ Authors: Ben Eltschig, Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 public import Mathlib.Topology.Convenient.Category
 

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Opposites

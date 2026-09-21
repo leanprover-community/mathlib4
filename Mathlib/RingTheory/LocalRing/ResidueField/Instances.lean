@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.FieldTheory.Separable
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 
 import Mathlib.RingTheory.Finiteness.Quotient
 

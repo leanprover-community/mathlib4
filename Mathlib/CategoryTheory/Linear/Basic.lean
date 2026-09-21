@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!

@@ -5,11 +5,9 @@ Authors: Anne Baanen, Paul Lezeau
 -/
 module
 
-import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.Order.Atoms
-import Mathlib.Order.Hom.Bounded
 /-!
 
 # Chains of divisors

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Equalizers in Type

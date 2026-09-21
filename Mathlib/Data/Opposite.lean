@@ -5,7 +5,6 @@ Authors: Kim Morrison, Reid Barton, Simon Hudon, Kenny Lau
 -/
 module
 
-import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Logic.Small.Defs
 
 /-!

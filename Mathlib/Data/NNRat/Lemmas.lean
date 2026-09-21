@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Field.Rat
 public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Rat.Lemmas

@@ -6,7 +6,6 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 module
 
 import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.GroupTheory.Commutator.Basic
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.Index
 

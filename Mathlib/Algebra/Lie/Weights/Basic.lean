@@ -6,10 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Ring.Divisibility.Lemmas
-import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.Algebra.Lie.Engel
 public import Mathlib.LinearAlgebra.Eigenspace.Pi
-import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.FreeModule.PID
 

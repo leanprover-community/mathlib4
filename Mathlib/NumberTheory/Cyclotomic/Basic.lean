@@ -6,8 +6,6 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.Galois.Abelian
 
 /-!

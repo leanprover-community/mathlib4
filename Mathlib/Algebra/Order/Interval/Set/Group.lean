@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Logic.Pairwise
 
 /-! # Lemmas about arithmetic operations and intervals -/
 

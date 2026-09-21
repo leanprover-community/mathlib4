@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Center.Preadditive
 

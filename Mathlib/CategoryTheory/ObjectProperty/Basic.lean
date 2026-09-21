@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.Order.Basic
 

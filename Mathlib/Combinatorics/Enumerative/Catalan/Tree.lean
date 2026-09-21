@@ -5,10 +5,7 @@ Authors: Julian Kuelshammer
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Central
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 

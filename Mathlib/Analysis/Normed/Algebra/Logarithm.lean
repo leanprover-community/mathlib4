@@ -6,7 +6,6 @@ Authors: Kevin Buzzard
 module
 
 import Mathlib.Algebra.Algebra.TransferInstance
-import Mathlib.Algebra.Star.Module
 public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!

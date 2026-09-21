@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.Basic
-import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
 # Presentable objects are stable under retracts

@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Analysis.Complex.CauchyIntegral
 

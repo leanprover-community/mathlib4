@@ -6,7 +6,6 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
-import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 

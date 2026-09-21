@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Stars and bars

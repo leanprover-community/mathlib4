@@ -5,9 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Data.Set.Image
 public import Mathlib.Topology.Bases
-import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Compactness.NhdsKer
 
 /-!

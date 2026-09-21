@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Ideal.MonicSpan
 import Mathlib.RingTheory.KrullDimension.Polynomial
 public import Mathlib.RingTheory.RegularLocalRing.Defs

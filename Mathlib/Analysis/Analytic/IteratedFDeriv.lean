@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-import Mathlib.Data.Fintype.Perm
 
 /-!
 # The iterated derivative of an analytic function

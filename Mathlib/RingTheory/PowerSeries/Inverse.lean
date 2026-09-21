@@ -10,8 +10,6 @@ public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 

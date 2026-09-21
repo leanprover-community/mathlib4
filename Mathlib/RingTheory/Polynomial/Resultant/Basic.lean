@@ -5,11 +5,8 @@ Authors: Kenny Lau, Anne Baanen, Andrew Yang
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Resultant of two polynomials

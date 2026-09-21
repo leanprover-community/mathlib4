@@ -5,7 +5,6 @@ Authors: Anatole Dedecker, Etienne Marion
 -/
 module
 
-import Mathlib.Basic.Rel
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!

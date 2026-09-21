@@ -5,9 +5,6 @@ Authors: Michael Lee
 -/
 module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Data.Fintype.Basic
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!

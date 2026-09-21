@@ -5,10 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Base change of cotangent spaces

@@ -6,12 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.GroupTheory.GroupAction.Pointwise
-import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
-import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Von Neumann Boundedness

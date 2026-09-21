@@ -10,7 +10,6 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients

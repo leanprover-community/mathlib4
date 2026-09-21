@@ -6,7 +6,6 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Submodule.Order
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Equiv

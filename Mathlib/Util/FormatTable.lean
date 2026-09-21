@@ -6,7 +6,6 @@ Authors: Bolton Bailey
 module
 
 public meta import Mathlib.Data.String.Defs
-import Mathlib.Init
 
 /-!
 # Format Table

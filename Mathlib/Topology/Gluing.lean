@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.GlueData
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 

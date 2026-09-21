@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Option.Basic
 import Batteries.Tactic.Congr
 public import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Contrapose
 
 /-!
 

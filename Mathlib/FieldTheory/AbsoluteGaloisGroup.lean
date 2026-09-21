@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 

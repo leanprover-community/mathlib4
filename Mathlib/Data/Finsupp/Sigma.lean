@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Data.Finsupp.Basic
-import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Embedding a finitely supported function into a sigma type summand

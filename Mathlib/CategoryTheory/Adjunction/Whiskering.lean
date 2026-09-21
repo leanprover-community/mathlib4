@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 module
 
-import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!

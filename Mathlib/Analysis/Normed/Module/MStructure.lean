@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
 
 /-!

@@ -6,7 +6,6 @@ Authors: Joël Riou, Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Pseudofunctors from strict bicategory

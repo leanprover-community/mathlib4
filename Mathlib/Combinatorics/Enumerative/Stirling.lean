@@ -6,9 +6,6 @@ Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Stirling Numbers

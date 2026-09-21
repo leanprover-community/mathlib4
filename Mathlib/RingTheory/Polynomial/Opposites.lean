@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 module
 
-import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Tactic.NoncommRing
 

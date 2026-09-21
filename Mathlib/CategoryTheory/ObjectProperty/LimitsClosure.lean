@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 

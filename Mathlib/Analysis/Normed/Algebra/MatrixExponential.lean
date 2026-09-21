@@ -7,10 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Matrix.Normed
-import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.Topology.UniformSpace.Matrix
 public import Mathlib.Topology.Instances.Matrix
 

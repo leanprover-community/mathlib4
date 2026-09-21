@@ -6,7 +6,6 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 module
 
 public import Mathlib.Data.Nat.PadicValNat
-import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Factors
 
 /-!

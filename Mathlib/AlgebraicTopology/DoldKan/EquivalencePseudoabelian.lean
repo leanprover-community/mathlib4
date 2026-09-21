@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 public import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
-import Mathlib.Tactic.SuppressCompilation
 
 /-!
 

@@ -5,11 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Analysis.LocallyConvex.SeparatingDual
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Topology.Algebra.Algebra.Equiv
 
 
 /-!

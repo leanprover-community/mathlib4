@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Atoms
-import Mathlib.Data.SetLike.Basic
 
 /-!
 # Rooted trees

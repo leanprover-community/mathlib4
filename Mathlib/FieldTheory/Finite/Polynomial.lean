@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!

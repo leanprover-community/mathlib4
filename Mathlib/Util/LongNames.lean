@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Lean.Name
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Lean.Elab.Command
-import Mathlib.Init
 
 /-!
 # Commands `#long_names` and `#long_instances`

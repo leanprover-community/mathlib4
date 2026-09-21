@@ -6,8 +6,6 @@ Authors: Jujian Zhang, Eric Wieser
 module
 
 import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 public import Mathlib.RingTheory.Localization.AtPrime.Basic

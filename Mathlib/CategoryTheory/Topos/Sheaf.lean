@@ -5,10 +5,8 @@ Authors: Edward van de Meent
 -/
 module
 
-import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
-import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
 

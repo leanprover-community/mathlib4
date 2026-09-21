@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
-import Mathlib.Order.WithBot
 
 /-!
 # Pivots of a matrix

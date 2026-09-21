@@ -7,10 +7,8 @@ module
 
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Nat
-import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.Prime.Pow
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Prime powers

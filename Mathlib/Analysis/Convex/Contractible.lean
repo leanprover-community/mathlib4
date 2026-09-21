@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Convex.Star
 public import Mathlib.Topology.Homotopy.Contractible
 
 /-!

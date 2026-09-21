@@ -10,12 +10,9 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Localization.Free
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.RingTheory.TensorProduct.Free
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.RingTheory.Support
 
 /-!
 

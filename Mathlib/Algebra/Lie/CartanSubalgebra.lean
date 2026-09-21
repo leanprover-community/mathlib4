@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Cartan subalgebras

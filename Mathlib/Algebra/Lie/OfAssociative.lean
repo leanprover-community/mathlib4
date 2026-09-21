@@ -5,10 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.Lie.Subalgebra
 public import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras

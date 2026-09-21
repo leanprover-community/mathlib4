@@ -5,10 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.DirectSum.Internal
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!

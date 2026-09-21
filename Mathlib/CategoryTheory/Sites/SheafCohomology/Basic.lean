@@ -5,11 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.CategoryTheory.Adjunction.Additive

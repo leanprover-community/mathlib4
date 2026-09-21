@@ -6,7 +6,6 @@ Authors: A. M. Berns
 module
 
 public import Mathlib.Analysis.Convex.Between
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Continuity
 
 /-!

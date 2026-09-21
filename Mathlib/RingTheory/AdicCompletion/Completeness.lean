@@ -6,12 +6,9 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
-import Mathlib.RingTheory.PowerSeries.Basic
 
 import Mathlib.RingTheory.AdicCompletion.Topology
-import Mathlib.Algebra.DirectSum.Finsupp
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals

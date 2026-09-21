@@ -5,9 +5,6 @@ Authors: Martin Dvorak
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Data.Fin.VecNotation
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!

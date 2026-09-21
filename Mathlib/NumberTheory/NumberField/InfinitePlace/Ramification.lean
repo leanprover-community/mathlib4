@@ -5,9 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
 /-!
 # Ramification of infinite places of a number field

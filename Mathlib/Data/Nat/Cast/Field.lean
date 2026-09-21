@@ -5,9 +5,7 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 module
 
-import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.Common
 public import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 

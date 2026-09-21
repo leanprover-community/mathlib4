@@ -5,7 +5,6 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 module
 
-import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Set.Finite.Basic
 

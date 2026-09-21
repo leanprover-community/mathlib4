@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner

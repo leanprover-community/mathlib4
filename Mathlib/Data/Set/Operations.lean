@@ -11,7 +11,6 @@ public import Mathlib.Data.SProd
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Push.Attr
 
 import Aesop.BuiltinRules
 import Aesop.Frontend.Tactic

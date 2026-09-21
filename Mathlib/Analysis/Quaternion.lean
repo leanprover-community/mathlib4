@@ -6,9 +6,7 @@ Authors: Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Algebra.Quaternion
-import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Quaternions as a normed algebra

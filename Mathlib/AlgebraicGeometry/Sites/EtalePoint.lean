@@ -8,9 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 import Mathlib.CategoryTheory.Functor.TypeValuedFlat
-import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 

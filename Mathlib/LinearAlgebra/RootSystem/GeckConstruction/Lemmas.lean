@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Chain
 public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 
 /-!

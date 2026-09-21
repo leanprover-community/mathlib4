@@ -5,9 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!

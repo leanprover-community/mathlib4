@@ -10,9 +10,6 @@ public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring
 
 /-!
 # Small tripling implies small powers

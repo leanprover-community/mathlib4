@@ -6,7 +6,6 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.FiniteSupport
 public import Mathlib.Algebra.Order.Ring.Defs

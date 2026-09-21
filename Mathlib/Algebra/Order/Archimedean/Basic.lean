@@ -5,10 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Archimedean.Defs
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Order.Directed
 public import Mathlib.Data.Rat.Floor
 
 import Mathlib.Algebra.Order.Group.Basic

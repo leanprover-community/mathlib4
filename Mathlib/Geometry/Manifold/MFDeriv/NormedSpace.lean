@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces

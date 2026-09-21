@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
 /-!

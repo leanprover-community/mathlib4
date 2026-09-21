@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.EpiMono
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.

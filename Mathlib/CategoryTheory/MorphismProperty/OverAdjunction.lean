@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!

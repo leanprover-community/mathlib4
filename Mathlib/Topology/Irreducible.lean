@@ -5,11 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
-import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
-import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Topology.WithTopology
 
 /-!

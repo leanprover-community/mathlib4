@@ -5,7 +5,6 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Units.Fintype
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin

@@ -6,9 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.Radical.Basic
 
 /-!

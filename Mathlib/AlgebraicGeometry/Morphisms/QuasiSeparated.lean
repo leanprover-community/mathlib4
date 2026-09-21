@@ -5,11 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
-import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Sheaves.CommRingCat
 
 /-!
 # Quasi-separated morphisms

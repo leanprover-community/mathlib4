@@ -5,9 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.PrincipalIdealDomain
 

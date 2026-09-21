@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.Pointwise.Stabilizer
 public import Mathlib.Combinatorics.Additive.Convolution
 public import Mathlib.NumberTheory.Real.GoldenRatio
-import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Qify
 

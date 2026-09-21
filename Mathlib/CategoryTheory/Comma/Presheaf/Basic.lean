@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.HomCongr
 public import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Computation of `Over A` for a presheaf `A`

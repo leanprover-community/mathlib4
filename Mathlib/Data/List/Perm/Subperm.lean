@@ -5,9 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Basic
-import Batteries.Tactic.Trans
 public import Mathlib.Data.List.Perm.Basic
 
 /-!

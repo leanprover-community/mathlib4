@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
 

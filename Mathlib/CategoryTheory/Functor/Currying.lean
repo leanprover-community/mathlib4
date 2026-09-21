@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Products.Basic
 
 /-!

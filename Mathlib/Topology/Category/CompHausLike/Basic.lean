@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 /-!
 
 # Categories of Compact Hausdorff Spaces

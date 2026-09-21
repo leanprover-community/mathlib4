@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 public import Mathlib.CategoryTheory.Localization.Triangulated
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
-import Mathlib.CategoryTheory.Shift.Localization
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! # Triangulated subcategories

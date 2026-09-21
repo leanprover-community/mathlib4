@@ -6,8 +6,6 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Basic.Sign.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 

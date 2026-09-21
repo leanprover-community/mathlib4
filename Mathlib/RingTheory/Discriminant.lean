@@ -5,7 +5,6 @@ Authors: Riccardo Brasca
 -/
 module
 
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Trace.Basic
 

@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Order.Bornology
 
 /-!
 # The reals are equipped with their order bornology

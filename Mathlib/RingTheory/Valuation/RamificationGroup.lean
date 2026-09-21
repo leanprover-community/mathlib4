@@ -5,7 +5,6 @@ Authors: Michail Karatarakis
 -/
 module
 
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!

@@ -12,7 +12,6 @@ import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Fixed field under a group action.

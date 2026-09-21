@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 import Mathlib.Topology.ShrinkingLemma
 

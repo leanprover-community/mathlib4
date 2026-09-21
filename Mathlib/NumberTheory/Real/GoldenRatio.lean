@@ -5,9 +5,7 @@ Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.LinearRecurrence
-import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Int.Fib.Basic
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.NatFib

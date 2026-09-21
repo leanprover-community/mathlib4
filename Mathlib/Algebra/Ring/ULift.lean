@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Tactic.PPWithUniv
 
 /-!
 # `ULift` instances for ring

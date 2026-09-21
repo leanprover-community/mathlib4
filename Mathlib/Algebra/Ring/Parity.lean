@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Function.Iterate
 
 /-!
 # Even and odd elements in rings

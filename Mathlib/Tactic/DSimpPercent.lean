@@ -6,7 +6,6 @@ Authors: Robin Carlier, Jovan Gerbscheid
 module
 
 public import Mathlib.Init
-import Lean.Elab.Tactic.Simp
 
 /-!
 `dsimp% […] t` runs `dsimp […]` on term `t`.

@@ -5,9 +5,7 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.LinearAlgebra.SModEq.Pointwise
-import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 
 /-!

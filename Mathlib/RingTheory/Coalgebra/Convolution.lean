@@ -5,10 +5,7 @@ Authors: Yaël Dillies, Michał Mrugała, Yunzhou Xie
 -/
 module
 
-import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.WithConv
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.Tactic.SuppressCompilation

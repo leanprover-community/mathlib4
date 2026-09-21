@@ -5,10 +5,7 @@ Authors: Joël Riou, Sophie Morel
 -/
 module
 
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Additive
-import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 
 /-!

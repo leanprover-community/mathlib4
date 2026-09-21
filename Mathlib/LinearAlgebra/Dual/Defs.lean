@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Dual vector spaces

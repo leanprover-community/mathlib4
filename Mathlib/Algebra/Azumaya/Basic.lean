@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Azumaya.Defs
 import Mathlib.Algebra.Central.End
 public import Mathlib.Algebra.Central.TensorProduct
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Basic properties of Azumaya algebras

@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 module
 
-import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!

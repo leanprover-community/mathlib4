@@ -5,10 +5,8 @@ Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.InnerProductSpace.Defs
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Tactic.MoveAdd
 

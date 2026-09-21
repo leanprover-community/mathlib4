@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Algebra.GCDMonoid.Basic

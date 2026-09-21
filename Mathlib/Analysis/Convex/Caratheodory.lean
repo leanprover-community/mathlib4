@@ -6,8 +6,6 @@ Authors: Johan Commelin, Kim Morrison
 module
 
 public import Mathlib.Analysis.Convex.Combination
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Carathéodory's convexity theorem

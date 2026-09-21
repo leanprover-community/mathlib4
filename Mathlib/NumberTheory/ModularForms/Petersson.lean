@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!

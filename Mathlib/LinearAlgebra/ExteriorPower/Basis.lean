@@ -6,10 +6,8 @@ Authors: Sophie Morel, Daniel Morrison
 module
 
 public import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 import Mathlib.RingTheory.Finiteness.Subalgebra
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Constructs a basis for exterior powers

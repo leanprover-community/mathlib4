@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Topology.Separation.Basic
 

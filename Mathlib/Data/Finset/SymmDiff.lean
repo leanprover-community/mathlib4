@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Image
-import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Symmetric difference of finite sets

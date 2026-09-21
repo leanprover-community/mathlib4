@@ -6,7 +6,6 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Group.Basic
-import Mathlib.Order.Basic
 public import Mathlib.Order.Monotone.Defs
 
 /-!

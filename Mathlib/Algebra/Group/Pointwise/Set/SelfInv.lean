@@ -5,7 +5,6 @@ Authors: Justus Springer
 -/
 module
 
-import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-!

@@ -5,7 +5,6 @@ Authors: Xavier Généreux, María Inés de Frutos-Fernández
 -/
 module
 
-import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.SkewMonoidAlgebra.Single
 import Mathlib.Algebra.SkewMonoidAlgebra.Support
 /-!

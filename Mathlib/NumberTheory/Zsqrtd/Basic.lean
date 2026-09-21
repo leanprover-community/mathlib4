@@ -5,10 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.Ring.Associated
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.Ring
 public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]

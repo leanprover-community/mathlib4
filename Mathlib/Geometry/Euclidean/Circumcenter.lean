@@ -5,10 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.DeriveFintype
 
 /-!

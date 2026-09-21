@@ -6,7 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.Cardinal.Order
 import Mathlib.Tactic.AdaptationNote

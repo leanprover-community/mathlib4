@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.Logic.Relation
 public import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.ToDual
 
 /-!
 # Shapes of homological complexes

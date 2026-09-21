@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.Algebra.Homology.ShortComplex.Limits
 import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!

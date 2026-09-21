@@ -6,8 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Data.Set.UnionLift
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!

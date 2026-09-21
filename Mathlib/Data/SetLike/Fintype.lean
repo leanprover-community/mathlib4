@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Fintype.Powerset
 
 /-!

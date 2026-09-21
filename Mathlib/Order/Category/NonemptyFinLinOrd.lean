@@ -6,10 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Order.Category.FinPartOrd
 public import Mathlib.Order.Category.LinOrd
 

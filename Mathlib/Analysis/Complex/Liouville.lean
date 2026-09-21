@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Liouville's theorem

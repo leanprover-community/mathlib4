@@ -5,7 +5,6 @@ Authors: Andreas Swerdlow, Kexing Ying
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 

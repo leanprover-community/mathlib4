@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 import Mathlib.Tactic.Peel
-import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Asymptotics in a Topological Vector Space

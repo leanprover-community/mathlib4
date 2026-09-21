@@ -6,10 +6,8 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Data.ENat.Pow
-import Mathlib.Data.ULift
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Finite Cardinality Functions

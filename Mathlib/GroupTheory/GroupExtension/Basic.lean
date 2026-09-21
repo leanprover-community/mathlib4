@@ -6,8 +6,6 @@ Authors: Yudai Yamazaki
 module
 
 public import Mathlib.GroupTheory.GroupExtension.Defs
-import Mathlib.GroupTheory.SemidirectProduct
-import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.Tactic.Group
 
 /-!

@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Topology.Coherent
-import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!

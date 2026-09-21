@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Universally closed morphism

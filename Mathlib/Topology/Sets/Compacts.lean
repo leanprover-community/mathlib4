@@ -5,7 +5,6 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.QuasiSeparated
 
 /-!

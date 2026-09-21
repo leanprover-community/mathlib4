@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 import Mathlib.RepresentationTheory.Submodule
 

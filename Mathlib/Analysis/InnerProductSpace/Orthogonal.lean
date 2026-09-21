@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
-import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
 # Orthogonal complements of submodules

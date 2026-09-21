@@ -6,11 +6,9 @@ Authors: Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.Sum.Order
 public import Mathlib.Order.IsNormal
 public import Mathlib.Order.Shrink
 public import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals

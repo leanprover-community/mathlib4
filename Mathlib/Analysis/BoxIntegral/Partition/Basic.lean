@@ -5,9 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Option
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`

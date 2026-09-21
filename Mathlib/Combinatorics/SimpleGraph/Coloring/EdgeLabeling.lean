@@ -5,9 +5,7 @@ Authors: Bhavik Mehta, Olivia Röhrig
 -/
 module
 
-import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Edge labelings

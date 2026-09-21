@@ -5,9 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Algebra.Algebra.StrictPositivity
-import Mathlib.Tactic.ContinuousFunctionalCalculus
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Algebra.Star.Real
 public import Mathlib.Topology.ContinuousMap.StarOrdered

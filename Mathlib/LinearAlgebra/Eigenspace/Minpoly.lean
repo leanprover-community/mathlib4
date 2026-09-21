@@ -6,7 +6,6 @@ Authors: Alexander Bentkamp
 module
 
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic

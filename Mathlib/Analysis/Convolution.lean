@@ -7,9 +7,7 @@ module
 
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Function.Holder
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Group.Prod
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!

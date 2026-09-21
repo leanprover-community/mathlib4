@@ -5,14 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.LinearAlgebra.Prod
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 
 /-!

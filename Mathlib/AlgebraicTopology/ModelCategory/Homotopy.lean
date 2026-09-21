@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
-import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 
 /-!

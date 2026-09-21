@@ -5,8 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Algebra.Algebra.Bilinear
 

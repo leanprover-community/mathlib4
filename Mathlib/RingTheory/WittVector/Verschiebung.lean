@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!

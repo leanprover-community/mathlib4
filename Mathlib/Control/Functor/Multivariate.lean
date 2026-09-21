@@ -5,9 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 module
 
-import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.TypeVec
-import Mathlib.Logic.Equiv.Defs
 
 /-!
 

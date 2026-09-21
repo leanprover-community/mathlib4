@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # `C^n` sections

@@ -6,7 +6,6 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.RingTheory.WittVector.Complete
-import Mathlib.RingTheory.WittVector.Teichmuller
 
 /-!
 # Teichmuller Series

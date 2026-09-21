@@ -7,7 +7,6 @@ module
 
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
-import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 
 /-!
 # Equalizers of ind-objects

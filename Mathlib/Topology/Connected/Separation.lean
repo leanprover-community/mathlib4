@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.TotallyDisconnected
 /-!
 

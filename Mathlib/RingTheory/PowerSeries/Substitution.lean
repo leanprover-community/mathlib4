@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
-import Mathlib.Data.Finsupp.Weight
 import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Substitutions in power series

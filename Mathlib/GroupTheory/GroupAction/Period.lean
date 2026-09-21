@@ -5,9 +5,7 @@ Authors: Emilie Burgun
 -/
 module
 
-import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Period of a group action

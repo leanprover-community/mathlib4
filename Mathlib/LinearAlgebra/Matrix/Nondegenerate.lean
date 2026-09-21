@@ -5,8 +5,6 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!

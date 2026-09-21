@@ -6,7 +6,6 @@ Authors: Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Analysis.Complex.Exponential
-import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Exponential

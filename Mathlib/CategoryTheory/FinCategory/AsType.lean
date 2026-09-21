@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite categories are equivalent to categories in `Type 0`.

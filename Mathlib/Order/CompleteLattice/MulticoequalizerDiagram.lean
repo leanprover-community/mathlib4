@@ -5,12 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Order.CompleteLattice.Lemmas
-import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.CommSq
 import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.SetLike
 
 /-!

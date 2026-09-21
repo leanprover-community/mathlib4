@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Faces
-import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 

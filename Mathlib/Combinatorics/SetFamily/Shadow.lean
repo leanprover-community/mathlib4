@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Grade
 public import Mathlib.Data.Finset.Sups
-import Mathlib.Logic.Function.Iterate
 
 /-!
 # Shadows

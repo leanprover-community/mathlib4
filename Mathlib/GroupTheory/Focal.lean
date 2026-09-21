@@ -6,9 +6,7 @@ Authors: Boyang Hu
 module
 
 import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.GroupTheory.Sylow
 public import Mathlib.GroupTheory.Transfer
-import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # Focal Subgroup Theorem

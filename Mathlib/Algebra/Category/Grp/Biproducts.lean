@@ -5,11 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # The category of abelian groups has finite biproducts

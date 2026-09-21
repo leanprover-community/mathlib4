@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Prime.Lemmas
-import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.

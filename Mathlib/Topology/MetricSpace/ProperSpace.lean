@@ -8,7 +8,6 @@ module
 import Mathlib.Topology.MetricSpace.Pseudo.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
-import Mathlib.Topology.Order.IsLUB
 
 /-! # Proper spaces
 

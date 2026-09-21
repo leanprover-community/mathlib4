@@ -6,7 +6,6 @@ Authors: Kevin H. Wilson, Alastair Irving
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Data.Set.Function
 
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 

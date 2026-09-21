@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Multiset.Antidiagonal
 
 import Mathlib.Data.Finsupp.Order
 

@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Domain of definition of the partial left adjoint

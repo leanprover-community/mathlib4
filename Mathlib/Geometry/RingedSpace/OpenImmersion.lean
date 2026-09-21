@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!

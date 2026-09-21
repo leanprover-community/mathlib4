@@ -5,13 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
 
 /-!

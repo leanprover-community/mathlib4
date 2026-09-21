@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Finset.Basic
 public import Mathlib.Order.Interval.Finset.Defs
 
 /-! # Antidiagonal with values in general types

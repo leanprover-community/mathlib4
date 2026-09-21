@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
 

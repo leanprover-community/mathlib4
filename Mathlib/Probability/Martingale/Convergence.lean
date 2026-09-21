@@ -5,8 +5,6 @@ Authors: Kexing Ying
 -/
 module
 
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.Probability.Martingale.Upcrossing
 
 /-!

@@ -6,9 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.GroupTheory.Index
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.RingTheory.Finiteness.Defs
 
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.ZMod.QuotientGroup

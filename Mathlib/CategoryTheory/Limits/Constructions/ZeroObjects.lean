@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
 /-!

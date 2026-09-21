@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 module
 
-import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!

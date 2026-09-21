@@ -5,7 +5,6 @@ Authors: Stefan Kebekus
 -/
 module
 
-import Mathlib.Algebra.Order.WithTop.Untop0
 import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Topology.LocallyFinsupp

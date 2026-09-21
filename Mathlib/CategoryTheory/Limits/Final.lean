@@ -5,16 +5,11 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-import Mathlib.CategoryTheory.Category.Cat.AsSmall
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors

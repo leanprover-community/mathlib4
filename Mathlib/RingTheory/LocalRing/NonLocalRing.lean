@@ -5,8 +5,6 @@ Authors: Michal Staromiejski
 -/
 module
 
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
 

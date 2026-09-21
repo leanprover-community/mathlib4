@@ -5,11 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.Algebra.GCDMonoid.Multiset
-import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
-import Mathlib.Data.List.Rotate
 public import Mathlib.GroupTheory.Perm.Closure
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
 public import Mathlib.Tactic.NormNum.GCD

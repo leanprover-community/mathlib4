@@ -6,8 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 

@@ -6,9 +6,7 @@ Authors: Iván Renison
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Data.Fin.Parity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 

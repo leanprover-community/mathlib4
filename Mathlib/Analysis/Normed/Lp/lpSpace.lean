@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!

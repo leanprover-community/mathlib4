@@ -5,8 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Composition
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.PolynomialAlgebra
 

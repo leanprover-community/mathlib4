@@ -6,7 +6,6 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.PiLex
 public import Mathlib.RingTheory.HahnSeries.Multiplication

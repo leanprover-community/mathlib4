@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Trace
 

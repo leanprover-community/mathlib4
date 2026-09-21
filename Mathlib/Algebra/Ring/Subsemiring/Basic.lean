@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Ring.Action.Subobjects
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.GroupTheory.Submonoid.Centralizer
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic

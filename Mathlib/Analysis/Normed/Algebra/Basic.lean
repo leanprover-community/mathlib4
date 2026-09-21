@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 module
 
-import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 

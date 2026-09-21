@@ -8,7 +8,6 @@ module
 import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.LocalRing.Quotient
-import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 

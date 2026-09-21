@@ -5,13 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Prime ideals in ℕ and ℤ

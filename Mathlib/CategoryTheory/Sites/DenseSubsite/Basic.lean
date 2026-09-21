@@ -5,10 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.CoverLifting
-import Mathlib.CategoryTheory.Sites.CoverPreserving
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 
 /-!

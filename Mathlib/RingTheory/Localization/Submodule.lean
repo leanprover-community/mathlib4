@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.EssentialFiniteness
 
 /-!

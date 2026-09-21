@@ -5,7 +5,6 @@ Authors: David Ledvinka
 -/
 module
 
-import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.Independence.InfinitePi
 
 /-!

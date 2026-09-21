@@ -5,9 +5,6 @@ Authors: Alvaro Belmonte, Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.Data.ULift
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Adjunction.Basic
 

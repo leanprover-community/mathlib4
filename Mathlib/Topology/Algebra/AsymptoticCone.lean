@@ -7,7 +7,6 @@ module
 
 import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Convex.Topology
-import Mathlib.Topology.Algebra.Group.Torsor
 
 /-!
 # Asymptotic cone of a set

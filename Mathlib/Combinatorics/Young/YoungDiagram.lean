@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
 
 /-!

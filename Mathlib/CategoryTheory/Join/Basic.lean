@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Products.Basic
 
 /-!

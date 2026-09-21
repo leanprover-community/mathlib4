@@ -5,7 +5,6 @@ Authors: Weiyi Wang
 -/
 module
 
-import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Module.LinearMap.Rat
 public import Mathlib.Algebra.Order.Module.HahnEmbedding
 public import Mathlib.Analysis.RCLike.Basic

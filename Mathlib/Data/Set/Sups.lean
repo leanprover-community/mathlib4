@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Data.Set.NAry
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
 

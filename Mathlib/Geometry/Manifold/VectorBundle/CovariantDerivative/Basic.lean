@@ -6,7 +6,6 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 module
 
 import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.VectorBundle.Hom

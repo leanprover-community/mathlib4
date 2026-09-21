@@ -6,9 +6,7 @@ Authors: Ralf Stephan
 module
 
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Exp
-import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!

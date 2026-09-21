@@ -5,11 +5,8 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
-import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Lex
-import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.UpperLower.Basic
-import Mathlib.Order.WellFounded
 
 /-!
 # Initial and principal segments

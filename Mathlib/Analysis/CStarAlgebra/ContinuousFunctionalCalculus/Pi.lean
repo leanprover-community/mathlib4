@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Algebra.Algebra.Spectrum.Pi
-import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # The continuous functional calculus on product types
 

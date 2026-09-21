@@ -5,9 +5,7 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!

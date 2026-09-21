@@ -5,8 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Extension.Presentation.Submersive
-import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic

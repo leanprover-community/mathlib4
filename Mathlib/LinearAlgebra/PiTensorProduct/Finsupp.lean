@@ -5,7 +5,6 @@ Authors: Daniel Morrison
 -/
 module
 
-import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
 public import Mathlib.RingTheory.PiTensorProduct
 

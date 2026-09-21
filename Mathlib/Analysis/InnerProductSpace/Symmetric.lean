@@ -5,9 +5,7 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 

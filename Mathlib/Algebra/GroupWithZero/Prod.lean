@@ -6,8 +6,6 @@ Authors: Eric Wieser, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!

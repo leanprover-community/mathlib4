@@ -5,15 +5,9 @@ Authors: Mario Carneiro, Chris Hughes
 -/
 module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.PowerBasis
-import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!

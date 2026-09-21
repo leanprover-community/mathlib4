@@ -6,7 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
 

@@ -6,8 +6,6 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.Expand
 
 /-!

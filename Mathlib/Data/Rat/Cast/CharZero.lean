@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Data.Rat.Cast.Defs
 
 /-!

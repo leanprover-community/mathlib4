@@ -5,10 +5,7 @@ Authors: Vilim Lendvaj
 -/
 module
 
-import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Tactic.Simps
 public import Mathlib.Control.Basic
 
 /-!

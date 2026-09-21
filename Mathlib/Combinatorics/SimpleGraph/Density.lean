@@ -5,11 +5,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Ring

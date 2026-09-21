@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
-import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Lemmas about sharply smaller regular cardinals

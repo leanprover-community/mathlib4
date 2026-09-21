@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Kernel.Basic
 import Mathlib.Tactic.Peel
-import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Independence of families of sets with respect to a kernel and a measure

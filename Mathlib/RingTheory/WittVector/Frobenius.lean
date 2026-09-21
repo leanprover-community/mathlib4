@@ -6,9 +6,6 @@ Authors: Johan Commelin
 module
 
 import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!

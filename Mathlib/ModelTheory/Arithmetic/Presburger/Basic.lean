@@ -5,7 +5,6 @@ Authors: Dexin Zhang
 -/
 module
 
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Module.NatInt
 public import Mathlib.ModelTheory.Semantics
 

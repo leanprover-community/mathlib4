@@ -6,8 +6,6 @@ Authors: Jujian Zhang, Yunzhou Xie
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!

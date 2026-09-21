@@ -6,10 +6,7 @@ Authors: Heather Macbeth, Michał Świętek
 module
 
 public import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
-import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Order.Group.End
-import Mathlib.Order.RelIso.Basic
 
 /-!
 # Tautological action by relation automorphisms

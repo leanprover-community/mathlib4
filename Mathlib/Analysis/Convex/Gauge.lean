@@ -7,7 +7,6 @@ module
 
 import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.RCLike.Basic
 

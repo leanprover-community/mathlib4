@@ -6,9 +6,6 @@ Authors: Kim Morrison
 module
 
 import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.RepresentationTheory.Semisimple
 
 /-!

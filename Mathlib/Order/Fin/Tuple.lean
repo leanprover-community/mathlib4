@@ -5,9 +5,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 module
 
-import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.PiLex
 public import Mathlib.Order.Interval.Set.Defs
 

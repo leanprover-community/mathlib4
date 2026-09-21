@@ -7,7 +7,6 @@ module
 
 import Mathlib.Algebra.GroupWithZero.Units.Fintype
 import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 

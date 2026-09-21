@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 
 /-!

@@ -5,9 +5,7 @@ Authors: Jz Pan
 -/
 module
 
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Ring.Opposite
 
 /-!
 

@@ -6,9 +6,6 @@ Authors: Rémy Degenne, Markus Himmel, Lorenzo Luccioli, Alessio Rondelli, Etien
 module
 
 public import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Set.Card
-import Mathlib.Topology.EMetricSpace.Diam
-import Mathlib.Topology.MetricSpace.MetricSeparated
 public import Mathlib.Topology.MetricSpace.Cover
 
 /-!

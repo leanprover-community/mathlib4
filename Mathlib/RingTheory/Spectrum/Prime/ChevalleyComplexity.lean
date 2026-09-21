@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 module
 
-import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Polynomial.CoeffMem
 import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet

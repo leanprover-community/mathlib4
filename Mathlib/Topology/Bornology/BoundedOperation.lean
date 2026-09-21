@@ -5,8 +5,6 @@ Authors: Kalle Kytölä
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!

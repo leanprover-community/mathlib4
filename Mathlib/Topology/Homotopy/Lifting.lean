@@ -5,12 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Topology.Covering.Quotient
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.UnitInterval
 
 /-!
 # The homotopy lifting property for covering maps

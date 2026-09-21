@@ -6,8 +6,6 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.RingTheory.Congruence.Opposite
 
 /-!

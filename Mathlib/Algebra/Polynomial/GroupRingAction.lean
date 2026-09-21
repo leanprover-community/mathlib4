@@ -7,9 +7,7 @@ module
 
 import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!

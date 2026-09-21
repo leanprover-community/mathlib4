@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Over
 
 /-!

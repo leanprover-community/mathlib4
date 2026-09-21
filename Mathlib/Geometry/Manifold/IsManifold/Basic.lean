@@ -6,11 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)

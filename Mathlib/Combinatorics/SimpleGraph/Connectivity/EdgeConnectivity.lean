@@ -6,7 +6,6 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
 
 /-!
 # Edge Connectivity

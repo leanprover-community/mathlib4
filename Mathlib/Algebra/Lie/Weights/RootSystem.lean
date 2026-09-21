@@ -5,11 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Lie.Weights.Killing
-import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.LinearAlgebra.RootSystem.Basic
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!

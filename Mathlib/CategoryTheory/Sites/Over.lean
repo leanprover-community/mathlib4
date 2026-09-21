@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Functor.Flat
 
 /-! # Localization
 

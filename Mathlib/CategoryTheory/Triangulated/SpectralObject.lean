@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.ComposableArrows.One
-import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 

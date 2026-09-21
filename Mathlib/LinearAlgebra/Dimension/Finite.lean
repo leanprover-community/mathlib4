@@ -6,10 +6,6 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Conditions for rank to be finite

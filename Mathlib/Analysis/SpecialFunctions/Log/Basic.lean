@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Real logarithm

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Invertibility of factorials

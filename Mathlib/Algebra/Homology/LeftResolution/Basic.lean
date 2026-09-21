@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!

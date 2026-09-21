@@ -12,7 +12,6 @@ public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
 import Batteries.Logic
-import Batteries.Tactic.Trans
 
 /-!
 # Relation closures

@@ -9,7 +9,6 @@ public meta import Mathlib.Tactic.Basic
 public import Mathlib.Order.Filter.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
-import Mathlib.Tactic.Basic
 
 /-!
 # The `peel` tactic

@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Tactic.NormNum.GCD
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Control.Monad.Basic
 public import Mathlib.Control.Monad.Cont
-import Mathlib.Control.Monad.Writer
 public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Logic.Equiv.Functor
 import Mathlib.Control.Lawful

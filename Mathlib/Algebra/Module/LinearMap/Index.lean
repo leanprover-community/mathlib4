@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 import Mathlib.Algebra.Exact.Sequence
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!

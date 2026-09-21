@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.LiminfLimsup

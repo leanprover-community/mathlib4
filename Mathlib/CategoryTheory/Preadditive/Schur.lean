@@ -5,10 +5,8 @@ Authors: Markus Himmel, Kim Morrison
 -/
 module
 
-import Mathlib.Algebra.Group.Ext
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!

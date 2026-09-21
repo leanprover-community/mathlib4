@@ -5,7 +5,6 @@ Authors: Jireh Loreaux, Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Commute
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.NNRat

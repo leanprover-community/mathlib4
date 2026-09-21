@@ -5,9 +5,6 @@ Authors: Violeta Hernández Palacios, Aaron Anderson
 -/
 module
 
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Antichain
 public import Mathlib.Order.OrderIsoNat
 
 /-!

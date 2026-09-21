@@ -5,12 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Sigma.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!

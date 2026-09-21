@@ -5,11 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 public import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!

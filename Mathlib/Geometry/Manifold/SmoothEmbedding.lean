@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Immersion
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-! # Smooth embeddings
 

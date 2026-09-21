@@ -7,10 +7,7 @@ module
 
 import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.MvPowerSeries.Trunc
 public import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.TopologicallyNilpotent
-import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.UniformRing
 
 /-! # Evaluation of multivariate power series

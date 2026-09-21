@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Basic.ENNReal.Action
-import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Algebra
 
 /-!

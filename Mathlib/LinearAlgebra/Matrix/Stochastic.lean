@@ -5,9 +5,6 @@ Authors: Steven Herbert
 -/
 module
 
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Analysis.Convex.Basic
 public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.PEmptyInstances
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!

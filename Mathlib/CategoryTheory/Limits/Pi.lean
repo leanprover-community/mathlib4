@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Pi.Basic
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!

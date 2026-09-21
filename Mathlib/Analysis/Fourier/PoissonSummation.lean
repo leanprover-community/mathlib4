@@ -5,11 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 public import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Geometry.RingedSpace.SheafedSpace
-import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Ringed spaces

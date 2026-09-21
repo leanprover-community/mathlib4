@@ -12,8 +12,6 @@ import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Fin.Basic
 public import Mathlib.Order.Nat
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Successors and predecessors of naturals

@@ -5,9 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 

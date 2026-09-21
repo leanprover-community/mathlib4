@@ -8,7 +8,6 @@ module
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 import Mathlib.Data.Fintype.Shrink
 
 /-!

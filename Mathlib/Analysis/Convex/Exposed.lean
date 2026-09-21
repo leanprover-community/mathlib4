@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Exposed sets

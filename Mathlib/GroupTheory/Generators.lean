@@ -6,7 +6,6 @@ Authors: Hang Lu Su
 module
 
 public import Mathlib.GroupTheory.Finiteness
-import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # Group generators as data

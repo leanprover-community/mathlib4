@@ -6,9 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # The weak operator topology

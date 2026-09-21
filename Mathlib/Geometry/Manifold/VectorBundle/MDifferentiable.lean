@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 module
 
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Differentiability of functions in vector bundles

@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Coskeletal simplicial objects

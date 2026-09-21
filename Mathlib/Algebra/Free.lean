@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Util.CompileInductive
 

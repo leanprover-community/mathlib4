@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!

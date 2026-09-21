@@ -5,8 +5,6 @@ Authors: Aaron Anderson, Jalex Stark, Eric Wieser
 -/
 module
 
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.PowerBasis
 
 /-!

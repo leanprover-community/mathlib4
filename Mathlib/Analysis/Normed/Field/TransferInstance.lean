@@ -5,7 +5,6 @@ Authors: Salvatore Mercuri
 -/
 module
 
-import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Data.EReal.Operations

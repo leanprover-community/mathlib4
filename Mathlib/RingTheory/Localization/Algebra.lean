@@ -5,10 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
 public import Mathlib.RingTheory.PolynomialAlgebra
 

@@ -6,9 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Sequences
 
 /-!

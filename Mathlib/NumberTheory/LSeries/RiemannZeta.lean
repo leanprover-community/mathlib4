@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 import Mathlib.Analysis.PSeriesComplex
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definition of the Riemann zeta function

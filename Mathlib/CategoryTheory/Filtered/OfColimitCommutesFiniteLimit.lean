@@ -5,7 +5,6 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.Yoneda
 

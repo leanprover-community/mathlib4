@@ -6,7 +6,6 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.Homology.AlternatingConst
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.RepresentationTheory.Coinvariants

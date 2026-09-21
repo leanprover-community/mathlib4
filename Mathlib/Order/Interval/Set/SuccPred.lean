@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.SuccPred.Basic
 
 /-!

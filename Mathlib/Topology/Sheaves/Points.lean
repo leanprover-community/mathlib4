@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-import Mathlib.Topology.Sets.Opens
 public import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.Topology.Sheaves.Presheaf
 

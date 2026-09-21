@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Normed.Field.UnitBall
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The circle

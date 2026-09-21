@@ -5,8 +5,6 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
 module
 
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 
 /-!

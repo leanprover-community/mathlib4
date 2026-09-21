@@ -5,8 +5,6 @@ Authors: Kevin Buzzard, Richard M. Hill
 -/
 module
 
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Derivation.Basic

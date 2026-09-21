@@ -6,9 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # The site induced by a morphism property

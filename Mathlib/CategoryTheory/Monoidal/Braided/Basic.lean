@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.CategoryTheory.CommSq
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!

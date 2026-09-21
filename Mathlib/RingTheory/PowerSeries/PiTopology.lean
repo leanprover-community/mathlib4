@@ -6,11 +6,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.Trunc
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-! # Product topology on power series
 

@@ -6,9 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagema
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Induction on polynomials

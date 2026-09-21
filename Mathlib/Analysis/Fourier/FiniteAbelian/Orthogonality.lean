@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Expect
-import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Analysis.RCLike.Inner
 
 /-!

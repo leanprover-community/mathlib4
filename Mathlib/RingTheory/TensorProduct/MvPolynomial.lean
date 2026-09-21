@@ -5,11 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 public import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 

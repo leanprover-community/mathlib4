@@ -5,9 +5,7 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
-import Mathlib.Logic.Relation
 public import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations

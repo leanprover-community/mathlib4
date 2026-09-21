@@ -6,7 +6,6 @@ Authors: Riccardo Brasca
 module
 
 import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.Algebra.Group.Nat.Range

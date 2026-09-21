@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Yoneda
 public import Mathlib.Algebra.Category.Grp.Preadditive
 
 /-!

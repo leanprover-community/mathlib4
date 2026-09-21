@@ -7,7 +7,6 @@ module
 
 public meta import Lean.Elab.Tactic.Simp
 import Mathlib.Init
-import Lean.Elab.Tactic.Simp
 
 /-! # `simp_intro` tactic -/
 

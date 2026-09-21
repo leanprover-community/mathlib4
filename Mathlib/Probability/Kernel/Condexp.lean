@@ -5,9 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.CondDistrib
-import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Kernel associated with a conditional expectation

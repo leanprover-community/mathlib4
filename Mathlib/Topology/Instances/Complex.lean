@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
 /-!

@@ -6,12 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Congruence relations and ring homomorphisms

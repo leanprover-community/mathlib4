@@ -5,10 +5,7 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 module
 
-import Mathlib.AlgebraicGeometry.Gluing
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
-import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
 # The 1-hypercover of a glue data

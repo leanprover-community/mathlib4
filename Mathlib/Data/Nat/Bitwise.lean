@@ -5,15 +5,12 @@ Authors: Markus Himmel, Alex Keizer
 -/
 module
 
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Common
 import Batteries.Data.Nat.Bitwise
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 

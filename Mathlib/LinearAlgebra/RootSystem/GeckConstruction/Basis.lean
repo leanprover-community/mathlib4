@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Base
-import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.CartanExists  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Lie.Weights.IsSimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple

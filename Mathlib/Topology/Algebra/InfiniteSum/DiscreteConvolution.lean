@@ -5,12 +5,8 @@ Authors: Fengyang Wang
 -/
 module
 
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Order.Antidiag.Prod
-import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Data.Set.MulAntidiagonal
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.GroupTheory.GroupAction.Ring

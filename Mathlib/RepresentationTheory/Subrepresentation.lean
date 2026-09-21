@@ -6,7 +6,6 @@ Authors: FLT Project
 module
 
 public import Mathlib.RepresentationTheory.Basic
-import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Subrepresentations

@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos—Fernández
 -/
 module
 
-import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Congruence.Hom
 import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.DividedPowers.Basic

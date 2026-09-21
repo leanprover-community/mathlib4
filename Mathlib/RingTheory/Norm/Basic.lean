@@ -5,10 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.RingTheory.Norm.Defs
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Norm for (finite) ring extensions

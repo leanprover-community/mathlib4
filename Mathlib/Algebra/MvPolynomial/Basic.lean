@@ -6,15 +6,12 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Regular.Pow
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.SymmDiff
 public import Mathlib.Tactic.Polynomial.Core
 
 /-!

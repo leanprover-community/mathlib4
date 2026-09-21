@@ -8,7 +8,6 @@ module
 import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Sober
-import Mathlib.Topology.Spectral.Prespectral
 import Mathlib.Topology.WithTopology
 
 /-!

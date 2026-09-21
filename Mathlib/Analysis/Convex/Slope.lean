@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Convex.Function
 import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 
 /-!

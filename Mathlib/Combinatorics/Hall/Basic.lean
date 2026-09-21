@@ -5,7 +5,6 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 module
 
-import Mathlib.Basic.Rel
 public import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.Combinatorics.Hall.Finite
 

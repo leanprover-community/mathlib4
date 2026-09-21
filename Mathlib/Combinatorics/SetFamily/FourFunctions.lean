@@ -8,14 +8,12 @@ module
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Ring
-import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries

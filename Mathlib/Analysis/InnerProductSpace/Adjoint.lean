@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-import Mathlib.Tactic.CrossRefAttribute
 
 
 /-!

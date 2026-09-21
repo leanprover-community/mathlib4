@@ -5,10 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.Prod
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.LinearAlgebra.Determinant
 

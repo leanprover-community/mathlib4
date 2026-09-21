@@ -6,7 +6,6 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Retract
-import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Stability under retracts

@@ -6,8 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom

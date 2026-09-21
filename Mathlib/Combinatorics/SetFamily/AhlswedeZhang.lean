@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity

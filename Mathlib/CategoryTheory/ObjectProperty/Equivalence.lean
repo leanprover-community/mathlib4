@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Equivalence
-import Mathlib.Order.BooleanAlgebra.Defs
 
 /-!
 # Equivalence of full subcategories

@@ -7,7 +7,6 @@ module
 
 import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary submodules

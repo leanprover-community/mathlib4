@@ -6,9 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Monovary
-import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Product of convex functions

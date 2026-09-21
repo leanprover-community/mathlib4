@@ -5,8 +5,6 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 -/
 module
 
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 public import Mathlib.Algebra.Star.MonoidHom

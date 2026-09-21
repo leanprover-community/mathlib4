@@ -5,7 +5,6 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!

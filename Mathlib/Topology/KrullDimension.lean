@@ -6,9 +6,6 @@ Authors: Jujian Zhang, Fangming Li, Alessandro D'Angelo
 module
 
 public import Mathlib.Order.KrullDimension
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.NoetherianSpace
 

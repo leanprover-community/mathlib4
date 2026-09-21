@@ -6,8 +6,6 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
-import Mathlib.RepresentationTheory.Intertwining
-import Mathlib.RepresentationTheory.Rep.Basic
 public import Mathlib.RepresentationTheory.Rep.Res
 
 /-!

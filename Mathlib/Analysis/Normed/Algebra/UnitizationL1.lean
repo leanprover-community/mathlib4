@@ -6,7 +6,6 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
-import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-! # Unitization equipped with the $L^1$ norm

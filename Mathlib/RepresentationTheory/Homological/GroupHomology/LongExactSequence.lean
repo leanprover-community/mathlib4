@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 module
 
-import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 

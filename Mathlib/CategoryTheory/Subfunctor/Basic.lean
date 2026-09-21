@@ -5,7 +5,6 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 

@@ -5,7 +5,6 @@ Authors: Noam Atar
 -/
 module
 
-import Mathlib.Order.Ideal
 public import Mathlib.Order.PFilter
 
 /-!

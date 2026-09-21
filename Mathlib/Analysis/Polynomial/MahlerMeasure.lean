@@ -7,7 +7,6 @@ module
 
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 import Mathlib.Analysis.Convex.Integral

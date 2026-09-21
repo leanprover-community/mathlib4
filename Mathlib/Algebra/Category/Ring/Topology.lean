@@ -5,9 +5,7 @@ Authors: Andrew Yang, Christian Merten
 -/
 module
 
-import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 

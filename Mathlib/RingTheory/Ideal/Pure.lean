@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Tensor
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Idempotents

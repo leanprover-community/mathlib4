@@ -6,7 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.FieldTheory.AlgebraicClosure
-import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!

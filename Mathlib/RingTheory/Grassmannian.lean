@@ -6,9 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
-import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Grassmannians

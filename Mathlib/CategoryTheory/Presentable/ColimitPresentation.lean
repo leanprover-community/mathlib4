@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Presentation
 public import Mathlib.CategoryTheory.Presentable.Finite
 
 /-!

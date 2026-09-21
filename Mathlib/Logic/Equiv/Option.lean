@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Control.EquivFunctor
 public import Mathlib.Data.Option.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Equivalences for `Option α`

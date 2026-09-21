@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.Order.Monovary
 public import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
 
 import Mathlib.Algebra.BigOperators.Module

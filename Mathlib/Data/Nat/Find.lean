@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Push
-import Batteries.Tactic.Init
 
 /-!
 # `Nat.find` and `Nat.findGreatest`

@@ -6,9 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`

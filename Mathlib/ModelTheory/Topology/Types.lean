@@ -7,9 +7,6 @@ Authors: Jonas van der Schaaf, Anish Rajeev
 module
 
 public import Mathlib.ModelTheory.Types
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Connected.TotallyDisconnected
-import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Connected.Separation
 public import Mathlib.Topology.Baire.LocallyCompactRegular
 

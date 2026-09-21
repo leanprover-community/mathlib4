@@ -6,7 +6,6 @@ Authors: Kexing Ying, Bhavik Mehta
 module
 
 public import Mathlib.Probability.ConditionalProbability
-import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.MeasureTheory.Constructions.Pi
 
 

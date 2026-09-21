@@ -5,7 +5,6 @@ Authors: Peter Nelson
 -/
 module
 
-import Mathlib.Basic.Finite.Prod
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Powerset

@@ -5,9 +5,6 @@ Authors: Michał Świętek, Yongxi Lin
 -/
 module
 
-import Mathlib.Topology.Defs.Sequences
-import Mathlib.Topology.Separation.Basic
-import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Sequences
 
 import Mathlib.Topology.Perfect

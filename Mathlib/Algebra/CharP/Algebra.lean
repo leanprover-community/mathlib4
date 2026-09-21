@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Characteristics of algebras

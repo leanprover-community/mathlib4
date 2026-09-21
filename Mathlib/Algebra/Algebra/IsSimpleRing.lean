@@ -5,7 +5,6 @@ Authors: Paul Lezeau, Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!

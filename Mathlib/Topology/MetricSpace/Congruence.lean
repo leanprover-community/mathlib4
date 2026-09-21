@@ -5,8 +5,6 @@ Authors: Jovan Gerbscheid, Newell Jensen
 -/
 module
 
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!

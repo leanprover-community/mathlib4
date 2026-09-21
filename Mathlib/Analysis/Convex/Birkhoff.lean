@@ -5,10 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 

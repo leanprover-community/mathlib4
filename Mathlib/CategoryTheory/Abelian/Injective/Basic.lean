@@ -5,8 +5,6 @@ Authors: Jakob von Raumer
 -/
 module
 
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor

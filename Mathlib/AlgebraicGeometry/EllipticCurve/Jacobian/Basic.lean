@@ -5,9 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!

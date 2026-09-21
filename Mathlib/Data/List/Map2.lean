@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
-import Mathlib.Tactic.Attr.Core
 
 /-!
 # Map₂ Lemmas

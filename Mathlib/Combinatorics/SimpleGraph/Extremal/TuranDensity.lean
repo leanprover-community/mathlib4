@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 import Mathlib.Data.Nat.Choose.Cast
 

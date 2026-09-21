@@ -6,9 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Unramified.Field
-import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Unramified algebras over local rings

@@ -5,14 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.RingTheory.HahnSeries.Basic
-import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series

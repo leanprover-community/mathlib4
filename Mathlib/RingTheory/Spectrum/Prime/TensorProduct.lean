@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.SurjectiveOnStalks
 
 /-!
 

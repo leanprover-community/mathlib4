@@ -6,7 +6,6 @@ Authors: Pim Otte
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
-import Mathlib.Data.Set.Card
 
 /-!
 # Representation of components by a set of vertices

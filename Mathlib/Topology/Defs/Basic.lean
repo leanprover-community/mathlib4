@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation

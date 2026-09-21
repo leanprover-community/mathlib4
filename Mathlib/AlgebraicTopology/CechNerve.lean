@@ -6,8 +6,6 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Tactic.ApplyFun
 

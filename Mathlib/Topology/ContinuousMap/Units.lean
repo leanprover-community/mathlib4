@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.ContinuousMap.Algebra

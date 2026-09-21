@@ -8,7 +8,6 @@ module
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
-import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!

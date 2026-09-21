@@ -6,8 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Basic.Real.Basic
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.Order.Northcott
 

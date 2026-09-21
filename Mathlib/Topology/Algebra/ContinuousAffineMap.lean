@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Affine
 

@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Sets.Closeds

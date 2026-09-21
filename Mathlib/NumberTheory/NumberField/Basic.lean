@@ -7,11 +7,8 @@ module
 
 import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Number fields

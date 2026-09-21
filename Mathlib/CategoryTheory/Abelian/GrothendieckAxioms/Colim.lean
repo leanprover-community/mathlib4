@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 

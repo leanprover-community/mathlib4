@@ -5,9 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Star.StarRingHom
 

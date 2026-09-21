@@ -5,8 +5,6 @@ Authors: Salvatore Mercuri
 -/
 module
 
-import Mathlib.Analysis.Normed.Field.WithAbs
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!

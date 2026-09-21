@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.Matrix.Hermitian
-import Mathlib.LinearAlgebra.Trace
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.LinearAlgebra.Matrix.PosDef

@@ -5,14 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Pi
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Preadditive.SingleObj
 public import Mathlib.Data.Matrix.DMatrix
 public import Mathlib.Data.Matrix.Mul

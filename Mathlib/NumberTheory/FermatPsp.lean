@@ -7,8 +7,6 @@ module
 
 import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat Pseudoprimes

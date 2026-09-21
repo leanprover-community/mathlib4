@@ -5,9 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Init
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.BitVec
 
 

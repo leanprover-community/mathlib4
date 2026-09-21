@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 

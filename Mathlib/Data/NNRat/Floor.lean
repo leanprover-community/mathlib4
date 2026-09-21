@@ -7,7 +7,6 @@ module
 
 public meta import Mathlib.Data.Rat.Floor
 
-import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Data.Rat.Floor
 

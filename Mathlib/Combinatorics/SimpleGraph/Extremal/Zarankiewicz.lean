@@ -5,10 +5,8 @@ Authors: Mitchell Horner
 -/
 module
 
-import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-import Mathlib.Combinatorics.SimpleGraph.Maps
 
 import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Logic.Equiv.Fin.Basic

@@ -6,7 +6,6 @@ Authors: Michael Rothgang, Ben Eltschig
 module
 
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
-import Mathlib.Geometry.Manifold.Notation
 
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.LocallyConvex.Separation

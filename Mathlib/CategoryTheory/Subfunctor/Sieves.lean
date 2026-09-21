@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!

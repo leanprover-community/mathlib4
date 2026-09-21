@@ -6,9 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Basic.Rel
-import Mathlib.Data.SetLike.Basic
 public import Mathlib.ModelTheory.Semantics
-import Mathlib.Tactic.FunProp
 
 /-!
 # Definable Sets

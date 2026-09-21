@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Exact.Basic
-import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!

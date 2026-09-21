@@ -5,8 +5,6 @@ Authors: Kim Morrison, Nicolò Cavalleri
 -/
 module
 
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Order.Group.Lattice
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.ContinuousMap.Ordered
 

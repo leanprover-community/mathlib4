@@ -5,14 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.Basic.Finite.Prod
 import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Products
 
 /-!

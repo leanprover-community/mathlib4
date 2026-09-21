@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Finsupp.SMul

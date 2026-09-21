@@ -5,10 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Calculus.VectorField
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
 
 /-!

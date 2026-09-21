@@ -5,8 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!

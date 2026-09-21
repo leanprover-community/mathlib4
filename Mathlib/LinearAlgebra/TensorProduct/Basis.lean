@@ -5,10 +5,8 @@ Authors: Jakob von Raumer
 -/
 module
 
-import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Lift
 
 /-!

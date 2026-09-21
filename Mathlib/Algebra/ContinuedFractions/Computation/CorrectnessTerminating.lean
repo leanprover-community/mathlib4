@@ -9,7 +9,6 @@ public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 public import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
 /-!

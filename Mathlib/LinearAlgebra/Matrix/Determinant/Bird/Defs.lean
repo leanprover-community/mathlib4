@@ -6,10 +6,7 @@ Authors: Paul Cadman
 module
 
 public import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Fintype.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
-import Mathlib.Logic.Function.Iterate
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!

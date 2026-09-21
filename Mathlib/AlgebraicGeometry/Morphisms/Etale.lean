@@ -7,8 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!

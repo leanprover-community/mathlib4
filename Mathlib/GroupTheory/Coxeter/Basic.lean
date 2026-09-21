@@ -5,13 +5,10 @@ Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
 module
 
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.GroupTheory.Coxeter.Matrix
 public import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.Tactic.NormNum.DivMod
 public import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Use
 
 /-!
 # Coxeter groups and Coxeter systems

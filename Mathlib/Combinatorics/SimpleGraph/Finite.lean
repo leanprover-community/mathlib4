@@ -9,7 +9,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Card
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definitions for finite and locally finite graphs

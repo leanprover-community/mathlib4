@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Topology.Perfect
 
 /-!
 # Principle of isolated zeros

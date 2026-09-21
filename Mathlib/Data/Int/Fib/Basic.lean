@@ -5,7 +5,6 @@ Authors: Monica Omar
 -/
 module
 
-import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Fib.Basic
 
 /-!

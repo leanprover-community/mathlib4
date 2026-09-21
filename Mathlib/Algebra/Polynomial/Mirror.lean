@@ -5,7 +5,6 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
 public import Mathlib.Algebra.Polynomial.Reverse
 
 /-!

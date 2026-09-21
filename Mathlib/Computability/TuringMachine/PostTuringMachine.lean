@@ -9,8 +9,6 @@ public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Computability.StateTransition
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Finset.Option
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.PFun
 public import Mathlib.Data.Vector.Basic
 
 /-!

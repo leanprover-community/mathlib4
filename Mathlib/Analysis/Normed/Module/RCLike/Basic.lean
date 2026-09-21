@@ -6,9 +6,6 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Analysis.Normed.Module.Span
-import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!

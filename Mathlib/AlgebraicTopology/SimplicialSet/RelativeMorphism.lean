@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Relative morphisms of simplicial sets

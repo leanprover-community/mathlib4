@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
 import Mathlib.RingTheory.Polynomial.GaussLemma
-import Mathlib.Tactic.LinearCombination
 
 /-!
 # Irreducibility of Selmer Polynomials

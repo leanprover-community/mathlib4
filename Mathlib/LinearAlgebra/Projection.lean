@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Ring.Idempotent

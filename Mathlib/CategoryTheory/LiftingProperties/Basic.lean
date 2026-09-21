@@ -5,7 +5,6 @@ Authors: Jakob Scholbach, Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.CommSq
 public import Mathlib.CategoryTheory.Retract
 
 /-!

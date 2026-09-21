@@ -6,9 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.Lean.Meta.Simp
-import Mathlib.Util.AddRelatedDecl
-import Qq
 
 /-!
 # The `map` attribute

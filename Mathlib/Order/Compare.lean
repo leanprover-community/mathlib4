@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.OrderDual
 
 /-!

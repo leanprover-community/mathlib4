@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.Killing
-import Mathlib.Algebra.Lie.TraceForm
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple

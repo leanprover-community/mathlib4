@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Tactic.TFAE
 
 /-!
 # Exact sequences in abelian categories

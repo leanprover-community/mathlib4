@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Basic.Finite.Prod
-import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Sym.Basic
 
 /-!

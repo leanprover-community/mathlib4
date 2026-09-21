@@ -5,8 +5,6 @@ Authors: Kim Morrison, Markus Himmel
 -/
 module
 
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.GroupTheory.Congruence.BigOperators
-import Mathlib.RingTheory.Ideal.Lattice
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!

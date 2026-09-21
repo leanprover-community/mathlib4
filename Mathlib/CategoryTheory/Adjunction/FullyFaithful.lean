@@ -6,8 +6,6 @@ Authors: Kim Morrison, Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Adjoints of fully faithful functors

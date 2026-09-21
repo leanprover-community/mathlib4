@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Quaternion
-import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!

@@ -9,7 +9,6 @@ public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Bornology.Hom
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!

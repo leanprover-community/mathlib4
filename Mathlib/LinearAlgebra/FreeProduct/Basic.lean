@@ -5,9 +5,7 @@ Authors: Robert Maxton
 -/
 module
 
-import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
-import Mathlib.RingTheory.Congruence.Hom
 
 /-!
 # The free product of $R$-algebras

@@ -7,10 +7,7 @@ module
 
 import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Basic.Real.Basic
-import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.Basic
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
 

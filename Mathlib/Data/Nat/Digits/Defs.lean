@@ -5,11 +5,8 @@ Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
 module
 
-import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Ring.Defs
 import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
 /-!

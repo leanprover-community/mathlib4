@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Iván Renison
 module
 
 public import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.ZMod.Defs
 
 /-!

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.HomEquiv
-import Mathlib.Logic.Small.Defs
 
 /-!
 # Shrinking morphisms in localized categories

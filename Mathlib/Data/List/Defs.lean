@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Control.Functor
 public import Mathlib.Data.SProd
-import Batteries.Tactic.Lint.Basic
 public import Batteries.Data.List.Basic
 public import Batteries.Logic
 

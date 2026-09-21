@@ -6,7 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.BernoulliPolynomials
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Polynomial
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.Fourier.AddCircle

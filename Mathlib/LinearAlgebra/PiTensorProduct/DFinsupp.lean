@@ -6,7 +6,6 @@ Authors: Sophie Morel, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 /-!

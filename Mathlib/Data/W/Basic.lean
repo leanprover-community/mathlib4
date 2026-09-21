@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 module
 
-import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Logic.Encodable.Pi
 
 /-!

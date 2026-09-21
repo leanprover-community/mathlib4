@@ -5,7 +5,6 @@ Authors: Kexing Ying, Eric Wieser
 -/
 module
 
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 /-!

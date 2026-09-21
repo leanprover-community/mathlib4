@@ -5,8 +5,6 @@ Authors: Felix Weilacher
 -/
 module
 
-import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!

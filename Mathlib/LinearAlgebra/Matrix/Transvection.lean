@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Data.Matrix.Basis
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.Field
 import Mathlib.GroupTheory.GroupAction.Ring

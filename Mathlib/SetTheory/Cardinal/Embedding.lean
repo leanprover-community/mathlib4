@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Fin.Tuple.Embedding
-import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.NatCard
 import Mathlib.Data.Set.Finite.Range
 

@@ -5,10 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Algebra.Lie.IdealOperations
-import Mathlib.Order.Hom.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!

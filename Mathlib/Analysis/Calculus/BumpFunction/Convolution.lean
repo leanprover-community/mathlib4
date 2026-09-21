@@ -5,13 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 public import Mathlib.Analysis.Calculus.BumpFunction.Normed
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Covering.Differentiation
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Convolution with a bump function

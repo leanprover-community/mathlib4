@@ -5,8 +5,6 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.LocalRing.Basic
 

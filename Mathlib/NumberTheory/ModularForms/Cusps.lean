@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.RingTheory.Localization.NumDen

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.SuccPred
 

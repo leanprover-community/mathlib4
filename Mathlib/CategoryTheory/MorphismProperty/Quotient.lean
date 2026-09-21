@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.CategoryTheory.Quotient
 
 /-!

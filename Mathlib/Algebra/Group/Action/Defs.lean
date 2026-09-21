@@ -6,7 +6,6 @@ Authors: Chris Hughes, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Spread

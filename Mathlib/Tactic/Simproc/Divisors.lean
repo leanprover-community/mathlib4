@@ -8,12 +8,6 @@ module
 public meta import Mathlib.NumberTheory.Divisors
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.Qq
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-! # Divisor Simprocs
 

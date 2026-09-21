@@ -6,8 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Order.Filter.Pointwise
 
 /-!
 # Boundedness in normed groups

@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.Sheaves.Presheaf
 
 /-!

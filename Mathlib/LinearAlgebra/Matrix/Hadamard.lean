@@ -6,7 +6,6 @@ Authors: Lu-Ming Zhang
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Data.Matrix.Basic
 
 /-!
 # Hadamard product of matrices

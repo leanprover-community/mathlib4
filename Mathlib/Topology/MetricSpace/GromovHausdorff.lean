@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 import Mathlib.Logic.Encodable.Pi
-import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.Topology.MetricSpace.Closeds
 import Mathlib.Topology.MetricSpace.Completion
 public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized

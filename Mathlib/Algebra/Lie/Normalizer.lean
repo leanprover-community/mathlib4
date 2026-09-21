@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.IdealOperations
 public import Mathlib.Algebra.Lie.Quotient
 
 /-!

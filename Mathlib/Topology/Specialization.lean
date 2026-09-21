@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Category.Preord
 public import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!

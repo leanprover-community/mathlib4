@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters

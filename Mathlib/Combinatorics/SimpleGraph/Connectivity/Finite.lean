@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
-import Mathlib.Data.Set.Card
 
 /-!
 # Counting walks of a given length

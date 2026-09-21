@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.Projectivization.Independence
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 

@@ -7,7 +7,6 @@ module
 
 import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Measure.Restrict
-import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Measures having value zero on singletons

@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Successor and predecessor limits

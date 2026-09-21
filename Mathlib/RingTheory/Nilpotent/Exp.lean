@@ -5,13 +5,8 @@ Authors: Janos Wolosz
 -/
 module
 
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Nat.Cast.Field
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 import Mathlib.Tactic.FieldSimp

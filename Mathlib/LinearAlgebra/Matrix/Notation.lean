@@ -5,10 +5,7 @@ Authors: Anne Baanen, Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Data.Fin.VecNotation
 public import Mathlib.LinearAlgebra.Matrix.RowCol
-import Mathlib.Tactic.FinCases
 public import Mathlib.Algebra.BigOperators.Fin
 public meta import Mathlib.LinearAlgebra.Matrix.Defs
 

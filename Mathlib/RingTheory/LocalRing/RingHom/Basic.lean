@@ -5,10 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 

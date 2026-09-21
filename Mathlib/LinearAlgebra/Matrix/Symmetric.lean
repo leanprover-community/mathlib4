@@ -5,9 +5,7 @@ Authors: Lu-Ming Zhang
 -/
 module
 
-import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Symmetric matrices

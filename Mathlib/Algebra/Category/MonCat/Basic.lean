@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!

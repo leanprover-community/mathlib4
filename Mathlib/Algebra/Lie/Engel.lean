@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Lie.AdjointAction.Basic
 public import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Engel's theorem

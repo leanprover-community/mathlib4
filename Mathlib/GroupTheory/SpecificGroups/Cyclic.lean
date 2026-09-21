@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Data.Nat.Totient

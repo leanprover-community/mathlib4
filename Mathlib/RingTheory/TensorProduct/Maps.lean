@@ -6,8 +6,6 @@ Authors: Kim Morrison, Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Module.Rat
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!

@@ -6,7 +6,6 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 module
 
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Combinations

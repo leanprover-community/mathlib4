@@ -6,7 +6,6 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 module
 
 import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.LinearAlgebra.Projectivization.Action
 public import Mathlib.Topology.Compactification.OnePoint.Basic

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 /-! # The Mellin transform
 

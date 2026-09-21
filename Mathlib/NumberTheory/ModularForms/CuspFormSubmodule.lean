@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 module
 
-import Mathlib.NumberTheory.ModularForms.QExpansion
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Bernstein

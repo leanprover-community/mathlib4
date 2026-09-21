@@ -7,12 +7,8 @@ module
 
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # Products and coproducts in the category of topological spaces

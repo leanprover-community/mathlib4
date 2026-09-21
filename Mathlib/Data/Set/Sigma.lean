@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Data.Set.Image
 public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!

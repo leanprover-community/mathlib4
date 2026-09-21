@@ -6,7 +6,6 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Algebra.Rat
 
 /-!

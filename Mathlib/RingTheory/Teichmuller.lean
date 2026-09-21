@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-import Mathlib.LinearAlgebra.SModEq.Basic
 import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Perfection

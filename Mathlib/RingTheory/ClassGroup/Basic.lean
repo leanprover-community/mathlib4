@@ -6,7 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The ideal class group

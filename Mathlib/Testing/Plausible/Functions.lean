@@ -11,13 +11,11 @@ public meta import Mathlib.Data.List.Sigma
 public meta import Plausible.Functions
 public import Batteries.Data.MLList.Basic
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Data.Int.Range
 public import Mathlib.Data.List.Sigma
 public import Mathlib.Data.PNat.Notation
-import Mathlib.Tactic.Bound.Init
 
 /-!
 ## `Plausible`: generators for functions

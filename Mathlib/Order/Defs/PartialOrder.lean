@@ -5,8 +5,6 @@ Authors: Leonardo de Moura
 -/
 module
 
-import Batteries.Tactic.Alias
-import Batteries.Tactic.Trans
 public import Mathlib.Tactic.ToDual
 
 /-!

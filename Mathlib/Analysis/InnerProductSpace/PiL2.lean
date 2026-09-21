@@ -6,11 +6,8 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 

@@ -5,7 +5,6 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Order.Interval.Set.Infinite

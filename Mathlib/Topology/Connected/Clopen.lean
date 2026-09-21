@@ -8,7 +8,6 @@ module
 public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Subset
 public import Mathlib.Topology.Clopen
-import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.Connected.Basic
 
 /-!

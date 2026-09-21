@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
 module
 
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!

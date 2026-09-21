@@ -5,7 +5,6 @@ Authors: Wrenna Robson
 -/
 module
 
-import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 

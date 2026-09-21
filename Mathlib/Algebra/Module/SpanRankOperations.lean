@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.LocalRing.Module
 

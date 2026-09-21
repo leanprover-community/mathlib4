@@ -6,7 +6,6 @@ Authors: Justin Thomas
 module
 
 public import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!

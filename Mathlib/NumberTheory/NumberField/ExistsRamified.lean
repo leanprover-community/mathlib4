@@ -8,7 +8,6 @@ module
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
-import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!

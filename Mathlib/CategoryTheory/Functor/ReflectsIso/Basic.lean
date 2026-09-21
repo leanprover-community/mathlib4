@@ -6,8 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Functors which reflect isomorphisms

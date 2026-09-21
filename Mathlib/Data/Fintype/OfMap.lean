@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Finset.Image
 
 /-!

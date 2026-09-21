@@ -5,11 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.Basic.Finite.Prod
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 
 /-!

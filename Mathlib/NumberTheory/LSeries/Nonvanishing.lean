@@ -5,11 +5,8 @@ Authors: Michael Stoll, David Loeffler
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
-import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.DirichletContinuation
-import Mathlib.NumberTheory.LSeries.Positivity
 
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1

@@ -8,7 +8,6 @@ module
 public import Mathlib.Basic.NNReal.Basic
 import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.Order.MonotoneConvergence

@@ -8,7 +8,6 @@ module
 import Mathlib.Basic.Finite.Sum
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!

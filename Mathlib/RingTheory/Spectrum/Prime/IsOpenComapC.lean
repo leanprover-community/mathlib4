@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 module
 
-import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!

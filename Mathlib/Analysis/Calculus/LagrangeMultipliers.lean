@@ -7,7 +7,6 @@ module
 
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Lagrange multipliers

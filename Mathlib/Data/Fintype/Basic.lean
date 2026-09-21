@@ -5,11 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Basic.Finite.Defs
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Fintype.OfMap
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
 public import Mathlib.Data.List.OfFn

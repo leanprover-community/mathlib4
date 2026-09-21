@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 import Mathlib.FieldTheory.Finiteness
-import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!

@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
-import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
 import Mathlib.RingTheory.Ideal.IdempotentFG

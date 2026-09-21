@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 

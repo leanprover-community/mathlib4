@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.WittVector.Domain
 public import Mathlib.RingTheory.WittVector.MulCoeff
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Tactic.LinearCombination
 
 /-!
 

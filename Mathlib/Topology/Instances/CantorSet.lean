@@ -10,10 +10,6 @@ module
 import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Analysis.Real.OfDigits
 public import Mathlib.Data.Stream.Init
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Field
 
 /-!
 # Ternary Cantor Set

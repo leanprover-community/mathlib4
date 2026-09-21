@@ -6,11 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Monad.Types
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Data.Set.Constructions
 
 /-!
 

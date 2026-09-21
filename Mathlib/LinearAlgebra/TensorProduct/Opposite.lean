@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.RingTheory.TensorProduct.Maps
-import Mathlib.Algebra.Algebra.Opposite
 
 /-! # `MulOpposite` distributes over `⊗`
 

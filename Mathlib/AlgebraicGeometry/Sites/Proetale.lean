@@ -5,13 +5,10 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 module
 
-import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Sites.Etale
-import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.CategoryTheory.Comma.Over.StrictInitial
-import Mathlib.CategoryTheory.MorphismProperty.CommaSites
 import Mathlib.CategoryTheory.Sites.Subcanonical
 import Mathlib.CategoryTheory.Sites.SubcanonicalOver
 

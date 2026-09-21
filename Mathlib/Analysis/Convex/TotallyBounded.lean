@@ -5,8 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Analysis.Convex.Hull
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 

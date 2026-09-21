@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Function
-import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Equivalences and sets

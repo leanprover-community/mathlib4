@@ -6,9 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Algebra.Epi
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.Combinatorics.Matroid.Init
 import Mathlib.Data.Nat.Totient

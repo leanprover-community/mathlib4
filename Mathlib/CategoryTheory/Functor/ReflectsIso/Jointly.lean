@@ -7,7 +7,6 @@ module
 
 import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
 /-!

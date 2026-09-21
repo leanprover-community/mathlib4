@@ -8,7 +8,6 @@ module
 public meta import Lean.Meta.Tactic.NormCast
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Tactic.Ring
-import Mathlib.Util.AtomM
 public meta import Mathlib.Algebra.Algebra.Defs
 
 /-! # A tactic for normalization over modules

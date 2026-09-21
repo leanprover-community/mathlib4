@@ -5,9 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-import Mathlib.Order.Lattice
 public import Mathlib.Order.ModularLattice
-import Mathlib.Data.List.Sort
 import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Equiv.Functor
 import Mathlib.Data.Fintype.Pigeonhole

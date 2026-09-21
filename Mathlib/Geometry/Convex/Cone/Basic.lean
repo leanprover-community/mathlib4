@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Hull
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Convex cones

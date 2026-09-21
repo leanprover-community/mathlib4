@@ -6,7 +6,6 @@ Authors: Jireh Loreaux, Jon Bannon
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!

@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!

@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Logic.Relator
-import Mathlib.Tactic.Common
 
 /-!
 # Coinductive formalization of unbounded computations.

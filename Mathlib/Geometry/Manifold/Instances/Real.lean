@@ -8,7 +8,6 @@ module
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Constructing examples of manifolds over ℝ

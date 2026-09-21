@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.WithBot
 

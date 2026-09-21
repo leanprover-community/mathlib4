@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Data.Int.Order.Units
 public import Mathlib.Data.ZMod.Basic
 

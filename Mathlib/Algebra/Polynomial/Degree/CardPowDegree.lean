@@ -6,7 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
-import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!

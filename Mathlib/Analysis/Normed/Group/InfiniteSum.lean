@@ -5,10 +5,8 @@ Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Instances.NNReal.Lemmas
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!

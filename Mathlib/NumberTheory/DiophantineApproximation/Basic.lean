@@ -6,9 +6,7 @@ Authors: Michael Geißer, Michael Stoll
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Basic
 
 /-!
 # Diophantine Approximation

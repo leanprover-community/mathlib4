@@ -5,8 +5,6 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 module
 
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.Basic
 public import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!

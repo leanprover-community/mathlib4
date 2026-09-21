@@ -5,8 +5,6 @@ Authors: Paul Lezeau
 -/
 module
 
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Data.Nat.Cast.Basic
 
 /-!

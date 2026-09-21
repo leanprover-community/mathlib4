@@ -6,8 +6,6 @@ Authors: Snir Broshi
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.Data.Nat.Factorization.Basic
 

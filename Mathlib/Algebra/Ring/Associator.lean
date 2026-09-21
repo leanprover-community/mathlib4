@@ -5,7 +5,6 @@ Authors: Bernhard Reinke
 -/
 module
 
-import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Tactic.Abel
 

@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.Basic.Countable.Defs
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts

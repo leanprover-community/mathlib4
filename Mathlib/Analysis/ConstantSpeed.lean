@@ -5,7 +5,6 @@ Authors: Rémi Bottinelli
 -/
 module
 
-import Mathlib.Data.Set.Function
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Analysis.Real.Sqrt

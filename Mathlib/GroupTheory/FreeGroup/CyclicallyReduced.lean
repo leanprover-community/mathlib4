@@ -5,8 +5,6 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
 module
 
-import Mathlib.Data.List.Induction
-import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.Tactic.Group
 

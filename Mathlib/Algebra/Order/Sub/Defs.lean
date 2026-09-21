@@ -5,9 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.Lattice
 
 /-!
 # Ordered Subtraction

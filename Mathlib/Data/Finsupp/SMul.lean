@@ -5,10 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.Torsion.Free
-import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.GroupTheory.GroupAction.Hom

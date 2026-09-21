@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 
 /-!

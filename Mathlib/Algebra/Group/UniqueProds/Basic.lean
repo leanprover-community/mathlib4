@@ -7,7 +7,6 @@ module
 
 import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Group.ULift

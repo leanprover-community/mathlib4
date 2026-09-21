@@ -5,10 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Inhabit
-import Batteries.Tactic.Trans
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 

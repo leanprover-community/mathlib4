@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.LinearIndependent.BaseChange

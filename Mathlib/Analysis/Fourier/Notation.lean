@@ -5,8 +5,6 @@ Authors: Moritz Doll
 -/
 module
 
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Type classes for the Fourier transform

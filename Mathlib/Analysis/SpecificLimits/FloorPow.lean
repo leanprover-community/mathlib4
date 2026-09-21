@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!

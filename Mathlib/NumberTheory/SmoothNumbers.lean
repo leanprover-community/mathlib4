@@ -5,7 +5,6 @@ Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
-import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.PrimeCounting
 

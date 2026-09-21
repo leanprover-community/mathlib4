@@ -5,9 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Algebra.Module.Projective

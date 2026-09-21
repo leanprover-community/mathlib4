@@ -5,9 +5,6 @@ Authors: Oliver Nash, Jon Bannon
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Exact.Basic
-import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-! # Exactness of sequences

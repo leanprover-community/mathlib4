@@ -5,8 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.UrysohnsLemma

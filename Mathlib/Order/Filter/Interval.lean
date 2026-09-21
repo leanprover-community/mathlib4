@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Bases.Finite
 
 /-!

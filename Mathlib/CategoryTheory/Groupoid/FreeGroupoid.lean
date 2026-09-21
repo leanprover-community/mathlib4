@@ -5,7 +5,6 @@ Authors: Rémi Bottinelli
 -/
 module
 
-import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!

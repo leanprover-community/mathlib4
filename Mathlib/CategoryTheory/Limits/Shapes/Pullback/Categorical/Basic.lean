@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 
 /-! # Categorical pullbacks

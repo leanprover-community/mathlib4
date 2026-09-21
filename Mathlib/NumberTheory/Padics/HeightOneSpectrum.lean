@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.Padics.WithVal
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 /-!

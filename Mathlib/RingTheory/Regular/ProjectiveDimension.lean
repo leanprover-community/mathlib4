@@ -8,7 +8,6 @@ module
 import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.RegularSequence

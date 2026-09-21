@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Order.Star.Basic
 
 /-!

@@ -6,7 +6,6 @@ Authors: Michael Stoll, Floris van Doorn
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
 

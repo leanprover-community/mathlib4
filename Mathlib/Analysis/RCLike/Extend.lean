@@ -5,9 +5,7 @@ Authors: Ruben Van de Velde
 -/
 module
 
-import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Analysis.RCLike.Basic
-import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 
 /-!

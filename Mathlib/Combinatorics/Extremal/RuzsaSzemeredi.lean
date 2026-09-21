@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Qify
 
 /-!

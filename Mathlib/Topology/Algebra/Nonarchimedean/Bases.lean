@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 

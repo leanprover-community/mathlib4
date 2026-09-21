@@ -8,7 +8,6 @@ module
 import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Order.PiLex
-import Mathlib.Order.WellFounded
 
 /-!
 # "Bubble sort" induction

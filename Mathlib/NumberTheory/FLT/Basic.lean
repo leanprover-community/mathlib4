@@ -6,8 +6,6 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 module
 
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.RingTheory.PrincipalIdealDomain
 

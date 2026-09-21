@@ -5,8 +5,6 @@ Authors: Eric Rodriguez
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
 import Mathlib.Data.Multiset.Defs

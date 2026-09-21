@@ -5,9 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Prime.Defs
 
 /-!
 # Mapping irreducible polynomials

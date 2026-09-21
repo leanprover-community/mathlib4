@@ -6,7 +6,6 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain

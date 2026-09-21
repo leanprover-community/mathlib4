@@ -5,10 +5,8 @@ Authors: Paul van Wamelen
 -/
 module
 
-import Mathlib.Data.Nat.Factors
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.PythagoreanTriples
-import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.LinearCombination
 
 /-!

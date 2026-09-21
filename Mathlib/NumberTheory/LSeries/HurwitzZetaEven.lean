@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 public import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.Analysis.Complex.RemovableSingularity

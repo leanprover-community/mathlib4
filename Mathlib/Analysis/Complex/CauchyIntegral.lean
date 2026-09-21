@@ -5,10 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Real.Cardinality

@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.IsConnected
 public import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
