@@ -401,5 +401,4 @@ lemma egauge_unitBall_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
 @[deprecated (since := "2026-09-21")] alias egauge_ball_one_le_of_one_lt_norm :=
   egauge_unitBall_le_of_one_lt_norm
 
-
 end SeminormedAddCommGroup
