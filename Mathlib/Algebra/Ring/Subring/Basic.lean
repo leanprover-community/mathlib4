@@ -926,11 +926,11 @@ theorem inclusion_injective {S T : Subring R} (h : S ≤ T) :
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 
-theorem range_fst : (fst R S).rangeS = ⊤ :=
-  (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
+@[deprecated (since := "2026-09-06")]
+alias range_fst := Subsemiring.range_fst
 
-theorem range_snd : (snd R S).rangeS = ⊤ :=
-  (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
+@[deprecated (since := "2026-09-06")]
+alias range_snd := Subsemiring.range_snd
 
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subring R) (t : Subring S) : s.prod ⊥ ⊔ prod ⊥ t = s.prod t :=
