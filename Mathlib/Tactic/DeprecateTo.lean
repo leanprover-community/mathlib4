@@ -11,7 +11,6 @@ public import Mathlib.Init
 public meta import Std.Time.Format
 public meta import Mathlib.Lean.Name
 
-
 /-!
 # `deprecate to` -- a deprecation tool
 

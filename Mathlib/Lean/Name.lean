@@ -11,7 +11,8 @@ public import Lean.Meta.Match.MatcherInfo
 /-!
 # Additional functions on `Lean.Name`.
 
-We provide `allNames` and `allNamesByModule`.
+We provide `allNames` and `allNamesByModule`, as well as assorted utilities on `Name`
+such as `mapPrefix`, `fromComponents`, `splitAt` and `isPrefixOf?`.
 -/
 
 public section
