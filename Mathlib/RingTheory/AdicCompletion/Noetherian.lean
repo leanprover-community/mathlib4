@@ -164,8 +164,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
   rw [this] at coeff_eq
   refine ⟨coeff', fun i ↦ ?_, fun i hi ↦ ?_, coeff_eq⟩
   · by_cases degle : deg i ≤ n
-    · simp only [degle, coeff']
-      exact (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
+    · simpa [degle, coeff'] using (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
     · simp [degle, coeff']
   · simp [coeff', hi]
 
@@ -192,8 +191,8 @@ lemma exists_coeffs_isAdicCauchy (J : Ideal R) (ι : Type u) [Fintype ι] (f : �
       Classical.choose (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2) := rfl
   have coeffs'_spec (n : ℕ) :
     ∀ i, (coeffs' (n + 1)).1 i - (coeffs' n).1 i ∈ I ^ (n + 1 - deg i) := by
-    simp only [coeffs'_spec_aux, Pi.add_apply, add_sub_cancel_left]
-    exact (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).1
+    simpa [coeffs'_spec_aux]
+      using (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).1
   let d := ∑ i, deg i
   use fun i n ↦ (coeffs' (d + n)).1 i
   refine ⟨fun i ↦ ?_, fun n ↦ Ideal.pow_le_pow_right (by omega) (coeffs' (d + n)).2⟩
@@ -233,8 +232,8 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
       rw [SModEq.comm, SModEq.sub_mem, ← sub_mul]
       apply Ideal.mul_mem_right
       simpa [SModEq.sub_mem] using c_lim_spec i n
-    · rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
-      exact Ideal.pow_le_pow_right (Nat.le_succ n) (hc n)
+    · simpa [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
+        using Ideal.pow_le_pow_right (Nat.le_succ n) (hc n)
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
     IsNoetherianRing (AdicCompletion I R) := by
