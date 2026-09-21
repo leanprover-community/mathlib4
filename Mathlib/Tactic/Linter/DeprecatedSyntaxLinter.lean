@@ -12,7 +12,9 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 
 /-!
-# Linter against deprecated syntax
+# Syntax based linters
+
+This linter discourages various kinds of syntax.
 
 `refine'`, `cases'` and `induction'` provide backward-compatible implementations of their
 unprimed equivalents in Lean 3 –`refine`, `cases` and `induction` respectively.
@@ -32,8 +34,6 @@ The `native_decide` tactic is not allowed in mathlib, as it trusts the entire Le
 (and not just the Lean kernel). Because the latter is large and complicated, at present it is
 probably possible to prove `False` using `native_decide`.
 
-This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
-It is not inherently limited to tactics.
 -/
 
 meta section
@@ -111,8 +111,8 @@ public register_option linter.style.maxHeartbeats : Bool := {
   descr := "enable the maxHeartbeats linter"
 }
 
-/-- The option `linter.style.pipe` flags usages of `f <| a` that are redundant. -/
-public register_option linter.style.pipe : Bool := {
+/-- The option `linter.style.redundantSyntax` flags usages of `f <| a` that are redundant. -/
+public register_option linter.style.redundantSyntax : Bool := {
   defValue := false
   descr := "enable the `<|` linter"
 }
@@ -277,7 +277,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       getLinterValue linter.style.native opts ||
       -- TODO: Remove this line with `linter.style.nativeDecide`.
       getLinterValue linter.style.nativeDecide opts ||
-      getLinterValue linter.style.pipe opts do
+      getLinterValue linter.style.redundantSyntax opts do
     return
   if (← MonadState.get).messages.hasErrors then
     return
@@ -305,10 +305,10 @@ def deprecatedSyntaxLinter : Linter where run stx := do
           Linter.logLint linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
       | ``«term_<|_» =>
-        if getLinterValue linter.style.pipe opts then
+        if getLinterValue linter.style.redundantSyntax opts then
           let sugg ← Command.liftCoreM <|
             Meta.Hint.mkSuggestionsMessage #[{toTryThisSuggestion := ""}] stx' none false
-          Linter.logLint linter.style.pipe stx' m!"Try this:{sugg}\n\n{msg}"
+          Linter.logLint linter.style.redundantSyntax stx' m!"Try this:{sugg}\n\n{msg}"
       | _ => continue) stx
 
 initialize addLinter deprecatedSyntaxLinter
