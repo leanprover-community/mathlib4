@@ -252,7 +252,7 @@ variable (R A B)
 instance Algebra.IsIntegral.tensorProduct [CommRing B]
     [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
     Algebra.IsIntegral A (A ⊗[R] B) where
-  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
 
 end TensorProduct
 

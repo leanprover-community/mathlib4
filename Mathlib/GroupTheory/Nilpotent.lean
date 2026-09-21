@@ -191,24 +191,13 @@ instance (n : ℕ) : Characteristic (upperCentralSeries G n) :=
 @[to_additive (attr := simp)]
 theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 
+@[to_additive upperCentralSeries_one]
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred_eq, mem_center_iff]
   exact forall_congr' fun y => by
     rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
-
-theorem _root_.AddSubgroup.upperCentralSeries_one (G : Type*) [AddGroup G] :
-    AddSubgroup.upperCentralSeries G 1 = AddSubgroup.center G := by
-  ext
-  simp only [AddSubgroup.upperCentralSeries, AddSubgroup.upperCentralSeriesAux,
-    AddSubgroup.upperCentralSeriesStep, AddSubgroup.mem_bot, AddSubgroup.mem_mk,
-    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_ofPred_eq, AddSubgroup.mem_center_iff]
-  exact forall_congr' fun y => by
-    rw [addCommutatorElement_def, add_neg_eq_zero, add_neg_eq_iff_eq_add, eq_comm]
-
-attribute [to_additive existing (attr := simp) AddSubgroup.upperCentralSeries_one]
-  upperCentralSeries_one
 
 variable {G}
 
@@ -488,7 +477,7 @@ coincides with the lower central series of `H` viewed as its own additive group,
 to `G`. -/]
 theorem top_subtype_lowerCentralSeries (H : Subgroup G) (n : ℕ) :
     (lowerCentralSeries ⊤ n).map H.subtype = H.lowerCentralSeries n := by
-  rw [map_lowerCentralSeries, ← MonoidHom.range_eq_map, subtype_range]
+  rw [map_lowerCentralSeries, Subgroup.map_top, subtype_range]
 
 /-- A subgroup is nilpotent iff its lower central series (computed in the ambient group) eventually
 vanishes. -/
@@ -954,10 +943,11 @@ theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :
 
 /-- Abelian groups are nilpotent. -/
 @[to_additive /-- Abelian groups are nilpotent. -/]
-instance (priority := 100) CommGroup.isNilpotent {G : Type*} [CommGroup G] : IsNilpotent G := by
+instance (priority := 100) CommGroup.isNilpotent {G : Type*} [Group G] [IsMulCommutative G] :
+    IsNilpotent G := by
   use 1
   rw [upperCentralSeries_one]
-  apply CommGroup.center_eq_top
+  exact Subgroup.center_eq_top
 
 /-- Abelian groups have nilpotency class at most one. -/
 @[to_additive /-- Abelian groups have nilpotency class at most one. -/]
@@ -1185,18 +1175,26 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
 
+/-- A simple nilpotent group is commutative. -/
+@[to_additive /-- A simple nilpotent additive group is commutative. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
-  ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
+  Group.commGroupOfCenterEqTop <|
+    (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
+      (Group.IsNilpotent.center_ne_bot G)
 
+/-- A simple nilpotent group is cyclic. -/
+@[to_additive /-- A simple nilpotent additive group is cyclic. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
   inferInstance
 
 namespace Group
 
+@[to_additive AddGroup.nilpotencyClass_le_one_of_isSimple_of_isNilpotent]
 lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [IsSimpleGroup G] [IsNilpotent G] :
     nilpotencyClass G ≤ 1 :=
   CommGroup.nilpotencyClass_le_one
 
+@[to_additive]
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition
   rw [normalizerCondition_iff_only_full_group_self_normalizing]
@@ -1390,9 +1388,11 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
   lowerCentralSeries_nilpotencyClass
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
   lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
   lowerCentralSeries_map_subtype_le
 @[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries.map := lowerCentralSeries.map
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ_eq_bot :=
   lowerCentralSeries_succ_eq_bot

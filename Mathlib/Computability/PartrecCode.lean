@@ -172,9 +172,10 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
 
 instance instDenumerable : Denumerable Code :=
   mk'
-    ⟨encodeCode, ofNatCode, fun c => by
-        induction c <;> simp [encodeCode, ofNatCode, Nat.div2_val, *],
-      private encode_ofNatCode⟩
+    { toFun := encodeCode
+      invFun := ofNatCode
+      left_inv c := by induction c <;> simp [encodeCode, ofNatCode, Nat.div2_val, *]
+      right_inv := private encode_ofNatCode }
 
 theorem encodeCode_eq : encode = encodeCode :=
   rfl

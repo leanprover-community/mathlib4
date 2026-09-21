@@ -26,12 +26,15 @@ This postpones until the expected type is available (`<= ty`). `withSynthesize` 
 since this would let through a public term under `backward.proofsInPublic`, which we want to ignore.
 
 We use `withSynthesize (postpone := .partial)` because `postpone := .yes` allows nested `by`'s
-within the wrapped term to escape, and thus they may still error when useing private definitions
+within the wrapped term to escape, and thus they may still error when using private definitions
 (if used to construct data within the wrapped proof), and `postpone := .no` can cause timing
 friction that `by exact` avoids.
 
 `private%` was considered, but this interferes with the parsing of antiquotations like
 `$[private%$tk]` (for e.g. `private` modifiers on declarations).
+
+TODO: is there a way to avoid the need for `(_ :)` when using dot notation (e.g.
+`(private exists_foo x :).choose`)?
 -/
 
 namespace Mathlib.Tactic.PrivateProof
@@ -51,10 +54,18 @@ on bare terms over `by exact` to communicate intent.
 
 If the term is not known to be a proof, `private` fails.
 
+If the type of the proof term itself uses private definitions, `private` will fail, as a wrapped
+proof's type is unavoidably public. If wrapping a nested proof term, however, consider trying to
+wrap an outer proof term which has a public type instead. (If this is not possible, `private` is is
+likely insufficient.)
+
+If dot notation is used on the wrapped proof, elaborating without the expected type via `(_ :)` may
+be necessary, e.g. `(private exists_foo x :).choose`.
+
 Note that `field := private ...` for structure instances is distinct, and allows wrapping data in
 auxiliary definitions as well. See also `private_decl%` for similar behavior that also includes
 non-proof declarations. -/
-syntax (name := privateElab) "private " term : term
+syntax (name := privateElab) "private " colGt term : term
 
 open Lean Meta Elab Term in
 elab_rules : term <= ty
@@ -67,21 +78,19 @@ elab_rules : term <= ty
   -- If definitely not a prop, log an error and proceed. We log errors at the (ambient) term
   -- instead of the `private` token, since the term is "at fault".
   if ← notM (isProp ty) <&&> return !(← instantiateMVars <|← inferType ty).hasMVar then
-    logError m!"`private` can only wrap proofs, but \
+    throwError m!"`private` can only wrap proofs, but \
       the expected type is not a `Prop`.\
       {indentD ty} : {← inferType ty}\n\n\
       Use `private_decl%` to wrap a non-proof term in an auxiliary definition."
-    Term.elabTerm t ty (implicitLambda := false)
   else
     let e ← instantiateMVars <|← withoutExporting do withSynthesize (postpone := .partial) do
       Term.elabTermEnsuringType t ty (implicitLambda := false)
     if !(← isProp ty) then
       let knownToBe? := if (← instantiateMVars ty).hasMVar then " known to be" else ""
-      logError m!"`private` can only wrap proofs, but \
+      throwError m!"`private` can only wrap proofs, but \
         the expected type of `{e}` is not{knownToBe?} a `Prop`.\
         {indentD ty} : {← inferType ty}\n\n\
         Use `private_decl%` to wrap a non-proof term in an auxiliary definition."
-      return e
     else if e.isFVar then
       if ← linter.privateProof.warnIfUnnecessary.getM then
         logWarningAt tk m!"`private` is unnecessary, since the resulting expression is just a free \

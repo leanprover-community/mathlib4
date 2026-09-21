@@ -63,7 +63,7 @@ abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
-@[deprecated LinearMap.id (since := "2026-04-02")]
+@[deprecated LinearMap.id +typeChanged (since := "2026-04-02")]
 def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
     Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
@@ -377,7 +377,7 @@ theorem dualAnnihilator_gc :
   intro a b
   induction b using OrderDual.rec
   simp only [Function.comp_apply, OrderDual.toDual_le_toDual, OrderDual.ofDual_toDual,
-    SetLike.le_def, mem_dualAnnihilator, mem_dualCoannihilator]
+    IsConcreteLE.le_iff, mem_dualAnnihilator, mem_dualCoannihilator]
   grind
 
 theorem le_dualAnnihilator_iff_le_dualCoannihilator {U : Submodule R (Module.Dual R M)}
@@ -390,7 +390,7 @@ theorem dualAnnihilator_bot : (⊥ : Submodule R M).dualAnnihilator = ⊤ :=
 
 @[simp]
 theorem dualAnnihilator_top : (⊤ : Submodule R M).dualAnnihilator = ⊥ := by
-  simp [eq_bot_iff, SetLike.le_def, LinearMap.ext_iff]
+  simp [eq_bot_iff, IsConcreteLE.le_iff, LinearMap.ext_iff]
 
 @[simp]
 theorem dualCoannihilator_bot : (⊥ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊤ :=

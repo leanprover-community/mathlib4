@@ -188,7 +188,8 @@ def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 
   dist_triangle := private glueDist_triangle Φ Ψ ε H
   eq_of_dist_eq_zero := private eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
   toUniformSpace := Sum.instUniformSpace
-  uniformity_dist := uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
+  uniformity_dist := private
+    uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
 
 end ApproxGluing
 

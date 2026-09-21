@@ -64,6 +64,7 @@ section Basics
 variable [TopologicalSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
+@[macro_inline]
 instance instFunLike : FunLike (α →ᵇ β) α β where
   coe f := f.toFun
   coe_injective f g h := by

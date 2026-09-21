@@ -36,12 +36,6 @@ error: `private` can only wrap proofs, but the expected type of `foo` is not a `
   ℕ : Type
 
 Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
----
-error: Unknown constant `_private.MathlibTest.Util.PrivateProof.0.foo`
-
-Note: A private declaration `foo` (from the current module) exists but would need to be public to access here.
----
-error: (kernel) declaration has metavariables 'fα''
 -/
 #guard_msgs in
 def fα' (_ : F (private foo)) : Bool := true
@@ -55,17 +49,11 @@ Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 #guard_msgs in
 def fαPub' (_ : F (private fooPub)) : Bool := true
 
--- Communicate that `private` doesn't work, but also continue elaborating, as shown by the
--- type mismatch error
 /--
 error: `private` can only wrap proofs, but the expected type is not a `Prop`.
   Bool : Type
 
 Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
----
-error: Unknown identifier `foo`
-
-Note: A private declaration `foo` (from the current module) exists but would need to be public to access here.
 -/
 #guard_msgs in
 def fα'' (_ : F (α := Bool) (private foo)) : Bool := true
@@ -75,15 +63,6 @@ error: `private` can only wrap proofs, but the expected type is not a `Prop`.
   Bool : Type
 
 Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
----
-error: Application type mismatch: The argument
-  fooPub
-has type
-  ℕ
-but is expected to have type
-  Bool
-in the application
-  F fooPub
 -/
 #guard_msgs in
 def fαPub'' (_ : F (α := Bool) (private fooPub)) : Bool := true
