@@ -15,7 +15,6 @@ public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
@@ -592,15 +591,6 @@ theorem _root_.LinearIndependent.mulVec_surjective [Ring R] [IsSemisimpleRing R]
   have : M * f.toMatrixRight' = 1 := toLinearMapRight'.injective <| by simpa using hf
   exact fun v ↦ ⟨f.toMatrixRight' *ᵥ v, by simp [this]⟩
 
-/-- A square matrix over a commutative artinian ring with linearly independent rows has
-surjective `mulVec`. -/
-theorem _root_.LinearIndependent.mulVec_surjective_of_isArtinianRing
-    [CommRing R] [IsArtinianRing R] [Fintype m] {M : Matrix m m R}
-    (h : LinearIndependent R M.row) : M.mulVec.Surjective := by
-  classical
-  rwa [mulVec_surjective_iff_isUnit, IsArtinianRing.isUnit_iff_isRightRegular,
-    isRightRegular_iff_vecMul_injective, vecMul_injective_iff]
-
 /-- `M.vecMul` is surjective iff `M` has full column rank. -/
 theorem vecMul_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
     M.vecMul.Surjective ↔ M.rank = Fintype.card n := by
@@ -609,12 +599,10 @@ theorem vecMul_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n
 
 omit [Fintype n] in
 /-- A matrix with linearly independent columns has surjective `vecMul`. -/
-theorem _root_.LinearIndependent.vecMul_surjective [Field R] [Fintype m] {M : Matrix m n R}
-    (h : LinearIndependent R M.col) : M.vecMul.Surjective := by
-  have := @Fintype.ofFinite n h.finite_of_isNoetherian
-  rw [vecMul_surjective_iff_rank_eq_card, ← rank_transpose]
-  have h' : LinearIndependent R Mᵀ.row := by rw [row_transpose]; exact h
-  exact h'.rank_matrix
+theorem _root_.LinearIndependent.vecMul_surjective [CommRing R] [IsSemisimpleRing R]
+    [Fintype m] {M : Matrix m n R} (h : LinearIndependent R M.col) : M.vecMul.Surjective := by
+  simp_rw [← row_transpose, ← mulVec_transpose M] at h ⊢
+  exact h.mulVec_surjective
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
     {A : Matrix l m R} {B : Matrix m n R} (hAB : A * B = 0) :
