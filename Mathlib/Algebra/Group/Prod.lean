@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Notation.Pi.Defs
@@ -59,6 +60,10 @@ theorem mk_one_mul_mk_one [Mul M] [MulOneClass N] (a₁ a₂ : M) :
 @[to_additive]
 theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * (1, p.snd) = p :=
   Prod.ext (mul_one p.1) (one_mul p.2)
+
+@[to_additive]
+theorem isSelfInv_iff [Inv M] [Inv N] {p : M × N} :
+    IsSelfInv p ↔ IsSelfInv p.fst ∧ IsSelfInv p.snd := Prod.ext_iff
 
 @[to_additive]
 instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
@@ -644,7 +649,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
+  fun _ _ h => Units.ext (congr_arg Prod.fst h :)
 
 end Units
 

@@ -189,7 +189,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
 
 @[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
-instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u}
 
 instance small_coe (x : ZFSet.{u}) : Small.{u} x :=
   Quotient.inductionOn x fun a => by
@@ -568,7 +568,7 @@ def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
 theorem insert_eq (x y : ZFSet) : insert x y = {x} ∪ y := by
   ext; simp
 
-theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
+instance mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 
@@ -576,9 +576,6 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
 @[elab_as_elim]
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
   mem_wf.induction x h
-
-instance : IsWellFounded ZFSet (· ∈ ·) :=
-  ⟨mem_wf⟩
 
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
@@ -612,7 +609,7 @@ def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
         (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).trans <|
           Iff.trans
               ⟨fun ⟨w, h1, h2⟩ => ⟨w, (Mem.congr_right e).1 h1, h2⟩, fun ⟨w, h1, h2⟩ =>
-                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩ <|
+                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩
             (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).symm
 
 theorem image.mk (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] (x) {y} : y ∈ x → f y ∈ image f x :=

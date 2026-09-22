@@ -40,6 +40,8 @@ order of an element
 
 @[expose] public section
 
+set_option linter.style.longFile 1600
+
 assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
@@ -778,6 +780,22 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 theorem orderOf_dvd_sub_iff_zpow_eq_zpow {a b : ℤ} : (orderOf x : ℤ) ∣ a - b ↔ x ^ a = x ^ b := by
   rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
+@[to_additive]
+theorem isSelfInv_iff_isOfFinOrder_and_orderOf_le_two {a : G} :
+    IsSelfInv a ↔ IsOfFinOrder a ∧ orderOf a ≤ 2 := by
+  rw [isSelfInv_iff_sq_eq_one]
+  refine ⟨fun h ↦ ⟨isOfFinOrder_iff_pow_eq_one.mpr ⟨2, zero_lt_two, h⟩,
+    orderOf_le_of_pow_eq_one zero_lt_two h⟩, fun ⟨hfin, _⟩ ↦ ?_⟩
+  have : orderOf a = 1 ∨ orderOf a = 2 := by grind [hfin.orderOf_pos]
+  rcases this with h₁ | h₂
+  · simp [orderOf_eq_one_iff.mp h₁]
+  · rw [← h₂, pow_orderOf_eq_one a]
+
+@[to_additive]
+theorem IsOfFinOrder.isSelfInv_iff {a : G} (h : IsOfFinOrder a) :
+    IsSelfInv a ↔ orderOf a ≤ 2 := by
+  rw [isSelfInv_iff_isOfFinOrder_and_orderOf_le_two, and_iff_right h]
+
 namespace Subgroup
 variable {H : Subgroup G}
 
@@ -838,7 +856,7 @@ lemma IsOfFinOrder.mem_powers_iff_mem_zpowers (hx : IsOfFinOrder x) :
   ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simp_all⟩, fun ⟨i, hi⟩ ↦ ⟨(i % orderOf x).natAbs, by
     dsimp only
     rwa [← zpow_natCast, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <|
-      Int.natCast_ne_zero_iff_pos.2 <| hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
+      Int.natCast_ne_zero_iff_pos.2 hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
 
 @[to_additive]
 lemma IsOfFinOrder.powers_eq_zpowers (hx : IsOfFinOrder x) : (powers x : Set G) = zpowers x :=
@@ -866,7 +884,7 @@ lemma Subgroup.closure_toSubmonoid_of_isOfFinOrder {s : Set G} (hs : ∀ x ∈ s
 `Subgroup.zmultiples a`, sending `i` to `i • a`. -/]
 noncomputable def finEquivZPowers (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ zpowers x :=
-  (finEquivPowers hx).trans <| Equiv.Set.congr hx.powers_eq_zpowers
+  (finEquivPowers hx).trans <| Set.equivOfEq hx.powers_eq_zpowers
 
 @[to_additive]
 lemma finEquivZPowers_apply (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
@@ -1194,7 +1212,7 @@ nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G)
 @[to_additive]
 lemma Subgroup.orderOf_le_card {G : Type*} [Group G] (s : Subgroup G) (hs : (s : Set G).Finite)
     {x} (hx : x ∈ s) : orderOf x ≤ Nat.card s :=
-  le_of_dvd (Nat.card_pos_iff.2 <| ⟨(OneMemClass.coe_nonempty s).to_subtype, hs.to_subtype⟩) <|
+  le_of_dvd (Nat.card_pos_iff.2 ⟨(OneMemClass.coe_nonempty s).to_subtype, hs.to_subtype⟩) <|
     s.orderOf_dvd_natCard hx
 
 @[to_additive]

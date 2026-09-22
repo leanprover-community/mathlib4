@@ -85,7 +85,7 @@ variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less than `x` and elements
 greater or equal to `x`. -/
 def sumLexIioIci : Iio x ⊕ₗ Ici x ≃o α :=
-  (sumLexCongr (refl _) (Set.congr (Ici x) {y | ¬ y < x} (by ext; simp))).trans <|
+  (sumLexCongr (refl _) (Set.orderIsoOfEq (Ici x) {y | ¬ y < x} (by ext; simp))).trans <|
     ofRelIsoLT (RelIso.sumLexComplLeft (· < ·) x)
 
 @[simp]
@@ -116,7 +116,7 @@ variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less or equal to `x` and
 elements greater than `x`. -/
 def sumLexIicIoi : Iic x ⊕ₗ Ioi x ≃o α :=
-  (sumLexCongr (Set.congr (Iic x) {y | ¬ x < y} (by ext; simp)) (refl _)).trans <|
+  (sumLexCongr (Set.orderIsoOfEq (Iic x) {y | ¬ x < y} (by ext; simp)) (refl _)).trans <|
     ofRelIsoLT (RelIso.sumLexComplRight (· < ·) x)
 
 @[simp]
@@ -184,7 +184,7 @@ theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
 def prodLexAssoc (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
   toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
-      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) <| toLex
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) toLex
   map_rel_iff' := by
     simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
       Equiv.prodAssoc_apply]

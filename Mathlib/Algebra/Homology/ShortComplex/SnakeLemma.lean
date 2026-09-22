@@ -504,7 +504,6 @@ def functorL₃ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₃
   map f := f.f₃
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends `S : SnakeInput C` to the auxiliary object `S.P`,
 which is `pullback S.L₁.g S.v₀₁.τ₃`. -/
 @[simps]

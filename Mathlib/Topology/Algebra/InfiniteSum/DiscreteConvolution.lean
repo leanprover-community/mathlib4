@@ -259,7 +259,7 @@ lemma convolution_eq_sum_mulAntidiagonal
     (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
     (f ⋆[L] g) x = ∑ ab ∈ Finset.mulAntidiagonal x, L (f ab.1) (g ab.2) := by
   rw [convolution, ← Finset.tsum_subtype]
-  exact (Equiv.Set.congr (mulFiber_eq_mulAntidiagonal x)).tsum_eq
+  exact (Set.equivOfEq (mulFiber_eq_mulAntidiagonal x)).tsum_eq
     (fun ab => L (f ab.1.1) (g ab.1.2))
 
 /-- Convolution exists whenever the index monoid has `Finset.HasMulAntidiagonal`, since every
