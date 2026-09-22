@@ -183,8 +183,8 @@ theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
     moebiusRow R (n + 1) =
       (fun k ↦ if k = (0 : Fin (n + 1)) then (1 : R) else 0) ᵥ* (zetaMatrix R (n + 1))⁻¹ := by
   have hunit : IsUnit (zetaMatrix R (n + 1)).det := by simp
-  have step := congrArg (· ᵥ* (zetaMatrix R (n + 1))⁻¹) (vecMul_moebiusRow_zetaMatrix R n)
-  simpa [vecMul_vecMul, mul_nonsing_inv _ hunit] using step
+  simpa [vecMul_vecMul, mul_nonsing_inv _ hunit] using
+    congrArg (· ᵥ* (zetaMatrix R (n + 1))⁻¹) (vecMul_moebiusRow_zetaMatrix R n)
 
 theorem det_zetaMatrix_updateCol (n : ℕ) (u : Fin (n + 1) → R) :
     ((zetaMatrix R (n + 1)).updateCol 0 u).det = ∑ j, moebiusRow R (n + 1) j * u j := by
@@ -205,12 +205,10 @@ theorem sum_moebiusRow_add_one (n : ℕ) :
 /-- **Redheffer's theorem**: the determinant of the `(n + 1) × (n + 1)` Redheffer matrix is the
 Mertens function `M (n + 1) = ∑ k ∈ Icc 1 (n + 1), μ k`. -/
 theorem det_redheffer (n : ℕ) : (redheffer R (n + 1)).det = mertens (n + 1) := by
-  rw [det_redheffer_eq_one_add, det_zetaMatrix_updateCol]
-  have h : (∑ j, moebiusRow R (n + 1) j * (if j = 0 then (0 : R) else 1)) =
-      mertens (n + 1) - 1 := by
-    rw [← sum_moebiusRow_add_one]
-    refine sum_congr rfl fun j _ ↦ ?_
-    by_cases hj : j = 0 <;> simp [hj]
-  rw [h]; ring
+  suffices (∑ j, moebiusRow R (n + 1) j * (if j = 0 then (0 : R) else 1)) =
+      mertens (n + 1) - 1 by
+    rw [det_redheffer_eq_one_add, det_zetaMatrix_updateCol, this]; ring
+  rw [← sum_moebiusRow_add_one]
+  exact sum_congr rfl fun j _ ↦ by by_cases hj : j = 0 <;> simp [hj]
 
 end Matrix
