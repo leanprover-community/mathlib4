@@ -59,6 +59,10 @@ theorem Interval.map_map {γ : Type*} (I : Interval α) (f : α → β) (g : β 
     (I.map f).map g = I.map (g ∘ f) := by
   simp [Interval.map, WithBot.map_map, WithTop.map_map]
 
+theorem Interval.map_comp {γ : Type*} (I : Interval α) (f : α → β) (g : β → γ) :
+    I.map (g ∘ f) = (I.map f).map g :=
+  (I.map_map f g).symm
+
 @[grind =]
 theorem Interval.mem_map_iff [Preorder β] (f : α → β) {x : β} {I : Interval α} :
     x ∈ I.map f ↔ (∀ a : α, I.lb = ↑a → f a ≤ x) ∧
