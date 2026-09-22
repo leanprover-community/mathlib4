@@ -521,8 +521,7 @@ theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
 theorem eLpNorm_enorm_rpow {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] (f : α → ε)
     (hf : AEStronglyMeasurable f μ) (hq_pos : 0 < q) :
     eLpNorm (‖f ·‖ₑ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
-  have hfrpow : AEStronglyMeasurable (‖f ·‖ₑ ^ q) μ :=
-    ENNReal.continuous_rpow_const.comp_aestronglyMeasurable hf.enorm.aestronglyMeasurable
+  have hfrpow : AEStronglyMeasurable (‖f ·‖ₑ ^ q) μ := by fun_prop
   by_cases h0 : p = 0
   · simp [h0, hf, hfrpow, ENNReal.zero_rpow_of_pos hq_pos]
   by_cases hp_top : p = ∞
