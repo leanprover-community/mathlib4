@@ -669,7 +669,7 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   let s ← saveState
   /- We do `liftReflToEq` here rather than in `preCongr!` since we don't want to commit to it
      if there are no relevant congr lemmas. -/
-  let mvarId ← liftReflToEq mvarId
+  let mvarId ← Mathlib.Tactic.liftReflToEq mvarId
   for (passName, pass) in congrPasses! do
     try
       if let some mvarIds ← pass config mvarId then
