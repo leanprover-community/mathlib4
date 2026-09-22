@@ -39,14 +39,23 @@ Let `A := (ZMod p)[X] ⧸ (X ^ 2 - X - 1)` and let `α` be the class of `X`, so 
 characteristic `p` gives `s ^ p = 2 α ^ p - 1`. Since `A` is free of rank two over `ZMod p`
 with basis `1, α` (whether or not `X ^ 2 - X - 1` splits), comparing coefficients yields
 `F_p = 5 ^ (p / 2)` and `2 F_{p - 1} = 1 - 5 ^ (p / 2)` in `ZMod p`; Euler's criterion
-identifies `5 ^ (p / 2)` with `(5 / p)`. No case distinction on `(5 / p)` is needed.
+identifies `5 ^ (p / 2)` with `(5 / p)`. No case distinction on `(5 / p)` is needed. This is the
+Frobenius form of the classical argument; [hardy2008introduction, Theorem 180] instead expands
+Binet's formula binomially.
 
 The converse of the divisibility statements fails: `323 = 17 * 19` divides `F_{324}`
 (such composites are the Fibonacci pseudoprimes).
 
+## References
+
+* [G. H. Hardy, E. M. Wright, *An Introduction to the Theory of Numbers*][hardy2008introduction],
+  Theorem 180, which proves the same congruences by expanding Binet's formula binomially.
+* [É. Lucas, *Théorie des fonctions numériques simplement périodiques*][lucas1878theorie],
+  the original source.
+
 ## Tags
 
-fibonacci, legendre symbol, frobenius, lucas sequence
+Fibonacci numbers, Legendre symbol, Frobenius endomorphism, Lucas sequences
 -/
 
 public section
@@ -242,24 +251,37 @@ end Main
 
 section ModFive
 
-/-- `5` is prime (as a `Fact`, for use with `legendreSym`). -/
-instance fact_prime_five : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
+/-! The four concrete facts about squares in `ZMod 5` that the reciprocity step needs, stated at
+top level so that `decide` can evaluate them. -/
+
+private lemma isSquare_one_zmod_five : IsSquare ((1 : ℕ) : ZMod 5) := by decide
+private lemma isSquare_four_zmod_five : IsSquare ((4 : ℕ) : ZMod 5) := by decide
+private lemma not_isSquare_two_zmod_five : ¬ IsSquare ((2 : ℕ) : ZMod 5) := by decide
+private lemma not_isSquare_three_zmod_five : ¬ IsSquare ((3 : ℕ) : ZMod 5) := by decide
+private lemma one_ne_zero_zmod_five : ((1 : ℕ) : ZMod 5) ≠ 0 := by decide
+private lemma four_ne_zero_zmod_five : ((4 : ℕ) : ZMod 5) ≠ 0 := by decide
 
 private lemma legendreSym_five_eq_one_of_mod {p : ℕ} [Fact p.Prime] (hp2 : p ≠ 2)
     (h : p % 5 = 1 ∨ p % 5 = 4) : legendreSym p 5 = 1 := by
+  have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
   change legendreSym p ((5 : ℕ) : ℤ) = 1
   rw [legendreSym.quadratic_reciprocity_one_mod_four (by norm_num) hp2, legendreSym.mod]
   have hmod : ((p : ℤ) % ((5 : ℕ) : ℤ)) = ((p % 5 : ℕ) : ℤ) := by norm_cast
   rw [hmod]
-  rcases h with h | h <;> rw [h] <;> decide
+  rcases h with h | h <;> rw [h]
+  · exact (legendreSym.eq_one_iff' 5 one_ne_zero_zmod_five).mpr isSquare_one_zmod_five
+  · exact (legendreSym.eq_one_iff' 5 four_ne_zero_zmod_five).mpr isSquare_four_zmod_five
 
 private lemma legendreSym_five_eq_neg_one_of_mod {p : ℕ} [Fact p.Prime] (hp2 : p ≠ 2)
     (h : p % 5 = 2 ∨ p % 5 = 3) : legendreSym p 5 = -1 := by
+  have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
   change legendreSym p ((5 : ℕ) : ℤ) = -1
   rw [legendreSym.quadratic_reciprocity_one_mod_four (by norm_num) hp2, legendreSym.mod]
   have hmod : ((p : ℤ) % ((5 : ℕ) : ℤ)) = ((p % 5 : ℕ) : ℤ) := by norm_cast
   rw [hmod]
-  rcases h with h | h <;> rw [h] <;> decide
+  rcases h with h | h <;> rw [h]
+  · exact (legendreSym.eq_neg_one_iff' 5).mpr not_isSquare_two_zmod_five
+  · exact (legendreSym.eq_neg_one_iff' 5).mpr not_isSquare_three_zmod_five
 
 /-- If `p ≡ ±1 (mod 5)` is prime, then `p ∣ F_{p - 1}`. -/
 theorem Prime.dvd_fib_sub_one_of_mod_five {p : ℕ} (hp : p.Prime) (h : p % 5 = 1 ∨ p % 5 = 4) :
