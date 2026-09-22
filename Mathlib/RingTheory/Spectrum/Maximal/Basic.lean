@@ -19,7 +19,7 @@ Basic properties the maximal spectrum of a ring.
 
 noncomputable section
 
-variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
+variable (R : Type*) [CommSemiring R]
 
 namespace MaximalSpectrum
 

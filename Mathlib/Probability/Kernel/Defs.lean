@@ -73,6 +73,7 @@ variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 
 namespace Kernel
 
+@[macro_inline]
 instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr

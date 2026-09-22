@@ -33,10 +33,8 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M : Type*} {R : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (M R)
 
@@ -71,7 +69,7 @@ theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
 
 theorem supported_eq_span_single (s : Set α) :
     supported R R s = span R ((fun i => single i 1) '' s) := by
-  refine (span_eq_of_le _ ?_ (SetLike.le_def.2 fun l hl => ?_)).symm
+  refine (span_eq_of_le _ ?_ (IsConcreteLE.le_iff.2 fun l hl => ?_)).symm
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
@@ -215,7 +213,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 
 section LMapDomain
 
-variable {α' : Type*} {α'' : Type*} (M R)
+variable {α' : Type*} (M R)
 
 theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
     supported M R (f ⁻¹' s) ≤ (supported M R s).comap (lmapDomain M R f) := by

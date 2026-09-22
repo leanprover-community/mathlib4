@@ -37,7 +37,7 @@ of order `n`.
 
 ## Other results
 Criteria for `X ^ n - C a` to be irreducible is given:
-- `X_pow_sub_C_irreducible_iff_of_prime_pow`:
+- `X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two`:
   For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power.
 - `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
   For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power for all prime `p ∣ n`.
@@ -143,18 +143,26 @@ theorem X_pow_sub_C_irreducible_iff_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     fun H ↦ X_pow_sub_C_irreducible_of_odd hn fun p hp hpn ↦ (H p hpn hp.ne_one)⟩
 
 -- TODO: generalize to `p = 2`
-theorem X_pow_sub_C_irreducible_of_prime_pow
+theorem X_pow_sub_C_irreducible_of_prime_pow_of_ne_two
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) (n : ℕ) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ (p ^ n) - C a) := by
   apply X_pow_sub_C_irreducible_of_odd (hp.odd_of_ne_two hp').pow
   intro q hq hq'
   simpa [(Nat.prime_dvd_prime_iff_eq hq hp).mp (hq.dvd_of_dvd_pow hq')] using ha
 
-theorem X_pow_sub_C_irreducible_iff_of_prime_pow
+@[deprecated (since := "2026-08-17")]
+alias X_pow_sub_C_irreducible_of_prime_pow :=
+  X_pow_sub_C_irreducible_of_prime_pow_of_ne_two
+
+theorem X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) {n} (hn : n ≠ 0) {a : K} :
     Irreducible (X ^ p ^ n - C a) ↔ ∀ b, b ^ p ≠ a :=
   ⟨(pow_ne_of_irreducible_X_pow_sub_C · (dvd_pow dvd_rfl hn) hp.ne_one),
-    X_pow_sub_C_irreducible_of_prime_pow hp hp' n⟩
+    X_pow_sub_C_irreducible_of_prime_pow_of_ne_two hp hp' n⟩
+
+@[deprecated (since := "2026-08-17")]
+alias X_pow_sub_C_irreducible_iff_of_prime_pow :=
+  X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
 
 end Irreducible
 
