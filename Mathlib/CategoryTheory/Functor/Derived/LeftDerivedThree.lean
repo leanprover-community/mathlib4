@@ -61,13 +61,15 @@ variable (LF LF' LF'' : D₁ ⥤ D₂ ⥤ D₃ ⥤ H) (F F' F'' : C₁ ⥤ C₂ 
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃]
 
-abbrev HasLeftDerivedFunctor₃ := (uncurry₃.obj F).HasLeftDerivedFunctor (W₁.prod (W₂.prod W₃))
+@[reducible]
+def HasLeftDerivedFunctor₃ := (uncurry₃.obj F).HasLeftDerivedFunctor (W₁.prod (W₂.prod W₃))
 
 variable [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
 
 variable {F F'}
 
-abbrev IsLeftDerivedFunctor₃ : Prop :=
+@[reducible]
+def IsLeftDerivedFunctor₃ : Prop :=
   (uncurry₃.obj LF).IsLeftDerivedFunctor (whiskeringLeft₃Equiv α) (W₁.prod (W₂.prod W₃))
 
 section
