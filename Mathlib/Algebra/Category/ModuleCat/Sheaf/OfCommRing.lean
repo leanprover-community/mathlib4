@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Category.Ring.Limits
 
 This file provides short names for categories and functors obtained from a sheaf of commutative
 rings by forgetting to rings. In particular, these names reduce the need for
-repeatedly writing the relevant forgetful functor.
+repeatedly writing the relevant forgetful functor
 -/
 
 @[expose] public section
