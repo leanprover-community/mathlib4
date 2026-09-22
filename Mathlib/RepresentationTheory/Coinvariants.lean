@@ -55,9 +55,16 @@ def Coinvariants.ker : Submodule k V :=
   Submodule.span k (Set.range fun (gv : G × V) => ρ gv.1 gv.2 - gv.2)
 
 /-- The coinvariants of a representation, `V ⧸ ⟨{ρ g x - x | g ∈ G, x ∈ V}⟩`. -/
-abbrev Coinvariants := V ⧸ Coinvariants.ker ρ
+def Coinvariants := V ⧸ Coinvariants.ker ρ
 
 namespace Coinvariants
+
+instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
+
+instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
+
+instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
+  inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
 
 variable {ρ}
 
