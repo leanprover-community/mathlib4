@@ -228,7 +228,7 @@ variable {ι : Type*} (R : ι → Type*)
 
 /-- The monoid equivalence between `GL n` of a product of rings,
 and the product of the `GL n` of each ring. -/
-@[simps! apply]
+@[simps! apply symm_apply]
 def piEquiv [Π i, CommRing (R i)] : GL n (Π i, R i) ≃* Π i, GL n (R i) :=
   (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
 
