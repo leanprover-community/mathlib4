@@ -88,8 +88,10 @@ lemma binaryBayesEstimator_eq :
   simp [Bool.ofNat]
 
 @[fun_prop]
-lemma measurable_binaryBayesEstimator : Measurable (binaryBayesEstimator μ ν π) :=
-  Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
+lemma measurable_binaryBayesEstimator : Measurable (binaryBayesEstimator μ ν π) := by
+  rw [binaryBayesEstimator_eq]
+  exact Measurable.of_discrete.fun_comp
+    (measurable_one.indicator (measurableSet_le (by fun_prop) (by fun_prop)))
 
 /-- `binaryBayesEstimator` is an argmin estimator for the zero-one loss. -/
 lemma isArgminEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]

@@ -83,7 +83,7 @@ lemma avgRisk_const_of_fintype [Fintype 𝓨] [MeasurableSingletonClass 𝓨]
   simp [avgRisk_fintype' hℓ]
 
 lemma bayesRisk_const_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
-    (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
+    (hℓ : Measurable (Function.uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
     bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
   have hℓ' : Measurable ℓ := by fun_prop
   have := Fintype.ofFinite 𝓨
