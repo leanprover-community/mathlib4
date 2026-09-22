@@ -380,7 +380,7 @@ omit [DecidableEq α] in
 @[simp]
 theorem isLowerSet_preimage_coe_powerset (s : Set α) :
     IsLowerSet (((↑) : Finset α → Set α) ⁻¹' 𝒫 s) :=
-  (Set.isLowerSet_powerset s).preimage fun _ _ h ↦ coe_subset.2 h
+  s.isLowerSet_powerset.preimage fun _ _ h ↦ coe_subset.2 h
 
 omit [DecidableEq α] in
 theorem isLowerSet_coe_powerset (s : Finset α) :
