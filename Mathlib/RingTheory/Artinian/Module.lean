@@ -102,7 +102,8 @@ theorem isArtinian_of_surjective_algebraMap {S : Type*} [CommSemiring S] [Algebr
     suffices r • x ∈ N by simpa [Algebra.algebraMap_eq_smul_one, smul_assoc]
     apply N.smul_mem _ hx
   · intro N1 N2 h
-    rwa [Submodule.ext_iff] at h ⊢
+    rw [Submodule.ext_iff] at h ⊢
+    assumption
   · intro N1 N2
     rfl
 

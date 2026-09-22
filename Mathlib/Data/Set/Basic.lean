@@ -118,10 +118,14 @@ theorem le_iff_subset : s ≤ t ↔ s ⊆ t :=
 theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 
-@[deprecated "this is now a syntactic identity" (since := "2026-05-24")]
+-- `alias` fills in `le_iff_subset` as the deprecation target, and that is itself deprecated
+-- without a replacement, as `≤` and `⊆` are now syntactically equal.
+set_option linter.deprecated.deprecatedTarget false in
+@[deprecated "this is now a syntactic identity" +typeChanged (since := "2026-05-24")]
 alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
-@[deprecated "this is now a syntactic identity" (since := "2026-05-24")]
+set_option linter.deprecated.deprecatedTarget false in
+@[deprecated "this is now a syntactic identity" +typeChanged (since := "2026-05-24")]
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
@@ -287,7 +291,7 @@ theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
 theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
 
-@[deprecated not_univ_subset (since := "2026-03-12")]
+@[deprecated not_univ_subset +typeChanged (since := "2026-03-12")]
 theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s :=
   not_univ_subset
 
