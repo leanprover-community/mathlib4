@@ -364,7 +364,7 @@ def coinvariantsShortComplex : ShortComplex (Rep.{w} k G) where
   X₁ := toCoinvariantsKer A S
   X₂ := A
   X₃ := toCoinvariants A S
-  f := Rep.subtype A _ _
+  f := ofHom ⟨Submodule.subtype _, fun g ↦ by ext; simp⟩
   g := toCoinvariantsMkQ A S
   zero := by ext x; exact (Submodule.Quotient.mk_eq_zero _).2 x.2
 
