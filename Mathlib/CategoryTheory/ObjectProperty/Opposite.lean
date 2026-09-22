@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # The opposite of a property of objects
@@ -137,6 +137,7 @@ lemma unop_isoClosure (P : ObjectProperty Cᵒᵖ) :
     P.isoClosure.unop = P.unop.isoClosure := by
   rw [← op_injective_iff, P.unop.op_isoClosure, op_unop, op_unop]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `P : ObjectProperty C`, this is the equivalence between `P.op.FullSubcategory`
 and `P.FullSubcategoryᵒᵖ`. -/
 @[simps]

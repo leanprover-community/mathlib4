@@ -34,7 +34,7 @@ lemma units_natAbs (u : ℤˣ) : natAbs u = 1 :=
 @[simp] lemma natAbs_of_isUnit (hu : IsUnit u) : natAbs u = 1 := units_natAbs hu.unit
 
 lemma isUnit_eq_one_or (hu : IsUnit u) : u = 1 ∨ u = -1 := by
-  simpa only [natAbs_of_isUnit hu] using natAbs_eq u
+  simpa only [natAbs_of_isUnit hu] using! natAbs_eq u
 
 lemma isUnit_ne_iff_eq_neg (hu : IsUnit u) (hv : IsUnit v) : u ≠ v ↔ u = -v := by
   obtain rfl | rfl := isUnit_eq_one_or hu <;> obtain rfl | rfl := isUnit_eq_one_or hv <;> decide

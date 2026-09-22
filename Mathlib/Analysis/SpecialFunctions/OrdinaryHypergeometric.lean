@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.OfScalars
 public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Ordinary hypergeometric function in a Banach algebra
@@ -75,7 +76,7 @@ variable {𝔸} (a b c : 𝕂)
 /-- `ordinaryHypergeometric (a b c : 𝕂) : 𝔸 → 𝔸`, denoted `₂F₁`, is the ordinary hypergeometric map,
 defined as the sum of the `FormalMultilinearSeries` `ordinaryHypergeometricSeries 𝔸 a b c`.
 
-Note that this takes the junk value `0` outside the radius of convergence.
+Note that this takes the junk value `0` outside the radius of convergence and for the poles.
 -/
 noncomputable def ordinaryHypergeometric (x : 𝔸) : 𝔸 :=
   (ordinaryHypergeometricSeries 𝔸 a b c).sum x
@@ -122,7 +123,10 @@ theorem ordinaryHypergeometricSeries_symm :
   simp [mul_assoc, mul_left_comm]
 
 /-- If any parameter to the series is a sufficiently large nonpositive integer, then the series
-term is zero. -/
+term is zero.
+
+In the case of the first two parameters these are usual zeros, whereas `c = -k` is a pole and its
+junk value is taken to be zero. -/
 lemma ordinaryHypergeometricSeries_eq_zero_of_neg_nat {n k : ℕ} (habc : k = -a ∨ k = -b ∨ k = -c)
     (hk : k < n) : ordinaryHypergeometricSeries 𝔸 a b c n = 0 := by
   rw [ordinaryHypergeometricSeries, ofScalars]
@@ -135,7 +139,7 @@ end Field
 
 section RCLike
 
-open Asymptotics Filter Real Set Nat
+open Filter Real Nat
 
 open scoped Topology
 
@@ -152,6 +156,7 @@ theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
   rw [ordinaryHypergeometricSeries_symm]
   exact ordinaryHypergeometric_radius_top_of_neg_nat₁ 𝔸 a c
 
+/-- The convergence radius for `c = -k` is infinite, because the junk value at poles is `0`. -/
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a b (-(k : 𝕂))).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
@@ -199,16 +204,16 @@ are non-positive integers. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℕ, ↑kn ≠ -a ∧ ↑kn ≠ -b ∧ ↑kn ≠ -c) :
     (ordinaryHypergeometricSeries 𝔸 a b c).radius = 1 := by
-  convert ofScalars_radius_eq_of_tendsto 𝔸 _ one_ne_zero ?_
+  convert! ofScalars_radius_eq_of_tendsto 𝔸 _ one_ne_zero ?_
   suffices Tendsto (fun k : ℕ ↦ (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k)) atTop (𝓝 1) by
     simp_rw [ordinaryHypergeometricSeries_norm_div_succ_norm a b c _ (fun n _ ↦ habc n)]
     simp only [← norm_inv, ← norm_mul, NNReal.coe_one]
-    convert Filter.Tendsto.norm this
+    convert! Filter.Tendsto.norm this
     exact norm_one.symm
   have (k : ℕ) : (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k) =
         (c + k) / (a + k) * ((1 + k) / (b + k)) := by field
   simp_rw [this]
   apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
-  convert tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
+  convert! tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
 
 end RCLike

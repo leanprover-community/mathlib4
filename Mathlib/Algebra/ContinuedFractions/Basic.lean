@@ -105,7 +105,7 @@ We store the sequence of partial numerators and denominators in a sequence of `G
 `s`.
 For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
 -/
-@[ext]
+@[ext, wikidata Q4115724]
 structure GenContFract where
   /-- Head term -/
   h : α

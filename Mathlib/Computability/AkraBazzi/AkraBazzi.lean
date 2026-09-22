@@ -58,7 +58,7 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -132,7 +132,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
           rw [isLittleO_const_left]
           refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
           exact Tendsto.comp (g := fun z => z ^ 2)
-            (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+            (tendsto_pow_atTop (by simp)) tendsto_log_atTop
         _ = fun z => z ^ (p - 1) := by ext; simp
         _ =Θ[atTop] fun z => p * z ^ (p - 1) := IsTheta.const_mul_right hp <| isTheta_refl _ _
 
@@ -155,7 +155,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
             rw [isLittleO_const_left]
             refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
             exact Tendsto.comp (g := fun z => z ^ 2)
-              (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+              (tendsto_pow_atTop (by simp)) tendsto_log_atTop
         _ = fun z => z ^ (p - 1) := by ext; simp
         _ =Θ[atTop] fun z => p * z ^ (p - 1) := IsTheta.const_mul_right hp <| isTheta_refl _ _
 
@@ -478,7 +478,6 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                     (n₀ : ℝ) / b' ≤ ⌈n₀ / b'⌉₊ := Nat.le_ceil (↑n₀ / b')
                     _ ≤ n := by exact_mod_cast n₀_div_le_n
                 rwa [div_le_iff₀, mul_comm] at this
-                grind only
         _ ≤ r i n := by grind
   have r_le_n : ∀ i, r i n < n := by grind [AkraBazziRecurrence]
   intro C hC h_ind
@@ -540,7 +539,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
       rw [sub_nonpos]
       calc 1
         _ ≤ 2 * (c₁⁻¹ * c₁) * (1 / 2) := by
-          rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; norm_num
+          rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; simp
         _ = (2 * c₁⁻¹) * c₁ * (1 / 2) := by ring
         _ ≤ C * c₁ * (1 - ε n) := by gcongr
     _ = C * ((1 - ε n) * asympBound g a b n) := by ring
@@ -585,7 +584,6 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                     (n₀ : ℝ) / b' ≤ ⌈n₀ / b'⌉₊ := Nat.le_ceil (↑n₀ / b')
                     _ ≤ n := by exact_mod_cast n₀_div_le_n
                 rwa [div_le_iff₀, mul_comm] at this
-                grind only
         _ ≤ r i n := by grind
   have r_le_n : ∀ i, r i n < n := by grind [AkraBazziRecurrence]
   intro C hC h_ind

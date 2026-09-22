@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Zify
@@ -185,8 +186,6 @@ theorem fastFibAux_bit_false (n : ℕ) :
   · rfl
   · simp
 
-@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_ff := fastFibAux_bit_false
-
 theorem fastFibAux_bit_true (n : ℕ) :
     fastFibAux (bit true n) =
       let p := fastFibAux n
@@ -194,8 +193,6 @@ theorem fastFibAux_bit_true (n : ℕ) :
   rw [fastFibAux, binaryRec_eq]
   · rfl
   · simp
-
-@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_tt := fastFibAux_bit_true
 
 theorem fastFibAux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   refine Nat.binaryRec ?_ ?_ n
@@ -205,11 +202,7 @@ theorem fastFibAux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
         congr_arg Prod.snd ih, Prod.mk_inj] <;>
       simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 
-@[deprecated (since := "2026-02-04")] alias fast_fib_aux_eq := fastFibAux_eq
-
 theorem fastFib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fastFibAux_eq]
-
-@[deprecated (since := "2026-02-04")] alias fast_fib_eq := fastFib_eq
 
 @[csimp]
 theorem fib_eq_fastFib : fib = fastFib := by ext; rw [fastFib_eq]
@@ -243,8 +236,13 @@ theorem fib_gcd (m n : ℕ) : fib (gcd m n) = gcd (fib m) (fib n) := by
     conv_rhs => rw [← mod_add_div' n m]
     rwa [gcd_fib_add_mul_self m (n % m) (n / m), gcd_comm (fib m) _]
 
-theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
-  rwa [← gcd_eq_left_iff_dvd, ← fib_gcd, gcd_eq_left_iff_dvd.mpr]
+theorem isStrongDvdSequence_fib : IsStrongDvdSequence fib :=
+  fun m n ↦ (fib_gcd m n).symm
+
+theorem isDvdSequence_fib : IsDvdSequence fib :=
+  isStrongDvdSequence_fib.isDvdSequence
+
+alias fib_dvd := isDvdSequence_fib
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p ∈ Finset.antidiagonal n, choose p.1 p.2 :=

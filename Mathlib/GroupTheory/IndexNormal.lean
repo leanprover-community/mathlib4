@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Nat.Prime.Factorial
 public import Mathlib.GroupTheory.Index
+public import Mathlib.Order.Atoms
 
 /-! # Subgroups of small index are normal
 
@@ -17,6 +18,8 @@ public import Mathlib.GroupTheory.Index
 * `Subgroup.normal_of_index_two`: in a group `G`, a subgroup of index 2 is normal
   (This does not require `G` to be finite.)
 
+* `Subgroup.isCoatom_of_index_prime`: a subgroup of prime index is maximal.
+
 -/
 
 public section
@@ -25,9 +28,18 @@ assert_not_exists Field
 
 open MulAction MonoidHom Nat
 
-variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
+variable {G : Type*} [Group G] {H : Subgroup G}
 
 namespace Subgroup
+
+/-- A subgroup of prime index is maximal. -/
+@[to_additive]
+theorem isCoatom_of_index_prime (hH : H.index.Prime) : IsCoatom H := by
+  have : H.FiniteIndex := ⟨hH.ne_zero⟩
+  refine isCoatom_iff_ge_of_le.mpr ⟨fun hM ↦ by simpa [hM] using hH.ne_one, fun K hK hHK ↦ ?_⟩
+  have : K.FiniteIndex := finiteIndex_of_le hHK
+  have h := (hH.eq_one_or_self_of_dvd _ (index_dvd_of_le hHK)).resolve_left (by simpa)
+  exact (eq_of_index_dvd_index hHK h.symm.dvd).ge
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
@@ -51,7 +63,7 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
   · rw [hG1, minFac_one] at hHp
     exact normal_of_index_eq_one hHp
   suffices H.normalCore.relIndex H = 1 by
-    convert H.normalCore_normal
+    convert! H.normalCore_normal
     exact le_antisymm (relIndex_eq_one.mp this) (normalCore_le H)
   have : Finite G := finite_of_card_ne_zero hG0
   have index_ne_zero : H.index ≠ 0 := index_ne_zero_of_finite

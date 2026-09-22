@@ -55,11 +55,11 @@ instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
   ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 
 /-- The opposite of an arrow in `V`. -/
-@[to_dual self]
+@[implicit_reducible, to_dual self]
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
-@[to_dual self]
+@[implicit_reducible, to_dual self]
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 
 /-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/
@@ -67,6 +67,12 @@ def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X :=
 def Hom.opEquiv {V} [Quiver V] {X Y : V} : (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
   toFun := Opposite.op
   invFun := Opposite.unop
+
+/-- To show that two Homs from the opposite category agree, it suffices to show they agree
+in the original category. -/
+@[ext low, to_dual self]
+theorem Hom.unop_ext {V} [Quiver V] {X Y : Vᵒᵖ} {f g : X ⟶ Y} (h : f.unop = g.unop) : f = g :=
+  Hom.opEquiv.symm.injective h
 
 /-- A type synonym for a quiver with no arrows. -/
 def Empty (V : Type u) : Type u := V

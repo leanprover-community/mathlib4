@@ -165,6 +165,8 @@ def ω :
   letI := P.indexNeg
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- Geck's construction of the Lie algebra associated to a root system with distinguished base.
 
 Note that it is convenient to include `range h` in the Lie span, to make it elementary that it
@@ -258,7 +260,7 @@ lemma ω_mul_h [Fintype ι] (i : b.support) :
 
 lemma ω_mul_e [Fintype ι] (i : b.support) :
     ω b * e i = f i * ω b := by
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k) (l | l)
   · simp [ω, e, f]
@@ -281,7 +283,6 @@ lemma ω_mul_f [Fintype ι] (i : b.support) :
 
 lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
     ⁅e i, f j⁆ * ω b = -ω b * ⁅e j, f i⁆ := by
-  classical
   calc ⁅e i, f j⁆ * ω b = e i * f j * ω b - f j * e i * ω b := by rw [Ring.lie_def, sub_mul]
                       _ = e i * (f j * ω b) - f j * (e i * ω b) := by rw [mul_assoc, mul_assoc]
                       _ = e i * (ω b * e j) - f j * (ω b * f i) := by rw [← ω_mul_e, ← ω_mul_f]
@@ -334,7 +335,7 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩
   obtain ⟨d, rfl⟩ : ∃ d : b.support ⊕ ι → R, Matrix.diagonal d = x :=
-    span_range_h_le_range_diagonal <| by simpa using hx
+    span_range_h_le_range_diagonal <| by simpa using! hx
   simp
 
 lemma cartanSubalgebra_le_lieAlgebra :
@@ -349,7 +350,7 @@ lemma e_lie_u (i j : b.support) :
 
 lemma e_lie_v_ne {i j : ι} {k : b.support} (h : P.root j = P.root k + P.root i) :
     ⁅e k, v b i⁆ = (P.chainBotCoeff k i + 1 : R) • v b j := by
-  letI := P.indexNeg
+  let := P.indexNeg
   ext (l | l)
   · replace h : i ≠ -k := by rintro rfl; exact P.ne_zero j <| by simpa using h
     simp [e, h, -indexNeg_neg]

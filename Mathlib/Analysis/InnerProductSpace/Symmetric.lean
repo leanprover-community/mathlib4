@@ -9,6 +9,7 @@ public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -39,7 +40,7 @@ self-adjoint, symmetric
 
 open RCLike
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 section Seminormed
 
@@ -189,7 +190,7 @@ theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
     rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
     simp only [Complex.conj_I]
     rw [inner_map_polarization']
-    norm_num
+    simp
     ring
 
 end Complex
@@ -369,12 +370,8 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
   simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
     inner_zero_right] at hf'
   simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
-    (forall_comm.eq ▸ hf')] using h
+    (forall_comm.eq ▸ hf')] using! h
 
 end LinearMap
-
-@[deprecated (since := "2025-12-28")] alias
-  ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
 
 end Normed

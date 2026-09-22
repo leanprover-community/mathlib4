@@ -6,7 +6,6 @@ Authors: Qinchuan Zhang
 module
 
 public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
@@ -32,7 +31,7 @@ lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c
     b = -a * (x1 + x2) := by
   let p : R[X] := C a * X ^ 2 + C b * X + C c
   have hp_natDegree : p.natDegree = 2 := le_antisymm natDegree_quadratic_le
-    (by convert p.card_roots'; rw [hroots, Multiset.card_pair])
+    (by convert! p.card_roots'; rw [hroots, Multiset.card_pair])
   have hp_roots_card : p.roots.card = p.natDegree := by
     rw [hp_natDegree, hroots, Multiset.card_pair]
   simpa [leadingCoeff, hp_natDegree, p, hroots, mul_assoc, add_comm x1] using
@@ -44,7 +43,7 @@ lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 
     c = a * x1 * x2 := by
   let p : R[X] := C a * X ^ 2 + C b * X + C c
   have hp_natDegree : p.natDegree = 2 := le_antisymm natDegree_quadratic_le
-    (by convert p.card_roots'; rw [hroots, Multiset.card_pair])
+    (by convert! p.card_roots'; rw [hroots, Multiset.card_pair])
   have hp_roots_card : p.roots.card = p.natDegree := by
     rw [hp_natDegree, hroots, Multiset.card_pair]
   simpa [leadingCoeff, hp_natDegree, p, hroots, mul_assoc, add_comm x1] using

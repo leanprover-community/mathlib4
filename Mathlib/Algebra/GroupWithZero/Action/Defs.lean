@@ -117,6 +117,7 @@ class SMulWithZero [Zero M₀] [Zero A] extends SMulZeroClass M₀ A where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : A, (0 : M₀) • m = 0
 
+-- see Note [higher instance priority]
 instance (priority := 1100) MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
   smul := (· * ·)
   smul_zero := mul_zero
@@ -159,7 +160,7 @@ protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Surje
 variable (A)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
-@[implicit_reducible]
+@[instance_reducible]
 def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
   smul := (f · • ·)
   smul_zero m := smul_zero (f m)
@@ -193,6 +194,7 @@ instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : Monoid
     {_ : Zero A} [m : MulActionWithZero M₀ A] : SMulWithZero M₀ A :=
   { m with }
 
+-- see Note [higher instance priority]
 /-- See also `Semiring.toModule` -/
 instance (priority := 1100) MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
   { MulZeroClass.toSMulWithZero M₀, Monoid.toMulAction M₀ with }
@@ -238,7 +240,7 @@ protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : 
 variable (A)
 
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
-@[implicit_reducible]
+@[instance_reducible]
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   __ := SMulWithZero.compHom A f.toZeroHom
   mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
@@ -347,8 +349,6 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
-attribute [to_additive existing (dont_translate := M) DistribMulAction] MulDistribMulAction
-
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
@@ -379,11 +379,6 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
   { hf.distribSMul f smul, hf.mulAction f smul with }
 
 variable (A)
-
-/-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps!, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
-def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
-  DistribSMul.toAddMonoidHom A x
 
 variable (M)
 

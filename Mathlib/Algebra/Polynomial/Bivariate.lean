@@ -131,8 +131,7 @@ lemma evalEval_prod {ι : Type*} (s : Finset ι) (x y : R) (p : ι → R[X][Y]) 
 
 lemma evalEval_list_prod (x y : R) (l : List R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
-  simp only [evalEval, eval_list_prod, List.map_map]
-  rfl -- todo: add the missing lemma
+  simp [evalEval, eval_list_prod, Function.comp_def]
 
 lemma evalEval_multiset_prod (x y : R) (l : Multiset R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
@@ -218,7 +217,7 @@ variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 variable (R A) in
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, the bijection induced by
 the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
-@[simps! apply_apply symm_apply symm_apply_fst symm_apply_snd]
+@[simps! apply_apply symm_apply]
 def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
   toFun xy := aeval xy.fst |>.restrictScalars R |>.comp <|
     let := Polynomial.algebra; aeval (R := R[X]) (C xy.snd) |>.restrictScalars R
@@ -234,6 +233,7 @@ abbrev aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
 lemma aevalAevalEquiv_apply (xy : A × A) : aevalAevalEquiv R A xy = aevalAeval xy.1 xy.2 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem coe_aevalAeval_eq_evalEval (x y : A) : ⇑(aevalAeval x y) = evalEval x y := by
   ext
   simp [aeval, aevalEquiv]
@@ -353,9 +353,6 @@ lemma pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [map_nsmul]
 
-@[deprecated (since := "2025-12-09")]
-alias Polynomial.Bivariate.pderiv_zero_equivMvPolynomial := pderiv_zero_equivMvPolynomial
-
 lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
     (equivMvPolynomial R p).pderiv 1 = equivMvPolynomial R (derivative p) := by
   induction p using Polynomial.induction_on' with
@@ -366,9 +363,6 @@ lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
   | monomial m a =>
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [derivative_pow]
-
-@[deprecated (since := "2025-12-09")]
-alias Polynomial.Bivariate.pderiv_one_equivMvPolynomial := pderiv_one_equivMvPolynomial
 
 end MvPolynomial
 

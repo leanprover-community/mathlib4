@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.Algebra.Group.Torsor
 
 /-!
 # Topological properties of affine spaces and maps
@@ -17,6 +17,7 @@ This file contains a few facts regarding the continuity of affine maps.
 
 public section
 
+open Topology
 
 namespace AffineMap
 
@@ -31,27 +32,37 @@ section Ring
 
 variable [Ring R] [Module R V] [Module R W]
 
+private theorem linear_decomp {f : P →ᵃ[R] Q} :
+    (f.linear : V → W) = (Homeomorph.vaddConst <| f (Classical.arbitrary P)).symm ∘ f ∘
+      (Homeomorph.vaddConst (Classical.arbitrary P)) := by
+  ext v
+  simp
+
 /-- If `f` is an affine map, then its linear part is continuous iff `f` is continuous. -/
 theorem continuous_linear_iff {f : P →ᵃ[R] Q} : Continuous f.linear ↔ Continuous f := by
-  inhabit P
-  have :
-    (f.linear : V → W) =
-      (Homeomorph.vaddConst <| f default).symm ∘ f ∘ (Homeomorph.vaddConst default) := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
+  simp only [linear_decomp, Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
 
 /-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
 theorem isOpenMap_linear_iff {f : P →ᵃ[R] Q} : IsOpenMap f.linear ↔ IsOpenMap f := by
-  inhabit P
-  have :
-    (f.linear : V → W) =
-      (Homeomorph.vaddConst <| f default).symm ∘ f ∘ (Homeomorph.vaddConst default) := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
+  simp only [linear_decomp, Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
+
+/-- If `f` is an affine map, then its linear part is an embedding iff `f` is an embedding. -/
+theorem isEmbedding_linear_iff {f : P →ᵃ[R] Q} : IsEmbedding f.linear ↔ IsEmbedding f := by
+  simp only [linear_decomp, Homeomorph.comp_isEmbedding_iff, Homeomorph.isEmbedding_comp_iff]
+
+/-- If `f` is an affine map, then its linear part is an open embedding iff `f` is an open embedding.
+-/
+theorem isOpenEmbedding_linear_iff {f : P →ᵃ[R] Q} :
+    IsOpenEmbedding f.linear ↔ IsOpenEmbedding f := by
+  simp only [linear_decomp, Homeomorph.comp_isOpenEmbedding_iff,
+    Homeomorph.isOpenEmbedding_comp_iff]
+
+/-- If `f` is an affine map, then its linear part is a closed embedding iff `f` is a closed
+embedding. -/
+theorem isClosedEmbedding_linear_iff {f : P →ᵃ[R] Q} :
+    IsClosedEmbedding f.linear ↔ IsClosedEmbedding f := by
+  simp only [linear_decomp, Homeomorph.comp_isClosedEmbedding_iff,
+    Homeomorph.isClosedEmbedding_comp_iff]
 
 variable [TopologicalSpace R] [ContinuousSMul R V]
 
@@ -67,7 +78,7 @@ theorem lineMap_continuous {p q : P} :
     Continuous (lineMap p q : R →ᵃ[R] P) := by
   fun_prop
 
-open Topology Filter
+open Filter
 
 section Tendsto
 
@@ -121,7 +132,7 @@ theorem homothety_continuous (x : P) (t : R) : Continuous <| homothety x t := by
 
 variable (R) [TopologicalSpace R] [Module R W] [ContinuousSMul R W] (x : Q) {s : Set Q}
 
-open Topology
+open scoped Topology
 
 theorem _root_.eventually_homothety_mem_of_mem_interior {y : Q} (hy : y ∈ interior s) :
     ∀ᶠ δ in 𝓝 (1 : R), homothety x δ y ∈ s := by
