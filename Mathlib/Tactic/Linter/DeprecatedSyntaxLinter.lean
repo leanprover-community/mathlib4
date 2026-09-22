@@ -163,8 +163,6 @@ partial def hasMaxPrec : Syntax → Bool
     | `choice => args.any hasMaxPrec
     -- prefix notation: `@⋯`
     | ``Parser.Term.explicit => args[1]?.any hasMaxPrec
-     -- postfix notation: `⋯.1`/`⋯.foo`, `⋯.{u}`, `⋯⁻¹`
-    | ``Parser.Term.proj | ``Parser.Term.explicitUniv | ``«term_⁻¹»
     -- literals
     | `num | `scientific | `str | `char | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName
     -- brackets: `(⋯)`, `(⋯ : ⋯)`, `(⋯ :)`
@@ -172,13 +170,15 @@ partial def hasMaxPrec : Syntax → Bool
     -- tuples/lists: `(⋯, ⋯)`, `⟨...⟩`, `{ ... }`, `[...]`, `#[...]`, `#v[...]`
     | ``Parser.Term.tuple | ``Parser.Term.anonymousCtor | ``Parser.Term.structInst
     | ``«term[_]» | ``«term#[_,]» | ``Vector.«term#v[_,]»
+     -- postfix notation: `⋯.1`/`⋯.foo`, `⋯.{u}`, `⋯⁻¹`
+    | ``Parser.Term.proj | ``Parser.Term.explicitUniv | ``«term_⁻¹»
     -- `getElem` notation
     | ``«term__[_]» | ``«term__[_]'_» | ``«term__[_]_!» | ``«term__[_]_?»
     -- miscellaneous: `·`, `.foo`,
     | ``Parser.Term.cdot | ``Parser.Term.dotIdent
       => true
     | _ =>
-      -- atomic notation such as `ℕ`
+      -- atomic notation such as `Type*` or `ℕ`
       if h : args.size = 1 then args[0].isAtom else false
   | _ => false
 
@@ -236,7 +236,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
           -- Trick: manually set the position info of `<|` in order to remove preceding whitespace.
           let info := match args[0].getTailPos?, args[1].getTailPos? with
             | some pos, some tailPos => .synthetic pos tailPos
-            | _,        _            => .none
+            | _,        _            => .none -- This should not happen.
           rargs.push (kind, args[1].setHeadInfo info,
             m!"`{args[2]}` can be parsed as a function argument, \
             so the pipe operator `<|` can be omitted.")
