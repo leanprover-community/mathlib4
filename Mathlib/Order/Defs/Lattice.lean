@@ -42,7 +42,7 @@ semilattice, lattice
 
 assert_not_exists LinearOrder
 
-universe u v w
+universe u v
 
 variable {α : Type u} {β : Type v}
 

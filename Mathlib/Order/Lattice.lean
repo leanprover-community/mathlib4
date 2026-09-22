@@ -17,6 +17,7 @@ import Mathlib.Tactic.GRewrite
 # Basic properties of lattices
 
 This file contains some basic results, alternative constructors and instances for (semi)lattices.
+For the definitions, see `Mathlib.Order.Defs.Lattice`.
 
 ## Main declarations
 
