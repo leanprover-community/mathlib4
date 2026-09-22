@@ -310,7 +310,7 @@ open CFC
 
 @[simp, grind =]
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
-  rw [CFC.abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
+  rw [CFC.abs, sqrt_eq_zero_iff _, star_mul_self_eq_zero]
 
 @[simp, grind =]
 lemma norm_abs {a : A} : ‖abs a‖ = ‖a‖ := by
