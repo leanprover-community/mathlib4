@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Basic
 
+import Mathlib.Data.Set.Image
+
 /-!
 # Matrix and vector notation
 
@@ -96,7 +98,7 @@ def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
 def vecTail {n : ℕ} (v : Fin n.succ → α) : Fin n → α :=
   v ∘ Fin.succ
 
-variable {m n : ℕ}
+variable {n : ℕ}
 
 /-- Use `![...]` notation for displaying a vector `Fin n → α`, for example:
 
@@ -496,5 +498,12 @@ lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :
     Function.comp_apply, cons_val_succ, Equiv.swap_apply_of_ne_of_ne (by grind) (by grind)]
 
 end swap
+
+@[simp]
+lemma injective_pair_iff_ne {x y : α} : Function.Injective ![x, y] ↔ x ≠ y := by
+  simp [Function.Injective, Fin.forall_fin_two, eq_comm]
+
+@[deprecated Matrix.injective_pair_iff_ne (since := "2026-09-04")]
+alias _root_.injective_pair_iff_ne := injective_pair_iff_ne
 
 end Matrix

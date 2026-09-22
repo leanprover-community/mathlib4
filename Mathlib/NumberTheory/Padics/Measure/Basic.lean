@@ -21,7 +21,7 @@ open ContinuousMap
 
 variable {X Y R E : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-    [CommRing R] [TopologicalSpace R] [IsTopologicalRing R] [Module R E] --[ContinuousSMul R E]
+    [CommRing R] [TopologicalSpace R] [IsTopologicalRing R] [Module R E]
 
 section Defs
 
@@ -49,6 +49,7 @@ namespace AbstractMeasure
 section NoContinuousSMul
 
 /-- Inherit `FunLike` structure from `C(X, R) →L[R] E`. -/
+@[macro_inline]
 instance : FunLike (AbstractMeasure X R E) C(X, R) E :=
   inferInstanceAs (FunLike (C(X, R) →L[R] E) C(X, R) E)
 
@@ -62,6 +63,11 @@ instance : AddCommGroup (AbstractMeasure X R E) :=
 
 instance isAddApply : IsAddApply (AbstractMeasure X R E) C(X, R) E where
   add_apply _ _ _ := rfl
+
+omit [IsTopologicalAddGroup E] in
+@[ext] lemma ext {μ ν : AbstractMeasure X R E} (hμν : ∀ f : C(X, R), μ f = ν f) :
+    μ = ν :=
+  DFunLike.ext _ _ hμν
 
 end NoContinuousSMul
 
@@ -122,6 +128,28 @@ lemma map_id (μ : AbstractMeasure X R E) :
   (rfl)
 
 end Map
+
+/-- A homeomorphism between topological spaces gives an isomorphism between their modules of
+measures. -/
+def arrowCongrLeft (φ : X ≃ₜ Y) : AbstractMeasure X R E ≃ₗ[R] AbstractMeasure Y R E :=
+  { map φ with
+    invFun := map φ.symm
+    left_inv μ := by apply DFunLike.ext; simp
+    right_inv μ := by apply DFunLike.ext; simp }
+
+@[simp]
+lemma arrowCongrLeft_symm (φ : X ≃ₜ Y) :
+    (arrowCongrLeft φ : AbstractMeasure X R E ≃ₗ[R] AbstractMeasure Y R E).symm =
+      arrowCongrLeft φ.symm :=
+  (rfl)
+
+lemma coe_arrowCongrLeft (φ : X ≃ₜ Y) :
+    (arrowCongrLeft φ : AbstractMeasure X R E → _) = map ⟨φ, φ.continuous⟩ :=
+  (rfl)
+
+@[simp] lemma arrowCongrLeft_apply (φ : X ≃ₜ Y) (μ : AbstractMeasure X R E) (f : C(Y, R)) :
+    arrowCongrLeft φ μ f = μ (f.comp φ) :=
+  (rfl)
 
 section Prod
 
@@ -229,7 +257,6 @@ lemma prodMk_eq_prodMk' : prodMk μ ν = prodMk' μ ν := by
   apply DFunLike.coe_injective
   apply denseRange_tensorHom.equalizer (by fun_prop) (by fun_prop) (funext fun h ↦ ?_)
   induction h with
-  | zero => simp
   | add => grind
   | tmul f g => simp [prodMul_def, prodMk_prod_apply μ, prodMk'_prod_apply μ]
 

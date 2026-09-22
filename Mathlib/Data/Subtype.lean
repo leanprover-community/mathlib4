@@ -106,6 +106,7 @@ theorem _root_.Function.extend_val_apply' {p : β → Prop} {g : {x // p x} → 
   grind [Function.extend]
 
 /-- Restrict a (dependent) function to a subtype -/
+@[implicit_reducible]
 def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
   f x
 

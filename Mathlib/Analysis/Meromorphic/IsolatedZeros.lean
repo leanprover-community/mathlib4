@@ -26,7 +26,9 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜} {x : 𝕜} {f g : 𝕜 → E}
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 namespace MeromorphicAt
 
@@ -68,7 +70,7 @@ theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mer
 Variant of the principle of isolated zeros, formulated in terms of orders: If `f` is nowhere locally
 constant zero, then its zero set is discrete within its domain of meromorphicity.
 -/
-theorem MeromorphicOn.codiscreteWithin_setOfPred_ne_zero (h₁f : MeromorphicOn f U)
+theorem _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero (h₁f : MeromorphicOn f U)
     (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
     ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
   filter_upwards [h₁f.analyticAt_mem_codiscreteWithin,
@@ -76,9 +78,13 @@ theorem MeromorphicOn.codiscreteWithin_setOfPred_ne_zero (h₁f : MeromorphicOn 
   have := h₂f x h₂x.1
   simp_all [← h₁x.analyticOrderAt_eq_zero, h₁x.meromorphicOrderAt_eq]
 
+@[deprecated (since := "2026-09-15")]
+alias MeromorphicOn.codiscreteWithin_setOfPred_ne_zero :=
+  _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
+
 @[deprecated (since := "2026-07-09")]
 alias MeromorphicOn.codiscreteWithin_setOf_ne_zero :=
-  MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
+  _root_.MeromorphicOn.codiscreteWithin_setOfPred_ne_zero
 
 /-!
 ## Identity Principles
@@ -137,7 +143,7 @@ end MeromorphicAt
 theorem MeromorphicOn.deriv_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
     (hg : MeromorphicOn g U) (h : f =ᶠ[codiscreteWithin U] g) :
     deriv f =ᶠ[codiscreteWithin U] deriv g := by
-  rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+  rw [eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE]
   intro x hx
   by_cases hacc : AccPt x (𝓟 U)
   · have h : f =ᶠ[𝓝[≠] x] g :=
