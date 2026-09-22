@@ -38,7 +38,7 @@ often useful to iterate between `bound` and `rw / simp` using `calc`.  Here is a
 ```
 -- Calc example: A weak lower bound for `z ↦ z^2 + c`
 lemma le_sqr_add {c z : ℂ} (cz : abs c ≤ abs z) (z3 : 3 ≤ abs z) :
-    2 * abs z ≤ abs (z^2 + c) := by
+    2 * abs z ≤ abs (z^2 + c) :=
   calc abs (z^2 + c)
     _ ≥ abs (z^2) - abs c := by bound
     _ ≥ abs (z^2) - abs z := by bound
@@ -217,7 +217,7 @@ An example use case is
 ```
 -- Calc example: A weak lower bound for `z ↦ z^2 + c`
 lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
-    2 * ‖z‖ ≤ ‖z^2 + c‖ := by
+    2 * ‖z‖ ≤ ‖z^2 + c‖ :=
   calc ‖z^2 + c‖
     _ ≥ ‖z^2‖ - ‖c‖ := by bound
     _ ≥ ‖z^2‖ - ‖z‖ := by  bound

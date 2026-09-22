@@ -40,7 +40,7 @@ private noncomputable def f₂ (s : Finset ι) (a : ι → ZMod p) : MvPolynomia
   ∑ i : s, a i • X i ^ (p - 1)
 
 private lemma totalDegree_f₁_add_totalDegree_f₂ {a : ι → ZMod p} :
-    (f₁ s a).totalDegree + (f₂ s a).totalDegree < 2 * p - 1 := by
+    (f₁ s a).totalDegree + (f₂ s a).totalDegree < 2 * p - 1 :=
   calc
     _ ≤ (p - 1) + (p - 1) := by
       gcongr <;> apply totalDegree_finsetSum_le <;> rintro i _
@@ -153,7 +153,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
     obtain ⟨𝒜, h𝒜card, h𝒜disj, h𝒜⟩ := ih (Nat.le_of_succ_le hk)
     -- There are at least `2 * (m * n) - 1 - k * n ≥ 2 * m - 1` elements in `s` that have not been
     -- taken in any element of `𝒜`.
-    have : 2 * n - 1 ≤ #(s \ 𝒜.biUnion id) := by
+    have : 2 * n - 1 ≤ #(s \ 𝒜.biUnion id) :=
       calc
         _ ≤ (2 * m - k) * n - 1 := by gcongr; lia
         _ = (2 * (m * n) - 1) - ∑ t ∈ 𝒜, #t := by

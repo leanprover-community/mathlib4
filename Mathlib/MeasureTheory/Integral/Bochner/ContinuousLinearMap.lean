@@ -136,7 +136,7 @@ section ContinuousMap
 variable [TopologicalSpace Y] [CompactSpace Y]
 
 lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X → C(Y, E)}
-    (hf : Integrable f μ) (y : Y) : (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
+    (hf : Integrable f μ) (y : Y) : (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ :=
   calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
     _ = ∫ x, ContinuousMap.evalCLM ℝ y (f x) ∂μ :=
           (ContinuousLinearMap.integral_comp_comm _ hf).symm
@@ -146,7 +146,7 @@ open scoped ContinuousMapZero in
 theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
     (hf : MeasureTheory.Integrable f μ) (y : Y) :
-    (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ := by
+    (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ :=
   calc (∫ x, f x ∂μ) y = ContinuousMapZero.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
     _ = ∫ x, ContinuousMapZero.evalCLM ℝ y (f x) ∂μ :=
           (ContinuousLinearMap.integral_comp_comm _ hf).symm

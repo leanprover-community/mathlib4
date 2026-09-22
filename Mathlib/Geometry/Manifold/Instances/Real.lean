@@ -263,7 +263,7 @@ lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
 
 lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
-    interior (range (𝓡∂ n)) = { y | 0 < y 0 } := by
+    interior (range (𝓡∂ n)) = { y | 0 < y 0 } :=
   calc interior (range (𝓡∂ n))
     _ = interior ({ y | 0 ≤ y 0}) := by
       congr!
@@ -271,7 +271,7 @@ lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     _ = { y | 0 < y 0 } := interior_halfSpace _ _ _
 
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
-    frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
+    frontier (range (𝓡∂ n)) = { y | 0 = y 0 } :=
   calc frontier (range (𝓡∂ n))
     _ = frontier ({ y | 0 ≤ y 0 }) := by
       congr!

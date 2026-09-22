@@ -33,7 +33,7 @@ variable {p : ℕ} [hp : Fact (Nat.Prime p)] {k : Type*} [CommRing k]
 local notation "𝕎" => WittVector p
 
 theorem le_coeff_eq_iff_le_sub_coeff_eq_zero {x y : 𝕎 k} {n : ℕ} :
-    (∀ i < n, x.coeff i = y.coeff i) ↔ ∀ i < n, (x - y).coeff i = 0 := by
+    (∀ i < n, x.coeff i = y.coeff i) ↔ ∀ i < n, (x - y).coeff i = 0 :=
   calc
   _ ↔ x.truncate n = y.truncate n := by
     refine ⟨fun h => ?_, fun h i hi => ?_⟩

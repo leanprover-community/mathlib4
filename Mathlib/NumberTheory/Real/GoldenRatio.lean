@@ -97,7 +97,7 @@ theorem one_lt_goldenRatio : 1 < φ := by
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt goldenRatio_pos)
   simp [← sq, zero_lt_one]
 
-theorem goldenRatio_lt_two : φ < 2 := by calc
+theorem goldenRatio_lt_two : φ < 2 := calc
   (1 + √5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
   _ = 2 := by norm_num
 

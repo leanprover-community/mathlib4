@@ -50,7 +50,7 @@ lemma triangleRemovalBound_nonpos (hε : ε ≤ 0) : triangleRemovalBound ε ≤
   rw [triangleRemovalBound, ceil_eq_zero.2 (div_nonpos_of_nonneg_of_nonpos _ hε)] <;> simp
 
 lemma triangleRemovalBound_mul_cube_lt (hε : 0 < ε) :
-    triangleRemovalBound ε * ⌈4 / ε⌉₊ ^ 3 < 1 := by
+    triangleRemovalBound ε * ⌈4 / ε⌉₊ ^ 3 < 1 :=
   calc
     _ ≤ (2 * ⌈4 / ε⌉₊ ^ 3 : ℝ)⁻¹ * ↑⌈4 / ε⌉₊ ^ 3 := by gcongr; exact min_le_left _ _
     _ = 2⁻¹ := by rw [mul_inv, inv_mul_cancel_right₀]; positivity

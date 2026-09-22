@@ -202,7 +202,7 @@ lemma integrable_llr_tilted_left [IsFiniteMeasure μ] [SigmaFinite ν]
 lemma integral_llr_tilted_left [IsProbabilityMeasure μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) (hf : Integrable f μ) (h_int : Integrable (llr μ ν) μ)
     (hfμ : Integrable (fun x ↦ exp (f x)) μ) (hfν : AEMeasurable f ν) :
-    ∫ x, llr (μ.tilted f) ν x ∂μ = ∫ x, llr μ ν x ∂μ + ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂μ) := by
+    ∫ x, llr (μ.tilted f) ν x ∂μ = ∫ x, llr μ ν x ∂μ + ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂μ) :=
   calc ∫ x, llr (μ.tilted f) ν x ∂μ
     = ∫ x, f x - log (∫ x, exp (f x) ∂μ) + llr μ ν x ∂μ :=
         integral_congr_ae (llr_tilted_left hμν hfμ hfν)
@@ -238,7 +238,7 @@ lemma integrable_llr_tilted_right [IsFiniteMeasure μ] [SigmaFinite ν]
 lemma integral_llr_tilted_right [IsProbabilityMeasure μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ exp (f x)) ν)
     (h_int : Integrable (llr μ ν) μ) :
-    ∫ x, llr μ (ν.tilted f) x ∂μ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by
+    ∫ x, llr μ (ν.tilted f) x ∂μ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) :=
   calc ∫ x, llr μ (ν.tilted f) x ∂μ
     = ∫ x, -f x + log (∫ x, exp (f x) ∂ν) + llr μ ν x ∂μ :=
         integral_congr_ae (llr_tilted_right hμν hfν)

@@ -104,7 +104,7 @@ theorem card_succ_choose_two_lt_card_subsetSum_of_pos (A_pos : ∀ x ∈ A, 0 < 
       mem_insert_self a A
 
 theorem card_choose_two_lt_card_subsetSum_of_nonneg (A_pos : ∀ x ∈ A, 0 ≤ x) :
-    (#A).choose 2 < #A.subsetSum := by
+    (#A).choose 2 < #A.subsetSum :=
   calc (#A).choose 2
     _ ≤ (#(A.erase 0) + 1).choose 2 := by grw [tsub_le_iff_right.1 <| pred_card_le_card_erase]
     _ < #(A.erase 0).subsetSum :=

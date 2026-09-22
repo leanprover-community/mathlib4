@@ -109,7 +109,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     | succ k ih =>
       intro z hxz hz
       simp only [Nat.cast_add, Nat.cast_one] at *
-      have hx' : x ≤ (2 : ℝ) ^ (-(k : ℤ) - 1) * x₀ := by
+      have hx' : x ≤ (2 : ℝ) ^ (-(k : ℤ) - 1) * x₀ :=
         calc x ≤ z := hxz
           _ ≤ _ := by simp only [neg_add, ← sub_eq_add_neg] at hz; exact hz.2
       specialize hx ((2 : ℝ) ^ (-(k : ℤ) - 1) * x₀) hx' z
@@ -384,21 +384,21 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                     eventually_ge_atTop 0] with x hf₁ hfg' hf₂ hx_nonneg
     have hbx : b * x ≤ x := by nth_rewrite 2 [← one_mul x]; gcongr
-    have hfg₂ : ‖g x‖ ≤ 1 / 2 * f x := by
+    have hfg₂ : ‖g x‖ ≤ 1 / 2 * f x :=
       calc ‖g x‖ ≤ 1 / 2 * ‖f x‖ := hfg' x hbx
            _ = 1 / 2 * f x := by congr; exact norm_of_nonneg (hf₂ _ hbx)
-    have hx_ub : f x + g x ≤ 3 / 2 * f x := by
+    have hx_ub : f x + g x ≤ 3 / 2 * f x :=
       calc _ ≤ f x + ‖g x‖ := by gcongr; exact le_norm_self (g x)
            _ ≤ f x + 1 / 2 * f x := by gcongr
            _ = 3 / 2 * f x := by ring
-    have hx_lb : 1 / 2 * f x ≤ f x + g x := by
+    have hx_lb : 1 / 2 * f x ≤ f x + g x :=
       calc f x + g x ≥ f x - ‖g x‖ := by
                 rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le (g x)
            _ ≥ f x - 1 / 2 * f x := by gcongr
            _ = 1 / 2 * f x := by ring
     intro u ⟨hu_lb, hu_ub⟩
     have hfu_nonneg : 0 ≤ f u := hf₂ _ hu_lb
-    have hfg₃ : ‖g u‖ ≤ 1 / 2 * f u := by
+    have hfg₃ : ‖g u‖ ≤ 1 / 2 * f u :=
       calc ‖g u‖ ≤ 1 / 2 * ‖f u‖ := hfg' _ hu_lb
            _ = 1 / 2 * f u := by congr; simp only [norm_eq_abs, abs_eq_self, hfu_nonneg]
     refine ⟨?lb, ?ub⟩
@@ -427,15 +427,15 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                     (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                     eventually_ge_atTop 0] with x hf₁ hfg' hf₂ hx_nonneg
     have hbx : b * x ≤ x := by nth_rewrite 2 [← one_mul x]; gcongr
-    have hfg₂ : ‖g x‖ ≤ -1 / 2 * f x := by
+    have hfg₂ : ‖g x‖ ≤ -1 / 2 * f x :=
       calc ‖g x‖ ≤ 1 / 2 * ‖f x‖ := hfg' x hbx
            _ = 1 / 2 * (-f x) := by congr; exact norm_of_nonpos (hf₂ x hbx)
            _ = _ := by ring
-    have hx_ub : f x + g x ≤ 1 / 2 * f x := by
+    have hx_ub : f x + g x ≤ 1 / 2 * f x :=
       calc _ ≤ f x + ‖g x‖ := by gcongr; exact le_norm_self (g x)
            _ ≤ f x + (-1 / 2 * f x) := by gcongr
            _ = 1 / 2 * f x := by ring
-    have hx_lb : 3 / 2 * f x ≤ f x + g x := by
+    have hx_lb : 3 / 2 * f x ≤ f x + g x :=
       calc f x + g x ≥ f x - ‖g x‖ := by
                 rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le (g x)
            _ ≥ f x + 1 / 2 * f x := by
@@ -446,7 +446,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ = 3 / 2 * f x := by ring
     intro u ⟨hu_lb, hu_ub⟩
     have hfu_nonpos : f u ≤ 0 := hf₂ _ hu_lb
-    have hfg₃ : ‖g u‖ ≤ -1 / 2 * f u := by
+    have hfg₃ : ‖g u‖ ≤ -1 / 2 * f u :=
       calc ‖g u‖ ≤ 1 / 2 * ‖f u‖ := hfg' _ hu_lb
            _ = 1 / 2 * (-f u) := by congr; exact norm_of_nonpos hfu_nonpos
            _ = -1 / 2 * f u := by ring

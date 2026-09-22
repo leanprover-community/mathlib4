@@ -29,7 +29,7 @@ namespace Nat
 
 /-- Vandermonde's identity -/
 theorem add_choose_eq (m n k : ℕ) :
-    (m + n).choose k = ∑ ij ∈ antidiagonal k, m.choose ij.1 * n.choose ij.2 := by
+    (m + n).choose k = ∑ ij ∈ antidiagonal k, m.choose ij.1 * n.choose ij.2 :=
   calc
     (m + n).choose k = ((X + 1) ^ (m + n)).coeff k := by rw [coeff_X_add_one_pow, cast_id]
     _ = ((X + 1) ^ m * (X + 1) ^ n).coeff k := by rw [pow_add]

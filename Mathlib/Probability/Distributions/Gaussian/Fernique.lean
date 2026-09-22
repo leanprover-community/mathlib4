@@ -144,7 +144,7 @@ lemma integrable_exp_sq_of_conv_neg (μ : Measure E) [IsGaussian μ] {C C' : ℝ
   intro x
   rw [← Real.exp_add]
   gcongr -- `⊢ C' * ‖x‖ ^ 2 ≤ C / ε * ‖y‖ ^ 2 + C * ‖x - y‖ ^ 2` with `ε = (C - C') / C'`
-  have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 := by
+  have h_le : ‖x‖ ^ 2 ≤ (1 + ε) * ‖x - y‖ ^ 2 + (1 + 1 / ε) * ‖y‖ ^ 2 :=
     calc ‖x‖ ^ 2
     _ = ‖x - y + y‖ ^ 2 := by simp
     _ ≤ (‖x - y‖ + ‖y‖) ^ 2 := by grw [norm_add_le (x - y) y]

@@ -23,7 +23,7 @@ open Real Set MeasureTheory MeasureTheory.Measure
 section real
 
 theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
-    ∫ x in Ioi (0 : ℝ), x ^ q * exp (-x ^ p) = (1 / p) * Gamma ((q + 1) / p) := by
+    ∫ x in Ioi (0 : ℝ), x ^ q * exp (-x ^ p) = (1 / p) * Gamma ((q + 1) / p) :=
   calc
     _ = ∫ (x : ℝ) in Ioi 0, (1 / p * x ^ (1 / p - 1)) • ((x ^ (1 / p)) ^ q * exp (-x)) := by
       rw [← integral_comp_rpow_Ioi _ (one_div_ne_zero (ne_of_gt hp)),
@@ -42,7 +42,7 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
 
 theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 < q) (hb : 0 < b) :
     ∫ x in Ioi (0 : ℝ), x ^ q * exp (-b * x ^ p) =
-      b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
+      b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) :=
   calc
     _ = ∫ x in Ioi (0 : ℝ), b ^ (-p⁻¹ * q) * ((b ^ p⁻¹ * x) ^ q * rexp (-(b ^ p⁻¹ * x) ^ p)) := by
       refine setIntegral_congr_fun measurableSet_Ioi (fun _ hx => ?_)
@@ -77,7 +77,7 @@ end real
 section complex
 
 theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : -2 < q) :
-    ∫ x : ℂ, ‖x‖ ^ q * rexp (-‖x‖ ^ p) = (2 * π / p) * Real.Gamma ((q + 2) / p) := by
+    ∫ x : ℂ, ‖x‖ ^ q * rexp (-‖x‖ ^ p) = (2 * π / p) * Real.Gamma ((q + 2) / p) :=
   calc
     _ = ∫ x in Ioi (0 : ℝ) ×ˢ Ioo (-π) π, x.1 * (|x.1| ^ q * rexp (-|x.1| ^ p)) := by
       rw [← Complex.integral_comp_polarCoord_symm, polarCoord_target]
@@ -104,7 +104,7 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
 theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) (hq : -2 < q)
     (hb : 0 < b) :
     ∫ x : ℂ, ‖x‖ ^ q * rexp (-b * ‖x‖ ^ p) = (2 * π / p) *
-      b ^ (-(q + 2) / p) * Real.Gamma ((q + 2) / p) := by
+      b ^ (-(q + 2) / p) * Real.Gamma ((q + 2) / p) :=
   calc
     _ = ∫ x in Ioi (0 : ℝ) ×ˢ Ioo (-π) π, x.1 * (|x.1| ^ q * rexp (-b * |x.1| ^ p)) := by
       rw [← Complex.integral_comp_polarCoord_symm, polarCoord_target]

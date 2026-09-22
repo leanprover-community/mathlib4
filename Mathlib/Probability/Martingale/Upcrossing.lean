@@ -585,7 +585,7 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
   simp_rw [h₁]
   have h₂ : ∑ _k ∈ Finset.range (upcrossingsBefore a b f N ω), (b - a) ≤
       ∑ k ∈ Finset.range N, (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
-        stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω) := by
+        stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω) :=
     calc
       ∑ _k ∈ Finset.range (upcrossingsBefore a b f N ω), (b - a) ≤
           ∑ k ∈ Finset.range (upcrossingsBefore a b f N ω),

@@ -192,7 +192,7 @@ theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
 theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 
 @[simp]
-theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
+theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 :=
   calc xa i ^ 4
       = a (n + n) := by simp [pow_succ, add_sub_assoc, sub_sub_cancel]
     _ = a ↑(2 * n) := by simp [Nat.cast_add, two_mul]
