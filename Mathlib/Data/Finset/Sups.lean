@@ -391,13 +391,14 @@ theorem isLowerSet_coe_powerset (s : Finset α) :
   ext u
   simp [mem_powerset, subset_inter_iff]
 
-@[deprecated powerset_inter_eq_inter (since := "2026-09-11")]
+@[deprecated powerset_inter_eq_inter +typeChanged (since := "2026-09-11")]
 lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
   simp
 
 @[simp] lemma powerset_sups_powerset_self (s : Finset α) :
     s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_union]
 
+@[deprecated "`simp` can prove this, using `Finset.infs_eq_inter`." (since := "2026-09-22")]
 lemma powerset_infs_powerset_self (s : Finset α) :
     s.powerset ⊼ s.powerset = s.powerset := by simp
 
