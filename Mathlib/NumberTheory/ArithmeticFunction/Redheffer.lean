@@ -182,15 +182,13 @@ theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
 theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
     moebiusRow R (n + 1) =
       (fun k ↦ if k = (0 : Fin (n + 1)) then (1 : R) else 0) ᵥ* (zetaMatrix R (n + 1))⁻¹ := by
-  have hunit : IsUnit (zetaMatrix R (n + 1)).det := by simp
-  simpa [vecMul_vecMul, mul_nonsing_inv _ hunit] using
+  simpa [vecMul_vecMul, mul_nonsing_inv (zetaMatrix R (n + 1)) (by simp)] using
     congrArg (· ᵥ* (zetaMatrix R (n + 1))⁻¹) (vecMul_moebiusRow_zetaMatrix R n)
 
 theorem det_zetaMatrix_updateCol (n : ℕ) (u : Fin (n + 1) → R) :
     ((zetaMatrix R (n + 1)).updateCol 0 u).det = ∑ j, moebiusRow R (n + 1) j * u j := by
   rw [← cramer_apply]
-  have hunit : IsUnit (zetaMatrix R (n + 1)).det := by simp
-  have hc := det_smul_inv_mulVec_eq_cramer (zetaMatrix R (n + 1)) u hunit
+  have hc := det_smul_inv_mulVec_eq_cramer (zetaMatrix R (n + 1)) u (by simp)
   rw [det_zetaMatrix, one_smul] at hc
   rw [← hc, moebiusRow_eq_vecMul_inv R n]
   simp [mulVec, dotProduct, vecMul]
