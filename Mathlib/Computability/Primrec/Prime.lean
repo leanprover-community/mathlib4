@@ -28,16 +28,16 @@ namespace Primrec
 
 /-- Primality is a primitive recursive predicate on `ℕ`. -/
 theorem nat_prime : PrimrecPred Nat.Prime := by
-  have hR : PrimrecRel fun m n : ℕ => 2 ≤ m ∧ n % m = 0 := by
+  have hR : PrimrecRel fun m n : ℕ ↦ 2 ≤ m ∧ n % m = 0 := by
     exact (nat_le.comp (const 2) fst).and
       (Primrec.eq.comp (nat_mod.comp snd fst) (const 0))
-  have h : PrimrecPred fun n : ℕ => 2 ≤ n ∧ ∀ m < n, ¬ (2 ≤ m ∧ n % m = 0) :=
+  have h : PrimrecPred fun n : ℕ ↦ 2 ≤ n ∧ ∀ m < n, ¬ (2 ≤ m ∧ n % m = 0) :=
     (nat_le.comp (const 2) Primrec.id).and
       ((PrimrecRel.forall_lt hR.not).comp Primrec.id Primrec.id)
-  refine h.of_eq fun n => ?_
+  refine h.of_eq fun n ↦ ?_
   rw [Nat.prime_def_lt']
   simp only [Nat.dvd_iff_mod_eq_zero, not_and]
-  exact ⟨fun ⟨h2, hm⟩ => ⟨h2, fun m hm2 hmn => hm m hmn hm2⟩,
-    fun ⟨h2, hm⟩ => ⟨h2, fun m hmn hm2 => hm m hm2 hmn⟩⟩
+  exact ⟨fun ⟨h2, hm⟩ ↦ ⟨h2, fun m hm2 hmn ↦ hm m hmn hm2⟩,
+    fun ⟨h2, hm⟩ ↦ ⟨h2, fun m hmn hm2 ↦ hm m hm2 hmn⟩⟩
 
 end Primrec
