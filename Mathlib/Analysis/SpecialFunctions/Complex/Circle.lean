@@ -155,7 +155,7 @@ theorem mem_centeredArc_div {z : Circle} {s : ℝ} {n : ℕ} (hs : s ≤ π)
     contrapose! h2
     simp [centeredArc_eq_empty h2]
   have hn0 : n ≠ 0 := by
-    contrapose! h1
+    contrapose h1
     simp [h1]
   have hn : 1 ≤ (n : ℝ) := by simpa [Nat.one_le_iff_ne_zero]
   rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs),
