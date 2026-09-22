@@ -119,7 +119,6 @@ instance instAdd : Add (SlashInvariantForm Γ k) :=
         rw [SlashAction.add_slash, slash_action_eqn f γ hγ, slash_action_eqn g γ hγ] }⟩
 
 instance : IsAddApply (SlashInvariantForm Γ k) ℍ ℂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
 
@@ -130,7 +129,6 @@ instance instZero : Zero (SlashInvariantForm Γ k) :=
     slash_action_eq' := fun _ _ ↦ SlashAction.zero_slash _ _}⟩
 
 instance : IsZeroApply (SlashInvariantForm Γ k) ℍ ℂ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
@@ -147,7 +145,6 @@ instance instSMul : SMul α (SlashInvariantForm Γ k) where
       simp [-smul_assoc, smul_slash, slash_action_eqn _ _ hγ, σ, Subgroup.HasDetOne.det_eq hγ] }
 
 instance : IsSMulApply α (SlashInvariantForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -168,7 +165,6 @@ instance instSMulℝ : SMul α (SlashInvariantForm Γ k) where
         Complex.real_smul, mul_one, σ_ofReal, slash_action_eqn _ _ hγ] }
 
 instance : IsSMulApply α (SlashInvariantForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smulℝ := FunLike.coe_smul
 
@@ -182,7 +178,6 @@ instance instNeg : Neg (SlashInvariantForm Γ k) :=
       slash_action_eq' := fun γ hγ => by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
 
 instance : IsNegApply (SlashInvariantForm Γ k) ℍ ℂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
 
@@ -192,7 +187,6 @@ instance instSub : Sub (SlashInvariantForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
 instance : IsSubApply (SlashInvariantForm Γ k) ℍ ℂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 

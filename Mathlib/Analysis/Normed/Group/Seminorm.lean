@@ -227,7 +227,6 @@ instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
 
 @[to_additive]
 instance : IsZeroApply (GroupSeminorm E) E ℝ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_zero := FunLike.coe_zero
 @[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_zero := FunLike.coe_zero
@@ -253,7 +252,6 @@ instance : Add (GroupSeminorm E) :=
 
 @[to_additive]
 instance : IsAddApply (GroupSeminorm E) E ℝ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_add := FunLike.coe_add
 @[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_add := FunLike.coe_add
@@ -483,7 +481,6 @@ instance : Zero (NonarchAddGroupSeminorm E) :=
       neg' := fun _ => rfl }⟩
 
 instance : IsZeroApply (NonarchAddGroupSeminorm E) E ℝ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
@@ -603,7 +600,6 @@ instance : SMul R (GroupSeminorm E) :=
 
 @[to_additive (dont_translate := R) instIsSMulApplyReal]
 instance : IsSMulApply R (GroupSeminorm E) E ℝ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -661,7 +657,6 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
 
 instance : IsSMulApply R (NonarchAddGroupSeminorm E) E ℝ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -738,7 +733,6 @@ instance : Add (GroupNorm E) :=
 
 @[to_additive]
 instance : IsAddApply (GroupNorm E) E ℝ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupNorm.coe_add := FunLike.coe_add
 @[deprecated (since := "2026-07-10")] alias _root_.AddGroupNorm.coe_add := FunLike.coe_add
