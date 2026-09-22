@@ -598,7 +598,7 @@ theorem degree_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
     (h : ¬IsNilpotent (m.leadingCoeff f)) :
     m.degree (f ^ n) = n • m.degree f := by
   apply degree_pow_of_pow_leadingCoeff_ne_zero
-  contrapose! h
+  contrapose h
   exact IsNilpotent.mk _ n h
 
 /-- Leading coefficient of powers (when the leading term is not nilpotent) -/
