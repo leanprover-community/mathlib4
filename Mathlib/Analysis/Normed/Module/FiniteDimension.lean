@@ -170,7 +170,7 @@ theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
     ∃ K : ℝ≥0, LipschitzWith K f := by
   let fL : E →L[𝕜] F := f.linear.toContinuousLinearMap
   refine ⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
-  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linearMap_vsub]
+  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linear_map_vsub]
   exact fL.le_opNorm _
 
 end Affine
@@ -257,7 +257,7 @@ theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [Metric
     ∃ K : ℝ≥0, AntilipschitzWith K f := by
   obtain ⟨K, -, hK⟩ := f.linear.injective_iff_antilipschitz.mp (f.linear_injective_iff.mpr hf)
   refine ⟨K, AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_⟩
-  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linearMap_vsub]
+  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linear_map_vsub]
   exact ZeroHomClass.bound_of_antilipschitz f.linear hK (x -ᵥ y)
 
 open Function in

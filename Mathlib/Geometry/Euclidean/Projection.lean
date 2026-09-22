@@ -539,7 +539,7 @@ variable [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
   rw [coe_orthogonalProjection_eq_iff_mem]
   simp only [mem_map, AffineIsometry.coe_toAffineMap, AffineIsometry.map_eq_iff, exists_eq_right,
     SetLike.coe_mem, map_direction, AffineIsometry.linear_eq_linearIsometry, true_and]
-  rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.linearMap_vsub, Submodule.mem_orthogonal]
+  rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.linear_map_vsub, Submodule.mem_orthogonal]
   intro u hu
   rw [Submodule.mem_map] at hu
   obtain ⟨v, hv, rfl⟩ := hu

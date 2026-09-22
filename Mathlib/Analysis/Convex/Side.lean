@@ -62,7 +62,7 @@ theorem WSameSide.map {s : AffineSubspace R P} {x y : P} (h : s.WSameSide x y) (
     (s.map f).WSameSide (f x) (f y) := by
   rcases h with ⟨p₁, hp₁, p₂, hp₂, h⟩
   refine ⟨f p₁, mem_map_of_mem f hp₁, f p₂, mem_map_of_mem f hp₂, ?_⟩
-  simp_rw [← linearMap_vsub]
+  simp_rw [← linear_map_vsub]
   exact h.map f.linear
 
 theorem _root_.Function.Injective.wSameSide_map_iff {s : AffineSubspace R P} {x y : P}
@@ -74,7 +74,7 @@ theorem _root_.Function.Injective.wSameSide_map_iff {s : AffineSubspace R P} {x 
   rcases hfp₁ with ⟨p₁, hp₁, rfl⟩
   rcases hfp₂ with ⟨p₂, hp₂, rfl⟩
   refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
-  simp_rw [← linearMap_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
+  simp_rw [← linear_map_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
   exact h
 
 theorem _root_.Function.Injective.sSameSide_map_iff {s : AffineSubspace R P} {x y : P}
@@ -96,7 +96,7 @@ theorem WOppSide.map {s : AffineSubspace R P} {x y : P} (h : s.WOppSide x y) (f 
     (s.map f).WOppSide (f x) (f y) := by
   rcases h with ⟨p₁, hp₁, p₂, hp₂, h⟩
   refine ⟨f p₁, mem_map_of_mem f hp₁, f p₂, mem_map_of_mem f hp₂, ?_⟩
-  simp_rw [← linearMap_vsub]
+  simp_rw [← linear_map_vsub]
   exact h.map f.linear
 
 theorem _root_.Function.Injective.wOppSide_map_iff {s : AffineSubspace R P} {x y : P}
@@ -108,7 +108,7 @@ theorem _root_.Function.Injective.wOppSide_map_iff {s : AffineSubspace R P} {x y
   rcases hfp₁ with ⟨p₁, hp₁, rfl⟩
   rcases hfp₂ with ⟨p₂, hp₂, rfl⟩
   refine ⟨p₁, hp₁, p₂, hp₂, ?_⟩
-  simp_rw [← linearMap_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
+  simp_rw [← linear_map_vsub, (f.linear_injective_iff.2 hf).sameRay_map_iff] at h
   exact h
 
 theorem _root_.Function.Injective.sOppSide_map_iff {s : AffineSubspace R P} {x y : P}

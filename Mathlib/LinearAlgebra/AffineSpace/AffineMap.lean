@@ -128,8 +128,10 @@ theorem map_vadd (f : P1 →ᵃ[k] P2) (p : P1) (v : V1) : f (v +ᵥ p) = f.line
 result of subtracting the result of the affine map on those two
 points. -/
 @[simp]
-theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2) = f p1 -ᵥ f p2 := by
+theorem linear_map_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2) = f p1 -ᵥ f p2 := by
   conv_rhs => rw [← vsub_vadd p1 p2, map_vadd, vadd_vsub]
+
+@[deprecated (since := "2026-09-22")] alias linearMap_vsub := linear_map_vsub
 
 /-- Two affine maps are equal if they coerce to the same function. -/
 @[ext]
@@ -151,7 +153,7 @@ theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.linear = g.linear) {p : P1}
   ext q
   have hgl : g.linear (q -ᵥ p) = toFun g ((q -ᵥ p) +ᵥ q) -ᵥ toFun g q := by simp
   have := f.map_vadd' q (q -ᵥ p)
-  rw [h₁, hgl, toFun_eq_coe, map_vadd, linearMap_vsub, h₂] at this
+  rw [h₁, hgl, toFun_eq_coe, map_vadd, linear_map_vsub, h₂] at this
   simpa
 
 /-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
@@ -187,7 +189,7 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
   refine ⟨fun h => ?_, fun h => ?_⟩
   · use f (Classical.arbitrary P1)
     ext
-    rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linearMap_vsub, h,
+    rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linear_map_vsub, h,
       LinearMap.zero_apply]
   · rcases h with ⟨q, rfl⟩
     exact const_linear k P1 q
@@ -448,7 +450,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
   simp only [Set.mem_vsub, Set.mem_image,
-    exists_exists_and_eq_and, ← f.linearMap_vsub]
+    exists_exists_and_eq_and, ← f.linear_map_vsub]
   grind
 
 /-- The product of two affine maps is an affine map. -/
@@ -643,7 +645,7 @@ theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
     ext x
     change f x = x • (f 1 -ᵥ f 0) +ᵥ f 0
-    rw [← f.linearMap_vsub, ← f.linear.map_smul, ← f.map_vadd]
+    rw [← f.linear_map_vsub, ← f.linear.map_smul, ← f.map_vadd]
     simp only [vsub_eq_sub, add_zero, mul_one, vadd_eq_add, sub_zero, smul_eq_mul]
   rw [this, Set.image_comp]
   simp only [Set.image_add_const_uIcc, Set.image_mul_const_uIcc, Function.comp_apply]

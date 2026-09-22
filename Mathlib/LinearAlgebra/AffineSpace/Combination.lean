@@ -398,7 +398,7 @@ theorem weightedVSub_vadd_affineCombination (w₁ w₂ : ι → k) (p : ι → P
 /-- Subtracting two `affineCombination`s. -/
 theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
     s.affineCombination k p w₁ -ᵥ s.affineCombination k p w₂ = s.weightedVSub p (w₁ - w₂) := by
-  rw [← AffineMap.linearMap_vsub, affineCombination_linear, vsub_eq_sub]
+  rw [← AffineMap.linear_map_vsub, affineCombination_linear, vsub_eq_sub]
 
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
@@ -578,7 +578,7 @@ theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
     s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w (f ∘ p) hw b₂, ←
     s.weightedVSubOfPoint_vadd_eq_of_sum_eq_one w (f ∘ p) hw (f b) b₂]
   simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd, map_smulₛₗ,
-    AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
+    AffineMap.linear_map_vsub, map_sum, Function.comp_apply]
 
 /-- The value of `affineCombination`, where the given points take only two values. -/
 lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p : ι → P)

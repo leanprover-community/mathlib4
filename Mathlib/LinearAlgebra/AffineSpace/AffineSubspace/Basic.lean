@@ -544,7 +544,7 @@ def map (s : AffineSubspace k P₁) : AffineSubspace k P₂ where
     use t • (p₁ -ᵥ p₂) +ᵥ p₃
     suffices t • (p₁ -ᵥ p₂) +ᵥ p₃ ∈ s by
     { simp only [SetLike.mem_coe, true_and, this]
-      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub] }
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linear_map_vsub] }
     exact s.smul_vsub_vadd_mem t h₁ h₂ h₃
 
 @[simp]
@@ -734,7 +734,7 @@ def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace
   carrier := f ⁻¹' s
   smul_vsub_vadd_mem' t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
-      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linear_map_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
 
 @[simp]
