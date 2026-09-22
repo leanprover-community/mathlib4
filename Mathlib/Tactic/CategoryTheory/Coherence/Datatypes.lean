@@ -173,6 +173,9 @@ class MonadCoherenceHom (m : Type → Type) where
 
 @[deprecated (since := "2026-09-17")] alias MonadCoherehnceHom := MonadCoherenceHom
 
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.unfoldM := MonadCoherenceHom.unfoldM
+
 /-- The underlying lean expression of a 2-isomorphism. -/
 def StructuralAtom.e : StructuralAtom → Expr
   | .associator e .. => e

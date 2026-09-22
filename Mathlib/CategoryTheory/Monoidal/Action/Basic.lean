@@ -494,6 +494,27 @@ instance selfRightAction [MonoidalCategory C] : MonoidalRightAction C C where
 @[deprecated (since := "2026-09-17")]
 alias selRightfAction := selfRightAction
 
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionObj := selfRightAction_actionObj
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHom := selfRightAction_actionHom
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHomLeft := selfRightAction_actionHomLeft
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionHomRight := selfRightAction_actionHomRight
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionUnitIso := selfRightAction_actionUnitIso
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionAssocIso_hom := selfRightAction_actionAssocIso_hom
+
+@[deprecated (since := "2026-09-17")]
+alias selRightfAction_actionAssocIso_inv := selfRightAction_actionAssocIso_inv
+
 namespace MonoidalRightAction
 
 open Category
