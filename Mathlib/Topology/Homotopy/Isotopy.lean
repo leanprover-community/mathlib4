@@ -98,12 +98,13 @@ def con : Con (X ≃ₜ X) where
 end Homeomorph
 
 variable (X) in
-/-- The mapping class group of a topological space. -/
+/-- The (extended) mapping class group of a topological space. -/
 abbrev MappingClassGroup : Type _ := (Homeomorph.con X).Quotient
 
 open ContinuousMap.Monoid in
 /-- The homomorphism from the mapping class group of a space to the monoid of continuous self-maps
-up to homotopy. -/
+up to homotopy. It is not injective nor surjective in general (for example, the homeomorphism
+`fun x : ℝ ↦ -x` is homotopic but not isotopic to the identity). -/
 def MappingClassGroup.toUnitsMonoid : MappingClassGroup X →* (MappingClassMonoid X)ˣ where
   toFun := Quotient.lift (fun f ↦ let u := ofHomeomorph X f
     ⟨u, ↑u⁻¹, congr($u.mul_inv), congr($u.inv_mul)⟩)

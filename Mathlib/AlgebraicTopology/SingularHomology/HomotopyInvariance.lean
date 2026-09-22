@@ -76,8 +76,11 @@ noncomputable def MappingClassMonoid.toEndSinularHomology {c : C} :
   Con.lift _ (ContinuousMap.toEndSingularHomology n) fun _ _ ⟨h⟩ ↦
     TopCat.Homotopy.congr_homologyMap_singularChainComplexFunctor h c n
 
-/-- The mapping class group acts on the singular homology. In the mapping class group
-of a surface S, the Torelli subgroup consists of elements that acts trivially on H₁(S;ℤ). -/
+/-- The (extended) mapping class group acts on the singular homology. If X is an orientable
+manifold, the mapping class group is usually defined to consist of orientation-preserving
+homeomorphisms, i.e. those acts trivially on Hₙ(X;ℤ), where `n = dim X`.
+If X is a surface, the Torelli subgroup consists of homeomorphisms that acts trivially
+on H₁(S;ℤ) and H₂(S;ℤ). -/
 noncomputable def MappingClassGroup.toAutSingularHomology {c : C} :
     MappingClassGroup X →* Aut (singularHomology n X c) :=
   Con.lift _ (Homeomorph.toAutSingularHomology n) fun _ _ ⟨h⟩ ↦ Iso.ext <|

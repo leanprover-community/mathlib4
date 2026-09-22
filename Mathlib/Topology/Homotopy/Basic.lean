@@ -392,7 +392,7 @@ def con : Con C(X, X) where
   iseqv := Homotopic.equivalence
   mul' := fun ⟨f⟩ ⟨g⟩ ↦ ⟨f.comp g⟩
 
-/-- The monoid of continuous self-maps up to homotopy. -/
+/-- The monoid of continuous self-maps up to homotopy; its units are homotopy auto-equivalences. -/
 abbrev _root_.MappingClassMonoid : Type _ := (con X).Quotient
 
 end Monoid
