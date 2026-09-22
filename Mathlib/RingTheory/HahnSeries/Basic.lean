@@ -397,7 +397,7 @@ theorem coeff_eq_zero_of_lt_order {x : R⟦Γ⟧} {i : Γ} (hi : i < x.order) : 
 
 theorem zero_lt_orderTop_iff {x : R⟦Γ⟧} (hx : x ≠ 0) :
     0 < x.orderTop ↔ 0 < x.order := by
-  simp_all [orderTop_of_ne_zero hx, order_of_ne hx]
+  simp [orderTop_of_ne_zero hx, order_of_ne hx]
 
 theorem zero_lt_orderTop_of_order {x : R⟦Γ⟧} (hx : 0 < x.order) : 0 < x.orderTop := by
   by_cases h : x = 0
@@ -407,7 +407,7 @@ theorem zero_lt_orderTop_of_order {x : R⟦Γ⟧} (hx : 0 < x.order) : 0 < x.ord
 theorem zero_le_orderTop_iff {x : R⟦Γ⟧} : 0 ≤ x.orderTop ↔ 0 ≤ x.order := by
   by_cases h : x = 0
   · simp_all
-  · simp_all [order_of_ne h, orderTop_of_ne_zero h]
+  · simp [order_of_ne h, orderTop_of_ne_zero h]
 
 theorem leadingCoeff_eq {x : R⟦Γ⟧} : x.leadingCoeff = x.coeff x.order := by
   by_cases h : x = 0

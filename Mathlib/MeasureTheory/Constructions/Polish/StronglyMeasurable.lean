@@ -36,7 +36,7 @@ theorem measurableSet_exists_tendsto [IsCompletelyPseudoMetrizableSpace E]
     (hf : ∀ i, StronglyMeasurable (f i)) :
     MeasurableSet {x | ∃ c, Tendsto (f · x) l (𝓝 c)} := by
   obtain rfl | hl := eq_or_neBot l
-  · simp_all
+  · simp
   borelize E
   let := upgradeIsCompletelyPseudoMetrizable E
   let s := closure (⋃ i, range (f i))

@@ -60,7 +60,7 @@ theorem aeval_aeval_eq_aeval_algEquivAdjoin {x : A} (y : B)
   induction p using Polynomial.induction_on' with
   | add p q hp hq => simp_all [map_add]
   | monomial n a =>
-    simp_all [aeval_algebraMap_apply, Transcendental.algEquivAdjoin, Subalgebra.algebraMap_def]
+    simp [aeval_algebraMap_apply, Transcendental.algEquivAdjoin, Subalgebra.algebraMap_def]
 
 theorem _root_.IsAlgebraic.adjoin_singleton {x : A} {y : B} (hx : Transcendental R x)
     (hy : Transcendental R y) (h : IsAlgebraic (adjoin R {x}) y) :

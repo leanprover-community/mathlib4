@@ -69,7 +69,7 @@ lemma hasPeriod_zero (w : List α) : HasPeriod w 0 := by
 
 @[simp]
 lemma hasPeriod_of_length_le (w : List α) (p : ℕ) (large : w.length ≤ p) : HasPeriod w p := by
-  rw [HasPeriod]; simp_all [(take_eq_self_iff w).mpr large]
+  rw [HasPeriod]; simp [(take_eq_self_iff w).mpr large]
 
 lemma hasPeriod_empty (p : ℕ) : HasPeriod ([] : List α) p := by
   simp
@@ -139,7 +139,7 @@ then the resulting word also has a period `p`. -/
 lemma HasPeriod.take_append (p n : ℕ) (w : List α) (dvd : p ∣ n)
     (len : n ≤ w.length) (per : HasPeriod w p) : HasPeriod (take n w ++ w) p := by
   rcases Nat.eq_zero_or_pos p with rfl | p_pos
-  · simp_all [HasPeriod]
+  · simp [HasPeriod]
   rcases Nat.eq_zero_or_pos n with rfl | pos
   · simp_all
   rw [hasPeriod_iff_forall_getElem?_mod]
