@@ -174,6 +174,14 @@ theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
   rw [mul_comm]
   exact le_mul_left h
 
+theorem le_of_dvd {a b : Cardinal} (hb : b ≠ 0) : a ∣ b → a ≤ b := by
+  rintro ⟨b, rfl⟩
+  apply le_mul_right
+  simp_all
+
+theorem dvd_of_le_of_aleph0_le {a b : Cardinal} (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
+  ⟨b, (mul_eq_right hb h ha).symm⟩
+
 theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ b ≠ 0 ∨ b = 1 ∨ a = 0 := by
   rw [max_le_iff]
   refine ⟨fun h => ?_, ?_⟩
@@ -217,6 +225,20 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
     · rw [mul_eq_max_of_aleph0_le_left ha hb, max_eq_left hab]
     all_goals simp
+
+@[simp, norm_cast]
+theorem natCast_dvd_iff {m n : ℕ} : (n : Cardinal) ∣ m ↔ n ∣ m := by
+  refine ⟨?_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
+  intro ⟨k, hk⟩
+  have : m < ℵ₀ := natCast_lt_aleph0
+  rw [hk, mul_lt_aleph0_iff] at this
+  rcases this with (h | h | ⟨-, hk'⟩)
+  · simp_all
+  · simp_all
+  · lift k to ℕ using hk'
+    exact ⟨k, mod_cast hk⟩
+
+@[deprecated (since := "2026-09-20")] alias nat_coe_dvd_iff := natCast_dvd_iff
 
 end mul
 

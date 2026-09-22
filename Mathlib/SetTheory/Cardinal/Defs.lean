@@ -489,6 +489,7 @@ recommended_spelling "aleph0" for "ℵ₀" in [aleph0, «termℵ₀»]
 theorem mk_nat : #ℕ = ℵ₀ :=
   (lift_id _).symm
 
+@[simp]
 theorem aleph0_ne_zero : ℵ₀ ≠ 0 :=
   mk_ne_zero _
 
