@@ -508,10 +508,10 @@ theorem parallelogram_law_with_nnnorm (x y : E) :
   simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
 
 include 𝕜 in
-/-- The identity underlying Euler's quadrilateral theorem, for the quadrilateral with vertices
-`0`, `x`, `x + y` and `x + y + z`: the sum of the squares of the four sides equals the sum of the
-squares of the diagonals `x + y` and `y + z`, plus `‖x + z‖ ^ 2`, where `x + z` is twice the vector
-between the midpoints of the diagonals. The case `z = -y` is `parallelogram_law_with_norm`. -/
+/-- An identity symmetric in `x`, `y` and `z`. It is the case `n = 3` of the following identity
+for `n ≥ 2` vectors `v i`: the sum of `‖v i + v j‖ ^ 2` over the pairs `i < j` is
+`(n - 2) * ∑ i, ‖v i‖ ^ 2 + ‖∑ i, v i‖ ^ 2`. The case `z = -y` gives
+`parallelogram_law_with_norm`. -/
 theorem norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq (x y z : E) :
     ‖x‖ ^ 2 + ‖y‖ ^ 2 + ‖z‖ ^ 2 + ‖x + y + z‖ ^ 2
       = ‖x + y‖ ^ 2 + ‖y + z‖ ^ 2 + ‖x + z‖ ^ 2 := by
