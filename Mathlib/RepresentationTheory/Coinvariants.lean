@@ -313,6 +313,7 @@ noncomputable def coinvariantsTensorFreeLEquiv :
     coinvariantsFinsuppLEquiv (ρ.tprod (leftRegular k G)) α ≪≫ₗ
       mapRange.linearEquiv (coinvariantsTprodLeftRegularLEquiv ρ)
 
+@[simp]
 lemma coinvariantsTensorFreeLEquiv_mk_tmul_single (v : V) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeLEquiv ρ α (Coinvariants.mk _ (v ⊗ₜ single i (.single g r))) =
       single i (r • ρ g⁻¹ v) := by
