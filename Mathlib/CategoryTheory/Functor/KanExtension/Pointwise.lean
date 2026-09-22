@@ -263,7 +263,6 @@ lemma IsPointwiseLeftKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The condition of being a pointwise left Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
@@ -360,7 +359,6 @@ lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension :
   fun Y => (h Y).hasPointwiseLeftKanExtensionAt
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The (unique) morphism from a pointwise left Kan extension. -/
 def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
   StructuredArrow.homMk
@@ -453,7 +451,6 @@ lemma IsPointwiseRightKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_π_app_of_isInitial _ StructuredArrow.mkIdInitial
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The condition of being a pointwise right Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
@@ -540,7 +537,6 @@ lemma IsPointwiseRightKanExtension.hasPointwiseRightKanExtension :
   fun Y => (h Y).hasPointwiseRightKanExtensionAt
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The (unique) morphism to a pointwise right Kan extension. -/
 def IsPointwiseRightKanExtension.homTo (G : RightExtension L F) : G ⟶ E :=
   CostructuredArrow.homMk
@@ -588,7 +584,6 @@ section
 variable [HasPointwiseLeftKanExtension L F]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The constructed pointwise left Kan extension when `HasPointwiseLeftKanExtension L F` holds. -/
 @[simps]
 noncomputable def pointwiseLeftKanExtension : D ⥤ H where
@@ -628,7 +623,6 @@ noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanEx
     exact colimit.w (CostructuredArrow.proj L (L.obj X₂) ⋙ F) φ
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `pointwiseLeftKanExtension L F` is a pointwise left Kan
 extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
@@ -694,7 +688,6 @@ section
 variable [HasPointwiseRightKanExtension L F]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The constructed pointwise right Kan extension
 when `HasPointwiseRightKanExtension L F` holds. -/
 @[simps]
@@ -735,7 +728,6 @@ noncomputable def pointwiseRightKanExtensionCounit :
     exact (limit.w (StructuredArrow.proj (L.obj X₁) L ⋙ F) φ).symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `pointwiseRightKanExtension L F` is a pointwise right Kan
 extension of `F` along `L`. -/
 noncomputable def pointwiseRightKanExtensionIsPointwiseRightKanExtension :

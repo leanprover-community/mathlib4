@@ -269,7 +269,7 @@ section DivisionSemiring
 
 variable [DivisionSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [TopologicalSpace 𝕜] [(𝓝[≠] (0 : 𝕜)).NeBot] [ContinuousSMul 𝕜 E]
-  {x y : E} {s t : Set E}
+  {x : E} {s : Set E}
 
 @[simp]
 theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by

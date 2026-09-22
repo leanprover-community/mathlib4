@@ -35,7 +35,7 @@ in order to define `PInfty : K[X] ⟶ K[X]`.
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject Opposite CategoryTheory.Idempotents
 
-open Simplicial DoldKan
+open scoped Simplicial DoldKan
 
 noncomputable section
 

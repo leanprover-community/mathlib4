@@ -16,7 +16,7 @@ public section
 
 universe u
 
-variable {α β : Type*} (s t : Set α)
+variable {α : Type*} (s t : Set α)
 
 open scoped Pointwise
 
