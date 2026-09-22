@@ -42,33 +42,9 @@ moebius matrix, zeta matrix, moebius inversion, dirichlet convolution
 open Finset
 open scoped ArithmeticFunction.Moebius
 
-namespace Matrix
+namespace Nat
 
-open ArithmeticFunction
-
-variable (R : Type*)
-
-section ZeroIntCast
-
-variable [Zero R] [IntCast R]
-
-/-- The `n × n` Möbius matrix: the `(i, j)` entry is `μ ((j + 1) / (i + 1))` if `i + 1 ∣ j + 1`
-and `0` otherwise. -/
-def moebiusMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
-  of fun i j ↦ if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0
-
-@[simp] theorem moebiusMatrix_apply (n : ℕ) (i j : Fin n) :
-    moebiusMatrix R n i j =
-      if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0 := rfl
-
-theorem moebiusMatrix_isUpperTriangular (n : ℕ) : (moebiusMatrix R n).IsUpperTriangular := by
-  intro i j hij
-  simp only [id] at hij
-  simp [Nat.not_dvd_of_pos_of_lt (n := (j : ℕ) + 1) (m := (i : ℕ) + 1) (by omega) (by omega)]
-
-end ZeroIntCast
-
-theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (n a b : ℕ)
+theorem sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (n a b : ℕ)
     (f : ℕ → M)
     (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a ∣ b) (hbn : b ≤ n) :
     (∑ k : Fin n, if a ∣ (k : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ b then f (((k : ℕ) + 1) / a) else 0) =
@@ -111,6 +87,34 @@ theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M]
       have h2 : 1 ≤ a * y := Nat.one_le_iff_ne_zero.mpr (by positivity)
       omega
     exact Nat.eq_of_mul_eq_mul_left (by omega) this
+
+end Nat
+
+namespace Matrix
+
+open ArithmeticFunction
+
+variable (R : Type*)
+
+section ZeroIntCast
+
+variable [Zero R] [IntCast R]
+
+/-- The `n × n` Möbius matrix: the `(i, j)` entry is `μ ((j + 1) / (i + 1))` if `i + 1 ∣ j + 1`
+and `0` otherwise. -/
+def moebiusMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
+  of fun i j ↦ if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0
+
+@[simp] theorem moebiusMatrix_apply (n : ℕ) (i j : Fin n) :
+    moebiusMatrix R n i j =
+      if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0 := rfl
+
+theorem moebiusMatrix_isUpperTriangular (n : ℕ) : (moebiusMatrix R n).IsUpperTriangular := by
+  intro i j hij
+  simp only [id] at hij
+  simp [Nat.not_dvd_of_pos_of_lt (n := (j : ℕ) + 1) (m := (i : ℕ) + 1) (by omega) (by omega)]
+
+end ZeroIntCast
 
 variable [CommRing R]
 
