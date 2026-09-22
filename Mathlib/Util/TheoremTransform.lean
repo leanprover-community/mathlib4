@@ -39,7 +39,9 @@ namespace Mathlib.Tactic.TheoremTransform
 
 /-- An elaborated proof and its intended (possibly normalized) type. -/
 structure Proof where
+  /-- The intended statement, possibly normalized definitionally. -/
   type : Expr
+  /-- A proof whose inferred type is definitionally equal to `type`. -/
   value : Expr
 
 /-- Infer the type when first entering the transformation machinery. -/
@@ -54,7 +56,7 @@ def underForall (p : Proof) (f : Proof → TermElabM (Except MessageData Proof))
   forallTelescopeReducing p.type (whnfType := true) fun xs type => do
     let type := (← instantiateMVars type).consumeMData
     match ← f ⟨type, mkAppN p.value xs⟩ with
-    | .error reason => return .error reason
+    | .error reason => return .error (← addMessageContext reason)
     | .ok p => return .ok ⟨← mkForallFVars xs p.type, ← mkLambdaFVars xs p.value⟩
 
 /-- Normalize the two sides independently, so a reflexive equality remains an equality. -/
@@ -80,8 +82,11 @@ def normalizeWithInstances (p : Proof) (instances : Array MVarId)
 
 /-- A transformation request. Arguments and suffix are part of its identity. -/
 structure Request where
+  /-- The stable name used when registering the transformation. -/
   transformation : Name
+  /-- Declaration arguments interpreted by the registered operation. -/
   args : Array Name := #[]
+  /-- Override the registered naming suffix for this request. -/
   suffix? : Option String := none
   deriving BEq, Inhabited, Repr
 
@@ -95,9 +100,13 @@ def generalize (p : Proof) (levels : List Name) : TermElabM (Expr × List Name) 
 Normalization belongs to `apply`; it is independent of registering the result as a simp lemma.
 The hooks are not run by the term elaborator. -/
 structure Transformation where
+  /-- Default suffix appended at this step of a generated name. -/
   suffix : String
+  /-- Construct and normalize a proof, or explain why the transformation is inapplicable. -/
   apply : Request → Proof → TermElabM (Except MessageData Proof)
+  /-- Prepare a named source, for example by allowing its universe parameters to specialize. -/
   prepare : Proof → List Name → TermElabM (Proof × List Name) := fun p levels => pure (p, levels)
+  /-- Finish a named result, returning its proof and ordered universe parameters. -/
   finalize : Proof → List Name → TermElabM (Expr × List Name) := generalize
 
 private initialize transformations : IO.Ref (NameMap Transformation) ← IO.mkRef {}
@@ -126,9 +135,12 @@ def apply? (request : Request) (p : Proof) : TermElabM (Except MessageData Proof
   let transformation ← getTransformation request.transformation
   let saved ← Term.saveState
   try
-    let result ← transformation.apply request p
-    if result matches .error _ then saved.restore (restoreInfo := true)
-    return result
+    match ← transformation.apply request p with
+    | .ok p => return .ok p
+    | .error reason =>
+      let reason ← addMessageContext reason
+      saved.restore (restoreInfo := true)
+      return .error reason
   catch ex =>
     saved.restore (restoreInfo := true)
     throw ex

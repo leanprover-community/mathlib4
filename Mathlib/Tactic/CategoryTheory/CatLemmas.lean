@@ -56,22 +56,32 @@ namespace Mathlib.Tactic.CategoryTheory.CatLemmas
 
 /-- A profile step, with a user-facing selector and the complete transformation request. -/
 structure Step where
+  /-- Name used by the bundle's `skip` and `noSimp` options. -/
   selector : Name
+  /-- Registered transformation, arguments, and naming suffix for this step. -/
   request : Request
+  /-- Whether at least one input branch must admit this explicit request. -/
   required : Bool := false
   deriving BEq, Inhabited
 
 /-- A generated declaration and its actual ordered path, including specialization arguments. -/
 structure Generated where
+  /-- Actual declaration name, obtained by following the ordered path. -/
   name : Name
+  /-- Steps from the original source to this result, without commuting transformations. -/
   path : Array Step
+  /-- Attributes applied by this invocation, independently of pre-existing attributes. -/
   attributes : Array Name := #[]
 
 /-- Options for the finite pilot profile. -/
 structure Config where
+  /-- Opt in to simp registration for the source and generated family. -/
   simp : Bool := false
+  /-- Remove matching steps and hence every branch descending from them. -/
   skip : Array Name := #[]
+  /-- Suppress bundle simp registration on paths containing a matching step. -/
   noSimp : Array Name := #[]
+  /-- Explicit template requests, in user-specified order, alongside generic mapping. -/
   specializations : Array Step := #[]
 
 /-- Run an explicitly ordered list of stages. Alternatives in one stage act on the same inputs,

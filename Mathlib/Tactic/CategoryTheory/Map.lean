@@ -76,9 +76,13 @@ def mapExpr (pf : Expr) (attrName : Name := `map) : Term.TermElabM Expr := do
 /-- A mapping proof applied to metavariables, with source parameters kept separate from the
 new functor. Its target category and instance are determined by specializing `functor`. -/
 structure MapApplication where
+  /-- Metavariables instantiating the original source telescope. -/
   sourceArgs : Array Expr
+  /-- Original binder information, in the same order as `sourceArgs`. -/
   sourceInfos : Array BinderInfo
+  /-- Functor metavariable; unify its type with the template's type before assigning it. -/
   functor : Expr
+  /-- Mapping proof applied to its source and target parameters. -/
   value : Expr
 
 /-- Instantiate the three appended binders specified by `mapProof`'s contract. This isolates the

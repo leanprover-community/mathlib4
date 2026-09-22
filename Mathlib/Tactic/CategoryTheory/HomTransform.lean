@@ -27,13 +27,21 @@ namespace Mathlib.Tactic.CategoryTheory
 /-- The data of an equality of morphisms, as recognized by `matchHomEquality`.
 `inst` is a synthetic instance metavariable, possibly already assigned. -/
 structure HomEquality where
+  /-- Universe of objects. -/
   u : Level
+  /-- Universe of morphisms. -/
   v : Level
+  /-- Type of objects of the source category. -/
   C : Q(Type u)
+  /-- Synthetic source instance, which may already have been assigned. -/
   inst : Q(Category.{v} $C)
+  /-- Common domain of the two morphisms. -/
   X : Q($C)
+  /-- Common codomain of the two morphisms. -/
   Y : Q($C)
+  /-- Left-hand side of the equality. -/
   f : Q($X ⟶ $Y)
+  /-- Right-hand side of the equality. -/
   g : Q($X ⟶ $Y)
 
 /-- Recognize an equality of morphisms without requiring a syntactic category projection chain.

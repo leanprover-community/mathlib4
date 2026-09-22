@@ -37,7 +37,12 @@ initialize register `test_inapplicable {
       type := mkConst ``True
       value := mkConst ``True.intro }
     logInfo "this message must be rolled back"
-    return .error m!"test inapplicability" }
+    return .error m!"test inapplicability at {p.type}" }
+
+initialize register `test_bound_context {
+  suffix := "_context"
+  apply := fun _ p => underForall p fun p => do
+    return .error m!"no rule for {p.type}" }
 
 initialize register `test_broken {
   suffix := "_broken"

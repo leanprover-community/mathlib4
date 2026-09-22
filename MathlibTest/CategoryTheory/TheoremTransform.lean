@@ -39,10 +39,17 @@ run_cmd liftTermElabM do
   let value ← mkFreshExprMVar type
   let before ← getMCtx
   let result ← apply? { transformation := `test_inapplicable } ⟨type, value⟩
-  guard <| result matches .error _
+  let .error reason := result | throwError "expected inapplicability"
+  guard <| (← reason.toString) == "test inapplicability at True"
   guard <| !(← type.mvarId!.isAssigned) && !(← value.mvarId!.isAssigned)
   guard <| (← getMCtx).decls.toList.length == before.decls.toList.length
   guard <| !(← getEnv).contains `Tests.failedProbeDeclaration
+
+-- Diagnostics retain the telescope's local context even though the probe is rolled back.
+/-- error: no rule for n = n -/
+#guard_msgs in
+@[transform_lemma test_bound_context]
+lemma boundContext (n : Nat) : n = n := rfl
 
 /-- error: test transformation implementation error -/
 #guard_msgs in
