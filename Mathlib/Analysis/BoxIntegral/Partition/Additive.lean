@@ -117,7 +117,7 @@ instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
 instance : IsAddApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
   add_apply _ _ _ := rfl
 
-instance {R} [Mul R] [DistribSMul R M] : IsSMulApply R (ι →ᵇᵃ[I₀] M) (Box ι) M where
+instance {R} [DistribSMul R M] : IsSMulApply R (ι →ᵇᵃ[I₀] M) (Box ι) M where
   smul_apply _ _ _ := rfl
 
 /-! ### Constructions and combinators -/
