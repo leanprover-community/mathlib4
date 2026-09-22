@@ -17,7 +17,12 @@ as `SimpleGraph`, `Graph`, and `Digraph`.
 ## Main definitions
 
 * `HyperGraphLike`: records the vertices, edges, and incidences of a graph-like
-  structure, with supplied edge and endpoint maps and source, target, link, and adjacency relations.
+  structure, with supplied edge and endpoint maps and source and target relations.
+* `HyperGraphLike.Link G e u v`: a specified source-to-target traversal of `e` from `u` to `v`,
+  retaining its two distinct incidences.
+* `HyperGraphLike.IsLink G e u v`: the existence of such a link, defined as
+  `Nonempty (Link G e u v)`.
+* `HyperGraphLike.Adj G u v`: the existence of an edge linking `u` to `v`.
 * `HyperGraphLike.edgeFiber` and `HyperGraphLike.vertexFiber`: the active incidence labels belonging
   to an edge or vertex.
 * `HyperGraphLike.incVerts` and `HyperGraphLike.incEdges`: the vertices of an edge and the edges at
@@ -46,7 +51,9 @@ directed edges and source & target incidences are used to model undirected edges
 
 Links require two *distinct* incidences of an edge, one source and one target. This separates loops
 (an edge with two incidences to the same vertex) and a dangling edge (an edge with one incidence
-with a vertex). Adjacency is then simply the existence of a link between two vertices.
+with a vertex). `Link G e u v` retains the chosen incidence data, while `IsLink G e u v` only
+remembers the existence of a link. Adjacency is then the existence of an edge linking two vertices.
+Both relations are derived from the incidence data and cannot be overridden by instances.
 
 Rather than directly using the given types, `HyperGraphLike` has fields for the set of vertices,
 edges, and incidences, and only those in the sets are treated as part of the graph-like
@@ -88,24 +95,9 @@ class HyperGraphLike (ν ι ε : outParam Type*) (Gr : Type*) where
   IsTarget (G : Gr) (i : ι) : Prop
   /-- An incidence is used exactly when it is a source or target. -/
   mem_incs_iff ⦃G i⦄ : i ∈ incs G ↔ IsSource G i ∨ IsTarget G i
-  -- Link and adjacency may be overridden for definitional agreement with a concrete representation.
-  -- The accompanying fields require each override to agree with its default.
-  /-- `IsLink G e u v` means that `e` has distinct source and target incidences at `u` and `v`. -/
-  IsLink (G : Gr) (e : ε) (u v : ν) : Prop := ∃ i j : incs G, i ≠ j ∧
-    IsSource G i.val ∧ IsTarget G j.val ∧ (edgeMap' G i).val = e ∧ (attach' G i).val = u ∧
-    (edgeMap' G j).val = e ∧ (attach' G j).val = v
-  /-- Characterizes `IsLink` using the supplied edge and endpoint maps of active incidences. -/
-  isLink_iff ⦃G e u v⦄ : IsLink G e u v ↔ ∃ i j : incs G, i ≠ j ∧
-    IsSource G i.val ∧ IsTarget G j.val ∧ (edgeMap' G i).val = e ∧ (attach' G i).val = u ∧
-    (edgeMap' G j).val = e ∧ (attach' G j).val = v := by grind
-  /-- `Adj G u v` means that some edge links `u` to `v`. -/
-  Adj (G : Gr) (u v : ν) : Prop := ∃ e, IsLink G e u v
-  /-- Adjacency means that an edge links the two vertices. -/
-  adj_iff' ⦃G u v⦄ : Adj G u v ↔ ∃ e, IsLink G e u v := by grind
 
 initialize_simps_projections HyperGraphLike (as_prefix verts, as_prefix edges, as_prefix incs,
-  IsSource → isSource, as_prefix isSource, IsTarget → isTarget, as_prefix isTarget,
-  IsLink → isLink, as_prefix isLink, Adj → adj, as_prefix adj)
+  IsSource → isSource, as_prefix isSource, IsTarget → isTarget, as_prefix isTarget)
 
 namespace HyperGraphLike
 
@@ -118,13 +110,39 @@ scoped notation "I(" G ")" => incs G
 @[inherit_doc edges]
 scoped notation "E(" G ")" => edges G
 
+variable {V I E Gr : Type*} {G : Gr} [HyperGraphLike V I E Gr] {u u' v v' w : V} {i j : I} {e f : E}
+
+/-- A link from `u` to `v` through `e`, retaining its ordered pair of distinct incidences. -/
+@[ext]
+structure Link (G : Gr) (e : E) (u v : V) where
+  /-- The source incidence of the link. -/
+  source : I(G)
+  /-- The target incidence of the link. -/
+  target : I(G)
+  /-- The two incidences are distinct, even when the attached vertices coincide. -/
+  ne : source ≠ target
+  isSource : IsSource G (source : I)
+  isTarget : IsTarget G (target : I)
+  /-- The source incidence belongs to the traversed edge. -/
+  source_edge : edgeMap' G source = e
+  /-- The target incidence belongs to the traversed edge. -/
+  target_edge : edgeMap' G target = e
+  /-- The source incidence is attached to the first vertex. -/
+  source_vertex : attach' G source = u
+  /-- The target incidence is attached to the second vertex. -/
+  target_vertex : attach' G target = v
+
+/-- `IsLink G e u v` means that a link from `u` to `v` through `e` exists. -/
+def IsLink (G : Gr) (e : E) (u v : V) : Prop := Nonempty (Link G e u v)
+
+/-- Two vertices are adjacent if some edge links the first to the second. -/
+def Adj (G : Gr) (u v : V) : Prop := ∃ e, IsLink G e u v
+
 @[inherit_doc Adj]
 scoped notation:50 u:50 " ~[" G "] " v:50 => Adj G u v
 
 @[inherit_doc IsLink]
 scoped notation:50 u:50 " ~[" G "; " e "] " v:50 => IsLink G e u v
-
-variable {V I E Gr : Type*} {G : Gr} [HyperGraphLike V I E Gr] {u u' v v' w : V} {i j : I} {e f : E}
 
 section HyperGraphLike
 
@@ -236,31 +254,40 @@ lemma biUnion_vertexFiber (G : Gr) : ⋃ v ∈ V(G), vertexFiber G v = I(G) := b
 
 /-! ### Links and adjacency -/
 
-@[grind →]
-lemma IsLink.edge_mem_edgeSet (h : u ~[G; e] v) : e ∈ E(G) := by
-  obtain ⟨i, _, _, _, _, rfl, _⟩ := isLink_iff.mp h
-  exact (edgeMap' G i).property
+/-- Forgetting the chosen incidences of a link. -/
+lemma Link.isLink (l : Link G e u v) : u ~[G; e] v := ⟨l⟩
+
+lemma Link.edge_mem_edgeSet (l : Link G e u v) : e ∈ E(G) :=
+  l.source_edge ▸ (edgeMap' G l.source).property
+
+lemma Link.left_mem_vertexSet (l : Link G e u v) : u ∈ V(G) :=
+  l.source_vertex ▸ (attach' G l.source).property
+
+lemma Link.right_mem_vertexSet (l : Link G e u v) : v ∈ V(G) :=
+  l.target_vertex ▸ (attach' G l.target).property
 
 @[grind →]
-lemma IsLink.left_mem_vertexSet (h : u ~[G; e] v) : u ∈ V(G) := by
-  obtain ⟨i, _, _, _, _, _, rfl, _⟩ := isLink_iff.mp h
-  exact (attach' G i).property
+lemma IsLink.edge_mem_edgeSet (h : u ~[G; e] v) : e ∈ E(G) :=
+  h.elim (·.edge_mem_edgeSet)
 
 @[grind →]
-lemma IsLink.right_mem_vertexSet (h : u ~[G; e] v) : v ∈ V(G) := by
-  obtain ⟨_, j, _, _, _, _, _, _, rfl⟩ := isLink_iff.mp h
-  exact (attach' G j).property
+lemma IsLink.left_mem_vertexSet (h : u ~[G; e] v) : u ∈ V(G) :=
+  h.elim (·.left_mem_vertexSet)
 
 @[grind →]
-lemma IsLink.adj (h : u ~[G; e] v) : u ~[G] v := adj_iff'.mpr ⟨e, h⟩
+lemma IsLink.right_mem_vertexSet (h : u ~[G; e] v) : v ∈ V(G) :=
+  h.elim (·.right_mem_vertexSet)
+
+@[grind →]
+lemma IsLink.adj (h : u ~[G; e] v) : u ~[G] v := ⟨e, h⟩
 
 @[grind →]
 lemma Adj.left_mem_vertexSet (h : u ~[G] v) : u ∈ V(G) :=
-  (adj_iff'.mp h).elim fun _ h ↦ h.left_mem_vertexSet
+  h.elim fun _ h ↦ h.left_mem_vertexSet
 
 @[grind →]
 lemma Adj.right_mem_vertexSet (h : u ~[G] v) : v ∈ V(G) :=
-  (adj_iff'.mp h).elim fun _ h ↦ h.right_mem_vertexSet
+  h.elim fun _ h ↦ h.right_mem_vertexSet
 
 @[simp]
 lemma not_isLink_of_notMem_edges (he : e ∉ E(G)) : ¬ u ~[G; e] v := mt IsLink.edge_mem_edgeSet he
@@ -275,12 +302,12 @@ lemma isLink_iff_exists_incidence [Nonempty V] [Nonempty E] :
     u ~[G; e] v ↔
       ∃ i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧ edgeMap G i = e ∧ edgeMap G j = e ∧
         attach G i = u ∧ attach G j = v := by
-  simp only [isLink_iff, val_edgeMap'_eq_edgeMap, val_attach'_eq_attach]
-  exact ⟨fun ⟨i, j, hij, hs, ht, he, hu, hf, hv⟩ ↦
-    ⟨i, j, fun h ↦ hij (Subtype.ext h), hs, ht, he, hf, hu, hv⟩,
-    fun ⟨i, j, hij, hs, ht, he, hf, hu, hv⟩ ↦
-    ⟨⟨i, hs.mem_incs⟩, ⟨j, ht.mem_incs⟩, fun h ↦ hij (congrArg Subtype.val h),
-      hs, ht, he, hu, hf, hv⟩⟩
+  refine ⟨fun ⟨l⟩ ↦ ⟨l.source, l.target, Subtype.coe_ne_coe.mpr l.ne, l.isSource, ?_⟩, ?_⟩
+  · simp only [← val_edgeMap'_eq_edgeMap, ← val_attach'_eq_attach]
+    exact ⟨l.isTarget, l.source_edge, l.target_edge, l.source_vertex, l.target_vertex⟩
+  rintro ⟨i, j, hne, hs, ht, he, rfl, rfl, rfl⟩
+  use ⟨i, hs.mem_incs⟩, ⟨j, ht.mem_incs⟩ <;> simp only [val_attach'_eq_attach,
+    val_edgeMap'_eq_edgeMap, ne_eq, Subtype.mk.injEq] <;> assumption
 
 lemma isLink_attach [Nonempty V] [Nonempty E] (hs : IsSource G i) (ht : IsTarget G j) (hij : i ≠ j)
     (he : edgeMap G i = edgeMap G j) : attach G i ~[G; edgeMap G i] attach G j :=
@@ -290,7 +317,7 @@ lemma adj_iff_exists_incidence [Nonempty V] [Nonempty E] :
     u ~[G] v ↔
       ∃ i j, i ≠ j ∧ IsSource G i ∧ IsTarget G j ∧ edgeMap G i = edgeMap G j ∧
         attach G i = u ∧ attach G j = v := by
-  simp only [adj_iff', isLink_iff_exists_incidence]
+  simp only [Adj, isLink_iff_exists_incidence]
   exact ⟨fun ⟨e, i, j, hij, hs, ht, he, hf, hu, hv⟩ ↦ ⟨i, j, hij, hs, ht, he.trans hf.symm, hu, hv⟩,
     fun ⟨i, j, hij, hs, ht, he, hu, hv⟩ ↦ ⟨edgeMap G i, i, j, hij, hs, ht, rfl, he.symm, hu, hv⟩⟩
 
@@ -368,12 +395,12 @@ lemma edgeMap_mem_incEdges [Nonempty V] [Nonempty E] (hi : i ∈ I(G)) :
 
 @[grind →]
 lemma IsLink.left_mem_incVerts (h : u ~[G; e] v) : u ∈ incVerts G e := by
-  obtain ⟨i, _, _, _, _, he, hu, _⟩ := isLink_iff.mp h
+  obtain ⟨i, _, _, _, _, he, _, hu, hv⟩ := h
   exact ⟨i, he, hu⟩
 
 @[grind →]
 lemma IsLink.right_mem_incVerts (h : u ~[G; e] v) : v ∈ incVerts G e := by
-  obtain ⟨_, j, _, _, _, _, _, he, hv⟩ := isLink_iff.mp h
+  obtain ⟨_, j, _, _, _, _, he, _, hv⟩ := h
   exact ⟨j, he, hv⟩
 
 lemma IsLink.pair_subset_incVerts (h : u ~[G; e] v) : {u, v} ⊆ incVerts G e :=
