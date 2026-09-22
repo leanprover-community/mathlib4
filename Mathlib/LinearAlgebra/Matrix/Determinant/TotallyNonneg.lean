@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
 /-!
 # Totally nonnegative matrices
