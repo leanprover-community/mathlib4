@@ -168,7 +168,6 @@ theorem moebiusMatrix_inv (n : ℕ) : (moebiusMatrix R n)⁻¹ = zetaMatrix R n 
   inv_eq_left_inv (zetaMatrix_mul_moebiusMatrix R n)
 
 @[simp] theorem det_moebiusMatrix (n : ℕ) : (moebiusMatrix R n).det = 1 := by
-  have h := congrArg det (moebiusMatrix_mul_zetaMatrix R n)
-  rwa [det_mul, det_zetaMatrix, mul_one, det_one] at h
+  simpa using congrArg det (moebiusMatrix_mul_zetaMatrix R n)
 
 end Matrix
