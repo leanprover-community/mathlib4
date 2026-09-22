@@ -152,18 +152,8 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     exact Nat.coprime_iff_isRelPrime.mp
       ((Nat.coprime_primes (Nat.mem_primeFactors.mp hp).1 (Nat.mem_primeFactors.mp hq).1).mpr hpq)
   have hP0 : P ≠ 0 := hPsq.ne_zero
-  have hsum : ∑ d ∈ n.divisors, (μ d : R) * f d = ∑ d ∈ P.divisors, (μ d : R) * f d := by
-    refine (Finset.sum_subset (Nat.divisors_subset_of_dvd hn (Nat.prod_primeFactors_dvd n))
-      fun d hd hno ↦ ?_).symm
-    have hdn : d ∣ n := (Nat.mem_divisors.mp hd).1
-    -- a squarefree divisor of `n` divides `P`: it is the product of its own prime factors
-    have hdP : Squarefree d → d ∣ P := fun hsq ↦ by
-      rw [← Nat.prod_primeFactors_of_squarefree hsq, Nat.prod_primeFactors_dvd_iff hP0, hP,
-        Nat.primeFactors_prod_primeFactors]
-      exact Nat.primeFactors_mono hdn hn
-    have : ¬ Squarefree d := fun hsq ↦ hno (Nat.mem_divisors.mpr ⟨hdP hsq, hP0⟩)
-    simp [ArithmeticFunction.moebius_eq_zero_of_not_squarefree this]
-  -- over the squarefree `P` this is `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`
+  -- over the squarefree `P` this is `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`;
+  -- the divisors of `n` that are not divisors of `P` are not squarefree, so `μ` kills them
   calc ∏ p ∈ n.primeFactors, (1 - f p)
       = ∏ p ∈ P.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
         rw [hP, Nat.primeFactors_prod_primeFactors]
@@ -174,7 +164,16 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     _ = ∑ d ∈ P.divisors, μ d * f d := by
         rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hPsq]
         simp_rw [pmul_apply, intCoe_apply]
-    _ = ∑ d ∈ n.divisors, μ d * f d := hsum.symm
+    _ = ∑ d ∈ n.divisors, μ d * f d := by
+        refine Finset.sum_subset (Nat.divisors_subset_of_dvd hn (Nat.prod_primeFactors_dvd n))
+          fun d hd hno ↦ ?_
+        -- a squarefree divisor of `n` divides `P`: it is the product of its own prime factors
+        have hdP : Squarefree d → d ∣ P := fun hsq ↦ by
+          rw [← Nat.prod_primeFactors_of_squarefree hsq, Nat.prod_primeFactors_dvd_iff hP0, hP,
+            Nat.primeFactors_prod_primeFactors]
+          exact Nat.primeFactors_mono (Nat.mem_divisors.mp hd).1 hn
+        have : ¬ Squarefree d := fun hsq ↦ hno (Nat.mem_divisors.mpr ⟨hdP hsq, hP0⟩)
+        simp [ArithmeticFunction.moebius_eq_zero_of_not_squarefree this]
 
 @[deprecated IsMultiplicative.prodPrimeFactors_one_sub (since := "2026-09-14")]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
