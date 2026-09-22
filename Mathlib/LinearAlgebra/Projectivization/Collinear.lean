@@ -5,9 +5,9 @@ Authors: Edison Xie, Bhavik Mehta
 -/
 module
 
-public import Mathlib.LinearAlgebra.Projectivization.Subspace
-public import Mathlib.LinearAlgebra.Projectivization.Independence
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.Projectivization.Independence
+public import Mathlib.LinearAlgebra.Projectivization.Subspace
 
 /-!
 

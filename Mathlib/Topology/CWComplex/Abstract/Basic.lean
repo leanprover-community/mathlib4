@@ -5,9 +5,9 @@ Authors: Jiazhen Xia, Elliot Dean Young, Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Sphere
-public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 
 /-!
 # CW-complexes

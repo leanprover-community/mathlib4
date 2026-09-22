@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.Presentation.Basic
 
 /-!
 # Characterization of finitely presented modules

@@ -6,10 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Order.Category.BoolAlg
 public import Mathlib.Order.Category.FinBddDistLat
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of finite Boolean algebras

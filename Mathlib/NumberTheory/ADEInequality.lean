@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Interval
-public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.NormNum
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`

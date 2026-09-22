@@ -5,12 +5,12 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Monad.Types
-public import Mathlib.CategoryTheory.Monad.Limits
 public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Monad.Types
+public import Mathlib.Data.Set.Constructions
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Data.Set.Constructions
 
 /-!
 

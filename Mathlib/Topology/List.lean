@@ -5,11 +5,11 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Topology.Constructions
+public import Mathlib.Data.Vector.Basic
 public import Mathlib.Order.Filter.ListTraverse
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Data.Vector.Basic
+public import Mathlib.Topology.Constructions
 
 /-!
 # Topology on lists and vectors

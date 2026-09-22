@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Baire.Lemmas
 
 /-! # Open mapping theorem for morphisms of topological groups
 

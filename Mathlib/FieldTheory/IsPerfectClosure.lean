@@ -5,8 +5,8 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.FieldTheory.PerfectClosure
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 

@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
-public import Mathlib.RingTheory.Kaehler.Polynomial
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Basic
+public import Mathlib.RingTheory.Kaehler.Polynomial
 
 /-!
 # Presentation of the module of differentials

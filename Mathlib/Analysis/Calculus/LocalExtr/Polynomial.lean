@@ -5,8 +5,8 @@ Authors: Benjamin Davidson, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 public import Mathlib.Topology.Algebra.Polynomial
 
 /-!

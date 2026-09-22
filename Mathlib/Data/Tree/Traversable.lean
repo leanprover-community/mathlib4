@@ -5,9 +5,9 @@ Authors: Edward van de Meent
 -/
 module
 
-public import Mathlib.Data.Tree.Basic
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Data.Tree.Basic
 
 /-!
 # Traversable Binary Tree

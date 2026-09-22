@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Michał Mrugała
 -/
 module
 
-public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.GroupLike
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # Group-like elements in a Hopf algebra

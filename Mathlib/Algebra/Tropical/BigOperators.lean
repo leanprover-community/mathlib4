@@ -5,10 +5,10 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.MinMax
-public import Mathlib.Algebra.Tropical.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
 

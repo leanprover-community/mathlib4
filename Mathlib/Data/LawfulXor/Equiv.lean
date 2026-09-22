@@ -5,8 +5,8 @@ Authors: Wrenna Robson
 -/
 
 module
-public import Mathlib.Data.LawfulXor.Basic
 public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.LawfulXor.Basic
 
 /-!
 # LawfulXor equivalences

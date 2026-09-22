@@ -6,8 +6,8 @@ Authors: Aaron Anderson, Jalex Stark
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.LinearAlgebra.Matrix.CharP
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 
 /-!
 # Results on characteristic polynomials and traces over finite fields.

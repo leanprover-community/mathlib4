@@ -5,15 +5,15 @@ Authors: Fengyang Wang
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Data.Set.MulAntidiagonal
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Algebra.Module.LinearMap.Basic
-public import Mathlib.Algebra.Order.Antidiag.Prod
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Data.Set.MulAntidiagonal
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Discrete Convolution

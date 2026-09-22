@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
-public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 public import Mathlib.Analysis.PSeries
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
+public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 
 /-!
 # Volume of the set of Liouville numbers

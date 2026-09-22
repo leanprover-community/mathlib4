@@ -6,9 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.Common
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Set enumeration

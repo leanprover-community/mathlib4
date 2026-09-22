@@ -6,8 +6,8 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.CharZero.Infinite
-public import Mathlib.Data.Rat.Encodable
 public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Rat.Encodable
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Fraisse
 public import Mathlib.Order.CountableDenseLinearOrder

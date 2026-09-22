@@ -5,8 +5,8 @@ Authors: Xavier Généreux
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.Analysis.Complex.PhragmenLindelof
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Hadamard three-lines Theorem

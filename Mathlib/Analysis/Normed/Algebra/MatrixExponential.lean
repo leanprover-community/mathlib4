@@ -5,14 +5,14 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.LinearAlgebra.Matrix.ZPow
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
-public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Lemmas about the matrix exponential

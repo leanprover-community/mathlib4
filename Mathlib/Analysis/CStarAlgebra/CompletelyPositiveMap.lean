@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 
 /-! # Completely positive maps
 

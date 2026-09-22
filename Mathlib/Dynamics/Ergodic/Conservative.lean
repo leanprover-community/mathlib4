@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Conservative systems

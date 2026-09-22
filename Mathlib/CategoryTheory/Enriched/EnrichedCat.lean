@@ -5,8 +5,8 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Enriched.Basic
 
 /-!
 # The bicategory of `V`-enriched categories

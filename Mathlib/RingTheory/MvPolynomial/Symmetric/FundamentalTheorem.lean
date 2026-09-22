@@ -5,11 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Data.Finsupp.Notation
 public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+public import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials

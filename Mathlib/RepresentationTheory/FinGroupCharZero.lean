@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Category.FGModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Maschke
-public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 public import Mathlib.RepresentationTheory.Rep.Iso
+public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 
 /-!
 # Applications of Maschke's theorem

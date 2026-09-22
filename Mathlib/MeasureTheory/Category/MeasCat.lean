@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.CategoryTheory.Monad.Algebra
+public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!

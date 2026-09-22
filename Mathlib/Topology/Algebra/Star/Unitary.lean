@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Star
 
 /-! # Topological properties of the unitary (sub)group
 
