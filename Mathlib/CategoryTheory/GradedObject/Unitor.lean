@@ -244,7 +244,6 @@ lemma mapBifunctorRightUnitor_inv_apply (j : J) :
 
 variable {Y}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :
     φ ≫ (mapBifunctorRightUnitor F Y e p hp X').inv =
@@ -336,7 +335,6 @@ variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category* C₁] [Category*
   [HasGoodTrifunctor₂₃Obj G F₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃]
   [HasMap (((mapBifunctor G I₁ I₃).obj X₁).obj X₃) π]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mapBifunctor_triangle
     (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
     (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃) :

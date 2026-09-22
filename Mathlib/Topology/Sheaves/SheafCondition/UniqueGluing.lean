@@ -167,7 +167,7 @@ end Presheaf
 
 namespace Sheaf
 
-open Presheaf CategoryTheory
+open CategoryTheory
 
 section
 
@@ -238,7 +238,7 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by
   fapply F.eq_of_locally_eq' fun t : Bool => if t then U₁ else U₂
-  · exact fun i => if h : i then eqToHom (if_pos h) ≫ i₁ else eqToHom (if_neg h) ≫ i₂
+  · exact fun i => if h : i then eqToHom (ite_eq_left h) ≫ i₁ else eqToHom (ite_eq_right h) ≫ i₂
   · refine le_trans hcover ?_
     rw [sup_le_iff]
     constructor

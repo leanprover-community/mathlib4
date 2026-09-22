@@ -98,7 +98,7 @@ theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
   rw [divisors, properDivisors,
     ← Finset.insert_Ico_right_eq_Ico_add_one (one_le_iff_ne_zero.2 h),
-    Finset.filter_insert, if_pos (dvd_refl n)]
+    Finset.filter_insert, ite_eq_left (dvd_refl n)]
 
 theorem cons_self_properDivisors (h : n ≠ 0) :
     cons n (properDivisors n) self_notMem_properDivisors = divisors n := by

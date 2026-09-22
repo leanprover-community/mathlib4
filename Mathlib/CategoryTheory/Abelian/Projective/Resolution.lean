@@ -310,7 +310,6 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
   | 0 => apply exact_d_f
   | n + 1 => apply exact_d_f
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 

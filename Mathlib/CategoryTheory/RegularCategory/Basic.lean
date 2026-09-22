@@ -80,7 +80,6 @@ section StrongEpiMonoFactorisation
 local instance : HasCoequalizer (pullback.fst f f) (pullback.snd f f) :=
   Regular.hasCoequalizer_of_isKernelPair <| IsKernelPair.of_hasPullback f
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono (coequalizer.desc f pullback.condition) := by
   -- It suffices to show that the two projections from the kernel pair are equal:
   apply (IsKernelPair.of_hasPullback _).mono_of_eq_fst_snd
@@ -132,7 +131,6 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
   convert! coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
   all_goals cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a regular category, every morphism `f : X ⟶ Y` factors as `e ≫ m`, where `e` is the projection
 map to the coequalizer of the kernel pair of `f`, and `m` is the canonical map from that
@@ -154,7 +152,6 @@ and `m` a monomorphism.
 instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a regular category, every extremal epimorphism is a regular epimorphism. -/
 noncomputable def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
   have := h.isIso (strongEpiMonoFactorisation f).e (strongEpiMonoFactorisation f).m (by simp)
