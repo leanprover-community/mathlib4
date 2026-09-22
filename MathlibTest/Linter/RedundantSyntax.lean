@@ -2,7 +2,6 @@ module
 
 import Mathlib.Init
 
-section
 set_option linter.style.redundantSyntax true
 
 /--
@@ -108,6 +107,29 @@ Note: This linter can be disabled with `set_option linter.style.redundantSyntax 
 #guard_msgs in
 example (f : Rat → Rat) (x : Rat) := f⁻¹ <| x⁻¹
 
+-- The `{...}` notation is ambiguous between set notation and constructor notation
+/--
+warning: Try this:
+   ̵<̵|̵
+
+`{ 1, 2, 3 }` can be parsed as a function argument, so the pipe operator `<|` can be omitted.
+
+Note: This linter can be disabled with `set_option linter.style.redundantSyntax false`
+-/
+#guard_msgs in
+example : Std.HashSet Nat := id <| {1, 2, 3}
+
+/--
+warning: Try this:
+   ̵<̵|̵
+
+`{ }` can be parsed as a function argument, so the pipe operator `<|` can be omitted.
+
+Note: This linter can be disabled with `set_option linter.style.redundantSyntax false`
+-/
+#guard_msgs in
+example : Std.HashSet Nat := id <| {}
+
 -- We currently don't lint against `<| fun` or `<| ¬`.
 example : Nat → Nat := id <| fun x ↦ x
 example : Nat → Nat := id <| @fun x ↦ x
@@ -130,5 +152,3 @@ example : Id Nat := id <| do
 -- Don't warn when the funtion is not an application or a syntax with `max` precedence.
 instance : Add (Nat → Nat) := ⟨fun f _ ↦ f⟩
 example (f g : Nat → Nat) := f + g <| 3
-
-end
