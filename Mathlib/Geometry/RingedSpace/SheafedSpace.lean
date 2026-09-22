@@ -69,7 +69,7 @@ def unit (X : TopCat) : SheafedSpace (Discrete Unit) :=
   { @PresheafedSpace.const (Discrete Unit) _ X ⟨⟨⟩⟩ with IsSheaf := Presheaf.isSheaf_unit _ }
 
 instance : Inhabited (SheafedSpace (Discrete Unit)) :=
-  ⟨unit (TopCat.of PEmpty)⟩
+  ⟨unit ↧PEmpty⟩
 
 instance : Category (SheafedSpace C) :=
   inferInstanceAs <| Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace)

@@ -67,7 +67,7 @@ section SubmonoidPresheaf
 
 open scoped nonZeroDivisors
 
-variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
+variable {X : TopCat.{w}}
 
 -- note: this was specialized to `CommRingCat` in https://github.com/leanprover-community/mathlib4/issues/19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
@@ -80,7 +80,7 @@ variable {F : X.Presheaf CommRingCat.{w}} (G : F.SubmonoidPresheaf)
 
 /-- The localization of a presheaf of `CommRing`s with respect to a `SubmonoidPresheaf`. -/
 protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf CommRingCat where
-  obj U := CommRingCat.of <| Localization (G.obj U)
+  obj U := ↧(Localization (G.obj U))
   map {_ _} i := CommRingCat.ofHom <| IsLocalization.map _ (F.map i).hom (G.map i)
   map_id U := by
     simp_rw [F.map_id]
@@ -206,7 +206,7 @@ instance : CommRing (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
 /-- The (bundled) commutative ring of continuous functions from a topological space
 to a topological commutative ring, with pointwise multiplication. -/
 def continuousFunctions (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) : CommRingCat.{v} :=
-  CommRingCat.of (X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R)
+  ↧(X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R)
 
 namespace continuousFunctions
 
@@ -270,7 +270,7 @@ section Stalks
 
 namespace TopCat.Presheaf
 
-variable {X Y Z : TopCat.{v}}
+variable {X : TopCat.{v}}
 
 instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
     Algebra (F.obj <| op U) (F.stalk x) :=

@@ -34,7 +34,9 @@ principle on `Hyperreal`.
 
 @[expose] public section
 
-open ArchimedeanClass Filter Germ Topology
+open ArchimedeanClass Filter Germ
+
+open scoped Topology
 
 noncomputable section
 

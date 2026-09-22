@@ -7,6 +7,7 @@ Authors: Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
+import Cache.Upload
 import Cache.Query
 import Cache.Warning
 import Cache.Lean
@@ -23,6 +24,9 @@ These tests cover the pure logic of the cache system, including:
   non-default-scope security warning it triggers
 - Decompression-pipeline carry across download rounds (`DecompState`,
   `finalizeDecomp`, `monitorCurl`)
+- Transfer classification (`classifyDownload`/`classifyUpload`): delivered,
+  miss, skip, or failed, per HTTP status and curl exit code
+- The two retry-flag tiers (`curlRetryArgs`)
 - Utility functions (URL extraction, filename hashing, etc.)
 
 Anything that touches the network is left to CI, which exercises the
@@ -81,6 +85,13 @@ def assertEq (name expected actual : String) : IO Unit := do
   else
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
+
+/-- Run `body` with the `--scope=` override (`scopeOverride`) restored on
+completion, including on exception, so a test that sets it leaves the tests
+after it unaffected. -/
+private def withSavedScopeOverride (body : IO Unit) : IO Unit := do
+  let saved ← scopeOverride.get
+  try body finally scopeOverride.set saved
 
 /-- Run `action` with both stdout and stderr redirected to the platform null
 device. Restores both on completion, including on exception. Apply this to every
@@ -159,6 +170,81 @@ def test_Container_azureURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4"
     Container.legacy.azureURL
 
+/-- A variable that names a read URL or a read chain arrives trimmed, and an
+empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
+`MATHLIB_CACHE_GET_URL`, and `MATHLIB_CACHE_FROM` follow that rule. CI wires
+them from a GitHub Actions `vars` lookup, which yields `""` for an undefined
+variable, and such a value behaves as an absent one. The upload endpoint
+`MATHLIB_CACHE_PUT_URL` keeps the opposite rule: an empty value there fails the
+upload rather than divert it to the fallback container. -/
+def test_envValueNormalization : IO Unit := do
+  IO.println "nonEmptyEnvValue / normalizeBaseURL:"
+  -- `<unset>` stands in for `none`, so a failure shows both sides as strings.
+  let shown (value? : Option String) : String := value?.getD "<unset>"
+  assertEq "absent value reads as unset" "<unset>" (shown (nonEmptyEnvValue none))
+  assertEq "empty value reads as unset" "<unset>" (shown (nonEmptyEnvValue (some "")))
+  assertEq "whitespace-only value reads as unset" "<unset>"
+    (shown (nonEmptyEnvValue (some " \n")))
+  assertEq "value is trimmed" "master,forks" (shown (nonEmptyEnvValue (some " master,forks\n")))
+  assertEq "URL keeps its own path" "https://cache.example.org/mathlib4"
+    (shown (normalizeBaseURL (some "https://cache.example.org/mathlib4")))
+  assertEq "trailing slashes are stripped" "https://cache.example.org"
+    (shown (normalizeBaseURL (some "https://cache.example.org///")))
+  assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
+
+/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set.
+Without it, reads address `publicCacheEndpoint`, and address the Azure account when
+`MATHLIB_CACHE_DEBUG_USE_LEGACY` selects the legacy read host. `getBaseURLFrom` is
+pure, so this test covers every branch; the environment-reading wrapper
+(`getBaseURL`) adds no logic of its own. -/
+def test_getBaseURLFrom : IO Unit := do
+  IO.println "getBaseURLFrom:"
+  assertEq "no override → the read endpoint"
+    "https://cache.mathlib.org" (getBaseURLFrom none false)
+  assertEq "legacy → the storage account"
+    "https://lakecache.blob.core.windows.net" (getBaseURLFrom none true)
+  -- The legacy base is the host the container URLs (`azureURL`) are built on.
+  assertEq "the legacy base matches the container URLs"
+    azureAccountURL (getBaseURLFrom none true)
+  assertEq "override → the given base"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") false)
+  assertEq "override wins over legacy"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") true)
+  -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
+  -- undefined, so an empty value must keep the default.
+  assertEq "empty value counts as unset"
+    publicCacheEndpoint (getBaseURLFrom (some "") false)
+  assertEq "whitespace-only value counts as unset"
+    publicCacheEndpoint (getBaseURLFrom (some " \n") false)
+  assertEq "override is trimmed"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n") false)
+  -- A base written with a trailing slash must not double the separator in
+  -- `{base}/{container}/{key}`.
+  assertEq "trailing slash is stripped"
+    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/") false)
+
+/-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
+`azureURL`, under whichever base the environment selects. Without a base-URL
+override, both positions of the legacy switch are pinned: the endpoint by
+default, `azureURL` under legacy. -/
+def test_Container_getURL : IO Unit := do
+  IO.println "Container.getURL:"
+  let base ← getBaseURL
+  assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
+  assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
+  assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
+  -- A base-URL override answers for both switch positions, so the pinned
+  -- assertions run only without one.
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+    let ambient ← useLegacy.get
+    useLegacy.set false
+    assertEq "default read URL is on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-master" (← Container.master.getURL)
+    useLegacy.set true
+    assertEq "legacy read URL matches azureURL"
+      Container.master.azureURL (← Container.master.getURL)
+    useLegacy.set ambient
+
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
 repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
 container's writers stay on non-colliding paths:
@@ -221,6 +307,28 @@ def test_defaultContainersForRepo : IO Unit := do
     ((defaultContainersForRepo MATHLIBREPO).getLast? == some .legacy)
   assertTrue "nightly-testing chain ends with legacy"
     ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some .legacy)
+
+/-- `effectiveGetURLs` pairs the lookup chain with read URLs in trust order.
+This test covers the default chain and the `--cache-from` override. The
+`MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_FROM` branches need process state,
+so the CI integration tests exercise them instead. -/
+def test_effectiveGetURLs : IO Unit := do
+  IO.println "effectiveGetURLs:"
+  if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
+      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
+    IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
+    return
+  let base ← getBaseURL
+  assertTrue "default chain pairs each container with its read URL"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .master, s!"{base}/mathlib4-master"),
+       (some .legacy, s!"{base}/mathlib4")])
+  cacheFromOverride.set (some [.forks, .master])
+  assertTrue "--cache-from override keeps its order"
+    ((← effectiveGetURLs MATHLIBREPO) ==
+      [(some .forks, s!"{base}/mathlib4-forks"),
+       (some .master, s!"{base}/mathlib4-master")])
+  cacheFromOverride.set none
 
 end PerRepoAllowlist
 
@@ -382,25 +490,60 @@ end ExtractPRNumber
 section HashFromFileName
 
 /-- Recovers the UInt64 cache hash from a cached file's path, the inverse of
-`UInt64.asLTar`. The subtle case is `.ltar.part` — the suffix curl writes during
-a download — where `.part` must be stripped before `.ltar`. A regression here
-corrupts cache lookups, so both suffixes and a non-hex stem are covered. -/
+`UInt64.asLTar`. The subtle cases are the in-flight suffixes curl writes during a
+download: today's process-tagged `.ltar.<pid>.part` (see `IO.PARTSUFFIX`) and the
+untagged `.ltar.part` a cache from before tagging may have left in the shared
+directory. A regression here corrupts cache lookups, so every suffix and a
+non-hex stem are covered. -/
 def test_hashFromFileName : IO Unit := do
   IO.println "hashFromFileName:"
   assertTrue "plain .ltar file"
     (hashFromFileName "abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
-  assertTrue "in-flight .ltar.part file strips both suffixes"
+  assertTrue "in-flight process-tagged .part file strips all three suffixes"
+    (hashFromFileName "abc123def.ltar.31415.part" == String.parseHexToUInt64? "000000abc123def")
+  assertTrue "legacy untagged .ltar.part file strips both suffixes"
     (hashFromFileName "abc123def.ltar.part" == String.parseHexToUInt64? "000000abc123def")
+  assertTrue "the tag this process actually writes round-trips"
+    (hashFromFileName ("abc123def.ltar" ++ IO.PARTSUFFIX) ==
+      String.parseHexToUInt64? "000000abc123def")
   assertTrue "full 16-digit hex stem"
     (hashFromFileName "deadbeef00112233.ltar" == String.parseHexToUInt64? "deadbeef00112233")
   -- A non-hex stem returns none rather than a garbage hash.
   assertTrue "non-hex stem returns none"
     (hashFromFileName "nothexa.ltar" == none)
+  assertTrue "non-hex stem returns none for a tagged part file too"
+    (hashFromFileName "nothexa.ltar.31415.part" == none)
   -- Directory components are ignored; only the basename's stem is parsed.
   assertTrue "leading path is ignored"
     (hashFromFileName "/path/to/abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
 
 end HashFromFileName
+
+section TempFileNames
+
+/-- Every temporary file `cache` writes into the shared `CACHEDIR` carries this process's
+tag, so two runs in flight in one cache directory cannot write each other's curl
+configuration or each other's partial downloads. The `.part` ending is load-bearing
+beyond uniqueness: the download monitor keys both its rename-on-success and its
+remove-on-error off it. -/
+def test_tempFileNames : IO Unit := do
+  IO.println "temporary file names:"
+  assertTrue "the process tag is non-empty" (!IO.PROCTAG.isEmpty)
+  assertTrue "the in-flight suffix still ends in .part" (IO.PARTSUFFIX.endsWith ".part")
+  assertTrue "the in-flight suffix is tagged, not a bare .part" (IO.PARTSUFFIX != ".part")
+  assertTrue "the in-flight suffix carries the tag" ((IO.PARTSUFFIX.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config carries the tag"
+    ((IO.CURLCFG.toString.splitOn IO.PROCTAG).length == 2)
+  assertTrue "the curl config sits in the cache directory"
+    (IO.CURLCFG.parent == some IO.CACHEDIR)
+  assertTrue "an upload's curl config sits under the given directory"
+    ((IO.curlConfigIn "staging").parent == some "staging")
+  assertTrue "an upload's curl config carries the same tagged name"
+    ((IO.curlConfigIn "staging").fileName == IO.CURLCFG.fileName)
+  -- The tag must not reintroduce a path separator or a shell/curl-config hazard.
+  assertTrue "the tag is a bare identifier" (IO.PROCTAG.all fun c => c.isAlphanum)
+
+end TempFileNames
 
 section IsRemoteURL
 
@@ -472,28 +615,60 @@ end RoundTrip
 
 section Marker
 
-/-- URL shape for the per-SHA marker blob written by `put-staged`. Probed by
-`cache query` with a HEAD request. The marker lives at `/m/{repo}/{sha}` in
-the chosen container; its presence is a 200 HEAD response that signals "all
-artifacts for this commit were uploaded". This shape enables cheap per-commit
-discovery via HEAD (no blob-listing). -/
+/-- URL shape for the per-SHA marker blob `cache put` writes
+(`StagedUploadDest.markerURL`, on the destination `stagedUploadDestFrom`
+resolves) and `cache query` probes with a HEAD request. The marker lives at
+`/m/{repo}/{sha}` under the base; a 200 HEAD response signals that all
+artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
-  IO.println "markerURL:"
-  assertEq "forks marker URL"
+  IO.println "StagedUploadDest.markerURL:"
+  let dest (backend : UploadBackend) (container? : Option Container)
+      (putBase? : Option String) : String :=
+    ((stagedUploadDestFrom backend none putBase? container? "alice/mathlib4"
+      none).toOption.map (·.markerURL "abc123")).getD "(unresolved)"
+  assertEq "forks marker URL under the Azure base"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
-    (markerURL .forks "alice/mathlib4" "abc123")
+    (dest .azure (some .forks) none)
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/m/leanprover-community/mathlib4/deadbeef"
-    (markerURL .forks MATHLIBREPO "deadbeef")
-  assertEq "marker URL respects the container base"
-    "https://lakecache.blob.core.windows.net/mathlib4/m/someorg/mathlib4/sha9999"
-    (markerURL .legacy "someorg/mathlib4" "sha9999")
+    "m/leanprover-community/mathlib4/deadbeef"
+    (markerPath MATHLIBREPO "deadbeef")
+  -- A put base rebases the marker with the artifacts it marks: the same
+  -- `{base}/{container}` resolution feeds both (see `stagedUploadDestFrom`).
+  assertEq "marker URL follows a rebased upload destination"
+    "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
+    (dest .s3 (some .forks) (some "https://bucket.example.org/mirror"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
-    (markerURL .forks "Alice/Mathlib4" "abc123")
+    "m/alice/mathlib4/abc123"
+    (markerPath "Alice/Mathlib4" "abc123")
+
+/-- Marker probes read through the container's read base; marker writes follow
+the resolved upload destination (`StagedUploadDest.markerURL`). Without a
+base-URL override, both positions of the legacy switch are pinned: probes
+address the container's service endpoint by default, and under legacy they
+match the Azure write URL. -/
+def test_markerReadURL : IO Unit := do
+  IO.println "markerReadURL:"
+  let base ← getBaseURL
+  assertEq "probe URL follows the read base"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "alice/mathlib4" "abc123")
+  assertEq "probe repo is lowercased in the path"
+    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
+    (← markerReadURL .forks "Alice/Mathlib4" "abc123")
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+    let ambient ← useLegacy.get
+    useLegacy.set false
+    assertEq "default probe URL is on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
+      (← markerReadURL .forks "alice/mathlib4" "abc123")
+    useLegacy.set true
+    assertEq "legacy probe URL matches the Azure write URL"
+      s!"{Container.forks.azureURL}/{markerPath "alice/mathlib4" "abc123"}"
+      (← markerReadURL .forks "alice/mathlib4" "abc123")
+    useLegacy.set ambient
 
 end Marker
 
@@ -507,9 +682,7 @@ needs process state, so it is exercised by the CI integration tests rather than
 here. -/
 def test_getRepoScope : IO Unit := do
   IO.println "getRepoScope:"
-  -- Guard the IORef so a leak doesn't pollute subsequent tests.
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
     assertTrue "no scope set returns none" ((← withSuppressedOutput getRepoScope) == none)
 
@@ -523,8 +696,6 @@ def test_getRepoScope : IO Unit := do
 
     scopeOverride.set none
     assertTrue "clearing the flag returns none" ((← withSuppressedOutput getRepoScope) == none)
-  finally
-    scopeOverride.set saved
 
 end ScopeResolution
 
@@ -538,7 +709,8 @@ reader off the repo's default trust boundary:
    the checked-out HEAD;
 2. `--cache-from=LIST` differs from the repo's default chain (passing the
    default explicitly is not widening);
-3. `--repo=` is given and differs from the detected git remote.
+3. `--repo=` is given and differs from the detected git remote, or names a
+   non-canonical repo with no detectable remote to compare against.
 
 The behavior the tests pin most carefully: a plain `cache get` with no flags
 never warns, even on a fork checkout whose remote isn't the canonical repo.
@@ -546,9 +718,7 @@ never warns, even on a fork checkout whose remote isn't the canonical repo.
 deterministic without needing a real checkout. -/
 def test_shouldWarnNonDefaultScope : IO Unit := do
   IO.println "shouldWarnNonDefaultScope:"
-  -- Sandbox the IORef for the duration of this test.
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
 
     assertTrue "plain get with no flags does not warn"
@@ -604,8 +774,6 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     assertTrue "no --unsafe (none window) does not warn on its own"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := none))))
-  finally
-    scopeOverride.set saved
 
 /-- `getNonDefaultScopeReason` produces the `Reason:` line in the warning, naming
 the specific input that triggered it so the user can match it to their command
@@ -613,8 +781,7 @@ line. When several inputs apply at once it reports the most specific first —
 scope, then `--cache-from`, then `--repo` — and that order is pinned here. -/
 def test_getNonDefaultScopeReason : IO Unit := do
   IO.println "getNonDefaultScopeReason:"
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
 
     -- A placeholder rather than a crash if nothing matches.
@@ -667,8 +834,6 @@ def test_getNonDefaultScopeReason : IO Unit := do
     assertTrue "unsafe reason names the window and outranks scope/cache-from/repo"
       (reason == "--unsafe (automatic walk over up to 7 fork commit(s); trusting whoever built them)")
     scopeOverride.set none
-  finally
-    scopeOverride.set saved
 
 /-- `findMostRecentSHAWithCache` returns the first candidate SHA whose per-SHA
 marker exists in the `forks` container, used by `cache query` to find the most
@@ -788,6 +953,7 @@ def test_isKnownOpt : IO Unit := do
   assertTrue "--container=master is known"   (isKnownOpt "--container=master")
   assertTrue "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
   assertTrue "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
+  assertTrue "--backend=s3 is known"         (isKnownOpt "--backend=s3")
 
   -- Empty value passes recognition (parseNamedOpt returns the empty string
   -- for these — callers decide whether to treat that as an error).
@@ -886,7 +1052,98 @@ def test_parseFlagOpt : IO Unit := do
   -- Lookalike: `--help-me` isn't the `--help` flag.
   assertTrue "lookalike prefix doesn't match" (!parseFlagOpt "help" ["--help-me"])
 
+/-- A boolean environment variable is on for `1` and `true`, off for `0` and
+`false`, and `ifUnset` for an absent or blank value.
+`MATHLIB_CACHE_DEBUG_USE_LEGACY` reads this way with `ifUnset := false`.
+
+`ifUnset` decides the unset case alone: a variable that defaults on still reads
+`0` as off, and a value the parser cannot read warns and falls back to
+`ifUnset`. -/
+def test_parseEnvFlag : IO Unit := do
+  IO.println "parseEnvFlag:"
+  let shown (flag : Bool) : String := if flag then "on" else "off"
+  -- The variable name only reaches the warning, so any name serves the rest.
+  let parse (value? : Option String) (ifUnset : Bool) : IO String := do
+    return shown (← withSuppressedOutput (parseEnvFlag "FLAG" value? ifUnset))
+  assertEq "absent value takes ifUnset" "off" (← parse none false)
+  assertEq "empty value takes ifUnset" "off" (← parse (some "") false)
+  assertEq "whitespace-only value takes ifUnset" "off" (← parse (some " \n") false)
+  assertEq "1 is on" "on" (← parse (some "1") false)
+  assertEq "true is on" "on" (← parse (some "true") false)
+  assertEq "case does not matter" "on" (← parse (some "TRUE") false)
+  assertEq "surrounding space does not matter" "on" (← parse (some " true ") false)
+  assertEq "0 is off" "off" (← parse (some "0") false)
+  assertEq "false is off" "off" (← parse (some "false") false)
+  assertEq "an unreadable value falls back to ifUnset" "off" (← parse (some "yes") false)
+  assertEq "a number other than 0 or 1 is unreadable" "off" (← parse (some "2") false)
+  -- A default-on variable: `ifUnset` moves the unset case and nothing else.
+  assertEq "absent value takes an on default" "on" (← parse none true)
+  assertEq "empty value takes an on default" "on" (← parse (some "") true)
+  assertEq "0 is off against an on default" "off" (← parse (some "0") true)
+  assertEq "false is off against an on default" "off" (← parse (some "false") true)
+  assertEq "1 is on against an on default" "on" (← parse (some "1") true)
+  assertEq "an unreadable value takes an on default" "on" (← parse (some "yes") true)
+  -- The warning names the variable and the value it rejected, and it fires only
+  -- for a value the parser cannot read.
+  let (warning, _) ← IO.FS.withIsolatedStreams (parseEnvFlag "MY_FLAG" (some "yes") false)
+  assertTrue "the warning names the variable and the value"
+    ((warning.splitOn "MY_FLAG=yes").length == 2)
+  let (quiet, _) ← IO.FS.withIsolatedStreams (parseEnvFlag "MY_FLAG" (some "0") false)
+  assertEq "a readable value warns about nothing" "" quiet
+
 end CliOptions
+
+section ReadRedirects
+
+/-- Reads follow redirects, so a read base can answer with the blob's current
+location. This test pins the flag set, because each flag bounds what a redirect
+may do: `--proto-redir =https` holds a transfer on an encrypted protocol, and
+`--max-redirs` bounds the chain. The upload path builds its own `curl`
+arguments and carries none of these flags. -/
+def test_curlFollowRedirectArgs : IO Unit := do
+  IO.println "curlFollowRedirectArgs:"
+  assertEq "read redirect flags"
+    "--location --proto-redir =https --max-redirs 5"
+    (" ".intercalate curlFollowRedirectArgs.toList)
+
+end ReadRedirects
+
+section RetryFlags
+
+/-- Only a path with a curl 7.71 floor may pass `--retry-all-errors`; an older
+curl rejects the whole command. The legacy tier serves the serial download
+path, so it must stay free of that flag. -/
+def test_curlRetryArgs : IO Unit := do
+  IO.println "curlRetryArgs:"
+  assertEq "legacy tier" "--retry 5"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := true)).toList)
+  assertEq "full tier" "--retry 5 --retry-all-errors"
+    (" ".intercalate (curlRetryArgs (supportLegacyCurl := false)).toList)
+
+end RetryFlags
+
+section RunCmdErrors
+
+/-- With `showArgsOnError := false` a failing command's error names only the
+command: the argument list can carry a credential (the marker uploads pass
+`--oauth2-bearer` or the S3 `--user` keypair). The default keeps the argument
+list in the message. -/
+def test_runCmd_showArgsOnError : IO Unit := do
+  IO.println "runCmd showArgsOnError:"
+  let secret := "hunter2-credential"
+  let hidden ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret] (showArgsOnError := false)
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the failure throws" (hidden != "no failure")
+  assertTrue "the message hides the arguments" ((hidden.splitOn secret).length == 1)
+  let shown ← try
+      discard <| IO.runCmd "curl" #["--not-a-curl-flag", secret]
+      pure "no failure"
+    catch e => pure (toString e)
+  assertTrue "the default shows the arguments" ((shown.splitOn secret).length == 2)
+
+end RunCmdErrors
 
 section CacheMissStatus
 
@@ -908,6 +1165,10 @@ def test_isCacheMissStatus : IO Unit := do
   assertTrue "200 is not a miss"               (!isCacheMissStatus 200 true)
   assertTrue "500 is not a miss"               (!isCacheMissStatus 500 true)
   assertTrue "403-as-miss is scoped to 403"    (!isCacheMissStatus 401 true)
+  -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
+  -- here. A miss verdict would make it look like an empty cache and send the
+  -- read silently down the container chain, so it counts as a failure.
+  assertTrue "302 is not a miss"               (!isCacheMissStatus 302 true)
 
 end CacheMissStatus
 
@@ -926,6 +1187,467 @@ def test_isAlreadyPresentStatus : IO Unit := do
   assertTrue "500 is not already-present" (!isAlreadyPresentStatus 500)
 
 end AlreadyPresentStatus
+
+section TransferClassification
+
+/-- `classifyDownload` is the decision table shared by the parallel and serial
+download paths. The clean-exit rows guard against renaming a truncated body: a
+transport error that outlives the retries reports `http_code: 200` with a
+nonzero `exitcode`. -/
+def test_classifyDownload : IO Unit := do
+  IO.println "classifyDownload:"
+  -- A clean 200/201 delivers.
+  assertTrue "200 + exit 0 delivers"
+    (classifyDownload (some 200) 0 false matches .delivered)
+  assertTrue "201 + exit 0 delivers"
+    (classifyDownload (some 201) 0 false matches .delivered)
+  -- A 200 with a nonzero exit code carries a truncated body.
+  assertTrue "200 + exit 18 fails"
+    (classifyDownload (some 200) 18 false matches .failed)
+  assertTrue "201 + exit 18 fails"
+    (classifyDownload (some 201) 18 false matches .failed)
+  -- The status alone decides a miss.
+  assertTrue "404 is a miss"
+    (classifyDownload (some 404) 0 false matches .miss)
+  assertTrue "404 + nonzero exit is still a miss"
+    (classifyDownload (some 404) 18 false matches .miss)
+  assertTrue "403 is a miss with treatForbiddenAsMiss"
+    (classifyDownload (some 403) 0 true matches .miss)
+  assertTrue "403 fails otherwise"
+    (classifyDownload (some 403) 0 false matches .failed)
+  assertTrue "409 fails on a read"
+    (classifyDownload (some 409) 0 false matches .failed)
+  -- No usable status is a failure (a connection error reports `000`).
+  assertTrue "status 0 fails"
+    (classifyDownload (some 0) 0 false matches .failed)
+  assertTrue "no status fails"
+    (classifyDownload none 0 false matches .failed)
+
+/-- The put config discards every response body: stdout must carry only the
+per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
+parses. -/
+def test_mkPutConfigContent : IO Unit := do
+  IO.println "mkPutConfigContent:"
+  let dest : StagedUploadDest :=
+    { base := "https://example.invalid"
+      label := "master"
+      filesPrefix := "mathlib4-master/f"
+      markerPrefix := "mathlib4-master/m/leanprover-community/mathlib4" }
+  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"]
+  assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
+  assertTrue "addresses {base}/{filesPrefix}/{name}"
+    ((cfg.splitOn
+      "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
+  assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
+
+/-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
+non-overwrite put, and every other answer — a 404 included — is a failure. -/
+def test_classifyUpload : IO Unit := do
+  IO.println "classifyUpload:"
+  assertTrue "201 + exit 0 delivers"
+    (classifyUpload (some 201) 0 false matches .delivered)
+  assertTrue "201 + exit 18 fails"
+    (classifyUpload (some 201) 18 false matches .failed)
+  assertTrue "409 skips on a non-overwrite put"
+    (classifyUpload (some 409) 0 true matches .skip)
+  assertTrue "412 skips on a non-overwrite put"
+    (classifyUpload (some 412) 0 true matches .skip)
+  assertTrue "409 fails on an overwrite put"
+    (classifyUpload (some 409) 0 false matches .failed)
+  assertTrue "404 fails"
+    (classifyUpload (some 404) 0 true matches .failed)
+  assertTrue "no status fails"
+    (classifyUpload none 0 true matches .failed)
+
+end TransferClassification
+
+section UploadDestination
+
+/-- `UploadBackend.parse?` accepts the known backend names, case-insensitively. -/
+def test_uploadBackendParse : IO Unit := do
+  IO.println "UploadBackend.parse?:"
+  assertTrue "azure parses" (UploadBackend.parse? "azure" == some .azure)
+  assertTrue "s3 parses, case-insensitively" (UploadBackend.parse? "S3" == some .s3)
+  assertTrue "an unknown name is rejected" ((UploadBackend.parse? "gcs").isNone)
+
+/-- `azureAuthFrom` resolves the azure backend's credential: the bearer
+token. A missing bearer errors naming the fix. -/
+def test_azureAuthFrom : IO Unit := do
+  IO.println "azureAuthFrom:"
+  assertTrue "bearer token" (azureAuthFrom (some "bear") matches .ok "bear")
+  assertTrue "no bearer errors" (azureAuthFrom none matches .error _)
+
+/-- `s3AuthFrom` resolves the s3 backend's credentials: the pair with its
+optional session token. A half-set pair errors instead of resolving. -/
+def test_s3AuthFrom : IO Unit := do
+  IO.println "s3AuthFrom:"
+  assertTrue "pair with a session token"
+    (s3AuthFrom (some "AK") (some "SK") (some "ST")
+      matches .ok ⟨"AK", "SK", some "ST"⟩)
+  assertTrue "pair without a session token"
+    (s3AuthFrom (some "AK") (some "SK") none matches .ok ⟨"AK", "SK", none⟩)
+  assertTrue "key id without a secret errors"
+    (s3AuthFrom (some "AK") none none matches .error _)
+  assertTrue "secret without a key id errors"
+    (s3AuthFrom none (some "SK") none matches .error _)
+  assertTrue "a stray session token alone errors"
+    (s3AuthFrom none none (some "ST") matches .error _)
+
+/-- `s3RegionFrom` resolves the s3 backend's signing region. An unset region
+errors, and so does a value that is not a region name. -/
+def test_s3RegionFrom : IO Unit := do
+  IO.println "s3RegionFrom:"
+  assertTrue "a plain name" (s3RegionFrom (some "auto") matches .ok "auto")
+  assertTrue "an AWS region" (s3RegionFrom (some "eu-west-1") matches .ok "eu-west-1")
+  assertTrue "unset errors" (s3RegionFrom none matches .error _)
+  assertTrue "a value with a colon errors" (s3RegionFrom (some "eu:west") matches .error _)
+
+/-- `isValidScope` gates every scope before it reaches a URL path or a file
+name (the fork namespace, the marker path, and the marker's local temp file):
+hex SHAs pass; a value with path characters or ref syntax is rejected, and
+`getRepoScope` throws on it. -/
+def test_isValidScope : IO Unit := do
+  IO.println "isValidScope:"
+  assertTrue "a full SHA passes"
+    (isValidScope "5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e")
+  assertTrue "a short SHA passes" (isValidScope "deadbeef")
+  assertTrue "uppercase hex passes" (isValidScope "DEADBEEF")
+  assertTrue "empty is rejected" (!isValidScope "")
+  assertTrue "a path separator is rejected" (!isValidScope "abc/def")
+  assertTrue "an absolute path is rejected" (!isValidScope "/tmp/pwned")
+  assertTrue "dot-dot is rejected" (!isValidScope "..")
+  assertTrue "a ref name is rejected" (!isValidScope "HEAD")
+  assertTrue "a branch name is rejected" (!isValidScope "nightly-testing")
+  assertTrue "an overlong value is rejected" (!isValidScope (String.ofList (List.replicate 65 'a')))
+  -- The IO accessor enforces the guard for both scope sources.
+  withSavedScopeOverride do
+    scopeOverride.set (some "/tmp/pwned")
+    let threw ← try discard <| withSuppressedOutput getRepoScope; pure false
+      catch _ => pure true
+    assertTrue "getRepoScope throws on a malformed scope" threw
+    scopeOverride.set (some "deadbeef")
+    assertTrue "getRepoScope passes a hex scope through"
+      ((← withSuppressedOutput getRepoScope) == some "deadbeef")
+
+/-- `fileDirPath` is the one path policy behind `mkFileURL` and every
+upload tool: bare `f` for a flat container, repo-namespaced otherwise, with
+the per-SHA scope appended when given, and the repo lowercased. -/
+def test_fileDirPath : IO Unit := do
+  IO.println "fileDirPath:"
+  assertEq "flat container → bare f"
+    "f" (fileDirPath (some .master) MATHLIBREPO (some "sha1"))
+  assertEq "namespaced container → repo segment"
+    "f/alice/mathlib4" (fileDirPath (some .forks) "alice/mathlib4" none)
+  assertEq "scope appends the per-commit segment"
+    "f/alice/mathlib4/sha1" (fileDirPath (some .forks) "alice/mathlib4" (some "sha1"))
+  assertEq "no container follows the repo (flat for canonical)"
+    "f" (fileDirPath none MATHLIBREPO (some "sha1"))
+  assertEq "no container follows the repo (namespaced for a fork)"
+    "f/alice/mathlib4/sha1" (fileDirPath none "alice/mathlib4" (some "sha1"))
+  assertEq "the repo is lowercased"
+    "f/alice/mathlib4" (fileDirPath (some .forks) "Alice/Mathlib4" none)
+
+/-- `stagedUploadDestFrom` resolves the destination contract per backend:
+each backend writes the container layout under the base
+MATHLIB_CACHE_PUT_BASE_URL names. The azure backend defaults to the Azure
+account; the s3 backend has no default. MATHLIB_CACHE_PUT_URL overrides both
+with one flat endpoint. The prefixes carry no trailing slashes and build on
+the same `fileDirPath` policy as every other upload path. -/
+def test_stagedUploadDestFrom : IO Unit := do
+  IO.println "stagedUploadDestFrom:"
+  let putBase := "https://s3.example.org/bucket-prefix"
+  let expectForksScoped : StagedUploadDest :=
+    { base := putBase
+      label := "forks"
+      filesPrefix := "mathlib4-forks/f/alice/mathlib4/sha1"
+      markerPrefix := "mathlib4-forks/m/alice/mathlib4" }
+  assertTrue "s3: put base + forks + scope"
+    ((stagedUploadDestFrom .s3 none (some putBase) (some .forks)
+        "Alice/Mathlib4" (some "sha1")).toOption == some expectForksScoped)
+  let expectMasterFlat : StagedUploadDest :=
+    { base := putBase
+      label := "master"
+      filesPrefix := "mathlib4-master/f"
+      markerPrefix := "mathlib4-master/m/leanprover-community/mathlib4" }
+  assertTrue "s3: put base + master is flat"
+    ((stagedUploadDestFrom .s3 none (some putBase) (some .master)
+        MATHLIBREPO none).toOption == some expectMasterFlat)
+  let expectFlatUrl : StagedUploadDest :=
+    { base := "https://my.example.org"
+      label := "(env override)"
+      filesPrefix := "f"
+      markerPrefix := "m/leanprover-community/mathlib4" }
+  assertTrue "PUT_URL is flat with the container policy off"
+    ((stagedUploadDestFrom .azure (some "https://my.example.org") none none
+        MATHLIBREPO none).toOption == some expectFlatUrl)
+  assertTrue "PUT_URL applies on the s3 backend too"
+    ((stagedUploadDestFrom .s3 (some "https://my.example.org/bucket") none none
+        MATHLIBREPO none).toOption ==
+      some { expectFlatUrl with base := "https://my.example.org/bucket" })
+  -- A base without a bucket path fails at resolution.
+  assertTrue "s3: a put base without a bucket path errors"
+    (stagedUploadDestFrom .s3 none (some "https://s3.example.org") (some .forks)
+      "alice/mathlib4" none matches .error _)
+  assertTrue "s3: a PUT_URL without a bucket path errors"
+    (stagedUploadDestFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
+      matches .error _)
+  let expectAzureForks : StagedUploadDest :=
+    { base := azureAccountURL
+      label := "forks"
+      filesPrefix := "mathlib4-forks/f/alice/mathlib4/sha1"
+      markerPrefix := "mathlib4-forks/m/alice/mathlib4" }
+  assertTrue "azure: the Azure account for the container"
+    ((stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
+        (some "sha1")).toOption == some expectAzureForks)
+  -- The label says where the bytes go: a `legacy` write must name that
+  -- container in the progress message, not an override.
+  let expectLegacy : StagedUploadDest :=
+    { base := azureAccountURL
+      label := "legacy"
+      filesPrefix := "mathlib4/f/alice/mathlib4"
+      markerPrefix := "mathlib4/m/alice/mathlib4" }
+  assertTrue "azure: an explicit legacy container"
+    ((stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none).toOption ==
+      some expectLegacy)
+  -- Each backend rejects a destination that contradicts it, instead of
+  -- resolving one the operator did not select.
+  assertTrue "azure: no container errors"
+    (stagedUploadDestFrom .azure none none none "alice/mathlib4" none
+      matches .error _)
+  assertTrue "s3: a put base without a container errors"
+    (stagedUploadDestFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
+      matches .error _)
+  assertTrue "s3: no put base errors"
+    (stagedUploadDestFrom .s3 none none (some .forks) "alice/mathlib4" none
+      matches .error _)
+  assertTrue "azure: a put base rebases the container write"
+    ((stagedUploadDestFrom .azure none (some putBase) (some .forks)
+        "Alice/Mathlib4" (some "sha1")).toOption == some expectForksScoped)
+  -- PUT_URL keeps the opposite empty rule from every read variable: any set
+  -- value counts, an empty one included, so a misconfigured endpoint fails
+  -- the upload rather than divert it to the backend's destination.
+  assertTrue "an empty PUT_URL still counts"
+    ((stagedUploadDestFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.base) ==
+      some "")
+  assertTrue "azure: an empty put base means unset"
+    ((stagedUploadDestFrom .azure none (some "") (some .forks) "alice/mathlib4" none).toOption.map
+      (·.base) == some azureAccountURL)
+  assertTrue "s3: an empty put base means unset, so it errors"
+    (stagedUploadDestFrom .s3 none (some "") (some .forks) "alice/mathlib4" none
+      matches .error _)
+  assertTrue "s3: a put base loses its trailing slashes"
+    ((stagedUploadDestFrom .s3 none (some "https://s3.example.org/bucket-prefix//") (some .forks)
+      "alice/mathlib4" none).toOption.map (·.base) == some "https://s3.example.org/bucket-prefix")
+  -- The resolved destination follows the read-side URL policy: `fileURL` is
+  -- exactly `mkFileURL` against the same base.
+  if let .ok d := stagedUploadDestFrom .s3 none (some putBase)
+      (some .forks) "Alice/Mathlib4" (some "sha1") then
+    assertEq "files prefix matches the curl URL shape"
+      (mkFileURL (some .forks) "Alice/Mathlib4"
+        s!"{putBase}/mathlib4-forks" "x.ltar" (some "sha1"))
+      (d.fileURL "x.ltar")
+    assertEq "marker prefix matches the marker path"
+      s!"{d.base}/mathlib4-forks/{markerPath "Alice/Mathlib4" "sha1"}"
+      (d.markerURL "sha1")
+  else
+    assertTrue "put-base destination resolves" false
+  -- The same cross-pin for the flat PUT_URL case.
+  if let .ok d := stagedUploadDestFrom .azure (some "https://my.example.org") none none
+      "alice/mathlib4" (some "abc1") then
+    assertEq "flat-URL files prefix matches the curl URL shape"
+      (mkFileURL none "alice/mathlib4" "https://my.example.org" "x.ltar" (some "abc1"))
+      (d.fileURL "x.ltar")
+  else
+    assertTrue "flat-URL destination resolves" false
+  -- And for the Azure account and the legacy container rows, so all four
+  -- resolution rows are pinned against `mkFileURL`'s shape.
+  if let .ok d := stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
+      (some "abc1") then
+    assertEq "Azure-account prefix matches the curl URL shape"
+      (mkFileURL (some .forks) "alice/mathlib4" Container.forks.azureURL "x.ltar" (some "abc1"))
+      (d.fileURL "x.ltar")
+  else
+    assertTrue "Azure-account destination resolves" false
+  if let .ok d := stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none then
+    assertEq "legacy-container prefix matches the curl URL shape"
+      (mkFileURL (some .legacy) "alice/mathlib4" Container.legacy.azureURL "x.ltar" none)
+      (d.fileURL "x.ltar")
+  else
+    assertTrue "legacy-container destination resolves" false
+
+/-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
+and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
+every backend (`uploadPutArgs`). Pins the S3 shape: SigV4 in the given region,
+the `UNSIGNED-PAYLOAD` hash that lets curl sign a `-T` upload, and the
+session-token header for temporary credentials. The azure arguments spawn
+`date`, so this covers S3 only. -/
+def test_s3CurlArgs : IO Unit := do
+  IO.println "s3CurlArgs:"
+  let s3 := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", some "ST"⟩ "auto") (overwrite := false)
+  assertTrue "S3 signs with SigV4 in the given region"
+    ((s3.toList.zip s3.toList.tail).contains ("--aws-sigv4", "aws:amz:auto:s3"))
+  assertTrue "S3 carries the keypair as --user"
+    ((s3.toList.zip s3.toList.tail).contains ("--user", "AK:SK"))
+  assertTrue "S3 signs the upload as UNSIGNED-PAYLOAD"
+    (s3.contains "x-amz-content-sha256: UNSIGNED-PAYLOAD")
+  assertTrue "S3 sends the session token" (s3.contains "x-amz-security-token: ST")
+  assertTrue "non-overwrite adds If-None-Match" (s3.contains "If-None-Match: *")
+  assertTrue "S3 sends no Azure blob-type header"
+    (!s3.contains "x-ms-blob-type: BlockBlob")
+  let s3Static := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", none⟩ "auto") (overwrite := true)
+  assertTrue "a static keypair sends no session token"
+    (s3Static.all (!·.startsWith "x-amz-security-token"))
+  assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
+
+/-- The transfer-tool policy for the s3 backend: rclone when available, curl
+otherwise; MATHLIB_CACHE_PUT_FORCE_CURL selects curl regardless. The azure
+backend has no policy to test: it always transfers with curl
+(`azurePutStaged`). -/
+def test_s3UploadToolFrom : IO Unit := do
+  IO.println "s3UploadToolFrom:"
+  assertTrue "rclone when available"
+    (s3UploadToolFrom (forceCurl := false) (rcloneAvailable := true) == .rclone)
+  assertTrue "curl without rclone"
+    (s3UploadToolFrom (forceCurl := false) (rcloneAvailable := false) == .curl)
+  assertTrue "the flag forces curl past an available rclone"
+    (s3UploadToolFrom (forceCurl := true) (rcloneAvailable := true) == .curl)
+
+/-- The endpoint/bucket split the rclone tool builds its remote from. -/
+def test_s3EndpointSplit : IO Unit := do
+  IO.println "s3EndpointSplit:"
+  assertTrue "endpoint and bucket split"
+    ((s3EndpointSplit "https://acct.r2.cloudflarestorage.com/devbucket").toOption ==
+      some ("https://acct.r2.cloudflarestorage.com", "devbucket"))
+  assertTrue "a deeper path stays with the bucket"
+    ((s3EndpointSplit "https://host.example/bucket/prefix").toOption ==
+      some ("https://host.example", "bucket/prefix"))
+  assertTrue "a base without a bucket path errors"
+    (s3EndpointSplit "https://host.example" matches .error _)
+  assertTrue "a trailing slash errors rather than yield an empty segment"
+    (s3EndpointSplit "https://host.example/bucket/" matches .error _)
+  assertTrue "a non-URL errors"
+    (s3EndpointSplit "host.example/bucket" matches .error _)
+
+/-- The rclone invocations, pinned: the files copy is restricted to the
+caller's `--files-from` list and skips existing objects (the curl tool's
+`If-None-Match: *`); the marker copy overwrites freely, like the curl marker
+put; and both remotes are the same `{prefix}/{name}` shape every other tool
+addresses. -/
+def test_rcloneArgs : IO Unit := do
+  IO.println "rcloneArgs:"
+  if let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
+      (some .forks) "alice/mathlib4" (some "abc1") then
+    let files := rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+      (overwrite := false)
+    assertEq "files copy remote matches the destination contract"
+      s!":s3:devbucket/{dest.filesPrefix}" files[2]!
+    assertTrue "files copy is a copy" (files[0]! == "copy")
+    assertTrue "files copy is restricted to the caller's file list"
+      ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
+    assertTrue "a non-overwrite copy skips existing objects"
+      (files.contains "--ignore-existing")
+    assertTrue "an overwrite copy replaces existing objects"
+      (!(rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+        (overwrite := true)).contains "--ignore-existing")
+    assertTrue "files copy skips the bucket-creation probe"
+      (files.contains "--s3-no-check-bucket")
+    let marker := rcloneMarkerArgs "devbucket" dest "tmp/abc1" "abc1"
+    assertEq "marker remote matches the marker path contract"
+      s!":s3:devbucket/{Container.forks.pathSegment}/{markerPath "alice/mathlib4" "abc1"}"
+      marker[2]!
+    assertTrue "marker copy is a copyto" (marker[0]! == "copyto")
+    assertTrue "marker copy overwrites freely"
+      !(marker.contains "--ignore-existing")
+  else
+    assertTrue "rclone destination resolves" false
+
+/-- The child environment the rclone tool runs under: credentials and
+endpoint set, a stale session token cleared when the credential has none,
+and nothing else touched. -/
+def test_rcloneEnv : IO Unit := do
+  IO.println "rcloneEnv:"
+  let env := rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://host.example" "Other" "auto"
+  assertTrue "credentials and endpoint are set"
+    (env.contains ("RCLONE_S3_ACCESS_KEY_ID", some "AK") &&
+     env.contains ("RCLONE_S3_SECRET_ACCESS_KEY", some "SK") &&
+     env.contains ("RCLONE_S3_ENDPOINT", some "https://host.example") &&
+     env.contains ("RCLONE_S3_SESSION_TOKEN", some "tok"))
+  assertTrue "config comes from the tool, not ambient credentials"
+    (env.contains ("RCLONE_S3_ENV_AUTH", some "false"))
+  assertTrue "the region is the one given"
+    (env.contains ("RCLONE_S3_REGION", some "auto"))
+  assertTrue "the provider is set (rclone refuses to run without one)"
+    (env.contains ("RCLONE_S3_PROVIDER", some "Other"))
+  let noSession := rcloneEnv ⟨"AK", "SK", none⟩ "https://host.example" "Other" "auto"
+  assertTrue "a static keypair clears any ambient session token"
+    (noSession.contains ("RCLONE_S3_SESSION_TOKEN", none))
+
+/-- `putStagedViaRclone` end to end against a recording fake binary: the
+files copy runs first with the child environment the caller assembled
+(`rcloneEnv`), the marker copy follows with the SHA-named temp file, and a
+marker failure warns without failing the put. -/
+def test_putStagedViaRclone : IO Unit := do
+  IO.println "putStagedViaRclone (fake binary):"
+  if System.Platform.isWindows then
+    IO.println "  (skipped on Windows)"
+    return
+  let dir ← IO.FS.createTempDir
+  try
+    let staging := dir / "staging"
+    IO.FS.createDirAll staging
+    IO.FS.writeFile (staging / "aa.ltar") "x"
+    let fake := dir / "fake-rclone"
+    IO.FS.writeFile fake <|
+      "#!/bin/sh\n" ++
+      s!"printf '%s\\n' \"$@\" > \"{dir}/args-$1\"\n" ++
+      s!"env | grep '^RCLONE_S3_\\|^HOME=' | sort > \"{dir}/env-$1\"\n" ++
+      -- The files-from list is a temp file the tool deletes after the run, so
+      -- the fake preserves its content for the assertions below.
+      "prev=''\n" ++
+      "for a in \"$@\"; do\n" ++
+      s!"  if [ \"$prev\" = --files-from ]; then cp \"$a\" \"{dir}/files-from-copy\"; fi\n" ++
+      "  prev=\"$a\"\n" ++
+      "done\n" ++
+      "if [ \"$1\" = copyto ]; then exit 3; fi\n" ++
+      "exit 0\n"
+    discard <| IO.runCmd "chmod" #["+x", fake.toString]
+    let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
+        (some .forks) "alice/mathlib4" (some "abc1")
+      | assertTrue "rclone destination resolves" false
+    withSuppressedOutput <| putStagedViaRclone dest
+      (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other" "auto")
+      "devbucket" (some "abc1") staging
+      #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
+    let copyArgs ← IO.FS.readFile (dir / "args-copy")
+    assertTrue "files copy targets the staging dir"
+      ((copyArgs.splitOn "\n").any (· == staging.toString))
+    assertTrue "files copy addresses the resolved remote"
+      ((copyArgs.splitOn "\n").any (· == s!":s3:devbucket/{dest.filesPrefix}"))
+    assertEq "the files-from list holds exactly the caller's file names"
+      "aa.ltar\n" (← IO.FS.readFile (dir / "files-from-copy"))
+    let copyEnv ← IO.FS.readFile (dir / "env-copy")
+    assertTrue "the credentials travel in the child environment"
+      ((copyEnv.splitOn "\n").contains "RCLONE_S3_ACCESS_KEY_ID=AK" &&
+       (copyEnv.splitOn "\n").contains "RCLONE_S3_SESSION_TOKEN=tok" &&
+       (copyEnv.splitOn "\n").contains "RCLONE_S3_ENDPOINT=https://acct.example")
+    -- The env parameter extends the parent environment (each pair sets or
+    -- unsets one variable), so the child keeps HOME, PATH, and any RCLONE_*
+    -- tuning of the caller. Pinned here so a runtime change cannot silently
+    -- drop them from rclone's environment.
+    assertTrue "the parent environment is inherited alongside the credentials"
+      ((copyEnv.splitOn "\n").any (·.startsWith "HOME="))
+    -- The fake exits 3 on `copyto`, so this pins the marker invocation shape
+    -- and that a marker failure warns without failing the put.
+    let markerArgs ← IO.FS.readFile (dir / "args-copyto")
+    assertTrue "the marker temp file is named after the SHA"
+      ((markerArgs.splitOn "\n").any (·.endsWith "/abc1"))
+    assertTrue "the marker addresses the marker path"
+      ((markerArgs.splitOn "\n").any
+        (· == s!":s3:devbucket/{dest.markerPrefix}/abc1"))
+  finally
+    IO.FS.removeDirAll dir
+
+end UploadDestination
 
 section UnsafeRounds
 
@@ -1041,7 +1763,8 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
     decompressed := 42
     decompFailed := 1 }
   let (s, served) ← withSuppressedOutput <|
-    monitorCurl #["--version"] 1 "Downloaded" "speed_download" (decompState := carried)
+    monitorCurl #["--version"] 1 "Downloaded" "speed_download"
+      (classifyDownload · · false) (decompState := carried)
   assertTrue "no transfers → an empty served set" served.isEmpty
   assertTrue "pending files survive the round" (s.decomp.pending.size == 1)
   assertTrue "the in-flight task survives the round" s.decomp.currentTask.isSome
@@ -1055,17 +1778,23 @@ def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_Container_azureURL
+  test_Container_getURL
+  test_envValueNormalization
+  test_getBaseURLFrom
   test_Container_flatPath
   test_defaultContainersForRepo
+  test_effectiveGetURLs
   test_mkFileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
   test_extractPRNumber
   test_hashFromFileName
+  test_tempFileNames
   test_isRemoteURL
   test_UInt64_asLTar
   test_hash_roundtrip
   test_markerURL
+  test_markerReadURL
   test_getRepoScope
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
@@ -1073,19 +1802,42 @@ def runAll : IO Unit := do
   test_findRecentSHAsWithCache
   test_getRemoteRepo_gitFallback
   test_headIsAncestorOfMaster_gitFallback
+  test_parseEnvFlag
   test_isKnownOpt
   test_parseNamedOpt
   test_parseFlagOpt
+  test_curlFollowRedirectArgs
+  test_curlRetryArgs
+  test_runCmd_showArgsOnError
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
+  test_classifyDownload
+  test_classifyUpload
+  test_mkPutConfigContent
+  test_uploadBackendParse
+  test_azureAuthFrom
+  test_s3AuthFrom
+  test_s3RegionFrom
+  test_isValidScope
+  test_fileDirPath
+  test_stagedUploadDestFrom
+  test_s3CurlArgs
+  test_s3UploadToolFrom
+  test_s3EndpointSplit
+  test_rcloneArgs
+  test_rcloneEnv
+  test_putStagedViaRclone
   test_expandDownloadRounds
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
 
 end Cache.Test
 
-open Cache.Test in
+open Cache Cache.Test Cache.Requests in
 def main : IO UInt32 := do
+  -- Resolve the legacy switch the way the tool's `main` does, so the read-base
+  -- assertions see the setting the environment names.
+  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
   runAll
   let n ← failures.get
   if n == 0 then

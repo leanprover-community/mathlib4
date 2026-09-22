@@ -246,7 +246,7 @@ equivalent. See also `continuousWithinAt_congr_set'` which requires that the set
 locally away from a point `y`, in a T1 space. -/
 theorem continuousWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
-  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEq.mpr h]
+  simp only [ContinuousWithinAt, nhdsWithin_eq_iff_eventuallyEqSet.mpr h]
 
 theorem ContinuousWithinAt.congr_set (hf : ContinuousWithinAt f s x) (h : s =ᶠ[𝓝 x] t) :
     ContinuousWithinAt f t x :=
@@ -891,9 +891,6 @@ theorem continuousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
 
-@[deprecated (since := "2026-02-20")]
-alias continouousOn_union_iff_of_isClosed := continuousOn_union_iff_of_isClosed
-
 /-- If a function is continuous on two open sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
     (hs : IsOpen s) (ht : IsOpen t) : ContinuousOn f (s ∪ t) :=
@@ -904,9 +901,6 @@ theorem continuousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : I
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
-
-@[deprecated (since := "2026-02-20")]
-alias continouousOn_union_iff_of_isOpen := continuousOn_union_iff_of_isOpen
 
 /-- If a function is continuous on open sets `s i`, it is continuous on their union -/
 lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}

@@ -319,6 +319,7 @@ theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
     Compl.compl '' Compl.compl '' s = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
+@[simp]
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
     f '' insert a s = insert (f a) (f '' s) := by grind
 
