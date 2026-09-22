@@ -31,7 +31,7 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
   have α : Q(Type u) := R
   let res ← mkBareissDecomposition A m n α entries
   let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
-  let k := mkNatLit res.data.pivot.size
+  let k := mkNatLit res.modelData.data.pivot.size
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
 
 /-- Core of the `norm_rank` simproc. -/
