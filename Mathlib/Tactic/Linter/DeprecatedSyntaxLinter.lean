@@ -111,10 +111,10 @@ public register_option linter.style.maxHeartbeats : Bool := {
   descr := "enable the maxHeartbeats linter"
 }
 
-/-- The option `linter.style.redundantSyntax` flags usages of `f <| a` that are redundant. -/
+/-- The option `linter.style.redundantSyntax` flags pieces of syntax that are redundant. -/
 public register_option linter.style.redundantSyntax : Bool := {
   defValue := false
-  descr := "enable the `<|` linter"
+  descr := "enable the redundant syntax linter"
 }
 
 /-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
