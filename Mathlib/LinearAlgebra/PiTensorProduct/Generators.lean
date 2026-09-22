@@ -47,6 +47,47 @@ noncomputable def equivPiTensorComplSingletonTensor (i₀ : ι) :
 
 variable (i₀ : ι)
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`AddCommMonoid (⨂[R] (i₁ : { i // ¬i = i₀ }), M ↑i₁)`
+The companion searches `Module R (⨂[R] (i₁ : { i // ¬i = i₀ }), M ↑i₁)` and the two `PUnit`-indexed
+variants fail in the same way. They are needed by the `rw [dsimp% …]` below, after `Equiv.symm_symm`
+has rewritten the index type to `{ i // ¬i = i₀ }` while the instance arguments in the term stay
+phrased through the equivalence.
+
+The failure happens while applying `@PiTensorProduct.instAddCommMonoid`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type of
+the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+`(i : { i // ¬i = i₀ }) → AddCommMonoid (M ↑i)`, whereas the assigned value
+`fun i ↦ inst✝ ((Equiv.subtypeNeSumPUnit i₀) (Sum.inl i))` has type
+`(i : { i // i ≠ i₀ }) → AddCommMonoid (M ((Equiv.subtypeNeSumPUnit i₀) (Sum.inl i)))`. The
+comparison bottoms out at `i.1 =?= (Equiv.subtypeNeSumPUnit i₀).1 (Sum.inl i)`, i.e. at actually
+computing the equivalence on `Sum.inl i`. Lean falls back to synthesize an instance of the correct
+type, which succeeds, but it returns `fun i ↦ inst✝ ↑i`, which is again not defeq to the assigned
+value, for the same reason. The `respectTransparency false` backward-compatibility flag blocks Lean
+from bumping to implicit, so the comparison happens at `.instances` again.
+
+Validated, but perhaps too invasive, fix: Make all of the following definitions implicit-reducible:
+
+```
+  Equiv.trans
+  Equiv.optionSubtype
+  Equiv.optionEquivSumPUnit
+  Equiv.refl
+  Set.singleton
+  Option.casesOn'
+  Equiv.optionSubtypeNe
+  Sum.elim
+```
+
+Then both backward compatibility options can go: first `respectTransparency false`, then
+`instanceSearchTypes false`.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivPiTensorComplSingletonTensor_tprod (i₀ : ι) (m : ∀ i, M i) :

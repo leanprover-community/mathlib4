@@ -21,16 +21,15 @@ public section
 
 open scoped Congruent EuclideanGeometry
 
-open Similar NNReal Affine
+open Similar
 
 namespace EuclideanGeometry
 
-variable {ι V₁ V₂ P₁ P₂ : Type*}
+variable {V₁ V₂ P₁ P₂ : Type*}
   [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
   [InnerProductSpace ℝ V₁] [InnerProductSpace ℝ V₂]
   [MetricSpace P₁] [MetricSpace P₂]
   [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
-  {v₁ : ι → P₁} {v₂ : ι → P₂}
   {a b c : P₁} {a' b' c' : P₂}
 
 /-- If two triangles have two pairs equal angles, then the triangles are similar. -/

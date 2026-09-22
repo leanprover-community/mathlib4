@@ -5,11 +5,12 @@ Authors: Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Asymptotics.Ring
 public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Further basic lemmas about asymptotics
@@ -18,26 +19,27 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 public section
 
-open Set Topology Filter NNReal
+open Set Filter
+
+open scoped Topology
 
 namespace Asymptotics
 
 
 variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
-  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
+  {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
+  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
   [SeminormedAddGroup E''']
-  [SeminormedRing R']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
-variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
-variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
-variable {l l' : Filter α}
+variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F}
+variable {f' : α → E'} {g' : α → F'}
+variable {f'' : α → E''} {g'' : α → F''}
+variable {l : Filter α}
 @[simp]
 theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
   rw [IsBigOWith_def, eventually_principal]
@@ -192,20 +194,29 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [One F] [NormOneClass F]
-    [TopologicalSpace α] {f : α → E} {x : α} :
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedAddCommGroup E] [One F]
+    [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α} :
     (ContinuousAt f x) ↔ (f · - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : F)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
 
-theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedRing E] [One F]
+theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedAddCommGroup E] [One F]
     [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
     (f · - f x) =o[𝓝 x] (fun _ ↦ (1 : F)) :=
   continuousAt_iff_isLittleO.mp hcont
 
-theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedRing E] [One F] [NormOneClass F]
-    [TopologicalSpace α] {f : α → E} {x : α} (hcont : ContinuousAt f x) :
+theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedAddCommGroup E]
+    [One F] [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α}
+    (hcont : ContinuousAt f x) :
     f =O[𝓝 x] (fun _ ↦ (1 : F)) :=
   hcont.isLittleO.isBigO.congr_of_sub.mpr (isBigO_const_one ..)
+
+theorem _root_.ContinuousAt.isTheta {α F : Type*} {E : Type*} [NormedAddCommGroup E]
+    [NormedAddCommGroup F] [One F] [NormOneClass F] [TopologicalSpace α]
+    {f : α → E} {x : α} (hcont : ContinuousAt f x) (hne : f x ≠ 0) :
+    f =Θ[𝓝 x] (fun _ ↦ (1 : F)) := by
+  refine ⟨hcont.isBigO, ?_⟩
+  rw [isBigO_const_left_iff_pos_le_norm <| ne_of_apply_ne (fun x ↦ ‖x‖) (by simp)]
+  exact ⟨_, half_pos (norm_pos_iff.mpr hne), hcont.tendsto.norm.eventually_const_le (by simpa)⟩
 
 /-! ### Multiplication -/
 

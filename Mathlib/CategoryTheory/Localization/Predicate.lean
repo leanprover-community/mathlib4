@@ -69,9 +69,9 @@ end Functor
 
 namespace Localization
 
-/-- This universal property states that a functor `L : C ⥤ D` inverts morphisms
-in `W` and that all functors `D ⥤ E` (for a fixed category `E`) uniquely factor
-through `L`. -/
+/-- This universal property states that a functor `L : C ⥤ D` inverts the morphisms
+in `W` and every functor `F : C ⥤ E` (for a fixed category `E`) inverting `W` admits
+a unique factorisation through `L`. -/
 structure StrictUniversalPropertyFixedTarget where
   /-- the functor `L` inverts `W` -/
   inverts : W.IsInvertedBy L
@@ -438,7 +438,6 @@ same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`.
 def uniq : D₁ ≌ D₂ :=
   (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
   dsimp [uniq, Equivalence.trans]
   ext <;> aesop

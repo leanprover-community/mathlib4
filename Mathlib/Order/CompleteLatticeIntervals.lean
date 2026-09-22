@@ -201,12 +201,12 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] {a b : α} [Fact (a
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩
     ↑(sSup S) = sSup ((↑) '' S : Set α) :=
-  congrArg Subtype.val (dif_neg hS.ne_empty)
+  congrArg Subtype.val (dite_eq_right hS.ne_empty)
 
 lemma Set.Icc.coe_sInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩
     ↑(sInf S) = sInf ((↑) '' S : Set α) :=
-  congrArg Subtype.val (dif_neg hS.ne_empty)
+  congrArg Subtype.val (dite_eq_right hS.ne_empty)
 
 lemma Set.Icc.coe_iSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     [Nonempty ι] {S : ι → Set.Icc a b} : have : Fact (a ≤ b) := ⟨h⟩
