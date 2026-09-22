@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.Bound
 
 /-!
-## Tests for the `@bound` attribute
+# Tests for the `@bound` attribute
 
 Verify that our heuristic for the priority of a declaration produces the expected values.
 -/

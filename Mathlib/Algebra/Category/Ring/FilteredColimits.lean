@@ -110,7 +110,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
 
 /-- The bundled semiring giving the filtered colimit of a diagram. -/
 def colimit : SemiRingCat.{max v u} :=
-  SemiRingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit semiring. -/
 def colimitCocone : Cocone F where
@@ -212,7 +212,7 @@ instance colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
 
 /-- The bundled commutative semiring giving the filtered colimit of a diagram. -/
 def colimit : CommSemiRingCat.{max v u} :=
-  CommSemiRingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative semiring. -/
 def colimitCocone : Cocone F where
@@ -270,7 +270,7 @@ instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
 
 /-- The bundled ring giving the filtered colimit of a diagram. -/
 def colimit : RingCat.{max v u} :=
-  RingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit ring. -/
 def colimitCocone : Cocone F where
@@ -333,7 +333,7 @@ instance colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=
 
 /-- The bundled commutative ring giving the filtered colimit of a diagram. -/
 def colimit : CommRingCat.{max v u} :=
-  CommRingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative ring. -/
 def colimitCocone : Cocone F where
@@ -366,7 +366,7 @@ omit [IsFiltered J] in
 protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     [∀ i, Nontrivial (F.obj i)] {c : Cocone F} (hc : IsColimit c) : Nontrivial c.pt := by
   cases isEmpty_or_nonempty J
-  · exact ((isColimitEquivIsInitialOfIsEmpty _ _ hc).to (.of (ULift ℤ))).hom.domain_nontrivial
+  · exact ((isColimitEquivIsInitialOfIsEmpty _ _ hc).to ↧(ULift ℤ)).hom.domain_nontrivial
   have i := ‹Nonempty J›.some
   refine ⟨c.ι.app i 0, c.ι.app i 1, fun h ↦ ?_⟩
   have : IsFiltered J := ⟨⟩

@@ -291,7 +291,8 @@ theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I 1 M
           (e.extend I x) := by
   rw [mdifferentiableWithinAt_iff_of_mem_maximalAtlas he he' hx hy, and_congr_right_iff]
   refine fun _ => differentiableWithinAt_congr_nhds ?_
-  simp_rw [nhdsWithin_eq_iff_eventuallyEq, e.extend_symm_preimage_inter_range_eventuallyEq hs hx]
+  simp_rw [nhdsWithin_eq_iff_eventuallyEqSet,
+    e.extend_symm_preimage_inter_range_eventuallyEqSet hs hx]
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. -/
@@ -472,13 +473,15 @@ theorem ContMDiffOn.mdifferentiableOn (hf : CMDiff[s] n f) (hn : n ≠ 0) : MDif
 theorem ContMDiff.mdifferentiable (hf : CMDiff n f) (hn : n ≠ 0) : MDiff f :=
   fun x => (hf x).mdifferentiableAt hn
 
+/-! ### Deriving continuity from differentiability on manifolds -/
+
+@[fun_prop]
 theorem MDifferentiableOn.continuousOn (h : MDiff[s] f) : ContinuousOn f s :=
   fun x hx => (h x hx).continuousWithinAt
 
+@[fun_prop]
 theorem MDifferentiable.continuous (h : MDiff f) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (h x).continuousAt
-
-/-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
     writtenInExtChartAt I I'' x (g ∘ f)
@@ -841,8 +844,8 @@ lemma tangentMap_snd {X : TangentSpace% x} : (tangentMap% f X).2 = (mfderiv% f x
 
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
-theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
+theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    (extChartAt I x).symm ⁻¹' s ∩ range I =ᶠ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
     ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) := by
   have : T1Space M := I.t1Space M
   obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
@@ -855,7 +858,6 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
     ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
   simp only [eq_iff_iff, mem_ofPred_eq]
-  change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
   by_cases hIz : z ∈ range I
   · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
       or_false, and_true] at hz ⊢
@@ -865,6 +867,10 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
     rw [eq_comm, (extChartAt I x).eq_symm_apply (by simp) hz.2]
     exact Ne.symm h'z
   · simp [hIz]
+
+@[deprecated (since := "2026-08-14")]
+alias preimage_extChartAt_eventuallyEq_compl_singleton :=
+  preimage_extChartAt_eventuallyEqSet_compl_singleton
 
 /-! ### Congruence lemmas for derivatives on manifolds -/
 
@@ -877,7 +883,7 @@ theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
   refine and_congr ?_ ?_
   · exact continuousWithinAt_congr_set' _ h
   · apply hasFDerivWithinAt_congr_set' (extChartAt I x x)
-    exact preimage_extChartAt_eventuallyEq_compl_singleton y h
+    exact preimage_extChartAt_eventuallyEqSet_compl_singleton y h
 
 theorem hasMFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     HasMFDerivAt[s] f x f' ↔ HasMFDerivAt[t] f x f' :=
@@ -901,7 +907,7 @@ theorem mfderivWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
   by_cases hx : MDiffAt[s] f x
   · simp only [mfderivWithin, hx, (mdifferentiableWithinAt_congr_set' y h).1 hx, ↓reduceIte]
     apply fderivWithin_congr_set' (extChartAt I x x)
-    exact preimage_extChartAt_eventuallyEq_compl_singleton y h
+    exact preimage_extChartAt_eventuallyEqSet_compl_singleton y h
   · simp [mfderivWithin, hx, ← mdifferentiableWithinAt_congr_set' y h]
 
 /-- If two sets coincide locally, then derivatives within these sets
