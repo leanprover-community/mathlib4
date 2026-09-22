@@ -60,7 +60,7 @@ formalised here.
 mertens function, redheffer matrix, moebius function, determinant
 -/
 
-@[expose] public section
+public section
 
 open Finset
 open scoped ArithmeticFunction.Moebius ArithmeticFunction.zeta
@@ -69,7 +69,7 @@ namespace ArithmeticFunction
 
 /-- The Mertens function `M n = ∑ k ∈ Icc 1 n, μ k`, the summatory function of the Möbius
 function, as an arithmetic function. -/
-def mertens : ArithmeticFunction ℤ := ⟨fun n ↦ ∑ k ∈ Icc 1 n, (μ k : ℤ), by simp⟩
+@[expose] def mertens : ArithmeticFunction ℤ := ⟨fun n ↦ ∑ k ∈ Icc 1 n, (μ k : ℤ), by simp⟩
 
 theorem mertens_apply (n : ℕ) : mertens n = ∑ k ∈ Icc 1 n, (μ k : ℤ) := rfl
 
@@ -111,11 +111,11 @@ variable [Zero R] [One R]
 
 /-- The `n × n` zeta (divisibility) matrix: the `(i, j)` entry is `1` if `i + 1 ∣ j + 1` and `0`
 otherwise. -/
-def zetaMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
+@[expose] def zetaMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
   of fun i j ↦ if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0
 
 /-- The `n × n` Redheffer matrix: the zeta matrix with its first column replaced by ones. -/
-def redheffer (n : ℕ) : Matrix (Fin n) (Fin n) R :=
+@[expose] def redheffer (n : ℕ) : Matrix (Fin n) (Fin n) R :=
   of fun i j ↦ if (j : ℕ) = 0 ∨ (i : ℕ) + 1 ∣ (j : ℕ) + 1 then 1 else 0
 
 @[simp] theorem zetaMatrix_apply (n : ℕ) (i j : Fin n) :
