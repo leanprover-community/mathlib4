@@ -14,7 +14,8 @@ public import Mathlib.RingTheory.Trace.Basic
 # Artin-Schreier Extensions
 
 Let `K` be a field of prime characteristic `p`. Artin-Schreier theory classifies finite extensions
-of `K` whose Galois group is cyclic of order `p`.
+of `K` whose Galois group is cyclic of order `p`: they are obtained by adjoining a single root of an
+Artin-Schreier polynomial (one of the form `X ^ p - X - C a` for some `a`).
 
 TODO: extend to finite extensions whose Galois group is cyclic of order `p^n` (Artin-Schreier-Witt
 theory).
@@ -36,26 +37,27 @@ lemma artinSchreierPoly_isMonicOfDegree {F : Type u} [CommRing F] [Nontrivial F]
 lemma artinSchreierPoly_taylor {F : Type u} [CommRing F] (a c : F) {p : ℕ}
     [CharP F p] (hp : p.Prime) :
     (X ^ p - X - C a).taylor c = X^p - X + C (c^p - c - a) := by
-  have := fact_iff.mpr hp
+  have := Fact.mk hp
   simp only [map_sub, taylor_pow, taylor_X, add_pow_char, taylor_C, map_pow]
   ring
 
 variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [Field K] [Algebra F K] [CharP F p]
 
-lemma artinSchreierPoly_splits (a : F) (hr : (X ^ p - X - C a).roots ≠ 0) :
+open AdjoinRoot Multiset
+
+lemma splits_artinSchreierPoly {a : F} (hr : (X ^ p - X - C a).roots ≠ 0) :
     Splits (X ^ p - X - C a) := by
   rcases CharP.char_is_prime_or_zero F p with hp | rfl
-  · have := fact_iff.mpr hp
-    have ⟨c, _⟩ := Multiset.exists_mem_of_ne_zero hr
+  · have := Fact.mk hp
+    have ⟨c, _⟩ := exists_mem_of_ne_zero hr
     have := (Subfield.splits_bot F p).map (algebraMap _ F)
     have h : ((X ^ p - X - C a).taylor c).Splits := by simp_all
     exact (splits_iff_comp_splits_of_natDegree_eq_one (natDegree_X_add_C c)).mpr h
   · apply Splits.of_natDegree_le_one
     compute_degree
 
-lemma artinSchreierPoly_irreducible (a : F) (hr : (X ^ p - X - C a).roots = 0) :
+lemma irreducible_artinSchreierPoly {a : F} (hr : (X ^ p - X - C a).roots = 0) :
     Irreducible (X ^ p - X - C a) := by
-  open AdjoinRoot Multiset in
   rcases CharP.char_is_prime_or_zero F p with hp | rfl
   · have hmon := artinSchreierPoly_isMonicOfDegree a hp.one_lt
     have h0 := IsMonicOfDegree.ne_zero hmon
@@ -63,14 +65,14 @@ lemma artinSchreierPoly_irreducible (a : F) (hr : (X ^ p - X - C a).roots = 0) :
     have h1 : b.natDegree ≠ 1 := by
       contrapose hr
       have ⟨x, hx⟩ := exists_root_of_natDegree_eq_one hr
-      apply eq_zero_iff_forall_notMem.mp.mt
+      rw [eq_zero_iff_forall_notMem]
       push Not
       exact ⟨x, (mem_roots h0).mpr (hx.dvd hb3)⟩
     have h2 : b.natDegree ∣ (X ^ p - X - C a).natDegree := by
       refine dvd_natDegree_of_monic_of_irreducible _ fun c hc0 hc hc1 ↦ ?_
-      have := fact_iff.mpr hc
+      have := Fact.mk hc
       let i := algebraMap F (AdjoinRoot c)
-      have hmap : (X ^ p - X - C a).map i = X^p - X - C (i a) := by aesop
+      have hmap : (X ^ p - X - C a).map i = X^p - X - C (i a) := by simp
       have hm0 := map_ne_zero (f := i) h0
       have hdiv := map_dvd i hb3
       have := (isRoot_root _).dvd (map_dvd i (y := X ^ p - X - C a) (by aesop))
@@ -78,7 +80,7 @@ lemma artinSchreierPoly_irreducible (a : F) (hr : (X ^ p - X - C a).roots = 0) :
       rw [hmap] at hm0 hdiv h
       have := (Algebra.charP_iff F (AdjoinRoot c) p).mp ‹CharP F p›
       rw [←(AdjoinRoot.isAdjoinRootMonic _ hc0).finrank]
-      exact hb2.natDegree_dvd_finrank ((artinSchreierPoly_splits _ h).of_dvd hm0 hdiv)
+      exact hb2.natDegree_dvd_finrank ((splits_artinSchreierPoly h).of_dvd hm0 hdiv)
     have h3 := (((Nat.dvd_prime hp).mp (h2.trans hmon.1.dvd)).resolve_left h1).symm
     exact (associated_of_dvd_of_natDegree_le hb3 h0 (hmon.1.trans h3).le).irreducible hb2
   · apply irreducible_of_natDegree_eq_one
@@ -87,8 +89,8 @@ lemma artinSchreierPoly_irreducible (a : F) (hr : (X ^ p - X - C a).roots = 0) :
 lemma artinSchreierPoly_irreducible_or_splits (a : F) :
     Irreducible (X ^ p - X - C a) ∨ Splits (X ^ p - X - C a) := by
   by_cases hr : (X ^ p - X - C a).roots = 0
-  · left; exact artinSchreierPoly_irreducible a hr
-  · right; exact artinSchreierPoly_splits a hr
+  · left; exact irreducible_artinSchreierPoly hr
+  · right; exact splits_artinSchreierPoly hr
 
 section Lemmas
 
@@ -98,10 +100,10 @@ lemma cyclic_charP_as_param [IsGalois F K] (hp : p.Prime) (hrank : Module.finran
   open Algebra FiniteDimensional Finset IsGalois MulAction Subgroup Nat minpoly in
   have := of_finrank_pos (hrank.trans_gt hp.pos)
   have h_ord := (card_aut_eq_finrank F K).trans hrank
-  have := fact_iff.mpr hp
+  have := Fact.mk hp
   have ⟨g, h_gen⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_prime_card h_ord)
   have h_ordg := (orderOf_eq_card_of_zpowers_eq_top h_gen).trans h_ord
-  let rp := range p
+  let rp := Finset.range p
   have ⟨y, hy⟩ := trace_surjective F K 1
   let z := ∑ i : rp, (g^(i:ℕ)) y * i
   have := (Algebra.charP_iff F K p).mp ‹CharP F p›
@@ -117,15 +119,15 @@ lemma cyclic_charP_as_param [IsGalois F K] (hp : p.Prime) (hrank : Module.finran
     let f := fun (i : rp) ↦ g ^ (i+1:ℕ)
     refine sum_bijective f ?_ (by simp) (fun _ _ ↦ rfl)
     refine (Nat.bijective_iff_surjective_and_card f).mpr ⟨?_, ?_⟩
-    · intro b
+    · classical
+      intro b
       have h := mem_top (g ^ (-1:ℤ) * b)
       rw [←h_gen] at h
-      have := Classical.typeDecidableEq Gal(K/F)
       have h := (isOfFinOrder_of_finite g).mem_zpowers_iff_mem_range_orderOf.mp h
       rw [h_ordg, mem_image] at h
       have ⟨i, h1, h2⟩ := h
       exact ⟨⟨i, h1⟩, (by simp [f, pow_succ' g, h2])⟩
-    · rw [h_ord, card_eq_finsetCard rp, card_range p]
+    · rw [h_ord, card_eq_finsetCard rp, Finset.card_range p]
   have hgz : g z = z - 1 := calc
     _ = ∑ i : rp, g ((g^(i:ℕ)) y * i) := map_finsetSum _ _
     _ = ∑ i : rp, (g^(i+1:ℕ)) y * i := by simp [pow_succ' g]
@@ -165,12 +167,12 @@ lemma cyclic_charP_splitting (hp : p.Prime) (hrank : Module.finrank F K = p)
     simp_all
   let pol' := (X ^ p - X - C a).map (algebraMap F K)
   have splits : pol'.Splits := by
-    have hi : pol' = X ^ p - X - C ((algebraMap F K) a) := by aesop
+    have hi : pol' = X ^ p - X - C (algebraMap F K a) := by aesop
     have h : pol' ≠ 0 := map_monic_ne_zero hd.2
     have hr := (roots_eq_zero_iff_isRoot_eq_bot h).mp.mt (ne_iff.mpr ⟨z, (by aesop)⟩)
     rw [hi] at hr ⊢
     have := (Algebra.charP_iff F K p).mp inferInstance
-    exact artinSchreierPoly_splits _ hr
+    exact splits_artinSchreierPoly hr
   exact isSplittingField_iff_intermediateField.mpr ⟨splits, adjoin⟩
 
 end Lemmas
@@ -182,7 +184,7 @@ theorem isCyclic_charP_tfae (hp : p.Prime) (hrank : Module.finrank F K = p) :
     ∃ α : K, α ^ p - α ∈ Set.range ⇑(algebraMap F K) ∧ F⟮α⟯ = ⊤,
     ∃ a : F, ∃ α : K, minpoly F α = X ^ p - X - C a].TFAE := by
   open Field FiniteDimensional FiniteField IsGalois minpoly in
-  let := fact_iff.mpr hp
+  have := Fact.mk hp
   let := of_finrank_pos (hp.pos.trans_eq hrank.symm)
   tfae_have 2 → 5 := fun ⟨_, _⟩ ↦ cyclic_charP_as_param hp hrank
   tfae_have 5 → 4 := by
@@ -219,7 +221,7 @@ lemma irreducible_artinSchreierPoly_tower (hp : p.Prime) (hrank : Module.finrank
   obtain ⟨f, h_pb, rfl⟩ := (adjoin.powerBasis h_int).exists_eq_aeval y
   simp only [adjoin.powerBasis_gen, AdjoinSimple.coe_aeval_gen_apply] at hy
   have : (f.coeff (p-1)) ^ p = f.coeff (p-1) + a := by
-    let := fact_iff.mpr hp
+    have := Fact.mk hp
     let m := f.map (frobenius F p)
     have hd : m.natDegree = f.natDegree := natDegree_map (frobenius F p)
     have h : m.taylor a - (f + monomial (p-1) a) = 0 := by
@@ -227,8 +229,8 @@ lemma irreducible_artinSchreierPoly_tower (hp : p.Prime) (hrank : Module.finrank
       · have he : x ^ p = x + algebraMap F K a := by
           have := aeval F x
           grind [aeval_sub, aeval_X, aeval_C]
-        simp only [taylor_apply, aeval_sub, aeval_comp, map_add, aeval_X, aeval_C, aeval_monomial]
-        rw [←he, ←expand_aeval, ←map_expand, map_frobenius_expand, map_pow]
+        rw [taylor_apply, aeval_sub, aeval_comp, _root_.map_add, _root_.map_add, aeval_X, aeval_C,
+            aeval_monomial, ←he, ←expand_aeval, ←map_expand, map_frobenius_expand, map_pow]
         have hy := eval_rootOfSplits h hs
         simp only [eval_sub, eval_pow, eval_X, eval_C] at hy
         grind
