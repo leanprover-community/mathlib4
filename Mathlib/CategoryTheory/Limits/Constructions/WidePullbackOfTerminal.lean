@@ -30,13 +30,15 @@ variable {C : Type u} [Category.{v} C]
 namespace WidePullbackCone
 
 /-- The fan that is induced by a wide pullback cone. -/
-abbrev toFan (s : WidePullbackCone arrows) : Fan objs :=
+@[reducible, inline]
+def toFan (s : WidePullbackCone arrows) : Fan objs :=
   Fan.mk _ s.π
 
 variable (c : Fan objs)
 
 /-- The wide pullback cone given by a fan, when the base object is terminal. -/
-abbrev ofFan (hB : IsTerminal B) : WidePullbackCone arrows :=
+@[reducible, inline]
+def ofFan (hB : IsTerminal B) : WidePullbackCone arrows :=
   WidePullbackCone.mk (hB.from _) c.proj (fun _ ↦ hB.hom_ext _ _)
 
 variable {c} in

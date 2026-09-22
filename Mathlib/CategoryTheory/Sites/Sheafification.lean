@@ -34,7 +34,8 @@ variable (A : Type u₂) [Category.{v₂} A]
 /--
 A proposition saying that the inclusion functor from sheaves to presheaves admits a left adjoint.
 -/
-abbrev HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
+@[reducible, inline]
+def HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
 
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact

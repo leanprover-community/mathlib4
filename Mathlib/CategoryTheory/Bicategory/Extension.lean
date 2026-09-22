@@ -50,27 +50,32 @@ f |     \          | unit
       g
 ```
 -/
-abbrev LeftExtension (f : a ⟶ b) (g : a ⟶ c) := StructuredArrow g (precomp _ f)
+@[reducible, inline]
+def LeftExtension (f : a ⟶ b) (g : a ⟶ c) := StructuredArrow g (precomp _ f)
 
 namespace LeftExtension
 
 variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- The extension of `g` along `f`. -/
-abbrev extension (t : LeftExtension f g) : b ⟶ c := t.right
+@[reducible, inline]
+def extension (t : LeftExtension f g) : b ⟶ c := t.right
 
 /-- The 2-morphism filling the triangle diagram. -/
-abbrev unit (t : LeftExtension f g) : g ⟶ f ≫ t.extension := t.hom
+@[reducible, inline]
+def unit (t : LeftExtension f g) : g ⟶ f ≫ t.extension := t.hom
 
 /-- Construct a left extension from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : b ⟶ c) (unit : g ⟶ f ≫ h) : LeftExtension f g :=
+@[reducible, inline]
+def mk (h : b ⟶ c) (unit : g ⟶ f ≫ h) : LeftExtension f g :=
   StructuredArrow.mk unit
 
 variable {s t : LeftExtension f g}
 
 /-- To construct a morphism between left extensions, we need a 2-morphism between the extensions,
 and to check that it is compatible with the units. -/
-abbrev homMk (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit := by cat_disch) :
+@[reducible, inline]
+def homMk (η : s.extension ⟶ t.extension) (w : s.unit ≫ f ◁ η = t.unit := by cat_disch) :
     s ⟶ t :=
   StructuredArrow.homMk η w
 
@@ -171,27 +176,32 @@ end LeftExtension
        g
 ```
 -/
-abbrev LeftLift (f : b ⟶ a) (g : c ⟶ a) := StructuredArrow g (postcomp _ f)
+@[reducible, inline]
+def LeftLift (f : b ⟶ a) (g : c ⟶ a) := StructuredArrow g (postcomp _ f)
 
 namespace LeftLift
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- The lift of `g` along `f`. -/
-abbrev lift (t : LeftLift f g) : c ⟶ b := t.right
+@[reducible, inline]
+def lift (t : LeftLift f g) : c ⟶ b := t.right
 
 /-- The 2-morphism filling the triangle diagram. -/
-abbrev unit (t : LeftLift f g) : g ⟶ t.lift ≫ f := t.hom
+@[reducible, inline]
+def unit (t : LeftLift f g) : g ⟶ t.lift ≫ f := t.hom
 
 /-- Construct a left lift from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : c ⟶ b) (unit : g ⟶ h ≫ f) : LeftLift f g :=
+@[reducible, inline]
+def mk (h : c ⟶ b) (unit : g ⟶ h ≫ f) : LeftLift f g :=
   StructuredArrow.mk unit
 
 variable {s t : LeftLift f g}
 
 /-- To construct a morphism between left lifts, we need a 2-morphism between the lifts,
 and to check that it is compatible with the units. -/
-abbrev homMk (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit := by cat_disch) :
+@[reducible, inline]
+def homMk (η : s.lift ⟶ t.lift) (w : s.unit ≫ η ▷ f = t.unit := by cat_disch) :
     s ⟶ t :=
   StructuredArrow.homMk η w
 
@@ -294,25 +304,30 @@ f |     \          ▽
       g
 ```
 -/
-abbrev RightExtension (f : a ⟶ b) (g : a ⟶ c) := CostructuredArrow (precomp _ f) g
+@[reducible, inline]
+def RightExtension (f : a ⟶ b) (g : a ⟶ c) := CostructuredArrow (precomp _ f) g
 
 namespace RightExtension
 
 variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- The extension of `g` along `f`. -/
-abbrev extension (t : RightExtension f g) : b ⟶ c := t.left
+@[reducible, inline]
+def extension (t : RightExtension f g) : b ⟶ c := t.left
 
 /-- The 2-morphism filling the triangle diagram. -/
-abbrev counit (t : RightExtension f g) : f ≫ t.extension ⟶ g := t.hom
+@[reducible, inline]
+def counit (t : RightExtension f g) : f ≫ t.extension ⟶ g := t.hom
 
 /-- Construct a right extension from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : b ⟶ c) (counit : f ≫ h ⟶ g) : RightExtension f g :=
+@[reducible, inline]
+def mk (h : b ⟶ c) (counit : f ≫ h ⟶ g) : RightExtension f g :=
   CostructuredArrow.mk counit
 
 /-- To construct a morphism between right extensions, we need a 2-morphism between the extensions,
 and to check that it is compatible with the counits. -/
-abbrev homMk {s t : RightExtension f g} (η : s.extension ⟶ t.extension)
+@[reducible, inline]
+def homMk {s t : RightExtension f g} (η : s.extension ⟶ t.extension)
     (w : f ◁ η ≫ t.counit = s.counit := by cat_disch) : s ⟶ t :=
   CostructuredArrow.homMk η w
 
@@ -339,27 +354,32 @@ end RightExtension
        g
 ```
 -/
-abbrev RightLift (f : b ⟶ a) (g : c ⟶ a) := CostructuredArrow (postcomp _ f) g
+@[reducible, inline]
+def RightLift (f : b ⟶ a) (g : c ⟶ a) := CostructuredArrow (postcomp _ f) g
 
 namespace RightLift
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- The lift of `g` along `f`. -/
-abbrev lift (t : RightLift f g) : c ⟶ b := t.left
+@[reducible, inline]
+def lift (t : RightLift f g) : c ⟶ b := t.left
 
 /-- The 2-morphism filling the triangle diagram. -/
-abbrev counit (t : RightLift f g) : t.lift ≫ f ⟶ g := t.hom
+@[reducible, inline]
+def counit (t : RightLift f g) : t.lift ≫ f ⟶ g := t.hom
 
 /-- Construct a right lift from a 1-morphism and a 2-morphism. -/
-abbrev mk (h : c ⟶ b) (counit : h ≫ f ⟶ g) : RightLift f g :=
+@[reducible, inline]
+def mk (h : c ⟶ b) (counit : h ≫ f ⟶ g) : RightLift f g :=
   CostructuredArrow.mk counit
 
 variable {s t : RightLift f g}
 
 /-- To construct a morphism between right lifts, we need a 2-morphism between the lifts,
 and to check that it is compatible with the counits. -/
-abbrev homMk (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit := by cat_disch) :
+@[reducible, inline]
+def homMk (η : s.lift ⟶ t.lift) (w : η ▷ f ≫ t.counit = s.counit := by cat_disch) :
     s ⟶ t :=
   CostructuredArrow.homMk η w
 

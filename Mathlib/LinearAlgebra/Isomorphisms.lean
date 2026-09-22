@@ -69,7 +69,8 @@ theorem quotKerEquivOfSurjective_symm_apply (hf : Function.Surjective f) (x : M)
   simp [LinearEquiv.symm_apply_eq]
 
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
-abbrev subToSupQuotient (p p' : Submodule R M) :
+@[reducible, inline]
+def subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 

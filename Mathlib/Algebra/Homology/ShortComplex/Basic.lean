@@ -311,10 +311,12 @@ def opEquiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where
 variable {C}
 
 /-- The canonical isomorphism `S.unop.op ≅ S` for a short complex `S` in `Cᵒᵖ` -/
-abbrev unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counitIso.app S
+@[reducible, inline]
+def unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counitIso.app S
 
 /-- The canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
-abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
+@[reducible, inline]
+def opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
   Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
 
 end ShortComplex

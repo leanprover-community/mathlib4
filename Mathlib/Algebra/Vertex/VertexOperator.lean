@@ -37,7 +37,8 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 /-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to
 Laurent series with coefficients in `V`.  We write this as a specialization of the heterogeneous
 case. -/
-abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
+@[reducible, inline]
+def VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
     [Module R V] := HVertexOperator ℤ R V V
 
 namespace VertexOperator

@@ -119,8 +119,8 @@ theorem coeff_uniqueAlgEquiv_symm [Unique σ] (P : Polynomial R) (d : σ →₀ 
 
 /-- The algebra isomorphism between multivariable polynomials in a single variable and
 polynomials over the ground ring. -/
-@[deprecated uniqueAlgEquiv +typeChanged (since := "2026-04-15")]
-abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
+@[reducible, inline, deprecated uniqueAlgEquiv +typeChanged (since := "2026-04-15")]
+def pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
 
 @[deprecated uniqueAlgEquiv_monomial +typeChanged (since := "2026-04-15")]
 theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :

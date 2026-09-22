@@ -78,11 +78,13 @@ theorem cons_fs (a : α) (v : Vector3 α n) (i) : (a :: v) (fs i) = v i :=
   rfl
 
 /-- Get the `i`th element of a vector -/
-abbrev nth (i : Fin2 n) (v : Vector3 α n) : α :=
+@[reducible, inline]
+def nth (i : Fin2 n) (v : Vector3 α n) : α :=
   v i
 
 /-- Construct a vector from a function on `Fin2`. -/
-abbrev ofFn (f : Fin2 n → α) : Vector3 α n :=
+@[reducible, inline]
+def ofFn (f : Fin2 n → α) : Vector3 α n :=
   f
 
 /-- Get the head of a nonempty vector. -/

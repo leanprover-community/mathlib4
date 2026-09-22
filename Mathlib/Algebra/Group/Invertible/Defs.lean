@@ -187,7 +187,8 @@ def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si 
   mul_invOf_self := by rw [hs, hsi, mul_invOf_self]
 
 /-- If `r` is invertible and `s = r`, then `s` is invertible. -/
-abbrev Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs : s = r) :
+@[reducible, inline]
+def Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs : s = r) :
     Invertible s :=
   hr.copy' _ _ hs rfl
 
@@ -234,7 +235,8 @@ theorem invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertib
   invOf_eq_right_inv (by simp [← mul_assoc])
 
 /-- A copy of `invertibleMul` for dot notation. -/
-abbrev Invertible.mul [Monoid α] {a b : α} (_ : Invertible a) (_ : Invertible b) :
+@[reducible, inline]
+def Invertible.mul [Monoid α] {a b : α} (_ : Invertible a) (_ : Invertible b) :
     Invertible (a * b) :=
   invertibleMul _ _
 

@@ -36,15 +36,16 @@ namespace CommGrp
 variable {C}
 
 /-- A commutative group object is a group object. -/
-@[simps -isSimp X]
-abbrev toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
+@[reducible, inline, simps -isSimp X]
+def toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
 
 /-- A commutative group object is a commutative monoid object. -/
 @[simps X]
 def toCommMon (A : CommGrp C) : CommMon C := ⟨A.X⟩
 
 /-- A commutative group object is a monoid object. -/
-abbrev toMon (A : CommGrp C) : Mon C := (toCommMon A).toMon
+@[reducible, inline]
+def toMon (A : CommGrp C) : Mon C := (toCommMon A).toMon
 
 variable (C) in
 /-- The trivial commutative group object. -/
@@ -161,7 +162,8 @@ variable {G H : CommGrp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
 set_option backward.privateInPublic true in
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-abbrev mkIso : G ≅ H :=
+@[reducible, inline]
+def mkIso : G ≅ H :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 

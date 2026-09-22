@@ -119,7 +119,8 @@ end
 
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
+@[reducible, inline]
+def LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
     [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
     [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂

@@ -87,7 +87,8 @@ open scoped Derivation
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
 tangent space, as this coincides with the usual tangent space for finite-dimensional `C^∞` real
 manifolds. The identification is not true in general, though. -/
-abbrev PointDerivation (x : M) :=
+@[reducible, inline]
+def PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 
 section

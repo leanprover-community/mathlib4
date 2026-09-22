@@ -62,7 +62,8 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z⁻¹]`. We make a
 slightly more general definition which coincides with the Laurent polynomial construction when
 `A = ℤ` -/
-abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
+@[reducible, inline]
+def loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 
 open LaurentPolynomial in
 /-- An Lie algebra isomorphism between the Loop algebra (with `A = ℤ`) and the tensor product with

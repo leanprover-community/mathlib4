@@ -91,7 +91,8 @@ class KleeneAlgebra (α : Type*) extends IdemSemiring α, KStar α where
 
 -- See note [reducible non-instances]
 /-- Construct an idempotent semiring from an idempotent addition. -/
-abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemSemiring α where
+@[reducible, inline]
+def IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemSemiring α where
   le a b := a + b = b
   le_refl := h
   le_trans a b c hab hbc := by rw [← hbc, ← add_assoc, hab]

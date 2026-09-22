@@ -247,7 +247,8 @@ variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsD
 The ring homomorphism that extends a fractional ideal of `A` to a fractional ideal of `B` for
 an extension of domains `A ⊆ B`.
 -/
-abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
+@[reducible, inline]
+def extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom' L <|
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
 

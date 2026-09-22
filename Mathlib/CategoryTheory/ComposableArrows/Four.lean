@@ -130,25 +130,29 @@ variable {ι : Type*} [Preorder ι] (i₀ i₁ i₂ i₃ i₄ : ι)
   (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄)
 
 /-- Variant of `fourδ₄Toδ₃` for preorders. -/
-abbrev fourδ₄Toδ₃' :
+@[reducible, inline]
+def fourδ₄Toδ₃' :
     mk₃ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE hi₂₃) ⟶
       mk₃ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE (hi₂₃.trans hi₃₄)) :=
   fourδ₄Toδ₃ _ _ _ (homOfLE hi₃₄) _ rfl
 
 /-- Variant of `fourδ₃Toδ₂` for preorders. -/
-abbrev fourδ₃Toδ₂' :
+@[reducible, inline]
+def fourδ₃Toδ₂' :
     mk₃ (homOfLE hi₀₁) (homOfLE hi₁₂) (homOfLE (hi₂₃.trans hi₃₄)) ⟶
       mk₃ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) (homOfLE hi₃₄) :=
   fourδ₃Toδ₂ _ (homOfLE hi₁₂) (homOfLE hi₂₃) _ _ _ rfl rfl
 
 /-- Variant of `fourδ₂Toδ₁` for preorders. -/
-abbrev fourδ₂Toδ₁' :
+@[reducible, inline]
+def fourδ₂Toδ₁' :
     mk₃ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) (homOfLE hi₃₄) ⟶
       mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
   fourδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ _ _ rfl rfl
 
 /-- Variant of `fourδ₁Toδ₀` for preorders. -/
-abbrev fourδ₁Toδ₀' :
+@[reducible, inline]
+def fourδ₁Toδ₀' :
     mk₃ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) (homOfLE hi₃₄) ⟶
       mk₃ (homOfLE hi₁₂) (homOfLE hi₂₃) (homOfLE hi₃₄) :=
   fourδ₁Toδ₀ (homOfLE hi₀₁) _ _ _ _ rfl

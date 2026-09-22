@@ -82,10 +82,12 @@ def of : C ⥤ FreeGroupoid C where
 variable {C}
 
 /-- Construct an object in the free groupoid on `C` by providing an object in `C`. -/
-abbrev mk (X : C) : FreeGroupoid C := (of C).obj X
+@[reducible, inline]
+def mk (X : C) : FreeGroupoid C := (of C).obj X
 
 /-- Construct a morphism in the free groupoid on `C` by providing a morphism in `C`. -/
-abbrev homMk {X Y : C} (f : X ⟶ Y) : mk X ⟶ mk Y := (of C).map f
+@[reducible, inline]
+def homMk {X Y : C} (f : X ⟶ Y) : mk X ⟶ mk Y := (of C).map f
 
 lemma eq_mk (X : FreeGroupoid C) : X = .mk (X.as.as) := rfl
 

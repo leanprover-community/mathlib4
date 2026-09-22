@@ -55,7 +55,8 @@ theorem DedekindCut.continuous_principal [TopologicalSpace α] [OrderTopology α
 namespace Order
 
 /-- A dense linear order into which α embeds continuously, formed by "filling in" the blanks. -/
-abbrev Fill (α : Type*) [LinearOrder α] : Type _ :=
+@[reducible, inline]
+def Fill (α : Type*) [LinearOrder α] : Type _ :=
   {x : α ×ₗ ℚ //
     (IsSuccPrelimit (ofLex x).1 → 0 ≤ (ofLex x).2) ∧
     (IsPredPrelimit (ofLex x).1 → (ofLex x).2 ≤ 0) }

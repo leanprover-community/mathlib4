@@ -83,7 +83,8 @@ theorem perm_symm_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite {
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
   `Equiv.Perm.subtypePerm`. -/
-abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
+@[expose, reducible, inline]
+def subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
   f.subtypePerm fun x => ⟨fun h₂ => f.symm_apply_apply x ▸ perm_symm_on_of_perm_on_finite h h₂, h x⟩
 

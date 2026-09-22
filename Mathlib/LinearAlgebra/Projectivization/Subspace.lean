@@ -282,7 +282,8 @@ variable {K V}
 
 /-- The projective subspace corresponding to a submodule `s`, consisting of the one-dimensional
 subspaces of `s`. This is the inverse of `Projectivization.Subspace.submodule`. -/
-abbrev projectivization : Submodule K V ≃o Projectivization.Subspace K V :=
+@[reducible, inline]
+def projectivization : Submodule K V ≃o Projectivization.Subspace K V :=
   Projectivization.Subspace.submodule.symm
 
 @[simp]

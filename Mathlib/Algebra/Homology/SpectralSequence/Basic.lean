@@ -107,31 +107,37 @@ end SpectralSequence
 
 /-- A cohomological spectral sequence has differentials given by the
 vector `(r, 1 - r)` on the `r`th page. -/
-abbrev CohomologicalSpectralSequence :=
+@[reducible, inline]
+def CohomologicalSpectralSequence :=
   SpectralSequence C (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ))
 
 /-- A `E₂`-cohomological spectral sequence has differentials given by the
 vector `(r, 1 - r)` on the `r`th page for `2 ≤ r`. -/
-abbrev E₂CohomologicalSpectralSequence := CohomologicalSpectralSequence C 2
+@[reducible, inline]
+def E₂CohomologicalSpectralSequence := CohomologicalSpectralSequence C 2
 
 /-- A first quadrant cohomological spectral sequence has differentials
 given by the vector `(r, 1 - r)` on the `r`th page. -/
-abbrev CohomologicalSpectralSequenceNat :=
+@[reducible, inline]
+def CohomologicalSpectralSequenceNat :=
   SpectralSequence C (fun r ↦ ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩)
 
 /-- A first quadrant `E₂`-cohomological spectral sequence has differentials
 given by the vector `(r, 1 - r)` on the `r`th page for `2 ≤ r`. -/
-abbrev E₂CohomologicalSpectralSequenceNat :=
+@[reducible, inline]
+def E₂CohomologicalSpectralSequenceNat :=
   CohomologicalSpectralSequenceNat C 2
 
 /-- A cohomological spectral sequence lying on finitely many rows
 has differentials given by the vector `(r, 1 - r)` on the `r`th page. -/
-abbrev CohomologicalSpectralSequenceFin (l : ℕ) :=
+@[reducible, inline]
+def CohomologicalSpectralSequenceFin (l : ℕ) :=
   SpectralSequence C (fun r ↦ ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩)
 
 /-- A `E₂`-cohomological spectral sequence lying on finitely many rows
 has differentials given by the vector `(r, 1 - r)` on the `r`th page for `2 ≤ r`. -/
-abbrev E₂CohomologicalSpectralSequenceFin (l : ℕ) :=
+@[reducible, inline]
+def E₂CohomologicalSpectralSequenceFin (l : ℕ) :=
   CohomologicalSpectralSequenceFin C 2 l
 
 end CategoryTheory

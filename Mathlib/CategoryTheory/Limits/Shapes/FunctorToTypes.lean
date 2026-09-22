@@ -273,13 +273,15 @@ lemma inr_comp_binaryCoproductIso_inv_apply (a : C) (x : G.obj a) :
 variable {F G}
 
 /-- Construct an element of `(F ⨿ G).obj a` from an element of `F.obj a` -/
+@[reducible, inline]
 noncomputable
-abbrev coprodInl {a : C} (x : F.obj a) : (F ⨿ G).obj a :=
+def coprodInl {a : C} (x : F.obj a) : (F ⨿ G).obj a :=
   (binaryCoproductIso F G).inv.app a (.inl x)
 
 /-- Construct an element of `(F ⨿ G).obj a` from an element of `G.obj a` -/
+@[reducible, inline]
 noncomputable
-abbrev coprodInr {a : C} (x : G.obj a) : (F ⨿ G).obj a :=
+def coprodInr {a : C} (x : G.obj a) : (F ⨿ G).obj a :=
   (binaryCoproductIso F G).inv.app a (.inr x)
 
 variable (F G)

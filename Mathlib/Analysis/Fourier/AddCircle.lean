@@ -249,7 +249,8 @@ theorem span_fourier_closure_eq_top : (span ℂ (range <| @fourier T)).topologic
 
 /-- The family of monomials `fourier n`, parametrized by `n : ℤ` and considered as
 elements of the `Lp` space of functions `AddCircle T → ℂ`. -/
-abbrev fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) : Lp ℂ p (@haarAddCircle T hT) :=
+@[reducible, inline]
+def fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) : Lp ℂ p (@haarAddCircle T hT) :=
   toLp (E := ℂ) p haarAddCircle ℂ (fourier n)
 
 theorem coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :

@@ -29,7 +29,8 @@ variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Catego
 
 /-- In a category `C` equipped with a shift by an additive monoid,
 this is the type of morphisms `X ⟶ (Y⟦m⟧)` for `m : M`. -/
-abbrev ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ Y⟦m⟧
+@[reducible, inline]
+def ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ Y⟦m⟧
 
 namespace ShiftedHom
 

@@ -31,10 +31,12 @@ universe u
 variable (S : LightProfinite.{u})
 
 /-- The functor `ℕᵒᵖ ⥤ FintypeCat` whose limit is isomorphic to `S`. -/
-abbrev fintypeDiagram : ℕᵒᵖ ⥤ FintypeCat := S.toLightDiagram.diagram
+@[reducible, inline]
+def fintypeDiagram : ℕᵒᵖ ⥤ FintypeCat := S.toLightDiagram.diagram
 
 /-- An abbreviation for `S.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
-abbrev diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat.toLightProfinite
+@[reducible, inline]
+def diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat.toLightProfinite
 
 /--
 A cone over `S.diagram` whose cone point is isomorphic to `S`.
@@ -77,7 +79,8 @@ def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
 def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
 
 /-- The projection from `S` to the `n`th component of `S.diagram`. -/
-abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
+@[reducible, inline]
+def proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
@@ -92,14 +95,17 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
   exact DiscreteQuotient.proj_surjective _
 
 /-- An abbreviation for the `n`th component of `S.diagram`. -/
-abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
+@[reducible, inline]
+def component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
+@[reducible, inline]
+def transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
-abbrev transitionMapLE {n m : ℕ} (h : n ≤ m) : S.component m ⟶ S.component n :=
+@[reducible, inline]
+def transitionMapLE {n m : ℕ} (h : n ≤ m) : S.component m ⟶ S.component n :=
   S.diagram.map ⟨homOfLE h⟩
 
 lemma proj_comp_transitionMap (n : ℕ) :

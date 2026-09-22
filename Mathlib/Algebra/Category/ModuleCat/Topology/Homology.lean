@@ -35,7 +35,8 @@ variable {M N : TopModuleCat.{v} R} (φ : M ⟶ N)
 section kernel
 
 /-- Kernel in `TopModuleCat R` is the kernel of the linear map with the subspace topology. -/
-abbrev ker : TopModuleCat R := .of R φ.hom.ker
+@[reducible, inline]
+def ker : TopModuleCat R := .of R φ.hom.ker
 
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
 def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
@@ -61,7 +62,8 @@ end kernel
 section cokernel
 
 /-- Cokernel in `TopModuleCat R` is the cokernel of the linear map with the quotient topology. -/
-abbrev coker : TopModuleCat R := .of R (N ⧸ φ.hom.range)
+@[reducible, inline]
+def coker : TopModuleCat R := .of R (N ⧸ φ.hom.range)
 
 /-- The projection map to the cokernel in `TopModuleCat R`. -/
 def cokerπ : N ⟶ coker φ := ofHom <| ⟨Submodule.mkQ _, by tauto⟩

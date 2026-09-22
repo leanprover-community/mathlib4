@@ -887,7 +887,8 @@ variable (C)
 `β_ X Y : X ⊗ Y ≅ Y ⊗ X` with the inverse `(β_ Y X)⁻¹ : X ⊗ Y ≅ Y ⊗ X`.
 This corresponds to the automorphism of the braid group swapping
 over-crossings and under-crossings. -/
-abbrev reverseBraiding : BraidedCategory C where
+@[reducible, inline]
+def reverseBraiding : BraidedCategory C where
   braiding X Y := (β_ Y X).symm
   braiding_naturality_right X {_ _} f := by simp
   braiding_naturality_left {_ _} f Z := by simp

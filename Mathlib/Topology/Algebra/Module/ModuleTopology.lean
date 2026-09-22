@@ -125,7 +125,8 @@ making addition and the `R`-action continuous, or equivalently the finest topolo
 into a topological `R`-module. More precisely it's the Inf of the set of
 topologies with these properties; theorems `continuousSMul` and `continuousAdd` show
 that the module topology also has these properties. -/
-abbrev moduleTopology : TopologicalSpace A :=
+@[expose, reducible, inline]
+def moduleTopology : TopologicalSpace A :=
   sInf {t | @ContinuousSMul R A _ _ t ∧ @ContinuousAdd A t _}
 
 /-- A class asserting that the topology on a module over a topological ring `R` is

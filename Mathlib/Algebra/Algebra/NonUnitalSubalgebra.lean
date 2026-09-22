@@ -501,7 +501,8 @@ theorem injective_codRestrict
 /-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-abbrev rangeRestrict (f : A →ₙₐ[R] B) :
+@[reducible, inline]
+def rangeRestrict (f : A →ₙₐ[R] B) :
     A →ₙₐ[R] f.range :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
@@ -1230,8 +1231,8 @@ variable (R) in
 semiring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
+@[reducible, inline, deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
+def adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     NonUnitalCommSemiring (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
   inferInstance
@@ -1245,8 +1246,8 @@ open scoped IsMulCommutative in
 ring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
+@[reducible, inline, deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
+def adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
     (hcomm : s.Pairwise Commute) : NonUnitalCommRing (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm

@@ -75,7 +75,8 @@ Two edges `f` and `g` are left homotopic if there is a `CompStruct` with
 (0, 1)-edge `f`, (1, 2)-edge `Edge.id` and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicL`.
 -/
-abbrev HomotopicL {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
+@[reducible, inline]
+def HomotopicL {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
   Nonempty (CompStruct f (id y) g)
 
 /--
@@ -83,7 +84,8 @@ Two edges `f` and `g` are right homotopic if there is a `CompStruct` with
 (0, 1)-edge `Edge.id`, (1, 2)-edge `f`, and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicR`.
 -/
-abbrev HomotopicR {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
+@[reducible, inline]
+def HomotopicR {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
   Nonempty (CompStruct (id x) f g)
 
 section homotopy_eqrel

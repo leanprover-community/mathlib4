@@ -48,7 +48,8 @@ namespace PullbackCone
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) (G : C ⥤ D)
 
 /-- The image of a pullback cone by a functor. -/
-abbrev map : PullbackCone (G.map f) (G.map g) :=
+@[reducible, inline]
+def map : PullbackCone (G.map f) (G.map g) :=
   PullbackCone.mk (G.map c.fst) (G.map c.snd)
     (by simpa using G.congr_map c.condition)
 
@@ -173,7 +174,8 @@ namespace PushoutCocone
 variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C ⥤ D)
 
 /-- The image of a pullback cone by a functor. -/
-abbrev map : PushoutCocone (G.map f) (G.map g) :=
+@[reducible, inline]
+def map : PushoutCocone (G.map f) (G.map g) :=
   PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
 
 set_option backward.defeqAttrib.useBackward true in

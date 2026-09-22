@@ -369,8 +369,8 @@ noncomputable def algebraOfLiesOver
 @[deprecated (since := "2026-04-24")] alias instAlgebraOfLiesOver := algebraOfLiesOver
 
 /-- A deprecated predicate on the algebra map between two localizations. -/
-@[deprecated "Use `IsScalarTower` instead." (since := "2026-06-27")]
-abbrev IsLiesOverAlgebra (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
+@[reducible, inline, deprecated "Use `IsScalarTower` instead." (since := "2026-06-27")]
+def IsLiesOverAlgebra (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)] :=
   IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P)
 

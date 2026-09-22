@@ -207,7 +207,8 @@ end Ring
 variable {R K : Type*} [CommRing R] [Field K]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
-abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
+@[reducible, inline]
+def IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
 
 @[simp] lemma isParabolic_conj_iff (g h : GL (Fin 2) R) :
     IsParabolic (g * h * g⁻¹) ↔ IsParabolic h := by
@@ -218,10 +219,12 @@ abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
   simp [IsParabolic]
 
 /-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
-abbrev IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
+@[reducible, inline]
+def IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
 
 /-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
-abbrev IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
+@[reducible, inline]
+def IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
 
 /-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation.
 

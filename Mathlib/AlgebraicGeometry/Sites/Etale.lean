@@ -37,7 +37,8 @@ def etalePretopology : Pretopology Scheme.{u} :=
   pretopology @Etale
 
 /-- Big étale site: the étale topology on the category of schemes. -/
-abbrev etaleTopology : GrothendieckTopology Scheme.{u} :=
+@[reducible, inline]
+def etaleTopology : GrothendieckTopology Scheme.{u} :=
   grothendieckTopology @Etale
 
 lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by

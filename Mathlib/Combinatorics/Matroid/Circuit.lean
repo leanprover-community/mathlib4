@@ -566,7 +566,8 @@ variable {K B : Set α}
 
 /-- A cocircuit is a circuit of the dual matroid,
 or equivalently the complement of a hyperplane. -/
-abbrev IsCocircuit (M : Matroid α) (K : Set α) : Prop := M✶.IsCircuit K
+@[reducible, inline]
+def IsCocircuit (M : Matroid α) (K : Set α) : Prop := M✶.IsCircuit K
 
 lemma isCocircuit_def : M.IsCocircuit K ↔ M✶.IsCircuit K := Iff.rfl
 

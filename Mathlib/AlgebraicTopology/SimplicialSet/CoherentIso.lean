@@ -36,7 +36,8 @@ open CategoryTheory
 namespace CategoryTheory
 
 /-- This is the free-living isomorphism as the codiscrete category on `Bool`. -/
-abbrev WalkingIso : Type w := Codiscrete (ULift Bool)
+@[reducible, inline]
+def WalkingIso : Type w := Codiscrete (ULift Bool)
 
 namespace WalkingIso
 
@@ -139,7 +140,8 @@ open scoped Simplicial
 
 /-- The simplicial set that encodes a single isomorphism.
 Its n-simplices are formal compositions of arrows in WalkingIso. -/
-abbrev coherentIso : SSet := nerve WalkingIso.{u}
+@[reducible, inline]
+def coherentIso : SSet := nerve WalkingIso.{u}
 
 namespace coherentIso
 
@@ -186,7 +188,8 @@ def invStructHom : Edge.InvStruct.{u} coherentIso.hom where
 
 /-- For a simplicial set `X`, if an edge in `X` is equal to the image of `hom`
 under a morphism of simplicial sets, this edge has an inverse. -/
-abbrev invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
+@[reducible, inline]
+def invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
     {g : coherentIso ⟶ X}
     (hfg : f.edge = g.app _ hom.edge) :

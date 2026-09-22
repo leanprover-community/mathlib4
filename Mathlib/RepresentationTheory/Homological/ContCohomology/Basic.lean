@@ -51,7 +51,8 @@ open CategoryTheory ContRepresentation
 namespace TopRep
 
 /-- The `n`-th term in the resolution of a topological representation induced by `TopRep.coind₁`. -/
-abbrev resolutionX (X : TopRep k G) : ℕ → TopRep k G
+@[reducible, inline]
+def resolutionX (X : TopRep k G) : ℕ → TopRep k G
   | 0 => X
   | n + 1 => (resolutionX X n).coind₁
 
@@ -87,11 +88,13 @@ lemma d_comp_d (X : TopRep k G) (n : ℕ) : d X n ≫ d X (n + 1) = 0 := by
 /-- The complex of functors whose behaviour pointwise takes an `R`-linear `G`-representation `M`
 to the complex `M → C(G, M) → ⋯ → C(G, C(G,...,C(G, M))) → ⋯`
 The `G`-invariant submodules of it is the homogeneous cochains (shifted by one). -/
-abbrev resolution (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
+@[reducible, inline]
+def resolution (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
   CochainComplex.of (resolutionX X) (d X) (d_comp_d X)
 
 /-- The shifted object in resolution by `1` degree. -/
-abbrev resolution'X (X : TopRep k G) (n : ℕ) : TopRep k G := resolutionX X (n + 1)
+@[reducible, inline]
+def resolution'X (X : TopRep k G) (n : ℕ) : TopRep k G := resolutionX X (n + 1)
 
 /-- The shifted boundary map of the resolution. -/
 @[implicit_reducible]
@@ -102,7 +105,8 @@ lemma resolution'd_eq (X : TopRep k G) (n : ℕ) :
     resolution'd X n = d X (n + 1) := rfl
 
 /-- The shifted resolution of a topological representation by `1` degree. -/
-abbrev resolution' (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
+@[reducible, inline]
+def resolution' (X : TopRep k G) : CochainComplex (TopRep k G) ℕ :=
   CochainComplex.of (resolution'X X)
     (resolution'd X) (fun n ↦ d_comp_d X (n + 1))
 
@@ -110,7 +114,8 @@ set_option allowUnsafeReducibility true in
 attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
 
 /-- The homogeneous cochains of a topological representation. -/
-abbrev homogeneousCochains (X : TopRep k G) :
+@[reducible, inline]
+def homogeneousCochains (X : TopRep k G) :
     CochainComplex (TopModuleCat k) ℕ :=
   ((invariantsFunctor k G).mapHomologicalComplex _).obj (resolution' X)
 

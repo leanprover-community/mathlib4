@@ -34,7 +34,8 @@ natural numbers, up to and including the first value satisfying `p`.
 
 We will be particularly interested in the case where there exists a value
 satisfying `p`, because in this case the `>` relation is well-founded. -/
-abbrev Upto (p : ℕ → Prop) : Type :=
+@[reducible, inline]
+def Upto (p : ℕ → Prop) : Type :=
   { i : ℕ // ∀ j < i, ¬p j }
 
 namespace Upto

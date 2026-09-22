@@ -214,7 +214,8 @@ variable {F₁ F₂ : Sheaf J D} (φ : F₁ ⟶ F₂)
 `Presheaf.IsLocallyInjective J φ.val`. Under suitable assumptions, it
 is equivalent to the injectivity of all maps `φ.val.app X`,
 see `isLocallyInjective_iff_injective`. -/
-abbrev IsLocallyInjective := Presheaf.IsLocallyInjective J φ.hom
+@[reducible, inline]
+def IsLocallyInjective := Presheaf.IsLocallyInjective J φ.hom
 
 lemma isLocallyInjective_sheafToPresheaf_map_iff :
     Presheaf.IsLocallyInjective J ((sheafToPresheaf J D).map φ) ↔ IsLocallyInjective φ := by rfl

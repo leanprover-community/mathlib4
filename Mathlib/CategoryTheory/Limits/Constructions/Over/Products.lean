@@ -224,7 +224,8 @@ namespace ConstructProducts
 Given a product diagram in `C/B`, construct the corresponding wide pullback diagram
 in `C`.
 -/
-abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
+@[reducible, inline]
+def widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 

@@ -130,7 +130,8 @@ def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   inv_hom_id := Quotient.sound _ (relations.Winv₂ w hw)
 
 /-- The formal inverse in `W.Localization` of a morphism `w` in `W`. -/
-abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
+@[reducible, inline]
+def wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 
 variable (W) in

@@ -188,8 +188,9 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
     (hfg.trans_le (X.basicOpen_le g)) hx
 
 /-- (Implementation) The intersections `Spec Γ(𝒪ₓ/I, U) ∩ V` useful for gluing. -/
+@[reducible, inline]
 noncomputable
-abbrev glueDataObjPullback (U V : X.affineOpens) : Scheme :=
+def glueDataObjPullback (U V : X.affineOpens) : Scheme :=
   pullback (I.glueDataObjι U) (X.homOfLE (U := U.1 ⊓ V.1) inf_le_left)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -657,10 +658,12 @@ open Limits
 variable {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.affineOpens)
 
 /-- The scheme-theoretic image of a morphism. -/
-abbrev Hom.image : Scheme.{u} := f.ker.subscheme
+@[reducible, inline]
+def Hom.image : Scheme.{u} := f.ker.subscheme
 
 /-- The embedding from the scheme-theoretic image to the codomain. -/
-abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
+@[reducible, inline]
+def Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :

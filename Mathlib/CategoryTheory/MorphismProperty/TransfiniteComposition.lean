@@ -290,7 +290,8 @@ end
 /-- A class of morphisms `W : MorphismProperty C` is stable under infinite composition
 if for any functor `F : ℕ ⥤ C` such that `F.obj n ⟶ F.obj (n + 1)` is in `W` for any `n : ℕ`,
 the map `F.obj 0 ⟶ c.pt` is in `W` for any colimit cocone `c : Cocone F`. -/
-abbrev IsStableUnderInfiniteComposition : Prop :=
+@[reducible, inline]
+def IsStableUnderInfiniteComposition : Prop :=
   W.IsStableUnderTransfiniteCompositionOfShape ℕ
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite composition

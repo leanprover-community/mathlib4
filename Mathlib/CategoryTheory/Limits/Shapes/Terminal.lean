@@ -33,11 +33,11 @@ variable (C)
 /-- A category has a terminal object if it has a limit over the empty diagram.
 Use `hasTerminal_of_unique` to construct instances.
 -/
-@[to_dual
+@[to_dual (attr := reducible, inline)
 /-- A category has an initial object if it has a colimit over the empty diagram.
 Use `hasInitial_of_unique` to construct instances.
 -/]
-abbrev HasTerminal :=
+def HasTerminal :=
   HasLimitsOfShape (Discrete.{0} PEmpty) C
 
 section Univ
@@ -60,12 +60,12 @@ end Univ
 You can use the notation `⊤_ C`.
 This object is characterized by having a unique morphism from any object.
 -/
-@[to_dual
+@[to_dual (attr := reducible, inline)
 /-- An arbitrary choice of initial object, if one exists.
 You can use the notation `⊥_ C`.
 This object is characterized by having a unique morphism to any object.
 -/]
-abbrev terminal [HasTerminal C] : C :=
+def terminal [HasTerminal C] : C :=
   limit (Functor.empty.{0} C)
 
 /-- Notation for the terminal object in `C` -/
@@ -94,8 +94,9 @@ theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 
 /-- The map from an object to the terminal object. -/
-@[to_dual «to» /-- The map to an object from the initial object. -/]
-abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
+@[to_dual (attr := reducible, inline)
+«to» /-- The map to an object from the initial object. -/]
+def terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
   limit.lift (Functor.empty C) (asEmptyCone P)
 
 /-- A terminal object is terminal. -/
@@ -221,10 +222,10 @@ instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F
 -- This is reducible to allow usage of lemmas about `conePointUniqueUpToIso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
 to the limit of `F`. -/
-@[to_dual
+@[to_dual (attr := reducible, inline)
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
 to the colimit of `F`. -/]
-abbrev limitOfInitial (F : J ⥤ C) [HasInitial J] : limit F ≅ F.obj (⊥_ J) :=
+def limitOfInitial (F : J ⥤ C) [HasInitial J] : limit F ≅ F.obj (⊥_ J) :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramInitial initialIsInitial F)
 
 @[to_dual]
@@ -235,10 +236,10 @@ instance hasLimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C}
 -- This is reducible to allow usage of lemmas about `conePointUniqueUpToIso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object and all the morphisms in the diagram
 are isomorphisms, then the image of the terminal object is isomorphic to the limit of `F`. -/
-@[to_dual
+@[to_dual (attr := reducible, inline)
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram
 are isomorphisms, then the image of the initial object is isomorphic to the colimit of `F`. -/]
-abbrev limitOfTerminal (F : J ⥤ C) [HasTerminal J] [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
+def limitOfTerminal (F : J ⥤ C) [HasTerminal J] [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
     limit F ≅ F.obj (⊤_ J) :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramTerminal terminalIsTerminal F)
 

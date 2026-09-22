@@ -298,15 +298,16 @@ variable (J : GrothendieckTopology C)
 variable (A : Type u₂) [Category.{v₂} A]
 
 /-- The category of sheaves taking values in `A` on a Grothendieck topology. -/
-abbrev Sheaf := ObjectProperty.FullSubcategory (Presheaf.IsSheaf J (A := A))
+@[reducible, inline]
+def Sheaf := ObjectProperty.FullSubcategory (Presheaf.IsSheaf J (A := A))
 
 section
 
 variable {J A}
 
 /-- The underlying presheaf of a sheaf. -/
-@[deprecated "Use ObjectProperty.obj" (since := "2026-03-03")]
-abbrev Sheaf.val (F : Sheaf J A) : Cᵒᵖ ⥤ A := F.obj
+@[reducible, inline, deprecated "Use ObjectProperty.obj" (since := "2026-03-03")]
+def Sheaf.val (F : Sheaf J A) : Cᵒᵖ ⥤ A := F.obj
 
 @[deprecated "Use ObjectProperty.FullSubcategory.property" (since := "2026-03-03")]
 lemma Sheaf.cond (F : Sheaf J A) : Presheaf.IsSheaf J F.obj := F.property
@@ -325,10 +326,12 @@ lemma Sheaf.hom_ext {F G : Sheaf J A} {f g : F ⟶ G} (h : f.hom = g.hom) :
 end
 
 /-- The inclusion functor of the category of sheaves in the category of presheaves. -/
-abbrev sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A := ObjectProperty.ι _
+@[reducible, inline]
+def sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A := ObjectProperty.ι _
 
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
-abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
+@[reducible, inline]
+def sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
 /-- The sheaf sections functor on `X` is given by evaluation of presheaves on `X`. -/
 @[simps!]
@@ -337,7 +340,8 @@ def sheafSectionsNatIsoEvaluation {X : C} :
   Iso.refl _
 
 /-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
-abbrev fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful :=
+@[reducible, inline]
+def fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
 section
@@ -345,7 +349,8 @@ section
 variable {J A}
 
 /-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
-abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.obj ⟶ Y.obj) :=
+@[reducible, inline]
+def Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.obj ⟶ Y.obj) :=
   (fullyFaithfulSheafToPresheaf J A).homEquiv
 
 #adaptation_note

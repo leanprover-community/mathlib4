@@ -129,7 +129,8 @@ namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulLeftMono [Mul M] [LE M] : Prop :=
+@[reducible, inline]
+def MulLeftMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (· * ·) (· ≤ ·)
 
 /-- Typeclass for monotonicity of multiplication on the right,
@@ -137,7 +138,8 @@ namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulRightMono [Mul M] [LE M] : Prop :=
+@[reducible, inline]
+def MulRightMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· ≤ ·)
 
 /-- Typeclass for monotonicity of addition on the left,
@@ -145,7 +147,8 @@ namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddLeftMono [Add M] [LE M] : Prop :=
+@[reducible, inline]
+def AddLeftMono [Add M] [LE M] : Prop :=
   CovariantClass M M (· + ·) (· ≤ ·)
 
 /-- Typeclass for monotonicity of addition on the right,
@@ -153,7 +156,8 @@ namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddRightMono [Add M] [LE M] : Prop :=
+@[reducible, inline]
+def AddRightMono [Add M] [LE M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· ≤ ·)
 
 attribute [to_additive existing] MulLeftMono MulRightMono
@@ -163,7 +167,8 @@ namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
+@[reducible, inline]
+def MulLeftStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (· * ·) (· < ·)
 
 /-- Typeclass for monotonicity of multiplication on the right,
@@ -171,7 +176,8 @@ namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
+@[reducible, inline]
+def MulRightStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· < ·)
 
 /-- Typeclass for monotonicity of addition on the left,
@@ -179,7 +185,8 @@ namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
+@[reducible, inline]
+def AddLeftStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (· + ·) (· < ·)
 
 /-- Typeclass for monotonicity of addition on the right,
@@ -187,7 +194,8 @@ namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
+@[reducible, inline]
+def AddRightStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
@@ -197,7 +205,8 @@ namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
+@[reducible, inline]
+def MulLeftReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (· * ·) (· < ·)
 
 /-- Typeclass for strict reverse monotonicity of multiplication on the right,
@@ -205,7 +214,8 @@ namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
+@[reducible, inline]
+def MulRightReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (swap (· * ·)) (· < ·)
 
 /-- Typeclass for strict reverse monotonicity of addition on the left,
@@ -213,7 +223,8 @@ namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
+@[reducible, inline]
+def AddLeftReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (· + ·) (· < ·)
 
 /-- Typeclass for strict reverse monotonicity of addition on the right,
@@ -221,7 +232,8 @@ namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
+@[reducible, inline]
+def AddRightReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftReflectLT MulRightReflectLT

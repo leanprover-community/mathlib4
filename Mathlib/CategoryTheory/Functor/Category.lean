@@ -225,7 +225,8 @@ end Iso
 
 /-- The natural transformation `G.flip.obj Y ⟶ G'.flip.obj Y` induced by
 a natural transformation `τ : G ⟶ G'` between bifunctors. -/
-abbrev NatTrans.flipApp {G G' : C ⥤ D ⥤ E} (τ : G ⟶ G') (Y : D) :
+@[reducible, inline]
+def NatTrans.flipApp {G G' : C ⥤ D ⥤ E} (τ : G ⟶ G') (Y : D) :
     G.flip.obj Y ⟶ G'.flip.obj Y :=
   ((flipFunctor _ _ _).map τ).app Y
 

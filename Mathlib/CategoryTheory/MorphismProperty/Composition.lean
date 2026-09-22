@@ -29,7 +29,8 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 variable (C) in
 /-- The property of morphisms that is satisfied by `𝟙 X` for any `X`. -/
-abbrev identities : MorphismProperty C :=
+@[reducible, inline]
+def identities : MorphismProperty C :=
   .ofHoms fun X ↦ 𝟙 X
 
 lemma identities_op_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :

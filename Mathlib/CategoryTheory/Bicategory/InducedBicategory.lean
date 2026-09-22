@@ -62,7 +62,8 @@ instance categoryStruct : CategoryStruct (InducedBicategory C F) where
   comp u v := ⟨u.hom ≫ v.hom⟩
 
 /-- Synonym for `Hom.mk` which makes unification easier. -/
-abbrev mkHom {X Y : InducedBicategory C F} (f : F X ⟶ F Y) : X ⟶ Y :=
+@[reducible, inline]
+def mkHom {X Y : InducedBicategory C F} (f : F X ⟶ F Y) : X ⟶ Y :=
   ⟨f⟩
 
 @[ext]
@@ -91,7 +92,8 @@ lemma hom₂_ext {X Y : InducedBicategory C F} {f g : X ⟶ Y} {η θ : f ⟶ g}
 
 /-- Synonym for the constructor of `Hom₂` where the 1-morphisms `f` and `g` lie in `C`, and not
 given in the form `f'.hom`, `g'.hom` for some `f' g' : InducedBicategory.Hom _ _`. -/
-abbrev mkHom₂ {a b : InducedBicategory C F} {f g : F a ⟶ F b} (η : f ⟶ g) : mkHom f ⟶ mkHom g :=
+@[reducible, inline]
+def mkHom₂ {a b : InducedBicategory C F} {f g : F a ⟶ F b} (η : f ⟶ g) : mkHom f ⟶ mkHom g :=
   Hom₂.mk η
 
 /-- Constructor for 2-isomorphisms in the induced bicategory. -/

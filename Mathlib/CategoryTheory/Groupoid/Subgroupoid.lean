@@ -531,7 +531,8 @@ section Thin
 
 /-- A subgroupoid is thin (`CategoryTheory.Subgroupoid.IsThin`) if it has at most one arrow between
 any two vertices. -/
-abbrev IsThin :=
+@[reducible, inline]
+def IsThin :=
   Quiver.IsThin S.objs
 
 nonrec theorem isThin_iff : S.IsThin ↔ ∀ c : S.objs, Subsingleton (S.arrows c c) := isThin_iff _

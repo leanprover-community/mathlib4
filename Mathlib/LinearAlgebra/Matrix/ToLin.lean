@@ -160,7 +160,8 @@ variable {l m n : Type*}
 /-- `Matrix.vecMul M` is a linear map.
 
 Note this is a special case of `Matrix.vecMulBilin`. -/
-abbrev Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R :=
+@[reducible, inline]
+def Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R :=
   Matrix.vecMulBilin R Rᵐᵒᵖ |>.flip M
 
 @[simp] theorem Matrix.vecMulLinear_apply [Fintype m] (M : Matrix m n R) (x : m → R) :
@@ -218,7 +219,8 @@ def LinearMap.toMatrixRight' [DecidableEq m] : ((m → R) →ₗ[R] n → R) ≃
 
 /-- A `Matrix m n R` is linearly equivalent over `Rᵐᵒᵖ` to a linear map `(m → R) →ₗ[R] (n → R)`,
 by having matrices act by right multiplication. -/
-abbrev Matrix.toLinearMapRight' [DecidableEq m] : Matrix m n R ≃ₗ[Rᵐᵒᵖ] (m → R) →ₗ[R] n → R :=
+@[reducible, inline]
+def Matrix.toLinearMapRight' [DecidableEq m] : Matrix m n R ≃ₗ[Rᵐᵒᵖ] (m → R) →ₗ[R] n → R :=
   LinearEquiv.symm LinearMap.toMatrixRight'
 
 variable [DecidableEq m]
@@ -283,7 +285,8 @@ variable {k l m n : Type*}
 /-- `Matrix.mulVec M` as a linear map.
 
 Note this is a special case of `Matrix.mulVecBilin`. -/
-abbrev Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R := mulVecBilin R R M
+@[reducible, inline]
+def Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R := mulVecBilin R R M
 
 theorem Matrix.coe_mulVecLin [Fintype n] (M : Matrix m n R) :
     (M.mulVecLin : _ → _) = M.mulVec := rfl
@@ -1097,9 +1100,9 @@ If `M` is a module with basis `b` indexed by a finite type `ι`,
 then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
-@[simps! -isSimp repr_apply repr_symm_apply]
+@[reducible, inline, simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
-abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
+def «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b
 
 lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) :=

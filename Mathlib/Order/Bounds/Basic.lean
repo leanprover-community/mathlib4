@@ -91,9 +91,9 @@ theorem IsLUB.dual (h : IsLUB s a) : IsGLB (ofDual ⁻¹' s) (toDual a) :=
   h
 
 /-- If `a` is the least element of a set `s`, then subtype `s` is an order with bottom element. -/
-@[to_dual
+@[to_dual (attr := reducible, inline)
 /-- If `a` is the greatest element of a set `s`, then subtype `s` is an order with top element. -/]
-abbrev IsLeast.orderBot (h : IsLeast s a) :
+def IsLeast.orderBot (h : IsLeast s a) :
     OrderBot s where
   bot := ⟨a, h.1⟩
   bot_le := Subtype.forall.2 h.2

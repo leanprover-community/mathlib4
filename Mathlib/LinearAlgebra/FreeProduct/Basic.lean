@@ -80,11 +80,13 @@ instance : Module R (⨁ i, A i) := by infer_instance
 
 /-- The free tensor algebra over a direct sum of `R`-algebras, before
 taking the quotient by the free product relation -/
-abbrev FreeTensorAlgebra := TensorAlgebra R (⨁ i, A i)
+@[reducible, inline]
+def FreeTensorAlgebra := TensorAlgebra R (⨁ i, A i)
 
 /-- The direct sum of tensor powers of a direct sum of `R`-algebras,
 before taking the quotient by the free product relation -/
-abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
+@[reducible, inline]
+def PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
 
 /-- The free tensor algebra and its representation as an infinite direct sum
 of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
@@ -144,7 +146,8 @@ instance instAlgebra : Algebra R (FreeProduct R A) := by infer_instance
 
 /-- The canonical quotient map `FreeTensorAlgebra R A →ₐ[R] FreeProduct R A`,
 as an `R`-algebra homomorphism -/
-abbrev mkAlgHom : FreeTensorAlgebra R A →ₐ[R] FreeProduct R A :=
+@[reducible, inline]
+def mkAlgHom : FreeTensorAlgebra R A →ₐ[R] FreeProduct R A :=
   RingCon.mkₐ _ _
 
 /-- The canonical linear map from the direct sum of the `A i` to the free product -/
@@ -172,7 +175,8 @@ theorem mul_injections (a₁ a₂ : A i) :
 
 /-- The `i`th canonical injection, from `A i` to the free product, as
 a linear map -/
-abbrev lof (i : I) : A i →ₗ[R] FreeProduct R A :=
+@[reducible, inline]
+def lof (i : I) : A i →ₗ[R] FreeProduct R A :=
   ι' R A ∘ₗ DirectSum.lof R I A i
 
 /-- `lof R A i 1 = 1` for all `i`. -/

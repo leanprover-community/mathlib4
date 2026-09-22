@@ -36,7 +36,8 @@ variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 open TensorProduct MulOpposite
 
 /-- `A` as a `A ⊗[R] Aᵐᵒᵖ`-module (or equivalently, an `A`-`A` bimodule). -/
-abbrev instModuleTensorProductMop : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
+@[reducible, inline]
+def instModuleTensorProductMop : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
 
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
   `a ⊗ b` maps to `f : x ↦ a * x * b`. -/

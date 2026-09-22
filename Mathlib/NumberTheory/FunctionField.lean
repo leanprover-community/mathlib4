@@ -55,7 +55,8 @@ extension of the field of rational functions in one variable over `F`.
 
 Note that `K` can be a function field over multiple, non-isomorphic, `F`.
 -/
-abbrev FunctionField [Algebra F⟮X⟯ K] : Prop :=
+@[reducible, inline]
+def FunctionField [Algebra F⟮X⟯ K] : Prop :=
   FiniteDimensional F⟮X⟯ K
 
 /-- `K` is a function field over `F` iff it is a finite extension of `F(t)`. -/

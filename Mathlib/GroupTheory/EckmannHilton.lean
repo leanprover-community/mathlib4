@@ -82,12 +82,14 @@ In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoi
 theorem mul_assoc : Std.Associative m₂ :=
   ⟨fun a b c => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
 
+@[expose] section
+
 /-- If a type carries a unital magma structure that distributes over a unital binary
 operation, then the magma structure is a commutative monoid. -/
-@[to_additive
+@[to_additive (attr := reducible, inline)
       /-- If a type carries a unital additive magma structure that distributes over a unital binary
       operation, then the additive magma structure is a commutative additive monoid. -/]
-abbrev commMonoid [h : MulOneClass X]
+def commMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
   { h with
       mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
@@ -95,11 +97,13 @@ abbrev commMonoid [h : MulOneClass X]
 
 /-- If a type carries a group structure that distributes over a unital binary operation,
 then the group is commutative. -/
-@[to_additive
+@[to_additive (attr := reducible, inline)
       /-- If a type carries an additive group structure that distributes over a unital binary
       operation, then the additive group is commutative. -/]
-abbrev commGroup [G : Group X]
+def commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
   { G, EckmannHilton.commMonoid h₁ distrib with .. }
+
+end
 
 end EckmannHilton

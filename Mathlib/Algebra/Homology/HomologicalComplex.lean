@@ -148,13 +148,15 @@ end HomologicalComplex
 /-- An `α`-indexed chain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `j + 1 = i`.
 -/
-abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
+@[reducible, inline]
+def ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.down α)
 
 /-- An `α`-indexed cochain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `i + 1 = j`.
 -/
-abbrev CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
+@[reducible, inline]
+def CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.up α)
 
 namespace ChainComplex
@@ -405,7 +407,8 @@ theorem image_eq_image [HasImages V] [HasEqualizers V] {i i' j : ι} (r : c.Rel 
 section
 
 /-- Either `C.X i`, if there is some `i` with `c.Rel i j`, or `C.X j`. -/
-abbrev xPrev (j : ι) : V :=
+@[reducible, inline]
+def xPrev (j : ι) : V :=
   C.X (c.prev j)
 
 /-- If `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X i`. -/
@@ -424,7 +427,8 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
         rw [this] at h; contradiction)
 
 /-- Either `C.X j`, if there is some `j` with `c.rel i j`, or `C.X i`. -/
-abbrev xNext (i : ι) : V :=
+@[reducible, inline]
+def xNext (i : ι) : V :=
   C.X (c.next i)
 
 /-- If `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X j`. -/
@@ -443,12 +447,14 @@ def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
 
 /-- The differential mapping into `C.X j`, or zero if there isn't one.
 -/
-abbrev dTo (j : ι) : C.xPrev j ⟶ C.X j :=
+@[reducible, inline]
+def dTo (j : ι) : C.xPrev j ⟶ C.X j :=
   C.d (c.prev j) j
 
 /-- The differential mapping out of `C.X i`, or zero if there isn't one.
 -/
-abbrev dFrom (i : ι) : C.X i ⟶ C.xNext i :=
+@[reducible, inline]
+def dFrom (i : ι) : C.X i ⟶ C.xNext i :=
   C.d i (c.next i)
 
 theorem dTo_eq {i j : ι} (r : c.Rel i j) : C.dTo j = (C.xPrevIso r).hom ≫ C.d i j := by
@@ -544,7 +550,8 @@ theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : Is
 
 
 /-- `f.prev j` is `f.f i` if there is some `r i j`, and `f.f j` otherwise. -/
-abbrev prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
+@[reducible, inline]
+def prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
   f.f _
 
 theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
@@ -553,7 +560,8 @@ theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   simp only [xPrevIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 
 /-- `f.next i` is `f.f j` if there is some `r i j`, and `f.f j` otherwise. -/
-abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
+@[reducible, inline]
+def next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
   f.f _
 
 theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
@@ -642,7 +650,8 @@ def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i �
 
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
-abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
+@[reducible, inline]
+def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     ChainComplex V α :=
   { X := X
     d := of.d X d
@@ -676,7 +685,8 @@ variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n +
 /-- A constructor for chain maps between `α`-indexed chain complexes built using `ChainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
-abbrev ofHom {X Y : ChainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
+@[reducible, inline]
+def ofHom {X Y : ChainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
     (comm : ∀ i : α, f (i + 1) ≫ Y.d (i + 1) i = X.d (i + 1) i ≫ f i) :
     X ⟶ Y where
   f := f
@@ -902,7 +912,8 @@ def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i �
 
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
-abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
+@[reducible, inline]
+def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
     CochainComplex V α :=
   { X := X
     d := of.d X d
@@ -939,7 +950,8 @@ variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n �
 A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
-abbrev ofHom {X Y : CochainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
+@[reducible, inline]
+def ofHom {X Y : CochainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
     (comm : ∀ i : α, f i ≫ Y.d i (i + 1) = X.d i (i + 1) ≫ f (i + 1)) :
     X ⟶ Y where
   f := f

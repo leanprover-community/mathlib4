@@ -55,7 +55,8 @@ instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
 variable (X : Type w) [TopologicalSpace X] [UCompactlyGeneratedSpace.{u} X]
 
 /-- Constructor for objects of the category `CompactlyGenerated`. -/
-abbrev of : CompactlyGenerated.{u, w} where
+@[reducible, inline]
+def of : CompactlyGenerated.{u, w} where
   toTop := ↧X
   is_compactly_generated := ‹_›
 
@@ -69,7 +70,8 @@ section
 variable {X} {Y : Type w} [TopologicalSpace Y] [UCompactlyGeneratedSpace.{u} Y]
 
 /-- Typecheck a `ContinuousMap` as a morphism in `CompactlyGenerated`. -/
-abbrev ofHom (f : C(X, Y)) : of X ⟶ of Y := ConcreteCategory.ofHom f
+@[reducible, inline]
+def ofHom (f : C(X, Y)) : of X ⟶ of Y := ConcreteCategory.ofHom f
 
 end
 

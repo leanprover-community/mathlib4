@@ -368,7 +368,8 @@ variable (𝕜 E)
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
 metric bornology. -/
-abbrev vonNBornology : Bornology E :=
+@[reducible, inline]
+def vonNBornology : Bornology E :=
   Bornology.ofBounded (Set.ofPred (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
     (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) isVonNBounded_singleton
 

@@ -42,7 +42,8 @@ instance : CoeSort DistLat.{u} (Type u) :=
 attribute [coe] DistLat.carrier
 
 /-- Construct a bundled `DistLat` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [DistribLattice X] : DistLat := ⟨X⟩
+@[reducible, inline]
+def of (X : Type*) [DistribLattice X] : DistLat := ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
 /-- This prints `DistLat.of X` as `↧X`. -/
@@ -66,11 +67,13 @@ instance : ConcreteCategory DistLat (LatticeHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `DistLat` back into a `LatticeHom`. -/
-abbrev Hom.hom {X Y : DistLat.{u}} (f : Hom X Y) :=
+@[reducible, inline]
+def Hom.hom {X Y : DistLat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := DistLat) f
 
 /-- Typecheck a `LatticeHom` as a morphism in `DistLat`. -/
-abbrev ofHom {X Y : Type u} [DistribLattice X] [DistribLattice Y] (f : LatticeHom X Y) :
+@[reducible, inline]
+def ofHom {X Y : Type u} [DistribLattice X] [DistribLattice Y] (f : LatticeHom X Y) :
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := DistLat) f
 

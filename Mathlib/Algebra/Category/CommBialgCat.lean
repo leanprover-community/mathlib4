@@ -51,7 +51,8 @@ variable (R) in
 /-- Turn an unbundled `R`-bialgebra into the corresponding object in the category of `R`-bialgebras.
 
 This is the preferred way to construct a term of `CommBialgCat R`. -/
-abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
+@[reducible, inline]
+def of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
 /-- This prints `CommBialgCat.of R X` as `↧X`. -/
@@ -78,10 +79,12 @@ instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommBialgCat` back into a `BialgHom`. -/
-abbrev Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f
+@[reducible, inline]
+def Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `CommBialgCat R`. -/
-abbrev ofHom {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
+@[reducible, inline]
+def ofHom {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
     {_ : Bialgebra R Y} (f : X →ₐc[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := CommBialgCat R) f
 

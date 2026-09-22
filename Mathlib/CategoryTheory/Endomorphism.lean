@@ -49,11 +49,13 @@ protected instance mul : Mul (End X) := ⟨fun x y => y ≫ x⟩
 variable {X}
 
 /-- Assist the typechecker by expressing a morphism `X ⟶ X` as a term of `CategoryTheory.End X`. -/
-abbrev of (f : X ⟶ X) : End X := f
+@[reducible, inline]
+def of (f : X ⟶ X) : End X := f
 
 /-- Assist the typechecker by expressing an endomorphism `f : CategoryTheory.End X` as a term of
 `X ⟶ X`. -/
-abbrev asHom (f : End X) : X ⟶ X := f
+@[reducible, inline]
+def asHom (f : End X) : X ⟶ X := f
 
 -- TODO: to fix defeq abuse, this should be `(1 : End x) = of (𝟙 X)`.
 -- But that would require many more extra simp lemmas to get rid of the `of`.

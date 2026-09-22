@@ -564,7 +564,8 @@ theorem LinearMap.coe_equivOfIsUnitDet
 
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
-abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M]
+@[reducible, inline]
+def LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M]
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
   have : IsUnit (LinearMap.toMatrix (Module.finBasis 𝕜 M)
       (Module.finBasis 𝕜 M) f).det := by

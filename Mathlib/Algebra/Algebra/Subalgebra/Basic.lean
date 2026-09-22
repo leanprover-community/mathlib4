@@ -579,7 +579,8 @@ theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀
 /-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
+@[reducible, inline]
+def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 
 theorem val_comp_rangeRestrict :

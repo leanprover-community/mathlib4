@@ -77,7 +77,8 @@ def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 variable (K) in
 /-- The `logSpace` is defined as `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is the
 distinguished infinite place. -/
-abbrev logSpace := {w : InfinitePlace K // w ≠ w₀} → ℝ
+@[reducible, inline]
+def logSpace := {w : InfinitePlace K // w ≠ w₀} → ℝ
 
 variable (K) in
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/

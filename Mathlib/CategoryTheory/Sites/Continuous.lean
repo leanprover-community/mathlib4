@@ -188,7 +188,8 @@ variable (F F' : C ⥤ D) (τ : F ⟶ F') (e : F ≅ F') (G : D ⥤ E)
 
 /-- The condition that a functor `F : C ⥤ D` sends 1-hypercovers for
 `J : GrothendieckTopology C` to 1-hypercovers for `K : GrothendieckTopology D`. -/
-abbrev PreservesOneHypercovers :=
+@[reducible, inline]
+def PreservesOneHypercovers :=
   ∀ {X : C} (E : GrothendieckTopology.OneHypercover.{w} J X), E.IsPreservedBy F K
 
 /-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of

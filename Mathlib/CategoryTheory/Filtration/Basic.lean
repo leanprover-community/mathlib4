@@ -49,12 +49,13 @@ namespace Filtration
 variable {X : C} {I : Type*} [Category I]
 
 /-- The underlying diagram in `C` obtained by forgetting `MonoOver`. -/
-@[simps! -isSimp]
-abbrev diagram (F : Filtration X I) : I ⥤ C :=
+@[reducible, inline, simps! -isSimp]
+def diagram (F : Filtration X I) : I ⥤ C :=
   F.toMonoOver ⋙ MonoOver.forget _ ⋙ Over.forget _
 
 /-- The object at index `i` (domain of the mono into `X`). -/
-abbrev obj (F : Filtration X I) (i : I) : C :=
+@[reducible, inline]
+def obj (F : Filtration X I) (i : I) : C :=
   F.diagram.obj i
 
 /-- The natural transformation from the filtration diagram to the constant underlying object. -/
@@ -80,7 +81,8 @@ namespace FilteredObject
 variable {I : Type*} [Category I]
 
 /-- The filtration diagram in `C`. -/
-abbrev filtrationDiagram (F : FilteredObject C I) : I ⥤ C :=
+@[reducible, inline]
+def filtrationDiagram (F : FilteredObject C I) : I ⥤ C :=
   F.filtration.diagram
 
 /-- Morphisms of filtered objects: a morphism on objects and a compatible natural transformation
@@ -156,7 +158,8 @@ instance {F G H : FilteredObject C I} (f : F ⟶ G) (g : G ⟶ H)
 
 variable (C I) in
 /-- The morphism property of strict morphisms of filtered objects. -/
-abbrev isStrictHom : MorphismProperty (FilteredObject C I) :=
+@[reducible, inline]
+def isStrictHom : MorphismProperty (FilteredObject C I) :=
   fun _ _ f ↦ IsStrictHom f
 
 instance : (isStrictHom C I).IsMultiplicative where

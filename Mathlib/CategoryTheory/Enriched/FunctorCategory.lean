@@ -51,7 +51,8 @@ the `V`-morphisms in `J ⥤ V` from `F₁` to `F₂`. -/
 def diagram : Jᵒᵖ ⥤ J ⥤ V := F₁.op ⋙ eHomFunctor V C ⋙ (whiskeringLeft J C V).obj F₂
 
 /-- The condition that the end `diagram V F₁ F₂` exists, see `enrichedHom`. -/
-abbrev HasEnrichedHom := HasEnd (diagram V F₁ F₂)
+@[reducible, inline]
+def HasEnrichedHom := HasEnd (diagram V F₁ F₂)
 
 section
 
@@ -292,7 +293,8 @@ section
 
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,
 this condition allows the definition of `functorEnrichedHom V F₁ F₂ : J ⥤ V`. -/
-abbrev HasFunctorEnrichedHom :=
+@[reducible, inline]
+def HasFunctorEnrichedHom :=
   ∀ (j : J), HasEnrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
 
 variable [HasFunctorEnrichedHom V F₁ F₂]

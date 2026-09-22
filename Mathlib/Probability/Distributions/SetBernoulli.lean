@@ -165,7 +165,8 @@ end Countable
 variable (X u p P) in
 /-- A random variable `X : Ω → Set ι` is `p`-bernoulli on a set `u : Set ι` if its distribution is
 the product over `u` of `p`-bernoulli distributions. -/
-abbrev IsSetBernoulli : Prop := HasLaw X setBer(u, p) P
+@[reducible, inline]
+def IsSetBernoulli : Prop := HasLaw X setBer(u, p) P
 
 lemma isSetBernoulli_congr (hXY : X =ᵐ[P] Y) : IsSetBernoulli X u p P ↔ IsSetBernoulli Y u p P :=
   hasLaw_congr hXY

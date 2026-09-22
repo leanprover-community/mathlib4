@@ -421,7 +421,8 @@ lemma isNilpotent_restrict_genEigenspace_top [IsNoetherian R M] (f : End R M) (�
 
 /-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
 such that `f x = μ • x`. (Def 5.52 of [axler2024]). -/
-abbrev eigenspace (f : End R M) (μ : R) : Submodule R M :=
+@[reducible, inline]
+def eigenspace (f : End R M) (μ : R) : Submodule R M :=
   f.genEigenspace μ 1
 
 lemma eigenspace_def {f : End R M} {μ : R} :
@@ -433,7 +434,8 @@ theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
   simp only [eigenspace, ← Nat.cast_one (R := ℕ∞), genEigenspace_zero_nat, pow_one]
 
 /-- A nonzero element of an eigenspace is an eigenvector. (Def 5.8 of [axler2024]) -/
-abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
+@[reducible, inline]
+def HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
   HasUnifEigenvector f μ 1 x
 
 lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
@@ -441,18 +443,20 @@ lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
 
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
 such that `f x = μ • x`. (Def 5.5 of [axler2024]). -/
-abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
+@[reducible, inline]
+def HasEigenvalue (f : End R M) (a : R) : Prop :=
   HasUnifEigenvalue f a 1
 
 lemma hasEigenvalue_iff {f : End R M} {μ : R} :
     f.HasEigenvalue μ ↔ f.eigenspace μ ≠ ⊥ := Iff.rfl
 
 /-- The eigenvalues of the endomorphism `f`, as a subtype of `R`. -/
-abbrev Eigenvalues (f : End R M) : Type _ :=
+@[reducible, inline]
+def Eigenvalues (f : End R M) : Type _ :=
   UnifEigenvalues f 1
 
-@[coe]
-abbrev Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := UnifEigenvalues.val f 1
+@[reducible, inline, coe]
+def Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := UnifEigenvalues.val f 1
 
 @[simp]
 lemma Eigenvalues.val_mk {f : End R M} {μ : R} (h : f.HasEigenvalue μ) :
@@ -535,7 +539,8 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
 (Def 8.8 of [axler2024]) -/
-abbrev HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
+@[reducible, inline]
+def HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   HasUnifEigenvector f μ k x
 
 lemma hasGenEigenvector_iff {f : End R M} {μ : R} {k : ℕ} {x : M} :
@@ -543,7 +548,8 @@ lemma hasGenEigenvector_iff {f : End R M} {μ : R} {k : ℕ} {x : M} :
 
 /-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
 are generalized eigenvectors for `f`, `k`, and `μ`. -/
-abbrev HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
+@[reducible, inline]
+def HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
   HasUnifEigenvalue f μ k
 
 lemma hasGenEigenvalue_iff {f : End R M} {μ : R} {k : ℕ} :
@@ -555,7 +561,8 @@ theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
   HasUnifEigenvalue.exp_ne_zero h
 
 /-- The union of the kernels of `(f - μ • id) ^ k` over all `k`. -/
-abbrev maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
+@[reducible, inline]
+def maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
   genEigenspace f μ ⊤
 
 lemma iSup_genEigenspace_eq (f : End R M) (μ : R) :

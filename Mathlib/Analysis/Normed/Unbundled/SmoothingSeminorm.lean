@@ -56,7 +56,8 @@ variable {R : Type*} [CommRing R] (μ : RingSeminorm R)
 section smoothingSeminorm
 
 /-- The `ℝ`-valued sequence sending `n` to `(μ (x ^ n))^(1/n : ℝ)`. -/
-abbrev smoothingSeminormSeq (x : R) : ℕ → ℝ := fun n => μ (x ^ n) ^ (1 / n : ℝ)
+@[reducible, inline]
+def smoothingSeminormSeq (x : R) : ℕ → ℝ := fun n => μ (x ^ n) ^ (1 / n : ℝ)
 
 /-- For any positive `ε`, there exists a positive natural number `m` such that
   `μ (x ^ (m : ℕ)) ^ (1 / m : ℝ) < iInf (fun (n : PNat), (μ(x ^(n : ℕ)))^(1/(n : ℝ))) + ε/2`. -/
@@ -97,7 +98,8 @@ theorem smoothingSeminormSeq_bddBelow (x : R) :
   ⟨0, zero_mem_lowerBounds_smoothingSeminormSeq_range μ x⟩
 
 /-- The iInf of the sequence `n ↦ μ(x ^ (n : ℕ)))^(1 / (n : ℝ)`. -/
-abbrev smoothingFun (x : R) : ℝ :=
+@[reducible, inline]
+def smoothingFun (x : R) : ℝ :=
   iInf fun n : PNat => μ (x ^ (n : ℕ)) ^ (1 / (n : ℝ))
 
 /-- If `μ x = 0`, then `smoothingFun μ x` is the limit of `smoothingSeminormSeq μ x`. -/

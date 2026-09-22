@@ -50,7 +50,8 @@ class HasPointwiseRightDerivedFunctorAt (X : C) : Prop where
 /-- A functor `F : C ⥤ H` has a pointwise right derived functor with respect to
 `W : MorphismProperty C` if it has a pointwise right derived functor at `X`
 for any `X : C`. -/
-abbrev HasPointwiseRightDerivedFunctor := ∀ (X : C), F.HasPointwiseRightDerivedFunctorAt W X
+@[reducible, inline]
+def HasPointwiseRightDerivedFunctor := ∀ (X : C), F.HasPointwiseRightDerivedFunctorAt W X
 
 lemma hasPointwiseRightDerivedFunctorAt_iff [L.IsLocalization W] (X : C) :
     F.HasPointwiseRightDerivedFunctorAt W X ↔

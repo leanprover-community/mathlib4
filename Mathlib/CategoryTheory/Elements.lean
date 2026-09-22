@@ -59,7 +59,8 @@ variable {F : C ⥤ Type w}
 
 variable (F) in
 /-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
-abbrev Functor.elementsMk (X : C) (x : F.obj X) : F.Elements := .mk x
+@[reducible, inline]
+def Functor.elementsMk (X : C) (x : F.obj X) : F.Elements := .mk x
 
 namespace Functor.Elements
 
@@ -125,7 +126,8 @@ def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
 namespace Functor.Elements
 
 /-- Constructor for morphisms in the category of elements of a functor to types. -/
-abbrev homMk {x y : F.Elements} (f : x.obj ⟶ y.obj)
+@[reducible, inline]
+def homMk {x y : F.Elements} (f : x.obj ⟶ y.obj)
     (hf : F.map f x.val = y.val := by cat_disch) : x ⟶ y := .mk f hf
 
 @[ext]
@@ -277,7 +279,8 @@ noncomputable def costructuredArrowShrinkYonedaEquivalenceFunctorCompProjIso
   Iso.refl _
 
 /-- The initial object in `F.Elements` if `F` is representable. -/
-abbrev initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
+@[reducible, inline]
+def initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
     F.Elements :=
   .mk (h.homEquiv (𝟙 X))
 
@@ -289,7 +292,8 @@ def isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.Representa
     (fun _ m ↦ by ext; simp [← m.map_val, ← h.homEquiv_unop_comp])
 
 /-- The initial object in `F.Elements` if `F` is corepresentable. -/
-abbrev initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
+@[reducible, inline]
+def initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
     F.Elements :=
   .mk (h.homEquiv (𝟙 X))
 
@@ -304,7 +308,8 @@ def isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.Corepresentabl
 The initial object in the category of elements for a representable functor. In `isInitial` it is
 shown that this is initial.
 -/
-abbrev initialYonedaObj (A : C) : (yoneda.obj A).Elements :=
+@[reducible, inline]
+def initialYonedaObj (A : C) : (yoneda.obj A).Elements :=
   .mk (𝟙 A)
 
 /-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.

@@ -380,7 +380,8 @@ end FiniteAt
 section LocallyFinite
 
 /-- A graph is locally finite if every vertex has a finite neighbor set. -/
-abbrev LocallyFinite :=
+@[reducible, inline]
+def LocallyFinite :=
   ∀ v : V, Fintype (G.neighborSet v)
 
 variable [LocallyFinite G]
@@ -412,8 +413,8 @@ section Finite
 variable [Fintype V]
 
 /-- `Fintype` for `neighborSet` -/
-@[deprecated inferInstance +typeChanged (since := "2026-04-29")]
-abbrev neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
+@[reducible, inline, deprecated inferInstance +typeChanged (since := "2026-04-29")]
+def neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
   inferInstance
 
 theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :

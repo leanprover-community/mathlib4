@@ -748,7 +748,8 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L'
 
 /-- We say a Lie ring is nilpotent when it is nilpotent as a Lie module over itself via the
 adjoint representation. -/
-abbrev LieRing.IsNilpotent (L : Type v) [LieRing L] : Prop :=
+@[reducible, inline]
+def LieRing.IsNilpotent (L : Type v) [LieRing L] : Prop :=
   LieModule.IsNilpotent L L
 
 open LieRing

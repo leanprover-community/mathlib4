@@ -109,7 +109,8 @@ def subtypeSum {α β} {p : α ⊕ β → Prop} :
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
-abbrev sumCongr {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (α ⊕ β) :=
+@[reducible, inline]
+def sumCongr {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (α ⊕ β) :=
   Equiv.sumCongr ea eb
 
 @[simp]

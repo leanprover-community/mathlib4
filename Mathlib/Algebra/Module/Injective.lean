@@ -219,7 +219,8 @@ theorem extensionOfMax_is_max :
 
 -- Auxiliary definition: Lean looks for an instance of `Max (Type u)` if we would write
 -- `(x : (extensionOfMax i f).domain ⊔ (Submodule.span R {y}))`, so we encapsulate the cast instead.
-abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
+@[reducible, inline]
+def supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 
 variable {f}

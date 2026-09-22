@@ -64,11 +64,13 @@ variable {C : Type u} [Category.{v} C]
 variable [HasZeroMorphisms C]
 
 /-- A morphism `f` has a kernel if the functor `ParallelPair f 0` has a limit. -/
-abbrev HasKernel {X Y : C} (f : X ⟶ Y) : Prop :=
+@[reducible, inline]
+def HasKernel {X Y : C} (f : X ⟶ Y) : Prop :=
   HasLimit (parallelPair f 0)
 
 /-- A morphism `f` has a cokernel if the functor `ParallelPair f 0` has a colimit. -/
-abbrev HasCokernel {X Y : C} (f : X ⟶ Y) : Prop :=
+@[reducible, inline]
+def HasCokernel {X Y : C} (f : X ⟶ Y) : Prop :=
   HasColimit (parallelPair f 0)
 
 variable {X Y : C} (f : X ⟶ Y)
@@ -76,7 +78,8 @@ variable {X Y : C} (f : X ⟶ Y)
 section
 
 /-- A kernel fork is just a fork where the second morphism is a zero morphism. -/
-abbrev KernelFork :=
+@[reducible, inline]
+def KernelFork :=
   Fork f 0
 
 variable {f}
@@ -89,7 +92,8 @@ theorem KernelFork.app_one (s : KernelFork f) : s.π.app one = 0 := by
   simp
 
 /-- A morphism `ι` satisfying `ι ≫ f = 0` determines a kernel fork over `f`. -/
-abbrev KernelFork.ofι {Z : C} (ι : Z ⟶ X) (w : ι ≫ f = 0) : KernelFork f :=
+@[reducible, inline]
+def KernelFork.ofι {Z : C} (ι : Z ⟶ X) (w : ι ≫ f = 0) : KernelFork f :=
   Fork.ofι ι <| by rw [w, HasZeroMorphisms.comp_zero]
 
 @[simp]
@@ -269,11 +273,13 @@ section
 variable [HasKernel f]
 
 /-- The kernel of a morphism, expressed as the equalizer with the 0 morphism. -/
-abbrev kernel (f : X ⟶ Y) [HasKernel f] : C :=
+@[reducible, inline]
+def kernel (f : X ⟶ Y) [HasKernel f] : C :=
   equalizer f 0
 
 /-- The map from `kernel f` into the source of `f`. -/
-abbrev kernel.ι : kernel f ⟶ X :=
+@[reducible, inline]
+def kernel.ι : kernel f ⟶ X :=
   equalizer.ι f 0
 
 @[simp]
@@ -290,7 +296,8 @@ def kernelIsKernel : IsLimit (Fork.ofι (kernel.ι f) ((kernel.condition f).tran
 
 /-- Given any morphism `k : W ⟶ X` satisfying `k ≫ f = 0`, `k` factors through `kernel.ι f`
 via `kernel.lift : W ⟶ kernel f`. -/
-abbrev kernel.lift {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ kernel f :=
+@[reducible, inline]
+def kernel.lift {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ kernel f :=
   (kernelIsKernel f).lift (KernelFork.ofι k h)
 
 @[reassoc (attr := simp)]
@@ -313,7 +320,8 @@ def kernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : { l : W ⟶ kernel f 
   ⟨kernel.lift f k h, kernel.lift_ι _ _ _⟩
 
 /-- A commuting square induces a morphism of kernels. -/
-abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
+@[reducible, inline]
+def kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
     (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
 
@@ -578,7 +586,8 @@ end
 section
 
 /-- A cokernel cofork is just a cofork where the second morphism is a zero morphism. -/
-abbrev CokernelCofork :=
+@[reducible, inline]
+def CokernelCofork :=
   Cofork f 0
 
 variable {f}
@@ -591,7 +600,8 @@ theorem CokernelCofork.π_eq_zero (s : CokernelCofork f) : s.ι.app zero = 0 := 
   simp
 
 /-- A morphism `π` satisfying `f ≫ π = 0` determines a cokernel cofork on `f`. -/
-abbrev CokernelCofork.ofπ {Z : C} (π : Y ⟶ Z) (w : f ≫ π = 0) : CokernelCofork f :=
+@[reducible, inline]
+def CokernelCofork.ofπ {Z : C} (π : Y ⟶ Z) (w : f ≫ π = 0) : CokernelCofork f :=
   Cofork.ofπ π <| by rw [w, zero_comp]
 
 @[simp]
@@ -769,11 +779,13 @@ section
 variable [HasCokernel f]
 
 /-- The cokernel of a morphism, expressed as the coequalizer with the 0 morphism. -/
-abbrev cokernel : C :=
+@[reducible, inline]
+def cokernel : C :=
   coequalizer f 0
 
 /-- The map from the target of `f` to `cokernel f`. -/
-abbrev cokernel.π : Y ⟶ cokernel f :=
+@[reducible, inline]
+def cokernel.π : Y ⟶ cokernel f :=
   coequalizer.π f 0
 
 @[simp]
@@ -792,7 +804,8 @@ def cokernelIsCokernel :
 
 /-- Given any morphism `k : Y ⟶ W` such that `f ≫ k = 0`, `k` factors through `cokernel.π f`
 via `cokernel.desc : cokernel f ⟶ W`. -/
-abbrev cokernel.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) : cokernel f ⟶ W :=
+@[reducible, inline]
+def cokernel.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) : cokernel f ⟶ W :=
   (cokernelIsCokernel f).desc (CokernelCofork.ofπ k h)
 
 @[reassoc (attr := simp)]
@@ -825,7 +838,8 @@ def cokernel.desc' {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
   ⟨cokernel.desc f k h, cokernel.π_desc _ _ _⟩
 
 /-- A commuting square induces a morphism of cokernels. -/
-abbrev cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
+@[reducible, inline]
+def cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
     (w : f ≫ q = p ≫ f') : cokernel f ⟶ cokernel f' :=
   cokernel.desc f (q ≫ cokernel.π f') (by
     have : f ≫ q ≫ π f' = p ≫ f' ≫ π f' := by

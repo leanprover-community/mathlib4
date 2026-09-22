@@ -43,7 +43,8 @@ group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.le
 
 All definitions and lemmas for Weierstrass curves in Jacobian coordinates live in the namespace
 `WeierstrassCurve.Jacobian` to distinguish them from those in other coordinates. This is simply an
-abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toJacobian`. This
+@[reducible, inline]
+defiation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toJacobian`. This
 can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Jacobian.toAffine`.
 
 A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
@@ -108,17 +109,20 @@ namespace WeierstrassCurve
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
-abbrev Jacobian : Type r :=
+@[reducible, inline]
+def Jacobian : Type r :=
   WeierstrassCurve R
 
 /-- The conversion from a Weierstrass curve to Jacobian coordinates. -/
-abbrev toJacobian (W : WeierstrassCurve R) : Jacobian R :=
+@[reducible, inline]
+def toJacobian (W : WeierstrassCurve R) : Jacobian R :=
   W
 
 namespace Jacobian
 
 /-- The conversion from a Weierstrass curve in Jacobian coordinates to affine coordinates. -/
-abbrev toAffine (W' : Jacobian R) : Affine R :=
+@[reducible, inline]
+def toAffine (W' : Jacobian R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
@@ -159,7 +163,8 @@ scoped instance : Setoid <| Fin 3 → R :=
 
 variable (R) in
 /-- The equivalence class of a Jacobian point representative on a Weierstrass curve. -/
-abbrev PointClass : Type r :=
+@[reducible, inline]
+def PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 lemma smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
@@ -507,12 +512,14 @@ lemma nonsingularLift_some (a b : R) :
 variable (W') (f : R →+* S)
 
 /-- The Weierstrass curve in Jacobian coordinates mapped over a ring homomorphism `f : R →+* S`. -/
-abbrev map : Jacobian S :=
+@[reducible, inline]
+def map : Jacobian S :=
   WeierstrassCurve.map W' f
 
 variable (S) in
 /-- The Weierstrass curve in Jacobian coordinates base changed to an algebra `S` over `R`. -/
-abbrev baseChange [Algebra R S] : Jacobian S :=
+@[reducible, inline]
+def baseChange [Algebra R S] : Jacobian S :=
   WeierstrassCurve.baseChange W' S
 
 /-- The notation `\textf` for `WeierstrassCurve.Jacobian.baseChange W S`. -/

@@ -42,7 +42,8 @@ local instance : TopologicalSpace (X.obj.obj ⟨↧PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `CondensedSet ⥤ TopCat` -/
-abbrev CondensedSet.toTopCat : TopCat.{u + 1} := ↧(X.obj.obj ⟨of PUnit⟩)
+@[reducible, inline]
+def CondensedSet.toTopCat : TopCat.{u + 1} := ↧(X.obj.obj ⟨of PUnit⟩)
 
 namespace CondensedSet
 

@@ -220,7 +220,8 @@ This is isomorphic to a corresponding `completeMultipartiteGraph` and `turanGrap
 is that the former vertices are a product type.
 
 See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`. -/
-abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
+@[reducible, inline]
+def completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
   SimpleGraph.comap Prod.fst ⊤
 
 lemma completeEquipartiteGraph_adj {v w} :

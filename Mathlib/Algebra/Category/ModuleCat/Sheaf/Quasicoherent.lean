@@ -165,7 +165,8 @@ def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generator
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
+@[reducible, inline]
+def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
@@ -257,8 +258,8 @@ lemma QuasicoherentData.isQuasicoherent {M : SheafOfModules.{u} R} (q : M.Quasic
     M.IsQuasicoherent := ⟨⟨q.shrink⟩⟩
 
 variable (R) in
-@[inherit_doc IsQuasicoherent]
-abbrev isQuasicoherent : ObjectProperty (SheafOfModules.{u} R) :=
+@[reducible, inline, inherit_doc IsQuasicoherent]
+def isQuasicoherent : ObjectProperty (SheafOfModules.{u} R) :=
   IsQuasicoherent
 
 instance (M : (isQuasicoherent R).FullSubcategory) : M.obj.IsQuasicoherent :=
@@ -271,8 +272,8 @@ class IsFinitePresentation (M : SheafOfModules.{u} R) : Prop where
     ∃ (σ : QuasicoherentData.{u₁} M), σ.IsFinitePresentation
 
 variable (R) in
-@[inherit_doc IsFinitePresentation]
-abbrev isFinitePresentation : ObjectProperty (SheafOfModules.{u} R) :=
+@[reducible, inline, inherit_doc IsFinitePresentation]
+def isFinitePresentation : ObjectProperty (SheafOfModules.{u} R) :=
   IsFinitePresentation
 
 instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :

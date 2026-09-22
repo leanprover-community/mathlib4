@@ -29,7 +29,8 @@ ring aut
 variable (R : Type*) [Mul R] [Add R]
 
 /-- The group of ring automorphisms. -/
-abbrev RingAut := RingEquiv R R
+@[reducible, inline]
+def RingAut := RingEquiv R R
 
 namespace RingAut
 

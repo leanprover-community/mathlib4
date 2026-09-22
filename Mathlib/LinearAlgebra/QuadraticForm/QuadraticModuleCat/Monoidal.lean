@@ -42,14 +42,15 @@ open QuadraticMap QuadraticForm
 namespace instMonoidalCategory
 
 /-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`. -/
-@[simps! form]
-abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
+@[expose, reducible, inline, simps! form]
+def tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
   of (X.form.tmul Y.form)
 
 /-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`.
 
 We want this up front so that we can re-use it to define `whiskerLeft` and `whiskerRight`. -/
-abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
+@[expose, reducible, inline]
+def tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩
 

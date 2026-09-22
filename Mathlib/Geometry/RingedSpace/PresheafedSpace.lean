@@ -124,7 +124,8 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
 variable {C}
 
 /-- Cast `Hom X Y` as an arrow `X ⟶ Y` of presheaves. -/
-abbrev Hom.toPshHom {X Y : PresheafedSpace C} (f : Hom X Y) : X ⟶ Y := f
+@[reducible, inline]
+def Hom.toPshHom {X Y : PresheafedSpace C} (f : Hom X Y) : X ⟶ Y := f
 
 @[ext (iff := false)]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)

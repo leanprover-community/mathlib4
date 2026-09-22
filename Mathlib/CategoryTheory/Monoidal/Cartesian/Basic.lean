@@ -115,11 +115,13 @@ variable (𝒯 : LimitCone (Functor.empty.{0} C)) (ℬ : ∀ X Y : C, LimitCone 
 namespace ofChosenFiniteProducts
 
 /-- Implementation of the tensor product for `CartesianMonoidalCategory.ofChosenFiniteProducts`. -/
-abbrev tensorObj (X Y : C) : C := (ℬ X Y).cone.pt
+@[reducible, inline]
+def tensorObj (X Y : C) : C := (ℬ X Y).cone.pt
 
 /-- Implementation of the tensor product of morphisms for
 `CartesianMonoidalCategory.ofChosenFiniteProducts`. -/
-abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X₂ ⟶ tensorObj ℬ Y₁ Y₂ :=
+@[reducible, inline]
+def tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X₂ ⟶ tensorObj ℬ Y₁ Y₂ :=
   (BinaryFan.IsLimit.lift' (ℬ Y₁ Y₂).isLimit ((ℬ X₁ X₂).cone.π.app ⟨.left⟩ ≫ f)
       (((ℬ X₁ X₂).cone.π.app ⟨.right⟩ : (ℬ X₁ X₂).cone.pt ⟶ X₂) ≫ g)).val
 
@@ -181,7 +183,8 @@ open ofChosenFiniteProducts
 
 /-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
 over arbitrary pairs of objects. -/
-abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
+@[reducible, inline]
+def ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorUnit := 𝒯.cone.pt
     tensorObj := tensorObj ℬ
@@ -519,7 +522,8 @@ section terminalComparison
 
 /-- When `C` and `D` have chosen finite products and `F : C ⥤ D` is any functor,
 `terminalComparison F` is the unique map `F (𝟙_ C) ⟶ 𝟙_ D`. -/
-abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
+@[reducible, inline]
+def terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 
 @[reassoc]
 lemma map_toUnit_comp_terminalComparison (A : C) :

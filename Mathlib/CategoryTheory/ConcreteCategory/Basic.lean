@@ -80,15 +80,17 @@ variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 
 This is an `abbrev` so that instances on `X` (e.g. `Ring`) do not need to be redeclared.
 -/
-@[nolint unusedArguments] -- Need the instance to trigger unification that finds `CC`.
-abbrev ToType [ConcreteCategory C FC] := CC
+@[reducible, inline, nolint unusedArguments]
+-- Need the instance to trigger unification that finds `CC`.
+def ToType [ConcreteCategory C FC] := CC
 
 /-- `ToHom X Y` is the type of (bundled) functions between objects `X Y : C`.
 
 This is an `abbrev` so that instances (e.g. `RingHomClass`) do not need to be redeclared.
 -/
-@[nolint unusedArguments] -- Need the instance to trigger unification that finds `FC`.
-abbrev ToHom [ConcreteCategory C FC] := FC
+@[reducible, inline, nolint unusedArguments]
+-- Need the instance to trigger unification that finds `FC`.
+def ToHom [ConcreteCategory C FC] := FC
 
 variable [ConcreteCategory C FC]
 
@@ -101,8 +103,8 @@ instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
   coe f := hom f
 
 /-- A non-instance `FunLike` instance on `X ⟶ Y`. -/
-@[deprecated "No replacement" (since := "2026-04-23")]
-abbrev instFunLike {X Y : C} :
+@[reducible, inline, deprecated "No replacement" (since := "2026-04-23")]
+def instFunLike {X Y : C} :
     FunLike (X ⟶ Y) (ToType X) (ToType Y) where
   coe f := f
   coe_injective f g h := by

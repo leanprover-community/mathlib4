@@ -97,7 +97,8 @@ type of unordered pairs.
 It is equivalent in a natural way to multisets of cardinality 2 (see
 `Sym2.equivMultiset`).
 -/
-abbrev Sym2 (α : Type u) := Quot (Sym2.Rel α)
+@[reducible, inline]
+def Sym2 (α : Type u) := Quot (Sym2.Rel α)
 
 /-- Constructor for `Sym2`. This is the quotient map `α × α → Sym2 α`. -/
 protected abbrev Sym2.mk {α : Type*} (a b : α) : Sym2 α := Quot.mk (Sym2.Rel α) (a, b)

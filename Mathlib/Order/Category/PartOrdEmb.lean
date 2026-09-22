@@ -65,11 +65,13 @@ instance : ConcreteCategory PartOrdEmb (· ↪o ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `PartOrdEmb` back into a `OrderEmbedding`. -/
-abbrev Hom.hom {X Y : PartOrdEmb.{u}} (f : Hom X Y) :=
+@[reducible, inline]
+def Hom.hom {X Y : PartOrdEmb.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := PartOrdEmb) f
 
 /-- Typecheck a `OrderEmbedding` as a morphism in `PartOrdEmb`. -/
-abbrev ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X ↪o Y) : of X ⟶ of Y :=
+@[reducible, inline]
+def ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X ↪o Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := PartOrdEmb) f
 
 variable {R} in

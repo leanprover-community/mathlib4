@@ -48,7 +48,8 @@ variable (ι ι' : Type*)
 
 /-- An orientation of a module, intended to be used when `ι` is a `Fintype` with the same
 cardinality as a basis. -/
-abbrev Orientation := Module.Ray R (M [⋀^ι]→ₗ[R] R)
+@[reducible, inline]
+def Orientation := Module.Ray R (M [⋀^ι]→ₗ[R] R)
 
 /-- A type class fixing an orientation of a module. -/
 class Module.Oriented where

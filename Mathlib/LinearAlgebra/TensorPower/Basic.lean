@@ -16,7 +16,8 @@ We define the `n`th tensor power of `M` as the n-ary tensor product indexed by `
 `⨂[R] (i : Fin n), M`. This is a special case of `PiTensorProduct`.
 
 This file introduces the notation `⨂[R]^n M` for `TensorPower R n M`, which in turn is an
-abbreviation for `⨂[R] i : Fin n, M`.
+@[reducible, inline]
+defiation for `⨂[R] i : Fin n, M`.
 
 ## Main definitions:
 
@@ -35,7 +36,8 @@ open scoped TensorProduct
 
 /-- Homogeneous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
 `⨂[R] (i : Fin n), M`. -/
-abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
+@[reducible, inline]
+def TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=
   ⨂[R] _ : Fin n, M
 

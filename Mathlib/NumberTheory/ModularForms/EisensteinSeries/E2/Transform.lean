@@ -93,7 +93,8 @@ lemma δ_eventually_cofinite : δ =ᶠ[cofinite] 0 := by
   simp_all [δ]
 
 /-- This term gives an alternative infinite sum for G2 which is absolutely convergent. -/
-abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
+@[reducible, inline]
+def G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
     (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ m
 
 lemma G2Term_summable (z : ℍ) : Summable (G2Term z) := by

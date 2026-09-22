@@ -34,7 +34,8 @@ variable {α β : Type*}
 open Nat
 
 /-- `FiniteMultiplicity a b` indicates that the multiplicity of `a` in `b` is finite. -/
-abbrev FiniteMultiplicity [Monoid α] (a b : α) : Prop :=
+@[reducible, inline]
+def FiniteMultiplicity [Monoid α] (a b : α) : Prop :=
   ∃ n : ℕ, ¬a ^ (n + 1) ∣ b
 
 open scoped Classical in

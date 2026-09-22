@@ -123,13 +123,13 @@ open scoped IsMulCommutative in
 /-- If a subgroup of a topological group is commutative, then so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
+@[to_additive (attr := reducible, inline, deprecated Subgroup.isMulCommutative_topologicalClosure
   +typeChanged (since := "2026-07-29"))
   /-- If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 
 See note [reducible non-instances]. -/]
-abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
+def Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
     (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
   haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
   inferInstance

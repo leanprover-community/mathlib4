@@ -67,10 +67,12 @@ namespace Language
 variable (L : Language.{u, v})
 
 /-- A language is relational when it has no function symbols. -/
-abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
+@[reducible, inline]
+def IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 
 /-- A language is algebraic when it has no relation symbols. -/
-abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
+@[reducible, inline]
+def IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
 protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
@@ -88,7 +90,8 @@ protected abbrev Constants :=
   L.Functions 0
 
 /-- The type of symbols in a given language. -/
-abbrev Symbols :=
+@[reducible, inline]
+def Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
 /-- The cardinality of a language is the cardinality of its type of symbols. -/

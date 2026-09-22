@@ -34,11 +34,13 @@ def lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u} :=
   (coherentTopology LightProfinite).yoneda
 
 /-- Dot notation for the value of `lightProfiniteToLightCondSet`. -/
-abbrev LightProfinite.toCondensed (S : LightProfinite.{u}) : LightCondSet.{u} :=
+@[reducible, inline]
+def LightProfinite.toCondensed (S : LightProfinite.{u}) : LightCondSet.{u} :=
   lightProfiniteToLightCondSet.obj S
 
 /-- `lightProfiniteToLightCondSet` is fully faithful. -/
-abbrev lightProfiniteToLightCondSetFullyFaithful :
+@[reducible, inline]
+def lightProfiniteToLightCondSetFullyFaithful :
     lightProfiniteToLightCondSet.FullyFaithful :=
   (coherentTopology LightProfinite).yonedaFullyFaithful
 

@@ -70,7 +70,8 @@ deriving instance Precoverage.IsStableUnderBaseChange for precoverage
 
 /-- The Grothendieck topology on the category of topological spaces is the topology given by
 jointly surjective open embeddings. -/
-abbrev grothendieckTopology : GrothendieckTopology TopCat.{u} :=
+@[reducible, inline]
+def grothendieckTopology : GrothendieckTopology TopCat.{u} :=
   precoverage.toGrothendieck
 
 lemma exists_mem_zeroHypercover_range {X : TopCat.{u}} (E : precoverage.ZeroHypercover X) :

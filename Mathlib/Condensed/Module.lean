@@ -37,7 +37,8 @@ variable (R : Type (u + 1)) [Ring R]
 The category of condensed `R`-modules, defined as sheaves of `R`-modules over
 `CompHaus` with respect to the coherent Grothendieck topology.
 -/
-abbrev CondensedMod := Condensed.{u} (ModuleCat.{u + 1} R)
+@[reducible, inline]
+def CondensedMod := Condensed.{u} (ModuleCat.{u + 1} R)
 
 noncomputable instance : Abelian (CondensedMod.{u} R) := sheafIsAbelian
 
@@ -58,12 +59,14 @@ def Condensed.freeForgetAdjunction : free R ⊣ forget R := Sheaf.adjunction _ (
 /--
 The category of condensed abelian groups is defined as condensed `ℤ`-modules.
 -/
-abbrev CondensedAb := CondensedMod.{u} (ULift ℤ)
+@[reducible, inline]
+def CondensedAb := CondensedMod.{u} (ULift ℤ)
 
 noncomputable example : Abelian CondensedAb.{u} := inferInstance
 
 /-- The forgetful functor from condensed abelian groups to condensed sets. -/
-abbrev Condensed.abForget : CondensedAb ⥤ CondensedSet := forget _
+@[reducible, inline]
+def Condensed.abForget : CondensedAb ⥤ CondensedSet := forget _
 
 /-- The free condensed abelian group on a condensed set. -/
 noncomputable abbrev Condensed.freeAb : CondensedSet ⥤ CondensedAb := free _

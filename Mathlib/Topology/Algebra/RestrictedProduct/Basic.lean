@@ -103,7 +103,8 @@ instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
 
 variable {R A} in
 /-- Constructor for `RestrictedProduct`. -/
-abbrev mk (x : Π i, R i) (hx : ∀ᶠ i in 𝓕, x i ∈ A i) : Πʳ i, [R i, A i]_[𝓕] :=
+@[reducible, inline]
+def mk (x : Π i, R i) (hx : ∀ᶠ i in 𝓕, x i ∈ A i) : Πʳ i, [R i, A i]_[𝓕] :=
   ⟨x, hx⟩
 
 @[simp]

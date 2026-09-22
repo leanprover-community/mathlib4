@@ -92,7 +92,8 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
 of `M`. -/
-abbrev AddSubsemigroup.toSubsemigroup' : AddSubsemigroup (Additive M) ≃o Subsemigroup M :=
+@[reducible, inline]
+def AddSubsemigroup.toSubsemigroup' : AddSubsemigroup (Additive M) ≃o Subsemigroup M :=
   Subsemigroup.toAddSubsemigroup.symm
 
 theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
@@ -131,7 +132,8 @@ def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multip
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
 of `A`. -/
-abbrev Subsemigroup.toAddSubsemigroup' : Subsemigroup (Multiplicative A) ≃o AddSubsemigroup A :=
+@[reducible, inline]
+def Subsemigroup.toAddSubsemigroup' : Subsemigroup (Multiplicative A) ≃o AddSubsemigroup A :=
   AddSubsemigroup.toSubsemigroup.symm
 
 theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :

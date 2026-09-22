@@ -202,7 +202,8 @@ namespace FormalGroup
 variable (F : FormalGroup R)
 
 /-- An abbreviation of $F(X,0)$ for a formal group $F$. -/
-abbrev Xzero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
+@[reducible, inline]
+def Xzero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
 
 lemma constantCoeff_Xzero : F.Xzero.constantCoeff = 0 := by
   simp [PowerSeries.constantCoeff, Xzero, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
@@ -254,7 +255,8 @@ lemma Xzero_eq_X : F.Xzero = PowerSeries.X := by
       rw [Xzero_subst_Xzero, F.Xzero.subst_substInv_left F.constantCoeff_Xzero]
 
 /-- An abbreviation of $F(0,X)$ for a formal group $F$. -/
-abbrev zeroX : PowerSeries R := subst ![0, PowerSeries.X] F.toPowerSeries
+@[reducible, inline]
+def zeroX : PowerSeries R := subst ![0, PowerSeries.X] F.toPowerSeries
 
 lemma constantCoeff_zeroX : F.zeroX.constantCoeff = 0 := by
   simp [PowerSeries.constantCoeff, zeroX, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero

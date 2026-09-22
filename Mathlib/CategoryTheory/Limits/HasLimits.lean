@@ -145,10 +145,10 @@ class HasColimitsOfSize (C : Type u) [Category.{v} C] : Prop where
     infer_instance
 
 /-- `C` has all (small) limits if it has limits of every shape that is as big as its hom-sets. -/
-@[to_dual
+@[to_dual (attr := reducible, inline)
 /-- `C` has all (small) colimits if it has colimits of every shape that is as big as its hom-sets.
 -/]
-abbrev HasLimits (C : Type u) [Category.{v} C] : Prop :=
+def HasLimits (C : Type u) [Category.{v} C] : Prop :=
   HasLimitsOfSize.{v, v} C
 
 @[to_dual]

@@ -87,12 +87,14 @@ namespace Affine
 
 variable (W') in
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
-abbrev CoordinateRing : Type r :=
+@[reducible, inline]
+def CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
 
 variable (W') in
 /-- The function field `R(W) := Frac(R[W])` of a Weierstrass curve `W`. -/
-abbrev FunctionField : Type r :=
+@[reducible, inline]
+def FunctionField : Type r :=
   FractionRing W'.CoordinateRing
 
 namespace CoordinateRing

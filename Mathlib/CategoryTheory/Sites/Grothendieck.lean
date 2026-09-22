@@ -635,7 +635,8 @@ Saying that this multifork is a limit is essentially equivalent to the sheaf con
 given object for the given covering sieve. See `Sheaf.lean` for an equivalent sheaf condition
 using this.
 -/
-abbrev multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
+@[reducible, inline]
+def multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.Multifork (S.index P) :=
   Limits.Multifork.ofι _ (P.obj (Opposite.op X)) (fun I => P.map I.f.op)
     (by

@@ -85,7 +85,8 @@ attribute [instance] HasConicalLimitsOfSize.hasConicalLimitsOfShape
 
 /-- `C` has all (small) conical limits if it has limits of every shape that is as big as its
 hom-sets. -/
-abbrev HasConicalLimits : Prop := HasConicalLimitsOfSize.{v, v} V C
+@[reducible, inline]
+def HasConicalLimits : Prop := HasConicalLimitsOfSize.{v, v} V C
 
 end Definitions
 

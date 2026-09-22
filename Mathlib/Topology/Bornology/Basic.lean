@@ -275,7 +275,8 @@ instance : Bornology PUnit :=
   ⟨⊥, bot_le⟩
 
 /-- The cofinite filter as a bornology -/
-abbrev Bornology.cofinite : Bornology α where
+@[reducible, inline]
+def Bornology.cofinite : Bornology α where
   cobounded := Filter.cofinite
   le_cofinite := le_rfl
 

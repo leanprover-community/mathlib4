@@ -93,7 +93,8 @@ class CreatesLimitsOfSize (F : C ⥤ D) where
     infer_instance
 
 /-- `F` creates small limits if it creates limits of shape `J` for any small `J`. -/
-abbrev CreatesLimits (F : C ⥤ D) :=
+@[reducible, inline]
+def CreatesLimits (F : C ⥤ D) :=
   CreatesLimitsOfSize.{v₂, v₂} F
 
 /-- Dual of definition 3.3.1 of [Riehl].
@@ -123,7 +124,8 @@ class CreatesColimitsOfSize (F : C ⥤ D) where
     infer_instance
 
 /-- `F` creates small colimits if it creates colimits of shape `J` for any small `J`. -/
-abbrev CreatesColimits (F : C ⥤ D) :=
+@[reducible, inline]
+def CreatesColimits (F : C ⥤ D) :=
   CreatesColimitsOfSize.{v₂, v₂} F
 
 -- see Note [lower instance priority]

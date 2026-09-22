@@ -42,7 +42,8 @@ and the identifications given by the morphisms in the diagram.
 The relations between elements of the direct sum of the `F.obj j` given by the
 morphisms in the diagram `J`.
 -/
-abbrev Relations [DecidableEq J] : AddSubgroup (DFinsupp (fun j ↦ F.obj j)) :=
+@[reducible, inline]
+def Relations [DecidableEq J] : AddSubgroup (DFinsupp (fun j ↦ F.obj j)) :=
   AddSubgroup.closure {x | ∃ (j j' : J) (u : j ⟶ j') (a : F.obj j),
     x = DFinsupp.single j' (F.map u a) - DFinsupp.single j a}
 

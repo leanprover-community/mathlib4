@@ -102,7 +102,8 @@ def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type (max w v' u) where
 /-- Composition of `homObjFunctor` with the co-Yoneda embedding, i.e. Hom(F ⊗ coyoneda(-), G).
 When `F G : C ⥤ Type max v' v u`, this is the internal hom of `F` and `G`: see
 `Mathlib/CategoryTheory/Closed/FunctorToTypes.lean`. -/
-abbrev functorHom (F G : C ⥤ D) : C ⥤ Type (max v' v u) :=
+@[reducible, inline]
+def functorHom (F G : C ⥤ D) : C ⥤ Type (max v' v u) :=
   coyoneda.rightOp ⋙ homObjFunctor.{v} F G
 
 variable {F G} in

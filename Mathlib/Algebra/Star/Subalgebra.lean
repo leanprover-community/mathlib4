@@ -600,8 +600,8 @@ open scoped IsMulCommutative in
 `star` of elements in this set, then `StarAlgebra.adjoin R s` is a commutative semiring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinCommSemiringOfComm {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
+@[reducible, inline, deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
+def adjoinCommSemiringOfComm {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
     (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
     CommSemiring (adjoin R s) :=
   have := isMulCommutative_adjoin R hnormal hcomm hcomm_star
@@ -619,8 +619,8 @@ open scoped IsMulCommutative in
 `star` of elements in this set, then `StarAlgebra.adjoin R s` is a commutative ring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A]
+@[reducible, inline, deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
+def adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] {s : Set A} (hnormal : ∀ x ∈ s, IsStarNormal x)
     (hcomm : s.Pairwise Commute) (hcomm_star : s.Pairwise (Commute · <| star ·)) :
     CommRing (adjoin R s) :=

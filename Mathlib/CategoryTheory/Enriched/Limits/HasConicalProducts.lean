@@ -33,7 +33,8 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 /-- An abbreviation for `HasConicalLimit V (Discrete.functor f)`. -/
-abbrev HasConicalProduct {I : Type w} (f : I → C) :=
+@[reducible, inline]
+def HasConicalProduct {I : Type w} (f : I → C) :=
   HasConicalLimit V (Discrete.functor f)
 
 /-- ensure products exists from the existence of conical products -/

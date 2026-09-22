@@ -47,7 +47,8 @@ class JointlySurjective (K : Precoverage Scheme.{u}) : Prop where
     ∃ (Y : Scheme.{u}) (g : Y ⟶ X), S g ∧ x ∈ Set.range g
 
 /-- A cover of `X` in the coverage `K` is a `0`-hypercover for `K`. -/
-abbrev Cover (K : Precoverage Scheme.{u}) := Precoverage.ZeroHypercover.{v} K
+@[reducible, inline]
+def Cover (K : Precoverage Scheme.{u}) := Precoverage.ZeroHypercover.{v} K
 
 variable {K}
 
@@ -242,7 +243,8 @@ Since covers of schemes are indexed, the definition also involves a map on the
 indexing types.
 This is implemented as an `abbrev` for `CategoryTheory.Precoverage.ZeroHypercover.Hom`.
 -/
-abbrev Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
+@[reducible, inline]
+def Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
   Precoverage.ZeroHypercover.Hom K 𝒰 𝒱
 
 end category

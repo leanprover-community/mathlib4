@@ -62,19 +62,22 @@ variable (α) [Nonempty α]
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊥` of a finite nonempty `SemilatticeInf`. -/
-abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
+@[reducible, inline]
+def toOrderBot [SemilatticeInf α] : OrderBot α where
   bot := univ.inf' univ_nonempty id
   bot_le a := inf'_le _ <| mem_univ a
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
-abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
+@[reducible, inline]
+def toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
   le_top a := le_sup' id <| mem_univ a
 
 -- See note [reducible non-instances]
 /-- Constructs the `⊤` and `⊥` of a finite nonempty `Lattice`. -/
-abbrev toBoundedOrder [Lattice α] : BoundedOrder α :=
+@[reducible, inline]
+def toBoundedOrder [Lattice α] : BoundedOrder α :=
   { toOrderBot α, toOrderTop α with }
 
 end Nonempty

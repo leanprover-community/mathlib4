@@ -419,7 +419,8 @@ lemma boundaries₁_le_cycles₁ : boundaries₁ A ≤ cycles₁ A :=
 
 variable (A) in
 /-- The natural inclusion `B₁(G, A) →ₗ[k] Z₁(G, A)`. -/
-abbrev boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
+@[reducible, inline]
+def boundariesToCycles₁ : boundaries₁ A →ₗ[k] cycles₁ A :=
   Submodule.inclusion (boundaries₁_le_cycles₁ A)
 
 @[simp]
@@ -456,7 +457,8 @@ lemma boundaries₂_le_cycles₂ : boundaries₂ A ≤ cycles₂ A :=
 
 variable (A) in
 /-- The natural inclusion `B₂(G, A) →ₗ[k] Z₂(G, A)`. -/
-abbrev boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
+@[reducible, inline]
+def boundariesToCycles₂ : boundaries₂ A →ₗ[k] cycles₂ A :=
   Submodule.inclusion (boundaries₂_le_cycles₂ A)
 
 @[simp]
@@ -845,7 +847,8 @@ section H0
 
 /-- Shorthand for the 0th group homology of a `k`-linear `G`-representation `A`, `H₀(G, A)`,
 defined as the 0th homology of the complex of inhomogeneous chains of `A`. -/
-abbrev H0 := groupHomology A 0
+@[reducible, inline]
+def H0 := groupHomology A 0
 
 /-- The 0th group homology of `A`, defined as the 0th homology of the complex of inhomogeneous
 chains, is isomorphic to the invariants of the representation on `A`. -/
@@ -913,7 +916,8 @@ section H1
 
 /-- Shorthand for the 1st group homology of a `k`-linear `G`-representation `A`, `H₁(G, A)`,
 defined as the 1st homology of the complex of inhomogeneous chains of `A`. -/
-abbrev H1 := groupHomology A 1
+@[reducible, inline]
+def H1 := groupHomology A 1
 
 /-- The quotient map from the 1-cycles of `A`, as a submodule of `G →₀ A`, to `H₁(G, A)`. -/
 def H1π : ↧(cycles₁ A) ⟶ H1 A :=
@@ -1060,7 +1064,8 @@ section H2
 
 /-- Shorthand for the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`,
 defined as the 2nd homology of the complex of inhomogeneous chains of `A`. -/
-abbrev H2 := groupHomology A 2
+@[reducible, inline]
+def H2 := groupHomology A 2
 
 /-- The quotient map from the 2-cycles of `A`, as a submodule of `G × G →₀ A`, to `H₂(G, A)`. -/
 def H2π : ↧(cycles₂ A) ⟶ H2 A :=

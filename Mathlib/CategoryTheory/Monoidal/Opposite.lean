@@ -139,10 +139,12 @@ variable {C}
 namespace Iso
 
 /-- An isomorphism in `C` gives an isomorphism in `Cᴹᵒᵖ`. -/
-abbrev mop {X Y : C} (f : X ≅ Y) : mop X ≅ mop Y := (mopFunctor C).mapIso f
+@[reducible, inline]
+def mop {X Y : C} (f : X ≅ Y) : mop X ≅ mop Y := (mopFunctor C).mapIso f
 
 /-- An isomorphism in `Cᴹᵒᵖ` gives an isomorphism in `C`. -/
-abbrev unmop {X Y : Cᴹᵒᵖ} (f : X ≅ Y) : unmop X ≅ unmop Y := (unmopFunctor C).mapIso f
+@[reducible, inline]
+def unmop {X Y : Cᴹᵒᵖ} (f : X ≅ Y) : unmop X ≅ unmop Y := (unmopFunctor C).mapIso f
 
 end Iso
 

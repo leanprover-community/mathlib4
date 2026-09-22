@@ -92,7 +92,8 @@ lemma colimitsClosure_isoClosure :
 
 /-- The closure of a property of objects of a category under colimits of
 shape `J` for a category `J`. -/
-abbrev colimitClosure (J : Type*) [Category* J] : ObjectProperty C :=
+@[expose, reducible, inline]
+def colimitClosure (J : Type*) [Category* J] : ObjectProperty C :=
   P.colimitsClosure (fun (_ : Unit) ↦ J)
 
 instance (J : Type*) [Category* J] : (P.colimitClosure J).IsClosedUnderColimitsOfShape J :=

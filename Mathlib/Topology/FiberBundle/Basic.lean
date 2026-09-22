@@ -197,10 +197,12 @@ variable [FiberBundle F E] (b : B)
 theorem totalSpaceMk_isInducing : IsInducing (@TotalSpace.mk B F E b) := totalSpaceMk_isInducing' b
 
 /-- Atlas of a fiber bundle. -/
-abbrev trivializationAtlas : Set (Trivialization F (π F E)) := trivializationAtlas'
+@[reducible, inline]
+def trivializationAtlas : Set (Trivialization F (π F E)) := trivializationAtlas'
 
 /-- Trivialization of a fiber bundle at a point. -/
-abbrev trivializationAt : Trivialization F (π F E) := trivializationAt' b
+@[reducible, inline]
+def trivializationAt : Trivialization F (π F E) := trivializationAt' b
 
 theorem mem_baseSet_trivializationAt : b ∈ (trivializationAt F E b).baseSet :=
   mem_baseSet_trivializationAt' b
@@ -449,7 +451,8 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
 It is by definition equal to `Bundle.TotalSpace F Z.Fiber`. -/
-abbrev TotalSpace := Bundle.TotalSpace F Z.Fiber
+@[reducible, inline]
+def TotalSpace := Bundle.TotalSpace F Z.Fiber
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/
 @[reducible, simp, mfld_simps]

@@ -184,7 +184,8 @@ namespace NumberField.mixedEmbedding
 open NumberField.InfinitePlace Module Finset
 
 /-- The mixed space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
-abbrev mixedSpace :=
+@[reducible, inline]
+def mixedSpace :=
   ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℂ)
 
 /-- The mixed embedding of a number field `K` into the mixed space of `K`. -/
@@ -482,7 +483,8 @@ open scoped ComplexConjugate
 variable [NumberField K]
 
 /-- The type indexing the basis `stdBasis`. -/
-abbrev index := {w : InfinitePlace K // IsReal w} ⊕ ({w : InfinitePlace K // IsComplex w}) × (Fin 2)
+@[reducible, inline]
+def index := {w : InfinitePlace K // IsReal w} ⊕ ({w : InfinitePlace K // IsComplex w}) × (Fin 2)
 
 open scoped Classical in
 /-- The `ℝ`-basis of the mixed space of `K` formed by the vector equal to `1` at `w` and `0`
@@ -718,7 +720,8 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
 /-- The image of the fractional ideal `I` in the mixed space. -/
-abbrev idealLattice (K : Type*) [Field K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+@[reducible, inline]
+def idealLattice (K : Type*) [Field K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     Submodule ℤ (mixedSpace K) := LinearMap.range <|
   (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
 
@@ -986,7 +989,8 @@ theorem negAt_preimage : negAt s ⁻¹' A = negAt s '' A := by
 
 /-- The `plusPart` of a subset `A` of the `mixedSpace` is the set of points in `A` that are
 positive at all real places. -/
-abbrev plusPart : Set (mixedSpace K) := A ∩ {x | ∀ w, 0 < x.1 w}
+@[reducible, inline]
+def plusPart : Set (mixedSpace K) := A ∩ {x | ∀ w, 0 < x.1 w}
 
 theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w // IsReal w}}
     (hw : w ∈ s) : x.1 w < 0 := by
@@ -1103,7 +1107,8 @@ open MeasureTheory
 The `realSpace` associated to a number field `K` is the real vector space indexed by the
 infinite places of `K`.
 -/
-abbrev realSpace := InfinitePlace K → ℝ
+@[reducible, inline]
+def realSpace := InfinitePlace K → ℝ
 
 variable {K}
 
@@ -1147,7 +1152,8 @@ open scoped Classical in
 The map from the `mixedSpace K` to `realSpace K` that sends the values at complex places
 to their norm.
 -/
-abbrev normAtComplexPlaces (x : mixedSpace K) : realSpace K :=
+@[reducible, inline]
+def normAtComplexPlaces (x : mixedSpace K) : realSpace K :=
     fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else normAtPlace w x
 
 @[simp]
@@ -1173,7 +1179,8 @@ theorem normAtComplexPlaces_mixedSpaceOfRealSpace {x : realSpace K}
 /--
 The map from the `mixedSpace K` to `realSpace K` that sends each component to its norm.
 -/
-abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
+@[reducible, inline]
+def normAtAllPlaces (x : mixedSpace K) : realSpace K :=
     fun w ↦ normAtPlace w x
 
 @[simp]

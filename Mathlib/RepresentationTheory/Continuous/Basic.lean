@@ -69,7 +69,8 @@ lemma ContRepresentation.toMonoidHom_apply (π : ContRepresentation R G V) (g : 
     π.toMonoidHom g = π g := rfl
 
 /-- Every continuous representation "is" a representation. -/
-abbrev ContRepresentation.toRepresentation (π : ContRepresentation R G V) :
+@[reducible, inline]
+def ContRepresentation.toRepresentation (π : ContRepresentation R G V) :
     Representation R G V :=
   .comp ContinuousLinearMap.toLinearMapRingHom.toMonoidHom π.toMonoidHom
 
@@ -93,7 +94,8 @@ variable {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
   {π₃ : ContRepresentation R G U}
 
 /-- Any continuous intertwining map is an intertwining map. -/
-abbrev toIntertwiningMap (f : π₁ →ⁱL π₂) :
+@[reducible, inline]
+def toIntertwiningMap (f : π₁ →ⁱL π₂) :
     Representation.IntertwiningMap π₁.toRepresentation π₂.toRepresentation where
   __ := f.toContinuousLinearMap.toLinearMap
   isIntertwining' g := congr(ContinuousLinearMap.toLinearMap $(f.2 g))

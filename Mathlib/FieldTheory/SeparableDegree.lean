@@ -132,7 +132,8 @@ namespace Field
 
 /-- `Field.Emb F E` is the type of `F`-algebra homomorphisms from `E` to the algebraic closure
 of `E`. -/
-abbrev Emb := E →ₐ[F] AlgebraicClosure E
+@[reducible, inline]
+def Emb := E →ₐ[F] AlgebraicClosure E
 
 /-- If `E / F` is an algebraic extension, then the (finite) separable degree of `E / F`
 is the number of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`,

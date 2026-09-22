@@ -121,7 +121,8 @@ instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} where
   forget₂.map f := ⟨f.1, f.hom.2.borel_measurable⟩
 
 /-- The Borel functor, the canonical embedding of topological spaces into measurable spaces. -/
-abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=
+@[reducible, inline]
+def Borel : TopCat.{u} ⥤ MeasCat.{u} :=
   forget₂ TopCat.{u} MeasCat.{u}
 
 section Notation

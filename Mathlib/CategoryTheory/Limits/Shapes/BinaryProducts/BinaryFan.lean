@@ -33,15 +33,18 @@ open WalkingPair
 variable {C : Type u} [Category.{v} C]
 
 /-- A binary fan is just a cone on a diagram indexing a product. -/
-abbrev BinaryFan (X Y : C) :=
+@[reducible, inline]
+def BinaryFan (X Y : C) :=
   Cone (pair X Y)
 
 /-- The first projection of a binary fan. -/
-abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) :=
+@[reducible, inline]
+def BinaryFan.fst {X Y : C} (s : BinaryFan X Y) :=
   s.π.app ⟨WalkingPair.left⟩
 
 /-- The second projection of a binary fan. -/
-abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) :=
+@[reducible, inline]
+def BinaryFan.snd {X Y : C} (s : BinaryFan X Y) :=
   s.π.app ⟨WalkingPair.right⟩
 
 -- Marking this `@[simp]` causes loops since `s.fst` is reducibly defeq to the LHS.
@@ -84,13 +87,16 @@ theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s
   h.hom_ext fun j => Discrete.recOn j fun j => WalkingPair.casesOn j h₁ h₂
 
 /-- A binary cofan is just a cocone on a diagram indexing a coproduct. -/
-abbrev BinaryCofan (X Y : C) := Cocone (pair X Y)
+@[reducible, inline]
+def BinaryCofan (X Y : C) := Cocone (pair X Y)
 
 /-- The first inclusion of a binary cofan. -/
-abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.left⟩
+@[reducible, inline]
+def BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.left⟩
 
 /-- The second inclusion of a binary cofan. -/
-abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.right⟩
+@[reducible, inline]
+def BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.right⟩
 
 /-- Constructs an isomorphism of `BinaryCofan`s out of an isomorphism of the tips that commutes with
 the injections. -/
@@ -371,7 +377,8 @@ variable {D : Type*} [Category* D] {F : C ⥤ D}
 
 variable (F) in
 /-- The image of a binary fan by a functor. -/
-abbrev BinaryFan.map {X Y : C} (s : BinaryFan X Y) : BinaryFan (F.obj X) (F.obj Y) :=
+@[reducible, inline]
+def BinaryFan.map {X Y : C} (s : BinaryFan X Y) : BinaryFan (F.obj X) (F.obj Y) :=
   mk (F.map s.fst) (F.map s.snd)
 
 @[simp]
@@ -382,7 +389,8 @@ lemma BinaryFan.map_snd {X Y : C} (s : BinaryFan X Y) : (s.map F).snd = F.map s.
 
 variable (F) in
 /-- The image of a binary cofan by a functor. -/
-abbrev BinaryCofan.map {X Y : C} (s : BinaryCofan X Y) : BinaryCofan (F.obj X) (F.obj Y) :=
+@[reducible, inline]
+def BinaryCofan.map {X Y : C} (s : BinaryCofan X Y) : BinaryCofan (F.obj X) (F.obj Y) :=
   mk (F.map s.inl) (F.map s.inr)
 
 @[simp]
@@ -582,12 +590,14 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
 we obtain an isomorphism between the cone points. -/
-abbrev BinaryFan.associator (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
+@[reducible, inline]
+def BinaryFan.associator (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
     (R : IsLimit s) {t : BinaryFan X sYZ.pt} (S : IsLimit t) : s.pt ≅ t.pt :=
   (P.assoc Q R).conePointUniqueUpToIso S
 
 /-- Given a fixed family of limit data for every pair `X Y`, we obtain an associator. -/
-abbrev BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y Z : C) :
+@[reducible, inline]
+def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y Z : C) :
     (L (L X Y).cone.pt Z).cone.pt ≅ (L X (L Y Z).cone.pt).cone.pt :=
   associator (L X Y).isLimit (L Y Z).isLimit (L (L X Y).cone.pt Z).isLimit
     (L X (L Y Z).cone.pt).isLimit

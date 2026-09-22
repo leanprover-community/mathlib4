@@ -134,10 +134,11 @@ export AddActionSemiHomClass (map_vaddₛₗ)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
-@[to_additive /-- `MulActionHomClass F M X Y` states that `F` is a type of
+@[to_additive (attr := reducible, inline)
+/-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/]
-abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
+def MulActionHomClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
@@ -660,12 +661,13 @@ class MulDistribMulActionSemiHomClass (F : Type*)
 the monoid structure and equivariant with respect to the action of `M`.
 It is an abbreviation to `MulDistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `MulDistribMulActionHom`. -/
-@[to_additive (dont_translate := M) DistribMulActionHomClass
+@[to_additive (attr := reducible, inline)
+(dont_translate := M) DistribMulActionHomClass
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
 the additive monoid structure and equivariant with respect to the action of `M`.
 It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `DistribMulActionHom`. -/]
-abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
+def MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
     (A B : outParam Type*) [Monoid M] [Monoid A] [Monoid B]
     [MulDistribMulAction M A] [MulDistribMulAction M B] [FunLike F A B] :=
     MulDistribMulActionSemiHomClass F (MonoidHom.id M) A B
@@ -903,7 +905,8 @@ class MulSemiringActionSemiHomClass (F : Type*)
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction` of `M` on `R` and `S`.
 -/
-abbrev MulSemiringActionHomClass
+@[reducible, inline]
+def MulSemiringActionHomClass
     (F : Type*)
     {M : outParam Type*} [Monoid M]
     (R S : outParam Type*) [Semiring R] [Semiring S]

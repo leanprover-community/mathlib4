@@ -73,7 +73,8 @@ attribute [coe] ModuleCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
-abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
+@[reducible, inline]
+def of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -110,11 +111,13 @@ section
 variable {R}
 
 /-- Turn a morphism in `ModuleCat` back into a `LinearMap`. -/
-abbrev Hom.hom {A B : ModuleCat.{v} R} (f : Hom A B) :=
+@[reducible, inline]
+def Hom.hom {A B : ModuleCat.{v} R} (f : Hom A B) :=
   ConcreteCategory.hom (C := ModuleCat R) f
 
 /-- Typecheck a `LinearMap` as a morphism in `ModuleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+@[reducible, inline]
+def ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := ModuleCat R) f
 
@@ -534,7 +537,8 @@ instance : Module R (mkOfSMul' φ) where
 /-- Given `A : AddCommGrpCat` and a ring morphism `R →+* End A`, this is an object in
 `ModuleCat R`, whose underlying abelian group is `A` and whose scalar multiplication is
 given by `R`. -/
-abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
+@[reducible, inline]
+def mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 

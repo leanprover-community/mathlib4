@@ -91,7 +91,8 @@ open Function Multiplicative SkewMonoidAlgebra
 
 /-- The skew polynomials over `R` is the type of univariate polynomials over `R`
 endowed with a skewed convolution product. -/
-abbrev SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
+@[reducible, inline]
+def SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
 
 namespace SkewPolynomial
 
@@ -217,7 +218,8 @@ variable [MulSemiringAction (Multiplicative ℕ) R]
 
 /-- Ring homomorphism associated to the twist of the skew polynomial ring.
 The multiplication in a skew polynomial ring is given by `xr = φ(r)x`. -/
-abbrev φ := MulSemiringAction.toRingHom (Multiplicative ℕ) R (ofAdd 1)
+@[reducible, inline]
+def φ := MulSemiringAction.toRingHom (Multiplicative ℕ) R (ofAdd 1)
 
 theorem φ_def : φ = MulSemiringAction.toRingHom (Multiplicative ℕ) R (ofAdd 1) := rfl
 

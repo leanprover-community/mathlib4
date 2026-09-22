@@ -296,11 +296,13 @@ lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
 variable [DecidableEq ι]
 
 /-- Geck's name for the "left" basis elements of `b.support ⊕ ι`. -/
-abbrev u (i : b.support) : b.support ⊕ ι → R := Pi.single (Sum.inl i) 1
+@[reducible, inline]
+def u (i : b.support) : b.support ⊕ ι → R := Pi.single (Sum.inl i) 1
 
 variable (b) in
 /-- Geck's name for the "right" basis elements of `b.support ⊕ ι`. -/
-abbrev v (i : ι) : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
+@[reducible, inline]
+def v (i : ι) : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
 
 variable (b) in
 omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in

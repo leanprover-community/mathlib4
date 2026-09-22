@@ -47,7 +47,8 @@ open CategoryTheory
 open scoped Topology
 
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
-abbrev Stonean := CompHausLike (fun X ↦ ExtremallyDisconnected X)
+@[reducible, inline]
+def Stonean := CompHausLike (fun X ↦ ExtremallyDisconnected X)
 
 namespace CompHaus
 
@@ -78,11 +79,13 @@ end CompHaus
 namespace Stonean
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
-abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
+@[reducible, inline]
+def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   compHausLikeToCompHaus _
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
-abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful :=
+@[reducible, inline]
+def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful :=
   CompHausLike.fullyFaithfulToCompHausLike _
 
 open CompHausLike
@@ -94,7 +97,8 @@ instance (X : Type*) [TopologicalSpace X]
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
 -/
-abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+@[reducible, inline]
+def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [ExtremallyDisconnected X] : Stonean := ↧X
 
 open Lean.PrettyPrinter.Delaborator in
@@ -105,7 +109,8 @@ meta def delabOf : Delab := CategoryTheory.delabOf
 instance (X : Stonean.{u}) : ExtremallyDisconnected X := X.prop
 
 /-- The functor from Stonean spaces to profinite spaces. -/
-abbrev toProfinite : Stonean.{u} ⥤ Profinite.{u} :=
+@[reducible, inline]
+def toProfinite : Stonean.{u} ⥤ Profinite.{u} :=
   CompHausLike.toCompHausLike (fun _ ↦ inferInstance)
 
 /--
@@ -215,7 +220,8 @@ instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
   (projectivePresentation X).epi
 
 /-- The underlying `CompHaus` of a `Stonean`. -/
-abbrev _root_.Stonean.compHaus (X : Stonean) := Stonean.toCompHaus.obj X
+@[reducible, inline]
+def _root_.Stonean.compHaus (X : Stonean) := Stonean.toCompHaus.obj X
 
 /--
 ```

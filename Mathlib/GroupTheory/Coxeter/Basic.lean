@@ -402,7 +402,8 @@ def alternatingWord (i i' : B) (m : ℕ) : List B :=
   | m + 1 => (alternatingWord i' i m).concat i'
 
 /-- The word of length `M i i'` that alternates between `i` and `i'`, ending with `i'`. -/
-abbrev braidWord (M : CoxeterMatrix B) (i i' : B) : List B := alternatingWord i i' (M i i')
+@[reducible, inline]
+def braidWord (M : CoxeterMatrix B) (i i' : B) : List B := alternatingWord i i' (M i i')
 
 theorem alternatingWord_succ (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := rfl

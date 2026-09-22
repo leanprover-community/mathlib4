@@ -47,12 +47,14 @@ open TensorAlgebra
 
 /-- Concrete construction of the symmetric algebra of `M` by quotienting out
 the tensor algebra by the commutativity relation. -/
-abbrev SymmetricAlgebra := symRingCon R M |>.Quotient
+@[reducible, inline]
+def SymmetricAlgebra := symRingCon R M |>.Quotient
 
 namespace SymmetricAlgebra
 
 /-- Algebra homomorphism from the tensor algebra over `M` to the symmetric algebra over `M`. -/
-abbrev algHom : TensorAlgebra R M →ₐ[R] SymmetricAlgebra R M := RingCon.mkₐ R _
+@[reducible, inline]
+def algHom : TensorAlgebra R M →ₐ[R] SymmetricAlgebra R M := RingCon.mkₐ R _
 
 lemma algHom_surjective : Function.Surjective (algHom R M) := Quotient.mk_surjective
 

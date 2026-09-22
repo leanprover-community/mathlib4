@@ -59,7 +59,8 @@ variable {C : Type*} [Category* C] [HasZeroObject C] [HasShift C ℤ] [Preadditi
 
 /-- All objects that can be reached by shifts, binary products, retracts and at most `n`
 extensions from objects in `P`. -/
-abbrev triangEnvelopeIter (n : ℕ) : ObjectProperty C :=
+@[reducible, inline]
+def triangEnvelopeIter (n : ℕ) : ObjectProperty C :=
   ((P.shiftClosure ℤ).binaryProductsClosure.retractClosure.extensionProductIter n).retractClosure
 
 @[simp]

@@ -342,7 +342,8 @@ def restrictFunctor : Y.Modules ⥤ X.Modules :=
     ⟨Functor.whiskerRight α (forget₂ CommRingCat RingCat)⟩
 
 /-- The restriction of a module along an open immersion. -/
-abbrev restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
+@[reducible, inline]
+def restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
   (restrictFunctor f).obj M
 
 /-- The sections of the restriction of `M` over `U` are isomorphic to `Γ(M, f ''ᵁ U). -/

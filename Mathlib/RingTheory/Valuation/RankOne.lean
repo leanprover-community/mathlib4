@@ -95,7 +95,8 @@ namespace RankOne
 variable (v : Valuation R Γ₀) [hv : RankOne v]
 
 /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
-abbrev hom := RankLeOne.hom' v
+@[reducible, inline]
+def hom := RankLeOne.hom' v
 
 lemma strictMono : StrictMono (hom v) := hv.strictMono'
 

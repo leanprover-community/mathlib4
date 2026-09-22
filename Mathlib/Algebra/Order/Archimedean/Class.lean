@@ -657,15 +657,17 @@ theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
 
 /-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`. -/
-@[to_additive /--An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`.
+@[to_additive (attr := reducible, inline)
+/--An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`. -/]
 noncomputable
-abbrev ballSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
+def ballSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
 
 /-- A closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici c`. -/
-@[to_additive /-- A closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici c`. -/]
+@[to_additive (attr := reducible, inline)
+/-- A closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici c`. -/]
 noncomputable
-abbrev closedBallSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ici c)
+def closedBallSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ici c)
 
 @[to_additive]
 theorem mem_ballSubgroup_iff {a : M} {c : MulArchimedeanClass M} (hA : c ≠ ⊤) :
@@ -705,7 +707,8 @@ It is defined as the subtype of non-top elements of `MulArchimedeanClass M`
 (`⊤ : MulArchimedeanClass M` is the archimedean class of `1`).
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/
-@[to_additive FiniteArchimedeanClass
+@[to_additive (attr := reducible, inline)
+FiniteArchimedeanClass
 /-- `FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
 additive archimedean equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`.
@@ -714,7 +717,7 @@ It is defined as the subtype of non-top elements of `ArchimedeanClass M`
 (`⊤ : ArchimedeanClass M` is the archimedean class of `0`).
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/]
-abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
+def FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
 
 namespace FiniteMulArchimedeanClass
 

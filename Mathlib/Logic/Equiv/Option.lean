@@ -288,7 +288,8 @@ def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
   right_inv _ := Option.get_some _ _
 
 /-- The bijection `{ i // i ≠ i₀ } ⊕ PUnit ≃ α` for any `i₀ : α`. -/
-abbrev subtypeNeSumPUnit (i₀ : α) : { i // i ≠ i₀ } ⊕ PUnit.{u + 1} ≃ α :=
+@[reducible, inline]
+def subtypeNeSumPUnit (i₀ : α) : { i // i ≠ i₀ } ⊕ PUnit.{u + 1} ≃ α :=
   (Equiv.optionEquivSumPUnit.{u} _).symm.trans (Equiv.optionSubtypeNe i₀)
 
 end Equiv

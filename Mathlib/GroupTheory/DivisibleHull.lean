@@ -48,7 +48,8 @@ local notation "↑ⁿ" => PNat.equivNonZeroDivisorsNat
 variable (M) in
 /-- The divisible hull of an `AddCommMonoid` (as a ℕ-module) is the localized module by
 `ℕ+` (implemented using `nonZeroDivisors ℕ`), thus a ℕ-divisible group, or a `ℚ≥0`-module. -/
-abbrev DivisibleHull := LocalizedModule (nonZeroDivisors ℕ) M
+@[reducible, inline]
+def DivisibleHull := LocalizedModule (nonZeroDivisors ℕ) M
 
 namespace DivisibleHull
 
@@ -58,8 +59,8 @@ def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
 noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
 
 /-- Define coercion as `m ↦ m / 1`. -/
-@[coe]
-abbrev coe (m : M) := mk m 1
+@[reducible, inline, coe]
+def coe (m : M) := mk m 1
 
 /-- Coercion from `M` to `DivisibleHull M` defined as `m ↦ m / 1`. -/
 instance : Coe M (DivisibleHull M) where

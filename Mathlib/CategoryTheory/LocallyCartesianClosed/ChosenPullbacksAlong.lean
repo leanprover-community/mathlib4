@@ -55,7 +55,8 @@ class ChosenPullbacksAlong {Y X : C} (f : Y ⟶ X) where
 
 variable (C) in
 /-- A category has chosen pullbacks if every morphism has a chosen pullback. -/
-abbrev ChosenPullbacks := Π {X Y : C} (f : Y ⟶ X), ChosenPullbacksAlong f
+@[reducible, inline]
+def ChosenPullbacks := Π {X Y : C} (f : Y ⟶ X), ChosenPullbacksAlong f
 
 namespace ChosenPullbacksAlong
 
@@ -178,22 +179,27 @@ section PullbackFromChosenPullbacksAlongs
 variable {Y Z X : C} (f : Y ⟶ X) (g : Z ⟶ X) [ChosenPullbacksAlong g]
 
 /-- The underlying object of the chosen pullback along `g` of `f`. -/
-abbrev pullbackObj : C := ((pullback g).obj (Over.mk f)).left
+@[reducible, inline]
+def pullbackObj : C := ((pullback g).obj (Over.mk f)).left
 
 /-- A morphism in `Over X` from the chosen pullback along `g` of `f` to `Over.mk f`. -/
-abbrev fst' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ Over.mk f :=
+@[reducible, inline]
+def fst' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ Over.mk f :=
   (mapPullbackAdj g).counit.app <| Over.mk f
 
 /-- The first projection from the chosen pullback along `g` of `f` to the domain of `f`. -/
-abbrev fst : pullbackObj f g ⟶ Y := fst' f g |>.left
+@[reducible, inline]
+def fst : pullbackObj f g ⟶ Y := fst' f g |>.left
 
 theorem fst'_left : (fst' f g).left = fst f g := rfl
 
 /-- The second projection from the chosen pullback along `g` of `f` to the domain of `g`. -/
-abbrev snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
+@[reducible, inline]
+def snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
 
 /-- A morphism in `Over X` from the chosen pullback along `g` of `f` to `Over.mk g`. -/
-abbrev snd' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ (Over.mk g) :=
+@[reducible, inline]
+def snd' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ (Over.mk g) :=
   Over.homMk (snd f g)
 
 theorem snd'_left : (snd' f g).left = snd f g := rfl

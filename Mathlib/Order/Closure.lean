@@ -140,7 +140,8 @@ theorem idempotent (x : α) : c (c x) = c x :=
 @[simp] lemma isClosed_closure (x : α) : c.IsClosed (c x) := c.isClosed_iff.2 <| c.idempotent x
 
 /-- The type of elements closed under a closure operator. -/
-abbrev Closeds := {x // c.IsClosed x}
+@[reducible, inline]
+def Closeds := {x // c.IsClosed x}
 
 /-- Send an element to a closed element (by taking the closure). -/
 def toCloseds (x : α) : c.Closeds := ⟨c x, c.isClosed_closure x⟩

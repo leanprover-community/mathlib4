@@ -605,8 +605,8 @@ theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
 
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : s.Pairwise Commute) :
+@[reducible, inline, deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
+def closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : s.Pairwise Commute) :
     CommRing (closure s) :=
   have := isMulCommutative_closure hcomm
   inferInstance

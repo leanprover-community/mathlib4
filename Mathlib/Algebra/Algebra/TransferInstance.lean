@@ -25,7 +25,8 @@ variable (e : α ≃ β)
 -- See note [instance transfer via equivalence]
 variable (R) in
 /-- Transfer `Algebra` across an `Equiv` -/
-protected abbrev algebra (e : α ≃ β) [Semiring β] :
+@[reducible, inline]
+protected def algebra (e : α ≃ β) [Semiring β] :
     let _ := Equiv.semiring e
     ∀ [Algebra R β], Algebra R α := fast_instance%
   letI := Equiv.semiring e

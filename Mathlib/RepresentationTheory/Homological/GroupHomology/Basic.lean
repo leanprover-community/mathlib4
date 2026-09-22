@@ -87,7 +87,8 @@ section Tor
 variable {k G} in
 /-- Given `A : Rep k G` and a chain complex `P` in `Rep k G`, this is the chain complex whose
 `n`th object is `(A ⊗ Pₙ)_G`. -/
-abbrev HomologicalComplex.coinvariantsTensorObj {α : Type*} [AddRightCancelSemigroup α] [One α]
+@[reducible, inline]
+def HomologicalComplex.coinvariantsTensorObj {α : Type*} [AddRightCancelSemigroup α] [One α]
     (A : Rep k G) (P : ChainComplex (Rep k G) α) :
     ChainComplex (ModuleCat k) α :=
   (((Rep.coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj P
@@ -103,7 +104,8 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
 variable {k G} (A : Rep.{w} k G)
 
 /-- `Tor` can be computed using a projective resolution. -/
-abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
+@[reducible, inline]
+def torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
     ((Rep.Tor k G n).obj A).obj B ≅ (P.complex.coinvariantsTensorObj A).homology n :=
   P.isoLeftDerivedObj _ n
 
@@ -192,7 +194,8 @@ def inhomogeneousChainsIso [DecidableEq G] :
 
 /-- The `n`-cycles `Zₙ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 differential `Cₙ(G, A) ⟶ Cₙ₋₁(G, A)` in the complex of inhomogeneous chains. -/
-abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
+@[reducible, inline]
+def cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 
 open HomologicalComplex
 
@@ -200,12 +203,14 @@ variable {A} in
 /-- When `m = 0` this makes a term of `cycles A 0` from any element of `A` (or more precisely
 any element in the kernel of `d₀,₀ = 0`). When `m` is positive, this makes a term of `cycles A m`
 from any element of the kernel of `dₘ,ₘ₋₁`. -/
-abbrev cyclesMk (m n : ℕ) (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
+@[reducible, inline]
+def cyclesMk (m n : ℕ) (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
     (hf : (inhomogeneousChains A).d m n f = 0) : cycles A m :=
   (inhomogeneousChains A).cyclesMk f n h hf
 
 /-- The natural inclusion of the `n`-cycles `Zₙ(G, A)` into the `n`-chains `Cₙ(G, A).` -/
-abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
+@[reducible, inline]
+def iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
   (inhomogeneousChains A).iCycles n
 
 variable {A} in
@@ -216,7 +221,8 @@ theorem iCycles_mk {m n : ℕ} (h : (ComplexShape.down ℕ).next m = n) (f : (Fi
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/
-abbrev toCycles (i j : ℕ) : (inhomogeneousChains A).X i ⟶ cycles A j :=
+@[reducible, inline]
+def toCycles (i j : ℕ) : (inhomogeneousChains A).X i ⟶ cycles A j :=
   (inhomogeneousChains A).toCycles i j
 
 end groupHomology
@@ -232,7 +238,8 @@ def groupHomology (n : ℕ) : ModuleCat k :=
 
 /-- The natural map from `n`-cycles to `n`th group homology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupHomology.π (n : ℕ) :
+@[reducible, inline]
+def groupHomology.π (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
 

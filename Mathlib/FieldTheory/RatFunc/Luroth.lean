@@ -50,7 +50,8 @@ variable {E : IntermediateField K K⟮X⟯}
 
 variable (E) in
 /-- The minimal polynomial of `X` with coefficients in `E`. -/
-abbrev φ : E[X] := minpoly E (X : K⟮X⟯)
+@[reducible, inline]
+def φ : E[X] := minpoly E (X : K⟮X⟯)
 
 lemma φ_ne_zero (h : E ≠ ⊥) : φ E ≠ 0 :=
   minpoly.ne_zero (IntermediateField.isAlgebraic_X h).isIntegral
@@ -115,11 +116,13 @@ public lemma adjoin_generator_le : K⟮generator E⟯ ≤ E :=
 
 variable (E) in
 /-- The numerator of the generator. -/
-abbrev f : K[X] := (generator E).num
+@[reducible, inline]
+def f : K[X] := (generator E).num
 
 variable (E) in
 /-- The denominator of the generator. -/
-abbrev g : K[X] := generator E |>.denom
+@[reducible, inline]
+def g : K[X] := generator E |>.denom
 
 -- The next step is to define a bivariate polynomial `Φ`, which is a multiple of `φ`.
 -- Cohn does this my "multiplying with the lowest common denominator". In this formalisation,
@@ -128,7 +131,8 @@ abbrev g : K[X] := generator E |>.denom
 
 variable (E) in
 /-- The integer normalization of `φ` as a bivariate polynomial. -/
-abbrev Φ' : K[X][Y] :=
+@[reducible, inline]
+def Φ' : K[X][Y] :=
   IsLocalization.integerNormalization (nonZeroDivisors K[X]) ((φ E).map (algebraMap E K⟮X⟯))
 
 lemma Φ'_ne_zero (h : E ≠ ⊥) : Φ' E ≠ 0 :=
@@ -151,7 +155,8 @@ lemma Φ'_map :
 variable (E) in
 open scoped Classical in
 /-- A rational function `c` that satisfies `c * φ = Φ`. This is `ν₀(x)` in Cohn's notation. -/
-abbrev c : K⟮X⟯ :=
+@[reducible, inline]
+def c : K⟮X⟯ :=
   (algebraMap K[X] K⟮X⟯ (Φ' E).content)⁻¹ * (algebraMap K[X] K⟮X⟯ (b E))
 
 open scoped Classical in
@@ -163,7 +168,8 @@ lemma c_ne_zero (h : E ≠ ⊥) : c E ≠ 0 :=
 variable (E) in
 open scoped Classical in
 /-- The primitive part of `Φ'`. -/
-abbrev Φ : K[X][Y] := (Φ' E).primPart
+@[reducible, inline]
+def Φ : K[X][Y] := (Φ' E).primPart
 
 /-- We have `c * φ = Φ` as polynomials with coefficients in `Ratfunc K`. See Equation
   (11.3.5) in Cohn's proof. -/
@@ -257,7 +263,8 @@ lemma le_Φ_coeff_natDegree_natDegree (h : E ≠ ⊥) :
 
 variable (E) in
 /-- The height of `generator E`. -/
-abbrev m : ℕ := max (f E).natDegree (g E).natDegree
+@[reducible, inline]
+def m : ℕ := max (f E).natDegree (g E).natDegree
 
 lemma m_le_swap_Φ_natDegree (h : E ≠ ⊥) :
     m E ≤ (Bivariate.swap (Φ E)).natDegree := by
@@ -289,7 +296,8 @@ lemma φ_dvd_generator_minpolyX :
 
 variable (E) in
 /-- A polynomial `q` that satisfies `φ * q = (generator E).minpolyX`. -/
-abbrev q : E[X] := φ_dvd_generator_minpolyX.choose
+@[reducible, inline]
+def q : E[X] := φ_dvd_generator_minpolyX.choose
 
 lemma φ_mul_q :
     φ E * q E = ((generator E).minpolyX K⟮generator E⟯).map (algebraMap _ E) :=
@@ -308,7 +316,8 @@ lemma q_ne_zero (h : E ≠ ⊥) : q E ≠ 0 := right_ne_zero_of_mul <|
 
 variable (E) in
 /-- A polynomial `Q₀` with coefficients in `K⟮X⟯` that satisfies `Q₀ * Φ = θ`. -/
-abbrev Q₀ : K⟮X⟯[X] :=
+@[reducible, inline]
+def Q₀ : K⟮X⟯[X] :=
   Polynomial.C ((algebraMap K[X] K⟮X⟯ (g E)) / c E) * (q E).map (algebraMap E K⟮X⟯)
 
 lemma Q₀_ne_zero (h : E ≠ ⊥) : Q₀ E ≠ 0 := by
@@ -320,7 +329,8 @@ variable (E) in
 /-- The bivariate polynomial `g(X) * f(Y) - f(X) * g(Y)`, where `f` and `g` are
 the numerator and denominator of `generator`. This is an auxiliary definition
 for the proof of Lüroth's theorem. -/
-abbrev θ : K[X][Y] :=
+@[reducible, inline]
+def θ : K[X][Y] :=
   Polynomial.C (g E) * (f E).map Polynomial.C - Polynomial.C (f E) * (g E).map Polynomial.C
 
 lemma swap_θ : Bivariate.swap (θ E) = -(θ E) := by
@@ -363,7 +373,8 @@ lemma Q₀_mem_lifts (h : E ≠ ⊥) : Q₀ E ∈ lifts (algebraMap K[X] K⟮X�
   exact ⟨_, rfl⟩
 
 /-- A bivariate polynomial `Q₁` that satisfies `Q₁ * Φ = θ`. -/
-abbrev Q₁ (h : E ≠ ⊥) : K[X][Y] := (Q₀_mem_lifts h).choose
+@[reducible, inline]
+def Q₁ (h : E ≠ ⊥) : K[X][Y] := (Q₀_mem_lifts h).choose
 
 lemma map_Q₁ (h : E ≠ ⊥) : (Q₁ h).map (algebraMap K[X] K⟮X⟯) = Q₀ E :=
   (Q₀_mem_lifts h).choose_spec
@@ -393,7 +404,8 @@ lemma swap_Q₁_natDegree (h : E ≠ ⊥) : (Bivariate.swap (Q₁ h)).natDegree 
   grind [m_le_swap_Φ_natDegree h]
 
 /-- A univariate polynomial `Q₂` that satisfies `Q₂ * Φ = θ`. -/
-abbrev Q₂ (h : E ≠ ⊥) : K[X] := (Bivariate.swap (Q₁ h)).coeff 0
+@[reducible, inline]
+def Q₂ (h : E ≠ ⊥) : K[X] := (Bivariate.swap (Q₁ h)).coeff 0
 
 lemma Q₂_map (h : E ≠ ⊥) : (Q₂ h).map Polynomial.C = Q₁ h := by
   have := eq_C_of_natDegree_eq_zero (swap_Q₁_natDegree h)
@@ -453,7 +465,8 @@ lemma Q₂_natDegree (h : E ≠ ⊥) : (Q₂ h).natDegree = 0 := by
     by simpa using (natDegree_eq_zero_of_isUnit this.2)⟩
 
 /-- A constant `Q₃` that satisfies `Q₃ * Φ = θ`. -/
-abbrev Q₃ (h : E ≠ ⊥) : K := (Q₂ h).coeff 0
+@[reducible, inline]
+def Q₃ (h : E ≠ ⊥) : K := (Q₂ h).coeff 0
 
 lemma Q₃_map (h : E ≠ ⊥) : Polynomial.C (Q₃ h) = Q₂ h :=
   (eq_C_of_natDegree_eq_zero (Q₂_natDegree h)).symm

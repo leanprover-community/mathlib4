@@ -83,11 +83,13 @@ theorem birdDet_eq_birdDetSpec (A : Array R) (hA : A.size = n * n) :
 variable (A : Matrix (Fin n) (Fin n) R) {p : ℕ}
 
 /-- Bird's bordered minor `f[iα, jα]`. -/
-abbrev bminor (i j : Fin n) (α : Fin p → Fin n) : R :=
+@[reducible, inline]
+def bminor (i j : Fin n) (α : Fin p → Fin n) : R :=
   (A.submatrix (Fin.cons i α) (Fin.cons j α)).det
 
 /-- Bird's principal minor `f[α, α]`. -/
-abbrev pminor (α : Fin p → Fin n) : R :=
+@[reducible, inline]
+def pminor (α : Fin p → Fin n) : R :=
   (A.submatrix α α).det
 
 lemma det_submatrix_removeNth_eq_sign_mul_bminor
@@ -185,7 +187,8 @@ lemma exists_insertNth_mem_S {p : ℕ} {i : Fin n} {α : Fin p → Fin n} {k : F
 
 variable (p) in
 /-- Bird's equation (1) : `x^(p)_ij = (-1)^p ∑ { f[iα, jα] | α ∈ S_p(βᵢ) }`. -/
-abbrev Eq1 : Prop :=
+@[reducible, inline]
+def Eq1 : Prop :=
   (Spec.stepEntry A)^[p] A = .of fun i j ↦ (-1) ^ p * ∑ α ∈ S p i, bminor A i j α
 
 /-! ## Equations (2) and (3): substituting the induction hypothesis -/

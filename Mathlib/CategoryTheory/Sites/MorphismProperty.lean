@@ -104,7 +104,8 @@ def coverage (P : MorphismProperty C) [P.IsStableUnderBaseChange] [P.HasPullback
 
 /-- If `P` is stable under base change, it induces a Grothendieck topology: the one associated
 to `coverage P`. -/
-abbrev grothendieckTopology (P : MorphismProperty C) [P.IsStableUnderBaseChange] [P.HasPullbacks] :
+@[reducible, inline]
+def grothendieckTopology (P : MorphismProperty C) [P.IsStableUnderBaseChange] [P.HasPullbacks] :
     GrothendieckTopology C :=
   P.coverage.toGrothendieck
 

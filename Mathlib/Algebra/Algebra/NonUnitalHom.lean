@@ -81,7 +81,8 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Mo
 from `A` to `B` which are `R`-linear.
 
   This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
-abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
+@[reducible, inline]
+def NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B

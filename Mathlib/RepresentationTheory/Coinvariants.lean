@@ -177,7 +177,8 @@ lemma toCoinvariants_mk (g : G) (x : V) :
     toCoinvariants ρ S g (Coinvariants.mk _ x) = Coinvariants.mk _ (ρ g x) := rfl
 
 /-- The morphism from `ρ` to `toCoinvariants ρ S` induced by the quotient map. -/
-abbrev toCoinvariantsMkQ : ρ.IntertwiningMap (toCoinvariants ρ S) where
+@[reducible, inline]
+def toCoinvariantsMkQ : ρ.IntertwiningMap (toCoinvariants ρ S) where
   __ := Coinvariants.mk _
   isIntertwining' _ := rfl
 
@@ -306,19 +307,23 @@ variable [Group G] (A : Rep.{w} k G) (S : Subgroup G) [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` restricts to a `G`-representation on
 the kernel of the quotient map to the `S`-coinvariants `A_S`. -/
-abbrev toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
+@[reducible, inline]
+def toCoinvariantsKer : Rep k G := Rep.of (A.ρ.toCoinvariantsKer S)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a `G`-representation on
 the `S`-coinvariants `A_S`. -/
-abbrev toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
+@[reducible, inline]
+def toCoinvariants : Rep k G := Rep.of (A.ρ.toCoinvariants S)
 
 /-- The quotient map `A → A_S` as a representation morphism. -/
-abbrev toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
+@[reducible, inline]
+def toCoinvariantsMkQ : A ⟶ toCoinvariants A S :=
   Rep.ofHom (Representation.toCoinvariantsMkQ _ _)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
-abbrev quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvariants A S) S
+@[reducible, inline]
+def quotientToCoinvariants : Rep k (G ⧸ S) := Rep.ofQuotient (Rep.toCoinvariants A S) S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `A` induces a short exact sequence of
 `G`-representations `0 ⟶ Ker(mk) ⟶ A ⟶ A_S ⟶ 0` where `mk` is the quotient map to the

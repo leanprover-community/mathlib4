@@ -114,7 +114,8 @@ section valuation_X_le_one
 variable [v.IsNontrivial] [v.IsTrivialOn K] (hle : v RatFunc.X ≤ 1)
 
 /-- A uniformizing element for the valuation `v`, as a polynomial in `K[X]`. -/
-abbrev uniformizingPolynomial : K[X] :=
+@[reducible, inline]
+def uniformizingPolynomial : K[X] :=
   WellFounded.min degree_lt_wf _ (setOfPred_polynomial_valuation_lt_one_and_ne_zero_nonempty hle)
 
 @[inherit_doc]

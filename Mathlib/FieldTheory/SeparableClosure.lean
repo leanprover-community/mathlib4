@@ -240,7 +240,8 @@ theorem le_restrictScalars_separableClosure (L : IntermediateField F E) :
   fun x hx ↦ isSeparable_algebraMap (F := L) ⟨x, hx⟩
 
 /-- `separableClosure` as a `ClosureOperator`. -/
-abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
+@[reducible, inline]
+def separableClosureOperator : ClosureOperator (IntermediateField F E) := by
   refine .mk' (fun K ↦ (separableClosure K E).restrictScalars F) (fun K L le x hx ↦ ?_)
     le_restrictScalars_separableClosure fun K x hx ↦ ?_
   · let _ := (inclusion le).toAlgebra

@@ -115,10 +115,11 @@ variable (M N α) [Monoid M] [Monoid N]
 
 /-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.
   This is not an instance to avoid diamonds for example when `α := M × N`. -/
-@[to_additive AddAction.prodOfVAddCommClass
+@[to_additive (attr := reducible, inline)
+AddAction.prodOfVAddCommClass
 /-- Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
 This is not an instance to avoid diamonds for example when `α := M × N`. -/]
-abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
+def MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
     MulAction (M × N) α where
   smul mn a := mn.1 • mn.2 • a
   one_smul a := (one_smul M _).trans (one_smul N a)

@@ -147,7 +147,8 @@ This however does create a (propeq) diamond for `MulDistribMulAction (ConjAct M�
 one way then `u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * v⁻¹ * ofConjAct u⁻¹, _, _⟩`,
 while the other way is
 `u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * (v⁻¹ * ofConjAct u⁻¹), _, _⟩`. -/
-abbrev mulDistribMulActionRight : MulDistribMulAction M Nˣ where
+@[inline, reducible]
+instance mulDistribMulActionRight : MulDistribMulAction M Nˣ where
   smul m u := ⟨m • u, m • u⁻¹, by simp [← smul_mul', smul_one], by simp [← smul_mul', smul_one]⟩
   one_smul u := Units.ext <| one_smul ..
   mul_smul m₁ m₂ u := Units.ext <| mul_smul ..

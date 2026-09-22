@@ -59,8 +59,9 @@ instance : CoeSort MonCat (Type u) :=
 attribute [coe] AddMonCat.carrier MonCat.carrier
 
 /-- Construct a bundled `MonCat` from the underlying type and typeclass. -/
-@[to_additive /-- Construct a bundled `AddMonCat` from the underlying type and typeclass. -/]
-abbrev of (M : Type u) [Monoid M] : MonCat := ⟨M⟩
+@[to_additive (attr := reducible, inline)
+/-- Construct a bundled `AddMonCat` from the underlying type and typeclass. -/]
+def of (M : Type u) [Monoid M] : MonCat := ⟨M⟩
 
 end MonCat
 
@@ -106,13 +107,15 @@ instance : ConcreteCategory MonCat (· →* ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MonCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddMonCat` back into an `AddMonoidHom`. -/]
-abbrev Hom.hom {X Y : MonCat.{u}} (f : Hom X Y) :=
+@[to_additive (attr := reducible, inline)
+/-- Turn a morphism in `AddMonCat` back into an `AddMonoidHom`. -/]
+def Hom.hom {X Y : MonCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := MonCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `MonCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/]
-abbrev ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y :=
+@[to_additive (attr := reducible, inline)
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddMonCat`. -/]
+def ofHom {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := MonCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -255,8 +258,9 @@ instance : CoeSort CommMonCat (Type u) :=
 attribute [coe] AddCommMonCat.carrier CommMonCat.carrier
 
 /-- Construct a bundled `CommMonCat` from the underlying type and typeclass. -/
-@[to_additive /-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/]
-abbrev of (M : Type u) [CommMonoid M] : CommMonCat := ⟨M⟩
+@[to_additive (attr := reducible, inline)
+/-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/]
+def of (M : Type u) [CommMonoid M] : CommMonCat := ⟨M⟩
 
 end CommMonCat
 
@@ -302,13 +306,15 @@ instance : ConcreteCategory CommMonCat (· →* ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommMonCat` back into a `MonoidHom`. -/
-@[to_additive /-- Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`. -/]
-abbrev Hom.hom {X Y : CommMonCat.{u}} (f : Hom X Y) :=
+@[to_additive (attr := reducible, inline)
+/-- Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`. -/]
+def Hom.hom {X Y : CommMonCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := CommMonCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
-@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/]
-abbrev ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y :=
+@[to_additive (attr := reducible, inline)
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommMonCat`. -/]
+def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommMonCat) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/

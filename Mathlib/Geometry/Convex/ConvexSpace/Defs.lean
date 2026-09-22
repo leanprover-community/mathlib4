@@ -470,7 +470,8 @@ lemma sConvexComb_convexCombPair (s t : R) (hs ht hst) (w w' : StdSimplex R X) :
   simp [convexCombPair, sConvexComb_sConvexComb]
 
 /-- The public constructor for `ConvexSpace`. -/
-abbrev ConvexSpace.mk {X : Type*} (sConvexComb : StdSimplex R X → X)
+@[reducible, inline]
+def ConvexSpace.mk {X : Type*} (sConvexComb : StdSimplex R X → X)
     (single : ∀ x : X, sConvexComb (.single x) = x)
     (assoc : ∀ f : StdSimplex R (StdSimplex R X),
       sConvexComb (f.map sConvexComb) = sConvexComb f.sConvexComb) : ConvexSpace R X :=

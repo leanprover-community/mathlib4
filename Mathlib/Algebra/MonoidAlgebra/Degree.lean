@@ -251,7 +251,8 @@ the induced linear order on `Lex A` equips `MvPolynomial` ring with a
 type of (monic) monomials in `R[A]`, that respects addition). We make use of this monomial order
 by taking `D := toLex`, and different monomial orders could be accessed via different type
 synonyms once they are added. -/
-abbrev supDegree (f : R[A]) : B :=
+@[reducible, inline]
+def supDegree (f : R[A]) : B :=
   f.coeff.support.sup D
 
 variable {D}
@@ -621,7 +622,8 @@ support of `f`, or `⊤` if `f` is zero.
 Often, the Type `T` is `WithTop A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the minimum of the exponents. -/
-abbrev infDegree (f : R[A]) : T :=
+@[reducible, inline]
+def infDegree (f : R[A]) : T :=
   f.coeff.support.inf D
 
 theorem le_infDegree_add (f g : R[A]) :

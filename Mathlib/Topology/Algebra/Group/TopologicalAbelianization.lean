@@ -39,7 +39,8 @@ instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal 
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
   `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
-abbrev TopologicalAbelianization := G ⧸ Subgroup.topologicalClosure (commutator G)
+@[expose, reducible, inline]
+def TopologicalAbelianization := G ⧸ Subgroup.topologicalClosure (commutator G)
 
 local notation "G_ab" => TopologicalAbelianization
 

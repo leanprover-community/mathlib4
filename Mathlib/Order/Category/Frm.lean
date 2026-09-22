@@ -67,11 +67,13 @@ instance : ConcreteCategory Frm (FrameHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Frm` back into a `FrameHom`. -/
-abbrev Hom.hom {X Y : Frm.{u}} (f : Hom X Y) :=
+@[reducible, inline]
+def Hom.hom {X Y : Frm.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := Frm) f
 
 /-- Typecheck a `FrameHom` as a morphism in `Frm`. -/
-abbrev ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) : of X ⟶ of Y :=
+@[reducible, inline]
+def ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := Frm) f
 
 variable {R} in

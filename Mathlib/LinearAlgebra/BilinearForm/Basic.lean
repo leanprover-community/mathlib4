@@ -141,7 +141,8 @@ theorem flip_flip :
 
 /-- The `flip` of a bilinear form over a commutative ring, obtained by exchanging the left and
 right arguments. -/
-abbrev flip (B : BilinForm R M) :=
+@[reducible, inline]
+def flip (B : BilinForm R M) :=
   flipHom B
 
 end flip

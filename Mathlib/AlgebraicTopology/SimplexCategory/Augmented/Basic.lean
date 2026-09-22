@@ -31,7 +31,8 @@ open CategoryTheory
 
 /-- The `AugmentedSimplexCategory` is the category obtained from `SimplexCategory` by adjoining an
 initial object. -/
-abbrev AugmentedSimplexCategory := WithInitial SimplexCategory
+@[reducible, inline]
+def AugmentedSimplexCategory := WithInitial SimplexCategory
 
 namespace AugmentedSimplexCategory
 

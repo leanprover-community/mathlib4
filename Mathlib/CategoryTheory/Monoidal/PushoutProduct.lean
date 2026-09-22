@@ -68,8 +68,9 @@ pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following diagra
   A ⊗ Y --> B ⊗ Y
 ```
 -/
+@[reducible, inline]
 noncomputable
-abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] :
+def pushoutProduct [HasPushouts C] [MonoidalCategory C] :
     Arrow C ⥤ Arrow C ⥤ Arrow C := (curriedTensor C).leibnizPushout
 
 /-- The Leibniz functor associated to the internal hom on a monoidal closed category. This is the
@@ -83,8 +84,9 @@ bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the 
   B ⟹ Y --> A ⟹ Y
 ```
 -/
+@[reducible, inline]
 noncomputable
-abbrev pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
+def pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
     (Arrow C)ᵒᵖ ⥤ Arrow C ⥤ Arrow C := MonoidalClosed.internalHom.leibnizPullback
 
 end Arrow

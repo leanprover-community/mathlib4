@@ -295,9 +295,10 @@ variable (α)
 -- See note [reducible non-instances]
 -- Since this is reducible, we make sure to go via
 -- `SMul.comp.smul` to prevent typeclass inference unfolding too far
-@[to_additive /-- An additive action of `M` on `α` and a function `N → M` induces an additive
+@[to_additive (attr := reducible, inline)
+/-- An additive action of `M` on `α` and a function `N → M` induces an additive
 action of `N` on `α`. -/]
-abbrev comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
+def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
 
 variable {α}
 

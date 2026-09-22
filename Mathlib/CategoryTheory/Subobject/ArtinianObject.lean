@@ -52,8 +52,8 @@ variable (X Y : C)
 
 /-- An object `X` in a category `C` is Artinian if `Subobject X`
 satisfies the descending chain condition. -/
-@[stacks 0FCF]
-abbrev IsArtinianObject : Prop := isArtinianObject.Is X
+@[reducible, inline, stacks 0FCF]
+def IsArtinianObject : Prop := isArtinianObject.Is X
 
 instance [IsArtinianObject X] : WellFoundedLT (Subobject X) :=
   isArtinianObject.prop_of_is X

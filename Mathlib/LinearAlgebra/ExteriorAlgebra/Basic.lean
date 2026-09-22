@@ -57,7 +57,8 @@ variable (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- The exterior algebra of an `R`-module `M`.
 -/
-abbrev ExteriorAlgebra :=
+@[reducible, inline]
+def ExteriorAlgebra :=
   CliffordAlgebra (0 : QuadraticForm R M)
 
 namespace ExteriorAlgebra
@@ -66,7 +67,8 @@ variable {M}
 
 /-- The canonical linear map `M →ₗ[R] ExteriorAlgebra R M`.
 -/
-abbrev ι : M →ₗ[R] ExteriorAlgebra R M :=
+@[reducible, inline]
+def ι : M →ₗ[R] ExteriorAlgebra R M :=
   CliffordAlgebra.ι _
 
 section exteriorPower
@@ -76,7 +78,8 @@ variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- Definition of the `n`th exterior power of an `R`-module `M`. We introduce the notation
 `⋀[R]^n M` for `exteriorPower R n M`. -/
-abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
+@[reducible, inline]
+def exteriorPower : Submodule R (ExteriorAlgebra R M) :=
   LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
 
 @[inherit_doc exteriorPower]
@@ -355,7 +358,8 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
 
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
 family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
-abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
+@[reducible, inline]
+def ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
     (s : Set.powersetCard I n) : ExteriorAlgebra R M :=
   ιMulti R n (v ∘ (Set.powersetCard.ofFinEmbEquiv.symm s))
 

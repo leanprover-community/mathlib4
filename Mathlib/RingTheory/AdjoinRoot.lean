@@ -174,7 +174,8 @@ variable [CommSemiring S] [Semiring T] [Algebra S R] [Algebra S T] (p : R[X])
 
 variable (S) in
 /-- Embedding of the original ring `R` into `AdjoinRoot p`. -/
-abbrev ofAlgHom : R →ₐ[S] AdjoinRoot p := Algebra.algHom S R <| AdjoinRoot p
+@[reducible, inline]
+def ofAlgHom : R →ₐ[S] AdjoinRoot p := Algebra.algHom S R <| AdjoinRoot p
 
 @[simp] lemma toRingHom_ofAlgHom : ofAlgHom S p = of p := rfl
 

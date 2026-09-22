@@ -110,8 +110,8 @@ space use `EuclideanSpace 𝕜 (Fin n)`.
 
 For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
 analogous to `![x, y, ...]` notation. -/
-@[wikidata Q17295]
-abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
+@[reducible, inline, wikidata Q17295]
+def EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
 section Notation
@@ -276,16 +276,19 @@ end
 variable (ι 𝕜)
 
 /-- A shorthand for `PiLp.continuousLinearEquiv`. -/
-abbrev EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
+@[reducible, inline]
+def EuclideanSpace.equiv : EuclideanSpace 𝕜 ι ≃L[𝕜] ι → 𝕜 :=
   PiLp.continuousLinearEquiv 2 𝕜 _
 
 variable {ι 𝕜}
 
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a linear map. -/
-abbrev EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 := PiLp.projₗ _ _ i
+@[reducible, inline]
+def EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 := PiLp.projₗ _ _ i
 
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a continuous linear map. -/
-abbrev EuclideanSpace.proj (i : ι) : StrongDual 𝕜 (EuclideanSpace 𝕜 ι) := PiLp.proj _ _ i
+@[reducible, inline]
+def EuclideanSpace.proj (i : ι) : StrongDual 𝕜 (EuclideanSpace 𝕜 ι) := PiLp.proj _ _ i
 
 @[simp]
 lemma EuclideanSpace.coe_proj {ι : Type*} (𝕜 : Type*) [RCLike 𝕜] {i : ι} :
@@ -297,7 +300,8 @@ variable [DecidableEq ι]
 
 /-- The vector given in Euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
 all other coordinates. -/
-abbrev EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι := PiLp.single 2 i a
+@[reducible, inline]
+def EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι := PiLp.single 2 i a
 
 @[deprecated PiLp.ofLp_single +typeChanged (since := "2026-03-15")]
 lemma EuclideanSpace.ofLp_single (i : ι) (a : 𝕜) : ofLp (single i a) = Pi.single i a := by
@@ -371,14 +375,16 @@ section finAddEquivProd
 
 See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
 where the RHS is equipped with the Euclidean norm rather than the supremum norm. -/
-abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
+@[reducible, inline]
+def EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
   (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
     WithLp.prodContinuousLinearEquiv _ _ _ _
 
 /-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (Fin (n + m))` and
 `EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m)`. -/
-abbrev EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
+@[reducible, inline]
+def EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
     EuclideanSpace 𝕜 (Fin (n + m)) ≃L[𝕜] EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m) :=
   (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 finSumFinEquiv.symm).toContinuousLinearEquiv.trans
     sumEquivProd
@@ -1239,7 +1245,8 @@ namespace Matrix
 variable [Fintype n] [DecidableEq n]
 
 /-- A shorthand for `Matrix.toLpLin 2 2`. -/
-abbrev toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
+@[reducible, inline]
+def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
   toLpLin 2 2
 
 open EuclideanSpace in

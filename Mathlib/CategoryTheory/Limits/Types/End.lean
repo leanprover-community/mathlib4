@@ -46,7 +46,8 @@ lemma coendRel_iff (j j' : J) (x : (F.obj (op j)).obj j) (x' : (F.obj (op j')).o
     exact coendRel.mk f y
 
 /-- The coend of a bifunctor valued in `Type`, defined as a quotient. -/
-abbrev coend : Type max w u := Quot (coendRel F)
+@[reducible, inline]
+def coend : Type max w u := Quot (coendRel F)
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ Type*`, this is the inclusion `(F.obj (op j)).obj j ⟶ coend F`
 for any `j : J`, which sends `x` to `Quot.mk _ ⟨j, x⟩` -/
@@ -113,7 +114,8 @@ namespace Types
 variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ Type max w u)
 
 /-- The end of a bifunctor valued in `Type`, defined as the subtype of compatible families. -/
-abbrev end_ : Type max w u :=
+@[reducible, inline]
+def end_ : Type max w u :=
   { x : ∀ j, (F.obj (op j)).obj j // ∀ ⦃i j : J⦄ (f : i ⟶ j),
       TypeCat.Hom.hom ((F.obj (op i)).map f) (x i) =
         TypeCat.Hom.hom ((F.map f.op).app j) (x j) }

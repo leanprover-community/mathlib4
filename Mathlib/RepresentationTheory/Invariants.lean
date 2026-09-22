@@ -156,7 +156,8 @@ lemma le_comap_invariants (g : G) :
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
-abbrev toInvariants :
+@[reducible, inline]
+def toInvariants :
     Representation k G (invariants (ρ.comp S.subtype)) :=
   subrepresentation ρ _ <| le_comap_invariants ρ S
 
@@ -165,12 +166,14 @@ instance : IsTrivial ((toInvariants ρ S).comp S.subtype) where
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-abbrev quotientToInvariants :
+@[reducible, inline]
+def quotientToInvariants :
     Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
   ofQuotient (toInvariants ρ S) S
 
 /-- The intertwining map between the `G ⧸ S`-representation on the invariants of `ρ|_S` and `ρ`. -/
-abbrev quotientToInvariants_lift :
+@[reducible, inline]
+def quotientToInvariants_lift :
     Representation.IntertwiningMap (MonoidHom.comp (quotientToInvariants ρ S)
       (QuotientGroup.mk' _)) ρ := ⟨Submodule.subtype _, fun _ ↦ rfl⟩
 
@@ -237,11 +240,13 @@ variable {k : Type u} {G : Type v} [CommRing k] [Group G] (A : Rep.{w} k G)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
-abbrev toInvariants : Rep k G := Rep.of <| A.ρ.toInvariants S
+@[reducible, inline]
+def toInvariants : Rep k G := Rep.of <| A.ρ.toInvariants S
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvariants S)
+@[reducible, inline]
+def quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvariants S)
 
 variable (k G)
 

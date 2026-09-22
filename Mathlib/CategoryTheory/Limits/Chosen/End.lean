@@ -32,8 +32,8 @@ class ChosenCoendsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wh
 
 set_option linter.checkUnivs false in
 /-- The data of chosen coends in `C`. -/
-@[pp_with_univ]
-abbrev ChosenCoends (C : Type*) [Category* C] :=
+@[reducible, inline, pp_with_univ]
+def ChosenCoends (C : Type*) [Category* C] :=
   ∀ {J : Type u} [Category.{v} J], ChosenCoendsOfShape J C
 
 variable {J C : Type*} [Category* C] [Category* J] (F : Jᵒᵖ ⥤ J ⥤ C) [ChosenCoendsOfShape J C]
@@ -108,8 +108,8 @@ class ChosenEndsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] wher
 
 set_option linter.checkUnivs false in
 /-- The data of chosen ends in `C`. -/
-@[pp_with_univ]
-abbrev ChosenEnds (C : Type*) [Category* C] :=
+@[reducible, inline, pp_with_univ]
+def ChosenEnds (C : Type*) [Category* C] :=
   ∀ {J : Type u} [Category.{v} J], ChosenEndsOfShape J C
 
 variable {J C : Type*} [Category* C] [Category* J] (F : Jᵒᵖ ⥤ J ⥤ C) [ChosenEndsOfShape J C]

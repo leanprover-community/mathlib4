@@ -45,11 +45,13 @@ lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
 variable [(HomologicalComplex.quasiIso C c).HasLocalization]
 
 /-- The category of homological complexes up to quasi-isomorphisms. -/
-abbrev HomologicalComplexUpToQuasiIso := (HomologicalComplex.quasiIso C c).Localization'
+@[reducible, inline]
+def HomologicalComplexUpToQuasiIso := (HomologicalComplex.quasiIso C c).Localization'
 
 variable {C c} in
 /-- The localization functor `HomologicalComplex C c ⥤ HomologicalComplexUpToQuasiIso C c`. -/
-abbrev HomologicalComplexUpToQuasiIso.Q :
+@[reducible, inline]
+def HomologicalComplexUpToQuasiIso.Q :
     HomologicalComplex C c ⥤ HomologicalComplexUpToQuasiIso C c :=
   (HomologicalComplex.quasiIso C c).Q'
 

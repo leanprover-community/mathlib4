@@ -134,8 +134,9 @@ and assume that `L` is finite free as `R`-module.
 Then the coefficients of the characteristic polynomial of `ad R L x` are polynomial in `x`.
 The *rank* of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 -/
+@[reducible, inline]
 noncomputable
-abbrev rank : ℕ := LieModule.rank R L L
+def rank : ℕ := LieModule.rank R L L
 
 lemma polyCharpoly_coeff_rank_ne_zero [Nontrivial R] [DecidableEq ι] :
     (polyCharpoly (ad R L).toLinearMap b).coeff (rank R L) ≠ 0 :=
@@ -163,7 +164,8 @@ lemma rank_le_natTrailingDegree_charpoly_ad [Nontrivial R] :
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
 Then `x` is *regular*
 if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
-abbrev IsRegular (x : L) : Prop := LieModule.IsRegular R L x
+@[reducible, inline]
+def IsRegular (x : L) : Prop := LieModule.IsRegular R L x
 
 lemma isRegular_def :
     IsRegular R x ↔ (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := Iff.rfl

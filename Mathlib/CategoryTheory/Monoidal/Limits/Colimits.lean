@@ -41,7 +41,8 @@ variable {F₁ : J₁ ⥤ C} {F₂ : J₂ ⥤ C} {c₁ : Cocone F₁} {c₂ : Co
 
 variable (c₁ c₂) in
 /-- The external tensor product of two cocones. -/
-abbrev Cocone.tensor₂ :
+@[reducible, inline]
+def Cocone.tensor₂ :
     Cocone (externalProduct F₁ F₂) :=
   (curriedTensor C).mapCocone₂ c₁ c₂
 

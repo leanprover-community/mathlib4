@@ -61,7 +61,8 @@ lemma leftAdjointObjIsDefined_of_adjunction {G : C ⥤ D} (adj : G ⊣ F) (X : C
   (adj.corepresentableBy X).isCorepresentable
 
 /-- The full subcategory where `F.partialLeftAdjoint` shall be defined. -/
-abbrev PartialLeftAdjointSource := F.leftAdjointObjIsDefined.FullSubcategory
+@[reducible, inline]
+def PartialLeftAdjointSource := F.leftAdjointObjIsDefined.FullSubcategory
 
 instance (X : F.PartialLeftAdjointSource) :
     IsCorepresentable (F ⋙ coyoneda.obj (op X.obj)) := X.property
@@ -211,7 +212,8 @@ lemma rightAdjointObjIsDefined_of_adjunction {G : D ⥤ C} (adj : F ⊣ G) (Y : 
   (adj.representableBy Y).isRepresentable
 
 /-- The full subcategory where `F.partialRightAdjoint` shall be defined. -/
-abbrev PartialRightAdjointSource := F.rightAdjointObjIsDefined.FullSubcategory
+@[reducible, inline]
+def PartialRightAdjointSource := F.rightAdjointObjIsDefined.FullSubcategory
 
 instance (Y : F.PartialRightAdjointSource) :
     IsRepresentable (F.op ⋙ yoneda.obj Y.obj) := Y.property

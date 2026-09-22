@@ -68,7 +68,8 @@ variable {E}
 @[inherit_doc]
 scoped notation:max "π " F':max E':max => Bundle.TotalSpace.proj (F := F') (E := E')
 
-abbrev TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
+@[reducible, inline]
+def TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
 
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
     .mk' F x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl

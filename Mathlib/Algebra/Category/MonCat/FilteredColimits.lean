@@ -45,10 +45,10 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.
 -/
-@[to_additive
+@[to_additive (attr := reducible, inline)
       /-- The colimit of `F ⋙ forget AddMon` in the category of types.
       In the following, we will construct an additive monoid structure on `M`. -/]
-abbrev M := (F ⋙ forget MonCat).ColimitType
+def M := (F ⋙ forget MonCat).ColimitType
 
 /-- The canonical projection into the colimit, as a quotient type. -/
 @[to_additive /-- The canonical projection into the colimit, as a quotient type. -/]

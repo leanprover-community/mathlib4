@@ -63,11 +63,13 @@ instance : ConcreteCategory PartOrd (· →o ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `PartOrd` back into a `OrderHom`. -/
-abbrev Hom.hom {X Y : PartOrd.{u}} (f : Hom X Y) :=
+@[reducible, inline]
+def Hom.hom {X Y : PartOrd.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := PartOrd) f
 
 /-- Typecheck a `OrderHom` as a morphism in `PartOrd`. -/
-abbrev ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) : of X ⟶ of Y :=
+@[reducible, inline]
+def ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := PartOrd) f
 
 variable {R} in

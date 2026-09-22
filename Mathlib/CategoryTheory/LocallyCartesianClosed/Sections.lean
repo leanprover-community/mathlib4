@@ -37,7 +37,8 @@ variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 variable (I : C) [Closed I]
 
 /-- The first leg of a cospan to define `sectionsObj` as a pullback in `C`. -/
-abbrev curryRightUnitorHom : 𝟙_ C ⟶ (I ⟶[C] I) :=
+@[reducible, inline]
+def curryRightUnitorHom : 𝟙_ C ⟶ (I ⟶[C] I) :=
   curry <| (ρ_ _).hom
 
 variable {I}

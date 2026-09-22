@@ -81,7 +81,8 @@ variable {R S : Type*}
 /-- The semiring of Laurent polynomials with coefficients in the semiring `R`.
 We denote it by `R[T;T⁻¹]`.
 The ring homomorphism `C : R →+* R[T;T⁻¹]` includes `R` as the constant polynomials. -/
-abbrev LaurentPolynomial (R : Type*) [Semiring R] :=
+@[reducible, inline]
+def LaurentPolynomial (R : Type*) [Semiring R] :=
   AddMonoidAlgebra R ℤ
 
 @[nolint docBlame]

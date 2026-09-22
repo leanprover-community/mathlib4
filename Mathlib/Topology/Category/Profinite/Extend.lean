@@ -192,15 +192,18 @@ variable (S : Profinite.{u})
 A functor `StructuredArrow S toProfinite ⥤ FintypeCat` whose limit in `Profinite` is isomorphic
 to `S`.
 -/
-abbrev fintypeDiagram' : StructuredArrow S toProfinite ⥤ FintypeCat :=
+@[reducible, inline]
+def fintypeDiagram' : StructuredArrow S toProfinite ⥤ FintypeCat :=
   StructuredArrow.proj S toProfinite
 
 /-- An abbreviation for `S.fintypeDiagram' ⋙ toProfinite`. -/
-abbrev diagram' : StructuredArrow S toProfinite ⥤ Profinite :=
+@[reducible, inline]
+def diagram' : StructuredArrow S toProfinite ⥤ Profinite :=
   S.fintypeDiagram' ⋙ toProfinite
 
 /-- A cone over `S.diagram'` whose cone point is `S`. -/
-abbrev asLimitCone' : Cone (S.diagram') := cone (𝟭 _) S
+@[reducible, inline]
+def asLimitCone' : Cone (S.diagram') := cone (𝟭 _) S
 
 instance (i : DiscreteQuotient S) : Epi (S.asLimitCone.π.app i) :=
   (epi_iff_surjective _).mpr i.proj_surjective

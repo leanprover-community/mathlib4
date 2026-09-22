@@ -463,9 +463,10 @@ def numeratorUnit (s : S) : Units R[S⁻¹] where
 
 /-- The multiplicative homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the
 fraction `r /ₒ 1`. -/
-@[to_additive /-- The additive homomorphism from `R` to `AddOreLocalization R S`,
+@[to_additive (attr := reducible, inline)
+/-- The additive homomorphism from `R` to `AddOreLocalization R S`,
   mapping `r : R` to the difference `r -ₒ 0`. -/]
-abbrev numeratorHom : R →* R[S⁻¹] where
+def numeratorHom : R →* R[S⁻¹] where
   toFun r := r /ₒ 1
   map_one' := by with_unfolding_all rfl
   map_mul' _ _ := mul_div_one.symm

@@ -30,7 +30,8 @@ namespace BinaryTree
 
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
-abbrev pairwiseNode (a b : Finset (BinaryTree Unit)) : Finset (BinaryTree Unit) :=
+@[reducible, inline]
+def pairwiseNode (a b : Finset (BinaryTree Unit)) : Finset (BinaryTree Unit) :=
   (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
@@ -44,8 +45,8 @@ def treesOfNumNodesEq : ℕ → Finset (BinaryTree Unit)
     · simp_wf; have := snd_le ijh.2; lia
 
 /-- **Alias** of `BinaryTree.treesOfNumNodesEq`. -/
-@[deprecated BinaryTree.treesOfNumNodesEq (since := "2026-06-07")]
-abbrev _root_.Tree.treesOfNumNodesEq : ℕ → Finset (Tree Unit) :=
+@[reducible, inline, deprecated BinaryTree.treesOfNumNodesEq (since := "2026-06-07")]
+def _root_.Tree.treesOfNumNodesEq : ℕ → Finset (Tree Unit) :=
   BinaryTree.treesOfNumNodesEq
 
 @[simp]

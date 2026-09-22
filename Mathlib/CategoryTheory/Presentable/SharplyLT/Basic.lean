@@ -296,7 +296,8 @@ public instance (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
 
 /-- The singleton `{j}`, as a term in
 `IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J`. -/
-abbrev singleton (j : J) : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J) :=
+@[reducible, inline]
+def singleton (j : J) : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J) :=
   ⟨{j}, by
     let : OrderTop ({j} : Set J) :=
       { top := ⟨j, by simp⟩
@@ -306,7 +307,8 @@ abbrev singleton (j : J) : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ�
 
 /-- A pair `{j ≤ j'}`, as a term in
 `IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J`. -/
-abbrev pair {j j' : J} (h : j ≤ j') :
+@[reducible, inline]
+def pair {j j' : J} (h : j ≤ j') :
     Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J) :=
   ⟨{j, j'}, by
     let : OrderTop ({j, j'} : Set J) :=

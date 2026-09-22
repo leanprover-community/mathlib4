@@ -113,7 +113,8 @@ variable {X Y : C}
 /-- Given a cylinder `P` for `X`, two maps `f` and `g` in `X ⟶ Y`
 are homotopic relative to `P` when there is a morphism `h : P.I ⟶ Y`
 such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
-abbrev LeftHomotopy [CategoryWithWeakEquivalences C] (P : Cylinder X) (f g : X ⟶ Y) : Type v :=
+@[reducible, inline]
+def LeftHomotopy [CategoryWithWeakEquivalences C] (P : Cylinder X) (f g : X ⟶ Y) : Type v :=
   P.toPrecylinder.LeftHomotopy f g
 
 namespace LeftHomotopy
@@ -123,17 +124,20 @@ section
 variable [CategoryWithWeakEquivalences C] (P : Cylinder X)
 
 /-- `f : X ⟶ Y` is left homotopic to itself relative to any cylinder. -/
-abbrev refl (f : X ⟶ Y) : P.LeftHomotopy f f := Precylinder.LeftHomotopy.refl _ f
+@[reducible, inline]
+def refl (f : X ⟶ Y) : P.LeftHomotopy f f := Precylinder.LeftHomotopy.refl _ f
 
 variable {P} in
 /-- If `f` and `g` are homotopic relative to a cylinder `P`, then `g` and `f`
 are homotopic relative to `P.symm`. -/
-abbrev symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f :=
+@[reducible, inline]
+def symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f :=
   Precylinder.LeftHomotopy.symm h
 
 variable {P} in
 /-- Left homotopies are compatible with postcomposition. -/
-abbrev postcomp {f g : X ⟶ Y} (h : P.LeftHomotopy f g) {Z : C} (p : Y ⟶ Z) :
+@[reducible, inline]
+def postcomp {f g : X ⟶ Y} (h : P.LeftHomotopy f g) {Z : C} (p : Y ⟶ Z) :
     P.LeftHomotopy (f ≫ p) (g ≫ p) :=
   Precylinder.LeftHomotopy.postcomp h p
 

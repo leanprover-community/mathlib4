@@ -104,7 +104,8 @@ open WithAbs
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
 /-- The completion of a field with respect to a real absolute value. -/
-abbrev Completion := UniformSpace.Completion (WithAbs v)
+@[expose, reducible, inline]
+def Completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 

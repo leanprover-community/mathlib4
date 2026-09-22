@@ -156,9 +156,10 @@ namespace QuotientGroup
 variable [Group α] {s : Subgroup α}
 
 /-- The canonical map from a group `α` to the quotient `α ⧸ s`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := reducible, inline)
+(attr := coe)
 /-- The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. -/]
-abbrev mk (a : α) : α ⧸ s :=
+def mk (a : α) : α ⧸ s :=
   Quotient.mk'' a
 
 @[to_additive]

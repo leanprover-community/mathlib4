@@ -79,7 +79,8 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : essImage F (F.obj Y) :=
   ⟨Y, ⟨Iso.refl _⟩⟩
 
 /-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
-abbrev EssImageSubcategory (F : C ⥤ D) := F.essImage.FullSubcategory
+@[reducible, inline]
+def EssImageSubcategory (F : C ⥤ D) := F.essImage.FullSubcategory
 
 lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
     (h : F.essImage.ι.map f = F.essImage.ι.map g) : f = g :=

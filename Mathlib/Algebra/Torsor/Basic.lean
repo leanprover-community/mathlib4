@@ -267,8 +267,9 @@ lemma pointReflection_eq_subLeft {G : Type*} [AddCommGroup G] (x : G) :
 end Equiv
 
 /-- Pullback of a torsor along an injective map. -/
-@[to_additive /-- Pullback of an add torsor along an injective map. -/]
-abbrev Function.Injective.torsor {G P Q : Type*}
+@[to_additive (attr := reducible, inline)
+/-- Pullback of an add torsor along an injective map. -/]
+def Function.Injective.torsor {G P Q : Type*}
     [Group G] [Torsor G P] [SMul G Q] [SDiv G Q] [Nonempty Q] (f : Q → P)
     (hf : Function.Injective f)
     (smul : ∀ (c : G) (x : Q), f (c • x) = c • f x)
@@ -278,8 +279,9 @@ abbrev Function.Injective.torsor {G P Q : Type*}
   smul_sdiv' c x := by simp [sdiv, smul]
 
 /-- Pushforward of a torsor along a surjective map. -/
-@[to_additive /-- Pushforward of an add torsor along a surjective map. -/]
-abbrev Function.Surjective.torsor {G P Q : Type*}
+@[to_additive (attr := reducible, inline)
+/-- Pushforward of an add torsor along a surjective map. -/]
+def Function.Surjective.torsor {G P Q : Type*}
     [Group G] [Torsor G P] [SMul G Q] [SDiv G Q]
     (f : P → Q) (hf : Surjective f)
     (smul : ∀ (c : G) (x : P), f (c • x) = c • f x)

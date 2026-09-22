@@ -365,7 +365,8 @@ variable (R) in
 if `Sₚ` is `R`-quasi-finite. In the case where `S` is (essentially) of finite type over `R`,
 this is equivalent to the usual definition that `p` is isolated in its fiber.
 See `Ideal.exists_notMem_forall_mem_of_ne_of_liesOver`. -/
-abbrev QuasiFiniteAt (p : Ideal S) [p.IsPrime] : Prop :=
+@[reducible, inline]
+def QuasiFiniteAt (p : Ideal S) [p.IsPrime] : Prop :=
   QuasiFinite R (Localization.AtPrime p)
 
 lemma QuasiFiniteAt.baseChange (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]

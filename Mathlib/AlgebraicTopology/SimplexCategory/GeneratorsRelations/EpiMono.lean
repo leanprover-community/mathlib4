@@ -47,10 +47,12 @@ def splitEpiσ {n : ℕ} (i : Fin (n + 1)) : SplitEpi (σ i) where
 instance {n : ℕ} {i : Fin (n + 1)} : IsSplitEpi (σ i) := .mk' <| splitEpiσ i
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `σ i`s. -/
-abbrev P_σ := degeneracies.multiplicativeClosure
+@[reducible, inline]
+def P_σ := degeneracies.multiplicativeClosure
 
 /-- Auxiliary predicate to express that a morphism is purely a composition of `δ i`s. -/
-abbrev P_δ := faces.multiplicativeClosure
+@[reducible, inline]
+def P_δ := faces.multiplicativeClosure
 
 lemma P_σ.σ {n : ℕ} (i : Fin (n + 1)) : P_σ (σ i) := .of _ (.σ i)
 

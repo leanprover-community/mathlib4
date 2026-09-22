@@ -51,8 +51,8 @@ variable (X Y : C)
 
 /-- An object `X` in a category `C` is Noetherian if `Subobject X`
 satisfies the ascending chain condition. -/
-@[stacks 0FCG]
-abbrev IsNoetherianObject : Prop := isNoetherianObject.Is X
+@[reducible, inline, stacks 0FCG]
+def IsNoetherianObject : Prop := isNoetherianObject.Is X
 
 instance [IsNoetherianObject X] : WellFoundedGT (Subobject X) :=
   isNoetherianObject.prop_of_is X

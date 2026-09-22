@@ -33,7 +33,8 @@ universe v v₁ v₂ u
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
 of LocallyRingedSpaces
 -/
-abbrev IsOpenImmersion : MorphismProperty (Scheme.{u}) :=
+@[reducible, inline]
+def IsOpenImmersion : MorphismProperty (Scheme.{u}) :=
   fun _ _ f ↦ LocallyRingedSpace.IsOpenImmersion f.toLRSHom
 
 instance IsOpenImmersion.comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)

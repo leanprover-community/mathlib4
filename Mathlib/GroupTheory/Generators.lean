@@ -55,7 +55,8 @@ namespace Group.Generators
 variable (P : Group.Generators G ι)
 
 /-- The canonical surjection from the free group on the generators to `G`. -/
-abbrev lift : FreeGroup ι →* G := FreeGroup.lift P.val
+@[reducible, inline]
+def lift : FreeGroup ι →* G := FreeGroup.lift P.val
 
 lemma lift_surjective : Function.Surjective P.lift :=
   FreeGroup.lift_surjective_iff_closure_range_eq_top.mpr P.closure_eq_top

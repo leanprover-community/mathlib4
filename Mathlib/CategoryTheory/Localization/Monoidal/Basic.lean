@@ -102,7 +102,8 @@ def toMonoidalCategory : C ⥤ LocalizedMonoidal L W ε := L
 
 /-- The isomorphism `ε : L.obj (𝟙_ C) ≅ unit`,
 as `(toMonoidalCategory L W ε).obj (𝟙_ C) ≅ unit`. -/
-abbrev ε' : (toMonoidalCategory L W ε).obj (𝟙_ C) ≅ unit := ε
+@[reducible, inline]
+def ε' : (toMonoidalCategory L W ε).obj (𝟙_ C) ≅ unit := ε
 
 local notation "L'" => toMonoidalCategory L W ε
 

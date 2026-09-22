@@ -341,7 +341,8 @@ theorem mem_pregroupoid_of_eqOnSource (PG : Pregroupoid H) {e e' : OpenPartialHo
   exact PG.congr e.open_source he'.eqOn.symm he
 
 /-- The pregroupoid of all partial maps on a topological space `H`. -/
-abbrev continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
+@[reducible, inline]
+def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   property _ _ := True
   comp _ _ _ _ _ := trivial
   id_mem := trivial

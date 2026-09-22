@@ -37,8 +37,8 @@ variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
 
 /-- For fans on maps `f₁ : ι₁ → C`, `f₂ : ι₂ → C` and a binary fan on their
 cone points, construct one family of morphisms indexed by `ι₁ ⊕ ι₂` -/
-@[simp]
-abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → bc.pt ⟶ Sum.elim f₁ f₂ i
+@[reducible, inline, simp]
+def combPairHoms : (i : ι₁ ⊕ ι₂) → bc.pt ⟶ Sum.elim f₁ f₂ i
   | .inl a => bc.fst ≫ c₁.proj a
   | .inr a => bc.snd ≫ c₂.proj a
 
@@ -73,8 +73,8 @@ variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
 
 /-- For cofans on maps `f₁ : ι₁ → C`, `f₂ : ι₂ → C` and a binary cofan on their
 cocone points, construct one family of morphisms indexed by `ι₁ ⊕ ι₂` -/
-@[simp]
-abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → Sum.elim f₁ f₂ i ⟶ bc.pt
+@[reducible, inline, simp]
+def combPairHoms : (i : ι₁ ⊕ ι₂) → Sum.elim f₁ f₂ i ⟶ bc.pt
   | .inl a => c₁.inj a ≫ bc.inl
   | .inr a => c₂.inj a ≫ bc.inr
 

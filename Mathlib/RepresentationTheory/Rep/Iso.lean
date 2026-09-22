@@ -36,7 +36,8 @@ open MonoidalCategory Finsupp Representation.IntertwiningMap
 which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, ..., gₙ)` to
 `g₀ ⊗ (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ)`. The inverse sends `g₀ ⊗ (g₁, ..., gₙ)` to
 `(g₀, g₀g₁, ..., g₀g₁...gₙ)`. -/
-abbrev diagonalSuccIsoTensorTrivial :
+@[reducible, inline]
+def diagonalSuccIsoTensorTrivial :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G k[Fin n → G] :=
   linearizationOfMulActionIso k G (Fin (n + 1) → G) ≪≫ (linearization k G).mapIso
     (Action.diagonalSuccIsoTensorTrivial G n) ≪≫
@@ -46,14 +47,16 @@ abbrev diagonalSuccIsoTensorTrivial :
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
 `single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
-abbrev diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
+@[reducible, inline]
+def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
   diagonalSuccIsoTensorTrivial k G n ≪≫ leftRegularTensorTrivialIsoFree k G (Fin n → G)
 
 variable (A : Rep k G)
 
 /-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
 `Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
-abbrev diagonalHomEquiv :
+@[reducible, inline]
+def diagonalHomEquiv :
     (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k (diagonalSuccIsoFree k G n) (Iso.refl _) ≪≫ₗ
     freeLiftLEquiv k G (Fin n → G) A

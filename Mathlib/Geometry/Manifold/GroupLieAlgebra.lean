@@ -51,9 +51,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable (I G) in
 /-- The Lie algebra of a Lie group, i.e., its tangent space at the identity. We use the word
 `GroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/
-@[to_additive /-- The Lie algebra of an additive Lie group, i.e., its tangent space at zero. We use
+@[to_additive (attr := reducible, inline)
+/-- The Lie algebra of an additive Lie group, i.e., its tangent space at zero. We use
 the word `AddGroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/]
-abbrev GroupLieAlgebra : Type _ := TangentSpace% (1 : G)
+def GroupLieAlgebra : Type _ := TangentSpace% (1 : G)
 
 /-- The invariant vector field associated to a vector `v` in the Lie algebra. At a point `g`, it
 is given by the image of `v` under left-multiplication by `g`. -/

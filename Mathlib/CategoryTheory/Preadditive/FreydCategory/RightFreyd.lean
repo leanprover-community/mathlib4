@@ -124,7 +124,8 @@ instance : (rightFunctor V).Additive where
 
 /-- The fully faithful additive functor from  `V` to `RightFreyd V` sending an object `X` of `V`
 to the class of the arrow `0 ⟶ X`. -/
-abbrev functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
+@[reducible, inline]
+def functor : V ⥤ RightFreyd V := rightFunctor V ⋙ quotient V
 
 instance : (functor V).Additive := by dsimp [functor]; infer_instance
 
@@ -151,7 +152,8 @@ namespace Candidate
 
 /-- If `f` is a morphism of `Arrow V`, this is a "candidate cokernel" of `f`, i.e. an object
 in `Arrow V` whose image in `RightFreyd V` will be a cokernel of the image of `f`. -/
-abbrev cokernel := Arrow.mk (biprod.desc v.hom f.right)
+@[reducible, inline]
+def cokernel := Arrow.mk (biprod.desc v.hom f.right)
 
 /-- For `f : u ⟶ v` a morphism in `Arrow V`, this is the morphism `v ⟶ cokernel f` from `v` to
 the "candidate cokernel" of `f`, whose image in `RightFreyd V` will be the projection to

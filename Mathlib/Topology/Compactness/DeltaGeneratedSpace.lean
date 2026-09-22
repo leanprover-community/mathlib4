@@ -37,7 +37,8 @@ open TopologicalSpace Topology
 
 /-- A topological space is Delta-generated if its topology is generated
 by the continuous maps from topological spaces of the form `Fin n → ℝ`. -/
-abbrev DeltaGeneratedSpace (Y : Type*) [TopologicalSpace Y] : Prop :=
+@[reducible, inline]
+def DeltaGeneratedSpace (Y : Type*) [TopologicalSpace Y] : Prop :=
     IsGeneratedBy (fun n ↦ Fin n → ℝ) Y
 
 namespace DeltaGeneratedSpace
@@ -45,7 +46,8 @@ namespace DeltaGeneratedSpace
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- Type synonym to be equipped with the delta-generated topology. -/
-abbrev of : Type _ := WithGeneratedByTopology (fun n ↦ Fin n → ℝ) Y
+@[reducible, inline]
+def of : Type _ := WithGeneratedByTopology (fun n ↦ Fin n → ℝ) Y
 
 /-- Delta-generated spaces are locally path-connected. -/
 instance [DeltaGeneratedSpace X] :

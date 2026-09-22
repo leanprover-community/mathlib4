@@ -522,10 +522,10 @@ attribute [instance] Hom.isMonHom_hom
 
 /-- Construct a morphism `M ⟶ N` of `Mon C` from a map `f : M ⟶ N` and
 compatibilities with the unit and the multiplication. -/
-@[to_additive
+@[to_additive (attr := reducible, inline)
 /-- Construct a morphism `M ⟶ N` of `AddMon C` from a map `f : M ⟶ N` and
 compatibilities with the zero and the addition. -/]
-abbrev Hom.mk' {M N : Mon C} (f : M.X ⟶ N.X)
+def Hom.mk' {M N : Mon C} (f : M.X ⟶ N.X)
     (one_f : η ≫ f = η := by cat_disch)
     (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch) : Hom M N :=
   have : IsMonHom f := ⟨one_f, mul_f⟩
@@ -621,11 +621,11 @@ def mkIso' {M N : C} [MonObj M] [MonObj N] (e : M ≅ N) [IsMonHom e.hom] : mk M
 
 /-- Construct an isomorphism of monoid objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-@[to_additive
+@[to_additive (attr := reducible, inline)
 /-- Construct an isomorphism of additive monoid objects by giving an isomorphism between
 the underlying objects and checking compatibility with zero and addition only in
 the forward direction. -/]
-abbrev mkIso {M N : Mon C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by cat_disch)
+def mkIso {M N : Mon C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by cat_disch)
     (mul_f : μ[M.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[N.X] := by cat_disch) : M ≅ N :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
@@ -816,10 +816,10 @@ variable [F.LaxMonoidal] [F'.LaxMonoidal] [G.LaxMonoidal] (X Y : C) [MonObj X] [
   (f : X ⟶ Y) [IsMonHom f]
 
 /-- The image of a monoid object under a lax monoidal functor is a monoid object. -/
-@[to_additive
+@[to_additive (attr := reducible, inline)
 /-- The image of an additive monoid object under a lax monoidal functor is an additive
 monoid object.-/]
-abbrev monObjObj : MonObj (F.obj X) where
+def monObjObj : MonObj (F.obj X) where
   one := ε F ≫ F.map η
   mul := LaxMonoidal.μ F X X ≫ F.map μ
   one_mul := by simp [← F.map_comp]
@@ -923,9 +923,10 @@ variable [F.OplaxMonoidal]
 
 open scoped MonObj in
 /-- Pullback a monoid object along a fully faithful oplax monoidal functor. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := reducible, inline)
+(attr := simps)
 /-- Pullback an additive monoid object along a fully faithful oplax monoidal functor. -/]
-abbrev FullyFaithful.monObj (hF : F.FullyFaithful) (X : C) [MonObj (F.obj X)] : MonObj X where
+def FullyFaithful.monObj (hF : F.FullyFaithful) (X : C) [MonObj (F.obj X)] : MonObj X where
   one := hF.preimage <| OplaxMonoidal.η F ≫ η[F.obj X]
   mul := hF.preimage <| OplaxMonoidal.δ F X X ≫ μ[F.obj X]
   one_mul := hF.map_injective <| by simp [← δ_natural_left_assoc]

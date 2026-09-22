@@ -54,7 +54,8 @@ variable (f : F)
 /--
 The smallest two-sided ideal containing a set.
 -/
-abbrev span (s : Set R) : TwoSidedIdeal R :=
+@[reducible, inline]
+def span (s : Set R) : TwoSidedIdeal R :=
   { ringCon := ringConGen (fun a b ↦ a - b ∈ s) }
 
 lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by

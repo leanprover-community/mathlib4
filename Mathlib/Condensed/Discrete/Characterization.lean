@@ -44,7 +44,8 @@ variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology CompHaus.{
 /--
 A condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant sheaf.
 -/
-abbrev IsDiscrete (X : Condensed.{u} C) := X.IsConstant (coherentTopology CompHaus)
+@[reducible, inline]
+def IsDiscrete (X : Condensed.{u} C) := X.IsConstant (coherentTopology CompHaus)
 
 end Condensed
 
@@ -169,7 +170,8 @@ variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology LightProfi
 A light condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant
 sheaf.
 -/
-abbrev IsDiscrete (X : LightCondensed.{u} C) := X.IsConstant (coherentTopology LightProfinite)
+@[reducible, inline]
+def IsDiscrete (X : LightCondensed.{u} C) := X.IsConstant (coherentTopology LightProfinite)
 
 end LightCondensed
 

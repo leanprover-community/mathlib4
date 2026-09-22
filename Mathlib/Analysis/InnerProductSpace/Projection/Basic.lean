@@ -136,8 +136,9 @@ def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
 unbundled function. This definition is only intended for use in
 setting up the bundled version `orthogonalProjection` and should not
 be used once that is defined. -/
-@[deprecated "Please use `orthogonalProjectionOnto` or `starProjection`." (since := "2026-06-10")]
-abbrev orthogonalProjectionFn (x : E) : E := K.starProjection x
+@[reducible, inline,
+deprecated "Please use `orthogonalProjectionOnto` or `starProjection`." (since := "2026-06-10")]
+def orthogonalProjectionFn (x : E) : E := K.starProjection x
 
 @[deprecated "Please use `orthogonalProjectionOnto` or `starProjection`." (since := "2026-06-10")]
 theorem orthogonalProjectionFn_eq (v : E) :

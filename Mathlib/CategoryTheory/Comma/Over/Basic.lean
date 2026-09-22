@@ -59,15 +59,18 @@ namespace Over
 variable {X : T}
 
 /-- The underlying object of an object in `Over X`. -/
-abbrev left (f : Over X) : T := Comma.left f
+@[reducible, inline]
+def left (f : Over X) : T := Comma.left f
 
 /-- The morphism that is part of an object in `Over X`. -/
-abbrev hom (f : Over X) : f.left ⟶ X := Comma.hom f
+@[reducible, inline]
+def hom (f : Over X) : f.left ⟶ X := Comma.hom f
 
 variable {f g : Over X} (φ : f ⟶ g)
 
 /-- The morphism that is part of a morphism in `Over X`. -/
-abbrev Hom.left : f.left ⟶ g.left := CommaMorphism.left φ
+@[reducible, inline]
+def Hom.left : f.left ⟶ g.left := CommaMorphism.left φ
 
 @[reassoc (attr := simp)]
 theorem w : φ.left ≫ g.hom = f.hom := by
@@ -650,15 +653,18 @@ namespace Under
 variable {X : T}
 
 /-- The underlying object of an object in `Under X`. -/
-abbrev right (f : Under X) : T := Comma.right f
+@[reducible, inline]
+def right (f : Under X) : T := Comma.right f
 
 /-- The morphism that is part of an object in `Under X`. -/
-abbrev hom (f : Under X) : X ⟶ f.right := Comma.hom f
+@[reducible, inline]
+def hom (f : Under X) : X ⟶ f.right := Comma.hom f
 
 variable {f g : Under X} (φ : f ⟶ g)
 
 /-- The morphism that is part of a morphism in `Under X`. -/
-abbrev Hom.right : f.right ⟶ g.right := CommaMorphism.right φ
+@[reducible, inline]
+def Hom.right : f.right ⟶ g.right := CommaMorphism.right φ
 
 @[reassoc (attr := simp)]
 theorem w : f.hom ≫ φ.right = g.hom := by

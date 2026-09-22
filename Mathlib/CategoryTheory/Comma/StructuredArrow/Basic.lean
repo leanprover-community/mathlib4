@@ -58,15 +58,18 @@ section
 variable {S : D} {T : C ⥤ D}
 
 /-- The right object of a structured arrow. -/
-abbrev right (X : StructuredArrow S T) : C := Comma.right X
+@[reducible, inline]
+def right (X : StructuredArrow S T) : C := Comma.right X
 
 /-- The morphism that is part of a structured arrow. -/
-abbrev hom (X : StructuredArrow S T) : S ⟶ T.obj X.right := Comma.hom X
+@[reducible, inline]
+def hom (X : StructuredArrow S T) : S ⟶ T.obj X.right := Comma.hom X
 
 variable {X Y : StructuredArrow S T} (f : X ⟶ Y)
 
 /-- The morphism that is part of a morphism of structured arrows. -/
-abbrev Hom.right : X.right ⟶ Y.right := CommaMorphism.right f
+@[reducible, inline]
+def Hom.right : X.right ⟶ Y.right := CommaMorphism.right f
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -453,7 +456,8 @@ def preIsoMap₂ (S : D) (F : B ⥤ C) (G : C ⥤ D) :
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A structured arrow is called universal if it is initial. -/
-abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
+@[reducible, inline]
+def IsUniversal (f : StructuredArrow S T) := IsInitial f
 
 namespace IsUniversal
 
@@ -518,15 +522,18 @@ section
 variable {S : C ⥤ D} {T : D}
 
 /-- The left object of a costructured arrow. -/
-abbrev left (X : CostructuredArrow S T) : C := Comma.left X
+@[reducible, inline]
+def left (X : CostructuredArrow S T) : C := Comma.left X
 
 /-- The morphism that is part of a costructured arrow. -/
-abbrev hom (X : CostructuredArrow S T) : S.obj X.left ⟶ T := Comma.hom X
+@[reducible, inline]
+def hom (X : CostructuredArrow S T) : S.obj X.left ⟶ T := Comma.hom X
 
 variable {X Y : CostructuredArrow S T} (f : X ⟶ Y)
 
 /-- The morphism that is part of a morphism of costructured arrows. -/
-abbrev Hom.left : X.left ⟶ Y.left := CommaMorphism.left f
+@[reducible, inline]
+def Hom.left : X.left ⟶ Y.left := CommaMorphism.left f
 
 #adaptation_note
 /--
@@ -902,7 +909,8 @@ def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A costructured arrow is called universal if it is terminal. -/
-abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
+@[reducible, inline]
+def IsUniversal (f : CostructuredArrow S T) := IsTerminal f
 
 namespace IsUniversal
 

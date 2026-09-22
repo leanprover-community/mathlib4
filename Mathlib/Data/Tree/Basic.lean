@@ -39,12 +39,12 @@ compile_inductive% BinaryTree
 alias Tree := BinaryTree
 
 /-- **Alias** of `BinaryTree.nil`. -/
-@[deprecated BinaryTree.nil (since := "2026-06-07")]
-abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
+@[reducible, inline, deprecated BinaryTree.nil (since := "2026-06-07")]
+def Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
 
 /-- **Alias** of `BinaryTree.node`. -/
-@[deprecated BinaryTree.node (since := "2026-06-07")]
-abbrev Tree.node.{u} {α : Type u}
+@[reducible, inline, deprecated BinaryTree.node (since := "2026-06-07")]
+def Tree.node.{u} {α : Type u}
     (value : α) (left : Tree α) (right : Tree α) : Tree α :=
   BinaryTree.node value left right
 
@@ -69,8 +69,8 @@ def traverse
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
 /-- **Alias** of `BinaryTree.traverse`. -/
-@[deprecated BinaryTree.traverse (since := "2026-06-07")]
-abbrev _root_.Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
+@[reducible, inline, deprecated BinaryTree.traverse (since := "2026-06-07")]
+def _root_.Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
 (t : Tree α) : m (Tree β) :=
   BinaryTree.traverse f t
 
@@ -82,8 +82,8 @@ def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | node a l r => node (f a) (map f l) (map f r)
 
 /-- **Alias** of `BinaryTree.map`. -/
-@[deprecated BinaryTree.map (since := "2026-06-07")]
-abbrev _root_.Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
+@[reducible, inline, deprecated BinaryTree.map (since := "2026-06-07")]
+def _root_.Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
 
 theorem id_map (t : BinaryTree α) : t.map id = t := by
   induction t with
@@ -111,8 +111,8 @@ def numNodes : BinaryTree α → ℕ
   | node _ a b => a.numNodes + b.numNodes + 1
 
 /-- **Alias** of `BinaryTree.numNodes`. -/
-@[deprecated BinaryTree.numNodes (since := "2026-06-07")]
-abbrev _root_.Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
+@[reducible, inline, deprecated BinaryTree.numNodes (since := "2026-06-07")]
+def _root_.Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
 
 /-- The number of leaves of a binary tree -/
 @[simp]
@@ -121,8 +121,8 @@ def numLeaves : BinaryTree α → ℕ
   | node _ a b => a.numLeaves + b.numLeaves
 
 /-- **Alias** of `BinaryTree.numLeaves`. -/
-@[deprecated BinaryTree.numLeaves (since := "2026-06-07")]
-abbrev _root_.Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
+@[reducible, inline, deprecated BinaryTree.numLeaves (since := "2026-06-07")]
+def _root_.Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
 
 /-- The height - length of the longest path from the root - of a binary tree -/
 @[simp]
@@ -131,8 +131,8 @@ def height : BinaryTree α → ℕ
   | node _ a b => max a.height b.height + 1
 
 /-- **Alias** of `BinaryTree.height`. -/
-@[deprecated BinaryTree.height (since := "2026-06-07")]
-abbrev _root_.Tree.height {α} (t : Tree α) : ℕ := BinaryTree.height t
+@[reducible, inline, deprecated BinaryTree.height (since := "2026-06-07")]
+def _root_.Tree.height {α} (t : Tree α) : ℕ := BinaryTree.height t
 
 theorem numLeaves_eq_numNodes_succ (x : BinaryTree α) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
@@ -154,8 +154,8 @@ def left : BinaryTree α → BinaryTree α
   | node _ l _r => l
 
 /-- **Alias** of `BinaryTree.left`. -/
-@[deprecated BinaryTree.left (since := "2026-06-07")]
-abbrev _root_.Tree.left {α} (t : Tree α) : Tree α := BinaryTree.left t
+@[reducible, inline, deprecated BinaryTree.left (since := "2026-06-07")]
+def _root_.Tree.left {α} (t : Tree α) : Tree α := BinaryTree.left t
 
 /-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
@@ -164,8 +164,8 @@ def right : BinaryTree α → BinaryTree α
   | node _ _l r => r
 
 /-- **Alias** of `BinaryTree.right`. -/
-@[deprecated BinaryTree.right (since := "2026-06-07")]
-abbrev _root_.Tree.right {α} (t : Tree α) : Tree α := BinaryTree.right t
+@[reducible, inline, deprecated BinaryTree.right (since := "2026-06-07")]
+def _root_.Tree.right {α} (t : Tree α) : Tree α := BinaryTree.right t
 
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => BinaryTree.node ()
@@ -177,8 +177,8 @@ def unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base :
   t.recOn base fun _u ↦ ind
 
 /-- **Alias** of `BinaryTree.unitRecOn`. -/
-@[deprecated BinaryTree.unitRecOn (since := "2026-06-07")]
-abbrev _root_.Tree.unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
+@[reducible, inline, deprecated BinaryTree.unitRecOn (since := "2026-06-07")]
+def _root_.Tree.unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   BinaryTree.unitRecOn t base ind
 

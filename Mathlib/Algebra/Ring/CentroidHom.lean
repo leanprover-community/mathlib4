@@ -612,7 +612,8 @@ variable [NonUnitalRing α]
 
 -- See note [reducible non-instances]
 /-- A prime associative ring has commutative centroid. -/
-abbrev commRing
+@[reducible, inline]
+def commRing
     (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by

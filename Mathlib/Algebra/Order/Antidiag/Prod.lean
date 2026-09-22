@@ -250,11 +250,11 @@ variable {A : Type*}
 filtering.
 
 Note that this is not an instance, as for sometimes a more efficient algorithm is available. -/
-@[to_additive
+@[to_additive (attr := reducible, inline)
 /-- In a canonically ordered additive type, the antidiagonal can be construct by filtering.
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/]
-abbrev mulAntidiagonalOfLocallyFinite : HasMulAntidiagonal A where
+def mulAntidiagonalOfLocallyFinite : HasMulAntidiagonal A where
   mulAntidiagonal n := {uv ∈ Iic n ×ˢ Iic n | uv.fst * uv.snd = n}
   mem_mulAntidiagonal {n} {a} := by
     simp only [mem_filter, and_iff_right_iff_imp]

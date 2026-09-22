@@ -56,13 +56,16 @@ namespace ComplexShape
 variable [TotalComplexShape c₁ c₂ c₁₂]
 
 /-- The map `I₁ × I₂ → I₁₂` on indices given by `TotalComplexShape c₁ c₂ c₁₂`. -/
-abbrev π (i : I₁ × I₂) : I₁₂ := TotalComplexShape.π c₁ c₂ c₁₂ i
+@[reducible, inline]
+def π (i : I₁ × I₂) : I₁₂ := TotalComplexShape.π c₁ c₂ c₁₂ i
 
 /-- The sign of the horizontal differential in the total complex. -/
-abbrev ε₁ (i : I₁ × I₂) : ℤˣ := TotalComplexShape.ε₁ c₁ c₂ c₁₂ i
+@[reducible, inline]
+def ε₁ (i : I₁ × I₂) : ℤˣ := TotalComplexShape.ε₁ c₁ c₂ c₁₂ i
 
 /-- The sign of the vertical differential in the total complex. -/
-abbrev ε₂ (i : I₁ × I₂) : ℤˣ := TotalComplexShape.ε₂ c₁ c₂ c₁₂ i
+@[reducible, inline]
+def ε₂ (i : I₁ × I₂) : ℤˣ := TotalComplexShape.ε₂ c₁ c₂ c₁₂ i
 
 variable {c₁}
 
@@ -126,7 +129,8 @@ class TensorSigns where
 variable [TensorSigns c]
 
 /-- The signs which appear in the vertical differential of the total complex. -/
-abbrev ε (i : I) : ℤˣ := TensorSigns.ε' c i
+@[reducible, inline]
+def ε (i : I) : ℤˣ := TensorSigns.ε' c i
 
 lemma rel_add {p q : I} (hpq : c.Rel p q) (r : I) : c.Rel (p + r) (q + r) :=
   TensorSigns.rel_add _ _ _ hpq
@@ -318,7 +322,8 @@ variable [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₂ c₁ c₁
   [TotalComplexShapeSymmetry c₁ c₂ c₁₂]
 
 /-- The signs involved in the symmetry isomorphism of the total complex. -/
-abbrev σ (i₁ : I₁) (i₂ : I₂) : ℤˣ := TotalComplexShapeSymmetry.σ c₁ c₂ c₁₂ i₁ i₂
+@[reducible, inline]
+def σ (i₁ : I₁) (i₂ : I₂) : ℤˣ := TotalComplexShapeSymmetry.σ c₁ c₂ c₁₂ i₁ i₂
 
 lemma π_symm (i₁ : I₁) (i₂ : I₂) :
     π c₂ c₁ c₁₂ ⟨i₂, i₁⟩ = π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ := by

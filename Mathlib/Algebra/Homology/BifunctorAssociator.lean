@@ -71,7 +71,8 @@ variable (F₁₂ G) in
 `K₃ : HomologicalComplex C₃ c₃`, and complexes shapes `c₁₂`, `c₄`, this asserts
 that for all `i₁₂ : ι₁₂` and `i₃ : ι₃`, the functor `G(-, K₃.X i₃)` commutes with
 the coproducts of the `F₁₂(X₁ i₁, X₂ i₂)` such that `π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂`. -/
-abbrev HasGoodTrifunctor₁₂Obj :=
+@[reducible, inline]
+def HasGoodTrifunctor₁₂Obj :=
   GradedObject.HasGoodTrifunctor₁₂Obj F₁₂ G
     (ComplexShape.ρ₁₂ c₁ c₂ c₃ c₁₂ c₄) K₁.X K₂.X K₃.X
 
@@ -83,7 +84,8 @@ with `ComplexShape.Associative c₁ c₂ c₃ c₁₂ c₂₃ c₄`, this assert
 all `i₁ : ι₁` and `i₂₃ : ι₂₃`, the functor `F(K₁.X i₁, _)` commutes with
 the coproducts of the `G₂₃(K₂.X i₂, K₃.X i₃)`
 such that `π c₂ c₃ c₂₃ ⟨i₂, i₃⟩ = i₂₃`. -/
-abbrev HasGoodTrifunctor₂₃Obj :=
+@[reducible, inline]
+def HasGoodTrifunctor₂₃Obj :=
   GradedObject.HasGoodTrifunctor₂₃Obj F G₂₃
     (ComplexShape.ρ₂₃ c₁ c₂ c₃ c₁₂ c₂₃ c₄) K₁.X K₂.X K₃.X
 

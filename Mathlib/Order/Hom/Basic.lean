@@ -90,7 +90,8 @@ infixr:25 " →o " => OrderHom
 
 /-- An order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
-abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
+@[reducible, inline]
+def OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderEmbedding :=
@@ -102,7 +103,8 @@ infixl:25 " ↪o " => OrderEmbedding
 
 /-- An order isomorphism is an equivalence such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelIso (≤) (≤)`. -/
-abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
+@[reducible, inline]
+def OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderIso :=
@@ -121,7 +123,8 @@ instance (α β : Type*) [LE α] [LE β] : FunLike (α ≃o β) α β := RelIso.
 section
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
+@[reducible, inline]
+def OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
 to_dual_insert_cast OrderHomClass := by grind only [RelHomClass]
@@ -581,7 +584,8 @@ variable [LE α] [LE β] [LE γ] [LE δ]
 
 variable (α) in
 /-- Identity order embedding -/
-abbrev id : α ↪o α :=
+@[reducible, inline]
+def id : α ↪o α :=
   RelEmbedding.refl (· ≤ ·)
 
 @[simp]
@@ -593,7 +597,8 @@ theorem id_toEmbedding : (id α).toEmbedding = Function.Embedding.refl α :=
   rfl
 
 /-- Composition of two order embeddings is an order embedding -/
-abbrev comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+@[reducible, inline]
+def comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
   RelEmbedding.trans f g
 
 @[simp]
@@ -951,7 +956,8 @@ def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃
 /-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
 
 This is `Equiv.embeddingCongr`/`RelIso.relEmbeddingCongr` for `OrderEmbedding`. -/
-abbrev orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
+@[reducible, inline]
+def orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
   RelIso.relEmbeddingCongr f g
 
 @[simp]
@@ -967,7 +973,8 @@ theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ
 /-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
 
 This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
-abbrev orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
+@[reducible, inline]
+def orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
   RelIso.relIsoCongr f g
 
 @[simp]

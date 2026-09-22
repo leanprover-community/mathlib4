@@ -34,8 +34,9 @@ attribute [local irreducible] KaehlerDifferential
 namespace KaehlerDifferential
 
 /-- (Implementation). `A`-action on `S ⊗[R] Ω[A⁄R]`. -/
+@[reducible, inline]
 noncomputable
-abbrev mulActionBaseChange : MulAction A (S ⊗[R] Ω[A⁄R]) :=
+def mulActionBaseChange : MulAction A (S ⊗[R] Ω[A⁄R]) :=
   (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
 
 attribute [local instance] mulActionBaseChange
@@ -57,8 +58,9 @@ lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
   rfl
 
 /-- (Implementation). `A`-module structure on `S ⊗[R] Ω[A⁄R]`. -/
+@[reducible, inline]
 noncomputable
-abbrev moduleBaseChange :
+def moduleBaseChange :
     Module A (S ⊗[R] Ω[A⁄R]) where
   __ := (TensorProduct.comm R S Ω[A⁄R]).toEquiv.mulAction A
   add_smul r s x := by induction x <;> simp [add_smul, tmul_add, *, add_add_add_comm]

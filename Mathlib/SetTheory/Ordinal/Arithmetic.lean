@@ -1012,7 +1012,8 @@ instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
 
 /-- This can be made a local instance in order to get `⊥`
 in `Cardinal.aleph0.ord.ToType`. -/
-abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
+@[reducible, inline]
+def orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
   WellFoundedLT.toOrderBot _
 
 end Cardinal

@@ -100,11 +100,13 @@ lemma valueGroup_def : valueGroup f = Subgroup.closure (valueMonoid f) := rfl
 
 /-- For a morphism of monoids with zero `f`, this is the smallest submonoid with zero of the
 codomain containing the range of `f`. -/
-abbrev ValueMonoid₀ := WithZero (valueMonoid f)
+@[reducible, inline]
+def ValueMonoid₀ := WithZero (valueMonoid f)
 
 /-- For a morphism of monoids with zero `f`, this is a smallest subgroup with zero of the
 codomain containing the range of `f`. -/
-abbrev ValueGroup₀ := WithZero (valueGroup f)
+@[reducible, inline]
+def ValueGroup₀ := WithZero (valueGroup f)
 
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
   tauto

@@ -39,7 +39,8 @@ instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   rfl
 
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
-abbrev of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
+@[reducible, inline]
+def of {X : Type v} [AddCommGroup X] [Module R X] (Q : QuadraticForm R X) :
     QuadraticModuleCat R :=
   { ModuleCat.of R X with
     form := Q }
@@ -62,11 +63,13 @@ instance concreteCategory : ConcreteCategory (QuadraticModuleCat.{v} R)
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `QuadraticModuleCat` back into a `Isometry`. -/
-abbrev Hom.toIsometry {X Y : QuadraticModuleCat R} (f : Hom X Y) :=
+@[reducible, inline]
+def Hom.toIsometry {X Y : QuadraticModuleCat R} (f : Hom X Y) :=
   ConcreteCategory.hom (C := QuadraticModuleCat R) f
 
 /-- Typecheck a `QuadraticForm.Isometry` as a morphism in `Module R`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+@[reducible, inline]
+def ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R Y} (f : Q₁ →qᵢ Q₂) :
     of Q₁ ⟶ of Q₂ :=
   ConcreteCategory.ofHom f

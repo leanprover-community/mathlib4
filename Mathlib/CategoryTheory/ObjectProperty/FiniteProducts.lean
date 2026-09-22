@@ -71,7 +71,8 @@ lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
     exact P.prop_of_isLimit_binaryFan h P.prop_terminal hX
 
 /-- All objects that are binary products of objects in `P`. -/
-abbrev binaryProductsClosure (P : ObjectProperty C) : ObjectProperty C :=
+@[expose, reducible, inline]
+def binaryProductsClosure (P : ObjectProperty C) : ObjectProperty C :=
   P.limitClosure (Discrete WalkingPair)
 
 lemma binaryProductsClosure_le_iff [HasTerminal C] {P Q : ObjectProperty C}
@@ -175,7 +176,8 @@ lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     exact P.prop_of_isColimit_binaryCofan h P.prop_initial hX
 
 /-- All objects that are binary coproducts of objects in `P`. -/
-abbrev binaryCoproductsClosure (P : ObjectProperty C) : ObjectProperty C :=
+@[reducible, inline]
+def binaryCoproductsClosure (P : ObjectProperty C) : ObjectProperty C :=
   P.colimitClosure (Discrete WalkingPair)
 
 lemma binaryCoproductsClosure_le_iff [HasInitial C] {P Q : ObjectProperty C}

@@ -329,7 +329,8 @@ variable {F : Type*} (R S : Type*) [FunLike F R S]
 `NormedDivisionRing` structure on the domain.
 
 See note [reducible non-instances] -/
-abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
+@[reducible, inline]
+def NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
   fast_instance% { NormedAddCommGroup.induced R S f hf, ‹DivisionRing R› with
     norm_mul x y := show ‖f _‖ = _ from (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
@@ -338,7 +339,8 @@ abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
 `NormedField` structure on the domain.
 
 See note [reducible non-instances] -/
-abbrev NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
+@[reducible, inline]
+def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedField R :=
   fast_instance% { NormedDivisionRing.induced R S f hf with
     mul_comm := mul_comm }

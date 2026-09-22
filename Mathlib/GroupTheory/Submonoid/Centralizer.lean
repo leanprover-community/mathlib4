@@ -104,10 +104,11 @@ theorem isMulCommutative_closure {s : Set M} (hcomm : s.Pairwise Commute) :
 
 open scoped IsMulCommutative
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
-@[to_additive (attr := deprecated isMulCommutative_closure +typeChanged (since := "2026-03-09"))
+@[to_additive (attr := reducible, inline)
+(attr := deprecated isMulCommutative_closure +typeChanged (since := "2026-03-09"))
 /-- If all the elements of a set `s` commute, then `closure s` forms an additive
 commutative monoid. -/]
-abbrev closureCommMonoidOfComm {s : Set M} (hcomm : s.Pairwise Commute) :
+def closureCommMonoidOfComm {s : Set M} (hcomm : s.Pairwise Commute) :
     CommMonoid (closure s) :=
   haveI := isMulCommutative_closure _ hcomm
   inferInstance

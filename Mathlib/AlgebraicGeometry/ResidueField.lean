@@ -100,7 +100,8 @@ def evaluation (U : X.Opens) (x : X) (hx : x ∈ U) : Γ(X, U) ⟶ X.residueFiel
 lemma germ_residue (x hx) : X.presheaf.germ U x hx ≫ X.residue x = X.evaluation U x hx := rfl
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
-abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
+@[reducible, inline]
+def Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
   X.evaluation ⊤ x trivial
 
 @[simp]

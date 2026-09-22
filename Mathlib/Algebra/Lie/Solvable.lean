@@ -68,7 +68,8 @@ theorem derivedSeriesOfIdeal_succ (k : ℕ) :
   Function.iterate_succ_apply' (fun I => ⁅I, I⁆) k I
 
 /-- The derived series of Lie ideals of a Lie algebra. -/
-abbrev derivedSeries (k : ℕ) : LieIdeal R L :=
+@[reducible, inline]
+def derivedSeries (k : ℕ) : LieIdeal R L :=
   derivedSeriesOfIdeal R L k ⊤
 
 theorem derivedSeries_def (k : ℕ) : derivedSeries R L k = derivedSeriesOfIdeal R L k ⊤ :=

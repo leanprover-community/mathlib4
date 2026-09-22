@@ -21,7 +21,8 @@ namespace CategoryTheory
 variable {C : Type u} [Bicategory.{w, v} C]
 
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
-abbrev EndMonoidal (X : C) :=
+@[expose, reducible, inline]
+def EndMonoidal (X : C) :=
   X ⟶ X
 -- The `Category` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380

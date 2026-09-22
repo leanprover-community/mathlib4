@@ -80,14 +80,17 @@ attribute [reassoc (attr := simp)] FunctorObjIndex.w
 variable [HasColimitsOfShape (Discrete (FunctorObjIndex f πX)) C]
 
 /-- The family of objects `A x.i` parametrized by `x : FunctorObjIndex f πX`. -/
-abbrev functorObjSrcFamily (x : FunctorObjIndex f πX) : C := A x.i
+@[reducible, inline]
+def functorObjSrcFamily (x : FunctorObjIndex f πX) : C := A x.i
 
 /-- The family of objects `B x.i` parametrized by `x : FunctorObjIndex f πX`. -/
-abbrev functorObjTgtFamily (x : FunctorObjIndex f πX) : C := B x.i
+@[reducible, inline]
+def functorObjTgtFamily (x : FunctorObjIndex f πX) : C := B x.i
 
 /-- The family of the morphisms `f x.i : A x.i ⟶ B x.i`
 parametrized by `x : FunctorObjIndex f πX`. -/
-abbrev functorObjLeftFamily (x : FunctorObjIndex f πX) :
+@[reducible, inline]
+def functorObjLeftFamily (x : FunctorObjIndex f πX) :
     functorObjSrcFamily f πX x ⟶ functorObjTgtFamily f πX x := f x.i
 
 /-- The top morphism in the pushout square in the definition of `pushoutObj f πX`. -/

@@ -59,7 +59,8 @@ noncomputable def gaussNorm : ℝ :=
 
 /-- We say `f` HasGaussNorm if the values `v (coeff t f) * ∏ i : t.support, c i` is bounded above,
   that is `gaussNorm f` is finite. -/
-abbrev HasGaussNorm := BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) * t.prod (c · ^ ·))))
+@[reducible, inline]
+def HasGaussNorm := BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) * t.prod (c · ^ ·))))
 
 @[simp]
 theorem gaussNorm_zero (vZero : v 0 = 0) : gaussNorm v c 0 = 0 := by simp [gaussNorm, vZero]
@@ -166,7 +167,8 @@ end Semiring
 variable [Ring R]
 
 /-- Predicate for when the gaussNorm is achieved by an index. -/
-abbrev AchievesGaussNorm (i : σ →₀ ℕ) : Prop :=
+@[reducible, inline]
+def AchievesGaussNorm (i : σ →₀ ℕ) : Prop :=
   v (coeff i f) * i.prod (c · ^ ·) = gaussNorm v c f
 
 lemma gaussNorm_neg (vNeg : ∀ x, v (-x) = v x) (f : MvPowerSeries σ R) :

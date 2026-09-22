@@ -160,7 +160,8 @@ def algSpec.fullyFaithful : (algSpec R).FullyFaithful :=
 
 variable (R) in
 /-- `Spec` as a functor from `R`-bialgebras to monoid schemes over `Spec R`. -/
-abbrev bialgSpec : (CommBialgCat R)ᵒᵖ ⥤ Mon (Over <| Spec R) :=
+@[reducible, inline]
+def bialgSpec : (CommBialgCat R)ᵒᵖ ⥤ Mon (Over <| Spec R) :=
   (commBialgCatEquivComonCommAlgCat R).functor.leftOp ⋙ (algSpec R).mapMon
 
 /-- `Spec` is full on `R`-bialgebras. -/
@@ -175,7 +176,8 @@ def bialgSpec.fullyFaithful : (bialgSpec R).FullyFaithful :=
 
 variable (R) in
 /-- `Spec` as a functor from `R`-Hopf algebras to group schemes over `Spec R`. -/
-abbrev hopfSpec : (CommHopfAlgCat R)ᵒᵖ ⥤ Grp (Over <| Spec R) :=
+@[reducible, inline]
+def hopfSpec : (CommHopfAlgCat R)ᵒᵖ ⥤ Grp (Over <| Spec R) :=
   (commHopfAlgCatEquivCogrpCommAlgCat R).functor.leftOp ⋙ (algSpec R).mapGrp
 
 /-- `Spec` is full on `R`-Hopf algebras. -/

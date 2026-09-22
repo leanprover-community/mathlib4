@@ -515,7 +515,8 @@ section ModP
 variable (O : Type u₂) [CommRing O] (p : ℕ)
 
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-abbrev ModP :=
+@[reducible, inline]
+def ModP :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
 
 namespace ModP

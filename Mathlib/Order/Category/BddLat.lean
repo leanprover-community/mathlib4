@@ -42,7 +42,8 @@ instance : CoeSort BddLat Type* :=
 attribute [instance] BddLat.isBoundedOrder
 
 /-- Construct a bundled `BddLat` from `Lattice` + `BoundedOrder`. -/
-abbrev of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
+@[reducible, inline]
+def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
   carrier := α
 
 open Lean.PrettyPrinter.Delaborator in
@@ -73,11 +74,13 @@ instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddLat` back into a `BoundedLatticeHom`. -/
-abbrev Hom.hom {X Y : BddLat.{u}} (f : Hom X Y) :=
+@[reducible, inline]
+def Hom.hom {X Y : BddLat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := BddLat) f
 
 /-- Typecheck a `BoundedLatticeHom` as a morphism in `BddLat`. -/
-abbrev ofHom {X Y : Type u} [Lattice X] [BoundedOrder X] [Lattice Y] [BoundedOrder Y]
+@[reducible, inline]
+def ofHom {X Y : Type u} [Lattice X] [BoundedOrder X] [Lattice Y] [BoundedOrder Y]
     (f : BoundedLatticeHom X Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := BddLat) f
 

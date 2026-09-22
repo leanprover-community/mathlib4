@@ -61,7 +61,8 @@ corresponding to the right square.
 variable {X₃ Y₁ Y₂ Y₃ : C} {g₁ : Y₁ ⟶ Y₂} {g₂ : Y₂ ⟶ Y₃} {i₃ : X₃ ⟶ Y₃}
 
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s horizontally -/
-abbrev PullbackCone.pasteHoriz
+@[reducible, inline]
+def PullbackCone.pasteHoriz
     (t₂ : PullbackCone g₂ i₃) {i₂ : t₂.pt ⟶ Y₂} (t₁ : PullbackCone g₁ i₂) (hi₂ : i₂ = t₂.fst) :
     PullbackCone (g₁ ≫ g₂) i₃ :=
   PullbackCone.mk t₁.fst (t₁.snd ≫ t₂.snd)
@@ -164,7 +165,8 @@ to the top square.
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₂ ⟶ X₁} {f₂ : X₃ ⟶ X₂} {i₁ : Y₁ ⟶ X₁}
 
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
-abbrev PullbackCone.pasteVert
+@[reducible, inline]
+def PullbackCone.pasteVert
     (t₁ : PullbackCone i₁ f₁) {i₂ : t₁.pt ⟶ X₂} (t₂ : PullbackCone i₂ f₂) (hi₂ : i₂ = t₁.snd) :
     PullbackCone i₁ (f₂ ≫ f₁) :=
   PullbackCone.mk (t₂.fst ≫ t₁.fst) t₂.snd
@@ -250,7 +252,8 @@ where `t₁` denotes the left pushout cocone, and `t₂` denotes the right pusho
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₁ ⟶ X₂} {f₂ : X₂ ⟶ X₃} {i₁ : X₁ ⟶ Y₁}
 
 /-- The pushout cocone obtained by pasting two pushout cocones horizontally. -/
-abbrev PushoutCocone.pasteHoriz
+@[reducible, inline]
+def PushoutCocone.pasteHoriz
     (t₁ : PushoutCocone i₁ f₁) {i₂ : X₂ ⟶ t₁.pt} (t₂ : PushoutCocone i₂ f₂) (hi₂ : i₂ = t₁.inr) :
     PushoutCocone i₁ (f₁ ≫ f₂) :=
   PushoutCocone.mk (t₁.inl ≫ t₂.inl) t₂.inr
@@ -359,7 +362,8 @@ variable (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : Push
   (hi₂ : i₂ = t₁.inl)
 
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
-abbrev PushoutCocone.pasteVert
+@[reducible, inline]
+def PushoutCocone.pasteVert
     (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : PushoutCocone g₁ i₂) (hi₂ : i₂ = t₁.inl) :
     PushoutCocone (g₂ ≫ g₁) i₃ :=
   PushoutCocone.mk t₂.inl (t₁.inr ≫ t₂.inr)

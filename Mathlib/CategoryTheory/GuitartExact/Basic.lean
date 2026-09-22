@@ -96,13 +96,15 @@ that there is an equivalence
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is the
 category `StructuredArrow (CostructuredArrow.mk g) (w.costructuredArrowRightwards X₃)`,
 see the constructor `StructuredArrowRightwards.mk` for the data that is involved. -/
-abbrev StructuredArrowRightwards :=
+@[reducible, inline]
+def StructuredArrowRightwards :=
   StructuredArrow (CostructuredArrow.mk g) (w.costructuredArrowRightwards X₃)
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is the
 category `CostructuredArrow (w.structuredArrowDownwards X₂) (StructuredArrow.mk g)`,
 see the constructor `CostructuredArrowDownwards.mk` for the data that is involved. -/
-abbrev CostructuredArrowDownwards :=
+@[reducible, inline]
+def CostructuredArrowDownwards :=
   CostructuredArrow (w.structuredArrowDownwards X₂) (StructuredArrow.mk g)
 
 section
@@ -110,13 +112,15 @@ section
 variable (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
 
 /-- Constructor for objects in `w.StructuredArrowRightwards g`. -/
-abbrev StructuredArrowRightwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+@[reducible, inline]
+def StructuredArrowRightwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
     w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
-abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+@[reducible, inline]
+def CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
     w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))

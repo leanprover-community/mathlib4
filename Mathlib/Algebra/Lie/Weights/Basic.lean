@@ -261,7 +261,8 @@ lemma isZero_iff_eq_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Wei
 lemma isZero_zero [Nontrivial (genWeightSpace M (0 : L → R))] : IsZero (0 : Weight R L M) := rfl
 
 /-- The proposition that a weight of a Lie module is non-zero. -/
-abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
+@[reducible, inline]
+def IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
 
 lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Weight R L M} :
     χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not

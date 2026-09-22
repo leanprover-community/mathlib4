@@ -73,7 +73,8 @@ section Action_by_Prod
 variable (M N α) [Monoid M] [Monoid N] [AddMonoid α]
 
 /-- Construct a `DistribMulAction` by a product monoid from `DistribMulAction`s by the factors. -/
-abbrev DistribMulAction.prodOfSMulCommClass [DistribMulAction M α] [DistribMulAction N α]
+@[reducible, inline]
+def DistribMulAction.prodOfSMulCommClass [DistribMulAction M α] [DistribMulAction N α]
     [SMulCommClass M N α] : DistribMulAction (M × N) α where
   __ := MulAction.prodOfSMulCommClass M N α
   smul_zero mn := by change mn.1 • mn.2 • 0 = (0 : α); rw [smul_zero, smul_zero]

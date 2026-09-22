@@ -84,7 +84,8 @@ class PreservesPointwiseLeftKanExtensionAt (c : C) where
 
 /-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all pointwise left Kan extensions
 of `F` along `L`. -/
-abbrev PreservesPointwiseLeftKanExtension := ∀ c : C, PreservesPointwiseLeftKanExtensionAt G F L c
+@[reducible, inline]
+def PreservesPointwiseLeftKanExtension := ∀ c : C, PreservesPointwiseLeftKanExtensionAt G F L c
 
 variable {F L} in
 /-- Given a pointwise left Kan extension of `F` along `L` at `c`, exhibits
@@ -266,11 +267,13 @@ end
 
 /-- `G.PreservesLeftKanExtensions L` means that `G : B ⥤ D` preserves all left Kan extensions along
 `L : A ⥤ C` of every functor `A ⥤ B`. -/
-abbrev PreservesLeftKanExtensions := ∀ (F : A ⥤ B), G.PreservesLeftKanExtension F L
+@[reducible, inline]
+def PreservesLeftKanExtensions := ∀ (F : A ⥤ B), G.PreservesLeftKanExtension F L
 
 /-- `G.PreservesPointwiseLeftKanExtensions L` means that `G : B ⥤ D` preserves all pointwise left
 Kan extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
-abbrev PreservesPointwiseLeftKanExtensions :=
+@[reducible, inline]
+def PreservesPointwiseLeftKanExtensions :=
   ∀ (F : A ⥤ B), G.PreservesPointwiseLeftKanExtension F L
 
 set_option backward.defeqAttrib.useBackward true in
@@ -345,7 +348,8 @@ class PreservesPointwiseRightKanExtensionAt (c : C) where
 
 /-- `G.PreservesRightKanExtensions L` asserts that `G` preserves all pointwise right Kan
 extensions of `F` along `L` for every `F`. -/
-abbrev PreservesPointwiseRightKanExtension := ∀ c : C, PreservesPointwiseRightKanExtensionAt G F L c
+@[reducible, inline]
+def PreservesPointwiseRightKanExtension := ∀ c : C, PreservesPointwiseRightKanExtensionAt G F L c
 
 variable {F L} in
 /-- Given a pointwise right Kan extension of `F` along `L` at `c`, exhibits
@@ -519,11 +523,13 @@ end
 
 /-- `G.PreservesRightKanExtensions L` means that `G : B ⥤ D` preserves all right Kan extensions
 along `L : A ⥤ C` of every functor `A ⥤ B`. -/
-abbrev PreservesRightKanExtensions := ∀ (F : A ⥤ B), G.PreservesRightKanExtension F L
+@[reducible, inline]
+def PreservesRightKanExtensions := ∀ (F : A ⥤ B), G.PreservesRightKanExtension F L
 
 /-- `G.PreservesPointwiseRightKanExtensions L` means that `G : B ⥤ D` preserves all pointwise right
 Kan extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
-abbrev PreservesPointwiseRightKanExtensions :=
+@[reducible, inline]
+def PreservesPointwiseRightKanExtensions :=
   ∀ (F : A ⥤ B), G.PreservesPointwiseRightKanExtension F L
 
 set_option backward.defeqAttrib.useBackward true in

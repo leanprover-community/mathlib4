@@ -38,7 +38,8 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory.{v} C]
 namespace CartesianCopyDiscard
 
 /-- Provide `ComonObj` instances using the canonical cartesian comonoid structure. -/
-abbrev instComonObjOfCartesian (X : C) : ComonObj X :=
+@[reducible, inline]
+def instComonObjOfCartesian (X : C) : ComonObj X :=
   ((cartesianComon C).obj X).comon
 
 attribute [local instance] instComonObjOfCartesian
@@ -49,7 +50,8 @@ variable [BraidedCategory C]
 instance instIsCommComonObjOfCartesian (X : C) : IsCommComonObj X where
 
 /-- Cartesian categories have copy-discard structure. -/
-abbrev ofCartesianMonoidalCategory : CopyDiscardCategory C where
+@[reducible, inline]
+def ofCartesianMonoidalCategory : CopyDiscardCategory C where
 
 attribute [local instance] ofCartesianMonoidalCategory
 

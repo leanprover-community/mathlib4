@@ -33,7 +33,8 @@ open scoped Simplicial
 /-- The category of simplicial sets.
 This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
-abbrev SSet : Type (u + 1) :=
+@[reducible, inline]
+def SSet : Type (u + 1) :=
   SimplicialObject (Type u)
 
 namespace SSet
@@ -79,7 +80,8 @@ protected abbrev evaluation : SimplexCategoryᵒᵖ ⥤ SSet.{u} ⥤ Type u :=
   evaluation _ _
 
 /-- Truncated simplicial sets. -/
-abbrev Truncated (n : ℕ) := SimplicialObject.Truncated (Type u) n
+@[reducible, inline]
+def Truncated (n : ℕ) := SimplicialObject.Truncated (Type u) n
 
 namespace Truncated
 
@@ -94,7 +96,8 @@ lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
   NatTrans.ext (funext w)
 
 /-- Further truncation of truncated simplicial sets. -/
-abbrev trunc (n m : ℕ) (h : m ≤ n := by lia) :
+@[reducible, inline]
+def trunc (n m : ℕ) (h : m ≤ n := by lia) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
 
@@ -112,7 +115,8 @@ lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
 end Truncated
 
 /-- The truncation functor on simplicial sets. -/
-abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
+@[reducible, inline]
+def truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
 
 /-- For all `m ≤ n`, `truncation m` factors through `SSet.Truncated n`. -/
 def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
@@ -132,10 +136,12 @@ protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   SimplicialObject.Truncated.cosk n
 
 /-- The n-skeleton as an endofunctor on `SSet`. -/
-abbrev sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
+@[reducible, inline]
+def sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
 
 /-- The n-coskeleton as an endofunctor on `SSet`. -/
-abbrev cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
+@[reducible, inline]
+def cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
 
 end
 
@@ -189,7 +195,8 @@ end adjunctions
 
 /-- The category of augmented simplicial sets, as a particular case of
 augmented simplicial objects. -/
-abbrev Augmented :=
+@[reducible, inline]
+def Augmented :=
   SimplicialObject.Augmented (Type u)
 
 section applications

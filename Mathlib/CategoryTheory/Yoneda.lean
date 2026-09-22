@@ -86,7 +86,8 @@ def uliftYonedaIsoYoneda {C : Type u₁} [Category.{max w v₁} C] :
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
 -/
-abbrev coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ := yoneda.flip
+@[reducible, inline]
+def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ := yoneda.flip
 
 /-- Unification hint for `(coyoneda.obj (op X)).obj Y = X ⟶ Y`. -/
 unif_hint coyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
@@ -102,8 +103,8 @@ unif_hint coyoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
 
 /-- Variant of the Coyoneda embedding which allows a raise in the universe level
 for the category of types. -/
-@[pp_with_univ]
-abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.{w}.flip
+@[reducible, inline, pp_with_univ]
+def uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.{w}.flip
 
 /-- Unification hint for `(uliftCoyoneda.{w}.obj (op X)).obj Y = ULift (Y ⟶ X)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom (X X' Y Y' : C) where

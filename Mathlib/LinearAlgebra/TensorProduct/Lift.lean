@@ -32,7 +32,8 @@ def liftBaseChangeEquiv : (M →ₗ[R] N) ≃ₗ[A] (A ⊗[R] M →ₗ[A] N) :=
   (LinearMap.ringLmapEquivSelf _ _ _).symm.trans (AlgebraTensorModule.lift.equiv _ _ _ _ _ _)
 
 /-- If `N` is an `A`-module, lift a linear map `M →ₗ[R] N` to `A ⊗[R] M →ₗ[A] N`. -/
-abbrev liftBaseChange (l : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] N :=
+@[reducible, inline]
+def liftBaseChange (l : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] N :=
   LinearMap.liftBaseChangeEquiv A l
 
 @[simp]

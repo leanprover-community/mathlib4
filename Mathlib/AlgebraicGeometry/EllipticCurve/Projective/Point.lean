@@ -623,7 +623,8 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
 end Projective
 
 /-- An abbreviation for `WeierstrassCurve.Projective.Point.fromAffine` for dot notation. -/
-abbrev Affine.Point.toProjective [Nontrivial R] {W : Affine R} (P : W.Point) :
+@[reducible, inline]
+def Affine.Point.toProjective [Nontrivial R] {W : Affine R} (P : W.Point) :
     W.toProjective.Point :=
   Projective.Point.fromAffine P
 

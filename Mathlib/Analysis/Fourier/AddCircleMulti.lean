@@ -206,7 +206,8 @@ section Lp
 
 /-- The family of monomials `mFourier n`, parametrized by `n : ℤᵈ` and considered as
 elements of the `Lp` space of functions `UnitAddTorus d → ℂ`. -/
-abbrev mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
+@[reducible, inline]
+def mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
     Lp ℂ p (volume : Measure (UnitAddTorus d)) :=
   ContinuousMap.toLp (E := ℂ) p volume ℂ (mFourier n)
 

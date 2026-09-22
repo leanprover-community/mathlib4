@@ -43,7 +43,8 @@ for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Form
 
 All definitions and lemmas for Weierstrass curves in projective coordinates live in the namespace
 `WeierstrassCurve.Projective` to distinguish them from those in other coordinates. This is simply an
-abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toProjective`.
+@[reducible, inline]
+defiation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toProjective`.
 This can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Projective.toAffine`.
 
 A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
@@ -108,17 +109,20 @@ namespace WeierstrassCurve
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in projective coordinates. -/
-abbrev Projective : Type r :=
+@[reducible, inline]
+def Projective : Type r :=
   WeierstrassCurve R
 
 /-- The conversion from a Weierstrass curve to projective coordinates. -/
-abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
+@[reducible, inline]
+def toProjective (W : WeierstrassCurve R) : Projective R :=
   W
 
 namespace Projective
 
 /-- The conversion from a Weierstrass curve in projective coordinates to affine coordinates. -/
-abbrev toAffine (W' : Projective R) : Affine R :=
+@[reducible, inline]
+def toAffine (W' : Projective R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
@@ -151,7 +155,8 @@ scoped instance : Setoid <| Fin 3 → R :=
 
 variable (R) in
 /-- The equivalence class of a projective point representative on a Weierstrass curve. -/
-abbrev PointClass : Type r :=
+@[reducible, inline]
+def PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 lemma smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
@@ -482,12 +487,14 @@ variable (W') (f : R →+* S)
 
 /-- The Weierstrass curve in projective coordinates mapped over a ring homomorphism `f : R →+* S`.
 -/
-abbrev map : Projective S :=
+@[reducible, inline]
+def map : Projective S :=
   WeierstrassCurve.map W' f
 
 variable (S) in
 /-- The Weierstrass curve in projective coordinates base changed to an algebra `S` over `R`. -/
-abbrev baseChange [Algebra R S] : Projective S :=
+@[reducible, inline]
+def baseChange [Algebra R S] : Projective S :=
   WeierstrassCurve.baseChange W' S
 
 /-- The notation `\textf` for `WeierstrassCurve.Projective.baseChange W S`. -/

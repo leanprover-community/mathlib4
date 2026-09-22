@@ -127,9 +127,9 @@ theorem decompLinearIsometryEquiv_symm_contLinear (p : W × (V →L[𝕜] W)) :
   rw [decompLinearIsometryEquiv, ← LinearIsometryEquiv.coe_symm_toLinearEquiv,
     decompLinearEquiv_symm_contLinear]
 
-@[deprecated decompLinearIsometryEquiv +typeChanged (since := "2026-03-03"),
+@[reducible, inline, deprecated decompLinearIsometryEquiv +typeChanged (since := "2026-03-03"),
   inherit_doc decompLinearIsometryEquiv]
-abbrev toConstProdContinuousLinearMap := decompLinearIsometryEquiv 𝕜 𝕜 V W
+def toConstProdContinuousLinearMap := decompLinearIsometryEquiv 𝕜 𝕜 V W
 
 @[deprecated fst_decompLinearIsometryEquiv +typeChanged (since := "2026-03-03")]
 theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :

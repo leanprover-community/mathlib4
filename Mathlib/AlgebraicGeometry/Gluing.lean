@@ -100,7 +100,8 @@ variable (D : GlueData.{u})
 local notation "𝖣" => D.toGlueData
 
 /-- The glue data of locally ringed spaces associated to a family of glue data of schemes. -/
-abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
+@[reducible, inline]
+def toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToLocallyRingedSpace }
 
@@ -156,15 +157,18 @@ instance : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
 
 /-- The glued scheme of a glued space. -/
-abbrev glued : Scheme :=
+@[reducible, inline]
+def glued : Scheme :=
   𝖣.glued
 
 /-- The immersion from `D.U i` into the glued space. -/
-abbrev ι (i : D.J) : D.U i ⟶ D.glued :=
+@[reducible, inline]
+def ι (i : D.J) : D.U i ⟶ D.glued :=
   𝖣.ι i
 
 /-- The gluing as sheafed spaces is isomorphic to the gluing as presheafed spaces. -/
-abbrev isoLocallyRingedSpace :
+@[reducible, inline]
+def isoLocallyRingedSpace :
     D.glued.toLocallyRingedSpace ≅ D.toLocallyRingedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToLocallyRingedSpace
 

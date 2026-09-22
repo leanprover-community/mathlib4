@@ -32,7 +32,8 @@ variable (X)
 
 /-- The fundamental group is the automorphism group (vertex group) of the basepoint
 in the fundamental groupoid. -/
-abbrev FundamentalGroup (x : X) :=
+@[reducible, inline]
+def FundamentalGroup (x : X) :=
   End (FundamentalGroupoid.mk x)
 
 variable {X}
@@ -58,22 +59,26 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
   fundamentalGroupMulEquivOfPath (PathConnectedSpace.somePath x₀ x₁)
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
-abbrev toArrow {x : X} (p : FundamentalGroup X x) :
+@[reducible, inline]
+def toArrow {x : X} (p : FundamentalGroup X x) :
     FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
   p
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
-abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
+@[reducible, inline]
+def toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
   toArrow p
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-abbrev fromArrow {x : X}
+@[reducible, inline]
+def fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
     FundamentalGroup X x :=
   p
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
-abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
+@[reducible, inline]
+def fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
   fromArrow p
 
 /-- The homomorphism between fundamental groups induced by a continuous map. -/

@@ -155,21 +155,25 @@ def inhomogeneousCochainsIso :
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
-abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
+@[reducible, inline]
+def cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
-abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
+@[reducible, inline]
+def cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
     cocycles A n :=
   (inhomogeneousCochains A).cyclesMk f (n + 1) (by simp) (by simp [h])
 
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
-abbrev iCocycles (n : ℕ) : cocycles A n ⟶ (inhomogeneousCochains A).X n :=
+@[reducible, inline]
+def iCocycles (n : ℕ) : cocycles A n ⟶ (inhomogeneousCochains A).X n :=
   (inhomogeneousCochains A).iCycles n
 
 /-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
 inhomogeneous cochains. -/
-abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
+@[reducible, inline]
+def toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
   (inhomogeneousCochains A).toCycles i j
 
 variable {A} in
@@ -188,7 +192,8 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
+@[reducible, inline]
+def groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 

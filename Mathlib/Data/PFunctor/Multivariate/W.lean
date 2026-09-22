@@ -235,7 +235,8 @@ theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a
 -- Can it be avoided?
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
-abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
+@[reducible, inline]
+def objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P (α ::: β) :=
   ⟨a, splitFun f' f⟩
 

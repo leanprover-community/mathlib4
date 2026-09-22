@@ -890,7 +890,8 @@ variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddC
 structure on the domain using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances]. -/
-abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
+@[reducible, inline]
+def InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
     letI := SeminormedAddCommGroup.induced G E f
     InnerProductSpace 𝕜 G :=
   letI := SeminormedAddCommGroup.induced G E f
@@ -953,7 +954,8 @@ This is not registered as an instance since
 However, it can be used in a proof to obtain a real inner product space structure from a given
 `𝕜`-inner product space structure. -/
 -- See note [reducible non-instances]
-abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
+@[reducible, inline]
+def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
     NormedSpace.restrictScalars ℝ 𝕜 E with
     norm_sq_eq_re_inner := norm_sq_eq_re_inner

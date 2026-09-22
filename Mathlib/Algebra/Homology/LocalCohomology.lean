@@ -71,7 +71,8 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
 
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
-abbrev diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
+@[reducible, inline]
+def diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
   (ringModIdeals I).op ⋙ Ext R (ModuleCat.{u} R) i
 
 end
@@ -103,7 +104,8 @@ in an ideal `J`, `localCohomology` and `localCohomology.ofSelfLERadical`.
 /-- `localCohomology.ofDiagram I i` is the functor sending a module `M` over a commutative
 ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collection of ideals
 of `R`, represented as a functor `I`. -/
-abbrev ofDiagram (I : D ⥤ Ideal R) (i : ℕ) [HasColimit (diagram I i)] :
+@[reducible, inline]
+def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) [HasColimit (diagram I i)] :
     ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
   colimit (diagram I i)
 
@@ -125,7 +127,8 @@ def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
     _ ≅ I'.op ⋙ diagram I i := Functor.associator _ _ _
 
 /-- Local cohomology agrees along precomposition with a cofinal diagram. -/
-abbrev isoOfFinal [Functor.Initial I'] (i : ℕ)
+@[reducible, inline]
+def isoOfFinal [Functor.Initial I'] (i : ℕ)
     [HasColimit (diagram (I' ⋙ I) i)] [HasColimit (diagram I i)] :
     ofDiagram.{u} (I' ⋙ I) i ≅ ofDiagram I i :=
   HasColimit.isoOfNatIso (diagramComp.{u} I' I i) ≪≫ Functor.Final.colimitIso _ _

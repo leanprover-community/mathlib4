@@ -29,7 +29,8 @@ namespace GrothendieckTopology
 
 /-- The class of morphisms of presheaves which become isomorphisms after sheafification.
 (See `GrothendieckTopology.W_iff`.) -/
-abbrev W : MorphismProperty (Cᵒᵖ ⥤ A) := ObjectProperty.isLocal (Presheaf.IsSheaf J)
+@[expose, reducible, inline]
+def W : MorphismProperty (Cᵒᵖ ⥤ A) := ObjectProperty.isLocal (Presheaf.IsSheaf J)
 
 variable (A) in
 lemma W_eq_isLocal_range_sheafToPresheaf_obj :

@@ -186,7 +186,8 @@ def IsUnramified : Prop := mult (w.comap (algebraMap k K)) = mult w
 /--
 An infinite place is ramified in a field extension if it is not unramified.
 -/
-abbrev IsRamified : Prop := ¬w.IsUnramified k
+@[reducible, inline]
+def IsRamified : Prop := ¬w.IsUnramified k
 
 lemma isUnramified_or_isRamified : w.IsUnramified k ∨ w.IsRamified k :=
   or_not
