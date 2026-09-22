@@ -66,9 +66,6 @@ lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter �
   refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
   convert! h.inv.mul_const b with k <;> rw [inv_div, div_mul_cancel]
 
-@[deprecated (since := "2026-02-03")]
-alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
-
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. -/]

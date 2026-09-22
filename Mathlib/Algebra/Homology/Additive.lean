@@ -27,7 +27,8 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalCom
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 variable {W : Type*} [Category* W] [Preadditive W]
-variable {W₁ W₂ : Type*} [Category* W₁] [Category* W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
+variable {W₁ W₂ W₃ : Type*} [Category* W₁] [Category* W₂] [Category* W₃]
+  [HasZeroMorphisms W₁] [HasZeroMorphisms W₂] [HasZeroMorphisms W₃]
 variable {c : ComplexShape ι} {C D : HomologicalComplex V c}
 variable (f : C ⟶ D) (i : ι)
 
@@ -205,9 +206,10 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
 the corresponding isomorphism for the induced functors on categories
 of homological complexes. -/
 @[simps!]
-def Functor.mapHomologicalComplexCompIso {W' : Type*} [Category W'] [Preadditive W']
-    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
-    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+def Functor.mapHomologicalComplexCompIso
+    {F : W₁ ⥤ W₂} {G : W₂ ⥤ W₃} {H : W₁ ⥤ W₃} (e : F ⋙ G ≅ H)
+    [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] [H.PreservesZeroMorphisms]
+    (c : ComplexShape ι) :
     F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c ≅ H.mapHomologicalComplex c :=
   NatIso.mapHomologicalComplex e c
 
@@ -240,7 +242,7 @@ theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X :
 
 end ChainComplex
 
-variable [HasZeroObject W₁] [HasZeroObject W₂]
+variable [HasZeroObject W₁] [HasZeroObject W₂] [HasZeroObject W₃]
 
 namespace HomologicalComplex
 
@@ -248,7 +250,8 @@ instance (W : Type*) [Category* W] [Preadditive W] [HasZeroObject W] [DecidableE
     (single W c j).Additive where
   map_add {_ _ f g} := by ext; simp [single_map_f_self]
 
-variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
+variable (F G : W₁ ⥤ W₂) (τ : F ⟶ G) [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
+    (F' : W₂ ⥤ W₃) [F'.PreservesZeroMorphisms]
     (c : ComplexShape ι) [DecidableEq ι]
 
 /-- Turning an object into a complex supported at `j` then applying a functor is
@@ -302,5 +305,41 @@ theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : W₁) :
 theorem singleMapHomologicalComplex_inv_app_ne {i j : ι} (h : i ≠ j) (X : W₁) :
     ((singleMapHomologicalComplex F c j).inv.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
+
+lemma singleMapHomologicalComplex_id_hom_app (j : ι) (X : W₁) :
+    (singleMapHomologicalComplex (𝟭 W₁) c j).hom.app X =
+      (Functor.mapHomologicalComplexIdIso W₁ c).hom.app ((single W₁ c j).obj X) := by
+  cat_disch
+
+lemma singleMapHomologicalComplex_id_inv_app (j : ι) (X : W₁) :
+    (singleMapHomologicalComplex (𝟭 W₁) c j).inv.app X =
+      (Functor.mapHomologicalComplexIdIso W₁ c).inv.app ((single W₁ c j).obj X) := by
+  cat_disch
+
+@[reassoc]
+lemma singleMapHomologicalComplex_comp_hom_app (j : ι) (X : W₁) :
+    (singleMapHomologicalComplex (F ⋙ F') c j).hom.app X =
+    (Functor.mapHomologicalComplexCompIso (Iso.refl (F ⋙ F')) c).inv.app _ ≫
+    (F'.mapHomologicalComplex c).map ((singleMapHomologicalComplex F c j).hom.app X) ≫
+      (singleMapHomologicalComplex F' c j).hom.app (F.obj X) := by
+  cat_disch
+
+@[reassoc]
+lemma singleMapHomologicalComplex_comp_inv_app (j : ι) (X : W₁) :
+    (singleMapHomologicalComplex (F ⋙ F') c j).inv.app X =
+    (singleMapHomologicalComplex F' c j).inv.app (F.obj X) ≫
+      (F'.mapHomologicalComplex c).map ((singleMapHomologicalComplex F c j).inv.app X) := by
+  cat_disch
+
+variable {F G} in
+@[reassoc]
+lemma natTransMapHomologicalComplex_app_single_obj (j : ι) (X : W₁) :
+    (τ.mapHomologicalComplex c).app ((single W₁ c j).obj X) =
+    (singleMapHomologicalComplex F c j).hom.app X ≫ (single W₂ c j).map (τ.app X) ≫
+      (singleMapHomologicalComplex G c j).inv.app X := by
+  rw [← cancel_epi ((singleMapHomologicalComplex F c j).inv.app X)]
+  dsimp
+  ext
+  simp [single_map_f_self]
 
 end HomologicalComplex

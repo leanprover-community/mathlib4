@@ -44,7 +44,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
   simp only [add_pow, one_pow, mul_one, ← pow_mul, sum_mul_sum]
   conv_lhs =>
-    enter [1, 2, k, 2, k']
+    enter [1, 1, 2, k, 2, k']
     rw [← mul_assoc, mul_right_comm _ _ (X ^ (p * k')), ← pow_add, mul_assoc, ← cast_mul]
   have h_iff : ∀ x ∈ range (n % p + 1) ×ˢ range (n / p + 1),
       k = x.1 + p * x.2 ↔ (k % p, k / p) = x := by
@@ -208,7 +208,7 @@ theorem gcd_choose_eq_minFac_of_isPrimePow (h : IsPrimePow n) :
     refine multiplicity_eq_of_dvd_of_not_dvd ?_ (minFac_sq_ndvd_gcd_choose_of_isPrimePow h)
     simpa using minFac_dvd_gcd_choose_of_isPrimePow h
   rw [Nat.prod_primeFactors_coe_pow_factorization ne_zero, primeFactors_gcd_choose_of_isPrimePow h]
-  simp [← Nat.multiplicity_eq_factorization isPrime ne_zero, this]
+  simp [← Nat.multiplicity_eq_factorization isPrime, this]
 
 /-- For a natural number `n` greater than `1`, assume that `n` is not a prime power, then
 the greatest common divisor of  `choose n 1, ⋯, choose n (n - 1)` is `1`. -/
@@ -219,9 +219,8 @@ theorem gcd_choose_eq_one_of_not_isPrimePow (hn : 1 < n) (hpn : ¬ IsPrimePow n)
   simp_rw [Finset.dvd_gcd_iff, ← modEq_zero_iff_dvd] at h
   have : Fact (Nat.Prime q) := ⟨hq⟩
   have := eq_pow_multiplicity_of_choose_modEq_zero_nat (zero_lt_of_lt hn) h
-  refine (isPrimePow_nat_iff n).mpr ⟨q, _, hq, Dvd.multiplicity_pos ?_, this.symm⟩
-  specialize h 1 (by grind)
-  rw [choose_one_right, modEq_zero_iff_dvd] at h
-  exact h
+  refine (isPrimePow_nat_iff n).mpr ⟨q, _, hq, ?_, this.symm⟩
+  contrapose! hn
+  rw [this, le_zero.mp hn, pow_zero]
 
 end Choose

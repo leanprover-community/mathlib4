@@ -38,10 +38,6 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
-## TODO
-
-- Connect this notion with `Ideal.radical`. Particularly, for a principal ideal,
-  `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
 
 @[expose] public noncomputable section
@@ -352,6 +348,14 @@ theorem radical_prod_dvd {ι : Type*} {s : Finset ι} {f : ι → M} :
   | cons i s h ih =>
     simp only [Finset.prod_cons]
     exact radical_mul_dvd.trans (mul_dvd_mul_left _ ih)
+
+theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
+  classical
+  by_cases ha : a = 0; · simp_all
+  by_cases hb : b = 0; · simp_all
+  rw [radical_eq_iff_primeFactors_eq, primeFactors_mul_eq_union ha hb, Finset.union_eq_right,
+    ← radical_dvd_iff_primeFactors_subset hb]
+  exact radical_dvd_self.trans h
 
 end UniqueFactorizationMonoid
 
