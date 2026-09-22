@@ -10,6 +10,7 @@ public import Mathlib.Init
 public import Qq
 
 public meta import Mathlib.Tactic.Matrix.ListMatrix
+public meta import Mathlib.Util.Qq
 
 /-!
 # Expansion of products of list matrices
@@ -29,8 +30,8 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Matrix
 
--- the classes are parameters so that every quotation references the one instance term the
--- caller synthesised, rather than rebuilding a projection path in every cell
+-- The classes are parameters so that every quotation references the one instance term the
+-- caller synthesised, rather than rebuilding a projection path in every cell.
 variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (aα : Q(Add $α)) (mα : Q(Mul $α))
 
 /-- Construct a proof term that `[a₀, …] = [b₀, …]` in `List α` from proofs of `aᵢ = bᵢ`.
@@ -42,11 +43,6 @@ def mkListCongr :
   | ⟨a, b, h⟩ :: es =>
     let ⟨l₁, l₂, hl⟩ := mkListCongr es
     ⟨q($a :: $l₁), q($b :: $l₂), q(congrArg₂ List.cons $h $hl)⟩
-
-/-- The list literal `[a₀, …]` of the entries `as`. -/
-def mkListLitQ : List Q($α) → Q(List $α)
-  | [] => q([])
-  | a :: as => q($a :: $(mkListLitQ as))
 
 /-- A dot product of two lists of entries, `ListMatrix.dotProduct n l₁ l₂ = expr`, with its
 proof. -/
@@ -76,7 +72,7 @@ where
     | a :: as, b :: bs =>
       let ⟨n, l₁, l₂, fold, h⟩ := go as bs
       ⟨q($n + 1), q($a :: $l₁), q($b :: $l₂), q($a * $b + $fold),
-        q(ListMatrix.dotProduct_succ_cons_cons $a $b $h)⟩
+        q(ListMatrix.dotProduct_add_one_cons_cons $a $b $h)⟩
     | _, _ => ⟨q(0), q([]), q([]), q(0), q(ListMatrix.dotProduct_zero [] [])⟩
 
 /-- The expansion of the product `ListMatrix.mul l m n A B` of two list literals with the
@@ -89,14 +85,15 @@ structure MulEq (l m n : Nat) where
   B : Q(List (List $α))
   /-- The rows of the product, each entry the sum of the products of the entries. -/
   rows : List (List Q($α))
-  /-- The list literal of `rows` as built by `mkListLitQ`. -/
+  /-- The list literal of `rows`. -/
   expr : Q(List (List $α))
   /-- The proof. -/
   proof : Q(ListMatrix.mul $l $m $n $A $B = $expr)
 
-/-- Rewrite `ListMatrix.mul l m n A B`, for `A` the list literal of the `l` rows `listA` of `m`
-entries and `B` that of the `m` rows `listB` of `n` entries over `α`, to the literal whose entries
-are the sums of products of the entries. The rows are not checked against `l`, `m` and `n`. -/
+/-- Rewrite `ListMatrix.mul l m n A B` to the literal whose entries are the sums of products of
+the entries.
+`listA`/`listB` are the rows of the `l × m` and `m × n` matrix respectively.
+The rows are not checked against `l`, `m` and `n`. -/
 def proveMul (l m n : Nat) (listA listB : List (List Q($α))) : MulEq zα aα mα l m n :=
   let Bt := letI : Zero Q($α) := ⟨q(0)⟩; ListMatrix.transpose n listB
   let mulEntryEqs := listA.map fun row => Bt.map fun col => proveDotProduct zα aα mα m row col

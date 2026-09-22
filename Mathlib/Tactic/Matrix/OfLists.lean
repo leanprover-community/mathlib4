@@ -24,9 +24,6 @@ operations to the matrix ones.
 The definitions recurse on the dimensions, so on literals they reduce in the kernel to the
 `vecCons` form of the `!![…]` notation, and a literal in that notation is definitionally an
 `ofLists` term.
-
-When the elaboration of the `!![…]` notation changes to list-based, `ofList` and `ofLists` will
-become unnecessary.
 -/
 
 @[expose] public section
@@ -39,6 +36,8 @@ namespace Mathlib.Tactic.Matrix
 
 variable {α : Type*}
 
+-- TODO: when `!![…]` elaborates to a list or array literal, define the matrix from that literal
+-- directly (`Matrix.ofArray` or its list form) and drop `ofList` and `ofLists`.
 /-- Construct a vector from the first `n` elements of a list, padded with `0`. -/
 def ofList [Zero α] : (n : ℕ) → List α → Fin n → α
   | 0, _ => ![]
@@ -73,8 +72,8 @@ theorem ofLists_apply [Zero α] (m n : ℕ) (rows : List (List α)) (i : Fin m) 
 theorem ListMatrix.dotProduct_eq [Mul α] [AddCommMonoid α] (n : ℕ) (l₁ l₂ : List α) :
     ListMatrix.dotProduct n l₁ l₂ = ofList n l₁ ⬝ᵥ ofList n l₂ := by
   induction n generalizing l₁ l₂ with
-  | zero => simp [ListMatrix.dotProduct]
-  | succ n ih => cases l₁ <;> cases l₂ <;> simp [ofList, ListMatrix.dotProduct, ← ih]
+  | zero => simp [ListMatrix.dotProduct_zero]
+  | succ n ih => cases l₁ <;> cases l₂ <;> simp [ofList, ListMatrix.dotProduct_add_one, ← ih]
 
 @[simp]
 theorem ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :

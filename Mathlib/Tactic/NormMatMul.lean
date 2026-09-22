@@ -35,16 +35,6 @@ initialize registerTraceClass `Tactic.norm_matmul
 
 namespace Mathlib.Tactic.Matrix
 
-/-- Normalise the entries of the rows `rows` by `NormNum.deriveSimp`. -/
-def proveNormalizedRows {u : Level} {α : Q(Type u)} (ctx : Simp.Context)
-    (rows : List (List Q($α))) : MetaM (List (List Q($α)) × Simp.Result) := do
-  let cells ← rows.mapM (·.mapM fun a => do
-    let s ← Mathlib.Meta.NormNum.deriveSimp ctx (useSimp := false) (e := a)
-    have b : Q($α) := s.expr
-    return (⟨a, b, ← s.getProof⟩ : (a : Q($α)) × (b : Q($α)) × Q($a = $b)))
-  let ⟨_, lit, h⟩ := mkListCongr (α := q(List $α)) (cells.map mkListCongr)
-  return (cells.map (·.map (·.2.1)), { expr := lit, proof? := some h })
-
 /-- Core of the `norm_matmul` simproc. -/
 def normMatMulCore : Simp.Simproc := fun e => do
   let_expr HMul.hMul _ _ _ _ A B := e | return .continue
@@ -64,12 +54,12 @@ def normMatMulCore : Simp.Simproc := fun e => do
   have aα : Q(Add $α) := ← synthInstanceQ q(Add $α)
   have mα : Q(Mul $α) := ← synthInstanceQ q(Mul $α)
   let r := proveMul zα aα mα l m n rowsA rowsB
-  let (entriesList, res) ← proveNormalizedRows (← readThe Simp.Context) r.rows
-  let entries := (entriesList.map List.toArray).toArray
-  let C := Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (entries[i]!)[j]!)
-  let pf ← mkAppM ``ofLists_mul #[← mkEqTrans r.proof (← res.getProof)]
-  -- `ofLists` on the row lists unfolds to the `!![…]` literals
-  return .done { expr := C, proof? := some (mkExpectedPropHint pf q($e = $C)) }
+  let rows := (r.rows.map List.toArray).toArray
+  have C : Q(Matrix (Fin $l) (Fin $n) $α) :=
+    Matrix.mkLiteralQ (α := α) (m := l) (n := n) (.of fun i j => (rows[i]!)[j]!)
+  have pf : Q($e = $C) := mkExpectedPropHint (← mkAppM ``ofLists_mul #[r.proof]) q($e = $C)
+  let res ← Mathlib.Meta.NormNum.deriveSimp (← readThe Simp.Context) (useSimp := false) (e := C)
+  return .done { expr := res.expr, proof? := some (← mkEqTrans pf (← res.getProof)) }
 
 end Mathlib.Tactic.Matrix
 

@@ -15,19 +15,20 @@ facts about matrix literals.
 
 ## Implementation notes
 
-The definitions in this file are intended for defining reflection certificates only and should
-not be used for any theory.
+`dotProduct` is sealed, and its expansion into the sum of products is reached only through
+the rewrite lemmas. Checking that expansion by kernel unfolding would make the kernel
+unfold `+` and `*` as well. For computable rings it then wastefully evaluates the entries, and
+for noncomputable rings it probes many nodes of opaque operations, which brings a worse constant.
 
 `ListMatrix` namespace is used to avoid accidental collision with other downstream definitions.
 
 Lean's `Array` is essentially a `List` within the kernel, so random access is slow; the `List`
-carrier is chosen for easier inductive operations.
-
-Reading an entry by position costs the kernel a walk of that length. Therefore, operations on
-this representation need to be mindful of traversing the structure in an efficient order.
+carrier is chosen for easier inductive operations. Reading an entry by position costs the kernel a
+walk of that length. Therefore, operations on this representation need to be mindful of traversing
+the structure in an efficient order.
 -/
 
-@[expose] public section
+public section
 
 namespace Mathlib.Tactic.Matrix.ListMatrix
 
@@ -39,28 +40,45 @@ def dotProduct [Mul α] [Add α] [Zero α] : Nat → List α → List α → α
   | 0, _, _ => 0
   | n + 1, l₁, l₂ => l₁.headD 0 * l₂.headD 0 + dotProduct n l₁.tail l₂.tail
 
-theorem dotProduct_zero [Mul α] [Add α] [Zero α] (l₁ l₂ : List α) : dotProduct 0 l₁ l₂ = 0 :=
-  rfl
+theorem dotProduct_zero [Mul α] [Add α] [Zero α] (l₁ l₂ : List α) : dotProduct 0 l₁ l₂ = 0 := by
+  rw [dotProduct]
 
-/- This is shaped to take the proof for the smaller dot product as an argument to produce a
-smaller proof term for the kernel check, as this avoids requiring `Eq.trans` and `congrArg` glue
-at each step. -/
-theorem dotProduct_succ_cons_cons [Mul α] [Add α] [Zero α] {n : Nat} (a b : α) {l₁ l₂ : List α}
-    {c : α} (h : dotProduct n l₁ l₂ = c) : dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + c :=
-  congrArg (a * b + ·) h
+theorem dotProduct_add_one [Mul α] [Add α] [Zero α] (n : Nat) (l₁ l₂ : List α) :
+    dotProduct (n + 1) l₁ l₂ = l₁.headD 0 * l₂.headD 0 + dotProduct n l₁.tail l₂.tail := by
+  rw [dotProduct]
+
+/- This is shaped to take the proof for the smaller dot product as an argument, as this avoids
+requiring `Eq.trans` and `congrArg` glue at each step. -/
+theorem dotProduct_add_one_cons_cons [Mul α] [Add α] [Zero α] {n : Nat} (a b : α) {l₁ l₂ : List α}
+    {c : α} (h : dotProduct n l₁ l₂ = c) : dotProduct (n + 1) (a :: l₁) (b :: l₂) = a * b + c := by
+  simp [dotProduct_add_one, h]
+
+/-- A one-pass recursion that prepends the entries of `row` to the rows of `cols`, with `row` padded
+with `0` when it is shorter.
+This can be done using `List.zipWith` + `row.rightpad`, but that version requires 3 traversals. -/
+@[expose] def consPad [Zero α] : List α → List (List α) → List (List α)
+  | _, [] => []
+  | a :: row, col :: cols => (a :: col) :: consPad row cols
+  | [], col :: cols => (0 :: col) :: consPad [] cols
+
+theorem consPad_eq_zipWith [Zero α] (row : List α) (cols : List (List α)) :
+    consPad row cols = List.zipWith List.cons (row.rightpad cols.length 0) cols := by
+  induction cols generalizing row with
+  | nil => simp [consPad]
+  | cons col cols ih => cases row <;> simp [consPad, ih, List.replicate_succ]
 
 /-- The transpose of a list of rows as `n` rows, where row `j` collects the `j`-th entries of
 the input rows padded with `0`. Defined by recursion on the rows with explicit padding rather than
 through Batteries' `List.transpose`, so that it reduces in the kernel. This is also more
 efficient as it gives an `O(nm)` transposition without any random access. -/
-def transpose [Zero α] (n : Nat) : List (List α) → List (List α)
+@[expose] def transpose [Zero α] (n : Nat) : List (List α) → List (List α)
   | [] => List.replicate n []
-  | row :: rows => List.zipWith List.cons ((row.rightpad n 0).take n) (transpose n rows)
+  | row :: rows => consPad row (transpose n rows)
 
 @[simp]
 theorem length_transpose [Zero α] (n : Nat) (rows : List (List α)) :
     (transpose n rows).length = n := by
-  induction rows <;> grind [transpose]
+  induction rows <;> simp [transpose, consPad_eq_zipWith]; lia
 
 theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (hj : j < n) :
     ((transpose n rows).getD j []).getD i 0 = (rows.getD i []).getD j 0 := by
@@ -68,7 +86,7 @@ theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (
   | nil => simp [transpose, hj]
   | cons row tl ih =>
     rw [← List.getElem_eq_getD (i := j) (h := ?_)]
-    · simp only [transpose, List.getElem_zipWith]
+    · simp only [transpose, consPad_eq_zipWith, length_transpose, List.getElem_zipWith]
       cases i with
       | zero => grind [List.rightpad]
       | succ k =>
@@ -76,9 +94,10 @@ theorem getD_transpose [Zero α] {n j : Nat} (rows : List (List α)) (i : Nat) (
         exact ih k
     · simpa using hj
 
-/-- The product of two lists of rows as `l` rows of `n` entries, each entry a dot product of
-`m` terms, with `A` read as an `l × m` matrix and `B` as an `m × n` matrix. -/
-def mul [Mul α] [Add α] [Zero α] (l m n : Nat) (A B : List (List α)) : List (List α) :=
+/-- The product of two lists of rows as `l` rows of `n` entries.
+Each entry is a dot product of `m` terms, with `A` and `B` read as an `l × m` and an `m × n` matrix
+respectively. -/
+@[expose] def mul [Mul α] [Add α] [Zero α] (l m n : Nat) (A B : List (List α)) : List (List α) :=
   let Bt := transpose n B
   (A.rightpad l []).map fun row ↦ Bt.map (dotProduct m row)
 
