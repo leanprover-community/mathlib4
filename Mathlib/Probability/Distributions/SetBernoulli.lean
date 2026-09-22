@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProductMeasure
+public import Mathlib.Probability.Independence.Process.Basic
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Probability.Independence.InfinitePi
@@ -242,20 +243,40 @@ lemma HasLaw.inter {S : Ω → Set ι} (hS : HasLaw S setBer(s, p) P) :
       apply eq_bernoulliMeasure <;> simp +contextual
     all_goals fun_prop
 
-lemma indepFun_inter {t : Set ι} {S : Ω → Set ι} (hS : HasLaw S setBer(s, p) P) :
+lemma indepFun_inter {t : Set ι} {S : Ω → Set ι} (hS : HasLaw S setBer(s, p) P)
+    (htu : Disjoint t u) [Countable ι] :
     (S · ∩ t) ⟂ᵢ[P] (S · ∩ u) := by
   have := hS.isProbabilityMeasure
-  rw [indepFun_iff_hasLaw_prodMk_prod hS.inter hS.inter]
-  refine ⟨by fun_prop, ?_⟩
-  change map ((fun s ↦ (s ∩ t, s ∩ u)) ∘ S) P = _
-  have h1 : (fun s ↦ (s ∩ t, s ∩ u)) ∘ (fun p : ι → Prop ↦ {i | p i}) =
-      ((fun p ↦ ({i | (p i).1}, {i | (p i).2}))) ∘
-        (fun p i ↦ (p i ∧ i ∈ t, p i ∧ i ∈ u)) := by ext; simp; grind
-  rw [← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map, setBernoulli_eq_map,
-    setBernoulli_eq_map, map_map, h1, ← map_map,
-    infinitePi_map_pi (f := fun i p ↦ (p ∧ i ∈ t, p ∧ i ∈ u)) (μ := fun i ↦ Ber(i ∈ s, False, p)),
-    map_prod_map]
-  ·
+  have h1 : (S · ∩ t) = (fun p ↦ {i | ∃ (h : i ∈ t), p ⟨i, h⟩}) ∘ (fun ω (i : t) ↦ i.1 ∈ (S ω)) := by
+    ext; grind
+  have h2 : (S · ∩ u) = (fun p ↦ {i | ∃ (h : i ∈ u), p ⟨i, h⟩}) ∘ (fun ω (i : u) ↦ i.1 ∈ (S ω)) := by
+    ext; grind
+  rw [h1, h2]
+  apply IndepFun.comp₀
+  · apply iIndepFun.indepFun_set₀ (X := fun i ω ↦ i ∈ (S ω))
+    · exact htu
+    · rw [iIndepFun_iff_map_fun_eq_infinitePi_map₀]
+      · have h1 : (fun ω i ↦ i ∈ (S ω)) = (fun s i ↦ i ∈ s) ∘ S := by
+          ext; grind
+        have h2 i : (fun ω ↦ i ∈ (S ω)) = (fun s ↦ i ∈ s) ∘ S := by
+          ext; grind
+        have h3 : ((fun (s : Set ι) i ↦ i ∈ s) ∘ fun p ↦ {i | p i}) = id := by ext; simp
+        have h4 i : ((fun (s : Set ι) ↦ i ∈ s) ∘ fun (p : ι → Prop) ↦ {i | p i}) = fun p ↦ p i := by
+          ext; simp
+        rw [h1, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map,
+          map_map, h3, map_id]
+        · congrm infinitePi fun i ↦ ?_
+          rw [h2, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map,
+            map_map, h4, infinitePi_map_eval]
+          any_goals fun_prop
+        any_goals fun_prop
+      fun_prop
+    · fun_prop
+  any_goals fun_prop
+  · apply Measurable.aemeasurable
+    fun_prop
+  · apply Measurable.aemeasurable
+    fun_prop
 
 lemma HasLaw.hasLaw_indicator_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
     {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] (c : M)
