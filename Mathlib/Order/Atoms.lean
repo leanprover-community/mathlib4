@@ -500,7 +500,7 @@ theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → 
     IsStronglyAtomic α :=
   inferInstance
 
-@[deprecated instIsStronglyCoatomicOfWellFoundedGT +typeChanged (since := "2026-08-01")]
+@[deprecated instIsStronglyCoatomicOfWellFoundedGT (since := "2026-08-01")]
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
   inferInstance
