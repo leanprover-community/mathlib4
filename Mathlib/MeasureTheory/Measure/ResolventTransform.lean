@@ -5,8 +5,12 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Support
+public import Mathlib.Tactic.Positivity
 
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Normed.Algebra.GelfandFormula

@@ -12,7 +12,7 @@ public import Mathlib.Init
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Expr
 

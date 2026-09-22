@@ -15,7 +15,7 @@ public import Mathlib.Init
 Likely these already exist somewhere. Pointers welcome.
 -/
 
-@[expose] public section
+public section
 
 /--
 Restore the metavariable context after execution.

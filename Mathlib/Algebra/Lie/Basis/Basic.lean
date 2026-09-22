@@ -330,7 +330,6 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 variable [IsDomain R] [CharZero R]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Lemma 4.4 from [Geck](Geck2017). -/
 lemma borelUpper_le_biSup :
     letI := b.isLieAbelian_cartan
@@ -395,7 +394,6 @@ private lemma cartan_borelLower_borelUpper_le :
 
 variable [IsTorsionFree R L]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma iSupIndep_rootSpace :
     letI := b.isLieAbelian_cartan
     letI U := ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i)

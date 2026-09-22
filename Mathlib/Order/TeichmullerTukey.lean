@@ -32,7 +32,7 @@ Teichmuller-Tukey lemma.
 
 @[expose] public section
 
-open Set Finite
+open Set
 
 variable {α : Type*} (F : Set (Set α))
 

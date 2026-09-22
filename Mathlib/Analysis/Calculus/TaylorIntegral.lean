@@ -6,8 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
@@ -21,7 +21,7 @@ TODO: add a version that assumes `ContDiffOn f (closedBall x (‖y‖))`
 
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

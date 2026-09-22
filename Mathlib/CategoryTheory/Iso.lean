@@ -5,6 +5,7 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
+public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
@@ -83,7 +84,7 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     _     = β.inv                 := by grind
 
 /-- Inverse isomorphism. -/
-@[symm]
+@[symm, implicit_reducible]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
@@ -112,7 +113,7 @@ theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) 
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
 
 /-- Identity isomorphism. -/
-@[refl, simps (attr := grind =)]
+@[refl, simps (attr := grind =), implicit_reducible]
 def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
@@ -127,7 +128,7 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
 /-- Composition of two isomorphisms -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =), implicit_reducible]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
@@ -219,7 +220,7 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
 attribute [local grind] Function.LeftInverse Function.RightInverse
 
 /-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
-@[to_dual (attr := simps) homFromEquiv
+@[implicit_reducible, to_dual (attr := simps) homFromEquiv
 /-- The bijection `(X ⟶ Z) ≃ (Y ⟶ Z)` induced by `α : X ≅ Y`. -/]
 def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
   toFun f := f ≫ α.hom
@@ -250,14 +251,18 @@ theorem IsIso.mk' {f : Y ⟶ X} (out : ∃ inv : X ⟶ Y, inv ≫ f = 𝟙 X ∧
 noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
   Classical.choose I.1
 
+attribute [to_dual self] inv.congr_simp
+
 namespace IsIso
 
 theorem hom_inv_id (f : X ⟶ Y) [I : IsIso f] : f ≫ inv f = 𝟙 X :=
   (Classical.choose_spec I.1).left
 
-@[to_dual existing (attr := reassoc (attr := simp), grind =) hom_inv_id]
+@[to_dual existing (attr := reassoc (attr := simp), map, grind =) hom_inv_id]
 theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
   (Classical.choose_spec I.1).right
+
+attribute [reassoc] hom_inv_id_map inv_hom_id_map
 
 end IsIso
 
@@ -449,13 +454,21 @@ section
 
 variable {D : Type*} [Category* D] {X Y : C} (e : X ≅ Y)
 
-@[reassoc +to_dual (attr := simp), grind =]
-lemma map_hom_inv_id (F : C ⥤ D) :
-    F.map e.hom ≫ F.map e.inv = 𝟙 _ := by grind
+attribute [map] hom_inv_id inv_hom_id
+attribute [reassoc +to_dual (attr := simp), grind =] hom_inv_id_map inv_hom_id_map
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[reassoc +to_dual, deprecated hom_inv_id_map +typeChanged (since := "2026-09-16")]
+lemma map_hom_inv_id (F : C ⥤ D) :
+    F.map e.hom ≫ F.map e.inv = 𝟙 _ := by simp
+
+@[reassoc +to_dual, deprecated inv_hom_id_map +typeChanged (since := "2026-09-16")]
 lemma map_inv_hom_id (F : C ⥤ D) :
     F.map e.inv ≫ F.map e.hom = 𝟙 _ := by grind
+
+attribute [deprecated hom_inv_id_map_assoc +typeChanged (since := "2026-09-16")]
+  map_hom_inv_id_assoc
+attribute [deprecated inv_hom_id_map_assoc +typeChanged (since := "2026-09-16")]
+  map_inv_hom_id_assoc
 
 end
 
@@ -469,7 +482,7 @@ variable {D : Type u₂}
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
-@[simps]
+@[simps, implicit_reducible]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
@@ -496,11 +509,18 @@ instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
 @[simp, push ←, to_dual self]
 theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) = inv (F.map f) := by
   apply eq_inv_of_hom_inv_id
-  simp [← F.map_comp]
+  exact IsIso.hom_inv_id_map f F
 
 @[to_dual (attr := reassoc) map_inv_hom]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
+
+attribute [deprecated IsIso.hom_inv_id_map +typeChanged (since := "2026-09-16")] map_hom_inv
+attribute [deprecated IsIso.inv_hom_id_map +typeChanged (since := "2026-09-16")] map_inv_hom
+attribute [deprecated IsIso.hom_inv_id_map_assoc +typeChanged (since := "2026-09-16")]
+  map_hom_inv_assoc
+attribute [deprecated IsIso.inv_hom_id_map_assoc +typeChanged (since := "2026-09-16")]
+  map_inv_hom_assoc
 
 -- The following two lemmas are needed to generate good elementwise lemmas
 @[reassoc]

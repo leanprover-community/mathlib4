@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
 
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 /-!
 # Radon-Nikodym derivatives and conditional expectations

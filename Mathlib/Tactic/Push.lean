@@ -6,12 +6,14 @@ Jireh Loreaux
 -/
 module
 
-public meta import Lean.Elab.Tactic.Conv.Simp
 public meta import Lean.Elab.ConfigEval
-public import Mathlib.Logic.Basic
+public meta import Lean.Elab.Tactic.Conv.Simp
+
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation
+public import Lean.Elab.ConfigEval
 
 /-!
 # The `push` and `pull` tactics

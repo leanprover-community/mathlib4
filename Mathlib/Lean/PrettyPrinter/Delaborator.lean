@@ -12,7 +12,7 @@ public import Mathlib.Init
 # Additions to the delaborator
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.PrettyPrinter.Delaborator
 

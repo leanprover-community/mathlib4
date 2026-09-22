@@ -54,7 +54,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 @[expose] public section
 
-variable {X G : Type*} {A B C : Set X}
+variable {X G : Type*} {A B : Set X}
 
 open Function Set Pointwise PartialEquiv
 

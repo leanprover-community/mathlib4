@@ -101,7 +101,6 @@ variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
   [G.Faithful] [G.Full]
 include adj
 
-set_option backward.isDefEq.respectTransparency false in
 lemma localEpi_mem_range_iff_epi {X Y : C} (f : X ⟶ Y) :
     localEpi (· ∈ Set.range G.obj) f ↔ Epi (F.map f) := by
   rw [← dsimp% (localEpi (· ∈ Set.range G.obj)).postcomp_iff _ _ (isLocal_adj_unit_app adj Y),

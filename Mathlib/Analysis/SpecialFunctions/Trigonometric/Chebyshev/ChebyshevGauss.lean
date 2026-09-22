@@ -9,7 +9,6 @@ module
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
-import Mathlib.Algebra.Polynomial.Sequence
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!

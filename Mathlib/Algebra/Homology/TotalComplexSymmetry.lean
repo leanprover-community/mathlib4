@@ -108,7 +108,6 @@ lemma totalFlipIsoX_hom_D₂ (j j' : J) :
     · rw [K.d₂_eq_zero _ _ _ _ h₂, K.flip.d₁_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₂_shape _ _ _ h₀, K.flip.D₁_shape c _ _ h₀, zero_comp, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The symmetry isomorphism `K.flip.total c ≅ K.total c` of the total complex of a
 bicomplex when we have `[TotalComplexShapeSymmetry c₁ c₂ c]`. -/
 noncomputable def totalFlipIso : K.flip.total c ≅ K.total c :=

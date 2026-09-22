@@ -9,7 +9,6 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Topology.Order.OrderClosedExtr
 
 /-!
 # The First- and Second-Derivative Tests
@@ -50,7 +49,9 @@ derivative test, first-derivative test, second-derivative test, calculus
 public section
 
 
-open Set Topology
+open Set
+
+open scoped Topology
 
 /-- If `f` is continuous at `b` and differentiable on `Ioo a b`, then `f` is continuous on
 `Ioc a b`. -/

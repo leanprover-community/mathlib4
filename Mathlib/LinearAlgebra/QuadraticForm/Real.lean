@@ -6,8 +6,10 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!

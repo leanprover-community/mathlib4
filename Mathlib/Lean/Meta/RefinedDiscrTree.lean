@@ -9,6 +9,8 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
 /-!
+# Refined discrimination trees
+
 A discrimination tree for the purpose of unifying local expressions with library results.
 
 This data structure is based on `Lean.Meta.DiscrTree` and `Lean.Meta.LazyDiscrTree`,

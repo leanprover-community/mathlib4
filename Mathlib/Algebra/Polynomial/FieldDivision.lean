@@ -253,7 +253,7 @@ end IsDomain
 
 section DivisionRing
 
-variable [DivisionRing R] {p q : R[X]}
+variable [DivisionRing R] {p : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
   lt_of_not_ge fun h => by
@@ -264,7 +264,7 @@ end DivisionRing
 
 section SimpleRing
 
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p q : R[X]}
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p : R[X]}
 
 @[simp]
 protected theorem map_eq_zero (f : R →+* S) : p.map f = 0 ↔ p = 0 :=
@@ -338,6 +338,8 @@ theorem div_def : p / q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff
 
 theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 
+theorem neg_mod : (-p) % q = -(p % q) := by rw [mod_def, mod_def, neg_modByMonic]
+
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
     simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
@@ -370,10 +372,10 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
-    rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
+    rw [mod_def, modByMonic, dite_eq_left (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and, if_false]⟩
+    simp only [this, false_and, ite_false]⟩
 
 protected theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
@@ -607,6 +609,10 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
 theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
   simp [normalize_apply]
 
+@[simp]
+theorem natDegree_normalize [DecidableEq R] : natDegree (normalize p) = natDegree p :=
+  natDegree_eq_of_degree_eq degree_normalize
+
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
@@ -727,6 +733,16 @@ theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % 
   apply Polynomial.modByMonic_eq_of_dvd_sub (by simp [Polynomial.Monic.def, hq])
   rw [mul_comm]
   exact (Polynomial.C_mul_dvd (by simpa using hq)).mpr h
+
+theorem mul_mod_mul_left {p₁ p₂ q : R[X]} : (q * p₁) % (q * p₂) = q * (p₁ % p₂) := by
+  by_cases hq: q = 0
+  · simp [hq]
+  rcases eq_or_ne p₂ 0 with rfl | hp₂
+  · simp
+  · have h1 : (q * p₁) % (q * p₂) = (q * (p₁ % p₂)) % (q * p₂) :=
+      mod_eq_of_dvd_sub ⟨p₁ / p₂, by rw [← mul_sub, EuclideanDomain.mod_eq_sub_mul_div]; ring⟩
+    rw [h1, mod_eq_self_iff (mul_ne_zero hq hp₂), degree_mul, degree_mul]
+    exact WithBot.add_lt_add_left (degree_ne_bot.mpr hq) (degree_mod_lt p₁ hp₂)
 
 end Field
 

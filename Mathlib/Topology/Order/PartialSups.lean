@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.PartialSups
 public import Mathlib.Topology.Order.Lattice
 
 /-!

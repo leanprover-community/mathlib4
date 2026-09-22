@@ -16,7 +16,7 @@ We show that for `α` a family of complete linear orders, the lexicographically 
 dependent functions `Πₗ i, α i` is itself a complete linear order.
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*} {α : ι → Type*} [LinearOrder ι] [∀ i, CompleteLinearOrder (α i)]
 
@@ -38,7 +38,8 @@ instance : InfSet (Πₗ i, α i) where
 
 theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.1 i := by
-  simp [sInf, inf]
+  -- This still works without excluding `iInf_of_isEmpty`, but very slowly
+  simp [sInf, inf, -iInf_of_isEmpty]
 
 theorem sInf_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (he : e ∈ s) (h : ∀ j < i, e j = sInf s j) : sInf s i ≤ e i := by
