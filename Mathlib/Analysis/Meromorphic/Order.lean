@@ -690,6 +690,24 @@ theorem meromorphicOrderAt_add_of_ne
   · simpa [h.le] using meromorphicOrderAt_add_eq_left_of_lt hf₂ h
   · simpa [h.le] using meromorphicOrderAt_add_eq_right_of_lt hf₁ h
 
+section IsTheta
+
+variable {z₀ : 𝕜}
+
+open Asymptotics in
+lemma MeromorphicAt.isTheta_pow_sub (hf : MeromorphicAt f z₀) (hf' : meromorphicOrderAt f z₀ ≠ ⊤) :
+    f =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ (meromorphicOrderAt f z₀).untop hf' := by
+  set n := (meromorphicOrderAt f z₀).untop hf'
+  have : ↑n = meromorphicOrderAt f z₀ := (meromorphicOrderAt f z₀).coe_untop hf'
+  obtain ⟨g, hgan, hgne, hev⟩ := (meromorphicOrderAt_eq_int_iff hf).mp this.symm
+  calc
+  f =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ n • g z := EventuallyEq.isTheta hev
+  _ =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ n • (1 : 𝕜) :=
+      (isTheta_refl _ _).smul (hgan.continuousAt.isTheta hgne) |>.mono nhdsWithin_le_nhds
+  _ =Θ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ n := by simpa using isTheta_refl (fun z ↦ (z - z₀) ^ n) _
+
+end IsTheta
+
 /-!
 ## Level Sets of the Order Function
 -/

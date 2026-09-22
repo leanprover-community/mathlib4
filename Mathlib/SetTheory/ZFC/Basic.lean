@@ -189,7 +189,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
 
 @[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
-instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u}
 
 instance small_coe (x : ZFSet.{u}) : Small.{u} x :=
   Quotient.inductionOn x fun a => by
@@ -609,7 +609,7 @@ def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
         (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).trans <|
           Iff.trans
               ⟨fun ⟨w, h1, h2⟩ => ⟨w, (Mem.congr_right e).1 h1, h2⟩, fun ⟨w, h1, h2⟩ =>
-                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩ <|
+                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩
             (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).symm
 
 theorem image.mk (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] (x) {y} : y ∈ x → f y ∈ image f x :=

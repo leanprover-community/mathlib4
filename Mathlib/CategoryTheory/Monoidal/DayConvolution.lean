@@ -261,7 +261,7 @@ def associatorCorepresentingIso :
           (whiskeringLeft _ _ _).obj (prod.associativity C C C).inverse ⋙
           coyoneda.obj (.op <| (prod.associativity C C C).inverse ⋙ (F ⊠ G) ⊠ H) :=
       isoWhiskerLeft _ (isoWhiskerLeft _
-        (NatIso.ofComponents fun _ ↦ Equiv.toIso <|
+        (NatIso.ofComponents fun _ ↦ Equiv.toIso
           (prod.associativity C C C).congrLeft.fullyFaithfulFunctor.homEquiv))
     _ ≅ (whiskeringLeft _ _ _).obj
             ((prod.associativity C C C).inverse ⋙ (tensor C).prod (𝟭 C) ⋙ tensor C) ⋙
@@ -294,7 +294,7 @@ lemma associator_hom_unit_unit (x y z : C) :
       (unit F (G ⊛ H)).app (x, y ⊗ z) ≫
       (F ⊛ G ⊛ H).map (α_ _ _ _).inv := by
   have := congrArg (fun t ↦ t.app ((x, y), z)) <|
-      (corepresentableBy₂' F G H).homEquiv.rightInverse_symm <|
+      (corepresentableBy₂' F G H).homEquiv.rightInverse_symm
         (corepresentableBy₂ F G H |>.ofIso
           (associatorCorepresentingIso F G H).symm |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
@@ -319,7 +319,7 @@ lemma associator_inv_unit_unit (x y z : C) :
       (unit (F ⊛ G) H).app (x ⊗ y, z) ≫
       ((F ⊛ G) ⊛ H).map (α_ x y z).hom := by
   have := congrArg (fun t ↦ t.app (x, y, z)) <|
-      (corepresentableBy₂ F G H).homEquiv.rightInverse_symm <|
+      (corepresentableBy₂ F G H).homEquiv.rightInverse_symm
         (corepresentableBy₂' F G H |>.ofIso
           (associatorCorepresentingIso F G H) |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
@@ -393,7 +393,7 @@ lemma pentagon (H K : C ⥤ V)
         (unit F (G ⊛ H ⊛ K)).app (i, (j ⊗ k ⊗ l)) ≫ (F ⊛ G ⊛ H ⊛ K).map (α_ i j (k ⊗ l)).inv ≫
         (associator F G (H ⊛ K)).inv.app ((i ⊗ j) ⊗ k ⊗ l) := by
     conv_rhs => simp only [Functor.comp_obj, tensor_obj, NatTrans.naturality,
-      associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj, Iso.map_hom_inv_id,
+      associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj, Iso.hom_inv_id_map,
       Category.comp_id]
     simp only [tensor_whiskerLeft_symm, Category.assoc, Iso.hom_inv_id_assoc,
     ← tensorHom_def'_assoc]
@@ -502,7 +502,7 @@ def leftUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
       coyoneda.obj (.op <| Functor.fromPUnit.{0} (𝟙_ V) ⊠ F) ≅
-    coyoneda.obj (.op <| F) := by
+    coyoneda.obj (.op F) := by
   calc
     _ ≅ (whiskeringLeft _ _ _).obj (tensor C) ⋙
           (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
@@ -510,7 +510,7 @@ def leftUnitorCorepresentingIso :
           coyoneda.obj (.op <|
            (prod.leftUnitorEquivalence C).inverse ⋙ Functor.fromPUnit.{0} (𝟙_ V) ⊠ F) :=
       isoWhiskerLeft _ (isoWhiskerLeft _
-        (NatIso.ofComponents fun _ ↦ Equiv.toIso <|
+        (NatIso.ofComponents fun _ ↦ Equiv.toIso
           (prod.leftUnitorEquivalence C).congrLeft.fullyFaithfulFunctor.homEquiv))
     _ ≅ (whiskeringLeft _ _ _).obj
             ((prod.leftUnitorEquivalence C).inverse ⋙ (Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C) ⋙
@@ -533,7 +533,7 @@ def rightUnitorCorepresentingIso :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
       coyoneda.obj (.op <| F ⊠ Functor.fromPUnit.{0} (𝟙_ V)) ≅
-    coyoneda.obj (.op <| F) := by
+    coyoneda.obj (.op F) := by
   calc
     _ ≅ (whiskeringLeft _ _ _).obj (tensor C) ⋙
           (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
@@ -541,7 +541,7 @@ def rightUnitorCorepresentingIso :
           coyoneda.obj (.op <|
            (prod.rightUnitorEquivalence C).inverse ⋙ F ⊠ Functor.fromPUnit.{0} (𝟙_ V)) :=
       isoWhiskerLeft _ (isoWhiskerLeft _
-        (NatIso.ofComponents fun _ ↦ Equiv.toIso <|
+        (NatIso.ofComponents fun _ ↦ Equiv.toIso
           (prod.rightUnitorEquivalence C).congrLeft.fullyFaithfulFunctor.homEquiv))
     _ ≅ (whiskeringLeft _ _ _).obj
             ((prod.rightUnitorEquivalence C).inverse ⋙

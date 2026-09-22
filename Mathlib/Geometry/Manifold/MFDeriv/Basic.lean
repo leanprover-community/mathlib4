@@ -199,7 +199,7 @@ theorem mdifferentiableWithinAt_iff_target_inter' :
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
           (extChartAt I x x) := by
   simp only [MDifferentiableWithinAt, liftPropWithinAt_iff']
-  exact and_congr_right fun hc => differentiableWithinAt_congr_nhds <|
+  exact and_congr_right fun hc => differentiableWithinAt_congr_nhds
     hc.nhdsWithin_extChartAt_symm_preimage_inter_range
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
@@ -210,7 +210,7 @@ theorem mdifferentiableWithinAt_iff_target :
   have cont :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
-      and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
+      and_iff_left_of_imp (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, DifferentiableWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
     PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
     OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
