@@ -123,7 +123,6 @@ lemma binomial_real_self (n : ℕ) (p : I) :
 lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
 
-@[simp]
 lemma binomial_one_eq_bernoulliMeasure (p : I) :
     Bin(1, p) = Ber(1, 0, p) := by
   refine ext_of_measureReal_singleton fun k ↦ ?_
@@ -131,7 +130,6 @@ lemma binomial_one_eq_bernoulliMeasure (p : I) :
   | 0 | 1 => simp
   | k + 2 => simp [binomial_real_singleton, Nat.choose_eq_zero_of_lt]
 
-@[simp]
 lemma map_cast_binomial_one_eq_bernoulliMeasure (p : I) :
     Bin(R, 1, p) = Ber(1, 0, p) := by
   rw [binomial_one_eq_bernoulliMeasure, map_bernoulliMeasure']
