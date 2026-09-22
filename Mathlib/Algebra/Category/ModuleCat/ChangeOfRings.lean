@@ -154,7 +154,7 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     (M →ₛₗ[f] N) ≃+ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N) <|
+  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N)
     { toFun := g
       map_add' := by simp
       map_smul' := by simp }
@@ -567,7 +567,7 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
     (g : (restrictScalars f).obj Y ⟶ X) : Y ⟶ (coextendScalars f).obj X :=
   ofHom
   { toFun := fun y : Y => (CoextendScalars.equiv _ _).symm
-      { toFun := fun s : S => g <| (s • y : Y)
+      { toFun := fun s : S => g (s • y : Y)
         map_add' := fun s1 s2 : S => by simp [add_smul]
         map_smul' := fun r (s : S) => by
           rw [← g.hom.map_smul]

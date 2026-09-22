@@ -106,7 +106,7 @@ def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t
 -- warning: this could potentially loop with `Invertible.ne_zero` - if there are weird type-class
 -- loops, watch out for that.
 instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) :=
-  invertibleOfNonzero <| NeZero.out
+  invertibleOfNonzero NeZero.out
 
 end Semifield
 

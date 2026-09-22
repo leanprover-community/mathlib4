@@ -191,7 +191,7 @@ instance : SmallCategory Skeleton.{u} where
 theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
   ext _ _ <|
     Fin.equiv_iff_eq.mp <|
-      Nonempty.intro <|
+      Nonempty.intro
         { toFun := fun x => (h.hom ⟨x⟩).down
           invFun := fun x => (h.inv ⟨x⟩).down
           left_inv := by
