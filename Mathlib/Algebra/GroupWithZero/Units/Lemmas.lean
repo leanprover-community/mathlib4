@@ -23,6 +23,32 @@ open scoped Ring
 variable {M M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
 
+section MonoidWithZero
+
+variable [MonoidWithZero M₀'] [FunLike F M₀ M₀']
+
+protected theorem IsUnit.map_ringInverse [MonoidHomClass F M₀ M₀'] (f : F) {a : M₀} (h : IsUnit a) :
+    f a⁻¹ʳ = (f a)⁻¹ʳ := by
+  lift a to M₀ˣ using h
+  simpa [Ring.inverse_unit] using (Ring.inverse_unit (Units.map (.ofClass f) a)).symm
+
+/-- A homomorphism which reflects units commutes with `Ring.inverse`. This does not require any
+`IsUnit` assumption. The `IsLocalHom f` hypothesis is satisfied when `f` is an isomorphism.
+Not marked `simp` to prevent frequent instance searches for `IsLocalHom _`. -/
+theorem map_ringInverse [MonoidWithZeroHomClass F M₀ M₀'] (f : F) [IsLocalHom f] (a : M₀) :
+    f a⁻¹ʳ = (f a)⁻¹ʳ := by
+  by_cases h : IsUnit a
+  · exact h.map_ringInverse f
+  · rw [Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ (h <| IsUnit.of_map f a ·), map_zero]
+
+theorem isLocalHom_iff_map_ringInverse [MonoidWithZeroHomClass F M₀ M₀'] [Nontrivial M₀'] (f : F) :
+    IsLocalHom f ↔ ∀ a, f a⁻¹ʳ = (f a)⁻¹ʳ := by
+  refine ⟨fun _ ↦ map_ringInverse f, fun h ↦ ⟨fun a ha ↦ by_contra fun ha' ↦ ?_⟩⟩
+  rw [Ring.isUnit_iff_inverse_ne_zero] at ha
+  exact ha <| by rw [← h a, Ring.inverse_non_unit _ ha', map_zero]
+
+end MonoidWithZero
+
 section Monoid
 
 variable [Monoid M] [GroupWithZero G₀]
@@ -41,6 +67,14 @@ lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ 
 instance [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
     (f : F) : IsLocalHom f :=
   isLocalHom_of_exists_map_ne_one ⟨0, by simp⟩
+
+-- not marked `simp` even at low priority because it applies unwanted in too many scenarios
+theorem map_inv₀' [FunLike F G₀ M₀]
+    [MonoidWithZeroHomClass F G₀ M₀] (f : F) (a : G₀) :
+    f a⁻¹ = (f a)⁻¹ʳ := by
+  obtain (rfl | ha) := eq_or_ne a 0
+  · simp
+  · simpa using IsUnit.mk0 a ha |>.map_ringInverse f
 
 end Monoid
 
@@ -108,10 +142,7 @@ variable [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
 /-- A monoid homomorphism between groups with zeros sending `0` to `0` sends `a⁻¹` to `(f a)⁻¹`. -/
 @[simp]
 theorem map_inv₀ : f a⁻¹ = (f a)⁻¹ := by
-  by_cases h : a = 0
-  · simp [h, map_zero f]
-  · apply eq_inv_of_mul_eq_one_left
-    rw [← map_mul, inv_mul_cancel₀ h, map_one]
+  simpa using map_ringInverse f a
 
 @[simp]
 theorem map_div₀ : f (a / b) = f a / f b :=
