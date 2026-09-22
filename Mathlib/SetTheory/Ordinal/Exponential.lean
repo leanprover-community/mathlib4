@@ -62,7 +62,7 @@ theorem opow_add_one (a b : Ordinal) : a ^ (b + 1) = a ^ b * a := by
   · rw [opow_of_ne_zero h, opow_of_ne_zero h]
     exact limitRecOn_add_one ..
 
-@[deprecated opow_add_one (since := "2026-06-17")]
+@[deprecated opow_add_one +typeChanged (since := "2026-06-17")]
 theorem opow_succ (a b : Ordinal) : a ^ succ b = a ^ b * a :=
   opow_add_one a b
 
@@ -237,7 +237,7 @@ theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : a ^ b ∣ a ^ c ↔ b
   ⟨fun h =>
     le_of_not_gt fun hn =>
       not_le_of_gt ((opow_lt_opow_iff_right a1).2 hn) <|
-        le_of_dvd (opow_ne_zero _ <| one_le_iff_ne_zero.1 <| a1.le) h,
+        le_of_dvd (opow_ne_zero _ <| one_le_iff_ne_zero.1 a1.le) h,
     opow_dvd_opow _⟩
 
 theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
@@ -475,7 +475,7 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
   · simpa only [log_of_left_le_one hb, zero_add] using le_rfl
 
-@[deprecated opow_mul_lt_opow (since := "2026-06-01")]
+@[deprecated opow_mul_lt_opow +typeChanged (since := "2026-06-01")]
 theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * n < ω ^ b :=
   opow_mul_lt_opow (natCast_lt_omega0 n) h
 

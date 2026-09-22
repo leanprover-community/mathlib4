@@ -50,6 +50,7 @@ the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
 `ULift (PLift (U ≤ V))`.
 -/
 
+@[macro_inline]
 instance opensHom.instFunLike : FunLike (U ⟶ V) U V where
   coe f := Set.inclusion f.le
   coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!

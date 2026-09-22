@@ -172,14 +172,14 @@ private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
   ( -- WithLp 2 (U × V) ≃ₗᵢ[ℝ] WithLp 2 (WithLp 2 (Fin .. → ℝ) × WithLp 2 (Fin .. → ℝ)
     (LinearIsometryEquiv.withLpProdCongr 2
       (stdOrthonormalBasis ℝ U).repr
-      (stdOrthonormalBasis ℝ V).repr).trans <|
+      (stdOrthonormalBasis ℝ V).repr).trans
     -- .. ≃ₗᵢ[ℝ] WithLp 2 (Fin (finrank ℝ U) ⊕ Fin (finrank ℝ V) → ℝ)
     (PiLp.sumPiLpEquivProdLpPiLp 2 (fun _ ↦ ℝ)).symm
   ).toMeasurableEquiv.trans <|
   -- .. ≃ᵐ Fin (finrank ℝ U) ⊕ Fin (finrank ℝ V) → ℝ
   (MeasurableEquiv.toLp 2 _).symm.trans <|
   -- .. ≃ᵐ Fin (finrank ℝ U) → ℝ × Fin (finrank ℝ V) → ℝ
-  (MeasurableEquiv.sumPiEquivProdPi (fun _ ↦ ℝ)).trans <|
+  (MeasurableEquiv.sumPiEquivProdPi (fun _ ↦ ℝ)).trans
   -- .. ≃ᵐ U × V
   (MeasurableEquiv.prodCongr
     ((MeasurableEquiv.toLp 2 _).trans (stdOrthonormalBasis ℝ U).repr.symm.toMeasurableEquiv)
