@@ -74,9 +74,9 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
       simp [hf₂, Ideal.Quotient.span_singleton_one]
   · have hxN₂ : x ∈ N₂ := (le_sup_right.trans_eq hx'.symm) (mem_span_singleton_self x)
     refine ⟨.symm (.ofBijective (Submodule.mapQ _ _ (toSpanSingleton A _ ⟨x, hxN₂⟩) ?_) ⟨?_, ?_⟩)⟩
-    · simp [SetLike.le_def, ← Quotient.mk_smul, submoduleOf]
+    · simp [IsConcreteLE.le_iff, ← Quotient.mk_smul, submoduleOf]
     · refine ker_eq_bot.mp (ker_liftQ_eq_bot _ _ _ ?_)
-      simp [← Quotient.mk_smul, SetLike.le_def, submoduleOf]
+      simp [← Quotient.mk_smul, IsConcreteLE.le_iff, submoduleOf]
     · rw [mapQ, ← range_eq_top, range_liftQ, range_comp]
       have := congr($(hx').submoduleOf N₂)
       rw [submoduleOf_self, submoduleOf_sup_of_le (by simp_all) (by simp_all),
@@ -198,8 +198,9 @@ theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
   rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at h
   obtain ⟨prime, x, rfl⟩ := h
-  exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
-    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using! hP,
+  exact IsConcreteLE.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
+    simpa only [smul_eq_mul, mul_comm x, IsConcreteLE.le_iff,
+      Submodule.mem_colon_singleton] using! hP,
       fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
 
 theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :

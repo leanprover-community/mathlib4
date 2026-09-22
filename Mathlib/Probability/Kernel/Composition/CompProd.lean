@@ -551,8 +551,6 @@ open scoped ProbabilityTheory
 
 section FstSnd
 
-variable {δ : Type*} {mδ : MeasurableSpace δ}
-
 /-- If `η` is a Markov kernel, use instead `fst_compProd` to get `(κ ⊗ₖ η).fst = κ`. -/
 lemma fst_compProd_apply (κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] (x : α) {s : Set β} (hs : MeasurableSet s) :

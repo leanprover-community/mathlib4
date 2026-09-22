@@ -28,6 +28,9 @@ Here, we take (i) as the definition, and the equivalence between the various def
 is obtained in the lemma `Cardinal.SharplyLT.tfae`. In particular, using (ii),
 we show that `Cardinal.SharplyLT` is transitive.
 
+This notion is used in the file `Mathlib/CategoryTheory/Presentable/Uniformization.lean`
+in the proof of the uniformization theorem for accessible categories.
+
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
@@ -56,7 +59,6 @@ namespace SharplyLT
 
 public lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
-set_option backward.defeqAttrib.useBackward true in
 open CardinalDirectedPoset in
 /-- This is the implication (i) → (iii) in the characterizations
 of `SharplyLT κ₁ κ₂` in the docstring of this file. -/
@@ -263,7 +265,6 @@ public lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ�
 
 end
 
-
 section
 
 variable (hκ : κ₁ < κ₂)
@@ -274,8 +275,8 @@ variable (hκ : κ₁ < κ₂)
 variable (κ₁ κ₂) in
 /-- Given a partially ordered type `J`, this is the property
 of subsets of `J` that are `κ₁`-directed and of cardinality `< κ₂`. -/
-@[implicit_reducible]
-def IsCardinalFilteredAndHasCardinalLT
+@[implicit_reducible, expose]
+public def IsCardinalFilteredAndHasCardinalLT
     (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
   IsCardinalFiltered A κ₁ ∧ HasCardinalLT A κ₂
 
@@ -287,7 +288,7 @@ variable (κ₁ κ₂) {C : Type u} [Category.{v} C] {X : C}
 
 variable [IsCardinalAccessibleCategory C κ₁]
 
-instance (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
+public instance (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) :
     HasColimit (A.val.mono_coe.functor ⋙ p.diag) := by
   have : IsCardinalFiltered A.val κ₁ := A.prop.1
   have := HasCardinalFilteredColimits.hasColimitsOfShape  C κ₁
@@ -326,12 +327,12 @@ lemma le_pair' {j j' : J} (h : j ≤ j') :
 ordered type `J` of `κ₁`-presentable objects and `A` a subset of `J`
 that is `κ₁`-directed and of cardinality `< κ₂`, this is
 the colimit of the restriction of the diagram `p.diag` to `A`. -/
-noncomputable abbrev colimit
+public noncomputable abbrev colimit
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : C :=
   Limits.colimit (A.val.mono_coe.functor ⋙ p.diag)
 
 /-- The inclusions in `colimit`. -/
-noncomputable abbrev colimit.ι
+public noncomputable abbrev colimit.ι
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) (a : J) (ha : a ∈ A.val) :
     p.diag.obj a ⟶ colimit κ₁ κ₂ p A :=
   Limits.colimit.ι (A.val.mono_coe.functor ⋙ p.diag) ⟨a, ha⟩
@@ -344,9 +345,8 @@ lemma colimit.w (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J))
   Limits.colimit.w (A.val.mono_coe.functor ⋙ p.diag)
     (j' := ⟨a, ha⟩) (j := ⟨b, hb⟩) (homOfLE hab)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functoriality of `colimit` with respect to the subset `A`. -/
-noncomputable def colimit.map
+public noncomputable def colimit.map
     {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)} (hA : A₁ ≤ A₂) :
     colimit κ₁ κ₂ p A₁ ⟶ colimit κ₁ κ₂ p A₂ :=
   colimit.desc _ (Cocone.mk _
@@ -356,14 +356,14 @@ noncomputable def colimit.map
 
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
-lemma colimit.ι_map {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)}
+public lemma colimit.ι_map {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)}
     (hA : A₁ ≤ A₂) (j : J) (hj : j ∈ A₁.val) :
     colimit.ι κ₁ κ₂ p A₁ j hj ≫ colimit.map κ₁ κ₂ p hA = colimit.ι κ₁ κ₂ p A₂ j (hA hj) :=
   colimit.ι_desc ..
 
 omit [Fact κ₂.IsRegular] in
 @[ext]
-lemma colimit.hom_ext
+public lemma colimit.hom_ext
     {A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)} {T : C}
     {φ₁ φ₂ : colimit κ₁ κ₂ p A ⟶ T}
     (h : ∀ (j : J) (hj : j ∈ A.val), colimit.ι κ₁ κ₂ p A j hj ≫ φ₁ =
@@ -374,20 +374,21 @@ lemma colimit.hom_ext
 
 /-- As `X` is the colimit of a diagram `p.diag`, this is the induced morphism
 `colimit κ₁ κ₂ p A ⟶ X` from the colimit of the restriction of this diagram to `A`. -/
-noncomputable def colimit.π
+public noncomputable def colimit.π
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) : colimit κ₁ κ₂ p A ⟶ X :=
   colimit.desc _ (Cocone.mk _ { app a := by exact p.ι.app a })
 
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
-lemma colimit.ι_π
+public lemma colimit.ι_π
     (A : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) (a : J) (ha : a ∈ A.val) :
     colimit.ι κ₁ κ₂ p A a ha ≫ colimit.π κ₁ κ₂ p A = p.ι.app a :=
   colimit.ι_desc ..
 
 omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
-lemma colimit.map_π {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)} (hA : A₁ ≤ A₂) :
+public lemma colimit.map_π
+    {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)} (hA : A₁ ≤ A₂) :
     colimit.map κ₁ κ₂ p hA ≫ colimit.π κ₁ κ₂ p A₂ = colimit.π κ₁ κ₂ p A₁ := by
   ext
   simp
@@ -396,8 +397,8 @@ lemma colimit.map_π {A₁ A₂ : Subtype (IsCardinalFilteredAndHasCardinalLT κ
 ordered type `J` of `κ₁`-presentable objects, this is the functor which sends
 a subset `A` of `J` that is `κ₁`-directed and of cardinality `< κ₂` to the
 colimit of the restriction to `A` of the diagram `p.diag`. -/
-@[simps]
-noncomputable def functor :
+@[expose, simps]
+public noncomputable def functor :
     Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J) ⥤ C where
   obj A := colimit κ₁ κ₂ p A
   map f := colimit.map κ₁ κ₂ p f.le
@@ -406,8 +407,8 @@ noncomputable def functor :
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The cocone for `functor κ₁ κ₂ p` with point `X`. -/
-@[simps]
-noncomputable def cocone : Cocone (functor κ₁ κ₂ p) where
+@[expose, simps]
+public noncomputable def cocone : Cocone (functor κ₁ κ₂ p) where
   pt := X
   ι.app j := colimit.π κ₁ κ₂ p j
 
@@ -416,7 +417,6 @@ namespace isColimit
 variable {κ₁ κ₂ p} (s : Cocone (functor κ₁ κ₂ p))
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `isColimit`. -/
 @[simps]
 noncomputable def coconeDesc : Cocone p.diag where
@@ -454,14 +454,14 @@ set_option backward.isDefEq.respectTransparency false in
 ordered type `J` of `κ₁`-presentable objects, `X` is also the colimit
 of all the colimits of the restrictions of the diagram `p.diag`
 to the subsets `A` of `J` that are `κ₁`-directed and of cardinality `< κ₂`. -/
-noncomputable def isColimit : IsColimit (cocone κ₁ κ₂ p) where
+public noncomputable def isColimit : IsColimit (cocone κ₁ κ₂ p) where
   desc s := desc s
   fac s A := fac' s A
   uniq s m hm := p.isColimit.hom_ext (fun j ↦ by simp [fac s j, ← hm])
 
 variable {κ₁ κ₂} in
 include hκ' in
-lemma isCardinalFiltered_subtype [IsCardinalFiltered J κ₁] :
+public lemma isCardinalFiltered_subtype [IsCardinalFiltered J κ₁] :
     IsCardinalFiltered (Subtype (IsCardinalFilteredAndHasCardinalLT κ₁ κ₂ J)) κ₂ :=
   isCardinalFiltered_preorder _ _ (fun K f hK ↦ by
     rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK

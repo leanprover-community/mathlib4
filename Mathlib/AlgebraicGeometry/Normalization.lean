@@ -112,9 +112,6 @@ lemma coequifibered_normalizationDiagramMap :
     (integralClosure Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r)) := .of_algebraMap_eq' rfl
   exact IsLocalization.Away.integralClosure r
 
-@[deprecated (since := "2026-02-01")]
-alias preservesLocalization_normalizationDiagramMap := coequifibered_normalizationDiagramMap
-
 /-- The diagram of affine schemes that we glue to form the normalization. -/
 def normalizationGlueData := relativeGluingData f.coequifibered_normalizationDiagramMap
 
@@ -498,7 +495,6 @@ section Coproduct
 variable {U V : Scheme} {iU : U ⟶ X} {iV : V ⟶ X} (e : IsColimit (BinaryCofan.mk iU iV))
     [QuasiCompact iU] [QuasiSeparated iU] [QuasiCompact iV] [QuasiSeparated iV]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normalization of `Y` in a coproduct is isomorphic to the coproduct of the normalizations in
 each of the components. -/
 noncomputable def normalizationCoprodIso :
@@ -528,14 +524,12 @@ noncomputable def normalizationCoprodIso :
     rw [← cancel_epi (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).inv]
     apply coprod.hom_ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_inl_normalizationCoprodIso_hom :
     (iU ≫ f).toNormalization ≫ coprod.inl ≫ (f.normalizationCoprodIso e).hom =
       iU ≫ f.toNormalization := by
   simp [Scheme.Hom.normalizationCoprodIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_inr_normalizationCoprodIso_hom :
     (iV ≫ f).toNormalization ≫ coprod.inr ≫ (f.normalizationCoprodIso e).hom =
@@ -554,14 +548,12 @@ lemma inr_toNormalization_normalizationCoprodIso_inv :
       (iV ≫ f).toNormalization ≫ coprod.inr := by
   simp [← toNormalization_inr_normalizationCoprodIso_hom_assoc f e]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_normalizationCoprodIso_hom_fromNormalization :
     coprod.inl ≫ (f.normalizationCoprodIso e).hom ≫ f.fromNormalization =
       (iU ≫ f).fromNormalization := by
   simp [Scheme.Hom.normalizationCoprodIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_normalizationCoprodIso_hom_fromNormalization :
     coprod.inr ≫ (f.normalizationCoprodIso e).hom ≫ f.fromNormalization =
@@ -581,7 +573,6 @@ section Smooth
 
 variable {X S Y : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [QuasiCompact f] [QuasiSeparated f]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The comparison lemma between the normalization of the pullback to the pullback of the
 normalization. This is an isomorphism when `g` is smooth. -/
 noncomputable def normalizationPullback :
@@ -595,7 +586,6 @@ lemma normalizationPullback_snd :
     f.normalizationPullback g ≫ pullback.snd _ _ = (pullback.snd f g).fromNormalization :=
   (pullback.snd f g).normalizationDesc_comp ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_normalizationPullback_fst :
     (pullback.snd f g).toNormalization ≫ f.normalizationPullback g ≫ pullback.fst _ _ =

@@ -286,7 +286,7 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
 @[simp] lemma toENat_eq_ofNat [n.AtLeastTwo] : toENat c = ofNat(n) ↔ c = ofNat(n) :=
   toENat_eq_natCast
 
-@[deprecated toENat_eq_zero (since := "2026-05-25")]
+@[deprecated toENat_eq_zero +typeChanged (since := "2026-05-25")]
 lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := by simp
 
 @[simp] lemma natCast_eq_toENat : n = toENat c ↔ n = c := by simp [eq_comm (a := Nat.cast _)]

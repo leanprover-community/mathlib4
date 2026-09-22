@@ -21,7 +21,7 @@ public section
 
 open TopologicalSpace Set Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 

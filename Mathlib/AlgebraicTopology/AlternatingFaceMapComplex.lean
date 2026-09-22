@@ -44,7 +44,7 @@ open CategoryTheory.Preadditive CategoryTheory.Category CategoryTheory.Idempoten
 
 open Opposite
 
-open Simplicial
+open scoped Simplicial
 
 noncomputable section
 
