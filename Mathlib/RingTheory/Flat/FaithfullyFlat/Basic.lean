@@ -127,7 +127,7 @@ lemma lTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [Subsingleton (M ⊗[R] N)] :
     Subsingleton N := by
-  haveI : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
+  have : Subsingleton (N ⊗[R] M) := (TensorProduct.comm R N M).toEquiv.injective.subsingleton
   apply rTensor_reflects_triviality R M
 
 attribute [-simp] Ideal.Quotient.mk_eq_mk in
@@ -139,7 +139,7 @@ lemma iff_flat_and_rTensor_faithful :
   refine ⟨fun fl => ⟨inferInstance, rTensor_nontrivial R M⟩, fun ⟨flat, faithful⟩ => ⟨?_⟩⟩
   intro m hm rid
   specialize faithful (ULift (R ⧸ m)) inferInstance
-  haveI : Nontrivial ((R ⧸ m) ⊗[R] M) :=
+  have : Nontrivial ((R ⧸ m) ⊗[R] M) :=
     (congr (ULift.moduleEquiv : ULift (R ⧸ m) ≃ₗ[R] R ⧸ m)
       (LinearEquiv.refl R M)).symm.toEquiv.nontrivial
   have := (quotTensorEquivQuotSMul M m).toEquiv.symm.nontrivial
@@ -195,7 +195,7 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
   obtain ⟨i⟩ := ‹Nonempty ι›
   obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
-  haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
+  have : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
   apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
@@ -335,8 +335,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   rw [e.toEquiv.subsingleton_congr, Submodule.Quotient.subsingleton_iff,
     LinearMap.range_eq_top]
   intro x
-  induction x using TensorProduct.induction_on with
-  | zero => exact ⟨0, by simp⟩
+  induction x using TensorProduct.inductionOn with
   -- let `x ⊗ m` be an element in `ker l23 ⊗ M`, then `x ⊗ m` is in the kernel of `l23 ⊗ 𝟙M`.
   -- Since `N1 ⊗ M -l12 ⊗ M-> N2 ⊗ M -l23 ⊗ M-> N3 ⊗ M` is exact, we have that `x ⊗ m` is in
   -- the range of `l12 ⊗ 𝟙M`, i.e. `x ⊗ m = (l12 ⊗ 𝟙M) y` for some `y ∈ N1 ⊗ M` as elements of
@@ -633,7 +632,7 @@ def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
 
 theorem IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
     (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
-  rw [isNoetherian_iff'] at h ⊢
+  rw [isNoetherian_iff] at h ⊢
   exact (baseChangeOrderEmbedding R M A).wellFoundedGT
 
 theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
@@ -641,3 +640,17 @@ theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
   (baseChangeOrderEmbedding R M A).wellFoundedLT
 
 end Submodule
+
+/-- In a nonzero algebra that is free as a module, the coordinates of `1` in any basis generate
+the unit ideal. Equivalently, `1` is unimodular: see `Module.Free.isUnimodular_one`. -/
+theorem Module.Basis.span_repr_one_eq_top {R : Type*} [CommRing R] {A ι : Type*} [Ring A]
+    [Nontrivial A] [Algebra R A] (e : Basis ι R A) :
+    Ideal.span (Set.range (e.repr 1)) = ⊤ := by
+  nontriviality R
+  have : Module.Free R A := .of_basis e
+  by_contra h
+  obtain ⟨𝔪, h𝔪, hle⟩ := Ideal.exists_le_maximal _ h
+  refine Module.FaithfullyFlat.submodule_ne_top h𝔪 (Submodule.eq_top_iff'.mpr fun a : A ↦ ?_)
+  rw [← mul_one a, ← e.linearCombination_repr 1, Finsupp.linearCombination_apply, Finsupp.mul_sum]
+  exact Submodule.sum_mem _ fun i _ ↦ by
+    simpa using Submodule.smul_mem_smul (hle (Ideal.subset_span ⟨i, rfl⟩)) Submodule.mem_top

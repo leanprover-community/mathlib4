@@ -43,7 +43,7 @@ variable (X : LocallyRingedSpace.{u}) {U : Opens X}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
+  ↧(IsLocalRing.ResidueField (X.presheaf.stalk x))
 
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
@@ -72,7 +72,6 @@ def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
 def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
   X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma evaluation_eq_zero_iff_notMem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
@@ -125,6 +124,7 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
   simp only [residueFieldMap, stalkMap_comp]
   apply IsLocalRing.ResidueField.map_comp (Hom.stalkMap g (f.base x)).hom (Hom.stalkMap f x).hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.base).obj V) :
     Y.evaluation ⟨f.base x, x.property⟩ ≫ residueFieldMap f x.val =
@@ -145,7 +145,6 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.base).obj V)
   simpa using! congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
     evaluation_naturality f x) a
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :
     Y.Γevaluation (f.base x) ≫ residueFieldMap f x =

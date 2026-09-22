@@ -21,13 +21,13 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A 
     [IsDedekindDomain A] [IsDomain B] [Algebra.FormallyUnramified A B]
 
 include A in
-theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
-  __ := IsNoetherianRing.of_finite A B
-  is_dvr_at_nonzero_prime := by
+theorem IsDedekindDomain.of_formallyUnramified : IsDedekindDomain B :=
+  have noetherian := IsNoetherianRing.of_finite A B
+  isDedekindDomain_iff_isDiscreteValuationRing_atPrime.2 ⟨noetherian, by
     intro q hq hqp
     let q' := IsLocalRing.maximalIdeal (Localization.AtPrime q)
     suffices q'.IsPrincipal from ((IsDiscreteValuationRing.TFAE (Localization.AtPrime q)
-      (IsLocalization.AtPrime.not_isField B hq (Localization.AtPrime q))).out 4 0).mp this
+      (IsLocalization.AtPrime.not_isField B hq (Localization.AtPrime q))).out 5 1).mp this
     let p := q.under A
     let := Localization.AtPrime.algebraOfLiesOver p q
     have : p.IsMaximal := (hqp.under A).isMaximal (q.under_ne_bot A hq)
@@ -44,10 +44,10 @@ theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
       Localization.AtPrime.map_eq_maximalIdeal]
     rw [Ideal.minimalPrimes_eq_comap]
     exact ⟨q.map (Ideal.Quotient.mk (p.map (algebraMap A B))),
-      IsArtinianRing.mem_minimalPrimes bot_le, Ideal.comap_map_mk Ideal.map_comap_le⟩
+      IsArtinianRing.mem_minimalPrimes bot_le, Ideal.comap_map_mk Ideal.map_comap_le⟩⟩
 
-include A in
-/-- A domain finite and unramified over a Dedekind domain is a Dedekind domain. -/
-theorem isDedekindDomain.of_formallyUnramified : IsDedekindDomain B :=
-  have := isDedekindDomainDvr.of_formallyUnramified A B
-  inferInstance
+@[deprecated (since := "2026-08-01")]
+alias isDedekindDomainDvr.of_formallyUnramified := IsDedekindDomain.of_formallyUnramified
+
+@[deprecated (since := "2026-08-01")]
+alias isDedekindDomain.of_formallyUnramified := IsDedekindDomain.of_formallyUnramified

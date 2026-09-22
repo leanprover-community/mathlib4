@@ -40,7 +40,7 @@ variable {α : Type*} (m : MeasurableSpace α) {s t : Set α}
 
 /-- The `MeasurableSpace` of sets which are measurable with respect to a given σ-algebra `m`
 on `α`, modulo a given σ-filter `l` on `α`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
@@ -66,7 +66,7 @@ theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
 
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
-  ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
+  ⟨univ, MeasurableSet.univ, eventuallyEqSet_univ.mpr hs⟩
 
 /-- A set which is `EventuallyEq` to an `EventuallyMeasurableSet`
 is an `EventuallyMeasurableSet`. -/

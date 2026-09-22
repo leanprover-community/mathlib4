@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
@@ -23,7 +24,7 @@ open Measure TopologicalSpace
 
 open scoped ENNReal
 
-variable {𝕜 M α G E F : Type*} [MeasurableSpace G]
+variable {α G E F : Type*} [MeasurableSpace G]
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
 variable {μ : Measure G} {f : G → E} {g : G}
 

@@ -62,14 +62,14 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup (Wrapped α) :=
   fast_instance% Function.Injective.commSemigroup _ val_injective (fun _ _ => rfl)
 
 /--
-info: @[implicit_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
+info: @[instance_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
 fun {α} [inst : Semigroup α] => @Semigroup.mk (Wrapped α) (@instMulWrapped α (@Semigroup.toMul α inst)) ⋯
 -/
 #guard_msgs in
 set_option pp.explicit true in
 #print instSemigroup
 /--
-info: @[implicit_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
+info: @[instance_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
   [CommSemigroup α] → CommSemigroup (Wrapped α) :=
 fun {α} [inst : CommSemigroup α] =>
   @CommSemigroup.mk (Wrapped α) (@instSemigroup α (@CommSemigroup.toSemigroup α inst)) ⋯
@@ -122,7 +122,7 @@ abbrev dec1 : Decidable It := isTrue sorry
 #guard_msgs in
 def dec2 : Decidable It := isTrue sorry
 
-/-- info: @Dec.mk It (@isTrue It _check._proof_1) : Dec It -/
+/-- info: @Dec.mk It (@Decidable.intro It true _check._proof_1) : Dec It -/
 #guard_msgs (info, drop warning) in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec1 : Dec It }
@@ -131,8 +131,6 @@ set_option pp.explicit true in
 error: Provided instance does not reduce to a constructor application
   dec2
 Reduces to an application of testing.dec2.
-
-This instance is not a structure and not canonical. Use a separate 'instance' command to define it.
 
 Use `set_option trace.Elab.fast_instance true` to analyze the error.
 

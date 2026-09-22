@@ -46,6 +46,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
     change (Pi.single i x) i = x
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem pi_iff [Finite I] :
     FormallySmooth R (Π i, A i) ↔ ∀ i, FormallySmooth R (A i) := by
   classical

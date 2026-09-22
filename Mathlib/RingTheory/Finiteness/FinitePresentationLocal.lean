@@ -56,6 +56,7 @@ lemma of_span_eq_top_target_aux {A : Type*} [CommRing A] [Algebra R A]
 
 universe u
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Finite-presentation can be checked on a standard covering of the target. -/
 lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     (h : ∀ i ∈ s, Algebra.FinitePresentation R (Localization.Away i)) :

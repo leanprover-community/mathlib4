@@ -29,8 +29,6 @@ universe w v u u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open MonoidalCategory
-
 variable (V : Type v) [Category.{w} V] [MonoidalCategory V]
 
 /-- Category of `V`-enriched categories for a monoidal category `V`. -/
@@ -47,8 +45,6 @@ instance str (C : EnrichedCat.{w, v, u} V) : EnrichedCategory.{w, v, u} V C :=
 /-- Construct a bundled `EnrichedCat` from the underlying type and the typeclass. -/
 def of (C : Type u) [EnrichedCategory.{w} V C] : EnrichedCat.{w, v, u} V :=
   Bundled.of C
-
-open EnrichedCategory ForgetEnrichment
 
 variable {V} {C : Type u} [EnrichedCategory V C] {D : Type u₁} [EnrichedCategory V D]
   {E : Type u₂} [EnrichedCategory V E] {E' : Type u₃} [EnrichedCategory V E']
@@ -93,6 +89,7 @@ def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
     Functor.isoWhiskerLeft _ (G.forgetComp H).symm ≪≫
     (F.forgetComp _).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma comp_whiskerRight {F G H : EnrichedFunctor V C D} (α : F ⟶ G)
     (β : G ⟶ H) (I : EnrichedFunctor V D E) :
@@ -102,6 +99,7 @@ lemma comp_whiskerRight {F G H : EnrichedFunctor V C D} (α : F ⟶ G)
     EnrichedFunctor.forget, EnrichedFunctor.comp_obj, EnrichedFunctor.comp_map]
   simp [← ForgetEnrichment.homOf_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma whisker_exchange {F G : EnrichedFunctor V C D} {H I : EnrichedFunctor V D E}
     (α : F ⟶ G) (β : H ⟶ I) :
     whiskerLeft F β ≫ whiskerRight α I = whiskerRight α H ≫ whiskerLeft G β := by
@@ -111,6 +109,7 @@ lemma whisker_exchange {F G : EnrichedFunctor V C D} {H I : EnrichedFunctor V D 
     whiskerRight_out_app]
   exact (β.out.naturality (α.out.app (ForgetEnrichment.of V X))).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bicategory structure on `EnrichedCat V` for a monoidal category `V`. -/
 instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   Hom C D := EnrichedFunctor V C D

@@ -12,7 +12,7 @@ public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
-import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Tactic.NormNum.Parity
 
 /-!
 # Eisenstein series q-expansions
@@ -43,7 +43,7 @@ public section
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
 
-open scoped Real Nat ArithmeticFunction.sigma
+open scoped Real Nat ArithmeticFunction.sigma Topology
 
 open UpperHalfPlane hiding I
 
@@ -93,13 +93,14 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
     have h1 : cexp (2 * π * I * (x / p)) = cexp (2 * π * I * x / p) := by
       ring_nf
     simpa using h1 ▸ norm_exp_two_pi_I_lt_one ⟨((x : ℂ) / p), by aesop⟩
-  refine ⟨_, by simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
-    (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), fun n z hz ↦ ?_⟩
+  refine ⟨fun n ↦ ‖f n‖ * (2 * π * n / |p|) ^ k * |r| ^ n, by
+    simpa using (summable_norm_mul_geometric_of_norm_lt_one' hr
+      (Asymptotics.isBigO_norm_left.mpr (aux_IsBigO_mul k l p hf))), fun n z hz ↦ ?_⟩
   have h0 := pow_le_pow_left₀ (norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
   simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ← exp_nsmul', Pi.smul_apply,
     iteratedDerivWithin_cexp_aux k n p isOpen_upperHalfPlaneSet (hK hz), smul_eq_mul,
     norm_mul, norm_pow, Complex.norm_div, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
-    norm_natCast, abs_norm, ge_iff_le, r, c] at *
+    norm_natCast, abs_norm, ge_iff_le, Real.abs_pi, r, c] at *
   rw [← mul_assoc]
   gcongr
   convert! h0
@@ -308,7 +309,7 @@ open ModularFormClass
 local notation "𝕢" => Periodic.qParam
 
 /-- Summability of the divisor-sum q-expansion series `∑ σ_{k-1}(n) q^n`. -/
-private lemma summable_sigma_mul_cexp_pow {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
+lemma EisensteinSeries.summable_sigma_mul_cexp_pow {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
     Summable fun n : ℕ ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * z) ^ n := by
   apply Summable.of_norm_bounded
     (summable_norm_pow_mul_geometric_of_norm_lt_one k (norm_exp_two_pi_I_lt_one z))
@@ -351,5 +352,11 @@ lemma EisensteinSeries.E_qExpansion_coeff_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : E
 /-- Normalised Eisenstein series of even weight `k ≥ 3` are non-zero. -/
 theorem EisensteinSeries.E_ne_zero {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) : E hk ≠ 0 :=
   fun h ↦ one_ne_zero <| (E_qExpansion_coeff_zero hk hk2).symm.trans (by simp [h, qExpansion_zero])
+
+/-- The normalised Eisenstein series `E k` tends to `1` at `i∞`. -/
+theorem EisensteinSeries.tendsto_E_atImInfty {k : ℕ} (hk : 3 ≤ k := by norm_num)
+    (hk2 : Even k := by norm_num) : Tendsto (E hk : ℍ → ℂ) atImInfty (𝓝 1) := by
+  simpa [E_qExpansion_coeff_zero hk hk2] using
+    ModularFormClass.tendsto_atImInfty (E hk) one_pos one_mem_strictPeriods_SL
 
 end NonZero

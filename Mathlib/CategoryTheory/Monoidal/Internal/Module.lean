@@ -43,7 +43,7 @@ namespace MonModuleEquivalenceAlgebra
 /-- The ring structure on a monoid object.
 This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
 to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
-@[implicit_reducible]
+@[instance_reducible]
 def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
@@ -98,7 +98,7 @@ theorem algebraMap (A : ModuleCat.{u} R) [MonObj A] (r : R) : algebraMap R A r =
 -/
 @[simps!]
 def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
-  obj A := AlgCat.of R A.X
+  obj A := ↧A.X
   map {_ _} f := AlgCat.ofHom
     { f.hom.hom.toAddMonoidHom with
       toFun := f.hom
@@ -161,7 +161,7 @@ attribute [local instance] inverseObj
 -/
 @[simps]
 def inverse : AlgCat.{u} R ⥤ Mon (ModuleCat.{u} R) where
-  obj A := { X := ModuleCat.of R A, mon := inverseObj A }
+  obj A := { X := ↧A, mon := inverseObj A }
   map f :=
     { hom := ofHom <| f.hom.toLinearMap
       isMonHom_hom.one_hom := hom_ext <| LinearMap.ext f.hom.commutes

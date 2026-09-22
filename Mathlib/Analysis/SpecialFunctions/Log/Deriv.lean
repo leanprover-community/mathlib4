@@ -388,7 +388,7 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     convert! h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
     ring_nf
   · intro m hm
-    rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
+    rw [range_two_mul, Set.mem_ofPred_eq, ← Nat.even_add_one] at hm
     dsimp [term]
     rw [Even.neg_pow hm, neg_one_mul, neg_add_cancel]
 
