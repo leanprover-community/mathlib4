@@ -527,12 +527,12 @@ theorem homogeneousComponent_mem :
 theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
     (homogeneousComponent n φ).coeff d = if d.degree = n then φ.coeff d else 0 := by
   rw [degree_eq_weight_one]
-  convert! coeff_weightedHomogeneousComponent n φ d
+  exact coeff_weightedHomogeneousComponent n φ d
 
 theorem homogeneousComponent_apply :
     homogeneousComponent n φ = ∑ d ∈ φ.support with d.degree = n, monomial d (φ.coeff d) := by
   simp_rw [degree_eq_weight_one]
-  convert! weightedHomogeneousComponent_apply n φ
+  exact weightedHomogeneousComponent_apply n φ
 
 theorem homogeneousComponent_isHomogeneous : (homogeneousComponent n φ).IsHomogeneous n :=
   weightedHomogeneousComponent_isWeightedHomogeneous n φ

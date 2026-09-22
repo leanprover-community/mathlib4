@@ -741,7 +741,7 @@ theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro k hk y hy
-    convert! (Hdiff k (lt_of_lt_of_le (mod_cast hk) (mod_cast hm)) y hy).hasFDerivWithinAt
+    exact (Hdiff k (lt_of_lt_of_le (mod_cast hk) (mod_cast hm)) y hy).hasFDerivWithinAt
   · intro k hk
     exact Hcont k (le_trans (mod_cast hk) (mod_cast hm))
 

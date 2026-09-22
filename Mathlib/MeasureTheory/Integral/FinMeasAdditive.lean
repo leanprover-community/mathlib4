@@ -546,7 +546,7 @@ theorem setToSimpleFunc_nonneg' (T : Set α → G' →L[ℝ] G'')
   rw [mem_range] at hi
   obtain ⟨y, hy⟩ := Set.mem_range.mp hi
   rw [← hy]
-  convert! hf y
+  exact hf y
 
 theorem setToSimpleFunc_mono [IsOrderedAddMonoid G']
     {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasAdditive μ T)

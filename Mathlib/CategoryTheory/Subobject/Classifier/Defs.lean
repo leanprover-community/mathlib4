@@ -321,7 +321,7 @@ alias _root_.CategoryTheory.Classifier.truth_as_subobject := truth_as_subobject
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
   ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ (by
-    convert! IsPullback.of_hasPullback φ 𝒞.truth)⟩
+    exact IsPullback.of_hasPullback φ 𝒞.truth)⟩
 
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.Classifier.surjective_χ := surjective_χ

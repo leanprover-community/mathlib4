@@ -77,7 +77,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         conv_rhs => rw [← insert_erase hi₀, sum_insert (notMem_erase i₀ t), hk, zero_add]
       _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
-  refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert! ksum, ?_⟩
+  refine ⟨⟨i₀, hi₀⟩, k, ?_, ksum, ?_⟩
   · simp only [k, and_imp, sub_nonneg, mem_erase, Ne]
     intro e _ het
     by_cases hes : e ∈ s

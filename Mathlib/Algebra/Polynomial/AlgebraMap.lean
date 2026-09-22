@@ -62,7 +62,7 @@ instance algebraOfAlgebra : Algebra R A[X] where
     toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
-      convert! Algebra.commutes' r p.toFinsupp
+      exact Algebra.commutes' r p.toFinsupp
   algebraMap := C.comp (algebraMap R A)
 
 @[simp]
