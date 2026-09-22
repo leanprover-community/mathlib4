@@ -945,7 +945,7 @@ lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
   refine (Real.rpow_le_rpow_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
     by rw [neg_re]; linarith only [hs]).trans ?_
   rw [one_div, ← Real.rpow_neg_one]
-  exact Real.rpow_le_rpow_of_exponent_le one_le_two <| (neg_lt_neg hs).le
+  exact Real.rpow_le_rpow_of_exponent_le one_le_two (neg_lt_neg hs).le
 
 lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.re) :
     1 - (p : ℂ) ^ (-s) ≠ 0 := by

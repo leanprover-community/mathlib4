@@ -276,7 +276,7 @@ lemma disjoint_path_image_Ioc (h : x ≠ y) :
 
 lemma compl_path_image_Ioc (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
   (compl_subset_iff_union.mpr <| path_image_Ioc_union h).antisymm
-    <| (disjoint_path_image_Ioc h.symm).subset_compl_right
+    (disjoint_path_image_Ioc h.symm).subset_compl_right
 
 lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
   rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
@@ -468,7 +468,7 @@ theorem Circle.hasBasis_centeredArc_div_two_pow :
     (fun _ _ ↦ by positivity) (by simp) ?_
   simp_rw [div_eq_mul_inv, pow_succ, mul_inv_rev, ← mul_assoc]
   rw [← mul_zero (π * 2⁻¹)]
-  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by norm_num))
+  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by simp))
     |>.const_mul _
 
 theorem Circle.isOpen_centeredArc (r : ℝ) : IsOpen (centeredArc r) := by

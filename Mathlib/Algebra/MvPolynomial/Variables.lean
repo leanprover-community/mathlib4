@@ -240,7 +240,7 @@ theorem vars_sum_subset [DecidableEq σ] :
       (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
     assumption
 
-theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
+theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise (Disjoint on fun i => (φ i).vars)) :
     (∑ i ∈ t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
   classical
   induction t using Finset.induction_on with

@@ -668,7 +668,7 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
         coe_mapCycles₁ (MonoidHom.id G)]
 /- Let `β` be `b` considered as an element of `C₁(G, I(S)(A))`, so that `C₁(Id, i)(β) = b`. -/
   let β : G →₀ Coinvariants.ker (A.ρ.comp S.subtype) :=
-    mapRange (Function.invFun <| (Coinvariants.ker (A.ρ.comp S.subtype)).subtype)
+    mapRange (Function.invFun (Coinvariants.ker (A.ρ.comp S.subtype)).subtype)
     (Function.leftInverse_invFun Subtype.val_injective (0 : Coinvariants.ker _)) b
   have hβb : mapRange Subtype.val rfl β = b := Finsupp.ext fun g => Subtype.ext_iff.1 <|
     Function.leftInverse_invFun Subtype.val_injective ⟨b g, hb g⟩
