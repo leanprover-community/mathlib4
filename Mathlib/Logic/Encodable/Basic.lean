@@ -110,9 +110,9 @@ theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
   rfl
 
 theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
-    @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
-  show Option.bind _ _ = Option.map _ _
-  by rw [Option.map_eq_bind]
+    @decode _ (ofEquiv _ e) n = (decode n).map e.symm := by
+  change Option.bind _ _ = Option.map _ _
+  rw [Option.map_eq_bind]
 
 instance _root_.Nat.encodable : Encodable ℕ :=
   ⟨id, some, fun _ => rfl⟩

@@ -71,7 +71,7 @@ to_dual_for Hom.comm₁₂ := self.comm₂₃.symm
 to_dual_for Hom.comm₂₃ := self.comm₁₂.symm
 to_dual_for Hom.mk := { τ₁ := τ₃, τ₂, τ₃ := τ₁, comm₁₂ := comm₂₃.symm, comm₂₃ := comm₁₂.symm }
 
-attribute [reassoc] Hom.comm₁₂ Hom.comm₂₃
+attribute [map (attr := reassoc)] Hom.comm₁₂ Hom.comm₂₃
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃ Hom.comm₁₂_assoc Hom.comm₂₃_assoc
 
 variable (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
