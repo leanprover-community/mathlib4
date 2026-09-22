@@ -64,10 +64,7 @@ def moebiusMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
 theorem moebiusMatrix_isUpperTriangular (n : ℕ) : (moebiusMatrix R n).IsUpperTriangular := by
   intro i j hij
   simp only [id] at hij
-  have : ¬ ((i : ℕ) + 1 ∣ (j : ℕ) + 1) := fun hd ↦ by
-    have := Nat.le_of_dvd (by omega) hd
-    omega
-  simp [this]
+  simp [Nat.not_dvd_of_pos_of_lt (n := (j : ℕ) + 1) (m := (i : ℕ) + 1) (by omega) (by omega)]
 
 end ZeroIntCast
 
@@ -77,10 +74,7 @@ theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M]
     (∑ k : Fin n, if a ∣ (k : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ b then f (((k : ℕ) + 1) / a) else 0) =
       ∑ d ∈ (b / a).divisors, f d := by
   obtain ⟨m, rfl⟩ := hab
-  have hm : 0 < m := by
-    rcases Nat.eq_zero_or_pos m with h | h
-    · subst h; simp at hb
-    · exact h
+  have hm : 0 < m := Nat.pos_of_ne_zero fun h ↦ by simp [h] at hb
   rw [Nat.mul_div_cancel_left m ha,
     Fin.sum_univ_eq_sum_range (fun k ↦ if a ∣ k + 1 ∧ k + 1 ∣ a * m then f ((k + 1) / a) else 0),
     ← sum_filter]
@@ -96,9 +90,8 @@ theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M]
     · rintro ⟨d, ⟨hdm, -⟩, hk⟩
       have hd1 : 1 ≤ d := Nat.pos_of_dvd_of_pos hdm hm
       have hle : d ≤ m := Nat.le_of_dvd hm hdm
-      have hak : a * d - 1 + 1 = a * d := by
-        have : 1 ≤ a * d := Nat.one_le_iff_ne_zero.mpr (by positivity)
-        omega
+      have hak : a * d - 1 + 1 = a * d :=
+        Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr (by positivity))
       refine ⟨?_, ?_, ?_⟩
       · have : a * d ≤ a * m := Nat.mul_le_mul_left a hle
         omega
@@ -107,10 +100,8 @@ theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M]
   rw [hset, sum_image]
   · refine sum_congr rfl fun d hd ↦ ?_
     have hd1 : 1 ≤ d := Nat.pos_of_dvd_of_pos (Nat.mem_divisors.mp hd).1 hm
-    have hak : a * d - 1 + 1 = a * d := by
-      have : 1 ≤ a * d := Nat.one_le_iff_ne_zero.mpr (by positivity)
-      omega
-    rw [hak, Nat.mul_div_cancel_left d ha]
+    rw [Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr (by positivity)),
+      Nat.mul_div_cancel_left d ha]
   · intro x hx y hy hxy
     have hx1 : 1 ≤ x := Nat.pos_of_dvd_of_pos (Nat.mem_divisors.mp hx).1 hm
     have hy1 : 1 ≤ y := Nat.pos_of_dvd_of_pos (Nat.mem_divisors.mp hy).1 hm
@@ -127,12 +118,8 @@ theorem moebiusMatrix_mul_zetaMatrix (n : ℕ) : moebiusMatrix R n * zetaMatrix 
   ext i j
   simp only [mul_apply, moebiusMatrix_apply, zetaMatrix_apply, one_apply]
   by_cases hij : (i : ℕ) + 1 ∣ (j : ℕ) + 1
-  · rw [show (∑ k : Fin n,
-          (if (i : ℕ) + 1 ∣ (k : ℕ) + 1 then (μ (((k : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0) *
-            (if (k : ℕ) + 1 ∣ (j : ℕ) + 1 then (1 : R) else 0)) =
-        ∑ k : Fin n, if (i : ℕ) + 1 ∣ (k : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ (j : ℕ) + 1
-          then (μ (((k : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0 from
-        sum_congr rfl fun k _ ↦ by split_ifs <;> simp_all]
+  · simp only [ite_mul, zero_mul]
+    simp only [mul_ite, mul_one, mul_zero, ← ite_and]
     rw [Nat.sum_fin_dvd_dvd_eq_sum_divisors n ((i : ℕ) + 1) ((j : ℕ) + 1) (fun d ↦ (μ d : R))
       (by omega) (by omega) hij (by omega), ← Int.cast_sum, sum_divisors_moebius]
     have hq : ((j : ℕ) + 1) / ((i : ℕ) + 1) = 1 ↔ i = j := by
