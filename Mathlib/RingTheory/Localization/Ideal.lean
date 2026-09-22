@@ -84,7 +84,6 @@ lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
     IsLocalization.algebraMap_mem_map_algebraMap_iff M]
   simp [Set.disjoint_left]
 
-set_option backward.isDefEq.respectTransparency false in
 include M in
 protected theorem map_inf (I J : Ideal R) :
     (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
@@ -210,6 +209,15 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
     (Ideal.map (algebraMap R S) I).IsPrime := by
   rw [isPrime_iff_isPrime_disjoint M S, under_map_of_isPrime_disjoint M S hp hd]
   exact ⟨hp, hd⟩
+
+include M S in
+lemma isMaximal_of_isMaximal_under (I : Ideal S) [hI : (I.under R).IsMaximal] : I.IsMaximal := by
+  exact ⟨(orderEmbedding M S).isCoatom_of_map_top_of_image Ideal.comap_top hI.out⟩
+
+theorem isMaximal_of_isMaximal_disjoint (I : Ideal R) [hI : I.IsMaximal]
+    (h : Disjoint (M : Set R) (I : Set R)) : (I.map (algebraMap R S)).IsMaximal := by
+  rw [← IsLocalization.under_map_of_isPrime_disjoint M S hI.isPrime h] at hI
+  exact isMaximal_of_isMaximal_under M S (I.map (algebraMap R S))
 
 theorem disjoint_under_iff (J : Ideal S) :
     Disjoint (M : Set R) (J.under R) ↔ J ≠ ⊤ := by

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Subset
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.Compactness.Compact
@@ -27,7 +27,7 @@ to clopen sets.
 
 @[expose] public section
 
-open Set Function Topology TopologicalSpace Relation
+open Set Function Topology TopologicalSpace
 
 universe u v
 
@@ -475,7 +475,8 @@ theorem Topology.IsCoinducing.isConnected_preimage_of_isClosed
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 
-@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed (since := "2026-04-01")]
+@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed +typeChanged
+  (since := "2026-04-01")]
 theorem preimage_connectedComponent_connected (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
     (hcl : IsCoinducing f) (t : β) :
     IsConnected (f ⁻¹' connectedComponent t) := by
@@ -562,7 +563,7 @@ instance subsingleton [PreconnectedSpace α] : Subsingleton (ConnectedComponents
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨x, rfl⟩ := surjective_coe x
   obtain ⟨y, rfl⟩ := surjective_coe y
-  simp_rw [coe_eq_coe, PreconnectedSpace.connectedComponent_eq_univ, ]
+  simp_rw [coe_eq_coe, PreconnectedSpace.connectedComponent_eq_univ]
 
 section
 

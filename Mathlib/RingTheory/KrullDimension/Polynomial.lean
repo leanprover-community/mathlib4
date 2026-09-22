@@ -92,7 +92,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
   have eq := under_map_of_isPrime_disjoint _ Rₚ[X] ‹P.IsMaximal›.isPrime disj
   have : (P'.under R[X]).IsMaximal := eq.symm ▸ ‹P.IsMaximal›
-  have : P'.IsMaximal := .of_isLocalization_of_disjoint (p.primeCompl.map C)
+  have : P'.IsMaximal := IsLocalization.isMaximal_of_isMaximal_under (p.primeCompl.map C) Rₚ[X] P'
   have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
   have eq1 : p.height = p'.height := by
     rw [height_map_of_disjoint p.primeCompl]
@@ -117,7 +117,7 @@ end Polynomial
 
 /-- If `R` is Noetherian, `dim R[X₁, ..., Xₙ] = dim R + n`. -/
 @[simp]
-lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
+lemma MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite {ι : Type*} [Finite ι] :
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
@@ -130,3 +130,11 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
       ← add_assoc] at IH ⊢
     rw [ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv,
       Polynomial.ringKrullDim_of_isNoetherianRing, IH]
+
+/-- If `R` is Noetherian, `dim R[Xₛ] = dim R + card(Xₛ)`. -/
+lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} :
+    ringKrullDim (MvPolynomial ι R) = ringKrullDim R + ENat.card ι := by
+  nontriviality R
+  by_cases! Finite ι
+  · simp [ringKrullDim_of_isNoetherianRing_of_finite, ENat.card_eq_coe_natCard]
+  · simp [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]

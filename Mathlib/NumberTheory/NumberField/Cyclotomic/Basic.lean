@@ -103,7 +103,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
       rw [singleton_one ℚ K]
       exact mem_top
     obtain ⟨y, rfl⟩ := mem_bot.1 this
-    replace h := (isIntegral_algebraMap_iff (algebraMap ℚ K).injective).1 h
+    replace h := isIntegral_algebraMap_iff.1 h
     obtain ⟨z, hz⟩ := IsIntegrallyClosed.isIntegral_iff.1 h
     rw [← hz, ← IsScalarTower.algebraMap_apply]
     exact Subalgebra.algebraMap_mem _ _
@@ -659,7 +659,6 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 
 variable (n) [hn : NeZero n]
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra IntermediateField Nat in
 /--
 Computes the absolute discriminant of the `n`-th cyclotomic field.
@@ -765,7 +764,6 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
 
 variable {n K}
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField Algebra in
 theorem adjoin_singleton_eq_top [hK : IsCyclotomicExtension {n} ℚ K]
     {ζ : K} (hζ : IsPrimitiveRoot ζ n) :

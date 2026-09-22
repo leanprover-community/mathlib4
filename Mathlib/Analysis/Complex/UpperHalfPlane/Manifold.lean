@@ -15,8 +15,6 @@ public import Mathlib.LinearAlgebra.Complex.Determinant
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Norm.Transitivity
 
-import Mathlib.Geometry.Manifold.Notation
-
 /-!
 # Manifold structure on the upper half plane.
 

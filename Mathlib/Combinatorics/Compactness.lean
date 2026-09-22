@@ -5,7 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Basic.Finite.Defs
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Tactic.ToAdditive
 
 import Mathlib.Topology.Compactness.Compact
 

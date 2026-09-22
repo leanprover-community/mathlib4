@@ -5,8 +5,8 @@ Authors: Adam Topaz, Nikolas Kuhn
 -/
 module
 
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-public import Mathlib.Data.Finite.Sigma
 
 /-!
 # Description of the covering sieves of the coherent topology

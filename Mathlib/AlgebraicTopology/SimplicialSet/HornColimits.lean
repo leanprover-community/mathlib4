@@ -26,7 +26,9 @@ universe u
 
 namespace SSet
 
-open CategoryTheory Simplicial Opposite Limits
+open CategoryTheory Opposite Limits
+
+open scoped Simplicial
 
 namespace horn₂₀
 

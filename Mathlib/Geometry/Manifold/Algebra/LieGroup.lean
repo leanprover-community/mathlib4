@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
 
-import Mathlib.Geometry.Manifold.Notation
-
 /-!
 # Lie groups
 

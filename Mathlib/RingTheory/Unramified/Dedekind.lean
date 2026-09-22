@@ -27,7 +27,7 @@ theorem IsDedekindDomain.of_formallyUnramified : IsDedekindDomain B :=
     intro q hq hqp
     let q' := IsLocalRing.maximalIdeal (Localization.AtPrime q)
     suffices q'.IsPrincipal from ((IsDiscreteValuationRing.TFAE (Localization.AtPrime q)
-      (IsLocalization.AtPrime.not_isField B hq (Localization.AtPrime q))).out 4 0).mp this
+      (IsLocalization.AtPrime.not_isField B hq (Localization.AtPrime q))).out 5 1).mp this
     let p := q.under A
     let := Localization.AtPrime.algebraOfLiesOver p q
     have : p.IsMaximal := (hqp.under A).isMaximal (q.under_ne_bot A hq)

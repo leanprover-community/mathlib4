@@ -39,7 +39,7 @@ convergence in distribution for random variables behave somewhat well in spaces 
 
 @[expose] public section
 
-open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open BoundedContinuousFunction MeasureTheory Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section auxiliary

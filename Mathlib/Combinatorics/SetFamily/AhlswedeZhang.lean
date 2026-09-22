@@ -5,18 +5,14 @@ Authors: Yaël Dillies, Vladimir Ivanov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Sups
 public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 public import Mathlib.Tactic.Positivity
-
-import Mathlib.Data.Rat.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # The Ahlswede-Zhang identity

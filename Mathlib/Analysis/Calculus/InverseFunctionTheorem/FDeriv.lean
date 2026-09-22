@@ -5,10 +5,12 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Inverse function theorem
@@ -44,7 +46,7 @@ derivative, strictly differentiable, continuously differentiable, smooth, invers
 
 @[expose] public section
 
-open Function Set Filter Metric
+open Set Filter
 
 open scoped Topology NNReal
 
@@ -54,7 +56,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-open Asymptotics Filter Metric Set
+open Asymptotics Filter Set
 
 open ContinuousLinearMap (id)
 

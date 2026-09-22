@@ -6,7 +6,8 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 import Mathlib.Topology.Algebra.Monoid
 

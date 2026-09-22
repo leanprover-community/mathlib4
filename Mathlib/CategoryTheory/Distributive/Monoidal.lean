@@ -212,7 +212,6 @@ lemma coprodComparison_tensorLeft_braiding_hom [BraidedCategory C] {X Y Z : C} :
     (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ (coprodComparison (tensorRight X) Y Z) := by
   simp [coprodComparison]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the right distributivity is equal to
 the left distributivity up to braiding isomorphisms. -/
@@ -246,7 +245,6 @@ instance isMonoidalDistrib.of_symmetric_monoidal_closed [SymmetricCategory C] [M
     IsMonoidalDistrib C := by
   apply SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of distributivity isomorphism from the closed monoidal structure -/
 lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
     (leftDistrib X Y Z).inv =

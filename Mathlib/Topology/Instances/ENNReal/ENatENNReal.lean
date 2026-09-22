@@ -5,9 +5,13 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Topology.Instances.ENat
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.Order.Real
 
 import Mathlib.Algebra.Order.Floor.Extended
 

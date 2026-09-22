@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.FunLike.IsApply
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Pi.Torsion
 
 /-! # Group instances for `FunLike` types
 In this file we define various instances related to groups for `FunLike` types.
@@ -275,5 +275,16 @@ protected abbrev commGroup [CommGroup β] [IsOneApply F α β] [IsMulApply F α 
     coe_pow coe_pow
 
 end GroupInstances
+
+section TorsionFree
+
+/-- A type `F` that satisfies `FunLike F α β` is torsion-free if `β` is torsion-free. -/
+@[to_additive /-- A type `F` that satisfies `FunLike F α β` is torsion-free if `β` is
+torsion-free. -/]
+protected theorem isMulTorsionFree [Monoid β] [Monoid F] [IsOneApply F α β] [IsMulApply F α β]
+    [IsMulTorsionFree β] : IsMulTorsionFree F :=
+  DFunLike.coe_injective.isMulTorsionFree (coeMonoidHom F α β)
+
+end TorsionFree
 
 end FunLike

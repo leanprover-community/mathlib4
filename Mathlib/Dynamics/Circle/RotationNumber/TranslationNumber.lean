@@ -116,8 +116,10 @@ circle homeomorphism, rotation number
 
 @[expose] public section
 
-open Filter Set Int Topology
+open Filter Set Int
 open Function hiding Commute
+
+open scoped Topology
 
 /-!
 ### Definition and monoid structure
@@ -129,6 +131,7 @@ structure CircleDeg1Lift : Type extends ℝ →o ℝ where
 
 namespace CircleDeg1Lift
 
+@[macro_inline]
 instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
   coe_injective | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
@@ -193,7 +196,6 @@ theorem units_inv_apply_apply (f : CircleDeg1Liftˣ) (x : ℝ) :
 theorem units_apply_inv_apply (f : CircleDeg1Liftˣ) (x : ℝ) :
     f ((f⁻¹ : CircleDeg1Liftˣ) x) = x := by simp only [← mul_apply, f.mul_inv, coe_one, id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a lift of a circle map is bijective, then it is an order automorphism of the line. -/
 def toOrderIso : CircleDeg1Liftˣ →* ℝ ≃o ℝ where
   toFun f :=

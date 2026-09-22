@@ -60,6 +60,7 @@ instance : Preadditive (HomotopyCategory V c) :=
   inferInstanceAs <| Preadditive (CategoryTheory.Quotient (homotopic V c))
 
 /-- The quotient functor from complexes to the homotopy category. -/
+@[implicit_reducible]
 def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 
@@ -123,7 +124,6 @@ lemma quotient_map_eq_zero_iff {C D : HomologicalComplex V c} (f : C ⟶ D) :
   ⟨fun h ↦ ⟨homotopyOfEq _ _ (by simpa using h)⟩,
     fun ⟨h⟩ ↦ by simpa using eq_of_homotopy _ _ h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrarily chosen representation of the image of a chain map in the homotopy category
 is homotopic to the original chain map.
 -/
@@ -149,7 +149,6 @@ def isoOfHomotopyEquiv {C D : HomologicalComplex V c} (f : HomotopyEquiv C D) :
     rw [← (quotient V c).map_comp, ← (quotient V c).map_id]
     exact eq_of_homotopy _ _ f.homotopyInvHomId
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two complexes become isomorphic in the homotopy category,
   then they were homotopy equivalent. -/
 def homotopyEquivOfIso {C D : HomologicalComplex V c}
@@ -228,7 +227,7 @@ namespace CategoryTheory
 variable {V} {W : Type*} [Category* W] [Preadditive W]
 
 /-- An additive functor induces a functor between homotopy categories. -/
-@[simps! obj]
+@[implicit_reducible, simps! obj]
 def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     HomotopyCategory V c ⥤ HomotopyCategory W c :=
   CategoryTheory.Quotient.lift _ (F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c)
@@ -250,7 +249,10 @@ def Functor.mapHomotopyCategoryFactors (F : V ⥤ W) [F.Additive] (c : ComplexSh
       F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c :=
   CategoryTheory.Quotient.lift.isLift _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
+lemma Functor.mapHomotopyCategoryFactors_hom_app (F : V ⥤ W) [F.Additive] {c : ComplexShape ι}
+    (K : HomologicalComplex V c) :
+    (F.mapHomotopyCategoryFactors c).hom.app K = 𝟙 _ := rfl
+
 -- TODO develop lifting of natural transformations for general quotient categories so that
 -- `NatTrans.mapHomotopyCategory` become a particular case of it
 /-- A natural transformation induces a natural transformation between
@@ -261,8 +263,7 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
   app C := (HomotopyCategory.quotient W c).map ((NatTrans.mapHomologicalComplex α c).app C.as)
   naturality := by
     rintro ⟨C⟩ ⟨D⟩ ⟨f : C ⟶ D⟩
-    simp only [HomotopyCategory.quot_mk_eq_quotient_map, Functor.mapHomotopyCategory_map,
-      ← Functor.map_comp, NatTrans.naturality]
+    simp [HomotopyCategory.quot_mk_eq_quotient_map]
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
@@ -296,7 +297,6 @@ def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W
 
 variable {c} in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The preimage by a fully faithful functor of a homotopy between morphisms
 of homological complexes. -/
 def Functor.preimageHomotopy

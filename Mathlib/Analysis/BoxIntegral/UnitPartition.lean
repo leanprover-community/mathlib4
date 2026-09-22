@@ -321,7 +321,7 @@ theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
 
 end fintype
 
-open Submodule Pointwise
+open Submodule
 
 open scoped Pointwise
 

@@ -357,10 +357,6 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
 theorem toZFSet_add_one (o : Ordinal) : toZFSet (o + 1) = insert (toZFSet o) (toZFSet o) := by
   aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
-@[deprecated toZFSet_add_one (since := "2026-02-24")]
-theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) :=
-  toZFSet_add_one o
-
 @[simp]
 theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by
   simpa [← coe_toZFSet, cardinalMk_coe_sort, Cardinal.mk_Iio_ordinal, ← lift_card] using
@@ -391,7 +387,6 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where
