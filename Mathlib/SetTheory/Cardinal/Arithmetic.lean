@@ -559,7 +559,7 @@ theorem pow_eq {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : 1 ≤ μ) (H3 :
   (pow_le H1 H3).antisymm <| self_le_power κ H2
 
 theorem power_self_eq {c : Cardinal} (h : ℵ₀ ≤ c) : c ^ c = 2 ^ c := by
-  apply ((power_le_power_right <| (cantor c).le).trans _).antisymm
+  apply ((power_le_power_right (cantor c).le).trans _).antisymm
   · exact power_le_power_right (natCast_le_aleph0.trans h)
   · rw [← power_mul, mul_eq_self h]
 
