@@ -352,6 +352,25 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
 /--
+`--write-out` format for the get path. curl's `%{json}` report carries no
+response headers, so this format nests that report inside an object that
+also records the headers a failed transfer needs.
+
+`cf-ray` identifies the request in Cloudflare's logs and names the colo.
+`cf-cache-status` says whether the edge cache served the body.
+`content-length` gives the size the body should have reached.
+
+A backend that sends no such header still reports curl's own fields,
+because `transferDiagnostics` skips an empty value. `monitorCurl` reads
+curl's own fields from the nested object.
+-/
+def curlGetWriteOut : String :=
+  "{\"curl\":%{json}," ++
+  "\"cf_ray\":\"%header{cf-ray}\"," ++
+  "\"cf_cache_status\":\"%header{cf-cache-status}\"," ++
+  "\"content_length\":\"%header{content-length}\"}\n"
+
+/--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
 
@@ -640,26 +659,42 @@ def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Na
   return (decompressed, decompFailed)
 
 /--
-Appends curl's per-transfer fields to a failure line, as `key=value` pairs:
-`size_download` (bytes received), `num_connects`, `http_version`,
-`remote_ip` (the address that answered), and `time_total`.
+Appends per-transfer detail to a failure line, as `key=value` pairs. A
+status and an exit code say that a transfer failed; these say how.
 
-Each value describes curl's final attempt, because `--retry` hides the
-earlier ones. A field the report omits is left out of the line.
+* `bytes` — the count that arrived, over the size `content-length`
+  promised. `bytes=4096/1421777` locates the truncation, and
+  `bytes=0/1421777` means nothing arrived at all.
+* `cf_ray` — Cloudflare's request id. The suffix names the colo, and the
+  id finds the request in Cloudflare's own logs.
+* `cf_cache_status` — whether the edge cache served the body, or the read
+  reached a backend.
+* `http_version` — the protocol that carried the transfer.
+* `time_total` — how long the attempt lasted, which separates an immediate
+  reset from a slow stall.
+
+`report` holds curl's own fields and the recorded response headers in one
+object. Each value describes curl's final attempt, because `--retry` hides
+the earlier ones. This function skips a key that the report lacks, so a
+backend that sends no `cf-*` header just contributes fewer pairs.
 -/
 def transferDiagnostics (report : Lean.Json) : String :=
+  -- An empty header reads as absent, so a backend that omits one drops out.
+  let scalar : Lean.Json → Option String
+    | .str s => if s.isEmpty then none else some s
+    | .null  => none
+    | value  => some value.compress
   let field (key : String) : Option String :=
-    match report.getObjVal? key with
-    | .error _ => none
-    | .ok value =>
-      match value.getStr? with
-      | .ok s => if s.isEmpty then none else some s
-      | .error _ =>
-        let s := value.compress
-        if s == "null" then none else some s
-  let pairs := #["size_download", "num_connects", "http_version", "remote_ip", "time_total"]
-    |>.filterMap fun key => (field key).map fun value => s!"{key}={value}"
-  " ".intercalate pairs.toList
+    (report.getObjVal? key).toOption.bind scalar
+  let pair (key : String) : Option String :=
+    (field key).map fun value => s!"{key}={value}"
+  -- Without `content-length` there is no size to compare against.
+  let bytes := (field "size_download").map fun got =>
+    match field "content_length" with
+    | some want => s!"bytes={got}/{want}"
+    | none      => s!"bytes={got}"
+  " ".intercalate <| List.reduceOption
+    [bytes, pair "cf_ray", pair "cf_cache_status", pair "http_version", pair "time_total"]
 
 def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     (caption : String) (speedVar : String)
@@ -696,7 +731,10 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     let line := line.trimAscii
     if !line.isEmpty then
       match Lean.Json.parse line.copy with
-      | .ok result =>
+      | .ok outer =>
+        -- The get path wraps curl's report to carry response headers too; the
+        -- upload path writes curl's object on its own.
+        let result := (outer.getObjVal? "curl").toOption.getD outer
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
         -- The per-transfer JSON report carries `exitcode` from curl 7.75 on;
@@ -755,7 +793,9 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
-              let diag := transferDiagnostics result
+              -- `result` and the headers live in one object only here, on the
+              -- rare failure path.
+              let diag := transferDiagnostics (Lean.Json.mergeObj result outer)
               if !diag.isEmpty then
                 msg := s!"{msg} [{diag}]"
               return msg
@@ -815,7 +855,7 @@ private def downloadFilesFromContainer
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
-      #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+      #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
     -- of retirement; treat that as a miss so the chain stays quiet for clients
     -- whose chain still lists it.
