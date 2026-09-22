@@ -2794,6 +2794,7 @@ public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
@@ -2817,6 +2818,7 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Exact
@@ -6664,6 +6666,7 @@ public import Mathlib.RingTheory.Adjoin.Field
 public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 public import Mathlib.RingTheory.Adjoin.PowerBasis
 public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.Adjoin.Tower

@@ -262,8 +262,7 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
   app C := (HomotopyCategory.quotient W c).map ((NatTrans.mapHomologicalComplex α c).app C.as)
   naturality := by
     rintro ⟨C⟩ ⟨D⟩ ⟨f : C ⟶ D⟩
-    simp only [HomotopyCategory.quot_mk_eq_quotient_map, Functor.mapHomotopyCategory_map,
-      ← Functor.map_comp, NatTrans.naturality]
+    simp [HomotopyCategory.quot_mk_eq_quotient_map]
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
