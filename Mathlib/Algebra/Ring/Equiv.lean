@@ -659,7 +659,6 @@ alias coe_addMonoidHom_trans := toAddMonoidHom_trans
 /-! `RingEquiv.coe_mulEquiv_trans` and `RingEquiv.coe_addEquiv_trans` are proved above
 in higher generality -/
 
--- TODO: remove lemma when we remove the RingHom.ofClass coercion
 @[simp]
 theorem toRingHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
@@ -842,6 +841,7 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 
+-- TODO: remove lemma when we remove the RingHom.ofClass coercion
 @[simp]
 theorem toRingHom_trans' (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=

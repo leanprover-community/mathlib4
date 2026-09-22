@@ -83,7 +83,7 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
   mpr h := by
     rw [← Polynomial.map_id (p := f), ← RingEquiv.toRingHom_refl, ← RingEquiv.self_trans_symm
       (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h),
-      RingEquiv.toRingHom_trans', ← map_map]
+      RingEquiv.toRingHom_trans, ← map_map]
     apply (splits L f).map
 
 theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
