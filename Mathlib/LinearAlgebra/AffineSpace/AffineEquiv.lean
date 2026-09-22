@@ -416,8 +416,7 @@ theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
 
 @[simp]
-theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := by
-  ext <;> simp
+theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := rfl
 
 /-- Product of affine spaces is associative up to affine isomorphism. -/
 @[simps! apply symm_apply linear]

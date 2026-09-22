@@ -273,8 +273,7 @@ theorem coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap
   rfl
 
 @[simp]
-theorem prodComm_trans_prodComm : (prodComm : R × S ≃+* S × R).trans prodComm = .refl _ := by
-  ext <;> simp
+theorem prodComm_trans_prodComm : (prodComm : R × S ≃+* S × R).trans prodComm = .refl _ := rfl
 
 @[simp]
 theorem fst_comp_coe_prodComm :

@@ -1038,8 +1038,7 @@ theorem symm_prodComm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E�
 
 @[simp]
 theorem prodComm_trans_prodComm [Module R E₂] :
-    (prodComm R E E₂).trans (prodComm R E₂ E) = .refl _ _ := by
-  ext <;> simp
+    (prodComm R E E₂).trans (prodComm R E₂ E) = .refl _ _ := rfl
 
 variable (E₃)
 

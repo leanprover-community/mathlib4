@@ -401,8 +401,7 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ where
 
 @[simp]
 theorem prodComm_trans_prodComm [Module R₁ M₂] :
-    (prodComm R₁ M₁ M₂).trans (prodComm R₁ M₂ M₁) = .refl _ _ := by
-  ext <;> simp
+    (prodComm R₁ M₁ M₂).trans (prodComm R₁ M₂ M₁) = .refl _ _ := rfl
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem _root_.ContinuousLinearMap.coprod_comp_prodComm [Module R₁ M₂] [Module R₁ M₃]

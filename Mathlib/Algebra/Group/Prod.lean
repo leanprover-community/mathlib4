@@ -523,8 +523,7 @@ theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap 
   rfl
 
 @[to_additive (attr := simp) prodComm_trans_prodComm]
-theorem prodComm_trans_prodComm : (prodComm : M × N ≃* N × M).trans prodComm = .refl _ := by
-  ext <;> simp
+theorem prodComm_trans_prodComm : (prodComm : M × N ≃* N × M).trans prodComm = .refl _ := rfl
 
 variable [MulOneClass P]
 
