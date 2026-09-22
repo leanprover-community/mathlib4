@@ -384,8 +384,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       -- normalize exponents
       show ((3 : Fin 8) : ℕ) = 3 from rfl, show ((5 : Fin 8) : ℕ) = 5 from rfl,
       show ((7 : Fin 8) : ℕ) = 7 from rfl]
-    simp only [Int.cast_zero, zero_mul, Int.cast_one, Fin.val_one, pow_one, one_mul, zero_add,
-      Fin.val_two, add_zero, Int.reduceNeg, Int.cast_neg]
+    simp only [Fin.val_one, pow_one, Fin.val_two, Int.reduceNeg]
     linear_combination (τ ^ 3 - τ) * τ_spec
   have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     rw [hχ, one_mul, ZMod.card, Nat.cast_ofNat, hg₁]
