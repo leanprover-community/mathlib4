@@ -243,7 +243,7 @@ lemma MemHolder.coe_nnHolderNorm_eq_eHolderNorm
     {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
     (nnHolderNorm r f : ℝ≥0∞) = eHolderNorm r f := by
   rw [nnHolderNorm, coe_toNNReal]
-  exact ne_of_lt <| lt_of_le_of_lt hf.holderWith.eHolderNorm_le <| coe_lt_top
+  exact ne_of_lt <| lt_of_le_of_lt hf.holderWith.eHolderNorm_le coe_lt_top
 
 lemma HolderWith.nnholderNorm_le {C r : ℝ≥0} {f : X → Y} (hf : HolderWith C r f) :
     nnHolderNorm r f ≤ C := by

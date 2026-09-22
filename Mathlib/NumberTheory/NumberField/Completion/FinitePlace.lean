@@ -314,7 +314,6 @@ lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < �
   simpa [← Int.sub_one_lt_iff, ← log_one] using
     lt_log_of_exp_lt (Valued.toNormedField.one_lt_norm_iff.1 h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
     ‖embedding v (algebraMap _ K x)‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_embedding, adicAbv_def,

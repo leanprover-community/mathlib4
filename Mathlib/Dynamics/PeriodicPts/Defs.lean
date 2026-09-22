@@ -343,7 +343,7 @@ theorem minimalPeriod_eq_one_of_subsingleton [Subsingleton α] : minimalPeriod f
 theorem IsPeriodicPt.eq_zero_of_lt_minimalPeriod (hx : IsPeriodicPt f n x)
     (hn : n < minimalPeriod f x) : n = 0 :=
   Eq.symm <|
-    (eq_or_lt_of_le <| n.zero_le).resolve_right fun hn0 => not_lt.2 (hx.minimalPeriod_le hn0) hn
+    (eq_or_lt_of_le n.zero_le).resolve_right fun hn0 => not_lt.2 (hx.minimalPeriod_le hn0) hn
 
 theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
     ∀ {n : ℕ} (_ : n ≠ 0) (_ : n < minimalPeriod f x), ¬IsPeriodicPt f n x
@@ -351,7 +351,7 @@ theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
   | _ + 1, _, hn => fun hp => Nat.succ_ne_zero _ (hp.eq_zero_of_lt_minimalPeriod hn)
 
 theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod f x ∣ n :=
-  (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 => hn0 ▸ Nat.dvd_zero _) fun hn0 =>
+  (eq_or_lt_of_le n.zero_le).elim (fun hn0 => hn0 ▸ Nat.dvd_zero _) fun hn0 =>
     Nat.dvd_iff_mod_eq_zero.2 <|
       (hx.mod <| isPeriodicPt_minimalPeriod f x).eq_zero_of_lt_minimalPeriod <|
         Nat.mod_lt _ <| hx.minimalPeriod_pos hn0
