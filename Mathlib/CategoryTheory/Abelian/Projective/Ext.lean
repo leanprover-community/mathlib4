@@ -77,7 +77,10 @@ lemma extEquivCohomologyClass_symm_smul
     (x : CohomologyClass R.cochainComplex ((singleFunctor C 0).obj Y) n) :
     R.extEquivCohomologyClass.symm (r • x) =
       r • R.extEquivCohomologyClass.symm x := by
-  sorry
+  have := HasDerivedCategory.standard C
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  ext
+  simp [← CohomologyClass.mk_smul, extEquivCohomologyClass_symm_mk_hom, ShiftedHom.map]
 
 /-- If `R` is a projective resolution of `X`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `R.cochainComplex`
@@ -179,17 +182,18 @@ lemma neg_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (by simpa [cochainComplex_d _ _ _ m n rfl rfl])]
   simp
 
+@[simp]
+lemma extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
+    R.extMk (0 : R.complex.X n ⟶ Y) m hm (by simp) = 0 := by
+  simp [extMk]
+
 lemma smul_extMk {R₀ : Type*} [Ring R₀] [Linear R₀ C]
     (r : R₀) {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (hf : R.complex.d m n ≫ f = 0) :
     r • R.extMk f m hm hf =
       R.extMk (r • f) m hm (by simp [hf]) := by
-  sorry
-
-@[simp]
-lemma extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
-    R.extMk (0 : R.complex.X n ⟶ Y) m hm (by simp) = 0 := by
-  simp [extMk]
+  simp only [extMk, Linear.comp_smul, ← extEquivCohomologyClass_symm_smul,
+    ← CohomologyClass.mk_smul, ← Cocycle.toSingleMk_smul]
 
 lemma extMk_hom
     [HasDerivedCategory C] {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)

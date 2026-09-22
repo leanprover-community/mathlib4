@@ -191,6 +191,11 @@ lemma ofHom_sub (φ₁ φ₂ : F ⟶ G) :
 lemma ofHom_neg (φ : F ⟶ G) :
     Cochain.ofHom (-φ) = -Cochain.ofHom φ := by cat_disch
 
+@[simp]
+lemma ofHom_smul (r : R) (φ : F ⟶ G) :
+    Cochain.ofHom (r • φ) = r • Cochain.ofHom φ := by
+  cat_disch
+
 /-- The cochain of degree `-1` given by a homotopy between two morphisms of complexes. -/
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
   Cochain.mk (fun p q _ => ho.hom p q)
@@ -655,6 +660,11 @@ lemma δ_eq_zero {n : ℤ} (z : Cocycle F G n) (m : ℤ) : δ n m (z : Cochain F
 /-- The `0`-cocycle associated to a morphism in `CochainComplex C ℤ`. -/
 @[simps!]
 def ofHom (φ : F ⟶ G) : Cocycle F G 0 := mk (Cochain.ofHom φ) 1 (zero_add 1) (by simp)
+
+@[simp]
+lemma ofHom_smul (r : R) (φ : F ⟶ G) :
+    ofHom (r • φ) = r • ofHom φ := by
+  cat_disch
 
 /-- The morphism in `CochainComplex C ℤ` associated to a `0`-cocycle. -/
 @[simps]
