@@ -58,25 +58,6 @@ namespace Polynomial
 
 variable {K : Type*} [Field K] [DecidableEq K]
 
-private lemma sturmSeq_termination (f g : K[X]) (hf : f ≠ 0) :
-    (if g = 0 then 0 else if -f % g = 0 then 1 else 2 + (-f % g).natDegree) <
-    if f = 0 then 0 else if g = 0 then 1 else 2 + g.natDegree := by
-  rw [ite_eq_right hf]
-  by_cases hg : g = 0
-  · simp [hg]
-  rw [ite_eq_right hg, ite_eq_right hg]
-  by_cases hmod : -f % g = 0
-  · rw [ite_eq_left hmod]; omega
-  rw [ite_eq_right hmod]
-  -- a nonzero constant divides everything, so `g` is not constant
-  have hdeg : g.natDegree ≠ 0 := by
-    intro h0
-    obtain ⟨c, rfl⟩ := natDegree_eq_zero.mp h0
-    have hc : c ≠ 0 := by rintro rfl; simp at hg
-    exact hmod (EuclideanDomain.mod_eq_zero.mpr (isUnit_C.mpr (isUnit_iff_ne_zero.mpr hc)).dvd)
-  have := natDegree_mod_lt (-f) hdeg
-  omega
-
 /-- The Sturm sequence of `p` and `q`: the list `[p, q, -(p % q), …]` of successive negated
 remainders, ending at the last nonzero one. -/
 noncomputable def sturmSeq (p q : K[X]) : List K[X] :=
@@ -85,7 +66,10 @@ noncomputable def sturmSeq (p q : K[X]) : List K[X] :=
   else
     p :: (sturmSeq q (-p % q))
   termination_by if p = 0 then 0 else if q = 0 then 1 else 2 + natDegree q
-  decreasing_by exact sturmSeq_termination p q (by assumption)
+  decreasing_by
+    have hdeg := fun (h : -p % q ≠ 0) (hq : q ≠ 0) =>
+      natDegree_lt_natDegree h (degree_mod_lt (-p) hq)
+    grind
 
 /-- The Sturm sequence of `0` and `q` is the empty sequence. -/
 @[simp]
