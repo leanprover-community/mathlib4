@@ -52,7 +52,6 @@ theorem cycleFactorsFinset_conj (g k : Perm α) :
   simp [← mem_cycleFactorsFinset_conj g k, mul_assoc]
 
 /-- A permutation `c` is a cycle of `g` iff `k • c` is a cycle of `k • g` -/
-@[simp]
 theorem mem_cycleFactorsFinset_conj' (k g c : Perm α) :
     MulAut.conj k c ∈ (MulAut.conj k g).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
   apply mem_cycleFactorsFinset_conj g k
