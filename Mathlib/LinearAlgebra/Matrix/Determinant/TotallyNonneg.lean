@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Totally nonnegative matrices
@@ -31,6 +32,8 @@ This file defines totally nonnegative matrices and provides basic API for them.
   is totally nonnegative.
 - `Matrix.IsTotallyNonneg.transpose`: the transpose of a totally nonnegative matrix is totally
   nonnegative.
+- `Matrix.IsTotallyNonneg.conjTranspose`: the conjugate transpose of a totally nonnegative matrix is
+  totally nonnegative.
 -/
 public section
 
@@ -60,6 +63,13 @@ protected lemma IsTotallyNonneg.transpose (hM : M.IsTotallyNonneg) :
 
 @[simp] theorem isTotallyNonneg_transpose_iff :
     Mᵀ.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(·.transpose), (·.transpose)⟩
+
+protected lemma IsTotallyNonneg.conjTranspose [StarRing R] [StarOrderedRing R]
+    (hM : M.IsTotallyNonneg) : Mᴴ.IsTotallyNonneg := fun _ _ _ hrows hcols ↦ by
+  simp [← conjTranspose_submatrix, hM hcols hrows]
+
+@[simp] theorem isTotallyNonneg_conjTranspose_iff [StarRing R] [StarOrderedRing R] :
+    Mᴴ.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(by simpa using ·.conjTranspose), (·.conjTranspose)⟩
 
 variable [IsOrderedRing R]
 
