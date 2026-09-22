@@ -4,6 +4,8 @@ import Mathlib.Init
 
 set_option linter.style.redundantSyntax true
 
+section Pipe
+
 /--
 @ +1:19...22
 warning: Try this:
@@ -152,3 +154,36 @@ example : Id Nat := id <| do
 -- Don't warn when the funtion is not an application or a syntax with `max` precedence.
 instance : Add (Nat → Nat) := ⟨fun f _ ↦ f⟩
 example (f g : Nat → Nat) := f + g <| 3
+
+end Pipe
+
+section PipeProj
+
+/--
+@ +1:14...18
+warning: Try this:
+   ̵|̵>̵.
+
+`[1]` can be parsed at maximal precedence, so the operator `|>.` can be replaced with a normal `.` projection.
+
+Note: This linter can be disabled with `set_option linter.style.redundantSyntax false`
+-/
+#guard_msgs (positions := true) in
+example : ([1] |>.cons 0) = [0, 1] := rfl
+
+/--
+warning: Try this:
+   ̵|̵>̵.
+
+`·` can be parsed at maximal precedence, so the operator `|>.` can be replaced with a normal `.` projection.
+
+Note: This linter can be disabled with `set_option linter.style.redundantSyntax false`
+-/
+#guard_msgs in
+example (as : Array Nat) : Std.HashSet Nat := as.foldl (· |>.insert ·) {}
+
+-- In these cases, replacing `|>.` with `.` causes weird parsing, so we don't lint them.
+example : (1 |>.succ) = 2 := rfl
+example := ``Nat |>.isStr
+
+end PipeProj

@@ -230,6 +230,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         else
           rargs
     | ``«term_<|_» =>
+      -- Suggest `f a` in place of `f <| a` when appropriate.
       if h : args.size = 3 then
         if (hasMaxPrec args[2] || args[2].isOfKind ``Parser.Term.do) &&
           (hasMaxPrec args[0] || args[0].isOfKind ``Parser.Term.app) then
@@ -240,6 +241,22 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
           rargs.push (kind, args[1].setHeadInfo info,
             m!"`{args[2]}` can be parsed as a function argument, \
             so the pipe operator `<|` can be omitted.")
+        else
+          rargs
+      else
+        rargs
+    | ``Parser.Term.pipeProj =>
+      -- Suggest `x.foo` in place of `x |>.foo` when appropriate.
+      if h : args.size ≥ 2 then
+        if hasMaxPrec args[0] && !(args[0].getKind matches
+            `num | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName) then
+          -- Trick: manually set the position info of `|>.` in order to remove preceding whitespace.
+          let info := match args[0].getTailPos?, args[1].getTailPos? with
+            | some pos, some tailPos => .synthetic pos tailPos
+            | _,        _            => .none -- This should not happen.
+          rargs.push (kind, args[1].setHeadInfo info,
+            m!"`{args[0]}` can be parsed at maximal precedence, \
+            so the operator `|>.` can be replaced with a normal `.` projection.")
         else
           rargs
       else
@@ -302,6 +319,11 @@ def deprecatedSyntaxLinter : Linter where run stx := do
         if getLinterValue linter.style.redundantSyntax opts then
           let sugg ← Command.liftCoreM <|
             Meta.Hint.mkSuggestionsMessage #[{toTryThisSuggestion := ""}] stx' none false
+          Linter.logLint linter.style.redundantSyntax stx' m!"Try this:{sugg}\n\n{msg}"
+      | ``Parser.Term.pipeProj =>
+        if getLinterValue linter.style.redundantSyntax opts then
+          let sugg ← Command.liftCoreM <|
+            Meta.Hint.mkSuggestionsMessage #[{toTryThisSuggestion := "."}] stx' none false
           Linter.logLint linter.style.redundantSyntax stx' m!"Try this:{sugg}\n\n{msg}"
       | _ => continue) stx
 
