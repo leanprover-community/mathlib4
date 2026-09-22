@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Order
 /-!
 # The spectrum radius limit in a normed ring
 
-This file defines the spectal radius limit `lim ‖a ^ k‖ ^ (1 / k)` in a normed ring and proves
+This file defines the spectral radius limit `lim ‖a ^ k‖ ^ (1 / k)` in a normed ring and proves
 basic properties.
 
 ## Main definitions
