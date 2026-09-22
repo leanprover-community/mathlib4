@@ -71,7 +71,7 @@ theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] 
     rw [continuousOn_iff_continuous_domRestrict]
     convert continuous_const (y := (0 : A)) with x
     simp
-  have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet a).measurableSet
+  have h3 : MeasurableSet (resolventSet 𝕜 a) := (isOpen_resolventSet 𝕜 a).measurableSet
   simpa using h1.measurable_piecewise h2 h3
 
 variable [CompleteSpace 𝕜] [NormedDivisionRing A] [NormedAlgebra 𝕜 A]
