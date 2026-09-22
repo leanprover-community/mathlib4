@@ -739,24 +739,6 @@ namespace NonUnitalAlgHom
 
 section NormedField
 
--- this should go elsewhere
-attribute [local grind .] add_mul add_comm add_right_comm zero_add one_ne_zero in
-theorem apply_mem_quasispectrum {F R A : Type*} [CommSemiring R] [Nontrivial R] [NonUnitalRing A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [FunLike F A R]
-    [NonUnitalAlgHomClass F R A R] (φ : F) (a : A) :
-    φ a ∈ quasispectrum R a := by
-  intro ha
-  lift φ a to Rˣ using ha with r hr
-  simp_rw [isQuasiregular_iff, IsUnit.unit_of_val_units]
-  rintro ⟨b, hb, -⟩
-  replace hb := congr(φ $hb)
-  have h1 : φ (r⁻¹ • a) = 1 := by simp [Units.smul_def, hr]
-  have := congr(φ ($(neg_add_cancel (r⁻¹ • a))))
-  replace h1 : φ (-(r⁻¹ • a)) + 1 = 0 := by simp [← h1, ← map_add]
-  grind =>
-    have huv : (φ (-(r⁻¹ • a)) + 1) * φ b = 0
-    have : 1 = 0
-
 variable {F : Type*} [NormedField 𝕜] [NonUnitalNormedRing A] [NormedSpace 𝕜 A]
     [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] [HasSummableGeomSeries A]
 

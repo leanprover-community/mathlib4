@@ -311,6 +311,22 @@ theorem quasispectrum_smul {R A : Type*} [Semifield R] [NonUnitalRing A] [Module
   · lift k to Rˣ using hk.isUnit
     simpa [Units.smul_def] using quasispectrum_unit_smul k a
 
+attribute [local grind .] add_mul add_comm add_right_comm zero_add one_ne_zero in
+theorem NonUnitalAlgHom.apply_mem_quasispectrum {F : Type*} [FunLike F A R]
+    [NonUnitalAlgHomClass F R A R] [Nontrivial R] (φ : F) (a : A) :
+    φ a ∈ quasispectrum R a := by
+  intro ha
+  lift φ a to Rˣ using ha with r hr
+  simp_rw [isQuasiregular_iff, IsUnit.unit_of_val_units]
+  rintro ⟨b, hb, -⟩
+  replace hb := congr(φ $hb)
+  have h1 : φ (r⁻¹ • a) = 1 := by simp [Units.smul_def, hr]
+  have := congr(φ ($(neg_add_cancel (r⁻¹ • a))))
+  replace h1 : φ (-(r⁻¹ • a)) + 1 = 0 := by simp [← h1, ← map_add]
+  grind =>
+    have huv : (φ (-(r⁻¹ • a)) + 1) * φ b = 0
+    have : 1 = 0
+
 /-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
 where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
 need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
