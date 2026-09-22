@@ -17,6 +17,8 @@ subgroups of a group is again nilpotent.
 
 * `Subgroup.lowerCentralSeries_sup_add_le`: for normal `H` and `K`, the `(m + n)`-th term of the
   lower central series of `H ⊔ K` lies in `H.lowerCentralSeries m ⊔ K.lowerCentralSeries n`.
+* `Subgroup.lowerCentralSeries_sup_eq_bot`: consequently, if those two series reach `⊥` by steps
+  `m` and `n`, then that of `H ⊔ K` reaches `⊥` by step `m + n`.
 * `Subgroup.isNilpotent_sup_of_normal`: if `H` and `K` are normal nilpotent subgroups of
   a group `G`, then `H ⊔ K` is nilpotent.
 * `Subgroup.nilpotencyClass_sup_le`: the nilpotency class of `H ⊔ K` is at most the sum of the
@@ -57,26 +59,30 @@ public theorem lowerCentralSeries_sup_add_le [H.Normal] [K.Normal] (m n : ℕ) :
         rw [← add_assoc, add_left_inj] at hmn
         grw [hk hmn, commutator_sup_right, commutator_le_left, lowerCentralSeries_succ]
 
+/-- If the lower central series of normal `H` and `K` reach `⊥` by steps `m` and `n`, then that
+of `H ⊔ K` reaches `⊥` by step `m + n`. -/
+public theorem lowerCentralSeries_sup_eq_bot [H.Normal] [K.Normal] {m n : ℕ}
+    (hH : H.lowerCentralSeries m = ⊥) (hK : K.lowerCentralSeries n = ⊥) :
+    (H ⊔ K).lowerCentralSeries (m + n) = ⊥ :=
+  le_bot_iff.mp <| (lowerCentralSeries_sup_add_le m n).trans <| sup_le hH.le hK.le
+
 /-- **Fitting's theorem.** The join of two normal nilpotent subgroups of a group is
 nilpotent. -/
 public instance isNilpotent_sup_of_normal (H K : Subgroup G) [H.Normal] [K.Normal]
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
     Group.IsNilpotent (H ⊔ K :) :=
-  isNilpotent_of_lowerCentralSeries_eq_bot (n := Group.nilpotencyClass H + Group.nilpotencyClass K)
-    <| le_bot_iff.mp <| (lowerCentralSeries_sup_add_le _ _).trans <| sup_le
-      (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl).le
-      (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl).le
+  isNilpotent_of_lowerCentralSeries_eq_bot <| lowerCentralSeries_sup_eq_bot
+    (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl)
+    (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl)
 
 /-- The nilpotency class of the join of two normal nilpotent subgroups is at most the sum of
 their nilpotency classes. -/
 public theorem nilpotencyClass_sup_le (H K : Subgroup G) [H.Normal] [K.Normal]
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
     Group.nilpotencyClass (H ⊔ K :) ≤
-      Group.nilpotencyClass H + Group.nilpotencyClass K := by
-  rw [← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le, ← map_eq_bot_iff_of_injective _
-    (H ⊔ K).subtype_injective, top_subtype_lowerCentralSeries]
-  exact le_bot_iff.mp <| (lowerCentralSeries_sup_add_le _ _).trans <| sup_le
-    (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl).le
-    (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl).le
+      Group.nilpotencyClass H + Group.nilpotencyClass K :=
+  lowerCentralSeries_eq_bot_iff_nilpotencyClass_le'.mp <| lowerCentralSeries_sup_eq_bot
+    (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl)
+    (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl)
 
 end Subgroup
