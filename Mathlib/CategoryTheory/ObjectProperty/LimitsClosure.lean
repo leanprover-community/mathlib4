@@ -151,6 +151,7 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     intro c hc
     exact hb' _ hc
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
     [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] (b : β)
     [hb₀ : Small.{w} (Set.Iio b)] :

@@ -10,7 +10,6 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
 public import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Algebra.Polynomial.Sequence
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss
@@ -55,7 +54,7 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ
     have hf {s a b t : ℂ} (h : s * a⁻¹ * b = t) (ha : a ≠ 0) (hb : b ≠ 0) : s = a / b * t := by
       linear_combination (norm := field) h * a / b
     apply hf this (Complex.exp_ne_zero _) (by grind [exp_sub_one_ne_zero])
-  convert geom_sum_mul (exp (k / n * π * I)) n using 1
+  convert! geom_sum_mul (exp (k / n * π * I)) n using 1
   · simp_rw [sum_mul]
     congr! 1 with i hi
     rw [← Complex.exp_nat_mul, ← Complex.exp_add]
@@ -89,7 +88,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
   · simp [sumZeroes]
   suffices ∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by
     rw [sumZeroes, mul_eq_zero_iff_left (by aesop)]
-    rw [← mul_sum, mul_eq_zero_iff_left (by norm_num)] at this
+    rw [← mul_sum, mul_eq_zero_iff_left (by simp)] at this
     simpa [T_real_cos]
   suffices (∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) : ℂ) = 0 by norm_cast at this ⊢
   suffices ∑ i ∈ range n, 2 * Complex.cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by aesop

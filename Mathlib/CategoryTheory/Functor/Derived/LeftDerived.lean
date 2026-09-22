@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
@@ -39,8 +39,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
-  [Category* D] [Category* D'] [Category* H] [Category* H']
+variable {C D H H' : Type _} [Category* C] [Category* D] [Category* H] [Category* H']
   (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α : L ⋙ LF ⟶ F) (α'₂ : L ⋙ LF' ⟶ F)
   (W : MorphismProperty C)
@@ -59,7 +58,7 @@ lemma isLeftDerivedFunctor_iff_isRightKanExtension [L.IsLocalization W] :
   · exact fun _ => IsLeftDerivedFunctor.isRightKanExtension LF α W
   · exact fun h => ⟨h⟩
 
-variable {RF RF'} in
+variable {LF LF'} in
 lemma isLeftDerivedFunctor_iff_of_iso (α' : L ⋙ LF' ⟶ F) (W : MorphismProperty C)
     [L.IsLocalization W] (e : LF ≅ LF') (comm : whiskerLeft L e.hom ≫ α' = α) :
     LF.IsLeftDerivedFunctor α W ↔ LF'.IsLeftDerivedFunctor α' W := by
@@ -142,7 +141,7 @@ lemma isLeftDerivedFunctor_iff_isIso_leftDerivedLift (G : D ⥤ H) (β : L ⋙ G
   have := IsLeftDerivedFunctor.isRightKanExtension _ α W
   exact isRightKanExtension_iff_isIso _ α _ (by simp)
 
-instance (G : H ⥤ H') [G.IsEquivalence] :
+instance (G : H ⥤ H') [G.IsRightAdjoint] :
     (LF ⋙ G).IsLeftDerivedFunctor ((associator _ _ _).inv ≫ whiskerRight α G) W := by
   have : LF.IsRightKanExtension α := by
     rwa [← isLeftDerivedFunctor_iff_isRightKanExtension _ _ W]
@@ -194,7 +193,7 @@ section
 
 variable (F) [F.HasLeftDerivedFunctor W] (L W)
 
-/-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
+/-- Given a functor `F : C ⥤ H`, and a localization functor `L : C ⥤ D` for `W`,
 this is the left derived functor `D ⥤ H` of `F`, i.e. the right Kan extension
 of `F` along `L`. -/
 noncomputable def totalLeftDerived : D ⥤ H :=
@@ -222,7 +221,7 @@ variable {C₁ C₂ H₁ H₂ D : Type*} [Category* C₁] [Category* C₂] [Cate
   [Category* H₁] [Category* H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
   (Φ : LocalizerMorphism W₁ W₂) [Φ.IsLocalizedEquivalence] [Φ.functor.IsEquivalence]
 
-open Functor in
+open CategoryTheory.Functor in
 lemma isLeftDerivedFunctor_iff_precomp
     (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
     (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)

@@ -305,11 +305,13 @@ splitting field of `R` are precisely the `X`-coordinates of the non-zero 2-torsi
 def twoTorsionPolynomial : Cubic R :=
   ⟨4, W.b₂, 2 * W.b₄, W.b₆⟩
 
+lemma eval_toPoly_twoTorsionPolynomial (x : R) :
+    W.twoTorsionPolynomial.toPoly.eval x = 4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆ := by
+  simp [twoTorsionPolynomial, Cubic.toPoly]
+
 lemma twoTorsionPolynomial_discr : W.twoTorsionPolynomial.discr = 16 * W.Δ := by
   simp only [b₂, b₄, b₆, b₈, Δ, twoTorsionPolynomial, Cubic.discr]
   ring1
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc := twoTorsionPolynomial_discr
 
 section CharTwo
 
@@ -323,9 +325,6 @@ lemma twoTorsionPolynomial_of_char_two : W.twoTorsionPolynomial = ⟨0, W.b₂, 
 
 lemma twoTorsionPolynomial_discr_of_char_two : W.twoTorsionPolynomial.discr = 0 := by
   linear_combination W.twoTorsionPolynomial_discr + 8 * W.Δ * CharP.cast_eq_zero R 2
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_two :=
-  twoTorsionPolynomial_discr_of_char_two
 
 end CharTwo
 
@@ -355,13 +354,6 @@ lemma twoTorsionPolynomial_discr_isUnit (hu : IsUnit (2 : R)) :
 lemma twoTorsionPolynomial_discr_ne_zero [Nontrivial R] (hu : IsUnit (2 : R)) (hΔ : IsUnit W.Δ) :
     W.twoTorsionPolynomial.discr ≠ 0 :=
   ((W.twoTorsionPolynomial_discr_isUnit hu).mpr hΔ).ne_zero
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_of_char_three :=
-  twoTorsionPolynomial_discr_of_char_three
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_isUnit :=
-  twoTorsionPolynomial_discr_isUnit
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero :=
-  twoTorsionPolynomial_discr_ne_zero
 
 end TorsionPolynomial
 
@@ -407,6 +399,10 @@ lemma j_eq_zero (h : W.c₄ = 0) : W.j = 0 := by
 lemma j_eq_zero_iff [IsReduced R] : W.j = 0 ↔ W.c₄ = 0 := by
   rw [j_eq_zero_iff', pow_eq_zero_iff three_ne_zero]
 
+theorem j_eq {K : Type*} [Field K] (W : WeierstrassCurve K) [W.IsElliptic] :
+    W.j = W.Δ⁻¹ * W.c₄ ^ 3 := by
+  rw [WeierstrassCurve.j, Units.val_inv_eq_inv_val, WeierstrassCurve.coe_Δ']
+
 section CharTwo
 
 variable [CharP R 2]
@@ -450,9 +446,6 @@ end CharThree
 lemma twoTorsionPolynomial_discr_ne_zero_of_isElliptic [Nontrivial R] (hu : IsUnit (2 : R)) :
     W.twoTorsionPolynomial.discr ≠ 0 :=
   W.twoTorsionPolynomial_discr_ne_zero hu W.isUnit_Δ
-
-@[deprecated (since := "2025-10-20")] alias twoTorsionPolynomial_disc_ne_zero_of_isElliptic :=
-  twoTorsionPolynomial_discr_ne_zero_of_isElliptic
 
 section BaseChange
 

@@ -9,19 +9,24 @@ public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Vertex operators
+
 In this file we introduce heterogeneous vertex operators using Hahn series.  When `R = ℂ`, `V = W`,
 and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D field".  The notion we use
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.
+
 ## Definitions
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
 * The coefficient function as an `R`-linear map.
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
+
 ## Main results
 * Ext
+
 ## TODO
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.
+
 ## References
 
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
@@ -65,9 +70,11 @@ def coeff : HVertexOperator Γ R V W →ₗ[R] Γ → V →ₗ[R] W where
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
+theorem isPWO_support_coeff (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
   ((of R).symm (A v)).isPWO_support'
+
+@[deprecated (since := "2026-09-17")] alias coeff_isPWOsupport := isPWO_support_coeff
 
 @[ext]
 theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[R] Γ → (V →ₗ[R] W)) := by
@@ -91,7 +98,7 @@ theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
   rfl
 
 @[simp]
-theorem of_coeff_coeff (A : HVertexOperator Γ R V W) : of_coeff A.coeff A.coeff_isPWOsupport = A :=
+theorem of_coeff_coeff (A : HVertexOperator Γ R V W) : of_coeff A.coeff A.isPWO_support_coeff = A :=
   rfl
 
 end Coeff

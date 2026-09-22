@@ -159,12 +159,12 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
     (F.toHomotopy.continuous.comp (by fun_prop)).continuousOn
-    (G.toHomotopy.continuous.comp (by fun_prop)).continuousOn fun x hx ↦ by norm_num [hx]
+    (G.toHomotopy.continuous.comp (by fun_prop)).continuousOn fun x hx ↦ by simp [hx]
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
     rcases ht with ht | ht
-    · norm_num [ht]
+    · simp [ht]
     · rw [Set.mem_singleton_iff] at ht
       norm_num [ht]
 
@@ -178,8 +178,8 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
-    F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
-  show ite _ _ _ = _ by norm_num
+    F.hcomp G (t, ⟨1 / 2, by simp, by norm_num⟩) = x₁ :=
+  show ite _ _ _ = _ by simp
 
 end
 
@@ -191,8 +191,8 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
   toFun x := p ⟨σ x.1 * x.2 + x.1 * f x.2,
     show (σ x.1 : ℝ) • (x.2 : ℝ) + (x.1 : ℝ) • (f x.2 : ℝ) ∈ I from
       convex_Icc _ _ x.2.2 (f x.2).2 (by unit_interval) (by unit_interval) (by simp)⟩
-  map_zero_left x := by norm_num
-  map_one_left x := by norm_num
+  map_zero_left x := by simp
+  map_one_left x := by simp
   prop' t x hx := by
     rcases hx with hx | hx
     · rw [hx]
@@ -379,21 +379,19 @@ theorem cast_cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) 
   induction γ using Quotient.ind with | mk γ =>
   rfl
 
+theorem cast_heq {x y x' y' : X} (hx : x' = x) (hy : y' = y) {γ : Homotopic.Quotient x y} :
+    γ.cast hx hy ≍ γ := by
+  cases hx; cases hy; exact heq_of_eq γ.cast_rfl_rfl
+
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
-
 @[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
     mk (P₀.trans P₁) = Quotient.trans (mk P₀) (mk P₁) :=
   rfl
-
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.comp_lift := Quotient.mk_trans
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
 This is `Path.map` descended to the quotient. -/
@@ -402,22 +400,25 @@ def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
   _root_.Quotient.map
     (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
-
 theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.map_lift := Quotient.mk_map
+theorem map_comp {Z} [TopologicalSpace Z] {p : Path.Homotopic.Quotient x₀ x₁}
+    {f : C(X, Y)} {g : C(Y, Z)} : p.map (g.comp f) = (p.map f).map g := by
+  rcases p; rfl
+
+theorem map_cast {x y : X} (p : Homotopic.Quotient x y) {x' y'} {hx : x' = x} {hy : y' = y}
+    {f : C(X, Y)} : (p.cast hx hy).map f = (p.map f).cast congr(f $hx) congr(f $hy) := by
+  rcases p; rfl
 
 end Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     HEq (α := Path.Homotopic.Quotient _ _) ⟦p₁⟧ (β := Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
-  obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
-  obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
+  obtain rfl : x₀ = x₂ := by convert! hp 0 <;> simp
+  obtain rfl : x₁ = x₃ := by convert! hp 1 <;> simp
   rw [heq_iff_eq]; congr; ext t; exact hp t
 
 end Homotopic

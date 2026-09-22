@@ -23,17 +23,14 @@ public import Mathlib.RingTheory.OrzechProperty
 
 @[expose] public section
 
-
-open Set Filter Pointwise
-
 open IsNoetherian Submodule Function
 
 section
 
 universe w
 
-variable {R M P : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-  [Module R N] [AddCommGroup P] [Module R P] [IsNoetherian R M]
+variable {R M : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+  [Module R N] [IsNoetherian R M]
 
 /-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
 `M` and `N` are `R`-modules, `M` is Noetherian, `i : N →ₗ[R] M` is injective,
@@ -43,7 +40,7 @@ utilizing `LinearMap.iterateMapComap`.
 See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
 theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
     (hi : Injective i) (hf : Surjective f) : Injective f := by
-  haveI := isNoetherian_of_injective i hi
+  have := isNoetherian_of_injective i hi
   obtain ⟨n, H⟩ := monotone_stabilizes_iff_noetherian.2 ‹_›
     ⟨_, monotone_nat_of_le_succ <| f.iterateMapComap_le_succ i ⊥ (by simp)⟩
   exact LinearMap.ker_eq_bot.1 <| bot_unique <|

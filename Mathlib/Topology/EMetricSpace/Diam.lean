@@ -16,7 +16,7 @@ as an extended nonnegative real number.
 
 @[expose] public section
 
-open Set Filter
+open Set
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -24,13 +24,13 @@ variable {α X : Type*} {s t : Set X} {x y z : X}
 
 namespace Metric
 
-section PseudoEMetricSpace
-
-variable [PseudoEMetricSpace X]
+section WeakPseudoEMetricSpace
 
 /-- The diameter of a set in a pseudoemetric space as an extended nonnegative real number. -/
-noncomputable def ediam (s : Set X) :=
+noncomputable def ediam [EDist X] (s : Set X) :=
   ⨆ (x ∈ s) (y ∈ s), edist x y
+
+variable [TopologicalSpace X] [WeakPseudoEMetricSpace X]
 
 theorem ediam_eq_sSup (s : Set X) : ediam s = sSup (image2 edist s s) := sSup_image2.symm
 
@@ -79,11 +79,10 @@ theorem ediam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set X) 
 theorem ediam_insert : ediam (insert x s) = max (⨆ y ∈ s, edist x y) (ediam s) :=
   eq_of_forall_ge_iff fun d => by simp +contextual [ediam_le_iff, edist_comm]
 
-theorem ediam_pair : ediam ({x, y} : Set X) = edist x y := by simp [ediam_insert]
+theorem ediam_pair : ediam {x, y} = edist x y := by simp [ediam_insert]
 
-theorem ediam_triple :
-    ediam ({x, y, z} : Set X) = max (max (edist x y) (edist x z)) (edist y z) := by
-  simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, ENNReal.max_zero_right]
+theorem ediam_triple : ediam {x, y, z} = max (max (edist x y) (edist x z)) (edist y z) := by
+  simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, max_zero]
 
 /-- The extended diameter is monotonous with respect to inclusion -/
 @[gcongr]
@@ -136,11 +135,11 @@ theorem ediam_pi_le_of_le {ι : Type*} {X : ι → Type*} [Fintype ι] [∀ i, P
   rw [mem_univ_pi] at hx hy
   exact fun b => ediam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
 
-end PseudoEMetricSpace
+end WeakPseudoEMetricSpace
 
-section EMetricSpace
+section WeakEMetricSpace
 
-variable [EMetricSpace X]
+variable [TopologicalSpace X] [WeakEMetricSpace X]
 
 theorem ediam_eq_zero_iff : ediam s = 0 ↔ s.Subsingleton :=
   ⟨fun h _x hx _y hy => edist_le_zero.1 <| h ▸ edist_le_ediam_of_mem hx hy, ediam_subsingleton⟩
@@ -151,38 +150,6 @@ theorem ediam_pos_iff : 0 < ediam s ↔ s.Nontrivial := by
 theorem ediam_pos_iff' : 0 < ediam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
   simp only [ediam_pos_iff, Set.Nontrivial]
 
-end EMetricSpace
+end WeakEMetricSpace
 
 end Metric
-
-namespace EMetric
-
-open Metric
-
-@[deprecated (since := "2026-01-04")] alias diam := Metric.ediam
-@[deprecated (since := "2026-01-04")] alias diam_eq_sSup := ediam_eq_sSup
-@[deprecated (since := "2026-01-04")] alias diam_le_iff := ediam_le_iff
-@[deprecated (since := "2026-01-04")] alias diam_image_le_iff := ediam_image_le_iff
-@[deprecated (since := "2026-01-04")] alias edist_le_of_diam_le := edist_le_of_ediam_le
-@[deprecated (since := "2026-01-04")] alias edist_le_diam_of_mem := edist_le_ediam_of_mem
-@[deprecated (since := "2026-01-04")] alias diam_le := ediam_le
-@[deprecated (since := "2026-01-04")] alias diam_subsingleton := ediam_subsingleton
-@[deprecated (since := "2026-01-04")] alias diam_empty := ediam_empty
-@[deprecated (since := "2026-01-04")] alias diam_singleton := ediam_singleton
-@[deprecated (since := "2026-01-04")] alias diam_zero := ediam_zero
-@[to_additive existing, deprecated (since := "2026-01-04")] alias diam_one := ediam_one
-@[deprecated (since := "2026-01-04")] alias diam_iUnion_mem_option := ediam_iUnion_mem_option
-@[deprecated (since := "2026-01-04")] alias diam_insert := ediam_insert
-@[deprecated (since := "2026-01-04")] alias diam_pair := ediam_pair
-@[deprecated (since := "2026-01-04")] alias diam_triple := ediam_triple
-@[deprecated (since := "2026-01-04")] alias diam_mono := ediam_mono
-@[deprecated (since := "2026-01-04")] alias diam_union := ediam_union_le_add_edist
-@[deprecated (since := "2026-01-04")] alias diam_union' := ediam_union_le
-@[deprecated (since := "2026-01-04")] alias diam_closedBall := ediam_closedEBall_le
-@[deprecated (since := "2026-01-04")] alias diam_ball := ediam_eball_le
-@[deprecated (since := "2026-01-04")] alias diam_pi_le_of_le := ediam_pi_le_of_le
-@[deprecated (since := "2026-01-04")] alias diam_eq_zero_iff := ediam_eq_zero_iff
-@[deprecated (since := "2026-01-04")] alias diam_pos_iff := ediam_pos_iff
-@[deprecated (since := "2026-01-04")] alias diam_pos_iff' := ediam_pos_iff'
-
-end EMetric

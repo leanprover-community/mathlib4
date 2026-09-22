@@ -50,7 +50,7 @@ theorem hasProd_powerSeriesMk_card_restricted [IsTopologicalSemiring R]
     (p : ℕ → Prop) [DecidablePred p] :
     HasProd (fun i ↦ if p (i + 1) then ∑' j : ℕ, X ^ ((i + 1) * j) else 1)
     (PowerSeries.mk fun n ↦ (#(restricted n p) : R)) := by
-  convert hasProd_genFun (fun i c ↦ if p i then (1 : R) else 0) using 1
+  convert! hasProd_genFun (fun i c ↦ if p i then (1 : R) else 0) using 1
   · ext1 i
     split_ifs
     · rw [tsum_eq_zero_add' ?_]
@@ -80,8 +80,8 @@ $$ -/
 theorem hasProd_powerSeriesMk_card_countRestricted {m : ℕ} (hm : 0 < m) :
     HasProd (fun i ↦ ∑ j ∈ range m, X ^ ((i + 1) * j))
     (PowerSeries.mk fun n ↦ (#(countRestricted n m) : R)) := by
-  nontriviality R using Subsingleton.eq_one
-  convert hasProd_genFun (fun i c ↦ if c < m then (1 : R) else 0) using 1
+  nontriviality R using Subsingleton.eq_one (α := R⟦X⟧)
+  convert! hasProd_genFun (fun i c ↦ if c < m then (1 : R) else 0) using 1
   · ext1 i
     rw [sum_range_eq_add_Ico _ hm, sum_Ico_eq_sum_range]
     congrm $(by simp) + ?_
@@ -157,6 +157,6 @@ theorem card_restricted_eq_card_countRestricted (n : ℕ) {m : ℕ} (hm : 0 < m)
 
 theorem card_odds_eq_card_distincts (n : ℕ) : #(odds n) = #(distincts n) := by
   simp_rw [← countRestricted_two, odds, even_iff_two_dvd]
-  exact card_restricted_eq_card_countRestricted n (by norm_num)
+  exact card_restricted_eq_card_countRestricted n (by simp)
 
 end Nat.Partition

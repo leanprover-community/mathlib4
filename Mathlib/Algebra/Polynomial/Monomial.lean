@@ -21,8 +21,8 @@ namespace Polynomial
 
 universe u
 
-variable {R : Type u} {a b : R} {m n : ℕ}
-variable [Semiring R] {p q r : R[X]}
+variable {R : Type u} {a : R} {m n : ℕ}
+variable [Semiring R] {r : R[X]}
 
 theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
     (monomial i 1 : R[X]) = monomial j 1 ↔ i = j := by
@@ -49,7 +49,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
   · rintro ⟨n, a, rfl⟩
     rw [← Finset.card_singleton n]
     apply Finset.card_le_card
-    exact support_monomial' _ _
+    exact support_monomial_subset _ _
 
 theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a) = g (C a))
     (h₂ : f X = g X) : f = g := by
@@ -58,7 +58,7 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
   have A : f' = g' := by
     ext
     · simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
-    simpa using h₂
+    simpa using! h₂
   have B : f = f'.comp (toFinsuppIso R) := by
     rw [hf', RingHom.comp_assoc]
     ext x

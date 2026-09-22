@@ -15,14 +15,16 @@ public import Mathlib.NumberTheory.ModularForms.QExpansion
 This file contains results specific to modular forms of level one, i.e. modular forms for
 `SL(2, ℤ)`.
 
-TODO: Add finite-dimensionality of these spaces of modular forms.
-
+Finite-dimensionality of these spaces is proved in a later file
+(`Mathlib/NumberTheory/ModularForms/LevelOne/DimensionFormula.lean`).
 -/
 
 public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
-  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic MatrixGroups
+  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
+
+open scoped MatrixGroups
 
 local notation "𝕢" => qParam
 
@@ -57,7 +59,6 @@ theorem slash_action_generators_SL2Z {f : ℍ → ℂ} {k : ℤ}
     (hS : f ∣[k] S = f) (hT : f ∣[k] T = f) : ∀ γ : SL(2, ℤ), f ∣[k] γ = f := by
   intro γ
   have h𝒮ℒ : 𝒮ℒ = Subgroup.closure ({↑S, ↑T} : Set (GL (Fin 2) ℝ)) := by
-    change (Matrix.SpecialLinearGroup.mapGL ℝ).range = _
     rw [MonoidHom.range_eq_map, ← SpecialLinearGroup.SL2Z_generators, MonoidHom.map_closure,
       Set.image_pair]
     rfl
@@ -115,4 +116,4 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) = 0 := by
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
-  simpa [← coe_eq_zero_iff] using levelOne_neg_weight_eq_zero hk f
+  simpa [← FunLike.coe_zero_iff] using levelOne_neg_weight_eq_zero hk f

@@ -84,6 +84,8 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
@@ -145,6 +147,7 @@ theorem comparisonAdjunction_unit_f_aux
         (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))) :=
   congr_arg (adj.homEquiv _ _) (Category.comp_id _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a cofork which is helpful for establishing monadicity: the morphism from the Beck
 coequalizer to this cofork is the unit for the adjunction on the comparison functor.
 -/
@@ -227,12 +230,13 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {G : D ⥤ C} {F : C ⥤ D} (adj : F ⊣ G)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 /--
 If `G` is monadic, it creates colimits of `G`-split pairs. This is the "boring" direction of Beck's
 monadicity theorem, the converse is given in `monadicOfCreatesGSplitCoequalizers`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply +allowSynthFailures monadicCreatesColimitOfPreservesColimit
@@ -292,7 +296,7 @@ instance [ReflectsColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
 /-- To show `G` is a monadic right adjoint, we can show it preserves and reflects `G`-split
 coequalizers, and `D` has them.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair G]
     [PreservesColimitOfIsSplitPair G] [ReflectsColimitOfIsSplitPair G] :
     MonadicRightAdjoint G where
@@ -317,7 +321,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
-      letI _ :
+      let _ :
         G.IsSplitPair (F.map (G.map (adj.counit.app Y)))
           (adj.counit.app (F.obj (G.obj Y))) :=
         MonadicityInternal.main_pair_G_split _ ((comparison adj).obj Y)
@@ -345,7 +349,7 @@ instance [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
 pairs, then it is monadic.
 This is the converse of `createsGSplitCoequalizersOfMonadic`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
   have I {A B} (f g : A ⟶ B) [G.IsSplitPair f g] : HasColimit (parallelPair f g ⋙ G) := by
@@ -359,7 +363,7 @@ def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
 /-- An alternate version of **Beck's monadicity theorem**: if `G` reflects isomorphisms, preserves
 coequalizers of `G`-split pairs and `C` has coequalizers of `G`-split pairs, then it is monadic.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIsomorphisms]
     [HasCoequalizerOfIsSplitPair G] [PreservesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
@@ -391,10 +395,11 @@ instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra adj.toMonad,
 
 variable [PreservesColimitOfIsReflexivePair G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Reflexive (crude) monadicity theorem. If `G` has a right adjoint, `D` has and `G` preserves
 reflexive coequalizers and `G` reflects isomorphisms, then `G` is monadic.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRightAdjoint G where
   L := F
   adj := adj

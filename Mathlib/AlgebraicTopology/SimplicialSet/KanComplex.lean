@@ -31,7 +31,9 @@ universe u
 
 namespace SSet
 
-open CategoryTheory Simplicial Limits HomotopicalAlgebra
+open CategoryTheory Limits HomotopicalAlgebra
+
+open scoped Simplicial
 
 open modelCategoryQuillen in
 /-- A simplicial set `S` is a Kan complex if it is fibrant, which means that
@@ -62,7 +64,6 @@ lemma exists_lift_of_kanComplex [KanComplex X]
 /-- If `X` is a Kan complex and `f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X`
 is a compatible family of morphisms (which defines a morphism `Λ[n + 1, i] ⟶ X`),
 then this is a lifting `Δ[n + 1] ⟶ X`. -/
-@[no_expose]
 noncomputable def liftOfKanComplex [KanComplex X] (hf : horn.IsCompatible f) :
     Δ[n + 1] ⟶ X :=
   hf.exists_lift_of_kanComplex.choose
@@ -99,5 +100,24 @@ lemma KanComplex.iff {Z : SSet.{u}} :
     l := φ
     fac_left := horn.hom_ext' (by simpa using hφ)
     fac_right := by subsingleton }⟩⟩
+
+instance {X : SSet.{u}} [KanComplex X] : KanComplex X.op := by
+  rw [KanComplex.iff]
+  intro n i f hf
+  replace hf : horn.IsCompatible (i := i.rev)
+      (fun j hj ↦ yonedaEquiv.symm (opObjEquiv (yonedaEquiv (f j.rev (by grind))))) := by
+    obtain _ | n := n
+    · simp
+    · rw [horn.isCompatible_iff]
+      intro j k jh hk hjk
+      simp only [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+        ← stdSimplex.yonedaEquiv_δ_comp]
+      congr 3
+      convert (hf.δ_pred_comp k.rev j.rev (by grind) (by grind) (by grind)).symm <;>
+        grind [Fin.castPred]
+  refine ⟨yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv hf.liftOfKanComplex)), fun j hj ↦ ?_⟩
+  rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+    ← stdSimplex.yonedaEquiv_δ_comp, hf.δ_liftOfKanComplex ..]
+  simp
 
 end SSet

@@ -179,7 +179,7 @@ section CommRing
 
 variable [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
 
-@[simp, mono]
+@[simp, mono, gcongr]
 theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :
     coeSubmodule K I ≤ coeSubmodule K J ↔ I ≤ J :=
   IsLocalization.coeSubmodule_le_coeSubmodule le_rfl

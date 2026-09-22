@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 public import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
@@ -90,7 +89,6 @@ def Scheme.Hom.finrank {X S : Scheme.{u}} (f : X ⟶ S) (s : S) : ℕ :=
   IsAffine.finrank (pullback.snd f (S.affineOpenCover.f <| S.affineOpenCover.idx s))
     (S.affineOpenCover.covers s).choose
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma Scheme.Hom.finrank_eq_finrank_snd_of_isAffine (g : T ⟶ S) [IsAffine T] (t : T)
     [Flat f] [IsFinite f] :
     f.finrank (g t) = IsAffine.finrank (pullback.snd f g) t := by
@@ -113,6 +111,7 @@ private lemma Scheme.Hom.finrank_eq_of_isAffine [IsAffine S] [Flat f] [IsFinite 
   rw [show s = (𝟙 S : S ⟶ S) s from rfl, finrank_eq_finrank_snd_of_isAffine,
     IsAffine.finrank_snd]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Scheme.Hom.finrank_SpecMap_eq_finrank {R S : CommRingCat.{u}} {f : R ⟶ S} (hf₁ : f.hom.Finite)
     (hf₂ : f.hom.Flat) :
@@ -172,6 +171,7 @@ lemma Scheme.Hom.finrank_pullback_fst {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ 
     finrank (pullback.fst g f) y = finrank f (g y) :=
   finrank_of_isPullback (pullback.snd g f) _ _ _ (.flip <| .of_hasPullback _ _) y
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec lemma Scheme.Hom.one_le_finrank_map (x : X) : 1 ≤ finrank f (f x) := by
   wlog hY : ∃ R, Y = Spec R
   · obtain ⟨R, g, hg, y, hy⟩ := Y.exists_Spec_apply_eq (f x)
@@ -266,6 +266,7 @@ lemma Scheme.Hom.finrank_eq_one_of_isIso (f : X ⟶ Y) [IsIso f] : finrank f = 1
   · exact RingHom.Finite.id R
   · exact RingHom.Flat.id ↑R
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A finite flat locally finitely presented morphism is an isomorphism if and only if
 its rank is constant equal to `1`. -/
 nonrec lemma Scheme.Hom.isIso_iff_finrank_eq : IsIso f ↔ finrank f = 1 := by

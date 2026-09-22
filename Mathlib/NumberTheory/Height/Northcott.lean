@@ -1,71 +1,41 @@
 /-
-Copyright (c) 2026 Thomas Browning. All rights reserved.
+Copyright (c) 2026 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
+Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.NumberTheory.Height.Basic
+public import Mathlib.Order.Northcott
 
 /-!
-# Northcott Functions
+# Results on the Northcott property for heights
 
-In number theory, the height function `h` satisfies the *Northcott property* that the sets
-`{a | h a ≤ b}` are finite. This file extracts this notion as a typeclass and provides some API.
+Assume that `K` is a field with a family of admissible absolute values that satisfies
+the Northcott property for `mulHeight₁`.
+We provide instances showing that `K` also satisfies the Northcott property
+* for `logHeight₁`,
+* (TODO) for `Projectivization.mulHeight`,
+* (TODO) for `Projectivization.logHeight`.
 
-## Main definitions
+## TODO
 
-* `Northcott h`: A function `h : α → β` is Northcott if the sets `{a : α | h a ≤ b}` are all finite.
-
-## Main theorems
-
-* `Northcott.exists_min_image h s hs`: If `h` is Northcott to a linear order, then `h` has an
-  absolute minimum on every nonempty set `s`.
-
-## References
-
-* [D. Northcott, *An inequality in the theory of arithmetic on algebraic varieties*](northcott1949)
+Add instances for heights on projectivizations.
 -/
 
-@[expose] public noncomputable section
+namespace Height
 
-variable {α β γ : Type*} (h : α → β) (h' : β → γ)
+public section
 
-/-- A function `h : α → β` is Northcott if the sets `{a : α | h a ≤ b}` are all finite. -/
-@[mk_iff]
-class Northcott [LE β] : Prop where
-  finite_le : ∀ b, {a : α | h a ≤ b}.Finite
+open Real Northcott
 
-open Filter in
-theorem northcott_iff_tendsto [LinearOrder β] [NoMaxOrder β] :
-    Northcott h ↔ Tendsto h cofinite atTop := by
-  simp_rw [northcott_iff, tendsto_atTop, eventually_cofinite, not_le]
-  refine ⟨fun H b ↦ (H b).subset fun x ↦ le_of_lt, fun H b ↦ ?_⟩
-  obtain ⟨b', hc⟩ := exists_gt b
-  exact (H b').subset fun x hx ↦ lt_of_le_of_lt hx hc
+variable {K : Type*} [Field K]
 
-namespace Northcott
+/-- A field that satisfies the Northcott property for `mulHeight₁` also does for `logHeight₁`. -/
+instance [AdmissibleAbsValues K] [Northcott (mulHeight₁ (K := K))] :
+    Northcott (logHeight₁ (K := K)) :=
+  comp_of_bddAbove mulHeight₁ log fun B ↦ bddAbove_def.mpr ⟨exp B, fun _ ↦ le_exp_of_log_le⟩
 
-theorem exists_min_image [LinearOrder β] [Northcott h] (s : Set α) (hs : s.Nonempty) :
-    ∃ a ∈ s, ∀ a' ∈ s, h a ≤ h a' := by
-  obtain ⟨a₁, h₁⟩ := hs
-  obtain ⟨a₂, h₂, h₃⟩ := Set.exists_min_image ({a | h a ≤ h a₁} ∩ s) h
-    ((finite_le (h a₁)).inter_of_left s) ⟨a₁, le_rfl, h₁⟩
-  grind
+end
 
-/-- A composition `h' ∘ h` is Northcott when `h` is Northcott and preimages of bounded above sets
-under `h'` are bounded above. -/
-lemma comp_of_bddAbove [Preorder β] [LE γ] [Northcott h] (H : ∀ c, BddAbove (h' ⁻¹' {x | x ≤ c})) :
-    Northcott (h' ∘ h) where
-  finite_le c := by
-    obtain ⟨b, hb⟩ := bddAbove_def.mp (H c)
-    exact (finite_le (h := h) b).subset <| by grind
-
-/-- A composition `h' ∘ h` is Northcott when `h'` is Northcott and the fibers of `h` are finite. -/
-lemma comp_of_finite_fibers [LE γ] [Northcott h'] (H : ∀ b, (h ⁻¹' {b}).Finite) :
-    Northcott (h' ∘ h) where
-  finite_le c := by
-    refine Set.Finite.of_finite_fibers h ?_ fun x _ ↦ (H x).inter_of_right _
-    exact (finite_le (h := h') c).subset <| by grind
-
-end Northcott
+end Height

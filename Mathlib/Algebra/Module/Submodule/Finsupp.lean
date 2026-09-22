@@ -44,7 +44,6 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
     Submodule.map
       (N.subtype.comp (Finsupp.lsum R <| DistribSMul.toLinearMap _ _))
       (Finsupp.supported N R sR) := by
-  classical
   apply set_smul_eq_of_le
   · intro r n hr hn
     exact ⟨Finsupp.single r ⟨n, hn⟩, Finsupp.single_mem_supported _ _ hr, by simp⟩

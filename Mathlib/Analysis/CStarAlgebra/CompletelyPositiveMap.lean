@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 /-! # Completely positive maps
 
@@ -97,7 +97,7 @@ lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
     (h : ∀ (φ : F) (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁), 0 ≤ M → 0 ≤ M.map φ) :
     OrderHomClass F A₁ A₂ := .of_addMonoidHom <| by
   intro φ a ha
-  simpa using map_nonneg (toOneByOne (Fin 1) ℂ A₂).symm <|
+  simpa using! map_nonneg (toOneByOne (Fin 1) ℂ A₂).symm <|
     h φ 1 _ <| map_nonneg (toOneByOne (Fin 1) ℂ A₁) ha
 
 instance [CompletelyPositiveMapClass F A₁ A₂] : OrderHomClass F A₁ A₂ :=
@@ -111,13 +111,14 @@ variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
   [StarOrderedRing A₂]
 
+@[macro_inline]
 instance : FunLike (A₁ →CP A₂) A₁ A₂ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
-    apply DFunLike.coe_injective'
+    apply DFunLike.coe_injective
     exact h
 
 instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
@@ -133,7 +134,7 @@ lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M :
   let k := Fintype.card n
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
   have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
-    simp only [mapₗ, LinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
+    simp only [mapₗ, LinearMap.coe_ofClass, LinearMap.coe_mk, AddHom.coe_mk]
     exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
   simpa [reindexₐ_symm] using map_nonneg (reindexₐ ℂ A₂ e).symm hmain
@@ -150,7 +151,7 @@ open CStarMatrix CFC in
 /-- Non-unital star algebra homomorphisms are completely positive. -/
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
   map_cstarMatrix_nonneg' φ k M hM := by
-    change 0 ≤ (mapₙₐ (φ : A₁ →⋆ₙₐ[ℂ] A₂)) M
+    change 0 ≤ mapₙₐ (.ofClass φ) M
     exact map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass

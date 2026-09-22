@@ -59,9 +59,9 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {Ω 𝓧 𝓨 𝓩 : Type*} {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧}
-    {m𝓨 : MeasurableSpace 𝓨} {m𝓩 : MeasurableSpace 𝓩}
-    {κ : Kernel Ω 𝓧} {μ : Measure Ω} [IsFiniteMeasure μ] [IsFiniteKernel κ]
+variable {Ω 𝓧 𝓨 : Type*}
+  {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
+  {κ : Kernel Ω 𝓧} {μ : Measure Ω} [IsFiniteMeasure μ] [IsFiniteKernel κ]
 
 variable [StandardBorelSpace Ω] [Nonempty Ω]
 
@@ -79,7 +79,7 @@ instance : IsMarkovKernel κ†μ := by rw [posterior]; infer_instance
 
 /-- The main property of the posterior. -/
 lemma compProd_posterior_eq_map_swap : (κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap := by
-  simpa using ((μ ⊗ₘ κ).map Prod.swap).disintegrate ((μ ⊗ₘ κ).map Prod.swap).condKernel
+  simpa using! ((μ ⊗ₘ κ).map Prod.swap).disintegrate ((μ ⊗ₘ κ).map Prod.swap).condKernel
 
 lemma compProd_posterior_eq_swap_comp : (κ ∘ₘ μ) ⊗ₘ κ†μ = Kernel.swap Ω 𝓧 ∘ₘ μ ⊗ₘ κ := by
   rw [compProd_posterior_eq_map_swap, Measure.swap_comp]
@@ -268,7 +268,10 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ x ∂(κ ∘ₘ μ),
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
-  convert Measure.ae_ae_of_ae_prod (rnDeriv_posterior_ae_prod h_ac) -- much faster than `exact`
+  convert!
+    Measure.ae_ae_of_ae_prod
+      (rnDeriv_posterior_ae_prod h_ac) -- much faster than `exact`
+         -- much faster than `exact`
 
 lemma rnDeriv_posterior_symm (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ x ∂(κ ∘ₘ μ), ∀ᵐ ω ∂μ,

@@ -5,9 +5,11 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Std.Time.Format
 public import Batteries.Tactic.Alias
 public import Mathlib.Init
+
+public meta import Std.Time.Format
+public meta import Mathlib.Lean.Name
 
 /-!
 # `deprecate to` -- a deprecation tool
@@ -47,11 +49,10 @@ open Lean Elab Term Command
 /-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`. -/
 def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := none) :
     CommandElabM (TSyntax `command) := do
-  let dat := ←
-    match dat with
-      | none => do
-        return s!"{(← Std.Time.ZonedDateTime.now).toPlainDate}"
-      | some s => return s
+  let dat ← match dat with
+    | none => do
+      pure s!"{← Std.Time.PlainDate.now}"
+    | some s => pure s
   let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
@@ -129,7 +130,7 @@ elab tk:"deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command
       for i in id.toList.drop news.size do logErrorAt i ""
       warn := warn.push s!"Unused names: {id.toList.drop news.size}"
     let (oldId, newCmd) := renameTheorem id[0]! cmd
-    let oldNames := ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
+    let oldNames ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
     let fil := news.filter fun n => n.toString.endsWith oldNames[0]!.1.toString
     if fil.size != 1 && oldId != default then
       logError m!"Expected to find one declaration called {oldNames[0]!.1}, found {fil.size}"
