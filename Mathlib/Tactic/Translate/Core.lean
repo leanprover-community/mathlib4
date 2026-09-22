@@ -13,6 +13,9 @@ public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Lean.Meta.CoeAttr
 public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Tactic.Translate.Reorder
+
 public import Batteries.Lean.NameMapAttribute
 public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Trans
@@ -21,8 +24,6 @@ public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
-meta import Mathlib.Tactic.Translate.Reorder
-public meta import Mathlib.Tactic.Translate.Reorder
 
 /-!
 # The translation attribute.

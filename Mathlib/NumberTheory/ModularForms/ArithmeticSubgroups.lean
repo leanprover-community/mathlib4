@@ -195,16 +195,19 @@ lemma Subgroup.negOne_mem_adjoinNegOne (𝒢 : Subgroup (GL n R)) : -1 ∈ 𝒢.
   ⟨fun h ↦ h ▸ negOne_mem_adjoinNegOne 𝒢, fun hG ↦ 𝒢.le_adjoinNegOne.antisymm'
     fun g hg ↦ hg.elim id (fun h ↦ by simpa using mul_mem hG h)⟩
 
-lemma Subgroup.relindex_adjoinNegOne_eq_two {𝒢 : Subgroup (GL n R)} (h𝒢 : -1 ∉ 𝒢) :
+lemma Subgroup.relIndex_adjoinNegOne_eq_two {𝒢 : Subgroup (GL n R)} (h𝒢 : -1 ∉ 𝒢) :
     𝒢.relIndex 𝒢.adjoinNegOne = 2 := by
   refine relIndex_eq_two_iff_exists_notMem_and.mpr ⟨_, 𝒢.negOne_mem_adjoinNegOne, h𝒢, ?_⟩
   simp [mem_adjoinNegOne_iff, or_comm]
+
+@[deprecated (since := "2026-09-17")]
+alias Subgroup.relindex_adjoinNegOne_eq_two := Subgroup.relIndex_adjoinNegOne_eq_two
 
 lemma Subgroup.relIndex_adjoinNegOne_ne_zero (𝒢 : Subgroup (GL n R)) :
     𝒢.relIndex 𝒢.adjoinNegOne ≠ 0 := by
   by_cases hG : -1 ∈ 𝒢
   · simp [adjoinNegOne_eq_self_iff.mpr hG]
-  · simp [𝒢.relindex_adjoinNegOne_eq_two hG]
+  · simp [𝒢.relIndex_adjoinNegOne_eq_two hG]
 
 instance (𝒢 : Subgroup (GL n R)) : Subgroup.IsFiniteRelIndex 𝒢 𝒢.adjoinNegOne :=
   ⟨𝒢.relIndex_adjoinNegOne_ne_zero⟩
