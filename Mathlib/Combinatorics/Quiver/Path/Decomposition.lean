@@ -52,7 +52,7 @@ theorem exists_mem_notMem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
   obtain ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩ :=
     exists_notMem_mem_hom_path_path_of_notMem_mem p Sᶜ ha_not_in_compl hb_in_compl
   simp only [Set.mem_compl_iff, not_not] at hu_not_in_compl hv_in_compl
-  refine ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩
+  exact ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩
 
 end BoundaryEdges
 

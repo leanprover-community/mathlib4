@@ -51,7 +51,7 @@ lemma essentiallySmall_of_localizationAway [ObjectProperty.EssentiallySmall.{u} 
       (RingEquiv.piCongrLeft (S' ·) hs'.equivFin.symm).symm).toRingHom.comp (algebraMap _ _)
   have hφ : Function.Injective φ := by
     dsimp only [RingHom.coe_comp, φ]
-    refine (RingEquiv.injective _).comp (Localization.algebraMap_injective_of_span_eq_top _ hs)
+    exact (RingEquiv.injective _).comp (Localization.algebraMap_injective_of_span_eq_top _ hs)
   refine ⟨_, ⟨Nat.card s, (fun f ↦ ⟨S' f, hS' f⟩) ∘ hs'.equivFin.symm, φ.range⟩, ⟨?_⟩⟩
   exact (RingEquiv.ofBijective φ.rangeRestrict
     ⟨φ.injective_codRestrict.mpr hφ, φ.rangeRestrict_surjective⟩).toCommRingCatIso

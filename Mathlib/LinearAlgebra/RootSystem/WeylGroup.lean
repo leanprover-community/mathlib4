@@ -140,7 +140,7 @@ lemma range_weylGroup_coweightHom :
     simp only [MonoidHom.domRestrict_range, Subgroup.coe_map, mem_image,
       SetLike.mem_coe]
     use Equiv.reflection P i
-    refine ⟨reflection_mem_weylGroup P i, by simp⟩
+    exact ⟨reflection_mem_weylGroup P i, by simp⟩
   · rintro fg ⟨⟨w, hw⟩, rfl⟩
     induction hw using Subgroup.closure_induction'' with
     | one =>
@@ -168,7 +168,7 @@ lemma range_weylGroupToPerm :
   · rintro - ⟨i, rfl⟩
     simp only [MonoidHom.domRestrict_range, Subgroup.coe_map, mem_image, SetLike.mem_coe]
     use Equiv.reflection P i
-    refine ⟨reflection_mem_weylGroup P i, by simp⟩
+    exact ⟨reflection_mem_weylGroup P i, by simp⟩
   · rintro fg ⟨⟨w, hw⟩, rfl⟩
     induction hw using Subgroup.closure_induction'' with
     | one =>

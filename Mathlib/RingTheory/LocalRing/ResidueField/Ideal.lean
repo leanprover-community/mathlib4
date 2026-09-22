@@ -203,7 +203,7 @@ instance [Algebra.EssFiniteType R A]
     [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     Algebra.EssFiniteType p.ResidueField q.ResidueField := by
   have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
-  refine .of_comp R _ _
+  exact .of_comp R _ _
 
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable def Ideal.ResidueField.lift

@@ -33,7 +33,7 @@ lemma isSuccLimit_coe {J : Type u} [LinearOrder J] {j : J}
     · have := hm.2 ⟨b, hb'⟩
       rw [not_covBy_iff (by exact hb)] at this
       obtain ⟨⟨x, h₁⟩, h₂, h₃⟩ := this
-      refine ⟨x, h₂, h₃⟩
+      exact ⟨x, h₂, h₃⟩
     · simp only [not_le] at hb'
       refine ⟨j, hb', ?_⟩
       by_contra!

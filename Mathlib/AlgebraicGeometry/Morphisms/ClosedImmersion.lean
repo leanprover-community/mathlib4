@@ -358,7 +358,7 @@ and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
     (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.appTop)) := by
   convert! HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
-  refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
+  exact ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma isClosedImmersion_iff_isAffineHom {f : X ⟶ Y} :

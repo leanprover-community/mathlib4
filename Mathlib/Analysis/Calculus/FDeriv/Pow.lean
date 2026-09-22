@@ -55,7 +55,7 @@ theorem HasStrictFDerivAt.pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :
   | n + 1 + 1 => by
     have := h.mul' (h.pow' (n + 1))
     simp_rw [pow_succ' _ (n + 1)]
-    refine this.congr_fderiv <| aux _ _ _ _
+    exact this.congr_fderiv <| aux _ _ _ _
 
 theorem hasStrictFDerivAt_pow' (n : ℕ) {x : 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ x ^ n)

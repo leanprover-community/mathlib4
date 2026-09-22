@@ -119,7 +119,7 @@ variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
 lemma isProbabilityMeasure_iff_real {μ : Measure α} :
     IsProbabilityMeasure μ ↔ μ.real univ = 1 := by
-  refine ⟨fun h ↦ probReal_univ, fun h ↦ ⟨(ENNReal.toReal_eq_one_iff (μ univ)).mp h⟩⟩
+  exact ⟨fun h ↦ probReal_univ, fun h ↦ ⟨(ENNReal.toReal_eq_one_iff (μ univ)).mp h⟩⟩
 
 instance {f : α → β} : IsProbabilityMeasure (map f μ) where
   measure_univ := by

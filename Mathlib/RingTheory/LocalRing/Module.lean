@@ -175,7 +175,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   let i := Finsupp.linearCombination R v
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
-    refine IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := v) bk
+    exact IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := v) bk
       (fun _ ↦ by simp [bk])
   have : Module.Finite R (LinearMap.ker i) :=
     .of_fg (Module.FinitePresentation.fg_ker i hi)

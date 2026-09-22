@@ -119,7 +119,7 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
       IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
   refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
   · refine Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine Cocone.ext (Iso.refl _) fun j => by dsimp; cases j; simp
+  exact Cocone.ext (Iso.refl _) fun j => by dsimp; cases j; simp
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/
 def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P : C}

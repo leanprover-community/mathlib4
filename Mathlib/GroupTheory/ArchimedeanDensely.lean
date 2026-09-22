@@ -92,7 +92,7 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
   default := ⟨AddEquiv.neg ℤ |>.trans ⟨toDual, toDual_add⟩, by simp⟩
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <| by
     simp only [OrderAddMonoidIso.toAddEquiv_eq_coe]
-    refine Int.addEquiv_eq_refl_or_neg ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨toDual, toDual_add⟩)
+    exact Int.addEquiv_eq_refl_or_neg ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨toDual, toDual_add⟩)
         |>.resolve_left fun H => by
       replace H : e 1 = 1 := congr($H 1)
       have h1 : 0 < e 1 := by

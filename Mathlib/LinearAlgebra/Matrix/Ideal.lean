@@ -212,7 +212,7 @@ theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
   constructor
   · intro h
     rw [matrix_eq_sum_single x, matrix_eq_sum_single y]
-    refine c.finsetSum _ fun i _ ↦ c.finsetSum _ fun j _ ↦ h i j i j
+    exact c.finsetSum _ fun i _ ↦ c.finsetSum _ fun j _ ↦ h i j i j
   · intro h i' j' i j
     simpa using c.mul (c.mul (c.refl <| single i i' 1) h) (c.refl <| single j' j 1)
 

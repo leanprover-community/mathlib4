@@ -85,7 +85,7 @@ lemma Etale.iff_flat_and_formallyUnramified {f : R →+* S} :
   algebraize [f]
   simp_rw [← f.algebraMap_toAlgebra, RingHom.etale_algebraMap, RingHom.flat_algebraMap_iff,
     RingHom.formallyUnramified_algebraMap, RingHom.finitePresentation_algebraMap]
-  refine ⟨fun h ↦ ⟨inferInstance, inferInstance, inferInstance⟩,
+  exact ⟨fun h ↦ ⟨inferInstance, inferInstance, inferInstance⟩,
     fun ⟨_, _, _⟩ ↦ .of_formallyUnramified_of_flat⟩
 
 end RingHom

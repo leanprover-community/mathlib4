@@ -116,7 +116,7 @@ theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
   intro p hp x hx
   rw [← mem_vanishingIdeal_singleton_iff]
   rw [radical_eq_sInf] at hp
-  refine
+  exact
     (mem_sInf.mp hp)
       ⟨le_trans (le_vanishingIdeal_zeroLocus I)
           (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),

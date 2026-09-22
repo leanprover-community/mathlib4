@@ -321,7 +321,7 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
     assumption
   convert! DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
   · exact discreteTopology_pi_basisFun
-  · refine Subtype.map_injective _ (Basis.equivFun b).injective
+  · exact Subtype.map_injective _ (Basis.equivFun b).injective
 
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
   inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))

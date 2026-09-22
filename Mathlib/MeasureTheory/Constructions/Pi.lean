@@ -115,7 +115,7 @@ theorem le_pi {m : ∀ i, OuterMeasure (α i)} {n : OuterMeasure (∀ i, α i)} 
     n ≤ OuterMeasure.pi m ↔
       ∀ s : ∀ i, Set (α i), (pi univ s).Nonempty → n (pi univ s) ≤ ∏ i, m i (s i) := by
   rw [OuterMeasure.pi, le_boundedBy']; constructor
-  · intro h s hs; refine (h _ hs).trans_eq (piPremeasure_pi hs)
+  · exact fun h s hs ↦ (h _ hs).trans_eq (piPremeasure_pi hs)
   · intro h s hs; refine le_trans (n.mono <| subset_pi_eval_image univ s) (h _ ?_)
     simp [univ_pi_nonempty_iff, hs]
 

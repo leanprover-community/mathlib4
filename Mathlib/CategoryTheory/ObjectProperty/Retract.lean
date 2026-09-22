@@ -134,7 +134,7 @@ lemma retractClosure_isoClosure :
 instance : IsStableUnderRetracts (retractClosure P) where
   of_retract := by
     rintro X Y r₁ ⟨Z, hZ, ⟨r₂⟩⟩
-    refine ⟨Z, hZ, ⟨r₁.trans r₂⟩⟩
+    exact ⟨Z, hZ, ⟨r₁.trans r₂⟩⟩
 
 @[simp]
 lemma retractClosure_retractClosure :

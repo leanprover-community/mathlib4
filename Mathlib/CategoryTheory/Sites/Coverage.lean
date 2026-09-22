@@ -78,7 +78,7 @@ lemma FactorsThruAlong.pullbackArrows {X Y : C} (f : X ⟶ Y)
     (Presieve.pullbackArrows f R).FactorsThruAlong R f := by
   intro Z g ⟨W, b, hb⟩
   have := R.hasPullback f hb
-  refine ⟨_, pullback.fst _ _, b, hb, pullback.condition⟩
+  exact ⟨_, pullback.fst _ _, b, hb, pullback.condition⟩
 
 /--
 Given `S T : Presieve X`, we say that `S` factors through `T` if any morphism in `S`

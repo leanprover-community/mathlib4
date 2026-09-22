@@ -221,7 +221,7 @@ lemma collapse_modular [ExistsAddOfLE β]
       · exact le_collapse_of_insert_mem ‹_› h₄
           (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›
     · rw [mul_zero, add_zero]
-      refine (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
+      exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
         (insert_inter_of_notMem ‹_›) <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_› h₄
         (insert_union _ _ _) <| union_mem_sups ‹_› ‹_›) (h₄ _) <| collapse_nonneg h₃ _
     · rw [mul_zero, zero_add]

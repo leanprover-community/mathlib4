@@ -106,7 +106,7 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsI
   refine hasAffineProperty.coprodDesc_affineAnd RingHom.isIntegral_respectsIso ?_ _ _ ‹_› ‹_›
   intros R S T _ _ _ f g _ _
   algebraize [f, g]
-  refine algebraMap_isIntegral_iff.mpr inferInstance
+  exact algebraMap_isIntegral_iff.mpr inferInstance
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
