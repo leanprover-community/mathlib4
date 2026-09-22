@@ -516,4 +516,7 @@ instance : BicategoryLike.MkMor₂ BicategoryM where
 instance : MonadCoherenceHom BicategoryM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
 
+@[deprecated (since := "2026-09-17")]
+alias instMonadCoherehnceHomBicategoryM := instMonadCoherenceHomBicategoryM
+
 end Mathlib.Tactic.Bicategory

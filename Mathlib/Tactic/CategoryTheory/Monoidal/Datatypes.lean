@@ -510,4 +510,7 @@ instance : BicategoryLike.MkMor₂ MonoidalM where
 instance : MonadCoherenceHom MonoidalM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
 
+@[deprecated (since := "2026-09-17")]
+alias instMonadCoherehnceHomMonoidalM := instMonadCoherenceHomMonoidalM
+
 end Mathlib.Tactic.Monoidal
