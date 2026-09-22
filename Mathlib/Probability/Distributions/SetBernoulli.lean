@@ -247,9 +247,11 @@ lemma indepFun_inter {t : Set ι} {S : Ω → Set ι} (hS : HasLaw S setBer(s, p
     (htu : Disjoint t u) [Countable ι] :
     (S · ∩ t) ⟂ᵢ[P] (S · ∩ u) := by
   have := hS.isProbabilityMeasure
-  have h1 : (S · ∩ t) = (fun p ↦ {i | ∃ (h : i ∈ t), p ⟨i, h⟩}) ∘ (fun ω (i : t) ↦ i.1 ∈ (S ω)) := by
+  have h1 : (S · ∩ t) =
+      (fun p ↦ {i | ∃ (h : i ∈ t), p ⟨i, h⟩}) ∘ (fun ω (i : t) ↦ i.1 ∈ (S ω)) := by
     ext; grind
-  have h2 : (S · ∩ u) = (fun p ↦ {i | ∃ (h : i ∈ u), p ⟨i, h⟩}) ∘ (fun ω (i : u) ↦ i.1 ∈ (S ω)) := by
+  have h2 : (S · ∩ u) =
+      (fun p ↦ {i | ∃ (h : i ∈ u), p ⟨i, h⟩}) ∘ (fun ω (i : u) ↦ i.1 ∈ (S ω)) := by
     ext; grind
   rw [h1, h2]
   apply IndepFun.comp₀
