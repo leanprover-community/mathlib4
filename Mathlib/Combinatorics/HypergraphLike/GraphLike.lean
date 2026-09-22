@@ -229,7 +229,6 @@ lemma one_lt_order_iff : 1 < order G e ↔ ∃ u v, IsLink G e u v :=
   ⟨fun h ↦ exists_isLink_of_mem_edgeSet (mem_edges_of_order_pos (lt_trans zero_lt_one h)),
     fun ⟨_, _, h⟩ ↦ by simp [order_eq_two h.edge_mem_edgeSet]⟩
 
-@[grind <=]
 lemma IsLink.eq_or_eq_of_isLink (h : IsLink G e u v) (h' : IsLink G e u' v') :
     u = u' ∧ v = v' ∨ u = v' ∧ v = u' :=
   h.eq_or_eq_of_isLink_of_eorder_eq_two h' (eorder_eq_two h.edge_mem_edgeSet)
