@@ -61,7 +61,7 @@ public theorem lowerCentralSeries_sup_add_le [H.Normal] [K.Normal] (m n : ℕ) :
 nilpotent. -/
 public instance isNilpotent_sup_of_normal (H K : Subgroup G) [H.Normal] [K.Normal]
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
-    Group.IsNilpotent (H ⊔ K : Subgroup G) :=
+    Group.IsNilpotent (H ⊔ K :) :=
   isNilpotent_of_lowerCentralSeries_eq_bot (n := Group.nilpotencyClass H + Group.nilpotencyClass K)
     <| le_bot_iff.mp <| (lowerCentralSeries_sup_add_le _ _).trans <| sup_le
       (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl).le
@@ -71,10 +71,10 @@ public instance isNilpotent_sup_of_normal (H K : Subgroup G) [H.Normal] [K.Norma
 their nilpotency classes. -/
 public theorem nilpotencyClass_sup_le (H K : Subgroup G) [H.Normal] [K.Normal]
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
-    Group.nilpotencyClass (H ⊔ K : Subgroup G) ≤
+    Group.nilpotencyClass (H ⊔ K :) ≤
       Group.nilpotencyClass H + Group.nilpotencyClass K := by
   rw [← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le, ← map_eq_bot_iff_of_injective _
-    (H ⊔ K : Subgroup G).subtype_injective, top_subtype_lowerCentralSeries]
+    (H ⊔ K).subtype_injective, top_subtype_lowerCentralSeries]
   exact le_bot_iff.mp <| (lowerCentralSeries_sup_add_le _ _).trans <| sup_le
     (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl).le
     (lowerCentralSeries_eq_bot_of_nilpotencyClass_le le_rfl).le
