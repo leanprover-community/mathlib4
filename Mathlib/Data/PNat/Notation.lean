@@ -68,6 +68,14 @@ theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
 instance : Add ℕ+ where
   add m n := ⟨m.1 + n.1, Nat.add_pos_right m.val n.property⟩
 
+protected lemma «exists» {p : ℕ+ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ) (hn : 0 < n), p (PNat.mk n hn) :=
+  Subtype.exists
+
+protected lemma exists_val {p : ℕ → Prop} :
+    (∃ n : ℕ+, p n) ↔ ∃ (n : ℕ), 0 < n ∧ p n := by
+  simp [PNat.exists]
+
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim, induction_eliminator]
