@@ -67,8 +67,4 @@ open Mathlib.Tactic.Matrix
 
 /-- Rewrite a product of matrix literals to the literal of the product, with the entries
 normalised by `norm_num` if possible. -/
-simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := fun e => do
-  try normMatMulCore e
-  catch ex =>
-    trace[Tactic.norm_matmul] "{ex.toMessageData}"
-    return .continue
+simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := normMatMulCore
