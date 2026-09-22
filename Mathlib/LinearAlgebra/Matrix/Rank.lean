@@ -594,15 +594,13 @@ theorem _root_.LinearIndependent.mulVec_surjective [Ring R] [IsSemisimpleRing R]
 /-- `M.vecMul` is surjective iff `M` has full column rank. -/
 theorem vecMul_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
     M.vecMul.Surjective ↔ M.rank = Fintype.card n := by
-  have hMv : M.vecMul = Mᵀ.mulVec := funext fun v ↦ (mulVec_transpose M v).symm
-  rw [hMv, mulVec_surjective_iff_rank_eq_card, rank_transpose]
+  simp [← mulVec_transpose, mulVec_surjective_iff_rank_eq_card]
 
 omit [Fintype n] in
 /-- A matrix with linearly independent columns has surjective `vecMul`. -/
 theorem _root_.LinearIndependent.vecMul_surjective [CommRing R] [IsSemisimpleRing R]
     [Fintype m] {M : Matrix m n R} (h : LinearIndependent R M.col) : M.vecMul.Surjective := by
-  simp_rw [← row_transpose, ← mulVec_transpose M] at h ⊢
-  exact h.mulVec_surjective
+  simpa [← mulVec_transpose] using h.mulVec_surjective
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
     {A : Matrix l m R} {B : Matrix m n R} (hAB : A * B = 0) :
