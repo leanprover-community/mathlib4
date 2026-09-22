@@ -212,8 +212,13 @@ theorem relIndex_eq_two_iff : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor
 
 /-- Relative version of `Subgroup.index_eq_two_iff'`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff'`. -/]
-theorem relIindex_eq_two_iff' : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor (a * b ∈ H) (b ∈ H) := by
+theorem relIndex_eq_two_iff' : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor (a * b ∈ H) (b ∈ H) := by
   simp [Subgroup.relIndex, Subgroup.index_eq_two_iff', mem_subgroupOf]
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.AddSubgroup.relIindex_eq_two_iff' := _root_.AddSubgroup.relIndex_eq_two_iff'
+@[to_additive existing, deprecated (since := "2026-09-17")]
+alias relIindex_eq_two_iff' := relIndex_eq_two_iff'
 
 /-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and`. -/]
@@ -521,8 +526,13 @@ theorem relIndex_dvd_two_iff : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K, 
 
 /-- Relative version of `Subgroup.index_dvd_two_iff'`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_dvd_two_iff'`. -/]
-theorem relIindex_dvd_two_iff' : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K, (a * b ∈ H) ∨ (b ∈ H) := by
+theorem relIndex_dvd_two_iff' : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K, (a * b ∈ H) ∨ (b ∈ H) := by
   simp [Subgroup.relIndex, Subgroup.index_dvd_two_iff', mem_subgroupOf]
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.AddSubgroup.relIindex_dvd_two_iff' := _root_.AddSubgroup.relIndex_dvd_two_iff'
+@[to_additive existing, deprecated (since := "2026-09-17")]
+alias relIindex_dvd_two_iff' := relIndex_dvd_two_iff'
 
 @[to_additive]
 lemma disjoint_of_coprime_natCard (h : Nat.card H |>.Coprime <| Nat.card K) : Disjoint H K :=
@@ -929,6 +939,13 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 @[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
+
+variable {G} in
+@[to_additive]
+theorem index_centralizer_eq_ncard (g : G) :
+    (Subgroup.centralizer {g}).index = (conjugatesOf g).ncard := by
+  rw [← stabilizer_comap_conj_eq_centralizer_singleton, Subgroup.index_comap, Subgroup.relIndex,
+    stabilizer_subgroupOf, index_stabilizer, orbit_range_conj_eq_conjugatesOf]
 
 end MulAction
 
