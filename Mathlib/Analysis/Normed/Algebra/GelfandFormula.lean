@@ -88,7 +88,7 @@ theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [No
   intro z z_mem
   apply DifferentiableAt.differentiableWithinAt
   have hu : IsUnit (1 - z • a) := by
-    refine isUnit_one_sub_smul_of_lt_inv_radius (lt_of_le_of_lt (coe_mono ?_) hr)
+    refine isUnit_one_sub_smul_of_lt_inv_spectralRadius (lt_of_le_of_lt (coe_mono ?_) hr)
     simpa only [norm_toNNReal, Real.toNNReal_coe] using
       Real.toNNReal_mono (mem_closedBall_zero_iff.mp z_mem)
   have H₁ : Differentiable 𝕜 fun w : 𝕜 => 1 - w • a := (differentiable_id.smul_const a).const_sub 1
@@ -121,7 +121,7 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
 `spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖₊ ^ (1 / n)`. -/
 theorem pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) atTop (𝓝 (spectralRadius ℂ a)) :=
-  tendsto_of_le_liminf_of_limsup_le (spectralRadius_le_liminf_pow_nnnorm_pow_one_div ℂ a)
+  tendsto_of_le_liminf_of_limsup_le (spectralRadius_le_liminf_pow_enorm_rpow_one_div ℂ a)
     (limsup_pow_nnnorm_pow_one_div_le_spectralRadius a)
 
 alias gelfand_formula := pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius
@@ -159,16 +159,18 @@ protected theorem nonempty (a : A) : (spectrum ℂ a).Nonempty := by
 
 /-- In a complex Banach algebra, the spectral radius is always attained by some element of the
 spectrum. -/
-theorem exists_nnnorm_eq_spectralRadius (a : A) :
-    ∃ z ∈ spectrum ℂ a, (‖z‖₊ : ℝ≥0∞) = spectralRadius ℂ a :=
-  exists_nnnorm_eq_spectralRadius_of_nonempty (spectrum.nonempty a)
+theorem exists_enorm_eq_spectralRadius (a : A) :
+    ∃ z ∈ spectrum ℂ a, ‖z‖ₑ = spectralRadius ℂ a :=
+  exists_enorm_spectrum_eq_spectralRadius_of_nonempty (spectrum.nonempty a)
+
+@[deprecated (since := "2026-09-22")]
+alias exists_nnnorm_eq_spectralRadius := exists_enorm_eq_spectralRadius
 
 /-- In a complex Banach algebra, if every element of the spectrum has norm strictly less than
 `r : ℝ≥0`, then the spectral radius is also strictly less than `r`. -/
 theorem spectralRadius_lt_of_forall_lt (a : A) {r : ℝ≥0}
-    (hr : ∀ z ∈ spectrum ℂ a, ‖z‖₊ < r) : spectralRadius ℂ a < r :=
+    (hr : ∀ z ∈ spectrum ℂ a, ‖z‖ₑ < r) : spectralRadius ℂ a < r :=
   spectralRadius_lt_of_forall_lt_of_nonempty (spectrum.nonempty a) hr
-
 
 open Polynomial in
 /-- The **spectral mapping theorem** for polynomials in a Banach algebra over `ℂ`. -/

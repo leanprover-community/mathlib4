@@ -154,6 +154,8 @@ theorem spectralRadius_le_enorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖ₑ :
 
 @[deprecated (since := "2026-09-21")]
 alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_enorm
+@[deprecated (since := "2026-09-21")]
+alias spectralRadius_le_nnnorm := spectralRadius_le_enorm
 
 variable (𝕜) in
 theorem quasispectrum.subset_closedBall_norm (a : A) :
@@ -364,7 +366,7 @@ theorem spectralRadius_lt_of_forall_lt_of_nonempty {a : A} {r : ℝ≥0∞}
     ((spectrum.isCompact 𝕜 a).sSup_lt_iff_of_continuous ha continuous_enorm.continuousOn r).mpr hr
 
 @[deprecated (since := "2026-09-21")]
-alias spectrum.spectralRadius_lt_of_forall_lt_of_nonempty :=
+protected alias spectrum.spectralRadius_lt_of_forall_lt_of_nonempty :=
   spectralRadius_lt_of_forall_lt_of_nonempty
 
 end ProperSpace
@@ -524,6 +526,9 @@ theorem isUnit_one_sub_smul_of_lt_inv_spectralRadius {a : A} {z : 𝕜}
   · have : spectralRadius 𝕜 a < ‖z⁻¹‖ₑ := by simpa [hz] using ENNReal.inv_lt_inv' h
     simpa [hz, Algebra.algebraMap_eq_smul_one, smul_sub]
       using spectrum.mem_resolventSet_of_spectralRadius_lt this |>.smul <| Units.mk0 z hz
+
+@[deprecated (since := "2026-09-22")]
+alias spectrum.isUnit_one_sub_smul_of_lt_inv_radius := isUnit_one_sub_smul_of_lt_inv_spectralRadius
 
 end OneSubSMul
 
