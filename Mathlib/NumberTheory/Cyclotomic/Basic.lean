@@ -651,11 +651,16 @@ section CyclotomicField
 /-- Given a nonzero `n : ℕ` and a field `K`, we define `CyclotomicField n K` as the
 splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
+@[implicit_reducible]
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
 deriving Inhabited
 
 namespace CyclotomicField
+
+-- Define `IntCast` before deriving `Field` so it uses the inherited `ℤ`-algebra map.
+instance : IntCast (CyclotomicField n K) :=
+  ⟨algebraMap ℤ (cyclotomic n K).SplittingField⟩
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
 variable [Algebra A K] in
@@ -663,8 +668,9 @@ deriving instance SMul A, Field, Algebra A, IsScalarTower A K for CyclotomicFiel
 
 instance algebra : Algebra K (CyclotomicField n K) := inferInstance
 
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
-example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := rfl
+/-- Ensure there are no diamonds when `A = ℤ`. -/
+example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := by
+  with_implicit rfl
 
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
@@ -706,15 +712,8 @@ instance isCyclotomicExtension_of_charZero [CharZero K] :
   | _ + 1 => inferInstance
 
 -- Ensure that there are no diamonds with `ℚ`,
--- but there is at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-example : CyclotomicField.algebra n ℚ = DivisionRing.toRatAlgebra := rfl
-
-/-- Instance search resolves `Algebra ℚ (CyclotomicField n ℚ)` to `DivisionRing.toRatAlgebra`,
-which is not defeq to `CyclotomicField.algebra n ℚ` at `reducible_and_instances` transparency, so
-`CyclotomicField.isCyclotomicExtension_of_charZero` does not apply to goals stated over `ℚ`. This
-instance restates it in the form expected by instance search. -/
-instance isCyclotomicExtension_rat : IsCyclotomicExtension {n} ℚ (CyclotomicField n ℚ) :=
-  isCyclotomicExtension_of_charZero n ℚ
+example : CyclotomicField.algebra n ℚ = DivisionRing.toRatAlgebra := by
+  with_implicit rfl
 
 instance [NumberField K] : NumberField (CyclotomicField n K) :=
   IsCyclotomicExtension.numberField {n} K _
