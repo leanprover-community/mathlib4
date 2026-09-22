@@ -277,19 +277,4 @@ instance [Γ.HasDetPlusMinusOne] : IntCast (SlashInvariantForm Γ 0) where
 @[simp, norm_cast]
 theorem coe_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) : ⇑(z : SlashInvariantForm Γ 0) = z := rfl
 
-open ConjAct Pointwise in
-/-- Translating a `SlashInvariantForm` by `g : GL (Fin 2) ℝ`, to obtain a new
-`SlashInvariantForm` of level `g⁻¹ Γ g`. -/
-noncomputable def translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
-    SlashInvariantForm (toConjAct g⁻¹ • Γ) k where
-  toFun := f ∣[k] g
-  slash_action_eq' j hj := by
-    rw [map_inv, Γ.mem_inv_pointwise_smul_iff, toConjAct_smul] at hj
-    simpa [← SlashAction.slash_mul] using congr_arg (· ∣[k] g) (slash_action_eqn f _ hj)
-
-@[simp]
-lemma coe_translate [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
 end SlashInvariantForm
