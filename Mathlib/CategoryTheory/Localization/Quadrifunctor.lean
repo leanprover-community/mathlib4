@@ -149,7 +149,6 @@ theorem natTrans₄_ext {τ τ' : F₁' ⟶ F₂'}
     (natTrans_ext (L₁.prod (L₂.prod (L₃.prod L₄))) (W₁.prod (W₂.prod (W₃.prod W₄)))
       (fun _ ↦ h _ _ _ _))
 
-attribute [local simp] whiskeringLeft₄_obj_obj_obj_obj_obj_obj_obj_obj_obj in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `F₁' ≅ F₂'` of quadrifunctors induced by a natural isomorphism
 `e : F₁ ≅ F₂` when `F₁'` and `F₂'` lift `F₁` and `F₂`, respectively. -/
