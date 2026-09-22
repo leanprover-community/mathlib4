@@ -99,7 +99,7 @@ theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePre
     s.find? p₁ hp₁ = s.find? p₂
       (by simp_rw +contextual [← exists_prop, ← h, exists_prop, hp₁]) := by
   induction s using Quotient.ind
-  exact List.find?_congr fun x hx ↦ by simp [h x (by simpa using hx)]
+  exact List.find?_congr rfl fun x hx ↦ by simp [h x (by simpa using hx)]
 
 theorem find?_eq_choose {s : Multiset α} (hp : ∃! x, x ∈ s ∧ p x) :
     s.find? p hp.setSubsingleton = some (s.choose p hp) := by

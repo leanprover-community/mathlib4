@@ -418,7 +418,7 @@ theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
     (s.filter fun a => b ≠ a) = s.erase b := by grind
 
 theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
-  (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]).trans (s.filter_ne b)
+  (filter_congr rfl fun _ _ => by simp_rw [@ne_comm _ b]).trans (s.filter_ne b)
 
 theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
