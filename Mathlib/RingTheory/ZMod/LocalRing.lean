@@ -28,7 +28,7 @@ theorem isLocalHom_castHom_pow {n r : ℕ} [NeZero n] (hr : r ≠ 0) :
     simp [isUnit_iff_coprime, Nat.coprime_pow_right_iff (Nat.pos_of_ne_zero hr)]
 
 /-- `ZMod (p ^ r)` is a local ring for `p` prime and `r ≠ 0`. -/
-instance isLocalRing_pow (p r : ℕ) [Fact p.Prime] [NeZero r] : IsLocalRing (ZMod (p ^ r)) :=
+instance (p r : ℕ) [Fact p.Prime] [NeZero r] : IsLocalRing (ZMod (p ^ r)) :=
   have := isLocalHom_castHom_pow (n := p) (NeZero.ne r)
   (castHom (dvd_pow_self p (NeZero.ne r)) (ZMod p)).domain_isLocalRing
 
