@@ -105,7 +105,7 @@ instance : Add (ι →ᵇᵃ[I₀] M) :=
     ⟨f + g, fun I hI π hπ => by
       simp only [Pi.add_apply, sum_add_distrib, sum_partition_boxes _ hI hπ]⟩⟩
 
-instance {R} [Mul R] [DistribSMul R M] : SMul R (ι →ᵇᵃ[I₀] M) :=
+instance {R} [DistribSMul R M] : SMul R (ι →ᵇᵃ[I₀] M) :=
   ⟨fun r f =>
     ⟨r • (f : Box ι → M), fun I hI π hπ => by
       simp only [Pi.smul_apply, ← smul_sum, sum_partition_boxes _ hI hπ]⟩⟩
