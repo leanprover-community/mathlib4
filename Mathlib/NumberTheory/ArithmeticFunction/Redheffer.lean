@@ -112,10 +112,8 @@ def redheffer (n : ℕ) : Matrix (Fin n) (Fin n) R :=
 theorem zetaMatrix_isUpperTriangular (n : ℕ) : (zetaMatrix R n).IsUpperTriangular := by
   intro i j hij
   simp only [id] at hij
-  have : ¬ ((i : ℕ) + 1 ∣ (j : ℕ) + 1) := fun hd ↦ by
-    have := Nat.le_of_dvd (by omega) hd
-    omega
-  simp [zetaMatrix_apply, this]
+  simp [zetaMatrix_apply, Nat.not_dvd_of_pos_of_lt (n := (j : ℕ) + 1) (m := (i : ℕ) + 1)
+    (by omega) (by omega)]
 
 theorem redheffer_eq_updateCol (n : ℕ) :
     redheffer R (n + 1) = (zetaMatrix R (n + 1)).updateCol 0 (fun _ ↦ 1) := by
@@ -168,11 +166,7 @@ theorem _root_.Nat.sum_fin_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (f 
 theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
     (moebiusRow R (n + 1)) ᵥ* zetaMatrix R (n + 1) = fun k ↦ if k = 0 then (1 : R) else 0 := by
   funext k
-  simp only [vecMul, dotProduct, moebiusRow, zetaMatrix_apply]
-  rw [show (∑ x : Fin (n + 1), (μ ((x : ℕ) + 1) : R) *
-        (if (x : ℕ) + 1 ∣ (k : ℕ) + 1 then (1 : R) else 0)) =
-      ∑ x : Fin (n + 1), (if (x : ℕ) + 1 ∣ (k : ℕ) + 1 then (μ ((x : ℕ) + 1) : R) else 0)
-      from sum_congr rfl fun x _ ↦ by by_cases h : (x : ℕ) + 1 ∣ (k : ℕ) + 1 <;> simp [h]]
+  simp only [vecMul, dotProduct, moebiusRow, zetaMatrix_apply, mul_ite, mul_one, mul_zero]
   rw [Nat.sum_fin_dvd_eq_sum_divisors (fun d ↦ (μ d : R)) (by omega) (by omega),
     ← Int.cast_sum, sum_divisors_moebius]
   by_cases hk : k = 0
@@ -187,10 +181,8 @@ theorem moebiusRow_eq_vecMul_inv (n : ℕ) :
 
 theorem det_zetaMatrix_updateCol (n : ℕ) (u : Fin (n + 1) → R) :
     ((zetaMatrix R (n + 1)).updateCol 0 u).det = ∑ j, moebiusRow R (n + 1) j * u j := by
-  rw [← cramer_apply]
-  have hc := det_smul_inv_mulVec_eq_cramer (zetaMatrix R (n + 1)) u (by simp)
-  rw [det_zetaMatrix, one_smul] at hc
-  rw [← hc, moebiusRow_eq_vecMul_inv R n]
+  rw [← cramer_apply, ← det_smul_inv_mulVec_eq_cramer (zetaMatrix R (n + 1)) u (by simp),
+    det_zetaMatrix, one_smul, moebiusRow_eq_vecMul_inv R n]
   simp [mulVec, dotProduct, vecMul]
 
 theorem sum_moebiusRow_add_one (n : ℕ) :
