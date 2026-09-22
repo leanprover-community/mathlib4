@@ -226,8 +226,8 @@ theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
 theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
     Disjoint (⨆ i ∈ I, range (single R φ i)) (⨆ i ∈ J, range (single R φ i)) := by
   refine
-    Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
-      (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) ?_
+    Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ disjoint_compl_right)
+      (iSup_range_single_le_iInf_ker_proj _ _ _ _ disjoint_compl_right) ?_
   simp only [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_iInf, mem_inf, mem_ker, mem_bot,
     proj_apply, funext_iff]
   rintro b ⟨hI, hJ⟩ i
