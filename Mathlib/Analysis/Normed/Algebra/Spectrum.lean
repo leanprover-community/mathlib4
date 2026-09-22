@@ -33,7 +33,16 @@ Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can 
 * `spectralRadius_le_enorm`: the spectral radius is bounded above by the norm.
 * `spectrum.isClosed`/`quasispectrum.isClosed` and `spectrum.isCompact`/`quasispectrum.isCompact`:
   the (quasi)spectrum is closed and, if `𝕜` is proper, compact.
-* `
+* `Subalgebra.spectrum_eq_union_sUnion_connectedComponentIn`/
+  `Subalgebra.isBounded_connectedComponentIn_spectrum_compl`: the spectrum of an element `x : S`
+  lying in a closed subalgebra `S` of `A` is the union of the spectrum of `↑x : A` along with some
+  of the connected components of the complement of the spectrum of `↑x : A`. Consequently, if the
+  complement of the spectrum of `↑x : A` is connected, the spectra of `x : S` and `↑x : A` coincide.
+* `spectrum.resolvent_tendsto_cobounded`: the resolvent function tends to zero along `cobounded 𝕜`.
+  This is a key step in establishing that the `ℂ`-spectrum is nonempty.
+* `upperHemicontinuous_spectrum`/`upperHemicontinuous_quasispectrum`: the (quasi)spectrum is
+  upper hemicontinuous.
+* `NonUnitalAlgHom.toStrongDual`: multiplicative linear functional are continuous.
 
 ## Implementation notes
 
