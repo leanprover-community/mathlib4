@@ -55,16 +55,9 @@ def Coinvariants.ker : Submodule k V :=
   Submodule.span k (Set.range fun (gv : G × V) => ρ gv.1 gv.2 - gv.2)
 
 /-- The coinvariants of a representation, `V ⧸ ⟨{ρ g x - x | g ∈ G, x ∈ V}⟩`. -/
-def Coinvariants := V ⧸ Coinvariants.ker ρ
+abbrev Coinvariants := V ⧸ Coinvariants.ker ρ
 
 namespace Coinvariants
-
-instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
-
-instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
-
-instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
-  inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
 
 variable {ρ}
 
@@ -299,11 +292,16 @@ lemma mk_ofCoinvariantsTprodLeftRegular (x : Coinvariants (ρ.tprod (leftRegular
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the linear equivalence
 `(V ⊗ k[G])_G ≃ₗ[k] V` sending `⟦v ⊗ single g r⟧ ↦ r • ρ(g⁻¹)(v)`. -/
-noncomputable abbrev coinvariantsTprodLeftRegularLEquiv :
+@[simps! symm_apply]
+noncomputable def coinvariantsTprodLeftRegularLEquiv :
     Coinvariants (ρ.tprod (leftRegular k G)) ≃ₗ[k] V :=
   LinearEquiv.ofLinearMap (ofCoinvariantsTprodLeftRegular ρ)
     (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V k[G]).flip (.single 1 1))
     (by ext; simp) (LinearMap.ext (mk_ofCoinvariantsTprodLeftRegular ρ))
+
+@[simp]
+lemma coinvariantsTprodLeftRegularLEquiv_apply (x : (ρ.tprod (leftRegular k G)).Coinvariants) :
+    coinvariantsTprodLeftRegularLEquiv ρ x = ofCoinvariantsTprodLeftRegular ρ x := rfl
 
 variable (α : Type*)
 
@@ -315,12 +313,10 @@ noncomputable def coinvariantsTensorFreeLEquiv :
     coinvariantsFinsuppLEquiv (ρ.tprod (leftRegular k G)) α ≪≫ₗ
       mapRange.linearEquiv (coinvariantsTprodLeftRegularLEquiv ρ)
 
-@[simp]
 lemma coinvariantsTensorFreeLEquiv_mk_tmul_single (v : V) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeLEquiv ρ α (Coinvariants.mk _ (v ⊗ₜ single i (.single g r))) =
       single i (r • ρ g⁻¹ v) := by
-  classical
-  simp [coinvariantsTensorFreeLEquiv, finsuppTensorRight]
+  classical simp [coinvariantsTensorFreeLEquiv, finsuppTensorRight]
 
 @[simp]
 lemma coinvariantsTensorFreeLEquiv_symm_single (i : α) (v : V) :
@@ -416,6 +412,7 @@ variable (k G)
 
 instance : (coinvariantsFunctor k G).Additive where
   map_add {X Y} {f g} := ModuleCat.hom_ext <| map_add (Coinvariants.map X.ρ Y.ρ) f.hom g.hom
+
 instance : (coinvariantsFunctor k G).Linear k where
   map_smul {X Y} f r := ModuleCat.hom_ext <| map_smul (Coinvariants.map X.ρ Y.ρ) r f.hom
 
