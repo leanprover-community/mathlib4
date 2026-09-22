@@ -50,9 +50,9 @@ def normMatMulCore : Simp.Simproc := fun e => do
   have e : Q(Matrix (Fin $l) (Fin $n) $α) := e
   let rowsA : List (List Q($α)) := rowsA.toList.map Array.toList
   let rowsB : List (List Q($α)) := rowsB.toList.map Array.toList
-  have zα : Q(Zero $α) := ← synthInstanceQ q(Zero $α)
-  have aα : Q(Add $α) := ← synthInstanceQ q(Add $α)
-  have mα : Q(Mul $α) := ← synthInstanceQ q(Mul $α)
+  let zα : Q(Zero $α) ← synthInstanceQ q(Zero $α)
+  let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
+  let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
   let r := proveMul zα aα mα l m n rowsA rowsB
   let rows := (r.rows.map List.toArray).toArray
   have C : Q(Matrix (Fin $l) (Fin $n) $α) :=

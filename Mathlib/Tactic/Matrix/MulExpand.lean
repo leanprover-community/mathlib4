@@ -95,7 +95,7 @@ the entries.
 `listA`/`listB` are the rows of the `l × m` and `m × n` matrix respectively.
 The rows are not checked against `l`, `m` and `n`. -/
 def proveMul (l m n : Nat) (listA listB : List (List Q($α))) : MulEq zα aα mα l m n :=
-  let Bt := letI : Zero Q($α) := ⟨q(0)⟩; ListMatrix.transpose n listB
+  let Bt := let : Zero Q($α) := ⟨q(0)⟩; ListMatrix.transpose n listB
   let mulEntryEqs := listA.map fun row => Bt.map fun col => proveDotProduct zα aα mα m row col
   let ⟨_, C, hC⟩ := mkListCongr (α := q(List $α)) <| mulEntryEqs.map fun row =>
     mkListCongr <| row.map fun d =>
