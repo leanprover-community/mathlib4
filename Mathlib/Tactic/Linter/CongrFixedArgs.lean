@@ -26,7 +26,7 @@ doesn't happen with `singlePass := true`, or when a `post` method returns `.done
 
 The linter only considers explicit non-type arguments which `simp` would rewrite with the default
 congruence procedure. In particular, proofs, instances, and arguments on which later
-non-proof arguments depend are ignored, as are types.
+non-proof arguments depend are ignored.
 -/
 
 meta section
@@ -40,13 +40,13 @@ but some explicit argument of the function in its conclusion is the same on both
 of the recommendation in the documentation of `@[congr]`. -/
 public register_option linter.congrFixedArgs : Bool := {
   defValue := true
-  descr := "enable the congrFixedArgs linter"
+  descr := "enable the `congrFixedArgs` linter"
 }
 
 namespace CongrFixedArgs
 
 /-- Given a `@[congr]` theorem `thm` whose conclusion is `f a₁ ... aₙ = f b₁ ... bₙ` (or `↔`),
-returns the positions `i` of the explicit non-type arguments of `f` for which `aᵢ` and `bᵢ` are the
+returns the positions `i` of the explicit arguments of `f` for which `aᵢ` and `bᵢ` are the
 same, but which `simp` would rewrite with the default congruence procedure. -/
 def fixedArgs (thm : SimpCongrTheorem) : MetaM (Array Nat) := do
   let (_, _, type) ← forallMetaTelescopeReducing (← getConstInfo thm.theoremName).type
@@ -55,7 +55,7 @@ def fixedArgs (thm : SimpCongrTheorem) : MetaM (Array Nat) := do
   let kinds ← getCongrSimpKinds lhs.getAppFn fnInfo
   let args := lhs.getAppArgs.zip <| rhs.getAppArgs.zip <| fnInfo.paramInfo.zip kinds
   let fixed : Array Bool ← args.mapM fun (a, b, p, k) ↦ do
-    return p.binderInfo.isExplicit && (k matches .eq) && a == b && !(← isType a)
+    return p.binderInfo.isExplicit && (k matches .eq) && a == b
   return fixed.zipIdx.filterMap (fun x ↦ if x.fst == true then some x.snd else none)
 
 /-- Logs a warning at `ref` if the `@[congr]` theorem `thm` has fixed explicit arguments. -/
