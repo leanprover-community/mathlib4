@@ -19,7 +19,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n o : Type*}
-variable {R S α β γ : Type*}
+variable {R S α β : Type*}
 
 namespace Matrix
 

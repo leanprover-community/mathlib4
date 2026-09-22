@@ -1,5 +1,9 @@
 import Mathlib.Tactic.DepRewrite
 
+/-!
+# Tests for the `rewrite!` and `rw!` tactics
+-/
+
 /-! ## Basic tests for `rewrite!`. -/
 
 private axiom test_sorry : ∀ {α}, α

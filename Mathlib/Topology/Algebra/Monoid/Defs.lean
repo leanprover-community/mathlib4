@@ -138,7 +138,7 @@ theorem Filter.Tendsto.mul_const {α : Type*} {f : α → M} {x : Filter α} {a 
     (b : M) (hf : Tendsto f x (𝓝 a)) : Tendsto (f · * b) x (𝓝 (a * b)) :=
   continuous_mul_const b |>.tendsto _ |>.comp hf
 
-variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
+variable {X : Type*} [TopologicalSpace X] {f : X → M} {s : Set X} {x : X}
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul_const (hf : Continuous f) (b : M) : Continuous (f · * b) :=

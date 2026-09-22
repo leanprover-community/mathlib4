@@ -50,8 +50,8 @@ the roots of the minimal polynomial of `s` over `R`.
 
 universe u v w z
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-variable [Algebra R S] [Algebra R T]
+variable {R S : Type*} [CommRing R] [CommRing S]
+variable [Algebra R S]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w}
 
@@ -439,7 +439,7 @@ section Field
 variable (K) (E : Type z) [Field E]
 variable [Algebra K E]
 variable [Module.Finite K L] [Algebra.IsSeparable K L] [IsAlgClosed E]
-variable (b : κ → L) (pb : PowerBasis K L)
+variable (b : κ → L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans : (traceMatrix K b).map (algebraMap K E) =
     embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ := by
@@ -627,3 +627,29 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   ring
 
 end Basis
+
+namespace Algebra
+
+section IsQuadraticExtension
+
+variable {R A : Type*} [CommRing R] [StrongRankCondition R] [CommRing A] [Algebra R A]
+  [IsQuadraticExtension R A]
+
+variable (R) in
+/-- Every element of a quadratic extension satisfies its characteristic equation. -/
+theorem IsQuadraticExtension.sq_sub_trace_smul_add_norm_eq_zero (a : A) :
+    a ^ 2 - trace R A a • a + algebraMap R A (norm R a) = 0 := by
+  have : Nontrivial R := nontrivial_of_invariantBasisNumber R
+  let b := Module.finBasisOfFinrankEq R A (IsQuadraticExtension.finrank_eq_two R A)
+  simpa [Matrix.charpoly_fin_two, ← Algebra.trace_eq_matrix_trace b,
+    ← Algebra.norm_eq_matrix_det b, smul_def] using Algebra.aeval_charpoly_leftMulMatrix b a
+
+variable (R) in
+/-- The square of an element of a quadratic extension in terms of its trace and norm. -/
+theorem IsQuadraticExtension.sq_eq_trace_smul_sub_norm (a : A) :
+    a ^ 2 = trace R A a • a - algebraMap R A (norm R a) := by
+  rw [← sub_eq_zero, ← sub_add, IsQuadraticExtension.sq_sub_trace_smul_add_norm_eq_zero]
+
+end IsQuadraticExtension
+
+end Algebra

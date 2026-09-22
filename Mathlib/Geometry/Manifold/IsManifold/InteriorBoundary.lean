@@ -387,7 +387,7 @@ lemma IsLocalDiffeomorphAt.isInteriorPoint_iff (hn : n ≠ 0) {f : M → N} {x :
   · refine (hf.mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
     exact (hf.mfderivToContinuousLinearEquiv hn).surjective
   · rw [← hf.localInverse_left_inv hf.localInverse_mem_target]
-    refine (hf.localInverse_mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
+    refine (hf.mdifferentiableAt_localInverse hn).isInteriorPoint_of_surjective_mfderiv ?_ h
     exact (hf.mfderivToContinuousLinearEquiv hn).symm.surjective
 
 lemma IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x : M}
@@ -486,7 +486,7 @@ variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
+  {J : ModelWithCorners 𝕜 E' H'}
 
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
@@ -542,7 +542,7 @@ end prod
 /-! Interior and boundary of the disjoint union of two manifolds. -/
 section disjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 open Topology
 
