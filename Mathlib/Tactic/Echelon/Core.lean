@@ -10,10 +10,9 @@ public import Mathlib.Init
 /-!
 # Parameterized computation core for the Bareiss elimination
 
-A computable model of a ring packages the representation the untrusted producer computes
+A computable model of a ring packages the representation the untrusted elimination computes
 with: a carrier, its arithmetic (`RingOps`), and the encoding between entry syntax and
-values. `Producer.run` runs the elimination of a producer, and the tactic selects a producer
-through the `bareiss_ext` extension registry.
+values. The tactic selects a model through the `bareiss_ext` extension registry.
 
 ## Implementation notes
 
@@ -49,7 +48,8 @@ structure RingOps (V : Type) where
   mul : V → V → V
   /-- Subtraction. -/
   sub : V → V → V
-  /-- Exact division: total on the quotients of the elimination -/
+  /-- Exact division: total on the quotients of the elimination and on a row scale by one of
+  the row's denominators. -/
   divExact : V → V → V
   /-- The pivot zero test. -/
   isZero : V → Bool
@@ -159,11 +159,18 @@ abbrev Carrier.type : Carrier → Type
   | .int => Int
   | .expr => Expr
 
-/-- A computation model of a ring on the carrier `V`: its arithmetic and the decoding of a
-value into an expression of the ring. -/
+/-- A computation model of a ring on the carrier `V`: its arithmetic, the encoding of an
+entry of a matrix literal as a fraction of values, and the decoding of a value into an
+expression of the ring. -/
 structure Model (V : Type) where
   /-- The arithmetic of the carrier. -/
   ops : RingOps V
+  /-- An entry as a value with an optional denominator: `(n, some d)` denotes `n / d` for a
+  nonzero `d`, and `(n, none)` denotes `n`. -/
+  evalEntry : Expr → MetaM (V × Option V)
+  /-- A common multiple of two denominators, one that both divide exactly; by default their
+  product, and a least common multiple keeps the scaled entries small. -/
+  commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Expr
 
@@ -171,31 +178,44 @@ structure Model (V : Type) where
 def Model.toExprData {V : Type} (m : Model V) (d : BareissData V) : MetaM (BareissData Expr) :=
   d.mapM m.mkEntry
 
-/-- A producer for the elimination: a model on one of the carriers, with the encoding of the
-entries of a matrix literal into values and the restoration of the resulting decomposition to
-one of the original matrix. -/
-structure Producer where
-  /-- The carrier the elimination runs on. -/
-  carrier : Carrier
-  /-- The model on the carrier. -/
-  model : Model carrier.type
-  /-- The values the elimination runs on, together with the restoration of the resulting
-  decomposition to one of the original matrix. -/
-  prepare : Array (Array Expr) →
-    MetaM (Array (Array carrier.type) × (BareissData carrier.type → BareissData carrier.type))
+/-- Clear the denominators of the rows: a row with denominators is multiplied by a common
+multiple of them, recorded as its scale; a row without denominators is left as it is. -/
+def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
+    (rows : Array (Array (V × Option V))) : Array (Array V) × Array (Option V) :=
+  let scale (row : Array (V × Option V)) : Option V :=
+    row.foldl (init := none) fun s nd =>
+      match s, nd.2 with
+      | none, d => d
+      | some s, none => some s
+      | some s, some d => some (commonMultiple s d)
+  let scales := rows.map scale
+  let scaled := rows.zipWith (bs := scales) fun row s =>
+    match s with
+    | none => row.map fun nd => nd.1
+    | some s => row.map fun nd =>
+      match nd.2 with
+      | none => ops.mul nd.1 s
+      | some d => ops.mul nd.1 (ops.divExact s d)
+  (scaled, scales)
 
-/-- Run the elimination on the entries of a matrix literal: the decomposition data on the
-producer's carrier, restored to the original matrix. -/
-def Producer.run (p : Producer) (entries : Array (Array Expr)) :
-    MetaM (BareissData p.carrier.type) := do
-  let (values, restore) ← p.prepare entries
-  let d ← bareissDecomp p.model.ops values
-  return restore d
+/-- Fold the row scales into the transform: column `j` of `L` is multiplied by the scale of
+the row that ends up in position `j`, so that the decomposition is one of the unscaled
+matrix. -/
+def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
+    (d : BareissData V) : BareissData V :=
+  if scales.all fun s => s.isNone then d
+  else
+    let colScale := d.rowOrder.map fun i => scales.getD i none
+    { d with L := d.L.map fun row => row.mapIdx fun j a =>
+        match colScale.getD j none with
+        | none => a
+        | some s => ops.mul a s }
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
-  /-- The producer for the ring type `R`, or `none` if the extension does not handle `R`. -/
-  producer? (R : Expr) : MetaM (Option Producer)
+  /-- The model for the ring type `R`, with its carrier, or `none` if the extension does not
+  handle `R`. -/
+  model? (R : Expr) : MetaM (Option ((c : Carrier) × Model c.type))
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do

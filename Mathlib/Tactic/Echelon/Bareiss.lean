@@ -44,14 +44,14 @@ def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
 
 /-- Select the computation model for the ring expression `R` by choosing the first
 registered `bareiss_ext` extension that handles `R`, or the default rational model. -/
-def producerFor (R : Expr) : MetaM Producer := do
+def modelFor (R : Expr) : MetaM ((c : Carrier) × Model c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
-    if let some p ← ext.producer? R then
+    if let some m ← ext.model? R then
       trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr R}"
-      return p
+      return m
   trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
     model for{indentExpr R}"
-  ratProducer R
+  ratModel R
 
 /-- The result of producing a decomposition by Bareiss. -/
 structure BareissResult where
@@ -68,11 +68,13 @@ structure BareissResult where
 `A`. -/
 def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
     (entries : Array (Array Expr)) : MetaM BareissResult := do
-  let p ← producerFor α
-  let data ← p.run entries
-  let d ← p.model.toExprData data
+  let ⟨carrier, model⟩ ← modelFor α
+  let fractions ← entries.mapM fun row => row.mapM model.evalEntry
+  let (values, scales) := scaleRows model.ops model.commonMultiple fractions
+  let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
+  let d ← model.toExprData data
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  return { cert := ← mkCertificate _cr A entries d, carrier := p.carrier, model := p.model, data }
+  return { cert := ← mkCertificate _cr A entries d, carrier, model, data }
 
 end Mathlib.Tactic.Echelon
