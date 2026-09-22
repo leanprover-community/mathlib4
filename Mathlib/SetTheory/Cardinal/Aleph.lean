@@ -666,7 +666,7 @@ theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
 theorem isStrongPrelimit_preBeth {o : Ordinal} :
     IsStrongPrelimit (preBeth o) ↔ IsSuccPrelimit o := by
   refine ⟨?_, fun ho x hx ↦ ?_⟩
-  · contrapose!
+  · contrapose
     rw [not_isSuccPrelimit_iff_mem_range_succ, not_isStrongPrelimit_iff]
     rintro ⟨a, rfl⟩
     refine ⟨preBeth a, ?_, ?_⟩

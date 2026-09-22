@@ -387,7 +387,7 @@ lemma IsLocalDiffeomorphAt.isInteriorPoint_iff (hn : n ≠ 0) {f : M → N} {x :
   · refine (hf.mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
     exact (hf.mfderivToContinuousLinearEquiv hn).surjective
   · rw [← hf.localInverse_left_inv hf.localInverse_mem_target]
-    refine (hf.localInverse_mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
+    refine (hf.mdifferentiableAt_localInverse hn).isInteriorPoint_of_surjective_mfderiv ?_ h
     exact (hf.mfderivToContinuousLinearEquiv hn).symm.surjective
 
 lemma IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x : M}
