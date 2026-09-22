@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Lean.Meta.Basic
+public import Lean.Meta.Basic
 public import Mathlib.Init
 
 /-!
@@ -17,8 +17,6 @@ It splits the environment into parts, each of which is folded over in a separate
 We also provide `foldCurrFileDecls` which loops through the declarations of the current module,
 without any parallelism.
 -/
-
-meta section
 
 variable {α : Type}
 

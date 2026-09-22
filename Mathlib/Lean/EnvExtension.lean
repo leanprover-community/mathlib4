@@ -6,13 +6,13 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Init
-public meta import Lean.ScopedEnvExtension
+public import Lean.ScopedEnvExtension
 
 /-!
 # Helper function for environment extensions and attributes.
 -/
 
-public meta section
+public section
 
 open Lean
 

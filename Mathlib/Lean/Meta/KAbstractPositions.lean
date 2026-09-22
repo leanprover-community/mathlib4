@@ -6,9 +6,9 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Init
-public meta import Lean.HeadIndex
-public meta import Lean.Meta.ExprLens
-public meta import Lean.Meta.Check
+public import Lean.HeadIndex
+public import Lean.Meta.ExprLens
+public import Lean.Meta.Check
 
 /-!
 
@@ -26,7 +26,7 @@ whether this is the case.
 
 -/
 
-public meta section
+public section
 
 namespace Lean.Meta
 

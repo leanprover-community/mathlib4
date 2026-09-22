@@ -6,14 +6,14 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Init
-public meta import Lean.Elab.Term
-public meta import Lean.Elab.Tactic.Basic
-public meta import Lean.Meta.Tactic.Assert
-public meta import Lean.Meta.Tactic.Clear
+public import Lean.Elab.Term
+public import Lean.Elab.Tactic.Basic
+public import Lean.Meta.Tactic.Assert
+public import Lean.Meta.Tactic.Clear
 
 /-! # Additional utilities in `Lean.MVarId` -/
 
-public meta section
+public section
 
 open Lean Meta
 

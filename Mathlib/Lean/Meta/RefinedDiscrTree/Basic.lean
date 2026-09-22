@@ -18,7 +18,7 @@ We define
 * `RefinedDiscrTree`, the discrimination tree itself.
 -/
 
-public meta section
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

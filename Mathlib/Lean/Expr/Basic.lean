@@ -9,11 +9,9 @@ module
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
-public meta import Lean.Meta.AppBuilder
-public meta import Lean.Meta.Match.MatcherInfo
-public meta import Lean.Meta.Transform
-public meta import Lean.ProjFns
-public meta import Lean.Structure
+public import Lean.Meta.AppBuilder
+public import Lean.Meta.Match.MatcherInfo
+public import Lean.Meta.Transform
 
 /-!
 # Additional operations on Expr and related types
@@ -23,7 +21,7 @@ This file defines basic operations on the types expr, name, declaration, level, 
 This file is mostly for non-tactics.
 -/
 
-public meta section
+public section
 
 namespace Lean
 

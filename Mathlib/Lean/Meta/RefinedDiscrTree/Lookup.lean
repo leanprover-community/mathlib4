@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
 /-!
 # Matching with a RefinedDiscrTree
@@ -30,7 +30,7 @@ and when it is attempted to be assigned again, we check that it is the same assi
 
 -/
 
-public meta section
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

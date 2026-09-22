@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 import Mathlib.Init
-public meta import Lean.Message
+public import Lean.Message
 
 /-!
 # Utilities for analyzing `MessageData`
@@ -22,7 +22,7 @@ and prepends emoji to the rendered header:
 The `traceResultOf` function provides backward-compatible parsing of rendered headers.
 -/
 
-public meta section
+public section
 
 namespace Lean.MessageData
 

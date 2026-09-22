@@ -6,14 +6,14 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Init
-public meta import Lean.LocalContext
-public meta import Batteries.Control.AlternativeMonad
+public import Lean.LocalContext
+public import Batteries.Control.AlternativeMonad
 
 /-!
 # Additional methods about `LocalContext`
 -/
 
-public meta section
+public section
 
 namespace Lean.LocalContext
 

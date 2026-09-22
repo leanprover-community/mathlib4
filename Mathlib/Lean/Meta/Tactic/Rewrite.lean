@@ -6,13 +6,13 @@ Authors: Kim Morrison, Patrick Massot, Kyle Miller
 module
 
 public import Mathlib.Init
-public meta import Lean.Meta.Tactic.Rewrite
+public import Lean.Meta.Tactic.Rewrite
 
 /-!
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`
 -/
 
-public meta section
+public section
 
 namespace Lean.Expr
 
