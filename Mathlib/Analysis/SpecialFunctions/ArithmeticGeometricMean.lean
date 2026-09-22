@@ -46,7 +46,9 @@ lemma sqrt_mul_lt_half_add_of_ne {x y : ℝ≥0} (h : x ≠ y) : sqrt (x * y) < 
     show (2 : ℝ≥0) ^ 2 * (x * y) = 2 * x * y + 2 * x * y by ring, add_sq, add_right_comm]
   gcongr
 
-open Function Filter Topology
+open Function Filter
+
+open scoped Topology
 
 /-- `agmSequences x y` is the sequence of (geometric, arithmetic) means
 converging to the arithmetic-geometric mean starting from `x` and `y`. -/
@@ -156,7 +158,7 @@ lemma tendsto_dist_agmSequences_atTop_zero :
     rw [← zero_mul (dist x y / 2)]
     enter [1, n]
     rw [pow_succ', ← div_div, div_eq_inv_mul, ← inv_pow]
-  exact (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)).mul_const _
+  exact (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)).mul_const _
 
 /-- The arithmetic-geometric mean of two `NNReal`s, defined as the infimum of arithmetic means. -/
 noncomputable def agm (x y : ℝ≥0) : ℝ≥0 :=
@@ -240,10 +242,9 @@ lemma agm_pos (hx : 0 < x) (hy : 0 < y) : 0 < agm x y := (lt_min hx hy).trans_le
 
 lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
     agm x y = agm (agmSequences x y n).1 (agmSequences x y n).2 := by
-  refine tendsto_nhds_unique ?_ tendsto_agmSequences_snd_agm
   have key := @tendsto_agmSequences_snd_agm x y
   rw [← tendsto_add_atTop_iff_nat (n + 1)] at key
-  convert! key using 2 with m
+  refine tendsto_nhds_unique_of_forall key tendsto_agmSequences_snd_agm fun m ↦ ?_
   simp_rw [agmSequences, Prod.mk.eta, ← iterate_add_apply, add_right_comm]
 
 lemma agm_eq_agm_gm_am : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by

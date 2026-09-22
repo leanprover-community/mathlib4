@@ -84,7 +84,9 @@ equicontinuity, uniform convergence, ascoli
 
 section
 
-open UniformSpace Filter Set Uniformity Topology UniformConvergence Function
+open UniformSpace Filter Set Topology Function
+
+open scoped Uniformity UniformConvergence
 
 variable {ι κ X X' Y α α' β β' γ : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
   [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]

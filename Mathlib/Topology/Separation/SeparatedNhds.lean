@@ -29,7 +29,9 @@ formulating separation axioms for topological spaces.
 
 @[expose] public section
 
-open Set Filter Topology TopologicalSpace
+open Set Filter TopologicalSpace
+
+open scoped Topology
 
 universe u v
 

@@ -294,6 +294,33 @@ theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
     integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
 
+theorem integrable_inv_one_add_mul_sq {b : ℝ} (hb : b ≠ 0) :
+    Integrable fun x ↦ (1 + (b * x) ^ 2)⁻¹ :=
+  (integrable_inv_one_add_sq.comp_mul_left' hb).congr (by simp)
+
+@[simp]
+theorem integral_univ_inv_one_add_mul_sq (b : ℝ) :
+    ∫ x, (1 + (b * x) ^ 2)⁻¹ = π / |b| := by
+  rw [Measure.integral_comp_mul_left (fun x ↦ (1 + x ^ 2)⁻¹) b, integral_univ_inv_one_add_sq]
+  simp [div_eq_inv_mul]
+
+theorem integrableOn_Ioi_zero_inv_mul_one_add_log_sq {b : ℝ} (hb : b ≠ 0) :
+    IntegrableOn (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) (Ioi 0) := by
+  have : (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ := by
+    ext; simp [mul_comm]
+  rw [this, integrableOn_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹)]
+  exact integrable_inv_one_add_mul_sq hb
+
+/-- The total mass of the log-Cauchy density on `Ioi 0`.
+
+This is not `@[simp]`: `simp` rewrites the left-hand side with `mul_inv_rev`. -/
+theorem integral_Ioi_zero_inv_mul_one_add_log_sq (b : ℝ) :
+    ∫ t in Ioi 0, (t * (1 + (b * log t) ^ 2))⁻¹ = π / |b| := by
+  have : (fun t ↦ (t * (1 + (b * log t) ^ 2))⁻¹) = fun t ↦ t⁻¹ • (1 + (b * log t) ^ 2)⁻¹ := by
+    ext; simp [mul_comm]
+  rw [this, integral_comp_log_Ioi_zero (fun u ↦ (1 + (b * u) ^ 2)⁻¹),
+    integral_univ_inv_one_add_mul_sq b]
+
 @[simp]
 theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     IntegrableOn (fun t ↦ t⁻¹ / (log t) ^ 2) (.Ioi c) volume := by

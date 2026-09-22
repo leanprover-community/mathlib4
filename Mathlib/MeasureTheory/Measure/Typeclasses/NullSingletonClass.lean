@@ -155,7 +155,7 @@ theorem restrict_Ico_eq_restrict_Ioc : μ.restrict (Ico a b) = μ.restrict (Ioc 
 
 end
 
-open Interval
+open scoped Interval
 
 open scoped Interval in
 theorem uIoc_ae_eq_interval [LinearOrder α] {a b : α} : Ι a b =ᵐ[μ] [[a, b]] :=
