@@ -59,6 +59,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward functor on presheaves of modules for a functor `F : C ⥤ D` and
 `R : Dᵒᵖ ⥤ RingCat`. On the underlying presheaves of abelian groups, it is induced
 by the precomposition with `F.op`. -/
+@[simps! obj_map]
 def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
     PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} (F.op ⋙ R) where
   obj M := pushforward₀Obj F R M

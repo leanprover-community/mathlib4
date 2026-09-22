@@ -36,7 +36,7 @@ abbrev over (M : PresheafOfModulesOfCommRing.{v} R) (X : C) :
   (pushforward₀.{v} (Over.forget X) R).obj M
 
 /-- Restrict a morphism of presheaves of modules to an over category. -/
-abbrev overHom {M N : PresheafOfModulesOfCommRing.{v} R} (φ : M ⟶ N)
+abbrev _root_.PresheafOfModules.Hom.overHom {M N : PresheafOfModulesOfCommRing.{v} R} (φ : M ⟶ N)
     (X : C) : M.over X ⟶ N.over X := (pushforward₀.{v} (Over.forget X) R).map φ
 
 @[simps -isSimp]
@@ -133,7 +133,7 @@ def internalHomFunctor : PresheafOfModulesOfCommRing.{u} R ⥤
   obj G := internalHom F G
   map φ :=
     { app V := ModuleCat.ofHom
-        { toFun s := s ≫ overHom φ (unop V)
+        { toFun s := s ≫ φ.overHom (unop V)
           map_smul' b s := by simp
           map_add' := by simp }
     }
@@ -148,7 +148,7 @@ def internalCoyoneda :
   map φ :=
     { app G :=
       { app V := ModuleCat.ofHom
-          { toFun s := overHom φ.unop (unop V) ≫ s
+          { toFun s := φ.unop.overHom (unop V) ≫ s
             map_add' := by simp
             map_smul' := by simp
           }
@@ -363,6 +363,46 @@ lemma ihom_ev_app_app_tmul (F G : PresheafOfModulesOfCommRing.{u} R)
   rw [ihom.ev, show ihom.adjunction F = internalHomAdjunction F by rfl,
     internalHomAdjunction_counit_app]
   exact internalHomEv_app_tmul F G U x φ
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- Restriction to an over category commutes with internal hom. -/
+def ihomOverIso (F G : PresheafOfModulesOfCommRing.{u} R) (X : C) :
+    (F ⟶[_] G).over X ≅ (F.over X ⟶[_] G.over X) :=
+  PresheafOfModules.isoMk (fun U ↦
+    { hom := ModuleCat.ofHom (R := ((Over.forget X).op ⋙ R).obj U)
+        { toFun φ :=
+            { app V := φ.app ((Over.iteratedSliceForward U.unop).op.obj V)
+              naturality f := φ.naturality ((Over.iteratedSliceForward U.unop).op.map f) }
+          map_add' _ _ := rfl
+          map_smul' _ _ := rfl }
+      inv := ModuleCat.ofHom
+        { toFun φ :=
+            { app V := φ.app ((Over.iteratedSliceBackward U.unop).op.obj V)
+              naturality f := φ.naturality ((Over.iteratedSliceBackward U.unop).op.map f) }
+          map_add' _ _ := rfl
+          map_smul' _ _ := rfl }
+      hom_inv_id := by
+        ext φ
+        exact PresheafOfModules.hom_ext fun V ↦ rfl
+      inv_hom_id := by
+        ext φ
+        refine PresheafOfModules.hom_ext fun V ↦ ?_
+        ext x
+        simpa [Over.iteratedSliceEquiv] using!
+          (PresheafOfModulesOfCommRing.naturality_apply φ
+            ((Over.iteratedSliceEquiv U.unop).unitIso.hom.app V.unop).op x).symm })
+
+set_option backward.isDefEq.respectTransparency false in
+lemma overHom_ihom_ev (F G : PresheafOfModulesOfCommRing.{u} R) (X : C) :
+    ((ihom.ev F).app G).overHom X =
+      F.over X ◁ (ihomOverIso F G X).hom ≫ (ihom.ev (F.over X)).app (G.over X) := by
+  apply PresheafOfModules.hom_ext
+  intro U
+  apply ModuleCat.MonoidalCategory.tensor_ext (R := ((Over.forget X).op ⋙ R).obj U)
+  intro x φ
+  exact (ihom_ev_app_app_tmul F G (op U.unop.left) x φ).trans
+    (ihom_ev_app_app_tmul (F.over X) (G.over X) U x ((ihomOverIso F G X).hom.app U φ)).symm
 
 @[simp]
 lemma ihom_coev_app_app_apply_app_apply (F M : PresheafOfModulesOfCommRing.{u} R)

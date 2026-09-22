@@ -56,6 +56,7 @@ open PresheafOfModulesOfCommRing
 
 variable [HasWeakSheafify J AddCommGrpCat.{w}] (R : Sheaf J CommRingCat.{w})
 
+--MOVE
 /-- Morphisms of presheaves of modules inverted by sheafification. -/
 abbrev W : MorphismProperty (PresheafOfModulesOfCommRing.{w} R.obj) :=
   J.W.inverseImage (toPresheaf R.obj)
@@ -63,10 +64,25 @@ abbrev W : MorphismProperty (PresheafOfModulesOfCommRing.{w} R.obj) :=
 example [LocallySmall.{w} C] [GrothendieckTopology.HasEnoughPoints.{w} J] :
     (W R).IsMonoidal := inferInstance
 
+variable [J.HasSheafCompose (forget₂ CommRingCat.{w} RingCat)]
+-- MOVE
+omit [HasWeakSheafify J AddCommGrpCat.{w}] in
+@[simp]
+lemma W_forget_map_iff_isIso {F G : SheafOfModulesOfCommRing.{w} R} (f : F ⟶ G) :
+    W R ((forget R).map f) ↔ IsIso f := by
+  change J.W ((sheafToPresheaf J AddCommGrpCat).map ((SheafOfModules.toSheaf _).map f)) ↔ _
+  rw [J.W_sheafToPresheaf_map_iff_isIso, isIso_iff_of_reflects_iso]
+
 variable [J.WEqualsLocallyBijective AddCommGrpCat.{w}]
-  [J.HasSheafCompose (forget₂ CommRingCat.{w} RingCat)]
-  [J.HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)]
-  [(W R).IsMonoidal]
+-- MOVE
+lemma W_iff_isIso_map_sheafification
+    {F G : PresheafOfModulesOfCommRing.{w} R.obj} (f : F ⟶ G) :
+    W R f ↔ IsIso ((sheafification R).map f) := by
+  change J.W ((toPresheaf R.obj).map f) ↔ _
+  rw [J.W_iff, ← isIso_iff_of_reflects_iso _ (SheafOfModules.toSheaf _)]
+  rfl
+
+variable [J.HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)] [(W R).IsMonoidal]
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance monoidalCategory :
@@ -93,6 +109,17 @@ noncomputable instance : (forget.{w} R).LaxMonoidal :=
 
 example : (sheafificationAdjunction R).IsMonoidal := by
   infer_instance
+
+omit [J.HasSheafCompose (forget₂ RingCat.{w} AddCommGrpCat)] in
+lemma W_μ (F G : SheafOfModulesOfCommRing.{w} R) :
+    W R (Functor.LaxMonoidal.μ (forget R) F G) := by
+  rw [W_iff_isIso_map_sheafification]
+  let adj := sheafificationAdjunction R
+  have : IsIso ((sheafification R).map (Functor.LaxMonoidal.μ (forget R) F G) ≫
+      adj.counit.app (F ⊗ G)) := by
+    rw [adj.map_μ_comp_counit_app_tensor]
+    infer_instance
+  exact IsIso.of_isIso_comp_right _ (adj.counit.app (F ⊗ G))
 
 section
 

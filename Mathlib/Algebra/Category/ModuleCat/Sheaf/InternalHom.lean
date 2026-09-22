@@ -166,14 +166,17 @@ lemma μ_monoidalClosed_uncurry_val {F M G : SheafOfModulesOfCommRing.{u} R}
   apply curry_injective
   rw [← monoidalClosed_curry_val, curry_uncurry, curry_uncurry]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Sheaf evaluation agrees with presheaf evaluation on the tensor comparison map. -/
 @[reassoc (attr := simp)]
 lemma μ_ihom_ev_app_val (F G : SheafOfModulesOfCommRing.{u} R) :
-    μ (forget R) F (F ⟶[_] G) ≫ ((ihom.ev F).app G).val =
-      (ihom.ev F.val).app G.val := by
-  simpa only [uncurry_id_eq_ev] using
-    (μ_monoidalClosed_uncurry_val (𝟙 (F ⟶[_] G))).trans
-      (uncurry_id_eq_ev (C := PresheafOfModulesOfCommRing R.obj) F.val G.val)
+    μ (forget R) F (F ⟶[_] G) ≫ ((ihom.ev F).app G).val = (ihom.ev F.val).app G.val := by
+  simpa [uncurry_id_eq_ev] using
+    (μ_monoidalClosed_uncurry_val (𝟙 (F ⟶[_] G))).trans (uncurry_id_eq_ev F.val G.val)
+
+/-- Sheaf evaluation is an isomorphism iff sheafification inverts presheaf evaluation. -/
+lemma isIso_ihom_ev_app_iff (F G : SheafOfModulesOfCommRing.{u} R) :
+    IsIso ((ihom.ev F).app G) ↔ W R ((ihom.ev F.val).app G.val) := by
+  rw [← μ_ihom_ev_app_val, ← W_forget_map_iff_isIso, ← (W R).precomp_iff _ _ (W_μ R F (F ⟶[_] G))]
+  rfl
 
 end SheafOfModulesOfCommRing

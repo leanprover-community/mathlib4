@@ -47,7 +47,21 @@ namespace LocalGeneratorsData
 class IsLocallyFreeData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) : Prop where
   isIso : ∀ i, IsIso (q.generators i).π := by infer_instance
 
+/-- Local generator data `q` is locally free data of rank `n` if it is locally free and
+each family of generators has cardinality `n`. -/
+class IsLocallyFreeDataOfRank {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) (n : ℕ)
+    extends q.IsLocallyFreeData, q.IsFiniteType where
+  rank : ∀ i, Nat.card (q.generators i).I = n
+
 attribute [instance] IsLocallyFreeData.isIso
+
+/-- A local trivialization supplied by locally free data of rank one. -/
+def isoUnit {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
+    [q.IsLocallyFreeDataOfRank 1] (i : q.I) :
+    M.over (q.X i) ≅ unit (R.over (q.X i)) := by
+  obtain ⟨h, h'⟩ := Nat.card_eq_one_iff_unique.mp (IsLocallyFreeDataOfRank.rank (q := q) i)
+  letI := Classical.choice (nonempty_unique (q.generators i).I)
+  exact (asIso (q.generators i).π).symm ≪≫ coproductUniqueIso _
 
 instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : q.shrink.IsLocallyFreeData where
@@ -63,6 +77,21 @@ class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
 
 theorem LocalGeneratorsData.isLocallyFree {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
     [q.IsLocallyFreeData] : M.IsLocallyFree := ⟨q.shrink, inferInstance⟩
+
+/-- A sheaf of modules is locally free of rank `n` if it is locally isomorphic to a free
+sheaf of rank `n` -/
+class IsLocallyFreeOfRank (M : SheafOfModules.{u} R) (n : semiOutParam ℕ) : Prop where
+  exists_isLocallyFreeDataOfRank : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeDataOfRank n
+
+instance (M : SheafOfModules.{u} R) (n : ℕ) [M.IsLocallyFreeOfRank n] :
+    M.IsLocallyFree := by
+  obtain ⟨q, hq⟩ := IsLocallyFreeOfRank.exists_isLocallyFreeDataOfRank (M := M) (n := n)
+  exact ⟨⟨q, inferInstance⟩⟩
+
+instance (M : SheafOfModules.{u} R) (n : ℕ) [M.IsLocallyFreeOfRank n] :
+    M.IsFiniteType := by
+  obtain ⟨q, hq⟩ := IsLocallyFreeOfRank.exists_isLocallyFreeDataOfRank (M := M) (n := n)
+  exact ⟨⟨q, inferInstance⟩⟩
 
 end
 

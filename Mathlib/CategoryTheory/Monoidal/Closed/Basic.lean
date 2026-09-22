@@ -248,10 +248,19 @@ variable [Closed B]
 def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=
   conjugateEquiv (ihom.adjunction _) (ihom.adjunction _) ((tensoringLeft C).map f)
 
+instance (f : B ⟶ A) [IsIso f] : IsIso (pre f) :=
+  inferInstanceAs (IsIso (conjugateEquiv _ _ _))
+
 @[reassoc (attr := simp)]
 theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
   conjugateEquiv_counit _ _ ((tensoringLeft C).map f) X
+
+/-- Whether evaluation is an isomorphism is invariant under isomorphism of its source object. -/
+lemma isIso_ihom_ev_app_iff_of_iso (e : A ≅ B) (X : C) :
+    IsIso ((ihom.ev A).app X) ↔ IsIso ((ihom.ev B).app X) := by
+  rw [← isIso_comp_left_iff (A ◁ (pre e.hom).app X),
+    id_tensor_pre_app_comp_ev, isIso_comp_left_iff]
 
 @[simp]
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
