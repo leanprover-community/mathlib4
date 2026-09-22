@@ -6,6 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Ring.Action.End
+public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Pointwise instances on `Ideal`s
@@ -88,10 +89,9 @@ instance : CovariantClass M (Ideal R) HSMul.hSMul LE.le :=
 theorem smul_bot (a : M) : a • (⊥ : Ideal R) = ⊥ :=
   map_bot
 
-@[simp]
 theorem stabilizer_bot {G : Type*} [Group G] [MulSemiringAction G R] :
     MulAction.stabilizer G (⊥ : Ideal R) = ⊤ :=
-  eq_top_iff.mpr fun g _ ↦ MulAction.mem_stabilizer_iff.mpr (smul_bot g)
+  MulAction.stabilizer_bot
 
 theorem smul_sup (a : M) (S T : Ideal R) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
@@ -161,13 +161,11 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
-@[simp]
 theorem smul_top (a : M) : a • (⊤ : Ideal R) = ⊤ :=
-  eq_top_iff.mpr fun _ _ ↦ mem_pointwise_smul_iff_inv_smul_mem.mpr trivial
+  _root_.smul_top a
 
-@[simp]
 theorem stabilizer_top : MulAction.stabilizer M (⊤ : Ideal R) = ⊤ :=
-  eq_top_iff.mpr fun x _ ↦ MulAction.mem_stabilizer_iff.mpr (smul_top x)
+  MulAction.stabilizer_top
 
 @[simp]
 theorem inertia_top {R : Type*} [Ring R] [MulSemiringAction M R] :
