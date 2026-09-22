@@ -52,10 +52,10 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
   · constructor
     · apply mul_nonneg <;> grind
     · rw [mul_assoc]
-      apply mul_le_one₀ <;> grind
+      apply (mul_le_of_le_one_left ?_ ?_).trans ?_ <;> grind
   · constructor
     · apply mul_nonneg <;> grind
-    · apply mul_le_one₀ <;> grind
+    · apply (mul_le_of_le_one_left ?_ ?_).trans ?_ <;> grind
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
@@ -94,7 +94,7 @@ theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
-  norm_num [transReflReparamAux]
+  simp [transReflReparamAux]
 
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
@@ -139,7 +139,7 @@ theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
-  norm_num [transAssocReparamAux]
+  simp [transAssocReparamAux]
 
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
   norm_num [transAssocReparamAux]
