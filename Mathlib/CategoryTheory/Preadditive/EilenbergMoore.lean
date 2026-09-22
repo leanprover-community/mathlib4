@@ -30,7 +30,7 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C] (T : Monad C)
 open CategoryTheory.Limits Preadditive
 
 /-- The category of algebras over an additive monad on a preadditive category is preadditive. -/
-@[simps]
+@[simps (dsimpLhs := true)]
 instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
   homGroup F G :=
     { add α β :=
@@ -75,7 +75,7 @@ instance Monad.forget_additive : (Monad.forget T).Additive where
 variable (U : Comonad C) [Functor.Additive (U : C ⥤ C)]
 
 /-- The category of coalgebras over an additive comonad on a preadditive category is preadditive. -/
-@[simps]
+@[simps (dsimpLhs := true)]
 instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
   homGroup F G :=
     { add α β :=
@@ -84,6 +84,9 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, comp_zero, zero_comp] }
+      psmul n α :=
+        { f := n • α.f
+          h := by rw [Functor.map_psmul, comp_psmul, Comonad.Coalgebra.Hom.h, psmul_comp] }
       nsmul n α :=
         { f := n • α.f
           h := by rw [Functor.map_nsmul, comp_nsmul, Comonad.Coalgebra.Hom.h, nsmul_comp] }
@@ -99,6 +102,8 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
       add_assoc _ _ _ := Coalgebra.Hom.ext <| add_assoc _ _ _
       zero_add _ := Coalgebra.Hom.ext <| zero_add _
       add_zero _ := Coalgebra.Hom.ext <| add_zero _
+      psmul_one _ := Coalgebra.Hom.ext <| one_psmul _
+      psmul_succ _ _ := Coalgebra.Hom.ext <| succ_psmul _ _
       nsmul_zero _ := Coalgebra.Hom.ext <| zero_nsmul _
       nsmul_succ _ _ := Coalgebra.Hom.ext <| succ_nsmul _ _
       sub_eq_add_neg _ _ := Coalgebra.Hom.ext <| sub_eq_add_neg _ _
