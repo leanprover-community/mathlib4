@@ -153,6 +153,6 @@ lemma sturmSeq_mul_left {r : K[X]} (hr : r ≠ 0) (p q : K[X]) :
   next q => simp
   next p q hp ih =>
     rw [sturmSeq_cons (mul_ne_zero hr hp), sturmSeq_cons hp, List.map_cons, neg_mod,
-      mul_mod_mul_left hr, ← mul_neg, ← neg_mod, ih]
+      mul_mod_mul_left, ← mul_neg, ← neg_mod, ih]
 
 end Polynomial

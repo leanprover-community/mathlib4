@@ -734,7 +734,9 @@ theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % 
   rw [mul_comm]
   exact (Polynomial.C_mul_dvd (by simpa using hq)).mpr h
 
-theorem mul_mod_mul_left {p₁ p₂ q : R[X]} (hq : q ≠ 0) : (q * p₁) % (q * p₂) = q * (p₁ % p₂) := by
+theorem mul_mod_mul_left {p₁ p₂ q : R[X]} : (q * p₁) % (q * p₂) = q * (p₁ % p₂) := by
+  by_cases hq: q = 0
+  · simp [hq]
   rcases eq_or_ne p₂ 0 with rfl | hp₂
   · simp
   · have h1 : (q * p₁) % (q * p₂) = (q * (p₁ % p₂)) % (q * p₂) :=
