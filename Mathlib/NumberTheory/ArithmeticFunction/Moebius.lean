@@ -144,17 +144,6 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
 theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : n ≠ 0) :
     ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
-  -- the squarefree case, via `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`
-  have key : ∀ {m : ℕ}, Squarefree m →
-      ∏ p ∈ m.primeFactors, (1 - f p) = ∑ d ∈ m.divisors, μ d * f d := by
-    intro m hm
-    trans (∏ p ∈ m.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p))
-    · apply prod_congr rfl; intro p hp
-      rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
-          (prime_of_mem_primeFactorsList (List.mem_toFinset.mp hp))]
-      ring
-    · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hm]
-      simp_rw [pmul_apply, intCoe_apply]
   set P := ∏ p ∈ n.primeFactors, p with hP
   have hPsq : Squarefree P := by
     refine Finset.squarefree_prod_of_pairwise_isCoprime ?_ fun p hp ↦
@@ -174,7 +163,18 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
       exact Nat.primeFactors_mono hdn hn
     have : ¬ Squarefree d := fun hsq ↦ hno (Nat.mem_divisors.mpr ⟨hdP hsq, hP0⟩)
     simp [ArithmeticFunction.moebius_eq_zero_of_not_squarefree this]
-  rw [hsum, ← key hPsq, hP, Nat.primeFactors_prod_primeFactors]
+  -- over the squarefree `P` this is `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`
+  calc ∏ p ∈ n.primeFactors, (1 - f p)
+      = ∏ p ∈ P.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
+        rw [hP, Nat.primeFactors_prod_primeFactors]
+        refine prod_congr rfl fun p hp ↦ ?_
+        rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
+          (prime_of_mem_primeFactorsList (List.mem_toFinset.mp hp))]
+        ring
+    _ = ∑ d ∈ P.divisors, μ d * f d := by
+        rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hPsq]
+        simp_rw [pmul_apply, intCoe_apply]
+    _ = ∑ d ∈ n.divisors, μ d * f d := hsum.symm
 
 @[deprecated IsMultiplicative.prodPrimeFactors_one_sub (since := "2026-09-14")]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
