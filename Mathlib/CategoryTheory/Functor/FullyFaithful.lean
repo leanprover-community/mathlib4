@@ -125,16 +125,17 @@ theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
 end
 
 variable (F) in
-/-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`
+/-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) → (X ⟶ Y)` of `F.map`
 in order to express that `F` is a fully faithful functor. -/
 structure FullyFaithful where
-  /-- The inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`. -/
+  /-- The inverse map `(F.obj X ⟶ F.obj Y) → (X ⟶ Y)` of `F.map`. -/
   preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : X ⟶ Y
   map_preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : F.map (preimage f) = f := by cat_disch
   preimage_map {X Y : C} (f : X ⟶ Y) : preimage (F.map f) = f := by cat_disch
 
 namespace FullyFaithful
 
+attribute [to_dual self] preimage map_preimage preimage_map
 attribute [simp] map_preimage preimage_map
 
 variable (F) in
@@ -156,13 +157,14 @@ variable (hF : F.FullyFaithful)
 include hF
 
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
-@[simps]
+@[simps, to_dual self]
 def homEquiv {X Y : C} : (X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y) where
   toFun := F.map
   invFun := hF.preimage
   left_inv _ := by simp
   right_inv _ := by simp
 
+@[to_dual self]
 lemma map_injective {X Y : C} {f g : X ⟶ Y} (h : F.map f = F.map g) : f = g :=
   hF.homEquiv.injective h
 

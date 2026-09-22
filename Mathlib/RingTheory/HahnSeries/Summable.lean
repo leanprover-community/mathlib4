@@ -78,6 +78,7 @@ section AddCommMonoid
 
 variable [PartialOrder Γ] [AddCommMonoid R]
 
+@[macro_inline]
 instance : FunLike (SummableFamily Γ R α) α R⟦Γ⟧ where
   coe := toFun
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
