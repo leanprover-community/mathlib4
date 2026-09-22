@@ -666,7 +666,7 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [SetLike.le_def, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by simp only [IsConcreteLE.le_iff, mem_inf, mem_bot, and_imp]
 
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :

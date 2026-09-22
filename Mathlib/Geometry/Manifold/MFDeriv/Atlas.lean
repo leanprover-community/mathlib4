@@ -366,7 +366,6 @@ lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm {x : M}
       (mfderiv[range I] (extChartAt I x).symm y) = ContinuousLinearMap.id _ _ :=
   mfderiv_extend_comp_mfderivWithin_extend_symm (IsManifold.chart_mem_maximalAtlas x) hy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the derivative of `extChartAt` with the derivative of the inverse of
 `extChartAt` gives the identity.
 Version where the basepoint belongs to `(extChartAt I x).source`. -/

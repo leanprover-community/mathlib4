@@ -102,6 +102,9 @@ theorem balanced_iUnion₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced �
     Balanced 𝕜 (⋃ (i) (j), f i j) :=
   balanced_iUnion fun _ => balanced_iUnion <| h _
 
+theorem Balanced.sUnion {S : Set (Set E)} (h : ∀ s ∈ S, Balanced 𝕜 s) : Balanced 𝕜 (⋃₀ S) :=
+  sUnion_eq_biUnion (s := S) ▸ balanced_iUnion₂ fun _ hi => h _ hi
+
 theorem Balanced.sInter {S : Set (Set E)} (h : ∀ s ∈ S, Balanced 𝕜 s) : Balanced 𝕜 (⋂₀ S) :=
   fun _ _ => (smul_set_sInter_subset ..).trans (fun _ _ => by aesop)
 
@@ -116,6 +119,16 @@ theorem Balanced.mulActionHom_preimage [SMul 𝕜 F] {s : Set F} (hs : Balanced 
     (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y,⟨hy₁,hy₂⟩⟩ => by
   rw [mem_preimage, ← hy₂, map_smul]
   exact hs a ha (smul_mem_smul_set hy₁)
+
+section ContinuousConstSMul
+
+variable [TopologicalSpace E] [ContinuousConstSMul 𝕜 E]
+
+protected theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
+  (image_closure_subset_closure_image <| continuous_const_smul _).trans <|
+    closure_mono <| hA _ ha
+
+end ContinuousConstSMul
 
 variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 
@@ -251,10 +264,6 @@ protected theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ inte
     Balanced 𝕜 (interior A) := by
   rw [← insert_eq_self.2 h]
   exact hA.zero_insert_interior
-
-protected theorem Balanced.closure (hA : Balanced 𝕜 A) : Balanced 𝕜 (closure A) := fun _a ha =>
-  (image_closure_subset_closure_image <| continuous_const_smul _).trans <|
-    closure_mono <| hA _ ha
 
 end NormedField
 

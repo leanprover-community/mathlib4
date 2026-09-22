@@ -243,7 +243,7 @@ lemma image_extremePoints (f : L) (s : Set E) :
   ext b
   obtain ⟨a, rfl⟩ := EquivLike.surjective f b
   have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
-    image_openSegment _ (LinearMapClass.linearMap f).toAffineMap
+    image_openSegment _ (LinearMap.ofClass f).toAffineMap
   simp only [mem_extremePoints, (EquivLike.surjective f).forall,
     (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
 
