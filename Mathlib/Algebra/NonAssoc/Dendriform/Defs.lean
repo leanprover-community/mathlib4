@@ -68,7 +68,7 @@ class NonUnitalDendriformRing (M) extends NonUnitalDendriformSemiring M,
 class NonUnitalDendriformAlgebra (R M) [CommSemiring R] extends NonUnitalSemiring M,
     Module R M where
   succ : M →ₗ[R] M →ₗ[R] M
-  prec : M →ₗ[R] M →ₗ[R] M 
+  prec : M →ₗ[R] M →ₗ[R] M
   mul_eq a b : a * b = succ a b + prec a b
   succ_succ_eq a b c : succ a (succ b c) = succ (succ a b + prec a b) c
   succ_prec_assoc a b c : succ a (prec b c) = prec (succ a b) c
