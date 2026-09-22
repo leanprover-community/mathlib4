@@ -48,8 +48,7 @@ structure PSet : Type (u + 1) where
 
 namespace PSet
 
-@[deprecated "these rules hold by reducible defeq for structure
-projection now" (since := "2026-09-20")]
+@[deprecated "This now holds by reducible defeq for structure projection." (since := "2026-09-20")]
 theorem mk_type (α A) : «Type» ⟨α, A⟩ = α :=
   rfl
 
