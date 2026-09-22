@@ -531,13 +531,19 @@ instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
     MulRightStrictMono (MinTropical R) :=
   ⟨fun _ y z h => add_lt_add_left (show untrop y < untrop z from h) _⟩
 
-to_dual_for mulLeftMono :=
+
+@[to_dual existing]
+instance _root_.MaxTropical.mulLeftMono [LE R] [Add R] [AddLeftMono R] :
+    MulLeftMono (MaxTropical R) :=
   ⟨fun _ y z h => add_le_add_right (show MaxTropical.untrop y ≤ MaxTropical.untrop z from h) _⟩
 
-to_dual_for mulRightMono :=
+@[to_dual existing]
+instance _root_.MaxTropical.mulRightMono [LE R] [Add R] [AddRightMono R] :
+    MulRightMono (MaxTropical R) :=
   ⟨fun _ y z h => add_le_add_left (show MaxTropical.untrop y ≤ MaxTropical.untrop z from h) _⟩
 
-to_dual_for addLeftMono :=
+@[to_dual existing]
+instance _root_.MaxTropical.addLeftMono [LinearOrder R] : AddLeftMono (MaxTropical R) :=
   ⟨fun x y z h => by
     rcases le_total x z with hx | hz
     · rw [MaxTropical.add_eq_right hx]
@@ -546,10 +552,14 @@ to_dual_for addLeftMono :=
       · rwa [MaxTropical.add_eq_left hx]
     · rw [MaxTropical.add_eq_left hz, MaxTropical.add_eq_left (h.trans hz)]⟩
 
-to_dual_for mulLeftStrictMono :=
+@[to_dual existing]
+instance _root_.MaxTropical.mulLeftStrictMono [LT R] [Add R] [AddLeftStrictMono R] :
+    MulLeftStrictMono (MaxTropical R) :=
   ⟨fun _ _ _ h => add_lt_add_right (MaxTropical.untrop_lt_iff.2 h) _⟩
 
-to_dual_for mulRightStrictMono :=
+@[to_dual existing]
+instance _root_.MaxTropical.mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
+    MulRightStrictMono (MaxTropical R) :=
   ⟨fun _ y z h => add_lt_add_left (show MaxTropical.untrop y < MaxTropical.untrop z from h) _⟩
 
 @[to_dual]
