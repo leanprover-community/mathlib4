@@ -14,6 +14,7 @@ public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.Periodic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Euler's totient function

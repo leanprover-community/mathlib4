@@ -495,7 +495,7 @@ namespace Function
 
 section Prod
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {n : ℕ}
 
 @[simp]
 theorem isFixedPt_prodMap (x : α × β) :

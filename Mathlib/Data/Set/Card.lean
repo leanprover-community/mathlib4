@@ -507,7 +507,7 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
   hf.injOn.encard_image
 
 theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
-    ENat.card α ≤ (range f).encard := by
+    (range f).encard = ENat.card α := by
   rw [← image_univ, hf.encard_image, encard_univ]
 
 theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard :=
@@ -1427,6 +1427,5 @@ there is at most a collision between a unique pair of elements. -/
 theorem Set.ncard_le_ncard_image_add_one_iff {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
     s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
       f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
-  simpa [Subtype.ext_iff, ← (Set.image_injective.mpr Subtype.val_injective).eq_iff,
-     Set.image_insert_eq, Set.image_singleton] using
+  simpa [Subtype.ext_iff, ← (Set.image_injective.mpr Subtype.val_injective).eq_iff] using
       (Set.surjective_mapsTo_image_restrict f s).card_le_card_add_one_iff

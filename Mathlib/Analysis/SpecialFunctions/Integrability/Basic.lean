@@ -19,9 +19,11 @@ powers and the logarithm.
 
 public section
 
-open Interval MeasureTheory Real Set
+open MeasureTheory Real Set
 
-variable {a b c d : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+open scoped Interval
+
+variable {a b c : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
 namespace intervalIntegral
 

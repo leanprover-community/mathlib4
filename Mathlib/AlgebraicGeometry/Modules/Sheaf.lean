@@ -306,7 +306,6 @@ lemma pseudofunctor_right_unitality :
   simp [← this]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
   conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in
@@ -320,7 +319,7 @@ these categories.) -/
 def pseudofunctor :
     Pseudofunctor (LocallyDiscrete Scheme.{u}ᵒᵖ) (Adj Cat) :=
   LocallyDiscrete.mkPseudofunctor
-    (fun X ↦ Adj.mk (Cat.of X.unop.Modules))
+    (fun X ↦ Adj.mk ↧X.unop.Modules)
     (fun f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
     (fun _ ↦ Adj.iso₂Mk (Cat.Hom.isoMk (pullbackId _))
         (Cat.Hom.isoMk (pushforwardId _).symm))

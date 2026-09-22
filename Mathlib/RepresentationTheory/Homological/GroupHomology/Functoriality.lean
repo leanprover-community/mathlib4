@@ -199,10 +199,10 @@ noncomputable def mapIso (e : G ≃* H) (e' : A.V ≃ₗ[k] B.V)
     simp [he, LinearMap.comp_assoc]⟩) n
   hom_inv_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    exact groupHomology.map_congr e.coe_monoidHom_symm_comp_coe_monoidHom e'.symm_comp n
+    exact groupHomology.map_congr e.toMonoidHom_symm_comp_toMonoidHom e'.symm_comp n
   inv_hom_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    exact groupHomology.map_congr e.coe_monoidHom_comp_coe_monoidHom_symm e'.comp_symm n
+    exact groupHomology.map_congr e.toMonoidHom_comp_toMonoidHom_symm e'.comp_symm n
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·gᵢ : G →₀ A` to `∑ φ(aᵢ)·f(gᵢ) : H →₀ B`. -/
@@ -429,9 +429,8 @@ instance mapCycles₁_quotientGroupMk'_epi :
   rw [ModuleCat.epi_iff_surjective]
   rintro ⟨x, hx⟩
   choose! s hs using QuotientGroup.mk_surjective (s := S)
-  have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
   refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
-    simp [mapCycles₁_hom, ← mapDomain_comp, hs₁, res, Rep.hom_id (of _)]⟩
+    simp [mapCycles₁_hom, ← mapDomain_comp, hs, res, Rep.hom_id (of _)]⟩
   simpa [mem_cycles₁_iff, ← (mem_cycles₁_iff _).1 hx, sum_mapDomain_index_inj (f := s)
       (fun x y h => by rw [← hs x, ← hs y, h])]
     using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
@@ -489,7 +488,7 @@ theorem H1CoresCoinfOfTrivial_exact :
       (d₂₁ (A.ofQuotient S)).hom y := by
     have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
       (resOfQuotientIso A S).inv).comm₁₂.symm) z)
-    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map, Rep.hom_id (res _ _)]
+    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_map, Rep.hom_id (res _ _)]
   let v := x - (d₂₁ _).hom z
 /- We have `C₁(s ∘ π)(v) = ∑ v(g)·s(π(g)) = 0`, since `C₁(π)(v) = dC₁(π)(z) - C₁(π)(dz) = 0` by
 previous assumptions. -/
@@ -571,6 +570,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
   apply (moduleCat_pOpcycles_eq_iff _ _ _).2 ⟨Z, ?_⟩
   change d₂₁ A Z = mapRange id rfl (lmapDomain _ k Subtype.val Y) -
     mapRange.linearMap (Submodule.subtype _) (mapDomain id x)
+  simp only [mapDomain]
   simpa [map_finsuppSum, mapDomain, map_sub, ← hX, sum_single_index, curryLinearEquiv,
     curryEquiv, Finsupp.uncurry, d₂₁, Y, Z, sum_mapRange_index,
     chains₁ToCoinvariantsKer, d₁₀, single_sum, mul_assoc, sub_add_eq_add_sub,

@@ -6,7 +6,6 @@ Authors: Monica Omar, Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Projection
 

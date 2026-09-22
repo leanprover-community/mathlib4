@@ -46,7 +46,9 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal
+open Filter Function Set NNReal ENNReal
+
+open scoped Topology
 
 variable {α δ : Type u} {β τ : Type v} {γ ζ : Type w} {ι : Type x}
 

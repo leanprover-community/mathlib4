@@ -38,7 +38,7 @@ instance monMonoid (A : Type u) [MonObj A] : Monoid A where
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
 noncomputable def functor : Mon (Type u) ⥤ MonCat.{u} where
-  obj A := MonCat.of A.X
+  obj A := ↧A.X
   map f := MonCat.ofHom
     { toFun := f.hom
       map_one' := congr_hom (IsMonHom.one_hom f.hom) PUnit.unit
@@ -91,7 +91,7 @@ noncomputable def monTypeEquivalenceMonForget :
   NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 noncomputable instance monTypeInhabited : Inhabited (Mon (Type u)) :=
-  ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
+  ⟨MonTypeEquivalenceMon.inverse.obj ↧PUnit⟩
 
 namespace CommMonTypeEquivalenceCommMon
 
@@ -103,7 +103,7 @@ instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
 noncomputable def functor : CommMon (Type u) ⥤ CommMonCat.{u} where
-  obj A := CommMonCat.of A.X
+  obj A := ↧A.X
   map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.

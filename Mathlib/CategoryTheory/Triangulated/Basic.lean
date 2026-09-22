@@ -60,7 +60,7 @@ variable {C}
 /-- A triangle `(X,Y,Z,f,g,h)` in `C` is defined by the morphisms `f : X ⟶ Y`, `g : Y ⟶ Z`
 and `h : Z ⟶ X⟦1⟧`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧) : Triangle C where
   obj₁ := X
   obj₂ := Y
@@ -115,7 +115,7 @@ structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the third commutative square of a triangle morphism -/
   comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by cat_disch
 
-attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.comm₂
+attribute [map (attr := reassoc (attr := simp))] TriangleMorphism.comm₁ TriangleMorphism.comm₂
   TriangleMorphism.comm₃
 
 /-- The identity triangle morphism.
@@ -333,7 +333,6 @@ def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct
   Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of triangles
 `binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
 @[simps!]
@@ -473,7 +472,6 @@ open CategoryTheory.Functor
 
 variable {J : Type*} [Category* J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
