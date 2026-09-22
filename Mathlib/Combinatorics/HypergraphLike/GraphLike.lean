@@ -10,9 +10,8 @@ public import Mathlib.Combinatorics.HypergraphLike.Degree
 /-!
 # Graph-like structures with two incidences per edge
 
-`HyperGraphLike.GraphLike` requires exactly two incidences per edge, including a source
-and a target, and supplies the operation exchanging them. This file develops its incidence
-and link API.
+`HyperGraphLike.GraphLike` requires exactly two incidences per edge, including a source and a
+target, and supplies the operation exchanging them. This file develops its incidence and link API.
 -/
 
 @[expose] public section
