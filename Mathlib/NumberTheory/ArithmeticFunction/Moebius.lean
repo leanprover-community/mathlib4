@@ -155,7 +155,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
   -- over the squarefree `P` this is `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`;
   -- the divisors of `n` that are not divisors of `P` are not squarefree, so `μ` kills them
   calc ∏ p ∈ n.primeFactors, (1 - f p)
-      = ∏ p ∈ P.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
+    = ∏ p ∈ P.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
         rw [hP, Nat.primeFactors_prod_primeFactors]
         refine prod_congr rfl fun p hp ↦ ?_
         rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
