@@ -30,8 +30,8 @@ field.
 
 * `Polynomial.sturmSeq_cons`: the unfolding equation
   `sturmSeq p q = p :: sturmSeq q (-p % q)` for `p ≠ 0`.
-* `Polynomial.sturmSeq_zero`, `Polynomial.sturmSeq_zero_right`, `Polynomial.sturmSeq_eq_nil_iff`:
-  the degenerate cases.
+* `Polynomial.sturmSeq_zero_left`, `Polynomial.sturmSeq_zero_right`,
+  `Polynomial.sturmSeq_eq_nil_iff`: the degenerate cases.
 * `Polynomial.zero_notMem_sturmSeq`: no entry of a Sturm sequence is the zero polynomial.
 * `Polynomial.dvd_of_mem_sturmSeq`: every common divisor of `p` and `q` divides every entry of
   `sturmSeq p q`.
@@ -75,15 +75,14 @@ noncomputable def sturmSeq (p q : K[X]) : List K[X] :=
 
 /-- The Sturm sequence of `0` and `q` is the empty sequence. -/
 @[simp]
-lemma sturmSeq_zero (q : K[X]) :
+lemma sturmSeq_zero_left (q : K[X]) :
     sturmSeq 0 q = [] := by simp [sturmSeq]
 
 /-- If `p` is not `0`, the Sturm sequence of `p` and `q` is `p` followed by the Sturm sequence of
 `q` and `-p % q`. -/
 lemma sturmSeq_cons {p q : K[X]} (hp : p ≠ 0) :
     sturmSeq p q = p :: sturmSeq q (-p % q) := by
-  conv_lhs => unfold sturmSeq
-  simp [hp]
+  rw [sturmSeq, ite_eq_right hp]
 
 @[simp]
 lemma sturmSeq_eq_nil_iff {p q : K[X]} :
@@ -94,14 +93,14 @@ lemma sturmSeq_eq_nil_iff {p q : K[X]} :
     rw [sturmSeq_cons hp] at hs
     exact List.cons_ne_nil _ _ hs
   · rintro rfl
-    exact sturmSeq_zero q
+    exact sturmSeq_zero_left q
 
 @[simp]
 lemma sturmSeq_zero_right (p : K[X]) :
     sturmSeq p 0 = if p = 0 then [] else [p] := by
   split_ifs with hp
   · exact sturmSeq_eq_nil_iff.mpr hp
-  · rw [sturmSeq_cons hp, sturmSeq_zero]
+  · rw [sturmSeq_cons hp, sturmSeq_zero_left]
 
 lemma mem_sturmSeq_self {p q : K[X]} (hp : p ≠ 0) :
     p ∈ sturmSeq p q := by
@@ -114,8 +113,12 @@ lemma zero_notMem_sturmSeq (p q : K[X]) : 0 ∉ sturmSeq p q := by
     rw [sturmSeq_cons hp]
     simp [Ne.symm hp, ih]
 
+lemma ne_zero_of_mem_sturmSeq {p q s : K[X]} (hs : s ∈ sturmSeq p q) : s ≠ 0 :=
+  ne_of_mem_of_not_mem hs (zero_notMem_sturmSeq p q)
+
 /-- The first entry of the Sturm sequence of a nonzero polynomial is the polynomial itself. -/
-lemma head?_sturmSeq {p : K[X]} (hp : p ≠ 0) (q : K[X]) :
+@[simp]
+lemma head?_sturmSeq {p q : K[X]} (hp : p ≠ 0) :
     (sturmSeq p q).head? = some p := by
   rw [sturmSeq_cons hp, List.head?_cons]
 
