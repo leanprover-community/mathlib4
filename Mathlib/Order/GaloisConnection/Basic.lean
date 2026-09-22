@@ -338,8 +338,8 @@ variable [PartialOrder β]
 def liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : SemilatticeSup β :=
   { ‹PartialOrder β› with
     sup := fun a b => l (u a ⊔ u b)
-    le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
-    le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
+    le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l le_sup_left
+    le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l le_sup_right
     sup_le := fun _ _ _ hac hbc =>
       gi.gc.l_le <| sup_le (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
 
@@ -351,8 +351,8 @@ def liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : Semilatt
   { ‹PartialOrder β› with
     inf := fun a b =>
       gi.choice (u a ⊓ u b) <|
-        le_inf (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_left)
-          (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_right)
+        le_inf (gi.gc.monotone_u <| gi.gc.l_le inf_le_left)
+          (gi.gc.monotone_u <| gi.gc.l_le inf_le_right)
     inf_le_left := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_left
     inf_le_right := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_right
     le_inf := by
@@ -378,7 +378,7 @@ def _root_.GaloisCoinsertion.liftLattice [Lattice α] (gi : GaloisCoinsertion u 
 @[to_dual (attr := reducible, inline) /-- Lift the bot along a Galois coinsertion -/]
 def liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
     OrderTop β where
-  top := gi.choice ⊤ <| le_top
+  top := gi.choice ⊤ le_top
   le_top := by
     simp only [gi.choice_eq]; exact fun b => (gi.le_l_u b).trans (gi.gc.monotone_l le_top)
 

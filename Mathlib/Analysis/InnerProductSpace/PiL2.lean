@@ -133,7 +133,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 meta def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
-    let p : Term ← withNaryArg 0 <| delab
+    let p : Term ← withNaryArg 0 delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
     let `(![$elems,*]) ← withNaryArg 2 delab | failure

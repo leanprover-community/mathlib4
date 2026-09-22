@@ -42,12 +42,14 @@ theorem isCoatom_of_index_prime (hH : H.index.Prime) : IsCoatom H := by
   exact (eq_of_index_dvd_index hHK h.symm.dvd).ge
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
+@[to_additive]
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
   rw [index_eq_one] at hH
   rw [hH]
   infer_instance
 
 /-- A subgroup of index 2 is normal (does not require finiteness of G) -/
+@[to_additive]
 theorem normal_of_index_eq_two (hH : H.index = 2) : H.Normal where
   conj_mem x hxH g := by simp_rw [mul_mem_iff_of_index_two hH, hxH, iff_true, inv_mem_iff]
 
@@ -80,5 +82,25 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
   exact lt_of_lt_of_le (Nat.sub_one_lt hp.ne_zero) <|
     hHp ▸ minFac_le_of_dvd (Nat.minFac_prime hr1).two_le
       (dvd_trans (minFac_dvd H.normalCore.index) (H.normalCore.index_dvd_card))
+
+theorem _root_.AddSubgroup.index_normalCore_dvd_factorial_index {G : Type*} [AddGroup G]
+    (H : AddSubgroup G) [H.FiniteIndex] : H.normalCore.index ∣ H.index ! := by
+  rw [H.normalCore_eq_ker, AddSubgroup.index_ker, AddSubgroup.index, ← card_perm]
+  apply AddSubgroup.card_addSubgroup_dvd_card
+
+variable (H) in
+@[to_additive existing]
+theorem index_normalCore_dvd_factorial_index [H.FiniteIndex] :
+    H.normalCore.index ∣ H.index ! := by
+  rw [normalCore_eq_ker, index_ker, index, ← card_perm]
+  apply card_subgroup_dvd_card
+
+variable (H) in
+@[to_additive]
+theorem index_normalCore_le_factorial_index : H.normalCore.index ≤ H.index ! := by
+  by_cases h : H.normalCore.FiniteIndex
+  · have : H.FiniteIndex := finiteIndex_of_le H.normalCore_le
+    exact le_of_dvd H.index.factorial_pos H.index_normalCore_dvd_factorial_index
+  · simp [not_finiteIndex_iff.mp h]
 
 end Subgroup

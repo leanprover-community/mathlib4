@@ -227,7 +227,7 @@ lemma eq_zero_of_neg_one_mem [Γ.HasDetOne] (h_neg_one : -1 ∈ Γ) (hk : Odd k)
   have hf := slash_action_eqn'' f h_neg_one z
   rw [neg_smul, one_smul, denom_neg, denom_one, hk.neg_one_zpow] at hf
   have h2 : (2 : ℂ) * f z = 0 := by linear_combination hf
-  exact (mul_eq_zero.mp h2).resolve_left (by norm_num)
+  exact (mul_eq_zero.mp h2).resolve_left (by simp)
 
 section
 -- scalar multiplication by real types (no assumption on `Γ`)

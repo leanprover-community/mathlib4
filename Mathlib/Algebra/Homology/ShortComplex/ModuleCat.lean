@@ -93,7 +93,7 @@ lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
 @[reducible, inline]
 def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
-  S.f.hom.codRestrict _ <| S.moduleCat_zero_apply
+  S.f.hom.codRestrict _ S.moduleCat_zero_apply
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The explicit left homology data of a short complex of modules that is

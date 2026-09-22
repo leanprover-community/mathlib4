@@ -49,10 +49,10 @@ def E {k : ℕ} (hk : 3 ≤ k) : ModularForm 𝒮ℒ k :=
 
 /-- The normalised level 1 Eisenstein series of weight 4. -/
 @[reducible, inline]
-def E₄ : ModularForm 𝒮ℒ 4 := E (by norm_num : 3 ≤ 4)
+def E₄ : ModularForm 𝒮ℒ 4 := E (by simp : 3 ≤ 4)
 
 /-- The normalised level 1 Eisenstein series of weight 6. -/
 @[reducible, inline]
-def E₆ : ModularForm 𝒮ℒ 6 := E (by norm_num : 3 ≤ 6)
+def E₆ : ModularForm 𝒮ℒ 6 := E (by simp : 3 ≤ 6)
 
 end ModularForm

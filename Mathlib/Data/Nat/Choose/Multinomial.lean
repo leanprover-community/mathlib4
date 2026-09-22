@@ -313,7 +313,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       s.sum x ^ n =
         ∑ k : s.sym n,
           k.1.1.countPerms *
-            (k.1.1.map <| x).noncommProd
+            (k.1.1.map x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
   induction s using Finset.induction with
   | empty =>
