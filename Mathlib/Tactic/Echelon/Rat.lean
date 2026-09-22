@@ -61,7 +61,7 @@ def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
 /-- The rational model of a ring: entries evaluate to rational numerals, denominators
 are cleared by row scaling, and the elimination runs on integer values. It applies to
 every ring, as the fallback model. -/
-def ratModel (R : Expr) : MetaM Model := do
+def ratProducer (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
   have α : Q(Type u) := R
   -- the characteristic determines the zero test
@@ -82,11 +82,10 @@ def ratModel (R : Expr) : MetaM Model := do
     isZero := if p == 0 then (· == 0) else fun v => v % p == 0 }
   return {
     carrier := .int
-    ops
+    model := { ops, mkEntry := mkIntNumeral α }
     prepare := fun entries => do
       let ratRows ← entries.mapM fun row => row.mapM (evalRatEntry (p == 0))
       let (values, scales) := scaleRowsIntegral ratRows
-      return (values, restoreScaling scales)
-    mkEntry := mkIntNumeral α }
+      return (values, restoreScaling scales) }
 
 end Mathlib.Tactic.Echelon

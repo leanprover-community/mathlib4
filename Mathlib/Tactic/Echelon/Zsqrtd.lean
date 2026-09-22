@@ -72,26 +72,27 @@ def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
 
 /-- The `ℤ√d` model, for `d` the value of the integer literal `dQ`: the elimination runs on
 literals with raw integer components, computed with the arithmetic of `ℤ√d`. -/
-def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : Model where
+def zsqrtdProducer (dQ : Q(ℤ)) (d : ℤ) : Producer where
   carrier := .expr
-  ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
+  model :=
+    { ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
+      mkEntry := fun e => do
+        let some v := zsqrtdOfRawLit? d e
+          | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
+        return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }
   prepare entries := do
     let values ← entries.mapM fun row => row.mapM fun e =>
       return mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e)
     return (values, id)
-  mkEntry e := do
-    let some v := zsqrtdOfRawLit? d e
-      | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
-    return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
-  model? R := do
+  producer? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching
     let R ← whnfR R
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE
-    return some (zsqrtdModel dQ d)
+    return some (zsqrtdProducer dQ d)
 
 end Mathlib.Tactic.Echelon
