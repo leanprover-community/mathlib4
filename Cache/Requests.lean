@@ -662,9 +662,9 @@ def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Na
 Appends per-transfer detail to a failure line, as `key=value` pairs. A
 status and an exit code say that a transfer failed; these say how.
 
-* `bytes` — the count that arrived, over the size `content-length`
-  promised. `bytes=4096/1421777` locates the truncation, and
-  `bytes=0/1421777` means nothing arrived at all.
+* `bytes` — the payload this transfer moved, over the size
+  `content-length` promised. `bytes=4096/1421777` locates a truncation,
+  and `bytes=0/1421777` means nothing arrived at all.
 * `cf_ray` — Cloudflare's request id. The suffix names the colo, and the
   id finds the request in Cloudflare's own logs.
 * `cf_cache_status` — whether the edge cache served the body, or the read
@@ -674,11 +674,14 @@ status and an exit code say that a transfer failed; these say how.
   reset from a slow stall.
 
 `report` holds curl's own fields and the recorded response headers in one
-object. Each value describes curl's final attempt, because `--retry` hides
-the earlier ones. This function skips a key that the report lacks, so a
+object. `payloadKey` names the counter that holds the payload: a download
+reads `size_download`, an upload `size_upload`.
+
+Each value describes curl's final attempt, because `--retry` hides the
+earlier ones. This function skips a key that the report lacks, so a
 backend that sends no `cf-*` header just contributes fewer pairs.
 -/
-def transferDiagnostics (report : Lean.Json) : String :=
+def transferDiagnostics (payloadKey : String) (report : Lean.Json) : String :=
   -- An empty header reads as absent, so a backend that omits one drops out.
   let scalar : Lean.Json → Option String
     | .str s => if s.isEmpty then none else some s
@@ -689,7 +692,7 @@ def transferDiagnostics (report : Lean.Json) : String :=
   let pair (key : String) : Option String :=
     (field key).map fun value => s!"{key}={value}"
   -- Without `content-length` there is no size to compare against.
-  let bytes := (field "size_download").map fun got =>
+  let bytes := (field payloadKey).map fun got =>
     match field "content_length" with
     | some want => s!"bytes={got}/{want}"
     | none      => s!"bytes={got}"
@@ -795,7 +798,10 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg}: {errMsg}"
               -- `result` and the headers live in one object only here, on the
               -- rare failure path.
-              let diag := transferDiagnostics (Lean.Json.mergeObj result outer)
+              let payloadKey := match dir with
+                | .download => "size_download"
+                | .upload => "size_upload"
+              let diag := transferDiagnostics payloadKey (Lean.Json.mergeObj result outer)
               if !diag.isEmpty then
                 msg := s!"{msg} [{diag}]"
               return msg
