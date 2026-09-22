@@ -84,6 +84,21 @@ theorem mertens_eq_sum_fin (n : ℕ) : mertens n = ∑ i : Fin n, (μ ((i : ℕ)
 
 end ArithmeticFunction
 
+namespace Nat
+
+theorem sum_fin_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (f : ℕ → M)
+    {n m : ℕ} (hm : m ≠ 0) (hmn : m ≤ n) :
+    (∑ x : Fin n, if (x : ℕ) + 1 ∣ m then f ((x : ℕ) + 1) else 0) = ∑ d ∈ m.divisors, f d := by
+  rw [Fin.sum_univ_eq_sum_range (fun x ↦ if x + 1 ∣ m then f (x + 1) else 0), range_eq_Ico,
+    sum_Ico_add' (fun x ↦ if x ∣ m then f x else 0) 0 n 1, ← sum_filter]
+  congr 1
+  ext d
+  simp only [mem_filter, mem_Ico, Nat.mem_divisors, hm, ne_eq, not_false_eq_true, and_true]
+  exact ⟨fun h ↦ h.2, fun h ↦ ⟨⟨Nat.pos_of_dvd_of_pos h (Nat.pos_of_ne_zero hm),
+    Nat.lt_succ_of_le ((Nat.le_of_dvd (Nat.pos_of_ne_zero hm) h).trans hmn)⟩, h⟩⟩
+
+end Nat
+
 namespace Matrix
 
 open ArithmeticFunction
@@ -151,17 +166,6 @@ theorem det_redheffer_eq_one_add (n : ℕ) :
 
 /-- The row vector `(μ 1, μ 2, …, μ n)`. -/
 def moebiusRow (n : ℕ) : Fin n → R := fun i ↦ (μ ((i : ℕ) + 1) : R)
-
-theorem _root_.Nat.sum_fin_dvd_eq_sum_divisors {M : Type*} [AddCommMonoid M] (f : ℕ → M)
-    {n m : ℕ} (hm : m ≠ 0) (hmn : m ≤ n) :
-    (∑ x : Fin n, if (x : ℕ) + 1 ∣ m then f ((x : ℕ) + 1) else 0) = ∑ d ∈ m.divisors, f d := by
-  rw [Fin.sum_univ_eq_sum_range (fun x ↦ if x + 1 ∣ m then f (x + 1) else 0), range_eq_Ico,
-    sum_Ico_add' (fun x ↦ if x ∣ m then f x else 0) 0 n 1, ← sum_filter]
-  congr 1
-  ext d
-  simp only [mem_filter, mem_Ico, Nat.mem_divisors, hm, ne_eq, not_false_eq_true, and_true]
-  exact ⟨fun h ↦ h.2, fun h ↦ ⟨⟨Nat.pos_of_dvd_of_pos h (Nat.pos_of_ne_zero hm),
-    by have := Nat.le_of_dvd (Nat.pos_of_ne_zero hm) h; omega⟩, h⟩⟩
 
 theorem vecMul_moebiusRow_zetaMatrix (n : ℕ) :
     (moebiusRow R (n + 1)) ᵥ* zetaMatrix R (n + 1) = fun k ↦ if k = 0 then (1 : R) else 0 := by
