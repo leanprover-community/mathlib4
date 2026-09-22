@@ -141,7 +141,6 @@ variable [Group G]
 variable {V : Type*} [AddCommGroup V] [Module k[G] V]
 variable {W : Type*} [AddCommGroup W] [Module k[G] W]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[k[G]] V, g.comp f = .id := by
   let A := k[G]
@@ -180,7 +179,6 @@ variable {G k V : Type*} [Group G] [Field k] [Finite G] [NeZero (Nat.card G : k)
 
 open Representation
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsSemisimpleRepresentation ρ := by
   rw [isSemisimpleRepresentation_iff_isSemisimpleModule_asModule]
   infer_instance

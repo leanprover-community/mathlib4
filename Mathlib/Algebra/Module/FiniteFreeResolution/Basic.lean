@@ -49,18 +49,18 @@ namespace Module
 /-- We say that an `R`-module `M` has a finite free resolution of length `n` if there exists an
 exact sequence `0 ⟶ Eₙ ⟶ ⋯ ⟶ E₀ ⟶ M ⟶ 0` such that `Eᵢ` are finite free `R`-modules. -/
 abbrev HasFiniteFreeResolutionOfLength : Prop :=
-  (ModuleCat.finiteFree R).HasFiniteResolutionOfLength (ModuleCat.of R M) n
+  (ModuleCat.finiteFree R).hasFiniteResolutionOfLength n (ModuleCat.of R M)
 
 /-- An `R`-module `M` has a finite free resolution if it has a finite free resolution of some
 finite length. -/
 abbrev HasFiniteFreeResolution : Prop :=
-  (ModuleCat.finiteFree R).HasFiniteResolution (ModuleCat.of R M)
+  (ModuleCat.finiteFree R).hasFiniteResolution.Is (ModuleCat.of R M)
 
 namespace HasFiniteFreeResolutionOfLength
 
 protected theorem zero [Module.Finite R M] [Module.Free R M] :
     HasFiniteFreeResolutionOfLength R M 0 :=
-  ObjectProperty.HasFiniteResolutionOfLength.zero (ModuleCat.of R M) (ModuleCat.finiteFree_of R M)
+  ObjectProperty.hasFiniteResolutionOfLength.zero (ModuleCat.of R M) (ModuleCat.finiteFree_of R M)
 
 variable {R M n}
 
@@ -70,7 +70,7 @@ protected theorem succ {K F M : Type v} [AddCommGroup K] [Module R K]
     (hf : Function.Injective f) (hg : Function.Surjective g) (h : Function.Exact f g)
     (hK : HasFiniteFreeResolutionOfLength R K n) :
     HasFiniteFreeResolutionOfLength R M (n + 1) :=
-  ObjectProperty.HasFiniteResolutionOfLength.succ
+  ObjectProperty.hasFiniteResolutionOfLength.succ
     (ModuleCat.shortComplexOfCompEqZero f g h.linearMap_comp_eq_zero) n
       (ModuleCat.shortComplex_shortExact _ h hf hg) (ModuleCat.finiteFree_of R F) hK
 
@@ -89,7 +89,7 @@ theorem induction_on
       motive (Module.HasFiniteFreeResolutionOfLength.succ f g hf hg h hK)) :
     motive hM := by
   suffices ∀ {X : ModuleCat.{v} R} {n : ℕ}
-    (hX : (ModuleCat.finiteFree R).HasFiniteResolutionOfLength X n), motive hX from this hM
+    (hX : (ModuleCat.finiteFree R).hasFiniteResolutionOfLength n X), motive hX from this hM
   intro X n hX
   induction hX with
   | zero X hX =>
@@ -124,7 +124,7 @@ theorem of_linearEquiv [Small.{w} R] {M : Type v} {N : Type w} [AddCommGroup M] 
         ModuleCat.shortComplexOfConj e₁ e₂ e.symm f g h.linearMap_comp_eq_zero
       have hS' : S'.ShortExact :=
         ModuleCat.shortComplexOfConj_shortExact e₁ e₂ e.symm f g h hf hg
-      exact ObjectProperty.HasFiniteResolutionOfLength.succ S' n hS'
+      exact ObjectProperty.hasFiniteResolutionOfLength.succ S' n hS'
         (ModuleCat.finiteFree_of R (Shrink.{w} F)) (ih e₁.symm)
 
 end HasFiniteFreeResolutionOfLength
@@ -132,10 +132,10 @@ end HasFiniteFreeResolutionOfLength
 namespace HasFiniteFreeResolution
 
 theorem out [HasFiniteFreeResolution R M] : ∃ (n : ℕ), HasFiniteFreeResolutionOfLength R M n :=
-  ObjectProperty.HasFiniteResolution.out (ModuleCat.finiteFree R) (ModuleCat.of R M)
+  ObjectProperty.hasFiniteResolution_iff.mp (ObjectProperty.prop_of_is _ (ModuleCat.of R M))
 
 instance of_finite_of_free [Module.Finite R M] [Module.Free R M] : HasFiniteFreeResolution R M :=
-  ObjectProperty.HasFiniteResolution.of_property (ModuleCat.finiteFree_of R M)
+  ⟨ObjectProperty.hasFiniteResolution.le _ (ModuleCat.finiteFree_of R M)⟩
 
 scoped instance module_finite [HasFiniteFreeResolution R M] : Module.Finite R M :=
   (HasFiniteFreeResolution.out R M).choose_spec.module_finite
@@ -144,7 +144,7 @@ variable {R M} in
 theorem of_linearEquiv [Small.{w} R] {N : Type w} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N)
     [HasFiniteFreeResolution R M] : HasFiniteFreeResolution R N := by
   obtain ⟨n, hn⟩ := HasFiniteFreeResolution.out R M
-  exact ⟨n, hn.of_linearEquiv e⟩
+  exact ⟨ObjectProperty.hasFiniteResolution_iff.mpr ⟨n, hn.of_linearEquiv e⟩⟩
 
 instance [Small.{max w v} R] [HasFiniteFreeResolution R M] :
     HasFiniteFreeResolution R (ULift.{w} M) :=

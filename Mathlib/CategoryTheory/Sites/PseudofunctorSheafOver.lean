@@ -30,14 +30,13 @@ namespace GrothendieckTopology
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   (A : Type u') [Category.{v'} A]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a Grothendieck topology `J` on a category `C` and a category `A`,
 this is the pseudofunctor which sends `X : C` to the categories of
 sheaves on `Over X` with values in `A`. -/
 @[simps!]
 def pseudofunctorOver : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat :=
   LocallyDiscrete.mkPseudofunctor
-    (fun X ↦ Cat.of (Sheaf (J.over X.unop) A))
+    (fun X ↦ ↧(Sheaf (J.over X.unop) A))
     (fun f ↦ (J.overMapPullback A f.unop).toCatHom)
     (fun X ↦ Cat.Hom.isoMk <| (J.overMapPullbackId A X.unop))
     (fun f g ↦ Cat.Hom.isoMk <| (J.overMapPullbackComp A g.unop f.unop).symm)

@@ -28,7 +28,7 @@ open scoped MonoidAlgebra
 
 /-- The category of representations of monoid `G` and their morphisms. -/
 structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `Rep k G` -/
   V : Type w
   [hV1 : AddCommGroup V]
@@ -55,8 +55,6 @@ instance : CoeSort (Rep k G) (Type w) := ⟨Rep.V⟩
 attribute [coe] V
 
 variable (ρ) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of representations associated to a type equipped a representation.
 This is the preferred way to construct a term of `Rep k G`. -/
 abbrev of : Rep.{w} k G := ⟨X, ρ⟩
@@ -70,22 +68,18 @@ lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 /-- The type of morphisms in `Rep.{w} k G`. -/
 @[ext]
 structure Hom where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `G`-equivariant linear map. -/
   hom' : A.ρ.IntertwiningMap B.ρ
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (Rep.{w} k G) where
   Hom A B := Hom A B
   id A := ⟨.id A.ρ⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {A B} in
 /-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/
@@ -270,8 +264,8 @@ instance : AddCommGroup (A ⟶ B) := fast_instance% hom_injective.addCommGroup
     Rep.Hom.hom zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
 
 instance : Preadditive (Rep.{w} k G) where
-  add_comp _ _ _ := add_comp
-  comp_add _ _ _ := comp_add
+  add_comp := by simp [add_comp]
+  comp_add := by simp [comp_add]
 
 lemma sum_hom {ι : Type u'} (f : ι → (A ⟶ B)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom := by
@@ -570,6 +564,8 @@ instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCa
 instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.reflectsColimits_of_reflectsIsomorphisms
 
+instance : Abelian (Rep.{w} k G) := abelianOfEquivalence (RepToAction k G)
+
 variable {k G} in
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
@@ -619,8 +615,8 @@ instance {M N : Rep k G} : Module k (M ⟶ N) := fast_instance% hom_injective.mo
   _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
 
 instance : Linear k (Rep k G) where
-  smul_comp _ _ _ := smul_comp
-  comp_smul _ _ _ := comp_smul
+  smul_comp := by simp [smul_comp]
+  comp_smul := by simp [comp_smul]
 
 end CommSemiring
 
@@ -819,7 +815,6 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
       LinearMap.id.flip) := by
   ext; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
     ((ihom.coev A).app B).hom.toLinearMap = (TensorProduct.mk k _ _).flip :=
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
@@ -1041,7 +1036,6 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 abbrev leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (.single g 1) = A.ρ g x := by
   simp [homEquiv]

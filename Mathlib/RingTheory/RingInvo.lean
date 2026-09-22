@@ -63,6 +63,7 @@ variable {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ]
 instance [RingInvoClass F R] : CoeTC F (RingInvo R) :=
   ⟨RingInvoClass.toRingInvo⟩
 
+@[macro_inline]
 instance : EquivLike (RingInvo R) R Rᵐᵒᵖ where
   coe f := f.toFun
   inv f := f.invFun

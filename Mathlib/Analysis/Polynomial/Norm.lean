@@ -96,7 +96,7 @@ lemma supNorm_eq_iSup : p.supNorm = ⨆ i, ‖p.coeff i‖ := p.isGreatest_supNo
 end Polynomial
 end supnorm_seminorm
 
-@[expose] public section supnorm_norm
+public section supnorm_norm
 
 namespace Polynomial
 

@@ -129,6 +129,14 @@ theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p
   rw [p.length_darts] at h
   ext <;> simp [p.getVert_eq_support_getElem (le_of_lt h), p.getVert_eq_support_getElem h]
 
+theorem getElem_edges {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :
+    p.edges[i] = s(p.getVert i, p.getVert (i + 1)) := by
+  simp [getElem_edges_eq_edge_getElem_darts, darts_getElem_eq_getVert]
+
+theorem mk_mem_edges_iff_exists {u' v' : V} (p : G.Walk u v) :
+    s(u', v') ∈ p.edges ↔ ∃ i < p.length, s(p.getVert i, p.getVert (i + 1)) = s(u', v') := by
+  constructor <;> grind [getElem_edges, List.mem_iff_getElem]
+
 theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.support) :
     G.Adj u' v' := by
   have ⟨k, hk, h⟩ := List.infix_iff_getElem?.mp h
@@ -179,7 +187,7 @@ lemma penultimate_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Ni
 
 @[simp]
 lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) : G.Adj p.penultimate w := by
-  grind [getVert_length, length_eq_zero_iff, adj_getVert_succ]
+  grind [getVert_length, adj_getVert_succ]
 
 lemma penultimate_mem_dropLast_support {p : G.Walk u v} (h : ¬p.Nil) :
     p.penultimate ∈ p.support.dropLast := by

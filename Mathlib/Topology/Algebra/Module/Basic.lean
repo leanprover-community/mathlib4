@@ -66,9 +66,9 @@ theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }
   rcases hs with ⟨y, hy⟩
   refine Submodule.eq_top_iff'.2 fun x => ?_
   rw [mem_interior_iff_mem_nhds] at hy
-  have : Tendsto (fun c : R => y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + (0 : R) • x)) :=
-    tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).smul tendsto_const_nhds)
-  rw [zero_smul, add_zero] at this
+  have : Tendsto (fun c : R ↦ y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + 0)) :=
+    tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).zero_smul_const _)
+  rw [add_zero] at this
   obtain ⟨_, hu : y + _ • _ ∈ s, u, rfl⟩ :=
     nonempty_of_mem (inter_mem (Filter.mem_map.1 (this hy)) self_mem_nhdsWithin)
   have hy' : y ∈ ↑s := mem_of_mem_nhds hy
@@ -90,8 +90,8 @@ theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   suffices Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x) from this.neBot
   refine Tendsto.inf ?_ (tendsto_principal_principal.2 <| ?_)
-  · convert! tendsto_const_nhds.add ((@tendsto_id R _).smul_const y)
-    rw [zero_smul, add_zero]
+  · convert! tendsto_const_nhds.add ((@tendsto_id R _).zero_smul_const y)
+    rw [add_zero]
   · intro c hc
     simpa [hy] using hc
 
@@ -130,9 +130,11 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
 
 namespace Submodule
 
-instance topologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+instance isTopologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
   inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
+
+@[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 end Submodule
 
@@ -327,8 +329,11 @@ theorem isQuotientMap_mkQ : IsQuotientMap S.mkQ := isQuotientMap_quot_mk
 @[continuity, fun_prop]
 theorem continuous_mkQ : Continuous S.mkQ := continuous_quot_mk
 
-instance topologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
+instance isTopologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
   inferInstanceAs <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)
+
+@[deprecated (since := "2026-08-21")]
+alias topologicalAddGroup_quotient := isTopologicalAddGroup_quotient
 
 instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
     [ContinuousSMul R M] : ContinuousSMul R (M ⧸ S) where

@@ -83,7 +83,7 @@ maximum modulus principle, complex analysis
 public section
 
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
+open TopologicalSpace Metric Set Filter Function AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
 
@@ -122,7 +122,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine this.ne ?_
     have A : (∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ) = (2 * π * I : ℂ) • f z :=
       hd.circleIntegral_sub_inv_smul (mem_ball_self hr)
-    simp [A, norm_smul, Real.pi_pos.le]
+    simp [A, norm_smul]
   suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * r * (‖f z‖ / r) by
     rwa [mul_assoc, mul_div_cancel₀ _ hr.ne'] at this
   /- This inequality is true because `‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r` for all `ζ` on the circle and
@@ -177,7 +177,6 @@ If we do not assume that the codomain is a strictly convex space, then we can on
 Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any normed space.
 -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
 value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball. -/
@@ -196,7 +195,7 @@ theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
       Subset.rfl ?_
     simpa only [lineMap_apply_zero, mul_one, coe_nndist] using ball_subset_ball hw
   exact norm_max_aux₃ hr (hd.comp hde.diffContOnCl hball)
-      (hz.comp_mapsTo hball (lineMap_apply_zero z w))
+      (hz.comp_of_mapsTo hball (lineMap_apply_zero z w))
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a set `s`, the norm
 of `f` takes it maximum on `s` at `z`, and `w` is a point such that the closed ball with center `z`
@@ -204,7 +203,7 @@ and radius `dist w z` is included in `s`, then `‖f w‖ = ‖f z‖`. -/
 theorem norm_eq_norm_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E}
     (hd : DiffContOnCl ℂ f s) (hz : IsMaxOn (norm ∘ f) s z) (hsub : ball z (dist w z) ⊆ s) :
     ‖f w‖ = ‖f z‖ :=
-  norm_eqOn_closedBall_of_isMaxOn (hd.mono hsub) (hz.on_subset hsub) (mem_closedBall.2 le_rfl)
+  norm_eqOn_closedBall_of_isMaxOn (hd.mono hsub) (hz.of_subset hsub) (mem_closedBall.2 le_rfl)
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood
@@ -395,11 +394,10 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
-  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.on_subset subset_closure) ?_).symm
+  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.of_subset subset_closure) ?_).symm
   rw [dist_comm, ← hzw]
   exact ball_infDist_compl_subset.trans interior_subset
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a bounded set `U` and
 `‖f z‖ ≤ C` for any `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
 theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : IsBounded U)

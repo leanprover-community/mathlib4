@@ -44,14 +44,13 @@ Plenty of the results hold for general finitely generated modules (see
 
 universe u v v' w
 
-open Cardinal Function IsNoetherian Module Submodule
+open Cardinal Function Module Submodule
 
 variable {K : Type u} {V : Type v}
 
 namespace FiniteDimensional
 section DivisionRing
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem finrank_le_iff_rank_le [FiniteDimensional K V] {n : ℕ} :
     finrank K V ≤ n ↔ Module.rank K V ≤ n := by
@@ -124,7 +123,6 @@ theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [Finite
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space with dimension 1, each set `{v}` is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
@@ -148,7 +146,6 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel_right₀ _ h }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basisSingleton_apply (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
     (i : ι) : basisSingleton ι h v hv i = v := by
@@ -186,7 +183,7 @@ end ZeroRank
 
 namespace Submodule
 
-open IsNoetherian Module
+open Module
 
 section DivisionRing
 
@@ -508,9 +505,9 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     letI := Classical.decEq K
     if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
   mul_inv_cancel x hx := show x * dite _ (h := _) _ _ = _ by
-    rw [dif_neg hx]
+    rw [dite_eq_right hx]
     exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
-  inv_zero := dif_pos rfl
+  inv_zero := dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -624,8 +621,6 @@ end finrank_eq_one
 end DivisionRing
 
 section SubalgebraRank
-
-open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 

@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
-public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 
@@ -114,6 +113,14 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     · norm_cast
       simp
     · exact WithBot.le_add_self Order.bot_lt_krullDim.ne' _
+
+/-- If `R` is non-trivial, a polynomial ring in an infinite number of variables has infinite height,
+i.e. `dim R[X₁, ...] = ∞`. -/
+@[simp]
+lemma ringKrullDim_mvPolynomial_of_infinite [Nontrivial R] {σ : Type*} [Infinite σ] :
+    ringKrullDim (MvPolynomial σ R) = ⊤ := by
+  have := ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (R := R) σ
+  simpa [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]
 
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
