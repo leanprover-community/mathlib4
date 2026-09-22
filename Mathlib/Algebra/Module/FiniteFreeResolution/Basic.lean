@@ -131,8 +131,11 @@ end HasFiniteFreeResolutionOfLength
 
 namespace HasFiniteFreeResolution
 
-theorem out [HasFiniteFreeResolution R M] : ∃ (n : ℕ), HasFiniteFreeResolutionOfLength R M n :=
-  ObjectProperty.hasFiniteResolution_iff.mp (ObjectProperty.prop_of_is _ (ModuleCat.of R M))
+theorem iff : HasFiniteFreeResolution R M ↔ ∃ (n : ℕ), HasFiniteFreeResolutionOfLength R M n := by
+  simp [(ModuleCat.finiteFree R).hasFiniteResolution.is_iff (ModuleCat.of R M)]
+
+theorem out [HasFiniteFreeResolution R M] : ∃ (n : ℕ), HasFiniteFreeResolutionOfLength R M n := by
+  rwa [← HasFiniteFreeResolution.iff]
 
 instance of_finite_of_free [Module.Finite R M] [Module.Free R M] : HasFiniteFreeResolution R M :=
   ⟨ObjectProperty.hasFiniteResolution.le _ (ModuleCat.finiteFree_of R M)⟩
