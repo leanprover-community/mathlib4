@@ -35,7 +35,8 @@ def Subgroup.subgroupOfContinuousMulEquivOfLe {H K : Subgroup G} (hHK : H ≤ K)
     simp only [subgroupOfEquivOfLe, Topology.IsInducing.subtypeVal.isOpen_iff,
       exists_exists_and_eq_and]
     simpa [Set.ext_iff] using fun s ↦ exists_congr
-      fun t ↦ and_congr_right fun _ ↦ ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind⟩)
+      fun t ↦ and_congr_right fun _ ↦
+        ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind [Subgroup.mem_subgroupOf]⟩)
 
 @[to_additive (attr := simp)]
 lemma Subgroup.subgroupOfContinuousMulEquivOfLe_symm_apply

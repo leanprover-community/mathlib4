@@ -373,7 +373,7 @@ theorem toAlgAut_bijective [Finite G] [FaithfulSMul G F] :
     Function.Bijective (MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F) := by
   refine ⟨fun _ _ h ↦ (FixedPoints.toAlgHom_bijective G F).injective ?_,
     fun f ↦ ((FixedPoints.toAlgHom_bijective G F).surjective f).imp (fun _ h ↦ ?_)⟩ <;>
-      rwa [DFunLike.ext_iff] at h ⊢
+      (rw [DFunLike.ext_iff] at h ⊢; assumption)
 
 /-- Bijection between `G` and algebra automorphisms of `F` that fix the fixed points. -/
 def toAlgAutMulEquiv [Finite G] [FaithfulSMul G F] : G ≃* (F ≃ₐ[FixedPoints.subfield G F] F) :=
@@ -395,6 +395,7 @@ theorem toAlgAut_surjective [Finite G] :
     (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))
   revert hq
   refine QuotientGroup.induction_on q (fun g hg ↦ ⟨g, ?_⟩)
-  rwa [AlgEquiv.ext_iff] at hg ⊢
+  rw [AlgEquiv.ext_iff] at hg ⊢
+  assumption
 
 end FixedPoints

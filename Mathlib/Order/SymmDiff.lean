@@ -182,7 +182,21 @@ theorem symmDiff_sup_inf : a ∆ b ⊔ a ⊓ b = a ⊔ b := by
     exact le_sup_of_le_right le_sdiff_sup
 
 @[to_dual (attr := simp)]
+theorem symmDiff_sup_left : a ∆ b ⊔ a = a ⊔ b :=
+  le_antisymm (sup_le symmDiff_le_sup le_sup_left)
+    (le_of_eq_of_le (symmDiff_sup_inf a b).symm (sup_le_sup_left inf_le_left _))
+
+@[to_dual (attr := simp)]
+theorem symmDiff_sup_right : a ∆ b ⊔ b = a ⊔ b := by rw [symmDiff_comm, symmDiff_sup_left, sup_comm]
+
+@[to_dual (attr := simp)]
 theorem inf_sup_symmDiff : a ⊓ b ⊔ a ∆ b = a ⊔ b := by rw [sup_comm, symmDiff_sup_inf]
+
+@[to_dual (attr := simp)]
+theorem left_sup_symmDiff : a ⊔ a ∆ b = a ⊔ b := by rw [sup_comm, symmDiff_sup_left]
+
+@[to_dual (attr := simp)]
+theorem right_sup_symmDiff : b ⊔ a ∆ b = a ⊔ b := by rw [sup_comm, symmDiff_sup_right]
 
 @[to_dual (attr := simp)]
 theorem symmDiff_symmDiff_inf : a ∆ b ∆ (a ⊓ b) = a ⊔ b := by
