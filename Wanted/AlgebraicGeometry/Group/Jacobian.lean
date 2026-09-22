@@ -10,8 +10,8 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
-/-!
-# Preliminary design for Jacobians in algebraic geometry
+/-
+Preliminary design for Jacobians in algebraic geometry.
 
 We use `theorem_wanted` / `def_wanted` to describe the types and universal characterisations
 we want to see completed in Mathlib.
@@ -25,7 +25,7 @@ recorded placeholder types carry the full dependency graph.
 By a smooth curve we mean a geometrically irreducible, smooth scheme of relative dimension one
 over a field.
 
-## Curves without rational points
+Curves without rational points.
 
 The Jacobian `Jacobian C` and its structure as an abelian variety are defined for every smooth
 proper curve `C`, whether or not `C` has a `k`-rational point. Only the Abel-Jacobi map
@@ -37,11 +37,6 @@ a rational point after a finite separable extension `K / k`, and the universal p
 Pinning down `Jacobian C` itself also needs the Galois descent datum, or a point-free universal
 property phrased via the Albanese torsor `Pic¹`; neither is recorded in this blueprint yet.
 -/
-
--- Every declaration here is either an intentionally private `def_wanted` / `theorem_wanted` /
--- `instance_wanted` placeholder, or a private helper instance needed to state one, so the
--- module exports nothing.
-set_option linter.privateModule false
 
 universe u
 
