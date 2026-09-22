@@ -555,7 +555,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   have : iSup K = ⨆ i : PLift ι, ⨆ (_ : True), K i.down := by simp [iSup_plift_down]
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
-  · simp only [setOf_true]
+  · simp only [ofPred_true]
     rw [directedOn_onFun_iff, Set.image_univ, directedOn_range]
     -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
@@ -579,7 +579,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Di
 @[to_additive]
 theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
-  haveI : Nonempty K := Kne.to_subtype
+  have : Nonempty K := Kne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
 
 @[to_additive]
@@ -666,7 +666,7 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [SetLike.le_def, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by simp only [IsConcreteLE.le_iff, mem_inf, mem_bot, and_imp]
 
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :

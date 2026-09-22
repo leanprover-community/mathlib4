@@ -244,10 +244,6 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
-instance instMulAction (H : Subgroup G) : MulAction H α :=
-  inferInstanceAs (MulAction H.toSubmonoid α)
-
-@[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
 
 @[to_additive]
@@ -262,6 +258,15 @@ lemma mem_orbit_of_mem_orbit_subgroup {H : Subgroup G} {a b : α} (h : a ∈ orb
 @[to_additive]
 lemma mem_orbit_symm {a₁ a₂ : α} : a₁ ∈ orbit G a₂ ↔ a₂ ∈ orbit G a₁ := by
   simp_rw [← orbit_eq_iff, eq_comm]
+
+@[to_additive]
+lemma mem_orbit_trans {a b c : α} (hab : a ∈ orbit G b) (hbc : b ∈ orbit G c) :
+    a ∈ orbit G c := by
+  obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hab
+  obtain ⟨g', rfl⟩ := mem_orbit_iff.mp hbc
+  rw [mem_orbit_iff]
+  use g * g'
+  rw [mul_smul]
 
 @[to_additive]
 lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
@@ -297,7 +302,7 @@ of the orbit of `U` under `G`. -/]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' Quotient.mk' '' U = ⋃ g : G, (g • ·) '' U := by
-  letI := orbitRel G α
+  let := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a
   constructor
@@ -318,7 +323,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
 theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
-  letI := orbitRel G α
+  let := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   refine
     ⟨fun h a a_in_U g g_in_V =>
@@ -345,6 +350,10 @@ abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 variable {G α}
+
+@[to_additive (attr := simp)]
+lemma orbitRel.Quotient.quotient_smul_eq {g : G} {a : α} :
+    ⟦g • a⟧ = (⟦a⟧ : orbitRel.Quotient G α) := Quotient.eq.mpr ⟨g, rfl⟩
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
@@ -476,10 +485,12 @@ def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
 @[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
 group action. -/]
-def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
-      Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+      Set.equivOfEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
@@ -516,7 +527,7 @@ theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a =
 @[to_additive]
 lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β) :
     stabilizer G a ≤ stabilizer G (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
+  simp_rw [IsConcreteLE.le_iff, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
 
 -- This lemma does not need `MulAction G α`, only `SMul G α`.
 -- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
@@ -524,7 +535,7 @@ lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
 lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
     [SMulCommClass G' α β] (a : α) (b : β) :
     stabilizer G' b ≤ stabilizer G' (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
+  simp_rw [IsConcreteLE.le_iff, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)

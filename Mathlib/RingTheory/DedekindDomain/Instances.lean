@@ -7,10 +7,11 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
 # Instances for Dedekind domains
+
 This file contains various instances to work with localization of a ring extension.
 
 A very common situation in number theory is to have an extension of (say) Dedekind domains `R` and

@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -71,13 +70,14 @@ variable (σ R) in
 lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
   Submodule.fg_span <| Set.finite_range _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
   apply le_antisymm
   · simp [idealOfVars, Ideal.span_le, Set.range_subset_iff, restrictSupportIdeal, X]
-  · simp only [SetLike.le_def, restrictSupportIdeal, Submodule.mem_mk, Submodule.mem_toAddSubmonoid,
-      ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
-    rw [← SetLike.le_def, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
+  · simp only [IsConcreteLE.le_iff, restrictSupportIdeal, Submodule.mem_mk,
+      Submodule.mem_toAddSubmonoid, ← Submodule.restrictScalars_mem R (idealOfVars σ R)]
+    rw [← IsConcreteLE.le_iff, restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
     intro x hx
     obtain ⟨i, hi⟩ : x.support.Nonempty := by aesop
     obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
@@ -100,6 +100,7 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
   rw [pow_idealOfVars]
@@ -130,6 +131,7 @@ theorem mkₐ_eq_aeval :
   ext d
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mk_eq_eval₂ : (Ideal.Quotient.mk I).toFun =
       eval₂ (algebraMap A (MvPolynomial σ A ⧸ I)) fun d : σ => Ideal.Quotient.mk I (X d) := by
   ext d
@@ -153,13 +155,12 @@ lemma span_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
     span (m.leadingTerm '' (insert 0 B)) = span (m.leadingTerm '' B) := by
   by_cases h : 0 ∈ B
   · rw [Set.insert_eq_of_mem h]
-  · simp [image_leadingTerm_insert_zero]
+  · simp
 
 lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p)) :
     span (m.leadingTerm '' B) =
       span ((fun p ↦ MvPolynomial.monomial (m.degree p) (1 : R)) '' B) := by
-  classical
   apply le_antisymm
   all_goals
     rw [Ideal.span_le, Set.image_subset_iff]

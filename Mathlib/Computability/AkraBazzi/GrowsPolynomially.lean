@@ -5,9 +5,10 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
@@ -29,7 +30,7 @@ arise in practice.
 
 @[expose] public section
 
-open Finset Real Filter Asymptotics
+open Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence

@@ -54,7 +54,7 @@ noncomputable section
 
 namespace Module
 
-variable (R A M : Type*)
+variable (R M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
@@ -63,7 +63,7 @@ abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
-@[deprecated LinearMap.id (since := "2026-04-02")]
+@[deprecated LinearMap.id +typeChanged (since := "2026-04-02")]
 def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
     Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
@@ -196,9 +196,6 @@ lemma LinearMap.range_dualMap_dual_eq_span_singleton (f : Dual R M₁) :
 end DualMap
 
 namespace Module
-
-variable {K V : Type*}
-variable [CommSemiring K] [AddCommMonoid V] [Module K V]
 
 open Module Module.Dual Submodule LinearMap Module
 
@@ -380,7 +377,7 @@ theorem dualAnnihilator_gc :
   intro a b
   induction b using OrderDual.rec
   simp only [Function.comp_apply, OrderDual.toDual_le_toDual, OrderDual.ofDual_toDual,
-    SetLike.le_def, mem_dualAnnihilator, mem_dualCoannihilator]
+    IsConcreteLE.le_iff, mem_dualAnnihilator, mem_dualCoannihilator]
   grind
 
 theorem le_dualAnnihilator_iff_le_dualCoannihilator {U : Submodule R (Module.Dual R M)}
@@ -393,7 +390,7 @@ theorem dualAnnihilator_bot : (⊥ : Submodule R M).dualAnnihilator = ⊤ :=
 
 @[simp]
 theorem dualAnnihilator_top : (⊤ : Submodule R M).dualAnnihilator = ⊥ := by
-  simp [eq_bot_iff, SetLike.le_def, LinearMap.ext_iff]
+  simp [eq_bot_iff, IsConcreteLE.le_iff, LinearMap.ext_iff]
 
 @[simp]
 theorem dualCoannihilator_bot : (⊥ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊤ :=
@@ -458,7 +455,7 @@ theorem iSup_dualAnnihilator_le_iInf {ι : Sort*} (U : ι → Submodule R M) :
 lemma coe_dualAnnihilator_span (s : Set M) :
     ((span R s).dualAnnihilator : Set (Module.Dual R M)) = {f | s ⊆ LinearMap.ker f} := by
   ext f
-  simp only [SetLike.mem_coe, mem_dualAnnihilator, Set.mem_setOf_eq, ← LinearMap.mem_ker]
+  simp only [SetLike.mem_coe, mem_dualAnnihilator, Set.mem_ofPred_eq, ← LinearMap.mem_ker]
   exact span_le
 
 @[simp]
@@ -466,7 +463,7 @@ lemma coe_dualCoannihilator_span (s : Set (Module.Dual R M)) :
     ((span R s).dualCoannihilator : Set M) = {x | ∀ f ∈ s, f x = 0} := by
   ext x
   have (φ : _) : x ∈ LinearMap.ker φ ↔ φ ∈ LinearMap.ker (Module.Dual.eval R M x) := by simp
-  simp only [SetLike.mem_coe, mem_dualCoannihilator, Set.mem_setOf_eq, ← LinearMap.mem_ker, this]
+  simp only [SetLike.mem_coe, mem_dualCoannihilator, Set.mem_ofPred_eq, ← LinearMap.mem_ker, this]
   exact span_le
 
 end Submodule

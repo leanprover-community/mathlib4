@@ -69,8 +69,6 @@ namespace Finset
 
 open Colex
 
-instance : Inhabited (Colex (Finset α)) := ⟨toColex ∅⟩
-
 namespace Colex
 section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)}
@@ -95,18 +93,15 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
   refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_ge.2 (hbmax hds hdt had) ?_, had⟩
   exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
-set_option backward.privateInPublic true in
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
   by_contra hat
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
-  le_antisymm _ _ hst hts := (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_antisymm _ _ hst hts := private (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -256,7 +251,6 @@ lemma erase_le_erase (ha : a ∈ s) (hb : b ∈ s) :
     toColex (s.erase a) ≤ toColex (s.erase b) ↔ b ≤ a := by
   obtain rfl | hab := eq_or_ne a b
   · simp
-  classical
   rw [← toColex_sdiff_le_toColex_sdiff', erase_sdiff_erase hab hb, erase_sdiff_erase hab.symm ha,
     singleton_le_singleton]
 
@@ -271,7 +265,6 @@ variable [LinearOrder α] [LinearOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂
 
 instance instLinearOrder : LinearOrder (Colex (Finset α)) where
   le_total s t := by
-    classical
     obtain rfl | hts := eq_or_ne t s
     · simp
     have ⟨a, ha, hamax⟩ := exists_max_image _ id
@@ -432,7 +425,6 @@ def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
 /-- Initial segments are nested in some way. In particular, if they're the same size they're equal.
 -/
 lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) : 𝒜₁ ⊆ 𝒜₂ ∨ 𝒜₂ ⊆ 𝒜₁ := by
-  classical
   simp_rw [← sdiff_eq_empty_iff_subset]
   by_contra! h
   have ⟨⟨s, hs⟩, t, ht⟩ := h
@@ -460,6 +452,7 @@ lemma isInitSeg_initSeg : IsInitSeg (initSeg s) #s := by
   rw [mem_initSeg] at ht₁
   exact ht₂.1.le.trans ht₁.2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonempty) :
     ∃ s : Finset α, #s = r ∧ 𝒜 = initSeg s := by
   have hs := sup'_mem (ofColex ⁻¹' 𝒜) (LinearOrder.supClosed _) 𝒜 h𝒜₀ toColex
