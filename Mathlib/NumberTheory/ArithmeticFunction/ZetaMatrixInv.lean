@@ -37,7 +37,7 @@ explicit argument; the definition only needs `Zero R` and `IntCast R`.
 moebius matrix, zeta matrix, moebius inversion, dirichlet convolution
 -/
 
-@[expose] public section
+public section
 
 open Finset
 open scoped ArithmeticFunction.Moebius
@@ -102,7 +102,7 @@ variable [Zero R] [IntCast R]
 
 /-- The `n × n` Möbius matrix: the `(i, j)` entry is `μ ((j + 1) / (i + 1))` if `i + 1 ∣ j + 1`
 and `0` otherwise. -/
-def moebiusMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
+@[expose] def moebiusMatrix (n : ℕ) : Matrix (Fin n) (Fin n) R :=
   of fun i j ↦ if (i : ℕ) + 1 ∣ (j : ℕ) + 1 then (μ (((j : ℕ) + 1) / ((i : ℕ) + 1)) : R) else 0
 
 @[simp] theorem moebiusMatrix_apply (n : ℕ) (i j : Fin n) :
