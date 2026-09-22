@@ -322,6 +322,18 @@ lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exact exists_hom_of_preservesColimit_coyoneda hc f
 
+variable {X} in
+/-- A variant of `IsCardinalPresentable.exists_hom_of_isColimit` where one also imposes
+the index found to be over a given index `j₀`. -/
+lemma IsCardinalPresentable.exists_hom_above_of_isColimit [IsCardinalPresentable X κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f : X ⟶ c.pt) (j₀ : J) :
+    ∃ (j : J) (_ : j₀ ⟶ j) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
+  obtain ⟨j₁, f₁, hf₁⟩ := exists_hom_of_isColimit κ hc f
+  have := isFiltered_of_isCardinalFiltered J κ
+  exact ⟨IsFiltered.max j₀ j₁, IsFiltered.leftToMax .., f₁ ≫ F.map (IsFiltered.rightToMax ..),
+    by simpa⟩
+
 variable {X}
 
 lemma IsCardinalPresentable.exists_hom₂_of_isColimit [IsCardinalPresentable X κ]

@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Inserter.Limits
 public import Mathlib.CategoryTheory.Inserter.LocallySmall
 public import Mathlib.CategoryTheory.Presentable.Comma
+import Mathlib.Order.Interval.Set.InitialSeg
 
 /-!
 # Inserter categories are accessible
@@ -75,39 +76,139 @@ instance isCardinalPresentable_of_proj_isCardinalPresentable (X : Inserter F G)
     exact ⟨j, u, by grind⟩
 
 variable (Λ : Type w) [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
-    (hΛ : HasCardinalLT Λ κ)
-    [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
-    [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
+    -- (hΛ : HasCardinalLT Λ κ)
+    -- [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
+    -- [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
 
 /-- The structure of a partial induction for constructing the chain
 as in Positetski, 4.5.
 To realize the induction, we transform `j ↦ PositetskiInductionDataUpTo … j` into a
 presheaf on `j` so that we can use `Functor.WellOrderInductionData`. From
 a section of the presheaf, we can extract the chain out of `J` that we are looking for. -/
+@[ext]
 structure PositetskiInductionDataUpTo
-    (E : Inserter F G) (S T : K)
-    [IsCardinalPresentable S κ] [IsCardinalPresentable T κ]
-    (σ : F.obj S ⟶ G.obj T)
-    (u : S ⟶ T) (v : T ⟶ E.obj)
-    (h : σ ≫ G.map v = F.map u ≫ F.map v ≫ E.hom)
-    (i : Λ) where
+    (E : Inserter F G) (i : Λ) where
   /-- corresponds to all the previous ξᵢ's -/
-  Θ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
-  /-- corresponds to all the "next" element (i.e ξᵢ₊₁) -/
-  Γ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
+  ξ : Set.Iic (Order.succ i) ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
   /-- corresponds to the structure map ψᵢ : F.obj ξᵢ ⟶ G.obj ξᵢ₊₁ -/
-  ε (j : Λ) (hj : j ≤ i) : F.obj (Θ.obj ⟨j, hj⟩).left.obj ⟶ G.obj (Γ.obj ⟨j, hj⟩).left.obj
-  /-- binds Θ and Γ on compatible things -/
-  obj_Γ_eq_obj_Θ_succ (j : Λ) (hj : j < i) :
-    Γ.obj ⟨j, hj.le⟩ = Θ.obj ⟨Order.succ j, by simpa⟩
+  ψ (j : Λ) (hj : j ≤ i) :
+    F.obj (ξ.obj ⟨j, hj.trans (Order.le_succ _)⟩).left.obj ⟶
+      G.obj (ξ.obj ⟨Order.succ j, by simpa⟩).left.obj
   sq₁ (j : Λ) (hj : j ≤ i) :
-    ε j hj ≫ G.map (Γ.obj ⟨j, hj⟩).hom =
-    F.map (Θ.obj ⟨j, hj⟩).hom ≫ E.hom
-  -- TODO: finish the statement of square two.
-  sq₂ (j : Λ) (hj : j < i) :
-    ε j hj ≫ G.map (Γ.obj ⟨j, hj⟩).hom = F.map (Θ.obj ⟨j, hj⟩).hom ≫ E.hom
+    ψ j hj ≫ G.map (ξ.obj ⟨Order.succ j, by simpa⟩).hom =
+    F.map (ξ.obj ⟨j, hj.trans (Order.le_succ _)⟩).hom ≫ E.hom
+  sq₂ (j k : Λ) (hj : j ≤ k) (hki : k ≤ i) :
+    ψ j (hj.trans hki) ≫ G.map (ξ.map (homOfLE (by simpa))).left.hom =
+    F.map (ξ.map (homOfLE (by simpa))).left.hom ≫ ψ k hki
 
 namespace PositetskiInductionDataUpTo
+
+/-- Restricts a PositetskiInductionDataUpTo to a lower index,
+turning PositetskiInductionDataUpTo into a presheaf. -/
+def trunc (E : Inserter F G)
+    {i i' : Λ} (hii' : i ≤ i') (d : PositetskiInductionDataUpTo κ Λ E i') :
+    PositetskiInductionDataUpTo κ Λ E i where
+  ξ := (Set.initialSegIicIicOfLE (by simpa)).monotone.functor ⋙ d.ξ
+  ψ j hj := by exact d.ψ j (hj.trans hii')
+  sq₁ j hj := d.sq₁ j (hj.trans hii')
+  sq₂ j k hjk hki := d.sq₂ j k (by grind) (by grind)
+
+def functor (E : Inserter F G) : Λᵒᵖ ⥤ Type _ where
+  obj i := PositetskiInductionDataUpTo κ Λ E i.unop
+  map f := TypeCat.ofHom <| trunc κ Λ E (leOfHom f.unop)
+
+-- let’s just check the "pentagonal diagram" commutes
+example (E : Inserter F G) (i j : Λ) (hi : j ≤ i) (d : PositetskiInductionDataUpTo κ Λ E i) :
+    F.map (d.ξ.map (homOfLE (Order.le_succ j))).left.hom ≫
+      F.map ((d.ξ.obj ⟨Order.succ j, by simpa⟩).hom) ≫ E.hom =
+    d.ψ j hi ≫ G.map (d.ξ.obj ⟨Order.succ j, by simpa⟩).hom := by
+  rw [d.sq₁ _, ← F.map_comp_assoc]
+  generalize_proofs u v w
+  have := (d.ξ.map (homOfLE w)).w
+  dsimp at this
+  simp [this]
+
+section
+-- helper congruence lemma to work through the DTT hell inherent to the definitions
+
+end
+
+variable {κ} {Λ} in
+omit [IsCardinalAccessibleCategory L κ] [WellFoundedLT Λ] in
+/-- The main technical induction step from Positetski's 4.5, where we pick an index large enough
+to ensure a set of properties. This crucially uses that Λ is small enough. -/
+theorem exists_succ_of_hasCardinalLT {E : Inserter F G} {i : Λ}
+    (b : PositetskiInductionDataUpTo κ Λ E i) (hΛ : HasCardinalLT Λ κ) :
+    ∃ (ξ₂ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
+      (ν : b.ξ.obj ⟨Order.succ i, le_rfl⟩ ⟶ ξ₂)
+      (ψ : F.obj (b.ξ.obj ⟨Order.succ i, le_rfl⟩).left.obj ⟶ G.obj ξ₂.left.obj),
+      (F.map (b.ξ.obj ⟨Order.succ i, le_rfl⟩).hom ≫ E.hom = ψ ≫ G.map ξ₂.hom) ∧
+      (∀ (j : Λ) (hj : j ≤ i),
+        b.ψ j hj ≫ G.map (b.ξ.map <| homOfLE <| by exact Order.succ_mono hj).left.hom ≫
+          G.map ν.left.hom =
+        F.map (b.ξ.map <| homOfLE <| hj.trans (Order.le_succ i)).left.hom ≫ ψ) := by
+  let ξ₀ := b.ξ.obj ⟨i, Order.le_succ i⟩
+  let ξ₁ := b.ξ.obj ⟨Order.succ i, le_rfl⟩
+  -- First, we summon a diagram to write E.obj as a κ-filtered colimits of κ-presentable objects.
+  let O₀ := isCardinalPresentable K κ
+  have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
+  let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
+  have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
+    G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
+  have (X : K) : Limits.PreservesColimitsOfShape (CostructuredArrow O₀.ι X) F :=
+    F.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
+  let hcolimGT := Limits.isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
+  let hcolimFT := Limits.isColimitOfPreserves F (O₀.ι.denseAt E.obj) -- F(E.obj) ≅ colim_ξ F(T_ξ)
+  -- having this in context makes grind better in this proof
+  have grind_helper {x y : CostructuredArrow O₀.ι E.obj} (f : x ⟶ y) :
+      f.left.hom ≫ y.hom = x.hom := by simpa using f.w
+  obtain ⟨ξ₂₁, v₀, v₁, hv₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimGT
+    (F.map ξ₁.hom ≫ E.hom) ξ₁
+  -- At this point, the squares required to make that into a functor are not necessarily natural
+  -- so we must coequalize all of them, and then take another max
+  -- We can probably wrap this part in a lemma as well
+  have Uspec (j : Set.Iic i) :
+    ∃ (uji : CostructuredArrow O₀.ι E.obj) (vji : ξ₂₁ ⟶ uji),
+      b.ψ j.1 j.property ≫
+        G.map (b.ξ.map <| homOfLE <| by exact Order.succ_mono j.property).left.hom ≫
+        G.map v₀.left.hom ≫ G.map vji.left.hom =
+      F.map (b.ξ.map <| homOfLE <| j.2.trans <| Order.le_succ i).left.hom ≫ v₁ ≫
+        G.map vji.left.hom := by
+    obtain ⟨uij, vij, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hcolimGT
+      (b.ψ j.1 j.property ≫
+        G.map (b.ξ.map <| homOfLE <| by exact Order.succ_mono j.property).left.hom ≫
+        G.map v₀.left.hom)
+      (F.map (b.ξ.map <| homOfLE <| j.2.trans <| Order.le_succ i).left.hom ≫ v₁)
+      (by
+        dsimp at *
+        simp only [Category.id_comp] at hv₀
+        simp only [homOfLE_leOfHom, Category.id_comp, Category.assoc, hv₀]
+        simp_rw [← Functor.map_comp, grind_helper]
+        simp [ξ₁, b.sq₁ j j.prop, ← Functor.map_comp_assoc, grind_helper])
+    exact ⟨uij, vij, by simpa using h⟩
+  choose u ν huν using Uspec
+  have h' : HasCardinalLT (Set.Iic i) κ := by
+    grw [hasCardinalLT_iff_cardinal_mk_lt, Cardinal.mk_set_le, ← hasCardinalLT_iff_cardinal_mk_lt]
+    assumption
+  let ξ₂₀ := IsCardinalFiltered.max (κ := κ) u h'
+  let ν₂₀ := IsCardinalFiltered.toMax (κ := κ) u h'
+  let ξ₂ := IsCardinalFiltered.coeq (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h'
+  let μ : ξ₁ ⟶ ξ₂ := v₀ ≫ IsCardinalFiltered.toCoeq (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h'
+  let ψ : F.obj ξ₁.left.obj ⟶ G.obj ξ₂.left.obj :=
+    v₁ ≫ G.map (IsCardinalFiltered.toCoeq (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h').left.hom
+  -- Now, we check that we have obtained all the conditions we want:
+  have cond_sq1 :
+       F.map ξ₁.hom ≫ E.hom = ψ ≫ G.map ξ₂.hom := by
+    dsimp [μ, ξ₁, ψ] at *
+    grind
+  refine ⟨ξ₂, μ, ψ, cond_sq1, fun j hj ↦ ?_⟩
+  · have S1 := huν ⟨j, hj⟩
+    have cond2 := IsCardinalFiltered.coeq_condition (κ := κ) (fun j ↦ ν j ≫ ν₂₀ j) h' ⟨j, hj⟩
+    dsimp [μ, ξ₁, ψ] at *
+    simp only [homOfLE_leOfHom, ← Functor.map_comp, ← cond2]
+    simp [reassoc_of% S1]
+
+-- now this is where we cry
 
 end PositetskiInductionDataUpTo
 
@@ -161,12 +262,6 @@ lemma positetski_4_5_attempt1 (E : Inserter F G) (S T : K)
   have : ψ₀ ≫ G.map ξ₁.hom = F.map u₀.left.hom ≫ F.map ξ₁.hom ≫ E.hom := by
     dsimp [u₀, ψ₀]
     grind
-  sorry
-
-
-
-
-
   sorry
 
 end
