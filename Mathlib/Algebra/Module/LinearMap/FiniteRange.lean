@@ -43,7 +43,7 @@ open LinearMap Submodule Module
 
 namespace LinearMap
 
-variable {K V V' V₂ V₂' V₃ : Type*}
+variable {K V V₂ V₃ : Type*}
 
 section Semiring
 

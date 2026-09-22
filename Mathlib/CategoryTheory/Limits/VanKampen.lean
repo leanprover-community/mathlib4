@@ -162,7 +162,6 @@ theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
   · exact ⟨fun h => ⟨isColimitOfPreserves G h.some⟩, fun h => ⟨isColimitOfReflects G h.some⟩⟩
   · exact IsPullback.map_iff G (NatTrans.congr_app h.symm j)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
     [G.IsEquivalence] : IsVanKampenColimit (G.mapCocone c) ↔ IsVanKampenColimit c :=
   ⟨IsVanKampenColimit.of_mapCocone G, fun hc ↦ by
@@ -411,7 +410,6 @@ end reflective
 
 section Initial
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hasStrictInitial_of_isUniversal [HasInitial C]
     (H : IsUniversalColimit (BinaryCofan.mk (𝟙 (⊥_ C)) (𝟙 (⊥_ C)))) : HasStrictInitialObjects C :=
@@ -517,7 +515,6 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     exact (BinaryCofan.mk _ _).isColimitCompRightIso e₂.hom
       ((BinaryCofan.mk _ _).isColimitCompLeftIso e₁.hom (h₂ f))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : Mono c.inr := by
@@ -529,7 +526,6 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
       dsimp
       infer_instance)).some
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
@@ -605,7 +601,6 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   · simp only [Fin.cases_succ]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     {c₁ : Cofan fun i : Fin n ↦ f i.succ} {c₂ : BinaryCofan (f 0) c₁.pt}
     (t₁ : IsVanKampenColimit c₁) (t₂ : IsVanKampenColimit c₂)
@@ -785,7 +780,6 @@ lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_left
   hau.nonempty_isColimit_of_pullbackCone_left f u v (fun i ↦ (hP i).cone)
     (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
 
-set_option backward.isDefEq.respectTransparency false in
 include hau hP in
 /-- Pullbacks distribute over universal coproducts on the left: This is the isomorphism
 `∐ (B ×[S] Xᵢ) ≅ B ×[S] (∐ Xᵢ)`. -/
@@ -850,7 +844,6 @@ lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_right
   hau.nonempty_isColimit_of_pullbackCone_right f u v (fun i ↦ (hP i).cone)
     (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
 
-set_option backward.isDefEq.respectTransparency false in
 include hau hP in
 /-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism
 `∐ (Xᵢ ×[S] B) ≅ (∐ Xᵢ) ×[S] B`. -/
@@ -877,7 +870,6 @@ variable {Y : ι' → C} {b : Cofan Y} (hbu : IsUniversalColimit b)
   (f : ∀ i, X i ⟶ S) (g : ∀ i, Y i ⟶ S) (u : a.pt ⟶ S) (v : b.pt ⟶ S)
   [∀ i, HasPullback (f i) v]
 
-set_option backward.isDefEq.respectTransparency false in
 include hau hbu in
 /-- Pullbacks distribute over universal coproducts in both arguments: This is the isomorphism
 `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`. -/
@@ -924,7 +916,6 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_isPullback
   IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone hau hbu f g u v
     (fun i j ↦ (hP i j).cone) (fun i j ↦ (hP i j).isLimit) h.cone h.isLimit e
 
-set_option backward.isDefEq.respectTransparency false in
 include hau hbu in
 lemma IsUniversalColimit.isPullback_prod_of_isColimit [HasPullback u v]
     {P : ι × ι' → C} {q₁ : ∀ i j, P (i, j) ⟶ X i} {q₂ : ∀ i j, P (i, j) ⟶ Y j}

@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Topology.Spectral.Prespectral
 
 /-!

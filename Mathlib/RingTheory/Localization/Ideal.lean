@@ -84,7 +84,6 @@ lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
     IsLocalization.algebraMap_mem_map_algebraMap_iff M]
   simp [Set.disjoint_left]
 
-set_option backward.isDefEq.respectTransparency false in
 include M in
 protected theorem map_inf (I J : Ideal R) :
     (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
