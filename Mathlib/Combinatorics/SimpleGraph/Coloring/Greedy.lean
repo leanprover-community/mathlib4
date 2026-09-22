@@ -12,17 +12,13 @@ public import Mathlib.SetTheory.Ordinal.Arithmetic
 # Greedy Coloring
 -/
 
-@[expose] public section Dependencies
-
-set_option warn.sorry false
-set_option linter.style.longLine false
+public section
 
 -- #36626
-theorem IsLowerSet.eqOn_id_of_injOn_of_forall_not_lt {α : Type*} {r : α → α → Prop} [IsWellOrder α r] {s : Set α} (hs : @IsLowerSet α ⟨r⟩ s) {f : α → α} (hf : s.InjOn f) (h : ∀ x ∈ s, ¬r x (f x)) : s.EqOn f id := sorry
-
-end Dependencies
-
-public section
+set_option warn.sorry false in
+theorem IsLowerSet.eqOn_id_of_injOn_of_forall_not_lt {α : Type*} {r : α → α → Prop}
+    [IsWellOrder α r] {s : Set α} (hs : @IsLowerSet α ⟨r⟩ s) {f : α → α} (hf : s.InjOn f)
+    (h : ∀ x ∈ s, ¬r x (f x)) : s.EqOn f id := sorry
 
 namespace SimpleGraph
 
