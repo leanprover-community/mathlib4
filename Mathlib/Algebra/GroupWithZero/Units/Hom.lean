@@ -25,8 +25,7 @@ protected theorem IsUnit.map_ringInverse [MonoidHomClass F M₀ M₀'] (f : F) {
   lift a to M₀ˣ using h
   simpa [Ring.inverse_unit] using (Ring.inverse_unit (Units.map (.ofClass f) a)).symm
 
--- marked as low priority so that `map_inv₀` takes precedence
-@[simp low]
+-- not marked `simp`, even at low priority because it applies unwanted in too many scenarios
 theorem map_ringInverse {F G₀ : Type*} [GroupWithZero G₀] [FunLike F G₀ M₀]
     [MonoidWithZeroHomClass F G₀ M₀] (f : F) (a : G₀) :
     f a⁻¹ = (f a)⁻¹ʳ := by
