@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{u} C] {J : GrothendieckTopology C}
 /-- Forget the linearity of local morphisms of presheaves of modules. -/
 @[implicit_reducible, simps]
 def internalHomToPresheafHom :
-    ((ihom F).obj G).presheaf ⋙ forget AddCommGrpCat ⟶
+    (F ⟶[_] G).presheaf ⋙ forget AddCommGrpCat ⟶
       presheafHom F.presheaf G.presheaf where
   app U := ↾fun φ ↦ (PresheafOfModules.toPresheaf _).map φ
   naturality := by intros; rfl
@@ -69,7 +69,7 @@ lemma presheafHom_app_smul_of_locally
 variable (F) in
 /-- The internal hom into a sheaf of modules is a sheaf. -/
 lemma isSheaf_ihom (hG : Presheaf.IsSheaf J G.presheaf) :
-    Presheaf.IsSheaf J ((ihom F).obj G).presheaf := by
+    Presheaf.IsSheaf J (F ⟶[_] G).presheaf := by
   apply Presheaf.isSheaf_of_isSheaf_comp _ _ (forget AddCommGrpCat)
   rw [isSheaf_iff_isSheaf_of_type]
   intro X S hS x hx
@@ -102,7 +102,7 @@ variable {C : Type u} [Category.{u} C] {J : GrothendieckTopology C}
 def internalHomFunctor (F : SheafOfModulesOfCommRing.{u} R) :
     SheafOfModulesOfCommRing.{u} R ⥤ SheafOfModulesOfCommRing.{u} R where
   obj G := {
-    val := (ihom F.val).obj G.val
+    val := F.val ⟶[_] G.val
     isSheaf := PresheafOfModulesOfCommRing.isSheaf_ihom F.val G.isSheaf }
   map f := { val := (ihom F.val).map f.val }
 
@@ -123,7 +123,7 @@ instance : MonoidalClosed (SheafOfModulesOfCommRing.{u} R) where
 
 @[simp]
 lemma ihom_val (F G : SheafOfModulesOfCommRing.{u} R) :
-    ((ihom F).obj G).val = (ihom F.val).obj G.val := rfl
+    (F ⟶[_] G).val = F.val ⟶[_] G.val := rfl
 
 @[simp]
 lemma ihom_map_val (F : SheafOfModulesOfCommRing.{u} R)
@@ -161,7 +161,7 @@ lemma monoidalClosed_curry_val {F M G : SheafOfModulesOfCommRing.{u} R}
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma μ_monoidalClosed_uncurry_val {F M G : SheafOfModulesOfCommRing.{u} R}
-    (f : M ⟶ (ihom F).obj G) :
+    (f : M ⟶ F ⟶[_] G) :
     μ (forget R) F M ≫ (uncurry f).val = uncurry f.val := by
   apply curry_injective
   rw [← monoidalClosed_curry_val, curry_uncurry, curry_uncurry]
@@ -170,10 +170,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Sheaf evaluation agrees with presheaf evaluation on the tensor comparison map. -/
 @[reassoc (attr := simp)]
 lemma μ_ihom_ev_app_val (F G : SheafOfModulesOfCommRing.{u} R) :
-    μ (forget R) F ((ihom F).obj G) ≫ ((ihom.ev F).app G).val =
+    μ (forget R) F (F ⟶[_] G) ≫ ((ihom.ev F).app G).val =
       (ihom.ev F.val).app G.val := by
   simpa only [uncurry_id_eq_ev] using
-    (μ_monoidalClosed_uncurry_val (𝟙 ((ihom F).obj G))).trans
+    (μ_monoidalClosed_uncurry_val (𝟙 (F ⟶[_] G))).trans
       (uncurry_id_eq_ev (C := PresheafOfModulesOfCommRing R.obj) F.val G.val)
 
 end SheafOfModulesOfCommRing

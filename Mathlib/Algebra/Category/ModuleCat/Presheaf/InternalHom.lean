@@ -343,22 +343,22 @@ namespace PresheafOfModulesOfCommRing
 
 @[simp]
 lemma ihom_obj_obj_carrier (F G : PresheafOfModulesOfCommRing.{u} R) (U : Cᵒᵖ) :
-    ((ihom F).obj G).obj U = (F.over U.unop ⟶ G.over U.unop) := rfl
+    (F ⟶[_] G).obj U = (F.over U.unop ⟶ G.over U.unop) := rfl
 
 @[simp]
 lemma ihom_obj_map_apply (F G : PresheafOfModulesOfCommRing.{u} R)
-    {U V : Cᵒᵖ} (f : U ⟶ V) (φ : ((ihom F).obj G).obj U) (W : (Over (unop V))ᵒᵖ) :
-    dsimp% (((ihom F).obj G).map f φ).app W = φ.app ((Over.map f.unop).op.obj W) := rfl
+    {U V : Cᵒᵖ} (f : U ⟶ V) (φ : (F ⟶[_] G).obj U) (W : (Over (unop V))ᵒᵖ) :
+    dsimp% ((F ⟶[_] G).map f φ).app W = φ.app ((Over.map f.unop).op.obj W) := rfl
 
 @[simp]
 lemma ihom_map_app_apply_app_apply (F : PresheafOfModulesOfCommRing.{u} R) (f : G ⟶ M)
-    (U : Cᵒᵖ) (φ : ((ihom F).obj G).obj U) (W : (Over U.unop)ᵒᵖ)
+    (U : Cᵒᵖ) (φ : (F ⟶[_] G).obj U) (W : (Over U.unop)ᵒᵖ)
     (x : (F.over U.unop).obj W) :
     dsimp% (((ihom F).map f).app U φ).app W x = f.app (op W.unop.left) (φ.app W x) := rfl
 
 @[simp]
 lemma ihom_ev_app_app_tmul (F G : PresheafOfModulesOfCommRing.{u} R)
-    (U : Cᵒᵖ) (x : F.obj U) (φ : ((ihom F).obj G).obj U) :
+    (U : Cᵒᵖ) (x : F.obj U) (φ : (F ⟶[_] G).obj U) :
     dsimp% ((ihom.ev F).app G).app U (x ⊗ₜ[R.obj U] φ) = φ.app (op (Over.mk (𝟙 U.unop))) x := by
   rw [ihom.ev, show ihom.adjunction F = internalHomAdjunction F by rfl,
     internalHomAdjunction_counit_app]
@@ -383,7 +383,7 @@ lemma monoidalClosed_curry_app_apply_app_apply (f : F ⊗ M ⟶ G)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma monoidalClosed_uncurry_app_tmul (f : M ⟶ (ihom F).obj G)
+lemma monoidalClosed_uncurry_app_tmul (f : M ⟶ F ⟶[_] G)
     (U : Cᵒᵖ) (x : F.obj U) (m : M.obj U) :
     dsimp% (MonoidalClosed.uncurry f).app U (x ⊗ₜ[R.obj U] m) =
       (f.app U m).app (op (Over.mk (𝟙 U.unop))) x := by
