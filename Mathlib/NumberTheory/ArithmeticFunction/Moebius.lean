@@ -158,7 +158,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     -- lead with `_ = `
     _ = ∏ p ∈ P.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
       -- move one indentation to the left. Same for all code below
-      rw [hP, Nat.primeFactors_prod_primeFactors] 
+      rw [hP, Nat.primeFactors_prod_primeFactors]
       refine prod_congr rfl fun p hp ↦ ?_
         rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
           (prime_of_mem_primeFactorsList (List.mem_toFinset.mp hp))]
