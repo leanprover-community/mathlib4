@@ -51,7 +51,7 @@ variable {E F G : Type*}
 if it is $C^k$ at this point and $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`.
 
 When naming lemmas about this predicate, `k` is called "order", and `α` is called "exponent". -/
-@[mk_iff]
+@[mk_iff, fun_prop]
 structure ContDiffPointwiseHolderAt (k : ℕ) (α : I) (f : E → F) (a : E) : Prop where
   /-- A $C^{k+(α)}$ map is a $C^k$ map. -/
   contDiffAt : ContDiffAt ℝ k f a

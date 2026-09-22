@@ -79,6 +79,7 @@ scoped notation "AEStronglyMeasurable[" m "]" => @MeasureTheory.AEStronglyMeasur
 
 /-- A function is `AEFinStronglyMeasurable` with respect to a measure if it is almost everywhere
 equal to the limit of a sequence of simple functions with support with finite measure. -/
+@[fun_prop]
 def AEFinStronglyMeasurable
     [Zero β] {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g, FinStronglyMeasurable g μ ∧ f =ᵐ[μ] g
