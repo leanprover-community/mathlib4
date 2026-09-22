@@ -5,12 +5,13 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # The tensoriality criterion
@@ -36,7 +37,9 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
 
 -/
 
-open Bundle FiberBundle Topology Module
+open Bundle FiberBundle Module
+
+open scoped Topology
 
 open scoped Manifold ContDiff
 
@@ -137,12 +140,12 @@ lemma pointwise (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
   have x_mem : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt F V x
   let b := Basis.ofVectorSpace 𝕜 F
   let s := t.localFrame b
-  let c := t.localFrame_coeff I b
+  let c := t.localFrameCoeff I b
   have hs (i) : MDiffAt (T% (s i)) x :=
     (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt (by simp)
   have hc {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) (i) :
       MDiffAt (LinearMap.piApply (c i) σ) x :=
-    mdifferentiableAt_localFrame_coeff b x_mem hσ i
+    mdifferentiableAt_localFrameCoeff b x_mem hσ i
   -- By the locality of the operation `(Φ · x)`, its value on `σ` agrees with the value of `Φ` on
   -- the expansion of `σ` into coefficients relative to the frame.
   have hΦ_eq {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) :

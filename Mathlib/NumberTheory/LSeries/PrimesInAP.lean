@@ -5,7 +5,6 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Data.ZMod.Coprime
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
 public import Mathlib.NumberTheory.LSeries.Linearity
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
@@ -69,13 +68,6 @@ prime number, arithmetic progression, residue class, Dirichlet's Theorem
 -/
 
 @[expose] public section
-
-/-!
-### Auxiliary statements
-
-An infinite product or sum over a function supported in prime powers can be written
-as an iterated product or sum over primes and natural numbers.
--/
 
 /-!
 ### The L-series of the von Mangoldt function restricted to a residue class

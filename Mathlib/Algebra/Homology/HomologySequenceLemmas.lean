@@ -40,7 +40,6 @@ namespace HomologicalComplex
 
 namespace HomologySequence
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `snakeInput hS₁ i j hij ⟶ snakeInput hS₂ i j hij` induced by
 a morphism `φ : S₁ ⟶ S₂` of short complexes of homological complexes, that
@@ -53,7 +52,6 @@ noncomputable def mapSnakeInput (i j : ι) (hij : c.Rel i j) :
   f₂ := (cyclesFunctor C c j).mapShortComplex.map φ
   f₃ := (homologyFunctor C c j).mapShortComplex.map φ
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma δ_naturality (i j : ι) (hij : c.Rel i j) :
     hS₁.δ i j hij ≫ HomologicalComplex.homologyMap φ.τ₁ _ =
@@ -87,7 +85,6 @@ lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
         (hS₁.homology_exact₂ j).exact_toComposableArrows))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The map between the exact sequences `S₁.X₁.homology i ⟶ S₁.X₂.homology i ⟶ S₁.X₃.homology i`
 and `S₂.X₁.homology i ⟶ S₂.X₂.homology i ⟶ S₂.X₃.homology i` that is induced by `φ : S₁ ⟶ S₂`. -/
 @[simp]

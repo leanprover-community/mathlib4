@@ -5,8 +5,8 @@ Authors: Peter Nelson
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Order.UpperLower.Closure
@@ -1057,7 +1057,7 @@ theorem IsBasis.union_isBasis_union (hIX : M.IsBasis I X) (hJY : M.IsBasis J Y)
     (h : M.Indep (I ∪ J)) : M.IsBasis (I ∪ J) (X ∪ Y) := by
   rw [union_eq_iUnion, union_eq_iUnion]
   refine IsBasis.iUnion_isBasis_iUnion _ _ ?_ ?_
-  · simp only [Bool.forall_bool, cond_false, cond_true]; exact ⟨hJY, hIX⟩
+  · simp only [Bool.forall_bool, Bool.cond_false, Bool.cond_true]; exact ⟨hJY, hIX⟩
   rwa [← union_eq_iUnion]
 
 theorem IsBasis.isBasis_union (hIX : M.IsBasis I X) (hIY : M.IsBasis I Y) :

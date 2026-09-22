@@ -283,6 +283,9 @@ protected theorem Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnec
     {x | IicExtend (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
 
-protected theorem Set.OrdConnected.restrict (hs : s.OrdConnected) :
-    {x | restrict t (· ∈ s) x}.OrdConnected :=
+protected theorem Set.OrdConnected.domRestrict (hs : s.OrdConnected) :
+    {x | domRestrict t (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy hz⟩
+
+@[deprecated (since := "2026-07-19")]
+alias Set.OrdConnected.restrict := Set.OrdConnected.domRestrict

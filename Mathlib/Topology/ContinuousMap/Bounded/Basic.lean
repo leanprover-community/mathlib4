@@ -21,7 +21,9 @@ assert_not_exists CStarRing
 
 noncomputable section
 
-open Topology Bornology NNReal UniformConvergence
+open Topology Bornology NNReal
+
+open scoped UniformConvergence
 
 open Set Filter Metric Function
 
@@ -62,6 +64,7 @@ section Basics
 variable [TopologicalSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
+@[macro_inline]
 instance instFunLike : FunLike (α →ᵇ β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -153,7 +156,6 @@ theorem dist_coe_le_dist (x : α) : dist (f x) (g x) ≤ dist f g :=
 useless afterwards as it will be superseded by the general result that the distance is nonnegative
 in metric spaces. -/
 
-set_option backward.privateInPublic true in
 private theorem dist_nonneg' : 0 ≤ dist f g :=
   le_csInf dist_set_exists fun _ => And.left
 
@@ -189,13 +191,11 @@ theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
     dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C :=
   ⟨fun w x => lt_of_le_of_lt (dist_coe_le_dist x) w, dist_lt_of_nonempty_compact⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The type of bounded continuous functions, with the uniform distance, is a pseudometric space. -/
 instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
-  dist_self f := le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
+  dist_self f := private le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
   dist_comm f g := by simp [dist_eq, dist_comm]
-  dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
+  dist_triangle _ _ _ := private (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
@@ -348,15 +348,19 @@ theorem continuous_compContinuous {δ : Type*} [TopologicalSpace δ] (g : C(δ, 
     Continuous fun f : α →ᵇ β => f.compContinuous g :=
   (lipschitz_compContinuous g).continuous
 
-/-- Restrict a bounded continuous function to a set. -/
-def restrict (f : α →ᵇ β) (s : Set α) : s →ᵇ β :=
+/-- Restrict the domain of a bounded continuous function to a set. -/
+def domRestrict (f : α →ᵇ β) (s : Set α) : s →ᵇ β :=
   f.compContinuous <| (ContinuousMap.id _).restrict s
 
 @[simp]
-theorem coe_restrict (f : α →ᵇ β) (s : Set α) : ⇑(f.restrict s) = f ∘ (↑) := rfl
+theorem coe_domRestrict (f : α →ᵇ β) (s : Set α) : ⇑(f.domRestrict s) = f ∘ (↑) := rfl
 
 @[simp]
-theorem restrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.restrict s x = f x := rfl
+theorem domRestrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.domRestrict s x = f x := rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias coe_restrict := coe_domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /-- Composition (in the target) of a bounded continuous function with a Lipschitz map again
 gives a bounded continuous function. -/
@@ -429,7 +433,7 @@ theorem extend_of_empty [IsEmpty α] (f : α ↪ δ) (g : α →ᵇ β) (h : δ 
 @[simp]
 theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂ : δ →ᵇ β) :
     dist (g₁.extend f h₁) (g₂.extend f h₂) =
-      max (dist g₁ g₂) (dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ)) := by
+      max (dist g₁ g₂) (dist (h₁.domRestrict (range f)ᶜ) (h₂.domRestrict (range f)ᶜ)) := by
   refine le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x => ?_) (max_le ?_ ?_)
   · rcases em (∃ y, f y = x) with (⟨x, rfl⟩ | hx)
     · simp only [extend_apply]
@@ -437,8 +441,8 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
     · simp only [extend_apply' hx]
       lift x to ((range f)ᶜ : Set δ) using hx
       calc
-        dist (h₁ x) (h₂ x) = dist (h₁.restrict (range f)ᶜ x) (h₂.restrict (range f)ᶜ x) := rfl
-        _ ≤ dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ) := dist_coe_le_dist x
+        dist (h₁ x) (h₂ x) = dist (h₁.domRestrict (range f)ᶜ x) (h₂.domRestrict (range f)ᶜ x) := rfl
+        _ ≤ dist (h₁.domRestrict (range f)ᶜ) (h₂.domRestrict (range f)ᶜ) := dist_coe_le_dist x
         _ ≤ _ := le_max_right _ _
   · refine (dist_le dist_nonneg).2 fun x => ?_
     rw [← extend_apply f g₁ h₁, ← extend_apply f g₂ h₂]
@@ -616,7 +620,7 @@ trivial inconvenience, but in any case there are no obvious applications of the 
 version. -/
 
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [LipschitzAdd β]
-variable (f g : α →ᵇ β) {x : α} {C : ℝ}
+variable {x : α} {C : ℝ}
 
 instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
   lipschitz_add :=
@@ -757,7 +761,7 @@ end DistribMulAction
 section Module
 
 variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
-variable {f g : α →ᵇ β} {x : α} {C : ℝ}
+variable {f : α →ᵇ β} {x : α} {C : ℝ}
 variable [BoundedAdd β] [ContinuousAdd β]
 
 instance instModule : Module 𝕜 (α →ᵇ β) := fast_instance%

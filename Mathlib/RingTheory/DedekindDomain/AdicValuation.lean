@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.Algebra.Group.Submonoid.Units
 
 /-!
 # Adic valuations on Dedekind domains
@@ -85,16 +86,16 @@ def intValuationDef (r : R) : ℤᵐ⁰ :=
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
-  if_pos hr
+  ite_eq_left hr
 
 @[simp]
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
-  if_neg hr
+  ite_eq_right hr
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
@@ -111,10 +112,10 @@ theorem intValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
   simp only [intValuationDef]
   by_cases hx : x = 0
-  · rw [hx, zero_mul, if_pos rfl, zero_mul]
+  · rw [hx, zero_mul, ite_eq_left rfl, zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, mul_zero, if_pos rfl, mul_zero]
-    · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← exp_add,
+    · rw [hy, mul_zero, ite_eq_left rfl, mul_zero]
+    · rw [ite_eq_right hx, ite_eq_right hy, ite_eq_right (mul_ne_zero hx hy), ← exp_add,
         ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
         Associates.count_mul (Associates.mk_ne_zero'.mpr hx) (Associates.mk_ne_zero'.mpr hy)
           v.associates_irreducible,
@@ -138,7 +139,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
     · rw [hy, add_zero]
       order
     · by_cases hxy : x + y = 0
-      · rw [intValuationDef, if_pos hxy]; exact zero_le
+      · rw [intValuationDef, ite_eq_left hxy]; exact zero_le
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
           le_max_iff]
         simp only [exp_le_exp, neg_le_neg_iff, Nat.cast_le, ← min_le_iff]
@@ -232,7 +233,6 @@ theorem intValuation_lt_one_iff_mem (r : R) :
     v.intValuation r < 1 ↔ r ∈ v.asIdeal := by
   rw [intValuation_lt_one_iff_dvd, Ideal.dvd_span_singleton]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `v`-adic valuation of `r : R` is equal to 1 if and only if `r ∈ vᶜ`. -/
 theorem intValuation_eq_one_iff_mem_primeCompl (r : R) :
     v.intValuation r = 1 ↔ r ∈ v.asIdeal.primeCompl := by
@@ -274,7 +274,7 @@ theorem intValuation_exists_uniformizer :
   have hlt : v.asIdeal ^ 2 < v.asIdeal := by
     rw [← Ideal.dvdNotUnit_iff_lt]
     exact ⟨v.ne_bot, v.asIdeal, Ideal.isUnit_iff.not.mpr v.isPrime.ne_top, sq v.asIdeal⟩
-  obtain ⟨π, mem, notMem⟩ := SetLike.exists_of_lt hlt
+  obtain ⟨π, mem, notMem⟩ := IsConcreteLE.exists_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h
@@ -441,12 +441,20 @@ theorem mem_integers_of_valuation_le_one (x : K)
     Associates.factors_mk _ (ine hd0), Associates.count_some hv'] at h
   simpa using h
 
-variable {K}
-
+variable {K} in
 theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
     (hpq : (valuation K p).IsEquiv (valuation K q)) : p = q := by
   simp_all [Valuation.isEquiv_iff_val_lt_one, HeightOneSpectrum.ext_iff, Ideal.ext_iff,
     ← valuation_lt_one_iff_mem (K := K)]
+
+theorem valuation_injective : Function.Injective (valuation (R := R) K) :=
+  fun _ _ h ↦ eq_of_valuation_isEquiv_valuation (by rw [h])
+
+theorem valuationSubring_valuation_injective :
+    Function.Injective fun p : HeightOneSpectrum R ↦ (p.valuation K).valuationSubring :=
+  fun _ _ h ↦ eq_of_valuation_isEquiv_valuation ((Valuation.isEquiv_iff_valuationSubring ..).mpr h)
+
+variable {K}
 
 section Localization
 
@@ -588,11 +596,6 @@ def adicValued : Valued K ℤᵐ⁰ :=
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
-@[deprecated adicValued_apply (since := "2026-01-28")]
-theorem adicValued_apply' (x : WithVal (v.valuation K)) :
-    v.adicValued.v (WithVal.equiv _ x) = v.valuation K (WithVal.equiv _ x) :=
-  rfl
-
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation, defined as a one-field structure
@@ -657,26 +660,23 @@ noncomputable def valuation : Valuation (adicCompletion K v) ℤᵐ⁰ :=
   Valued.v.comap (equiv K v).toRingHom
 
 theorem valueGroup_eq :
-    valueGroup (.ofClass (valuation K v)) =
-      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) := by
+    (valuation K v).valueGroup = (Valued.v (R := (v.valuation K).Completion)).valueGroup := by
   simp [valuation, valueGroup, valueMonoid, ← (toCompletion_surjective K v).range_comp]; rfl
 
 /-- The multiplicative equivalence between the value group of the completion's valuation, pulled
 back along `equiv`, and that of the completion. -/
 def valueGroupEquiv :
-    valueGroup (.ofClass (valuation K v)) ≃*
-      valueGroup (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
-  __ := Equiv.setCongr (by rw [valueGroup_eq K v])
+    (valuation K v).valueGroup ≃* (Valued.v (R := (v.valuation K).Completion)).valueGroup where
+  __ := Set.equivOfEq (by rw [valueGroup_eq K v])
   map_mul' _ _ := rfl
 
-@[simp] theorem coe_valueGroupEquiv (a : valueGroup (.ofClass (valuation K v))) :
+@[simp] theorem coe_valueGroupEquiv (a : (valuation K v).valueGroup) :
     ((valueGroupEquiv K v a : _) : ℤᵐ⁰ˣ) = a := rfl
 
 /-- The order-preserving multiplicative equivalence between the `ValueGroup₀` of the completion's
 valuation, pulled back along `equiv`, and that of the completion. -/
 noncomputable def valueGroupOrderIso :
-    ValueGroup₀ (.ofClass (valuation K v)) ≃*o
-      ValueGroup₀ (.ofClass (Valued.v : Valuation (v.valuation K).Completion ℤᵐ⁰)) where
+    (valuation K v).ValueGroup₀ ≃*o (Valued.v (R := (v.valuation K).Completion)).ValueGroup₀ where
   toFun := WithZero.map' (valueGroupEquiv K v)
   invFun := WithZero.map' (valueGroupEquiv K v).symm
   left_inv x := by match x with | 0 => simp | .coe a => simp
@@ -689,11 +689,11 @@ noncomputable def valueGroupOrderIso :
     | .coe _, 0 => simp
     | .coe a, .coe b => simp [← Subtype.coe_le_coe]
 
-@[simp] theorem coe_valueGroupOrderIso_coe (a : valueGroup (.ofClass (valuation K v))) :
+@[simp] theorem coe_valueGroupOrderIso_coe (a : (valuation K v).valueGroup) :
     valueGroupOrderIso K v (a : ValueGroup₀ _) = (valueGroupEquiv K v a : ValueGroup₀ _) := by
   simp [valueGroupOrderIso]
 
-theorem embedding_valueGroupOrderIso (g : ValueGroup₀ (.ofClass (valuation K v))) :
+theorem embedding_valueGroupOrderIso (g : (valuation K v).ValueGroup₀) :
     embedding (valueGroupOrderIso K v g) = embedding g := by
   match g with
   | 0 => simp [valueGroupOrderIso]
@@ -789,13 +789,12 @@ lemma valuedAdicCompletion_surjective :
     Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)
   exact h.comp (adicCompletion.toCompletion_surjective K v)
 
-lemma adicCompletion_valueGroup_eq : MonoidWithZeroHom.valueGroup (.ofClass (Valued.v
-      (R := adicCompletion K v))) =
-    MonoidWithZeroHom.valueGroup (.ofClass (valuation K v)) := by
+lemma adicCompletion_valueGroup_eq : (Valued.v (R := adicCompletion K v)).valueGroup  =
+    (valuation K v).valueGroup := by
   ext n
-  simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, MonoidWithZeroHom.coe_ofClass]
+  simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, Valuation.coe_toMonoidWithZeroHom, ne_eq]
   refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩ ↦
-    ⟨↑a, by simpa using ha0, ↑x, by simpa using hx⟩⟩
+    ⟨a, by simpa using ha0, ↑x, by simpa using hx⟩⟩
   obtain ⟨b, hb⟩ := valuation_surjective K v (Valued.v a)
   obtain ⟨y, hy⟩ := valuation_surjective K v (Valued.v x)
   exact ⟨b, by rw [hb]; exact ha0, y, by rw [hb, hy]; exact hx⟩
