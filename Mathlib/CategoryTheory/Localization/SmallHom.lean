@@ -290,11 +290,8 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
   simp only [Functor.map_comp, ← NatIso.naturality_1 γ, ← Functor.comp_map,
     ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
     ← cancel_epi (γ.hom.app (W₁.Q.obj X)), assoc, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp,
-    Iso.hom_inv_id_app_assoc]
-  simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
-    Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
-    Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
+    Iso.hom_inv_id_app_map_assoc, Iso.hom_inv_id_app_assoc]
+  simp [hγ]
 
 @[simp]
 lemma smallHomMap_mk (f : X ⟶ Y) :

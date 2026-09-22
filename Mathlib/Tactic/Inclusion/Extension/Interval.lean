@@ -47,7 +47,7 @@ def Interval.toSet [Preorder α] (I : Interval α) : Set α := {a | I.lb ≤ a �
 
 instance [Preorder α] : ToSet (Interval α) α := ⟨Interval.toSet⟩
 
-@[simp, grind =]
+@[simp]
 theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
     x ∈ I ↔ I.lb ≤ x ∧ x ≤ I.ub := Iff.rfl
 
@@ -60,8 +60,7 @@ theorem Interval.map_map {γ : Type*} (I : Interval α) (f : α → β) (g : β 
   simp [Interval.map, WithBot.map_map, WithTop.map_map]
 
 theorem Interval.map_comp {γ : Type*} (I : Interval α) (f : α → β) (g : β → γ) :
-    I.map (g ∘ f) = (I.map f).map g :=
-  (I.map_map f g).symm
+    I.map (g ∘ f) = (I.map f).map g := (I.map_map f g).symm
 
 @[grind =]
 theorem Interval.mem_map_iff [Preorder β] (f : α → β) {x : β} {I : Interval α} :
@@ -109,16 +108,16 @@ def Interval.Ici (lb : WithBot α) : Interval α := ⟨lb, ⊤⟩
 
 theorem Interval.mem_Iic_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub := by
-  grind [Interval.Iic, WithBot.le_coe_iff, WithTop.coe_le_iff]
+  grind [Interval.mem_def, Interval.Iic, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Ici_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hx : x ∈ I) : y ∈ Interval.Ici I.lb := by
-  grind [Interval.Ici, WithBot.le_coe_iff, WithTop.coe_le_iff]
+  grind [Interval.mem_def, Interval.Ici, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Icc_of_le [Preorder α] {a b x : α} {I J : Interval α}
     (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) :
     x ∈ Interval.Icc I.lb J.ub := by
-  grind [Interval.Icc, WithBot.le_coe_iff, WithTop.coe_le_iff]
+  grind [Interval.mem_def, Interval.Icc, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Iic_of_lt [Preorder α] {x y : α} {I : Interval α}
     (hxy : x < y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub :=
@@ -189,11 +188,11 @@ def Interval.hull [LinearOrder α] (I J : Interval α) : Interval α :=
 
 theorem Interval.mem_hull_left [LinearOrder α] {x : α} {I J : Interval α} (hx : x ∈ I) :
     x ∈ I.hull J := by
-  grind [Interval.hull, min_le_left, le_max_left]
+  grind [Interval.mem_def, Interval.hull, min_le_left, le_max_left]
 
 theorem Interval.mem_hull_right [LinearOrder α] {x : α} {I J : Interval α} (hx : x ∈ J) :
     x ∈ I.hull J := by
-  grind [Interval.hull, min_le_right, le_max_right]
+  grind [Interval.mem_def, Interval.hull, min_le_right, le_max_right]
 
 instance [LinearOrder α] : Coarsen (Interval α) α where
   coarsen := Interval.hull
@@ -248,6 +247,28 @@ def Interval.neg [Neg α] (I : Interval α) : Interval α where
 theorem Interval.neg_mem [AddGroup α] [AddCommGroup β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x : β} {I : Interval α} (hx : x ∈ I.map f) : -x ∈ I.neg.map f := by
   grind [Interval.neg, neg_le_neg_iff]
+
+/-- Take the absolute value of an interval. -/
+def Interval.abs [Zero α] [Neg α] [LinearOrder α] (I : Interval α) : Interval α :=
+  match I.lb with
+  | some lb =>
+    if 0 ≤ lb then
+      I
+    else
+      match I.ub with
+      | some ub => if ub ≤ 0 then  ⟨some (-ub), some (-lb)⟩ else ⟨0, some (max (-lb) ub)⟩
+      | ⊤ => Interval.Ici 0
+  | ⊥ =>
+    let lb := match I.ub with
+      | some ub => if ub ≤ 0 then some (-ub) else 0
+      | ⊤ => 0
+    Interval.Ici lb
+
+theorem Interval.abs_mem [Zero α] [Neg α] [LinearOrder α] [AddCommGroup β]
+    [LinearOrder β] [IsOrderedAddMonoid β] (f : α ↪o β) (map_zero : f 0 = 0)
+    (map_neg : ∀ a, f (-a) = -f a) {x : β} {I : Interval α} (hx : x ∈ I.map f) :
+    |x| ∈ I.abs.map f := by
+  fun_cases Interval.abs with grind [Interval.Ici, abs_le']
 
 /-- Subtract one interval from another. -/
 def Interval.sub [Sub α] (I J : Interval α) : Interval α where
