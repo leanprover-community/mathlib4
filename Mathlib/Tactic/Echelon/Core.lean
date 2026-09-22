@@ -11,16 +11,9 @@ public import Mathlib.Init
 # Parameterized computation core for the Bareiss elimination
 
 A computable model of a ring packages the representation the untrusted producer computes
-with: a value type `V`, its arithmetic (`RingOps V`), and the encoding between entry
-syntax and values. `mkProducer` assembles a `Producer` from a model's parts, and the
-tactic selects a model through the `bareiss_ext` extension registry.
-
-## Main definitions
-
-- `RingOps`: the arithmetic of a model's value type.
-- `bareissDecomp`: fraction-free Gaussian elimination over a model's values.
-- `mkProducer`: assemble a producer from a model's parts.
-- `bareiss_ext`: the attribute registering a `BareissExt` computation model.
+with: a carrier, its arithmetic (`RingOps`), and the encoding between entry syntax and
+values. `Model.run` runs the elimination of a model, and the tactic selects a model through
+the `bareiss_ext` extension registry.
 
 ## Implementation notes
 
@@ -61,6 +54,17 @@ structure RingOps (V : Type) where
   /-- The pivot zero test. -/
   isZero : V → Bool
 
+/-- The arithmetic of `V` on its literals: `decode` reads a literal into a value and `encode`
+writes a value as a literal. -/
+def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → V) (encode : V → Expr) :
+    RingOps Expr where
+  zero := encode ops.zero
+  one := encode ops.one
+  mul x y := encode (ops.mul (decode x) (decode y))
+  sub x y := encode (ops.sub (decode x) (decode y))
+  divExact x y := encode (ops.divExact (decode x) (decode y))
+  isZero x := ops.isZero (decode x)
+
 /-- Decomposition data with entries in `V`: the values of the elimination, or the
 ring expressions constructed (`V := Expr`). -/
 structure BareissData (V : Type) where
@@ -86,10 +90,6 @@ def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
 that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
-
-/-- A producer: run the elimination on the entries of a matrix literal, returning
-the decomposition constructed. -/
-@[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
@@ -146,24 +146,62 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       r := r + 1
   return { L, U := W, swaps, pivot := pivotCols }
 
-/-- Assemble a producer from a computation model's parts.
-`ops` describes the ring operation structure;
-`prepare` reifies the entries into the values the elimination runs on, plus a
-function restoring the resulting decomposition to one of the original matrix;
-`mkEntry` constructs the value back in the ring. -/
-def mkProducer {V : Type} (ops : RingOps V)
-    (prepare : Array (Array Expr) →
-      MetaM (Array (Array V) × (BareissData V → BareissData V)))
-    (mkEntry : V → MetaM Expr) : Producer := fun entries => do
-  let (values, restore) ← prepare entries
-  let d ← bareissDecomp ops values
-  (restore d).mapM mkEntry
+/-- The carriers an elimination runs on. -/
+inductive Carrier
+  /-- Integers: the values are integer numerals of the ring. -/
+  | int
+  /-- Expressions: the values are literals of the ring, in a form the model chooses. -/
+  | expr
+
+/-- The type of the values of a carrier. -/
+abbrev Carrier.type : Carrier → Type
+  | .int => Int
+  | .expr => Expr
+
+/-- A computation model of a ring: the carrier the elimination runs on, its arithmetic, the
+encoding of the entries of a matrix literal into values, and the decoding of a value into an
+expression of the ring. -/
+structure Model where
+  /-- The carrier of the elimination. -/
+  carrier : Carrier
+  /-- The arithmetic of the carrier. -/
+  ops : RingOps carrier.type
+  /-- The values the elimination runs on, together with the restoration of the resulting
+  decomposition to one of the original matrix. -/
+  prepare : Array (Array Expr) →
+    MetaM (Array (Array carrier.type) × (BareissData carrier.type → BareissData carrier.type))
+  /-- The expression of the ring denoting a value. -/
+  mkEntry : carrier.type → MetaM Expr
+
+/-- One run of the elimination: the model and its decomposition data. -/
+structure Run where
+  /-- The model that ran. -/
+  model : Model
+  /-- The decomposition data, restored to the original matrix. -/
+  data : BareissData model.carrier.type
+
+/-- Run the elimination of the model on the entries of a matrix literal. -/
+def Model.run (m : Model) (entries : Array (Array Expr)) : MetaM Run := do
+  let (values, restore) ← m.prepare entries
+  let d ← bareissDecomp m.ops values
+  return { model := m, data := restore d }
+
+/-- The decomposition data decoded into expressions of the ring. -/
+def Run.toExprData (r : Run) : MetaM (BareissData Expr) :=
+  r.data.mapM r.model.mkEntry
+
+/-- Apply a function generic in the carrier to the run's arithmetic, decoding and data. -/
+def Run.elim {β : Type} (r : Run)
+    (k : {V : Type} → RingOps V → (V → MetaM Expr) → BareissData V → β) : β :=
+  match r with
+  | ⟨⟨.int, ops, _, mkEntry⟩, d⟩ => k ops mkEntry d
+  | ⟨⟨.expr, ops, _, mkEntry⟩, d⟩ => k ops mkEntry d
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
   /-- The computation model for the ring type `R`, or `none` if the extension does not
   handle `R`. -/
-  producer? (R : Expr) : MetaM (Option Producer)
+  model? (R : Expr) : MetaM (Option Model)
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do

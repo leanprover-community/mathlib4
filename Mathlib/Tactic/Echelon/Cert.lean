@@ -19,13 +19,6 @@ The certificate constructor from the decomposition data, and the default certifi
 This will eventually be generalised to a general certificate
 constructor that is parametric on a leaf normaliser.
 
-## Main definitions
-
-- `mkCertificate`: build the `Echelon.Decomposition` certificate of a matrix literal.
-- `checkKernelDecide`: check that equality in a ring reduces in the kernel.
-- `mkPerm`, `mkPivotLit`, `mkMatrixLit`: elaborate the row permutation, the pivot
-  function, and a matrix literal.
-
 ## Implementation notes
 
 The elimination records its echelon form `U`, making the product a certificate obligation
