@@ -416,7 +416,7 @@ noncomputable def pushforwardCompForgetToSheafModuleCat
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) (hX' : Limits.IsInitial (F.op.obj X)) :
     SheafOfModules.pushforward φ ⋙ SheafOfModules.forgetToSheafModuleCat _ X hX ≅
     SheafOfModules.forgetToSheafModuleCat _ _ hX' ⋙
-      sheafCompose K (ModuleCat.restrictScalars <| (φ.hom.app _).hom) ⋙
+      sheafCompose K (ModuleCat.restrictScalars (φ.hom.app _).hom) ⋙
         F.sheafPushforwardContinuous _ J K := by
   refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
   · refine NatIso.ofComponents (fun U ↦ ?_) ?_

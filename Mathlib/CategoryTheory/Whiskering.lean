@@ -446,8 +446,13 @@ def whiskeringLeft₃ :
   obj F₁ := whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁
   map τ₁ := whiskeringLeft₃Map C₂ C₃ D₂ D₃ E τ₁
 
+section
+
+-- The projection lemmas for four-variable whiskering are expensive for the simp linter.
+-- Enable them only locally when constructing the auxiliary functors.
+
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps!]
+@[implicit_reducible, simps! (attr := local simp) -isSimp]
 def whiskeringLeft₄ObjObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     (F₃ : C₃ ⥤ D₃) (F₄ : C₄ ⥤ D₄) :
     (D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E :=
@@ -455,7 +460,7 @@ def whiskeringLeft₄ObjObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     (whiskeringLeft C₁ D₁ _).obj F₁
 
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps (attr := local simp) -isSimp]
 def whiskeringLeft₄ObjObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     (F₃ : C₃ ⥤ D₃) {F₄ F₄' : C₄ ⥤ D₄} (τ₄ : F₄ ⟶ F₄') :
     whiskeringLeft₄ObjObjObjObj E F₁ F₂ F₃ F₄ ⟶
@@ -464,7 +469,7 @@ def whiskeringLeft₄ObjObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
 
 variable (C₄ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps (attr := local simp) -isSimp]
 def whiskeringLeft₄ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃) :
     (C₄ ⥤ D₄) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E) ⥤
       (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) where
@@ -473,7 +478,7 @@ def whiskeringLeft₄ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F�
 
 variable (C₄ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps (attr := local simp) -isSimp]
 def whiskeringLeft₄ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     {F₃ F₃' : C₃ ⥤ D₃} (τ₃ : F₃ ⟶ F₃') :
     whiskeringLeft₄ObjObjObj C₄ D₄ E F₁ F₂ F₃ ⟶
@@ -483,7 +488,7 @@ def whiskeringLeft₄ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
 
 variable (C₃ C₄ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps (attr := local simp) -isSimp]
 def whiskeringLeft₄ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
     (C₃ ⥤ D₃) ⥤ (C₄ ⥤ D₄) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E) ⥤
       (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) where
@@ -492,7 +497,7 @@ def whiskeringLeft₄ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
 
 variable (C₃ C₄ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps (attr := local simp) -isSimp]
 def whiskeringLeft₄ObjMap (F₁ : C₁ ⥤ D₁) {F₂ F₂' : C₂ ⥤ D₂} (τ₂ : F₂ ⟶ F₂') :
     whiskeringLeft₄ObjObj C₃ C₄ D₃ D₄ E F₁ F₂ ⟶
       whiskeringLeft₄ObjObj C₃ C₄ D₃ D₄ E F₁ F₂' where
@@ -502,7 +507,7 @@ def whiskeringLeft₄ObjMap (F₁ : C₁ ⥤ D₁) {F₂ F₂' : C₂ ⥤ D₂} 
 
 variable (C₂ C₃ C₄ D₂ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps (attr := local simp) -isSimp]
 def whiskeringLeft₄Obj (F₁ : C₁ ⥤ D₁) :
     (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (C₄ ⥤ D₄) ⥤
       (D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) where
@@ -511,7 +516,7 @@ def whiskeringLeft₄Obj (F₁ : C₁ ⥤ D₁) :
 
 variable (C₂ C₃ C₄ D₂ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
-@[implicit_reducible, simps]
+@[implicit_reducible, simps (attr := local simp) -isSimp]
 def whiskeringLeft₄Map {F₁ F₁' : C₁ ⥤ D₁} (τ₁ : F₁ ⟶ F₁') :
     whiskeringLeft₄Obj C₂ C₃ C₄ D₂ D₃ D₄ E F₁ ⟶
       whiskeringLeft₄Obj C₂ C₃ C₄ D₂ D₃ D₄ E F₁' where
@@ -520,12 +525,14 @@ def whiskeringLeft₄Map {F₁ F₁' : C₁ ⥤ D₁} (τ₁ : F₁ ⟶ F₁') :
 /-- The obvious functor
 `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (C₄ ⥤ D₄) ⥤`
 `(D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)`. -/
-@[simps!, implicit_reducible]
+@[simps! -isSimp, implicit_reducible]
 def whiskeringLeft₄ :
     (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (C₄ ⥤ D₄) ⥤
       (D₁ ⥤ D₂ ⥤ D₃ ⥤ D₄ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) where
   obj F₁ := whiskeringLeft₄Obj C₂ C₃ C₄ D₂ D₃ D₄ E F₁
   map τ₁ := whiskeringLeft₄Map C₂ C₃ C₄ D₂ D₃ D₄ E τ₁
+
+end
 
 variable {E}
 
@@ -545,7 +552,7 @@ def postcompose₃ {E' : Type*} [Category* E'] :
 
 /-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
 `(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E'`. -/
-@[simps!, implicit_reducible]
+@[simps! -isSimp, implicit_reducible]
 def postcompose₄ {E' : Type*} [Category* E'] :
     (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E' :=
   whiskeringRight C₄ _ _ ⋙ whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙

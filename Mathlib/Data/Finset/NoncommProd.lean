@@ -189,7 +189,7 @@ theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈
     s.noncommProd comm = m ^ Multiset.card s := by
   induction s using Quotient.inductionOn
   simp only [quot_mk_to_coe, noncommProd_coe, coe_card, mem_coe] at *
-  exact List.prod_eq_pow_card _ m h
+  exact List.prod_eq_pow_length _ m h
 
 @[to_additive]
 theorem noncommProd_eq_prod {α : Type*} [CommMonoid α] (s : Multiset α) :
@@ -398,7 +398,7 @@ theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) 
     rw [Finset.noncommProd_cons, Finset.noncommProd_cons, Finset.noncommProd_cons, Pi.mul_apply,
       ih (comm_ff.mono fun _ => mem_cons_of_mem) (comm_gg.mono fun _ => mem_cons_of_mem)
         (comm_gf.mono fun _ => mem_cons_of_mem),
-      (noncommProd_commute _ _ _ _ fun y hy => ?_).mul_mul_mul_comm]
+      (noncommProd_commute _ _ _ _ fun y hy => (?_ : Commute (g x) (f y))).mul_mul_mul_comm]
     exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnotMem).symm
 
 section FinitePi

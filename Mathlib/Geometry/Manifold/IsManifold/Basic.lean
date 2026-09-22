@@ -1075,6 +1075,8 @@ def tangentSpaceCast (x y : M) : TangentSpace I x ≃L[𝕜] TangentSpace I y wh
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
+instance : T2Space (TangentSpace I x) := inferInstanceAs (T2Space E)
+
 variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a manifold, as a Sigma type. Defined in terms of
