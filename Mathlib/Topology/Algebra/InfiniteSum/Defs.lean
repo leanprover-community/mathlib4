@@ -182,14 +182,14 @@ equal to the finite sum (which is taken to be 1 if the support of `f` is infinit
 Note that in this case `HasSum f a` is satisfied for *every* element `a` of the target, so the
 value assigned to the `tsum` is a question of conventions. -/]
 lemma tprod_bot (hL : ¬L.NeBot) (f : β → α) : ∏'[L] b, f b = ∏ᶠ b, f b := by
-  simp only [tprod_def, dif_pos (multipliable_bot hL f)]
-  haveI : L.LeAtTop := L.leAtTop_of_not_NeBot hL
+  simp only [tprod_def, dite_eq_left (multipliable_bot hL f)]
+  have : L.LeAtTop := L.leAtTop_of_not_NeBot hL
   rw [L.support_eq_univ, Set.inter_univ, Set.mulIndicator_univ]
   by_cases hf : (mulSupport f).Finite
-  · rw [eq_true_intro hf, if_pos]
+  · rw [eq_true_intro hf, ite_eq_left]
     simp only [and_true]
     infer_instance
-  · rwa [if_neg (by tauto), if_pos (hasProd_bot hL _ _), finprod_of_infinite_mulSupport]
+  · rwa [ite_eq_right (by tauto), ite_eq_left (hasProd_bot hL _ _), finprod_of_infinite_mulSupport]
 
 variable {f : β → α} {a : α} {s : Finset β}
 
@@ -254,7 +254,7 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
       (fun b hb ↦ (L.eventually_mem_or_not_mem b).resolve_left hb)
   filter_upwards [h1, h2] with s hs hs'
   congr 1
-  simp only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_compl_iff] at hs hs'
+  simp only [Set.mem_iInter, Set.mem_ofPred_eq, Set.mem_compl_iff] at hs hs'
   grind
 
 @[to_additive]
@@ -269,6 +269,7 @@ theorem Finset.hasProd_support (s : Finset β) (f : β → α) (L := uncondition
       (∏ b ∈ (L.support.toFinset.map <| Embedding.subtype _), f b) L := by
   simpa [prod_attach] using hasProd_fintype_support (f ∘ Subtype.val) L
 
+set_option backward.isDefEq.respectTransparency false in
 -- note this is not deduced from `Finset.hasProd_support` to avoid needing `[DecidableEq β]`
 @[to_additive]
 protected theorem Finset.hasProd (s : Finset β) (f : β → α)
@@ -307,7 +308,7 @@ theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) [L.HasSupport]
 theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b) L := by
   -- This is quite delicate because of the fiddly special-casing for finite products.
   classical
-  rw [tprod_def, dif_pos ha]
+  rw [tprod_def, dite_eq_left ha]
   split_ifs with h h'
   · convert! hasProd_prod_support_of_ne_finset_one (s := h.2.toFinset) (L := L) _ using 2
     · simp only [Set.inter_eq_left.mpr (show ↑h.2.toFinset ⊆ L.support by simp)]
@@ -325,7 +326,7 @@ variable [T2Space α] [L.NeBot]
 @[to_additive]
 theorem HasProd.unique {a₁ a₂ : α} :
     HasProd f a₁ L → HasProd f a₂ L → a₁ = a₂ := by
-  classical exact tendsto_nhds_unique
+  exact tendsto_nhds_unique
 
 @[to_additive]
 theorem HasProd.tprod_eq (ha : HasProd f a L) : ∏'[L] b, f b = a :=

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.WithBot
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
@@ -32,8 +33,14 @@ This is the order iso form of `WithTop.ofDual`, as proven by `coe_toDualBotEquiv
 @[to_dual
 /-- Taking the dual then adding `⊥` is the same as adding `⊤` then taking the dual.
 This is the order iso form of `WithBot.ofDual`, as proven by `coe_toDualTopEquiv`. -/]
-protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
-  OrderIso.refl _
+protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ where
+  toFun a := toDual (a.recTopCoe ⊥ fun a ↦ ↑(ofDual a))
+  invFun a := (ofDual a).recBotCoe ⊤ fun a ↦ ↑(toDual a)
+  left_inv a := by cases a <;> simp
+  right_inv a := by apply_fun ofDual; dsimp; generalize ofDual a = a; cases a <;> simp
+  map_rel_iff' {a b} := by
+    simp only [Equiv.coe_fn_mk, toDual_le_toDual]
+    cases a <;> cases b <;> simp
 
 @[to_dual (attr := simp)]
 theorem toDualBotEquiv_coe [LE α] (a : α) :
@@ -55,8 +62,8 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 
 @[to_dual]
 theorem coe_toDualBotEquiv [LE α] :
-    (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
-  funext fun _ => rfl
+    (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual := by
+  ext (- | x) <;> rfl
 
 @[deprecated (since := "2026-03-27")]
 alias _root_.WithBot.coe_toDualTopEquiv_eq := WithBot.coe_toDualTopEquiv
@@ -68,12 +75,16 @@ def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
   inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
-@[to_dual (attr := simps -fullyApplied)
+@[to_dual
 /-- The coercion `α → WithBot α` bundled as monotone map. -/]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
+
+-- `simps` could generate this theorem, but `to_dual` is not happy with that version.
+@[to_dual (attr := simp)]
+theorem coeOrderHom_apply {α : Type*} [Preorder α] : (coeOrderHom : α → WithTop α) = some := rfl
 
 /-- Any `OrderTop` is equivalent to `WithTop` of the subtype excluding `⊤`.
 
@@ -126,11 +137,15 @@ namespace OrderEmbedding
 variable [Preorder α] [Preorder β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[to_dual (attr := simps -fullyApplied) /-- A version of `WithTop.map` for order embeddings. -/]
+@[to_dual /-- A version of `WithTop.map` for order embeddings. -/]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   toFun := WithBot.map f
   inj' := WithBot.map_injective f.injective
   map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
+
+-- `simps` could generate this theorem, but `to_dual` is not happy with that version.
+@[to_dual (attr := simp)]
+theorem withBotMap_apply (f : α ↪o β) : ⇑f.withBotMap = WithBot.map f := rfl
 
 end OrderEmbedding
 
@@ -139,11 +154,15 @@ namespace OrderIso
 variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
-@[to_dual (attr := simps -fullyApplied) /-- A version of `Equiv.optionCongr` for `WithBot`. -/]
+@[to_dual /-- A version of `Equiv.optionCongr` for `WithBot`. -/]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
   toFun := WithTop.map e
   __ := e.toOrderEmbedding.withTopMap
   __ := e.toEquiv.withTopCongr
+
+-- `simps` could generate this theorem, but `to_dual` is not happy with that version.
+@[to_dual (attr := simp)]
+theorem withTopCongr_apply (e : α ≃o β) : ⇑e.withTopCongr = WithTop.map e := rfl
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=

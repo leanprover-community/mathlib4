@@ -119,15 +119,14 @@ open scoped Classical in
 noncomputable
 def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
-open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
+  classical
   apply Continuous.isClosedEmbedding
   · dsimp +unfoldPartialApp [ι]
     refine continuous_pi ?_
     intro C
-    rw [← IsLocallyConstant.iff_continuous]
-    refine ((IsLocallyConstant.tfae _).out 0 3).mpr ?_
+    rw [← IsLocallyConstant.iff_continuous, IsLocallyConstant.iff_isOpen_fiber]
     rintro ⟨⟩
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
       convert! C.2

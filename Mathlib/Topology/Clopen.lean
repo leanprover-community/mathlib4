@@ -16,7 +16,7 @@ A clopen set is a set that is both closed and open.
 
 public section
 
-open Set Filter Topology TopologicalSpace
+open Set Topology TopologicalSpace
 
 universe u v
 
@@ -143,7 +143,7 @@ theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
 
 theorem continuousOn_boolIndicator_iff_isClopen (s U : Set X) :
     ContinuousOn U.boolIndicator s ↔ IsClopen (((↑) : s → X) ⁻¹' U) := by
-  rw [continuousOn_iff_continuous_restrict, ← continuous_boolIndicator_iff_isClopen]
+  rw [continuousOn_iff_continuous_domRestrict, ← continuous_boolIndicator_iff_isClopen]
   rfl
 
 end Clopen

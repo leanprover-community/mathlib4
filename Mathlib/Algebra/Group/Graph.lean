@@ -39,7 +39,7 @@ namespace MonoidHom
 /-- The graph of a monoid homomorphism as a submonoid.
 
 See also `MonoidHom.graph` for the graph as a subgroup. -/
-@[to_additive
+@[to_additive (attr := simps! coe)
 /-- The graph of a monoid homomorphism as a submonoid.
 
 See also `AddMonoidHom.graph` for the graph as a subgroup. -/]
@@ -47,12 +47,6 @@ def mgraph (f : G →* H) : Submonoid (G × H) where
   carrier := {x | f x.1 = x.2}
   one_mem' := map_one f
   mul_mem' {x y} := by simp +contextual
-
--- TODO: Can `to_additive` be smarter about `simps`?
-attribute [simps! coe] mgraph
-attribute [simps! coe] AddMonoidHom.mgraph
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] coe_mgraph
 
 @[to_additive (attr := simp)]
 lemma mem_mgraph {f : G →* H} {x : G × H} : x ∈ f.mgraph ↔ f x.1 = x.2 := .rfl
@@ -163,7 +157,6 @@ def graph (f : G →* H) : Subgroup (G × H) where
 -- TODO: Can `to_additive` be smarter about `simps`?
 attribute [simps! coe toSubmonoid] graph
 attribute [simps! coe toAddSubmonoid] AddMonoidHom.graph
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_graph graph_toSubmonoid
 
 @[to_additive]

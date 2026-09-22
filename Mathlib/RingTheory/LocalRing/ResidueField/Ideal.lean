@@ -55,6 +55,7 @@ lemma RingHom.SurjectiveOnStalks.residueFieldMap_bijective
   exact ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
     (Ideal.Quotient.mk_surjective.comp (H J ‹_›))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 def Ideal.ResidueField.mapₐ (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime]
@@ -96,9 +97,6 @@ instance (I : Ideal R) [I.IsPrime] : (⊥ : Ideal I.ResidueField).LiesOver I :=
 lemma Ideal.algebraMap_quotient_residueField_mk (x) :
     algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
     algebraMap R I.ResidueField x := rfl
-
-@[deprecated (since := "2025-12-02")]
-alias algebraMap_mk := Ideal.algebraMap_quotient_residueField_mk
 
 lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
@@ -170,11 +168,13 @@ section
 open Localization AtPrime
 
 variable (J : Ideal A) (K : Ideal B) [J.IsPrime] [K.IsPrime]
-  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)] [IsLiesOverAlgebra I J]
-  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)] [IsLiesOverAlgebra I K]
+  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
+  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime K)]
 
 instance : IsLocalHom (algebraMap (Localization.AtPrime I) (Localization.AtPrime J)) := by
-  rw [IsLiesOverAlgebra.algebraMap_eq]
+  rw [algebraMap_eq]
   exact isLocalHom_localRingHom _ _ _ (J.over_def I)
 
 /-- An isomorphism of rings induces an isomorphism of residue fields. -/
@@ -200,7 +200,7 @@ instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
 instance [Algebra.EssFiniteType R A]
     (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     Algebra.EssFiniteType p.ResidueField q.ResidueField := by
   have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
   refine .of_comp R _ _
@@ -212,6 +212,7 @@ noncomputable def Ideal.ResidueField.lift
   IsLocalization.lift (M := (R ⧸ I)⁰) (g := Ideal.Quotient.lift I (f := f) hf₁) <| by
     simpa [Ideal.Quotient.mk_surjective.forall, Ideal.Quotient.eq_zero_iff_mem]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Ideal.ResidueField.lift_algebraMap
     (f : R →+* S) (hf₁ : I ≤ RingHom.ker f)
     (hf₂ : I.primeCompl ≤ (IsUnit.submonoid S).comap f) (r : R) :
@@ -246,3 +247,7 @@ lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
 lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
     (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
   AlgHom.coe_ringHom_injective (ringHom_ext congr($H))
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp] lemma Ideal.ResidueField.mapₐ_id (I : Ideal A) [I.IsPrime] :
+    Ideal.ResidueField.mapₐ I I (.id R A) rfl = .id _ _ := by ext; simp

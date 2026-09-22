@@ -19,7 +19,7 @@ Basic properties the maximal spectrum of a ring.
 
 noncomputable section
 
-variable (R S P : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
+variable (R : Type*) [CommSemiring R]
 
 namespace MaximalSpectrum
 
@@ -31,8 +31,8 @@ def equivSubtype : MaximalSpectrum R ≃ {I : Ideal R // I.IsMaximal} where
 
 theorem range_asIdeal : Set.range MaximalSpectrum.asIdeal = {J : Ideal R | J.IsMaximal} :=
   Set.ext fun J ↦
-    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isMaximal,
-      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_ofPred.mpr <| hj ▸ j.isMaximal,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_ofPred.mp hJ⟩, rfl⟩⟩
 
 variable {R}
 

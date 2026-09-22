@@ -78,7 +78,6 @@ def symm : PrepathObject A where
   p₁ := P.p₀
   ι := P.ι
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two pre-path objects. -/
 @[simps]
 noncomputable def trans (P' : PrepathObject A) [HasPullback P.p₁ P'.p₀] :
@@ -97,11 +96,9 @@ a pre-path object for `A`. `P` shall be a *good* path object
 when this morphism is a fibration. -/
 noncomputable def p : P.P ⟶ A ⨯ A := prod.lift P.p₀ P.p₁
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma p_fst : P.p ≫ prod.fst = P.p₀ := by simp [p]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma p_snd : P.p ≫ prod.snd = P.p₁ := by simp [p]
 
@@ -238,7 +235,6 @@ section
 variable (h : MorphismProperty.MapFactorizationData
   (trivialCofibrations C) (fibrations C) (diag A))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A path object for `A` can be obtained from a factorization of the obvious
 map `A ⟶ A ⨯ A` as a trivial cofibration followed by a fibration. -/
 @[simps]

@@ -104,6 +104,9 @@ lemma mk_ι (j : J) : (mk pt π hπ).ι j = π j := rfl
 
 end Constructor
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma condition (c : Wedge F) {i j : J} (f : i ⟶ j) :
     c.ι i ≫ (F.obj (op i)).map f = c.ι j ≫ (F.map f.op).app j :=
@@ -143,6 +146,7 @@ namespace Cowedge
 
 variable {F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `CategoryTheory.Limits.Cocone.ext` specialized to produce
 isomorphisms of cowedges. -/
 @[simps!]
@@ -167,6 +171,9 @@ lemma mk_π (j : J) : (mk pt ι hι).π j = ι j := rfl
 
 end Constructor
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma condition (c : Cowedge F) {i j : J} (f : i ⟶ j) :
     (F.map f.op).app i ≫ c.π i = (F.obj (op j)).map f ≫ c.π j :=

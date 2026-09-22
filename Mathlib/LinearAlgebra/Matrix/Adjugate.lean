@@ -341,7 +341,7 @@ theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A]
 theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.card n - 1) := by
   -- get rid of the `- 1`
   rcases (Fintype.card n).eq_zero_or_pos with h_card | h_card
-  · haveI : IsEmpty n := Fintype.card_eq_zero_iff.mp h_card
+  · have : IsEmpty n := Fintype.card_eq_zero_iff.mp h_card
     rw [h_card, Nat.zero_sub, pow_zero, adjugate_subsingleton, det_one]
   replace h_card := tsub_add_cancel_of_le h_card.nat_succ_le
   -- express `A` as an evaluation of a polynomial in n^2 variables, and solve in the polynomial ring
@@ -406,7 +406,7 @@ theorem adjugate_fin_three_of (a b c d e f g h i : α) :
 
 theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
     det A = ∑ j : n, A i j * adjugate A j i := by
-  haveI : Nonempty n := ⟨i⟩
+  have : Nonempty n := ⟨i⟩
   obtain ⟨n', hn'⟩ := Nat.exists_eq_succ_of_ne_zero (Fintype.card_ne_zero : Fintype.card n ≠ 0)
   obtain ⟨e⟩ := Fintype.truncEquivFinOfCardEq hn'
   let A' := reindex e e A

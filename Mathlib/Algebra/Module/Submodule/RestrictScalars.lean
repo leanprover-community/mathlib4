@@ -56,7 +56,7 @@ theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
   SetLike.coe_injective rfl
 
 @[simp] theorem restrictScalars_restrictScalars
-    (T : Type*) [Semiring T] [SMul T R] [SMul S T] [IsScalarTower S T R]
+    (T : Type*) [Semiring T] [SMul T R] [SMul S T]
     [Module T M] [IsScalarTower S T M] [IsScalarTower T R M]
     (V : Submodule R M) :
     (V.restrictScalars T).restrictScalars S = V.restrictScalars S :=
@@ -137,6 +137,7 @@ lemma restrictScalars_sInf (s : Set (Submodule R M)) :
     (sInf s).restrictScalars S = sInf (restrictScalars S '' s) := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrictScalars_sSup (s : Set (Submodule R M)) :
     (sSup s).restrictScalars S = sSup (restrictScalars S '' s) := by
@@ -168,7 +169,7 @@ lemma restrictScalars_inf (s t : Submodule R M) :
 @[simp]
 lemma restrictScalars_sup (s t : Submodule R M) :
     (s ⊔ t).restrictScalars S = s.restrictScalars S ⊔ t.restrictScalars S := by
-  simpa [Set.image_insert_eq] using restrictScalars_sSup S (s := {s, t})
+  simpa using restrictScalars_sSup S (s := {s, t})
 
 @[simp]
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]

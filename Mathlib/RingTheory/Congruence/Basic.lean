@@ -26,7 +26,6 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 ## TODO
 
-* Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
@@ -259,7 +258,6 @@ theorem ringConGen_eq (r : R → R → Prop) :
         (fun _ _ h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc))
     (sInf_le le_ringConGen)
 
-
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
 congruence relation containing `r`. -/
 theorem ringConGen_le {r : R → R → Prop} {c : RingCon R} : ringConGen r ≤ c ↔ r ≤ ⇑c :=
@@ -349,12 +347,6 @@ theorem comap_ringConGen_ringEquiv {R R'} [NonAssocSemiring R] [NonAssocSemiring
     simp [Function.onFun, RingEquiv.coe_toNonUnitalRingHom']
   · rw [← comap_nonUnitalRingHomComp]
     simp
-
--- This one probably needs the RingCon version of `Setoid.comap_surjective`
-proof_wanted comap_ringConGen_equiv
-    {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R] [EquivLike F R' R]
-    (r : R → R → Prop) (f : F) :
-    (ringConGen r).comap f = ringConGen (r on f)
 
 end Lattice
 

@@ -276,11 +276,9 @@ lemma expect_image [DecidableEq ι] {m : κ → ι} (hm : (t : Set κ).InjOn m) 
 
 end bij
 
-@[simp] lemma expect_inv_index [DecidableEq ι] [InvolutiveInv ι] (s : Finset ι) (f : ι → M) :
+@[to_additive (attr := simp)]
+lemma expect_inv_index [DecidableEq ι] [InvolutiveInv ι] (s : Finset ι) (f : ι → M) :
     𝔼 i ∈ s⁻¹, f i = 𝔼 i ∈ s, f i⁻¹ := expect_image inv_injective.injOn
-
-@[simp] lemma expect_neg_index [DecidableEq ι] [InvolutiveNeg ι] (s : Finset ι) (f : ι → M) :
-    𝔼 i ∈ -s, f i = 𝔼 i ∈ s, f (-i) := expect_image neg_injective.injOn
 
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :
@@ -346,7 +344,6 @@ variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCo
 
 lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
     (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ Fintype.piFinset fun _ : Fin n ↦ s, ∏ i, f (p i) := by
-  classical
   rw [expect, smul_pow, sum_pow', expect, Fintype.card_piFinset_const, inv_pow, Nat.cast_pow]
 
 end CommSemiring
@@ -360,7 +357,7 @@ variable [Semifield K] [CharZero K]
 
 lemma expect_boole_mul [Fintype ι] [Nonempty ι] [DecidableEq ι] (f : ι → K) (i : ι) :
     𝔼 j, ite (i = j) (Fintype.card ι : K) 0 * f j = f i := by
-  simp_rw [expect_univ, ite_mul, zero_mul, sum_ite_eq, if_pos (mem_univ _)]
+  simp_rw [expect_univ, ite_mul, zero_mul, sum_ite_eq, ite_eq_left (mem_univ _)]
   rw [← @NNRat.cast_natCast K, ← NNRat.smul_def, inv_smul_smul₀]
   simp [Fintype.card_ne_zero]
 

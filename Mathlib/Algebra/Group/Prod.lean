@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Notation.Pi.Defs
@@ -61,6 +62,10 @@ theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * 
   Prod.ext (mul_one p.1) (one_mul p.2)
 
 @[to_additive]
+theorem isSelfInv_iff [Inv M] [Inv N] {p : M × N} :
+    IsSelfInv p ↔ IsSelfInv p.fst ∧ IsSelfInv p.snd := Prod.ext_iff
+
+@[to_additive]
 instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
   { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
 
@@ -86,8 +91,13 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
   mul_one _ := by ext <;> exact mul_one _
 
 @[to_additive]
+instance [MulOneClass M] [MulOneClass N] [IsDedekindFiniteMonoid M] [IsDedekindFiniteMonoid N] :
+    IsDedekindFiniteMonoid (M × N) where
+  mul_eq_one_symm := by simp [mul_eq_one_comm]
+
+@[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
-  { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
+  { npow := fun z a => ⟨NPow.npow z a.1, NPow.npow z a.2⟩,
     npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
     npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
@@ -102,7 +112,7 @@ instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulT
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
   div_eq_mul_inv _ _ := by ext <;> exact div_eq_mul_inv ..
-  zpow z a := ⟨DivInvMonoid.zpow z a.1, DivInvMonoid.zpow z a.2⟩
+  zpow z a := ⟨ZPow.zpow z a.1, ZPow.zpow z a.2⟩
   zpow_zero' _ := by ext <;> exact DivInvMonoid.zpow_zero' _
   zpow_succ' _ _ := by ext <;> exact DivInvMonoid.zpow_succ' ..
   zpow_neg' _ _ := by ext <;> exact DivInvMonoid.zpow_neg' ..

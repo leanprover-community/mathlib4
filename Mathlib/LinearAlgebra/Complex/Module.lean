@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Complex.Basic
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Basic.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Monoid.Submonoid
@@ -52,9 +52,7 @@ element of a `StarModule` over `ℂ`.
 assert_not_exists NNReal
 namespace Complex
 
-open ComplexConjugate
-
-open scoped SMul
+open scoped Complex.SMul
 
 variable {R : Type*} {S : Type*}
 
@@ -138,7 +136,7 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-open Module Submodule
+open Module
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
@@ -217,7 +215,7 @@ instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E]
 
 namespace Complex
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where
@@ -453,6 +451,7 @@ lemma realPart_comp_subtype_selfAdjoint :
     realPart.comp (selfAdjoint.submodule ℝ A).subtype = LinearMap.id :=
   selfAdjointPart_comp_subtype_selfAdjoint ℝ
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma imaginaryPart_comp_subtype_selfAdjoint :
     imaginaryPart.comp (selfAdjoint.submodule ℝ A).subtype = 0 := by
   ext; simp [imaginaryPart]
@@ -491,6 +490,20 @@ lemma ComplexStarModule.ext_iff {x y : A} : x = y ↔ ℜ x = ℜ y ∧ ℑ x = 
   mp := by grind
   mpr h := ext h.1 h.2
 
+section StarHomClass
+
+variable {B F : Type*} [AddCommGroup B] [Module ℂ B] [StarAddMonoid B] [StarModule ℂ B]
+    [FunLike F A B] [StarHomClass F A B] [LinearMapClass F ℂ A B]
+
+lemma map_realPart (f : F) (x : A) : f (ℜ x) = ℜ (f x) := by
+  simp [realPart_apply_coe, ← Complex.coe_smul, map_star]
+
+lemma map_imaginaryPart (f : F) (x : A) : f (ℑ x) = ℑ (f x) := by
+  simp [imaginaryPart_apply_coe, ← Complex.coe_smul, map_star]
+
+end StarHomClass
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := by
   ext x
@@ -637,5 +650,15 @@ lemma mem_unitary_iff_isStarNormal_and_realPart_sq_add_imaginaryPart_sq_eq_one [
   · have : IsStarNormal x := ⟨h.trans h'.symm⟩
     exact ⟨this, by simp [sq, ← star_mul_self_eq_realPart_sq_add_imaginaryPart_sq x, h]⟩
   · simp [← hx.star_comm_self.eq, star_mul_self_eq_realPart_sq_add_imaginaryPart_sq, ← sq, h]
+
+instance {F E A : Type*} [AddCommGroup E] [PartialOrder E]
+    [StarAddMonoid E] [SelfAdjointDecompose E] [Module ℂ E] [StarModule ℂ E]
+    [NonUnitalRing A] [PartialOrder A] [StarRing A]
+    [StarOrderedRing A] [Module ℂ A] [StarModule ℂ A]
+    [FunLike F E A] [OrderHomClass F E A] [LinearMapClass F ℂ E A] :
+    StarHomClass F E A where
+  map_star φ x := by
+    rw [← realPart_add_I_smul_imaginaryPart x]
+    simp [(ℜ x).2.map' φ, IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
 
 end RealImaginaryPart
