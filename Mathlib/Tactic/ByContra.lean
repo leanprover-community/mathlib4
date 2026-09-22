@@ -50,9 +50,9 @@ syntax (name := byContra!)
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
-    (ifUnchanged := .silent)
+    (ifUnchanged := .warning)
 
-local elab "try_push_neg" cfg:optConfig : tactic => do
+local elab "try_push_neg_nowarn" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
     (ifUnchanged := .silent)
 
@@ -61,7 +61,11 @@ macro_rules
   let pat ← pat?.getDM `(rcasesPatMed| $(mkIdent `this):ident)
   let replaceTac ← match ty? with
     | some ty => `(tactic|
-      replace h : $ty := by try_push_neg $cfg; exact h) -- Let `h` have type `ty`.
+      -- We do not warn if the `push_neg` step does nothing: if there is an expected type
+      -- specified, the `push_neg` step can e.g. be used to convert `¬(a < b)` to `b ≤ a`,
+      -- which is used in two places. (Without the `push_neg`, this would fail if the particular
+      -- `LE` instance is not exposed.)
+      replace h : $ty := by try_push_neg_nowarn $cfg; exact h) -- Let `h` have type `ty`.
     | none => `(tactic| skip)
   -- We have to use `revert h; rintro $pat` instead of `obtain $pat := h`,
   -- because if `$pat` is a variable, `obtain $pat := h` doesn't do anything.
