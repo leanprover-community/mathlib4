@@ -251,7 +251,7 @@ variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
     mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   haveI := (algebraMap A K).domain_nontrivial
-  mk'_eq_iff_eq_mul.2 <|
+  mk'_eq_iff_eq_mul.2
     (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 

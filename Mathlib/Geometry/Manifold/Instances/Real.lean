@@ -226,7 +226,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     rw [range_euclideanQuadrant, interior_euclideanQuadrant]
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
-  continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp <|
+  continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp
     (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max continuous_const))) _
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/

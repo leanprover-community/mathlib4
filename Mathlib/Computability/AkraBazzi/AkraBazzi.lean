@@ -237,7 +237,7 @@ lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (
   rw [norm_mul, ← mul_assoc]
   refine Convex.norm_image_sub_le_of_norm_deriv_le
     (s := Set.Icc (b' * n) n) (fun z hz => ?diff) (fun z hz => (hn z hz).2)
-    (convex_Icc _ _) ?mem_Icc <| ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
+    (convex_Icc _ _) ?mem_Icc ⟨h_bi_le_r i, by exact_mod_cast (le_of_lt (R.r_lt_n i n h_ge_n₀))⟩
   case diff =>
     refine hq_diff.differentiableAt (Ioi_mem_nhds ?_)
     calc 1 < b' * n := h_bn

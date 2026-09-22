@@ -425,7 +425,7 @@ theorem prime_pow_pow_totient_ediv_prod {p k : ℕ} (hp : p.Prime) (hk : 0 < k) 
   have h : p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
     rw [mul_left_comm]
     refine le_mul_of_one_le_right (Nat.zero_le _) ?_
-    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt <| hp.one_lt
+    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt hp.one_lt
   simp_rw [Nat.totient_prime_pow hp hk, Nat.primeFactors_prime_pow hk.ne' hp, Finset.prod_singleton,
     Nat.mul_div_left _ (Nat.sub_pos_of_lt hp.one_lt), ← pow_mul]
   rw [Nat.pow_div h hp.pos]

@@ -538,7 +538,7 @@ include hv
 
 /-- An orthonormal family of vectors whose span is dense in the whole module is a Hilbert basis. -/
 protected def mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) : HilbertBasis ι 𝕜 E :=
-  HilbertBasis.ofRepr <| (hv.isHilbertSum hsp).linearIsometryEquiv
+  HilbertBasis.ofRepr (hv.isHilbertSum hsp).linearIsometryEquiv
 
 theorem _root_.Orthonormal.linearIsometryEquiv_symm_apply_single_one [DecidableEq ι] (h i) :
     (hv.isHilbertSum h).linearIsometryEquiv.symm (lp.single 2 i 1) = v i := by
