@@ -174,27 +174,28 @@ structure Model where
   /-- The expression of the ring denoting a value. -/
   mkEntry : carrier.type → MetaM Expr
 
-/-- One run of the elimination: the model and its decomposition data. -/
-structure Run where
+/-- A model with its decomposition data on the model's carrier. -/
+structure ModelData where
   /-- The model that ran. -/
   model : Model
   /-- The decomposition data, restored to the original matrix. -/
   data : BareissData model.carrier.type
 
 /-- Run the elimination of the model on the entries of a matrix literal. -/
-def Model.run (m : Model) (entries : Array (Array Expr)) : MetaM Run := do
+def Model.run (m : Model) (entries : Array (Array Expr)) : MetaM ModelData := do
   let (values, restore) ← m.prepare entries
   let d ← bareissDecomp m.ops values
   return { model := m, data := restore d }
 
 /-- The decomposition data decoded into expressions of the ring. -/
-def Run.toExprData (r : Run) : MetaM (BareissData Expr) :=
-  r.data.mapM r.model.mkEntry
+def ModelData.toExprData (md : ModelData) : MetaM (BareissData Expr) :=
+  md.data.mapM md.model.mkEntry
 
-/-- Apply a function generic in the carrier to the run's arithmetic, decoding and data. -/
-def Run.elim {β : Type} (r : Run)
+/-- Apply a function generic in the carrier to the model's arithmetic and decoding and to the
+data. -/
+def ModelData.withCarrier {β : Type} (md : ModelData)
     (k : {V : Type} → RingOps V → (V → MetaM Expr) → BareissData V → β) : β :=
-  match r with
+  match md with
   | ⟨⟨.int, ops, _, mkEntry⟩, d⟩ => k ops mkEntry d
   | ⟨⟨.expr, ops, _, mkEntry⟩, d⟩ => k ops mkEntry d
 
