@@ -110,7 +110,6 @@ instance [IsRegularEpiCategory D] (F : C ⥤ D) [F.PreservesEpimorphisms] [Limit
     rw [← isRegularEpi_iff_effectiveEpi]
     apply IsRegularEpiCategory.regularEpiOfEpi
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Applying a functor which preserves pullbacks and effective epimorphisms to a regular epi diagram
@@ -264,7 +263,6 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by
     let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _

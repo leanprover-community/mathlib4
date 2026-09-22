@@ -5,9 +5,11 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Data.Tree.Basic
-public import Mathlib.Algebra.Field.Basic
 public meta import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Basic.Logic.Basic
+public meta import Mathlib.Data.Tree.Basic
+
+public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Tactic.NormNum.Core
@@ -228,7 +230,8 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e = {e}"
   let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
-  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) false eSimp.expr
+  let eSimpNormNum ←
+    Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) (useSimp := false) (e := eSimp.expr)
   trace[CancelDenoms] "e norm_num'd = {eSimpNormNum.expr}"
   let (n, t) := findCancelFactor eSimpNormNum.expr
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr

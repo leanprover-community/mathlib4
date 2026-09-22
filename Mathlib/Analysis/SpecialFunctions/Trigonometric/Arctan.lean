@@ -74,7 +74,7 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
 
 @[continuity]
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
-  continuousOn_iff_continuous_restrict.1 continuousOn_tan
+  continuousOn_iff_continuous_domRestrict.1 continuousOn_tan
 
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine ContinuousOn.mono continuousOn_tan fun x => ?_
@@ -110,7 +110,7 @@ theorem image_tan_Ioo : tan '' Ioo (-(π / 2)) (π / 2) = univ :=
 /-- `Real.tan` as an `OrderIso` between `(-(π / 2), π / 2)` and `ℝ`. -/
 def tanOrderIso : Ioo (-(π / 2)) (π / 2) ≃o ℝ :=
   (strictMonoOn_tan.orderIso _ _).trans <|
-    (OrderIso.setCongr _ _ image_tan_Ioo).trans OrderIso.Set.univ
+    (Set.orderIsoOfEq _ _ image_tan_Ioo).trans OrderIso.Set.univ
 
 /-- Inverse of the `tan` function, returns values in the range `-π / 2 < arctan x` and
 `arctan x < π / 2` -/
@@ -395,7 +395,7 @@ theorem coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
 end Real
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]

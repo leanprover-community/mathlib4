@@ -178,7 +178,6 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [filter_map]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
       (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
@@ -403,6 +402,7 @@ theorem _root_.Function.Commute.finset_image [DecidableEq α] {f g : α → α}
     (h : Function.Commute f g) : Function.Commute (image f) (image g) :=
   Function.Semiconj.finset_image h
 
+@[gcongr]
 theorem image_subset_image {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₁.image f ⊆ s₂.image f := by
   simp only [subset_def, image_val, subset_dedup', dedup_subset', Multiset.map_subset_map h]
 
@@ -540,7 +540,6 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq [DecidableEq α] {f : ℤ → �
     fun ⟨i, hi, ha⟩ =>
     ⟨i, by rw [Int.emod_eq_of_lt (Int.natCast_nonneg _) (Int.ofNat_lt_ofNat_of_lt hi), ha]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem attach_image_val [DecidableEq α] {s : Finset α} : s.attach.image Subtype.val = s :=
   eq_of_veq <| by rw [image_val, attach_val, Multiset.attach_map_val, dedup_eq_self]
@@ -740,35 +739,47 @@ theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) 
 
 namespace Equiv
 
-/-- Given an equivalence `α` to `β`, produce an equivalence between `Finset α` and `Finset β`. -/
-protected def finsetCongr (e : α ≃ β) : Finset α ≃ Finset β where
+/-- A `Finset` is bijective to its image under an equivalence.
+
+See `Equiv.image` for the `Set` version. -/
+@[simps!] def imageFinset [DecidableEq β] (e : α ≃ β) (s : Finset α) :
+    s ≃ s.image e :=
+  e.subtypeEquiv <| by simp
+
+/-- If `α` is equivalent to `β`, then `Finset α` is equivalent to `Finset β`.
+
+See also `Equiv.setCongr`. -/
+def finsetCongr (e : α ≃ β) : Finset α ≃ Finset β where
   toFun s := s.map e.toEmbedding
   invFun s := s.map e.symm.toEmbedding
   left_inv s := by simp [Finset.map_map]
   right_inv s := by simp [Finset.map_map]
 
 @[simp]
-theorem finsetCongr_apply (e : α ≃ β) (s : Finset α) : e.finsetCongr s = s.map e.toEmbedding :=
+theorem finsetCongr_apply (e : α ≃ β) (s : Finset α) : finsetCongr e s = s.map e.toEmbedding :=
   rfl
 
 @[simp]
-theorem finsetCongr_refl : (Equiv.refl α).finsetCongr = Equiv.refl _ := by
+theorem finsetCongr_refl : finsetCongr (Equiv.refl α) = Equiv.refl _ := by
   ext
   simp
 
-@[simp]
-theorem finsetCongr_symm (e : α ≃ β) : e.finsetCongr.symm = e.symm.finsetCongr :=
-  rfl
+lemma finsetCongr_symm (e : α ≃ β) : (finsetCongr e).symm = finsetCongr e.symm := rfl
 
-@[simp]
-theorem finsetCongr_trans (e : α ≃ β) (e' : β ≃ γ) :
-    e.finsetCongr.trans e'.finsetCongr = (e.trans e').finsetCongr := by
+lemma finsetCongr_trans (e : α ≃ β) (e' : β ≃ γ) :
+    (finsetCongr e).trans (finsetCongr e') = finsetCongr (e.trans e') := by
   ext
   simp [-Finset.mem_map, -Equiv.trans_toEmbedding]
 
 theorem finsetCongr_toEmbedding (e : α ≃ β) :
-    e.finsetCongr.toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
+    (finsetCongr e).toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
+
+namespace Finset
+
+@[deprecated (since := "2026-08-21")] alias congr_toEmbedding := Equiv.finsetCongr_toEmbedding
+
+end Finset
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
@@ -791,3 +802,29 @@ protected def finsetSubtypeComm (p : α → Prop) :
     grind
 
 end Equiv
+
+namespace Finset
+variable {s t u : Finset α}
+
+/-- The subtypes corresponding to equal finsets are equivalent.
+
+See also `Set.equivOfEq`. -/
+@[simps!] def equivOfEq (h : s = t) : s ≃ t := .subtypeEquivProp <| by simp [h]
+
+@[simp] lemma equivOfEq_refl : equivOfEq (s := s) rfl = .refl _ := rfl
+
+lemma equivOfEq_symm (h : s = t) : equivOfEq h.symm = (equivOfEq h).symm := rfl
+
+lemma equivOfEq_trans (h : s = t) (h' : t = u) :
+    equivOfEq (h.trans h') = (equivOfEq h).trans (equivOfEq h') := rfl
+
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr := equivOfEq
+@[deprecated (since := "2026-08-29")]
+alias _root_.Equiv.Finset.congr_apply_coe := equivOfEq_apply_coe
+@[deprecated (since := "2026-08-29")]
+alias _root_.Equiv.Finset.congr_symm_apply_coe := equivOfEq_symm_apply_coe
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr_refl := equivOfEq_refl
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr_symm := equivOfEq_symm
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr_trans := equivOfEq_trans
+
+end Finset

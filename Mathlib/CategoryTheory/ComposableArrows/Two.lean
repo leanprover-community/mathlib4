@@ -33,13 +33,13 @@ variable {C : Type*} [Category* C]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₁ f ⟶ mk₁ fg` when `f ≫ g = fg` for some morphism `g`. -/
-def twoδ₂Toδ₁ (h : f ≫ g = fg := by cat_disch) :
+abbrev twoδ₂Toδ₁ (h : f ≫ g = fg := by cat_disch) :
     mk₁ f ⟶ mk₁ fg :=
   homMk₁ (𝟙 _) g
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
-def twoδ₁Toδ₀ (h : f ≫ g = fg := by cat_disch) :
+abbrev twoδ₁Toδ₀ (h : f ≫ g = fg := by cat_disch) :
     mk₁ fg ⟶ mk₁ g :=
   homMk₁ f (𝟙 _)
 

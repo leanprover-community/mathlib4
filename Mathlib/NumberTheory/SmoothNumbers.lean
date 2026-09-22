@@ -367,9 +367,9 @@ given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` 
 when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
-  ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
+  ((prodCongrRight fun _ ↦ Set.equivOfEq <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
-    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
+    Set.equivOfEq <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
@@ -416,7 +416,7 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
     ∃ s ∈ k.primesBelow.powerset, ∃ m, n = m ^ 2 * (s.prod id) := by
-  obtain ⟨l, m, H₁, H₂⟩ := sq_mul_squarefree n
+  obtain ⟨m, l, H₁, H₂⟩ := exists_sq_mul_squarefree n
   have hl : l ∈ smoothNumbers k := mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁)
   refine ⟨l.primeFactorsList.toFinset, ?_, m, ?_⟩
   · simp only [toFinset_factors, Finset.mem_powerset]
@@ -446,7 +446,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
     refine LE.le.trans ?_ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
     gcongr
-    exact Finset.one_le_prod' fun p hp ↦
+    exact Finset.one_le_prod fun p hp ↦
       (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_le
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/

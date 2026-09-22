@@ -49,7 +49,7 @@ we could keep the collection of instances behind an `open scoped`.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable (𝕜 : Type*) {S R M : Type*}

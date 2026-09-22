@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SupClosed
+public import Mathlib.Order.SetAccumulate
 
 /-! # Semirings and rings of sets
 
@@ -407,7 +408,7 @@ noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : 
 
 private theorem disjointOfUnion_coe (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : J) :
     hC.disjointOfUnion hJ j = (hC.exists_partition_disjointed hJ j).choose.parts := by
-  rw [disjointOfUnion, dif_pos j.2]
+  rw [disjointOfUnion, dite_eq_left j.2]
 
 lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     PairwiseDisjoint J (hC.disjointOfUnion hJ) := by
@@ -506,7 +507,6 @@ protected lemma Ioc [LinearOrder α] [Nonempty α] :
     rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
     refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
     intro a ha b hb hab
-    simp [Function.onFun]
     grind
 
 end IsSetSemiring

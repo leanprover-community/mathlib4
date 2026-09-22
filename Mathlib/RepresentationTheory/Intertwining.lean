@@ -62,6 +62,7 @@ lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.t
   ext x
   exact congrFun h x
 
+@[macro_inline]
 instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
   coe_injective := toFun_injective ρ σ
@@ -74,8 +75,9 @@ instance : LinearMapClass (IntertwiningMap ρ σ) A V W where
 -- we are actively moving away from these design decisions.
 -- See e.g. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20homomorphism.20type.20vs.20abstract.20class/with/492579416
 @[simp]
-lemma coe_eq_toLinearMap {f : IntertwiningMap ρ σ} :
-  SemilinearMapClass.semilinearMap f = f.toLinearMap := rfl
+lemma ofClass_eq_toLinearMap {f : IntertwiningMap ρ σ} : .ofClass f = f.toLinearMap := rfl
+
+@[deprecated (since := "2026-09-03")] alias coe_eq_toLinearMap := ofClass_eq_toLinearMap
 
 @[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
 
@@ -101,7 +103,7 @@ instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
 instance : Add (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
-    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2,]⟩⟩
+    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2]⟩⟩
 
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
@@ -153,9 +155,9 @@ lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) 
 
 section group
 
-variable {V W P : Type*} [AddCommMonoid V] [AddCommGroup W]
-  [AddCommGroup P] [Module A V] [Module A W] [Module A P] (ρ : Representation A G V)
-  (σ : Representation A G W) (τ : Representation A G P) (f : V →ₗ[A] W)
+variable {V W : Type*} [AddCommMonoid V] [AddCommGroup W]
+  [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
+  (f : V →ₗ[A] W)
 
 instance : Neg (IntertwiningMap ρ σ) :=
   ⟨fun f ↦ ⟨-f.toLinearMap, by simp [LinearMap.neg_comp, f.2]⟩⟩
@@ -201,8 +203,8 @@ def id : IntertwiningMap ρ ρ where
 @[simp]
 lemma toLinearMap_id : (id ρ).toLinearMap = LinearMap.id := rfl
 
-@[simp]
-lemma id_apply (v : V) : id ρ v = v := rfl
+@[simp] lemma coe_id : ⇑(id ρ) = _root_.id := rfl
+@[simp high] lemma id_apply (v : V) : id ρ v = v := rfl
 
 variable {ρ σ τ} in
 /-- Composition of intertwining maps.
@@ -344,6 +346,7 @@ lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ
 lemma toLinearEquiv_inj (φ ψ : σ.Equiv ρ) : φ.toLinearEquiv = ψ.toLinearEquiv ↔ φ = ψ :=
   toLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance : EquivLike (Equiv ρ σ) V W where
   coe φ := φ.toLinearEquiv
   inv φ := φ.invFun
@@ -382,8 +385,6 @@ def refl : Equiv ρ ρ where
 
 @[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
-lemma coe_invFun : φ.invFun = φ.symm := rfl
-
 theorem toLinearEquiv_toLinearMap :
   φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
 
@@ -410,6 +411,8 @@ lemma mk_symm {e : V ≃ₗ[A] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e
     (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
 
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
+
+lemma coe_invFun : φ.invFun = φ.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 
@@ -486,6 +489,37 @@ instance : Module A (IntertwiningMap ρ σ) :=
   fast_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`LinearMap.CompatibleSMul ρ.asModule σ.asModule A A[G]`
+It is needed by `LinearMap.map_smul_of_tower`, with which the `simp` in `invFun`'s `map_smul'`
+below has to rewrite the goal `f (a • v) = a • f v`.
+
+The failure happens while applying `@LinearMap.IsScalarTower.compatibleSMul`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `SMul A ρ.asModule`, whereas the assigned value `DistribMulAction.toDistribSMul.toSMul` has type
+`SMul A V`. The comparison bottoms out at `ρ.asModule =?= V`, where `asModule` is a plain
+semireducible `def` and therefore does not unfold at the `.instances` transparency that instance
+search runs at. Lean falls back to synthesize an instance of the correct type, which succeeds, but
+the candidate is again not defeq to the assigned value, stalling at
+`inst✝.toSemigroupAction.1 =?= instModuleAsModule._aux_1 ρ`. That comparison, too, runs at
+`.instances`, since `respectTransparency false` suppresses the transparency bump that
+instance-implicit arguments would otherwise receive.
+
+With no `CompatibleSMul` instance found, the rewrite does not fire and `simp` makes no progress.
+
+Potential fix: mark `asModule` implicit-reducible *at its definition site*. Then
+`respectTransparency false` becomes obsolete, and once it is removed, `instanceSearchTypes false`
+can go as well: `asModule` being implicit-reducible, the `instModuleAsModule._aux_1` constant
+becomes implicit-reducible as well. The reason for this is that `instModuleAsModule`'s definition
+uses `inferInstanceAs`, which wraps the instance's fields into wrappers to encapsulate defeq abuse.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- An intertwining map is the same thing as a linear map over the group ring. -/
 def equivLinearMapAsModule :
@@ -507,7 +541,6 @@ def equivLinearMapAsModule :
   left_inv f := rfl
   right_inv f := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of intertwining maps. -/
 def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] IntertwiningMap ρ τ where
   toFun f :=
