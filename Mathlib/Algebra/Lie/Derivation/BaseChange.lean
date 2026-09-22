@@ -60,12 +60,15 @@ lemma ofDerivation_apply (d : Derivation R A A) (x : A ⊗[R] L) :
     ofDerivation L d x = d.toLinearMap.rTensor L x :=
   rfl
 
+lemma ofDerivation_comp_leibniz (d : Derivation R A A) (a : A) :
+    (ofDerivation L d).toLinearMap ∘ₗ DistribSMul.toLinearMap _ _ a =
+      a • (ofDerivation L d).toLinearMap + DistribSMul.toLinearMap _ _ (d a) := by
+  ext
+  simp [smul_tmul', add_tmul, mul_comm]
+  
 lemma ofDerivation_leibniz (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
-    ofDerivation L d (a • x) = a • ofDerivation L d x + (d a) • x := by
-  refine x.induction_on (by simp) (fun _ _ ↦ ?_) (fun _ _ h1 h2 ↦ ?_)
-  · simp [TensorProduct.smul_tmul', add_tmul, mul_comm]
-  · simp_rw [smul_add, map_add, h1, h2, smul_add]
-    abel_nf
+    ofDerivation L d (a • x) = a • ofDerivation L d x + (d a) • x :=
+  DFunLike.congr_fun (ofDerivation_comp_smul d a) x
 
 lemma ofDerivation_smul (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
     ofDerivation L (a • d) x = a • ofDerivation L d x := by
