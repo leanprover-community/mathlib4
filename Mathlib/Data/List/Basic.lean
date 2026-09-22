@@ -920,9 +920,9 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
   rcases f a <;> simp [ih]
 
 @[congr]
-theorem filterMap_congr {f g : α → Option β} {l : List α}
-    (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
-  induction l <;> simp_all [filterMap_cons]
+theorem filterMap_congr {f g : α → Option β} {l l' : List α}
+    (hl : l = l') (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l'.filterMap g := by
+  subst hl; induction l <;> simp_all [filterMap_cons]
 
 theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → β} {l : List α} :
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
@@ -933,7 +933,7 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       have : (filterMap f l).length = l.length + 1 := by grind
       grind
     · simp +contextual [ha, ih]
-  mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
+  mpr h := Eq.trans (filterMap_congr rfl <| by simpa) congr($filterMap_eq_map _)
 
 @[simp]
 lemma filterMap_none (l : List α) :

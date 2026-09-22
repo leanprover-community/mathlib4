@@ -61,8 +61,10 @@ theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).s
   rfl
 
 @[congr]
-theorem zipWith_congr (f g : α → β → γ) (la : List α) (lb : List β)
-    (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
+theorem zipWith_congr (f g : α → β → γ) (la la' : List α) (lb lb' : List β)
+    (hla : la = la') (hlb : lb = lb')
+    (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la' lb' := by
+  subst hla hlb
   induction h with
   | nil => rfl
   | cons hfg _ ih => exact congr_arg₂ _ hfg ih

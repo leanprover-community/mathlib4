@@ -50,9 +50,11 @@ theorem filter_zero : filter p 0 = 0 :=
   rfl
 
 @[congr]
-theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
-    (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
-  Quot.inductionOn s fun _l h => congr_arg ofList <| List.filter_congr <| by simpa using h
+theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+    {s t : Multiset α} (hs : s = t) :
+    (∀ x ∈ s, p x ↔ q x) → filter p s = filter q t := by
+  subst hs; exact Quot.inductionOn s fun _l h ↦
+    congr_arg ofList <| List.filter_congr <| by simpa using h
 
 @[simp]
 theorem filter_add (s t : Multiset α) : filter p (s + t) = filter p s + filter p t :=

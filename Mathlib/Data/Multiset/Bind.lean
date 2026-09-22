@@ -155,14 +155,14 @@ theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s
 theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 
 @[congr]
-theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
-    (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
+theorem bind_congr {f g : α → Multiset β} {m m' : Multiset α} (hm : m = m') :
+    (∀ a ∈ m, f a = g a) → bind m f = bind m' g := by subst hm; simp +contextual [bind]
 
 theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
     (h : β = β') (hf : ∀ a ∈ m, f a ≍ f' a) : bind m f ≍ bind m f' := by
   subst h
   simp only [heq_eq_eq] at hf
-  simp [bind_congr hf]
+  simp [bind_congr rfl hf]
 
 theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
     map f (bind m n) = bind m fun a => map f (n a) := by simp [bind]
@@ -192,7 +192,7 @@ theorem filter_eq_bind (m : Multiset α) (p : α → Prop) [DecidablePred p] :
 theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
     bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
   simp only [filter_eq_bind, bind_assoc]
-  apply Multiset.bind_congr; intro a ham
+  apply Multiset.bind_congr rfl; intro a ham
   split_ifs <;> simp
 
 theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop) [DecidablePred p] :
@@ -208,7 +208,7 @@ theorem filterMap_eq_bind (m : Multiset α) (f : α → Option β) :
 theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
     bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
   simp only [filterMap_eq_bind, Multiset.bind_assoc]
-  apply Multiset.bind_congr; intro a ham
+  apply Multiset.bind_congr rfl; intro a ham
   cases f a with
   | none => simp
   | some b => simp
