@@ -991,7 +991,7 @@ def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
     C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
   let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=
     ⟨fun eγt => (eγt.1.2, eγt.2), by fun_prop⟩
-  refine ContinuousMap.curry <| T.liftCM.comp <| ⟨fun eγt => ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
+  refine ContinuousMap.curry <| T.liftCM.comp ⟨fun eγt => ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
   simpa using ⟨by fun_prop, ContinuousEval.continuous_eval.comp Ψ.continuous⟩
 
 @[simp]

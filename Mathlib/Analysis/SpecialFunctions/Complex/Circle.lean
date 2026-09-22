@@ -276,7 +276,7 @@ lemma disjoint_path_image_Ioc (h : x ≠ y) :
 
 lemma compl_path_image_Ioc (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
   (compl_subset_iff_union.mpr <| path_image_Ioc_union h).antisymm
-    <| (disjoint_path_image_Ioc h.symm).subset_compl_right
+    (disjoint_path_image_Ioc h.symm).subset_compl_right
 
 lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
   rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,

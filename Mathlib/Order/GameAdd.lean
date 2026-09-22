@@ -163,7 +163,7 @@ theorem gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :
 
 theorem _root_.Prod.GameAdd.to_sym2 {a₁ a₂ b₁ b₂ : α} (h : Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂)) :
     Sym2.GameAdd rα s(a₁, b₁) s(a₂, b₂) :=
-  gameAdd_iff.2 <| Or.inl <| h
+  gameAdd_iff.2 <| Or.inl h
 
 theorem GameAdd.fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(a₁, b) s(a₂, b) :=
   (Prod.GameAdd.fst h).to_sym2

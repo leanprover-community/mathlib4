@@ -438,7 +438,7 @@ theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support
 /-- The support of the empty graph is empty. -/
 @[simp]
 theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
-  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+  SetRel.dom_eq_empty_iff.mpr Set.empty_def.symm
 
 /-- Only the empty graph has empty support. -/
 @[simp]
@@ -788,7 +788,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
+  refine (G.incidenceSet_inter_incidenceSet_subset h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 
