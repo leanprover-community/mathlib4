@@ -167,13 +167,12 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     _ = ∑ d ∈ n.divisors, μ d * f d := by
         refine Finset.sum_subset (Nat.divisors_subset_of_dvd hn (Nat.prod_primeFactors_dvd n))
           fun d hd hno ↦ ?_
+        suffices ¬ Squarefree d by simp [ArithmeticFunction.moebius_eq_zero_of_not_squarefree this]
         -- a squarefree divisor of `n` divides `P`: it is the product of its own prime factors
-        have hdP : Squarefree d → d ∣ P := fun hsq ↦ by
-          rw [← Nat.prod_primeFactors_of_squarefree hsq, Nat.prod_primeFactors_dvd_iff hP0, hP,
-            Nat.primeFactors_prod_primeFactors]
-          exact Nat.primeFactors_mono (Nat.mem_divisors.mp hd).1 hn
-        have : ¬ Squarefree d := fun hsq ↦ hno (Nat.mem_divisors.mpr ⟨hdP hsq, hP0⟩)
-        simp [ArithmeticFunction.moebius_eq_zero_of_not_squarefree this]
+        refine fun hsq ↦ hno (Nat.mem_divisors.mpr ⟨?_, hP0⟩)
+        rw [← Nat.prod_primeFactors_of_squarefree hsq, Nat.prod_primeFactors_dvd_iff hP0, hP,
+          Nat.primeFactors_prod_primeFactors]
+        exact Nat.primeFactors_mono (Nat.mem_divisors.mp hd).1 hn
 
 @[deprecated IsMultiplicative.prodPrimeFactors_one_sub (since := "2026-09-14")]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
