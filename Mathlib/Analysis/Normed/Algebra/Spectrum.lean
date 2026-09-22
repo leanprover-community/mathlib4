@@ -272,7 +272,7 @@ lemma spectralRadius_pow_le (a : A) (n : ℕ) (hn : n ≠ 0) :
     (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
   simp only [spectralRadius_eq_of_unital, ENNReal.iSup₂_pow_of_ne_zero _ hn]
   refine iSup₂_le fun x hx ↦ ?_
-  apply le_iSup₂_of_le (x ^ n) (spectrum.pow_mem_pow a n hx)
+  apply le_iSup₂_of_le (x ^ n) <| pow_mem_pow a n hx
   simp
 
 @[deprecated (since := "2026-09-21")]
