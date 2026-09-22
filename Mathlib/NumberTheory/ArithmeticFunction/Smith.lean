@@ -67,12 +67,9 @@ theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors_gcd {M : Type*} [AddCommMonoi
   have hpos : 0 < Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1) := Nat.gcd_pos_of_pos_left _ (by omega)
   have hle : Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1) ≤ n :=
     (Nat.gcd_le_left ((j : ℕ) + 1) (by omega)).trans (by omega)
-  have h := Nat.sum_fin_dvd_dvd_eq_sum_divisors n 1 (Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1)) g le_rfl
-    hpos (one_dvd _) hle
-  simp only [one_dvd, true_and, Nat.div_one] at h
-  rw [← h]
-  refine sum_congr rfl fun k _ ↦ ?_
-  simp [Nat.dvd_gcd_iff]
+  simpa [Nat.dvd_gcd_iff] using
+    Nat.sum_fin_dvd_dvd_eq_sum_divisors n 1 (Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1)) g le_rfl hpos
+      (one_dvd _) hle
 
 variable [CommRing R]
 
