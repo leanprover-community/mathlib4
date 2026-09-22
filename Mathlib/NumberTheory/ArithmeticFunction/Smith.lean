@@ -64,12 +64,10 @@ theorem _root_.Nat.sum_fin_dvd_dvd_eq_sum_divisors_gcd {M : Type*} [AddCommMonoi
     (g : ℕ → M) (i j : Fin n) :
     (∑ k : Fin n, if (k : ℕ) + 1 ∣ (i : ℕ) + 1 ∧ (k : ℕ) + 1 ∣ (j : ℕ) + 1 then g ((k : ℕ) + 1)
       else 0) = ∑ d ∈ (Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1)).divisors, g d := by
-  have hpos : 0 < Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1) := Nat.gcd_pos_of_pos_left _ (by omega)
-  have hle : Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1) ≤ n :=
-    (Nat.gcd_le_left ((j : ℕ) + 1) (by omega)).trans (by omega)
   simpa [Nat.dvd_gcd_iff] using
-    Nat.sum_fin_dvd_dvd_eq_sum_divisors n 1 (Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1)) g le_rfl hpos
-      (one_dvd _) hle
+    Nat.sum_fin_dvd_dvd_eq_sum_divisors n 1 (Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1)) g le_rfl
+      (Nat.gcd_pos_of_pos_left _ (by omega)) (one_dvd _)
+      ((Nat.gcd_le_left ((j : ℕ) + 1) (by omega)).trans (by omega))
 
 variable [CommRing R]
 
