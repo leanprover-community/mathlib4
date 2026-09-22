@@ -372,7 +372,9 @@ info: renameTest' {α : Type} [Bot α] [Top α] (y : α) {P : α → Prop} (Pbot
 #check renameTest'
 
 -- Test translation of binder names starting with `h`: `hmax` turns into `hmin`.
-@[to_dual]
+/-- trace: [translate] Adding `eq_of_min_of_max` ↔ `eq_of_max_of_min` (relevant_arg := 1) -/
+#guard_msgs in
+@[to_dual?]
 theorem eq_of_min_of_max (hmax : ∀ x, x ≤ a) (hmin : ∀ x, a ≤ x) : a = b :=
   le_antisymm (hmin b) (hmax b)
 

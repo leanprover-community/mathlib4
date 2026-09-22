@@ -181,7 +181,7 @@ def len : Skeleton → ℕ :=
 
 @[ext]
 theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
-  ULift.ext _ _
+  ULift.ext
 
 instance : SmallCategory Skeleton.{u} where
   Hom X Y := ULift.{u} (Fin X.len) → ULift.{u} (Fin Y.len)
