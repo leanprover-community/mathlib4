@@ -38,7 +38,7 @@ assert_not_exists Module.Basis Ideal ContinuousMul
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal Bornology
+open Filter Function Set NNReal ENNReal Bornology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
@@ -301,8 +301,6 @@ theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x =
 
 end Real
 end LocallyLipschitz
-
-open Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 

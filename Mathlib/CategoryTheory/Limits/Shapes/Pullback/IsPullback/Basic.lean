@@ -35,7 +35,6 @@ namespace IsPullback
 
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a limiting binary product cone, and we have a terminal object,
 then we have `IsPullback c.fst c.snd 0 0`
@@ -327,7 +326,6 @@ lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pullback diagram:
@@ -353,7 +351,6 @@ lemma of_prod_fst_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryProduct A X]
       · simpa using h₁
       · simp [← h₂])⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_isLimit_binaryFan_of_isTerminal
     {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c)
     {T : C} (hT : IsTerminal T) :
@@ -409,7 +406,6 @@ lemma paste_twist_right {X Y Z S : C} {f : X ⟶ S} {g : Y ⟶ S} {i : Z ⟶ S}
   rw [← hrw, ht₁]
   exact .paste_horiz hsndfgr hfg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a `HasPullback` variant of `CategoryTheory.IsPullback.paste_twist_right` -/
 lemma map_fst_comp_fst_snd_comp_fst {X Y Z U S : C} (f : X ⟶ S) (g : Y ⟶ S) (i : Z ⟶ S)
     [HasPullback i g] (h : U ⟶ pullback i g) [HasPullback f g] [HasPullback (pullback.snd f g)
@@ -430,7 +426,6 @@ namespace IsPushout
 
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a colimiting binary coproduct cocone, and we have an initial object,
 then we have `IsPushout 0 0 c.inl c.inr`
@@ -709,7 +704,6 @@ lemma id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pushout diagram:
@@ -736,7 +730,6 @@ lemma of_coprod_inl_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct 
       · simpa using h₂
       · simp [← h₁])⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_isColimit_binaryCofan_of_isInitial
     {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c)
     {I : C} (hI : IsInitial I) :
@@ -994,8 +987,6 @@ instance (priority := low) [PreservesColimitsOfShape (Discrete WalkingPair) F] :
 end Thin
 
 section IsPullbackOverPullback
-
-open Limits
 
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong g]
 

@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`
@@ -47,7 +46,6 @@ theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
 abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
   (Functor.const _).obj X
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Functors from `Discrete PUnit` are equivalent to the category itself. -/
 @[simps]
@@ -82,7 +80,6 @@ theorem equiv_punit_iff_unique :
     rw [this a, this b]
     simp only [Functor.comp_map]
     congr 3
-    apply ULift.ext
     simp [eq_iff_true_of_subsingleton]
   · rintro ⟨⟨p⟩, h⟩
     have := fun x y => (h x y).some

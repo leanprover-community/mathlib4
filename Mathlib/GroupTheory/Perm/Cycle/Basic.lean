@@ -425,7 +425,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
 theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCycle f) {x : α}
     (hx : f x ≠ x) (hffx : f (f x) ≠ x) : IsCycle (swap x (f x) * f) := by
   refine ⟨f x, ?_, fun y hy ↦ ?_⟩
-  · simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, hx]
+  · simp [swap_apply_def, mul_apply, ite_eq_right hffx, f.injective.eq_iff, hx]
   obtain ⟨i, rfl⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
   exact isCycle_swap_mul_aux₂ (i - 1) hy (by simp [← mul_apply, -coe_mul, ← zpow_add_one])
 
@@ -652,7 +652,7 @@ end Conjugation
 
 section IsCycleOn
 
-variable {f g : Perm α} {s t : Set α} {a b x y : α}
+variable {f g : Perm α} {s : Set α} {a b x y : α}
 
 /-- A permutation is a cycle on `s` when any two points of `s` are related by repeated application
 of the permutation. Note that this means the identity is a cycle of subsingleton sets. -/

@@ -27,7 +27,6 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory
 
@@ -156,7 +155,6 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) :=
   fun k₁ k₂ ↦ homMk (pullback.lift k₂.hom.left k₁.hom.left (by simp))
@@ -219,12 +217,10 @@ instance {X : C} : Inhabited (Subobject X) :=
 theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Subobject B).arrow := by
   convert! underlyingIso_hom_comp_eq_mk (𝟙 B)
   simp only [comp_id]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
   rw [← underlyingIso_top_hom]
   infer_instance
@@ -667,7 +663,6 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
     rintro ⟨a, m, rfl⟩
     simpa using m⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm

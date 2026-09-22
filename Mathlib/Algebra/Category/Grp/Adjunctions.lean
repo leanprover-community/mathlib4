@@ -141,17 +141,17 @@ section Abelianization
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
 -/
 def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
-  obj G := CommGrpCat.of (Abelianization G)
+  obj G := ↧(Abelianization G)
   map f := CommGrpCat.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
   map_id := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
   map_comp := by
     intros
     ext : 1
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    apply (Equiv.eq_symm_apply Abelianization.lift).mp
     rfl
 
 /-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
@@ -177,7 +177,7 @@ end GrpCat
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def MonCat.units : MonCat.{u} ⥤ GrpCat.{u} where
-  obj R := GrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := GrpCat.ofHom <| Units.map f.hom
   map_id _ := GrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := GrpCat.ext fun _ => Units.ext rfl
@@ -200,7 +200,7 @@ instance : MonCat.units.{u}.IsRightAdjoint :=
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
-  obj R := CommGrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := CommGrpCat.ofHom <| Units.map f.hom
   map_id _ := CommGrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := CommGrpCat.ext fun _ => Units.ext rfl

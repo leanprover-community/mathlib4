@@ -46,7 +46,7 @@ open scoped Pointwise
 open MulAction Finset Set Equiv Equiv.Perm
 
 variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
-  {n : ℕ} {s t : powersetCard α n}
+  {n : ℕ} {s : powersetCard α n}
 
 section
 
@@ -76,35 +76,7 @@ theorem stabilizer_coe {n : ℕ} (s : powersetCard α n) :
   ext g
   simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← coe_inj]
 
-theorem addAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
-    (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
-    AddAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddAction.toPerm g = (1 : Perm α) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · contrapose h with h
-    have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using h
-    obtain ⟨a, ha⟩ := this
-    obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
-    rw [Equiv.ext_iff, not_forall]
-    use s
-    contrapose has'
-    simp only [AddAction.toPerm_apply, coe_one, id_eq] at has'
-    rw [← has']
-    simpa [← mem_coe_iff]
-  · simp only [Equiv.ext_iff, AddAction.toPerm_apply] at h ⊢
-    simp [Subtype.ext_iff, Finset.ext_iff, mem_vadd_finset, h]
-
-/-- If an additive group `G` acts faithfully on `α`,
-then it acts faithfully on `powersetCard α n`,
-provided `1 ≤ n < ENat.card α`. -/
-theorem faithfulVAdd {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
-    (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulVAdd G α] :
-    FaithfulVAdd G (powersetCard α n) := by
-  rw [faithfulVAdd_iff]
-  intro g hg
-  apply AddAction.toPerm_injective (α := G) (β := α)
-  rw [AddAction.toPerm_zero, ← addAction_faithful hn hα]
-  exact Perm.ext_iff.mpr hg
-
+@[to_additive]
 theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     toPerm g = (1 : Perm (powersetCard α n)) ↔ toPerm g = (1 : Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -122,7 +94,10 @@ theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     simp [Subtype.ext_iff, Finset.ext_iff, mem_smul_finset, h]
 
 /-- If a group `G` acts faithfully on `α`, then
-it acts faithfully on `powersetCard α n` provided `1 ≤ n < ENat.card α`. -/
+it acts faithfully on `powersetCard α n`, provided `1 ≤ n < ENat.card α`. -/
+@[to_additive
+/-- If an additive group `G` acts faithfully on `α`, then
+it acts faithfully on `powersetCard α n`, provided `1 ≤ n < ENat.card α`. -/]
 theorem faithfulSMul (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α] :
     FaithfulSMul G (powersetCard α n) := by
   rw [faithfulSMul_iff]
@@ -131,11 +106,8 @@ theorem faithfulSMul (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α]
   rw [toPerm_one, ← mulAction_faithful hn hα]
   exact Perm.ext_iff.mpr hg
 
-attribute [to_additive existing] faithfulSMul
-
 variable (α G)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (n) in
 /-- The equivariant map from embeddings of `Fin n` (aka arrangement) to combinations. -/
 @[to_additive /-- The equivariant map from embeddings of `Fin n`

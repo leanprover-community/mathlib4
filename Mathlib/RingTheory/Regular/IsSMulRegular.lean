@@ -5,6 +5,7 @@ Authors: Brendan Murphy
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.Regular
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
@@ -43,7 +44,7 @@ lemma LinearEquiv.isSMulRegular_congr [AddCommMonoid N] [Module R N]
 
 end Congr
 
-variable {R S M M' M'' : Type*}
+variable {R M M' M'' : Type*}
 
 lemma IsSMulRegular.submodule [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (r : R) (h : IsSMulRegular M r) : IsSMulRegular N r :=
