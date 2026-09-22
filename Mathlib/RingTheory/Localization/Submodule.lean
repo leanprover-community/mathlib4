@@ -89,8 +89,8 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
 
 lemma _root_.Algebra.EssFiniteType.isNoetherianRing
     (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
-  exact IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
+    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S :=
+  IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
     (Algebra.FiniteType.isNoetherianRing R _)
 section NonZeroDivisors
 

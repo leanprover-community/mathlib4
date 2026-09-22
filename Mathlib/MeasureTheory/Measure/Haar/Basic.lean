@@ -402,8 +402,8 @@ theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K�
 theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
     chaar K₀ (K₁ ⊔ K₂) ≤ chaar K₀ K₁ + chaar K₀ K₂ := by
   let eval : (Compacts G → ℝ) → ℝ := fun f => f K₁ + f K₂ - f (K₁ ⊔ K₂)
-  have : Continuous eval := by
-    exact ((continuous_apply K₁).add (continuous_apply K₂)).sub (continuous_apply (K₁ ⊔ K₂))
+  have : Continuous eval :=
+    ((continuous_apply K₁).add (continuous_apply K₂)).sub (continuous_apply (K₁ ⊔ K₂))
   rw [← sub_nonneg]; change chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]

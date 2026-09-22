@@ -42,8 +42,7 @@ lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.ra
 lemma extremallyDisconnected_pullback : ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
   have := extremallyDisconnected_preimage i hi
   let e := (TopCat.pullbackHomeoPreimage i i.hom.hom.2 f hi.isEmbedding).symm
-  let e' : {xy : X × Y | f xy.1 = i xy.2} ≃ₜ {xy : Y × X | i xy.1 = f xy.2} := by
-    exact TopCat.homeoOfIso
+  let e' : {xy : X × Y | f xy.1 = i xy.2} ≃ₜ {xy : Y × X | i xy.1 = f xy.2} := TopCat.homeoOfIso
       ((TopCat.pullbackIsoProdSubtype f.hom i.hom).symm ≪≫ pullbackSymmetry _ _ ≪≫
         (TopCat.pullbackIsoProdSubtype i.hom f.hom))
   extremallyDisconnected_of_homeo (e.trans e'.symm)

@@ -127,8 +127,7 @@ theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Mea
 
 @[fun_prop]
 theorem measurable_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
-    (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) := by
-  exact measurable_rnDeriv _ _
+    (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) := measurable_rnDeriv _ _
 
 theorem withDensity_pdf_le_map {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) : μ.withDensity (pdf X ℙ μ) ≤ map X ℙ :=

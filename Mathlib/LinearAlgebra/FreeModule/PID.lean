@@ -228,7 +228,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     intro c x xM' hc
     obtain ⟨⟨x, xM⟩, hx', rfl⟩ := Submodule.mem_map.mp xM'
     rw [LinearMap.mem_ker] at hx'
-    have hc' : (c • ⟨y', y'M⟩ + ⟨x, xM⟩ : M) = 0 := by exact @Subtype.coe_injective O (· ∈ M) _ _ hc
+    have hc' : (c • ⟨y', y'M⟩ + ⟨x, xM⟩ : M) = 0 := @Subtype.coe_injective O (· ∈ M) _ _ hc
     simpa only [map_add, map_zero, map_smul, smul_eq_mul, add_zero, mul_eq_zero, ϕy'_ne_zero, hx',
       or_false] using congr_arg ϕ hc'
   -- And `a • y'` is orthogonal to `N'`.

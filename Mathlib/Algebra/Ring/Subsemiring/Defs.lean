@@ -238,8 +238,8 @@ submonoid `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
 protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmonoid R)
     (ha : ↑sa = s) : Subsemiring R where
   carrier := s
-  zero_mem' := by exact ha ▸ sa.zero_mem
-  one_mem' := by exact hm ▸ sm.one_mem
+  zero_mem' := ha ▸ sa.zero_mem
+  one_mem' := hm ▸ sm.one_mem
   add_mem' {x y} := by simpa only [← ha] using! sa.add_mem
   mul_mem' {x y} := by simpa only [← hm] using! sm.mul_mem
 

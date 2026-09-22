@@ -313,8 +313,7 @@ theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
 @[simp] theorem mk''_eq_mk (p : Path x₀ x₁) : Quotient.mk'' p = mk p := rfl
 
 theorem exact {p q : Path x₀ x₁} (h : Quotient.mk p = Quotient.mk q) :
-    Homotopic p q := by
-  exact _root_.Quotient.exact h
+    Homotopic p q := _root_.Quotient.exact h
 
 theorem eq {p q : Path x₀ x₁} : mk p = mk q ↔ Homotopic p q :=
   _root_.Quotient.eq
