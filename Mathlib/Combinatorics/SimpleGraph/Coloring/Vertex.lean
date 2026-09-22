@@ -522,7 +522,7 @@ theorem chromaticNumber_eq_zero_iff : G.chromaticNumber = 0 ↔ IsEmpty V :=
 theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
   simpa
 
-@[deprecated (since := "2026-04-24")]
+@[deprecated chromaticNumber_eq_zero_iff +typeChanged (since := "2026-04-24")]
 alias ⟨isEmpty_of_chromaticNumber_eq_zero, _⟩ := chromaticNumber_eq_zero_iff
 
 theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonempty V := by
@@ -641,7 +641,7 @@ variable {W : Type*} {H : SimpleGraph W}
 
 /-- If `H` is not `n`-colorable and `G` is `n`-colorable, then `G` is `H.Free`. -/
 theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
-  contrapose! nhc with hc'
+  contrapose nhc with hc'
   exact hc.of_hom hc'.some.toHom
 
 /-! ### Isomorphisms -/
