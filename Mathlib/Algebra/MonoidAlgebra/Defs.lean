@@ -30,7 +30,7 @@ In this file we define `MonoidAlgebra R M` and `AddMonoidAlgebra R M` as one-fie
 When the domain is additive, this is used to define polynomials:
 ```
 Polynomial R := AddMonoidAlgebra R ℕ
-MvPolynomial σ α := AddMonoidAlgebra R (σ →₀ ℕ)
+MvPolynomial σ R := AddMonoidAlgebra R (σ →₀ ℕ)
 ```
 
 When the domain is multiplicative, e.g. a group, this will be used to define the group ring.
@@ -299,7 +299,8 @@ Further results on scalar multiplication can be found in
 variable {A : Type*} [SMulZeroClass A R]
 
 @[to_additive (dont_translate := A) smulZeroClass]
-instance smulZeroClass : SMulZeroClass A R[M] := fast_instance% coeffEquiv.smulZeroClass _
+instance smulZeroClass : SMulZeroClass A R[M] :=
+  fast_instance% coeffEquiv.smulZeroClass _ coeff_zero
 
 section
 -- Ensure that the different smul instances do not create a diamond.
@@ -332,7 +333,7 @@ lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' *
 
 @[to_additive (dont_translate := N) distribSMul]
 instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
-  fast_instance% coeffEquiv.distribSMul _
+  fast_instance% coeffAddEquiv.distribSMul _
 
 @[to_additive (dont_translate := N) isScalarTower]
 instance isScalarTower [SMulZeroClass N R] [SMulZeroClass O R] [SMul N O] [IsScalarTower N O R] :
@@ -355,7 +356,7 @@ lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
 lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
   ext; simp
 
-@[to_additive (attr := deprecated coeff_add (since := "2026-06-18"))]
+@[to_additive (attr := deprecated coeff_add +typeChanged (since := "2026-06-18"))]
 lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := rfl
 
 @[to_additive (attr := simp)]
@@ -409,7 +410,7 @@ lemma addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : R[M] →+ N⦄
     (hfg : ∀ m, f.comp (singleAddHom m) = g.comp (singleAddHom m)) : f = g :=
   addMonoidHom_ext <| by simpa [DFunLike.ext_iff] using hfg
 
-@[to_additive (attr := deprecated Finsupp.sum_single_index (since := "2026-06-18"))]
+@[to_additive (attr := deprecated Finsupp.sum_single_index +typeChanged (since := "2026-06-18"))]
 lemma sum_single_index [AddCommMonoid N] {m : M} {r : R} {h : M → R → N} (h_zero : h m 0 = 0) :
     (single m r).coeff.sum h = h m r := by
   simp [h_zero]
@@ -420,11 +421,12 @@ lemma sum_coeff_single (f : R[M]) : f.coeff.sum single = f := by ext; simp
 @[to_additive (attr := deprecated sum_coeff_single (since := "2026-06-18"))]
 alias sum_single := sum_coeff_single
 
-@[to_additive (attr := deprecated Finsupp.single_apply (since := "2026-06-18"))]
+@[to_additive (attr := deprecated Finsupp.single_apply +typeChanged (since := "2026-06-18"))]
 theorem coeff_single_apply {a a' : M} {b : R} [Decidable (a = a')] :
     (single a b).coeff a' = if a = a' then b else 0 :=
   Finsupp.single_apply
 
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-06-18")] protected alias single_apply := coeff_single_apply
 
 @[to_additive (attr := simp)]
@@ -441,10 +443,10 @@ lemma induction {motive : R[M] → Prop} (x : R[M])
     (by simpa using zero) (fun m r x ↦ single_add m r (ofCoeff x))
 
 @[to_additive (attr := elab_as_elim)]
-lemma induction_linear {p : R[M] → Prop} (x : R[M]) (zero : p 0)
-    (add : ∀ x y : R[M], p x → p y → p (x + y))
-    (single : ∀ m r, p (single m r)) : p x :=
-  Finsupp.induction_linear (motive := (p <| ofCoeff ·)) x.coeff zero (fun _ _ ↦ add _ _)
+lemma induction_linear {motive : R[M] → Prop} (x : R[M]) (zero : motive 0)
+    (add : ∀ x y : R[M], motive x → motive y → motive (x + y))
+    (single : ∀ m r, motive (single m r)) : motive x :=
+  Finsupp.induction_linear (motive := (motive <| ofCoeff ·)) x.coeff zero (fun _ _ ↦ add _ _)
     (fun _ _ ↦ single _ _)
 
 @[to_additive (attr := simp) addSubmonoidClosure_single]
@@ -466,24 +468,24 @@ instance one : One R[M] where one := single 1 1
 @[to_additive (dont_translate := R) one_def]
 lemma one_def : (1 : R[M]) = single 1 1 := rfl
 
-@[to_additive (attr := simp) (dont_translate := R)]
+@[to_additive (attr := simp) (dont_translate := R) coeff_one_zero]
 lemma coeff_one_one : (1 : R[M]).coeff 1 = 1 := by simp [one_def]
+
+@[deprecated (since := "2026-07-15")]
+alias _root_.AddMonoidAlgebra.coeff_zero_zero := AddMonoidAlgebra.coeff_one_zero
 
 end One
 
 section Mul
 variable [Mul M]
 
-/-- The multiplication in an additive monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.AddMonoidAlgebra.mul' [Add M] (x y : AddMonoidAlgebra R M) : AddMonoidAlgebra R M :=
-  x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ .single (m₁ + m₂) (r₁ * r₂)
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[to_additive existing mul', no_expose]
+@[no_expose, to_additive (dont_translate := R) mul'
+/-- The multiplication in an additive monoid algebra.
+
+We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/]
 def mul' (x y : R[M]) : R[M] :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 
@@ -586,14 +588,14 @@ lemma coeff_mul_single_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, d * m ≠
 lemma coeff_single_mul_of_forall_mul_ne (r : R) (x : R[M]) (h : ∀ d, m * d ≠ m') :
     (single m r * x).coeff m' = 0 := by classical simp [coeff_mul, h]
 
-@[to_additive (attr := deprecated coeff_mul_single_of_forall_mul_ne (since := "2026-06-18"))
-  (dont_translate := R)]
+@[to_additive (attr := deprecated coeff_mul_single_of_forall_mul_ne +typeChanged
+  (since := "2026-06-18")) (dont_translate := R)]
 lemma mul_single_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
     (h : ¬∃ d, g' = d * g) : (x * single g r).coeff g' = 0 :=
   coeff_mul_single_of_forall_mul_ne _ _ <| by simpa [eq_comm] using h
 
-@[to_additive (attr := deprecated coeff_single_mul_of_forall_mul_ne (since := "2026-06-18"))
-  (dont_translate := R)]
+@[to_additive (attr := deprecated coeff_single_mul_of_forall_mul_ne +typeChanged
+  (since := "2026-06-18")) (dont_translate := R)]
 lemma single_mul_apply_of_not_exists_mul (r : R) {g g' : M} (x : R[M])
     (h : ¬∃ d, g' = g * d) : (single g r * x).coeff g' = 0 :=
   coeff_single_mul_of_forall_mul_ne _ _ <| by simpa [eq_comm] using h
@@ -692,7 +694,7 @@ then they are equal. -/]
 lemma ringHom_ext [Semiring S] {f g : R[M] →+* S}
     (h₁ : ∀ r, f (single 1 r) = g (single 1 r)) (h_of : ∀ m, f (single m 1) = g (single m 1)) :
     f = g :=
-  RingHom.coe_addMonoidHom_injective <| addMonoidHom_ext fun m r ↦ by
+  RingHom.toAddMonoidHom_injective <| addMonoidHom_ext fun m r ↦ by
     simpa [← map_mul] using! congr($(h₁ r) * $(h_of m))
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
@@ -719,13 +721,13 @@ lemma single_pow (m : M) (r : R) : ∀ n : ℕ, single m r ^ n = single (m ^ n) 
   | 0 => by simp [one_def]
   | n + 1 => by simp [pow_succ, single_pow _ _ n]
 
-lemma induction_on {p : R[M] → Prop} (x : R[M])
-    (hM : ∀ m, p (of R M m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
-    (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
-  Finsupp.induction_linear (motive := fun x ↦ p <| ofCoeff x) x.coeff
-    (by simpa using hsmul 0 (of R M 1) (hM 1))
-    (fun x y hf hg ↦ hadd (ofCoeff x) (ofCoeff y) hf hg)
-    fun m r ↦ by simpa using hsmul r (of R M m) (hM m)
+lemma induction_on {motive : R[M] → Prop} (x : R[M])
+    (of : ∀ m, motive (.of R M m)) (add : ∀ x y : R[M], motive x → motive y → motive (x + y))
+    (smul : ∀ (r : R) (x), motive x → motive (r • x)) : motive x :=
+  Finsupp.induction_linear (motive := fun x ↦ motive <| ofCoeff x) x.coeff
+    (by simpa using smul 0 (.of R M 1) (of 1))
+    (fun x y hf hg ↦ add (ofCoeff x) (ofCoeff y) hf hg)
+    fun m r ↦ by simpa using smul r (.of R M m) (of m)
 
 @[to_additive (dont_translate := R)]
 instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M := M)) where
@@ -747,10 +749,11 @@ def uniqueRingEquiv [Subsingleton M] : R[M] ≃+* R where
     refine (coeff_mul ..).trans ?_
     simp [Finsupp.sum_unique, Unique.eq_default]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (M) in
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) :
-    (uniqueRingEquiv M).symm r = single 1 r := by classical ext; simp [uniqueRingEquiv]
+    (uniqueRingEquiv M).symm r = single 1 r := by ext; simp [uniqueRingEquiv]
 
 -- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
 @[to_additive (dont_translate := R) (attr := simp↓ high)]
@@ -787,6 +790,7 @@ def curryRingEquiv : R[M × N] ≃+* R[N][M] where
 lemma curryRingEquiv_single (m : M) (n : N) (r : R) :
     curryRingEquiv (single (m, n) r) = single m (single n r) := by simp [curryRingEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := simp)]
 lemma curryRingEquiv_symm_single (m : M) (n : N) (r : R) :
     curryRingEquiv.symm (single m <| single n r) = (single (m, n) r) := by
@@ -915,7 +919,7 @@ lemma intCast_def [MulOneClass M] (z : ℤ) : (z : R[M]) = single 1 (z : R) := r
 @[to_additive (dont_translate := R)]
 instance ring [Monoid M] : Ring R[M] where
 
-@[deprecated coeff_neg (since := "2026-06-18")]
+@[deprecated coeff_neg +typeChanged (since := "2026-06-18")]
 lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := rfl
 
 end Ring
@@ -985,13 +989,15 @@ def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
   map_one' := rfl
   map_mul' _a _b := (single_mul_single ..).symm
 
-theorem induction_on [AddMonoid M] {p : R[M] → Prop} (x : R[M])
-    (hM : ∀ m, p (of R M <| .ofAdd m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
-    (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
-  Finsupp.induction_linear (motive := fun x ↦ p (ofCoeff x)) x.coeff
-    (by simpa using hsmul 0 (of R M 1) (hM 0))
-    (fun x y hf hg ↦ hadd (ofCoeff x) (ofCoeff y) hf hg)
-    fun m r ↦ by simpa using! hsmul r (of R M m) (hM m)
+set_option backward.isDefEq.respectTransparency false in
+theorem induction_on [AddMonoid M] {motive : R[M] → Prop} (x : R[M])
+    (of : ∀ m, motive (.of R M <| .ofAdd m))
+    (add : ∀ x y : R[M], motive x → motive y → motive (x + y))
+    (smul : ∀ (r : R) (x), motive x → motive (r • x)) : motive x :=
+  Finsupp.induction_linear (motive := fun x ↦ motive (ofCoeff x)) x.coeff
+    (by simpa using smul 0 (.of R M 1) (of 0))
+    (fun x y hf hg ↦ add (ofCoeff x) (ofCoeff y) hf hg)
+    fun m r ↦ by simpa using! smul r (.of R M m) (of m)
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 0 r`, then they are equal.

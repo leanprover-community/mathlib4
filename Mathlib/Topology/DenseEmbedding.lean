@@ -192,7 +192,7 @@ theorem extend_unique [T2Space γ] {f : α → γ} {g : β → γ} (di : IsDense
 theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : IsDenseInducing i)
     (hf : ∀ᶠ x in 𝓝 b, ∃ c, Tendsto f (comap i <| 𝓝 x) (𝓝 c)) : ContinuousAt (di.extend f) b := by
   set φ := di.extend f
-  haveI := di.comap_nhds_neBot
+  have := di.comap_nhds_neBot
   suffices ∀ V' ∈ 𝓝 (φ b), IsClosed V' → φ ⁻¹' V' ∈ 𝓝 b by
     simpa [ContinuousAt, (closed_nhds_basis (φ b)).tendsto_right_iff]
   intro V' V'_in V'_closed
@@ -341,7 +341,7 @@ theorem isClosed_property [TopologicalSpace β] {e : α → β} {p : β → Prop
       univ = closure (range e) := he.closure_range.symm
       _ ⊆ closure { b | p b } := closure_mono <| range_subset_iff.mpr h
       _ = _ := hp.closure_eq
-  simpa only [univ_subset_iff, eq_univ_iff_forall, mem_setOf]
+  simpa only [univ_subset_iff, eq_univ_iff_forall, mem_ofPred]
 
 theorem isClosed_property2 [TopologicalSpace β] {e : α → β} {p : β → β → Prop} (he : DenseRange e)
     (hp : IsClosed { q : β × β | p q.1 q.2 }) (h : ∀ a₁ a₂, p (e a₁) (e a₂)) : ∀ b₁ b₂, p b₁ b₂ :=

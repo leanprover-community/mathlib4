@@ -5,9 +5,11 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
+public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Matrices
@@ -55,7 +57,7 @@ and whose columns are indexed by `n`. -/
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
+variable {l m n o : Type*}
 variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
@@ -82,6 +84,10 @@ which performs elementwise multiplication, vs `Matrix.mul`).
 If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
 purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
+
+This is available in bundled forms as:
+* `Matrix.ofAddEquiv`
+* `Matrix.ofLinearEquiv`
 -/
 def of : (m → n → α) ≃ Matrix m n α :=
   Equiv.refl _
@@ -94,11 +100,34 @@ theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
 
+/-- Construct a matrix from an array in row-major ordering. -/
+def ofArray {m n : ℕ} (A : Array R) (hA : A.size = m * n) : Matrix (Fin m) (Fin n) R :=
+  fun i j => A[Fin.mkDivMod i j]
+
+@[simp]
+theorem ofArray_apply {m n : ℕ} (A : Array R) (hA : A.size = m * n) (i : Fin m) (j : Fin n) :
+    ofArray A hA i j = A[Fin.mkDivMod i j] := rfl
+
+/-- The matrix constructed from the row-major array of `A`'s entries is `A`. -/
+@[simp]
+theorem ofArray_ofFn {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
+    ofArray (.ofFn fun k : Fin (m * n) ↦ A k.divNat k.modNat) Array.size_ofFn = A := by
+  ext i j
+  rw [ofArray_apply, Fin.getElem_fin, Array.getElem_ofFn, Fin.divNat_mkDivMod,
+    Fin.modNat_mkDivMod]
+
+lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
+    ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by
+  ext i j
+  have : n * i.val + j.val < m * n := (Fin.mkDivMod i j).isLt
+  simp [ofArray, hA, this]
+
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
 This is available in bundled forms as:
 * `AddMonoidHom.mapMatrix`
 * `LinearMap.mapMatrix`
+* `LinearMap.mapMatrixLinear`
 * `RingHom.mapMatrix`
 * `AlgHom.mapMatrix`
 * `Equiv.mapMatrix`
@@ -498,7 +527,14 @@ theorem submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Mat
   rfl
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
-equivalence. -/
+equivalence.
+
+This is available in bundled forms as:
+* `Matrix.reindexAddEquiv`
+* `Matrix.reindexLinearEquiv`
+* `Matrix.reindexRingEquiv`
+* `Matrix.reindexAlgEquiv`
+-/
 def reindex (eₘ : m ≃ l) (eₙ : n ≃ o) : Matrix m n α ≃ Matrix l o α where
   toFun M := M.submatrix eₘ.symm eₙ.symm
   invFun M := M.submatrix eₘ eₙ

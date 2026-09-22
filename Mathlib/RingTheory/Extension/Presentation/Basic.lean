@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.RingTheory.MvPolynomial.Localization
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 
@@ -28,6 +29,8 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
   are finite.
 - `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
   minus the number of relations.
+- `Algebra.Presentation.mvPolynomial`: The canonical `R`-presentation of the polynomial algebra
+  `MvPolynomial ι R`, with generators the variables `X i` for `i : ι` and no relations.
 
 We also give constructors for localization, base change and composition.
 
@@ -196,6 +199,20 @@ noncomputable def id : Presentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
 
 lemma id_dimension : (Presentation.id R).dimension = 0 :=
   ofBijectiveAlgebraMap_dimension (R := R) Function.bijective_id
+
+variable (R ι) in
+/-- The canonical `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+@[simps -fullyApplied relation]
+noncomputable def mvPolynomial : Presentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  relation := PEmpty.elim
+  span_range_relation_eq_ker := by
+    simpa only [Generators.ker_mvPolynomial, Set.range_eq_empty] using Ideal.span_empty
+  __ := Generators.mvPolynomial R ι
+
+@[simp]
+lemma dimension_mvPolynomial : (mvPolynomial R ι).dimension = Nat.card ι := by
+  simp [dimension]
 
 section Localization
 
@@ -367,8 +384,10 @@ private lemma compRelationAux_map (r : σ') :
   rw [AddMonoidAlgebra.ofCoeff_finsuppSum]
   congr
   ext u s m
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom, map_one, one_mul, AddMonoidAlgebra.ofCoeff_single,
-    single_eq_monomial]
+  simp only [aeval, map_one, one_mul]
+  change (eval₂ (algebraMap R (MvPolynomial ι' S)) (C ∘ P.val) (P.σ s) *
+      (Finsupp.mapDomain Sum.inl u).prod fun i k ↦ Sum.elim X (C ∘ P.val) i ^ k).coeff m =
+        (monomial u s).coeff m
   rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 
@@ -461,7 +480,6 @@ lemma relation_comp_localizationAway_inl (P : Presentation R S ι σ)
     (h1 : P.σ (-1) = -1) (h0 : P.σ 0 = 0) (r : Unit) :
     ((Presentation.localizationAway T g).comp P).relation (Sum.inl r) =
       rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1 := by
-  classical
   simp only [Presentation.comp, Sum.elim_inl, Presentation.compRelationAux,
     Presentation.localizationAway_relation, sub_eq_add_neg, C_mul_X_eq_monomial,
     ← map_one C, ← map_neg C]

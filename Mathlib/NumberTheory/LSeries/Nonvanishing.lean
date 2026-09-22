@@ -47,8 +47,10 @@ hypothetical objects which we eventually deduce cannot exist. We have only made 
 whose hypotheses do not turn out to be contradictory.
 -/
 
-open Complex Asymptotics Topology Filter
+open Complex Asymptotics Filter
 open ArithmeticFunction hiding log
+
+open scoped Topology
 
 -- We use the ordering on `ℂ` given by comparing real parts for fixed imaginary part
 open scoped ComplexOrder
@@ -86,6 +88,7 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
   simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
   using norm_le_one χ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
     (hp : p.Prime) (k : ℕ) :
     0 ≤ zetaMul χ (p ^ k) := by

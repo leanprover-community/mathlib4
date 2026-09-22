@@ -39,14 +39,8 @@ theorem _root_.discreteUniformity_iff_eq_principal_setRelId {X : Type*} [Uniform
     DiscreteUniformity X ↔ uniformity X = 𝓟 SetRel.id := by
   rw [discreteUniformity_iff_eq_bot, UniformSpace.ext_iff, Filter.ext_iff, bot_uniformity]
 
-@[deprecated (since := "2025-12-19")]
-alias _root_.discreteUniformity_iff_eq_principal_relId :=
-  _root_.discreteUniformity_iff_eq_principal_setRelId
-
 theorem eq_principal_setRelId : uniformity X = 𝓟 SetRel.id :=
   discreteUniformity_iff_eq_principal_setRelId.mp inferInstance
-
-@[deprecated (since := "2025-12-19")] alias eq_principal_relId := eq_principal_setRelId
 
 /-- The discrete uniformity induces the discrete topology. -/
 instance : DiscreteTopology X where
@@ -56,10 +50,6 @@ instance : DiscreteTopology X where
 theorem _root_.discreteUniformity_iff_setRelId_mem_uniformity {X : Type*} [UniformSpace X] :
     DiscreteUniformity X ↔ SetRel.id ∈ uniformity X := by
   rw [← uniformSpace_eq_bot, discreteUniformity_iff_eq_bot]
-
-@[deprecated (since := "2025-12-19")]
-alias _root_.discreteUniformity_iff_relId_mem_uniformity :=
-  _root_.discreteUniformity_iff_setRelId_mem_uniformity
 
 theorem relId_mem_uniformity : SetRel.id ∈ uniformity X :=
   discreteUniformity_iff_setRelId_mem_uniformity.mp inferInstance
@@ -78,7 +68,7 @@ variable {X} in
 instance {Y : Type*} [UniformSpace Y] [DiscreteUniformity Y] :
     DiscreteUniformity (X × Y) := by
   simp [discreteUniformity_iff_eq_principal_setRelId, uniformity_prod_eq_comap_prod,
-    eq_principal_setRelId, SetRel.id, Set.prod_eq, Prod.ext_iff, Set.setOf_and]
+    eq_principal_setRelId, SetRel.id, Set.prod_eq, Prod.ext_iff, Set.ofPred_and]
 
 variable {x} in
 /-- On a space with a discrete uniformity, any function is uniformly continuous. -/

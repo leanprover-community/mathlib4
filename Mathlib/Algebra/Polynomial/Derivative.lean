@@ -34,7 +34,7 @@ namespace Polynomial
 
 universe u v w y z
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {n : ℕ}
 
 section Derivative
 
@@ -60,13 +60,13 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
   rw [derivative_apply]
   simp only [coeff_X_pow, coeff_sum, coeff_C_mul]
   rw [sum, Finset.sum_eq_single (n + 1)]
-  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, if_true]; norm_cast
+  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, ite_true]; norm_cast
   · intro b
     cases b
     · intros
       rw [Nat.cast_zero, mul_zero, zero_mul]
     · intro _ H
-      rw [Nat.add_one_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
+      rw [Nat.add_one_sub_one, ite_eq_right (mt (congr_arg Nat.succ) H.symm), mul_zero]
   · simp_all
 
 @[simp]
@@ -358,9 +358,6 @@ noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-@[deprecated (since := "2025-12-15")]
-alias derivativeFinsupp_apply_toFun := derivativeFinsupp_apply_apply
-
 @[simp]
 theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
     (derivativeFinsupp p).support ⊆ range n := by
@@ -453,13 +450,13 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
   norm_cast
   congr <;> lia
 
-@[deprecated (since := "2026-06-03")]
+@[deprecated derivative_eq_zero +typeChanged (since := "2026-06-03")]
 alias ⟨natDegree_eq_zero_of_derivative_eq_zero, _⟩ := derivative_eq_zero
 
 lemma eq_C_of_derivative_eq_zero (h : derivative p = 0) : p = C (p.coeff 0) :=
   eq_C_of_natDegree_eq_zero <| derivative_eq_zero.1 h
 
-@[deprecated degree_derivative (since := "2026-06-03")]
+@[deprecated degree_derivative +typeChanged (since := "2026-06-03")]
 lemma degree_derivative_eq (p : R[X]) (hp : 0 < natDegree p) :
     degree (derivative p) = (natDegree p - 1 : ℕ) :=
   degree_derivative (by lia)

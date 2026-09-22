@@ -136,7 +136,7 @@ private theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq 
     · ext i
       refine (RingHom.map_mulVec _ _ _ i).symm.trans ?_
       rw [mul_eq, Pi.zero_apply, map_zero, Pi.zero_apply]
-  · letI := Classical.decEq K
+  · let := Classical.decEq K
     obtain ⟨⟨b, hb⟩, ba_eq⟩ :=
       IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors A) (Finset.univ.image v)
     choose f hf using ba_eq

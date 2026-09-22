@@ -123,7 +123,9 @@ lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   simpa using! Real.tendsto_exp_comp_nhds_zero.mpr tendsto_neg_atTop_atBot |>.const_add 1 |>.inv₀ <|
@@ -252,13 +254,16 @@ lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   exact Real.sigmoid_neg x
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
   rw [sigmoid, Subtype.range_coind, Real.range_sigmoid]
   ext
   simp
 
-open Topology Filter
+open Filter
+
+open scoped Topology
 
 lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) :=
   tendsto_subtype_rng.mpr Real.tendsto_sigmoid_atTop

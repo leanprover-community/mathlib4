@@ -53,6 +53,7 @@ namespace Nucleus
 section SemilatticeInf
 variable [SemilatticeInf X] {n m : Nucleus X} {x y : X}
 
+@[macro_inline]
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
@@ -250,18 +251,14 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 
-set_option backward.privateInPublic true in
-instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
+instance : Frame (range n) := .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s := by
     simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
     rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
     apply n.monotone
     simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,
-      le_rfl]
+      le_rfl] }
 
-instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
-
-set_option backward.privateInPublic true in
 /-- Restrict a nucleus to its range. -/
 @[simps] def restrict (n : Nucleus X) : FrameHom X (range n) where
   toFun := rangeFactorization n

@@ -8,6 +8,7 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
+public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
 /-! # The alternating group is simple
@@ -67,6 +68,7 @@ namespace Equiv.Perm
 
 variable {α : Type*} [Finite α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Iwasawa structure of `Perm α` acting on `Set.powersetCard α 2`. -/
 def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     IwasawaStructure (Perm α) (Set.powersetCard α 2) where
@@ -167,7 +169,7 @@ def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
   is_generator := by
     rw [eq_top_iff, ← closure_cycleType_eq_two_two_eq_top h5, Subgroup.closure_le]
     intro g hg
-    simp only [Set.mem_setOf_eq] at hg
+    simp only [Set.mem_ofPred_eq] at hg
     apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, by simp [← sum_cycleType, hg]⟩
     rw [mem_map_kleinFour_ofSubtype] <;> simp [hg, ← sum_cycleType]
 
@@ -198,13 +200,21 @@ theorem normal_subgroup_eq_bot_or_eq_top
   · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα'
 
 /-- When `α` has at least 5 elements, then `alternatingGroup α` is a simple group. -/
-public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
+theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     IsSimpleGroup (alternatingGroup α) where
   exists_pair_ne := by
     rw [← _root_.nontrivial_iff]
     refine nontrivial_of_three_le_card ?_
     simpa using le_trans (by norm_num) hα
   eq_bot_or_eq_top_of_normal H _ := normal_subgroup_eq_bot_or_eq_top hα
+
+theorem isSolvable (hα : Nat.card α ≤ 4) : Group.IsSolvable (alternatingGroup α) := by
+  rcases Nat.le_succ_iff.mp hα with hα | hα
+  · have := alternatingGroup.isMulCommutative_of_card_le_three hα
+    infer_instance
+  · rw [← Group.isSolvable_commutator_iff, ← kleinFour_eq_commutator hα]
+    have := (kleinFour_isKleinFour hα).isMulCommutative
+    infer_instance
 
 @[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
 theorem _root_.Equiv.Perm.IsThreeCycle.alternating_normalClosure
@@ -233,3 +243,16 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
   isSimpleGroup (by simp)
 
 end alternatingGroup
+
+namespace Equiv.Perm
+
+theorem isSolvable {α : Type*} [Finite α] (hα : Nat.card α ≤ 4) :
+    Group.IsSolvable (Equiv.Perm α) := by
+  classical
+  cases nonempty_fintype α
+  have : Group.IsSolvable (alternatingGroup α) := alternatingGroup.isSolvable hα
+  have : IsMulCommutative (Equiv.Perm α ⧸ alternatingGroup α) :=
+    Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr alternatingGroup.commutator_perm_le
+  exact Group.isSolvable_of_subgroup_quotient (alternatingGroup α)
+
+end Equiv.Perm
