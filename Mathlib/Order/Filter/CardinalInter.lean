@@ -116,49 +116,66 @@ theorem eventually_cardinal_ball {S : Set ι} (hS : #S < c)
   simp only [Filter.Eventually, ofPred_forall]
   exact cardinal_bInter_mem hS
 
-theorem EventuallyLE.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
+theorem EventuallySubset.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i ≤ᶠ[l] t i) : ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
   ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs => mem_iUnion.2 <|
     (mem_iUnion.1 hs).imp hst
 
-theorem EventuallyEq.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
+theorem EventuallyEqSet.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i =ᶠ[l] t i) : ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.cardinal_iUnion hic fun i => (h i).le).antisymm
-    (EventuallyLE.cardinal_iUnion hic fun i => (h i).symm.le)
+  (EventuallySubset.cardinal_iUnion hic fun i => (h i).subset).antisymm
+    (EventuallySubset.cardinal_iUnion hic fun i => (h i).symm.subset)
 
-theorem EventuallyLE.cardinal_bUnion {S : Set ι} (hS : #S < c)
+theorem EventuallySubset.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
-  exact EventuallyLE.cardinal_iUnion hS fun i => h i i.2
+  exact EventuallySubset.cardinal_iUnion hS fun i => h i i.2
 
-theorem EventuallyEq.cardinal_bUnion {S : Set ι} (hS : #S < c)
+theorem EventuallyEqSet.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
-  (EventuallyLE.cardinal_bUnion hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.cardinal_bUnion hS fun i hi => (h i hi).symm.le)
+  (EventuallySubset.cardinal_bUnion hS fun i hi => (h i hi).subset).antisymm
+    (EventuallySubset.cardinal_bUnion hS fun i hi => (h i hi).symm.subset)
 
-theorem EventuallyLE.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
+theorem EventuallySubset.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i ≤ᶠ[l] t i) : ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
   ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs =>
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 
-theorem EventuallyEq.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
+theorem EventuallyEqSet.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i =ᶠ[l] t i) : ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.cardinal_iInter hic fun i => (h i).le).antisymm
-    (EventuallyLE.cardinal_iInter hic fun i => (h i).symm.le)
+  (EventuallySubset.cardinal_iInter hic fun i => (h i).subset).antisymm
+    (EventuallySubset.cardinal_iInter hic fun i => (h i).symm.subset)
 
-theorem EventuallyLE.cardinal_bInter {S : Set ι} (hS : #S < c)
+theorem EventuallySubset.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
-  exact EventuallyLE.cardinal_iInter hS fun i => h i i.2
+  exact EventuallySubset.cardinal_iInter hS fun i => h i i.2
 
-theorem EventuallyEq.cardinal_bInter {S : Set ι} (hS : #S < c)
+theorem EventuallyEqSet.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
-  (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.cardinal_bInter hS fun i hi => (h i hi).symm.le)
+  (EventuallySubset.cardinal_bInter hS fun i hi => (h i hi).subset).antisymm
+    (EventuallySubset.cardinal_bInter hS fun i hi => (h i hi).symm.subset)
+
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.cardinal_iUnion := EventuallySubset.cardinal_iUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.cardinal_iUnion := EventuallyEqSet.cardinal_iUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.cardinal_bUnion := EventuallySubset.cardinal_bUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.cardinal_bUnion := EventuallyEqSet.cardinal_bUnion
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.cardinal_iInter := EventuallySubset.cardinal_iInter
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.cardinal_iInter := EventuallyEqSet.cardinal_iInter
+@[deprecated (since := "2026-08-14")]
+alias EventuallyLE.cardinal_bInter := EventuallySubset.cardinal_bInter
+@[deprecated (since := "2026-08-14")]
+alias EventuallyEq.cardinal_bInter := EventuallyEqSet.cardinal_bInter
 
 /-- Construct a filter with cardinal `c` intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the cardinal `c` intersection property. -/
@@ -214,7 +231,7 @@ instance cardinalInter_ofCardinalUnion (l : Set (Set α)) (hc : 2 < c) (h₁ h�
 
 @[simp]
 theorem mem_ofCardinalUnion {l : Set (Set α)} (hc : 2 < c) {hunion hmono s} :
-    s ∈ ofCardinalUnion l hc hunion hmono ↔ l sᶜ :=
+    s ∈ ofCardinalUnion l hc hunion hmono ↔ sᶜ ∈ l :=
   Iff.rfl
 
 instance cardinalInterFilter_principal (s : Set α) : CardinalInterFilter (𝓟 s) c :=

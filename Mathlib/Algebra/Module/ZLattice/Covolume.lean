@@ -215,7 +215,9 @@ namespace covolume
 
 section General
 
-open Filter Fintype Pointwise Topology BoxIntegral Bornology
+open Filter Fintype Pointwise BoxIntegral Bornology
+
+open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L]
@@ -297,7 +299,9 @@ end General
 
 section Pi
 
-open Filter Fintype Pointwise Topology Bornology
+open Filter Fintype Pointwise Bornology
+
+open scoped Topology
 
 private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Finite ι]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
@@ -340,7 +344,9 @@ end Pi
 
 section InnerProductSpace
 
-open Filter Pointwise Topology Bornology
+open Filter Pointwise Bornology
+
+open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]

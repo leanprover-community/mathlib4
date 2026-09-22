@@ -317,7 +317,8 @@ theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
-    rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
+    rw [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
+    assumption
   convert! DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
@@ -330,7 +331,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
   have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
   refine Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete hs ?_
   rw [← coe_toAddSubgroup]
-  exact AddSubgroup.isClosed_of_discrete
+  exact AddSubgroup.isClosed_of_discreteTopology
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :

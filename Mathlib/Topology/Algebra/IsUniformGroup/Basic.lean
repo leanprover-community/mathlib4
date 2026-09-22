@@ -31,7 +31,9 @@ public import Mathlib.Tactic.Abel
 
 noncomputable section
 
-open Uniformity Topology Filter Pointwise
+open Filter Pointwise
+
+open scoped Uniformity Topology
 
 section IsUniformGroup
 
@@ -79,27 +81,41 @@ end IsUniformGroup
 
 end Cauchy
 
+namespace IsLeftUniformGroup
+
+variable (G : Type*) [Group G] [UniformSpace G] [IsLeftUniformGroup G]
+
+-- not an instance for performance reasons, see benchmark on PR #42117
+/-- A locally compact left-uniform group is complete. -/
+@[to_additive
+/-- A locally compact left-uniform additive group is complete. -/]
+theorem completeSpace_of_weaklyLocallyCompactSpace
+    [WeaklyLocallyCompactSpace G] : CompleteSpace G where
+  complete {f} hf := by
+    have : f.NeBot := hf.1
+    obtain ⟨K, K_compact, K_mem⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
+    obtain ⟨x, hx⟩ : ∃ x, ∀ᶠ y in f, x⁻¹ * y ∈ K := by
+      rw [cauchy_iff_le, uniformity_eq_comap_inv_mul_nhds_one, ← tendsto_iff_comap] at hf
+      exact hf.eventually_mem K_mem |>.curry.exists
+    simp_rw [← smul_eq_mul, ← Set.mem_smul_set_iff_inv_smul_mem] at hx
+    have Kx_complete : IsComplete (x • K) := K_compact.smul _ |>.isComplete
+    obtain ⟨l, -, hl⟩ := Kx_complete f hf (by simpa using hx)
+    exact ⟨l, hl⟩
+
+end IsLeftUniformGroup
+
 namespace IsRightUniformGroup
 
-variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
+variable (G : Type*) [Group G] [UniformSpace G] [IsRightUniformGroup G]
 
+-- not an instance for performance reasons, see benchmark on PR #42117
 /-- A locally compact right-uniform group is complete. -/
 @[to_additive
 /-- A locally compact right-uniform additive group is complete. -/]
 theorem completeSpace_of_weaklyLocallyCompactSpace
-    [WeaklyLocallyCompactSpace G] : CompleteSpace G where
-  complete {f} hf := by
-    open scoped RightActions in
-    have : f.NeBot := hf.1
-    obtain ⟨K, K_compact, K_mem⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
-    obtain ⟨x, hx⟩ : ∃ x, ∀ᶠ y in f, y / x ∈ K := by
-      rw [cauchy_iff_le, uniformity_eq_comap_nhds_one, ← tendsto_iff_comap] at hf
-      exact hf.eventually_mem K_mem |>.curry.exists
-    simp_rw [div_eq_mul_inv, ← op_smul_eq_mul, MulOpposite.op_inv,
-      ← mem_smul_set_iff_inv_smul_mem] at hx
-    have Kx_complete : IsComplete (K <• x) := K_compact.smul _ |>.isComplete
-    obtain ⟨l, -, hl⟩ := Kx_complete f hf (by simpa using hx)
-    exact ⟨l, hl⟩
+    [WeaklyLocallyCompactSpace G] : CompleteSpace G :=
+  completeSpace_mulOpposite_iff.1
+    (IsLeftUniformGroup.completeSpace_of_weaklyLocallyCompactSpace Gᵐᵒᵖ)
 
 end IsRightUniformGroup
 
@@ -262,46 +278,6 @@ instance (priority := 100) IsUniformGroup.of_compactSpace [UniformSpace β] [Gro
   uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
 
 end IsUniformGroup
-
-section IsTopologicalGroup
-
-open Filter
-
-variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-
-attribute [local instance] IsTopologicalGroup.rightUniformSpace
-
-variable {G}
-
-@[to_additive]
-instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
-    IsClosed (H : Set G) := by
-  have hd : IsDiscrete (H : Set G) := isDiscrete_iff_discreteTopology.mpr ‹_›
-  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
-    nhds_inter_eq_singleton_of_mem_discrete hd H.one_mem
-  have : (fun p : G × G => p.2 * p.1⁻¹) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
-  apply isClosed_of_spaced_out this
-  intro h h_in h' h'_in
-  contrapose
-  simp only [Set.mem_preimage]
-  rintro (hyp : h' * h⁻¹ ∈ V)
-  have : h' * h⁻¹ ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.mul_mem h'_in (H.inv_mem h_in))
-  exact (eq_of_mul_inv_eq_one this).symm
-
-@[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
-    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
-  IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
-
-@[to_additive]
-lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
-    (hf : Function.Injective f) (hf' : IsDiscrete (f.range : Set G)) :
-    Tendsto f cofinite (cocompact _) := by
-  replace hf : Function.Injective f.rangeRestrict := by simpa
-  exact (f.range.tendsto_coe_cofinite_of_discrete hf').comp hf.tendsto_cofinite
-
-end IsTopologicalGroup
 
 namespace MulOpposite
 

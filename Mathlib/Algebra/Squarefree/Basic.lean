@@ -211,6 +211,19 @@ theorem dvd_of_squarefree_of_mul_dvd_mul_right (hx : Squarefree x) (h : d * d �
 theorem dvd_of_squarefree_of_mul_dvd_mul_left (hy : Squarefree y) (h : d * d ∣ x * y) : d ∣ x :=
   dvd_of_squarefree_of_mul_dvd_mul_right hy (mul_comm x y ▸ h)
 
+/-- If `x` is squarefree and `x * y` is a square, then `x ∣ y`. -/
+theorem dvd_of_isSquare_mul (hx : Squarefree x) (h : IsSquare (x * y)) : x ∣ y := by
+  nontriviality R
+  obtain ⟨c, hc⟩ := h
+  obtain ⟨k, rfl⟩ : x ∣ c := (hx.dvd_pow_iff_dvd two_ne_zero).mp ⟨y, by rwa [sq, eq_comm]⟩
+  rw [mul_mul_mul_comm, mul_assoc, mul_right_inj' hx.ne_zero] at hc
+  exact ⟨k * k, hc⟩
+
+/-- Two squarefree elements whose product is a square are associated. -/
+theorem associated_of_isSquare_mul (hx : Squarefree x) (hy : Squarefree y)
+    (h : IsSquare (x * y)) : Associated x y :=
+  associated_of_dvd_dvd (hx.dvd_of_isSquare_mul h) (hy.dvd_of_isSquare_mul (mul_comm x y ▸ h))
+
 end Squarefree
 
 variable [DecompositionMonoid R]
@@ -265,6 +278,20 @@ lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     · suffices Squarefree (p * y) from ⟨p * y, n, this,
         mul_dvd_mul_left p hyx, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
       exact squarefree_mul_iff.mpr ⟨hp.isRelPrime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
+
+/-- Every element of a unique factorization monoid is a square times a squarefree element. -/
+theorem _root_.exists_sq_mul_squarefree (x : R) : ∃ e d : R, e ^ 2 * d = x ∧ Squarefree d := by
+  induction x using WfDvdMonoid.induction_on_irreducible with
+  | zero => exact ⟨0, 1, by simp, squarefree_one⟩
+  | unit u hu => exact ⟨1, u, by simp, hu.squarefree⟩
+  | mul z p hz hp ih =>
+    obtain ⟨e, d, rfl, hd⟩ := ih
+    by_cases hpd : p ∣ d
+    · obtain ⟨d', rfl⟩ := hpd
+      exact ⟨e * p, d', by simp only [pow_two]; ac_rfl, hd.of_mul_right⟩
+    · refine ⟨e, d * p, by ac_rfl, ?_⟩
+      rw [squarefree_mul_iff]
+      exact ⟨(hp.isRelPrime_iff_not_dvd.mpr hpd).symm, hd, hp.squarefree⟩
 
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
