@@ -358,12 +358,10 @@ lemma primrec_pappAck_step : Primrec pappAck.step := by
     [Code.primrec₂_curry.comp, Code.primrec₂_prec.comp, Code.primrec₂_comp.comp,
       _root_.Primrec.id, Primrec.const]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck_step_zero (c : Code) : (pappAck.step c).eval 0 = c.eval 1 := by
   simp [pappAck.step, Code.eval]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck_step_succ (c : Code) (n) :
     (pappAck.step c).eval (n + 1) = ((pappAck.step c).eval n).bind c.eval := by
@@ -371,10 +369,9 @@ lemma eval_pappAck_step_succ (c : Code) (n) :
 
 lemma primrec_pappAck : Primrec pappAck := by
   suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
-    convert! this using 2 with n; induction n <;> simp [pappAck, *]
+    convert this using 2 with n; induction n <;> simp [pappAck, *]
   apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
   induction m, n using ack.induct with
@@ -385,10 +382,9 @@ lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
 /-- The Ackermann function is computable. -/
 theorem _root_.computable₂_ack : Computable₂ ack := by
   apply _root_.Partrec.of_eq_tot
-    (f := fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
-  · change Partrec₂ (fun m n => (pappAck m).eval n)
-    apply_rules only
-      [Code.eval_part.comp₂, Computable.fst, Computable.snd, primrec_pappAck.to_comp.comp]
+    (f := fun p : ℕ × ℕ ↦. (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
+  · change Partrec₂ (fun m => (pappAck m).eval)
+    exact Code.eval_part.comp₂ (primrec_pappAck.to_comp.comp Computable.fst) Computable.snd
   · simp
 
 end Nat.Partrec.Code
