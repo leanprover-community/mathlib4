@@ -41,8 +41,10 @@ field.
 ## Implementation notes
 
 The definition is by well-founded recursion on the measure
-`if p = 0 then 0 else if q = 0 then 1 else 2 + q.natDegree`: the degree of the second argument
-drops at every step, except possibly at the first one, where `q` may have larger degree than `p`.
+`if p = 0 then 0 else if q = 0 then 1 else 2 + q.natDegree`. At every step the second argument goes
+from `q` to `-p % q`, which is either `0` or of smaller degree than `q`; if `q = 0` the next call
+is `sturmSeq 0 (-p)`, which is the base case. The two special values of the measure correspond to
+these two terminal cases.
 Proofs about `sturmSeq` should go through `sturmSeq_cons` and the functional induction principle
 `sturmSeq.induct` and never unfold the definition.
 
