@@ -39,7 +39,7 @@ theorem HasFiniteFreeResolutionOfLength.of_flat_baseChange {n : ℕ}
 instance HasFiniteFreeResolution.of_flat_baseChange [HasFiniteFreeResolution R M] :
     HasFiniteFreeResolution A (A ⊗[R] M) :=
   let ⟨n, hn⟩ := HasFiniteFreeResolution.out R M
-  ⟨n, hn.of_flat_baseChange⟩
+  (HasFiniteFreeResolution.iff A (A ⊗[R] M)).mpr ⟨n, hn.of_flat_baseChange⟩
 
 theorem HasFiniteFreeResolutionOfLength.of_isBaseChange_of_flat [Small.{v', u'} A]
     (hf : IsBaseChange A f) {n : ℕ} (hM : HasFiniteFreeResolutionOfLength R M n) :
