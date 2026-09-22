@@ -705,8 +705,7 @@ instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
 
 omit [NeZero n]
 
-instance isCyclotomicExtension_of_charZero [CharZero K] :
-    IsCyclotomicExtension {n} K (CyclotomicField n K) :=
+instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
   match n with
   | 0 => inferInstance
   | _ + 1 => inferInstance
