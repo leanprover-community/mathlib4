@@ -22,9 +22,8 @@ all the `Iso`s in `Rep` using the equivs in this file.
 
 open scoped MonoidAlgebra
 
-variable {k : Type*} [Semiring k] {G : Type*} [Monoid G] {V : Type*} [AddCommMonoid V]
-  [Module k V] {W : Type*} [AddCommMonoid W] [Module k W] (H : Type*) [Subsingleton H]
-  [MulOneClass H] [MulAction G H]
+variable {k G V W : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V] [AddCommMonoid W]
+  [Module k W] (H : Type*) [Subsingleton H] [MulOneClass H] [MulAction G H]
 
 namespace Representation
 
