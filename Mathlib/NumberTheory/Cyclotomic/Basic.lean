@@ -293,7 +293,6 @@ theorem equiv {C : Type*} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension 
     (f : B ≃ₐ[A] C) : IsCyclotomicExtension S A C := by
   let : Algebra B C := f.toAlgHom.toRingHom.toAlgebra
   have : IsCyclotomicExtension {1} B C := singleton_one_of_algebraMap_bijective f.surjective
-  have : IsScalarTower A B C := IsScalarTower.of_algHom f.toAlgHom
   exact (iff_union_singleton_one _ _ _).2 (trans S {1} A B C f.injective)
 
 theorem neZero_of_mem [IsCyclotomicExtension S A B] [IsDomain B] (hn : n ∈ S) : NeZero (n : B) :=
@@ -633,7 +632,6 @@ theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
   { splits' := splits_cyclotomic K L (mem_singleton n)
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
-      let := Classical.decEq L
       obtain ⟨ζ : L, hζ⟩ :=
         IsCyclotomicExtension.exists_isPrimitiveRoot K L (mem_singleton n) (NeZero.ne _)
       exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ }

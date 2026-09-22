@@ -512,7 +512,6 @@ theorem separableClosure_le_iff [Algebra.IsAlgebraic F E] (L : IntermediateField
     separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
   let := (inclusion h).toAlgebra
-  let : SMul (separableClosure F E) L := Algebra.toSMul
   have : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact IsPurelyInseparable.tower_top (separableClosure F E) L E
 

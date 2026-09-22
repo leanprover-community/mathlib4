@@ -184,8 +184,6 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
   classical
   by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
   · obtain ⟨s, ⟨b⟩⟩ := h
-    let : Algebra A B := RingHom.toAlgebra e
-    let : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.trace_eq_matrix_trace b,
       Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
     rw [AddMonoidHom.map_trace]

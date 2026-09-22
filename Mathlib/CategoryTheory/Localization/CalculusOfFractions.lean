@@ -80,7 +80,6 @@ noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInverted
 @[reassoc (attr := simp)]
 lemma map_comp_map_s (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     φ.map L hL ≫ L.map φ.s = L.map φ.f := by
-  let := hL _ φ.hs
   simp [map]
 
 variable (W)
@@ -94,14 +93,12 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
-  let := hL _ hs
   simp [map]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
-  let := hL _ hs
   simp [map]
 
 variable {W}
@@ -155,7 +152,6 @@ noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInverte
 @[reassoc (attr := simp)]
 lemma map_s_comp_map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map φ.s ≫ φ.map L hL = L.map φ.f := by
-  let := hL _ φ.hs
   simp [map]
 
 variable (W)
@@ -170,14 +166,12 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
-  let := hL _ hs
   simp [map]
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
-  let := hL _ hs
   simp [map]
 
 variable {W}

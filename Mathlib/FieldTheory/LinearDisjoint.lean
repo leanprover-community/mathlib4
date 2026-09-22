@@ -629,12 +629,6 @@ theorem isDomain' {A B : Type*} [Field A] [Algebra F A] [Field B] [Algebra F B]
 /-- If `A ⊗[F] L` is a field, then `A` and `L` are linearly disjoint over `F`. -/
 theorem of_isField (H : IsField (A ⊗[F] L)) : A.LinearDisjoint L := by
   apply Subalgebra.LinearDisjoint.of_isField
-  -- need these otherwise the `exact` will stuck at typeclass
-  have : SMulCommClass F A A := SMulCommClass.of_commMonoid F A A
-  have : SMulCommClass F A.toSubalgebra A.toSubalgebra := ‹SMulCommClass F A A›
-  let : Mul (A ⊗[F] L) := Algebra.TensorProduct.instMul
-  let : Mul (A.toSubalgebra ⊗[F] (IsScalarTower.toAlgHom F L E).range) :=
-    Algebra.TensorProduct.instMul
   exact Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
     (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
       |>.symm.toMulEquiv.isField H

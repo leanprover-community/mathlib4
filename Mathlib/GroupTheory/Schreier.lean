@@ -170,7 +170,6 @@ instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := b
 
 theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
     Group.rank H ≤ H.index * Group.rank G := by
-  have := H.fg_of_index_ne_zero
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
   calc
@@ -196,9 +195,6 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   have h1 := relIndex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
-  -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`
-  have : FiniteIndex ((center G).subgroupOf (_root_.commutator G)) :=
-    ⟨ne_zero_of_dvd_ne_zero hG h1⟩
   -- We have `h2 : rank (Z(G) ∩ G') ≤ [G' : Z(G) ∩ G'] * rank G'` by Schreier's lemma
   have h2 := rank_le_index_mul_rank ((center G).subgroupOf (_root_.commutator G))
   -- We have `h3 : [G' : Z(G) ∩ G'] * rank G' ≤ [G : Z(G)] * n` by `h1` and `rank G' ≤ n`

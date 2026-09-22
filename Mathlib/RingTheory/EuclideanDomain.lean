@@ -94,15 +94,11 @@ theorem gcd_isUnit_iff [DecidableEq α] {x y : α} : IsUnit (gcd x y) ↔ IsCopr
 -- this should be proved for UFDs surely?
 theorem isCoprime_of_dvd {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits α, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  letI := Classical.decEq α
-  letI := EuclideanDomain.gcdMonoid α
   _root_.isCoprime_of_dvd x y nonzero H
 
 -- this should be proved for UFDs surely?
 theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
-  letI := Classical.decEq α
-  letI := EuclideanDomain.gcdMonoid α
   _root_.dvd_or_isCoprime x y h
 
 end EuclideanDomain

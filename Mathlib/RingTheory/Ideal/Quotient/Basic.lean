@@ -96,7 +96,6 @@ theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   · have : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
-    have := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
 set_option backward.isDefEq.respectTransparency false in

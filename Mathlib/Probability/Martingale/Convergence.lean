@@ -337,7 +337,6 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
     f n =ᵐ[μ] μ[g | ℱ n] := by
   rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff one_ne_zero]
   have ht : Tendsto (fun m => eLpNorm (μ[f m - g | ℱ n]) 1 μ) atTop (𝓝 0) :=
-    haveI hint : ∀ m, Integrable (f m - g) μ := fun m => (hf.integrable m).sub hg
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le)
       fun m => eLpNorm_condExp_le_eLpNorm _ le_rfl
   have hev : ∀ m ≥ n, eLpNorm (μ[f m - g | ℱ n]) 1 μ = eLpNorm (f n - μ[g | ℱ n]) 1 μ := by

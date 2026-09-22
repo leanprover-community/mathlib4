@@ -129,7 +129,6 @@ but still assumes we have a finite spanning set.
 -/
 theorem basis_le_span' {ι : Type*} (b : Basis ι R M) {w : Set M} [Fintype w] (s : span R w = ⊤) :
     #ι ≤ Fintype.card w := by
-  have := nontrivial_of_invariantBasisNumber R
   have := basis_finite_of_finite_spans w.toFinite s b
   cases nonempty_fintype ι
   rw [Cardinal.mk_fintype ι]
@@ -143,7 +142,6 @@ then the cardinality of any basis is bounded by the cardinality of any spanning 
 -/
 theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) :
     #(range v) ≤ #J := by
-  have := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
     convert! Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
@@ -267,7 +265,6 @@ theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w
   -- We split into cases depending on whether `ι` is infinite.
   cases fintypeOrInfinite ι
   · rw [Cardinal.mk_fintype ι] -- When `ι` is finite, we have `linearIndependent_le_span`,
-    have : Nontrivial R := nontrivial_of_invariantBasisNumber R
     rw [Fintype.card_congr (Equiv.ofInjective b b.injective)]
     exact linearIndependent_le_span v i (range b) b.span_eq
   · -- and otherwise we have `linearIndependent_le_infinite_basis`.
@@ -320,7 +317,6 @@ theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι 
     exact infinite_basis_le_maximal_linearIndependent b v i m
 
 theorem Module.Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
-  have := nontrivial_of_invariantBasisNumber R
   rw [Module.rank_def]
   apply le_antisymm
   · trans
@@ -344,7 +340,6 @@ cardinality of the basis. -/
 theorem rank_eq_card_basis {ι : Type w} [Fintype ι] (h : Basis ι R M) :
     Module.rank R M = Fintype.card ι := by
   classical
-  have := nontrivial_of_invariantBasisNumber R
   rw [← h.mk_range_eq_rank, Cardinal.mk_fintype, Set.card_range_of_injective h.injective]
 
 namespace Module.Basis
@@ -366,7 +361,6 @@ theorem card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι]
 
 theorem mk_eq_rank (v : Basis ι R M) :
     Cardinal.lift.{v} #ι = Cardinal.lift.{w} (Module.rank R M) := by
-  have := nontrivial_of_invariantBasisNumber R
   rw [← v.mk_range_eq_rank, Cardinal.mk_range_eq_of_injective v.injective]
 
 theorem mk_eq_rank'.{m} (v : Basis ι R M) :
@@ -377,7 +371,6 @@ end Module.Basis
 
 theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
     Module.rank R ↑(span R (range v)) = #(range v) := by
-  have := nontrivial_of_invariantBasisNumber R
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 
