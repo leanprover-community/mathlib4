@@ -26,7 +26,7 @@ noncomputable section
 
 namespace Complex
 
-open Set Filter
+open Set Filter Finset
 
 open scoped Real
 
@@ -81,7 +81,6 @@ See also `Complex.tan_eq_zero_iff` for a version that takes into account junk va
 theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
   simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
-set_option linter.flexible false in -- Non-terminal simp, used to be field_simp
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
     cos x = cos y ↔ cos x - cos y = 0 := sub_eq_zero.symm
@@ -90,7 +89,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
     _ ↔ sin ((x - y) / 2) = 0 ∨ sin ((x + y) / 2) = 0 := or_comm
     _ ↔ (∃ k : ℤ, y = 2 * k * π + x) ∨ ∃ k : ℤ, y = 2 * k * π - x := by
       apply or_congr <;>
-        simp [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
+        simp only [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
           sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
       constructor <;> · rintro ⟨k, rfl⟩; use -k; simp
     _ ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x := exists_or.symm
@@ -219,7 +218,7 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} :=
 
 @[continuity]
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
-  continuousOn_iff_continuous_restrict.1 continuousOn_tan
+  continuousOn_iff_continuous_domRestrict.1 continuousOn_tan
 
 theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
@@ -253,11 +252,52 @@ theorem sin_surjective : Function.Surjective sin := by
 theorem range_sin : Set.range sin = Set.univ :=
   sin_surjective.range_eq
 
+theorem sin_mul_sum_sin (n : ℕ) (a b : ℂ) :
+    sin (a / 2) * ∑ i ∈ range n, sin (a * i + b) = sin (n * a / 2) * sin ((n - 1) * a / 2 + b) := by
+  apply mul_left_cancel₀ (show (-2 : ℂ) ≠ 0 by simp)
+  simp_rw [← mul_assoc, mul_sum]
+  calc
+    ∑ i ∈ range n, -2 * sin (a / 2) * sin (a * i + b)
+      = ∑ x ∈ range n, (cos (a * (↑(x + 1) - 1 / 2) + b) - cos (-(a * (x - 1 / 2) + b))) := by
+      congr! 1 with x hx
+      rw [cos_sub_cos]
+      push_cast
+      ring_nf
+    _ = -2 * sin (n * a / 2) * sin ((n - 1) * a / 2 + b) := by
+      simp_rw [cos_neg, sum_range_sub (fun i ↦ cos (a * (i - 1 / 2) + b)), cos_sub_cos]
+      ring_nf
+
+theorem sum_sin (n : ℕ) {a : ℂ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℂ) :
+    ∑ i ∈ range n, sin (a * i + b) = sin (n * a / 2) * sin ((n - 1) * a / 2 + b) / sin (a / 2) := by
+  rw [← sin_mul_sum_sin]
+  grind [sin_ne_zero_iff]
+
+theorem sin_mul_sum_cos (n : ℕ) (a b : ℂ) :
+    sin (a / 2) * ∑ i ∈ range n, cos (a * i + b) = sin (n * a / 2) * cos ((n - 1) * a / 2 + b) := by
+  apply mul_left_cancel₀ (show (2 : ℂ) ≠ 0 by simp)
+  simp_rw [← mul_assoc, mul_sum]
+  calc
+    ∑ i ∈ range n, 2 * sin (a / 2) * cos (a * i + b)
+      = ∑ x ∈ range n, (sin (a * (↑(x + 1) - 1 / 2) + b) - sin (a * (x - 1 / 2) + b)) := by
+      congr! 1 with x hx
+      rw [sin_sub_sin]
+      push_cast
+      ring_nf
+    _ = 2 * sin (n * a / 2) * cos ((n - 1) * a / 2 + b) := by
+      simp_rw [sum_range_sub (fun i ↦ sin (a * (i - 1 / 2) + b)), sin_sub_sin]
+      ring_nf
+
+theorem sum_cos (n : ℕ) {a : ℂ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℂ) :
+    ∑ i ∈ range n, cos (a * i + b) = sin (n * a / 2) * cos ((n - 1) * a / 2 + b) / sin (a / 2) := by
+  rw [← sin_mul_sum_cos]
+  grind [sin_ne_zero_iff]
+
 end Complex
 
 namespace Real
 
 open scoped Real
+open Finset
 
 theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 :=
   mod_cast @Complex.cos_eq_zero_iff θ
@@ -333,5 +373,23 @@ theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℝ) :
 theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℝ) :
     tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) :=
   mod_cast @Complex.tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq x
+
+theorem sin_mul_sum_sin (n : ℕ) (a b : ℝ) :
+    sin (a / 2) * ∑ i ∈ range n, sin (a * i + b) = sin (n * a / 2) * sin ((n - 1) * a / 2 + b) := by
+  exact_mod_cast congr($(Complex.sin_mul_sum_sin n a b).re)
+
+theorem sum_sin (n : ℕ) {a : ℝ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℝ) :
+    ∑ i ∈ range n, sin (a * i + b) = sin (n * a / 2) * sin ((n - 1) * a / 2 + b) / sin (a / 2) := by
+  have h := Complex.sum_sin n (a := a) (by exact_mod_cast h) b
+  exact_mod_cast congr($(h).re)
+
+theorem sin_mul_sum_cos (n : ℕ) (a b : ℝ) :
+    sin (a / 2) * ∑ i ∈ range n, cos (a * i + b) = sin (n * a / 2) * cos ((n - 1) * a / 2 + b) := by
+  exact_mod_cast congr($(Complex.sin_mul_sum_cos n a b).re)
+
+theorem sum_cos (n : ℕ) {a : ℝ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℝ) :
+    ∑ i ∈ range n, cos (a * i + b) = sin (n * a / 2) * cos ((n - 1) * a / 2 + b) / sin (a / 2) := by
+  have h := Complex.sum_cos n (a := a) (by exact_mod_cast h) b
+  exact_mod_cast congr($(h).re)
 
 end Real

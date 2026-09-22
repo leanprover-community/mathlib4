@@ -26,8 +26,6 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Limits
-
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable (F : C ⥤ D)

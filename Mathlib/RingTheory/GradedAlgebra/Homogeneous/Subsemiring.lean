@@ -77,7 +77,6 @@ theorem mem_iff {R : HomogeneousSubsemiring 𝒜} {a} :
 
 end HomogeneousSubsemiring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsHomogeneous.subsemiringClosure {s : Set A}
     (h : ∀ (i : ι) ⦃x : A⦄, x ∈ s → (decompose 𝒜 x i : A) ∈ s) :
     IsHomogeneous 𝒜 (Subsemiring.closure s) := fun i x hx ↦ by

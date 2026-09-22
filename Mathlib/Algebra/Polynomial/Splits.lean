@@ -346,6 +346,12 @@ theorem Splits.of_splits_map_of_injective {S : Type*} [CommRing S] [IsDomain S] 
   conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
 
+omit [IsDomain R] in
+theorem Splits.of_splits_algebraMap [FaithfulSMul R A] (hf : Splits (f.map (algebraMap R A)))
+    (h : ∀ a ∈ f.rootSet A, a ∈ (algebraMap R A).range) : Splits f := by
+  apply hf.of_splits_map_of_injective (FaithfulSMul.algebraMap_injective R A) fun a ha ↦ h a ?_
+  rwa [mem_rootSet', ← eval_map_algebraMap, ← IsRoot.def, ← mem_roots']
+
 theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
     {S : Type*} [Ring S] (i : S →+* R) (hr : ∀ a ∈ f.roots, a ∈ i.range) :
     f ∈ Polynomial.lifts i := by
@@ -482,12 +488,6 @@ theorem splits_prod_iff {ι : Type*} {f : ι → R[X]} {s : Finset ι} (hf : ∀
   ⟨fun h _ hx ↦ h.of_dvd (Finset.prod_ne_zero_iff.mpr hf) (Finset.dvd_prod_of_mem f hx),
     Splits.prod⟩
 
-@[deprecated "Use `Splits.degree_le_one_of_irreducible` instead." (since := "2026-01-13")]
-theorem Splits.splits (hf : Splits f) :
-    f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 :=
-  or_iff_not_imp_left.mpr fun hf0 _ hg hgf ↦ degree_le_of_natDegree_le <|
-    (hf.of_dvd hf0 hgf).natDegree_le_one_of_irreducible hg
-
 lemma map_sub_sprod_roots_eq_prod_map_eval
     (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((s ×ˢ g.roots).map fun ij ↦ ij.1 - ij.2).prod = (s.map g.eval).prod := by
@@ -498,7 +498,6 @@ lemma map_sub_sprod_roots_eq_prod_map_eval
   congr! with x hx
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_sub_roots_sprod_eq_prod_map_eval
     (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((g.roots ×ˢ s).map fun ij ↦ ij.1 - ij.2).prod =
@@ -670,37 +669,15 @@ theorem Splits.of_natDegree_eq_two {x : R} (h₁ : f.natDegree = 2) (h₂ : f.ev
 theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x = 0) : Splits f :=
   Splits.of_natDegree_eq_two (natDegree_eq_of_degree_eq_some h₁) h₂
 
-open UniqueFactorizationMonoid in
-@[deprecated "Use `Splits.degree_eq_one_of_irreducible` instead." (since := "2026-01-13")]
-theorem splits_iff_splits {f : R[X]} :
-    Splits f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g = 1 := by
-  refine ⟨fun hf ↦ or_iff_not_imp_left.mpr fun h0 g hg hgf ↦
-    (hf.of_dvd h0 hgf).degree_eq_one_of_irreducible hg, ?_⟩
-  rintro (rfl | hf)
-  · aesop
-  by_cases hf0 : f = 0
-  · simp [hf0]
-  obtain ⟨u, hu⟩ := factors_prod hf0
-  rw [← hu]
-  refine (Splits.multisetProd fun g hg ↦ ?_).mul u.isUnit.splits
-  exact Splits.of_degree_eq_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
-
 end Field
 
 noncomputable section
 
-open Polynomial
-
 universe u v w
-
-variable {F : Type u} {K : Type v} {L : Type w}
 
 section Splits
 
 section CommRing
-
-variable [CommRing K] [Field L] [Field F]
-variable (i : K →+* L)
 
 variable {i}
 
@@ -708,8 +685,7 @@ variable (i)
 
 end CommRing
 
-variable [CommRing R] [Field K] [Field L] [Field F]
-variable (i : K →+* L)
+variable [CommRing R]
 
 section UFD
 
@@ -717,11 +693,7 @@ attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
 
 local infixl:50 " ~ᵤ " => Associated
 
-open UniqueFactorizationMonoid Associates
-
 end UFD
-
-variable [Algebra R K] [Algebra R L]
 
 end Splits
 

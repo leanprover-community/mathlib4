@@ -54,7 +54,6 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 @[instance_reducible]
@@ -179,7 +178,6 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 @[instance_reducible]
@@ -228,7 +226,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by
     letI hn := regularOfIsPushoutSndOfRegular gn.regularEpi comm t
-    have q := (@zero_comp _ _ _ gn.W _ _ f).symm
+    have q : 0 = (0 : gn.W ⟶ P) ≫ f := zero_comp.symm
     convert! hn.isColimit
 
 /-- The first leg of a pushout cocone is a normal epimorphism if the left component is too.

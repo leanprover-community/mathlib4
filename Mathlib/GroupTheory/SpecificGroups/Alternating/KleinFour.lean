@@ -44,7 +44,7 @@ Since all 2-sylow subgroups are conjugate, we conclude
 that there is only one 2-sylow subgroup and that it is normal,
 and then characteristic.
 
-## TODO :
+## TODO
 
 Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.

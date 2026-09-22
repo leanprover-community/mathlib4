@@ -5,7 +5,7 @@ Authors: Anthony Bordg
 -/
 module
 
-public import Mathlib.Data.Rel
+public import Mathlib.Basic.Rel
 
 /-!
 # The Galois Connection Induced by a Relation

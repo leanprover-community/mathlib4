@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
@@ -85,7 +86,7 @@ open MeasureTheory
 /-! ## Strongly measurable functions -/
 
 section StronglyMeasurable
-variable {_ : MeasurableSpace α} {μ : Measure α} {f : α → β} {g : ℕ → α} {m : ℕ}
+variable {_ : MeasurableSpace α} {f : α → β} {g : ℕ → α} {m : ℕ}
 
 variable [TopologicalSpace β]
 
@@ -442,7 +443,6 @@ theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] (hf :
   ⟨fun n => hf.approx n / hg.approx n,
     fun x => (hf.tendsto_approx x).div (hg.tendsto_approx x) (h₀ x)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [MetrizableSpace β]
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
@@ -496,6 +496,11 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 protected theorem star {R : Type*} [MeasurableSpace α] [Star R] [TopologicalSpace R]
     [ContinuousStar R] (f : α → R) (hf : StronglyMeasurable f) : StronglyMeasurable (star f) :=
   ⟨fun n => star (hf.approx n), fun x => (hf.tendsto_approx x).star⟩
+
+protected theorem star_iff {R : Type*} [MeasurableSpace α] [InvolutiveStar R] [TopologicalSpace R]
+    [ContinuousStar R] {f : α → R} :
+    StronglyMeasurable (star f) ↔ StronglyMeasurable f :=
+  ⟨fun h ↦ by simpa using h.star, fun h ↦ h.star⟩
 
 /-- In a normed vector space, the addition of a measurable function and a strongly measurable
 function is measurable. Note that this is not true without further second-countability assumptions
@@ -840,7 +845,7 @@ theorem _root_.ContinuousOn.stronglyMeasurable_of_countable_compl [MeasurableSpa
   rw [this]
   apply StronglyMeasurable.dite (f := fun x ↦ f x) (g := fun x ↦ f x) ?_ ?_ h's
   · have : SecondCountableTopologyEither s β := by cases h.out <;> infer_instance
-    exact (continuousOn_iff_continuous_restrict.1 hf).stronglyMeasurable
+    exact (continuousOn_iff_continuous_domRestrict.1 hf).stronglyMeasurable
   · have := hs.to_subtype
     exact MeasureTheory.StronglyMeasurable.of_discrete
 
@@ -896,7 +901,7 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
 
 theorem _root_.stronglyMeasurable_of_restrict_of_restrict_compl {_ : MeasurableSpace α}
     [TopologicalSpace β] {f : α → β} {s : Set α} (hs : MeasurableSet s)
-    (h₁ : StronglyMeasurable (s.restrict f)) (h₂ : StronglyMeasurable (sᶜ.restrict f)) :
+    (h₁ : StronglyMeasurable (s.domRestrict f)) (h₂ : StronglyMeasurable (sᶜ.domRestrict f)) :
     StronglyMeasurable f :=
   stronglyMeasurable_of_stronglyMeasurable_union_cover s sᶜ hs hs.compl (union_compl_self s).ge h₁
     h₂

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
 /-!
 # Affine space
@@ -69,7 +70,6 @@ instance over : 𝔸(n; S).CanonicallyOver S where
 /-- The map from the affine `n`-space over `S` to the integral model `Spec ℤ[n]`. -/
 def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
@@ -172,7 +172,7 @@ def isoOfIsAffine [IsAffine S] :
       hom := 𝔸(n; S).toSpecΓ ≫ Spec.map (CommRingCat.ofHom
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)))
       inv := homOfVector (Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv)
-        ((Scheme.ΓSpecIso (.of (MvPolynomial n Γ(S, ⊤)))).inv ∘ MvPolynomial.X)
+        ((Scheme.ΓSpecIso ↧(MvPolynomial n Γ(S, ⊤))).inv ∘ MvPolynomial.X)
       hom_inv_id := by
         ext1
         · simp only [Category.assoc, homOfVector_over, Category.id_comp]
@@ -209,13 +209,11 @@ lemma isoOfIsAffine_hom_appTop [IsAffine S] :
         (eval₂Hom ((𝔸(n; S) ↘ S).appTop).hom (coord S)) := by
   simp [isoOfIsAffine_hom]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma isoOfIsAffine_inv_appTop_coord [IsAffine S] (i) :
-    (isoOfIsAffine n S).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) :=
+    (isoOfIsAffine n S).inv.appTop (coord _ i) = (Scheme.ΓSpecIso ↧_).inv (.X i) :=
   homOfVector_appTop_coord _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma isoOfIsAffine_inv_over [IsAffine S] :
     (isoOfIsAffine n S).inv ≫ 𝔸(n; S) ↘ S = Spec.map (CommRingCat.ofHom C) ≫ S.isoSpec.inv :=
@@ -230,7 +228,6 @@ def SpecIso (R : CommRingCat.{u}) :
   isoOfIsAffine _ _ ≪≫ Scheme.Spec.mapIso (MvPolynomial.mapEquiv _
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv).toCommRingCatIso.op
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma SpecIso_hom_appTop (R : CommRingCat.{u}) :
     (SpecIso n R).hom.appTop = (Scheme.ΓSpecIso _).hom ≫
@@ -242,7 +239,7 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{u}) :
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma SpecIso_inv_appTop_coord (R : CommRingCat.{u}) (i) :
-    (SpecIso n R).inv.appTop (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) := by
+    (SpecIso n R).inv.appTop (coord _ i) = (Scheme.ΓSpecIso ↧_).inv (.X i) := by
   simp only [SpecIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, Scheme.Spec_map,
     Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, CommRingCat.comp_apply]
   rw [isoOfIsAffine_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
@@ -250,7 +247,6 @@ lemma SpecIso_inv_appTop_coord (R : CommRingCat.{u}) (i) :
   congr 1
   exact map_X _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma SpecIso_inv_over (R : CommRingCat.{u}) :
     (SpecIso n R).inv ≫ 𝔸(n; Spec R) ↘ Spec R = Spec.map (CommRingCat.ofHom C) := by
@@ -325,7 +321,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_map {S T : Scheme.{u}} (f : S ⟶ T) :
     IsPullback (map n f) (𝔸(n; S) ↘ S) (𝔸(n; T) ↘ T) f := by
   refine (IsPullback.paste_horiz_iff (.flip <| .of_hasPullback _ _) (map_over f)).mp ?_
-  simp only [terminal.comp_from, ]
+  simp only [terminal.comp_from]
   convert! (IsPullback.of_hasPullback _ _).flip
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
@@ -380,15 +376,31 @@ instance : Surjective (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ <|
     MorphismProperty.cancel_right_of_respectsIso (P := @Surjective)]
   exact ⟨MvPolynomial.comap_C_surjective⟩
 
+variable (n) in
 set_option backward.isDefEq.respectTransparency.types false in
-instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
+/-- The affine `n`-space over `S` is smooth of relative dimension `Nat.card n`. -/
+instance smoothOfRelativeDimension [Finite n] :
+    SmoothOfRelativeDimension (Nat.card n) (𝔸(n; S) ↘ S) :=
   MorphismProperty.pullback_fst _ _ <| by
   have := isIso_of_isTerminal specULiftZIsTerminal.{u} terminalIsTerminal (terminal.from _)
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
-    MorphismProperty.cancel_right_of_respectsIso (P := @LocallyOfFinitePresentation),
-    HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation), RingHom.FinitePresentation]
-  convert! (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+    MorphismProperty.cancel_right_of_respectsIso (P := @SmoothOfRelativeDimension _),
+    HasRingHomProperty.Spec_iff (P := @SmoothOfRelativeDimension _)]
+  apply RingHom.locally_of RingHom.isStandardSmoothOfRelativeDimension_respectsIso
+  simp_rw [ConcreteCategory.hom_ofHom, ← MvPolynomial.algebraMap_eq,
+    RingHom.isStandardSmoothOfRelativeDimension_algebraMap]
+  exact Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial _ _
+
+lemma smoothOfRelativeDimension_of_card_eq [Finite n] {m : ℕ} (h : Nat.card n = m) :
+    SmoothOfRelativeDimension m (𝔸(n; S) ↘ S) := h ▸ smoothOfRelativeDimension n S
+
+/-- The affine `n`-space (indexed by `ULift (Fin n)`) over `S` is smooth of relative
+dimension `n`. -/
+instance smoothOfRelativeDimension_fin {S : Scheme.{u}} (n : ℕ) :
+    SmoothOfRelativeDimension n (𝔸(ULift.{u} (Fin n); S) ↘ S) :=
+  smoothOfRelativeDimension_of_card_eq S (by simp)
+
+instance [Finite n] : Smooth (𝔸(n; S) ↘ S) := (smoothOfRelativeDimension n S).smooth
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
   change topologically @IsOpenMap _
@@ -408,7 +420,7 @@ instance : GeometricallyIrreducible (𝔸(n; S) ↘ S) := by
   rw [geometricallyIrreducible_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n ↧K)).symm
   infer_instance
 
 instance [IrreducibleSpace S] : IrreducibleSpace 𝔸(n; S) :=
@@ -418,7 +430,7 @@ instance : GeometricallyReduced (𝔸(n; S) ↘ S) := by
   rw [geometricallyReduced_iff]
   introv K h
   apply ObjectProperty.prop_of_iso _
-    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n (.of K))).symm
+    ((h.isoIsPullback _ _ (isPullback_map _)) ≪≫ (SpecIso n ↧K)).symm
   infer_instance
 
 set_option backward.isDefEq.respectTransparency.types false in

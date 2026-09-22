@@ -246,7 +246,7 @@ theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := f
   hP (subset_closure h)
 
 @[simp]
-theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
+theorem closed (S : L.Substructure M) : (S : Set M) ∈ (closure L).closed :=
   congr rfl ((closure L).eq_of_le Set.Subset.rfl fun _x xS => mem_closure.2 fun _T hT => hT xS)
 
 open Set
