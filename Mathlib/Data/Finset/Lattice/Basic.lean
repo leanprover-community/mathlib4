@@ -74,7 +74,7 @@ instance : Lattice (Finset α) where
   inf_le_left := fun _ _ _ h => (mem_ndinter.1 h).1
   inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2
 
-@[deprecated "This is now a syntactic euqality" (since := "2026-08-01")]
+@[deprecated "This is now a syntactic equality" (since := "2026-08-01")]
 theorem sup_eq_union' : (Max.max : Finset α → Finset α → Finset α) = Max.max :=
   rfl
 
