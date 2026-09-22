@@ -115,7 +115,7 @@ theorem ofPoint_linear : ofPoint.linear = ofVector (R := R) (P := P) :=
 
 @[simp]
 theorem ofVector_vsub (p q : P) : ofVector (R := R) (p -ᵥ q) = ofPoint p - ofPoint q :=
-  ofPoint.linear_map_vsub p q
+  ofPoint.linear_apply_vsub p q
 
 @[simp]
 theorem ofVector_smul {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
