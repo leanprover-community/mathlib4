@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Functor.CurryingFour
-public import Mathlib.CategoryTheory.Functor.WhiskeringFour
 public import Mathlib.CategoryTheory.Localization.Trifunctor
 
 /-!
