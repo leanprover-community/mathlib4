@@ -151,11 +151,8 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
 
 theorem subsingleton_iff_isEmpty_or_unique (α : Sort u) :
     Subsingleton α ↔ IsEmpty α ∨ Nonempty (Unique α) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_cases h' : Nonempty α
-    · exact Or.inr <| nonempty_unique α
-    · exact Or.inl <| isEmpty_iff.mpr fun a ↦ not_nonempty_iff_imp_false.mp h' a
-  · rcases h with _ | ⟨⟨_⟩⟩ <;> infer_instance
+  rw [isEmpty_iff, ← not_nonempty_iff_imp_false, unique_iff_subsingleton_and_nonempty,
+    or_and_left, or_iff_right_of_imp subsingleton_of_not_nonempty, and_iff_left (em' _)]
 
 variable {α : Sort*}
 
