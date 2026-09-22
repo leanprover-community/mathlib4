@@ -323,7 +323,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
   -- from `W` we have `∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x`
   have wa : ∀ ⦃w⦄, w ∈ W → w ≠ a → w ≠ b → G.Adj w x := by
     intro _ hz haz hbz
-    by_contra! hf
+    by_contra hf
     apply h2.not_gt
     exact two_lt_card.2 ⟨_, by simp [has, hcj], _, by simp [hbt, hdj], _,
                          mem_filter.2 ⟨hz, by rwa [adj_comm] at hf⟩, hab, haz.symm, hbz.symm⟩
@@ -429,7 +429,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     -- If `H` is `r + 2`-colorable then so is `G`
     apply Colorable.mono_left hle
     -- Suppose, for a contradiction, that `H` is not `r + 2`-colorable
-    by_contra! hnotcol
+    by_contra hnotcol
     -- so `H` is not complete-multipartite
     have hn : ¬ H.IsCompleteMultipartite := fun hc ↦ hnotcol <| hc.colorable_of_cliqueFree hmcf.1
     -- Hence `H` contains `Wᵣ₊₁,ₖ` but not `Wᵣ₊₁,ₖ₊₁`, for some `k < r + 1`
