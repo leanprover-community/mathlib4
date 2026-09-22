@@ -167,7 +167,7 @@ theorem dotProduct_star_self_pos_iff {v : n → R} :
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
-theorem dotProduct_self_star_pos_iff {v : n → R} : 0 < v ⬝ᵥ (star v) ↔ v ≠ 0 := by
+theorem dotProduct_self_star_pos_iff {v : n → R} : 0 < v ⬝ᵥ star v ↔ v ≠ 0 := by
   simpa using dotProduct_star_self_pos_iff (v := star v)
 
 end Matrix
