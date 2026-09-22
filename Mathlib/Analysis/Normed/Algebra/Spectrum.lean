@@ -55,17 +55,16 @@ non-unital normed algebras too. When `A` is unital, `quasispectrum 𝕜 a = spec
 
 @[expose] public section
 
-variable {𝕜 A : Type*}
-
-local notation "σ" => spectrum
-local notation "σₙ" => quasispectrum
-
-
 assert_not_exists ProbabilityTheory.cond
 assert_not_exists HasFDerivAt
 
 open NormedSpace Topology Filter Set WithLp Unitization ENNReal
 open scoped ENNReal NNReal Topology Set.Notation
+
+variable {𝕜 A : Type*}
+
+local notation "σ" => spectrum
+local notation "σₙ" => quasispectrum
 
 /- The *spectral radius* is the supremum of the `enorm` (`‖·‖ₑ`) of elements in the quasispectrum.
 
@@ -111,19 +110,6 @@ theorem Unitization.spectralRadius_inr [IsScalarTower 𝕜 A A] [SMulCommClass �
     spectralRadius 𝕜 (a : Unitization 𝕜 A) = spectralRadius 𝕜 a := by
   simp [spectralRadius, quasispectrum_eq_spectrum_union_zero, ← quasispectrum_eq_spectrum_inr']
 
-
--- this should move out of this file. Does it work when `𝕜` is not a (semi)field?
-open Pointwise Unitization in
-@[simp]
-theorem quasispectrum_smul [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] (k : 𝕜) (a : A) :
-    σₙ 𝕜 (k • a) = k • σₙ 𝕜 a := by
-  ext r
-  obtain (rfl | hk) := eq_or_ne k 0
-  · simp [Set.zero_smul_set (quasispectrum.nonempty 𝕜 a)]
-  · lift k to 𝕜ˣ using IsUnit.mk0 k hk
-    simp_rw [quasispectrum_eq_spectrum_inr 𝕜, inr_smul, ← Units.smul_def,
-      spectrum.unit_smul_eq_smul]
-
 @[simp]
 theorem spectralRadius_smul [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] (k : 𝕜) (a : A) :
     spectralRadius 𝕜 (k • a) = ‖k‖ₑ * spectralRadius 𝕜 a := by
@@ -155,9 +141,6 @@ private theorem withLp_one_unitization_notMem_of_norm_lt {a : WithLp 1 (Unitizat
   let ku := Units.map (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A))).toMonoidHom (Units.mk0 k hk)
   have hku : ‖-a‖ < ‖(↑ku⁻¹ : WithLp 1 (Unitization 𝕜 A))‖⁻¹ := by simpa [ku] using h
   simpa [ku, sub_eq_add_neg, Algebra.algebraMap_eq_smul_one] using (ku.add (-a) hku).isUnit
-
--- move to another file
-attribute [simp] WithLp.unitization_norm_inr
 
 theorem quasispectrum.norm_le_norm_of_mem {a : A} {k : 𝕜} (hk : k ∈ σₙ 𝕜 a) :
     ‖k‖ ≤ ‖a‖ := by
@@ -566,16 +549,6 @@ open scoped Topology
 
 section NormedField
 
--- Move me elsewhere
-open scoped Ring
-theorem IsUnit.map_inverse {F M₀ M₀' : Type*} [MonoidWithZero M₀] [MonoidWithZero M₀']
-    [FunLike F M₀ M₀'] [MonoidWithZeroHomClass F M₀ M₀'] (f : F) {a : M₀} (h : IsUnit a) :
-    f a⁻¹ʳ = (f a)⁻¹ʳ := by
-  lift a to M₀ˣ using h
-  convert a.coe_map_inv (MonoidHom.ofClass f) |>.symm
-  · simp
-  · simp [← Ring.inverse_unit]
-
 variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
@@ -598,7 +571,7 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
   apply hS.mem_of_tendsto hla₂
   rw [Filter.eventually_map]
   apply hl.mono fun x hx ↦ ?_
-  rw [← hx.map_inverse (val S)]
+  rw [← hx.map_ringInverse (val S)]
   simp
 
 /-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
