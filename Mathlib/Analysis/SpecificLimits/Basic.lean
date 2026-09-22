@@ -348,7 +348,7 @@ theorem sum_geometric_two_le (n : ℕ) : (∑ i ∈ range n, (1 / (2 : ℝ)) ^ i
   have : ∀ i, 0 ≤ (1 / (2 : ℝ)) ^ i := by
     intro i
     apply pow_nonneg
-    norm_num
+    simp
   convert! summable_geometric_two.sum_le_tsum (range n) (fun i _ ↦ this i)
   exact tsum_geometric_two.symm
 
