@@ -47,7 +47,12 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 instance Prop.le_total : @Std.Total Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 
-noncomputable instance Prop.linearOrder : LinearOrder Prop := by
+/-- The order on `Prop` is a `LinearOrder`.
+
+This is not an instance since `LinearOrder` includes decidability instances, which we want to avoid
+for `Prop`. -/
+@[expose, instance_reducible]
+noncomputable def Prop.linearOrder : LinearOrder Prop := by
   classical
   exact Lattice.toLinearOrder Prop
 

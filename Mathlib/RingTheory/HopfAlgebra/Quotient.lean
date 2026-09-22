@@ -57,7 +57,7 @@ noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective
           f.toCoalgHom.toLinearMap
         = (toConv (f.toLinearMap ∘ₗ antipode R) * toConv f.toLinearMap).ofConv := by
           rw [convMul_comp_coalgHom_distrib, hS]; rfl
-      _ = (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ
+      _ = (AlgHom.ofClass f).toLinearMap ∘ₗ
             (toConv (antipode R) * toConv .id : WithConv (A →ₗ[R] A)).ofConv := by
           rw [algHom_comp_convMul_distrib]; rfl
       _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
@@ -66,7 +66,7 @@ noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective
           f.toCoalgHom.toLinearMap
         = (toConv f.toLinearMap * toConv (f.toLinearMap ∘ₗ antipode R)).ofConv := by
           rw [convMul_comp_coalgHom_distrib, hS]; rfl
-      _ = (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ
+      _ = (AlgHom.ofClass f).toLinearMap ∘ₗ
             (toConv .id * toConv (antipode R) : WithConv (A →ₗ[R] A)).ofConv := by
           rw [algHom_comp_convMul_distrib]; rfl
       _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by

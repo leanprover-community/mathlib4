@@ -190,8 +190,7 @@ private theorem calc_norm_le_one {n : ℕ} {z : ℤ_[p]} (hz : ih n z) :
       gcongr
       apply hz.2
     _ = ‖F.derivative.aeval a‖ * T ^ 2 ^ n := div_sq_cancel _ _
-    _ ≤ 1 := mul_le_one₀ (PadicInt.norm_le_one _) (T_pow_nonneg _) (le_of_lt (T_pow' hnorm _))
-
+    _ ≤ 1 := by bound [T_pow' hnorm n]
 
 private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
     (hz1 : ‖z1‖ = ‖F.aeval z‖ / ‖F.derivative.aeval a‖) {n} (hz : ih n z) :
@@ -217,7 +216,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   have hdzne' : (↑(F.derivative.aeval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff.2 h)
   obtain ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion z (-z1)
   have : ‖(↑(F.derivative.aeval z) * (↑(F.aeval z) / ↑(F.derivative.aeval z)) : ℚ_[p])‖ ≤ 1 := by
-    simpa using mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
+    rw [norm_mul, PadicInt.padic_norm_e_of_padicInt]; bound
   have : F.derivative.aeval z * -z1 = -F.aeval z := by
     calc
       F.derivative.aeval z * -z1 =
@@ -395,7 +394,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
         (le_of_lt (T_lt_one hnorm)) this) (norm_nonneg _))
     _ < ‖F.derivative.aeval a‖ * T ^ 1 :=
       (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one₀ (T_pos hnorm hnsol)
-        (T_lt_one hnorm) (by norm_num)) (deriv_norm_pos hnorm))
+        (T_lt_one hnorm) (by simp)) (deriv_norm_pos hnorm))
     _ = ‖F.aeval a‖ / ‖F.derivative.aeval a‖ := by
       rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,
         PadicInt.coe_mul, norm_mul]

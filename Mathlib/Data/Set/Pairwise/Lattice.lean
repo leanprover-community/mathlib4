@@ -143,7 +143,7 @@ theorem biUnion_sdiff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ 
 /-- Equivalence between a disjoint bounded union and a dependent sum. -/
 noncomputable def biUnionEqSigmaOfDisjoint {s : Set ι} {f : ι → Set α} (h : s.PairwiseDisjoint f) :
     (⋃ i ∈ s, f i) ≃ Σ i : s, f i :=
-  (Equiv.setCongr (biUnion_eq_iUnion _ _)).trans <|
+  (Set.equivOfEq (biUnion_eq_iUnion _ _)).trans <|
     unionEqSigmaOfDisjoint fun ⟨_i, hi⟩ ⟨_j, hj⟩ ne => h hi hj fun eq => ne <| Subtype.ext eq
 
 @[simp]
@@ -191,8 +191,8 @@ theorem Pairwise.subset_of_biUnion_subset_biUnion (h₀ : Pairwise (Disjoint on 
 
 theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀ i, (f i).Nonempty) :
     Injective fun s : Set ι => ⋃ i ∈ s, f i := fun _s _t h =>
-  ((h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.subset).antisymm <|
-    (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.superset
+  ((h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) h.subset).antisymm <|
+    (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) h.superset
 
 /-- In a disjoint union we can identify the unique set an element belongs to. -/
 theorem pairwiseDisjoint_unique {y : α}

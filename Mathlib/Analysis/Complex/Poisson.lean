@@ -228,7 +228,7 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
       apply circleAverage_congr_sphere fun z hz ↦ ?_
       have hzR : ‖z‖ = R := by simpa [abs_of_pos hR] using hz
       match_scalars
-      simp only [q, W, real_smul, ofReal_div, coe_algebraMap, mul_one]
+      simp only [q, W, real_smul, ofReal_div, coe_algebraMap]
       rw [← norm_mul_exp_arg_mul_I w, ← norm_mul_exp_arg_mul_I z, hzR,
         ← circleAverage_re_smul_on_ball_zero_aux, norm_mul_exp_arg_mul_I w]
       field [hR.ne.symm]
@@ -329,7 +329,7 @@ theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable
   -- Uniform bound for the differentiated integrand near `w`
   case bound =>
     filter_upwards with θ _ x hx
-    have h₁ : ‖(2 : ℂ)‖ = 2 := by norm_num
+    have h₁ : ‖(2 : ℂ)‖ = 2 := by simp
     rw [norm_smul, norm_div, norm_mul, norm_circleMap_zero, norm_pow, div_eq_mul_inv, h₁]
     gcongr
     exact hdist x hx θ

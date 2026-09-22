@@ -84,8 +84,8 @@ open scoped Distributions
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
 class TestFunctionClass (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) extends FunLike B E F where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_hasCompactSupport (f : B) : HasCompactSupport f
@@ -96,15 +96,15 @@ open TestFunctionClass
 namespace TestFunctionClass
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
@@ -126,6 +126,8 @@ protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contD
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
+protected theorem zero_on_compl (f : 𝓓^{n}(Ω, F)) : EqOn f 0 Ωᶜ := fun _ hx ↦
+  image_eq_zero_of_notMem_tsupport fun h ↦ hx (f.tsupport_subset h)
 
 @[fun_prop]
 protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
@@ -674,6 +676,11 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
   exact B.memLp_of_bilin 1 f.memLp_top hφ
 
+protected theorem integrable_smul {f : E → F} {μ : Measure E}
+    (φ : 𝓓^{n}(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
+    Integrable (fun x ↦ φ x • f x) μ :=
+  φ.integrable_bilin (ContinuousLinearMap.lsmul ℝ ℝ) hf
+
 /-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
 `LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both
 - `IsLocallyFiniteMeasure (μ.restrict Ω)` (because we say nothing about points outside of `Ω`)
@@ -691,7 +698,7 @@ protected theorem integrable {μ : Measure E}
   replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   suffices IntegrableOn ((1 : ℝ) • f) (tsupport f) μ by simpa
   rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
-  exact f.memLp_top.smul H
+  exact H.smul f.memLp_top
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
 
@@ -740,5 +747,38 @@ lemma integralAgainstBilinCLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜]
   simp [hφ, hφ']
 
 end Integral
+
+section Multiplication
+
+section bilin
+
+variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
+
+open ContinuousLinearMap Finset
+
+/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_(E, F₁),
+where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
+noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
+    𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₃) :=
+  letI T : 𝓓^{n}(Ω, F₁) → 𝓓^{n}(Ω, F₃) :=
+    fun φ ↦ ⟨fun x ↦ B (φ x) (g x),
+      ((B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp ((φ.contDiff).prodMk hg)),
+      (by exact (φ.hasCompactSupport).mono (by aesop)),
+      (by exact le_trans (closure_mono (by aesop)) (tsupport_map_subset φ))⟩
+  TestFunction.limitCLM 𝕜 T
+    (fun K K_sub_Ω ↦ ofSupportedInCLM 𝕜 K_sub_Ω ∘L ContDiffMapSupportedIn.bilinLeftCLM B hg)
+    (fun K K_sub_Ω f ↦ by congr)
+
+@[simp]
+theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)
+    (φ : 𝓓^{n}(Ω, F₁)) : bilinLeftCLM B hg φ = fun x => B (φ x) (g x) := rfl
+
+
+end bilin
+
+end Multiplication
 
 end TestFunction
