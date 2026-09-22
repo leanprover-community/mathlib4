@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Tactic.CrossRefAttribute
@@ -114,6 +115,17 @@ analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
+namespace EuclideanSpace
+
+variable {n : Type*}
+
+instance : Lattice (EuclideanSpace ℝ n) := (WithLp.equiv 2 (n → ℝ)).lattice
+
+instance : IsOrderedAddMonoid (EuclideanSpace ℝ n) :=
+  Function.Injective.isOrderedAddMonoid WithLp.ofLp (fun _ _ ↦ rfl) .rfl
+
+end EuclideanSpace
+
 section Notation
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
@@ -156,6 +168,12 @@ theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fint
 theorem EuclideanSpace.real_norm_sq_eq {n : Type*} [Fintype n] (x : EuclideanSpace ℝ n) :
     ‖x‖ ^ 2 = ∑ i, (x i) ^ 2 := by
   simp [EuclideanSpace.norm_sq_eq]
+
+instance {n : Type*} [Fintype n] : HasSolidNorm (EuclideanSpace ℝ n) where
+  solid {x y} h := by
+    rw [← sq_le_sq₀ (norm_nonneg x) (norm_nonneg y), EuclideanSpace.real_norm_sq_eq,
+      EuclideanSpace.real_norm_sq_eq]
+    exact Finset.sum_le_sum fun i _ ↦ sq_le_sq.2 (h i)
 
 @[wikidata Q847073]
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
