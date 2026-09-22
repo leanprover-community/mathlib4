@@ -23,7 +23,7 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {G : Type*} [Group G]
@@ -34,10 +34,12 @@ section
 variable (G) (A)
 
 /-- A `Group` is simple when it has exactly two normal `Subgroup`s. -/
-@[mk_iff]
+@[mk_iff, wikidata Q571124]
 class IsSimpleGroup : Prop extends Nontrivial G where
   /-- Any normal subgroup is either `⊥` or `⊤` -/
-  eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤
+  eq_bot_or_eq_top_of_normal : ∀ (H : Subgroup G) [H.Normal], H = ⊥ ∨ H = ⊤
+
+attribute [instance 100] IsSimpleGroup.toNontrivial
 
 /-- An `AddGroup` is simple when it has exactly two normal `AddSubgroup`s. -/
 @[mk_iff]
@@ -45,14 +47,16 @@ class IsSimpleAddGroup : Prop extends Nontrivial A where
   /-- Any normal additive subgroup is either `⊥` or `⊤` -/
   eq_bot_or_eq_top_of_normal : ∀ H : AddSubgroup A, H.Normal → H = ⊥ ∨ H = ⊤
 
+attribute [instance 100] IsSimpleAddGroup.toNontrivial
+
 attribute [to_additive existing] IsSimpleGroup isSimpleGroup_iff
 
 variable {G} {A}
 
 @[to_additive]
-theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn : H.Normal) :
+theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] (H : Subgroup G) [H.Normal] :
     H = ⊥ ∨ H = ⊤ :=
-  IsSimpleGroup.eq_bot_or_eq_top_of_normal H Hn
+  IsSimpleGroup.eq_bot_or_eq_top_of_normal H
 
 @[to_additive]
 protected lemma Subgroup.isSimpleGroup_iff {H : Subgroup G} :
@@ -65,6 +69,12 @@ namespace IsSimpleGroup
 @[to_additive]
 instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
   ⟨fun H => H.normal_of_isMulCommutative.eq_bot_or_eq_top⟩
+
+/-- A group whose subgroups are only `⊥` and `⊤` is simple. -/
+@[to_additive /-- An additive group whose subgroups are only `⊥` and `⊤` is simple. -/]
+theorem of_isSimpleOrder [hG : IsSimpleOrder (Subgroup G)] : IsSimpleGroup G where
+  exists_pair_ne := (Subgroup.nontrivial_iff.mp hG.toNontrivial).exists_pair_ne
+  eq_bot_or_eq_top_of_normal H _ := eq_bot_or_eq_top H
 
 open Subgroup
 

@@ -48,11 +48,11 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
   ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by
     refine
         (hp.2.2 (f a) (f b) <| by
-              convert map_dvd f h
+              convert! map_dvd f h
               simp).imp
           ?_ ?_ <;>
       · intro h
-        convert ← map_dvd g h <;> apply hinv⟩
+        convert! ← map_dvd g h <;> apply hinv⟩
 
 theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (e : E) :
     Prime (e p) ↔ Prime p := by
@@ -61,6 +61,21 @@ theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (
     fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h⟩
 
 end Map
+
+variable {x y : M}
+
+theorem prime_units_mul (u : Mˣ) : Prime (↑u * y) ↔ Prime y := by simp [Prime]
+
+theorem prime_isUnit_mul (h : IsUnit x) : Prime (x * y) ↔ Prime y :=
+  let ⟨u, hu⟩ := h
+  hu ▸ prime_units_mul u
+
+theorem prime_mul_units (u : Mˣ) : Prime (y * ↑u) ↔ Prime y := by
+  rw [mul_comm, prime_units_mul]
+
+theorem prime_mul_isUnit (h : IsUnit x) : Prime (y * x) ↔ Prime y :=
+  let ⟨u, hu⟩ := h
+  hu ▸ prime_mul_units u
 
 end Prime
 
@@ -146,13 +161,20 @@ theorem DvdNotUnit.isUnit_of_irreducible_right [CommMonoidWithZero M] {p q : M}
   obtain ⟨_, x, hx, hx'⟩ := h
   exact ((irreducible_iff.1 hq).right hx').resolve_right hx
 
-theorem not_irreducible_of_not_unit_dvdNotUnit [CommMonoidWithZero M] {p q : M} (hp : ¬IsUnit p)
-    (h : DvdNotUnit p q) : ¬Irreducible q :=
+theorem not_irreducible_of_not_isUnit_of_dvdNotUnit [CommMonoidWithZero M] {p q : M}
+    (hp : ¬IsUnit p) (h : DvdNotUnit p q) : ¬Irreducible q :=
   mt h.isUnit_of_irreducible_right hp
 
-theorem DvdNotUnit.not_unit [CommMonoidWithZero M] {p q : M} (hp : DvdNotUnit p q) : ¬IsUnit q := by
+@[deprecated (since := "2026-08-02")]
+alias not_irreducible_of_not_unit_dvdNotUnit := not_irreducible_of_not_isUnit_of_dvdNotUnit
+
+theorem DvdNotUnit.not_isUnit [CommMonoidWithZero M] {p q : M} (hp : DvdNotUnit p q) :
+    ¬IsUnit q := by
   obtain ⟨-, x, hx, rfl⟩ := hp
   exact fun hc => hx (isUnit_iff_dvd_one.mpr (dvd_of_mul_left_dvd (isUnit_iff_dvd_one.mp hc)))
+
+@[deprecated (since := "2026-08-02")]
+alias DvdNotUnit.not_unit := DvdNotUnit.not_isUnit
 
 end CommMonoidWithZero
 

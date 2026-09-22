@@ -13,7 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.NeZero
 # Opposites of groups with zero
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

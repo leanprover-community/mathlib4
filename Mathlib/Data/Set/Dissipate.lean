@@ -1,11 +1,8 @@
-/-
-Copyright (c) 2026 Peter Pfaffelhuber. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Pfaffelhuber
--/
+module -- shake: keep-all
 
-module
+public import Mathlib.Order.SetDissipate
 
+<<<<<<< HEAD
 public import Mathlib.Data.Set.Accumulate
 
 /-!
@@ -112,3 +109,6 @@ lemma exists_dissipate_eq_empty_iff_of_directed {s : ℕ → Set α} (hd : Direc
   exact (h m).mono hm
 
 end Set
+=======
+deprecated_module (since := "2026-06-10")
+>>>>>>> master

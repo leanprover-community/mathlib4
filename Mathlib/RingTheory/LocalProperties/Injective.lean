@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 
 universe u v
 
-@[expose] public section
+public section
 
 variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (S : Submonoid R)
 
@@ -44,7 +44,7 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
   simp only [← Baer.iff_injective, Module.Baer.iff_surjective] at MB ⊢
   intro Iₛ g
   obtain ⟨I, rfl⟩ : ∃ I, .localized' Rₛ S (Algebra.linearMap R Rₛ) I = Iₛ :=
-    ⟨Iₛ.comap (algebraMap R Rₛ), by simp [Ideal.localized'_eq_map, IsLocalization.map_comap S]⟩
+    ⟨Iₛ.comap (algebraMap R Rₛ), by simp [Ideal.localized'_eq_map, IsLocalization.map_under S]⟩
   have : FinitePresentation R I := finitePresentation_of_finite R I
   obtain ⟨⟨g', a⟩, e : a.1 • g = _⟩ := surj S (mapExtendScalars S (I.toLocalized' _ _ _) f Rₛ) g
   obtain ⟨g', rfl⟩ := MB I g'
@@ -91,7 +91,7 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
   rw [eq] at surj
   rw [← LinearMap.coe_restrictScalars (R := R),
     LocalizedModule.restrictScalars_map_eq m.primeCompl hM gM]
-  simpa using surj
+  simpa using! surj
 
 section
 
@@ -111,6 +111,7 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 include f in
 /--

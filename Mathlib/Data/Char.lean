@@ -16,7 +16,7 @@ Provides an additional definition to truncate a `Char` to `UInt8` and a theorem 
 `Nat`.
 -/
 
-@[expose] public section
+public section
 
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.

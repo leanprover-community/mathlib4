@@ -31,6 +31,7 @@ variable {F G H I : B ⥤ᵒᵖᴸ C}
 
 namespace LaxTrans
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left whiskering of a lax natural transformation and a modification. -/
 @[simps]
 def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι where
@@ -50,6 +51,7 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
           rw [whisker_exchange]
           bicategory }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right whiskering of a lax natural transformation and a modification. -/
 @[simps]
 def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι where
@@ -69,6 +71,7 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
           rw [Γ.as.naturality]
           bicategory }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Associator for the vertical composition of lax natural transformations. -/
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι := by
@@ -77,11 +80,13 @@ def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι
     dsimp only [comp_app, comp_naturality]
     bicategory
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left unitor for the vertical composition of lax natural transformations. -/
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
   isoMk (fun a ↦ λ_ (η.app a))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right unitor for the vertical composition of lax natural transformations. -/
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
@@ -89,6 +94,7 @@ def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
 
 variable (B C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicategory structure on the oplax functors between bicategories, with lax transformations. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
   rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
@@ -104,6 +110,7 @@ end LaxTrans
 
 namespace OplaxTrans
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left whiskering of an oplax natural transformation and a modification. -/
 @[simps]
 def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι where
@@ -114,6 +121,7 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
       rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
       simp }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right whiskering of an oplax natural transformation and a modification. -/
 @[simps]
 def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι where
@@ -124,16 +132,19 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
       simp_rw [assoc, ← associator_inv_naturality_left, whisker_exchange_assoc]
       simp }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Associator for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
   isoMk (fun a ↦ α_ (η.app a) (θ.app a) (ι.app a))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
   isoMk (fun a ↦ λ_ (η.app a))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
@@ -141,6 +152,7 @@ def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
 
 variable (B C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
   rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]

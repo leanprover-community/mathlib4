@@ -207,7 +207,7 @@ theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert! h.1.prodMk h.2⟩
 
 theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔

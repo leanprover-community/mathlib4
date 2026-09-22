@@ -54,7 +54,6 @@ lemma comapIso_hom_fst (I : Y.IdealSheafData) (f : X ⟶ Y) :
     (I.comapIso f).hom ≫ pullback.fst _ _ = (I.comap f).subschemeι := by
   rw [← comapIso_inv_subschemeι, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_comp (I : Z.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
     I.comap (f ≫ g) = (I.comap g).comap f := by
@@ -83,7 +82,6 @@ lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersio
   rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
     (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To show that the pullback of the closed immersion `iX` along `f` is the closed immersion
 `iY`, it suffices to check that the preimage of `ker iY` under `f` is `ker iX`. -/
 lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
@@ -100,6 +98,7 @@ lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
 def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
   (I.subschemeι ≫ f).ker
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma le_map_iff_comap_le {I : X.IdealSheafData} {f : X ⟶ Y} {J : Y.IdealSheafData} :
     J ≤ I.map f ↔ J.comap f ≤ I := by
   constructor
@@ -206,7 +205,7 @@ lemma ideal_comap_of_isOpenImmersion
 /-- If `J ≤ I.map f`, then `f` restricts to a map `I ⟶ J` between the closed subschemes. -/
 def subschemeMap (I : X.IdealSheafData) (J : Y.IdealSheafData)
     (f : X ⟶ Y) (H : J ≤ I.map f) : I.subscheme ⟶ J.subscheme :=
-  IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using H)
+  IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using! H)
 
 @[reassoc (attr := simp)]
 lemma subschemeMap_subschemeι (I : X.IdealSheafData) (J : Y.IdealSheafData)

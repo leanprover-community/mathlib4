@@ -74,6 +74,9 @@ theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
+theorem norm_qParam_lt_one (hh : 0 < h) {z : ℂ} (hz : 0 < im z) : ‖𝕢 h z‖ < 1 := by
+  simpa using (norm_qParam_lt_iff hh 0 z).mpr hz
+
 lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
   simp [qParam, exp_ne_zero]
 
@@ -116,6 +119,12 @@ variable (h : ℝ) (f : ℂ → ℂ)
 def cuspFunction : ℂ → ℂ :=
   update (f ∘ invQParam h) 0 (limUnder (𝓝[≠] 0) (f ∘ invQParam h))
 
+@[simp]
+theorem cuspFunction_zero : cuspFunction h (0 : ℂ → ℂ) = 0 := by
+  simp only [cuspFunction, Function.comp_def, Pi.zero_apply]
+  rw [tendsto_const_nhds.limUnder_eq]
+  exact update_eq_self _ _
+
 theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
     cuspFunction h f q = f (invQParam h q) :=
   update_of_ne hq ..
@@ -156,7 +165,7 @@ theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
     DifferentiableAt ℂ (cuspFunction h f) (𝕢 h z) := by
   let q := 𝕢 h z
   have qdiff : HasStrictDerivAt (𝕢 h) (q * (2 * π * I / h)) z := by
-    simpa only [id_eq, mul_one] using (((hasStrictDerivAt_id z).const_mul _).div_const _).cexp
+    simpa only [id_eq, mul_one] using! (((hasStrictDerivAt_id z).const_mul _).div_const _).cexp
   -- Now show that the q-map has a differentiable local inverse at z, say L : ℂ → ℂ with L q = z.
   have diff_ne : q * (2 * π * I / h) ≠ 0 :=
     mul_ne_zero (exp_ne_zero _) (div_ne_zero two_pi_I_ne_zero <| mod_cast hh)
@@ -210,9 +219,9 @@ theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     fun x hx ↦ (hS1 x hx.1 hx.2).1.differentiableWithinAt
   have hF_bd : BddAbove (norm ∘ cuspFunction h f '' (S \ {0})) := by
     use c
-    simp only [mem_upperBounds, Set.mem_image, Set.mem_diff, forall_exists_index, and_imp]
+    simp only [mem_upperBounds, Set.mem_image, Set.mem_sdiff, forall_exists_index, and_imp]
     intro y q hq hq2 hy
-    simpa only [← hy, norm_one, mul_one] using (hS1 q hq hq2).2
+    simpa only [← hy, norm_one, mul_one] using! (hS1 q hq hq2).2
   have := differentiableOn_update_limUnder_of_bddAbove (IsOpen.mem_nhds hS2 hS3) h_diff hF_bd
   rw [← cuspFunction_zero_eq_limUnder_nhds_ne, update_eq_self] at this
   exact this.differentiableAt (IsOpen.mem_nhds hS2 hS3)
@@ -259,7 +268,7 @@ lemma cuspFunction_smul {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunctio
   simp only [cuspFunction] at *
   ext y
   obtain rfl | hy := eq_or_ne y 0
-  · simpa using (Tendsto.const_mul _ (by simpa using hfcts)).limUnder_eq
+  · simpa using! (Tendsto.const_mul _ (by simpa using! hfcts)).limUnder_eq
   · simp [hy]
 
 lemma cuspFunction_neg {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
@@ -273,7 +282,7 @@ lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFuncti
   ext y
   obtain hy | rfl := ne_or_eq y 0
   · simp [hy]
-  · simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+  · simpa using! (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
       (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
 
 lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)

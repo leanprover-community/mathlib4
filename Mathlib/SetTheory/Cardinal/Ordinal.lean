@@ -7,6 +7,7 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Principal
+public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Ordinal arithmetic with cardinals
@@ -35,17 +36,11 @@ lemma mk_biUnion_le_of_le_lift {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}
   intro i
   simpa using hA _ i.toOrd.prop
 
-@[deprecated (since := "2026-01-26")]
-alias mk_iUnion_Ordinal_lift_le_of_le := mk_biUnion_le_of_le_lift
-
 lemma mk_biUnion_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
   apply mk_biUnion_le_of_le_lift _ hc A hA
   rwa [Cardinal.lift_le]
-
-@[deprecated (since := "2026-01-26")]
-alias mk_iUnion_Ordinal_le_of_le := mk_biUnion_le_of_le
 
 end Cardinal
 
@@ -53,19 +48,21 @@ end Cardinal
 
 namespace Ordinal
 
-theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordinal.{v}) :
+theorem lift_card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{v}) :
     Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
+  by_cases! hf : ¬ BddAbove (range f)
+  · simp [ciSup_of_not_bddAbove hf]
   simp_rw [← mk_toType]
   rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
   apply lift_mk_le_lift_mk_of_surjective (f := .mk ∘ (⟨·.2.toOrd,
-    (mem_Iio.mp (ToType.toOrd _).2).trans_le (Ordinal.le_iSup _ _)⟩))
+    (mem_Iio.mp (ToType.toOrd _).2).trans_le (le_ciSup hf _)⟩))
   rw [EquivLike.comp_surjective]
   rintro ⟨x, hx⟩
-  obtain ⟨i, hi⟩ := Ordinal.lt_iSup_iff.mp hx
+  obtain ⟨i, hi⟩ := (lt_ciSup_iff' hf).mp hx
   exact ⟨⟨i, .mk ⟨x, hi⟩⟩, by simp⟩
 
 theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    (⨆ i, f i).card ≤ Cardinal.sum (fun i ↦ (f i).card) := by
+    (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
   have := lift_card_iSup_le_sum_card f
   rwa [Cardinal.lift_id'] at this
 
@@ -77,35 +74,114 @@ theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
   apply (card_iSup_Iio_le_sum_card f).trans
-  convert ← sum_le_lift_mk_mul_iSup _
+  convert! ← sum_le_lift_mk_mul_iSup _
   · exact mk_toType o
   · exact ToType.mk.symm.iSup_comp (g := fun x ↦ (f x).card)
 
+theorem card_iSup_le_lift {ι : Type u} {c : Cardinal} {f : ι → Ordinal.{v}}
+    (hι : Cardinal.lift.{v} #ι ≤ Cardinal.lift.{u} c) (hf : ∀ i, (f i).card ≤ c) :
+    (⨆ i, f i).card ≤ c := by
+  by_cases! hc : c < ℵ₀
+  · obtain ⟨n, rfl⟩ := lt_aleph0.1 hc
+    rw [card_le_nat]
+    refine ciSup_le' fun i ↦ ?_
+    simpa using hf i
+  · rw [← Cardinal.lift_le.{u}]
+    apply (lift_card_iSup_le_sum_card ..).trans ((sum_le_lift_mk_mul_iSup_lift _).trans _)
+    rw [← mul_eq_self hc, Cardinal.lift_mul]
+    apply mul_le_mul' hι (ciSup_le' _)
+    simpa [← lift_card]
+
+theorem card_iSup_le {ι : Type*} {c : Cardinal} {f : ι → Ordinal}
+    (hι : #ι ≤ c) (hf : ∀ i, (f i).card ≤ c) : (⨆ i, f i).card ≤ c := by
+  rw [← Cardinal.lift_le] at hι
+  simpa using card_iSup_le_lift hι hf
+
+theorem card_iSup_Iio_le_of_lift {o : Ordinal.{u}} {c : Cardinal} {f : Iio o → Ordinal.{v}}
+    (hι : Cardinal.lift.{v} o.card ≤ Cardinal.lift.{u} c) (hf : ∀ i, (f i).card ≤ c) :
+    (⨆ i, f i).card ≤ c := by
+  apply card_iSup_le_lift _ hf
+  conv_rhs => rw [← Cardinal.lift_lift.{u, u + 1}]
+  rwa [Cardinal.mk_Iio_ordinal, Cardinal.lift_lift, ← Cardinal.lift_lift.{v, u + 1},
+    Cardinal.lift_le]
+
+theorem card_iSup_Iio_le {o : Ordinal} {c : Cardinal} {f : Iio o → Ordinal}
+    (hι : o.card ≤ c) (hf : ∀ i, (f i).card ≤ c) : (⨆ i, f i).card ≤ c := by
+  rw [← Cardinal.lift_le] at hι
+  simpa using card_iSup_Iio_le_of_lift hι hf
+
+theorem card_sSup_le {c : Cardinal} {s : Set Ordinal.{u}}
+    (hs : #s ≤ Cardinal.lift.{u + 1} c) (hs' : ∀ x ∈ s, x.card ≤ c) : (sSup s).card ≤ c := by
+  rw [sSup_eq_iSup']
+  apply card_iSup_le_lift
+  · rwa [Cardinal.lift_id'.{u, u + 1}]
+  · simpa
+
+theorem card_nfpFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
+    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
+    (nfpFamily f o).card ≤ max c o.card := by
+  have : Small.{u} ι := small_of_lift_mk_le_lift hι
+  replace hι : #(Shrink.{u} ι) ≤ c := by rwa [← Cardinal.lift_le.{v}, Cardinal.lift_mk_shrink' ι]
+  set σ := equivShrink (List ι) |>.symm
+  rw [nfpFamily, ← Equiv.iSup_comp σ]
+  apply card_iSup_le_sum_card (List.foldr f o <| σ ·) |>.trans <|
+    sum_le_lift_mk_mul_iSup _ |>.trans <|
+    mul_le_mul' (b := c) ?_ (d := max c o.card) ?_ |>.trans ?_
+  · simp only [Cardinal.lift_id]
+    apply max_le hc hι |>.trans'
+    grw [mk_congr (σ.trans (equivShrink ι).listEquivOfEquiv), mk_list_le_max (Shrink ι)]
+  · have : Nonempty (Shrink (List ι)) := ⟨σ.symm []⟩
+    apply ciSup_le fun i => ?_
+    induction σ i with
+    | nil => simp
+    | cons => grind
+  · rw [Cardinal.mul_eq_max hc (le_trans hc (le_max_left _ _)), ← max_assoc, max_self]
+
+theorem card_derivFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
+    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
+    (derivFamily f o).card ≤ max c o.card := by
+  induction o using limitRecOn with
+  | zero => simpa using card_nfpFamily_le hc hι hf 0
+  | add_one o ih =>
+    simp only [derivFamily_add_one, card_add_one]
+    grw [card_nfpFamily_le hc hι hf ((derivFamily f o) + 1), card_add_one, ih]
+    suffices max c o.card + 1 ≤ c ∨ c ≤ o.card + 1 ∧ c ≤ o.card by simp [this]
+    rcases lt_or_ge c o.card with ho | ho
+    · simp [ho.le, hc.trans ho.le]
+    · simp [ho, hc]
+  | limit o ho ih =>
+    rw [derivFamily_limit f ho]
+    apply card_iSup_Iio_le_card_mul_iSup _ |>.trans <|
+      mul_le_mul' (Cardinal.lift_le.mpr <| le_max_right c o.card)
+        (ciSup_le' (a := max c o.card) ?_) |>.trans ?_
+    · exact fun ⟨i, hi⟩ => ih _ hi |>.trans <| max_le_max_left _ (card_le_card hi.le)
+    · grw [Cardinal.lift_id, ← sq, power_nat_le (by simp [hc])]
+
+theorem card_nfp_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (nfp f o).card ≤ max ℵ₀ o.card :=
+  card_nfpFamily_le le_rfl (by simp) (fun _ => hf) o
+
+theorem card_deriv_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (deriv f o).card ≤ max ℵ₀ o.card :=
+  card_derivFamily_le le_rfl (by simp) (fun _ => hf) o
+
 theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by
-  refine limitRecOn b ?_ ?_ ?_
-  · simpa using one_lt_omega0.le.trans ha
-  · intro b IH
-    simp_rw [Order.succ_eq_add_one]
-    rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
-    · grw [IH]
-      rw [← max_assoc, max_self]
-      grw [← le_self_add]
+  induction b using limitRecOn with
+  | zero => simpa using one_lt_omega0.le.trans ha
+  | add_one b IH =>
+    rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right]
+    · grw [IH, max_comm, ← max_assoc, max_self, ← le_self_add]
     · rw [ne_eq, card_eq_zero, opow_eq_zero]
       rintro ⟨rfl, -⟩
       cases omega0_pos.not_ge ha
     · rwa [aleph0_le_card]
-  · intro b hb IH
+  | limit b hb IH =>
     rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isSuccLimit hb]
-    apply (card_iSup_Iio_le_card_mul_iSup _).trans
-    rw [Cardinal.lift_id, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
-    · apply max_le _ (le_max_right _ _)
-      apply ciSup_le'
-      rintro ⟨c, (hcb : c < b)⟩
-      grw [IH c hcb, hcb]
-    · simpa using hb.ne_bot
-    · exact le_ciSup_of_le Cardinal.bddAbove_of_small
-        ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isSuccLimit hb⟩ (by simpa)
+    exact card_iSup_Iio_le (le_max_right ..) fun i ↦
+      (IH i i.2).trans (max_le_max_left _ (card_le_card i.2.le))
 
 theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
     (a ^ b).card ≤ max a.card b.card := by

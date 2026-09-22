@@ -44,25 +44,26 @@ def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
 theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
-    IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
+    IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.domRestrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨e, hxe, rfl⟩ := h x hx
     exact ⟨e.source, e.open_source.mem_nhds hxe, e.isOpenEmbedding_restrict⟩
   · obtain ⟨U, hU, emb⟩ := h x hx
-    have : IsOpenEmbedding ((interior U).restrict f) := by
+    have : IsOpenEmbedding ((interior U).domRestrict f) := by
       refine emb.comp ⟨.inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
     obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_isOpenMap.mp this
-    haveI : Nonempty X := ⟨x⟩
+    have : Nonempty X := ⟨x⟩
     exact ⟨OpenPartialHomeomorph.ofContinuousOpenRestrict
       (Set.injOn_iff_injective.mpr inj).toPartialEquiv
-      (continuousOn_iff_continuous_restrict.mpr cont) openMap isOpen_interior,
+      (continuousOn_iff_continuous_domRestrict.mpr cont) openMap isOpen_interior,
       mem_interior_iff_mem_nhds.mpr hU, rfl⟩
 
 namespace IsLocalHomeomorphOn
 
 variable {f s}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     [DiscreteTopology (f '' s)] : DiscreteTopology s :=
   discreteTopology_iff_isOpen_singleton.mpr fun x ↦ by
@@ -164,6 +165,7 @@ end IsLocalHomeomorphOn
 def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
+/-- A homeomorphism is a local homeomorphism. -/
 theorem Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
   fun _ ↦ ⟨f.toOpenPartialHomeomorph, trivial, rfl⟩
 
@@ -177,7 +179,7 @@ protected theorem IsLocalHomeomorph.isLocalHomeomorphOn (hf : IsLocalHomeomorph 
     IsLocalHomeomorphOn f s := fun x _ ↦ hf x
 
 theorem isLocalHomeomorph_iff_isOpenEmbedding_restrict {f : X → Y} :
-    IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
+    IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.domRestrict f) := by
   simp_rw [isLocalHomeomorph_iff_isLocalHomeomorphOn_univ,
     isLocalHomeomorphOn_iff_isOpenEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
 
@@ -213,9 +215,8 @@ theorem mk (h : ∀ x : X, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source ∧
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
     (IsLocalHomeomorphOn.mk f Set.univ fun x _hx ↦ h x)
 
-/-- A homeomorphism is a local homeomorphism. -/
-lemma Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
-  fun _ ↦ ⟨h.toOpenPartialHomeomorph, trivial, rfl⟩
+@[deprecated (since := "2026-06-06")]
+alias Homeomorph.isLocalHomeomorph := _root_.Homeomorph.isLocalHomeomorph
 
 variable {g f}
 
@@ -254,8 +255,6 @@ noncomputable def toHomeomorphOfBijective (hf : IsLocalHomeomorph f) (hb : f.Bij
     X ≃ₜ Y :=
   (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
 
-@[deprecated (since := "2025-12-19")] alias toHomeomorph_of_bijective := toHomeomorphOfBijective
-
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))
     (cont : Continuous f) : IsOpenEmbedding f :=
@@ -273,11 +272,48 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
     refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,
-      ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
-      ?_, (Set.range_restrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
+      ⟨_, continuousOn_iff_continuous_domRestrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
+      ?_, (Set.range_domRestrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
     · ext y; exact f.right_inv y.2.1
     · apply (f.symm_image_target_inter_eq _).trans
       rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left
         f.source_preimage_target, f.source_inter_preimage_inv_preimage]
+
+variable (hf : IsLocalHomeomorph f) {x : X}
+
+variable (x) in
+/-- A chosen local inverse for a local homeomorphism `f` at a point `x`. -/
+noncomputable def localInverseAt : OpenPartialHomeomorph Y X := (hf x).choose.symm
+
+/-- The point `x` lies in the target of `localInverseAt x`. -/
+@[grind =>, simp] lemma self_mem_localInverseAt_target : x ∈ (hf.localInverseAt x).target :=
+  (hf x).choose_spec.1
+
+variable (x) in
+/-- The inverse function of `localInverseAt x` coincides with `f`. -/
+@[simp] lemma localInverseAt_symm : (hf.localInverseAt x).symm = f :=
+  (hf x).choose_spec.2.symm
+
+/-- The point `f x` lies in the source of `localInverseAt x`. -/
+@[grind =>, simp] lemma apply_self_mem_localInverseAt_source :
+    f x ∈ (hf.localInverseAt x).source := by
+  rw [← congrFun (hf.localInverseAt_symm x)]
+  exact (hf.localInverseAt x).map_target hf.self_mem_localInverseAt_target
+
+/-- The function `f` is injective on the target of `localInverseAt x`. -/
+lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
+  rw [Set.EqOn.injOn_iff (f₂ := (hf.localInverseAt x).symm) (fun y _ ↦ by simp)]
+  exact (hf.localInverseAt x).symm.injOn
+
+/-- If `y` lies in the source of `localInverseAt x`, then `f (localInverseAt x y) = y`. -/
+@[grind .] lemma apply_localInverseAt_of_mem {y : Y} (hx : y ∈ (hf.localInverseAt x).source) :
+    f (hf.localInverseAt x y) = y := by
+  rw [← congrFun (hf.localInverseAt_symm x)]
+  exact (hf.localInverseAt x).left_inv hx
+
+/-- The function `localInverseAt x` sends `f x` back to `x`. -/
+@[simp] lemma localInverseAt_apply_self : hf.localInverseAt x (f x) = x :=
+  hf.injOn_localInverseAt_target (by simp) hf.self_mem_localInverseAt_target <|
+    hf.apply_localInverseAt_of_mem hf.apply_self_mem_localInverseAt_source
 
 end IsLocalHomeomorph

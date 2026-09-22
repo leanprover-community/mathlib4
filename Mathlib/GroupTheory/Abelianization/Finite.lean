@@ -12,7 +12,7 @@ public import Mathlib.GroupTheory.Coset.Card
 # The abelianization of a finite group is finite
 -/
 
-@[expose] public section
+public section
 
 variable {G : Type*} [Group G]
 

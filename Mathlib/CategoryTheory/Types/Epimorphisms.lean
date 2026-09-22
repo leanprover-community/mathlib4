@@ -16,7 +16,7 @@ are stable under base change.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -142,13 +142,13 @@ lemma toAddSubmonoid_injective :
 
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toAddSubmonoid_injective
+  coe_injective := SetLike.coe_injective.comp toAddSubmonoid_injective
 
 lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
 
-instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R)
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]
@@ -230,7 +230,7 @@ end NonUnitalSubsemiring
 namespace NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S] (s : NonUnitalSubsemiring R)
+variable (s : NonUnitalSubsemiring R)
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=

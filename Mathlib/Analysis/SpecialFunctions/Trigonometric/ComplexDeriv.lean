@@ -26,7 +26,7 @@ open Set Filter
 open scoped Real
 
 theorem hasStrictDerivAt_tan {x : ℂ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x := by
-  convert (hasStrictDerivAt_sin x).div (hasStrictDerivAt_cos x) h using 1
+  convert! (hasStrictDerivAt_sin x).div (hasStrictDerivAt_cos x) h using 1
   rw_mod_cast [← sin_sq_add_cos_sq x]
   ring
 

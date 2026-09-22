@@ -17,7 +17,7 @@ In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal
 
@@ -117,7 +117,7 @@ theorem discreteTopology (hN : IsOpen (N : Set G)) :
   discreteTopology_iff.mpr hN
 
 /-- A quotient of a locally compact group is locally compact. -/
-@[to_additive]
+@[to_additive /-- A quotient of a locally compact additive group is locally compact. -/]
 instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace

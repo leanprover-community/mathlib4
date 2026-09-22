@@ -22,10 +22,10 @@ and `OrderTopology ℕ` become available.
 
 -/
 
-@[expose] public section
+public section
 
 
-open Order Set TopologicalSpace Filter
+open Set TopologicalSpace Filter
 
 variable {α : Type*} [TopologicalSpace α]
 

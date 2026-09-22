@@ -6,9 +6,11 @@ Authors: Robert Y. Lewis, Keeley Hoek
 module
 
 public import Mathlib.Data.Int.DivMod
-public import Mathlib.Order.Lattice
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Common
 public import Batteries.Data.Fin.Basic
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # The finite type with `n` elements
@@ -19,7 +21,7 @@ This file expands on the development in the core library.
 ## Main definitions
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
+  Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
 
 -/
@@ -27,7 +29,7 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 @[expose] public section
 
 
-assert_not_exists Monoid Finset
+assert_not_exists Monoid Finset Preorder
 
 open Fin Nat Function
 
@@ -83,6 +85,21 @@ lemma ne_zero_of_lt {a b : Fin (n + 1)} (hab : a < b) : b ≠ 0 :=
 
 lemma ne_last_of_lt {a b : Fin (n + 1)} (hab : a < b) : a ≠ last n :=
   Fin.ne_of_lt <| Fin.lt_of_lt_of_le hab b.le_last
+
+lemma ne_last_of_ne_last_of_le {a b : Fin (n + 1)} (hb : b ≠ last n) (hab : a ≤ b) :
+    a ≠ last n := by
+  intro rfl
+  exact Nat.not_lt_of_le hab (lt_last_iff_ne_last.mpr hb)
+
+lemma val_sub_lt_of_lt_of_le {a b : Fin n} (ha : a.val < m) (hab : b ≤ a) :
+    (a - b).val < m := by
+  rw [Fin.sub_val_of_le hab]
+  exact sub_lt_of_lt ha
+
+lemma sub_ne_last_of_ne_last_of_le {a b : Fin (n + 1)} (ha : a ≠ last n) (hab : b ≤ a) :
+    a - b ≠ last n := by
+  rw [← lt_last_iff_ne_last, lt_def]
+  exact val_sub_lt_of_lt_of_le (val_lt_last ha) hab
 
 /-- Equivalence between `Fin n` and `{ i // i < n }`. -/
 @[simps apply symm_apply]
@@ -404,18 +421,18 @@ lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b
   rw [← Nat.lt_succ_iff] at han hbn; simp [lt_def, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
-  (natCast_le_natCast (hab.trans hbn) hbn).2 hab
+  (natCast_le_natCast (Nat.le_trans hab hbn) hbn).2 hab
 
 lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :=
-  (natCast_lt_natCast (hab.le.trans hbn) hbn).2 hab
+  (natCast_lt_natCast (Nat.le_trans (Nat.le_of_lt hab) hbn) hbn).2 hab
 
 @[simp]
 lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
-    haveI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
+    haveI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (Nat.lt_of_lt_of_le m.pos_of_neZero h)⟩
     Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
   ext
   simp only [val_castLE, val_natCast]
-  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
+  rw [Nat.mod_eq_of_lt (a := a % m) (Nat.lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 end OfNatCoe
 
@@ -465,7 +482,7 @@ theorem liftFun_iff_succ {α : Type*} (r : α → α → Prop) [IsTrans α r] {f
     · simp at h
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
-      obtain hij | hij := (le_def.1 hij).eq_or_lt
+      obtain hij | hij := Nat.eq_or_lt_of_le <| le_def.1 hij
       · obtain rfl := Fin.ext hij
         exact H _
       · exact _root_.trans (ihj hij) (H j)
@@ -481,7 +498,7 @@ theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
   · simp
   rw [Fin.val_neg', Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
-  constructor
+  exact Nat.lt_add_one _
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   Fin.ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
@@ -492,7 +509,7 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
 theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
   have hkb : k ≤ b := by lia
-  refine ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, ?_⟩
+  refine ⟨⟨k, Nat.lt_of_le_of_lt hkb b.is_lt⟩, hkb, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
 theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
@@ -501,7 +518,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
   · lia
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by lia
-  refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
+  refine ⟨⟨k, Nat.lt_trans hkb b.is_lt⟩, hkb, by fin_omega, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) : 0 < a :=
@@ -529,9 +546,9 @@ theorem val_add_one_of_lt' {n : ℕ} {i : Fin n} (h : i + 1 < n) :
   simpa [add_def] using Nat.mod_eq_of_lt (by lia)
 
 instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) := by
-  suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using NeZero.ne m
+  suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using! NeZero.ne m
   apply Nat.mod_eq_of_lt
-  simpa using zero_lt_of_ne_zero (NeZero.ne n)
+  simpa using! zero_lt_of_ne_zero (NeZero.ne n)
 
 section Mul
 

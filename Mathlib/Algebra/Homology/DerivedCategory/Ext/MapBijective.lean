@@ -5,13 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.FiveLemma
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 
@@ -24,7 +24,7 @@ by a fully faithful exact functor `F : C ⥤ D` are bijective when either
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' u u'
 

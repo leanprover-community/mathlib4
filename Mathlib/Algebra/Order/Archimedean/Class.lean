@@ -7,13 +7,14 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.UpperLower.CompleteLattice
 public import Mathlib.Order.UpperLower.Principal
+public import Mathlib.Algebra.Order.Archimedean.Defs
+public import Mathlib.Data.Rat.Floor
 
 /-!
 # Archimedean classes of a linearly ordered group
@@ -185,6 +186,11 @@ namespace MulArchimedeanClass
 @[to_additive /-- The archimedean class of a given element. -/]
 def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedeanOrder.of a)
 
+@[to_additive]
+theorem mk_eq_mk' {a b : M} : mk a = mk b ↔ MulArchimedeanOrder.of a ≤ MulArchimedeanOrder.of b ∧
+    MulArchimedeanOrder.of b ≤ MulArchimedeanOrder.of a :=
+  toAntisymmetrization_eq (· ≤ ·) (MulArchimedeanOrder.of a) (MulArchimedeanOrder.of b)
+
 /-- An induction principle for `MulArchimedeanClass`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
 /-- An induction principle for `ArchimedeanClass` -/]
@@ -202,12 +208,9 @@ variable (M) in
 @[to_additive (attr := simp)]
 theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (mk_surjective M)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mk_eq_mk {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |b|ₘ ^ n) := by
-  unfold mk toAntisymmetrization
-  rw [Quotient.eq]
-  rfl
+  simp [mk_eq_mk', MulArchimedeanOrder.le_def]
 
 /-- Lift a `M → α` function to `MulArchimedeanClass M → α`. -/
 @[to_additive /-- Lift a `M → α` function to `ArchimedeanClass M → α`. -/]
@@ -262,7 +265,7 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 @[to_additive]
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) :=
-  open Classical in
+  open scoped Classical in
   -- TODO: why does `inferInstanceAs` not work here?
   fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
 
@@ -605,7 +608,6 @@ s = ⊤ with a junk value ⊥. -/
 s = ⊤ with a junk value ⊥. -/]
 noncomputable
 def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
-  open Classical in
   if hs : s = ⊤ then
     ⊥
   else {
@@ -678,7 +680,7 @@ theorem mem_closedBallSubgroup_iff {a : M} {c : MulArchimedeanClass M} :
 variable (M) in
 @[to_additive (attr := simp)]
 theorem ballSubgroup_top : ballSubgroup (M := M) ⊤ = ⊥ := by
-  convert subgroup_eq_bot M
+  convert! subgroup_eq_bot M
   simp
 
 variable (M) in
@@ -764,8 +766,7 @@ def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
   refine (MulArchimedeanClass.lift
     (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) (fun a b h' ↦ ?_) A).untop ?_
-  · simp only
-    split_ifs with ha hb hb
+  · split_ifs with ha hb hb
     · rfl
     · exact (hb (MulArchimedeanClass.mk_eq_top_iff.mp (ha ▸ h').symm)).elim
     · exact (ha (MulArchimedeanClass.mk_eq_top_iff.mp (by apply hb ▸ h'))).elim
@@ -847,8 +848,15 @@ noncomputable def toUpperSetMulArchimedeanClass :
     { carrier := {a | ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s}
       upper' _ _ le mem ne := s.upper le (mem <| ne_top_of_le_ne_top ne le) })
   fun s t lt ↦ by
-    simp_rw [lt_iff_le_not_ge] at lt ⊢
-    exact ⟨fun _ mem ne ↦ lt.1 (mem _), fun hst ↦ lt.2 fun x mem ↦ hst (fun _ ↦ mem) x.2⟩
+    simp only [lt_iff_le_not_ge, ne_eq, ← SetLike.mem_coe, ← UpperSet.coe_subset_coe,
+      UpperSet.coe_mk, Set.subset_def] at lt ⊢
+    exact ⟨fun a ha1 ha2 ↦ lt.1 _ (ha1 ha2),
+      fun hst ↦ (lt.2 fun ⟨x, hx⟩ mem ↦ hst x (fun _ ↦ mem) _)⟩
+
+@[to_additive (attr := simp)]
+theorem mem_toUpperSetMulArchimedeanClass {s : UpperSet (FiniteMulArchimedeanClass M)}
+    {a : MulArchimedeanClass M} :
+    a ∈ toUpperSetMulArchimedeanClass s ↔ ∀ h : a ≠ ⊤, ⟨a, h⟩ ∈ s := Iff.rfl
 
 /-- The `MulArchimedeanClass.subsemigroup` associated to an upper set in
 `FiniteMulArchimedeanClass M` is a subgroup. -/
@@ -869,7 +877,7 @@ theorem subsemigroup_eq_subgroup :
 variable (M) in
 @[to_additive (attr := simp)]
 theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
-  ext; simp [subgroup, MulArchimedeanClass.subsemigroup, toUpperSetMulArchimedeanClass]
+  ext; simp [subgroup, MulArchimedeanClass.subsemigroup]
 
 @[to_additive (attr := simp)]
 theorem mem_subgroup_iff : a ∈ subgroup s ↔ ∀ h : a ≠ 1, mk a h ∈ s := by
@@ -902,28 +910,5 @@ theorem mem_closedBallSubgroup_iff {a : M} {c : FiniteMulArchimedeanClass M} :
 @[to_additive]
 theorem ballSubgroup_strictAnti : StrictAnti (ballSubgroup (M := M)) :=
   fun _ _ h ↦ subgroup_strictAnti <| UpperSet.Ioi_strictMono _ h
-
-attribute [deprecated subgroup (since := "2025-12-14")] MulArchimedeanClass.subgroup
-attribute [deprecated subsemigroup_eq_subgroup (since := "2025-12-14")]
-  MulArchimedeanClass.subsemigroup_eq_subgroup_of_ne_top
-attribute [deprecated subgroup_eq_bot (since := "2025-12-14")] MulArchimedeanClass.subgroup_eq_bot
-attribute [deprecated mem_subgroup_iff (since := "2025-12-14")] MulArchimedeanClass.mem_subgroup_iff
-attribute [deprecated subgroup_strictAnti (since := "2025-12-14")]
-  MulArchimedeanClass.subgroup_strictAntiOn
-attribute [deprecated subgroup_strictAnti (since := "2025-12-14")]
-  MulArchimedeanClass.subgroup_antitone
-attribute [deprecated ballSubgroup (since := "2025-12-14")] MulArchimedeanClass.ballSubgroup
-attribute [deprecated closedBallSubgroup (since := "2025-12-14")]
-  MulArchimedeanClass.closedBallSubgroup
-attribute [deprecated mem_ballSubgroup_iff (since := "2025-12-14")]
-  MulArchimedeanClass.mem_ballSubgroup_iff
-attribute [deprecated mem_closedBallSubgroup_iff (since := "2025-12-14")]
-  MulArchimedeanClass.mem_closedBallSubgroup_iff
-attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
-  MulArchimedeanClass.ballSubgroup_top
-attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
-  MulArchimedeanClass.closedBallSubgroup_top
-attribute [deprecated ballSubgroup_strictAnti (since := "2025-12-14")]
-  MulArchimedeanClass.ballSubgroup_antitone
 
 end FiniteMulArchimedeanClass

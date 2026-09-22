@@ -115,6 +115,9 @@ variable (𝕜 E F) in
 @[simps!]
 def coeLM [ContinuousConstSMul 𝕜 F] : (E →Lₚₜ[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F := ContinuousLinearMap.coeLM 𝕜
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (σ F) in
 /-- The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for `a : E` as a continuous linear map. -/
 @[simps!]
@@ -163,5 +166,30 @@ def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   continuous_toFun :=
     WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
   continuous_invFun := continuous_of_continuous_eval (WeakBilin.eval_continuous _)
+
+section Pi
+
+variable {ι : Type*} (F : ι → Type*)
+  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
+
+variable (𝕜 E) in
+/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
+`Π i, E →Lₚₜ[𝕜] F i` and `E →Lₚₜ[𝕜] Π i, F i`. -/
+def piEquivL :
+    (Π i, E →Lₚₜ[𝕜] F i) ≃L[𝕜] (E →Lₚₜ[𝕜] Π i, F i) where
+  toFun F := ContinuousLinearMap.pi F
+  invFun f i := (ContinuousLinearMap.proj i).comp f
+  __ := UniformConvergenceCLM.piEquivL _ _ _
+
+@[simp]
+lemma piEquivL_apply (T : Π i, E →Lₚₜ[𝕜] F i) (e : E) (i : ι) :
+    piEquivL 𝕜 E F T e i = T i e := rfl
+
+@[simp]
+lemma piEquivL_symm_apply (T : E →Lₚₜ[𝕜] Π i, F i) (e : E) (i : ι) :
+    (piEquivL 𝕜 E F).symm T i e = T e i := rfl
+
+end Pi
 
 end PointwiseConvergenceCLM

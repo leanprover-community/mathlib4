@@ -31,7 +31,7 @@ reduce imports.
 
 open Finsupp Function
 
-variable {ι μ μ' : Type*}
+variable {ι μ : Type*}
 
 namespace Finset
 variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}

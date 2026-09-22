@@ -16,10 +16,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe w v u
 
@@ -41,7 +38,7 @@ instance : HasFiniteBiproducts (ModuleCat.{v} R) :=
 @[simps cone_pt isLimit_lift]
 def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N) where
   cone :=
-    { pt := ModuleCat.of R (M × N)
+    { pt := ↧(M × N)
       π :=
         { app := fun j =>
             Discrete.casesOn j fun j =>
@@ -70,7 +67,7 @@ theorem binaryProductLimitCone_cone_π_app_right (M N : ModuleCat.{v} R) :
 the Cartesian product of the underlying types:
 -/
 noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
-    (M ⊞ N : ModuleCat.{v} R) ≅ ModuleCat.of R (M × N) :=
+    (M ⊞ N : ModuleCat.{v} R) ≅ ↧(M × N) :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit M N) (binaryProductLimitCone M N).isLimit
 
 @[simp, elementwise]
@@ -87,11 +84,12 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/
 @[simps!]
-def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) :=
+def lift (s : Fan f) : s.pt ⟶ ↧(∀ j, f j) :=
   ofHom
   { toFun := fun x j => s.π.app ⟨j⟩ x
     map_add' := fun x y => by
@@ -106,7 +104,7 @@ def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) :=
 @[simps]
 def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   cone :=
-    { pt := ModuleCat.of R (∀ j, f j)
+    { pt := ↧(∀ j, f j)
       π := Discrete.natTrans fun j => ofHom (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
   isLimit :=
     { lift := lift.{_, v} f
@@ -125,7 +123,7 @@ variable {J : Type} (f : J → ModuleCat.{v} R)
 on the dependent function type.
 -/
 noncomputable def biproductIsoPi [Finite J] (f : J → ModuleCat.{v} R) :
-    ((⨁ f) : ModuleCat.{v} R) ≅ ModuleCat.of R (∀ j, f j) :=
+    ((⨁ f) : ModuleCat.{v} R) ≅ ↧(∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 
 @[simp, elementwise]
@@ -160,7 +158,7 @@ private noncomputable def lequivProdOfLeftSplitExact' {f : M →ₗ[R] A} (hg : 
   ((ShortComplex.Splitting.ofExactOfRetraction _
     (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) (hom_ext h)
-    (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
+    (by simpa only [ModuleCat.epi_iff_surjective] using! hg)).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _).symm.toLinearEquiv
 
 end universe_monomorphic

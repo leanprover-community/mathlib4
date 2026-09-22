@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Basic
 # Ordered instances on submodules
 -/
 
-@[expose] public section
+public section
 
 namespace Submodule
 variable {R M : Type*}

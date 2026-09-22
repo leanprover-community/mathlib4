@@ -13,7 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
 A local isomorphism of schemes is a morphism that is source-locally an open immersion.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

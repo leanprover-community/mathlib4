@@ -17,7 +17,7 @@ This file provides measurable-space instances for a selection of standard counta
 in each case defining the Σ-algebra to be `⊤` (the discrete measurable-space structure).
 -/
 
-@[expose] public section
+public section
 
 instance Empty.instMeasurableSpace : MeasurableSpace Empty := ⊤
 
@@ -50,7 +50,7 @@ instance IterateMulAct.instDiscreteMeasurableSpace {α : Type*} {f : α → α} 
 instance (priority := 100) Subsingleton.measurableSingletonClass
     {α} [MeasurableSpace α] [Subsingleton α] : MeasurableSingletonClass α := by
   refine ⟨fun i => ?_⟩
-  convert MeasurableSet.univ
+  convert! MeasurableSet.univ
   simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 
 instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩

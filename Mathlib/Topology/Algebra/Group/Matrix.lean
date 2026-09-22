@@ -8,7 +8,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.Group.Units
 public import Mathlib.Topology.Instances.Matrix
 
 /-!
@@ -18,7 +18,7 @@ Lemmas about the topology of matrix groups, such as `GL(n, R)` and `SL(n, R)` fo
 topological ring `R`.
 -/
 
-@[expose] public section
+public section
 
 open Matrix Topology
 
@@ -122,10 +122,12 @@ lemma _root_.Topology.IsClosedEmbedding.specialLinearGroup_map [T1Space R]
 instance instT1Space [T1Space R] : T1Space (SL n R) := isClosedEmbedding_val.isEmbedding.t1Space
 
 /-- The special linear group over a topological ring is a topological group. -/
-instance topologicalGroup : IsTopologicalGroup (SL n R) where
+instance isTopologicalGroup : IsTopologicalGroup (SL n R) where
   continuous_inv := continuous_induced_rng.mpr continuous_induced_dom.matrix_adjugate
   continuous_mul := continuous_induced_rng.mpr <|
     (continuous_induced_dom.comp continuous_fst).mul (continuous_induced_dom.comp continuous_snd)
+
+@[deprecated (since := "2026-08-21")] alias topologicalGroup := isTopologicalGroup
 
 /-!
 ### Mapping `SL(n, R)` to `GL(n, R)`
@@ -148,14 +150,17 @@ the topology on `SL n A` coincides with the subspace topology from `GL n A`. -/
 lemma isEmbedding_toGL : IsEmbedding (toGL : SL n R → GL n R) :=
   ⟨isInducing_toGL, toGL_injective⟩
 
+@[deprecated "Use range_toGL_eq_ker_det instead" (since := "2026-09-14")]
 theorem range_toGL {A : Type*} [CommRing A] :
     Set.range (toGL : SL n A → GL n A) = GeneralLinearGroup.det ⁻¹' {1} := by
   ext x
   simpa [Units.ext_iff] using ⟨fun ⟨y, hy⟩ ↦ by simp [← hy], fun hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
 
-/-- The natural inclusion of `SL n A` in `GL n A` is a closed embedding. -/
+/-- The natural inclusion of `SL n R` in `GL n R` is a closed embedding. -/
 lemma isClosedEmbedding_toGL [T0Space R] : IsClosedEmbedding (toGL : SL n R → GL n R) :=
-  ⟨isEmbedding_toGL, by simpa [range_toGL] using isClosed_singleton.preimage <| by fun_prop⟩
+  ⟨isEmbedding_toGL, by
+    rw [← MonoidHom.coe_range, range_toGL_eq_ker_det, MonoidHom.coe_ker]
+    exact isClosed_singleton.preimage <| by fun_prop⟩
 
 end toGL
 

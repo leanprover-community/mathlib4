@@ -28,7 +28,7 @@ minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 Alexandroff, discrete, finitely generated, fg space
 -/
 
-@[expose] public section
+public section
 
 open Filter Set TopologicalSpace Topology
 
