@@ -174,30 +174,25 @@ structure Model where
   /-- The expression of the ring denoting a value. -/
   mkEntry : carrier.type → MetaM Expr
 
-/-- A model with its decomposition data on the model's carrier. -/
-structure ModelData where
-  /-- The model that ran. -/
-  model : Model
-  /-- The decomposition data, restored to the original matrix. -/
-  data : BareissData model.carrier.type
-
-/-- Run the elimination of the model on the entries of a matrix literal. -/
-def Model.run (m : Model) (entries : Array (Array Expr)) : MetaM ModelData := do
+/-- Run the elimination of the model on the entries of a matrix literal: the decomposition
+data on the model's carrier, restored to the original matrix. -/
+def Model.run (m : Model) (entries : Array (Array Expr)) :
+    MetaM (BareissData m.carrier.type) := do
   let (values, restore) ← m.prepare entries
   let d ← bareissDecomp m.ops values
-  return { model := m, data := restore d }
+  return restore d
 
-/-- The decomposition data decoded into expressions of the ring. -/
-def ModelData.toExprData (md : ModelData) : MetaM (BareissData Expr) :=
-  md.data.mapM md.model.mkEntry
+/-- Decode decomposition data on the model's carrier into expressions of the ring. -/
+def Model.toExprData (m : Model) (d : BareissData m.carrier.type) : MetaM (BareissData Expr) :=
+  d.mapM m.mkEntry
 
-/-- Apply a function generic in the carrier to the model's arithmetic and decoding and to the
-data. -/
-def ModelData.withCarrier {β : Type} (md : ModelData)
+/-- Apply a function generic in the carrier to the model's arithmetic and decoding and to
+decomposition data on the model's carrier. -/
+def Model.withCarrier {β : Type} (m : Model) (d : BareissData m.carrier.type)
     (k : {V : Type} → RingOps V → (V → MetaM Expr) → BareissData V → β) : β :=
-  match md with
-  | ⟨⟨.int, ops, _, mkEntry⟩, d⟩ => k ops mkEntry d
-  | ⟨⟨.expr, ops, _, mkEntry⟩, d⟩ => k ops mkEntry d
+  match m, d with
+  | ⟨.int, ops, _, mkEntry⟩, d => k ops mkEntry d
+  | ⟨.expr, ops, _, mkEntry⟩, d => k ops mkEntry d
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where

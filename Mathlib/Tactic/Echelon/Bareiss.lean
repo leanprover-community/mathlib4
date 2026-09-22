@@ -57,18 +57,20 @@ def modelFor (R : Expr) : MetaM Model := do
 structure BareissResult where
   /-- The elaborated `Echelon.Decomposition` certificate term. -/
   cert : Expr
-  /-- The model with the decomposition data underlying the certificate, on the model's
-  carrier. -/
-  modelData : ModelData
+  /-- The computation model that produced the decomposition. -/
+  model : Model
+  /-- The decomposition data underlying the certificate, on the model's carrier. -/
+  data : BareissData model.carrier.type
 
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
 `A`. -/
 def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
     (entries : Array (Array Expr)) : MetaM BareissResult := do
-  let modelData ← (← modelFor α).run entries
-  let d ← modelData.toExprData
+  let model ← modelFor α
+  let data ← model.run entries
+  let d ← model.toExprData data
   have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  return { cert := ← mkCertificate _cr A entries d, modelData }
+  return { cert := ← mkCertificate _cr A entries d, model, data }
 
 end Mathlib.Tactic.Echelon
