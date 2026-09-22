@@ -71,7 +71,10 @@ definition as the supremum of all normal `p`-subgroups (`pCore_eq_iSup`).
 
 Taking the intersection of the Sylow `p`-subgroups rather than the supremum of the normal
 `p`-subgroups needs no finiteness hypothesis either way, but it keeps the definition free of
-the subtype of normal `p`-subgroups.
+the subtype of normal `p`-subgroups. The intersection is taken inside `H` and then mapped, rather
+than the other way round, so that `pCore_le` and `pCore_subgroupOf_eq_iInf_sylow` are immediate
+from `map_subtype_le` and `comap_map_eq_self_of_injective`, with no appeal to `Sylow p H` being
+nonempty.
 
 The parameter is an arbitrary natural number, and `pCore` is prime-agnostic: `IsPGroup n N`
 constrains element orders only through the primes dividing `n`, so for `n ≥ 1` the value of
@@ -81,23 +84,24 @@ not of this form: `IsPGroup 0` holds vacuously, so the only Sylow `0`-subgroup o
 `pCore 0 H = H` (`pCore_zero`), rather than the `⊥` that `Nat.primeFactors 0 = ∅` would
 suggest. -/
 def pCore (p : ℕ) (H : Subgroup G) : Subgroup G :=
-  ⨅ P : Sylow p H, (P : Subgroup H).map H.subtype
-
-/-- The `p`-core of `H` is contained in `H`. -/
-theorem pCore_le : pCore p H ≤ H :=
-  iInf_le_of_le (Classical.arbitrary _) (map_subtype_le _)
-
-/-- Computed inside `H`, the `p`-core is the intersection of the Sylow `p`-subgroups of `H`. -/
-theorem pCore_subgroupOf_eq_iInf_sylow :
-    (pCore p H).subgroupOf H = ⨅ P : Sylow p H, (P : Subgroup H) := by
-  rw [pCore, subgroupOf, comap_iInf]
-  exact iInf_congr fun _ => comap_map_eq_self_of_injective H.subtype_injective _
+  (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype
 
 /-- The `p`-core equals the intersection of all Sylow `p`-subgroups of `H`,
 embedded into `G`. -/
 theorem pCore_eq_iInf_sylow :
     pCore p H = (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype := by
-  rw [← pCore_subgroupOf_eq_iInf_sylow, map_subgroupOf_eq_of_le pCore_le]
+  rw [pCore]
+
+/-- The `p`-core of `H` is contained in `H`. -/
+theorem pCore_le : pCore p H ≤ H := by
+  rw [pCore_eq_iInf_sylow]
+  exact map_subtype_le _
+
+/-- Computed inside `H`, the `p`-core is the intersection of the Sylow `p`-subgroups of `H`. -/
+theorem pCore_subgroupOf_eq_iInf_sylow :
+    (pCore p H).subgroupOf H = ⨅ P : Sylow p H, (P : Subgroup H) := by
+  rw [pCore_eq_iInf_sylow]
+  exact comap_map_eq_self_of_injective H.subtype_injective _
 
 /-- The `p`-core, computed inside `H`, is a `p`-group. -/
 theorem isPGroup_pCore_subgroupOf : IsPGroup p ((pCore p H).subgroupOf H) := by
