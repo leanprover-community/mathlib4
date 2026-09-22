@@ -94,10 +94,11 @@ theorem find?_eq_none_iff {s : Multiset α} (hp) :
 
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]
-theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePred p₂] {s : Multiset α}
-    (hp₁ : {x ∈ s | p₁ x}.Subsingleton) (h : ∀ x ∈ s, p₁ x ↔ p₂ x) :
-    s.find? p₁ hp₁ = s.find? p₂
-      (by simp_rw +contextual [← exists_prop, ← h, exists_prop, hp₁]) := by
+theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePred p₂] {s t : Multiset α}
+    (hs : s = t) (hp₁ : {x ∈ s | p₁ x}.Subsingleton) (h : ∀ x ∈ s, p₁ x ↔ p₂ x) :
+    s.find? p₁ hp₁ = t.find? p₂
+      (by simp_rw +contextual [← hs, ← exists_prop, ← h, exists_prop, hp₁]) := by
+  subst hs
   induction s using Quotient.ind
   exact List.find?_congr rfl fun x hx ↦ by simp [h x (by simpa using hx)]
 

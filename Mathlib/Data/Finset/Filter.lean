@@ -175,7 +175,7 @@ theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
 @[congr]
 theorem filter_congr {s t : Finset α} (h : s = t) (H : ∀ x ∈ s, p x ↔ q x) :
     filter p s = filter q t :=
-  h ▸ (eq_of_veq <| Multiset.filter_congr H)
+  h ▸ (eq_of_veq <| Multiset.filter_congr rfl H)
 
 variable (p q)
 

@@ -173,12 +173,14 @@ theorem image2_insert_right : image2 f s (insert b t) = (fun a => f a b) '' s �
   rw [insert_eq, image2_union_right, image2_singleton_right]
 
 @[congr]
-theorem image2_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image2 f s t = image2 f' s t := by
+theorem image2_congr {s' : Set α} {t' : Set β}
+    (hs : s = s') (ht : t = t') (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) :
+    image2 f s t = image2 f' s' t' := by
   grind
 
 /-- A common special case of `image2_congr` -/
 theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s t :=
-  image2_congr fun a _ b _ => h a b
+  image2_congr rfl rfl fun a _ b _ => h a b
 
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
     g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
