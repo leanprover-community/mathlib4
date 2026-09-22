@@ -227,7 +227,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
     ⟨f.mapMatrix ↑ₘg, by
       rw [← f.map_det]
       simp [g.prop]⟩
-  map_one' := Subtype.ext <| f.mapMatrix.map_one
+  map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
 section center

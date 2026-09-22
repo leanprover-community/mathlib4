@@ -1118,7 +1118,7 @@ example, if it is necessary to use uniqueness of this continuous functional calc
 @[simps!]
 noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     C(s, R) →⋆ₐ[R] A :=
-  cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R <| ⟨_, continuous_id.subtype_map hs⟩
+  cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R ⟨_, continuous_id.subtype_map hs⟩
 
 lemma cfcHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     Continuous (cfcHomSuperset ha hs) :=
@@ -1147,7 +1147,7 @@ class ClosedEmbeddingContinuousFunctionalCalculus (R A : Type*) (p : outParam (A
 lemma cfcHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A]
     [StarRing A] [Algebra R A] [instCFC : ClosedEmbeddingContinuousFunctionalCalculus R A p]
-    {a : A} (ha : p a) : IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+    {a : A} (ha : p a) : IsClosedEmbedding (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   ClosedEmbeddingContinuousFunctionalCalculus.isClosedEmbedding a ha
 
 end IsClosedEmbedding

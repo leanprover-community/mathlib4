@@ -174,7 +174,7 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
-    (locally_holdsForLocalizationAway <|
+    (locally_holdsForLocalizationAway
       isStandardSmoothOfRelativeDimension_holdsForLocalizationAway).containsIdentities
 
 /-- Open immersions are smooth. -/

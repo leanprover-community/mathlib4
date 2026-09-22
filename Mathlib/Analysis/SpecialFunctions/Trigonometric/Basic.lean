@@ -1278,9 +1278,9 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   refine mul_le_mul_of_nonpos_left (mul_le_mul this ?_ ?_ ((Real.exp_pos _).le.trans this)) ha
   · exact
       Real.cos_le_cos_of_nonneg_of_le_pi (_root_.abs_nonneg _)
-        (hb.trans <| half_le_self <| Real.pi_pos.le) hz
+        (hb.trans <| half_le_self Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
-    exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
+    exact (neg_nonpos.2 Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
 
 theorem sinh_antiperiodic : Function.Antiperiodic sinh (π * I) := by
   simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]

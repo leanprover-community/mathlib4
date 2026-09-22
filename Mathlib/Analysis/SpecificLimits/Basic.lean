@@ -554,7 +554,7 @@ include hu₂
 
 /-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_geometric_two : CauchySeq f :=
-  cauchySeq_of_dist_le_of_summable _ hu₂ <| ⟨_, hasSum_geometric_two' C⟩
+  cauchySeq_of_dist_le_of_summable _ hu₂ ⟨_, hasSum_geometric_two' C⟩
 
 /-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C`. -/

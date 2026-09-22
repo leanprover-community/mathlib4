@@ -747,7 +747,7 @@ noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R
     haveI : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
     C(s, R)₀ →⋆ₙₐ[R] A :=
   have : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
-  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
+  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R
     ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
 
 lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
@@ -782,7 +782,7 @@ lemma cfcₙHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R
     [StarRing A] [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [instCFC : NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p]
     {a : A} (ha : p a) :
-    IsClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
+    IsClosedEmbedding (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   NonUnitalClosedEmbeddingContinuousFunctionalCalculus.isClosedEmbedding a ha
 
 end IsClosedEmbedding
@@ -855,7 +855,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
     IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
-  refine (cfcHom_isClosedEmbedding ha).comp <|
+  refine (cfcHom_isClosedEmbedding ha).comp
     (IsUniformInducing.isUniformEmbedding ⟨?_⟩).isClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
