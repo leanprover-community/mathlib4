@@ -99,7 +99,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn Subtype.property]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -150,7 +150,7 @@ end Generic
 
 section Isometric
 
-variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
@@ -614,9 +614,8 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
   have hf := h_tendsto.continuousOn hF.frequently
-  have hf0 : f 0 = 0 := Eq.symm <|
-    tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
-    h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
+  have hf0 : f 0 = 0 := tendsto_nhds_unique_of_eventuallyEq
+    (h_tendsto.tendsto_at (quasispectrum.zero_mem R a)) tendsto_const_nhds hF0
   by_cases ha : p a
   · let s : Set X := {x | ContinuousOn (F x) (quasispectrum R a) ∧ F x 0 = 0}
     have hs : s ∈ l := hF.and hF0
@@ -632,7 +631,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -688,7 +687,7 @@ end Generic
 
 section Isometric
 
-variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
     [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
     [NonUnitalIsometricContinuousFunctionalCalculus R A p]

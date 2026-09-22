@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.EGauge
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 import Mathlib.Tactic.Peel
@@ -159,7 +159,7 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =o[𝕜; l] g₁ ↔ f₂ =o[𝕜; l] g₂ := by
   simp only [isLittleOTVS_iff_tendsto_div]
-  peel with U hU V hV
+  congr! 5 with U hU V hV
   exact tendsto_congr' (hf.comp₂ (egauge _ _ · / egauge _ _ ·) hg)
 
 /-- A stronger version of `IsLittleOTVS.congr` that requires the functions only agree along the
@@ -181,7 +181,7 @@ theorem IsLittleOTVS.congr_right (h : f =o[𝕜; l] g₁) (hg : ∀ x, g₁ x = 
 theorem isBigOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =O[𝕜; l] g₁ ↔ f₂ =O[𝕜; l] g₂ := by
   simp only [isBigOTVS_iff]
-  peel with U hU V hV
+  congr! 5 with U hU V hV
   exact eventuallyLE_congr (hf.fun_comp (egauge 𝕜 U)) (hg.fun_comp (egauge 𝕜 V))
 
 /-- A stronger version of `IsBigOTVS.congr` that requires the functions only agree along the
@@ -333,7 +333,7 @@ protected theorem _root_.Filter.HasBasis.isLittleOTVS_iff
   · rintro s t hsub ⟨V, hV₀, hV⟩
     exact ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
   · refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
-    beta_reduce
+    simp only
     gcongr
 
 protected theorem _root_.Filter.HasBasis.isBigOTVS_iff
@@ -366,7 +366,7 @@ theorem IsBigOTVS.of_egauge_le_mul [ContinuousConstSMul 𝕜 F] {ι} {p : ι →
   have hc₀ : c ≠ 0 := by rintro rfl; simp at hc
   refine ⟨c⁻¹ • V, (set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hV₀, ?_⟩
   refine hV.trans <| .of_forall fun x ↦ ?_
-  beta_reduce
+  simp only
   grw [hc]
   simp [egauge_smul_left, hc₀, enorm_eq_nnnorm, ENNReal.div_eq_inv_mul]
 
@@ -663,9 +663,8 @@ theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜; l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜; l] (fun x ↦ c x • g x) := by
-  simp only [isLittleOTVS_iff] at *
-  peel h with U hU V hV ε hε x hx
-  beta_reduce at *
+  simp only [isLittleOTVS_iff, EventuallyLE] at *
+  gconvert h using 7 with U hU V hV ε hε x hx
   rw [egauge_smul_right, egauge_smul_right, mul_left_comm]
   · gcongr
   all_goals exact fun _ ↦ Filter.nonempty_of_mem ‹_›
@@ -827,9 +826,6 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
       _ ≤ _ := div_le_egauge_ball _ _ _
 
 alias ⟨IsBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
-
-@[deprecated (since := "2026-02-03")]
-alias isBigOTVS.isBigO := IsBigOTVS.isBigO
 
 lemma isThetaTVS_iff_isTheta : f =Θ[𝕜; l] g ↔ f =Θ[l] g :=
   .and isBigOTVS_iff_isBigO isBigOTVS_iff_isBigO

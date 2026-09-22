@@ -234,7 +234,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
     rw [real_inner_smul_right]
     convert! mul_zero _
     rw [← Submodule.mem_orthogonal_singleton_iff_inner_right]
-    refine SetLike.le_def.1 (Submodule.orthogonal_le ?_)
+    refine mem_of_le_of_mem (Submodule.orthogonal_le ?_)
       (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
     rw [Submodule.span_singleton_le_iff_mem, direction_affineSpan]
     simp only [Finset.mem_erase, Finset.mem_univ, and_true] at hj
@@ -305,7 +305,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
 lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     SignType.sign (s.excenterWeights {i} i) = -1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert! one_mul _
+  convert one_mul (-1 : SignType)
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm]
@@ -313,7 +313,7 @@ lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
 lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
     SignType.sign (s.excenterWeights {i} j) = 1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
-  convert! one_mul _
+  convert one_mul (1 : SignType)
   · rw [sign_eq_one_iff, inv_pos]
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm, h.symm]
@@ -642,7 +642,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
   · convert!
     h.excenter_notMem_affineSpan_face (fs := { i, j }) (m := 1) (by simp_all)
       Nat.AtLeastTwo.ne_one.symm
-    simp [Set.image_insert_eq]
+    simp
 
 lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
     s.incenter ∉ line[ℝ, s.points i, s.points j] :=
@@ -808,7 +808,7 @@ lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1))
 /-- A weaker version of `touchpoint_mem_affineSpan`. -/
 lemma touchpoint_mem_affineSpan_simplex (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range s.points) := by
-  refine SetLike.le_def.1 (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i)
+  refine mem_of_le_of_mem (affineSpan_mono _ ?_) (s.touchpoint_mem_affineSpan signs i)
   simp
 
 lemma touchpoint_eq_point_rev (s : Simplex ℝ P 1) (signs : Finset (Fin 2)) (i : Fin 2) :
@@ -1328,7 +1328,7 @@ lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : F
       (t.exsphere signs).orthRadius (t.touchpoint signs i₁) := by
   convert! (t.excenterExists signs).affineSpan_faceOpposite_eq_orthRadius i₁
   have hc : {i₁}ᶜ = ({i₂, i₃} : Set (Fin 3)) := by grind
-  simp [Simplex.range_faceOpposite_points, hc, Set.image_insert_eq]
+  simp [Simplex.range_faceOpposite_points, hc]
 
 lemma affineSpan_pair_eq_orthRadius_insphere [Fact (Module.finrank ℝ V = 2)]
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :

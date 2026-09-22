@@ -55,9 +55,8 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-variable {L : GrothendieckTopology E}
 
 /-- An auxiliary structure that witnesses the fact that `f` factors through an image object of `G`.
 -/

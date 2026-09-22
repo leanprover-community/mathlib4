@@ -575,7 +575,6 @@ variable [HasPullbacks D] [HasBinaryProducts D] [HasTerminal D]
 variable [Full F]
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products,
 2. `D` has pullbacks, binary products and a terminal object, and
@@ -627,7 +626,6 @@ lemma toPullbackTerminal {X : D} {a : C}
   exact map_preimage F (_ ≫ pbIso.hom) ▸ map F (F.preimage _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and

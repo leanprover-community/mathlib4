@@ -83,7 +83,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
 
-@[deprecated factorizationEquiv_symm_apply_coe (since := "2026-03-18")]
+@[deprecated factorizationEquiv_symm_apply_coe +typeChanged (since := "2026-03-18")]
 theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
     (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod (· ^ ·) :=
   factorizationEquiv_symm_apply_coe ⟨f, hf⟩
@@ -133,6 +133,10 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   · exact (Nat.pow_lt_pow_iff_right pp.one_lt).1 <| (ordProj_le p hn).trans_lt <|
       Nat.lt_pow_self pp.one_lt
   · simpa only [factorization_eq_zero_of_not_prime n pp] using! hn.bot_lt
+
+/-- A weak upper bound on `n.factorization p` -/
+theorem mul_factorization_le {n p : ℕ} : p * n.factorization p ≤ n := by
+  grw [factorization_le_padicValNat, mul_padicValNat_le]
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by

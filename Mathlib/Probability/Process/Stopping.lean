@@ -1285,9 +1285,9 @@ section Nat
 
 /-! ### Filtrations indexed by `ℕ` -/
 
-variable {u : ℕ → Ω → β} {τ π : Ω → ℕ∞}
+variable {u : ℕ → Ω → β} {τ π : Ω → WithTop ℕ}
 
-theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ∞) :
+theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ⊤) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.Ico (τ ω).untopA (π ω).untopA, (u (i + 1) - u i)) ω := by
   ext ω
@@ -1299,9 +1299,8 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
   have hπ_top ω : π ω ≠ ⊤ := fun h ↦ by specialize hbdd ω; simp [h] at hbdd
-  have hτ_top ω : τ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (mod_cast hle ω)
-  rw [stoppedValue_sub_eq_sum hle]
-  swap; · intro ω; exact mod_cast hπ_top ω
+  have hτ_top ω : τ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (hle ω)
+  rw [stoppedValue_sub_eq_sum hle hπ_top]
   ext ω
   simp only [Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
   refine Finset.sum_congr ?_ fun _ _ => rfl
@@ -1310,8 +1309,8 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   specialize hbdd ω
   lift τ ω to ℕ using hτ_top ω with t ht
   lift π ω to ℕ using hπ_top ω with b hb
-  simp only [Nat.cast_le] at hbdd
-  simp
+  simp at hbdd
+  simp [← ENat.some_eq_natCast]
   grind
 
 section AddCommMonoid
@@ -1324,9 +1323,8 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   specialize hbdd ω
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ℕ using h_top with t ht
-  simp only [Nat.cast_le] at hbdd
-  simp only [ENat.some_eq_natCast, Finset.coe_range]
-  exact ⟨t, by simpa, Nat.cast_inj.mpr rfl⟩
+  simp only [Nat.cast_withTop, WithTop.coe_le_coe] at hbdd
+  exact ⟨t, by simpa [Nat.lt_succ_iff], rfl⟩
 
 theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
     ∑ i ∈ Finset.range n, Set.indicator {ω | τ ω = i} (u i) := by
@@ -1340,14 +1338,14 @@ theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a 
       {a | n + 1 ≤ τ a}.indicator (u n) + {a | τ a = n}.indicator (u n) := by
     ext x
     rw [add_comm, Pi.add_apply, ← Set.indicator_union_of_notMem_inter]
-    · simp_rw [@eq_comm _ _ (n : ℕ∞), @le_iff_eq_or_lt _ _ (n : ℕ∞)]
+    · simp_rw [@eq_comm _ _ (n : WithTop ℕ), @le_iff_eq_or_lt _ _ (n : WithTop ℕ)]
       have : {a | ↑n + 1 ≤ τ a} = {a | ↑n < τ a} := by
         ext ω
         simp only [Set.mem_ofPred_eq]
         cases τ ω with
         | top => simp
         | coe t =>
-          simp only [Nat.cast_lt]
+          simp
           norm_cast
       rw [this, Set.ofPred_or]
     · rintro ⟨h₁, h₂⟩

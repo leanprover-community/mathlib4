@@ -27,7 +27,7 @@ lattice or set operations behave when indexed by a finset.
 
 open Function Multiset OrderDual
 
-variable {F α β γ ι κ : Type*}
+variable {F α β γ ι : Type*}
 
 namespace Finset
 
@@ -359,7 +359,7 @@ variable [DistribLattice α]
 
 section OrderBot
 
-variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ → α} {a : α}
+variable [OrderBot α] {s : Finset ι} {f : ι → α} {a : α}
 
 @[to_dual]
 theorem sup_inf_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
@@ -624,7 +624,7 @@ theorem apply_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonem
 alias comp_sup'_eq_sup'_comp := apply_sup'_eq_sup'_comp
 
 @[deprecated (since := "2026-05-29")]
-alias comp_inf'_eq_inf'_comp := apply_sup'_eq_sup'_comp
+alias comp_inf'_eq_inf'_comp := apply_inf'_eq_inf'_comp
 
 @[to_dual (attr := simp)]
 theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
@@ -715,8 +715,8 @@ theorem ofDual_sup' [SemilatticeInf α] {s : Finset ι} (hs : s.Nonempty) (f : �
   rfl
 
 section DistribLattice
-variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty)
-  {f : ι → α} {g : κ → α} {a : α}
+variable [DistribLattice α] {s : Finset ι} (hs : s.Nonempty)
+  {f : ι → α} {a : α}
 
 @[to_dual]
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
