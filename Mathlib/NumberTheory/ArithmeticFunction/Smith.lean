@@ -44,7 +44,7 @@ The entry-wise identity behind the factorisation is
 smith determinant, gcd matrix, zeta matrix, totient, divisor function
 -/
 
-@[expose] public section
+public section
 
 open Finset
 open scoped ArithmeticFunction.sigma
@@ -67,7 +67,7 @@ namespace Matrix
 variable {R : Type*}
 
 /-- The GCD matrix of `f`: the `n × n` matrix with entry `f (gcd (i + 1) (j + 1))`. -/
-def gcdMatrix (n : ℕ) (f : ℕ → R) : Matrix (Fin n) (Fin n) R :=
+@[expose] def gcdMatrix (n : ℕ) (f : ℕ → R) : Matrix (Fin n) (Fin n) R :=
   of fun i j ↦ f (Nat.gcd ((i : ℕ) + 1) ((j : ℕ) + 1))
 
 @[simp] theorem gcdMatrix_apply (n : ℕ) (f : ℕ → R) (i j : Fin n) :
