@@ -68,13 +68,14 @@ lemma ofDerivation_comp_leibniz (d : Derivation R A A) (a : A) :
 
 lemma ofDerivation_leibniz (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
     ofDerivation L d (a • x) = a • ofDerivation L d x + (d a) • x :=
-  DFunLike.congr_fun (ofDerivation_comp_smul d a) x
+  DFunLike.congr_fun (ofDerivation_comp_leibniz d a) x
 
-lemma ofDerivation_smul (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
-    ofDerivation L (a • d) x = a • ofDerivation L d x := by
-  refine x.induction_on (by simp) (fun _ _ ↦ ?_) (fun _ _ h1 h2 ↦ ?_)
+lemma ofDerivation_smul (d : Derivation R A A) (a : A) :
+    ofDerivation L (a • d) = a • ofDerivation L d := by
+  ext x
+  refine x.inductionOn  (fun ?_ ?_ ↦ ?_) (fun _ _ h1 h2 ↦ ?_)
   · simp [TensorProduct.smul_tmul']
-  · simp [smul_add, map_add, h1, h2]
+  · simp [map_add, h1, h2]
 
 variable (A) in
 /-- A Lie derivation of an `R-`Lie algebra `L`, induces a Lie derivation of `A ⊗[R] L` for any
