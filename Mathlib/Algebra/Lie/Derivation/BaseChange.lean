@@ -65,7 +65,7 @@ lemma ofDerivation_comp_leibniz (d : Derivation R A A) (a : A) :
       a • (ofDerivation L d).toLinearMap + DistribSMul.toLinearMap _ _ (d a) := by
   ext
   simp [smul_tmul', add_tmul, mul_comm]
-  
+
 lemma ofDerivation_leibniz (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
     ofDerivation L d (a • x) = a • ofDerivation L d x + (d a) • x :=
   DFunLike.congr_fun (ofDerivation_comp_smul d a) x
