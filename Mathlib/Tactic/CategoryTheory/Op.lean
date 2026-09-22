@@ -6,9 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Opposites
-public import Mathlib.Lean.Meta.Simp
-public import Mathlib.Util.AddRelatedDecl
-public import Qq
+public import Mathlib.Tactic.CategoryTheory.HomTransform
 
 /-!
 # The `op` attribute
@@ -27,51 +25,39 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.Op
 
+open TheoremTransform
+
 /-- `simp only` with `op_comp` and `op_id` on a single expression (used on each side via
 `simpEq`). -/
 def opSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``op_comp, ``op_id] e (config := { decide := false })
 
-/-- Build the `op` lemma for `e : f = g`, simplifying the resulting equality with `op_comp` and
-`op_id`. -/
-def opExprHom (type : Q(Prop)) (e : Q($type)) : Term.TermElabM Expr := do
-  let u ← mkFreshLevelMVar
-  let v ← mkFreshLevelMVar
-  let C ← mkFreshExprMVarQ q(Type u)
-  let instC ← mkFreshExprMVarQ q(Category.{v} $C) .synthetic
-  let X ← mkFreshExprMVarQ q($C)
-  let Y ← mkFreshExprMVarQ q($C)
-  let f ← mkFreshExprMVarQ q($X ⟶ $Y)
-  let g ← mkFreshExprMVarQ q($X ⟶ $Y)
-  let eqType : Q(Prop) := q($f = $g)
-  unless ← isDefEq type eqType do
-    throwError "`@[op]` expects an equality of morphisms"
-  let _ : $type =Q $eqType := ⟨⟩
-  let opType : Q(Prop) := q(Quiver.Hom.op $f = Quiver.Hom.op $g)
-  let opProof : Q($opType) := q(congrArg Quiver.Hom.op $e)
-  -- As in `map_of%`, let simplification use the instance even if synthesis is still pending.
-  let inst := instC.mvarId!
-  let (pf, ()) ← withEnsuringLocalInstance inst do
-    let (type, pf) ← simpEq opSimp opType opProof
-    -- `op_comp` and `op_id` are definitional equalities, so the proof alone need not change.
-    return (← mkExpectedTypeHint pf type, ())
-  -- Rewriting can determine the source category after this elaborator returns.
-  unless ← Term.synthesizeInstMVarCore inst do
-    Term.registerSyntheticMVarWithCurrRef inst (.typeClass none)
-  return pf
+/-- Apply `Quiver.Hom.op` and normalize with `op_comp` and `op_id`, retaining the normalized
+type even when simplification changes only the displayed statement. -/
+def opHomProof (p : Proof) : Term.TermElabM (Except MessageData Proof) := do
+  match ← matchHomEquality p `op with
+  | .error reason => return .error reason
+  | .ok ⟨u, v, _C, instC, _X, _Y, f, g⟩ => do
+    let e : Q($f = $g) := p.value
+    let type : Q(Prop) := q(Quiver.Hom.op $f = Quiver.Hom.op $g)
+    let value : Q($type) := q(congrArg Quiver.Hom.op $e)
+    return .ok (← normalizeHomProof instC ⟨type, value⟩ opSimp)
 
-/--
-Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produce a proof of the
-corresponding `op` lemma.
--/
+/-- Build the opposite equality without emitting a declaration. -/
+def opExprHom (type : Q(Prop)) (e : Q($type)) : Term.TermElabM Expr := do
+  match ← opHomProof ⟨type, e⟩ with
+  | .ok p => p.toExpr
+  | .error reason => throwError reason
+
+initialize TheoremTransform.register `op {
+  suffix := "_op"
+  apply := fun request p => do
+    unless request.args.isEmpty do throwError "`op` takes no transformation arguments"
+    underForall p opHomProof }
+
+/-- Apply the opposite transformation beneath forall binders. -/
 def opExpr (pf : Expr) : Term.TermElabM Expr := do
-  forallTelescopeReducing (← inferType pf) (whnfType := true) fun xs type => do
-    let type := (← instantiateMVars type).consumeMData
-    let some _ := type.eq? | throwError "`@[op]` expects an equality"
-    let type : Q(Prop) := type
-    let pfApp := mkAppN pf xs
-    let inner ← opExprHom type pfApp
-    mkLambdaFVars xs inner
+  (← TheoremTransform.apply { transformation := `op } (← Proof.ofExpr pf)).toExpr
 
 /--
 Adding `@[op]` to a lemma named `H` of shape `∀ .., f = g`, where `f` and `g` are morphisms in
@@ -83,20 +69,20 @@ for `reassoc` and other attributes.
 -/
 syntax (name := opStx) "op" optAttrArg : attr
 
-initialize registerBuiltinAttribute {
-  name := `opStx
-  descr := ""
-  applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
+private def opImpl (src : Name) (ref : Syntax) (kind : AttributeKind) : AttrM Name :=
+  match ref with
   | `(attr| op $optAttr) => MetaM.run' do
-    if kind != AttributeKind.global then
-      throwError "`op` can only be used as a global attribute"
-    let tgt := src.appendAfter "_op"
-    addRelatedDecl src tgt ref optAttr fun value levels => do
-      Term.TermElabM.run' <| Term.withSynthesize do
-        let pf ← opExpr value
-        pure (pf, levels)
-  | _ => throwUnsupportedSyntax }
+    unless kind == .global do throwError "`op` can only be used as a global attribute"
+    TheoremTransform.addDecl { transformation := `op } src ref optAttr
+  | _ => throwUnsupportedSyntax
+
+initialize
+  registerGeneratingAttr `opStx ((#[·]) <$> opImpl · · ·)
+  registerBuiltinAttribute {
+    name := `opStx
+    descr := ""
+    applicationTime := .afterCompilation
+    add := fun src ref kind => discard <| opImpl src ref kind }
 
 /--
 `op_of% t`, where `t` is an equality `f = g` between morphisms (possibly under `∀` binders),
@@ -104,7 +90,6 @@ produces the corresponding statement with `Quiver.Hom.op` applied to both sides 
 `simp only [op_comp, op_id]` on each side.
 -/
 elab "op_of% " t:term : term => do
-  let e ← Term.withSynthesizeLight <| Term.elabTerm t none
-  opExpr e
+  TheoremTransform.elabTerm { transformation := `op } t
 
 end Mathlib.Tactic.CategoryTheory.Op

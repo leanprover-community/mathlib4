@@ -27,6 +27,8 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.SpecializeMap
 
+open TheoremTransform
+
 open Mathlib.Tactic.CategoryTheory.Map
 
 /-- Build a `dsimp` context unfolding exactly the listed declarations. -/
@@ -57,42 +59,61 @@ private partial def orderBinders (vars : Array Expr) : MetaM (Array Expr) := do
 Instantiate the theorem and functor template with metavariables, specialize the proof produced by
 `mapExpr`, and abstract over the remaining parameters with their original binder information.
 -/
-def specializeMapExpr (pf functorExpr : Expr) : TermElabM Expr := do
+def specializeMapProof (p : Proof) (functorExpr : Expr) :
+    TermElabM (Except MessageData Proof) := do
   let (ys, yInfos, functorType) ← forallMetaTelescopeReducing (← inferType functorExpr)
   unless (← whnf functorType).isAppOf ``CategoryTheory.Functor do
     throwError "`@[specialize_map]` expects a declaration whose type reduces to `∀ .., C ⥤ D`"
   let F := mkAppN functorExpr ys
-  let mapped ← mapExpr pf `specialize_map
-  let (args, infos, _) ← forallMetaTelescopeReducing (← inferType mapped)
-  -- `mapExpr` appends the target category, its instance, and the functor after the source binders.
-  let functor := args.back!
-  let xs := args.extract 0 (args.size - 3)
-  let xInfos := infos.extract 0 (infos.size - 3)
-  unless ← isDefEq (← inferType functor) functorType do
-    throwError
-      "`@[specialize_map]` could not unify the source of the functor with the source \
-       category of the lemma"
-  functor.mvarId!.assign F
-  -- Unification may identify parameters; retain the source binder information in that case.
-  let mut binders := #[]
-  for (x, info) in (xs ++ ys).zip (xInfos ++ yInfos) do
-    let x' ← instantiateMVars x
-    if x'.isMVar && !binders.any (·.1 == x') then
-      x'.mvarId!.setUserName (← x.mvarId!.getDecl).userName
-      binders := binders.push (x', info)
-  let vars ← orderBinders (binders.map (·.1))
-  let pf ← instantiateMVars (mkAppN mapped args)
-  let pf ← elimMVarDeps vars pf
-  let pf ← vars.foldrM (init := pf) fun x pf => do
-    let some (_, info) := binders.find? (·.1 == x) | unreachable!
-    mkLambdaFVars #[x] pf (binderInfoForMVars := info)
-  let mut unfold := functorExpr.getAppFn.constName?.toList
-  for name in unfold do
-    if let some value := (← getConstInfo name).value? then
-      for name in value.getUsedConstants do
-        if (← getConstInfo name).value?.isSome then
-          unfold := unfold.insert name
-  simpType (dsimpSimp unfold) pf
+  match ← instantiateMap p `specialize_map with
+  | .error reason => return .error reason
+  | .ok mapped => do
+    let xs := mapped.sourceArgs
+    let xInfos := mapped.sourceInfos
+    let functor := mapped.functor
+    unless ← isDefEq (← inferType functor) functorType do
+      return .error m!"`@[specialize_map]` could not unify the source of the functor with the \
+        source category of the lemma"
+    functor.mvarId!.assign F
+    -- Unification may identify parameters; retain the source binder information in that case.
+    let mut binders := #[]
+    for (x, info) in (xs ++ ys).zip (xInfos ++ yInfos) do
+      let x' ← instantiateMVars x
+      if x'.isMVar && !binders.any (·.1 == x') then
+        x'.mvarId!.setUserName (← x.mvarId!.getDecl).userName
+        binders := binders.push (x', info)
+    let vars ← orderBinders (binders.map (·.1))
+    let pf ← instantiateMVars mapped.value
+    let pf ← elimMVarDeps vars pf
+    let pf ← vars.foldrM (init := pf) fun x pf => do
+      let some (_, info) := binders.find? (·.1 == x) | unreachable!
+      mkLambdaFVars #[x] pf (binderInfoForMVars := info)
+    let mut unfold := functorExpr.getAppFn.constName?.toList
+    for name in unfold do
+      if let some value := (← getConstInfo name).value? then
+        for name in value.getUsedConstants do
+          if (← getConstInfo name).value?.isSome then
+            unfold := unfold.insert name
+    return .ok (← Proof.ofExpr (← simpType (dsimpSimp unfold) pf))
+
+/-- Specialize an elaborated proof without requiring a named map lemma. -/
+def specializeMapExpr (pf functorExpr : Expr) : TermElabM Expr := do
+  match ← specializeMapProof (← Proof.ofExpr pf) functorExpr with
+  | .ok p => p.toExpr
+  | .error reason => throwError reason
+
+initialize TheoremTransform.register `specialize_map {
+  suffix := "_specializeMap"
+  apply := fun request p => do
+    unless request.args.size == 1 do
+      throwError "`specialize_map` requires one explicit functor template"
+    specializeMapProof p (← mkConstWithFreshMVarLevels request.args[0]!)
+  prepare := fun p levels => do
+    -- Source universes may specialize to composite levels, as in functor categories.
+    let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
+    return (⟨p.type.instantiateLevelParams levels levelMVars,
+      p.value.instantiateLevelParams levels levelMVars⟩, [])
+  finalize := finalizeMap }
 
 /-- Optional `suffix := "..."` argument for `@[specialize_map ...]`. -/
 syntax specializeMapSuffix := atomic(" (" &"suffix" " := " str ")")
@@ -108,27 +129,23 @@ specialized declaration.
 syntax (name := specializeMapStx)
   "specialize_map " ident (specializeMapSuffix)? optAttrArg : attr
 
-initialize registerBuiltinAttribute {
-  name := `specializeMapStx
-  descr := "specialize a map lemma to a functor template"
-  applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
+private def specializeMapImpl (src : Name) (ref : Syntax) (kind : AttributeKind) : AttrM Name :=
+  match ref with
   | `(attr| specialize_map $F:ident $[(suffix := $suffix:str)]? $optAttr) => MetaM.run' do
-    if kind != AttributeKind.global then
+    unless kind == .global do
       throwError "`specialize_map` can only be used as a global attribute"
-    let suffix := suffix.map (·.getString) |>.getD "_specializeMap"
-    let tgt := src.appendAfter suffix
-    addRelatedDecl src tgt ref optAttr fun value levels => do
-      Term.TermElabM.run' <| withSynthesize do
-        -- The source universes may specialize to composite levels, e.g. for functor categories.
-        let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
-        let value := value.instantiateLevelParams levels levelMVars
-        let Fexpr ← mkConstWithFreshMVarLevels (← resolveGlobalConstNoOverload F)
-        let pf ← specializeMapExpr value Fexpr
-        let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) pf
-        setMCtx r.mctx
-        let ordered ← orderMapUniverses (← inferType r.expr) [] r.newParamNames.toList
-        pure (r.expr, ordered)
-  | _ => throwUnsupportedSyntax }
+    let F ← resolveGlobalConstNoOverload F
+    TheoremTransform.addDecl
+      { transformation := `specialize_map, args := #[F], suffix? := suffix.map (·.getString) }
+      src ref optAttr
+  | _ => throwUnsupportedSyntax
+
+initialize
+  registerGeneratingAttr `specializeMapStx ((#[·]) <$> specializeMapImpl · · ·)
+  registerBuiltinAttribute {
+    name := `specializeMapStx
+    descr := "specialize a map lemma to a functor template"
+    applicationTime := .afterCompilation
+    add := fun src ref kind => discard <| specializeMapImpl src ref kind }
 
 end Mathlib.Tactic.CategoryTheory.SpecializeMap
