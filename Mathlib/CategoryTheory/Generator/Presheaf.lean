@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 /-!
 # Generators in the category of presheaves
@@ -37,6 +38,23 @@ noncomputable def freeYoneda (X : C) (M : A) : Cᵒᵖ ⥤ A where
   obj Y := ∐ (fun (i : (yoneda.obj X).obj Y) ↦ M)
   map f := Sigma.map' ((yoneda.obj X).map f) (fun _ ↦ 𝟙 M)
 
+/-- The morphism between free presheaves induced by a morphism of the indexing objects. -/
+@[simps]
+noncomputable def freeYonedaMap {X Y : C} (f : X ⟶ Y) (M : A) :
+    freeYoneda X M ⟶ freeYoneda Y M where
+  app Z := Sigma.map' (fun g : Z.unop ⟶ X ↦ g ≫ f) (fun _ ↦ 𝟙 M)
+  naturality Z W g := by
+    apply Sigma.hom_ext
+    intro h
+    simp [freeYoneda, Category.assoc]
+
+instance {X Y : C} (f : X ⟶ Y) (M : A) [MonoCoprod A] [Mono f] :
+    Mono (freeYonedaMap f M) := by
+  have (Z : Cᵒᵖ) : Mono ((freeYonedaMap f M).app Z) :=
+    MonoCoprod.mono_map'_of_injective (fun _ : Z.unop ⟶ Y ↦ M)
+      (fun g : Z.unop ⟶ X ↦ g ≫ f) (fun _ _ h ↦ (cancel_mono f).1 h)
+  exact NatTrans.mono_of_mono_app _
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(Presheaf.freeYoneda X M ⟶ F) ≃ (M ⟶ F.obj (op X))`. -/
 noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
@@ -50,6 +68,16 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     refine Sigma.hom_ext _ _ (fun φ ↦ ?_)
     simpa using (Sigma.ι _ (𝟙 _) ≫= f.naturality φ.op).symm
   right_inv g := by simp
+
+@[reassoc]
+lemma freeYonedaHomEquiv_naturality {X Y : C} {M : A} {F : Cᵒᵖ ⥤ A}
+    (f : X ⟶ Y) (α : freeYoneda Y M ⟶ F) :
+    freeYonedaHomEquiv (freeYonedaMap f M ≫ α) =
+      freeYonedaHomEquiv α ≫ F.map f.op := by
+  change Sigma.ι _ (𝟙 X) ≫ ((freeYonedaMap f M).app (op X) ≫ α.app (op X)) =
+    (Sigma.ι _ (𝟙 Y) ≫ α.app (op Y)) ≫ F.map f.op
+  simpa [freeYonedaMap, freeYoneda] using
+    (Sigma.ι (fun _ : Y ⟶ Y ↦ M) (𝟙 Y) ≫= α.naturality f.op)
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

@@ -36,12 +36,32 @@ sheaf to the presheaf `Presheaf.freeYoneda X M`. -/
 noncomputable def freeYoneda (X : C) (M : A) : Sheaf J A :=
   (presheafToSheaf J A).obj (Presheaf.freeYoneda X M)
 
+/-- The morphism between free sheaves induced by a morphism in the site. -/
+noncomputable def freeYonedaMap {X Y : C} (f : X ⟶ Y) (M : A) :
+    freeYoneda J X M ⟶ freeYoneda J Y M :=
+  (presheafToSheaf J A).map (Presheaf.freeYonedaMap f M)
+
+instance {X Y : C} (f : X ⟶ Y) (M : A) [Mono f] [MonoCoprod A]
+    [(presheafToSheaf J A).PreservesMonomorphisms] : Mono (freeYonedaMap J f M) :=
+  Functor.map_mono _ _
+
 variable {J} in
 /-- The bijection `(Sheaf.freeYoneda J X M ⟶ F) ≃ (M ⟶ F.val.obj (op X))`
 when `F : Sheaf J A`, `X : C` and `M : A`. -/
 noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Sheaf J A} :
     (freeYoneda J X M ⟶ F) ≃ (M ⟶ F.obj.obj (op X)) :=
   ((sheafificationAdjunction J A).homEquiv _ _).trans Presheaf.freeYonedaHomEquiv
+
+set_option backward.isDefEq.respectTransparency false in
+variable {J} in
+@[reassoc]
+lemma freeYonedaHomEquiv_naturality {X Y : C} {M : A} {F : Sheaf J A}
+    (f : X ⟶ Y) (α : freeYoneda J Y M ⟶ F) :
+    freeYonedaHomEquiv (freeYonedaMap J f M ≫ α) =
+      freeYonedaHomEquiv α ≫ F.obj.map f.op := by
+  simp only [freeYonedaHomEquiv, freeYonedaMap, freeYoneda, Equiv.trans_apply]
+  rw [Adjunction.homEquiv_naturality_left]
+  exact Presheaf.freeYonedaHomEquiv_naturality f _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S)) :

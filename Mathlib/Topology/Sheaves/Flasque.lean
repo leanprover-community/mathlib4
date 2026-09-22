@@ -6,6 +6,7 @@ Authors: Brian Nugent
 
 module
 
+public import Mathlib.CategoryTheory.Generator.Sheaf
 public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
 public import Mathlib.Topology.Sheaves.LocallySurjective
@@ -190,52 +191,17 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
     exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.obj.map i)
 
-noncomputable section
-
-/-- The sheafification of the presheaf that is `ℤ` on `U` and `0` elsewhere. -/
-private abbrev freeAbSheaf (U : Opens X) : Sheaf AddCommGrpCat.{u} X :=
-  (presheafToSheaf _ _).obj (yoneda.obj U ⋙ AddCommGrpCat.free)
-
-/-- If `U` is contained in `V`, we get a natural morphism from `freeAbSheaf U` to `freeAbSheaf V` -/
-private abbrev freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
-  (presheafToSheaf _ _).map (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
-
-/-- Morphisms out of `freeAbSheaf U` are in correspondence with the sections `I.obj.obj (op U)` -/
-private abbrev freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
-    (freeAbSheaf U ⟶ I) ≃ I.obj.obj (op U) :=
-  ((sheafificationAdjunction _ _).homEquiv (yoneda.obj U ⋙ AddCommGrpCat.free) I).trans <|
-    ((AddCommGrpCat.adj.whiskerRight _).homEquiv (yoneda.obj U)
-    (sheafToPresheaf _ _ |>.obj I)).trans <|
-      yonedaEquiv
-
 set_option backward.isDefEq.respectTransparency false in
-private lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
-    (I : Sheaf AddCommGrpCat.{u} X) (f : freeAbSheaf V ⟶ I) :
-    freeAbSheafHomEquiv U I (freeAbSheafMap i ≫ f) =
-      I.obj.map i.op (freeAbSheafHomEquiv V I f) := by
-  simp only [freeAbSheafHomEquiv, Equiv.trans_apply]
-  rw [Adjunction.homEquiv_naturality_left, ← Functor.whiskeringRight_obj_map]
-  erw [Adjunction.homEquiv_naturality_left]
-  exact (yonedaEquiv_naturality _ i).symm
-
-set_option backward.isDefEq.respectTransparency false in
-private instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
-    Mono (freeAbSheafMap i) :=
-  haveI : PreservesFiniteLimits (presheafToSheaf (Opens.grothendieckTopology X)
-      AddCommGrpCat.{u}) := HasSheafify.isLeftExact
-  Functor.map_mono _ _
-
-end
-
 /-- Injective sheaves are flasque. -/
 instance of_injective {X : TopCat.{u}}
     (I : TopCat.Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
-  epi := by
-    refine fun i => ((AddCommGrpCat.epi_iff_surjective _).mpr (fun s => ?_))
-    obtain ⟨h, hh⟩ := Injective.factors ((freeAbSheafHomEquiv _ I).symm s) (freeAbSheafMap i.unop)
-    use freeAbSheafHomEquiv _ I h
-    rw [← Quiver.Hom.op_unop i, ← freeAbSheafHomEquiv_naturality, hh]
-    simp
+  epi {U V} i := by
+    obtain ⟨h, hh⟩ := Injective.factors
+      ((CategoryTheory.Sheaf.freeYonedaHomEquiv (F := I)).symm (𝟙 (I.obj.obj V)))
+      (CategoryTheory.Sheaf.freeYonedaMap (Opens.grothendieckTopology X) i.unop (I.obj.obj V))
+    apply epi_of_epi_fac (f := CategoryTheory.Sheaf.freeYonedaHomEquiv h) (h := 𝟙 _)
+    rw [← Quiver.Hom.op_unop i, ← CategoryTheory.Sheaf.freeYonedaHomEquiv_naturality, hh]
+    exact Equiv.apply_symm_apply _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Flasque sheaves have no higher cohomology. -/
