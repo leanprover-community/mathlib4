@@ -139,10 +139,6 @@ theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 
-attribute [coe] Valuation.toMonoidWithZeroHom
-
-instance : Coe (Valuation R Γ₀) (R →*₀ Γ₀) := ⟨toMonoidWithZeroHom⟩
-
 @[simp]
 theorem coe_toMonoidWithZeroHom (v : Valuation R Γ₀) : ⇑(v : R →*₀ Γ₀) = v := rfl
 
@@ -487,8 +483,6 @@ def restrict : Valuation R (ValueGroup₀ (v : R →*₀ Γ₀)) where
     · simp only [ne_eq, not_or, Decidable.not_not] at H
       replace H : v (x + y) = 0 := eq_zero_of_nonpos (map_add_le _ (le_of_eq H.1) (le_of_eq H.2))
       simp [restrict₀_apply, H]
---     have := (embedding_strictMono (f := (v : R →*₀ Γ₀)))
---     simp [← this.le_iff_le, this.monotone.map_max]
 
 lemma restrict_def (x : R) : v.restrict x = restrict₀ (v : R →*₀ Γ₀) x := rfl
 
