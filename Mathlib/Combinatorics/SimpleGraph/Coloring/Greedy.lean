@@ -37,10 +37,10 @@ noncomputable def greedyColoring : G.Coloring V :=
     -- This set is not empty since `v` itself is always a possible color
     have : v ∈ s := fun ⟨u, hu, _, heq⟩ ↦ heq ▸ (ih u hu).prop <| hu
     -- Color `v` with the minimum possible color, ordered by the well-order
-    ⟨IsWellFounded.wf.min s ⟨v, this⟩, IsWellFounded.wf.not_lt_min s this⟩
+    ⟨WellFounded.min inferInstance s ⟨v, this⟩, WellFounded.not_lt_min inferInstance s this⟩
   let toFun v :=
     -- Recurse to color each vertex, ordered by the well-order
-    IsWellFounded.fix (motive := ({ c // ¬r · c })) r f v |>.val
+    WellFounded.fix' (motive := ({ c // ¬r · c })) r f v |>.val
   { toFun := toFun
     map_rel' {u v} hadj heq := by
       -- As `r` is trichotomous and `u ≠ v` because they are adjacent in the graph, wlog `r u v`
@@ -53,10 +53,10 @@ noncomputable def greedyColoring : G.Coloring V :=
       -- it can't be in `sv`, so surely the colors of `u` and `v` cannot be the same
       refine absurd this <| heq ▸ ?_
       unfold toFun
-      rw [IsWellFounded.fix_eq]
-      refine IsWellFounded.wf.min_mem svᶜ ⟨v, fun ⟨w, hw, _, heq'⟩ ↦ absurd hw ?_⟩
+      rw [WellFounded.fix'_eq]
+      refine WellFounded.min_mem inferInstance svᶜ ⟨v, fun ⟨w, hw, _, heq'⟩ ↦ absurd hw ?_⟩
       rw [← heq']
-      exact IsWellFounded.fix r f w |>.prop }
+      exact WellFounded.fix' r f w |>.prop }
 
 variable {G} in
 /-- Given a coloring of a graph, consider the mapped graph `G.map f` which can be thought of as
@@ -95,9 +95,9 @@ theorem greedyColorsBefore_subset_image_neighborSet (v : V) :
 
 /-- Greedy coloring assigns the smallest available color -/
 theorem greedyColoring_eq_min (v : V) :
-    G.greedyColoring r v = IsWellFounded.wf.min (r := r) (G.greedyColorsBefore r v)ᶜ
+    G.greedyColoring r v = WellFounded.min (r := r) inferInstance (G.greedyColorsBefore r v)ᶜ
       ⟨v, G.notMem_greedyColorsBefore_self r v⟩ := by
-  rw [greedyColoring, RelHom.coeFn_mk, IsWellFounded.fix_eq]
+  rw [greedyColoring, RelHom.coeFn_mk, WellFounded.fix'_eq]
   rfl
 
 theorem greedyColoring_notMem_greedyColorsBefore (v : V) :
@@ -170,7 +170,7 @@ theorem greedyColoring_isClique_tfae {s : Set V} (hs : @IsLowerSet V ⟨r⟩ s) 
     obtain ⟨u, hr, hadj, rfl⟩ := mem_greedyColorsBefore_of_lt_greedyColoring (h hv ▸ id_def v ▸ huv)
     rwa [h <| hs hr hv]
   tfae_have 3 → 2 := fun h v hv ↦ by
-    induction v using IsWellFounded.induction r with | ind v ih
+    induction v using WellFounded.induction' r with | ind v ih
     rw [id_eq, greedyColoring_eq_self_tfae.out 1 3 rfl]
     refine fun u huv ↦ ⟨u, huv, h (hs huv hv) hv (irrefl v <| · ▸ huv), ?_⟩
     rw [ih u huv <| hs huv hv, id_eq]
@@ -228,7 +228,7 @@ theorem nonempty_coloring_iff_exists_isWellOrder {α : Type*} :
   have : IsWellOrder V r := Function.Injective.isWellOrder _ fun _ _ h ↦ congr(($h).snd)
   -- For every color `v` assigned in the greedy coloring, let `f v` be the first vertex that was
   -- greedy-colored by the color `v`, with respect to the order `r`.
-  let f : Set.range (G.greedyColoring r) → V := (IsWellFounded.wf.min (r := r) _ <| ·.prop)
+  let f : Set.range (G.greedyColoring r) → V := (WellFounded.min (r := r) inferInstance _ <| ·.prop)
   -- We claim that `C ∘ f` is injective.
   refine ⟨r, this, C ∘ f, fun u v heq ↦ Subtype.ext ?_⟩
   -- WLOG `r u v` since `r` is trichotomous.
