@@ -254,7 +254,6 @@ lemma isPrincipal_iff_exists_eq_setOfPred_valuation_le (hv : Integers v O) {I : 
 alias isPrincipal_iff_exists_eq_setOf_valuation_le :=
   isPrincipal_iff_exists_eq_setOfPred_valuation_le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : Integers v O) :
     ¬ DenselyOrdered (range v) := by
   intro H
@@ -275,8 +274,11 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
     simpa [I, IsGreatest, hv.isPrincipal_iff_exists_isGreatest, ← image_preimage_eq_inter_range]
       using IsPrincipalIdealRing.principal I
   obtain ⟨y, hy, hy₁⟩ : ∃ y, v (algebraMap O F x) < v y ∧ v y < 1 := by
-    simpa only [Subtype.exists, Subtype.mk_lt_mk, exists_range_iff, exists_prop]
-      using H.dense ⟨v (algebraMap O F x), mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
+    obtain ⟨y, hy1, ⟨⟨y, rfl⟩, hy2⟩⟩ := by
+      simpa only [Subtype.exists, Subtype.mk_lt_mk, mem_range, exists_and_left] using
+        H.dense ⟨v (algebraMap O F x), mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
+    use y, hy1
+    rwa [← (Subtype.strictMono_coe _).lt_iff_lt] at hy2
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
   exact hy.not_ge <| hx ⟨hy₁, mem_range_self _⟩
 

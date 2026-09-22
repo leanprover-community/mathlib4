@@ -533,7 +533,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 
 
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
-theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
+protected theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
     Continuous g := by
   let φ₀ : E →ₗ[𝕜] E × F := LinearMap.id.prod g
   have : Function.LeftInverse Prod.fst φ₀ := fun x => rfl

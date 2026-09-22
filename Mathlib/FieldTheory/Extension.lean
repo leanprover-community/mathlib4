@@ -16,7 +16,7 @@ field extensions, K is another extension of F, and `f` is an embedding of L/F in
 that the minimal polynomials of a set of generators of E/L splits in K (via `f`), then `f`
 extends to an embedding of E/F into K/F.
 
-## Reference
+## References
 
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly
@@ -184,7 +184,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
       fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
   suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
   by_contra!
-  obtain ⟨α, -, hα⟩ := SetLike.exists_of_lt this.lt_top
+  obtain ⟨α, -, hα⟩ := IsConcreteLE.exists_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra
   let Λ := ϕ.carrier⟮α⟯ →ₐ[ϕ.carrier] K
   have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦ ((alg.tower_top ϕ.carrier).isIntegral).1 _

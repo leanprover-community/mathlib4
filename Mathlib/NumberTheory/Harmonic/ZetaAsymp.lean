@@ -44,7 +44,9 @@ we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 
 @[expose] public section
 
-open Set MeasureTheory Filter Topology
+open Set MeasureTheory Filter
+
+open scoped Topology
 
 @[inherit_doc] local notation "γ" => Real.eulerMascheroniConstant
 
@@ -410,8 +412,9 @@ end val_at_one
 
 end ZetaAsymptotics
 
-open scoped Real
-open Complex ComplexConjugate
+open Complex
+
+open scoped Real ComplexConjugate
 
 /-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
 this particular value to it. -/
@@ -646,11 +649,14 @@ lemma log_deriv_riemannZeta_add_inv_sub_bounded :
     =O[𝓝[≠] 1] (fun _ ↦ (1 : ℂ)) :=
   (isBigO_const_one ..).sub_iff_left.mp log_deriv_riemannZeta_add_inv_sub_sub_isLittleO.isBigO
 
+lemma inv_riemannZeta_eq_sub_mul_of_ne_one {s : ℂ} (hs : s ≠ 1) :
+    (riemannZeta s)⁻¹ = (s - 1) * (riemannZeta₁ s)⁻¹ := by
+  rw [riemannZeta_eq_inv_sub_mul hs, mul_inv, inv_inv]
+
 lemma inv_riemannZeta_eq_sub_mul :
     ∀ᶠ s in 𝓝[≠] 1, (riemannZeta s)⁻¹ = (s - 1) * (riemannZeta₁ s)⁻¹ := by
-  filter_upwards [eventually_mem_nhdsWithin,
-    riemannZeta₁_ne_zero_of_near_one.filter_mono nhdsWithin_le_nhds] with s hs
-  simp [riemannZeta_eq_inv_sub_mul hs, field]
+  filter_upwards [eventually_mem_nhdsWithin] with s hs
+  exact inv_riemannZeta_eq_sub_mul_of_ne_one hs
 
 lemma inv_riemannZeta_sub_sub_isBigO :
     (fun s ↦ (riemannZeta s)⁻¹ - (s - 1)) =O[𝓝[≠] 1] (fun s ↦ (s - 1) ^ 2) := by

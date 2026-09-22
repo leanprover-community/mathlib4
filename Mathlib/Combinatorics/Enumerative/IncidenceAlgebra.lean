@@ -73,7 +73,7 @@ Here are some additions to this file that could be made in the future:
 
 open Finset OrderDual
 
-variable {F 𝕜 𝕝 𝕞 α β : Type*}
+variable {𝕜 𝕝 𝕞 α β : Type*}
 
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where
@@ -88,6 +88,7 @@ namespace IncidenceAlgebra
 section Zero
 variable [Zero 𝕜] [LE α] {a b : α}
 
+@[macro_inline]
 instance instFunLike : FunLike (IncidenceAlgebra 𝕜 α) α (α → 𝕜) where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr

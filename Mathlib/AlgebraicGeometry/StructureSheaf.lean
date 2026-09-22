@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Topology.Sheaves.LocalPredicate
+public import Mathlib.Tactic.ModuleNF
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -67,7 +68,7 @@ namespace AlgebraicGeometry
 variable (R) in
 /-- The prime spectrum as an object of `TopCat`. -/
 @[implicit_reducible]
-def PrimeSpectrum.Top : TopCat := TopCat.of (PrimeSpectrum R)
+def PrimeSpectrum.Top : TopCat := ↧(PrimeSpectrum R)
 
 namespace StructureSheaf
 
@@ -209,7 +210,7 @@ variable (R M) in
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInModuleCat : Presheaf (ModuleCat R) (PrimeSpectrum.Top R) where
-  obj U := ModuleCat.of R ((structureSheafInType R M).1.obj U)
+  obj U := ↧((structureSheafInType R M).1.obj U)
   map i := ModuleCat.ofHom
     { toFun := (structureSheafInType R M).1.map i
       map_add' _ _ := rfl
@@ -220,7 +221,7 @@ variable (R) in
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) where
-  obj U := .of ((structureSheafInType R R).1.obj U)
+  obj U := ↧((structureSheafInType R R).1.obj U)
   map i := CommRingCat.ofHom
     { toFun := (structureSheafInType R R).1.map i
       map_add' _ _ := rfl
@@ -476,7 +477,9 @@ theorem exists_le_iSup_basicOpen_and_smul_eq_smul_and_eq_const
     have : n i j + 1 ≤ N := (t ×ˢ t).le_sup (f := fun x ↦ n x.1 x.2 + 1) (b := ⟨_, _⟩) (by simp)
     rw [← Nat.sub_add_cancel this, pow_add, mul_smul, mul_smul]
     congr 1
-    convert! (hn i j).symm using 1 <;> module
+    have h := (hn i j).symm
+    module_nf at h ⊢
+    exact h
   · convert! congr((structureSheafInType R M).presheaf.map (homOfLE ?_).op $((H i).symm)) using 1
     · refine Subtype.ext <| funext fun x ↦ LocalizedModule.mk_eq.mpr ⟨1, ?_⟩
       simp [Submonoid.smul_def, pow_succ', mul_smul]
@@ -542,7 +545,7 @@ variable (R) in
 /-- The canonical ring homomorphism interpreting an element of `R` as an element of
 the stalk of `structureSheaf R` at `x`. -/
 @[expose] public def toStalk (x : PrimeSpectrum.Top R) :
-    CommRingCat.of R ⟶ (structurePresheafInCommRingCat R).stalk x :=
+    ↧R ⟶ (structurePresheafInCommRingCat R).stalk x :=
   CommRingCat.ofHom (algebraMap _ _) ≫ (structurePresheafInCommRingCat R).germ ⊤ x trivial
 
 @[elementwise, reassoc]
@@ -553,8 +556,6 @@ public lemma algebraMap_germ
   dsimp [toStalk]
   rw [← (structurePresheafInCommRingCat R).germ_res (homOfLE (le_top : U ≤ ⊤)) _ hxU]
   rfl
-
-@[deprecated (since := "2026-02-10")] public alias toOpen_germ := algebraMap_germ
 
 public
 instance (x : PrimeSpectrum.Top R) : Algebra R ((structurePresheafInCommRingCat R).stalk x) :=
@@ -626,7 +627,7 @@ variable (R M) in
 /-- The canonical ring homomorphism interpreting an element of `R` as an element of
 the stalk of `structureSheaf R` at `x`. -/
 def toStalkₗ' (x : PrimeSpectrum.Top R) :
-    ModuleCat.of R M ⟶ (structurePresheafInModuleCat R M).stalk x :=
+    ↧M ⟶ (structurePresheafInModuleCat R M).stalk x :=
   ModuleCat.ofHom (toOpenₗ R M ⊤) ≫ (structurePresheafInModuleCat R M).germ _ x trivial
 
 set_option backward.isDefEq.respectTransparency false in
@@ -658,7 +659,7 @@ variable (R M) in
 /-- The canonical ring homomorphism from the localization of `R` at `p` to the stalk
 of the structure sheaf at the point `p`. -/
 def localizationtoStalkₗ (x : PrimeSpectrum.Top R) :
-    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
+    ↧(LocalizedModule x.asIdeal.primeCompl M) ⟶
       (structurePresheafInModuleCat R M).stalk x :=
   ModuleCat.ofHom (IsLocalizedModule.lift x.asIdeal.primeCompl
     (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
@@ -684,7 +685,7 @@ implemented as a subtype of dependent functions to localizations at prime ideals
 the section on the point corresponding to a given prime ideal. -/
 def openToLocalizationₗ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hx : x ∈ U) :
     (structurePresheafInModuleCat R M).obj (op U) ⟶
-      .of R (LocalizedModule x.asIdeal.primeCompl M) :=
+      ↧(LocalizedModule x.asIdeal.primeCompl M) :=
   ModuleCat.ofHom
   { toFun s := s.1 ⟨x, hx⟩
     map_smul' _ _ := rfl
@@ -695,7 +696,7 @@ variable (R M) in
 a prime ideal `p` to the localization of `R` at `p`,
 formed by gluing the `openToLocalization` maps. -/
 def stalkToLocalizationₗ (x : PrimeSpectrum.Top R) :
-    (structurePresheafInModuleCat R M).stalk x ⟶ .of R (LocalizedModule x.asIdeal.primeCompl M) :=
+    (structurePresheafInModuleCat R M).stalk x ⟶ ↧(LocalizedModule x.asIdeal.primeCompl M) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ structurePresheafInModuleCat R M)
     { pt := _
       ι.app U := openToLocalizationₗ R M ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 }
@@ -724,7 +725,7 @@ corresponding to a prime ideal in `R` and the localization of `R` at `p`. -/
 @[simps]
 def stalkIsoₗ (x : PrimeSpectrum.Top R) :
     (structurePresheafInModuleCat R M).stalk x ≅
-      .of R (LocalizedModule x.asIdeal.primeCompl M) where
+      ↧(LocalizedModule x.asIdeal.primeCompl M) where
   hom := stalkToLocalizationₗ R M x
   inv := localizationtoStalkₗ R M x
   hom_inv_id := by
@@ -890,19 +891,11 @@ def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpect
 
 open Spec (structureSheaf)
 
-/-- The canonical ring homomorphism interpreting an element of `R` as
-a section of the structure sheaf. -/
-@[deprecated "algebraMap" (since := "2026-02-10")]
-def toOpen (U : Opens (PrimeSpectrum.Top R)) :
-    CommRingCat.of R ⟶ (structureSheaf R).1.obj (op U) := CommRingCat.ofHom (algebraMap _ _)
-
 @[simp]
 theorem algebraMap_self_map (U V : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (i : V ⟶ U) :
     CommRingCat.ofHom (algebraMap R _) ≫ (Spec.structureSheaf R).1.map i =
       CommRingCat.ofHom (algebraMap R _) :=
   rfl
-
-@[deprecated (since := "2026-02-10")] alias toOpen_res := algebraMap_self_map
 
 instance stalkAlgebra (p : PrimeSpectrum R) : Algebra R ((structureSheaf R).presheaf.stalk p) :=
   (toStalk R p).hom.toAlgebra
@@ -933,7 +926,7 @@ instance to_basicOpen_epi (r : R) :
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
 @[simps! inv]
-def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
+def globalSectionsIso : ↧R ≅ (structureSheaf R).1.obj (op ⊤) :=
   RingEquiv.toCommRingCatIso (.ofBijective _ algebraMap_obj_top_bijective)
 
 theorem globalSectionsIso_hom (R : CommRingCat) :

@@ -185,10 +185,10 @@ Lipschitz constants are both 1. -/
 @[simps!]
 noncomputable def mapIsometry (f : X ≃ᵢ Y) : DeloneSet X ≃ DeloneSet Y where
   toFun D := (D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
-      f.isometry.antilipschitz f.isometry.lipschitz).copy (f '' D.carrier)
+      f.isometry.antilipschitzWith f.isometry.lipschitzWith).copy (f '' D.carrier)
       D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
   invFun D := (D.mapBilipschitz f.symm.toEquiv 1 1 zero_lt_one zero_lt_one
-      f.symm.isometry.antilipschitz f.symm.isometry.lipschitz).copy (f.symm '' D.carrier)
+      f.symm.isometry.antilipschitzWith f.symm.isometry.lipschitzWith).copy (f.symm '' D.carrier)
       D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
   left_inv D := by ext <;> simp [copy_eq]
   right_inv D := by ext <;> simp [copy_eq]

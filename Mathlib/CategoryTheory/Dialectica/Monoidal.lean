@@ -103,12 +103,11 @@ theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ �
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix the non-terminal simp
-set_option linter.flexible false in
 theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
-  ext <;> simp; ext <;> simp <;> (rw [← Category.assoc]; congr 1; simp)
+  ext <;> simp only [tensorObj_src, comp_f, tensorHom_f, prod.map_map, tensorObj_tgt]
+  ext <;> simp [← Category.assoc]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -119,19 +118,23 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix the non-terminal simp
-set_option linter.flexible false in
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (𝟙 (𝟙_ (Dial C)) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
-  ext <;> simp; ext; simp; congr 1; ext <;> simp
+  ext; · simp
+  simp only [tensorObj_tgt, tensorUnit_tgt, comp_F]
+  ext; simp only [tensorObj_src, tensorUnit_src, leftUnitor_hom_F, prod.comp_lift,
+    tensorHom_F, tensorUnit_tgt, BinaryFan.mk_snd, limit.lift_π, prod.lift_map_assoc]
+  congr 1; ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix the non-terminal simp
-set_option linter.flexible false in
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (f ⊗ₘ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
-  ext <;> simp; ext; simp; congr 1; ext <;> simp
+  ext; · simp
+  simp only [tensorObj_tgt, tensorUnit_tgt, comp_F]
+  ext; simp only [tensorObj_src, tensorUnit_src, rightUnitor_hom_F, prod.comp_lift,
+    tensorHom_F, tensorUnit_tgt, BinaryFan.mk_fst, limit.lift_π, prod.lift_map_assoc]
+  congr 1; ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
