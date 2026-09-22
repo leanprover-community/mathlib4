@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # Cohomology of the hom complex
@@ -225,7 +226,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
-@[simps]
+@[simps, implicit_reducible]
 def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
     ((HomComplex K L).sc' n m p).LeftHomologyData where
   K := ↧(Cocycle K L m)
@@ -252,9 +253,12 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         obtain ⟨y, rfl⟩ := x.mk_surjective
         simpa using! ConcreteCategory.congr_hom hl y)
 
+lemma leftHomologyData'_f'_apply_coe (hm : n + 1 = m) (hp : m + 1 = p) (x : Cochain K L n) :
+    ((leftHomologyData' K L n m p hm hp).f' x).1 = δ n m x := rfl
+
 /-- `CohomologyClass K L n` identifies to the cohomology of the complex `HomComplex K L`
 in degree `n`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def leftHomologyData :
     ((HomComplex K L).sc n).LeftHomologyData :=
   leftHomologyData' K L _ n _ (by simp) (by simp)
@@ -268,26 +272,39 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the
 complex `linearHomComplex R K L` in degree `m`. -/
-@[simps]
-def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m + 1 = p) :
-    ((linearHomComplex R K L).sc' n m p).LeftHomologyData where
-  K := ModuleCat.of R (Cocycle K L m)
-  H := ModuleCat.of R (CohomologyClass K L m)
-  i := ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L m)
-  π := ModuleCat.ofHom (CohomologyClass.mkLinearMap R K L m)
-  wi := by cat_disch
-  hi := Cocycle.isKernel' R K L _ _ hp
-  wπ := by
-    ext x
-    dsimp
-    rw [CohomologyClass.mk_eq_zero_iff]
-    exact ⟨n, hm, x, rfl⟩
-  hπ := by
-    sorry
+@[simps, implicit_reducible]
+noncomputable def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m + 1 = p) :
+    ((linearHomComplex R K L).sc' n m p).LeftHomologyData := by
+  exact {
+    K := ModuleCat.of R (Cocycle K L m)
+    H := ModuleCat.of R (CohomologyClass K L m)
+    i := ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L m)
+    π := ModuleCat.ofHom (CohomologyClass.mkLinearMap R K L m)
+    wi := by cat_disch
+    hi := Cocycle.isKernel' R K L _ _ hp
+    wπ := by
+      dsimp
+      ext x
+      dsimp
+      rw [CohomologyClass.mk_eq_zero_iff]
+      refine ⟨n, hm, x, ?_⟩
+      rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
+    hπ :=
+      isColimitOfReflects (forget₂ _ AddCommGrpCat) (by
+        refine (CokernelCofork.isColimitMapCoconeEquiv ..).2
+          ((IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+            (leftHomologyData' K L n m p hm hp).hπ')
+        · refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ (by simp)
+          ext (x : Cochain K L n)
+          dsimp
+          ext : 1
+          rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp x,
+            dsimp% leftHomologyData'_f'_apply_coe K L n m p hm hp x]
+        · exact Cofork.ext (Iso.refl _)) }
 
 /-- `CohomologyClass K L m` identifies to the cohomology of the
 complex `linearHomComplex R K L` in degree `m`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def linearLeftHomologyData [Linear R C] :
     ((linearHomComplex R K L).sc n).LeftHomologyData :=
   linearLeftHomologyData' R K L _ n _ (by simp) (by simp)

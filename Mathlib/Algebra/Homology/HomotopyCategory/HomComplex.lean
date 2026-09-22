@@ -977,4 +977,12 @@ noncomputable def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
   isLimitOfReflects (forget₂ _ (AddCommGrpCat.{v}))
     ((KernelFork.isLimitMapConeEquiv ..).2 (Cocycle.isKernel K L n m hm))
 
+variable (R K L) in
+lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
+    (p : ℤ) (hp : m + 1 = p) (x : Cochain K L n) :
+    dsimp% (((Cocycle.isKernel' R K L m p hp).lift
+      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp))) x).1 = δ n m x :=
+  congr($((Cocycle.isKernel' R K L m p hp).fac
+      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).1 x)
+
 end CochainComplex
