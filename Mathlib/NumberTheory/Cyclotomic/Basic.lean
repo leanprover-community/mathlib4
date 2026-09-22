@@ -710,7 +710,7 @@ instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
   | 0 => inferInstance
   | _ + 1 => inferInstance
 
--- Ensure that there are no diamonds with `ℚ`,
+-- Ensure that there are no diamonds with `ℚ`.
 example : CyclotomicField.algebra n ℚ = DivisionRing.toRatAlgebra := by
   with_implicit rfl
 
