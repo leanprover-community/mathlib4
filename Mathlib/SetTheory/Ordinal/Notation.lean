@@ -1116,7 +1116,7 @@ theorem fastGrowingε₀_one : fastGrowingε₀ 1 = 2 := by
   simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl]
 
 theorem fastGrowingε₀_two : fastGrowingε₀ 2 = 2048 := by
-  norm_num [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
+  simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
     show oadd 0 (2 : Nat).succPNat 0 = 3 from rfl, @fastGrowing_succ 3 2 rfl]
 
 end ONote
@@ -1168,11 +1168,8 @@ instance : Zero NONote :=
 instance : Inhabited NONote :=
   ⟨0⟩
 
-theorem lt_wf : @WellFounded NONote (· < ·) :=
+instance lt_wf : WellFoundedLT NONote :=
   InvImage.wf repr Ordinal.lt_wf
-
-instance : WellFoundedLT NONote :=
-  ⟨lt_wf⟩
 
 instance : WellFoundedRelation NONote :=
   ⟨(· < ·), lt_wf⟩
