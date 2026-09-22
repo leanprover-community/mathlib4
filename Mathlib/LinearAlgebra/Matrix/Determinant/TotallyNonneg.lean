@@ -61,7 +61,7 @@ protected lemma IsTotallyNonneg.transpose (hM : M.IsTotallyNonneg) :
 @[simp] theorem isTotallyNonneg_transpose_iff :
     Mᵀ.IsTotallyNonneg ↔ M.IsTotallyNonneg := ⟨(·.transpose), (·.transpose)⟩
 
-variable [IsStrictOrderedRing R]
+variable [IsOrderedRing R]
 
 @[simp] protected lemma IsTotallyNonneg.zero : (0 : Matrix ι ι R).IsTotallyNonneg
   | 0 => by simp
