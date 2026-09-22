@@ -639,6 +639,28 @@ def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Na
       decompFailed := decompFailed + pending.size
   return (decompressed, decompFailed)
 
+/--
+Appends curl's per-transfer fields to a failure line, as `key=value` pairs:
+`size_download` (bytes received), `num_connects`, `http_version`,
+`remote_ip` (the address that answered), and `time_total`.
+
+Each value describes curl's final attempt, because `--retry` hides the
+earlier ones. A field the report omits is left out of the line.
+-/
+def transferDiagnostics (report : Lean.Json) : String :=
+  let field (key : String) : Option String :=
+    match report.getObjVal? key with
+    | .error _ => none
+    | .ok value =>
+      match value.getStr? with
+      | .ok s => if s.isEmpty then none else some s
+      | .error _ =>
+        let s := value.compress
+        if s == "null" then none else some s
+  let pairs := #["size_download", "num_connects", "http_version", "remote_ip", "time_total"]
+    |>.filterMap fun key => (field key).map fun value => s!"{key}={value}"
+  " ".intercalate pairs.toList
+
 def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     (caption : String) (speedVar : String)
     (classify : Option Nat → Nat → TransferVerdict dir) (removeOnError := false)
@@ -733,6 +755,9 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
+              let diag := transferDiagnostics result
+              if !diag.isEmpty then
+                msg := s!"{msg} [{diag}]"
               return msg
             let msg? := result.getObjValAs? String "errormsg"
             -- A download is named by its part file, an upload by its URL.
