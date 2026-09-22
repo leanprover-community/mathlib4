@@ -211,7 +211,7 @@ example :
 set_option backward.isDefEq.respectTransparency false in
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   erw [WithLp.norm_seminormedAddCommGroupToProd]
-  rw [WithLp.prod_norm_eq_add (by norm_num)]
+  rw [WithLp.prod_norm_eq_add (by simp)]
   simp only [WithLp.toLp_fst, ENNReal.toReal_one, Real.rpow_one, WithLp.toLp_snd, ne_eq,
     one_ne_zero, not_false_eq_true, div_self, fst, snd]
 

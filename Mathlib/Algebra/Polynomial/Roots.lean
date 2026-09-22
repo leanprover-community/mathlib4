@@ -610,6 +610,13 @@ theorem rootSet_finite (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra
     (p.rootSet S).Finite :=
   Set.toFinite _
 
+variable (T R) in
+@[simp]
+theorem rootSet_map [CommRing S] (p : S[X]) [Algebra S T] [Algebra T R] [Algebra S R]
+    [IsScalarTower S T R] : (p.map (algebraMap S T)).rootSet R = p.rootSet R := by
+  classical
+  rw [rootSet_def, rootSet_def, aroots_map]
+
 /-- The set of roots of all polynomials of bounded degree and having coefficients in a finite set
 is finite. -/
 theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
@@ -894,8 +901,8 @@ theorem Monic.irreducible_iff_degree_lt (p_monic : Monic p) (p_1 : p ≠ 1) :
     have := degree_pos_of_not_isUnit_of_dvd_monic p_monic q_unit dvd
     have hu := p_monic.isUnit_leadingCoeff_of_dvd dvd
     refine (h _ (monic_of_isUnit_leadingCoeff_inv_smul hu) ?_ ?_ (dvd_trans ?_ dvd)).elim
-    · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
-    · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
+    · rwa [degree_smul_of_smul_regular _ (IsSMulRegular.all _)]
+    · rwa [degree_smul_of_smul_regular _ (IsSMulRegular.all _)]
     · rw [Units.smul_def, Polynomial.smul_eq_C_mul, (isUnit_C.mpr (Units.isUnit _)).mul_left_dvd]
   · rintro h q _ deg_pos deg_le dvd
     exact deg_pos.ne' <| degree_eq_zero_of_isUnit (h q deg_le dvd)

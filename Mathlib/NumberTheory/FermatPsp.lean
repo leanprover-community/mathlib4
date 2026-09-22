@@ -21,8 +21,8 @@ is a composite number that passes the Fermat primality test to base `b` and is c
 Fermat pseudoprimes can also be seen as composite numbers for which Fermat's little theorem holds
 true.
 
-Numbers which are Fermat pseudoprimes to all bases are known as Carmichael numbers (not yet defined
-in this file).
+Numbers which are Fermat pseudoprimes to all bases are known as Carmichael numbers
+(defined in `Mathlib/NumberTheory/CarmichaelNumber.lean`).
 
 ## Main Results
 
@@ -54,6 +54,10 @@ probable primes to any base.
 -/
 def ProbablePrime (n b : ℕ) : Prop :=
   n ∣ b ^ (n - 1) - 1
+
+theorem probablePrime_iff_zmod_one (n : ℕ) {b : ℕ} (hb : b ≠ 0) :
+    n.ProbablePrime b ↔ (b : ZMod n) ^ (n - 1) = 1 := by
+  rw [ProbablePrime, ← ZMod.natCast_eq_zero_iff, cast_pred (by positivity), sub_eq_zero, cast_pow]
 
 /--
 `n` is a Fermat pseudoprime to base `b` if `n` is a probable prime to base `b` and is composite. By

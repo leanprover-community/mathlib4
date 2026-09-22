@@ -61,7 +61,6 @@ lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X ⟶ Y) (y : Y) (x : f.fibe
     f.fiberToSpecResidueField y x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X}
     {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (y : Y) :
     IsPullback (pullback.map _ _ _ _ fst (Spec.map (g.residueFieldMap y)) g h.w.symm (by simp))
@@ -130,9 +129,6 @@ instance (f : X ⟶ Y) [QuasiCompact f] (y : Y) : CompactSpace (f.fiber y) :=
 lemma Scheme.Hom.isCompact_preimage_singleton (f : X ⟶ Y) [QuasiCompact f] (y : Y) :
     IsCompact (f ⁻¹' {y}) :=
   f.range_fiberι y ▸ isCompact_range (f.fiberι y).continuous
-
-@[deprecated (since := "2026-02-05")]
-alias QuasiCompact.isCompact_preimage_singleton := Scheme.Hom.isCompact_preimage_singleton
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) [IsAffineHom f] (y : Y) : IsAffine (f.fiber y) :=

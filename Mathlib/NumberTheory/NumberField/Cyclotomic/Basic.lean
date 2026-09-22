@@ -389,7 +389,7 @@ The norm, relative to `ℤ`, of `ζ - 1` in a `2`-th cyclotomic extension of `�
 theorem norm_toInteger_sub_one_of_eq_two [IsCyclotomicExtension {2} ℚ K]
     (hζ : IsPrimitiveRoot ζ 2) :
     norm ℤ (hζ.toInteger - 1) = -2 := by
-  rw [show 2 = (2 ^ (0 + 1)) by norm_num] at hζ
+  rw [show 2 = (2 ^ (0 + 1)) by simp] at hζ
   simpa using hζ.norm_toInteger_pow_sub_one_of_two
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p`-th cyclotomic extension of `ℚ` is `p` if
@@ -659,7 +659,6 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 
 variable (n) [hn : NeZero n]
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra IntermediateField Nat in
 /--
 Computes the absolute discriminant of the `n`-th cyclotomic field.
@@ -765,7 +764,6 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
 
 variable {n K}
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField Algebra in
 theorem adjoin_singleton_eq_top [hK : IsCyclotomicExtension {n} ℚ K]
     {ζ : K} (hζ : IsPrimitiveRoot ζ n) :

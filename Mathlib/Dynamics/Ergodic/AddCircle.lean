@@ -103,8 +103,8 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     mul_assoc, this, hI₂]
 
 theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => n • y :=
-  { measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn) with
-    aeconst_set := fun s hs hs' => by
+  Ergodic.of_preimage_eq (measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn))
+    fun s hs hs' => by
       let u : ℕ → AddCircle T := fun j => ↑((↑1 : ℝ) / ↑(n.natAbs ^ j) * T)
       replace hn : 1 < n.natAbs := by rwa [Int.abs_eq_natAbs, Nat.one_lt_cast] at hn
       have hu₀ : ∀ j, addOrderOf (u j) = n.natAbs ^ j := fun j => by
@@ -118,8 +118,8 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
         (vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)).eventuallyEq
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact tendsto_pow_atTop_atTop_of_one_lt hn
-      rw [eventuallyConst_set']
-      exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs.nullMeasurableSet hu₁ hu₂ }
+      rw [eventuallyEmptyOrUniv_iff']
+      exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs.nullMeasurableSet hu₁ hu₂
 
 theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n • y :=
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)

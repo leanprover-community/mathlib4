@@ -2,6 +2,10 @@ import Mathlib.Tactic.Simps
 
 set_option linter.tacticCheckInstances true
 
+/-!
+# Tests for the `tacticCheckInstances` linter on `@[simps]` projections
+-/
+
 /-! ## clean projection, no warning expected -/
 
 structure Wrap (α : Type) where

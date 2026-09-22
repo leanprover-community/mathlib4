@@ -620,7 +620,7 @@ theorem ContinuousOn.image_connectedComponentIn_subset [TopologicalSpace β] {f 
     |>.subset_connectedComponentIn (mem_image_of_mem _ <| mem_connectedComponentIn hx)
       (image_mono <| connectedComponentIn_subset _ _)
 
-@[deprecated ContinuousOn.image_connectedComponentIn_subset (since := "2026-07-27")]
+@[deprecated ContinuousOn.image_connectedComponentIn_subset +typeChanged (since := "2026-07-27")]
 theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
     {a : α} (hf : Continuous f) (hx : a ∈ s) :
     f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
@@ -635,7 +635,7 @@ theorem ContinuousOn.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α �
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
   mapsTo_iff_image_subset.2 <| h.image_connectedComponentIn_subset hx
 
-@[deprecated ContinuousOn.mapsTo_connectedComponentIn (since := "2026-07-27")]
+@[deprecated ContinuousOn.mapsTo_connectedComponentIn +typeChanged (since := "2026-07-27")]
 theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
     (h : Continuous f) {a : α} (hx : a ∈ s) :
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
