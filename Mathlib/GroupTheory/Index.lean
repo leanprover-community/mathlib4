@@ -949,8 +949,8 @@ theorem Subgroup.index_centralizer_eq_ncard {G : Type*} [Group G] (g : G) :
   rw [← stabilizer_comap_conj_eq_centralizer_singleton, Subgroup.index_comap, Subgroup.relIndex,
     stabilizer_subgroupOf, index_stabilizer, orbit_range_conj_eq_conjugatesOf]
 
-@[deprecated (since := "2026-09-22")] alias MulAction.index_centralizer_eq_ncard :=
-  Subgroup.index_centralizer_eq_ncard
+@[to_additive (attr := deprecated (since := "2026-09-22"))]
+alias MulAction.index_centralizer_eq_ncard := Subgroup.index_centralizer_eq_ncard
 
 namespace MonoidHom
 
