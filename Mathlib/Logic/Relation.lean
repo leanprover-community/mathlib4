@@ -869,15 +869,21 @@ end EqvGen
 
 section
 
-variable (r : α → α → Prop)
+variable (r)
 
 lemma reflGen_le_eqvGen : ReflGen r ≤ EqvGen r
   |  _, _, .refl => .refl _
   |  _, _, .single h => .rel _ _ h
 
+@[deprecated (since := "2026-09-10")]
+protected alias EqvGen.reflGen_le_eqvGen := reflGen_le_eqvGen
+
 lemma symmGen_le_eqvGen : SymmGen r ≤ EqvGen r
   | _, _, .inl h => .rel _ _ h
   | _, _, .inr h => _root_.symm <| .rel _ _ h
+
+@[deprecated (since := "2026-09-10")]
+protected alias EqvGen.symmGen_le_eqvGen := symmGen_le_eqvGen
 
 lemma transGen_le_eqvGen : TransGen r ≤ EqvGen r := by
   intro _ _ h
@@ -885,12 +891,18 @@ lemma transGen_le_eqvGen : TransGen r ≤ EqvGen r := by
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
 
+@[deprecated (since := "2026-09-10")]
+protected alias EqvGen.transGen_le_eqvGen := transGen_le_eqvGen
+
 lemma reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
   intro _ _ h
   induction h using ReflTransGen.trans_induction_on with
   | refl => exact .refl _
   | trans _ _ h1 h2 => exact _root_.trans h1 h2
   | single h => exact .rel _ _ h
+
+@[deprecated (since := "2026-09-10")]
+protected alias EqvGen.reflTransGen_le_eqvGen := reflTransGen_le_eqvGen
 
 end
 
@@ -927,18 +939,6 @@ lemma reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
   rw [← eqvGen_eq_reflTransGen, eqvGen_symmGen]
 
 end EqvGen
-
-@[deprecated (since := "2026-09-10")]
-protected alias EqvGen.reflGen_le_eqvGen := reflGen_le_eqvGen
-
-@[deprecated (since := "2026-09-10")]
-protected alias EqvGen.symmGen_le_eqvGen := symmGen_le_eqvGen
-
-@[deprecated (since := "2026-09-10")]
-protected alias EqvGen.transGen_le_eqvGen := transGen_le_eqvGen
-
-@[deprecated (since := "2026-09-10")]
-protected alias EqvGen.reflTransGen_le_eqvGen := reflTransGen_le_eqvGen
 
 /-- The join of a relation on a single type is a new relation for which
 pairs of terms are related if there is a third term they are both
