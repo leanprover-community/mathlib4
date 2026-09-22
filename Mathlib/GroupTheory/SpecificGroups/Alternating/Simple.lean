@@ -143,7 +143,7 @@ theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alter
       ← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs]
     simp [cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
   · simp_rw [hk, false_and, iff_false]
-    contrapose! hk
+    contrapose hk
     exact (mem_range_ofSubtype_iff s k).mp (Subgroup.map_le_range _ _ hk)
 
 theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGroup α) :

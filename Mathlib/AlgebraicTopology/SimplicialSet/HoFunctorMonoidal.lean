@@ -352,7 +352,6 @@ def associativity'Iso :
         simp only [Category.comp_id, Category.id_comp, ← prod_id',
           CategoryTheory.Functor.map_id, inverse_obj, inverse_map_mkHom_homMk_id]))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {X Y Z} in
 lemma associativity'Iso_hom_app (xyz) :
     (associativity'Iso X Y Z).hom.app xyz = 𝟙 _ := by

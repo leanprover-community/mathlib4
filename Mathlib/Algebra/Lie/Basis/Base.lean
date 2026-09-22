@@ -148,7 +148,7 @@ private lemma exists_mem_rootSpace_lie_ne_zero' [IsKilling K L]
   obtain ⟨a', ha', b, hb, hab⟩ := exists_mem_rootSpace_lie_ne_zero hα h_ne_bot
   obtain ⟨t, rfl⟩ : ∃ t : K, t • a = a' :=
     Submodule.mem_span_singleton.mp <| by rwa [← toSubmodule_rootSpace_eq_span α hα a ha₀ ha]
-  exact ⟨b, hb, by contrapose! hab; simp [hab]⟩
+  exact ⟨b, hb, by contrapose hab; simp [hab]⟩
 
 lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSystem H).Base)
     (e f : b.support → L)
