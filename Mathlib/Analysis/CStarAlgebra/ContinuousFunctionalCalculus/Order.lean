@@ -331,7 +331,7 @@ lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
   · calc
       a = (sqrt ↑b * ↑b ^ (-(1 / 2) : ℝ)) * a * (↑b ^ (-(1 / 2) : ℝ) * sqrt ↑b) := by
         simp only [CFC.sqrt_eq_rpow .., ← CFC.rpow_add b.isUnit]
-        norm_num
+        simp
         simp [CFC.rpow_zero (b : A)]
       _ = sqrt ↑b * (↑b ^ (-(1 / 2) : ℝ) * a * ↑b ^ (-(1 / 2) : ℝ)) * sqrt ↑b := by
         simp only [mul_assoc]
@@ -358,8 +358,9 @@ protected lemma inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
     ← CStarRing.norm_star_mul_self] at hab
   rw [le_iff_norm_sqrt_mul_sqrt_inv .., inv_inv, ← sq_le_one_iff₀ (norm_nonneg _), sq,
     ← CStarRing.norm_self_mul_star]
-  rwa [star_mul, IsSelfAdjoint.of_nonneg (sqrt_nonneg _),
+  rw [star_mul, IsSelfAdjoint.of_nonneg (sqrt_nonneg _),
     IsSelfAdjoint.of_nonneg (sqrt_nonneg _)] at hab ⊢
+  assumption
 
 /-- In a unital C⋆-algebra, if `0 ≤ a` and `0 ≤ b` and `a` and `b` are units, then `a⁻¹ ≤ b⁻¹`
 if and only if `b ≤ a`. -/
@@ -532,7 +533,7 @@ lemma isBounded_of_bddAbove_of_bddBelow {s : Set A} (hbd : BddAbove s) (hbd' : B
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
     rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
-    convert! this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
+    convert! this.inter (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
     simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_inter_iff, Set.mem_range,
       ← exists_and_left]
@@ -671,7 +672,7 @@ lemma pow_monotone {a : A} (ha : 1 ≤ a) : Monotone (a ^ · : ℕ → A) := by
   simp only
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
   rw [CFC.one_le_iff (R := ℝ) a] at ha
-  peel ha with x hx _
+  gconvert ha using 2 with x hx
   exact pow_le_pow_right₀ (ha x hx) hnm
 
 lemma pow_antitone {a : A} (ha₁ : a ≤ 1) (ha₀ : 0 ≤ a := by cfc_tac) :
@@ -680,7 +681,7 @@ lemma pow_antitone {a : A} (ha₁ : a ≤ 1) (ha₀ : 0 ≤ a := by cfc_tac) :
   simp only
   rw [← cfc_pow_id (R := ℝ) a, ← cfc_pow_id (R := ℝ) a, cfc_le_iff ..]
   rw [CFC.le_one_iff (R := ℝ) a] at ha₁
-  peel ha₁ with x hx _
+  gconvert ha₁ using 2 with x hx
   exact pow_le_pow_of_le_one (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
 
 end CStarAlgebra
