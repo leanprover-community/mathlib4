@@ -44,42 +44,44 @@ def evalZsqrtdEntry (d : ℤ) (e : Expr) : MetaM (ℤ√d) := do
 def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
   zero := 0
   one := 1
-  mul := (· * ·)
-  sub := (· - ·)
+  mul := Mul.mul
+  sub := Sub.sub
   divExact x y :=
     let z := x * star y
     let n := y.norm
     ⟨z.re / n, z.im / n⟩
-  isZero := (· == 0)
+  isZero x := x == 0
 
 /-- The integer of a raw literal `Int.ofNat n` or `Int.negOfNat n`. -/
-def intOfRawLit (e : Expr) : ℤ :=
-  match e with
-  | .app (.const ``Int.ofNat _) (.lit (.natVal n)) => n
-  | .app (.const ``Int.negOfNat _) (.lit (.natVal n)) => -n
-  | _ => panic! "not a raw integer literal"
+def intOfRawLit? (e : Expr) : Option ℤ :=
+  match_expr e with
+  | Int.ofNat n => n.rawNatLit?
+  | Int.negOfNat n => n.rawNatLit?.map fun n => -n
+  | _ => none
 
 /-- The value of a literal `⟨re, im⟩ : ℤ√d` with raw integer components. -/
-def zsqrtdOfRawLit (d : ℤ) (e : Expr) : ℤ√d :=
-  match e with
-  | .app (.app (.app (.const ``Zsqrtd.mk _) _) re) im => ⟨intOfRawLit re, intOfRawLit im⟩
-  | _ => panic! "not a ℤ√d literal"
+def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
+  match_expr e with
+  | Zsqrtd.mk _ re im => do return ⟨← intOfRawLit? re, ← intOfRawLit? im⟩
+  | _ => none
 
 /-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components, for `d` the value
 of the integer literal `dQ`. -/
-def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Expr :=
-  mkApp3 (.const ``Zsqrtd.mk []) dQ (Meta.NormNum.mkRawIntLit v.re) (Meta.NormNum.mkRawIntLit v.im)
+def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
+  q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
 
 /-- The `ℤ√d` model, for `d` the value of the integer literal `dQ`: the elimination runs on
 literals with raw integer components, computed with the arithmetic of `ℤ√d`. -/
 def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : Model where
   carrier := .expr
-  ops := (zsqrtdOps d).lift (zsqrtdOfRawLit d) (mkZsqrtdRawLit dQ)
+  ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
   prepare entries := do
-    let values ← entries.mapM (·.mapM fun e => return mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e))
+    let values ← entries.mapM fun row => row.mapM fun e =>
+      return mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e)
     return (values, id)
   mkEntry e := do
-    let v := zsqrtdOfRawLit d e
+    let some v := zsqrtdOfRawLit? d e
+      | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
     return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/

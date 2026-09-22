@@ -55,15 +55,16 @@ structure RingOps (V : Type) where
   isZero : V → Bool
 
 /-- The arithmetic of `V` on its literals: `decode` reads a literal into a value and `encode`
-writes a value as a literal. -/
-def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → V) (encode : V → Expr) :
-    RingOps Expr where
-  zero := encode ops.zero
-  one := encode ops.one
-  mul x y := encode (ops.mul (decode x) (decode y))
-  sub x y := encode (ops.sub (decode x) (decode y))
-  divExact x y := encode (ops.divExact (decode x) (decode y))
-  isZero x := ops.isZero (decode x)
+writes a value as a literal. A literal `decode` rejects is read as `zero`. -/
+def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → Option V) (encode : V → Expr) :
+    RingOps Expr :=
+  let read (e : Expr) : V := (decode e).getD ops.zero
+  { zero := encode ops.zero
+    one := encode ops.one
+    mul x y := encode (ops.mul (read x) (read y))
+    sub x y := encode (ops.sub (read x) (read y))
+    divExact x y := encode (ops.divExact (read x) (read y))
+    isZero x := ops.isZero (read x) }
 
 /-- Decomposition data with entries in `V`: the values of the elimination, or the
 ring expressions constructed (`V := Expr`). -/
