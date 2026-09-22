@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Star
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 public import Mathlib.Analysis.PSeriesComplex
 public import Mathlib.Tactic.CrossRefAttribute
@@ -34,6 +35,8 @@ Euler-Mascheroni constant will follow in a subsequent PR.
   `ζ(s) = ∑' (n : ℕ), 1 / (n + 1) ^ s`.
 * `completedRiemannZeta₀_one_sub`, `completedRiemannZeta_one_sub`, and `riemannZeta_one_sub` :
   functional equation relating values at `s` and `1 - s`
+* `completedRiemannZeta₀_conj` and `completedRiemannZeta_conj` : conjugation symmetry,
+  `Λ (conj s) = conj (Λ s)` and likewise for `Λ₀`
 
 For special-value formulae expressing `ζ (2 * k)` and `ζ (1 - 2 * k)` in terms of Bernoulli numbers
 see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of the constant term as
@@ -52,7 +55,7 @@ open CharZero Set Filter HurwitzZeta
 
 open Complex hiding exp continuous_exp
 
-open scoped Topology Real
+open scoped Topology Real ComplexConjugate
 
 noncomputable section
 
@@ -260,3 +263,72 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
   simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
+
+/-!
+## Conjugation symmetry
+
+The Dirichlet coefficients of `ζ` are real, so the completed zeta functions `Λ` and `Λ₀` commute
+with complex conjugation. We prove this on the halfplane `1 < re s` using the Dirichlet series,
+and propagate it to all of `ℂ` by the identity principle applied to the entire function `Λ₀`.
+
+No points need to be excluded in the final statements: at the poles `s = 0` and `s = 1` of `Λ`
+both sides take the same junk value, since `Λ` is defined from the entire function `Λ₀` by
+subtracting `1 / s + 1 / (1 - s)` and `1 / 0 = 0`.
+
+For the corresponding statement about `ζ` see `riemannZeta_conj`.
+-/
+
+private lemma natCast_cpow_conj (n : ℕ) (w : ℂ) : (n : ℂ) ^ conj w = conj ((n : ℂ) ^ w) := by
+  have harg : (n : ℂ).arg ≠ π := by
+    rw [natCast_arg]
+    exact Ne.symm Real.pi_ne_zero
+  rw [cpow_conj _ _ harg, conj_natCast]
+
+private lemma completedRiemannZeta_conj_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  have hs' : 1 < re (conj s) := by rwa [conj_re]
+  rw [completedZeta_eq_tsum_of_one_lt_re hs', completedZeta_eq_tsum_of_one_lt_re hs,
+    ← Gammaℝ_def, ← Gammaℝ_def, map_mul, Gammaℝ_conj]
+  congr 1
+  calc ∑' n : ℕ, 1 / (n : ℂ) ^ conj s
+      = ∑' n : ℕ, conj (1 / (n : ℂ) ^ s) := by
+        refine tsum_congr fun n ↦ ?_
+        rw [natCast_cpow_conj, map_div₀, map_one]
+    _ = conj (∑' n : ℕ, 1 / (n : ℂ) ^ s) := (conj_tsum _).symm
+
+private lemma completedRiemannZeta₀_conj_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
+    completedRiemannZeta₀ (conj s) = conj (completedRiemannZeta₀ s) := by
+  have e1 : completedRiemannZeta₀ (conj s)
+      = completedRiemannZeta (conj s) + 1 / conj s + 1 / (1 - conj s) := by
+    rw [completedRiemannZeta_eq (conj s)]; ring
+  have e2 : conj (completedRiemannZeta₀ s)
+      = conj (completedRiemannZeta s + 1 / s + 1 / (1 - s)) := by
+    congr 1
+    rw [completedRiemannZeta_eq s]; ring
+  rw [e1, completedRiemannZeta_conj_of_one_lt_re hs, e2]
+  simp only [map_add, map_sub, map_div₀, map_one]
+
+/-- The entire completed Riemann zeta function `Λ₀` commutes with complex conjugation. -/
+@[simp]
+theorem completedRiemannZeta₀_conj (s : ℂ) :
+    completedRiemannZeta₀ (conj s) = conj (completedRiemannZeta₀ s) := by
+  have hg_diff : Differentiable ℂ (conj ∘ completedRiemannZeta₀ ∘ (conj : ℂ → ℂ)) := fun z ↦ by
+    have h := (differentiable_completedZeta₀ (conj z)).conj_conj
+    rwa [Complex.conj_conj] at h
+  have heq : completedRiemannZeta₀ = conj ∘ completedRiemannZeta₀ ∘ (conj : ℂ → ℂ) := by
+    refine AnalyticOnNhd.eq_of_eventuallyEq
+      (differentiable_completedZeta₀.differentiableOn.analyticOnNhd isOpen_univ)
+      (hg_diff.differentiableOn.analyticOnNhd isOpen_univ) (z₀ := 2) ?_
+    have hopen : IsOpen {z : ℂ | 1 < re z} := isOpen_lt continuous_const continuous_re
+    have h2 : (2 : ℂ) ∈ {z : ℂ | 1 < re z} := by norm_num
+    filter_upwards [hopen.mem_nhds h2] with z hz
+    simp only [Function.comp_apply]
+    rw [completedRiemannZeta₀_conj_of_one_lt_re hz, Complex.conj_conj]
+  have h := congrArg conj (congrFun heq s)
+  simpa only [Function.comp_apply, Complex.conj_conj] using h.symm
+
+/-- The completed Riemann zeta function `Λ` commutes with complex conjugation. -/
+@[simp]
+theorem completedRiemannZeta_conj (s : ℂ) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  simp only [completedRiemannZeta_eq, completedRiemannZeta₀_conj, map_sub, map_div₀, map_one]
