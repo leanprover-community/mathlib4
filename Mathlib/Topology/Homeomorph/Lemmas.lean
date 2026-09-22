@@ -175,7 +175,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
-  toEquiv := Equiv.setCongr h
+  toEquiv := Set.equivOfEq h
 
 section prod
 
@@ -443,15 +443,15 @@ end Topology.IsEmbedding
 
 lemma Topology.IsEmbedding.uliftMap {f : X → Y} (hf : IsEmbedding f) :
     IsEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf <| Homeomorph.ulift.isEmbedding)
+  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf Homeomorph.ulift.isEmbedding)
 
 lemma Topology.IsOpenEmbedding.uliftMap {f : X → Y} (hf : IsOpenEmbedding f) :
     IsOpenEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf <| Homeomorph.ulift.isOpenEmbedding)
+  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf Homeomorph.ulift.isOpenEmbedding)
 
 lemma Topology.IsClosedEmbedding.uliftMap {f : X → Y} (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf <| Homeomorph.ulift.isClosedEmbedding)
+  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf Homeomorph.ulift.isClosedEmbedding)
 
 end
 

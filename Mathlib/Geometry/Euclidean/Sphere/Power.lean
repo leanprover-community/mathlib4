@@ -33,7 +33,9 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 @[expose] public section
 
 
-open Real EuclideanGeometry RealInnerProductSpace Real Module
+open Real EuclideanGeometry Real Module
+
+open scoped RealInnerProductSpace
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 

@@ -3,11 +3,13 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.GCongr
 
 /-!
 # IMO 2019 Q4
@@ -25,6 +27,7 @@ Now for `n ≥ 6` we have `RHS < 2 ^ (n ^ 2) < (n(n-1)/2)! < k!`. We then treat 
 individually.
 -/
 
+public section
 
 open Nat Finset
 
@@ -65,7 +68,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       apply sum_le_sum_of_subset
       simpa using hn'
     calc 2 ^ ((n' + 1) * (n' + 1))
-        ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
+        ≤ 2 ^ (n' * n' + 4 * n') := by gcongr; linarith
       _ = 2 ^ (n' * n') * (2 ^ 4) ^ n' := by rw [← pow_mul, ← pow_add]
       _ < A ! * (2 ^ 4) ^ n' := by gcongr
       _ = A ! * (15 + 1) ^ n' := rfl

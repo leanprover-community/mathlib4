@@ -102,7 +102,7 @@ def CAlgHom : A →ₐ[R] A[X] where
 theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hC : f.comp CAlgHom = g.comp CAlgHom)
     (hX : f X = g X) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
+  AlgHom.toRingHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
 
 set_option backward.defeqAttrib.useBackward true in
 variable (R) in
@@ -178,9 +178,11 @@ theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
   AlgHom.ext fun _x => map_id
 
 @[simp]
-theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
+theorem toRingHom_mapAlgHom (f : A →ₐ[R] B) :
     ↑(mapAlgHom f : _ →ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias mapAlgHom_coe_ringHom := toRingHom_mapAlgHom
 
 @[simp]
 theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
@@ -216,9 +218,11 @@ theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl 
   AlgEquiv.ext fun _x => map_id
 
 @[simp]
-theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
+theorem toRingHom_mapAlgEquiv (f : A ≃ₐ[R] B) :
     ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias mapAlgEquiv_coe_ringHom := toRingHom_mapAlgEquiv
 
 @[simp]
 theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
@@ -515,6 +519,14 @@ section Semiring
 
 variable [Semiring S] {f : R →+* S}
 
+lemma comp_X_add_C_eq_zero_iff {p : S[X]} {t : S} : p.comp (X + C t) = 0 ↔ p = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  nontriviality S
+  simpa [h] using (p.coeff_comp_degree_mul_degree <| ne_zero_of_eq_one <| natDegree_X_add_C t).symm
+
+lemma comp_X_add_C_ne_zero_iff {p : S[X]} {t : S} : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 :=
+  comp_X_add_C_eq_zero_iff.not
+
 theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
     aeval x p = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
@@ -573,7 +585,7 @@ theorem aevalTower_toAlgHom (x : R) : aevalTower g y (IsScalarTower.toAlgHom S R
 
 @[simp]
 theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom S R R[X]) = g :=
-  AlgHom.coe_ringHom_injective <| aevalTower_comp_algebraMap _ _
+  AlgHom.toRingHom_injective <| aevalTower_comp_algebraMap _ _
 
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
@@ -592,8 +604,7 @@ lemma X_pow_smul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
     [AddCommMonoid N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
     X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
       (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
-  induction sn using TensorProduct.induction_on with
-  | zero => simp
+  induction sn using TensorProduct.inductionOn with
   | add x y hx hy => simp [hx, hy]
   | tmul s n =>
     simp only [rTensor_tmul, coe_restrictScalars, monomial_zero_left]
@@ -663,11 +674,6 @@ theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →�
 lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
   convert! (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
-
-lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
-  EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
-
-lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
 lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
     p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟a * (X - C b)) ∣ q := by

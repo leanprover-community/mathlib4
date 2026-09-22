@@ -444,7 +444,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
       rw [← mul_assoc, mul_comm (2 * r + 2 + k + 3), mul_comm _ (_ * ‖α‖)]
       apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
       nlinarith
-    exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans <| this
+    exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans this
 
 end AES
 end SimpleGraph

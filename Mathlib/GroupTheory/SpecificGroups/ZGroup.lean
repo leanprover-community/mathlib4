@@ -164,7 +164,7 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       infer_instance
     suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
         Subgroup.centralizer (commutator H) by
-      simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
+      simpa [IsConcreteLE.le_iff, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
     let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
     have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
@@ -256,7 +256,7 @@ theorem normalizer_le_centralizer_or_le_commutator :
     isCyclic_of_surjective _ (Subgroup.subgroupOfEquivOfLe P.le_normalizer).symm.surjective
   refine (le_center_or_le_commutator Q).imp (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [← SetLike.coe_subset_coe, ← Subgroup.centralizer_eq_top_iff_subset, eq_top_iff,
-      ← Subgroup.map_subtype_le_map_subtype, ← MonoidHom.range_eq_map,
+      ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_top,
       (Subgroup.normalizer (P : Set G)).range_subtype] at h
     replace h := h.trans (Subgroup.map_centralizer_le_centralizer_image _ _)
     rwa [← Subgroup.coe_map, P.coe_subtype, ← P.coe_coe,

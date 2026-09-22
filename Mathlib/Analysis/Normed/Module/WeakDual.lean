@@ -59,6 +59,10 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
 * `WeakDual.isBounded_iff_isVonNBounded`: Equivalence of norm and weak-\* boundedness for
   Banach spaces.
 
+### Metrizability of compact sets
+* `WeakDual.metrizable_of_isCompact`: A compact subset of the weak dual of a separable normed space
+  is metrizable.
+
 ### Compactness and Banach-Alaoglu
 * `WeakDual.isCompact_polar`: Polars of neighborhoods of the origin are weak-\* compact.
 * `WeakDual.isCompact_closedBall`: Closed balls are weak-\* compact.
@@ -89,10 +93,6 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
 * Add that in finite dimensions, the weak-\* topology and the dual norm topology coincide.
 * Add that in infinite dimensions, the weak-\* topology is strictly coarser than the dual norm
   topology.
-* Add metrizability of the dual unit ball (more generally weak-star compact subsets) of
-  `WeakDual 𝕜 E` under the assumption of separability of `E`.
-* Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
-  is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
 ## References
 * https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology

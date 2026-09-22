@@ -44,8 +44,8 @@ instance (K : Type*) [NormedField K] : Inhabited (AlgebraNorm K K) :=
 
 /-- `AlgebraNormClass F R S` states that `F` is a type of `R`-algebra norms on the ring `S`.
 You should extend this class when you extend `AlgebraNorm`. -/
-class AlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
-    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
+class AlgebraNormClass (F : Type*) (R : outParam Type*) [SeminormedCommRing R]
+    (S : outParam Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
     extends RingNormClass F S ℝ, SeminormClass F R S
 
 namespace AlgebraNorm
@@ -56,6 +56,7 @@ variable {R : Type*} [SeminormedCommRing R] {S : Type*} [Ring S] [Algebra R S] {
 def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
   f.toRingNorm.toRingSeminorm
 
+@[macro_inline]
 instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective f f' h := by
@@ -76,6 +77,10 @@ instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
   map_smul_eq_mul f := f.smul'
 
 theorem toFun_eq_coe (p : AlgebraNorm R S) : p.toFun = p := rfl
+
+@[simp]
+theorem toRingNorm_apply (p : AlgebraNorm R S) (x : S) : p.toRingNorm x = p x :=
+  rfl
 
 @[ext]
 theorem ext {p q : AlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
@@ -139,15 +144,16 @@ instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
 
 /-- `MulAlgebraNormClass F R S` states that `F` is a type of multiplicative `R`-algebra norms on
 the ring `S`. You should extend this class when you extend `MulAlgebraNorm`. -/
-class MulAlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
-    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
+class MulAlgebraNormClass (F : Type*) (R : outParam Type*) [SeminormedCommRing R]
+    (S : outParam Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
     extends MulRingNormClass F S ℝ, SeminormClass F R S
 
 namespace MulAlgebraNorm
 
-variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
+variable {R S : outParam Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
   {f : AlgebraNorm R S}
 
+@[macro_inline]
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective f f' h := by
@@ -165,6 +171,10 @@ instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S wher
   map_smul_eq_mul f := f.smul'
 
 theorem toFun_eq_coe (p : MulAlgebraNorm R S) : p.toFun = p := rfl
+
+@[simp]
+theorem toMulRingNorm_apply (p : MulAlgebraNorm R S) (x : S) : p.toMulRingNorm x = p x :=
+  rfl
 
 @[ext]
 theorem ext {p q : MulAlgebraNorm R S} : (∀ x, p x = q x) → p = q :=
