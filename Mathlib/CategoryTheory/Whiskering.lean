@@ -461,6 +461,7 @@ def whiskeringLeft₄ObjObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
     whiskeringLeft₄ObjObjObjObj E F₁ F₂ F₃ F₄ ⟶
       whiskeringLeft₄ObjObjObjObj E F₁ F₂ F₃ F₄' where
   app F := whiskerLeft _ (whiskerLeft _ ((((whiskeringLeft₃ E).obj F₂).obj F₃).map τ₄))
+  naturality {_ _} f := by ext; simp
 
 variable (C₄ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
@@ -480,6 +481,7 @@ def whiskeringLeft₄ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂)
       whiskeringLeft₄ObjObjObj C₄ D₄ E F₁ F₂ F₃' where
   app F₄ := whiskerRight
     ((whiskeringRight _ _ _).map ((((whiskeringLeft₃ E).obj F₂).map τ₃).app F₄)) _
+  naturality {_ _} f := by ext; simp
 
 variable (C₃ C₄ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
@@ -498,7 +500,9 @@ def whiskeringLeft₄ObjMap (F₁ : C₁ ⥤ D₁) {F₂ F₂' : C₂ ⥤ D₂} 
       whiskeringLeft₄ObjObj C₃ C₄ D₃ D₄ E F₁ F₂' where
   app F₃ :=
     { app F₄ := whiskerRight
-        ((whiskeringRight _ _ _).map ((((whiskeringLeft₃ E).map τ₂).app F₃).app F₄)) _ }
+        ((whiskeringRight _ _ _).map ((((whiskeringLeft₃ E).map τ₂).app F₃).app F₄)) _
+      naturality {_ _} f := by ext; simp }
+  naturality {_ _} f := by ext; simp
 
 variable (C₂ C₃ C₄ D₂ D₃ D₄) in
 /-- Auxiliary definition for `whiskeringLeft₄`. -/
@@ -515,7 +519,12 @@ variable (C₂ C₃ C₄ D₂ D₃ D₄) in
 def whiskeringLeft₄Map {F₁ F₁' : C₁ ⥤ D₁} (τ₁ : F₁ ⟶ F₁') :
     whiskeringLeft₄Obj C₂ C₃ C₄ D₂ D₃ D₄ E F₁ ⟶
       whiskeringLeft₄Obj C₂ C₃ C₄ D₂ D₃ D₄ E F₁' where
-  app F₂ := { app F₃ := { app F₄ := whiskerLeft _ ((whiskeringLeft _ _ _).map τ₁) } }
+  app F₂ := {
+    app F₃ := {
+      app F₄ := whiskerLeft _ ((whiskeringLeft _ _ _).map τ₁)
+      naturality {_ _} f := by ext; simp }
+    naturality {_ _} f := by ext; simp }
+  naturality {_ _} f := by ext; simp
 
 /-- The obvious functor
 `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (C₄ ⥤ D₄) ⥤`
