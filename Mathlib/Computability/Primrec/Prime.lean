@@ -11,7 +11,9 @@ public import Mathlib.Data.Nat.Prime.Defs
 /-!
 # Primality is primitive recursive
 
-`Primrec.nat_prime : PrimrecPred Nat.Prime`.
+## Main results
+
+* `Primrec.nat_prime`: primality is a primitive recursive predicate.
 
 The proof rewrites `Nat.Prime n` as `2 ≤ n ∧ ∀ m < n, ¬ (2 ≤ m ∧ n % m = 0)`
 (`Nat.prime_def_lt'`) and closes with the bounded quantifier `PrimrecRel.forall_lt`.
