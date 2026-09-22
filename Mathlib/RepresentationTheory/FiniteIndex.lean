@@ -23,8 +23,6 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
 * `Rep.indCoindIso A`: An isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)` for a finite index subgroup
   `S ≤ G` and a `k`-linear `S`-representation `A`.
 * `Rep.indCoindNatIso k S`: A natural isomorphism between the functors `Ind_S^G` and `Coind_S^G`.
-
-TODO: remove the universe constraint `Rep.{max w u}`.
 -/
 
 @[expose] public section
@@ -104,8 +102,7 @@ intertwining map `Coind_S^G(ρ) → Ind_S^G(ρ)` sending `f` to `∑_{gS ∈ G �
 noncomputable def coindToInd : (coind S.subtype ρ).IntertwiningMap (ind S.subtype ρ) where
   toLinearMap := ∑ c : G ⧸ S, coindToIndAux ρ c
   isIntertwining' g := LinearMap.ext fun _ => by
-    simpa only [LinearMap.comp_apply, LinearMap.sum_apply, map_sum] using
-      Fintype.sum_equiv (MulAction.toPerm g⁻¹) _ _ fun c => c.inductionOn (by simp)
+    simpa using Fintype.sum_equiv (MulAction.toPerm g⁻¹) _ _ fun c => c.inductionOn (by simp)
 
 omit [DecidablePred (· ∈ S)] in
 lemma coindToInd_apply (f : coindV S.subtype ρ) :
@@ -177,19 +174,19 @@ variable {k S}
 
 @[simp]
 lemma resIndAdjunction_counit_app (A : Rep.{max w u v} k S) :
-    (resIndAdjunction.{w, u, v} k S).counit.app A =
+    (resIndAdjunction.{w} k S).counit.app A =
       (resFunctor.{max w u v} S.subtype).map (indCoindIso.{max w u v} A).hom ≫
       (resCoindAdjunction.{max w u v} k S.subtype).counit.app A := rfl
 
 @[simp]
 lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
-    (resIndAdjunction.{w, u, v} k S).unit.app B =
+    (resIndAdjunction.{w} k S).unit.app B =
       (resCoindAdjunction.{max w u v} k S.subtype).unit.app B ≫
-      (indCoindIso.{max w (max u v)} (res S.subtype B)).inv := rfl
+      (indCoindIso.{max w u v} (res S.subtype B)).inv := rfl
 
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res.{u} S.subtype B ⟶ A) :
-    (resIndAdjunction.{w, u, v} k S).homEquiv B A f =
+    (resIndAdjunction.{w} k S).homEquiv B A f =
       resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv :=
   Adjunction.homEquiv_ofNatIsoRight_apply _ _ _
 
@@ -214,13 +211,14 @@ theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
 
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
-    (coindResAdjunction.{w, u, v} k S).counit.app B =
+    (coindResAdjunction.{w} k S).counit.app B =
       (indCoindIso.{max w u v} (res S.subtype B)).inv ≫
       (indResAdjunction.{max w u v} S.subtype).counit.app B := rfl
 
 @[simp]
 lemma coindResAdjunction_unit_app (A : Rep.{max w u v} k S) :
-    (coindResAdjunction.{w} k S).unit.app A = (indResAdjunction.{max w u v} S.subtype).unit.app A ≫
+    (coindResAdjunction.{w} k S).unit.app A =
+      (indResAdjunction.{max w u v} S.subtype).unit.app A ≫
       (resFunctor.{max w u v} S.subtype).map (indCoindIso.{max w u v} A).hom := rfl
 
 lemma coindResAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
