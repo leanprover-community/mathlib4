@@ -8,13 +8,13 @@ module
 public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Log
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # Representation of `log⁺` as a Circle Average
 
-If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` represents `log⁺ a` as
+If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` represents `log⁺ ‖a‖` as
 the circle average of `log ‖· - a‖` over the unit circle.
 -/
 
@@ -25,17 +25,6 @@ open Filter intervalIntegral MeasureTheory Metric Real
 open scoped Interval
 
 variable {a c : ℂ} {R : ℝ}
-
-/-!
-## Circle Integrability
--/
-
-/--
-If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
--/
-@[fun_prop]
-lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
-  MeromorphicOn.circleIntegrable_log_norm (fun z hz ↦ by fun_prop)
 
 /-!
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
@@ -75,7 +64,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ = 1`.
 -/
 
--- Integral computation used in `circleAverage_log_norm_id_sub_const₁`
+-- Integral computation used in `circleAverage_log_norm_sub_const₁`
 private lemma circleAverage_log_norm_sub_const₁_integral :
     ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 = 0 := by
   calc ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2
@@ -200,7 +189,7 @@ theorem circleAverage_log_norm_add_const_eq_posLog :
 
 /--
 Generalization of `circleAverage_log_norm_sub_const_eq_posLog`: The
-`circleAverage (log ‖· - a‖) c R` equals `log R + log⁺ (|R|⁻¹ * ‖c - a‖)`.
+`circleAverage (log ‖· - a‖) c R` equals `log R + log⁺ (R⁻¹ * ‖c - a‖)`.
 -/
 theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0) :
     circleAverage (log ‖· - a‖) c R = log R + log⁺ (R⁻¹ * ‖c - a‖) := by
@@ -240,9 +229,9 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
 
 /--
 Trivial corollary of
-`circleAverage_log_norm_sub_const_eq_log_radius_add_posLog`: If `u : ℂ` lies within the closed ball
-with center `c` and radius `R`, then the circle average
-`circleAverage (log ‖· - u‖) c R` equals `log R`.
+`circleAverage_log_norm_sub_const_eq_log_radius_add_posLog`: If `a : ℂ` lies within the closed ball
+with center `c` and radius `|R|`, then the circle average
+`circleAverage (log ‖· - a‖) c R` equals `log R`.
 -/
 lemma circleAverage_log_norm_sub_const_of_mem_closedBall (hu : a ∈ closedBall c |R|) :
     circleAverage (log ‖· - a‖) c R = log R := by
