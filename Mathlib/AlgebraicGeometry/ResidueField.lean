@@ -325,25 +325,40 @@ lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
   rw [Spec.map_inj]
   simp [← Scheme.Spec.algebraMap_residueFieldIso_inv]
 
+lemma Spec.Γevaluation_eq_of_field {k : Type u} [Field k] (x : Spec (.of k)) :
+    haveI := x.isPrime
+    (Spec (.of k)).Γevaluation x = (Scheme.ΓSpecIso (.of k)).hom ≫
+      (Ideal.algEquivResidueFieldOfField x.asIdeal).toRingEquiv.toCommRingCatIso.hom ≫
+        (Spec.residueFieldIso (.of k) x).inv := by
+  have := x.isPrime
+  have : (Ideal.algEquivResidueFieldOfField x.asIdeal).toRingEquiv.toCommRingCatIso.hom =
+      CommRingCat.ofHom (algebraMap (CommRingCat.of k) x.asIdeal.ResidueField) := by
+    ext a; simp [Ideal.algEquivResidueFieldOfField_apply]
+  rw [this, Spec.algebraMap_residueFieldIso_inv, Iso.hom_inv_id_assoc]
+  exact ((Spec (.of k)).germ_residue (U := ⊤) x trivial).symm
+
+instance Spec.isIso_Γevaluation {k : Type u} [Field k] (x : Spec (.of k)) :
+    IsIso ((Spec (.of k)).Γevaluation x) := by
+  rw [Spec.Γevaluation_eq_of_field]
+  infer_instance
+
 /-- For a field `k`, the residue field of `Spec k` at any point `x` is canonically isomorphic
 to `k`. -/
+@[simps! -isSimp inv]
 noncomputable def Spec.residueFieldIsoOfField {k : Type u} [Field k] (x : Spec (.of k)) :
     (Spec (.of k)).residueField x ≅ .of k :=
-  haveI := x.isPrime
-  Spec.residueFieldIso (.of k) x ≪≫
-    (Ideal.algEquivResidueFieldOfField x.asIdeal).symm.toRingEquiv.toCommRingCatIso
+  (asIso ((Spec (.of k)).Γevaluation x)).symm ≪≫ Scheme.ΓSpecIso (.of k)
 
-@[reassoc]
-lemma Spec.residueFieldIsoOfField_inv {k : Type u} [Field k] (x : Spec (.of k)) :
-    (Spec.residueFieldIsoOfField x).inv =
-      (Scheme.ΓSpecIso (.of k)).inv ≫ (Spec (.of k)).Γevaluation x := by
-  have := x.isPrime
-  have step : (Spec.residueFieldIsoOfField x).inv =
-      CommRingCat.ofHom (algebraMap (CommRingCat.of k) x.asIdeal.ResidueField) ≫
-        (Spec.residueFieldIso (.of k) x).inv := by
-    ext a; simp [Spec.residueFieldIsoOfField, Ideal.algEquivResidueFieldOfField_apply]
-  rw [step, Spec.algebraMap_residueFieldIso_inv (CommRingCat.of k) x,
-    Scheme.germ_residue (X := Spec (CommRingCat.of k)) (U := ⊤) x trivial]
+attribute [reassoc] Spec.residueFieldIsoOfField_inv
+
+lemma Spec.residueFieldIsoOfField_eq {k : Type u} [Field k] (x : Spec (.of k)) :
+    haveI := x.isPrime
+    Spec.residueFieldIsoOfField x = Spec.residueFieldIso (.of k) x ≪≫
+      (Ideal.algEquivResidueFieldOfField x.asIdeal).symm.toRingEquiv.toCommRingCatIso := by
+  refine Iso.ext ((Iso.inv_eq_inv _ _).mp ?_)
+  simp only [Spec.residueFieldIsoOfField_inv, Spec.Γevaluation_eq_of_field, Iso.inv_hom_id_assoc,
+    Iso.trans_inv, RingEquiv.toCommRingCatIso_hom, RingEquiv.toCommRingCatIso_inv,
+    AlgEquiv.symm_toRingEquiv, RingEquiv.symm_symm]
 
 end Spec
 
