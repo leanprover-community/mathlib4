@@ -81,8 +81,6 @@ are not central series if `G` is not nilpotent is a standard abuse of notation.
 
 -/
 
-set_option linter.style.longFile 1700
-
 @[expose] public section
 
 
