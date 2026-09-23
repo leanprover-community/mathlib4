@@ -27,7 +27,7 @@ We introduce a type class for each axiom:
   induces an isomorphism in homology.
 * `IsAdditive`: Homology preserves coproducts.
 * `HasPairSequence`: For a topological pair `(X, A)`, the sequence
-  `⋯ ⟶ Hₙ(X) ⟶ Hₙ(X, A) ⟶ Hₙ₋₁(A) ⟶ Hₙ₋₁(X) ⟶ Hₙ₋₁(X, A) ⟶ ⋯`
+  `⋯ ⟶ H i X ⟶ H i (X, A) ⟶ H (i - 1) A ⟶ H (i - 1) X ⟶ H (i - 1) (X, A) ⟶ ⋯`
   is exact.
 * `HasDimensionAxiom`: A `HomologyPretheory` on `ComplexShape.down ℕ : ComplexShape ℕ` has the
   dimension axiom, if homology is zero for positive indices.
@@ -35,13 +35,6 @@ We introduce a type class for each axiom:
  In addition, there are bundled type classes
 `IsExtraordinaryEilenbergSteenrod` with the homotopy-invariance, excision, additivity, and pair
 sequence axioms and `IsEilenbergSteenrod` which extends the former by the dimension axiom.
-
-Excision is formulated in terms of complements of topological pairs: Suppose `U` and `V` are
-complements of a topological pair `X` with embeddings `f : U ⟶ X` and `g : V ⟶ X`. Suppose further
-that the closure of `Hom.fst f (U.fst)` is a subset of the interior of the image of `X.snd` in
-`X.fst`. Then the excision axiom postulates that the homology of `X` is isomorphic to that of `V`.
-Note that this closure condition a priori seems weaker than in the literature. However, we prove
-that under these assumptions, `U` is actually an isomorphism.
 -/
 
 @[expose] public section
