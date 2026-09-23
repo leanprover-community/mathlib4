@@ -562,12 +562,12 @@ lemma trivializationAt_symm_apply_bilin
     rw [← h1, Trivialization.continuousLinearMapAt_apply, Trivialization.linearMapAt_apply,
       hom_trivializationAt_apply, ite_eq_left hc, ← inCoordinates_apply_eq₂_bilin hb,
       Trivialization.symmL_apply _ hc]
-  have h3 := Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb u
-  rw [Trivialization.symmL_apply _ hb] at h3
-  have h4 := Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb v
-  rw [Trivialization.symmL_apply _ hb] at h4
   change ψ.symm x ϕ u v = ϕ (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v)
-  rw [h2 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v), h3, h4]
+  rw [h2 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v),
+    ← Trivialization.symmL_apply (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
+    Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
+    ← Trivialization.symmL_apply (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
+    Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb]
 
 end TwoVariables
 
