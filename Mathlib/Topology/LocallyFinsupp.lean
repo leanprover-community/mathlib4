@@ -428,8 +428,7 @@ checked on `t` alone.
 lemma le_iff_of_support_subset [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {t : Set X}
     (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, 0 ≤ D₂ z) :
     D₁ ≤ D₂ ↔ ∀ z ∈ t, D₁ z ≤ D₂ z := by
-  peel with z
-  refine ⟨by tauto, fun m ↦ ?_⟩
+  refine forall_congr' fun z => ⟨by tauto, fun m ↦ ?_⟩
   by_cases o : z ∈ t
   · exact m o
   simp only [support_subset_iff, ne_eq] at hD₁
