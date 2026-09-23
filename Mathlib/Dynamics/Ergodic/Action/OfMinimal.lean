@@ -234,7 +234,7 @@ then it is pre-ergodic with respect to any finite inner regular left invariant m
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1))
-    (hqmp : Measure.QuasiMeasurePreserving f μ μ) :
+    (hqmp : QuasiMeasurePreserving f μ μ) :
     PreErgodic f μ := by
   refine .of_preimage_eq hqmp fun s hsm hs ↦
     aeconst_of_dense_setOfPred_preimage_smul_eq (M := G) hsm.nullMeasurableSet ?_

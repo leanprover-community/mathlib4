@@ -31,13 +31,11 @@ variable {α β γ δ : Type*}
 
 namespace MeasureTheory
 
-open Set Function ENNReal
+open Set Function ENNReal Measure
 open Filter hiding map
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {μ ν : Measure α} {s : Set α}
-
-namespace Measure
 
 /-- A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`. -/
@@ -235,8 +233,6 @@ theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G]
 
 end Pointwise
 
-end Measure
-
 open Measure
 
 theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
@@ -256,7 +252,7 @@ namespace MeasurableEquiv
 variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α}
 
 theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
-    Measure.QuasiMeasurePreserving e.symm (μ.map e) μ :=
+    QuasiMeasurePreserving e.symm (μ.map e) μ :=
   ⟨e.symm.measurable, by rw [Measure.map_map, e.symm_comp_self, Measure.map_id] <;> measurability⟩
 
 end MeasurableEquiv
