@@ -145,7 +145,7 @@ abbrev hFstToHₚ (i : ι) (X : TopPair.{u}) : (HP.H i).obj X.fst ⟶ (HP.Hₚ i
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def hₚFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopPair.{u} ⥤ C where
   obj HP := HP.Hₚ i
   map f := f.homₚ i
@@ -157,7 +157,7 @@ instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.homₚ i) :=
 abbrev hₚIsoOfIso (e : HP ≅ HP') (i : ι) : HP.Hₚ i ≅ HP'.Hₚ i := ((hₚFunctor i).mapIso e)
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's homology functor `H`. -/
-@[simps]
+@[implicit_reducible, simps]
 def hFunctor (i : ι) : HomologyPretheory.{u} C c ⥤ TopCat.{u} ⥤ C where
   obj HP := HP.H i
   map f := f.hom i

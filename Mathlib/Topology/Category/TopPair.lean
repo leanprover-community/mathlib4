@@ -79,6 +79,7 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
+@[implicit_reducible]
 def proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
@@ -91,6 +92,7 @@ lemma proj₁_map (f : X ⟶ Y) : proj₁.map f = Hom.fst f := rfl
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
+@[implicit_reducible]
 def proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
 
@@ -103,14 +105,15 @@ lemma proj₂_map (f : X ⟶ Y) : proj₂.map f = Hom.snd f := rfl
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
-@[simps]
+@[implicit_reducible, simps]
 def incl : TopCat.{u} ⥤ TopPair.{u} where
   obj X := ofTopCat X
   map f := TopPair.ofHom f (𝟙 _) <| by ext x; induction x
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
-abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
+@[implicit_reducible]
+def diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
