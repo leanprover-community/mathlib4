@@ -101,11 +101,10 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
   map f := NatTrans.leftDerived ((coinvariantsTensor k G).map f) n
 
 variable {k G} (A : Rep.{w} k G)
-
 /-- `Tor` can be computed using a projective resolution. -/
 abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
     ((Rep.Tor k G n).obj A).obj B ≅ (P.complex.coinvariantsTensorObj A).homology n :=
-  P.isoLeftDerivedObj _ n
+  P.isoLeftDerivedObj ((coinvariantsTensor k G).obj A) n
 
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
@@ -246,7 +245,7 @@ theorem groupHomology_induction_on {n : ℕ}
 
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Torₙ(A, k)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
-def groupHomologyIsoTor [DecidableEq G] (n : ℕ) :
+def groupHomologyIsoTor (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIso A)).hom n ≪≫
     (torIso A (barResolution k G) n).symm
@@ -254,7 +253,7 @@ def groupHomologyIsoTor [DecidableEq G] (n : ℕ) :
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hₙ((A ⊗ P)_G)`, where `P` is any projective resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
-def groupHomologyIso [DecidableEq G] (A : Rep k G) (n : ℕ)
+def groupHomologyIso (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupHomology A n ≅ (P.complex.coinvariantsTensorObj A).homology n :=
   groupHomologyIsoTor A n ≪≫ torIso A P n
