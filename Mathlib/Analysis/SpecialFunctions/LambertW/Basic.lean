@@ -189,8 +189,9 @@ theorem add_log_im : (x + x.log).im = x.arg + x.im := by
 theorem arg_mul_exp_eq_of_mem (hx : x ≠ 0)
     (h : x.arg + x.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π)) :
     (x * cexp x).arg = x.arg + x.im - i * (2 * π) := by
-  rw [← exp_log hx, ← exp_add, mul_comm, arg_exp, add_im, log_im, toIocMod_eq_iff, exp_log hx]
-  exact ⟨by grind [h.left, h.right, Real.pi_pos], i, by ring⟩
+  rw [arg_mul_eq_toIocMod hx (exp_ne_zero x), arg_exp, ← self_sub_toIocDiv_zsmul (b := x.im),
+    ← add_sub_assoc, toIocMod_sub_zsmul, toIocMod_eq_iff]
+  exact ⟨by grind [pi_pos], i, by ring⟩
 
 theorem mul_exp_mem_of_arg_add_im_eq
     (hw : w.arg + w.im ∈ Ioc ((2 * i - 1) * π) ((2 * i + 1) * π))
@@ -201,7 +202,7 @@ theorem mul_exp_eq_of_arg_add_im_eq (hx : x ≠ 0) (h : x.arg + x.im = (2 * i + 
     x * cexp x = -rexp (x + log x).re := by
   nth_rw 1 [← exp_log hx, ← exp_add, ← add_comm]
   apply Complex.ext
-  · rw [exp_re, add_log_im, h, add_mul, one_mul, mul_comm (2 : ℝ), mul_assoc]
+  · rw [exp_re, add_log_im, h, add_mul, one_mul, mul_comm 2, mul_assoc]
     rw_mod_cast [Real.cos_int_mul_two_pi_add_pi i]
     rw [mul_neg_one]
   · rw_mod_cast [exp_im, add_log_im, h, Real.sin_int_mul_pi (2 * i + 1), mul_zero]
@@ -239,9 +240,7 @@ theorem im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem {w : ℂ}
       Real.log_pos (by simpa [hnorm, one_lt_div hsin] using Real.sin_lt nh)
     linear_combination (norm := (field_simp; ring_nf)) h1 + h2
     nth_rw 3 [← hnormsin]
-    field_simp
-    ring_nf
-    rfl
+    simp [field, hsin.ne']
   rw [mul_exp_eq_of_arg_add_im_eq (i := 0) hw₀ (by grind), neg_re, ofReal_re,
     ← Real.exp_neg, neg_le_neg_iff] at hzre1
   exact False.elim <| H.not_ge <| Real.exp_le_exp.mp hzre1
@@ -639,7 +638,8 @@ theorem eq_of_mem_range_of_mem_range {i j : ℤ}
     have := toIocDiv_eq_iff two_pi_pos (a := -π) (b := w.arg + w.im) (n := j) |>.mpr
     grind
 
-/-- See also `Complex.LambertW.index`. -/
+/-- See also `Complex.LambertW.index`, `Complex.eq_lambertW_index_of_eq_mul_exp` and
+`Complex.eq_index_of_mem_lambertW`. -/
 public theorem existsUnique_mem_range_of_ne_neg_one (hw : w ≠ -1) :
     ∃! k : ℤ, w ∈ range k := by
   obtain ⟨k, hk⟩ : ∃ k, w ∈ range k := mem_iUnion.mp <| eq_univ_iff_forall.mp iUnion_range w
@@ -852,13 +852,14 @@ theorem existsUnique_mem_range_of_ne (hk : k ≠ 0) (hk' : k ≠ -1) (hz : z ≠
       rw [mul_exp_eq_of_arg_add_im_eq (ne_zero_of_mem_range hk hw) h_eq, ← ofReal_neg,
         arg_ofReal_of_neg <| neg_neg_iff_pos.mpr <| Real.exp_pos _]
 
-/-- The `w` is `W_ k z`, see also `Complex.lambertW`. -/
+/-- The `w` is `W_ k z`, see also `Complex.lambertW`,
+`Complex.lambertW_mul_exp_lambertW_of_mem_domain` and `Complex.eq_lambertW_of_eq_mul_exp`. -/
 public theorem existsUnique_mem_range_mul_exp_eq (hz : z ∈ domain k) :
     ∃! w ∈ range k, w * cexp w = z := by
   rcases (show k = 0 ∨ k = -1 ∨ (k ≠ 0 ∧ k ≠ -1) by tauto) with rfl | rfl | ⟨hk, hk'⟩
-  · exact existsUnique_mem_range_zero z
-  · exact existsUnique_mem_range_neg_one (by rwa [domain_of_ne_zero (by decide)] at hz)
-  · exact existsUnique_mem_range_of_ne hk hk' (by rwa [domain_of_ne_zero hk] at hz)
+  exacts [existsUnique_mem_range_zero z,
+    existsUnique_mem_range_neg_one (by rwa [domain_of_ne_zero (by decide)] at hz),
+    existsUnique_mem_range_of_ne hk hk' (by rwa [domain_of_ne_zero hk] at hz)]
 
 --  Public theorems about bijectivity.
 
@@ -960,6 +961,12 @@ public theorem lambertW_mul_exp_of_mem_range (hw : w ∈ range k) : W_ k (w * ex
 public theorem lambertW_mul_exp_lambertW_of_mem_domain (hz : z ∈ domain k) :
     W_ k z * cexp (W_ k z) = z :=
   invOn_mul_exp_lambertW_domain_range.left hz
+
+/-- If `w ∈ range k` and `z = w * cexp w`, then `w = W_ k z`. In other words, on
+`range k`, `W_ k z` is the unique inverse of `w ↦ w * cexp w`. -/
+public theorem eq_lambertW_of_eq_mul_exp (hw : w ∈ range k) (hz : z = w * cexp w) :
+    w = W_ k z := by
+  rw [hz, lambertW_mul_exp_of_mem_range hw]
 
 @[simp]
 public theorem lambertW_zero_mul_exp_lambertW_zero : W₀ z * cexp (W₀ z) = z :=
