@@ -298,13 +298,6 @@ lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
     ofCoinvariantsTprodLeftRegular ρ (Coinvariants.mk _ (x ⊗ₜ .single g r)) = r • ρ g⁻¹ x :=
   congr($(Finsupp.linearCombination_single k (v := fun g => ρ g⁻¹) r g) x)
 
-@[simp]
-lemma mk_ofCoinvariantsTprodLeftRegular (x : Coinvariants (ρ.tprod (leftRegular k G))) :
-    Coinvariants.mk _ (ofCoinvariantsTprodLeftRegular ρ x ⊗ₜ[k] .single 1 1) = x := by
-  have h : (Coinvariants.mk _ ∘ₗ (TensorProduct.mk k V k[G]).flip (.single 1 1)) ∘ₗ
-      ofCoinvariantsTprodLeftRegular ρ = LinearMap.id := by ext; simp
-  exact congr($h x)
-
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the linear equivalence
 `(V ⊗ k[G])_G ≃ₗ[k] V` sending `⟦v ⊗ single g r⟧ ↦ r • ρ(g⁻¹)(v)`. -/
 @[simps! symm_apply]
@@ -318,29 +311,25 @@ noncomputable def coinvariantsTprodLeftRegularLEquiv :
 lemma coinvariantsTprodLeftRegularLEquiv_apply (x : (ρ.tprod (leftRegular k G)).Coinvariants) :
     coinvariantsTprodLeftRegularLEquiv ρ x = ofCoinvariantsTprodLeftRegular ρ x := rfl
 
-variable (α : Type*)
-
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the linear equivalence
 `(A ⊗ (α →₀ k[G]))_G ≃ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
-noncomputable def coinvariantsTensorFreeLEquiv :
+noncomputable def coinvariantsTensorFreeLEquiv (α : Type*) :
     Coinvariants (ρ.tprod (free k G α)) ≃ₗ[k] α →₀ V := by
-  classical
   exact Coinvariants.congr (finsuppTensorRight ρ (leftRegular k G) α) ≪≫ₗ
     coinvariantsFinsuppLEquiv (ρ.tprod (leftRegular k G)) α ≪≫ₗ
       mapRange.linearEquiv (coinvariantsTprodLeftRegularLEquiv ρ)
 
 @[simp]
-lemma coinvariantsTensorFreeLEquiv_mk_tmul_single (v : V) (i : α) (g : G) (r : k) :
+lemma coinvariantsTensorFreeLEquiv_mk_tmul_single {α : Type*} (v : V) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeLEquiv ρ α (Coinvariants.mk _ (v ⊗ₜ single i (.single g r))) =
       single i (r • ρ g⁻¹ v) := by
-  classical simp [coinvariantsTensorFreeLEquiv, finsuppTensorRight]
+  simp [coinvariantsTensorFreeLEquiv, finsuppTensorRight]
 
 @[simp]
-lemma coinvariantsTensorFreeLEquiv_symm_single (i : α) (v : V) :
+lemma coinvariantsTensorFreeLEquiv_symm_single {α : Type*} (i : α) (v : V) :
     (coinvariantsTensorFreeLEquiv ρ α).symm (single i v) =
       Coinvariants.mk _ (v ⊗ₜ single i (.single (1 : G) (1 : k))) := by
-  classical
   simp [coinvariantsTensorFreeLEquiv, finsuppTensorRight, Equiv.mk_symm]
 
 end TensorProduct
