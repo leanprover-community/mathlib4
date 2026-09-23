@@ -96,20 +96,7 @@ def associatorMap (unit : C)
 @[implicit_reducible, simps!]
 def leftUnitorMap (unit : C) (leftUnitor : tensor.obj unit ≅ 𝟭 C) :
     middle tensor unit ⟶ tensor where
-  app X :=
-    { app Y := (tensor.obj X).map (leftUnitor.hom.app Y)
-      naturality _ _ f := by
-        change (tensor.obj X).map ((tensor.obj unit).map f) ≫
-            (tensor.obj X).map (leftUnitor.hom.app _) =
-          (tensor.obj X).map (leftUnitor.hom.app _) ≫ (tensor.obj X).map f
-        rw [← Functor.map_comp, ← Functor.map_comp, leftUnitor.hom.naturality]
-        simp only [Functor.id_map] }
-  naturality X Y f := by
-    ext Z
-    change (tensor.map f).app ((tensor.obj unit).obj Z) ≫
-        (tensor.obj Y).map (leftUnitor.hom.app Z) =
-      (tensor.obj X).map (leftUnitor.hom.app Z) ≫ (tensor.map f).app Z
-    exact ((tensor.map f).naturality (leftUnitor.hom.app Z)).symm
+  app X := { app Y := (tensor.obj X).map (leftUnitor.hom.app Y) }
 
 /-- The path around the top and right of the monoidal triangle through the associator and left
 unitor.
@@ -135,11 +122,7 @@ def secondMap (unit : C) (rightUnitor : tensor.flip.obj unit ≅ 𝟭 C) :
   app X := { app Y := (tensor.map (rightUnitor.hom.app X)).app Y }
   naturality X₁ Y₁ f := by
     ext Z
-    change (tensor.map ((tensor.map f).app unit)).app Z ≫
-        (tensor.map (rightUnitor.hom.app Y₁)).app Z =
-      (tensor.map (rightUnitor.hom.app X₁)).app Z ≫ (tensor.map f).app Z
-    simpa [Functor.map_comp, NatTrans.comp_app] using
-      NatTrans.congr_app (congrArg tensor.map (rightUnitor.hom.naturality f)) Z
+    simpa using NatTrans.congr_app (congrArg tensor.map (rightUnitor.hom.naturality f)) Z
 
 end Triangle
 
