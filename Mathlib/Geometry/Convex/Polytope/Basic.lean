@@ -32,8 +32,6 @@ Future PRs will define polyhedra (using H-representations) and prove that, in ve
 polytopes are polyhedra.
 -/
 
-public noncomputable section
-
 namespace Convexity
 
 variable {R X Y V A : Type*}
@@ -46,9 +44,12 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable [ConvexSpace R X]
 
 variable (R) in
-/-- A set is a *polytope* if it is the convex hull of finitely many points. This is the V-polytope
-definition of convex polytope. -/
+/-- A set is a *polytope* if it is the convex hull of finitely many points. This is the
+V-definition of a convex polytope. -/
 def IsPolytope (s : Set X) : Prop := ∃ t : Finset X, s = convexHull R t
+
+lemma isPolytope_def {P : Set X} :
+    IsPolytope R P ↔ ∃ t : Finset X, P = convexHull R t := by rfl
 
 end Semiring
 
@@ -60,6 +61,9 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable [ConvexSpace R X]
 
 variable {P P₁ P₂ : Set X}
+
+theorem exists_finset_convexHull (hP : IsPolytope R P) :
+    ∃ t : Finset X, P = convexHull R t := hP
 
 lemma isConvexSet (hP : IsPolytope R P) : IsConvexSet R P := by
   obtain ⟨_, rfl⟩ := hP
