@@ -5,11 +5,10 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
-
 public meta import Mathlib.NumberTheory.Zsqrtd.Basic
-public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # The `ℤ√d` model for the Bareiss elimination
@@ -24,9 +23,9 @@ open Lean Meta Qq
 namespace Mathlib.Tactic.Echelon
 
 /-- Evaluate an entry or component of the `ℤ√d` model to an integer, via `norm_num`. -/
-def evalInt (e : Expr) : MetaM Int := do
+def evalInt (e : Expr) : MetaM ℤ := do
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
-  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
+  let r ← try some <$> Mathlib.Meta.NormNum.derive eQ catch _ => pure none
   if let some v := r.bind (·.toRat) then
     if v.den == 1 then
       return v.num
@@ -36,7 +35,7 @@ def evalInt (e : Expr) : MetaM Int := do
 entry without `√d` content evaluating through `norm_num`. -/
 def evalZsqrtdEntry (d : ℤ) (e : Expr) : MetaM (ℤ√d) := do
   match_expr e with
-  | Zsqrtd.mk _ a b => return ⟨← evalInt a, ← evalInt b⟩
+  | Zsqrtd.mk _ re im => return ⟨← evalInt re, ← evalInt im⟩
   | Zsqrtd.sqrtd _ => return .sqrtd
   | _ => return ⟨← evalInt e, 0⟩
 
@@ -56,7 +55,7 @@ def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
 def intOfRawLit? (e : Expr) : Option ℤ :=
   match_expr e with
   | Int.ofNat n => n.rawNatLit?
-  | Int.negOfNat n => n.rawNatLit?.map fun n => -n
+  | Int.negOfNat n => n.rawNatLit?.map fun k => -k
   | _ => none
 
 /-- The value of a literal `⟨re, im⟩ : ℤ√d` with raw integer components. -/
@@ -68,7 +67,7 @@ def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
 /-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components. `d` is the value of
 the integer literal `dQ`. -/
 def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
-  q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
+  q(⟨$(Mathlib.Meta.NormNum.mkRawIntLit v.re), $(Mathlib.Meta.NormNum.mkRawIntLit v.im)⟩)
 
 /-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
 with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/

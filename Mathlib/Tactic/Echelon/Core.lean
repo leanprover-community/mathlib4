@@ -38,7 +38,7 @@ open Lean Meta
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Arithmetic of a model's value type. -/
+/-- Arithmetic of a model's carrier. -/
 structure RingOps (V : Type) where
   /-- The zero value. -/
   zero : V
@@ -84,8 +84,10 @@ structure BareissData (V : Type) where
 /-- Map over the entries of the transform. -/
 def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
     MetaM (BareissData W) :=
-  return { L := ← d.L.mapM (·.mapM f), U := ← d.U.mapM (·.mapM f),
-           swaps := d.swaps, pivot := d.pivot }
+  return { L := ← d.L.mapM fun row => row.mapM f
+           U := ← d.U.mapM fun row => row.mapM f
+           swaps := d.swaps
+           pivot := d.pivot }
 
 /-- The row arrangement of the swaps: the entry at position `i` is the original row index
 that the swaps move to position `i`, that is, `σ i`. -/
@@ -104,8 +106,8 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   let cols := (A.getD 0 #[]).size
   let getEntry (M : Array (Array V)) (i j : Nat) : V := (M.getD i #[]).getD j ops.zero
   let eliminate (pivot coef prev : V) (row pivotRow : Array V) : Array V :=
-    Array.zipWith (fun a b => ops.divExact (ops.sub (ops.mul pivot a) (ops.mul coef b)) prev)
-      row pivotRow
+    row.zipWith (bs := pivotRow) fun a b =>
+      ops.divExact (ops.sub (ops.mul pivot a) (ops.mul coef b)) prev
   let mut W := A
   let mut L : Array (Array V) :=
     Array.ofFn (n := rows) fun i =>
@@ -173,17 +175,13 @@ structure Model (V : Type) where
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Expr
 
-/-- Decode decomposition data into expressions of the ring. -/
-def Model.toExprData {V : Type} (m : Model V) (d : BareissData V) : MetaM (BareissData Expr) :=
-  d.mapM m.mkEntry
-
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
     (rows : Array (Array (V × Option V))) : Array (Array V) × Array (Option V) :=
   let scales := rows.map fun row =>
-    row.foldl (init := none) fun scale entry => Option.merge commonMultiple scale entry.2
-  let scaled := rows.zipWith (bs := scales) fun row scale =>
-    match scale with
+    row.foldl (init := none) fun scale? entry => Option.merge commonMultiple scale? entry.2
+  let scaled := rows.zipWith (bs := scales) fun row scale? =>
+    match scale? with
     | none => row.map Prod.fst
     | some scale => row.map fun entry =>
       match entry.2 with

@@ -29,29 +29,29 @@ namespace Mathlib.Tactic.Echelon
 
 /-- The applicability check of the Bareiss method, which requires a commutative domain
 with kernel-decidable equality. -/
-def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
-  let u ← getDecLevel R
-  have α : Q(Type u) := R
+def checkBareissApplicable {u : Level} (α : Q(Type u)) :
+    MetaM (Except MessageData Q(CommRing $α)) := do
   let .some _cr ← trySynthInstanceQ q(CommRing $α)
     | return .error m!"expected the element type to be a commutative ring"
   let .some _ ← trySynthInstanceQ q(IsDomain $α)
     | return .error m!"expected the element type to be a domain"
   try
-    checkKernelDecide α
+    checkKernelDecide α _cr
   catch e =>
     return .error e.toMessageData
-  return .ok ()
+  return .ok _cr
 
-/-- Select the computation model for the ring expression `R` by choosing the first
-registered `bareiss_ext` extension that handles `R`, or the default rational model. -/
-def modelFor (R : Expr) : MetaM ((c : Carrier) × Model c.type) := do
+/-- Select the computation model for the element type `α` by choosing the first
+registered `bareiss_ext` extension that handles `α`, or the default rational model. -/
+def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
+    MetaM ((c : Carrier) × Model c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
-    if let some m ← ext.model? R then
-      trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr R}"
-      return m
+    if let some model ← ext.model? α then
+      trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
+      return model
   trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
-    model for{indentExpr R}"
-  ratModel R
+    model for{indentExpr α}"
+  ratModel α _cr
 
 /-- The result of producing a decomposition by Bareiss. -/
 structure BareissResult where
@@ -66,15 +66,14 @@ structure BareissResult where
 
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
 `A`. -/
-def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
-    (entries : Array (Array Expr)) : MetaM BareissResult := do
-  let ⟨carrier, model⟩ ← modelFor α
+def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) :
+    MetaM BareissResult := do
+  let ⟨carrier, model⟩ ← modelFor α _cr
   let fractions ← entries.mapM fun row => row.mapM model.evalEntry
   let (values, scales) := scaleRows model.ops model.commonMultiple fractions
   let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
-  let d ← model.toExprData data
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
-  have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
+  let d ← data.mapM model.mkEntry
   return { cert := ← mkCertificate _cr A entries d, carrier, model, data }
 
 end Mathlib.Tactic.Echelon

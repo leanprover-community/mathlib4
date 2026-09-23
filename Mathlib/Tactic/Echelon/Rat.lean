@@ -27,7 +27,7 @@ namespace Mathlib.Tactic.Echelon
 Fraction values are accepted only in characteristic zero. -/
 def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
-  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
+  let r ← try some <$> Mathlib.Meta.NormNum.derive eQ catch _ => pure none
   if let some v := r.bind (·.toRat) then
     if v.den == 1 || charZero then
       return v
@@ -36,8 +36,7 @@ def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
 /-- Build the numeral of an integer in `α`: `mkNumeral` on the absolute value, negated if
 `i` is negative. -/
 def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
-  let n ← mkNumeral α i.natAbs
-  have n : Q($α) := n
+  let n : Q($α) ← mkNumeral α i.natAbs
   if i < 0 then
     let _ ← synthInstanceQ q(Neg $α)
     return q(-$n)
@@ -45,25 +44,23 @@ def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
     return n
 
 /-- The rational model. -/
-def ratModel (R : Expr) : MetaM ((c : Carrier) × Model c.type) := do
-  let u ← getDecLevel R
-  have α : Q(Type u) := R
+def ratModel {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
+    MetaM ((c : Carrier) × Model c.type) := do
   -- the characteristic determines the zero test
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
-  let pE : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
-  let .some _ ← trySynthInstanceQ q(CharP $α $pE)
+  let pQ : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
+  let .some _ ← trySynthInstanceQ q(CharP $α $pQ)
     | throwError "could not determine the characteristic of the element type{indentExpr α}"
   -- `whnfD`: the ambient transparency inside `simp` is `reducible`, which does not reduce
   -- the numeral to a literal
-  let some p := (← whnfD (← instantiateMVars pE)).rawNatLit?
+  let some p := (← whnfD (← instantiateMVars pQ)).rawNatLit?
     | throwError "the characteristic of the element type is not a literal{indentExpr α}"
   let ops : RingOps Int := {
     zero := 0
     one := 1
-    mul := (· * ·)
-    sub := (· - ·)
-    divExact := (· / ·)
-    isZero := if p == 0 then (· == 0) else fun v => v % p == 0 }
+    mul x y := x * y
+    sub x y := x - y
+    divExact x y := x / y
+    isZero x := if p == 0 then x == 0 else x % p == 0 }
   return ⟨.int, {
     ops
     evalEntry := fun e => do
