@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
+public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.CategoryTheory.Linear.Yoneda
 
 /-!
@@ -16,11 +17,13 @@ public import Mathlib.CategoryTheory.Linear.Yoneda
 
 -/
 
+universe v u
+
 @[expose] public section
 
 open CategoryTheory Limits
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type u} [Category.{v} C] [Abelian C]
 
 namespace ChainComplex
 
@@ -62,3 +65,15 @@ def linearYonedaObjHomologyIso (n : ℤ) (k : ℕ) (h : k = n := by lia) :
   sorry
 
 end ChainComplex
+
+namespace CategoryTheory.ProjectiveResolution
+
+variable [HasExt.{v} C] {X : C} (P : ProjectiveResolution X) {R : Type*} [Ring R] [Linear R C]
+
+noncomputable def extIsoHomologyLinearYonedaObj (Y : C) (n : ℕ) :
+    ModuleCat.of R (Abelian.Ext X Y n) ≅
+      (P.complex.linearYonedaObj R Y).homology n :=
+  P.extLinearEquivCohomologyClass.toModuleIso ≪≫
+    (P.complex.linearYonedaObjHomologyIso R Y n n).symm
+
+end CategoryTheory.ProjectiveResolution

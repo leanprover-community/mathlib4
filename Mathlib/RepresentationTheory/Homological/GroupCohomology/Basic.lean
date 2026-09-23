@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.ConcreteCategory
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.RepresentationTheory.Homological.Resolution
 public import Mathlib.Tactic.CategoryTheory.Slice
@@ -203,8 +201,6 @@ theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
   rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
   exact h y
 
-instance [Monoid G] : HasExt.{u} (Rep.{u} k G) := hasExt_of_enoughProjectives _
-
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
@@ -219,7 +215,7 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
 def groupCohomologyIso [Group G] (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupCohomology A n ≅ (P.complex.linearYonedaObj k A).homology n :=
-  groupCohomologyIsoExt A n ≪≫ sorry--P.isoExt _ _
+  groupCohomologyIsoExt A n ≪≫ P.extIsoHomologyLinearYonedaObj _ _
 
 lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
