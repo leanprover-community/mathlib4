@@ -601,7 +601,6 @@ instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
 
 instance instIsNatCastApply [ContinuousAdd M₁] : IsNatCastApplyEqSMul (M₁ →L[R₁] M₁) M₁ where
-  natCast_apply_eq_smul _ _ := rfl
 
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
   fast_instance% FunLike.compSemiring
@@ -898,7 +897,6 @@ instance [IsTopologicalAddGroup M] : IntCast (M →L[R] M) where
   intCast z := z • (1 : M →L[R] M)
 
 instance instIsIntCastApply [IsTopologicalAddGroup M] : IsIntCastApplyEqSMul (M →L[R] M) M where
-  intCast_apply_eq_smul _ _ := rfl
 
 @[deprecated (since := "2026-05-20")] alias intCast_apply := _root_.intCast_apply_eq_smul
 

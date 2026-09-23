@@ -185,7 +185,7 @@ section Cast
 /-- `IsNatCastApply F α β` states for all `n : ℕ` and `x : α`, `(n : F) x = n`. -/
 class IsNatCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [NatCast F]
     [NatCast β] where
-  natCast_apply_eq_const (n : Nat) (x : α) : (n : F) x = n
+  natCast_apply_eq_const (n : Nat) (x : α) : (n : F) x = n := by intros; rfl
 
 @[simp, grind =]
 alias natCast_apply_eq_const := IsNatCastApply.natCast_apply_eq_const
@@ -193,7 +193,7 @@ alias natCast_apply_eq_const := IsNatCastApply.natCast_apply_eq_const
 /-- `IsIntCastApply F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n`. -/
 class IsIntCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [IntCast F]
     [IntCast β] where
-  intCast_apply_eq_const (n : Int) (x : α) : (n : F) x = n
+  intCast_apply_eq_const (n : Int) (x : α) : (n : F) x = n := by intros; rfl
 
 @[simp, grind =]
 alias intCast_apply_eq_const := IsIntCastApply.intCast_apply_eq_const
@@ -201,7 +201,7 @@ alias intCast_apply_eq_const := IsIntCastApply.intCast_apply_eq_const
 /-- `IsNatCastApplyEqSMul F α` states for all `n : ℕ` and `x : α`, `(n : F) x = n • x`. -/
 class IsNatCastApplyEqSMul (F : Type*) (α : outParam Type*) [FunLike F α α] [NatCast F]
     [SMul Nat α] where
-  natCast_apply_eq_smul (n : Nat) (x : α) : (n : F) x = n • x
+  natCast_apply_eq_smul (n : Nat) (x : α) : (n : F) x = n • x := by intros; rfl
 
 @[simp, grind =]
 alias natCast_apply_eq_smul := IsNatCastApplyEqSMul.natCast_apply_eq_smul
@@ -209,7 +209,7 @@ alias natCast_apply_eq_smul := IsNatCastApplyEqSMul.natCast_apply_eq_smul
 /-- `IsIntCastApplyEqSMul F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n • x`. -/
 class IsIntCastApplyEqSMul (F : Type*) (α : outParam Type*) [FunLike F α α] [IntCast F]
     [SMul Int α] where
-  intCast_apply_eq_smul (n : Int) (x : α) : (n : F) x = n • x
+  intCast_apply_eq_smul (n : Int) (x : α) : (n : F) x = n • x := by intros; rfl
 
 @[simp, grind =]
 alias intCast_apply_eq_smul := IsIntCastApplyEqSMul.intCast_apply_eq_smul
