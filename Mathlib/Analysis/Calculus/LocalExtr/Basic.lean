@@ -259,12 +259,9 @@ theorem IsLocalMin.deriv_eq_zero (h : IsLocalMin f a) : deriv f a = 0 := by
 derivatives agree at that point. -/
 theorem HasDerivAt.eq_of_le {g : ℝ → ℝ} {g' : ℝ} (hf : HasDerivAt f f' a)
     (hg : HasDerivAt g g' a) (hfg : f ≤ g) (ha : f a = g a) : f' = g' := by
-  have hmin : IsLocalMin (fun x ↦ g x - f x) a := by
-    refine Filter.Eventually.of_forall fun x ↦ ?_
-    change g a - f a ≤ g x - f x
-    rw [sub_eq_zero.mpr ha.symm]
-    exact sub_nonneg.mpr (hfg x)
-  exact (sub_eq_zero.mp (hmin.hasDerivAt_eq_zero (hg.sub hf))).symm
+  have h := (hasDerivAt_iff_hasFDerivAt.1 hf).eq_of_le
+    (hasDerivAt_iff_hasFDerivAt.1 hg) hfg ha
+  simpa using DFunLike.congr_fun h 1
 
 /-- **Fermat's Theorem**: the derivative of a function at a local maximum equals zero. -/
 theorem IsLocalMax.hasDerivAt_eq_zero (h : IsLocalMax f a) (hf : HasDerivAt f f' a) : f' = 0 :=
