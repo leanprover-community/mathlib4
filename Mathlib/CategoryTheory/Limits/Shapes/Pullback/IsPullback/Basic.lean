@@ -406,7 +406,6 @@ lemma paste_twist_right {X Y Z S : C} {f : X ⟶ S} {g : Y ⟶ S} {i : Z ⟶ S}
   rw [← hrw, ht₁]
   exact .paste_horiz hsndfgr hfg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a `HasPullback` variant of `CategoryTheory.IsPullback.paste_twist_right` -/
 lemma map_fst_comp_fst_snd_comp_fst {X Y Z U S : C} (f : X ⟶ S) (g : Y ⟶ S) (i : Z ⟶ S)
     [HasPullback i g] (h : U ⟶ pullback i g) [HasPullback f g] [HasPullback (pullback.snd f g)
@@ -705,7 +704,6 @@ lemma id_horiz (f : X ⟶ Z) : IsPushout (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pushout diagram:
