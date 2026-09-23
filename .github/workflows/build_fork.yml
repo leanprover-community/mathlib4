@@ -13,6 +13,15 @@ on:
       # the PR, so PR changes under these dirs can't affect the run — triggering is wasteful.
       - '.github/**'
 
+concurrency:
+  # Collapse duplicate runs for the *same* commit: GitHub does dispatch these, two
+  # `pull_request_target` events arriving within a second of each other. Keyed on the head
+  # sha, so runs for *different* commits are never in the same group and so never cancel
+  # each other by arrival order — ordering those is the `guard` job's business. The PR
+  # number is in the key as well because two PRs can share a single fork branch.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
@@ -30,13 +39,10 @@ jobs:
     # Overrides the workflow-level block for this job only; the `build` job below still gets
     # the workflow-level permissions.
     permissions:
-      actions: write       # cancel superseded runs of this workflow
+      actions: write       # cancel this run, and the runs it supersedes
       pull-requests: read  # read the PR's current head sha
-    outputs:
-      is_head: ${{ steps.check.outputs.is_head }}
     steps:
-      - name: Skip if superseded, and cancel any run this one supersedes
-        id: check
+      - name: Cancel this run if superseded, else cancel the runs it supersedes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -48,55 +54,79 @@ jobs:
         run: |
           set -uo pipefail
 
-          # Fail open: if the API cannot be reached, trigger a build.
-          is_head=true
-
+          # Fail open throughout: every API error below falls through to the build, so a
+          # mistake costs a duplicate build rather than a PR with no CI.
           if ! head_sha="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq '.head.sha')"; then
             echo "::warning::Could not read PR #${PR_NUMBER}; building anyway."
-          elif [ "${head_sha}" != "${MY_SHA}" ]; then
-            echo "PR #${PR_NUMBER} is at ${head_sha}; this run is for ${MY_SHA}. Skipping."
-            is_head=false
-          else
-            # This run is the head, so every other in-flight run for this branch is stale.
-            # Matched on head sha rather than PR number because the runs API reports no PR
-            # number for `pull_request_target` runs. Runs for *this* sha are left alone, so a
-            # second PR sharing this fork branch keeps its own run.
-            if stale="$(gh api -X GET "repos/${REPO}/actions/workflows/build_fork.yml/runs" \
-                          -f "branch=${HEAD_BRANCH}" -f per_page=50 |
-                        jq -r --arg r "${HEAD_REPO}" --arg s "${MY_SHA}" --arg me "${RUN_ID}" \
-                          '.workflow_runs[]
-                           | select(.head_repository.full_name == $r
-                                    and .status != "completed"
-                                    and .head_sha != $s
-                                    and (.id | tostring) != $me)
-                           | .id')"; then
-              for id in ${stale}; do
-                echo "Cancelling run ${id}, superseded by ${MY_SHA}."
-                gh api -X POST "repos/${REPO}/actions/runs/${id}/cancel" \
-                  || echo "::warning::Could not cancel run ${id}."
-              done
-            else
-              echo "::warning::Could not list runs for ${HEAD_REPO}:${HEAD_BRANCH}."
-            fi
+            exit 0
           fi
 
-          echo "is_head=${is_head}" >> "$GITHUB_OUTPUT"
+          if [ "${head_sha}" != "${MY_SHA}" ]; then
+            # Superseded. Cancel the whole run rather than just skipping the build, so its
+            # conclusion is `cancelled` — what the `concurrency` group produced before, and
+            # what every `workflow_run` consumer already expects of a discarded run. A run
+            # that skipped its build would instead conclude `success` and invite consumers
+            # to treat "succeeded" as "built".
+            echo "PR #${PR_NUMBER} is at ${head_sha}; this run is for ${MY_SHA}. Cancelling."
+            if ! gh api -X POST "repos/${REPO}/actions/runs/${RUN_ID}/cancel"; then
+              echo "::warning::Could not cancel this run; building anyway."
+              exit 0
+            fi
+            # `cancel` is asynchronous, and returning here would let `build` — which `needs`
+            # this job — claim a self-hosted runner for a build about to be torn down. Block
+            # instead; GitHub kills this job within seconds, so the wait only has to outlast
+            # that. Falling through costs one stale build, which beats a PR with no CI.
+            for _ in $(seq 12); do
+              sleep 5
+              echo "Waiting for the cancellation of run ${RUN_ID} to land..."
+            done
+            echo "::warning::Cancellation did not land within 60s; building anyway."
+            exit 0
+          fi
+
+          # This run is the head, so every other in-flight run for this branch is stale.
+          # Matched on head sha rather than PR number because the runs API reports no PR
+          # number for `pull_request_target` runs. Runs for *this* sha are left alone: the
+          # `concurrency` group above already collapses those, and a second PR sharing this
+          # fork branch keeps its own run.
+          if ! stale="$(gh api -X GET "repos/${REPO}/actions/workflows/build_fork.yml/runs" \
+                         -f "branch=${HEAD_BRANCH}" -f per_page=50 |
+                       jq -r --arg r "${HEAD_REPO}" --arg s "${MY_SHA}" --arg me "${RUN_ID}" \
+                         '.workflow_runs[]
+                          | select(.head_repository.full_name == $r
+                                   and .status != "completed"
+                                   and .head_sha != $s
+                                   and (.id | tostring) != $me)
+                          | .id')"; then
+            echo "::warning::Could not list runs for ${HEAD_REPO}:${HEAD_BRANCH}."
+            exit 0
+          fi
+
+          for id in ${stale}; do
+            echo "Cancelling run ${id}, superseded by ${MY_SHA}."
+            if ! err="$(gh api -X POST "repos/${REPO}/actions/runs/${id}/cancel" 2>&1)"; then
+              case "${err}" in
+                # The run reached a terminal state between the listing above and this call.
+                # That is the outcome being asked for, so it is not worth a warning.
+                *"HTTP 409"*) echo "Run ${id} had already finished." ;;
+                *) echo "::warning::Could not cancel run ${id}: ${err}" ;;
+              esac
+            fi
+          done
 
   build:
     name: ci (fork)
     needs: guard
     # `guard` carries the fork/repository condition, hence the `result` test: without it
     # the `!cancelled()` below would let every *non-fork* PR build here as well as in
-    # `build.yml`. `!cancelled()` is what makes the rest of this evaluate at all when
-    # `guard` did not succeed, and `is_head` is then unset (`!= 'false'`), so an
-    # infrastructure failure in `guard` builds rather than silently dropping the PR's CI.
-    # That matches the step's own fail-open handling of API errors.
-    if: >-
-      ${{ !cancelled()
-      && needs.guard.result != 'skipped'
-      && needs.guard.outputs.is_head != 'false' }}
+    # `build.yml`. `!cancelled()` is what makes this evaluate at all when `guard` did not
+    # succeed, so an infrastructure failure in `guard` builds rather than silently dropping
+    # the PR's CI — matching the step's own fail-open handling of API errors. A superseded
+    # run never reaches this job: `guard` cancels the run, taking the job with it.
+    if: ${{ !cancelled() && needs.guard.result != 'skipped' }}
     uses: ./.github/workflows/build_template.yml
     with:
+      concurrency_group: ${{ github.workflow }}-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
       pr_branch_ref: ${{ github.event.pull_request.head.sha }}
       cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
       cache_environment: cache-upload-forks
