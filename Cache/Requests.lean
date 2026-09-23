@@ -684,16 +684,19 @@ A status and an exit code say that a transfer failed; these say how.
   reset from a slow stall.
 
 `report` is curl's own JSON report. `headers` holds the values of
-`curlGetHeaders`, in order, and is empty on the upload path. `payloadKey`
-names the counter that holds the payload: a download reads
-`size_download`, an upload `size_upload`.
+`curlGetHeaders`, in order, and is empty on the upload path. `dir` picks
+the counter that holds the payload: a download reads `size_download`, an
+upload `size_upload`.
 
 Each value describes curl's final attempt, because `--retry` hides the
 earlier ones. The function skips an absent or empty value, so a backend
 without `cf-*` headers gives fewer pairs.
 -/
-def transferDiagnostics (payloadKey : String) (report : Lean.Json)
+def transferDiagnostics (dir : TransferDirection) (report : Lean.Json)
     (headers : List String) : String :=
+  let payloadKey := match dir with
+    | .download => "size_download"
+    | .upload => "size_upload"
   let nonEmpty (s : String) : Option String := if s.isEmpty then none else some s
   let header (name : String) : Option String :=
     ((curlGetHeaders.zip headers).lookup name).bind nonEmpty
@@ -809,10 +812,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
-              let payloadKey := match dir with
-                | .download => "size_download"
-                | .upload => "size_upload"
-              let diag := transferDiagnostics payloadKey result headers
+              let diag := transferDiagnostics dir result headers
               if !diag.isEmpty then
                 msg := s!"{msg} [{diag}]"
               return msg

@@ -1837,13 +1837,13 @@ def test_transferDiagnostics : IO Unit := do
     |>.toOption.getD .null
   assertEq "download with every header"
     "bytes=4096/100000 cf_ray=a3f2-EZE cf_cache_status=HIT http_version=1.1 time_total=0.5"
-    (transferDiagnostics "size_download" report ["a3f2-EZE", "HIT", "100000"])
+    (transferDiagnostics .download report ["a3f2-EZE", "HIT", "100000"])
   assertEq "a backend without cf-* headers or content-length"
     "bytes=4096 http_version=1.1 time_total=0.5"
-    (transferDiagnostics "size_download" report ["", "", ""])
+    (transferDiagnostics .download report ["", "", ""])
   assertEq "upload counts size_upload and has no header values"
     "bytes=10 http_version=1.1 time_total=0.5"
-    (transferDiagnostics "size_upload" report [])
+    (transferDiagnostics .upload report [])
 
 end TransferDiagnostics
 
