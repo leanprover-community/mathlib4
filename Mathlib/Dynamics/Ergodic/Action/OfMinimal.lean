@@ -233,10 +233,10 @@ If the preimages of `0` under the iterations of `f` are dense,
 then it is pre-ergodic with respect to any finite inner regular left invariant measure. -/]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
-    (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1))
+    (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hfm : Measurable f)
     (hqmp : Measure.QuasiMeasurePreserving f μ μ) :
     PreErgodic f μ := by
-  refine .of_preimage_eq hqmp fun s hsm hs ↦
+  refine .of_preimage_eq hfm hqmp fun s hsm hs ↦
     aeconst_of_dense_setOfPred_preimage_smul_eq (M := G) hsm.nullMeasurableSet ?_
   refine hf.mono <| iUnion_subset fun n x hx ↦ ?_
   have hsn : f^[n] ⁻¹' s = s := by
@@ -258,6 +258,6 @@ theorem ergodic_of_dense_iUnion_preimage_one [CompactSpace G] {μ : Measure G} [
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hcont : Continuous f) (hsurj : Surjective f) :
     Ergodic f μ :=
   have hmp := f.measurePreserving hcont hsurj rfl
-  ⟨hmp, f.preErgodic_of_dense_iUnion_preimage_one hf hmp.quasiMeasurePreserving⟩
+  ⟨hmp, f.preErgodic_of_dense_iUnion_preimage_one hf hmp.measurable hmp.quasiMeasurePreserving⟩
 
 end MonoidHom
