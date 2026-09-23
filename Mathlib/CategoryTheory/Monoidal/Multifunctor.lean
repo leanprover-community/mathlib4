@@ -56,7 +56,7 @@ abbrev target : C ⥤ C ⥤ C ⥤ C ⥤ C :=
                 ------> X₁ ⊗ (X₂ ⊗ (X₃ ⊗ X₄))
 ```
 -/
-@[implicit_reducible]
+@[simps!, implicit_reducible]
 def firstMap
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor ⟶ target tensor :=
@@ -64,31 +64,14 @@ def firstMap
     (bifunctorComp₂₃Functor.map associator.hom).app tensor ≫
       (trifunctorComp₂₃₄Functor.obj tensor).map associator.hom
 
-@[simp]
-lemma firstMap_app_app_app_app
-    (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
-    (X₁ X₂ X₃ X₄ : C) :
-    ((((firstMap tensor associator).app X₁).app X₂).app X₃).app X₄ =
-      (tensor.map (((associator.hom.app X₁).app X₂).app X₃)).app X₄ ≫
-        (((associator.hom.app X₁).app ((tensor.obj X₂).obj X₃)).app X₄) ≫
-          (tensor.obj X₁).map (((associator.hom.app X₂).app X₃).app X₄) := rfl
-
 /-- The two-associator path along the left and bottom of the monoidal pentagon displayed in
 `Pentagon.firstMap`. -/
-@[implicit_reducible]
+@[simps!, implicit_reducible]
 def secondMap
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor ⟶ target tensor :=
   (bifunctorComp₁₂Functor.obj tensor).map associator.hom ≫
     (trifunctorComp₃₄Functor.map associator.hom).app tensor
-
-@[simp]
-lemma secondMap_app_app_app_app
-    (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
-    (X₁ X₂ X₃ X₄ : C) :
-    ((((secondMap tensor associator).app X₁).app X₂).app X₃).app X₄ =
-      (((associator.hom.app ((tensor.obj X₁).obj X₂)).app X₃).app X₄) ≫
-        (((associator.hom.app X₁).app X₂).app ((tensor.obj X₃).obj X₄)) := rfl
 
 end Pentagon
 
