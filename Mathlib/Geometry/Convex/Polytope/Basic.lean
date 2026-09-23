@@ -32,6 +32,8 @@ Future PRs will define polyhedra (using H-representations) and prove that, in ve
 polytopes are polyhedra.
 -/
 
+@[expose] public section
+
 namespace Convexity
 
 variable {R X Y V A : Type*}
