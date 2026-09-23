@@ -89,10 +89,6 @@ instance : CovariantClass M (Ideal R) HSMul.hSMul LE.le :=
 theorem smul_bot (a : M) : a • (⊥ : Ideal R) = ⊥ :=
   map_bot
 
-theorem stabilizer_bot {G : Type*} [Group G] [MulSemiringAction G R] :
-    MulAction.stabilizer G (⊥ : Ideal R) = ⊤ :=
-  MulAction.stabilizer_bot
-
 theorem smul_sup (a : M) (S T : Ideal R) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 
@@ -160,12 +156,6 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 @[simp]
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
-
-theorem smul_top (a : M) : a • (⊤ : Ideal R) = ⊤ :=
-  _root_.smul_top a
-
-theorem stabilizer_top : MulAction.stabilizer M (⊤ : Ideal R) = ⊤ :=
-  MulAction.stabilizer_top
 
 @[simp]
 theorem inertia_top {R : Type*} [Ring R] [MulSemiringAction M R] :

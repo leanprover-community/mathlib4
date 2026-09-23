@@ -47,21 +47,21 @@ theorem smul_strictMono_right [SMul M α] [Preorder α] [CovariantClass M α HSM
 
 section Monoid
 
-variable {G : Type*} [Monoid G] [Preorder α] [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
+variable [Monoid M] [Preorder α] [MulAction M α] [CovariantClass M α HSMul.hSMul LE.le]
 
-lemma le_pow_smul {g : G} {a : α} (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
+lemma le_pow_smul {m : M} {a : α} (h : a ≤ m • a) (n : ℕ) : a ≤ m ^ n • a := by
   induction n with
   | zero => rw [pow_zero, one_smul]
   | succ n hn =>
     rw [pow_succ', mul_smul]
-    exact h.trans (smul_mono_right g hn)
+    exact h.trans (smul_mono_right m hn)
 
-lemma pow_smul_le {g : G} {a : α} (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
+lemma pow_smul_le {m : M} {a : α} (h : m • a ≤ a) (n : ℕ) : m ^ n • a ≤ a := by
   induction n with
   | zero => rw [pow_zero, one_smul]
   | succ n hn =>
     rw [pow_succ', mul_smul]
-    exact (smul_mono_right g hn).trans h
+    exact (smul_mono_right m hn).trans h
 
 end Monoid
 
