@@ -191,7 +191,7 @@ def getManyGoals : InfoTree → Array (Syntax × Option (Nat × Nat × Nat))
     if let .ofTacticInfo info := info then
       if ignoreBranch.contains info.stx.getKind then #[]
       -- Record unnecessary uses of `·`.
-      else if unCDots.contains (info.stx.getPos?.getD default) && info.goalsBefore.length == 1 then
+      else if unCDots.contains (info.stx.getPos?.getD default) && info.goalsBefore.length == 1 && info.stx.getKind == ``cdot then
         kargs.push (info.stx, none)
       -- Ideal case: one goal, and it might or might not be closed.
       else if info.goalsBefore.length == 1 && info.goalsAfter.length ≤ 1 then kargs

@@ -160,13 +160,10 @@ example : true ∧ true := by
     trivial
   exact this
 
--- TODO: there are **way** to many warnings emitted here; not sure why!
-/--
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdotTk'
+-- TODO: understand if the current attempted fix for superfluous warnings is sufficient, or needs a
+-- different/more systematic fix!
 
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
+/--
 warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
 'Lean.cdot'
 
@@ -184,22 +181,7 @@ example : 1 = 1 ∧ 1 = 1 ∧ 1 = 1 := by
 
 /--
 warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdotTk'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
 'Lean.cdot'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.Parser.Tactic.tacticSeq1Indented'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.Parser.Tactic.tacticSeq'
 
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 -/
@@ -209,42 +191,12 @@ example : True := by
 
 /--
 warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdotTk'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdotTk'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
 'Lean.cdot'
 
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 ---
 warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.Parser.Tactic.tacticSeq1Indented'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.Parser.Tactic.tacticSeq'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
 'Lean.cdot'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.Parser.Tactic.tacticSeq1Indented'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.Parser.Tactic.tacticSeq'
 
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 -/
