@@ -57,6 +57,20 @@ noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f 
 -/
 
 /--
+The characteristic function of a constant function `c` for the value `⊤` is the constant function
+`log⁺ ‖c‖`.
+-/
+@[simp] theorem characteristic_const {c : ℂ} :
+    characteristic (fun _ ↦ c) ⊤ = fun _ ↦ log⁺ ‖c‖ := by
+  simp [characteristic]
+
+/-- The characteristic function of the zero function for the value `⊤` vanishes identically. -/
+@[simp] theorem characteristic_zero :
+    characteristic (0 : ℂ → ℂ) ⊤ = fun _ ↦ 0 := by
+  convert characteristic_const (c := 0)
+  simp
+
+/--
 If two functions differ only on a discrete set, then their characteristic functions agree, except
 perhaps at radius 0.
 -/
@@ -96,6 +110,18 @@ theorem characteristic_eventually_nonneg :
 /-!
 ## Behaviour under Arithmetic Operations
 -/
+
+/--
+Multiplying a meromorphic function by a nonzero constant changes the characteristic function at `⊤`
+only by a bounded function.
+-/
+theorem isBigO_characteristic_sub_characteristic_const_mul {f : ℂ → ℂ} {s : ℂ}
+    (hf : Meromorphic f) (hs : s ≠ 0) :
+    (characteristic f ⊤ - characteristic (s • f) ⊤) =O[atTop] (1 : ℝ → ℝ) := by
+  unfold characteristic
+  rw [logCounting_const_smul_top hs]
+  ring_nf
+  apply isBigO_proximity_top_sub_proximity_const_smul_top hf hs
 
 /--
 For `1 ≤ r`, the characteristic function of a sum `∑ a, f a` at `⊤` is less than or equal to the sum
