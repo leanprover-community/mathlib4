@@ -535,6 +535,13 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
       simp_all [← smul_assoc]
     }
 
+private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f : β → α)
+    (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
+  simp only [mulSupport_subset_iff, ne_eq, mem_support]
+  intro
+  contrapose
+  simp +contextual
+
 /--
 Companion lemma to `MeromorphicOn.exists_ecanonicalDecomp`: In the setting of the extended canonical
 decomposition, write the function `h` entirely in terms of `f`.

@@ -753,7 +753,7 @@ lemma mem_closure_insert (he : e ∉ M.closure X) (hef : e ∈ M.closure (insert
     f ∈ M.closure (insert e X) := by
   rw [← closure_inter_ground] at *
   have hfE : f ∈ M.E := by
-    by_contra! hfE; rw [insert_inter_of_notMem hfE] at hef; exact he hef
+    by_contra hfE; rw [insert_inter_of_notMem hfE] at hef; exact he hef
   have heE : e ∈ M.E := (M.closure_subset_ground _) hef
   rw [insert_inter_of_mem hfE] at hef; rw [insert_inter_of_mem heE]
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)

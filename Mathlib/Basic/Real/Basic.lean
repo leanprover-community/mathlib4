@@ -258,7 +258,7 @@ theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
 private irreducible_def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
     (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
-      propext <|
+      propext
         ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
@@ -552,7 +552,7 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
         simp [mul_add, add_assoc, add_left_comm]
       _ ≤ (a + 1) ^ b * a + (a + 1) ^ b := by
         gcongr
-        · norm_num
+        · simp
         · exact hb ha'
       _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
