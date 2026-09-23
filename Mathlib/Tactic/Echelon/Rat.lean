@@ -12,7 +12,7 @@ public import Mathlib.Tactic.NormNum.Basic
 /-!
 # The rational model for the Bareiss elimination
 
-The computable model of ℚ literals. It is the fallback model the tactic uses when no
+The computable model of literals expressible in ℚ. It is the fallback model the tactic uses when no
 other model matches the ring.
 -/
 

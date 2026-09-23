@@ -53,7 +53,8 @@ def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
     model for{indentExpr α}"
   ratModel α _cr
 
-/-- The result of evaluation and certificate construction, together with the carrier model. -/
+/-- The result of producer evaluation and certificate construction, together with the carrier
+model. -/
 structure BareissResult where
   /-- The elaborated `Echelon.Decomposition` certificate term. -/
   cert : Expr

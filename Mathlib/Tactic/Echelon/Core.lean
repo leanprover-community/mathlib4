@@ -168,7 +168,7 @@ structure Model (V : Type) where
   /-- An entry as a value with an optional denominator (used for the scaling optimisation).
   `(n, some d)` denotes `n / d` for a nonzero `d`, and `(n, none)` denotes `n`. -/
   evalEntry : Expr → MetaM (V × Option V)
-  /-- A common multiple for eliminating the denominators, default to `ops.mul`. A
+  /-- A common multiple for eliminating the denominators (`ops.mul` by default). A
   carrier type with a cheap lcm function could supply it as an optimisation to keep the
   scaled entries small. -/
   commonMultiple : V → V → V := ops.mul
