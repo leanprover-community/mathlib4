@@ -105,6 +105,7 @@ def coconeOfLE : Cocone (restrictionLT F hi) :=
 
 /-- The functor `Set.Iic i ⥤ C` obtained by "restriction" of `F : Set.Iic j ⥤ C`
 when `i ≤ j`. -/
+@[implicit_reducible]
 def restrictionLE : Set.Iic i ⥤ C :=
   (Set.initialSegIicIicOfLE hi).monotone.functor ⋙ F
 

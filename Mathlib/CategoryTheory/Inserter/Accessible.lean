@@ -103,6 +103,163 @@ structure PositetskiInductionDataUpTo
     ψ j (hj.trans hki) ≫ G.map (ξ.map (homOfLE (by simpa))).left.hom =
     F.map (ξ.map (homOfLE (by simpa))).left.hom ≫ ψ k hki
 
+@[simp, grind =]
+private lemma grind_helper {X : K}
+  {x y : CostructuredArrow (isCardinalPresentable K κ).ι X} (f : x ⟶ y) :
+      f.left.hom ≫ y.hom = x.hom := by simpa using f.w
+/-- The structure of a partial induction for constructing the chain
+as in Positetski, 4.5.
+To realize the induction, we transform `j ↦ PositetskiInductionDataUpTo … j` into a
+presheaf on `j` so that we can use `Functor.WellOrderInductionData`. From
+a section of the presheaf, we can extract the chain out of `J` that we are looking for. -/
+@[ext]
+structure PositetskiInductionDataUpTo2
+    (E : Inserter F G) (i : Λ) where
+  /-- corresponds to all the previous ξᵢ's -/
+  ξ : Set.Iic i ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj
+  /-- A structure map ψⱼ : F.obj ξⱼ ⟶ G.obj ξₖ for all j < k ≤ i.
+  In particular, this bundles a map F.obj ξᵢ₋₁ ⟶ G.obj ξᵢ when indices
+  allow it. -/
+  ψ (j k : Λ) (hj : j < k) (hk : k ≤ i) :
+    F.obj (ξ.obj ⟨j, Set.mem_Iic.mpr <| hj.le.trans hk⟩).left.obj ⟶
+      G.obj (ξ.obj ⟨k, Set.mem_Iic.mpr hk⟩).left.obj
+  sq₁ (j : Λ) (hj : j < i) :
+    ψ j i hj le_rfl ≫ G.map (ξ.obj ⟨i, Set.mem_Iic.mpr le_rfl⟩).hom =
+    F.map (ξ.obj ⟨j, Set.mem_Iic.mpr hj.le⟩).hom ≫ E.hom
+  t₁ (j k l : Λ) (hjk : j < k) (hkl : k < l) (hl : l ≤ i) :
+    ψ j l (by grind) hl =
+      F.map (ξ.map (homOfLE hjk.le)).left.hom ≫ ψ k l hkl (by grind)
+  t₂ (j k l : Λ) (hjk : j < k) (hkl : k < l) (hl : l ≤ i) :
+    ψ j l (by grind) hl =
+      ψ j k hjk (by grind) ≫ G.map (ξ.map (homOfLE hkl.le)).left.hom
+
+namespace PositetskiInductionDataUpTo2
+
+omit [IsCardinalAccessibleCategory K κ]
+  [IsCardinalAccessibleCategory L κ]
+  [F.IsCardinalAccessible κ]
+  [G.IsCardinalAccessible κ]
+  [F.PreservesCardinalPresentable κ]
+  [SuccOrder Λ]
+  [WellFoundedLT Λ]
+  [NoMaxOrder Λ] in
+lemma sq₂ {i : Λ} {E : Inserter F G} (d : PositetskiInductionDataUpTo2 κ Λ E i)
+    (j k l m : Λ) (hjk : j < k) (hkm : k < m) (hjl : j < l) (hlm : l < m) (hm : m ≤ i) :
+    F.map (d.ξ.map (homOfLE hjl.le)).left.hom ≫ d.ψ l m hlm (by grind) =
+    d.ψ j k hjk (by grind) ≫ G.map (d.ξ.map (homOfLE hkm.le)).left.hom := by
+  rw [← d.t₂, ← d.t₁] <;> grind
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Restricts a PositetskiInductionDataUpTo to a lower index,
+turning PositetskiInductionDataUpTo into a presheaf. -/
+def trunc (E : Inserter F G)
+    {i i' : Λ} (hii' : i ≤ i') (d : PositetskiInductionDataUpTo2 κ Λ E i') :
+    PositetskiInductionDataUpTo2 κ Λ E i where
+  ξ := SmallObject.restrictionLE d.ξ hii'
+  ψ j k hjk hk := d.ψ j k hjk (hk.trans hii')
+  sq₁ j hj := by
+    have := d.sq₁ j (by grind) |>.symm
+    obtain rfl | hii' := hii'.eq_or_lt
+    · simp [this]
+    dsimp
+    rw [this]
+    grind [→ d.t₂]
+  t₁ j k l hjk hkl hl := d.t₁ j k l hjk hkl (hl.trans hii')
+  t₂ j k l hjk hkl hl := d.t₂ j k l hjk hkl (hl.trans hii')
+
+def functor (E : Inserter F G) : Λᵒᵖ ⥤ Type _ where
+  obj i := PositetskiInductionDataUpTo2 κ Λ E i.unop
+  map f := TypeCat.ofHom <| trunc κ Λ E (leOfHom f.unop)
+
+open SmallObject.SuccStruct in
+-- set_option backward.isDefEq.respectTransparency false in
+attribute [local grind =] Subtype.mk_le_mk Order.lt_succ_iff in
+noncomputable def extend {E : Inserter F G} {i : Λ} (b : PositetskiInductionDataUpTo2 κ Λ E i)
+    (ξₙ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
+    (ν : b.ξ.obj ⟨i, Set.mem_Iic.mpr le_rfl⟩ ⟶ ξₙ)
+    (ψ : F.obj (b.ξ.obj ⟨i, Set.mem_Iic.mpr le_rfl⟩).left.obj ⟶ G.obj ξₙ.left.obj)
+    (h₁ : F.map (b.ξ.obj ⟨i, Set.mem_Iic.mpr le_rfl⟩).hom ≫ E.hom = ψ ≫ G.map ξₙ.hom) :
+    PositetskiInductionDataUpTo2 κ Λ E (Order.succ i) :=
+  let ξ' := extendToSucc (not_isMax _) b.ξ ν
+  -- TODO: figure out how to remove the helper
+  have grind_helper {x y : CostructuredArrow (isCardinalPresentable K κ).ι E.obj} (f : x ⟶ y) :
+      f.left.hom ≫ y.hom = x.hom := by simp
+  let ψ' (j k : Λ) (hjk : j < k) (hk : k ≤ Order.succ i) :
+    F.obj (ξ'.obj ⟨j, Set.mem_Iic.mpr (hjk.le.trans hk)⟩).left.obj ⟶
+      G.obj (ξ'.obj ⟨k, by simpa⟩).left.obj :=
+    if hk' : k ≤ i then
+      F.map (extendToSuccObjIso (not_isMax _) b.ξ ν j (by grind)).hom.left.hom ≫
+        b.ψ j k (by grind) hk' ≫
+        G.map (extendToSuccObjIso (not_isMax _) b.ξ ν k hk').inv.left.hom
+    else
+      --letI hki : k = Order.succ i := le_antisymm (by simpa) (by simpa using hk')
+      F.map (ξ'.map <| homOfLE (by grind [Order.le_succ_iff_eq_or_le])).left.hom ≫
+        (F.map (extendToSuccObjIso (not_isMax _) b.ξ ν _ _).hom.left.hom ≫ ψ ≫
+        G.map (extendToSuccObjSuccIso (not_isMax _) b.ξ ν).inv.left.hom) ≫
+        G.map (ξ'.map <| homOfLE (by grind [Order.le_succ_iff_eq_or_le])).left.hom
+  { ξ := ξ'
+    ψ := ψ'
+    sq₁ j hj := by
+      dsimp [ψ', ξ']
+      split_ifs with h
+      · simp at h
+      · simp
+        by_cases hj : j < i
+        · have := b.sq₁ j hj
+          exact this
+        · obtain rfl : j = i := by grind
+          sorry
+
+    t₁ j k l hjk hkl hl := by
+      dsimp [ψ', ξ']
+      split_ifs with h
+      · have bt₁ := b.t₁ j k l (by grind) (by grind) (by grind)
+        have := congr(F.map
+          $(extendToSuccObjIso_hom_naturality (not_isMax _) b.ξ ν j k hjk.le (by grind)).left.hom)
+        simp only [homOfLE_leOfHom, CostructuredArrow.comp_left,
+          ObjectProperty.FullSubcategory.comp_hom, Functor.map_comp] at this
+        simp [bt₁, reassoc_of% this]
+      · obtain rfl : l = Order.succ i := le_antisymm (by simpa) (by simpa using h)
+        by_cases hh : k = i
+        · subst hh
+          simp
+        have := (extendToSucc (not_isMax _) b.ξ ν).map_comp
+          (X := ⟨j, by grind⟩) (Y := ⟨k, by grind⟩) (Z := ⟨i, by grind⟩)
+          (homOfLE <| by grind) (homOfLE <| by grind)
+        simp only [homOfLE_leOfHom, homOfLE_comp, CostructuredArrow.hom_eq_iff,
+          CostructuredArrow.comp_left] at this
+        simp [this]
+    t₂ j k l hjk hkl hl := by
+      dsimp [ψ', ξ']
+      split_ifs with h'' h'
+      · sorry -- should reduce to t₂ in d
+      · obtain rfl : l = Order.succ i := le_antisymm (by simpa) (by grind)
+        simp at h''
+      · obtain rfl : l = Order.succ i := le_antisymm (by simpa) (by simpa using h'')
+        sorry -- actual case
+      · grind
+
+    /- sq₂ j k hj hk := by
+      dsimp [ψ', ξ']
+      split_ifs with hj' hk' hh
+      · have sq2 := b.sq₂ j k hj hk'
+        have := congr(G.map
+          $(extendToSuccObjIso_hom_naturality (not_isMax _) b.ξ ν
+            (Order.succ j) (Order.succ k) (Order.succ_mono hj) (by grind)).left.hom)
+        simp only [homOfLE_leOfHom, CostructuredArrow.comp_left,
+          ObjectProperty.FullSubcategory.comp_hom, Functor.map_comp, Category.assoc] at this ⊢
+        rw [this]
+        simp_rw [← F.map_comp_assoc, reassoc_of% sq2, ← F.map_comp_assoc]
+        have := congr(F.map $(ξ'ObjIso_nat j k hj hk).left.hom)
+        simp at this
+        simp [this]
+      · sorry
+      · grind
+      · obtain rfl : k = Order.succ i := le_antisymm (by simpa) (by simpa using hh)
+        obtain rfl : j = Order.succ i := le_antisymm (by simpa) (by simpa using hj')
+        simp -/ }
+end PositetskiInductionDataUpTo2
+
 namespace PositetskiInductionDataUpTo
 
 /-- Restricts a PositetskiInductionDataUpTo to a lower index,
@@ -163,7 +320,7 @@ theorem exists_succ_of_hasCardinalLT {E : Inserter F G} {i : Λ}
   let hcolimFT := Limits.isColimitOfPreserves F (O₀.ι.denseAt E.obj) -- F(E.obj) ≅ colim_ξ F(T_ξ)
   -- having this in context makes grind better in this proof
   have grind_helper {x y : CostructuredArrow O₀.ι E.obj} (f : x ⟶ y) :
-      f.left.hom ≫ y.hom = x.hom := by simpa using f.w
+      f.left.hom ≫ y.hom = x.hom := by simp
   obtain ⟨ξ₂₁, v₀, v₁, hv₀⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hcolimGT
     (F.map ξ₁.hom ≫ E.hom) ξ₁
   -- At this point, the squares required to make that into a functor are not necessarily natural
