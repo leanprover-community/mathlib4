@@ -39,12 +39,6 @@ open CochainComplex.HomComplex HomologicalComplex
 
 variable (K : ChainComplex C ℕ) (R : Type*) [Ring R] [Linear R C] (Y : C)
 
-def φ (n : ℤ) : ℤˣ := ((n * (n + 1)) / 2).negOnePow
-
-lemma φ_succ (n : ℤ) : φ (n + 1) = φ n * (n + 1).negOnePow := by
-  simp [φ, ← Int.negOnePow_add]
-  grind
-
 noncomputable def linearYonedaObjXIso (n : ℤ) (k : ℕ) (h : k = n := by lia) :
     (K.linearYonedaObj R Y).X k ≅
       (CochainComplex.linearHomComplex R (K.extend ComplexShape.embeddingDownNat)
