@@ -358,6 +358,38 @@ theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : 
   exact (ENNReal.tendsto_toNNReal (measure_ne_top (↑μ) E)).comp key
 
 /-- One implication of the portmanteau theorem:
+Weak convergence of finite measures implies that if the boundary of a set carries no mass under
+the limit measure, then the measures of that set converge to its measure under the limit measure.
+-/
+theorem FiniteMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : Type*} [Nonempty Ω]
+    {L : Filter ι} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+    [HasOuterApproxClosed Ω] {μ : FiniteMeasure Ω} {μs : ι → FiniteMeasure Ω}
+    (μs_lim : Tendsto μs L (𝓝 μ)) {E : Set Ω}
+    (E_nullbdry : (μ : Measure Ω) (frontier E) = 0) :
+    Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)) := by
+  by_cases hμ : μ = 0
+  · subst μ
+    have hmass : Tendsto (fun i ↦ (μs i).mass) L (𝓝 0) := by
+      simpa using μs_lim.mass
+    have hmassReal : Tendsto (fun i ↦ ((μs i).mass : ℝ)) L (𝓝 0) :=
+      NNReal.tendsto_coe.mpr hmass
+    have hsetReal : Tendsto (fun i ↦ ((μs i E : ℝ≥0) : ℝ)) L (𝓝 0) :=
+      squeeze_zero (fun _ ↦ NNReal.coe_nonneg _)
+        (fun i ↦ NNReal.coe_le_coe.mpr ((μs i).apply_le_mass E)) hmassReal
+    exact NNReal.tendsto_coe.mp (by simpa using hsetReal)
+  · have hnormalized : Tendsto (fun i ↦ (μs i).normalize) L (𝓝 μ.normalize) :=
+      FiniteMeasure.tendsto_normalize_of_tendsto μs_lim hμ
+    have hfrontierNormalized : μ.normalize (frontier E) = 0 := by
+      rw [μ.normalize_eq_of_nonzero hμ]
+      apply mul_eq_zero_of_right
+      exact FiniteMeasure.null_iff_toMeasure_null μ (frontier E) |>.mpr E_nullbdry
+    have hsetNormalized :=
+      ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto hnormalized
+        hfrontierNormalized
+    have hmass := μs_lim.mass
+    simpa only [FiniteMeasure.self_eq_mass_mul_normalize] using hmass.mul hsetNormalized
+
+/-- One implication of the portmanteau theorem:
 Weak convergence of probability measures implies that if a set is clopen, then the limit of the
 measures of the set equals the measure of the set under the limit probability measure.
 -/
