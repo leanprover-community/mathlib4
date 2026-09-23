@@ -505,7 +505,7 @@ section BasicOpen
 /-- `basicOpen r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : R) : TopologicalSpace.Opens (PrimeSpectrum R) where
   carrier := { x | r ∉ x.asIdeal }
-  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
+  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans Classical.not_not.symm⟩
 
 @[simp]
 theorem mem_basicOpen (f : R) (x : PrimeSpectrum R) : x ∈ basicOpen f ↔ f ∉ x.asIdeal :=
@@ -1232,7 +1232,7 @@ end IsIntegral
 irreducible component is a zero locus of some minimal prime ideal. -/
 @[stacks 00ES]
 protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R) :
-    I.minimalPrimes ≃o (irreducibleComponents <| (zeroLocus (I : Set R)))ᵒᵈ := by
+    I.minimalPrimes ≃o (irreducibleComponents (zeroLocus (I : Set R)))ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
     ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.1, x.1.2, x.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
@@ -1390,7 +1390,7 @@ lemma isClopen_iff {s : Set (PrimeSpectrum R)} :
 
 lemma isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = zeroLocus {e} :=
-  isClopen_iff.trans <| ⟨fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub,
+  isClopen_iff.trans ⟨fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub,
     h.trans (basicOpen_eq_zeroLocus_of_isIdempotentElem e he)⟩,
     fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub, h.trans (zeroLocus_eq_basicOpen_of_isIdempotentElem e he)⟩⟩
 

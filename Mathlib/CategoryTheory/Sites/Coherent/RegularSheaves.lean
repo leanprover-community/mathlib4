@@ -70,7 +70,6 @@ theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
     (hP : EqualizerCondition P) : EqualizerCondition P' := fun X B π _ c hc ↦
   ⟨Fork.isLimitOfIsos _ (hP π c hc).some _ (i.app _) (i.app _) (i.app _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Precomposing with a pullback-preserving functor preserves the equalizer condition. -/
 theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F : E ⥤ C)
     [∀ {X B} (π : X ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) F]
@@ -130,7 +129,6 @@ theorem EqualizerCondition.mk' (P : Cᵒᵖ ⥤ Type*)
     ext
     simpa [mapToEqualizer] using h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem EqualizerCondition.mk (P : Cᵒᵖ ⥤ Type*)
     (hP : ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
     (mapToEqualizer P π (pullback.fst π π) (pullback.snd π π)

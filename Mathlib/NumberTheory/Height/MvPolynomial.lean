@@ -420,7 +420,7 @@ private lemma mulHeight_eval_ge_aux {M N : ℕ} {q : ι × ι' → MvPolynomial 
     x = 0 := by
   ext i
   simp only [Finset.univ_eq_empty, Finset.sum_empty] at h
-  exact eq_zero_of_pow_eq_zero <| (h i).symm
+  exact eq_zero_of_pow_eq_zero (h i).symm
 
 variable [AdmissibleAbsValues K] [Finite ι]
 

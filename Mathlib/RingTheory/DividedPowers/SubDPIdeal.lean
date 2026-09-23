@@ -237,7 +237,7 @@ instance : SetLike (SubDPIdeal hI) A where
     rw [SetLike.coe_set_eq] at h
     cases p; cases q; congr
 
-instance : PartialOrder (SubDPIdeal hI) := .ofSetLike (SubDPIdeal hI) A
+instance : PartialOrder (SubDPIdeal hI) := .ofSetLike (SubDPIdeal hI)
 
 /-- The coercion from `SubDPIdeal` to `Ideal`. -/
 @[coe]

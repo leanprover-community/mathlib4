@@ -229,7 +229,6 @@ abbrev pushoutSection : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ⟶ �
   pushout.desc (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*]))
     (by simp only [Scheme.Hom.appLE_comp_appLE, H.w])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_pushoutSection_iff :
     IsIso (pushoutSection H hUST hUSX hUY) ↔ IsPushout (iX.appLE US UX hUSX) (f.appLE US UT hUST)
       (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*])) :=
@@ -251,7 +250,6 @@ lemma isIso_pushoutSection_of_isAffineOpen (hUS : IsAffineOpen US) (hUT : IsAffi
   exact .of_iso (Scheme.Hom.isPullback_resLE H hUST hUSX hUY).flip hUY'.isoSpec hUT.isoSpec
     hUX.isoSpec hUS.isoSpec (by simp) (by simp) (by simp) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Opens) (hVU : iSup VX = UX)
     (hV : ∀ i, Mono (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl))
@@ -444,7 +442,6 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
     (fun i ↦ have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.1.2; inferInstance)
     (f.flat_appLE hUS hUT _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_pushoutSection_of_isCompact_of_flat_left [Flat iX]
     (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX) (hUT : IsCompact (X := T) UT) :
     Mono (pushoutSection H hUST hUSX hUY) := by
@@ -465,7 +462,6 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
     i.1.2.isCompact (hIUX _) j.1.1.2 j.1.2.isCompact))
     (f.flat_appLE hUS hUT _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat iX]
     (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX)
     (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT) :
@@ -483,7 +479,6 @@ lemma mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat [Flat iX]
   exact mono_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
     (fun i ↦ mono_pushoutSection_of_isCompact_of_flat_left _ _ _ _ hUS i.1.2 hUT) hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT)
     (hUX : IsCompact (X := X) UX) (hiX : (iX.appLE US UX hUSX).hom.Flat) :
@@ -492,7 +487,6 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     rw [← mono_comp_iff_of_isIso (pushoutSymmetry _ _).hom]; convert! this; cat_disch
   exact mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX hUT hiX
 
-set_option backward.isDefEq.respectTransparency false in
 include H in
 lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT)

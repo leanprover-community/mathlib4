@@ -470,7 +470,7 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
     rintro ⟨f, t, hts, hf, rfl⟩
     refine ⟨f, hf.trans hts, .symm <| Finset.sum_subset hts ?_⟩
     simp +contextual [Function.support_subset_iff'.1 hf]
-  mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hx
+  mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span hx
 
 lemma Submodule.mem_span_iff_of_fintype {s : Set M} [Fintype s] {x : M} :
     x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by

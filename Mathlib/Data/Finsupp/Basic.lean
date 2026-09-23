@@ -290,7 +290,7 @@ theorem mapDomain_of_notMem_range {f : α → β} (x : α →₀ M) (a : β) (h 
 @[deprecated (since := "2026-07-15")] alias mapDomain_notin_range := mapDomain_of_notMem_range
 
 lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
-    b ∈ Set.range f := by contrapose! h; exact mapDomain_of_notMem_range _ _ h
+    b ∈ Set.range f := by contrapose h; exact mapDomain_of_notMem_range _ _ h
 
 @[to_fun mapDomain_fun_id]
 lemma mapDomain_id : mapDomain id v = v := sum_single _

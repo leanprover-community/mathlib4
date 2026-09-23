@@ -357,7 +357,7 @@ theorem closure_le : closure k ≤ K ↔ k ⊆ K :=
 
 @[to_additive]
 theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k = K :=
-  le_antisymm ((closure_le <| K).2 h₁) h₂
+  le_antisymm ((closure_le K).2 h₁) h₂
 
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `k`, and
 is preserved under multiplication and inverse, then `p` holds for all elements of the closure

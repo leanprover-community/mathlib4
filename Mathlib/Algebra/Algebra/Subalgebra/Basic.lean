@@ -46,7 +46,7 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
+instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A)
 
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
@@ -478,7 +478,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_zero' := Subtype.ext <| by simp
     map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
-  smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
+  smul_def' r x := Subtype.ext (algebraMap_smul A r (x : A)).symm
 
 @[simp, norm_cast]
 lemma coe_algebraMap (r : R) : (algebraMap R s r : A) = algebraMap R A r := rfl

@@ -60,7 +60,7 @@ instance : SetLike (Face C) M where
   coe C := C.toPointedCone
   coe_injective := SetLike.coe_injective.comp <| by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
-instance : PartialOrder (Face C) := .ofSetLike (Face C) M
+instance : PartialOrder (Face C) := .ofSetLike (Face C)
 
 lemma toPointedCone_le : F ≤ C := F.isFaceOf.le
 
