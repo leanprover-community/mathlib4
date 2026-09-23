@@ -985,6 +985,22 @@ end ChineseRemainder
 
 namespace Ideal
 
+/-- `⊤` is the unit ideal, so nothing has positive multiplicity in it. -/
+theorem multiplicity_top_right {S : Type*} [CommSemiring S] (I : Ideal S) :
+    multiplicity I ⊤ = 0 := by
+  rw [← one_eq_top, multiplicity_one_right]
+
+/-- `⊤` is the unit ideal, so nothing but the unit ideal has positive multiplicity in it. -/
+theorem emultiplicity_of_top_right {S : Type*} [CommSemiring S] {I : Ideal S} (hI : I ≠ ⊤) :
+    emultiplicity I ⊤ = 0 := by
+  rw [← one_eq_top, emultiplicity_of_one_right (by rwa [Ideal.isUnit_iff])]
+
+variable {R} in
+/-- In a Dedekind domain, the multiplicity of a proper ideal in a nonzero ideal is finite. -/
+theorem finiteMultiplicity [IsDedekindDomain R] {I J : Ideal R} (hI : I ≠ ⊤) (hJ : J ≠ ⊥) :
+    FiniteMultiplicity I J :=
+  FiniteMultiplicity.of_not_isUnit (by rwa [Ideal.isUnit_iff]) hJ
+
 variable {R} in
 theorem emultiplicity_span_eq_emultiplicity {a b : R} :
     emultiplicity (span {a}) (span ({b} : Set R)) = emultiplicity a b := by
