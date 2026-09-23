@@ -155,7 +155,7 @@ theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ}
 
 theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.support) :
     s.support ⊆ p.vars := fun i hi ↦ by
-  contrapose! hi
+  contrapose hi
   simp [mem_support_notMem_vars_zero h hi]
 
 theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by

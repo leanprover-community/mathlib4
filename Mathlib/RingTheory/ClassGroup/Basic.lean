@@ -116,7 +116,7 @@ lemma ClassGroup.mk_def (I : (FractionalIdeal R⁰ K)ˣ) :
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk (FractionRing R) I := by
-  rw [ClassGroup.mk_def, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
+  rw [ClassGroup.mk_def, canonicalEquiv_self, RingEquiv.toMonoidHom_refl, Units.map_id,
     MonoidHom.id_apply, QuotientGroup.mk'_apply]
   rfl
 
@@ -223,7 +223,7 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
     ClassGroup.mk K' (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk K I := by
   rw [ClassGroup.mk_def, ClassGroup.mk_def, ← MonoidHom.comp_apply (Units.map _),
-      ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
+      ← Units.map_comp, ← RingEquiv.toMonoidHom_trans,
       FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
 
 set_option linter.overlappingInstances false
@@ -463,12 +463,12 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
     (toPrincipalIdeal R K).range = (toPrincipalIdeal S L).range := by
   ext I
   simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.mem_range,
-    toPrincipalIdeal_eq_iff, MonoidHom.coe_coe]
+    toPrincipalIdeal_eq_iff, MonoidHom.coe_ofClass]
   refine ⟨fun ⟨u, ⟨v, huv⟩, hu⟩ ↦ ?_, fun ⟨u, hu⟩ ↦ ?_⟩
   · use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
       (L := L)).toRingHom v
     rw [← hu]
-    simp only [RingEquiv.toRingHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, RingHom.coe_coe,
+    simp only [RingEquiv.toRingHom_eq_coe, Units.coe_map, MonoidHom.coe_ofClass, RingHom.coe_coe,
       Units.coe_mapEquiv, ← huv, RingEquiv.coe_toMulEquiv]
     rw [FractionalIdeal.ringEquivOfRingEquiv_spanSingleton]
   · use Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv _ _ f).symm.toMulEquiv I
@@ -476,7 +476,7 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
     · use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
         (L := L)).symm.toRingHom u
       simp only [IsFractionRing.ringEquivOfRingEquiv_symm, RingEquiv.toRingHom_eq_coe,
-        Units.coe_map, MonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.toMulEquiv_eq_coe,
+        Units.coe_map, MonoidHom.coe_ofClass, RingHom.coe_coe, RingEquiv.toMulEquiv_eq_coe,
         RingEquiv.coe_toMulEquiv_symm, Units.coe_mapEquiv]
       rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
         ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]

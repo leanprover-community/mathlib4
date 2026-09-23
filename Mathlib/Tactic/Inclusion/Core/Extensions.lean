@@ -49,6 +49,9 @@ structure HypothesisExt where
 
 /-- A family of inclusion and hypothesis extensions. -/
 structure InclusionFamily where
+  /-- The declaration the family was registered in. Recorded so that modules referring to the
+  family by name still depend on the module registering it. -/
+  ref : Name
   /-- The `DiscrTree`-indexed collection of inclusion extensions. -/
   inclusionExt : EnvExt InclusionExt
   /-- The `DiscrTree`-indexed collection of hypothesis extensions. -/
@@ -61,14 +64,19 @@ abbrev InclusionFamilies := Std.HashMap Name InclusionFamily
 /-- The registry of inclusion families. -/
 initialize inclusionFamiliesRef : IO.Ref InclusionFamilies ← IO.mkRef {}
 
-/-- Register an inclusion family. -/
+/-- Register an inclusion family.
+
+`ref` must name the declaration whose initializer runs the registration: it is what
+`getInclusionFamily?` records, so that a module naming the family acquires a dependency on the
+module registering it. The `decl_name%` default is correct for the usual
+`initialize _ : InclusionFamily ← registerInclusionFamily ..` idiom. -/
 def registerInclusionFamily (name : Name) (ref : Name := by exact decl_name%) :
     IO InclusionFamily := do
   if (← inclusionFamiliesRef.get).contains name then
     throw <| IO.userError s!"Inclusion family `{name}` is already registered"
   let inclusionExt ← initializeEnvExt ``InclusionExt (ref.str "inclusionExt")
   let hypothesisExt ← initializeEnvExt ``HypothesisExt (ref.str "hypothesisExt")
-  let family := { inclusionExt, hypothesisExt }
+  let family := { ref, inclusionExt, hypothesisExt }
   inclusionFamiliesRef.modify (·.insert name family)
   return family
 
@@ -77,7 +85,7 @@ otherwise return `none`. -/
 def getInclusionFamily? (name : Name) : CoreM (Option InclusionFamily) := do
   let family? := (← inclusionFamiliesRef.get)[name]?
   if let some family := family? then
-    recordExtraModUseFromDecl (isMeta := true) family.inclusionExt.ext.name
+    recordExtraModUseFromDecl (isMeta := true) family.ref
   return family?
 
 /-- Return the registered inclusion family named `name`, or fail if it is not registered. -/
