@@ -238,6 +238,7 @@ attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
 variable (I)
 
+-- TODO: once mathlib has a notion vmfderiv, use mvfderiv here and vmfderiv in related lemmas below
 set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ < C := by
