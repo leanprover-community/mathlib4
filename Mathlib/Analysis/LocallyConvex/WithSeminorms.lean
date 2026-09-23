@@ -951,7 +951,7 @@ lemma induction_add_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
     (smul : ∀ r (C : ℝ≥0), motive r → motive (C • r))
     {q : Seminorm 𝕜 E} (cont : Continuous q) :
     motive q :=
-  induction_sup_of_continuous hp base zero 
+  induction_sup_of_continuous hp base zero
     (fun r s hr hs ↦ le _ _ (fun x ↦ by simp) (add r s hr hs)) le smul cont
 
 end Seminorm
