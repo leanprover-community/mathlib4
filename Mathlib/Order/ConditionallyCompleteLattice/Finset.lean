@@ -97,7 +97,7 @@ theorem Set.Finite.map_sSup_of_antitoneOn (hfin : s.Finite) (hne : s.Nonempty)
   (hf.map_isGreatest <| hne.isGreatest_csSup hfin).csInf_eq.symm
 
 @[to_dual]
-theorem Set.Finite.map_sSup_of_antitone (hne : s.Nonempty) (hfin : s.Finite) (hf : Antitone f) :
+theorem Set.Finite.map_sSup_of_antitone (hfin : s.Finite) (hne : s.Nonempty) (hf : Antitone f) :
     f (sSup s) = sInf (f '' s) :=
   hfin.map_sSup_of_antitoneOn hne <| hf.antitoneOn s
 
