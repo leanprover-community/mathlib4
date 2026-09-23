@@ -14,7 +14,7 @@ on:
       - '.github/**'
 
 concurrency:
-  # Collapse duplicate runs for the *same* commit. Keyed on the head sha, so runs for
+  # Collapse duplicate runs for the same commit. The key includes the head sha, so runs
   # *different* commits are never in the same group and so never cancel each other 
   # by arrival order (that part is taken care of by the `guard` job below). The PR
   # number is in the key as well because two PRs can share a single fork branch.
@@ -61,11 +61,7 @@ jobs:
           fi
 
           if [ "${head_sha}" != "${MY_SHA}" ]; then
-            # Superseded. Cancel the whole run rather than just skipping the build, so its
-            # conclusion is `cancelled` — what the `concurrency` group produced before, and
-            # what every `workflow_run` consumer already expects of a discarded run. A run
-            # that skipped its build would instead conclude `success` and invite consumers
-            # to treat "succeeded" as "built".
+            # Superseded by another commit. Cancel the whole run.
             echo "PR #${PR_NUMBER} is at ${head_sha}; this run is for ${MY_SHA}. Cancelling."
             if ! gh api -X POST "repos/${REPO}/actions/runs/${RUN_ID}/cancel"; then
               echo "::warning::Could not cancel this run; building anyway."
