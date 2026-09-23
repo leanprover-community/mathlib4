@@ -95,7 +95,6 @@ the intermediate value theorem.
 ## TODO
 
 + Prove some identities and some special values
-+ Prove continuity, differentiability, analyticity
 + Prove asymptotic expansion and series expansion
 + Prove tree counting and combinatorics
 + Prove indefinite integral formulas

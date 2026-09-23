@@ -11,35 +11,38 @@ public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.SpecialFunctions.LambertW.Real
 
 /-!
-# Analytic
+# Derivative and analyticity of complex Lambert W function
+
+In this file we prove that Lambert W function is analytic on the slit plane and give the
+derivative formula that $\operatorname{W}_k'(z) = \frac{1}{z + \exp(\operatorname{W}_k(z))}$.
+We also prove the identity that
+$\overline{\operatorname{W}_{k}(z)} = \operatorname{W}_{-k}(\overline{z}) $.
 
 ## Main definitions
 
-* `FooBar`
+* `Complex.LambertW.branchCut`: the branch cut of Lambert W function.
+  It is `(-∞, - 1 / e]` for principal branch and `(-∞, 0]` for other branch.
+* `Complex.LambertW.slitPlane`: the slit plane of Lambert W function i.e. complement of branch cut.
+* `Complex.LambertW.openRange`: the open range of Lambert W function.
+* `Complex.lambertWOpenPartialHomeomorph`: `Complex.LambertW` as an `OpenPartialHomeomorph`.
 
-## Main statements
+## Main results
 
-* `fooBar_unique`
-
-## Notation
-
-
-
-## Implementation details
-
-
+* `hasDerivAt_lambertW`: the derivative formula that
+  $\operatorname{W}_k'(z) = \frac{1}{z + \exp(\operatorname{W}_k(z))}$.
+* `analyticOn_lambertW`: the Lambert W function is analytic on the slit plane.
+* `Complex.conj_lambertW_eq_lambertW_neg_conj`: the identity that
+  $\overline{\operatorname{W}_{k}(z)} = \operatorname{W}_{-k}(\overline{z})$.
 
 ## References
 
-* [F. Bar, *Quuxes*][bibkey]
+* [R. M. Corless, G. H. Gonnet, D. E. G. Hare, D. J. Jeffrey and D. E. Knuth, *On the Lambert W
+  function*][corless1996]
+* <https://en.wikipedia.org/wiki/Lambert_W_function>
 
 ## TODO
 
-+ prove real version
-
-## Tags
-
-Foobars, barfoos
++ prove real version derivative etc.
 -/
 
 public noncomputable section
@@ -53,15 +56,21 @@ variable {α : Type*} {s : Set ℂ} {w z : ℂ} {k : ℤ}
 
 namespace LambertW
 
-/-- TODO doc -/
+/-- The branch cut of Lambert W function.
+`branchCut 0` is `Iic (-(rexp 1)⁻¹) ×ℂ {0}` and
+`branchCut k` is `Iic 0 ×ℂ {0}` for `k ≠ 0`. -/
 def branchCut (k : ℤ) : Set ℂ :=
   Iic (if k = 0 then -(rexp 1)⁻¹ else 0) ×ℂ {0}
 
-/-- TODO doc -/
+/-- The slit plane of Lambert W function i.e. `(branchCut k)ᶜ`. -/
 def slitPlane (k : ℤ) : Set ℂ :=
   (branchCut k)ᶜ
 
-/-- TODO doc -/
+/-- The open range of Lambert W function.
+
+Like the range of Lambert W function it's defined by
+`w.arg + w.im ∈ Ioo ((2 * k - 1) * π) ((2 * k + 1) * π)` and corrected when `k = 0` by
+adding `Ioo (-1) 0 ×ℂ {0}`, while for `k = -1` it is already correct. -/
 def openRange (k : ℤ) : Set ℂ :=
   if k = 0 then {w | w.arg + w.im ∈ Ioo (-π) π} ∪ Ioo (-1) 0 ×ℂ {0} else
     {w | w.arg + w.im ∈ Ioo ((2 * k - 1) * π) ((2 * k + 1) * π)}
@@ -123,7 +132,6 @@ private theorem _root_.Real.add_sin_mem_Ioo_of_mem_Ioo :
     ⟨by grind [this (-x) (by grind), Real.sin_neg x], this x ⟨hxl, hxr⟩⟩
   exact fun x hx => by linarith [Real.sin_lt <| sub_pos_of_lt hx.right, Real.sin_pi_sub x]
 
---  golf
 private theorem isOpen_openRange_zero : IsOpen (openRange 0) := by
   suffices openRange 0 =
       Complex.slitPlane ∩ (fun w => w.arg + w.im) ⁻¹' Ioo (-π) π ∪ Metric.ball 0 1 by
@@ -161,7 +169,6 @@ private theorem isOpen_openRange_zero : IsOpen (openRange 0) := by
   exact (convex_Ioo (-π) π) harg (add_sin_mem_Ioo_of_mem_Ioo harg)
     (sub_nonneg_of_le hb.le) (norm_nonneg w) (sub_add_cancel 1 ‖w‖)
 
---  golf?
 private theorem isOpen_openRange_of_ne (hk : k ≠ 0) : IsOpen (openRange k) := by
   suffices openRange k = Complex.slitPlane ∩
       (fun w => w.arg + w.im) ⁻¹' Ioo ((2 * k - 1) * π) ((2 * k + 1) * π) by
@@ -286,7 +293,7 @@ end LambertW
 
 open LambertW
 
--- /-- **TODO** doc -/
+/-- The identity that `conj (W_ k z) = W_ (-k) (conj z)`. -/
 theorem conj_lambertW_eq_lambertW_neg_conj (hz : z ∈ LambertW.slitPlane k) :
     conj (W_ k z) = W_ (-k) (conj z) := by
   rw [← lambertW_mul_exp_of_mem_range <| openRange_subset_range <|
@@ -297,7 +304,6 @@ theorem conj_lambertW_zero (hz : z ∈ LambertW.slitPlane 0) :
     conj (W₀ z) = W₀ (conj z) := by
   rw [conj_lambertW_eq_lambertW_neg_conj hz, neg_zero]
 
--- use which one? `((1 + W_ k z) * cexp (W_ k z))⁻¹`, `(z + cexp (W_ k z))⁻¹`.
 theorem _root_.hasStrictDerivAt_lambertW (hz : z ∈ LambertW.slitPlane k) :
     HasStrictDerivAt (W_ k) (z + cexp (W_ k z))⁻¹ z := by
   set w₀ : ℂ := W_ k z
@@ -314,6 +320,7 @@ theorem _root_.hasStrictDerivAt_lambertW (hz : z ∈ LambertW.slitPlane k) :
   · filter_upwards [isOpen_openRange.eventually_mem hw₀'] with w hw using
       lambertW_mul_exp_of_mem_range <| openRange_subset_range hw
 
+/-- The Lambert W function has derivative `(z + cexp (W_ k z))⁻¹`. -/
 theorem _root_.hasDerivAt_lambertW (hz : z ∈ LambertW.slitPlane k) :
     HasDerivAt (W_ k) (z + cexp (W_ k z))⁻¹ z := hasStrictDerivAt_lambertW hz |>.hasDerivAt
 
@@ -325,14 +332,15 @@ theorem _root_.differentiableOn_lambertW (hs : s ⊆ LambertW.slitPlane k) :
     DifferentiableOn ℂ (W_ k) s :=
   fun _x hx => hasDerivAt_lambertW (hs hx) |>.differentiableAt.differentiableWithinAt
 
+/-- The derivative of Lambert W in form of `(z + cexp (W_ k z))⁻¹`. -/
 theorem _root_.deriv_lambertW (hz : z ∈ LambertW.slitPlane k) :
     deriv (W_ k) z = (z + cexp (W_ k z))⁻¹ := hasDerivAt_lambertW hz |>.deriv
 
+/-- The derivative of Lambert W in form of `((1 + W_ k z) * cexp (W_ k z))⁻¹`. -/
 theorem _root_.deriv_lambertW' (hz : z ∈ LambertW.slitPlane k) :
     deriv (W_ k) z = ((1 + W_ k z) * cexp (W_ k z))⁻¹ := by
-  rw [deriv_lambertW hz]
-  nth_rw 1 [← lambertW_mul_exp_lambertW_of_mem_domain <| slitPlane_subset_domain hz]
-  ring
+  rw [deriv_lambertW hz, add_comm, one_add_mul,
+    lambertW_mul_exp_lambertW_of_mem_domain <| slitPlane_subset_domain hz]
 
 -- TODO : add `continuousAt_lambertWZero` `continuousAt_lambertWNegOne`
 -- /-- For real version, see `continuousAt_lambertWZero` or `continuousAt_lambertWNegOne`. -/
@@ -345,6 +353,7 @@ theorem _root_.continuousOn_lambertW : ContinuousOn (W_ k) (LambertW.slitPlane k
 theorem _root_.analyticOnNhd_lambertW : AnalyticOnNhd ℂ (W_ k) (LambertW.slitPlane k) :=
   (differentiableOn_lambertW Subset.rfl).analyticOnNhd LambertW.isOpen_slitPlane
 
+/-- The Lambert W function is analytic on the slit plane. -/
 theorem _root_.analyticOn_lambertW : AnalyticOn ℂ (W_ k) (LambertW.slitPlane k) :=
   analyticOnNhd_lambertW.analyticOn
 
@@ -384,20 +393,21 @@ nonrec theorem _root_.Continuous.lambertW (h₁ : Continuous f)
     (h₂ : ∀ x, f x ∈ LambertW.slitPlane k) : Continuous fun t => W_ k (f t) :=
   continuous_iff_continuousAt.mpr fun x => h₁.continuousAt.lambertW (h₂ x)
 
-/-- TODO doc -/
-def mulExpOpenPartialHomeomorph (k : ℤ) : OpenPartialHomeomorph ℂ ℂ where
-  toFun := fun w => w * cexp w
-  invFun := W_ k
-  source := LambertW.openRange k
-  target := LambertW.slitPlane k
-  map_source' w h := mapsTo_mul_exp_openRange h
-  map_target' z h := mapsTo_lambertW_slitPlane h
-  left_inv' _x hx := lambertW_mul_exp_of_mem_range <| openRange_subset_range hx
-  right_inv' _x hx := lambertW_mul_exp_lambertW_of_mem_domain <| slitPlane_subset_domain hx
-  open_source := LambertW.isOpen_openRange
-  open_target := LambertW.isOpen_slitPlane
-  continuousOn_toFun := by fun_prop
-  continuousOn_invFun := continuousOn_id.lambertW fun _ => id
+/-- `Complex.LambertW` as an `OpenPartialHomeomorph` with `source = LambertW.slitPlane k` and
+`target = LambertW.openRange k`. -/
+def lambertWOpenPartialHomeomorph (k : ℤ) : OpenPartialHomeomorph ℂ ℂ where
+  toFun := W_ k
+  invFun := fun w => w * cexp w
+  source := LambertW.slitPlane k
+  target := LambertW.openRange k
+  map_source' z h := mapsTo_lambertW_slitPlane h
+  map_target' w h := mapsTo_mul_exp_openRange h
+  left_inv' _x hx := lambertW_mul_exp_lambertW_of_mem_domain <| slitPlane_subset_domain hx
+  right_inv' _x hx := lambertW_mul_exp_of_mem_range <| openRange_subset_range hx
+  open_source := LambertW.isOpen_slitPlane
+  open_target := LambertW.isOpen_openRange
+  continuousOn_toFun := continuousOn_id.lambertW fun _ => id
+  continuousOn_invFun := by fun_prop
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
