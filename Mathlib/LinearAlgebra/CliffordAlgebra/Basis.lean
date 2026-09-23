@@ -3,9 +3,9 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.Data.Sign
-import Mathlib.Tactic.SlimCheck
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 
 /-!
 # A basis for the Clifford algebra
@@ -13,6 +13,8 @@ import Mathlib.Tactic.SlimCheck
 This file constructs `CliffordAlgebra.Model ι B`, which is a model for
 `CliffordAlgebra (_ : ι →₀ R)` that also works as a basis.
 -/
+
+@[expose] public section
 
 namespace List
 
