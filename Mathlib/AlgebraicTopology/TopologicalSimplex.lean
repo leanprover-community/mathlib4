@@ -31,7 +31,7 @@ namespace SimplexCategory
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map, implicit_reducible]
 noncomputable def toTop₀ : CosimplicialObject TopCat.{0} where
-  obj n := TopCat.of (StdSimplex ℝ (Fin (n.len + 1)))
+  obj n := ↧(StdSimplex ℝ (Fin (n.len + 1)))
   map f := TopCat.ofHom ⟨_, StdSimplex.continuous_map ℝ f⟩
   map_comp f g := by
     ext : 1
@@ -54,7 +54,6 @@ noncomputable instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Uniqu
 noncomputable instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp; infer_instance
 
 instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=

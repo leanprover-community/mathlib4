@@ -164,7 +164,7 @@ instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
   coe_injective := SetLike.coe_injective.comp Subtype.coe_injective
 
-instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
+instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P)
 
 @[simp]
 theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
@@ -604,9 +604,9 @@ protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} 
 instance : NatCast (FractionalIdeal S P) :=
   ⟨Nat.unaryCast⟩
 
-theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
-  show ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
-  by induction n <;> simp [*, Nat.unaryCast]
+theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n := by
+  change ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
+  induction n <;> simp [*, Nat.unaryCast]
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
