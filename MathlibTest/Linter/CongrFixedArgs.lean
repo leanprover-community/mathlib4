@@ -3,7 +3,7 @@ import Mathlib.Init
 
 set_option linter.congrFixedArgs true
 
-def myMap (f : Nat → Nat) (l : List Nat) : List Nat := l.map f
+def myMap (f : Nat → Nat) (l' : List Nat) : List Nat := l'.map f
 
 /--
 warning: The `@[congr]` theorem `myMap_congr` does not allow the following explicit arguments of `myMap` to change:
