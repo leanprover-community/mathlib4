@@ -385,7 +385,6 @@ lemma tensorProductAssoc_def (eA : A ≃ₗ[R] A') (eB : B ≃ₗ[R] B') (eC : C
       (TensorProduct.assoc R A' B' C') <| congr eA.symm <| congr eB.symm (eC).symm) := by
   ext x
   induction x with
-  | zero => simp
   | add => simp [*]
   | tmul x a => induction x <;> simp [*, add_tmul]
 

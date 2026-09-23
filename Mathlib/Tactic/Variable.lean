@@ -140,8 +140,8 @@ partial def getSubproblem
         let fvarIds' := (← mvarId.getDecl).lctx.getFVarIds.filter
                           (fun fvar => !(fvarIds.contains fvar))
         -- 2. Abstract the instance problem with respect to these fvars
-        let goal ← mvarId.withContext do instantiateMVars <|
-                    (← mkForallFVars (usedOnly := true) (fvarIds'.map .fvar) (← mvarId.getType))
+        let goal ← mvarId.withContext do instantiateMVars (
+                    ← mkForallFVars (usedOnly := true) (fvarIds'.map .fvar) (← mvarId.getType))
         -- Note: pretty printing is not guaranteed to round-trip, but it's what we can do.
         let ty' ← PrettyPrinter.delab goal
         let binder' ← withRef binder `(bracketedBinderF| [$ty'])
@@ -240,7 +240,7 @@ def cleanBinders (binders : TSyntaxArray ``bracketedBinder) :
     TSyntaxArray ``bracketedBinder := Id.run do
   let mut binders' := #[]
   for binder in binders do
-    binders' := binders'.push <| ⟨binder.raw.unsetTrailing⟩
+    binders' := binders'.push ⟨binder.raw.unsetTrailing⟩
   return binders'
 
 @[command_elab «variable?», inherit_doc «variable?»]
