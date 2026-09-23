@@ -8,7 +8,6 @@ module
 public import Mathlib.Init
 public meta import Qq
 public import Qq
-public import Qq.MatchImpl
 public import Qq.Typ
 
 /-!
@@ -111,11 +110,11 @@ where
     panic!
       "some side of equality must be `a`, and the other must not depend on `a`"
   | .andLeft :: tl =>
-    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjuction"
+    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjunction"
     let (fvars, lctx, P', a') ← go a q($L) tl
     return (fvars, lctx, q($P' ∧ $R), a')
   | .andRight :: tl =>
-    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjuction"
+    let ~q($L ∧ $R) := P | panic! "path starts with andLeft, but `P` is not a conjunction"
     let (fvars, lctx, P', a') ← go a q($R) tl
     return (fvars, lctx, q($L ∧ $P'), a')
   | .existsType :: _ =>

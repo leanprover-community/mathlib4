@@ -20,7 +20,7 @@ AB4\*.
 
 public section
 
-universe u
+universe u v w
 
 open CategoryTheory Limits
 
@@ -31,7 +31,6 @@ instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Pre
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (colim (J := J) (C := AddCommGrpCat.{u})).PreservesHomology :=
   Functor.preservesHomology_of_map_exact _ (fun S hS ↦ by
@@ -59,6 +58,18 @@ instance : HasFilteredColimits (AddCommGrpCat.{u}) where
 
 noncomputable instance : AB5 (AddCommGrpCat.{u}) where
   ofShape _ := { preservesFiniteLimits := inferInstance }
+
+section UnivLE
+
+variable [UnivLE.{u, v}] [UnivLE.{u, w}] [UnivLE.{v, w}]
+
+instance Ab.hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{u, v} Ab.{w} :=
+  hasFilteredColimitsOfSize_of_univLE.{u, v, w}
+
+instance Ab.ab5OfSize : AB5OfSize.{u, v} Ab.{w} :=
+  AB5OfSize_of_univLE.{u, v, w, w} Ab.{w}
+
+end UnivLE
 
 attribute [local instance] Abelian.hasFiniteBiproducts
 

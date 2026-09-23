@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of small categories has all small limits.
@@ -105,7 +106,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
 @[simps! toFunctor]
 def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
-  Functor.toCatHom <| {
+  Functor.toCatHom {
     obj :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt

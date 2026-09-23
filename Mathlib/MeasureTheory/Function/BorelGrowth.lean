@@ -101,7 +101,7 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
   have hvol : volume E < ⊤ := by
     have hsum : Summable fun n ↦ ((2 : ℝ) ^ n * S a)⁻¹ := by
       simp only [mul_inv, ← inv_pow]
-      exact (summable_geometric_of_lt_one (r := 2⁻¹) (by norm_num) (by norm_num)).mul_right _
+      exact (summable_geometric_of_lt_one (r := 2⁻¹) (by simp) (by norm_num)).mul_right _
     have h₃ : ∑' n : ℕ, ENNReal.ofReal (((2 : ℝ) ^ n * S a)⁻¹) = ENNReal.ofReal (2 * (S a)⁻¹) := by
       rw [← ENNReal.ofReal_tsum_of_nonneg (f := fun n ↦ ((2 : ℝ) ^ n * S a)⁻¹)
         (fun n ↦ by positivity) hsum]
