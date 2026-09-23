@@ -478,7 +478,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_zero' := Subtype.ext <| by simp
     map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
-  smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
+  smul_def' r x := Subtype.ext (algebraMap_smul A r (x : A)).symm
 
 @[simp, norm_cast]
 lemma coe_algebraMap (r : R) : (algebraMap R s r : A) = algebraMap R A r := rfl
@@ -1044,7 +1044,7 @@ theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ �
 
 theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
     Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
-      (LinearMap.ofClass φ) (LinearMap.ofClass ψ) := rfl
+      φ.toLinearMap ψ.toLinearMap := rfl
 
 theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
     S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl

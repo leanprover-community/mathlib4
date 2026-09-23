@@ -84,8 +84,8 @@ open scoped Distributions
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
 class TestFunctionClass (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) extends FunLike B E F where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_hasCompactSupport (f : B) : HasCompactSupport f
@@ -96,15 +96,15 @@ open TestFunctionClass
 namespace TestFunctionClass
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by

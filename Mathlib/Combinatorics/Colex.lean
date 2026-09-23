@@ -348,7 +348,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
   -- Case on whether `s = t`
   obtain rfl | h' := eq_or_ne s t
   -- If `s = t`, then `s \ {a} ≤ s \ {m}` because `m ≤ a`
-  · exact (erase_le_erase ha <| min'_mem _ _).2 <| min'_le _ _ <| ha
+  · exact (erase_le_erase ha <| min'_mem _ _).2 <| min'_le _ _ ha
   -- If `s ≠ t`, call `w` the colex witness. Case on whether `w < a` or `a < w`
   replace hst := hst.lt_of_ne <| toColex_inj.not.2 h'
   simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst

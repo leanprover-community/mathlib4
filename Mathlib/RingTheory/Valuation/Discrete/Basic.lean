@@ -130,7 +130,7 @@ lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
 lemma generator'_lt_one : generator' v < 1 :=
   (exists_generator_lt_one v).choose_spec.2
 
-instance : IsCyclic <| v.valueGroup := by
+instance : IsCyclic v.valueGroup := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 
