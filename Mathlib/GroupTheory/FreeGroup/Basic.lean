@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.FreeMonoid.Basic
 
 /-!
 # Free groups
@@ -924,34 +925,16 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 
 end Sum
 
-section OfList
+section OfFreeMonoid
 
 variable {α : Type*}
 
-/-- Convert a list of generators to an element of the free group by taking the product of `of`
-applied to each element. -/
-@[to_additive /-- Convert a list of generators to an element of the additive free group by taking
-the sum of `of` applied to each element. -/]
-def ofList (l : List α) : FreeGroup α := (l.map of).prod
+/-- The canonical monoid homomorphism from the free monoid on `α` to the free group on `α`. -/
+@[to_additive /-- The canonical additive monoid homomorphism from the free additive monoid on
+`α` to the free additive group on `α`. -/]
+abbrev ofFreeMonoid : FreeMonoid α →* FreeGroup α := FreeMonoid.lift of
 
-@[to_additive (attr := simp)]
-theorem ofList_nil : ofList ([] : List α) = 1 := rfl
-
-@[to_additive (attr := simp)]
-theorem ofList_singleton (x : α) : ofList [x] = of x := by simp [ofList]
-
-@[to_additive]
-theorem ofList_cons (x : α) (l : List α) : ofList (x :: l) = of x * ofList l := by simp [ofList]
-
-@[to_additive]
-theorem ofList_concat (l : List α) (x : α) : ofList (l.concat x) = ofList l * of x := by
-  simp [ofList]
-
-@[to_additive]
-theorem ofList_append (l₁ l₂ : List α) : ofList (l₁ ++ l₂) = ofList l₁ * ofList l₂ := by
-  simp [ofList]
-
-end OfList
+end OfFreeMonoid
 
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
@@ -975,14 +958,6 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
       (fun i ih => by
         simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
-
-/-- The multiplicative equivalence between the free group on a singleton and `Multiplicative ℤ`. -/
-def freeGroupUnitMulEquivInt : FreeGroup Unit ≃* Multiplicative ℤ where
-  toFun x := Multiplicative.ofAdd (freeGroupUnitEquivInt x)
-  invFun n := freeGroupUnitEquivInt.symm n.toAdd
-  left_inv x := by simp
-  right_inv n := by simp
-  map_mul' x y := by ext; simp [freeGroupUnitEquivInt]
 
 /-- The bijection between the free group on a unique type and the integers. -/
 def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
