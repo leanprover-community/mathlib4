@@ -182,7 +182,7 @@ instance [∀ n, IsZeroOrProbabilityMeasure (μ n)] (I : Finset ℕ) :
 instance [∀ n, IsProbabilityMeasure (μ n)] (I : Finset ℕ) :
     IsProbabilityMeasure (inducedFamily μ I) := by
   rw [inducedFamily]
-  exact Measure.isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
+  infer_instance
 
 /-- Given a family of measures `μ : (n : ℕ) → Measure (Π i : Iic n, X i)`, the induced family
 equals `μ` over the intervals `Iic n`. -/
@@ -363,7 +363,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- `χₙ` is measurable.
   have mχ n : Measurable (χ n) := by
     simp_rw [χ, A_eq]
-    exact (measurable_indicator_const_iff 1).2 <| (mS n).cylinder
+    exact (measurable_indicator_const_iff 1).2 (mS n).cylinder
   -- `χₙ` only depends on the first coordinates.
   have χ_dep n : DependsOn (χ n) (Iic (a n)) := by
     simp_rw [χ, A_eq]
@@ -594,7 +594,6 @@ theorem traj_eq_prod (a : ℕ) :
     all_goals fun_prop
   all_goals fun_prop
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
     (traj κ n x).map (updateFinset · (Iic n) x) = traj κ n x := by
   nth_rw 2 [traj_eq_prod]
@@ -767,11 +766,8 @@ def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n
 
 variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
-  have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique ((fun i : Iic 0 ↦ X i))).symm) :=
-    Measure.isProbabilityMeasure_map <| by fun_prop
   infer_instance
 
 lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :

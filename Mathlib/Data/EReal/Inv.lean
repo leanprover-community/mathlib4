@@ -5,9 +5,9 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Basic.ENNReal.Inv
+public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.EReal.Operations
-public import Mathlib.Data.Sign.Basic
 public import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
@@ -344,6 +344,14 @@ lemma div_zero {a : EReal} : a / 0 = 0 := by
 @[simp]
 lemma zero_div {a : EReal} : 0 / a = 0 := zero_mul a⁻¹
 
+lemma div_eq_top_iff {a b : EReal} :
+    a / b = ⊤ ↔ (a = ⊥ ∧ b < 0 ∧ b ≠ ⊥) ∨ (a = ⊤ ∧ 0 < b ∧ b ≠ ⊤) := by
+  have hpos : 0 < b⁻¹ ↔ 0 < b ∧ b ≠ ⊤ := by
+    grind [inv_nonpos_of_nonpos, inv_top, inv_pos_of_pos_ne_top]
+  have hneg : b⁻¹ < 0 ↔ b < 0 ∧ b ≠ ⊥ := by
+    grind [inv_nonneg_of_nonneg, inv_bot, inv_neg_of_neg_ne_bot]
+  simp [div_eq_mul_inv, mul_eq_top, hpos, hneg, (bot_lt_inv b).ne', (inv_lt_top b).ne]
+
 lemma top_div_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊤ / a = ⊤ :=
   top_mul_of_pos (inv_pos_of_pos_ne_top h h')
 
@@ -383,6 +391,10 @@ variable {a b c : EReal}
 
 lemma div_mul_cancel (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : a / b * b = a := by
   rw [mul_comm (a / b) b, ← mul_div_left_comm a b b, div_self h₁ h₂ h₃, mul_one]
+
+lemma div_mul_div_cancel (hbot : b ≠ ⊥) (htop : b ≠ ⊤) (hzero : b ≠ 0) :
+    a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, EReal.div_mul_cancel hbot htop hzero]
 
 lemma mul_div_cancel (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : b * (a / b) = a := by
   rw [mul_comm, div_mul_cancel h₁ h₂ h₃]
@@ -548,7 +560,7 @@ end EReal
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]

@@ -35,7 +35,7 @@ public section
 
 open Polynomial Finset Nat
 
-variable {n i j p : ℕ} {A K : Type*} {ζ : A}
+variable {n i j p : ℕ} {A : Type*} {ζ : A}
 
 variable [CommRing A] [IsDomain A] {R : Type*} [CommRing R] [Algebra R A]
 

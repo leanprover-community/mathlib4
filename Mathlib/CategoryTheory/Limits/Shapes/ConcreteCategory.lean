@@ -82,7 +82,6 @@ variable [ConcreteCategory.{max w r} D FD] (F : C ⥤ D)
   [PreservesLimitsOfShape WalkingCospan (forget D)]
   [PreservesLimit (Discrete.functor fun b ↦ F.obj (f b)) (forget D)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Pi.map_ext (x y : ToType (F.obj (∏ᶜ f : C)))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
   apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
@@ -349,10 +348,8 @@ theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j :
   obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
   · left
     use y
-    rfl
   · right
     use j, y
-    rfl
 
 theorem widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}
     (f : ∀ j : α, B ⟶ X j) [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]

@@ -365,8 +365,6 @@ theorem linearIndepOn_equiv (e : ι ≃ ι') {f : ι' → M} {s : Set ι} :
 theorem linearIndepOn_univ_iff : LinearIndepOn R v univ ↔ LinearIndependent R v :=
   linearIndependent_equiv' (Equiv.Set.univ ι) rfl
 
-@[deprecated (since := "2026-02-24")] alias linearIndepOn_univ := linearIndepOn_univ_iff
-
 alias ⟨_, LinearIndependent.linearIndepOn_univ⟩ := linearIndepOn_univ_iff
 
 lemma LinearIndependent.linearIndepOn (h : LinearIndependent R v) (s : Set ι) :
@@ -473,7 +471,7 @@ theorem LinearIndependent.linearCombination_repr (x) :
 
 theorem LinearIndependent.linearCombination_comp_repr :
     (Finsupp.linearCombination R v).comp hv.repr = Submodule.subtype _ :=
-  LinearMap.ext <| hv.linearCombination_repr
+  LinearMap.ext hv.linearCombination_repr
 
 theorem LinearIndependent.repr_ker : LinearMap.ker hv.repr = ⊥ := by
   rw [LinearIndependent.repr, LinearEquiv.ker]
@@ -832,8 +830,8 @@ theorem linearIndepOn_iff_disjoint : LinearIndepOn R v s ↔
 
 theorem linearIndepOn_iff_linearCombinationOn :
     LinearIndepOn R v s ↔ (LinearMap.ker <| Finsupp.linearCombinationOn ι M R v s) = ⊥ :=
-  linearIndepOn_iff_linearCombinationOnₛ.trans <|
-    LinearMap.ker_eq_bot (M := Finsupp.supported R R s).symm
+  linearIndepOn_iff_linearCombinationOnₛ.trans
+    (LinearMap.ker_eq_bot (M := Finsupp.supported R R s)).symm
 
 /-- A version of `linearIndepOn_iff` where the linear combination is a `Finset` sum. -/
 lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι → R), (t : Set ι) ⊆ s →
@@ -908,7 +906,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-variable {v : ι → V} {s t : Set ι} {x y : V}
+variable {v : ι → V} {s : Set ι}
 
 open Submodule
 

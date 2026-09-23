@@ -34,7 +34,7 @@ universe u v
 
 variable {α : Type u}
 
-open Cardinal Ordinal Set MeasureTheory
+open Cardinal Ordinal Set
 
 namespace MeasurableSpace
 

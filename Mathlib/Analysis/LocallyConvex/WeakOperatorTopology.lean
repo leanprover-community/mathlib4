@@ -192,6 +192,7 @@ def algEquiv (S : Type*) [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S 
     (E →WOT[𝕜₁] E) ≃ₐ[S] (E →L[𝕜₁] E) :=
   equiv.algEquiv S
 
+@[macro_inline]
 instance instFunLike : FunLike (E →SWOT[σ] F) E F where
   coe f := toCLM f
   coe_injective := DFunLike.coe_injective.comp toCLM_injective
@@ -406,7 +407,7 @@ def seminormFamily : SeminormFamily 𝕜₂ (E →SWOT[σ] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
 
 lemma withSeminorms : WithSeminorms (seminormFamily σ E F) :=
-  let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _
+  let e : E × F⋆ ≃ (Σ _ : E × F⋆, Unit) := .symm <| .sigmaUnique _ _
   isInducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ 𝕜₂)
     |>.congr_equiv e
 

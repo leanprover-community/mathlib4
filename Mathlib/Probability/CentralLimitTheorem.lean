@@ -64,7 +64,7 @@ lemma tendsto_charFun_inv_sqrt_mul_pow {X : Ω → ℝ}
     convert! this using 4 with n <;> norm_cast <;> simp [field]
   have : Tendsto (fun (n : ℕ) ↦ (√n)⁻¹ * t) atTop (𝓝 0) := by
     rw [← zero_mul t]
-    exact .mul_const t (tendsto_inv_atTop_zero.comp <| Real.tendsto_sqrt_atTop.comp <|
+    exact .mul_const t (tendsto_inv_atTop_zero.comp <| Real.tendsto_sqrt_atTop.comp
       tendsto_natCast_atTop_atTop)
   convert! (taylor_charFun_two hX h0 h1).comp_tendsto this using 2
   simp

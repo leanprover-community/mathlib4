@@ -47,7 +47,7 @@ theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
 
 @[simp]
 theorem prod_bot_bot : prod (⊥ : Ideal R) (⊥ : Ideal S) = ⊥ :=
-  SetLike.coe_injective <| Set.singleton_prod_singleton
+  SetLike.coe_injective Set.singleton_prod_singleton
 
 @[gcongr]
 theorem prod_mono {I₁ I₂ : Ideal R} {J₁ J₂ : Ideal S} (hI : I₁ ≤ I₂) (hJ : J₁ ≤ J₂) :
@@ -96,7 +96,6 @@ theorem map_prodComm_prod :
   refine Trans.trans (ideal_prod_eq _) ?_
   simp [map_map]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
 `S`. -/
 def idealProdEquiv : Ideal (R × S) ≃o Ideal R × Ideal S where

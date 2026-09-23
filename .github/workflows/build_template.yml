@@ -48,6 +48,7 @@ env:
   # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
 
 jobs:
   build:
@@ -113,7 +114,7 @@ jobs:
       - name: check cache tool is post-migration
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
         # contributors who run `lake exe cache get` locally. The nightly-testing
-        # repo's branches (nightly-testing, bump/*, lean-pr-testing-*) are
+        # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
         # machine-managed and don't merge master the same way, so "merge master
         # and push" is the wrong remedy there; never fail their CI on it.
         if: github.repository == 'leanprover-community/mathlib4'
@@ -426,8 +427,8 @@ jobs:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
 
-      # mathlib-ci provides the scripts for the lean-pr-testing comment at the end of
-      # this job, which runs only on the nightly-testing repo — so check it out only
+      # mathlib-ci provides the scripts for the batteries-pr-testing comment at the end
+      # of this job, which runs only on the nightly-testing repo — so check it out only
       # there. Written twice because a `uses:` step cannot conditionally omit the
       # single `ref` key (`ref: ''` would override the action's pinned default).
       - name: Get mathlib-ci
@@ -563,23 +564,21 @@ jobs:
 
       # Generate a fresh token just before posting comments.
       # GitHub App tokens expire after 1 hour, and the build can take longer than that.
-      - name: Generate lean-pr-testing app token
-        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
-        id: lean-pr-testing-token
+      - name: Generate batteries-pr-testing app token
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') }}
+        id: batteries-pr-testing-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
-          # `batteries-pr-testing-*` branches need a token scoped to `leanprover-community/batteries`
-          # for the labelling API; `lean-pr-testing-*` branches need one scoped to `leanprover/lean4`.
-          app-id: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && secrets.MATHLIB_NIGHTLY_TESTING_APP_ID || secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
-          private-key: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY || secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
-          owner: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && 'leanprover-community' || 'leanprover' }}
-          repositories: ${{ startsWith(github.ref_name, 'batteries-pr-testing-') && 'batteries' || 'lean4' }}
+          app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+          owner: leanprover-community
+          repositories: batteries
       # The create-github-app-token README states that this token is masked and will not be logged accidentally.
-      - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
-        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
+      - name: Post comments for batteries-pr-testing-NNNN branches
+        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') }}
         shell: bash
         env:
-          TOKEN: ${{ steps.lean-pr-testing-token.outputs.token }}
+          TOKEN: ${{ steps.batteries-pr-testing-token.outputs.token }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           # build/archive/counterexamples/noisy outcomes come from the `build` job's
@@ -592,7 +591,6 @@ jobs:
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
-          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" lean
           "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
 
   upload_cache:
@@ -663,7 +661,7 @@ jobs:
           path: cache-staging
 
       - name: Azure CLI OIDC login and mint storage bearer token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
@@ -680,6 +678,72 @@ jobs:
           # container.
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
+
+      # A second upload of the same staged set, to R2. `master` writes the
+      # public cache bucket, flat. `forks` writes the developer cache bucket
+      # in the container's layout, the layout the Azure upload above wrote,
+      # so the cache resolver serves both stores at one path. The other
+      # containers upload to Azure alone.
+      # The action returns short-lived S3 credentials as masked step outputs.
+      # A failed mint fails only this step, and the upload below is skipped.
+      # An empty `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off.
+      - name: Mint R2 credentials
+        id: mint-r2
+        if: >-
+          (env.MATHLIB_CACHE_PRIMARY == 'master' || env.MATHLIB_CACHE_PRIMARY == 'forks') &&
+          vars.MATHLIB_CACHE_BROKER_URL != ''
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+          audience: mathlib-cache-broker
+
+      - name: Upload staged cache to R2
+        if: steps.mint-r2.outputs.success == 'true'
+        # No need to fail the job for now. Remove when this becomes the primary cache endpoint
+        continue-on-error: true
+        shell: bash
+        env:
+          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
+          MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
+          MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
+          # R2 signs every request in the region `auto`.
+          MATHLIB_CACHE_S3_REGION: auto
+          # The public cache bucket's master prefix, `https://<endpoint>/<bucket>/mathlib4`.
+          # The flat write puts `{url}/f/{hash}.ltar` under it, which the cache
+          # resolver serves.
+          MASTER_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
+          # The developer cache bucket, `https://<endpoint>/<bucket>`. The container
+          # write puts `{base}/mathlib4-forks/f/{repo}/{sha}/{hash}.ltar` under it,
+          # with the completeness marker `{base}/mathlib4-forks/m/{repo}/{sha}`, for
+          # the per-commit scope the dispatch sets.
+          DEVELOPER_PUT_BASE_URL: ${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL }}
+        run: |
+          # $MATHLIB_CACHE_PRIMARY is the container the Azure upload above wrote.
+          case "$MATHLIB_CACHE_PRIMARY" in
+            master)
+              if [ -z "$MASTER_PUT_URL" ]; then
+                echo "::warning::the secret MATHLIB_CACHE_R2_PUT_URL is unset; the R2 upload is skipped"
+                exit 1
+              fi
+              export MATHLIB_CACHE_PUT_URL="$MASTER_PUT_URL"
+              container_args=()
+              ;;
+            forks)
+              if [ -z "$DEVELOPER_PUT_BASE_URL" ]; then
+                echo "::warning::the secret MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL is unset; the R2 upload is skipped"
+                exit 1
+              fi
+              export MATHLIB_CACHE_PUT_BASE_URL="$DEVELOPER_PUT_BASE_URL"
+              container_args=(--container=forks)
+              ;;
+          esac
+          echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
+          if ! lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"; then
+            echo "::warning::the R2 upload failed; the Azure upload holds this run's files"
+            exit 1
+          fi
 
   post_steps:
     name: Post-Build Step
@@ -931,7 +995,7 @@ jobs:
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: Generate auto merge app token
         id: auto-merge-app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
