@@ -457,7 +457,7 @@ variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [CharZero K] [Algeb
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
     E = maximalRealSubfield K := by
   refine le_antisymm (IsTotallyReal.le_maximalRealSubfield E) ?_
-  by_contra! h
+  by_contra h
   have h' : E ⊔ (maximalRealSubfield K) = ⊤ := by
     let L : IntermediateField E K := (E ⊔ (maximalRealSubfield K)).toIntermediateField
       (fun x ↦ (le_sup_left (a := E)) x.prop)
