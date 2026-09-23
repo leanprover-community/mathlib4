@@ -311,15 +311,16 @@ section Projective
 
 variable {R : Type*} [CommSemiring R]
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
+-- (.id : (M₁ →ₛₗ[I₁] M) →ₗ[S₂] M₁ →ₛₗ[I₁] M)
 
 /-- The identity pairing is right-separating. -/
-protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+protected theorem SeparatingRight.id : SeparatingRight (.id : (M →ₗ[R] R) →ₗ[R] M →ₗ[R] R) :=
   fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
 
 alias id_separatingRight := SeparatingRight.id
 
 /-- The identity pairing is non-degenerate. -/
-protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+protected theorem Nondegenerate.id : Nondegenerate (.id : (M →ₗ[R] R) →ₗ[R] M →ₗ[R] R) :=
   ⟨.id, .id⟩
 
 alias id_nondegenerate := Nondegenerate.id
