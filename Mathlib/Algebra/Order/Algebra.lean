@@ -91,7 +91,7 @@ end Nontrivial
 end ZeroLEOneClass
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for `algebraMap`. -/
 @[positivity algebraMap _ _ _]

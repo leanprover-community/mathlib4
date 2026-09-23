@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Finiteness.Bilinear
 public section
 
 open Function (Surjective)
-open Finsupp
 
 namespace Subalgebra
 

@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Module
 
 /-!
@@ -39,6 +38,7 @@ instance (X Y : LightCondensed.{u} C) : Small.{max u v} (X ⟶ Y) where
     ⟨(equivSmall C).functor.obj X ⟶ (equivSmall C).functor.obj Y,
       ⟨(equivSmall C).fullyFaithfulFunctor.homEquiv⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Sheafifying is preserved under conjugating with the equivalence between light condensed objects

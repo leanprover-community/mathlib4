@@ -24,7 +24,7 @@ section SMul
 
 open scoped Polynomial
 
-example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
+example : (ZSMul.toSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
 example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
@@ -35,19 +35,19 @@ example : Algebra.restrictScalars ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNSMul := by
+    (Prod.instSMul : SMul ℕ (α × β)) = NSMul.toSMul := by
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
-    (Prod.instSMul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
+    (Prod.instSMul : SMul ℤ (α × β)) = ZSMul.toSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
-    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNSMul := by
+    (Pi.instSMul : SMul ℕ (∀ a, β a)) = NSMul.toSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
-    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.toZSMul := by
+    (Pi.instSMul : SMul ℤ (∀ a, β a)) = ZSMul.toSMul := by
   with_reducible_and_instances rfl
 
 namespace TensorProduct
@@ -78,7 +78,7 @@ example :
     instSMulOfMul (α := ℂ ⊗[ℝ] ℂ) ≠
       (@TensorProduct.Algebra.module ℝ ℂ ℂ (ℂ ⊗[ℝ] ℂ) _ _ _ _ _ _ _ _ _ _ _ _).toSMul := by
   have contra : I ⊗ₜ[ℝ] I ≠ (-1) ⊗ₜ[ℝ] 1 := fun c => by simpa using congr_arg f c
-  contrapose! contra
+  contrapose contra
   rw [SMul.ext_iff, SMul.smul_eq_hSMul, @SMul.smul_eq_hSMul _ _ (_)] at contra
   replace contra := congr_fun (congr_fun contra (1 ⊗ₜ I)) (I ⊗ₜ 1)
   rw [TensorProduct.Algebra.smul_def (R := ℝ) (1 : ℂ) I (I ⊗ₜ[ℝ] (1 : ℂ))] at contra
@@ -153,7 +153,7 @@ the domain is a group. -/
 example {k : Type _} [Semiring k] [Nontrivial kˣ] :
     (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
-  haveI : Nontrivial k := Units.val_injective.nontrivial
+  have : Nontrivial k := Units.val_injective.nontrivial
   intro h
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u

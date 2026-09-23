@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
 # Domain of the moment-generating function
@@ -40,13 +39,13 @@ We prove the integrability of other functions for `t` in the interior of that in
 @[expose] public section
 
 
-open MeasureTheory Filter Finset Real
+open MeasureTheory Filter Real
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
 
 section Interval
 
@@ -417,27 +416,11 @@ section IntegrableExpSet
 
 lemma add_half_inf_sub_mem_Ioo {l u v : ℝ} (hv : v ∈ Set.Ioo l u) :
     v + ((v - l) ⊓ (u - v)) / 2 ∈ Set.Ioo l u := by
-  have h_pos : 0 < (v - l) ⊓ (u - v) := by simp [hv.1, hv.2]
-  constructor
-  · calc l < v := hv.1
-    _ ≤ v + ((v - l) ⊓ (u - v)) / 2 := le_add_of_nonneg_right (by positivity)
-  · calc v + ((v - l) ⊓ (u - v)) / 2
-    _ < v + ((v - l) ⊓ (u - v)) := by gcongr; exact half_lt_self (by positivity)
-    _ ≤ v + (u - v) := by gcongr; exact inf_le_right
-    _ = u := by abel
+  grind
 
 lemma sub_half_inf_sub_mem_Ioo {l u v : ℝ} (hv : v ∈ Set.Ioo l u) :
     v - ((v - l) ⊓ (u - v)) / 2 ∈ Set.Ioo l u := by
-  have h_pos : 0 < (v - l) ⊓ (u - v) := by simp [hv.1, hv.2]
-  constructor
-  · calc l = v - (v - l) := by abel
-    _ ≤ v - ((v - l) ⊓ (u - v)) := by gcongr; exact inf_le_left
-    _ < v - ((v - l) ⊓ (u - v)) / 2 := by gcongr; exact half_lt_self (by positivity)
-  · calc v - ((v - l) ⊓ (u - v)) / 2
-    _ ≤ v := by
-      rw [sub_le_iff_le_add]
-      exact le_add_of_nonneg_right (by positivity)
-    _ < u := hv.2
+  grind
 
 /-- If the interior of the interval `integrableExpSet X μ` is nonempty,
 then `X` is a.e. measurable. -/

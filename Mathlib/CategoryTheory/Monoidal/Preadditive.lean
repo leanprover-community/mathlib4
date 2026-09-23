@@ -283,7 +283,7 @@ theorem rightDistributor_assoc {J : Type} [Finite J] (f : J → C) (X Y : C) :
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,
     comp_tensor_id, tensorIso_hom, rightDistributor_hom, biproduct.mapIso_hom, biproduct.ι_map,
     biproduct.ι_π, Finset.sum_dite_irrel, Finset.sum_dite_eq', Finset.sum_const_zero,
-    Finset.mem_univ, if_true]
+    Finset.mem_univ, ite_true]
   simp_rw [← tensorHom_id]
   simp only [← comp_tensor_id, biproduct.ι_π, dite_tensor, comp_dite]
   simp
@@ -301,7 +301,7 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Finite J]
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,
     tensor_sum, comp_tensor_id, tensorIso_hom, leftDistributor_hom, rightDistributor_hom,
     biproduct.mapIso_hom, biproduct.ι_map, biproduct.ι_π, Finset.sum_dite_irrel,
-    Finset.sum_dite_eq', Finset.sum_const_zero, Finset.mem_univ, if_true]
+    Finset.sum_dite_eq', Finset.sum_const_zero, Finset.mem_univ, ite_true]
   simp_rw [← tensorHom_id, ← id_tensorHom]
   simp only [← comp_tensor_id, ← id_tensor_comp_assoc, Category.assoc, biproduct.ι_π, comp_dite,
     dite_comp, tensor_dite, dite_tensor]
@@ -310,7 +310,6 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Finite J]
 @[ext]
 theorem leftDistributor_ext_left {J : Type} [Finite J] {X Y : C} {f : J → C} {g h : X ⊗ ⨁ f ⟶ Y}
     (w : ∀ j, (X ◁ biproduct.ι f j) ≫ g = (X ◁ biproduct.ι f j) ≫ h) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_epi (leftDistributor X f).inv).mp
   ext
@@ -319,7 +318,6 @@ theorem leftDistributor_ext_left {J : Type} [Finite J] {X Y : C} {f : J → C} {
 @[ext]
 theorem leftDistributor_ext_right {J : Type} [Finite J] {X Y : C} {f : J → C} {g h : X ⟶ Y ⊗ ⨁ f}
     (w : ∀ j, g ≫ (Y ◁ biproduct.π f j) = h ≫ (Y ◁ biproduct.π f j)) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_mono (leftDistributor Y f).hom).mp
   ext
@@ -349,7 +347,6 @@ theorem leftDistributor_ext₂_right {J : Type} [Finite J]
 theorem rightDistributor_ext_left {J : Type} [Finite J]
     {f : J → C} {X Y : C} {g h : (⨁ f) ⊗ X ⟶ Y}
     (w : ∀ j, (biproduct.ι f j ▷ X) ≫ g = (biproduct.ι f j ▷ X) ≫ h) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
@@ -359,7 +356,6 @@ theorem rightDistributor_ext_left {J : Type} [Finite J]
 theorem rightDistributor_ext_right {J : Type} [Finite J]
     {f : J → C} {X Y : C} {g h : X ⟶ (⨁ f) ⊗ Y}
     (w : ∀ j, g ≫ (biproduct.π f j ▷ Y) = h ≫ (biproduct.π f j ▷ Y)) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_mono (rightDistributor f Y).hom).mp
   ext

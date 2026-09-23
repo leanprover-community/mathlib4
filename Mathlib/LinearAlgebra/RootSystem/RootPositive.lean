@@ -139,11 +139,13 @@ def posForm :
     · simpa
     · simpa)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma algebraMap_posForm {x y : span S (range P.root)} :
     algebraMap S R (B.posForm x y) = B.form x y := by
   change Algebra.linearMap S R _ = _
   simp [posForm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma algebraMap_apply_eq_form_iff {x y : span S (range P.root)} {s : S} :
     algebraMap S R s = B.form x y ↔ s = B.posForm x y := by
   simp [RootPositiveForm.posForm]

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Archimedean classes of a linearly ordered ring
@@ -101,7 +102,6 @@ instance : AddCommMonoid (ArchimedeanClass R) where
   add_assoc := private add_assoc'
   zero_add := private zero_add'
   add_zero x := private add_comm x _ ▸ zero_add' x
-  nsmul n x := n • x
   nsmul_zero x := by induction x with | mk x => rw [← mk_pow, pow_zero, mk_one]
   nsmul_succ n x := by induction x with | mk x => rw [← mk_pow, pow_succ, mk_mul, mk_pow]
 
@@ -308,7 +308,6 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
   add_neg_cancel_of_ne_top x h := by
     induction x with | mk x
     simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (mk_eq_top_iff.not.1 h)]
-  zsmul n x := n • x
   zsmul_zero' x := by induction x with | mk x => rw [← mk_zpow, zpow_zero, mk_one]
   zsmul_succ' := by exact zsmul_succ'
   zsmul_neg' n x := by

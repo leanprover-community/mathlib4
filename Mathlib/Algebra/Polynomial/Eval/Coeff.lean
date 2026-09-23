@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Evaluation of polynomials
@@ -52,8 +53,6 @@ end
 
 section Eval
 
-variable {x : R}
-
 theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
   calc
     coeff p 0 = coeff p 0 * 0 ^ 0 := by simp
@@ -95,10 +94,10 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
     (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
   .ofBijective (RingHom.pi fun i ↦ mapRingHom (Pi.evalRingHom R i))
     ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,
-      fun p ↦ ⟨.ofFinsupp (.ofSupportFinite (fun n i ↦ coeff (p i) n) <|
+      fun p ↦ ⟨.ofFinsupp <| .ofCoeff <| .ofSupportFinite (fun n i ↦ coeff (p i) n) <|
         (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
           simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
-          contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
+          contrapose! hn; exact funext hn, by ext i n; exact coeff_map _ _⟩⟩
 
 theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
   ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]
@@ -182,7 +181,7 @@ section Eval
 
 section
 
-variable [Semiring R] {p q : R[X]} {x : R} [Semiring S] (f : R →+* S)
+variable [Semiring R] {p : R[X]} {x : R} [Semiring S] (f : R →+* S)
 
 theorem eval₂_hom (x : R) : p.eval₂ f (f x) = f (p.eval x) :=
   RingHom.comp_id f ▸ (hom_eval₂ p (RingHom.id R) f x).symm
@@ -191,7 +190,7 @@ end
 
 section
 
-variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
+variable [CommSemiring R] {p : R[X]} [CommSemiring S]
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
   DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm

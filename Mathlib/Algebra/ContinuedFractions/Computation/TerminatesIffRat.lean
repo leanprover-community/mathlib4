@@ -193,6 +193,7 @@ end IntFractPair
 theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
   simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
   simp only [of, IntFractPair.seq1, Stream'.Seq.map_get?, Stream'.Seq.get?_tail]
@@ -259,7 +260,7 @@ theorem stream_succ_nth_fr_num_lt_nth_fr_num_rat {ifp_n ifp_succ_n : IntFractPai
   cases this
   rw [← IntFractPair.of_eq_ifp_succ_n]
   obtain ⟨zero_le_ifp_n_fract, _⟩ := nth_stream_fr_nonneg_lt_one stream_nth_eq
-  have : 0 < ifp_n.fr := lt_of_le_of_ne zero_le_ifp_n_fract <| ifp_n_fract_ne_zero.symm
+  have : 0 < ifp_n.fr := lt_of_le_of_ne zero_le_ifp_n_fract ifp_n_fract_ne_zero.symm
   exact of_inv_fr_num_lt_num_of_pos this
 
 theorem stream_nth_fr_num_le_fr_num_sub_n_rat :

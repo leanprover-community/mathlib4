@@ -5,11 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SumOverResidueClass
 
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Convergence of `p`-series
@@ -98,7 +98,7 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
         add_le_add_left (hu n.le_succ) _]
     have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
       hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
-        (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
+        (mem_Ico.mp hk).1) (Nat.le_of_lt_succ (mem_Ico.mp hk).2)
     convert! sum_le_sum this
     simp
 
@@ -224,7 +224,7 @@ theorem summable_schlomilch_iff_of_nonneg {C : ℕ} {u : ℕ → ℕ} {f : ℕ �
   lift f to ℕ → ℝ≥0 using h_nonneg
   simp only [NNReal.coe_le_coe] at *
   have (k : ℕ) : (u (k + 1) - (u k : ℝ)) = ((u (k + 1) : ℝ≥0) - (u k : ℝ≥0) : ℝ≥0) := by
-    have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
+    have := Nat.cast_le (α := ℝ≥0).mpr (hu_strict k.lt_succ_self).le
     simp [NNReal.coe_sub this]
   simp_rw [this]
   exact_mod_cast NNReal.summable_schlomilch_iff hf h_pos hu_strict hC_nonzero h_succ_diff
@@ -438,8 +438,8 @@ lemma Real.not_summable_indicator_one_div_natCast {m : ℕ} (hm : m ≠ 0) (k : 
   rw [← summable_nat_add_iff 1] -- shift by one to avoid non-monotonicity at zero
   have h (n : ℕ) : {n : ℕ | (n : ZMod m) = k - 1}.indicator (fun n : ℕ ↦ (1 / (n + 1 :) : ℝ)) n =
       if (n : ZMod m) = k - 1 then (1 / (n + 1) : ℝ) else (0 : ℝ) := by
-    simp only [indicator_apply, mem_setOf_eq, cast_add, cast_one]
-  simp_rw [indicator_apply, mem_setOf, cast_add, cast_one, ← eq_sub_iff_add_eq, ← h]
+    simp only [indicator_apply, mem_ofPred_eq, cast_add, cast_one]
+  simp_rw [indicator_apply, mem_ofPred, cast_add, cast_one, ← eq_sub_iff_add_eq, ← h]
   rw [summable_indicator_mod_iff (fun n₁ n₂ h ↦ by gcongr) (k - 1)]
   exact mt (summable_nat_add_iff (f := fun n : ℕ ↦ 1 / (n : ℝ)) 1).mp not_summable_one_div_natCast
 
@@ -448,7 +448,7 @@ lemma Real.not_summable_indicator_one_div_natCast {m : ℕ} (hm : m ≠ 0) (k : 
 -/
 section shifted
 
-open Filter Asymptotics Topology
+open Filter Asymptotics
 
 lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by

@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Convex cones
@@ -55,6 +56,7 @@ variable [Semiring R] [PartialOrder R]
 variable (R M) in
 /-- A convex cone is a subset `s` of an `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
+@[wikidata Q2256541]
 structure ConvexCone [AddCommMonoid M] [SMul R M] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set M
@@ -77,7 +79,7 @@ instance : SetLike (ConvexCone R M) M where
   coe := carrier
   coe_injective C₁ C₂ h := by cases C₁; congr!
 
-instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M) M
+instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M)
 
 @[simp, norm_cast] lemma coe_mk (s : Set M) (h₁ h₂) : ↑(mk (R := R) s h₁ h₂) = s := rfl
 
@@ -316,7 +318,7 @@ theorem Blunt.salient : C.Blunt → C.Salient := by
   exact mt Flat.pointed
 
 /-- A pointed convex cone defines a preorder. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toPreorder (C : ConvexCone R G) (h₁ : C.Pointed) : Preorder G where
   le x y := y - x ∈ C
   le_refl x := by rw [sub_self x]; exact h₁
@@ -695,11 +697,11 @@ def toCone (s : Set M) (hs : Convex 𝕜 s) : ConvexCone 𝕜 M := by
 
 variable {s : Set M} (hs : Convex 𝕜 s) {x : M}
 
-@[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
+@[deprecated ConvexCone.mem_hull_of_convex +typeChanged (since := "2026-03-30")]
 theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, c • y = x := by
   simp only [toCone, ConvexCone.mem_mk, mem_iUnion, mem_smul_set, eq_comm, exists_prop]
 
-@[deprecated ConvexCone.mem_hull_of_convex (since := "2026-03-30")]
+@[deprecated ConvexCone.mem_hull_of_convex +typeChanged (since := "2026-03-30")]
 theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
   refine hs.mem_toCone.trans ⟨?_, ?_⟩
   · rintro ⟨c, hc, y, hy, rfl⟩
@@ -707,7 +709,7 @@ theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ 
   · rintro ⟨c, hc, hcx⟩
     exact ⟨c⁻¹, inv_pos.2 hc, _, hcx, by rw [smul_smul, inv_mul_cancel₀ hc.ne', one_smul]⟩
 
-@[deprecated ConvexCone.subset_hull (since := "2026-03-30")]
+@[deprecated ConvexCone.subset_hull +typeChanged (since := "2026-03-30")]
 theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
   hs.mem_toCone'.2 ⟨1, zero_lt_one, by rwa [one_smul]⟩
 

@@ -24,9 +24,7 @@ This file contains lemmas about normed additive torsors over normed spaces.
 
 noncomputable section
 
-open NNReal Topology
-
-open Filter
+open NNReal
 
 variable {V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
@@ -36,6 +34,19 @@ section NormedSpace
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 
 open AffineMap
+
+@[simp]
+theorem dist_homothety (p₁ p₂ p : P) (c : 𝕜) :
+    dist (homothety p c p₁) (homothety p c p₂) = ‖c‖ * dist p₁ p₂ := by
+  simp [dist_eq_norm_vsub, ← (homothety p c).linearMap_vsub, homothety_linear, norm_smul]
+
+@[simp]
+theorem nndist_homothety (p₁ p₂ p : P) (c : 𝕜) :
+    nndist (homothety p c p₁) (homothety p c p₂) = ‖c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_homothety p₁ p₂ p c
+
+theorem lipschitzWith_homothety (p : P) (c : 𝕜) : LipschitzWith ‖c‖₊ (homothety p c) :=
+  LipschitzWith.of_dist_le_mul fun p₁ p₂ ↦ (dist_homothety p₁ p₂ p c).le
 
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
@@ -230,7 +241,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
     (hfc : Continuous f) : P →ᵃ[ℝ] Q :=
   let c := Classical.arbitrary P
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
-    ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
+    ((AffineEquiv.vaddConst ℝ (f c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by simp [h]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp

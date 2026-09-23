@@ -257,7 +257,7 @@ theorem tendsto_pure_left {f : α → β} {a : α} {l : Filter β} :
 @[simp]
 theorem map_inf_principal_preimage {f : α → β} {s : Set β} {l : Filter α} :
     map f (l ⊓ 𝓟 (f ⁻¹' s)) = map f l ⊓ 𝓟 s :=
-  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_setOf_eq, mem_preimage]
+  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_ofPred_eq, mem_preimage]
 
 /-- If two filters are disjoint, then a function cannot tend to both of them along a non-trivial
 filter. -/

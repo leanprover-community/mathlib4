@@ -341,24 +341,24 @@ def rcons {i} (p : Pair M i) : Word M :=
 
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
-  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, map_one, one_mul]
-  else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
+  if hm : p.head = 1 then by rw [rcons, dite_eq_left hm, hm, map_one, one_mul]
+  else by rw [rcons, dite_eq_right hm, cons, prod, List.map_cons, List.prod_cons, prod]
 
 theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
   rintro ⟨m, w, h⟩ ⟨m', w', h'⟩ he
   by_cases hm : m = 1 <;> by_cases hm' : m' = 1
-  · simp only [rcons, dif_pos hm, dif_pos hm'] at he
+  · simp only [rcons, dite_eq_left hm, dite_eq_left hm'] at he
     simp_all
   · exfalso
-    simp only [rcons, dif_pos hm, dif_neg hm'] at he
+    simp only [rcons, dite_eq_left hm, dite_eq_right hm'] at he
     rw [he] at h
     exact h rfl
   · exfalso
-    simp only [rcons, dif_pos hm', dif_neg hm] at he
+    simp only [rcons, dite_eq_left hm', dite_eq_right hm] at he
     rw [← he] at h'
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
-      simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
+      simpa [cons, rcons, dite_eq_right hm, dite_eq_right hm', eq_self_iff_true, Subtype.mk_eq_mk,
         heq_iff_eq, ← Subtype.ext_iff] using he
     rcases this with ⟨rfl, h⟩
     congr
@@ -434,7 +434,7 @@ theorem equivPair_symm (i) (p : Pair M i) : (equivPair i).symm p = rcons p :=
 
 theorem equivPair_eq_of_fstIdx_ne {i} {w : Word M} (h : fstIdx w ≠ some i) :
     equivPair i w = ⟨1, w, h⟩ :=
-  (equivPair i).apply_eq_iff_eq_symm_apply.mpr <| Eq.symm (dif_pos rfl)
+  (equivPair i).eq_symm_apply.mp <| Eq.symm (dite_eq_left rfl)
 
 theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     (⟨i, m⟩ ∈ (equivPair j w).tail.toList) ↔ ⟨i, m⟩ ∈ w.toList.tail
@@ -459,6 +459,7 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   · revert h; cases w.toList <;> simp +contextual
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
       if h : ∃ (h : w.toList ≠ []), (w.toList.head h).1 = i
@@ -856,28 +857,27 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
 include hcard in
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
-  classical
-    rcases hcard with hcard | hcard
-    · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
-      exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
-    · obtain ⟨k, hcard⟩ := hcard
-      by_cases hh : i = k <;> by_cases hl : j = k
-      · subst hh
-        subst hl
-        exact lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w
-      · subst hh
-        change j ≠ i at hl
-        exact lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w hcard hl.symm
-      · subst hl
-        change i ≠ j at hh
-        have : lift f w.inv.prod ≠ 1 :=
-          lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w.inv hcard hh.symm
-        intro heq
-        apply this
-        simpa using heq
-      · change i ≠ k at hh
-        change j ≠ k at hl
-        exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
+  rcases hcard with hcard | hcard
+  · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
+    exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
+  · obtain ⟨k, hcard⟩ := hcard
+    by_cases hh : i = k <;> by_cases hl : j = k
+    · subst hh
+      subst hl
+      exact lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w
+    · subst hh
+      change j ≠ i at hl
+      exact lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w hcard hl.symm
+    · subst hl
+      change i ≠ j at hh
+      have : lift f w.inv.prod ≠ 1 :=
+        lift_word_prod_nontrivial_of_head_card f X hXnonempty hXdisj hpp w.inv hcard hh.symm
+      intro heq
+      apply this
+      simpa using heq
+    · change i ≠ k at hh
+      change j ≠ k at hl
+      exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
 
 include hcard in
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
