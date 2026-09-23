@@ -99,7 +99,7 @@ variable (W₂) in
 @[simps]
 def precompL (g : P →ᴬ[R] Q) : (Q →ᴬ[R] W₂) →L[R] (P →ᴬ[R] W₂) where
   toFun f := f.comp g
-  map_add' _ _:= rfl
+  map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 variable (Q₂) in
