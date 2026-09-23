@@ -33,7 +33,7 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 /-- The stupid truncation of a complex `K : HomologicalComplex C c'` relatively to
 an embedding `e : c.Embedding c'` of complex shapes. -/
-@[local implicit_reducible]
+@[implicit_reducible]
 noncomputable def stupidTrunc : HomologicalComplex C c' := (K.restriction e).extend e
 
 instance : IsStrictlySupported (K.stupidTrunc e) e := by
