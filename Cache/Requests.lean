@@ -366,9 +366,10 @@ def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-lengt
 value of each header in `curlGetHeaders`, each after `curlFieldSep`.
 curl writes a header value unescaped, so the values stay outside the JSON.
 
-`%header{…}` needs curl 7.83. Below that version, `validateCurl` downloads
-a newer curl on Linux. A curl that old on another platform prints
-`%header{…}` as literal text, and that text appears only in a failure line.
+`%header{…}` needs curl 7.84. curl 7.83 shipped it as experimental only.
+Below 7.84, `validateCurl` downloads a newer curl on Linux. A curl that
+old on another platform prints `%header{…}` as literal text, and that text
+appears only in a failure line.
 -/
 def curlGetWriteOut : String :=
   "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"

@@ -260,8 +260,8 @@ def validateCurl : IO Bool := do
   let found := s!"{version.1}.{version.2}"
   let _ := @lexOrd
   let _ := @leOfOrd
-  -- The get path's write-out reads response headers with `%header{…}` (curl 7.83).
-  if version >= (7, 83) then return true
+  -- The get path's write-out reads response headers with `%header{…}` (curl 7.84).
+  if version >= (7, 84) then return true
   -- TODO: support more platforms if the need arises
   let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
   let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
@@ -278,7 +278,7 @@ def validateCurl : IO Bool := do
   -- JSON report (curl 7.75); an older curl rejects the flag or omits
   -- the fields.
   if version >= (7, 75) then
-    IO.println s!"Warning: recommended `curl` version ≥7.83. Found {found}"
+    IO.println s!"Warning: recommended `curl` version ≥7.84. Found {found}"
     return true
   else
     IO.println s!"Warning: recommended `curl` version ≥7.75. Found {found}. Can't use `--parallel`."

@@ -1800,12 +1800,12 @@ separator byte in the format reaches curl through its argument list and
 comes back on stdout. The output name carries 0x1F and a quote where the
 file system allows them; Windows allows neither, so there the name is
 plain. A `file://` transfer has no response headers, so each header value
-is empty. `%header{…}` needs curl 7.83, so the test skips an older curl. -/
+is empty. `%header{…}` needs curl 7.84, so the test skips an older curl. -/
 def test_curlGetWriteOut_real_curl : IO Unit := do
   IO.println "curlGetWriteOut (local curl run):"
   let curl ← Cache.IO.getCurl
   let (maj, min) ← Cache.IO.curlVersion curl
-  if maj < 7 || (maj == 7 && min < 83) then
+  if maj < 7 || (maj == 7 && min < 84) then
     IO.println s!"  (skipped: curl {maj}.{min} has no %header\{…})"
     return
   let dir ← IO.FS.createTempDir
