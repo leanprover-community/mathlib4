@@ -31,11 +31,9 @@ left adjoint to the functor equipping a module with the trivial representation.
 * `Rep.coinvariantsTensor k G`: the functor sending representations `A, B` to `(A ⊗[k] B)_G`. This
   is naturally isomorphic to the functor sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the
   `k[G]ᵐᵒᵖ`-module structure defined by `g • a := A.ρ g⁻¹ a`.
-* `Representation.coinvariantsTensorFreeLEquiv ρ α`: the linear equivalence between
-  `(V ⊗ (α →₀ k[G]))_G` and `α →₀ V`, sending
-  `⟦v ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(v))`. Its `Rep` wrapper is useful
-  for homology.
-
+* `Rep.coinvariantsTensorFreeLEquiv A α`: given a representation `A` and a type `α`, this is the
+  `k`-linear equivalence between `(A ⊗ (α →₀ k[G]))_G` and `α →₀ A` sending
+  `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a))`. This is useful for group homology.
 -/
 
 @[expose] public section
@@ -55,9 +53,16 @@ def Coinvariants.ker : Submodule k V :=
   Submodule.span k (Set.range fun (gv : G × V) => ρ gv.1 gv.2 - gv.2)
 
 /-- The coinvariants of a representation, `V ⧸ ⟨{ρ g x - x | g ∈ G, x ∈ V}⟩`. -/
-abbrev Coinvariants := V ⧸ Coinvariants.ker ρ
+def Coinvariants := V ⧸ Coinvariants.ker ρ
 
 namespace Coinvariants
+
+instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ ⧸ _)
+
+instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
+
+instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
+  inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
 
 variable {ρ}
 
