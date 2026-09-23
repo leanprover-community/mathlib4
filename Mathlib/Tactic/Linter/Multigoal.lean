@@ -215,8 +215,8 @@ def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
     let poss := getNonTerminalCdots _stx
     let trees ← getInfoTrees
     for t in trees do
-      dbg_trace "superfluous cdots: {poss}"
-      dbg_trace "goals info is {getManyGoals poss t}"
+      --dbg_trace "superfluous cdots: {poss}"
+      --dbg_trace "goals info is {getManyGoals poss t}"
       for (s, opt) in getManyGoals poss t do
         match opt with
         | none =>

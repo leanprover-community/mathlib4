@@ -168,26 +168,6 @@ warning: Unnecessary focusing dot `·`: you should be able to remove it, or move
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 ---
 warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdotTk'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdotTk'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdot'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
-'Lean.cdot'
-
-Note: This linter can be disabled with `set_option linter.style.multiGoal false`
----
-warning: Unnecessary focusing dot `·`: you should be able to remove it, or move it earlier up in the proof, as necessary.
 'Lean.cdot'
 
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
@@ -268,7 +248,7 @@ warning: Unnecessary focusing dot `·`: you should be able to remove it, or move
 
 Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 -/
---#guard_msgs in
+#guard_msgs in
 example : True := by
   · · exact .intro
 
