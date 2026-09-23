@@ -1,52 +1,54 @@
 name: ci dev
 
+# Testing .github/workflows/dependent-issues.yml
 on:
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
-        required: false
+      dry_run:
+        description: 'Log the changes that would be made, without making them'
         type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
+        default: true
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
-permissions:
-  contents: read
-  id-token: write
-  actions: read  # read-only: download master artifacts (tools-bin, cache-snapshot)
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
+# Don't run concurrently. A run started while another one is in progress waits for it to finish.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
-      cache_environment: cache-upload-forks
-      runs_on: pr
-    secrets: inherit
+  check:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name, 'ci-dev/') }}
+    timeout-minutes: 30
+    permissions:
+      id-token: write
+    steps:
+      - name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          app-id: ${{ secrets.MATHLIB_DEPENDENT_ISSUES_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-dependent-issues-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_LABEL_BOTS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+      - uses: leanprover-community/dependent-issues@bc71d2d939d09878776a3637a69d717dc400a47f
+        env:
+          # (Required) The token to use to make API calls to GitHub.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        with:
+          # (Optional) The label to use to mark dependent issues
+          label: blocked-by-other-PR
+
+          # (Optional) Enable checking for dependencies in issues. Enable by
+          # setting the value to "on". Default "off"
+          check_issues: off
+
+          # (Optional) Set a commit status on PRs. Default "on"
+          commit_status: off
+
+          # (Optional) Log the changes that would be made without making them.
+          dry_run: ${{ inputs.dry_run && 'on' || 'off' }}
+
+          # (Optional) A comma-separated list of keywords. Default
+          # "depends on, blocked by"
+          keywords: "- \\[ \\] depends on:,- \\[x\\] depends on:"
