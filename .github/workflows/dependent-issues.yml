@@ -32,7 +32,7 @@ jobs:
           key-name: mathlib-dependent-issues-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_LABEL_BOTS }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
-      - uses: leanprover-community/dependent-issues@bc71d2d939d09878776a3637a69d717dc400a47f
+      - uses: leanprover-community/dependent-issues@642c46aafe7b8a799f4052dc4297e8e245e16f47
         env:
           # (Required) The token to use to make API calls to GitHub.
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
