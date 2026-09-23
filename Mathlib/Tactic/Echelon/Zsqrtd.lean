@@ -31,8 +31,8 @@ def evalInt (e : Expr) : MetaM ℤ := do
       return v.num
   throwError "the following entry cannot be simplified to an integer numeral{indentExpr e}"
 
-/-- Evaluate a `ℤ√d` entry to a `ℤ√d` value: a `⟨a, b⟩` literal, `√d` itself, or an
-entry without `√d` content evaluating through `norm_num`. -/
+/-- Evaluate a `ℤ√d` entry to its value. The entry is a `⟨re, im⟩` literal, `√d` itself, or
+an entry without `√d` content, which `norm_num` evaluates. -/
 def evalZsqrtdEntry (d : ℤ) (e : Expr) : MetaM (ℤ√d) := do
   match_expr e with
   | Zsqrtd.mk _ re im => return ⟨← evalInt re, ← evalInt im⟩
@@ -81,7 +81,7 @@ def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
         | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
       return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }⟩
 
-/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
+/-- The registration of the `ℤ√d` model for `Zsqrtd d` with an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   model? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching

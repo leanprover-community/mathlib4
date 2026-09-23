@@ -10,9 +10,15 @@ public import Mathlib.Init
 /-!
 # Parameterized computation core for the Bareiss elimination
 
-A computable model of a ring packages the representation the untrusted elimination computes
-with: a carrier, its arithmetic (`RingOps`), and the encoding between entry syntax and
-values. The tactic selects a model through the `bareiss_ext` extension registry.
+`bareissDecomp` computes the transform `L`, the echelon form `U`, the row swaps and the pivot
+columns of an echelon decomposition by fraction-free elimination on a carrier of values.
+
+As an optimisation, rows are scaled to clear their denominators (when applicable) before the
+elimination with the scales folded back into `L` afterwards.
+
+A computation model supplies the carrier, its arithmetic operations (`RingOps`) and the
+encoding between entry syntax and values, and the tactic selects a model through the `bareiss_ext`
+extension registry.
 
 ## Implementation notes
 
@@ -66,16 +72,15 @@ def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → Option V) (enco
     divExact x y := encode (ops.divExact (read x) (read y))
     isZero x := ops.isZero (read x) }
 
-/-- Decomposition data with entries in `V`: the values of the elimination, or the
-ring expressions constructed (`V := Expr`). -/
+/-- Decomposition data with entries in `V`, the carrier of the elimination or `Expr` once the
+entries are encoded. -/
 structure BareissData (V : Type) where
   /-- The lower-triangular transform. -/
   L : Array (Array V)
   /-- The echelon form, the final working matrix `L * A_σ` of the elimination. -/
   U : Array (Array V)
-  /-- The row swaps, in order. Stores the swaps instead of row re-indexing, since in
-  common cases swaps are infrequent and therefore produce a smaller term to be checked
-  by the kernel. The row permutation `σ` is later constructed by their product. -/
+  /-- The row swaps, in order. Swaps are infrequent in common cases, so their product is a
+  smaller term for the kernel than a row permutation. -/
   swaps : Array (Nat × Nat)
   /-- The pivot columns. The `k`-th entry is the column of the pivot in row `k` of the
   final echelon form. -/
@@ -89,17 +94,12 @@ def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
            swaps := d.swaps
            pivot := d.pivot }
 
-/-- The row arrangement of the swaps: the entry at position `i` is the original row index
-that the swaps move to position `i`, that is, `σ i`. -/
+/-- The row arrangement `σ` of the swaps. The entry at position `i` is the original index of
+the row the swaps move to position `i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
-by the model.
-
-A single sweep accumulates the transform `L` alongside the working matrix `W`, maintaining
-`L * (A.submatrix σ id) = W` for the row arrangement `σ` so far. The divisions are exact
-by Sylvester's identity, although the data-only computation does not prove that. -/
+/-- Core algorithm of fraction-free Gaussian elimination. -/
 def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     MetaM (BareissData V) := do
   let rows := A.size
@@ -150,7 +150,7 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   return { L, U := W, swaps, pivot := pivotCols }
 
 /-- The carriers a model computes on, the integers or expressions of the ring.
-The most direct way is for a model to name this as a parameter in `Type`, but that
+The most direct method is for a model to name this as a parameter in `Type`, but that
 puts the model in a higher universe level, and the registry can only store `Type 0` elements. -/
 inductive Carrier
   | int
@@ -168,7 +168,7 @@ structure Model (V : Type) where
   /-- An entry as a value with an optional denominator (used for the scaling optimisation).
   `(n, some d)` denotes `n / d` for a nonzero `d`, and `(n, none)` denotes `n`. -/
   evalEntry : Expr → MetaM (V × Option V)
-  /-- A common multiple for eliminating the denominators. The default (mul) is always available. A
+  /-- A common multiple for eliminating the denominators, default to `ops.mul`. A
   carrier type with a cheap lcm function could supply it as an optimisation to keep the
   scaled entries small. -/
   commonMultiple : V → V → V := ops.mul
@@ -203,7 +203,7 @@ def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
-  /-- The model for the ring type `R`, with its carrier, or `none` if the extension does not
+  /-- The model for the element type `R` and its carrier, or `none` if the extension does not
   handle `R`. -/
   model? (R : Expr) : MetaM (Option ((c : Carrier) × Model c.type))
 

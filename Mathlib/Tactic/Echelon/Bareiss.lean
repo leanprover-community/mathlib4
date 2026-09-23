@@ -41,8 +41,8 @@ def checkBareissApplicable {u : Level} (α : Q(Type u)) :
     return .error e.toMessageData
   return .ok _cr
 
-/-- Select the computation model for the element type `α` by choosing the first
-registered `bareiss_ext` extension that handles `α`, or the default rational model. -/
+/-- Select the first registered computation model for the element type `α`, or the default
+rational model. -/
 def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
     MetaM ((c : Carrier) × Model c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
@@ -53,7 +53,7 @@ def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
     model for{indentExpr α}"
   ratModel α _cr
 
-/-- The result of producing a decomposition by Bareiss. -/
+/-- The result of evaluation and certificate construction, together with the carrier model. -/
 structure BareissResult where
   /-- The elaborated `Echelon.Decomposition` certificate term. -/
   cert : Expr

@@ -12,9 +12,8 @@ public import Mathlib.Tactic.NormNum.Basic
 /-!
 # The rational model for the Bareiss elimination
 
-The computable model of ℚ. Entries evaluate to rational numerals via `norm_num`, reported
-as integer numerators with their denominators, so that the elimination runs on integer values.
-It is the fallback model the tactic uses when no ring-specific model matches the ring.
+The computable model of ℚ literals. It is the fallback model the tactic uses when no
+other model matches the ring.
 -/
 
 public meta section
@@ -33,8 +32,8 @@ def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
       return v
   throwError "the following entry cannot be simplified to a numeral{indentExpr e}"
 
-/-- Build the numeral of an integer in `α`: `mkNumeral` on the absolute value, negated if
-`i` is negative. -/
+/-- Build the numeral of the integer `i` in `α`, as `mkNumeral` of its absolute value under a
+negation when `i` is negative. -/
 def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
   let n : Q($α) ← mkNumeral α i.natAbs
   if i < 0 then
@@ -50,8 +49,8 @@ def ratModel {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
   let pQ : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
   let .some _ ← trySynthInstanceQ q(CharP $α $pQ)
     | throwError "could not determine the characteristic of the element type{indentExpr α}"
-  -- `whnfD`: the ambient transparency inside `simp` is `reducible`, which does not reduce
-  -- the numeral to a literal
+  -- the ambient transparency inside `simp` is `reducible` and does not reduce the numeral to a
+  -- literal, hence `whnfD`
   let some p := (← whnfD (← instantiateMVars pQ)).rawNatLit?
     | throwError "the characteristic of the element type is not a literal{indentExpr α}"
   let ops : RingOps Int := {

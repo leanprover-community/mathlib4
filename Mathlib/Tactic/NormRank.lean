@@ -53,7 +53,8 @@ end Mathlib.Tactic.Echelon
 open Mathlib.Tactic.Echelon
 
 /-- The `norm_rank` simproc evaluates the rank of matrices with non-symbolic entries.
-Terms that it cannot evaluate are skipped. -/
+Terms that it cannot evaluate are skipped, since the fallback model accepts every ring and only
+the evaluation can tell whether an entry is in its scope. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
   try normRankCore e
   catch ex =>
