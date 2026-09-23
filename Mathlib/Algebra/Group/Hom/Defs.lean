@@ -136,9 +136,6 @@ section add_zero
 
 `AddMonoidHom` is also used for group homomorphisms.
 
-When possible, instead of parametrizing results over `(f : M →+ N)`,
-you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
-
 When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
 structure AddMonoidHom (M : Type*) (N : Type*) [AddZero M] [AddZero N]
@@ -356,9 +353,6 @@ variable [MulOne M] [MulOne N]
 
 /-- `M →* N` is the type of functions `M → N` that preserve the `MulOne` structure.
 `MonoidHom` is used for both monoid and group homomorphisms.
-
-When possible, instead of parametrizing results over `(f : M →* N)`,
-you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
