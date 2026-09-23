@@ -2412,6 +2412,7 @@ public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+public import Mathlib.Analysis.SpecialFunctions.LambertW.Analytic
 public import Mathlib.Analysis.SpecialFunctions.LambertW.Basic
 public import Mathlib.Analysis.SpecialFunctions.LambertW.Real
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
