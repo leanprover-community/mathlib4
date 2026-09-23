@@ -209,8 +209,8 @@ instance [Monoid G] : HasExt.{u} (Rep.{u} k G) := hasExt_of_enoughProjectives _
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ModuleCat.of k (Abelian.Ext (Rep.trivial k G k) A n) :=
-  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫ (by
-      sorry) ≪≫
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
+    ChainComplex.linearYonedaObjHomologyIso .. ≪≫
     (Rep.barResolution k G).extLinearEquivCohomologyClass.{u}.symm.toModuleIso
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to

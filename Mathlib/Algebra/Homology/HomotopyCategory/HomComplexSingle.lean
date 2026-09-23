@@ -119,6 +119,15 @@ lemma fromSingleMk_smul {R : Type*} [Ring R] [Linear R C]
     fromSingleMk (r • f) h = r • fromSingleMk f h :=
   (fromSingleEquiv h).injective (by simp)
 
+/-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
+to `X ⟶ K.X q` when `p + n = q`. -/
+@[simps]
+noncomputable def fromSingleLinearEquiv
+    {R : Type*} [Ring R] [Linear R C] {p q n : ℤ} (h : p + n = q) :
+    Cochain ((singleFunctor C p).obj X) K n ≃ₗ[R] (X ⟶ K.X q) where
+  toAddEquiv := fromSingleEquiv h
+  map_smul' := by simp
+
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cochain ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) :
     ∃ (f : X ⟶ K.X q), fromSingleMk f h = α :=
@@ -219,6 +228,15 @@ lemma toSingleMk_smul {R : Type*} [Ring R] [Linear R C]
     (r : R) {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
     toSingleMk (r • f) h = r • toSingleMk f h :=
   (toSingleEquiv h).injective (by simp)
+
+/-- Cochains of degree `n` from `(singleFunctor C q).obj X` to `K` identify
+to `K.X p ⟶ X` when `p + n = q`. -/
+@[simps]
+noncomputable def toSingleLinearEquiv
+    {R : Type*} [Ring R] [Linear R C] {p q n : ℤ} (h : p + n = q) :
+    Cochain K ((singleFunctor C q).obj X) n ≃ₗ[R] (K.X p ⟶ X) where
+  toAddEquiv := toSingleEquiv h
+  map_smul' := by simp
 
 lemma toSingleMk_surjective {q n : ℤ} (α : Cochain K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) :

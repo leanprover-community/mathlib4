@@ -6,7 +6,7 @@ Authors: Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.LinearYonedaObj
 public import Mathlib.CategoryTheory.Abelian.LeftDerived
 public import Mathlib.CategoryTheory.Abelian.Opposite
 public import Mathlib.CategoryTheory.Abelian.Projective.Resolution
@@ -49,17 +49,6 @@ def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
 open ZeroObject
 
 variable {R C}
-
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
-/-- Given a chain complex `X` and an object `Y`, this is the cochain complex
-which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
-@[simps! X d]
-def ChainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One α]
-    (X : ChainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C) :
-    CochainComplex (ModuleCat A) α :=
-  ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
 
 namespace CategoryTheory
 
