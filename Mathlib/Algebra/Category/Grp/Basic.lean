@@ -516,7 +516,7 @@ end AddCommGrpCat
 
 /-- Build an isomorphism in the category `GrpCat` from a `MulEquiv` between `Group`s. -/
 @[to_additive (attr := simps)
-/-- Build an isomorphism in the category `AddGroup` from an `AddEquiv` between `AddGroup`s. -/]
+/-- Build an isomorphism in the category `AddGrpCat` from an `AddEquiv` between `AddGroup`s. -/]
 def MulEquiv.toGrpIso {X Y : GrpCat} (e : X ≃* Y) : X ≅ Y where
   hom := GrpCat.ofHom e.toMonoidHom
   inv := GrpCat.ofHom e.symm.toMonoidHom
@@ -534,7 +534,7 @@ namespace CategoryTheory.Iso
 
 /-- Build a `MulEquiv` from an isomorphism in the category `GrpCat`. -/
 @[to_additive (attr := simp)
-/-- Build an `addEquiv` from an isomorphism in the category `AddGroup` -/]
+/-- Build an `addEquiv` from an isomorphism in the category `AddGrpCat` -/]
 def groupIsoToMulEquiv {X Y : GrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
