@@ -533,15 +533,6 @@ lemma inCoordinates_apply_eq₂_of_trivial
   rw [inCoordinates_apply_eq₂ h₁x h₂x (by simp [Trivial.fiberBundle_trivializationAt'])]
   simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
 
-/-- Specialisation of `inCoordinates_apply_eq₂` to scalar-valued bilinear forms on a single
-bundle, i.e. `E₂ = E₁` and `E₃ = Bundle.Trivial B 𝕜`. -/
-lemma inCoordinates_apply_eq₂_bilin
-    {x₀ x : B} {ϕ : E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜} {v w : F₁}
-    (hx : x ∈ (trivializationAt F₁ E₁ x₀).baseSet) :
-    inCoordinates F₁ E₁ (F₁ →L[𝕜] 𝕜) (fun x ↦ E₁ x →L[𝕜] 𝕜) x₀ x x₀ x ϕ v w =
-      ϕ ((trivializationAt F₁ E₁ x₀).symm x v) ((trivializationAt F₁ E₁ x₀).symm x w) := by
-  exact inCoordinates_apply_eq₂_of_trivial hx hx
-
 /-- The inverse trivialization of the bundle of scalar-valued bilinear forms
 `fun x ↦ E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜`, applied to a model form `ϕ` and then to fibre vectors
 `u v : E₁ x`, equals `ϕ` evaluated on the images of `u` and `v` in the model fibre `F₁`. -/
@@ -556,14 +547,13 @@ lemma trivializationAt_symm_apply_bilin
       (fun (x : B) ↦ E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜) x₀
   let χ := trivializationAt F₁ E₁ x₀
   have hc : x ∈ ψ.baseSet := by simpa [ψ] using hb
-  have h1 (u v) : (((ψ.continuousLinearMapAt 𝕜 x) (ψ.symmL 𝕜 x ϕ)) u) v = ϕ u v := by
-    rw [Trivialization.continuousLinearMapAt_symmL ψ hc]
-  have h2 (u v) : ϕ u v = ψ.symm x ϕ (χ.symm x u) (χ.symm x v) := by
-    rw [← h1, Trivialization.continuousLinearMapAt_apply, Trivialization.linearMapAt_apply,
-      hom_trivializationAt_apply, ite_eq_left hc, ← inCoordinates_apply_eq₂_bilin hb,
+  have h1 (u v) : ϕ u v = ψ.symm x ϕ (χ.symm x u) (χ.symm x v) := by
+    nth_rw 1 [← Trivialization.continuousLinearMapAt_symmL (R := 𝕜) ψ hc ϕ]
+    rw [Trivialization.continuousLinearMapAt_apply, Trivialization.linearMapAt_apply,
+      hom_trivializationAt_apply, ite_eq_left hc, ← inCoordinates_apply_eq₂_of_trivial hb hb,
       Trivialization.symmL_apply _ hc]
   change ψ.symm x ϕ u v = ϕ (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v)
-  rw [h2 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v),
+  rw [h1 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v),
     ← Trivialization.symmL_apply (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
     Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
     ← Trivialization.symmL_apply (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,

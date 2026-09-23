@@ -185,11 +185,11 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
   simp only [Trivialization.symmL_apply, mem_baseSet_trivializationAt,
     ← real_inner_self_eq_norm_sq, hg]
   have hgy : g y v v = g' y w w := by
-    rw [inCoordinates_apply_eq₂_bilin h'y]
+    rw [inCoordinates_apply_eq₂_of_trivial h'y h'y]
     simp [w, Trivialization.symm_linearMapAt _ h'y]
   have hgx : g x ((trivializationAt F E x).symm x w) ((trivializationAt F E x).symm x w) =
       g' x w w := by
-    rw [inCoordinates_apply_eq₂_bilin h'x]
+    rw [inCoordinates_apply_eq₂_of_trivial h'x h'x]
   rw [hgx, hgy]
   -- get a good control for the norms of `w` in the model space, using continuity
   have : g' x w w ≤ δ * C * g' x w w + g' y w w := calc
@@ -283,11 +283,11 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     le_of_sq_le_sq (by simpa [mul_pow]) (by positivity)
   simp only [Trivialization.symmL_apply, h'y, ← real_inner_self_eq_norm_sq, hg]
   have hgx : g x v v = g' x w w := by
-    rw [inCoordinates_apply_eq₂_bilin h'x]
+    rw [inCoordinates_apply_eq₂_of_trivial h'x h'x]
     simp [w, Trivialization.symm_linearMapAt _ h'x]
   have hgy : g y ((trivializationAt F E x).symm y w) ((trivializationAt F E x).symm y w)
       = g' y w w := by
-    rw [inCoordinates_apply_eq₂_bilin h'y]
+    rw [inCoordinates_apply_eq₂_of_trivial h'y h'y]
   rw [hgx, hgy]
   -- get a good control for the norms of `w` in the model space, using continuity
   calc g' y w w
@@ -303,7 +303,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by simp [← hg]
     _ = δ * C * g' x w w + g' x w w := by
       congr
-      rw [inCoordinates_apply_eq₂_bilin h'x]
+      rw [inCoordinates_apply_eq₂_of_trivial h'x h'x]
       rfl
     _ = (1 + δ * C) * g' x w w := by ring
     _ ≤ r' ^ 2 * g' x w w := by
