@@ -234,7 +234,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
 
 /-- A ring isomorphism `R ≃+* S` induces `SL(n, R) ≃* SL(n, S)`. -/
-@[simps!]
+@[simps! apply_coe]
 def mapEquiv (e : R ≃+* S) : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
   toFun := map e
   invFun := map e.symm
