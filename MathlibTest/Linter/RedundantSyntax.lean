@@ -185,5 +185,10 @@ example (as : Array Nat) : Std.HashSet Nat := as.foldl (· |>.insert ·) {}
 -- In these cases, replacing `|>.` with `.` causes weird parsing, so we don't lint them.
 example : (1 |>.succ) = 2 := rfl
 example := ``Nat |>.isStr
+example : Nat := .zero |>.succ
+
+-- We allow `|>.` when it follows a newline.
+example : ([1]
+  |>.cons 0) = [0, 1] := rfl
 
 end PipeProj

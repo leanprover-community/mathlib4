@@ -184,85 +184,73 @@ partial def hasMaxPrec : Syntax → Bool
 
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
-def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
-  | stx@(.node _ kind args) =>
-    let rargs := args.flatMap getDeprecatedSyntax
+def getDeprecatedSyntax (fmap : FileMap) : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
+  | stx@(.node _ kind args) => Id.run do
+    let rargs := args.flatMap (getDeprecatedSyntax fmap)
     match kind with
     | ``Lean.Parser.Tactic.refine' =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `refine'` tactic is discouraged: \
          please strongly consider using `refine` or `apply` instead.")
     | `Mathlib.Tactic.cases' =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `cases'` tactic is discouraged: \
          please strongly consider using `obtain`, `rcases` or `cases` instead.")
     | `Mathlib.Tactic.induction' =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `induction'` tactic is discouraged: \
          please strongly consider using `induction` instead.")
     | ``Lean.Parser.Tactic.tacticAdmit =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
     | ``Parser.Term.configItem | ``Parser.Tactic.configItem =>
       if usesNativeConfig stx then
-        rargs.push (kind, stx, m!"Using `+native` is not allowed in mathlib: \
+        return rargs.push (kind, stx, m!"Using `+native` is not allowed in mathlib: \
           because it trusts the entire Lean compiler (not just the Lean kernel), \
           it could quite possibly be used to prove `{.ofConstName ``False}`.")
-      else
-        rargs
     | ``Lean.Parser.Tactic.nativeDecide =>
-      rargs.push (kind, stx, m!"Using `native_decide` is not allowed in mathlib: \
+      return rargs.push (kind, stx, m!"Using `native_decide` is not allowed in mathlib: \
         because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove `{.ofConstName ``False}`.")
     | ``Lean.Parser.Command.in =>
-      match getSetOptionMaxHeartbeatsComment stx with
-      | none => rargs
-      | some (opt, n, trailing) =>
+      if let some (opt, n, trailing) := getSetOptionMaxHeartbeatsComment stx then
         -- Since we are now seeing the currently outermost `maxHeartbeats` option,
         -- we remove all subsequent potential flags and only decide whether to lint or not
         -- based on whether the current option has a comment.
         let rargs := rargs.filter (·.1 != `MaxHeartbeats)
         if trailing.toString.trimAsciiStart.isEmpty then
-          rargs.push (`MaxHeartbeats, stx,
+          return rargs.push (`MaxHeartbeats, stx,
             s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
               as in\nset_option {opt} {n} in\n-- reason for change\n...")
-        else
-          rargs
     | ``«term_<|_» =>
       -- Suggest `f a` in place of `f <| a` when appropriate.
       if h : args.size = 3 then
         if (hasMaxPrec args[2] || args[2].isOfKind ``Parser.Term.do) &&
           (hasMaxPrec args[0] || args[0].isOfKind ``Parser.Term.app) then
+          if let some pos := args[0].getTailPos? then
+          if let some tailPos := args[1].getTailPos? then
           -- Trick: manually set the position info of `<|` in order to remove preceding whitespace.
-          let info := match args[0].getTailPos?, args[1].getTailPos? with
-            | some pos, some tailPos => .synthetic pos tailPos
-            | _,        _            => .none -- This should not happen.
-          rargs.push (kind, args[1].setHeadInfo info,
+          return rargs.push (kind, args[1].setHeadInfo (.synthetic pos tailPos),
             m!"`{args[2]}` can be parsed as a function argument, \
             so the pipe operator `<|` can be omitted.")
-        else
-          rargs
-      else
-        rargs
     | ``Parser.Term.pipeProj =>
       -- Suggest `x.foo` in place of `x |>.foo` when appropriate.
       if h : args.size ≥ 2 then
-        if hasMaxPrec args[0] && !(args[0].getKind matches
-            `num | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName) then
+        if hasMaxPrec args[0] && !(args[0].getKind matches ``Parser.Term.dotIdent | `num
+            | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName) then
+          if let some pos := args[0].getTailPos? then
+          if let some tailPos := args[1].getTailPos? then
+          -- It is allowed to use `|>.` to break a long line into multiple lines,
+          -- So we only warn if `|>.` is used inline
+          if (fmap.utf8PosToLspPos pos).line = (fmap.utf8PosToLspPos tailPos).line then
           -- Trick: manually set the position info of `|>.` in order to remove preceding whitespace.
-          let info := match args[0].getTailPos?, args[1].getTailPos? with
-            | some pos, some tailPos => .synthetic pos tailPos
-            | _,        _            => .none -- This should not happen.
-          rargs.push (kind, args[1].setHeadInfo info,
+          return rargs.push (kind, args[1].setHeadInfo (.synthetic pos tailPos),
             m!"`{args[0]}` can be parsed at maximal precedence, \
             so the operator `|>.` can be replaced with a normal `.` projection.")
-        else
-          rargs
-      else
-        rargs
-    | _ => rargs
-  | _ => default
+    | _ => pure ()
+    return rargs
+  | _ => #[]
 
 -- TODO: Remove this `set_option` with `linter.style.nativeDecide`.
 set_option linter.deprecated false in
@@ -292,7 +280,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  let deprecations := getDeprecatedSyntax stx
+  let deprecations := getDeprecatedSyntax (← getFileMap) stx
   -- Using `withSetOptionIn` here, allows the linter to parse also the "leading" `set_option`s
   -- but then flagging them only if the corresponding option is still set after elaborating the
   -- leading `set_option`s.
