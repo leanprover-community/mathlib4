@@ -56,28 +56,38 @@ structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop
 
 variable {f : α → α} {μ : Measure α}
 
-/-- To prove that a quasi-measure-preserving `f` is pre-ergodic, it suffices to check the ergodicity
-condition on strictly invariant measurable sets. -/
-theorem PreErgodic.of_preimage_eq (hf : QuasiMeasurePreserving f μ μ)
+/-- To prove that a measurable quasi-measure-preserving `f` is pre-ergodic, it suffices to check the
+ergodicity condition on strictly invariant measurable sets. -/
+theorem PreErgodic.of_preimage_eq (hfm : Measurable f) (hf : QuasiMeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     PreErgodic f μ where
   aeconst_set _s hsm hs :=
-    let ⟨_t, htm, hts, htf⟩ := hf.exists_preimage_eq_of_preimage_ae hsm hs
+    let ⟨_t, htm, hts, htf⟩ := hf.exists_preimage_eq_of_preimage_ae hfm hsm hs
     (h htm htf).congr hts
+
+theorem PreErgodic.of_preimage_eq_of_isComplete [μ.IsComplete] (hf : QuasiMeasurePreserving f μ μ)
+    (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
+    PreErgodic f μ :=
+  .of_preimage_eq (aemeasurable_iff_measurable.1 hf.aemeasurable) hf h
 
 /-- To prove that a quasi-measure-preserving `f` is ergodic, it suffices to check the ergodicity
 condition on strictly invariant measurable sets. -/
 theorem Ergodic.of_preimage_eq (hf : MeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     Ergodic f μ :=
-  ⟨hf, .of_preimage_eq hf.quasiMeasurePreserving h⟩
+  ⟨hf, .of_preimage_eq hf.measurable hf.quasiMeasurePreserving h⟩
 
-/-- To prove that a quasi-measure-preserving `f` is quasi-ergodic, it suffices to check the
-ergodicity condition on strictly invariant measurable sets. -/
-theorem QuasiErgodic.of_preimage_eq (hf : QuasiMeasurePreserving f μ μ)
+/-- To prove that a measurable quasi-measure-preserving `f` is quasi-ergodic, it suffices to check
+the ergodicity condition on strictly invariant measurable sets. -/
+theorem QuasiErgodic.of_preimage_eq (hfm : Measurable f) (hf : QuasiMeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     QuasiErgodic f μ :=
-  ⟨hf, .of_preimage_eq hf h⟩
+  ⟨hf, .of_preimage_eq hfm hf h⟩
+
+theorem QuasiErgodic.of_preimage_eq_of_isComplete [μ.IsComplete] (hf : QuasiMeasurePreserving f μ μ)
+    (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
+    QuasiErgodic f μ :=
+  ⟨hf, .of_preimage_eq_of_isComplete hf h⟩
 
 namespace PreErgodic
 
@@ -178,8 +188,8 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
   ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
 
-theorem zero_measure {f : α → α} (hf : Measurable f) : @QuasiErgodic α m f 0 where
-  measurable := hf
+theorem zero_measure {f : α → α} : @QuasiErgodic α m f 0 where
+  aemeasurable := aemeasurable_zero_measure
   absolutelyContinuous := by simp
   toPreErgodic := .zero_measure f
 
