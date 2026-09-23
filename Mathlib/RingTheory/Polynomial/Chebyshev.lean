@@ -173,7 +173,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [T_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1, neg_mul,
@@ -346,14 +346,14 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
     norm_cast
-    norm_num
+    simp
     ring
 
 theorem U_eval_zero (n : ℤ) :
@@ -496,6 +496,7 @@ theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := 
     show n + 2 + 1 - 2 = n + 1 by ring] at h
   linear_combination (norm := ring_nf) h
 
+@[dlmf 18.9.E9]
 theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
   linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
 
@@ -603,7 +604,7 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [C_sub_one, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1, neg_mul,
@@ -712,14 +713,14 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
     norm_cast
-    norm_num
+    simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [S_sub_one, eval_sub, eval_mul, eval_X, mul_neg, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
     norm_cast
-    norm_num
+    simp
     ring
 
 theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
@@ -846,6 +847,7 @@ theorem algebraMap_eval_S [Algebra R R'] (x : R) (n : ℤ) :
     algebraMap R R' ((S R n).eval x) = (S R' n).eval (algebraMap R R' x) := by
   rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
+@[dlmf 18.9.E21]
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -1078,6 +1080,7 @@ variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
 polynomials. -/
+@[dlmf 18.18.E21]
 theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
   induction k using Polynomial.Chebyshev.induct with
   | zero => simp [two_mul]

@@ -27,6 +27,8 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 - `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
   map `P.map` from `σ` to `ι`. This map is used to define the differential of a
   presubmersive presentation.
+- `PreSubmersivePresentation.mvPolynomial`: The canonical presentation of `MvPolynomial ι R`,
+  viewed as a presubmersive presentation via the (empty) map from its relations to its generators.
 
 For a presubmersive presentation `P` of `S` over `R` we make the following definitions:
 
@@ -165,7 +167,7 @@ lemma isUnit_jacobian_iff_aevalDifferential_bijective :
 lemma isUnit_jacobian_of_linearIndependent_of_span_eq_top
     (hli : LinearIndependent S (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j)))
     (hsp : Submodule.span S
-      (Set.range <| (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
+      (Set.range (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
     IsUnit P.jacobian := by
   classical
   rw [isUnit_jacobian_iff_aevalDifferential_bijective]
@@ -200,7 +202,7 @@ lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} 
   rw [jacobian_eq_jacobiMatrix_det, jacobian_eq_jacobiMatrix_det]
   simp only [ofAlgEquiv_toPresentation, Presentation.ofAlgEquiv_toGenerators,
     jacobiMatrix_ofAlgEquiv, Generators.algebraMap_apply, Generators.ofAlgEquiv_val,
-    ← AlgHom.coe_coe e, MvPolynomial.comp_aeval_apply]
+    ← AlgHom.coe_ofClass e, MvPolynomial.comp_aeval_apply]
   simp [Function.comp_def]
 
 /-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
@@ -219,6 +221,20 @@ lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     ext (i j : PEmpty)
     contradiction
   rw [jacobian_eq_jacobiMatrix_det, RingHom.map_det, this, Matrix.det_one]
+
+variable (R ι) in
+/-- The canonical pre-submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+@[simps -fullyApplied map]
+noncomputable def mvPolynomial :
+    PreSubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  map := PEmpty.elim
+  map_inj := PEmpty.elim.injective_of_subsingleton
+  __ := Presentation.mvPolynomial R ι
+
+@[simp]
+lemma jacobian_mvPolynomial : (mvPolynomial R ι).jacobian = 1 := by
+  rw [jacobian_eq_jacobiMatrix_det, Matrix.det_isEmpty, map_one]
 
 section Localization
 
@@ -524,6 +540,12 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 noncomputable def id : SubmersivePresentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
   ofBijectiveAlgebraMap Function.bijective_id
 
+/-- The canonical submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+noncomputable def mvPolynomial : SubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  __ := PreSubmersivePresentation.mvPolynomial R ι
+  jacobian_isUnit := by simp
+
 section Composition
 variable {R S ι σ}
 variable {T ι' σ' : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -535,7 +557,7 @@ noncomputable def comp : SubmersivePresentation R T (ι' ⊕ ι) (σ' ⊕ σ) wh
   __ := Q.toPreSubmersivePresentation.comp P.toPreSubmersivePresentation
   jacobian_isUnit := by
     rw [comp_jacobian_eq_jacobian_smul_jacobian, Algebra.smul_def, IsUnit.mul_iff]
-    exact ⟨RingHom.isUnit_map _ <| P.jacobian_isUnit, Q.jacobian_isUnit⟩
+    exact ⟨RingHom.isUnit_map _ P.jacobian_isUnit, Q.jacobian_isUnit⟩
 
 end Composition
 

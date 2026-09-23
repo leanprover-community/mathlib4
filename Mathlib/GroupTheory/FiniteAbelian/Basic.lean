@@ -192,9 +192,9 @@ theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG :
       Nonempty <| G ≃* (j → Multiplicative ℤ) × ((i : ι) → Multiplicative (ZMod (p i ^ e i))) := by
   obtain ⟨n, ι, inst, x, p, e, equiv⟩ := AddCommGroup.equiv_free_prod_directSum_zmod (Additive G)
   exact ⟨ι, Fin n, inst, inferInstance, x, p, e, ⟨MulEquiv.toAdditive.symm <| equiv.some.trans <|
-    ((Finsupp.addEquivFunOnFinite.trans <| ((AddEquiv.piAdditive _).trans <|
+    ((Finsupp.addEquivFunOnFinite.trans ((AddEquiv.piAdditive _).trans <|
         (AddEquiv.additiveMultiplicative ℤ).arrowCongr (Equiv.refl _)).symm).prodCongr
-          (DirectSum.addEquivProd _ )).trans <| (AddEquiv.prodAdditive _ _).symm⟩⟩
+          (DirectSum.addEquivProd _ )).trans (AddEquiv.prodAdditive _ _).symm⟩⟩
 
 end CommGroup
 
@@ -241,7 +241,7 @@ lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ
   have := isFiniteRelIndex_map_nsmulAddMonoidHom_of_fg this hn
   refine isFiniteRelIndex_of_le_left (H := A.toAddSubgroup.map (nsmulAddMonoidHom n))
     A.toAddSubgroup ?_
-  rw [SetLike.le_def] at h ⊢
+  rw [IsConcreteLE.le_iff] at h ⊢
   simpa using h
 
 end Submodule

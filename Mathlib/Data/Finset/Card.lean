@@ -75,7 +75,7 @@ theorem card_mono : Monotone (@card α) := by apply card_le_card
 
 @[simp] lemma card_eq_zero : #s = 0 ↔ s = ∅ := Multiset.card_eq_zero.trans val_eq_zero
 lemma card_ne_zero : #s ≠ 0 ↔ s.Nonempty := card_eq_zero.ne.trans nonempty_iff_ne_empty.symm
-@[simp] lemma card_pos : 0 < #s ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
+@[simp, grind =] lemma card_pos : 0 < #s ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
 @[simp] lemma one_le_card : 1 ≤ #s ↔ s.Nonempty := card_pos
 
 alias ⟨_, Nonempty.card_pos⟩ := card_pos
@@ -756,6 +756,10 @@ theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
+lemma Nontrivial.one_lt_card (hs : s.Nontrivial) : 1 < #s := s.one_lt_card_iff_nontrivial.mpr hs
+
+lemma Nontrivial.two_le_card (hs : s.Nontrivial) : 2 ≤ #s := s.one_lt_card_iff_nontrivial.mpr hs
+
 /-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
     cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/
 theorem existsUnique_notMem_image_of_injOn_of_card_eq_add_one
@@ -936,7 +940,7 @@ theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
 theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
-  Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
+  Subrelation.wf H <| InvImage.wf _ (Nat.lt_wfRel).2
 
 /--
 To prove a proposition for an arbitrary `Finset α`,

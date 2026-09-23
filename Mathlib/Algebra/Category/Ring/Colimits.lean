@@ -177,7 +177,7 @@ theorem quot_mul (x y) :
 
 /-- The bundled ring giving the colimit of a diagram. -/
 def colimit : RingCat :=
-  RingCat.of (ColimitType F)
+  ↧(ColimitType F)
 
 /-- The function from a given ring in the diagram to the colimit ring. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
@@ -477,7 +477,7 @@ theorem quot_mul (x y) :
 
 /-- The bundled commutative ring giving the colimit of a diagram. -/
 def colimit : CommRingCat :=
-  CommRingCat.of (ColimitType F)
+  ↧(ColimitType F)
 
 /-- The function from a given commutative ring in the diagram to the colimit commutative ring. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
@@ -485,7 +485,7 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 
 /-- The ring homomorphism from a given commutative ring in the diagram to the colimit commutative
 ring. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom <|
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom
   { toFun := coconeFun F j
     map_one' := by apply Quot.sound; apply Relation.one
     map_mul' := by intros; apply Quot.sound; apply Relation.mul
