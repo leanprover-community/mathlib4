@@ -33,6 +33,7 @@ variable {C : Type u} [Category.{v} C]
 
 /-- Given `J : GrothendieckTopology C`, `X : C` and `M : A`, this is the associated
 sheaf to the presheaf `Presheaf.freeYoneda X M`. -/
+@[implicit_reducible]
 noncomputable def freeYoneda (X : C) (M : A) : Sheaf J A :=
   (presheafToSheaf J A).obj (Presheaf.freeYoneda X M)
 
@@ -52,7 +53,6 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Sheaf J A} :
     (freeYoneda J X M ⟶ F) ≃ (M ⟶ F.obj.obj (op X)) :=
   ((sheafificationAdjunction J A).homEquiv _ _).trans Presheaf.freeYonedaHomEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 variable {J} in
 @[reassoc]
 lemma freeYonedaHomEquiv_naturality {X Y : C} {M : A} {F : Sheaf J A}
@@ -63,7 +63,6 @@ lemma freeYonedaHomEquiv_naturality {X Y : C} {M : A} {F : Sheaf J A}
   rw [Adjunction.homEquiv_naturality_left]
   exact Presheaf.freeYonedaHomEquiv_naturality f _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S)) :
     ObjectProperty.IsSeparating (.ofObj (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))) := by
   intro F G f g hfg
