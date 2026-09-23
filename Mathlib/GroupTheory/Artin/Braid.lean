@@ -144,17 +144,15 @@ def braidGroupTwoEquivInt : BraidGroup 2 ≃* Multiplicative ℤ := by
   have h : Subgroup.normalClosure (CoxeterMatrix.A 1).artinRelationsSet = ⊥ := by
     rw [artinRelationsSet_A_one_eq_one, Subgroup.normalClosure_singleton_one]
   -- Chain: PresentedGroup rels ≃* FreeGroup (Fin 1) ⧸ ⊥ ≃*
-  --        FreeGroup (Fin 1) ≃* FreeGroup Unit ≃* Multiplicative ℤ
+  --        FreeGroup (Fin 1) ≃* Multiplicative ℤ
   exact (QuotientGroup.quotientMulEquivOfEq h).trans
-    (QuotientGroup.quotientBot.trans
-      ((FreeGroup.freeGroupCongr (Equiv.equivPUnit (Fin 1))).trans
-        FreeGroup.freeGroupUnitMulEquivInt))
+    (QuotientGroup.quotientBot.trans FreeGroup.mulEquivIntOfUnique)
 
 /-- The generator $σ_0$ of $B_2$ maps to $1$ under the isomorphism with $ℤ$. -/
 @[simp]
 theorem braidGroupTwoEquivInt_σ :
     braidGroupTwoEquivInt (σ 0) = Multiplicative.ofAdd 1 := by
-  simp only [braidGroupTwoEquivInt, FreeGroup.freeGroupUnitMulEquivInt]
+  simp only [braidGroupTwoEquivInt, FreeGroup.mulEquivIntOfUnique]
   rfl
 
 end BraidGroup
