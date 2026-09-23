@@ -311,7 +311,6 @@ section Projective
 
 variable {R : Type*} [CommSemiring R]
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
--- (.id : (M₁ →ₛₗ[I₁] M) →ₗ[S₂] M₁ →ₛₗ[I₁] M)
 
 /-- The identity pairing is right-separating. -/
 protected theorem SeparatingRight.id : SeparatingRight (.id : (M →ₗ[R] R) →ₗ[R] M →ₗ[R] R) :=
