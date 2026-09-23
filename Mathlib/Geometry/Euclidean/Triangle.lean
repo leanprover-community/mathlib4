@@ -546,10 +546,10 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [Norme
 variable (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
 
 /-- The height of a triangle is equal to the sine of a side angle times the same side. -/
-theorem height_eq_dist_mul_sin (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+theorem height_eq_sin_mul_dist (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     t.height i₁ = Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) *
       dist (t.points i₁) (t.points i₂) := by
-  refine dist_orthogonalProjection_eq_sin_mul_dist_of_collinear ?_ ?_ ?_ ?_
+  refine dist_orthogonalProjection_eq_sin_mul_dist_of_collinear (t.points i₁) ?_ ?_ ?_ ?_
   · simp [h₁₂.symm]
   · simp [h₁₃.symm]
   · apply collinear_insert_of_mem_affineSpan_pair
