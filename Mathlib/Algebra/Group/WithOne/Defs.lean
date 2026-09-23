@@ -5,10 +5,11 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.DivInvMonoid
+public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -21,10 +22,6 @@ this provides an example of an adjunction is proved in
 Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
 `Mathlib/Algebra/GroupWithZero/Basic.lean`)
-
-## TODO
-
-`WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
 
 @[expose] public section
@@ -85,6 +82,10 @@ instance inhabited : Inhabited (WithOne α) :=
 instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
+@[to_additive]
+instance [IsEmpty α] : Subsingleton (WithOne α) :=
+  inferInstanceAs <| Subsingleton (Option α)
+
 /-- The canonical map from `α` into `WithOne α` -/
 @[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=
@@ -100,15 +101,9 @@ lemma «forall» {p : WithOne α → Prop} : (∀ x, p x) ↔ p 1 ∧ ∀ a : α
 @[to_additive]
 lemma «exists» {p : WithOne α → Prop} : (∃ x, p x) ↔ p 1 ∨ ∃ a : α, p a := Option.exists
 
-/-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def _root_.WithZero.recZeroCoe {motive : WithZero α → Sort*} (zero : motive 0)
-    (coe : ∀ a : α, motive a) : ∀ n : WithZero α, motive n
-  | Option.none => zero
-  | Option.some x => coe x
-
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
-@[to_additive existing, elab_as_elim, induction_eliminator, cases_eliminator]
+@[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)
+/-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/]
 def recOneCoe {motive : WithOne α → Sort*} (one : motive 1) (coe : ∀ a : α, motive a) :
     ∀ n : WithOne α, motive n
   | Option.none => one
@@ -162,7 +157,8 @@ lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
   Option.some_injective _
 
 @[to_additive (attr := elab_as_elim)]
-protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
+protected theorem cases_on {motive : WithOne α → Prop} :
+    ∀ x : WithOne α, (one : motive 1) → (coe : ∀ a : α, motive a) → motive x :=
   Option.casesOn
 
 @[to_additive]

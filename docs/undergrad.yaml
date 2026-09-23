@@ -291,7 +291,7 @@ Single Variable Real Analysis:
     completeness of R: 'Real.instCompleteSpace'
     Bolzano-Weierstrass theorem: 'tendsto_subseq_of_bounded'
     compact subsets of $\R$: 'Metric.isCompact_iff_isClosed_bounded'
-    connected subsets of $\R$: 'setOf_isPreconnected_eq_of_ordered'
+    connected subsets of $\R$: 'setOfPred_isPreconnected_eq_of_ordered'
     additive subgroups of $\R$: 'AddSubgroup.dense_or_cyclic'
   Numerical series:
     Convergence of real-valued series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'

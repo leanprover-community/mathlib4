@@ -18,7 +18,7 @@ public section
 
 namespace SpectrumRestricts
 
-open NNReal ENNReal
+open NNReal
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
@@ -57,7 +57,7 @@ end SpectrumRestricts
 
 namespace QuasispectrumRestricts
 
-open NNReal ENNReal
+open NNReal
 local notation "σₙ" => quasispectrum
 
 variable {A : Type*} [NonUnitalRing A]
@@ -84,12 +84,9 @@ lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A 
 
 end QuasispectrumRestricts
 
-variable {A : Type*} [Ring A] [PartialOrder A]
-
-open scoped NNReal
-
-lemma coe_mem_spectrum_real_of_nonneg [Algebra ℝ A] [NonnegSpectrumClass ℝ A] {a : A} {x : ℝ≥0}
-    (ha : 0 ≤ a := by cfc_tac) :
-    (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a := by
-  simp [← (SpectrumRestricts.nnreal_of_nonneg ha).algebraMap_image, Set.mem_image,
-    NNReal.algebraMap_eq_coe]
+open scoped NNReal in
+@[deprecated spectrum.algebraMap_mem_iff +typeChanged (since := "2026-09-22")]
+lemma coe_mem_spectrum_real_of_nonneg {A : Type*} [Ring A] [PartialOrder A] [Algebra ℝ A]
+    {a : A} {x : ℝ≥0} (_ha : 0 ≤ a := by cfc_tac) :
+    (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a :=
+  spectrum.algebraMap_mem_iff ℝ (R := ℝ≥0)

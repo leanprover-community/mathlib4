@@ -81,7 +81,7 @@ lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = 
 
 /-- `Polynomial.mkDerivation` as a linear equivalence. -/
 def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
-  LinearEquiv.symm <|
+  LinearEquiv.symm
     { invFun := mkDerivation R
       toFun := fun D => D X
       map_add' := fun _ _ => rfl

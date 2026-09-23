@@ -116,8 +116,6 @@ lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
 theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
   hL.isChain.sortedLT
 
-@[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
-
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
 @[grind →]
 lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :

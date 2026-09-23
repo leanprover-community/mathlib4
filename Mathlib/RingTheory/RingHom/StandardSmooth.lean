@@ -227,7 +227,7 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
       exact congr($H)
     relation := e.symm ∘ P.relation
     span_range_relation_eq_ker := by
-      rw [Set.range_comp, ← AlgEquiv.coe_ringEquiv e.symm, AlgEquiv.symm_toRingEquiv,
+      rw [Set.range_comp, ← AlgEquiv.coe_toRingEquiv e.symm, AlgEquiv.symm_toRingEquiv,
         ← Ideal.map_span, P.span_range_relation_eq_ker, Ideal.map_symm]
       exact congr(RingHom.ker $H).symm
     map := _
@@ -253,7 +253,6 @@ where `n` is the relative dimension and `R[X₁,...,Xₙ] → S` is etale. -/
 theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
     {f : R →+* S} {n : ℕ} (hf : f.IsStandardSmoothOfRelativeDimension n) :
     ∃ g : MvPolynomial (Fin n) R →+* S, g.comp MvPolynomial.C = f ∧ g.Etale := by
-  classical
   algebraize [f]
   obtain ⟨g, hg⟩ := Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial n R S
   exact ⟨_, g.comp_algebraMap, hg⟩

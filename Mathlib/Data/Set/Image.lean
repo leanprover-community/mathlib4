@@ -100,8 +100,10 @@ theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
   rfl
 
 @[simp]
-theorem preimage_setOf_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
+theorem preimage_ofPred_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias preimage_setOf_eq := preimage_ofPred_eq
 
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
@@ -317,6 +319,7 @@ theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
     Compl.compl '' Compl.compl '' s = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
+@[simp]
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
     f '' insert a s = insert (f a) (f '' s) := by grind
 
@@ -367,7 +370,7 @@ theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f 
 theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' sᶜ = (f '' s)ᶜ :=
   Subset.antisymm (image_compl_subset H.1) (subset_image_compl H.2)
 
-private theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
+theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
 
@@ -376,7 +379,7 @@ theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s 
     (Subset.trans (image_sdiff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
     (subset_image_sdiff f s t)
 
-@[deprecated image_sdiff (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
+@[deprecated (since := "2026-06-03")] alias subset_image_diff := subset_image_sdiff
 @[deprecated (since := "2026-06-03")] alias image_diff := image_sdiff
 
 open scoped symmDiff in
@@ -433,12 +436,12 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
 
 @[simp]
 theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  rw [← Injective.of_comp_iff Set.mem_injective, ← Injective.of_comp_iff' _ Set.setOf_bijective]
+  rw [← Injective.of_comp_iff Set.mem_injective, ← Injective.of_comp_iff' _ Set.ofPred_bijective]
   exact injective_comp_right_iff_surjective
 
 @[simp]
 theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  rw [← Surjective.of_comp_iff _ Set.setOf_bijective.surjective,
+  rw [← Surjective.of_comp_iff _ Set.ofPred_bijective.surjective,
     ← Surjective.of_comp_iff' Set.mem_bijective]
   exact surjective_comp_right_iff_injective
 
@@ -473,8 +476,10 @@ theorem image_sdiff_preimage {f : α → β} {s : Set α} {t : Set β} :
 theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
   image_eq_preimage_of_inverse compl_compl compl_compl
 
-theorem compl_image_set_of {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
+theorem compl_image_ofPred {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
   congr_fun compl_image {x | p x}
+
+@[deprecated (since := "2026-07-13")] alias compl_image_set_of := compl_image_ofPred
 
 theorem inter_preimage_subset (s : Set α) (t : Set β) (f : α → β) :
     s ∩ f ⁻¹' t ⊆ f ⁻¹' (f '' s ∩ t) := fun _ h => ⟨mem_image_of_mem _ h.left, h.right⟩
@@ -869,7 +874,7 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
     range (Subtype.map f h) = (↑) ⁻¹' f '' { x | p x } := by
   ext ⟨x, hx⟩
   simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
-  simp only [Subtype.mk.injEq, exists_prop, mem_setOf_eq]
+  simp only [Subtype.mk.injEq, exists_prop, mem_ofPred_eq]
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=
   image_eq_preimage_of_inverse Prod.swap_leftInverse Prod.swap_rightInverse

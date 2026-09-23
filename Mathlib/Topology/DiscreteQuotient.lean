@@ -74,11 +74,14 @@ variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Topologic
 @[ext]
 structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is an open set. -/
-  protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid x))
+  protected isOpen_setOfPred_rel : ∀ x, IsOpen (Set.ofPred (toSetoid x))
 
 namespace DiscreteQuotient
 
 variable (S : DiscreteQuotient X)
+
+@[deprecated (since := "2026-07-09")]
+protected alias isOpen_setOf_rel := DiscreteQuotient.isOpen_setOfPred_rel
 
 lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
@@ -86,7 +89,7 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
 /-- Construct a discrete quotient from a clopen set. -/
 def ofIsClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
   toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
-  isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [hx, h.1, h.2, ← compl_setOf]
+  isOpen_setOfPred_rel x := by by_cases hx : x ∈ A <;> simp [hx, h.1, h.2, ← compl_ofPred]
 
 theorem refl : ∀ x, S.toSetoid x x := S.refl'
 
@@ -106,7 +109,7 @@ instance : TopologicalSpace S :=
 /-- The projection from `X` to the given discrete quotient. -/
 def proj : X → S := Quotient.mk''
 
-theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
+theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = Set.ofPred (S.toSetoid x) :=
   Set.ext fun _ => eq_comm.trans Quotient.eq''
 
 theorem proj_surjective : Function.Surjective S.proj :=
@@ -121,7 +124,7 @@ theorem proj_continuous : Continuous S.proj :=
 instance : DiscreteTopology S :=
   discreteTopology_iff_isOpen_singleton.2 <| S.proj_surjective.forall.2 fun x => by
     rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
-    exact S.isOpen_setOf_rel _
+    exact S.isOpen_setOfPred_rel _
 
 theorem proj_isLocallyConstant : IsLocallyConstant S.proj :=
   (IsLocallyConstant.iff_continuous S.proj).2 S.proj_continuous
@@ -135,9 +138,12 @@ theorem isOpen_preimage (A : Set S) : IsOpen (S.proj ⁻¹' A) :=
 theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
   (S.isClopen_preimage A).1
 
-theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
+theorem isClopen_setOfPred_rel (x : X) : IsClopen (Set.ofPred (S.toSetoid x)) := by
   rw [← fiber_eq]
   apply isClopen_preimage
+
+@[deprecated (since := "2026-07-09")]
+alias isClopen_setOf_rel := isClopen_setOfPred_rel
 
 instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
@@ -170,7 +176,7 @@ variable (g : C(Y, Z)) (f : C(X, Y))
 /-- Comap a discrete quotient along a continuous map. -/
 def comap (S : DiscreteQuotient Y) : DiscreteQuotient X where
   toSetoid := Setoid.comap f S.1
-  isOpen_setOf_rel _ := (S.2 _).preimage f.continuous
+  isOpen_setOfPred_rel _ := (S.2 _).preimage f.continuous
 
 @[simp]
 theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl
@@ -228,12 +234,13 @@ end OfLE
 instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
-      isOpen_setOf_rel := fun x => by
+      isOpen_setOfPred_rel := fun x => by
         convert! isOpen_connectedComponent (x := x)
         ext y
         simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
-    (S.isClopen_setOf_rel x).connectedComponent_subset (S.refl _) <| h.symm ▸ mem_connectedComponent
+    (S.isClopen_setOfPred_rel x).connectedComponent_subset (S.refl _) <|
+      h.symm ▸ mem_connectedComponent
 
 @[simp]
 theorem proj_bot_eq [LocallyConnectedSpace X] {x y : X} :
@@ -367,7 +374,7 @@ lemma comp_finsetClopens [CompactSpace X] :
     (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ (↑)) ∘
       finsetClopens X = fun ⟨f, _⟩ ↦ f.classes := by
   ext d
-  simp only [Setoid.classes, Set.mem_setOf_eq, Function.comp_apply,
+  simp only [Setoid.classes, Set.mem_ofPred_eq, Function.comp_apply,
     finsetClopens, Set.coe_toFinset, Set.mem_image, Set.mem_range,
     exists_exists_eq_and]
   constructor
@@ -404,7 +411,7 @@ variable (f : LocallyConstant X α)
 /-- Any locally constant function induces a discrete quotient. -/
 def discreteQuotient : DiscreteQuotient X where
   toSetoid := .comap f ⊥
-  isOpen_setOf_rel _ := f.isLocallyConstant _
+  isOpen_setOfPred_rel _ := f.isLocallyConstant _
 
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/

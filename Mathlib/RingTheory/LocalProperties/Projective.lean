@@ -31,8 +31,8 @@ public section
 
 universe uM
 
-variable {R N N' : Type*} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-variable [Module R N] [AddCommGroup N'] [Module R N'] (S : Submonoid R)
+variable {R N : Type*} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable [Module R N] (S : Submonoid R)
 
 theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]

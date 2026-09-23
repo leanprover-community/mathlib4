@@ -66,9 +66,6 @@ see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 class IsSepClosed : Prop where
   splits_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
-@[deprecated (since := "2025-12-09")]
-alias IsSepClosed.factors_of_separable := IsSepClosed.splits_of_separable
-
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
   ⟨fun p _ ↦ IsAlgClosed.splits p⟩
@@ -280,12 +277,15 @@ namespace IsSepClosed
 variable {K : Type u} (L : Type v) {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsSepClosed M]
 
-theorem surjective_restrictDomain_of_isSeparable {E : Type*}
+theorem surjective_domRestrict_of_isSeparable {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsSeparable L E] :
-    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.domRestrict L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
     fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
       IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
+
+@[deprecated (since := "2026-07-19")]
+alias surjective_restrictDomain_of_isSeparable := surjective_domRestrict_of_isSeparable
 
 variable [Algebra.IsSeparable K L] {L}
 

@@ -92,6 +92,7 @@ section
 variable {R : Type*} (S T A : Type*) [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T] [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of an `S`-algebra `A` over `R` with the quotient of `T` by an ideal `I`
 is isomorphic (as an `S`-algebra) to the quotient of `A ⊗[R] T` by the extended ideal. -/
 noncomputable def tensorQuotientEquiv (I : Ideal T) :
@@ -126,7 +127,7 @@ noncomputable def quotientTensorEquiv (I : Ideal A) :
     (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) where
   __ := (TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
     (tensorQuotientEquiv (R := R) R A T I).toRingEquiv.trans <|
-    Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv <| (I.map_map _ _).symm
+    Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv (I.map_map _ _).symm
   commutes' _ := rfl
 
 @[simp]
@@ -184,6 +185,7 @@ lemma Algebra.tensorQuotientTensorEquiv_tmul (e : R' ⊗[R] S) (a : R'') (b : R'
       Ideal.Quotient.mk _ ((a * algebraMap R' R'' b) ⊗ₜ c) := by
   simp [Algebra.tensorQuotientTensorEquiv, ← Ideal.Quotient.mk_algebraMap, ← map_mul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Algebra.tensorQuotientTensorEquiv_symm_tmul (e : R' ⊗[R] S) (a : R'') (b : S) :
     (Algebra.tensorQuotientTensorEquiv R'' e).symm (Ideal.Quotient.mk _ (a ⊗ₜ b)) =

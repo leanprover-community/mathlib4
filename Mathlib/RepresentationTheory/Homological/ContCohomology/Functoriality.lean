@@ -59,6 +59,7 @@ lemma resolutionMap_zero (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
 lemma resolutionMap_succ (φ : H →ₜ* G) (f : res φ X ⟶ Y) (i : ℕ) :
     resolutionMap φ f (i + 1) = ofHom (coind₁ResMap φ (resolutionMap φ f i).hom) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma resolutionMap_id (X : TopRep k G) (i : ℕ) :
     resolutionMap (ContinuousMonoidHom.id G) (𝟙 X) i = 𝟙 (resolutionX X i) := by
@@ -107,6 +108,7 @@ def cochainsMap (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     rw [homogeneousCochains.d_eq, homogeneousCochains.d_eq, ← invariantsResMap_comp,
       resolutionMap_comp_d, invariantsResMap_map_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma cochainsMap_id (X : TopRep k G) :
     cochainsMap (ContinuousMonoidHom.id G) (𝟙 X) = 𝟙 (homogeneousCochains X) := by

@@ -58,7 +58,11 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 open NormedSpace selfAdjoint Bornology Complex
 open scoped ComplexStarModule
 
-variable {A : Type*} [CStarAlgebra A] {a b x : A} [IsStarNormal a] [IsStarNormal b]
+variable {A : Type*}
+
+section Unital
+
+variable [CStarAlgebra A] {a b x : A} [IsStarNormal a] [IsStarNormal b]
 
 /-- The map `expMulMulExp : ℂ → A` given by `z ↦ exp (z • star b) * x * exp (z • star (-a))` for
 fixed `a b x : A`. -/
@@ -97,32 +101,6 @@ lemma SemiconjBy.star_right_of_unital (h : SemiconjBy x a b) :
   let _ := invertibleExp (z • star a)
   simpa [← mul_assoc, ← invOf_exp, expMulMulExp] using
     congr($(expMulMulExp_const h z) * exp (z • star a)).symm
-
-/-- **Fuglede–Putnam–Rosenblum**: If `a` and `b` are normal elements in a C⋆-algebra `A` which
-are interwined by `x`, then `star a` and `star b` are also intertwined by `x`. -/
-public lemma SemiconjBy.star_right {A : Type*} [NonUnitalCStarAlgebra A] {a b x : A}
-    (ha : IsStarNormal a) (hb : IsStarNormal b) (h : SemiconjBy x a b) :
-    SemiconjBy x (star a) (star b) := by
-  apply Unitization.inr_injective (R := ℂ)
-  simp only [Unitization.inr_mul, Unitization.inr_star]
-  apply SemiconjBy.star_right_of_unital
-  simpa [SemiconjBy] using mod_cast h.eq
-
-public alias fuglede_putnam_rosenblum := SemiconjBy.star_right
-
-/-- **Fuglede–Putnam–Rosenblum**: If `a` is a normal element in a C⋆-algebra `A` which
-commutes with `x`, then `star a` commutes with `x`. -/
-public lemma IsStarNormal.commute_star_right {A : Type*} [NonUnitalCStarAlgebra A] {a x : A}
-    (ha : IsStarNormal a) (h : Commute x a) :
-    Commute x (star a) :=
-  h.semiconjBy.star_right ha ha
-
-/-- **Fuglede–Putnam–Rosenblum**: If `a` is a normal element in a C⋆-algebra `A` which
-commutes with `x`, then `star a` commutes with `x`. -/
-public lemma IsStarNormal.commute_star_left {A : Type*} [NonUnitalCStarAlgebra A] {a x : A}
-    (ha : IsStarNormal a) (h : Commute a x) :
-    Commute (star a) x :=
-  ha.commute_star_right h.symm |>.symm
 
 /-- A characterization of normal elements in a C⋆-algebra in terms of exponentials. -/
 public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
@@ -176,3 +154,80 @@ public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
     rw [← sub_eq_zero] at h₄ ⊢
     rw [← h₄]
     noncomm_ring
+
+end Unital
+
+section NonUnital
+
+variable [NonUnitalCStarAlgebra A] {a b x : A}
+
+/-- **Fuglede–Putnam–Rosenblum**: If `a` and `b` are normal elements in a C⋆-algebra `A` which
+are interwined by `x`, then `star a` and `star b` are also intertwined by `x`. -/
+public lemma SemiconjBy.star_right (ha : IsStarNormal a) (hb : IsStarNormal b)
+    (h : SemiconjBy x a b) : SemiconjBy x (star a) (star b) := by
+  apply Unitization.inr_injective (R := ℂ)
+  simp only [Unitization.inr_mul, Unitization.inr_star]
+  apply SemiconjBy.star_right_of_unital
+  simpa [SemiconjBy] using mod_cast h.eq
+
+public alias fuglede_putnam_rosenblum := SemiconjBy.star_right
+
+/-- **Fuglede–Putnam–Rosenblum**: If `a` is a normal element in a C⋆-algebra `A` which
+commutes with `x`, then `star a` commutes with `x`. -/
+public lemma IsStarNormal.commute_star_right (ha : IsStarNormal a) (h : Commute x a) :
+    Commute x (star a) :=
+  h.semiconjBy.star_right ha ha
+
+/-- **Fuglede–Putnam–Rosenblum**: If `a` is a normal element in a C⋆-algebra `A` which
+commutes with `x`, then `star a` commutes with `x`. -/
+public lemma IsStarNormal.commute_star_left (ha : IsStarNormal a) (h : Commute a x) :
+    Commute (star a) x :=
+  ha.commute_star_right h.symm |>.symm
+
+public lemma Set.Pairwise.commute_star_right {s : Set A}
+    (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
+    s.Pairwise (Commute · <| star ·) :=
+  fun _ hx _ hy hxy ↦ (hs' _ hy).commute_star_right (hs hx hy hxy)
+
+public lemma Set.Pairwise.commute_star_left {s : Set A}
+    (hs : s.Pairwise Commute) (hs' : ∀ x ∈ s, IsStarNormal x) :
+    s.Pairwise (fun x y ↦ Commute (star x) y) :=
+  fun _ hx _ hy hxy ↦ (hs' _ hx).commute_star_left (hs hx hy hxy)
+
+public lemma Set.Pairwise.commute_union_star_self_iff_of_isStarNormal {s : Set A}
+    (hs : ∀ x ∈ s, IsStarNormal x) :
+    (s ∪ star s).Pairwise Commute ↔ s.Pairwise Commute := by
+  rw [commute_union_star_self_iff, and_iff_left_iff_imp]
+  exact fun hs' ↦ ⟨hs'.commute_star_right hs, hs⟩
+
+open NonUnitalStarAlgebra
+
+public lemma CStarAlgebra.isMulCommutative_nonUnital_adjoin {s : Set A}
+    (hs : ∀ x ∈ s, IsStarNormal x) (hs' : s.Pairwise Commute) :
+    IsMulCommutative (adjoin ℂ s) :=
+  isMulCommutative_adjoin ℂ hs hs' (hs'.commute_star_right hs)
+
+public lemma CStarAlgebra.isMulCommutative_nonUnital_adjoin_pair {x y : A} (h : Commute x y)
+    (hx : IsStarNormal x := by cfc_tac) (hy : IsStarNormal y := by cfc_tac) :
+    IsMulCommutative (adjoin ℂ {x, y}) :=
+  isMulCommutative_nonUnital_adjoin (by grind) (Set.pairwise_pair_of_symm_of_refl.mpr h)
+
+end NonUnital
+
+section Unital
+
+variable [CStarAlgebra A]
+
+open StarAlgebra
+
+public lemma CStarAlgebra.isMulCommutative_adjoin {s : Set A} (hs : ∀ x ∈ s, IsStarNormal x)
+    (hs' : s.Pairwise Commute) :
+    IsMulCommutative (adjoin ℂ s) :=
+  StarAlgebra.isMulCommutative_adjoin ℂ hs hs' (hs'.commute_star_right hs)
+
+public lemma CStarAlgebra.isMulCommutative_adjoin_pair {x y : A} (h : Commute x y)
+    (hx : IsStarNormal x := by cfc_tac) (hy : IsStarNormal y := by cfc_tac) :
+    IsMulCommutative (adjoin ℂ {x, y}) :=
+  isMulCommutative_adjoin (by grind) (Set.pairwise_pair_of_symm_of_refl.mpr h)
+
+end Unital

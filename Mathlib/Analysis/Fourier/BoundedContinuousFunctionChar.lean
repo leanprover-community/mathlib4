@@ -39,7 +39,7 @@ measure.
 
 @[expose] public section
 
-open Filter BoundedContinuousFunction Complex
+open BoundedContinuousFunction Complex
 
 namespace BoundedContinuousFunction
 
@@ -106,6 +106,7 @@ noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V �
   map_one' := char_zero_eq_one
   map_mul' := char_add_eq_mul (he := he) (hL := hL)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma charMonoidHom_apply (w : Multiplicative W) (v : V) :
     charMonoidHom he hL w v = e (L v w.toAdd) := by simp [charMonoidHom]
@@ -122,6 +123,7 @@ lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
   simp [charAlgHom, charMonoidHom, char, AddMonoidAlgebra.lift_apply]
   simp [Finsupp.sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The family of `ℂ`-linear combinations of `char he hL w, w : W`, is closed under `star`. -/
 lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {x : V →ᵇ ℂ} (hx : x ∈ (charAlgHom he hL).range) :

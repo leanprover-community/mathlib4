@@ -56,7 +56,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     · grind [Metric.closedBall, Real.dist_eq, Pi.sub_apply, abs_le']
     · intro A hA
       simp only [Pi.sub_apply, Real.volume_closedBall, ENNReal.coe_ofNat, Real.volume_Icc]
-      rw [show 6 = ENNReal.ofReal 6 by norm_num, ← ENNReal.ofReal_mul (by norm_num),
+      rw [show 6 = ENNReal.ofReal 6 by simp, ← ENNReal.ofReal_mul (by simp),
           ENNReal.ofReal_le_ofReal_iff (by grind)]
       linarith
     · simp +contextual [t]
@@ -76,7 +76,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
         with ε hε₁ hε₂ hε₃ hε₄
       refine ⟨(x, x + ε), ⟨⟨hx.1.1, by linarith, by linarith⟩, ?_⟩, by simp, rfl⟩
       exact hδ₂ (by grind) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
-  simp only [t, subset_def, mem_setOf_eq] at hu₁
+  simp only [t, subset_def, mem_ofPred_eq] at hu₁
   refine ⟨u, ⟨hu₁, hu₃, ?_⟩⟩
   have : Countable u := by simp [hu₂]
   have : Pairwise (Disjoint on fun (z : u) ↦ Icc z.val.1 z.val.2) :=

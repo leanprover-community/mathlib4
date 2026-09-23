@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.RepresentationTheory.Continuous.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 
 /-!
 # Topological representations
@@ -28,7 +29,7 @@ universe w u v
 /-- The category of topological representations of a monoid `G` over a topological ring `k`, and
 their morphisms. -/
 structure TopRep (k : Type u) (G : Type v) [Ring k] [TopologicalSpace k] [Monoid G] where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `TopRep k G` -/
   V : Type w
   [hV1 : AddCommGroup V]
@@ -58,8 +59,6 @@ instance : CoeSort (TopRep k G) (Type w) := ⟨TopRep.V⟩
 attribute [coe] V
 
 variable (ρ) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of topological representations associated to a type equipped with a
 continuous representation. This is the preferred way to construct a term of `TopRep k G`. -/
 abbrev of : TopRep k G := ⟨X, ρ⟩
@@ -70,28 +69,23 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `TopRep k G`. -/
 @[ext]
 structure Hom (A B : TopRep k G) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `G`-equivariant linear map. -/
   hom' : A.ρ →ⁱL B.ρ
 
 variable (A B C : TopRep.{w} k G)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (TopRep.{w} k G) where
   Hom A B := Hom A B
   id A := ⟨.id (π₁ := A.ρ)⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopRep.{w} k G) (fun A B ↦ A.ρ →ⁱL B.ρ) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 variable {A B} in
 /-- Turn a morphism in `TopRep` back into an `IntertwiningMap`. -/
@@ -164,7 +158,9 @@ variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
 
-instance : Module k (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.module k
+instance : Module k (A ⟶ B) := fast_instance%
+  { ConcreteCategory.homEquiv (X := A) with
+    map_add' := hom_add A B : (A ⟶ B) ≃+ (A.ρ →ⁱL B.ρ) }.module k
 
 lemma hom_smul (r : k) (f : A ⟶ B) : (r • f).hom = r • f.hom := rfl
 
@@ -187,6 +183,7 @@ end Linear
 
 section equivAction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor sending a topological representation to the corresponding object in
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where

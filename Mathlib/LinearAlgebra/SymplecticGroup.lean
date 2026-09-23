@@ -101,7 +101,7 @@ variable [Fintype l]
 def symplecticGroup : Submonoid (Matrix (l ⊕ l) (l ⊕ l) R) where
   carrier := { A | A * J l R * Aᵀ = J l R }
   mul_mem' {a b} ha hb := by
-    simp only [Set.mem_setOf_eq, transpose_mul] at *
+    simp only [Set.mem_ofPred_eq, transpose_mul] at *
     rw [← Matrix.mul_assoc, a.mul_assoc, a.mul_assoc, hb]
     exact ha
   one_mem' := by simp

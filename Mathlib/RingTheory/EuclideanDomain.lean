@@ -62,14 +62,14 @@ theorem isCoprime_div_gcd_div_gcd_of_gcd_ne_zero (hpq : GCDMonoid.gcd p q ≠ 0)
   (gcd_isUnit_iff _ _).1 <|
     isUnit_gcd_of_eq_mul_gcd
         (EuclideanDomain.mul_div_cancel' (hpq) <| gcd_dvd_left _ _).symm
-        (EuclideanDomain.mul_div_cancel' (hpq) <| gcd_dvd_right _ _).symm <| hpq
+        (EuclideanDomain.mul_div_cancel' (hpq) <| gcd_dvd_right _ _).symm hpq
 
 end GCDMonoid
 
 namespace EuclideanDomain
 
 /-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm

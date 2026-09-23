@@ -192,7 +192,7 @@ theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrim
 theorem ne_zero_of_coprime (hc : Int.gcd x y = 1) : z ≠ 0 := by
   suffices 0 < z * z by
     rintro rfl
-    norm_num at this
+    simp at this
   rw [← h.eq, ← sq, ← sq]
   have hc' : Int.gcd x y ≠ 0 := by
     rw [hc]
@@ -237,8 +237,6 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 
 variable {K : Type*} [Field K]
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
@@ -269,9 +267,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     simp only [Prod.mk_inj, Subtype.mk_eq_mk]
     constructor
     · simp [field, h3]
-    · simp [field, h3]
-      rw [← add_neg_eq_iff_eq_add.mpr hxy.symm]
-      ring
+    · grind
 
 @[simp]
 theorem circleEquivGen_apply (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) (x : K) :
@@ -498,7 +494,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
       · lia
-    norm_num [h2.1, h1.2.2.1] at hyo
+    simp [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
     h.IsPrimitiveClassified := by

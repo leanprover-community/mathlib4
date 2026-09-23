@@ -34,14 +34,14 @@ This file concerns bases on dual vector spaces.
 
 @[expose] public section
 
-open Module Dual Submodule LinearMap Function
+open Module Submodule LinearMap Function
 
 noncomputable section
 
 namespace Module.Basis
 
 universe u v w uR uM uK uV uι
-variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
+variable {R : Type uR} {M : Type uM} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
@@ -143,7 +143,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
   cases nonempty_fintype ι
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
-      Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
+      Finset.sum_ite_eq, ite_eq_left (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 
@@ -197,7 +197,7 @@ omit [DecidableEq ι]
 @[simp]
 theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R) (i : ι) :
     Finsupp.linearCombination R b.coord f (b i) = f i := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   rw [← coe_dualBasis, linearCombination_dualBasis]
 
 end CommSemiring
@@ -228,7 +228,7 @@ end DualBases
 
 namespace Module.DualBases
 
-open LinearMap Function
+open LinearMap
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -238,7 +238,7 @@ variable {e : ι → M} {ε : ι → Dual R M}
 def coeffs (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
   support := (h.finite m).toFinset
-  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_ofPred_eq]
 
 @[simp]
 theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i m :=
