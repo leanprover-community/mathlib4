@@ -572,6 +572,9 @@ def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
     · simp
     · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
 
+
+/-- The graph induced over the image of and embedding is isomorphic to an induction over their
+original graph -/
 noncomputable def induce_image (f : G ↪g G') {s : Set V} : G'.induce (f '' s) ≃g G.induce s where
   toFun := (Equiv.Set.image f s f.injective).symm
   invFun := Equiv.Set.image f s f.injective
