@@ -80,8 +80,9 @@ lemma IndV.inductionOn {p : IndV φ ρ → Prop} (v : IndV φ ρ) (mk : ∀ h a,
 
 @[ext]
 lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
-    (hfg : ∀ h a, f (IndV.mk φ ρ h a) = g (IndV.mk φ ρ h a)) : f = g :=
-  LinearMap.ext fun v => v.inductionOn hfg fun _ _ hx hy => by simp [hx, hy]
+    (hfg : ∀ h, f ∘ₗ IndV.mk φ ρ h = g ∘ₗ IndV.mk φ ρ h) : f = g :=
+  LinearMap.ext fun v => v.inductionOn (fun h a => congrArg (fun f => f a) (hfg h))
+    fun _ _ hx hy => by simp [hx, hy]
 
 @[simp]
 lemma IndV.mk_map_mul (g : G) (h : H) (a : A) :
