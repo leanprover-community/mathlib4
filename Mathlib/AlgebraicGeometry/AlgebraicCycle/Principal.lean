@@ -62,11 +62,8 @@ theorem divisor_mul [IsIntegral X] [IsLocallyNoetherian X]
   ext a
   by_cases ha : coheight a = 1 <;> simp_all
 
-/--
-The `divisor` construction gives a Weil divisor: its support consists of points of coheight one.
--/
-theorem divisor_support [IsIntegral X] [IsLocallyNoetherian X] {f : X.functionField} :
-    (divisor f).support ⊆ {x : X | coheight x = 1} := by
+theorem isWeilDivisor_divisor [IsIntegral X] [IsLocallyNoetherian X] {f : X.functionField} :
+    (divisor f).IsWeilDivisor := by
   intro z hz
   simp only [Function.mem_support, ne_eq] at hz
   contrapose hz
