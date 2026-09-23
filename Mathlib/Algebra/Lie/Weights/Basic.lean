@@ -87,8 +87,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
-  refine t.induction_on ?_ ?_ ?_
-  · use 0; simp only [map_zero]
+  refine t.inductionOn ?_ ?_
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
     simp only [map_add, Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
@@ -212,6 +211,7 @@ structure Weight where
 
 namespace Weight
 
+@[macro_inline]
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
   coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
@@ -238,10 +238,12 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
-@[simp]
-lemma coe_zero [Nontrivial (genWeightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
+instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) L R where
+  zero_apply _ := rfl
 
-lemma zero_apply [Nontrivial (genWeightSpace M (0 : L → R))] (x) : (0 : Weight R L M) x = 0 := rfl
+@[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
 /-- The proposition that a weight of a Lie module is zero.
 
@@ -266,7 +268,6 @@ lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : 
 
 noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where

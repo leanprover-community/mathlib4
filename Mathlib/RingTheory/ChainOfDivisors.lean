@@ -75,7 +75,7 @@ theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (h
     exact Nat.lt_succ_of_le (Nat.one_le_iff_ne_zero.mpr hn)
   · exact Associates.dvdNotUnit_iff_lt.mp
         ⟨pow_ne_zero n hp.ne_zero, p ^ (m - n : ℕ),
-          not_isUnit_of_not_isUnit_dvd hp.not_unit (dvd_pow dvd_rfl (Nat.sub_pos_of_lt h).ne'),
+          not_isUnit_of_not_isUnit_dvd hp.not_isUnit (dvd_pow dvd_rfl (Nat.sub_pos_of_lt h).ne'),
           (pow_mul_pow_sub p h.le).symm⟩
   · obtain ⟨i, i_le, hi⟩ := (dvd_prime_pow hp n).1 h
     rw [associated_iff_eq] at hi
@@ -85,7 +85,7 @@ theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (h
 
 theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)} (i_pos : i ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c) : ¬IsUnit (c i) :=
-  DvdNotUnit.not_unit
+  DvdNotUnit.not_isUnit
     (Associates.dvdNotUnit_iff_lt.2
       (h₁ <| show (0 : Fin (n + 1)) < i from Fin.pos_iff_ne_zero.mpr i_pos))
 
@@ -118,12 +118,12 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   · rw [Fin.le_iff_val_le_val, Fin.val_one, Nat.succ_le_iff, ← Fin.val_zero (n.succ + 1), ←
       Fin.lt_def, Fin.pos_iff_ne_zero]
     rintro rfl
-    exact hp.not_unit (first_of_chain_isUnit h₁ @h₂)
+    exact hp.not_isUnit (first_of_chain_isUnit h₁ @h₂)
   obtain rfl | ⟨j, rfl⟩ := i.eq_zero_or_eq_succ
   · cases hi
   refine
-    not_irreducible_of_not_unit_dvdNotUnit
-      (DvdNotUnit.not_unit
+    not_irreducible_of_not_isUnit_of_dvdNotUnit
+      (DvdNotUnit.not_isUnit
         (Associates.dvdNotUnit_iff_lt.2 (h₁ (show (0 : Fin (n + 2)) < j.castSucc from ?_))))
       ?_ hp.irreducible
   · simpa using Fin.lt_def.mp hi
@@ -289,7 +289,7 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
   · rw [Ne, ← Associates.isUnit_iff_eq_bot, Associates.isUnit_iff_eq_one,
       coe_factor_orderIso_map_eq_one_iff _ d]
     rintro rfl
-    exact (prime_of_normalized_factor 1 hp).not_unit isUnit_one
+    exact (prime_of_normalized_factor 1 hp).not_isUnit isUnit_one
   · have : b ≤ n := le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
     obtain ⟨x, hx⟩ := d.surjective ⟨b, this⟩
     rw [← Subtype.coe_mk (p := (· ≤ n)) b this, ← hx] at hb

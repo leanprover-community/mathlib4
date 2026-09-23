@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Modular forms
@@ -24,13 +23,11 @@ define the space of modular forms, cusp forms and prove that the product of two 
 modular form.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open Complex UpperHalfPlane Matrix.SpecialLinearGroup
 
 open scoped Topology Manifold MatrixGroups ComplexConjugate
-
-noncomputable section
 
 section ModularForm
 
@@ -103,6 +100,7 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k 
   holo : ∀ f : F, MDiff (f : ℍ → ℂ)
   zero_at_cusps (f : F) {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsZeroAt f k
 
+@[macro_inline]
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
@@ -120,6 +118,7 @@ lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     Continuous f :=
   (ModularFormClass.holo f).continuous
 
+@[macro_inline]
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
@@ -200,32 +199,26 @@ instance add : Add (ModularForm Γ k) where add f g :=
     holo' := f.holo'.add g.holo'
     bdd_at_cusps' hc := by simpa using (f.bdd_at_cusps' hc).add (g.bdd_at_cusps' hc) }
 
-@[simp]
-theorem coe_add (f g : ModularForm Γ k) : ⇑(f + g) = f + g :=
-  rfl
+instance : IsAddApply (ModularForm Γ k) ℍ ℂ where
+  add_apply _ _ _ := rfl
 
-@[simp]
-theorem add_apply (f g : ModularForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
+
+@[deprecated (since := "2026-07-10")] protected alias add_apply := add_apply
 
 instance instZero : Zero (ModularForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const
-      bdd_at_cusps' hc g hg := by
-        simp only [SlashInvariantForm.toFun_eq_coe, coe_zero, SlashAction.zero_slash]
-        exact zero_form_isBoundedAtImInfty } ⟩
+      bdd_at_cusps' hc g hg := by simpa using zero_form_isBoundedAtImInfty } ⟩
 
-@[simp]
-theorem coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
-  rfl
+instance : IsZeroApply (ModularForm Γ k) ℍ ℂ where
+  zero_apply _ := rfl
 
-@[simp]
-theorem zero_apply (z : ℍ) : (0 : ModularForm Γ k) z = 0 :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
-@[simp] lemma coe_eq_zero_iff (f : ModularForm Γ k) :
-    (f : ℍ → ℂ) = 0 ↔ f = 0 := by
-  rw [← coe_zero, DFunLike.coe_fn_eq]
+@[deprecated (since := "2026-07-10")] protected alias zero_apply := zero_apply
+
+@[deprecated (since := "2026-07-10")] alias coe_eq_zero_iff := FunLike.coe_zero_iff
 
 /-- If `-1 ∈ Γ` and `k` is odd, then every modular form of weight `k` for `Γ` is zero. -/
 lemma eq_zero_of_neg_one_mem [Γ.HasDetOne] (h_neg_one : -1 ∈ Γ) (hk : Odd k)
@@ -234,7 +227,7 @@ lemma eq_zero_of_neg_one_mem [Γ.HasDetOne] (h_neg_one : -1 ∈ Γ) (hk : Odd k)
   have hf := slash_action_eqn'' f h_neg_one z
   rw [neg_smul, one_smul, denom_neg, denom_one, hk.neg_one_zpow] at hf
   have h2 : (2 : ℂ) * f z = 0 := by linear_combination hf
-  exact (mul_eq_zero.mp h2).resolve_left (by norm_num)
+  exact (mul_eq_zero.mp h2).resolve_left (by simp)
 
 section
 -- scalar multiplication by real types (no assumption on `Γ`)
@@ -248,18 +241,17 @@ instance instSMulℝ : SMul α (ModularForm Γ k) where
   smul c f :=
   { toSlashInvariantForm := c • f.1
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
-    bdd_at_cusps' := fun hc g hg ↦ by
+    bdd_at_cusps' hc g hg := by
       simpa only [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.coe_smulℝ, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
+        FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
         using (f.bdd_at_cusps' hc g hg).const_smul_left _ }
 
-@[simp]
-theorem coe_smul (f : ModularForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance instIsSMulApplyℝ : IsSMulApply α (ModularForm Γ k) ℍ ℂ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
 
 end
 
@@ -271,18 +263,17 @@ instance instSMulℂ : SMul α (ModularForm Γ k) where
   smul c f :=
   { toSlashInvariantForm := c • f.1
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
-    bdd_at_cusps' := fun hc g hg ↦ by
+    bdd_at_cusps' hc g hg := by
       simp_rw [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
+        FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
       exact (f.bdd_at_cusps' hc g hg).const_smul_left (σ g (c • (1 : ℂ))) }
 
-@[simp]
-theorem IsGLPos.coe_smul (f : ModularForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance instIsSMulApplyℂ : IsSMulApply α (ModularForm Γ k) ℍ ℂ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem IsGLPos.smul_apply (f : ModularForm Γ k) (n : α) (z : ℍ) : (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias IsGLPos.coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias IsGLPos.smul_apply := smul_apply
 
 end
 
@@ -290,42 +281,32 @@ instance instNeg : Neg (ModularForm Γ k) :=
   ⟨fun f =>
     { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
-      bdd_at_cusps' := fun hc g hg => by simpa using! (f.bdd_at_cusps' hc g hg).neg }⟩
+      bdd_at_cusps' hc g hg := by simpa using! (f.bdd_at_cusps' hc g hg).neg }⟩
 
-@[simp]
-theorem coe_neg (f : ModularForm Γ k) : ⇑(-f) = -f :=
-  rfl
+instance : IsNegApply (ModularForm Γ k) ℍ ℂ where
+  neg_apply _ _ := rfl
 
-@[simp]
-theorem neg_apply (f : ModularForm Γ k) (z : ℍ) : (-f) z = -f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-07-10")] protected alias neg_apply := neg_apply
 
 instance instSub : Sub (ModularForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
-@[simp]
-theorem coe_sub (f g : ModularForm Γ k) : ⇑(f - g) = f - g :=
-  rfl
+instance : IsSubApply (ModularForm Γ k) ℍ ℂ where
+  sub_apply _ _ _ := rfl
 
-@[simp]
-theorem sub_apply (f g : ModularForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
-instance : AddCommGroup (ModularForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+@[deprecated (since := "2026-07-10")] protected alias sub_apply := sub_apply
 
-/-- Additive coercion from `ModularForm` to `ℍ → ℂ`. -/
-@[simps]
-def coeHom : ModularForm Γ k →+ ℍ → ℂ where
-  toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+instance : AddCommGroup (ModularForm Γ k) := fast_instance% FunLike.addCommGroup
 
-instance : Module ℝ (ModularForm Γ k) :=
-  Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
+@[deprecated (since := "2026-07-10")] alias coeHom := FunLike.coeMonoidHom
 
-instance [Γ.HasDetOne] : Module ℂ (ModularForm Γ k) :=
-  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
+instance : Module ℝ (ModularForm Γ k) := fast_instance% FunLike.module
+
+instance [Γ.HasDetOne] : Module ℂ (ModularForm Γ k) := fast_instance% FunLike.module
 
 instance : Inhabited (ModularForm Γ k) :=
   ⟨0⟩
@@ -401,28 +382,26 @@ instance hasAdd : Add (CuspForm Γ k) :=
   ⟨fun f g =>
     { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
-      zero_at_cusps' := fun A => by simpa using (f.zero_at_cusps' A).add (g.zero_at_cusps' A) }⟩
+      zero_at_cusps' A := by simpa using (f.zero_at_cusps' A).add (g.zero_at_cusps' A) }⟩
 
-@[simp]
-theorem coe_add (f g : CuspForm Γ k) : ⇑(f + g) = f + g :=
-  rfl
+instance : IsAddApply (CuspForm Γ k) ℍ ℂ where
+  add_apply _ _ _ := rfl
 
-@[simp]
-theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
+
+@[deprecated (since := "2026-07-10")] protected alias add_apply := add_apply
 
 instance instZero : Zero (CuspForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const
       zero_at_cusps' hc g hg := by simpa using! Filter.zero_zeroAtFilter _ } ⟩
 
-@[simp]
-theorem coe_zero : ⇑(0 : CuspForm Γ k) = (0 : ℍ → ℂ) :=
-  rfl
+instance : IsZeroApply (CuspForm Γ k) ℍ ℂ where
+  zero_apply _ := rfl
 
-@[simp]
-theorem zero_apply (z : ℍ) : (0 : CuspForm Γ k) z = 0 :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-10")] protected alias zero_apply := zero_apply
 
 section
 -- scalar multiplication by real types (no assumption on `Γ`)
@@ -437,16 +416,15 @@ instance instSMul : SMul α (CuspForm Γ k) where smul c f :=
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.coe_smulℝ, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
+        FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
-@[simp]
-theorem coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance instSMulApply : IsSMulApply α (CuspForm Γ k) ℍ ℂ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
 
 end
 
@@ -460,17 +438,16 @@ instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f,
+        FunLike.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f,
         smul_slash]
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
-@[simp]
-theorem IsGLPos.coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
-  rfl
+instance IsGLPos.instSMulApply : IsSMulApply α (CuspForm Γ k) ℍ ℂ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem IsGLPos.smul_apply (f : CuspForm Γ k) (n : α) {z : ℍ} : (n • f) z = n • f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias IsGLPos.coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias IsGLPos.smul_apply := smul_apply
 
 end
 
@@ -480,40 +457,32 @@ instance instNeg : Neg (CuspForm Γ k) :=
       holo' := f.holo'.neg
       zero_at_cusps' hc g hg := by simpa using! (f.zero_at_cusps' hc g hg).neg }⟩
 
-@[simp]
-theorem coe_neg (f : CuspForm Γ k) : ⇑(-f) = -f :=
-  rfl
+instance : IsNegApply (CuspForm Γ k) ℍ ℂ where
+  neg_apply _ _ := rfl
 
-@[simp]
-theorem neg_apply (f : CuspForm Γ k) (z : ℍ) : (-f) z = -f z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-07-10")] protected alias neg_apply := neg_apply
 
 instance instSub : Sub (CuspForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
-@[simp]
-theorem coe_sub (f g : CuspForm Γ k) : ⇑(f - g) = f - g :=
-  rfl
+instance : IsSubApply (CuspForm Γ k) ℍ ℂ where
+  sub_apply _ _ _ := rfl
 
-@[simp]
-theorem sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
-instance : AddCommGroup (CuspForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+@[deprecated (since := "2026-07-10")] protected alias sub_apply := sub_apply
 
-/-- Additive coercion from `CuspForm` to `ℍ → ℂ`. -/
-@[simps]
-def coeHom : CuspForm Γ k →+ ℍ → ℂ where
-  toFun f := f
-  map_zero' := CuspForm.coe_zero
-  map_add' _ _ := rfl
+instance : AddCommGroup (CuspForm Γ k) := fast_instance% FunLike.addCommGroup
 
-instance : Module ℝ (CuspForm Γ k) :=
-  Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
+@[deprecated (since := "2026-07-10")] alias coeHom := FunLike.coeMonoidHom
 
-instance [Γ.HasDetOne] : Module ℂ (CuspForm Γ k) :=
-  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
+@[deprecated (since := "2026-07-10")] alias coeHom_apply := FunLike.coeMonoidHom_apply
+
+instance : Module ℝ (CuspForm Γ k) := fast_instance% FunLike.module
+
+instance [Γ.HasDetOne] : Module ℂ (CuspForm Γ k) := fast_instance% FunLike.module
 
 instance : Inhabited (CuspForm Γ k) :=
   ⟨0⟩
@@ -559,10 +528,14 @@ def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : Modu
   holo' := f.holo'
   bdd_at_cusps' hc := h ▸ f.bdd_at_cusps' (hΓ ▸ hc)
 
+/-- `mcast` does not change the pointwise values of a modular form. -/
+theorem mcast_apply {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularForm Γ a)
+    (hΓ : Γ' = Γ := by rfl) (z : ℍ) : mcast h f hΓ z = f z := rfl
+
 @[simp]
 lemma mcast_eq_zero_iff {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b)
     (hΓ : Γ' = Γ) (f : ModularForm Γ a) : mcast h f hΓ = 0 ↔ f = 0 := by
-  simp [← coe_eq_zero_iff, ← coe_eq_zero_iff (f := f)]
+  simp [← FunLike.coe_zero_iff]
 
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
@@ -648,7 +621,7 @@ open Filter SlashInvariantForm
 /-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
 @[simps! -fullyApplied]
-def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
+def prod {ι : Type*} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
   toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i))
@@ -664,7 +637,7 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
 /-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
 those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
-def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
+def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
   prod (s := s) (s.card * k) (by simp) F
@@ -673,51 +646,9 @@ end GradedRing
 
 end ModularForm
 
-section translate
-
-open ModularForm OnePoint
-
-variable {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} {F : Type*} [FunLike F ℍ ℂ] (f : F)
-
-open ConjAct Pointwise in
-/-- Translating a `ModularForm` by `GL(2, ℝ)`, to obtain a new `ModularForm`. -/
-noncomputable def ModularForm.translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    ModularForm (toConjAct g⁻¹ • Γ) k where
-  __ := SlashInvariantForm.translate f g
-  bdd_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, SlashInvariantForm.coe_translate,
-      ← SlashAction.slash_mul, ← isBoundedAt_infty_iff, ← OnePoint.IsBoundedAt.smul_iff]
-    apply ModularFormClass.bdd_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-  holo' := (ModularFormClass.holo f).slash k g
-
-@[simp]
-lemma ModularForm.coe_translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-open ConjAct Pointwise in
-/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`. -/
-noncomputable def CuspForm.translate [CuspFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    CuspForm (toConjAct g⁻¹ • Γ) k where
-  __ := ModularForm.translate f g
-  zero_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, ModularForm.toSlashInvariantForm_coe,
-      ModularForm.coe_translate, ← SlashAction.slash_mul, ← isZeroAt_infty_iff,
-      ← OnePoint.IsZeroAt.smul_iff]
-    apply CuspFormClass.zero_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-
-@[simp]
-lemma CuspForm.coe_translate [CuspFormClass F Γ k] (g : SL(2, ℤ)) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-end translate
-
 section SL2Z
 
-open ModularForm CuspForm OnePoint
+open ModularForm OnePoint
 
 variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
 
@@ -750,3 +681,5 @@ lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k] :
   exact ⟨g, by simp [mapGL]⟩
 
 end SL2Z
+
+end

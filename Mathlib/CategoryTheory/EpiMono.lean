@@ -71,6 +71,9 @@ structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- `section_` composed with `f` is the identity -/
   id : section_ ≫ f = 𝟙 Y := by cat_disch
 
+-- TODO: `to_dual` should add these automatically:
+attribute [to_dual existing] SplitEpi.ext SplitEpi.ext_iff
+
 /-- `IsSplitEpi f` is the assertion that `f` admits a section -/
 @[to_dual]
 class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
@@ -138,9 +141,9 @@ instance {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} [hf : IsSplitEpi f] [hg : IsSpl
 
 /-- Every split epi whose section is epi is an iso. -/
 @[to_dual /-- Every split mono whose retraction is mono is an iso. -/]
-theorem IsIso.of_epi_section' {X Y : C} {f : X ⟶ Y} (hf : SplitEpi f) [Epi <| hf.section_] :
+theorem IsIso.of_epi_section' {X Y : C} {f : X ⟶ Y} (hf : SplitEpi f) [Epi hf.section_] :
     IsIso f :=
-  ⟨⟨hf.section_, ⟨(cancel_epi_id <| hf.section_).mp (by simp), by simp⟩⟩⟩
+  ⟨⟨hf.section_, ⟨(cancel_epi_id hf.section_).mp (by simp), by simp⟩⟩⟩
 
 /-- Every split epi whose section is epi is an iso. -/
 @[to_dual /-- Every split mono whose retraction is mono is an iso. -/]

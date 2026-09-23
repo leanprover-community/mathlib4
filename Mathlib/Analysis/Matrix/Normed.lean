@@ -171,7 +171,7 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
 
 /-- Note this is safe as an instance as it carries no data. -/
 instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
-  ⟨(norm_diagonal _).trans <| norm_one⟩
+  ⟨(norm_diagonal _).trans norm_one⟩
 
 end SeminormedAddCommGroup
 
@@ -318,6 +318,17 @@ theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v�
 @[simp]
 theorem linfty_opNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_diagonal v
+
+@[simp]
+theorem linfty_opNNNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
+    ‖blockDiagonal M‖₊ = ‖M‖₊ := by
+  simp [Pi.nnnorm_def, linfty_opNNNorm_def, ← Finset.univ_product_univ,
+    Finset.sup_product_right, Finset.sum_product, blockDiagonal_apply, apply_ite]
+
+@[simp]
+theorem linfty_opNorm_blockDiagonal [DecidableEq l] (M : l → Matrix m n α) :
+    ‖blockDiagonal M‖ = ‖M‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_blockDiagonal M
 
 end SeminormedAddCommGroup
 

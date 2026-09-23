@@ -197,7 +197,7 @@ end
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (Module.End R M) M where
-  smul := (· <| ·)
+  smul := (· ·)
   smul_zero := map_zero
   smul_add := map_add
   add_smul := LinearMap.add_apply
@@ -252,8 +252,6 @@ def DistribMulAction.toModuleEnd [DistribMulAction S M] [SMulCommClass S R M] :
   toFun := DistribSMul.toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
-
-@[deprecated (since := "2026-01-07")] alias DistribMulAction.toLinearMap := DistribSMul.toLinearMap
 
 end
 

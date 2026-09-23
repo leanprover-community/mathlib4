@@ -178,12 +178,12 @@ theorem isChain_cons_of_isChain_cons_pmap {S : β → β → Prop} {p : α → P
     (H : ∀ a b ha hb, S (f a ha) (f b hb) → R a b) : IsChain R (a :: l) :=
   ((isChain_cons_pmap f _ _).1 hl₂).imp (by grind)
 
-protected theorem IsChain.sublist [Trans R R R] (hl : l₂.IsChain R) (h : l₁ <+ l₂) :
+protected theorem IsChain.sublist [IsTrans α R] (hl : l₂.IsChain R) (h : l₁ <+ l₂) :
     l₁.IsChain R := by
   rw [isChain_iff_pairwise] at hl ⊢
   exact hl.sublist h
 
-protected theorem IsChain.rel_cons [Trans R R R] (hl : (a :: l).IsChain R) (hb : b ∈ l) :
+protected theorem IsChain.rel_cons [IsTrans α R] (hl : (a :: l).IsChain R) (hb : b ∈ l) :
     R a b := by
   rw [isChain_iff_pairwise] at hl
   exact rel_of_pairwise_cons hl hb
@@ -516,10 +516,5 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       · apply ihl ⟨m, (List.isChain_cons.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
-theorem WellFounded.list_chain' (hwf : WellFounded r) :
-    WellFounded (List.lex_chains r) :=
-  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
-
-instance [hwf : IsWellFounded α r] :
-    IsWellFounded (List.chains r) (List.lex_chains r) :=
-  ⟨hwf.wf.list_chain'⟩
+instance WellFounded.list_chain' [WellFounded r] : WellFounded (List.lex_chains r) :=
+  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => ‹WellFounded r›.apply _)⟩

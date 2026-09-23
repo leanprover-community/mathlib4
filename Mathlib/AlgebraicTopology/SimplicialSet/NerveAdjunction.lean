@@ -40,8 +40,10 @@ that it fails to preserve infinite products.
 
 universe u
 
-open CategoryTheory Nerve Simplicial SimplicialObject.Truncated
+open CategoryTheory Nerve SimplicialObject.Truncated
   SimplexCategory.Truncated Opposite Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -83,13 +85,11 @@ lemma spineEquiv_f₂_arrow_one (x : X _⦋2⦌₂) :
     ((hY.spineEquiv 2) (f₂ f₀ f₁ hδ₁ hδ₀ hY x)).arrow 1 = f₁ (X.map (δ₂ 0).op x) := by
   simp [f₂]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hδ'₀ (x : X _⦋2⦌₂) :
     f₁ (X.map (δ₂ 0).op x) = Y.map (δ₂ 0).op (f₂ f₀ f₁ hδ₁ hδ₀ hY x) := by
   simp [← spineEquiv_f₂_arrow_one f₀ f₁ hδ₁ hδ₀ hY, StrictSegal.spineEquiv,
     SimplexCategory.mkOfSucc_one_eq_δ]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hδ'₂ (x : X _⦋2⦌₂) :
     f₁ (X.map (δ₂ 2).op x) = Y.map (δ₂ 2).op (f₂ f₀ f₁ hδ₁ hδ₀ hY x) := by
   simp [← spineEquiv_f₂_arrow_zero f₀ f₁ hδ₁ hδ₀ hY, StrictSegal.spineEquiv,
@@ -100,7 +100,6 @@ lemma hδ'₁ (x : X _⦋2⦌₂) :
     f₁ (X.map (δ₂ 1).op x) = Y.map (δ₂ 1).op (f₂ f₀ f₁ hδ₁ hδ₀ hY x) :=
   H x (f₂ f₀ f₁ hδ₁ hδ₀ hY x) (hδ'₂ f₀ f₁ hδ₁ hδ₀ hY x) (hδ'₀ f₀ f₁ hδ₁ hδ₀ hY x)
 
-set_option backward.isDefEq.respectTransparency.types false in
 include hσ in
 lemma hσ'₀ (x : X _⦋1⦌₂) :
     f₂ f₀ f₁ hδ₁ hδ₀ hY (X.map (σ₂ 0).op x) = Y.map (σ₂ 0).op (f₁ x) := by
@@ -119,7 +118,6 @@ lemma hσ'₀ (x : X _⦋1⦌₂) :
     simp [StrictSegal.spineEquiv, SimplexCategory.mkOfSucc_one_eq_δ,
       ← Functor.map_comp_apply, ← op_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
 include hσ in
 lemma hσ'₁ (x : X _⦋1⦌₂) :
     f₂ f₀ f₁ hδ₁ hδ₀ hY (X.map (σ₂ 1).op x) = Y.map (σ₂ 1).op (f₁ x) := by
@@ -344,7 +342,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `C ⥤ D` that is reconstructed for a morphism
 between the `2`-truncated nerves. -/
 @[simps]
-def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
+def functorOfNerveMap (φ : nerveFunctor₂.obj ↧C ⟶ nerveFunctor₂.obj ↧D) :
     C ⥤ D where
   obj x := nerveEquiv (φ.app (op ⟨⦋0⦌, by simp⟩) (nerveEquiv.symm x))
   map f := nerve.homEquiv ((nerve.edgeMk f).toTruncated.map φ)
@@ -355,21 +353,18 @@ def functorOfNerveMap (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj 
     obtain ⟨h⟩ := (nerve.nonempty_compStruct_iff f g (f ≫ g)).2 rfl
     exact (nerve.homEquiv_comp (h.toTruncated.map φ)).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma nerveFunctor₂_map_functorOfNerveMap
-    (φ : nerveFunctor₂.obj (.of C) ⟶ nerveFunctor₂.obj (.of D)) :
+    (φ : nerveFunctor₂.obj ↧C ⟶ nerveFunctor₂.obj ↧D) :
     nerveFunctor₂.map (functorOfNerveMap φ).toCatHom = φ :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x, y, f, rfl⟩ := ComposableArrows.mk₁_surjective f
     exact (nerveMap_app_mk₁ _ _).trans ((nerve.mk₁_homEquiv_apply _).trans
       (ComposableArrows.mk₁_hom _)))
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma functorOfNerveMap_nerveFunctor₂_map (F : C ⥤ D) :
     functorOfNerveMap ((SSet.truncation 2).map (nerveMap F)) = F :=
   Functor.ext (fun x ↦ by cat_disch) (fun x y f ↦ by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `2`-truncated nerve functor is fully faithful. -/
 def fullyFaithfulNerveFunctor₂ : nerveFunctor₂.{u, u}.FullyFaithful where
   preimage φ := (functorOfNerveMap φ).toCatHom
@@ -422,7 +417,7 @@ section
 
 instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
     IsIso (prodComparison (nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor)
-      (Cat.of C) (Cat.of D)) := by
+      ↧C ↧D) := by
   let iso : nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor ≅ nerveFunctor :=
     (nerveFunctor.associator hoFunctor nerveFunctor).symm ≪≫
       Functor.isoWhiskerRight nerveFunctorCompHoFunctorIso nerveFunctor ≪≫
@@ -440,7 +435,7 @@ instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
     have : IsIso (prodComparison (hoFunctor ⋙ nerveFunctor) (nerve C) (nerve D)) :=
       IsIso.of_isIso_fac_left
         (prodComparison_comp nerveFunctor (hoFunctor ⋙ nerveFunctor)
-          (A := Cat.of C) (B := Cat.of D)).symm
+          (A := ↧C) (B := ↧D)).symm
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
   exact isIso_of_fully_faithful nerveFunctor _
 
@@ -459,12 +454,11 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 
-set_option backward.isDefEq.respectTransparency false in
-instance isIso_prodComparison (X Y : SSet) :
-    IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
+instance isIso_prodComparison (X Y : SSet.{u}) :
+    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
-  · ext <;> simp [← Functor.map_comp]
+  · simp [↓map_braiding_hom_comp_prodComparison_assoc]
   suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
   exact isIso_prodComparison_of_stdSimplex _ (isIso_prodComparison_stdSimplex _)
 

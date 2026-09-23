@@ -6,7 +6,7 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -275,7 +275,7 @@ $[a, ∞)$.
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
-  Subset.antisymm ((closure_minimal fun _ h => h.ge) <| isClosed_Ici) <|
+  Subset.antisymm ((closure_minimal fun _ h => h.ge) isClosed_Ici) <|
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
@@ -478,6 +478,23 @@ end CompleteLinearOrder
 
 end IsUpper
 
+section LinearOrder
+
+variable (α : Type*) [LinearOrder α]
+
+theorem preorderTopology_le_lower_of_linearOrder : Preorder.topology α ≤ Topology.lower α :=
+  TopologicalSpace.generateFrom_anti fun s ⟨a, h⟩ ↦ ⟨a, by simp [← h]⟩
+
+theorem preorderTopology_le_upper_of_linearOrder : Preorder.topology α ≤ Topology.upper α :=
+  TopologicalSpace.generateFrom_anti fun s ⟨a, h⟩ ↦ ⟨a, by simp [← h]⟩
+
+theorem lower_inf_upper_eq_preorderTopology :
+    Topology.lower α ⊓ Topology.upper α = Preorder.topology α := by
+  unfold Topology.lower Topology.upper Preorder.topology
+  simp [generateFrom_union, Set.ofPred_or, exists_or, eq_comm, or_comm]
+
+end LinearOrder
+
 instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
     IsLower (α × β) where
@@ -554,9 +571,9 @@ instance : IsUpper Prop where
     congr
     exact le_antisymm
       (fun h hs => by
-        simp only [compl_Iic, mem_ofPred_eq]
-        rw [← Ioi_True, ← Ioi_False] at hs
         rcases hs with (rfl | rfl)
         · use True
-        · use False)
+          simp
+        · use False
+          simp)
       (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_ge]))

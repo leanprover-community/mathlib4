@@ -8,11 +8,12 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Logic.Pairwise
 
 import Mathlib.Util.Delaborators
+public import Mathlib.Util.Delaborators
 
 /-!
 # Extra lemmas about products of monoids and groups
@@ -44,17 +45,16 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 
 namespace Pi
 
-@[to_additive]
-instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
-    IsMulTorsionFree (∀ i, M i) where
-  pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
-
 variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[to_additive] lemma one_mono [One β] : Monotone (1 : α → β) := monotone_const
 @[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
 
 end Pi
+
+@[to_additive]
+protected theorem Pi.isSelfInv_iff {ι : Type*} {G : ι → Type*} [∀ i, Inv (G i)] {x : ∀ i, G i} :
+    IsSelfInv x ↔ ∀ i, IsSelfInv (x i) := funext_iff
 
 namespace MulHom
 

@@ -5,14 +5,14 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Basic.ENNReal.Real
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Metrizable.Basic
 
 /-!
-## Pseudo-metric spaces
+# Pseudo-metric spaces
 
 Further results about pseudo-metric spaces.
 
@@ -20,7 +20,7 @@ Further results about pseudo-metric spaces.
 
 public section
 
-open Set Filter TopologicalSpace Bornology
+open Set Filter TopologicalSpace
 open scoped ENNReal NNReal Uniformity Topology
 
 universe u v
@@ -85,7 +85,7 @@ theorem controlled_of_isUniformInducing [PseudoMetricSpace β] {f : α → β}
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
 
-@[deprecated controlled_of_isUniformInducing (since := "2026-04-01")]
+@[deprecated controlled_of_isUniformInducing +typeChanged (since := "2026-04-01")]
 theorem controlled_of_isUniformEmbedding [PseudoMetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, dist a b < δ → dist (f a) (f b) < ε) ∧
@@ -239,8 +239,6 @@ theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizab
 namespace Metric
 
 section SecondCountable
-
-open TopologicalSpace
 
 /-- A pseudometric space is second countable if, for every `ε > 0`, there is a countable set which
 is `ε`-dense. -/

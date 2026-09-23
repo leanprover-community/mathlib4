@@ -79,8 +79,6 @@ section MulAction
 
 variable {C : Type u} [Category.{v} C]
 
-open Opposite
-
 instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
   one_smul := Category.comp_id
@@ -106,7 +104,6 @@ instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
 
 end End
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem isUnit_iff_isIso {C : Type u} [Category.{v} C] {X : C} (f : End X) :
     IsUnit (f : End X) ↔ IsIso f :=
   ⟨fun h => { out := ⟨h.unit.inv, ⟨h.unit.inv_val, h.unit.val_inv⟩⟩ }, fun h =>

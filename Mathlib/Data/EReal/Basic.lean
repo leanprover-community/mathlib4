@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # The extended real numbers
@@ -192,13 +192,13 @@ protected theorem mul_comm (x y : EReal) : x * y = y * x := by
   rw [← coe_mul, ← coe_mul, mul_comm]
 
 protected theorem one_mul : ∀ x : EReal, 1 * x = x
-  | ⊤ => if_pos one_pos
-  | ⊥ => if_pos one_pos
+  | ⊤ => ite_eq_left one_pos
+  | ⊥ => ite_eq_left one_pos
   | (x : ℝ) => congr_arg Real.toEReal (one_mul x)
 
 protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
-  | ⊤ => (if_neg (lt_irrefl _)).trans (if_pos rfl)
-  | ⊥ => (if_neg (lt_irrefl _)).trans (if_pos rfl)
+  | ⊤ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
+  | ⊥ => (ite_eq_right (lt_irrefl _)).trans (ite_eq_left rfl)
   | (x : ℝ) => congr_arg Real.toEReal (zero_mul x)
 
 instance : MulZeroOneClass EReal where
@@ -302,11 +302,19 @@ theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
   rfl
 
+/-- The additive homomorphism from `ℝ` to `EReal`. -/
+def _root_.Real.toERealAddHom : ℝ →+ EReal where
+  toFun := Real.toEReal
+  map_zero' := coe_zero
+  map_add' := coe_add
+
+@[simp] lemma _root_.Real.coe_toERealAddHom : ⇑Real.toERealAddHom = Real.toEReal := rfl
+
 -- `coe_mul` moved up
 
 @[norm_cast]
 theorem coe_nsmul (n : ℕ) (x : ℝ) : (↑(n • x) : EReal) = n • (x : EReal) :=
-  map_nsmul (⟨⟨Real.toEReal, coe_zero⟩, coe_add⟩ : ℝ →+ EReal) _ _
+  map_nsmul Real.toERealAddHom _ _
 
 @[simp, norm_cast]
 theorem coe_eq_zero {x : ℝ} : (x : EReal) = 0 ↔ x = 0 :=
@@ -339,7 +347,7 @@ protected theorem coe_neg' {x : ℝ} : (x : EReal) < 0 ↔ x < 0 :=
   EReal.coe_lt_coe_iff
 
 lemma toReal_eq_zero_iff {x : EReal} : x.toReal = 0 ↔ x = 0 ∨ x = ⊤ ∨ x = ⊥ := by
-  cases x <;> norm_num
+  cases x <;> simp
 
 lemma toReal_ne_zero_iff {x : EReal} : x.toReal ≠ 0 ↔ x ≠ 0 ∧ x ≠ ⊤ ∧ x ≠ ⊥ := by
   simp only [ne_eq, toReal_eq_zero_iff, not_or]
@@ -675,7 +683,7 @@ private theorem coe_ennreal_top_mul (x : ℝ≥0) : ((⊤ * x : ℝ≥0∞) : ER
   rcases eq_or_ne x 0 with (rfl | h0)
   · simp
   · rw [ENNReal.top_mul (ENNReal.coe_ne_zero.2 h0)]
-    exact Eq.symm <| if_pos <| NNReal.coe_pos.2 h0.bot_lt
+    exact Eq.symm <| ite_eq_left <| NNReal.coe_pos.2 h0.bot_lt
 
 @[simp, norm_cast]
 theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) = (x : EReal) * y
@@ -701,7 +709,7 @@ noncomputable def toENNReal (x : EReal) : ℝ≥0∞ :=
 
 @[simp]
 lemma toENNReal_of_ne_top {x : EReal} (hx : x ≠ ⊤) : x.toENNReal = ENNReal.ofReal x.toReal :=
-  if_neg hx
+  ite_eq_right hx
 
 @[simp]
 lemma toENNReal_eq_top_iff {x : EReal} : x.toENNReal = ⊤ ↔ x = ⊤ := by
@@ -713,7 +721,7 @@ lemma toENNReal_ne_top_iff {x : EReal} : x.toENNReal ≠ ⊤ ↔ x ≠ ⊤ := to
 
 @[simp]
 lemma toENNReal_of_nonpos {x : EReal} (hx : x ≤ 0) : x.toENNReal = 0 := by
-  rw [toENNReal, if_neg (fun h ↦ ?_)]
+  rw [toENNReal, ite_eq_right (fun h ↦ ?_)]
   · exact ENNReal.ofReal_of_nonpos (toReal_nonpos hx)
   · exact zero_ne_top <| top_le_iff.mp <| h ▸ hx
 
@@ -734,9 +742,9 @@ lemma toENNReal_pos_iff {x : EReal} : 0 < x.toENNReal ↔ 0 < x := by
 lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
   rw [toENNReal]
   by_cases h_top : x = ⊤
-  · rw [if_pos h_top, h_top]
+  · rw [ite_eq_left h_top, h_top]
     rfl
-  rw [if_neg h_top]
+  rw [ite_eq_right h_top]
   simp only [coe_ennreal_ofReal, hx, toReal_nonneg, max_eq_left]
   exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
 
@@ -749,7 +757,7 @@ lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by
 lemma toENNReal_coe {x : ℝ≥0∞} : (x : EReal).toENNReal = x := by
   by_cases h_top : x = ⊤
   · rw [h_top, coe_ennreal_top, toENNReal_top]
-  rwa [toENNReal, if_neg _, toReal_coe_ennreal, ENNReal.ofReal_toReal_eq_iff]
+  rwa [toENNReal, ite_eq_right _, toReal_coe_ennreal, ENNReal.ofReal_toReal_eq_iff]
   simp [h_top]
 
 @[simp] lemma real_coe_toENNReal (x : ℝ) : (x : EReal).toENNReal = ENNReal.ofReal x := rfl
@@ -782,8 +790,10 @@ lemma toENNReal_lt_toENNReal {x y : EReal} (hx : 0 ≤ x) (hxy : x < y) :
 
 theorem coe_coe_eq_natCast (n : ℕ) : (n : ℝ) = (n : EReal) := rfl
 
+@[simp]
 theorem natCast_ne_bot (n : ℕ) : (n : EReal) ≠ ⊥ := Ne.symm (ne_of_beq_false rfl)
 
+@[simp]
 theorem natCast_ne_top (n : ℕ) : (n : EReal) ≠ ⊤ := Ne.symm (ne_of_beq_false rfl)
 
 @[norm_cast]
