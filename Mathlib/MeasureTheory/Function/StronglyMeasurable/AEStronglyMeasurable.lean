@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -548,7 +549,7 @@ theorem _root_.aestronglyMeasurable_indicator_iff [Zero β] {s : Set α} (hs : M
   · refine ⟨indicator s (h.mk f), h.stronglyMeasurable_mk.indicator hs, ?_⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (h.mk f) :=
       (indicator_ae_eq_restrict hs.nullMeasurableSet).trans
-        (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs.nullMeasurableSet).symm)
+        (h.ae_eq_mk.trans (indicator_ae_eq_restrict hs.nullMeasurableSet).symm)
     have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (h.mk f) :=
       (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).trans
         (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).symm
@@ -808,7 +809,7 @@ theorem add_measure [PseudoMetrizableSpace β] {ν : Measure α} {f : α → β}
 protected theorem iUnion [PseudoMetrizableSpace β] {s : ι → Set α}
     (h : ∀ i, AEStronglyMeasurable f (μ.restrict (s i))) :
     AEStronglyMeasurable f (μ.restrict (⋃ i, s i)) :=
-  (sum_measure h).mono_measure <| restrict_iUnion_le
+  (sum_measure h).mono_measure restrict_iUnion_le
 
 @[simp]
 theorem _root_.aestronglyMeasurable_iUnion_iff [PseudoMetrizableSpace β] {s : ι → Set α} :
