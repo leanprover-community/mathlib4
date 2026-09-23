@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
@@ -47,20 +46,12 @@ noncomputable instance monoidalCategoryStruct : MonoidalCategoryStruct Ab.{u} wh
   rightUnitor M := ((TensorProduct.congr (LinearEquiv.refl ℤ M) ULift.moduleEquiv).trans
     (TensorProduct.rid ℤ M)).toAddEquiv.toAddCommGrpIso
 
-/-- The functor sending an abelian group to the corresponding module over `ULift.{u} ℤ`,
-which is an equivalence of categories. -/
-@[implicit_reducible, simps! functor inverse]
-noncomputable def toModuleCatULiftInt : Ab.{u} ≌ ModuleCat.{u} (ULift.{u} ℤ) :=
-  ModuleCat.intEquivalence.symm.trans
-    (ModuleCat.restrictScalarsEquivalenceOfRingEquiv ULift.ringEquiv)
-
 /-- Extensionality for morphisms out of the image of a tensor product of abelian groups. -/
 lemma toModuleCatULiftInt_tensor_ext {X Y : Ab.{u}} {W : ModuleCat.{u} (ULift.{u} ℤ)}
     {f g : toModuleCatULiftInt.functor.obj (X ⊗ Y) ⟶ W}
     (h : ∀ (x : X) (y : Y), f.hom (x ⊗ₜ y) = g.hom (x ⊗ₜ y)) : f = g := by
   ext t
-  exact t.induction_on ((map_zero _).trans (map_zero _).symm) h
-    fun _ _ h₁ h₂ ↦ (map_add ..).trans <| congr($h₁ + $h₂).trans (map_add ..).symm
+  exact t.inductionOn h fun _ _ h h' ↦ (map_add ..).trans <| congr($h + $h').trans (map_add ..).symm
 
 /-- The data needed to induce the monoidal structure on `Ab` from the one on
 `ModuleCat (ULift ℤ)`. -/
@@ -71,7 +62,7 @@ noncomputable def inducingFunctorData :
   whiskerLeft_eq _ _ _ _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
   whiskerRight_eq _ _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
   tensorHom_eq _ _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
-  associator_eq X Y Z := toModuleCatULiftInt_tensor_ext fun t z ↦ t.induction_on rfl (fun _ _ ↦ rfl)
+  associator_eq X Y Z := toModuleCatULiftInt_tensor_ext fun t z ↦ t.inductionOn (fun _ _ ↦ rfl)
     fun _ _ h h' ↦ by
     rw [TensorProduct.add_tmul]; exact (map_add ..).trans <| congr($h + $h').trans (map_add ..).symm
   leftUnitor_eq _ := toModuleCatULiftInt_tensor_ext fun _ _ ↦ rfl
