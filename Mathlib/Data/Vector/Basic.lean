@@ -599,7 +599,7 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
   cases v; cases i; cases j
   simp only [get_eq_get_toList, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
   rw [List.getElem_set_of_ne]
-  · simpa using h
+  simpa using h
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by
