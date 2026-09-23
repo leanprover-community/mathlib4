@@ -255,7 +255,8 @@ def forget : Action V G ⥤ V where
 instance : (forget V G).Faithful where map_injective w := Hom.ext w
 
 /-- The type of `V`-morphisms that can be lifted back to morphisms in the category `Action`. -/
-abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+@[reducible]
+def HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :=
   { f : FV M.V N.V // ∀ g : G,
       f ∘ ConcreteCategory.hom (M.ρ g) = ConcreteCategory.hom (N.ρ g) ∘ f }

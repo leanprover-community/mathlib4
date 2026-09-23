@@ -58,7 +58,8 @@ variable {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ �
 /-- Given a square `w : TwoSquare T L R B` (consisting of a natural transformation
 `T ⋙ R ⟶ L ⋙ B`), this is the obvious map `R.LeftExtension F → L.LeftExtension (T ⋙ F)`
 obtained by the precomposition with `T` and the postcomposition with `w`. -/
-abbrev compTwoSquare (w : TwoSquare T L R B) : L.LeftExtension (T ⋙ F) :=
+@[reducible]
+def compTwoSquare (w : TwoSquare T L R B) : L.LeftExtension (T ⋙ F) :=
   LeftExtension.mk (B ⋙ E.right)
     (whiskerLeft T E.hom ≫ (associator _ _ _).inv ≫
       whiskerRight w.natTrans _ ≫ (associator _ _ _).hom)
@@ -126,7 +127,8 @@ variable {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ �
 /-- Given a square `w : TwoSquare T L R B` (consisting of a natural transformation
 `T ⋙ R ⟶ L ⋙ B`), this is the obvious map `B.RightExtension F → T.RightExtension (L ⋙ F)`
 obtained by the precomposition with `L` and the postcomposition with `w`. -/
-abbrev compTwoSquare (w : TwoSquare T L R B) : T.RightExtension (L ⋙ F) :=
+@[reducible]
+def compTwoSquare (w : TwoSquare T L R B) : T.RightExtension (L ⋙ F) :=
   RightExtension.mk (R ⋙ E.left)
     ((associator _ _ _).inv ≫ whiskerRight w.natTrans _ ≫
       (associator _ _ _).hom ≫ whiskerLeft L E.hom)

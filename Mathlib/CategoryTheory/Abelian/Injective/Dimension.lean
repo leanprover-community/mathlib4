@@ -49,7 +49,8 @@ class HasInjectiveDimensionLT (X : C) (n : ℕ) : Prop where mk' ::
 
 /-- An object `X` in an abelian category has Injective dimension `≤ n` if
 all `Ext X Y i` vanish when `n + 1 ≤ i` -/
-abbrev HasInjectiveDimensionLE (X : C) (n : ℕ) : Prop :=
+@[reducible]
+def HasInjectiveDimensionLE (X : C) (n : ℕ) : Prop :=
   HasInjectiveDimensionLT X (n + 1)
 
 namespace HasInjectiveDimensionLT

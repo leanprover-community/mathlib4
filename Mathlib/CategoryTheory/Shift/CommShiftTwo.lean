@@ -105,7 +105,8 @@ attribute [reassoc] commShift₂_comm
 that is natural in `X₁` and `X₂`, and that these isomorphisms for the shift by `p`
 on the first variable and the shift by `q` on the second variable commute up
 to the sign `(-1) ^ (p * q)`. -/
-abbrev CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
+@[reducible]
+def CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (G : C₁ ⥤ C₂ ⥤ D) : Type _ :=
   G.CommShift₂ .int
 
@@ -197,7 +198,8 @@ end
 /-- If `τ : G₁ ⟶ G₂` is a natural transformation between two bifunctors
 which commute shifts on both variables, this typeclass asserts a compatibility of `τ`
 with these shifts. -/
-abbrev CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
+@[reducible]
+def CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
     [∀ (n : ℤ), (shiftFunctor D n).Additive]
     {G₁ G₂ : C₁ ⥤ C₂ ⥤ D} [G₁.CommShift₂Int] [G₂.CommShift₂Int] (τ : G₁ ⟶ G₂) : Prop :=
   NatTrans.CommShift₂ τ .int

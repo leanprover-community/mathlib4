@@ -193,7 +193,8 @@ variable (e : C ≌ D)
 
 /-- We upgrade the equivalence of categories `e : C ≌ D` to a monoidal category
 equivalence `C ≌ Transported e`. -/
-abbrev equivalenceTransported : C ≌ Transported e := e
+@[reducible]
+def equivalenceTransported : C ≌ Transported e := e
 
 instance : (equivalenceTransported e).inverse.Monoidal := by
   dsimp +instances only [Transported.instMonoidalCategory]
