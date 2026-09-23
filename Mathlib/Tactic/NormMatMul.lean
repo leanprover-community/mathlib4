@@ -50,9 +50,9 @@ def normMatMulCore : Simp.Simproc := fun e => do
   have e : Q(Matrix (Fin $l) (Fin $n) $α) := e
   let rowsA : List (List Q($α)) := rowsA.toList.map Array.toList
   let rowsB : List (List Q($α)) := rowsB.toList.map Array.toList
-  have zα : Q(Zero $α) := ← synthInstanceQ q(Zero $α)
-  have aα : Q(Add $α) := ← synthInstanceQ q(Add $α)
-  have mα : Q(Mul $α) := ← synthInstanceQ q(Mul $α)
+  let zα : Q(Zero $α) ← synthInstanceQ q(Zero $α)
+  let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
+  let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
   let r := proveMul zα aα mα l m n rowsA rowsB
   let rows := (r.rows.map List.toArray).toArray
   have C : Q(Matrix (Fin $l) (Fin $n) $α) :=
@@ -67,8 +67,4 @@ open Mathlib.Tactic.Matrix
 
 /-- Rewrite a product of matrix literals to the literal of the product, with the entries
 normalised by `norm_num` if possible. -/
-simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := fun e => do
-  try normMatMulCore e
-  catch ex =>
-    trace[Tactic.norm_matmul] "{ex.toMessageData}"
-    return .continue
+simproc_decl norm_matmul ((_ * _ : Matrix (Fin _) (Fin _) _)) := normMatMulCore
