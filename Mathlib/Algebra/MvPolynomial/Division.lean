@@ -6,8 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Division
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Division of `MvPolynomial` by monomials
@@ -51,7 +51,7 @@ local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
 
 @[simp]
 theorem coeff_divMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) (s' : σ →₀ ℕ) :
-    coeff s' (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) = coeff (s + s') x :=
+    (x /ᵐᵒⁿᵒᵐⁱᵃˡ s).coeff s' = x.coeff (s + s') :=
   rfl
 
 @[simp]
@@ -66,7 +66,6 @@ theorem zero_divMonomial (s : σ →₀ ℕ) : (0 : MvPolynomial σ R) /ᵐᵒ�
 theorem divMonomial_zero (x : MvPolynomial σ R) : x /ᵐᵒⁿᵒᵐⁱᵃˡ 0 = x :=
   x.divOf_zero
 
-set_option backward.isDefEq.respectTransparency false in
 theorem add_divMonomial (x y : MvPolynomial σ R) (s : σ →₀ ℕ) :
     (x + y) /ᵐᵒⁿᵒᵐⁱᵃˡ s = x /ᵐᵒⁿᵒᵐⁱᵃˡ s + y /ᵐᵒⁿᵒᵐⁱᵃˡ s := by
   simp [divMonomial, MvPolynomial, AddMonoidAlgebra.add_divOf]
@@ -97,12 +96,12 @@ local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
 theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : ¬s ≤ s') :
-    coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = coeff s' x :=
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ s).coeff s' = x.coeff s' :=
   x.coeff_modOf_of_not_exists_add s s' <| by rintro ⟨d, rfl⟩; exact h le_self_add
 
 @[simp]
 theorem coeff_modMonomial_of_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : s ≤ s') :
-    coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = 0 :=
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ s).coeff s' = 0 :=
   x.coeff_modOf_of_exists_add _ _ <| exists_add_of_le h
 
 @[simp]
@@ -200,7 +199,7 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
   · rintro ⟨h | hij, d, rfl⟩
     · simp_rw [h, monomial_zero, dvd_zero]
     · refine ⟨monomial (j - i) d, ?_⟩
-      rw [monomial_mul, add_tsub_cancel_of_le hij]
+      rw [monomial_mul_monomial, add_tsub_cancel_of_le hij]
 
 @[simp]
 theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
@@ -226,7 +225,8 @@ theorem eq_divMonomial_single [IsLeftCancelAdd R]
     (hr : ∀ n ∈ r.support, n i = 0) :
     q = p.divMonomial (Finsupp.single i 1) := by
   ext n
-  rw [coeff_divMonomial, h, coeff_add, coeff_X_mul, left_eq_add, ← notMem_support_iff]
+  rw [coeff_divMonomial, h, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, coeff_X_mul, left_eq_add,
+    ← notMem_support_iff]
   intro hn
   simpa using hr _ hn
 
@@ -236,7 +236,7 @@ instance [IsLeftCancelAdd R] :
     AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _
   refine { add_left_cancel := fun f g h H ↦ ?_ }
   ext d
-  simpa using congr_arg (coeff d) H
+  simpa using congr_arg ((·.coeff d)) H
 
 theorem eq_modMonomial_single [IsLeftCancelAdd R]
     {σ : Type*} {i : σ} {p q r : MvPolynomial σ R}
@@ -369,7 +369,7 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
         use m + Finsupp.single i 1, r, ?_, hr
         · simp [monomial_add_single, pow_one, mul_comm _ (X i), mul_assoc, ← hp]
         · simpa [← hn'] using hm
-    · rw [hp, ← add_tsub_cancel_of_le hmn, ← mul_one 1, ← monomial_mul, mul_one, mul_assoc]
+    · rw [hp, ← add_tsub_cancel_of_le hmn, ← mul_one 1, ← monomial_mul_monomial, mul_one, mul_assoc]
       apply mul_dvd_mul dvd_rfl
       apply dvd_mul_of_dvd_right hrq
 

@@ -55,7 +55,12 @@ local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
-/-- The determinant of a matrix given by the Leibniz formula. -/
+/-- The determinant of a matrix given by the Leibniz formula.
+
+This is available in bundled forms as:
+* `Matrix.detMonoidHom`
+* `Matrix.detRowAlternating`
+-/
 @[wikidata Q178546]
 def det (M : Matrix n n R) : R :=
   detRowAlternating M
@@ -607,7 +612,6 @@ theorem det_eq_of_forall_col_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 
 
 end DetEq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Matrix n n R) :
     (blockDiagonal M).det = ∏ k, (M k).det := by

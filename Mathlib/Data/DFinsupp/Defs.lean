@@ -29,7 +29,7 @@ The support is internally represented (in the primed `DFinsupp.support'`) as a `
 represents a superset of the true support of the function, quotiented by the always-true relation so
 that this does not impact equality. This approach has computational benefits over storing a
 `Finset`; it allows us to add together two finitely-supported functions without
-having to evaluate the resulting function to recompute its support (which would required
+having to evaluate the resulting function to recompute its support (which would require
 decidability of `b = 0` for `b : β i`).
 
 The true support of the function can still be recovered with `DFinsupp.support`; but these
@@ -51,7 +51,7 @@ assert_not_exists Finset.prod Submonoid
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
 
 variable (β) in
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
@@ -74,6 +74,7 @@ section Basic
 
 variable [∀ i, Zero (β i)] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 
+@[macro_inline]
 instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
   ⟨fun f => f.toFun, fun ⟨f₁, s₁⟩ ⟨f₂, s₁⟩ ↦ fun (h : f₁ = f₂) ↦ by
     subst h
@@ -91,7 +92,7 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
 
 instance : Zero (Π₀ i, β i) :=
-  ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
+  ⟨⟨0, Trunc.mk ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
 
 instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
@@ -1045,7 +1046,7 @@ noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Functio
   support' :=
     f.support'.map fun s =>
       ⟨(s.1.finite_toSet.preimage hh.injOn).toFinset.val, fun x =>
-        (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr <| hx⟩
+        (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr hx⟩
 
 @[simp]
 theorem comapDomain_apply [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h) (f : Π₀ i, β i)
@@ -1107,7 +1108,6 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
     comapDomain' h hh' (single (h k) x) = single k x := by
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing terms of a dfinsupp.
 
 This is the dfinsupp version of `Equiv.piCongrLeft'`. -/

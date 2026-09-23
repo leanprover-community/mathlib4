@@ -42,7 +42,6 @@ variable {κ : Type uκ} {R : Type uR} {M : Type uM}
 section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `SymmetricAlgebra.equivMvPolynomial` gives an algebra isomorphism between the symmetric algebra
 over a free module and multivariate polynomials over a basis. This is analogous to
 `TensorAlgebra.equivFreeAlgebra`. -/
@@ -64,7 +63,6 @@ lemma equivMvPolynomial_symm_X (b : Basis κ R M) (i : κ) :
     (equivMvPolynomial b).symm (MvPolynomial.X i) = ι R M (b i) :=
   (equivMvPolynomial b).toEquiv.symm_apply_eq.mpr <| equivMvPolynomial_ι_apply b i |>.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (b : Basis I R M) :
     IsSymmetricAlgebra (Basis.constr b R (.X : I → MvPolynomial I R)) :=
   (SymmetricAlgebra.equivMvPolynomial b).bijective
@@ -73,7 +71,7 @@ theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (b : Basis I R M) :
 @[simps! repr_apply]
 noncomputable def _root_.Module.Basis.symmetricAlgebra (b : Basis κ R M) :
     Basis (κ →₀ ℕ) R (SymmetricAlgebra R M) :=
-  (MvPolynomial.basisMonomials κ R).map <| (SymmetricAlgebra.equivMvPolynomial b).symm.toLinearEquiv
+  (MvPolynomial.basisMonomials κ R).map (SymmetricAlgebra.equivMvPolynomial b).symm.toLinearEquiv
 
 /-- `SymmetricAlgebra R M` is free when `M` is. -/
 instance instModuleFree [Module.Free R M] : Module.Free R (SymmetricAlgebra R M) :=

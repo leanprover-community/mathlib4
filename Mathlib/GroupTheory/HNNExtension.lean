@@ -11,8 +11,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## HNN Extensions of Groups
+# HNN Extensions of Groups
 
 This file defines the HNN extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
 subgroups `A` and `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such
@@ -71,7 +70,7 @@ def t : HNNExtension G A B φ :=
 
 theorem t_mul_of (a : A) :
     t * (of (a : G) : HNNExtension G A B φ) = of (φ a : G) * t :=
-  (Con.eq _).2 <| ConGen.Rel.of _ _ <| ⟨a, by simp⟩
+  (Con.eq _).2 <| ConGen.Rel.of _ _ ⟨a, by simp⟩
 
 theorem of_mul_t (b : B) :
     (of (b : G) : HNNExtension G A B φ) * t = t * of (φ.symm b : G) := by
@@ -118,7 +117,6 @@ theorem hom_ext {f g : HNNExtension G A B φ →* M}
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem induction_on {motive : HNNExtension G A B φ → Prop}
     (x : HNNExtension G A B φ) (of : ∀ g, motive (of g))

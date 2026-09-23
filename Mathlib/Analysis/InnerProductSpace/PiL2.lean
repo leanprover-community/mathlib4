@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -132,7 +133,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 meta def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
-    let p : Term ← withNaryArg 0 <| delab
+    let p : Term ← withNaryArg 0 delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
     let `(![$elems,*]) ← withNaryArg 2 delab | failure
@@ -298,20 +299,20 @@ variable [DecidableEq ι]
 all other coordinates. -/
 abbrev EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι := PiLp.single 2 i a
 
-@[deprecated PiLp.ofLp_single (since := "2026-03-15")]
+@[deprecated PiLp.ofLp_single +typeChanged (since := "2026-03-15")]
 lemma EuclideanSpace.ofLp_single (i : ι) (a : 𝕜) : ofLp (single i a) = Pi.single i a := by
   simp
 
-@[deprecated PiLp.toLp_single (since := "2026-03-15")]
+@[deprecated PiLp.toLp_single +typeChanged (since := "2026-03-15")]
 lemma EuclideanSpace.toLp_single (i : ι) (a : 𝕜) : toLp _ (Pi.single i a) = single i a := by
   simp
 
-@[deprecated PiLp.single_apply (since := "2026-03-15")]
+@[deprecated PiLp.single_apply +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
     (EuclideanSpace.single i a) j = ite (j = i) a 0 := by
   simp
 
-@[deprecated PiLp.single_eq_zero_iff (since := "2026-03-15")]
+@[deprecated PiLp.single_eq_zero_iff +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
     EuclideanSpace.single i a = 0 ↔ a = 0 := by simp
 
@@ -324,25 +325,25 @@ theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace
 theorem EuclideanSpace.inner_single_right (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
     ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [PiLp.inner_apply]
 
-@[deprecated PiLp.norm_single (since := "2026-03-15")]
+@[deprecated PiLp.norm_single +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.norm_single (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖ = ‖a‖ := by simp
 
-@[deprecated PiLp.nnnorm_single (since := "2026-03-15")]
+@[deprecated PiLp.nnnorm_single +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.nnnorm_single (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖₊ = ‖a‖₊ := by simp
 
-@[deprecated PiLp.dist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.dist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.dist_single_same (i : ι) (a b : 𝕜) :
     dist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = dist a b := by
   simp
 
-@[deprecated PiLp.nndist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.nndist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.nndist_single_same (i : ι) (a b : 𝕜) :
     nndist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = nndist a b := by
   simp
 
-@[deprecated PiLp.edist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.edist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.edist_single_same (i : ι) (a b : 𝕜) :
     edist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = edist a b := by
   simp
@@ -403,8 +404,8 @@ theorem repr_injective :
   cases g
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `b i` is the `i`th basis vector. -/
+@[macro_inline]
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
@@ -855,7 +856,6 @@ lemma equiv_self_rfl : b.equiv b (.refl ι) = .refl 𝕜 E := by
   apply b.toBasis.ext_linearIsometryEquiv
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
   nth_rw 1 [← b.sum_repr x, map_sum]
   simp_rw [map_smul, equiv_apply_basis]
@@ -1217,8 +1217,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
-    simp only [p1, p2, LinearIsometry.norm_map,
-      ContinuousLinearMap.coe_coe, Submodule.coe_norm]
+    simp [p1, p2]
   exact
     { toLinearMap := M
       norm_map' := M_norm_map }
@@ -1284,7 +1283,6 @@ theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike �
     Basis.coe_singleton, Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one,
     Matrix.one_vecMulVec, Matrix.vecMulVec_eq Unit]
 
-set_option backward.isDefEq.respectTransparency false in
 open Matrix LinearMap EuclideanSpace in
 theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :

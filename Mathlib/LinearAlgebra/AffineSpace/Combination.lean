@@ -44,7 +44,7 @@ These definitions are for sums over a `Finset`; versions for a
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 namespace Finset
 
@@ -580,7 +580,6 @@ theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
   simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd, map_smulₛₗ,
     AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The value of `affineCombination`, where the given points take only two values. -/
 lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p : ι → P)
     (p₁ p₂ : P) (s' : Finset ι) (h : ∑ i ∈ s, w i = 1) (hp₂ : ∀ i ∈ s ∩ s', p i = p₂)
@@ -594,7 +593,6 @@ lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p 
     simp [hp₁ i hi]
   · exact (hp₂ i hi).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying `AffineMap.lineMap` on two `Finset.affineCombination` over the same set of points
 is equivalent to applying `AffineMap.lineMap` to the weights. -/
 theorem lineMap_affineCombination (w₁ : ι → k) (w₂ : ι → k) (r : k) (p : ι → P) :
@@ -606,19 +604,19 @@ theorem lineMap_affineCombination (w₁ : ι → k) (w₂ : ι → k) (r : k) (p
 variable (k)
 
 /-- Weights for expressing a single point as an affine combination. -/
-@[deprecated Pi.single (since := "2026-04-16")]
+@[deprecated Pi.single +typeChanged (since := "2026-04-16")]
 def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
   Pi.single i 1
 
-@[deprecated Pi.single_eq_same (since := "2026-04-16")]
+@[deprecated Pi.single_eq_same +typeChanged (since := "2026-04-16")]
 theorem affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
     affineCombinationSingleWeights k i i = 1 := Pi.single_eq_same _ _
 
-@[deprecated Pi.single_eq_of_ne (since := "2026-04-16")]
+@[deprecated Pi.single_eq_of_ne +typeChanged (since := "2026-04-16")]
 theorem affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (h : j ≠ i) :
     affineCombinationSingleWeights k i j = 0 := Pi.single_eq_of_ne h _
 
-@[deprecated Finset.sum_pi_single' (since := "2026-04-16")]
+@[deprecated Finset.sum_pi_single' +typeChanged (since := "2026-04-16")]
 theorem sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :
     ∑ j ∈ s, affineCombinationSingleWeights k i j = 1 := by
   rw [affineCombinationSingleWeights, s.sum_pi_single', ite_eq_left h]
@@ -692,7 +690,7 @@ theorem affineCombination_piSingle [DecidableEq ι] (p : ι → P) {i : ι}
   simp [hj]
 
 /-- An affine combination with `affineCombinationSingleWeights` gives the specified point. -/
-@[deprecated affineCombination_piSingle (since := "2026-04-16")]
+@[deprecated affineCombination_piSingle +typeChanged (since := "2026-04-16")]
 theorem affineCombination_affineCombinationSingleWeights [DecidableEq ι] (p : ι → P) {i : ι}
     (hi : i ∈ s) : s.affineCombination k p (affineCombinationSingleWeights k i) = p i :=
   affineCombination_piSingle _ _ _ hi
@@ -707,7 +705,6 @@ theorem weightedVSub_weightedVSubVSubWeights [DecidableEq ι] (p : ι → P) {i 
 
 variable {k}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An affine combination with `affineCombinationLineMapWeights` gives the result of
 `line_map`. -/
 @[simp]
@@ -719,7 +716,6 @@ theorem affineCombination_affineCombinationLineMapWeights [DecidableEq ι] (p : 
     weightedVSub_const_smul, s.affineCombination_piSingle k p hi,
     s.weightedVSub_weightedVSubVSubWeights k p hj hi, AffineMap.lineMap_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying `AffineMap.homothety` on `Finset.affineCombination` towards one of the weighted points
   is equivalent to moving the weights towards `Finset.affineCombinationSingleWeights`. -/
 -- Redeclaring all variables because `AffineMap.homothety` requires `[CommRing k]`
@@ -953,7 +949,6 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
 
 variable {k V}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a set of points, together with a chosen base point in this set, if we affinely transport
 all other members of the set along the line joining them to this base point, the affine span is
 unchanged. -/

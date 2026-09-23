@@ -71,9 +71,9 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
-  · norm_num at hn
+  · simp at hn
   induction l generalizing x with
-  | nil => norm_num at hn
+  | nil => simp at hn
   | cons y l =>
     use x
     constructor
@@ -364,7 +364,6 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
       have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
       exact Quotient.sound' hc.toList_isRotated)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ x) :
     toCycle f hf = toList f x := by
   have key : (Finset.univ : Finset α).val = x ::ₘ Finset.univ.val.erase x := by simp

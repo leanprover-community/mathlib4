@@ -56,7 +56,9 @@ metric space, Hausdorff distance
 
 noncomputable section
 
-open NNReal ENNReal Topology Set Filter Pointwise Bornology
+open NNReal ENNReal Set Filter Pointwise Bornology
+
+open scoped Topology
 
 universe u v w
 
@@ -104,7 +106,7 @@ theorem infEDist_le_edist_of_mem (h : y ∈ s) : infEDist x s ≤ edist x y :=
 
 /-- If a point `x` belongs to `s`, then its edist to `s` vanishes -/
 theorem infEDist_zero_of_mem (h : x ∈ s) : infEDist x s = 0 :=
-  nonpos_iff_eq_zero.1 <| @edist_self _ _ x ▸ infEDist_le_edist_of_mem h
+  nonpos_iff_eq_zero.1 <| edist_self x ▸ infEDist_le_edist_of_mem h
 
 /-- The edist is antitone with respect to inclusion. -/
 @[gcongr]
@@ -293,7 +295,7 @@ theorem hausdorffEDist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y
 theorem infEDist_le_hausdorffEDist_of_mem (h : x ∈ s) : infEDist x t ≤ hausdorffEDist s t := by
   rw [hausdorffEDist_def]
   refine le_trans ?_ le_sup_left
-  exact le_iSup₂ (α := ℝ≥0∞) x h
+  grw [← le_iSup₂ x h]
 
 /-- If the Hausdorff distance is `< r`, then any point in one of the sets has
 a corresponding point at distance `< r` in the other set. -/

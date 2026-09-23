@@ -59,7 +59,6 @@ open scoped Moebius
 
 open LSeries Nat Complex
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
   refine fun h ↦ not_summable_one_div_on_primes <| summable_ofReal.mp <| .of_neg ?_
   refine (h.indicator {n | n.Prime}).congr fun n ↦ ?_
@@ -171,7 +170,6 @@ lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter 
 lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
   congr_arg L modOne_eq_one
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The L-series of a Dirichlet character mod `N > 0` does not converge absolutely at `s = 1`. -/
 lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) :
     ¬ LSeriesSummable ↗χ 1 := by
@@ -269,7 +267,7 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
-  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
+  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans LSeriesSummable_one_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by

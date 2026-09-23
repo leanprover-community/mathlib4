@@ -39,10 +39,8 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α : Type*} {M : Type*} {R : Type*} {S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
 
 section LinearCombination
 
@@ -250,7 +248,6 @@ theorem linearCombinationOn_range (s : Set α) :
     range_subtype]
   exact (span_image_eq_map_linearCombination _ _).le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linearCombination_restrict (s : Set α) :
     linearCombination R (s.domRestrict v) = Submodule.subtype _ ∘ₗ
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
@@ -473,7 +470,7 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
     rintro ⟨f, t, hts, hf, rfl⟩
     refine ⟨f, hf.trans hts, .symm <| Finset.sum_subset hts ?_⟩
     simp +contextual [Function.support_subset_iff'.1 hf]
-  mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hx
+  mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span hx
 
 lemma Submodule.mem_span_iff_of_fintype {s : Set M} [Fintype s] {x : M} :
     x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by

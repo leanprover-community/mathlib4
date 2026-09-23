@@ -354,6 +354,9 @@ theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x
 theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := fun h =>
   map_comap_of_surjective f hf K ▸ map_mono h
 
+theorem map_eq_image_of_surjective : map f I = ⇑f '' ↑I := by
+  grind [Ideal.mem_map_iff_of_surjective f hf, SetLike.mem_coe]
+
 end
 
 theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
@@ -525,7 +528,6 @@ section Bijective
 variable (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S}
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Special case of the correspondence theorem for isomorphic rings -/
 def relIsoOfBijective : Ideal S ≃o Ideal R where
   toFun := comap f
@@ -669,7 +671,6 @@ def mapHom : Ideal R →+* Ideal S where
 protected theorem map_pow (n : ℕ) : map f (I ^ n) = map f I ^ n :=
   map_pow (mapHom f) I n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_radical : comap f (radical K) = radical (comap f K) := by
   ext
   simp [radical]
@@ -688,7 +689,7 @@ theorem map_radical_le : map f (radical I) ≤ radical (map f I) :=
 theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
   map_le_iff_le_comap.1 <|
     (Ideal.map_mul f (comap f K) (comap f L)).symm ▸
-      mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
+      mul_mono (map_le_iff_le_comap.2 le_rfl) (map_le_iff_le_comap.2 le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
   induction n with
@@ -723,7 +724,7 @@ its image in `S` is not equal to `⊤`.
 -/
 theorem comap_map_eq_self_of_isMaximal (f : R →+* S) {p : Ideal R} [hP' : p.IsMaximal]
     (hP : Ideal.map f p ≠ ⊤) : (map f p).comap f = p :=
-  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp <| le_comap_map
+  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp le_comap_map
 
 end CommRing
 
@@ -971,7 +972,7 @@ theorem annihilator_sup (N P : Submodule R M) :
   rw [← sSup_pair, sSup_eq_iSup, iSup_subtype', annihilator_iSup, ← iInf_pair, iInf_subtype']
 
 theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
-  simp_rw [← le_bot_iff, smul_le, SetLike.le_def, mem_annihilator]; rfl
+  simp_rw [← le_bot_iff, smul_le, IsConcreteLE.le_iff, mem_annihilator]; rfl
 
 @[simp]
 theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
@@ -1254,7 +1255,6 @@ theorem eq_liftOfSurjective (hf : Function.Surjective f) (g : A →+* C)
 
 end RingHom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any ring isomorphism induces an order isomorphism of ideals. -/
 @[simps apply]
 def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :

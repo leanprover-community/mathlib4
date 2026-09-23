@@ -18,8 +18,6 @@ public import Mathlib.RingTheory.OreLocalization.Basic
 
 @[expose] public section
 
-open Function
-
 section CommMonoidWithZero
 
 variable {M : Type*} [CommMonoidWithZero M] (S : Submonoid M) (N : Type*) [CommMonoidWithZero N]
