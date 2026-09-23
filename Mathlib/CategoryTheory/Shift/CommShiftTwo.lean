@@ -80,7 +80,7 @@ namespace Functor
 that is natural in `X₁` and `X₂`, and that these isomorphisms commute up to
 the multiplication with an element in `(CatCenter D)ˣ` which is determined by
 a `CommShift₂Setup D M` structure. (In most cases, one should use the
-@[reducible, inline]
+@[reducible]
 defiation `CommShift₂Int`.) -/
 class CommShift₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) where
@@ -106,7 +106,7 @@ attribute [reassoc] commShift₂_comm
 that is natural in `X₁` and `X₂`, and that these isomorphisms for the shift by `p`
 on the first variable and the shift by `q` on the second variable commute up
 to the sign `(-1) ^ (p * q)`. -/
-@[reducible, inline]
+@[reducible]
 def CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (G : C₁ ⥤ C₂ ⥤ D) : Type _ :=
   G.CommShift₂ .int
@@ -199,7 +199,7 @@ end
 /-- If `τ : G₁ ⟶ G₂` is a natural transformation between two bifunctors
 which commute shifts on both variables, this typeclass asserts a compatibility of `τ`
 with these shifts. -/
-@[reducible, inline]
+@[reducible]
 def CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] [Preadditive D]
     [∀ (n : ℤ), (shiftFunctor D n).Additive]
     {G₁ G₂ : C₁ ⥤ C₂ ⥤ D} [G₁.CommShift₂Int] [G₂.CommShift₂Int] (τ : G₁ ⟶ G₂) : Prop :=

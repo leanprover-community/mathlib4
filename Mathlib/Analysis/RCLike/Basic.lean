@@ -397,7 +397,7 @@ variable (K)
 
 /-- Conjugation as a ring equivalence. This is used to convert the inner product into a
 sesquilinear product. -/
-@[reducible, inline]
+@[reducible]
 def conjToRingEquiv : K ≃+* Kᵐᵒᵖ :=
   starRingEquiv
 

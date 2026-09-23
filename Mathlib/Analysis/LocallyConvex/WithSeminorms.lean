@@ -72,7 +72,7 @@ variable [SeminormedRing R] [AddCommGroup E] [Module R E]
 variable (R E ι)
 
 /-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
-@[reducible, inline]
+@[reducible]
 def SeminormFamily :=
   ι → Seminorm R E
 

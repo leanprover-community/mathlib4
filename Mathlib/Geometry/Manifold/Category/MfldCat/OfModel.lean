@@ -57,7 +57,7 @@ attribute [coe] MfldCat.carrier
 /-- The object of `ModelWithCorners.MfldCat I n` associated to a `C^n` manifold `X` modeled on `I`.
 
 This is the preferred way to construct a term of `ModelWithCorners.MfldCat I n`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def of (X : Type u) [TopologicalSpace X] [ChartedSpace H X] [IsManifold I n X] :
     MfldCat I n := ⟨X⟩
 
@@ -86,11 +86,11 @@ instance : ConcreteCategory (MfldCat I n) (fun M N => ContMDiffMap I I M N n) wh
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `ModelWithCorners.MfldCat` back into a `ContMDiffMap`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Hom.hom (f : Hom M N) := ConcreteCategory.hom (C := MfldCat I n) f
 
 /-- Typecheck a `ContMDiffMap` as a morphism in `ModelWithCorners.MfldCat`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def ofHom (f : ContMDiffMap I I X Y n) : of (I := I) (n := n) X ⟶ of (I := I) (n := n) Y :=
   ConcreteCategory.ofHom (C := MfldCat I n) f
 

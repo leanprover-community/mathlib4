@@ -37,7 +37,7 @@ instance : MorphismProperty.HasPullbacks IsOpenImmersion where
   hasPullback _ _ := inferInstance
 
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
-@[reducible, inline]
+@[reducible]
 def OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} (precoverage @IsOpenImmersion) X
 
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
@@ -120,7 +120,7 @@ theorem OpenCover.compactSpace {X : Scheme.{u}} (𝒰 : X.OpenCover) [Finite �
 An affine open cover of `X` consists of a family of open immersions into `X` from
 spectra of rings.
 -/
-@[reducible, inline]
+@[reducible]
 def AffineOpenCover (X : Scheme.{u}) : Type _ :=
   AffineCover.{v} @IsOpenImmersion X
 

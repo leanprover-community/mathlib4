@@ -74,7 +74,7 @@ def multispanIndexCoend : MultispanIndex (multispanShapeCoend J) C where
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, a wedge for `F` is a type of cones (specifically
 the type of multiforks for `multicospanIndexEnd F`):
 the point of universal of these wedges shall be the end of `F`. -/
-@[reducible, inline]
+@[reducible]
 def Wedge := Multifork (multicospanIndexEnd F)
 
 namespace Wedge
@@ -97,7 +97,7 @@ variable (pt : C) (π : ∀ (j : J), pt ⟶ (F.obj (op j)).obj j)
   (hπ : ∀ ⦃i j : J⦄ (f : i ⟶ j), π i ≫ (F.obj (op i)).map f = π j ≫ (F.map f.op).app j)
 
 /-- Constructor for wedges. -/
-@[reducible, inline]
+@[reducible]
 def mk : Wedge F :=
   Multifork.ofι _ pt π (fun f ↦ hπ f.hom)
 
@@ -142,7 +142,7 @@ end Wedge
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, a cowedge for `F` is a type of cocones
 (specifically the type of multicoforks for `multispanIndexCoend F`):
 the point of a universal cowedge is the coend of `F`. -/
-@[reducible, inline]
+@[reducible]
 def Cowedge := Multicofork (multispanIndexCoend F)
 
 namespace Cowedge
@@ -166,7 +166,7 @@ variable (pt : C) (ι : ∀ (j : J), (F.obj (op j)).obj j ⟶ pt)
   (hι : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f.op).app i ≫ ι i = (F.obj (op j)).map f ≫ ι j)
 
 /-- Constructor for cowedges. -/
-@[reducible, inline]
+@[reducible]
 def mk : Cowedge F :=
   Multicofork.ofπ _ pt ι (fun f ↦ hι f.hom)
 
@@ -210,7 +210,7 @@ end Cowedge
 section End
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property asserts the existence of the end of `F`. -/
-@[reducible, inline]
+@[reducible]
 def HasEnd := HasMultiequalizer (multicospanIndexEnd F)
 
 variable [HasEnd F]
@@ -286,7 +286,7 @@ end End
 section Coend
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property asserts the existence of the coend of `F`. -/
-@[reducible, inline]
+@[reducible]
 def HasCoend := HasMulticoequalizer (multispanIndexCoend F)
 
 variable [HasCoend F]

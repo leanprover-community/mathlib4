@@ -527,7 +527,7 @@ theorem veblen_eq_opow_iff (h : a < veblen o a) :
 
 /-- The epsilon function enumerates the fixed points of `ω ^ ⬝`.
 This is an abbreviation for `veblen 1`. -/
-@[reducible, inline]
+@[reducible]
 def epsilon := veblen 1
 
 @[inherit_doc] scoped notation "ε_ " => epsilon

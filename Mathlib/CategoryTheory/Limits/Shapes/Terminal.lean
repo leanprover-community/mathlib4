@@ -33,7 +33,7 @@ variable (C)
 /-- A category has a terminal object if it has a limit over the empty diagram.
 Use `hasTerminal_of_unique` to construct instances.
 -/
-@[to_dual (attr := reducible, inline)
+@[to_dual (attr := reducible)
 /-- A category has an initial object if it has a colimit over the empty diagram.
 Use `hasInitial_of_unique` to construct instances.
 -/]
@@ -60,7 +60,7 @@ end Univ
 You can use the notation `⊤_ C`.
 This object is characterized by having a unique morphism from any object.
 -/
-@[to_dual (attr := reducible, inline)
+@[to_dual (attr := reducible)
 /-- An arbitrary choice of initial object, if one exists.
 You can use the notation `⊥_ C`.
 This object is characterized by having a unique morphism to any object.
@@ -94,7 +94,7 @@ theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 
 /-- The map from an object to the terminal object. -/
-@[to_dual (attr := reducible, inline)
+@[to_dual (attr := reducible)
 «to» /-- The map to an object from the initial object. -/]
 def terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
   limit.lift (Functor.empty C) (asEmptyCone P)
@@ -222,7 +222,7 @@ instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F
 -- This is reducible to allow usage of lemmas about `conePointUniqueUpToIso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
 to the limit of `F`. -/
-@[to_dual (attr := reducible, inline)
+@[to_dual (attr := reducible)
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
 to the colimit of `F`. -/]
 def limitOfInitial (F : J ⥤ C) [HasInitial J] : limit F ≅ F.obj (⊥_ J) :=
@@ -236,7 +236,7 @@ instance hasLimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C}
 -- This is reducible to allow usage of lemmas about `conePointUniqueUpToIso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object and all the morphisms in the diagram
 are isomorphisms, then the image of the terminal object is isomorphic to the limit of `F`. -/
-@[to_dual (attr := reducible, inline)
+@[to_dual (attr := reducible)
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram
 are isomorphisms, then the image of the initial object is isomorphic to the colimit of `F`. -/]
 def limitOfTerminal (F : J ⥤ C) [HasTerminal J] [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :

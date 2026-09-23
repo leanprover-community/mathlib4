@@ -135,7 +135,7 @@ theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)
   rfl
 
 /-- Abbreviation for projection onto the ith coordinate. -/
-@[reducible, inline]
+@[reducible]
 def proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotient (as i) (bs i) :=
   p.map ⟨_, continuous_apply i⟩
 
@@ -190,12 +190,12 @@ theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ 
 variable {c₁ c₂ : α × β}
 
 /-- Abbreviation for projection onto the left coordinate of a path class. -/
-@[reducible, inline]
+@[reducible]
 def projLeft (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.1 c₂.1 :=
   p.map ⟨_, continuous_fst⟩
 
 /-- Abbreviation for projection onto the right coordinate of a path class. -/
-@[reducible, inline]
+@[reducible]
 def projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.2 c₂.2 :=
   p.map ⟨_, continuous_snd⟩
 

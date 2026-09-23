@@ -114,12 +114,12 @@ theorem symmetrify_reverse {a b : Symmetrify V} (e : a ⟶ b) : reverse e = e.sw
 section Paths
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `symmetrify V` -/
-@[reducible, inline]
+@[reducible]
 def Hom.toPos {X Y : V} (f : X ⟶ Y) : (Quiver.symmetrifyQuiver V).Hom X Y :=
   Sum.inl f
 
 /-- Shorthand for the "backward" arrow corresponding to `f` in `symmetrify V` -/
-@[reducible, inline]
+@[reducible]
 def Hom.toNeg {X Y : V} (f : X ⟶ Y) : (Quiver.symmetrifyQuiver V).Hom Y X :=
   Sum.inr f
 

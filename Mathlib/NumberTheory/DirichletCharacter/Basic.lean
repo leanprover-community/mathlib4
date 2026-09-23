@@ -36,7 +36,7 @@ dirichlet character, multiplicative character
 -/
 
 /-- The type of Dirichlet characters of level `n`. -/
-@[reducible, inline, wikidata Q1063579]
+@[reducible, wikidata Q1063579]
 def DirichletCharacter (R : Type*) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
 
 open MulChar

@@ -29,7 +29,7 @@ universe u v
 
 /-- Linear endomorphisms of a module, with associated ring structure
 `Module.End.semiring` and algebra structure `Module.End.algebra`. -/
-@[reducible, inline]
+@[reducible]
 def Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] M
 

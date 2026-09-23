@@ -567,7 +567,7 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalRing R] {s : Set R}
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
 ring. -/
-@[reducible, inline, deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
+@[reducible, deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
 def closureNonUnitalCommRingOfComm {R : Type*} [NonUnitalRing R] {s : Set R}
     (hcomm : s.Pairwise Commute) : NonUnitalCommRing (closure s) :=
   have := isMulCommutative_closure hcomm

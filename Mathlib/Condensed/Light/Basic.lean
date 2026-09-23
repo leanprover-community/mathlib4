@@ -25,7 +25,7 @@ open CategoryTheory
 `LightCondensed.{u} C` is the category of light condensed objects in a category `C`, which are
 defined as sheaves on `LightProfinite.{u}` with respect to the coherent Grothendieck topology.
 -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def LightCondensed (C : Type w) [Category.{v} C] :=
   Sheaf (coherentTopology LightProfinite.{u}) C
 
@@ -33,7 +33,7 @@ def LightCondensed (C : Type w) [Category.{v} C] :=
 Light condensed sets. Because `LightProfinite` is an essentially small category, we don't need the
 same universe bump as in `CondensedSet`.
 -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def LightCondSet := LightCondensed.{u} <| Type u
 
 namespace LightCondensed

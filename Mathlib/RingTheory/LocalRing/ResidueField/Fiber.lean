@@ -63,7 +63,7 @@ lemma ResidueField.exists_smul_eq_tmul_one
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
-@[reducible, inline]
+@[reducible]
 def Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddCommGroup S] [Module R S] : Type _ :=
   p.ResidueField ⊗[R] S
 

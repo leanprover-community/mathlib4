@@ -38,7 +38,7 @@ open scoped Simplicial
 open modelCategoryQuillen in
 /-- A simplicial set `S` is a Kan complex if it is fibrant, which means that
 the projection `S ⟶ ⊤_ _` has the right lifting property with respect to horn inclusions. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def KanComplex (S : SSet.{u}) : Prop := HomotopicalAlgebra.IsFibrant S
 
 /-- A Kan complex `S` satisfies the following horn-filling condition:

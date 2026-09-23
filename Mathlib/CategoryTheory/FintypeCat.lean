@@ -28,13 +28,13 @@ We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat
 open CategoryTheory
 
 /-- The category of finite types. -/
-@[reducible, inline]
+@[reducible]
 def FintypeCat := ObjectProperty.FullSubcategory (C := Type*) Finite
 
 namespace FintypeCat
 
 /-- Construct a term of `FintypeCat` from a type endowed with a `Finite` instance. -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type*) [Finite X] : FintypeCat :=
   ⟨X, inferInstance⟩
 
@@ -59,7 +59,7 @@ noncomputable def fintype {X : FintypeCat} : Fintype X :=
   Fintype.ofFinite X.obj
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
-@[reducible, inline, simps!]
+@[reducible, simps!]
 def incl : FintypeCat ⥤ Type* := ObjectProperty.ι _
 
 instance : incl.Full := ObjectProperty.full_ι _

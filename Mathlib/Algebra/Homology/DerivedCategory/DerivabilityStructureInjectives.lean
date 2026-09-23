@@ -152,7 +152,7 @@ variable (C) in
 /-- The localizer morphism (relative to quasi-isomorphisms) that is
 given by the equivalence of categories
 `CochainComplex.Plus (InjectiveObject C) ≌ FibrantObject (CochainComplex.Plus C)`. -/
-@[reducible, inline]
+@[reducible]
 def fibrantObjectLocalizerMorphism :
     LocalizerMorphism ((quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
       (weakEquivalences (FibrantObject (Plus C))) where
@@ -186,7 +186,7 @@ variable (C) in
 The target category is equipped with the class of quasi-isomorphisms while
 the source category `HomotopyCategory.Plus (InjectiveObject C)` is equipped
 with the class of isomorphisms (which is exactly the same as quasi-isomorphisms). -/
-@[reducible, inline]
+@[reducible]
 def localizerMorphism : LocalizerMorphism
   (MorphismProperty.isomorphisms (HomotopyCategory.Plus (InjectiveObject C)))
     (HomotopyCategory.Plus.quasiIso C) where

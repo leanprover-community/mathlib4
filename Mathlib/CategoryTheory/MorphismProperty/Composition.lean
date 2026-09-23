@@ -29,7 +29,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 variable (C) in
 /-- The property of morphisms that is satisfied by `𝟙 X` for any `X`. -/
-@[reducible, inline]
+@[reducible]
 def identities : MorphismProperty C :=
   .ofHoms fun X ↦ 𝟙 X
 

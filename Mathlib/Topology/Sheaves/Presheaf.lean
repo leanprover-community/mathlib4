@@ -122,7 +122,7 @@ open AlgebraicGeometry
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
 the tactic `Top.presheaf.restrict_tac'` -/
-@[reducible, inline]
+@[reducible]
 def restrictOpen {F : X.Presheaf C}
     {V : Opens X} (x : ToType (F.obj (op V))) (U : Opens X)
     (e : U ≤ V := by restrict_tac) :

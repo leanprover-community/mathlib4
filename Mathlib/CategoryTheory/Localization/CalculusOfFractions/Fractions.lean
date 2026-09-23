@@ -108,7 +108,7 @@ namespace LeftFraction₂
 variable {X Y : C} (φ : W.LeftFraction₂ X Y)
 
 /-- The first left fraction. -/
-@[reducible, inline]
+@[reducible]
 def fst : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f
@@ -116,7 +116,7 @@ def fst : W.LeftFraction X Y where
   hs := φ.hs
 
 /-- The second left fraction. -/
-@[reducible, inline]
+@[reducible]
 def snd : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f'
@@ -124,7 +124,7 @@ def snd : W.LeftFraction X Y where
   hs := φ.hs
 
 /-- The exchange of the two fractions. -/
-@[reducible, inline]
+@[reducible]
 def symm : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f'
@@ -139,7 +139,7 @@ namespace LeftFraction₃
 variable {X Y : C} (φ : W.LeftFraction₃ X Y)
 
 /-- The first left fraction. -/
-@[reducible, inline]
+@[reducible]
 def fst : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f
@@ -147,7 +147,7 @@ def fst : W.LeftFraction X Y where
   hs := φ.hs
 
 /-- The second left fraction. -/
-@[reducible, inline]
+@[reducible]
 def snd : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f'
@@ -155,7 +155,7 @@ def snd : W.LeftFraction X Y where
   hs := φ.hs
 
 /-- The third left fraction. -/
-@[reducible, inline]
+@[reducible]
 def thd : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f''
@@ -163,7 +163,7 @@ def thd : W.LeftFraction X Y where
   hs := φ.hs
 
 /-- Forgets the first fraction. -/
-@[reducible, inline]
+@[reducible]
 def forgetFst : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f'
@@ -172,7 +172,7 @@ def forgetFst : W.LeftFraction₂ X Y where
   hs := φ.hs
 
 /-- Forgets the second fraction. -/
-@[reducible, inline]
+@[reducible]
 def forgetSnd : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f
@@ -181,7 +181,7 @@ def forgetSnd : W.LeftFraction₂ X Y where
   hs := φ.hs
 
 /-- Forgets the third fraction. -/
-@[reducible, inline]
+@[reducible]
 def forgetThd : W.LeftFraction₂ X Y where
   Y' := φ.Y'
   f := φ.f
@@ -244,7 +244,7 @@ variable {X Y : C}
 variable (φ : W.RightFraction₂ X Y)
 
 /-- The first right fraction. -/
-@[reducible, inline]
+@[reducible]
 def fst : W.RightFraction X Y where
   X' := φ.X'
   f := φ.f
@@ -252,7 +252,7 @@ def fst : W.RightFraction X Y where
   hs := φ.hs
 
 /-- The second right fraction. -/
-@[reducible, inline]
+@[reducible]
 def snd : W.RightFraction X Y where
   X' := φ.X'
   f := φ.f'

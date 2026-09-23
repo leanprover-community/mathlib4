@@ -51,7 +51,7 @@ variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 -- but as of August 2026 it does not. See:
 -- see https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Structure.20extensions.20vs.20abbrev.20difference.20in.20dot.20notation/with/581169071
 /-- Converts a face of a pointed cone into a pointed cone. -/
-@[expose, reducible, inline, coe]
+@[expose, reducible, coe]
 def toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
 
 instance : CoeOut (Face C) (PointedCone R M) := ⟨toPointedCone⟩

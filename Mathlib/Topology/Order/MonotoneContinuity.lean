@@ -291,7 +291,7 @@ instance : HomeomorphClass (α ≃o β) α β where
   inv_continuous e := e.symm.continuous
 
 /-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
   HomeomorphClass.toHomeomorph e
 

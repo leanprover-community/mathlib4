@@ -49,7 +49,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
-@[reducible, inline]
+@[reducible]
 def SimplicialObject :=
   SimplexCategoryᵒᵖ ⥤ C
 
@@ -218,7 +218,7 @@ variable {D : Type*} [Category* D]
 
 variable (D) in
 /-- Functor composition induces a functor on simplicial objects. -/
-@[reducible, inline]
+@[reducible]
 def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
@@ -235,7 +235,7 @@ lemma whiskering_obj_obj_σ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i 
 end
 
 /-- Truncated simplicial objects. -/
-@[reducible, inline]
+@[reducible]
 def Truncated (n : ℕ) := (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 
 variable {C}
@@ -244,7 +244,7 @@ namespace Truncated
 
 variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
-@[reducible, inline]
+@[reducible]
 def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
@@ -302,13 +302,13 @@ protected abbrev Truncated.cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n
   ran (SimplexCategory.Truncated.inclusion n).op
 
 /-- The n-skeleton as an endofunctor on `SimplicialObject C`. -/
-@[reducible, inline]
+@[reducible]
 def sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.sk n
 
 /-- The n-coskeleton as an endofunctor on `SimplicialObject C`. -/
-@[reducible, inline]
+@[reducible]
 def cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.cosk n
@@ -393,7 +393,7 @@ end adjunctions
 variable (C)
 
 /-- The constant simplicial object is the constant functor. -/
-@[reducible, inline]
+@[reducible]
 def const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 
@@ -535,7 +535,7 @@ def augmentOfIsTerminal (X : SimplicialObject C) {T : C} (hT : IsTerminal T) :
 end SimplicialObject
 
 /-- Cosimplicial objects. -/
-@[reducible, inline]
+@[reducible]
 def CosimplicialObject :=
   SimplexCategory ⥤ C
 
@@ -690,7 +690,7 @@ theorem σ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i 
 variable (C)
 
 /-- Functor composition induces a functor on cosimplicial objects. -/
-@[reducible, inline]
+@[reducible]
 def whiskering (D : Type*) [Category* D] :
     (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
@@ -724,7 +724,7 @@ instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
 
 variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
-@[reducible, inline]
+@[reducible]
 def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
@@ -767,7 +767,7 @@ end Truncation
 variable (C)
 
 /-- The constant cosimplicial object. -/
-@[reducible, inline]
+@[reducible]
 def const : C ⥤ CosimplicialObject C :=
   CategoryTheory.Functor.const _
 

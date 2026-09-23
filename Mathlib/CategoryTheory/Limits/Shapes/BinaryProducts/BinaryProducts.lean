@@ -40,12 +40,12 @@ variable {C : Type u} [Category.{v} C]
 variable {X Y : C}
 
 /-- An abbreviation for `HasLimit (pair X Y)`. -/
-@[reducible, inline]
+@[reducible]
 def HasBinaryProduct (X Y : C) :=
   HasLimit (pair X Y)
 
 /-- An abbreviation for `HasColimit (pair X Y)`. -/
-@[reducible, inline]
+@[reducible]
 def HasBinaryCoproduct (X Y : C) :=
   HasColimit (pair X Y)
 
@@ -398,13 +398,13 @@ variable (C)
 
 /-- A category `HasBinaryProducts` if it has all limits of shape `Discrete WalkingPair`,
 i.e. if it has a product for every pair of objects. -/
-@[reducible, inline, stacks 001T]
+@[reducible, stacks 001T]
 def HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
 /-- A category `HasBinaryCoproducts` if it has all colimit of shape `Discrete WalkingPair`,
 i.e. if it has a coproduct for every pair of objects. -/
-@[reducible, inline, stacks 04AP]
+@[reducible, stacks 04AP]
 def HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C
 

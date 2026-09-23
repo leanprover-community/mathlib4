@@ -250,7 +250,7 @@ variable {A : Type*}
 filtering.
 
 Note that this is not an instance, as for sometimes a more efficient algorithm is available. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- In a canonically ordered additive type, the antidiagonal can be construct by filtering.
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/]

@@ -631,7 +631,7 @@ Ordinal.ToType.mk : Iio o → o.ToType
 Ordinal.ToType.toOrd : o.ToType → Iio o
 ```
 -/
-@[reducible, inline]
+@[reducible]
 def ToType (o : Ordinal.{u}) : Type u :=
   Shrink (Iio o)
 

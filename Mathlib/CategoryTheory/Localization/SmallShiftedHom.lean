@@ -45,7 +45,7 @@ variable (M)
 /-- Given objects `X` and `Y` in a category `C`, this is the property that
 all the types of morphisms from `X⟦a⟧` to `Y⟦b⟧` are `w`-small
 in the localized category with respect to a class of morphisms `W`. -/
-@[reducible, inline]
+@[reducible]
 def HasSmallLocalizedShiftedHom : Prop :=
   ∀ (a b : M), HasSmallLocalizedHom.{w} W (X⟦a⟧) (Y⟦b⟧)
 

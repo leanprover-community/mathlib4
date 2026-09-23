@@ -38,7 +38,7 @@ variable {C : Type*} [Category* C] [MonoidalCategory C] [Preadditive C] [HasZero
 
 /-- If `K₁` and `K₂` are two homological complexes, this is the property that
 for all `j`, the coproduct of `K₁ i₁ ⊗ K₂ i₂` for `i₁ + i₂ = j` exists. -/
-@[reducible, inline]
+@[reducible]
 def HasTensor (K₁ K₂ : HomologicalComplex C c) := HasMapBifunctor K₁ K₂ (curriedTensor C) c
 
 section
@@ -66,14 +66,14 @@ noncomputable abbrev tensorHom {K₁ K₂ L₁ L₂ : HomologicalComplex C c}
 /-- Given three homological complexes `K₁`, `K₂`, and `K₃`, this asserts that for
 all `j`, the functor `- ⊗ K₃.X i₃` commutes with the coproduct of
 the `K₁.X i₁ ⊗ K₂.X i₂` such that `i₁ + i₂ = j`. -/
-@[reducible, inline]
+@[reducible]
 def HasGoodTensor₁₂ (K₁ K₂ K₃ : HomologicalComplex C c) :=
   HasGoodTrifunctor₁₂Obj (curriedTensor C) (curriedTensor C) K₁ K₂ K₃ c c
 
 /-- Given three homological complexes `K₁`, `K₂`, and `K₃`, this asserts that for
 all `j`, the functor `K₁.X i₁` commutes with the coproduct of
 the `K₂.X i₂ ⊗ K₃.X i₃` such that `i₂ + i₃ = j`. -/
-@[reducible, inline]
+@[reducible]
 def HasGoodTensor₂₃ (K₁ K₂ K₃ : HomologicalComplex C c) :=
   HasGoodTrifunctor₂₃Obj (curriedTensor C) (curriedTensor C) K₁ K₂ K₃ c c c
 

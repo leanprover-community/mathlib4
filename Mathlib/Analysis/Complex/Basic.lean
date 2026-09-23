@@ -249,7 +249,7 @@ def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv wit
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`.
 
 This is an abbreviation for `conjCAE` coerced to a continuous linear map. -/
-@[reducible, inline]
+@[reducible]
 def conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE.toContinuousLinearEquiv
 
 @[simp] lemma conjLIE_toCLE : conjLIE.toContinuousLinearEquiv = conjCLE := rfl

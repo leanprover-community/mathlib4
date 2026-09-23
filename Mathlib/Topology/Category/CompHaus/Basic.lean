@@ -41,7 +41,7 @@ universe v u
 open CategoryTheory CompHausLike
 
 /-- The category of compact Hausdorff spaces. -/
-@[reducible, inline]
+@[reducible]
 def CompHaus := CompHausLike (fun _ ↦ True)
 
 namespace CompHaus
@@ -65,7 +65,7 @@ instance : HasProp (fun _ ↦ True) X := ⟨trivial⟩
 /-- A constructor for objects of the category `CompHaus`,
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
-@[reducible, inline]
+@[reducible]
 def of : CompHaus := ↧X
 
 open Lean.PrettyPrinter.Delaborator in
@@ -76,7 +76,7 @@ meta def delabOf : Delab := CategoryTheory.delabOf
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
-@[reducible, inline]
+@[reducible]
 def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
   CompHausLike.compHausLikeToTop _
 
@@ -222,6 +222,6 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 end CompHaus
 
 /-- Every `CompHausLike` admits a functor to `CompHaus`. -/
-@[reducible, inline]
+@[reducible]
 def compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus :=
   CompHausLike.toCompHausLike (by simp only [implies_true])

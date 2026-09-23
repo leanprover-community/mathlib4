@@ -702,7 +702,7 @@ variable {R : Type u} {M : Type v}
 variable [AddCommGroup M] [Semiring R] [Module Rᵐᵒᵖ M] [Module R M]
 
 /-- `x.fst : R` is invertible when `x : tzre R M` is. -/
-@[reducible, inline]
+@[reducible]
 def invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fst where
   invOf := (⅟x).fst
   invOf_mul_self := by rw [← fst_mul, invOf_mul_self, fst_one]
@@ -729,7 +729,7 @@ variable [SMulCommClass R Rᵐᵒᵖ M]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `x : tzre R M` is invertible when `x.fst : R` is. -/
-@[reducible, inline]
+@[reducible]
 def invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
   invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))
   invOf_mul_self := by
@@ -892,7 +892,7 @@ def fstHom : tsze R M →ₐ[S] R where
 
 /-- `R'` as an algebra over `TrivSqZeroExt R' M`. Not an instance since it creates a different
 `Algebra (TrivSqZeroExt R' M) (TrivSqZeroExt R' M)` instance from `TrivSqZeroExt.algebra'`. -/
-@[reducible, inline]
+@[reducible]
 def algebraBase : Algebra (tsze R' M) R' where
   algebraMap := (fstHom R' R' M).toRingHom
   smul x r := x.fst * r

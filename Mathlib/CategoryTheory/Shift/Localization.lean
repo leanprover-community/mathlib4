@@ -65,7 +65,7 @@ lemma shift {X Y : C} {f : X ⟶ Y} (hf : W f) (a : A) : W (f⟦a⟧') := by
 variable {A} in
 /-- The morphism of localizer from `W` to `W` given by the functor `shiftFunctor C a`
 when `a : A` and `W` is compatible with the shift by `A`. -/
-@[reducible, inline]
+@[reducible]
 def shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
   functor := shiftFunctor C a
   map := by rw [MorphismProperty.IsCompatibleWithShift.condition]

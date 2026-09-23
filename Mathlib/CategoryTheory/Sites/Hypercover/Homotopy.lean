@@ -118,13 +118,13 @@ end
 variable [Limits.HasPullbacks C] (f g : E.Hom F)
 
 /-- (Implementation): The covering object of `cylinder f g`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def cylinderX {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : C :=
   pullback (pullback.lift (f.h₀ i) (g.h₀ i) (by simp)) (F.toPullback k)
 
 /-- (Implementation): The structure morphisms of the covering objects of `cylinder f g`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def cylinderf {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : cylinderX f g k ⟶ S :=
   pullback.fst _ _ ≫ E.f _
@@ -288,11 +288,11 @@ def OneHypercover.homotopicRel : HomRel (J.OneHypercover S) :=
   fun _ _ f g ↦ Nonempty (PreOneHypercover.Homotopy f g)
 
 /-- The category of `1`-hypercovers with refinement morphisms up to homotopy. -/
-@[reducible, inline]
+@[reducible]
 def HOneHypercover (S : C) := Quotient (OneHypercover.homotopicRel J S)
 
 /-- The canonical projection from `1`-hypercovers to `1`-hypercovers up to homotopy. -/
-@[reducible, inline]
+@[reducible]
 def OneHypercover.toHOneHypercover (S : C) : J.OneHypercover S ⥤ J.HOneHypercover S :=
   Quotient.functor _
 

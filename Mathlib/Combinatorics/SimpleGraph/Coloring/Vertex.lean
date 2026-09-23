@@ -71,7 +71,7 @@ variable {V : Type u} (G : SimpleGraph V) {n : ℕ}
 /-- An `α`-coloring of a simple graph `G` is a homomorphism of `G` into the complete graph on `α`.
 This is also known as a proper coloring.
 -/
-@[reducible, inline]
+@[reducible]
 def Coloring (α : Type v) := G →g completeGraph α
 
 variable {G}
@@ -125,7 +125,7 @@ theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c
   fun _ hv _ hw _ ↦ C.not_adj_of_mem_colorClass hv hw
 
 /-- Coloring induced from a homomorphism to a colored graph. -/
-@[reducible, inline]
+@[reducible]
 def Coloring.comap {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
     (f : G →g G') : G.Coloring α :=
   C.comp f
@@ -185,7 +185,7 @@ theorem colorable_one_iff : G.Colorable 1 ↔ G = ⊥ := by
 /-- A coloring of a graph `G` is a homomorphism from it to the mapped graph.
 This is `Hom.map` spelled using colorings. The mapped graph `G.map f` can be thought of as taking
 the original graph `G` and considering every color class (independent set) as a single vertex. -/
-@[reducible, inline]
+@[reducible]
 def Coloring.homMap {α : Type*} (f : G.Coloring α) : G →g G.map f :=
   .map f G f.map_adj
 

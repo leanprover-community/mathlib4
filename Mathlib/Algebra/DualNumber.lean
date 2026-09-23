@@ -43,7 +43,7 @@ variable {R A B : Type*}
 
 /-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.
 `R[ε]` is notation for `DualNumber R`. -/
-@[reducible, inline]
+@[reducible]
 def DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 

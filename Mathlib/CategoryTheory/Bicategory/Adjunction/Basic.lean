@@ -57,7 +57,7 @@ a －－－－－－ ▸ a
         b －－－－－－ ▸ b
 ```
 -/
-@[reducible, inline]
+@[reducible]
 def leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   η ▷ f ⊗≫ f ◁ ε
 
@@ -70,7 +70,7 @@ def leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
 b －－－－－－ ▸ b
 ```
 -/
-@[reducible, inline]
+@[reducible]
 def rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   g ◁ η ⊗≫ ε ▷ g
 
@@ -177,12 +177,12 @@ noncomputable section
 variable (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b)
 
 /-- The isomorphism version of `leftZigzag`. -/
-@[reducible, inline]
+@[reducible]
 def leftZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
   whiskerRightIso η f ≪⊗≫ whiskerLeftIso f ε
 
 /-- The isomorphism version of `rightZigzag`. -/
-@[reducible, inline]
+@[reducible]
 def rightZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
   whiskerLeftIso g η ≪⊗≫ whiskerRightIso ε g
 

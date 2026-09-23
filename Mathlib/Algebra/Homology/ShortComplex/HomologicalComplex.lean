@@ -20,7 +20,7 @@ is the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`.
 
 The homology `K.homology i` of a homological complex `K` in degree `i` is defined as
 the homology of the short complex `(shortComplexFunctor C c i).obj K`, which can be
-@[reducible, inline]
+@[reducible]
 defiated as `K.sc i`.
 
 -/
@@ -64,7 +64,7 @@ variable {C c}
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (iso : K ≅ L) (ψ : L ⟶ M) (i j k : ι)
 
 /-- The short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
-@[reducible, inline]
+@[reducible]
 def sc' := (shortComplexFunctor' C c i j k).obj K
 
 /-- The short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. -/
@@ -76,7 +76,7 @@ noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
 
 /-- A homological complex `K` has homology in degree `i` if the associated
 short complex `K.sc i` has. -/
-@[reducible, inline]
+@[reducible]
 def HasHomology := (K.sc i).HasHomology
 
 variable {K L} in

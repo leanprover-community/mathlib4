@@ -48,19 +48,19 @@ instance : (leftExactFunctor C D).IsClosedUnderIsomorphisms where
     exact preservesFiniteLimits_of_natIso e
 
 /-- Bundled left-exact functors. -/
-@[reducible, inline]
+@[reducible]
 def LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
 
 /-- `C ⥤ₗ D` denotes left exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₗ " => LeftExactFunctor
 
 /-- A left exact functor is in particular a functor. -/
-@[reducible, inline]
+@[reducible]
 def LeftExactFunctor.forget : (C ⥤ₗ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
 /-- The inclusion of left exact functors into functors is fully faithful. -/
-@[reducible, inline]
+@[reducible]
 def LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
@@ -79,19 +79,19 @@ instance : (rightExactFunctor C D).IsClosedUnderIsomorphisms where
     exact preservesFiniteColimits_of_natIso e
 
 /-- Bundled right-exact functors. -/
-@[reducible, inline]
+@[reducible]
 def RightExactFunctor := (rightExactFunctor C D).FullSubcategory
 
 /-- `C ⥤ᵣ D` denotes right exact functors `C ⥤ D` -/
 infixr:26 " ⥤ᵣ " => RightExactFunctor
 
 /-- A right exact functor is in particular a functor. -/
-@[reducible, inline]
+@[reducible]
 def RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
 /-- The inclusion of right exact functors into functors is fully faithful. -/
-@[reducible, inline]
+@[reducible]
 def RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
@@ -109,14 +109,14 @@ instance : (exactFunctor C D).IsClosedUnderIsomorphisms := by
   infer_instance
 
 /-- Bundled exact functors. -/
-@[reducible, inline]
+@[reducible]
 def ExactFunctor := (exactFunctor C D).FullSubcategory
 
 /-- `C ⥤ₑ D` denotes exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₑ " => ExactFunctor
 
 /-- An exact functor is in particular a functor. -/
-@[reducible, inline]
+@[reducible]
 def ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
@@ -129,12 +129,12 @@ lemma exactFunctor_le_rightExactFunctor :
   fun _ h ↦ h.2
 
 /-- Turn an exact functor into a left exact functor. -/
-@[reducible, inline]
+@[reducible]
 def LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_leftExactFunctor C D)
 
 /-- Turn an exact functor into a left exact functor. -/
-@[reducible, inline]
+@[reducible]
 def RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_rightExactFunctor C D)
 

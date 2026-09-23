@@ -49,7 +49,7 @@ class HasProjectiveDimensionLT (X : C) (n : ℕ) : Prop where mk' ::
 
 /-- An object `X` in an abelian category has projective dimension `≤ n` if
 all `Ext X Y i` vanish when `n + 1 ≤ i` -/
-@[reducible, inline]
+@[reducible]
 def HasProjectiveDimensionLE (X : C) (n : ℕ) : Prop :=
   HasProjectiveDimensionLT X (n + 1)
 

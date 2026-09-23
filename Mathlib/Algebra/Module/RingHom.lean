@@ -42,7 +42,7 @@ variable (R)
 
 See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
 -/
-@[reducible, inline]
+@[reducible]
 def Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
@@ -55,7 +55,7 @@ variable {R} (M)
 /-- Compose a `Module` with a `RingHom`, with action `f s • m`.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
   { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
     -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
@@ -69,7 +69,7 @@ end AddCommMonoid
 
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 

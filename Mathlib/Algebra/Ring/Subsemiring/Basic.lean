@@ -268,7 +268,7 @@ def center : Subsemiring R :=
 
 This is not an instance as it forms a non-defeq diamond with
 `NonUnitalSubringClass.toNonUnitalRing` in the `npow` field. -/
-@[reducible, inline]
+@[reducible]
 def center.commSemiring' : CommSemiring (center R) :=
   { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
 
@@ -1042,7 +1042,7 @@ theorem isMulCommutative_closure {s : Set R'} (hcomm : s.Pairwise Commute) :
 
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
-@[reducible, inline, deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
+@[reducible, deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
 def closureCommSemiringOfComm {s : Set R'} (hcomm : s.Pairwise Commute) :
     CommSemiring (closure s) :=
   have := isMulCommutative_closure hcomm

@@ -52,7 +52,7 @@ lemma homRel_equivalence_of_isFibrant_tgt {X Y : CofibrantObject C} [IsFibrant Y
 
 variable (C) in
 /-- The homotopy category of cofibrant objects. -/
-@[reducible, inline]
+@[reducible]
 def HoCat := Quotient (CofibrantObject.homRel C)
 
 /-- The quotient functor from the category of cofibrant objects to its

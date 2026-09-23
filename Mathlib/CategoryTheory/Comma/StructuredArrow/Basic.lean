@@ -58,17 +58,17 @@ section
 variable {S : D} {T : C ⥤ D}
 
 /-- The right object of a structured arrow. -/
-@[reducible, inline]
+@[reducible]
 def right (X : StructuredArrow S T) : C := Comma.right X
 
 /-- The morphism that is part of a structured arrow. -/
-@[reducible, inline]
+@[reducible]
 def hom (X : StructuredArrow S T) : S ⟶ T.obj X.right := Comma.hom X
 
 variable {X Y : StructuredArrow S T} (f : X ⟶ Y)
 
 /-- The morphism that is part of a morphism of structured arrows. -/
-@[reducible, inline]
+@[reducible]
 def Hom.right : X.right ⟶ Y.right := CommaMorphism.right f
 
 set_option backward.defeqAttrib.useBackward true in
@@ -456,7 +456,7 @@ def preIsoMap₂ (S : D) (F : B ⥤ C) (G : C ⥤ D) :
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A structured arrow is called universal if it is initial. -/
-@[reducible, inline]
+@[reducible]
 def IsUniversal (f : StructuredArrow S T) := IsInitial f
 
 namespace IsUniversal
@@ -522,17 +522,17 @@ section
 variable {S : C ⥤ D} {T : D}
 
 /-- The left object of a costructured arrow. -/
-@[reducible, inline]
+@[reducible]
 def left (X : CostructuredArrow S T) : C := Comma.left X
 
 /-- The morphism that is part of a costructured arrow. -/
-@[reducible, inline]
+@[reducible]
 def hom (X : CostructuredArrow S T) : S.obj X.left ⟶ T := Comma.hom X
 
 variable {X Y : CostructuredArrow S T} (f : X ⟶ Y)
 
 /-- The morphism that is part of a morphism of costructured arrows. -/
-@[reducible, inline]
+@[reducible]
 def Hom.left : X.left ⟶ Y.left := CommaMorphism.left f
 
 #adaptation_note
@@ -909,7 +909,7 @@ def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A costructured arrow is called universal if it is terminal. -/
-@[reducible, inline]
+@[reducible]
 def IsUniversal (f : CostructuredArrow S T) := IsTerminal f
 
 namespace IsUniversal

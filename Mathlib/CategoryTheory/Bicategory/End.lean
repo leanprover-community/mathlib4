@@ -21,7 +21,7 @@ namespace CategoryTheory
 variable {C : Type u} [Bicategory.{w, v} C]
 
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def EndMonoidal (X : C) :=
   X ⟶ X
 -- The `Category` instance should be constructed by a deriving handler.

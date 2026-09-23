@@ -96,7 +96,7 @@ variable (s : A.N) {d : ℕ} (hd : s.dim = d)
 /-- When `A` is a subcomplex of a simplicial set `X`,
 and `s : A.N` is such that `s.dim = d`, this is a term
 that is equal to `s`, but whose dimension if definitionally equal to `d`. -/
-@[reducible, inline]
+@[reducible]
 def cast : A.N where
   toN := s.toN.cast hd
   notMem := hd ▸ s.notMem

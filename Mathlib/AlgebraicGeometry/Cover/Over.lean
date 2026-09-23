@@ -33,12 +33,12 @@ namespace AlgebraicGeometry.Scheme
 variable {P : MorphismProperty Scheme.{u}} (S : Scheme.{u})
 
 /-- Bundle an `S`-scheme with `P` into an object of `P.Over ⊤ S`. -/
-@[reducible, inline]
+@[reducible]
 def asOverProp (X : Scheme.{u}) (S : Scheme.{u}) [X.Over S] (h : P (X ↘ S)) : P.Over ⊤ S :=
   ⟨X.asOver S, h⟩
 
 /-- Bundle an `S`-morphism of `S`-scheme with `P` into a morphism in `P.Over ⊤ S`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.asOverProp {X Y : Scheme.{u}} (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S]
     [f.IsOver S] {hX : P (X ↘ S)} {hY : P (Y ↘ S)} : X.asOverProp S hX ⟶ Y.asOverProp S hY :=
   ⟨f.asOver S, trivial, trivial⟩

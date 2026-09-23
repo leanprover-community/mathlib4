@@ -94,7 +94,7 @@ def opEquiv {W₁ W₂ : MorphismProperty C} {X Y : C} {f : X ⟶ Y} :
 end MapFactorizationData
 
 /-- The data of a term in `MapFactorizationData W₁ W₂ f` for any morphism `f`. -/
-@[reducible, inline]
+@[reducible]
 def FactorizationData := ∀ {X Y : C} (f : X ⟶ Y), MapFactorizationData W₁ W₂ f
 
 /-- The factorization axiom for two classes of morphisms `W₁` and `W₂` in a category `C`. It

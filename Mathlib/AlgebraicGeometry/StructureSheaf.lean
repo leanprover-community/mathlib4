@@ -76,7 +76,7 @@ variable {P : PrimeSpectrum.Top R}
 
 variable (M P) in
 /-- The type family over `PrimeSpectrum R` consisting of the localization over each point. -/
-@[reducible, inline]
+@[reducible]
 def Localizations : Type u := LocalizedModule P.asIdeal.primeCompl M
 
 /-- The predicate saying that a dependent function on an open `U` is realised as a fixed fraction

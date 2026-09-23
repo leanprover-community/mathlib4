@@ -29,7 +29,7 @@ noncomputable section
 namespace TopCat
 
 /-- The projection from the product as a bundled continuous map. -/
-@[reducible, inline]
+@[reducible]
 def piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : ↧(∀ i, α i) ⟶ α i :=
   ofHom ⟨fun f => f i, continuous_apply i⟩
 
@@ -71,7 +71,7 @@ theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
     (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := rfl
 
 /-- The inclusion to the coproduct as a bundled continuous map. -/
-@[reducible, inline]
+@[reducible]
 def sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ ↧(Σ i, α i) := by
   refine ofHom (ContinuousMap.mk ?_ ?_)
   · apply Sigma.mk i
@@ -118,12 +118,12 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i 
 section Prod
 
 /-- The first projection from the product. -/
-@[reducible, inline]
+@[reducible]
 def prodFst {X Y : TopCat.{u}} : ↧(X × Y) ⟶ X :=
   ofHom { toFun := Prod.fst }
 
 /-- The second projection from the product. -/
-@[reducible, inline]
+@[reducible]
 def prodSnd {X Y : TopCat.{u}} : ↧(X × Y) ⟶ Y :=
   ofHom { toFun := Prod.snd }
 

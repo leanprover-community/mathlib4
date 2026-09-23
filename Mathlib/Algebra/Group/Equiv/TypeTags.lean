@@ -72,7 +72,7 @@ def AddEquiv.toMultiplicativeRight [Mul G] [Add H] :
     map_add' := map_mul f }
 
 /-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
-@[reducible, inline]
+@[reducible]
 def MulEquiv.toAdditiveLeft [Mul G] [Add H] :
     G ≃* Multiplicative H ≃ (Additive G ≃+ H) :=
   AddEquiv.toMultiplicativeRight.symm
@@ -95,7 +95,7 @@ def AddEquiv.toMultiplicativeLeft [Add G] [Mul H] :
     map_add' := map_mul f }
 
 /-- Reinterpret `Multiplicative G ≃* H` as `G ≃+ Additive H` as. -/
-@[reducible, inline]
+@[reducible]
 def MulEquiv.toAdditiveRight [Add G] [Mul H] :
     Multiplicative G ≃* H ≃ (G ≃+ Additive H) :=
   AddEquiv.toMultiplicativeLeft.symm
@@ -145,7 +145,7 @@ def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
 
 variable (ι) (G) in
 /-- `Multiplicative (ι → G)` is equivalent to `ι → Multiplicative G`. -/
-@[reducible, inline]
+@[reducible]
 def MulEquiv.funMultiplicative [Add G] :
     Multiplicative (ι → G) ≃* (ι → Multiplicative G) :=
   MulEquiv.piMultiplicative fun _ ↦ G
@@ -160,7 +160,7 @@ def AddEquiv.piAdditive (K : ι → Type*) [∀ i, Mul (K i)] :
 
 variable (ι) (G) in
 /-- `Additive (ι → G)` is equivalent to `ι → Additive G`. -/
-@[reducible, inline]
+@[reducible]
 def AddEquiv.funAdditive [Mul G] :
     Additive (ι → G) ≃+ (ι → Additive G) :=
   AddEquiv.piAdditive fun _ ↦ G

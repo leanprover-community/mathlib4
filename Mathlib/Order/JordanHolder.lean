@@ -152,7 +152,7 @@ Note that there is no stipulation that a series start from the bottom of the lat
 the top. For a composition series `s`, `s.last` is the largest element of the series,
 and `s.head` is the least element.
 -/
-@[reducible, inline]
+@[reducible]
 def CompositionSeries (X : Type u) [Lattice X] [JordanHolderLattice X] : Type u :=
   RelSeries {(x, y) : X × X | IsMaximal x y}
 

@@ -75,7 +75,7 @@ class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring
 
 This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
 -/
-@[reducible, inline]
+@[reducible]
 def LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [FunLike 𝓕 E E₂] :=
@@ -464,7 +464,7 @@ class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Sem
 
 This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
 -/
-@[reducible, inline]
+@[reducible]
 def LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [EquivLike 𝓕 E E₂] :=

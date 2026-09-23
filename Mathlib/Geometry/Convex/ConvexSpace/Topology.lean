@@ -31,7 +31,7 @@ namespace Convexity.StdSimplex
 /-- The topology on `StdSimplex R ι` that is induced by the embedding
 `StdSimplex R ι → (ι → R)`. This is the correct topoplogy only when
 `ι` is finite, see `StdSimplex.isEmbedding_toFun_comp_weights`. -/
-@[reducible, inline]
+@[reducible]
 def topologicalSpaceInduced (ι : Type*) : TopologicalSpace (StdSimplex R ι) :=
   .induced (fun t ↦ t.weights : StdSimplex R ι → ι → R) inferInstance
 

@@ -165,7 +165,7 @@ noncomputable section
 open Nat padicNorm CauSeq CauSeq.Completion Metric
 
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
-@[reducible, inline]
+@[reducible]
 def PadicSeq (p : ℕ) :=
   CauSeq _ (padicNorm p)
 

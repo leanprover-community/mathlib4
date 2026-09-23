@@ -48,14 +48,14 @@ variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The shift on bicomplexes obtained by shifting the first indices (and changing the
 sign of differentials). -/
-@[reducible, inline]
+@[reducible]
 def shiftFunctor₁ (x : ℤ) :
     HomologicalComplex₂ C (up ℤ) (up ℤ) ⥤ HomologicalComplex₂ C (up ℤ) (up ℤ) :=
   shiftFunctor _ x
 
 /-- The shift on bicomplexes obtained by shifting the second indices (and changing the
 sign of differentials). -/
-@[reducible, inline]
+@[reducible]
 def shiftFunctor₂ (y : ℤ) :
     HomologicalComplex₂ C (up ℤ) (up ℤ) ⥤ HomologicalComplex₂ C (up ℤ) (up ℤ) :=
   (shiftFunctor _ y).mapHomologicalComplex _

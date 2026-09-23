@@ -44,7 +44,7 @@ variable {V : Type*} {G : SimpleGraph V} {u v w : V} {p : G.Walk u v}
 namespace Walk
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
-@[reducible, inline]
+@[reducible]
 def IsTrail.edgesFinset (h : p.IsTrail) : Finset (Sym2 V) :=
   ⟨p.edges, Multiset.coe_nodup.mpr h.edges_nodup⟩
 

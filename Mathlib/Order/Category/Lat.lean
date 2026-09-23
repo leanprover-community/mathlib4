@@ -46,7 +46,7 @@ instance : CoeSort Lat (Type _) :=
 attribute [coe] Lat.carrier
 
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -71,12 +71,12 @@ instance : ConcreteCategory Lat (LatticeHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Lat` back into a `LatticeHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {X Y : Lat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := Lat) f
 
 /-- Typecheck a `LatticeHom` as a morphism in `Lat`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := Lat) f
 

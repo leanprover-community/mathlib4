@@ -53,7 +53,7 @@ structure PartialMap (X Y : Scheme.{u}) where
 
 variable (S) in
 /-- A partial map is an `S`-map if the underlying morphism is. -/
-@[reducible, inline]
+@[reducible]
 def PartialMap.IsOver [X.Over S] [Y.Over S] (f : X.PartialMap Y) :=
   f.hom.IsOver S
 
@@ -178,7 +178,7 @@ def fromSpecStalkOfMem (f : X.PartialMap Y) {x} (hx : x ∈ f.domain) :
   f.domain.fromSpecStalkOfMem x hx ≫ f.hom
 
 /-- A partial map restricts to a map from `Spec K(X)`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def fromFunctionField [IrreducibleSpace X] (f : X.PartialMap Y) :
     Spec X.functionField ⟶ Y :=
@@ -383,12 +383,12 @@ scoped[AlgebraicGeometry] infix:10 " ⤏ " => Scheme.RationalMap
 def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 
 /-- A scheme morphism as a rational map. -/
-@[reducible, inline]
+@[reducible]
 def Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 variable (X) in
 /-- The identity rational map. -/
-@[reducible, inline]
+@[reducible]
 def RationalMap.id : X ⤏ X := (PartialMap.id X).toRationalMap
 
 variable (S) in

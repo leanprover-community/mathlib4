@@ -225,7 +225,7 @@ namespace MonoidalCategory
 A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
 `whiskerRight`.
 -/
-@[reducible, inline]
+@[reducible]
 def ofTensorHom {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
     (id_tensorHom_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
       cat_disch)
@@ -832,21 +832,21 @@ def curriedTensor : C ⥤ C ⥤ C where
 variable {C}
 
 /-- Tensoring on the left with a fixed object, as a functor. -/
-@[reducible, inline]
+@[reducible]
 def tensorLeft (X : C) : C ⥤ C := (curriedTensor C).obj X
 
 /-- Tensoring on the right with a fixed object, as a functor. -/
-@[reducible, inline]
+@[reducible]
 def tensorRight (X : C) : C ⥤ C := (curriedTensor C).flip.obj X
 
 variable (C)
 
 /-- The functor `fun X ↦ 𝟙_ C ⊗ X`. -/
-@[reducible, inline]
+@[reducible]
 def tensorUnitLeft : C ⥤ C := tensorLeft (𝟙_ C)
 
 /-- The functor `fun X ↦ X ⊗ 𝟙_ C`. -/
-@[reducible, inline]
+@[reducible]
 def tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 
 -- We can express the associator and the unitors, given componentwise above,
@@ -903,7 +903,7 @@ variable (C)
 
 TODO: show this is an op-monoidal functor.
 -/
-@[reducible, inline]
+@[reducible]
 def tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 
 instance : (tensoringLeft C).Faithful where
@@ -916,7 +916,7 @@ instance : (tensoringLeft C).Faithful where
 
 We later show this is a monoidal functor.
 -/
-@[reducible, inline]
+@[reducible]
 def tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 
 set_option backward.defeqAttrib.useBackward true in
@@ -1007,7 +1007,7 @@ open ObjectProperty
 /-- The restriction of a monoidal category along an object property
 that's closed under the monoidal structure. -/
 -- See note [reducible non-instances]
-@[reducible, inline]
+@[reducible]
 def MonoidalCategory.fullSubcategory
     {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : ObjectProperty C)
     (tensorUnit : P (𝟙_ C))

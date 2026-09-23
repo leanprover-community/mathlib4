@@ -109,7 +109,7 @@ Finally note that if `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]` are sup
 assume freeness since it follows automatically. Moreover Mathlib knows this via
 `Module.IsReflexive.of_isPerfPair`, `Module.IsReflexive.to_isTorsionFree`,
 `Module.free_of_finite_type_torsion_free'`. -/
-@[reducible, inline]
+@[reducible]
 def RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
 namespace RootPairing
@@ -180,11 +180,11 @@ protected lemma nontrivial' [Nonempty ι] [NeZero (2 : R)] : Nontrivial N :=
   P.flip.nontrivial
 
 /-- Roots written as functionals on the coweight space. -/
-@[reducible, inline]
+@[reducible]
 def root' (i : ι) : Dual R N := P.toLinearMap (P.root i)
 
 /-- Coroots written as functionals on the weight space. -/
-@[reducible, inline]
+@[reducible]
 def coroot' (i : ι) : Dual R M := P.toLinearMap.flip (P.coroot i)
 
 lemma root'_ne_zero [NeZero (2 : R)] : P.root' i ≠ 0 := by

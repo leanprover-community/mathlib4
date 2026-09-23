@@ -398,7 +398,7 @@ specified uniformity. See Note [forgetful inheritance] explaining why having def
 the right uniformity is often important.
 See note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoEMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoEMetricSpace α where
   edist := @edist _ m.toEDist
@@ -410,7 +410,7 @@ def PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoE
 
 /-- The extended pseudometric induced by a function taking values in a pseudoemetric space.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace β) :
     PseudoEMetricSpace α where
   edist x y := edist (f x) (f y)
@@ -421,7 +421,7 @@ def PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace �
   uniformity_edist := (uniformity_basis_edist.comap (Prod.map f f)).eq_biInf
 
 /-- `WeakPseudoEMetricSpace` can be induced backwards. -/
-@[reducible, inline]
+@[reducible]
 def WeakPseudoEMetricSpace.IsInducing {α β : Type*} [e : TopologicalSpace α]
   [n : TopologicalSpace β] {f : α → β} (hf : IsInducing f) (m : WeakPseudoEMetricSpace β) :
     WeakPseudoEMetricSpace α where
@@ -848,7 +848,7 @@ specified uniformity. See Note [forgetful inheritance] explaining why having def
 the right uniformity is often important.
 See note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : EMetricSpace γ where
   edist := @edist _ m.toEDist
@@ -866,7 +866,7 @@ specified topology. See Note [forgetful inheritance] explaining why having defin
 the right topology is often important.
 See note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricSpace γ)
     (H : T = m.toUniformSpace.toTopologicalSpace) : EMetricSpace γ where
   edist := @edist _ m.toEDist
@@ -879,7 +879,7 @@ def EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricSpac
 
 /-- The extended metric induced by an injective function taking values in an emetric space.
 See Note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
@@ -969,7 +969,7 @@ end
 section
 
 /-- The `WeakEMetric` space induced by pulling back a topology along an injective function. -/
-@[reducible, inline]
+@[reducible]
 def WeakEMetricSpace.induced
   {α β : Type*} [n : TopologicalSpace β]
   {f : α → β} (hf : Function.Injective f) (m : WeakEMetricSpace β) :

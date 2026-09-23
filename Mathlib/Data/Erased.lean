@@ -26,7 +26,7 @@ namespace Erased
 
 Note: `(mk a).OutType` is not definitionally equal to `a`.
 -/
-@[reducible, inline]
+@[reducible]
 def OutType (a : Erased (Sort u)) : Sort u :=
   out a
 

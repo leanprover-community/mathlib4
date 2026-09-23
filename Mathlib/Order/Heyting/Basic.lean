@@ -135,7 +135,7 @@ instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : B
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and Heyting implication alone. -/
-@[reducible, inline]
+@[reducible]
 def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → α → α)
     (le_himp_iff : ∀ a b c, a ≤ himp b c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
@@ -146,7 +146,7 @@ def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → �
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and complement operator alone. -/
-@[reducible, inline]
+@[reducible]
 def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
     (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α where
   himp := (compl · ⊔ ·)
@@ -156,7 +156,7 @@ def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α →
 
 -- See note [reducible non-instances]
 /-- Construct a co-Heyting algebra from the lattice structure and the difference alone. -/
-@[reducible, inline]
+@[reducible]
 def CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : α → α → α)
     (sdiff_le_iff : ∀ a b c, sdiff a b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
@@ -167,7 +167,7 @@ def CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : α �
 
 -- See note [reducible non-instances]
 /-- Construct a co-Heyting algebra from the difference and Heyting negation alone. -/
-@[reducible, inline]
+@[reducible]
 def CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α → α)
     (sdiff_le_iff : ∀ a b c, a ⊓ hnot b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α where
   sdiff a b := a ⊓ hnot b
@@ -791,7 +791,7 @@ variable (α) in
 /-- A bounded linear order is a bi-Heyting algebra by setting
 * `a ⇨ b = ⊤` if `a ≤ b` and `a ⇨ b = b` otherwise.
 * `a \ b = ⊥` if `a ≤ b` and `a \ b = a` otherwise. -/
-@[reducible, inline]
+@[reducible]
 def LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : BiheytingAlgebra α :=
   { LinearOrder.toLattice, ‹BoundedOrder α› with
     himp := fun a b => if a ≤ b then ⊤ else b,

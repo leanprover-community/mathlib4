@@ -24,7 +24,7 @@ variable {F α : Type*} [FunLike F α ℝ]
 
 /-- Constructs a `SeminormedGroup` structure from a `GroupSeminormClass` on a `Group`. -/
 -- See note [reducible non-instances]
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Constructs a `SeminormedAddGroup` structure from an `AddGroupSeminormClass` on an
 `AddGroup`. -/]
 def GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α ℝ]
@@ -42,7 +42,7 @@ lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClas
 
 /-- Constructs a `SeminormedCommGroup` structure from a `GroupSeminormClass` on a `CommGroup`. -/
 -- See note [reducible non-instances]
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
 on an `AddCommGroup`. -/]
 def GroupSeminormClass.toSeminormedCommGroup [CommGroup α] [GroupSeminormClass F α ℝ]
@@ -56,7 +56,7 @@ lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [CommGroup α] [GroupSemi
 
 /-- Constructs a `NormedGroup` structure from a `GroupNormClass` on a `Group`. -/
 -- See note [reducible non-instances]
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Constructs a `NormedAddGroup` structure from an `AddGroupNormClass` on an
 `AddGroup`. -/]
 def GroupNormClass.toNormedGroup [Group α] [GroupNormClass F α ℝ]
@@ -70,7 +70,7 @@ lemma GroupNormClass.toNormedGroup_norm_eq [Group α] [GroupNormClass F α ℝ]
 
 /-- Constructs a `NormedCommGroup` structure from a `GroupNormClass` on a `CommGroup`. -/
 -- See note [reducible non-instances]
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
 `AddCommGroup`. -/]
 def GroupNormClass.toNormedCommGroup [CommGroup α] [GroupNormClass F α ℝ]

@@ -147,13 +147,13 @@ class ChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpac
   protected chart_mem_atlas : ∀ x, chartAt x ∈ atlas
 
 /-- The atlas of charts in a `ChartedSpace`. -/
-@[reducible, inline]
+@[reducible]
 def atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] : Set (OpenPartialHomeomorph M H) :=
   ChartedSpace.atlas
 
 /-- The preferred chart at a point `x` in a charted space `M`. -/
-@[reducible, inline]
+@[reducible]
 def chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : OpenPartialHomeomorph M H :=
   ChartedSpace.chartAt x

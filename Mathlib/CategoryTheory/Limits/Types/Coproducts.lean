@@ -32,7 +32,7 @@ variable {C : Type u} (F : C → Type v)
 
 /-- Given a functor `F : Discrete C ⥤ Type v`, this is a "cofan" for `F`,
 but we allow the point to be in `Type w` for an arbitrary universe `w`. -/
-@[reducible, inline]
+@[reducible]
 def CofanTypes := Functor.CoconeTypes.{w} (Discrete.functor F)
 
 variable {F}
@@ -40,7 +40,7 @@ variable {F}
 namespace CofanTypes
 
 /-- The injection map for a cofan of a functor to types. -/
-@[reducible, inline]
+@[reducible]
 def inj (c : CofanTypes.{w} F) (i : C) : F i → c.pt := c.ι ⟨i⟩
 
 variable (F) in

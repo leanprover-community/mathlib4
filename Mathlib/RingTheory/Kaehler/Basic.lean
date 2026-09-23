@@ -61,7 +61,7 @@ universe u v
 variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- The kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`. -/
-@[reducible, inline]
+@[reducible]
 def KaehlerDifferential.ideal : Ideal (S ⊗[R] S) :=
   RingHom.ker (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S)
 

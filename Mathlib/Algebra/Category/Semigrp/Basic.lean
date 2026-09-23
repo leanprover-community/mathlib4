@@ -64,7 +64,7 @@ instance : CoeSort MagmaCat (Type u) :=
 attribute [coe] AddMagmaCat.carrier MagmaCat.carrier
 
 /-- Construct a bundled `MagmaCat` from the underlying type and typeclass. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a bundled `AddMagmaCat` from the underlying type and typeclass. -/]
 def of (M : Type u) [Mul M] : MagmaCat := ⟨M⟩
 
@@ -112,13 +112,13 @@ instance : ConcreteCategory MagmaCat (· →ₙ* ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `MagmaCat` back into a `MulHom`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Turn a morphism in `AddMagmaCat` back into an `AddHom`. -/]
 def Hom.hom {X Y : MagmaCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := MagmaCat) f
 
 /-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Typecheck an `AddHom` as a morphism in `AddMagmaCat`. -/]
 def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := MagmaCat) f
@@ -236,7 +236,7 @@ instance : CoeSort Semigrp (Type u) :=
 attribute [coe] AddSemigrp.carrier Semigrp.carrier
 
 /-- Construct a bundled `Semigrp` from the underlying type and typeclass. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a bundled `AddSemigrp` from the underlying type and typeclass. -/]
 def of (M : Type u) [Semigroup M] : Semigrp := ⟨M⟩
 
@@ -284,13 +284,13 @@ instance : ConcreteCategory Semigrp (· →ₙ* ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Semigrp` back into a `MulHom`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Turn a morphism in `AddSemigrp` back into an `AddHom`. -/]
 def Hom.hom {X Y : Semigrp.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := Semigrp) f
 
 /-- Typecheck a `MulHom` as a morphism in `Semigrp`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Typecheck an `AddHom` as a morphism in `AddSemigrp`. -/]
 def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := Semigrp) f

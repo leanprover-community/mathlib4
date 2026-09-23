@@ -80,7 +80,7 @@ variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 
 This is an `abbrev` so that instances on `X` (e.g. `Ring`) do not need to be redeclared.
 -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 -- Need the instance to trigger unification that finds `CC`.
 def ToType [ConcreteCategory C FC] := CC
 
@@ -88,7 +88,7 @@ def ToType [ConcreteCategory C FC] := CC
 
 This is an `abbrev` so that instances (e.g. `RingHomClass`) do not need to be redeclared.
 -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 -- Need the instance to trigger unification that finds `FC`.
 def ToHom [ConcreteCategory C FC] := FC
 
@@ -103,7 +103,7 @@ instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
   coe f := hom f
 
 /-- A non-instance `FunLike` instance on `X ⟶ Y`. -/
-@[reducible, inline, deprecated "No replacement" (since := "2026-04-23")]
+@[reducible, deprecated "No replacement" (since := "2026-04-23")]
 def instFunLike {X Y : C} :
     FunLike (X ⟶ Y) (ToType X) (ToType Y) where
   coe f := f

@@ -47,7 +47,7 @@ variable (Q : QuadraticForm R M)
 namespace EquivEven
 
 /-- The quadratic form on the augmented vector space `M × R` sending `v + r•e0` to `Q v - r^2`. -/
-@[reducible, inline]
+@[reducible]
 def Q' : QuadraticForm R (M × R) :=
   Q.prod <| -QuadraticMap.sq (R := R)
 

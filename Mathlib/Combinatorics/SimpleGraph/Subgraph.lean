@@ -287,7 +287,7 @@ theorem incidenceSet_subset (G' : Subgraph G) (v : V) : G'.incidenceSet v ⊆ G'
   fun _ h ↦ h.1
 
 /-- Give a vertex as an element of the subgraph's vertex type. -/
-@[reducible, inline]
+@[reducible]
 def vert (G' : Subgraph G) (v : V) (h : v ∈ G'.verts) : G'.verts := ⟨v, h⟩
 
 /--
@@ -1309,7 +1309,7 @@ end Induce
 
 /-- Given a subgraph and a set of vertices, delete all the vertices from the subgraph,
 if present. Any edges incident to the deleted vertices are deleted as well. -/
-@[reducible, inline]
+@[reducible]
 def deleteVerts (G' : G.Subgraph) (s : Set V) : G.Subgraph :=
   G'.induce (G'.verts \ s)
 

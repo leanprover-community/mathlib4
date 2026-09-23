@@ -37,7 +37,7 @@ def Total (P : ∀ j, ColimitPresentation (I j) (D.obj j)) : Type _ :=
 
 variable (P) in
 /-- Constructor for `Total` to guide type checking. -/
-@[reducible, inline]
+@[reducible]
 def Total.mk (i : J) (k : I i) : Total P := ⟨i, k⟩
 
 /-- Morphisms in the `Total` category. -/

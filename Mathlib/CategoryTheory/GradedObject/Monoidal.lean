@@ -39,7 +39,7 @@ namespace GradedObject
 
 /-- The tensor product of two graded objects `X₁` and `X₂` exists if for any `n`,
 the coproduct of the objects `X₁ i ⊗ X₂ j` for `i + j = n` exists. -/
-@[reducible, inline]
+@[reducible]
 def HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
   HasMap (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂) (fun ⟨i, j⟩ => i + j)
 
@@ -178,14 +178,14 @@ def triangleIndexData : TriangleIndexData (r₁₂₃ : _ → I) (fun ⟨i₁, i
 /-- Given three graded objects `X₁`, `X₂`, `X₃` in `GradedObject I C`, this is the
 assumption that for all `i₁₂ : I` and `i₃ : I`, the tensor product functor `- ⊗ X₃ i₃`
 commutes with the coproduct of the objects `X₁ i₁ ⊗ X₂ i₂` such that `i₁ + i₂ = i₁₂`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.CategoryTheory.GradedObject.HasGoodTensor₁₂Tensor (X₁ X₂ X₃ : GradedObject I C) :=
   HasGoodTrifunctor₁₂Obj (curriedTensor C) (curriedTensor C) ρ₁₂ X₁ X₂ X₃
 
 /-- Given three graded objects `X₁`, `X₂`, `X₃` in `GradedObject I C`, this is the
 assumption that for all `i₁ : I` and `i₂₃ : I`, the tensor product functor `X₁ i₁ ⊗ -`
 commutes with the coproduct of the objects `X₂ i₂ ⊗ X₃ i₃` such that `i₂ + i₃ = i₂₃`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.CategoryTheory.GradedObject.HasGoodTensorTensor₂₃ (X₁ X₂ X₃ : GradedObject I C) :=
   HasGoodTrifunctor₂₃Obj (curriedTensor C) (curriedTensor C) ρ₂₃ X₁ X₂ X₃
 
@@ -325,7 +325,7 @@ end
 this typeclass expresses that functor `Z ⊗ _` commutes with the coproduct of
 the objects `X₁ i₁ ⊗ (X₂ i₂ ⊗ X₃ i₃)` such that `i₁ + i₂ + i₃ = j` for a certain `j`.
 See lemma `left_tensor_tensorObj₃_ext`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := PreservesColimit
   (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
     (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
@@ -377,7 +377,7 @@ lemma ιTensorObj₄_eq (i₁ i₂ i₃ i₄ j : I) (h : i₁ + i₂ + i₃ + i�
 /-- Given four graded objects, this is the condition
 `HasLeftTensor₃ObjExt (X₁ i₁) X₂ X₃ X₄ i₂₃₄` for all indices `i₁` and `i₂₃₄`,
 see the lemma `tensorObj₄_ext`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.CategoryTheory.GradedObject.HasTensor₄ObjExt :=
   ∀ (i₁ i₂₃₄ : I), HasLeftTensor₃ObjExt (X₁ i₁) X₂ X₃ X₄ i₂₃₄
 

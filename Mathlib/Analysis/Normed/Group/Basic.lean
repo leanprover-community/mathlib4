@@ -678,7 +678,7 @@ variable [FunLike 𝓕 E F]
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `Group` to a `SeminormedGroup` induces a `SeminormedGroup`
 structure on the domain. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- A group homomorphism from an `AddGroup` to a
 `SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain. -/]
 def SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
@@ -690,7 +690,7 @@ def SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `CommGroup` to a `SeminormedGroup` induces a
 `SeminormedCommGroup` structure on the domain. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- A group homomorphism from an `AddCommGroup` to a
 `SeminormedAddGroup` induces a `SeminormedAddCommGroup` structure on the domain. -/]
 def SeminormedCommGroup.induced
@@ -702,7 +702,7 @@ def SeminormedCommGroup.induced
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `Group` to a `NormedGroup` induces a `NormedGroup`
 structure on the domain. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- An injective group homomorphism from an `AddGroup` to a
 `NormedAddGroup` induces a `NormedAddGroup` structure on the domain. -/]
 def NormedGroup.induced
@@ -713,7 +713,7 @@ def NormedGroup.induced
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
 `NormedCommGroup` structure on the domain. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- An injective group homomorphism from a `CommGroup` to a
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
 def NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)

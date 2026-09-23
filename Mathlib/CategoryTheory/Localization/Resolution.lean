@@ -80,11 +80,11 @@ lemma LeftResolution.mk_surjective (L : Φ.LeftResolution X₂) :
   ⟨_, L.w, L.hw, rfl⟩
 
 /-- A localizer morphism has right resolutions when any object has a right resolution. -/
-@[reducible, inline]
+@[reducible]
 def HasRightResolutions := ∀ (X₂ : C₂), Nonempty (Φ.RightResolution X₂)
 
 /-- A localizer morphism has left resolutions when any object has a left resolution. -/
-@[reducible, inline]
+@[reducible]
 def HasLeftResolutions := ∀ (X₂ : C₂), Nonempty (Φ.LeftResolution X₂)
 
 namespace RightResolution

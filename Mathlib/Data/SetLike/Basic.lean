@@ -325,13 +325,13 @@ variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
 /-- membership is inherited from `Set X` -/
-@[reducible, inline]
+@[reducible]
 def instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
   coe := (↑)
   coe_injective := Subtype.val_injective
 
 /-- membership is inherited from `S` -/
-@[reducible, inline]
+@[reducible]
 def instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
   coe := (↑)
   coe_injective := SetLike.coe_injective.comp Subtype.val_injective

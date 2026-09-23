@@ -39,7 +39,7 @@ instance : CoeSort HeytAlg (Type _) :=
 attribute [coe] HeytAlg.carrier
 
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -64,12 +64,12 @@ instance : ConcreteCategory HeytAlg (HeytingHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `HeytAlg` back into a `HeytingHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {X Y : HeytAlg.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := HeytAlg) f
 
 /-- Typecheck a `HeytingHom` as a morphism in `HeytAlg`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [HeytingAlgebra X] [HeytingAlgebra Y] (f : HeytingHom X Y) :
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := HeytAlg) f

@@ -681,7 +681,7 @@ end QuaternionAlgebra
 
 /-- Space of quaternions over a type, denoted as `ℍ[R]`.
 Implemented as a structure with four fields: `re`, `im_i`, `im_j`, and `im_k`. -/
-@[reducible, inline]
+@[reducible]
 def Quaternion (R : Type*) [Zero R] [One R] [Neg R] :=
   QuaternionAlgebra R (-1) 0 (-1)
 

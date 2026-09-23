@@ -43,7 +43,7 @@ for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Form
 
 All definitions and lemmas for Weierstrass curves in projective coordinates live in the namespace
 `WeierstrassCurve.Projective` to distinguish them from those in other coordinates. This is simply an
-@[reducible, inline]
+@[reducible]
 defiation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toProjective`.
 This can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Projective.toAffine`.
 
@@ -109,19 +109,19 @@ namespace WeierstrassCurve
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in projective coordinates. -/
-@[reducible, inline]
+@[reducible]
 def Projective : Type r :=
   WeierstrassCurve R
 
 /-- The conversion from a Weierstrass curve to projective coordinates. -/
-@[reducible, inline]
+@[reducible]
 def toProjective (W : WeierstrassCurve R) : Projective R :=
   W
 
 namespace Projective
 
 /-- The conversion from a Weierstrass curve in projective coordinates to affine coordinates. -/
-@[reducible, inline]
+@[reducible]
 def toAffine (W' : Projective R) : Affine R :=
   W'
 
@@ -155,7 +155,7 @@ scoped instance : Setoid <| Fin 3 → R :=
 
 variable (R) in
 /-- The equivalence class of a projective point representative on a Weierstrass curve. -/
-@[reducible, inline]
+@[reducible]
 def PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
@@ -487,13 +487,13 @@ variable (W') (f : R →+* S)
 
 /-- The Weierstrass curve in projective coordinates mapped over a ring homomorphism `f : R →+* S`.
 -/
-@[reducible, inline]
+@[reducible]
 def map : Projective S :=
   WeierstrassCurve.map W' f
 
 variable (S) in
 /-- The Weierstrass curve in projective coordinates base changed to an algebra `S` over `R`. -/
-@[reducible, inline]
+@[reducible]
 def baseChange [Algebra R S] : Projective S :=
   WeierstrassCurve.baseChange W' S
 

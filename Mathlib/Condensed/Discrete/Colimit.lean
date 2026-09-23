@@ -34,7 +34,7 @@ variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u
   (c : Cone <| F ⋙ toProfinite) (X : Type (u + 1))
 
 /-- The presheaf on `Profinite` of locally constant functions to `X`. -/
-@[reducible, inline]
+@[reducible]
 def locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u + 1}.obj X
 
@@ -97,7 +97,7 @@ end LocallyConstantAsColimit
 Given a presheaf `F` on `Profinite`, `lanPresheaf F` is the left Kan extension of its
 restriction to finite sets along the inclusion functor of finite sets into `Profinite`.
 -/
-@[reducible, inline]
+@[reducible]
 def lanPresheaf (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)) : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
   pointwiseLeftKanExtension toProfinite.op (toProfinite.op ⋙ F)
 
@@ -329,7 +329,7 @@ section LocallyConstantAsColimit
 variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite) (X : Type u)
 
 /-- The presheaf on `LightProfinite` of locally constant functions to `X`. -/
-@[reducible, inline]
+@[reducible]
 def locallyConstantPresheaf : LightProfiniteᵒᵖ ⥤ Type u :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u}.obj X
 
@@ -395,7 +395,7 @@ instance (S : LightProfinite.{u}ᵒᵖ) :
 Given a presheaf `F` on `LightProfinite`, `lanPresheaf F` is the left Kan extension of its
 restriction to finite sets along the inclusion functor of finite sets into `Profinite`.
 -/
-@[reducible, inline]
+@[reducible]
 def lanPresheaf (F : LightProfinite.{u}ᵒᵖ ⥤ Type u) : LightProfinite.{u}ᵒᵖ ⥤ Type u :=
   pointwiseLeftKanExtension toLightProfinite.op (toLightProfinite.op ⋙ F)
 

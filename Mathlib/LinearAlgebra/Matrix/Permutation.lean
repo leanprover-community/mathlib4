@@ -37,7 +37,7 @@ variable (R) in
 /-- the permutation matrix associated with an `Equiv.Perm`.
 
 This is available in a bundled form as `Matrix.permMatrixHom`. -/
-@[reducible, inline]
+@[reducible]
 def Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 

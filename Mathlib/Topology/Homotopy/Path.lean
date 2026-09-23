@@ -47,7 +47,7 @@ namespace Path
 
 /-- The type of homotopies between two paths.
 -/
-@[reducible, inline]
+@[reducible]
 def Homotopy (p₀ p₁ : Path x₀ x₁) :=
   ContinuousMap.HomotopyRel p₀.toContinuousMap p₁.toContinuousMap {0, 1}
 

@@ -38,7 +38,7 @@ def Sieve.EffectiveEpimorphic {X : C} (S : Sieve X) : Prop :=
 
 /-- A presieve is effective epimorphic if the cocone associated to the sieve it generates
 is a colimit cocone. -/
-@[reducible, inline]
+@[reducible]
 def Presieve.EffectiveEpimorphic {X : C} (S : Presieve X) : Prop :=
   (Sieve.generate S).EffectiveEpimorphic
 

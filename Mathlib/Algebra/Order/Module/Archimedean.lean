@@ -63,14 +63,14 @@ theorem submodule_strictAnti : StrictAnti (submodule K (M := M)) := addSubgroup_
 For `c = ⊤`, we assign the junk value `⊥`.
 
 This has the same carrier as `ArchimedeanClass.ballAddSubgroup`'s. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def ball (c : FiniteArchimedeanClass M) := submodule K (UpperSet.Ioi c)
 
 /-- A closed ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ici c`.
 
 This has the same carrier as `ArchimedeanClass.closedBallAddSubgroup`'s. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def closedBall (c : FiniteArchimedeanClass M) := submodule K (UpperSet.Ici c)
 

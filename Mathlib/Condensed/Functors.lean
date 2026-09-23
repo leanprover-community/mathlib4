@@ -50,7 +50,7 @@ def compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u} :=
   compHausToCondensed' ⋙ Condensed.ulift
 
 /-- Dot notation for the value of `compHausToCondensed`. -/
-@[reducible, inline]
+@[reducible]
 def CompHaus.toCondensed (S : CompHaus.{u}) : CondensedSet.{u} := compHausToCondensed.obj S
 
 /-- The yoneda presheaf as a condensed set, restricted to profinite spaces. -/
@@ -58,7 +58,7 @@ def profiniteToCondensed : Profinite.{u} ⥤ CondensedSet.{u} :=
   profiniteToCompHaus ⋙ compHausToCondensed
 
 /-- Dot notation for the value of `profiniteToCondensed`. -/
-@[reducible, inline]
+@[reducible]
 def Profinite.toCondensed (S : Profinite.{u}) : CondensedSet.{u} := profiniteToCondensed.obj S
 
 /-- The yoneda presheaf as a condensed set, restricted to Stonean spaces. -/
@@ -66,7 +66,7 @@ def stoneanToCondensed : Stonean.{u} ⥤ CondensedSet.{u} :=
   Stonean.toCompHaus ⋙ compHausToCondensed
 
 /-- Dot notation for the value of `stoneanToCondensed`. -/
-@[reducible, inline]
+@[reducible]
 def Stonean.toCondensed (S : Stonean.{u}) : CondensedSet.{u} := stoneanToCondensed.obj S
 
 instance : compHausToCondensed'.Full :=

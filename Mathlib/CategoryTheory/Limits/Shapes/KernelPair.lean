@@ -52,7 +52,7 @@ and the square
 is a pullback square.
 This is just an abbreviation for `IsPullback a b f f`.
 -/
-@[reducible, inline]
+@[reducible]
 def IsKernelPair :=
   IsPullback a b f f
 

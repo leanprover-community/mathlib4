@@ -97,19 +97,19 @@ end
 end
 
 /-- The condition that a cochain complex `K` is strictly `≥ n`. -/
-@[reducible, inline]
+@[reducible]
 def IsStrictlyGE (n : ℤ) := K.IsStrictlySupported (embeddingUpIntGE n)
 
 /-- The condition that a cochain complex `K` is strictly `≤ n`. -/
-@[reducible, inline]
+@[reducible]
 def IsStrictlyLE (n : ℤ) := K.IsStrictlySupported (embeddingUpIntLE n)
 
 /-- The condition that a cochain complex `K` is (cohomologically) `≥ n`. -/
-@[reducible, inline]
+@[reducible]
 def IsGE (n : ℤ) := K.IsSupported (embeddingUpIntGE n)
 
 /-- The condition that a cochain complex `K` is (cohomologically) `≤ n`. -/
-@[reducible, inline]
+@[reducible]
 def IsLE (n : ℤ) := K.IsSupported (embeddingUpIntLE n)
 
 lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n := by lia) [K.IsStrictlyGE n] :

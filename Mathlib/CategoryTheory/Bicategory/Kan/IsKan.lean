@@ -29,7 +29,7 @@ the category theory library. This means that `IsKan t` is a structure containing
 is a `Prop`-valued typeclass asserting that a Kan extension of `g` along `f` exists.
 
 We define `LeftExtension.IsKan t` for an extension `t : LeftExtension f g` (which is an
-@[reducible, inline]
+@[reducible]
 defiation of `t : StructuredArrow g (precomp _ f)`) to be an abbreviation for
 `StructuredArrow.IsUniversal t`. This means that we can use the definitions and lemmas living
 in the namespace `StructuredArrow.IsUniversal`.
@@ -54,11 +54,11 @@ namespace LeftExtension
 variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- A left Kan extension of `g` along `f` is an initial object in `LeftExtension f g`. -/
-@[reducible, inline]
+@[reducible]
 def IsKan (t : LeftExtension f g) := t.IsUniversal
 
 /-- An absolute left Kan extension is a Kan extension that commutes with any 1-morphism. -/
-@[reducible, inline]
+@[reducible]
 def IsAbsKan (t : LeftExtension f g) :=
   ∀ {x : B} (h : c ⟶ x), IsKan (t.whisker h)
 
@@ -68,13 +68,13 @@ variable {s t : LeftExtension f g}
 
 /-- To show that a left extension `t` is a Kan extension, we need to show that for every left
 extension `s` there is a unique morphism `t ⟶ s`. -/
-@[reducible, inline]
+@[reducible]
 def mk (desc : ∀ s, t ⟶ s) (w : ∀ s τ, τ = desc s) :
     IsKan t :=
   .ofUniqueHom desc w
 
 /-- The family of 2-morphisms out of a left Kan extension. -/
-@[reducible, inline]
+@[reducible]
 def desc (H : IsKan t) (s : LeftExtension f g) : t.extension ⟶ s.extension :=
   StructuredArrow.IsUniversal.desc H s
 
@@ -129,7 +129,7 @@ namespace IsAbsKan
 variable {s t : LeftExtension f g}
 
 /-- The family of 2-morphisms out of an absolute left Kan extension. -/
-@[reducible, inline]
+@[reducible]
 def desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h)) :
     t.extension ≫ h ⟶ s.extension :=
   (H h).desc s
@@ -152,11 +152,11 @@ namespace LeftLift
 variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- A left Kan lift of `g` along `f` is an initial object in `LeftLift f g`. -/
-@[reducible, inline]
+@[reducible]
 def IsKan (t : LeftLift f g) := t.IsUniversal
 
 /-- An absolute left Kan lift is a Kan lift such that every 1-morphism commutes with it. -/
-@[reducible, inline]
+@[reducible]
 def IsAbsKan (t : LeftLift f g) :=
   ∀ {x : B} (h : x ⟶ c), IsKan (t.whisker h)
 
@@ -166,13 +166,13 @@ variable {s t : LeftLift f g}
 
 /-- To show that a left lift `t` is a Kan lift, we need to show that for every left lift `s`
 there is a unique morphism `t ⟶ s`. -/
-@[reducible, inline]
+@[reducible]
 def mk (desc : ∀ s, t ⟶ s) (w : ∀ s τ, τ = desc s) :
     IsKan t :=
   .ofUniqueHom desc w
 
 /-- The family of 2-morphisms out of a left Kan lift. -/
-@[reducible, inline]
+@[reducible]
 def desc (H : IsKan t) (s : LeftLift f g) : t.lift ⟶ s.lift :=
   StructuredArrow.IsUniversal.desc H s
 
@@ -226,7 +226,7 @@ namespace IsAbsKan
 variable {s t : LeftLift f g}
 
 /-- The family of 2-morphisms out of an absolute left Kan lift. -/
-@[reducible, inline]
+@[reducible]
 def desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
     h ≫ t.lift ⟶ s.lift :=
   (H h).desc s
@@ -248,7 +248,7 @@ namespace RightExtension
 variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- A right Kan extension of `g` along `f` is a terminal object in `RightExtension f g`. -/
-@[reducible, inline]
+@[reducible]
 def IsKan (t : RightExtension f g) := t.IsUniversal
 
 end RightExtension
@@ -258,11 +258,11 @@ namespace RightLift
 variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- A right Kan lift of `g` along `f` is a terminal object in `RightLift f g`. -/
-@[reducible, inline]
+@[reducible]
 def IsKan (t : RightLift f g) := t.IsUniversal
 
 /-- An absolute right Kan lift is a Kan lift such that every 1-morphism commutes with it. -/
-@[reducible, inline]
+@[reducible]
 def IsAbsKan (t : RightLift f g) :=
   ∀ {x : B} (h : x ⟶ c), IsKan (t.whisker h)
 
@@ -272,13 +272,13 @@ variable {s t : RightLift f g}
 
 /-- To show that a right lift `t` is a Kan lift, we need to show that for every right lift `s`
 there is a unique morphism `s ⟶ t`. -/
-@[reducible, inline]
+@[reducible]
 def mk (desc : ∀ s, s ⟶ t) (w : ∀ s τ, τ = desc s) :
     IsKan t :=
   .ofUniqueHom desc w
 
 /-- The family of 2-morphisms into a right Kan lift. -/
-@[reducible, inline]
+@[reducible]
 def desc (H : IsKan t) (s : RightLift f g) : s.lift ⟶ t.lift :=
   CostructuredArrow.IsUniversal.lift H s
 
@@ -332,7 +332,7 @@ namespace IsAbsKan
 variable {s t : RightLift f g}
 
 /-- The family of 2-morphisms into an absolute right Kan lift. -/
-@[reducible, inline]
+@[reducible]
 def desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : RightLift f (h ≫ g)) :
     s.lift ⟶ h ≫ t.lift :=
   (H h).desc s

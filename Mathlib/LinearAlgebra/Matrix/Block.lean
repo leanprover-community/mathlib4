@@ -64,12 +64,12 @@ def BlockTriangular (M : Matrix m m R) (b : m → α) : Prop :=
   ∀ ⦃i j⦄, b j < b i → M i j = 0
 
 /-- `M` is upper triangular: entries below the diagonal vanish. -/
-@[reducible, inline]
+@[reducible]
 def IsUpperTriangular [LT m] (M : Matrix m m R) : Prop :=
   M.BlockTriangular id
 
 /-- `M` is lower triangular: entries above the diagonal vanish. -/
-@[reducible, inline]
+@[reducible]
 def IsLowerTriangular [LT m] (M : Matrix m m R) : Prop :=
   M.BlockTriangular toDual
 

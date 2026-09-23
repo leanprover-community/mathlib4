@@ -745,7 +745,7 @@ lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B
 end
 
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `A / P`. -/
-@[reducible, inline]
+@[reducible]
 def Quotient.algebraQuotientOfLEComap {R} [CommRing R] [Algebra R A] {p : Ideal R}
     {P : Ideal A} [P.IsTwoSided] (h : p ≤ comap (algebraMap R A) P) :
     Algebra (R ⧸ p) (A ⧸ P) where

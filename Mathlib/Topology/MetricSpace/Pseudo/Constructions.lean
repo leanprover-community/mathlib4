@@ -23,7 +23,7 @@ open scoped NNReal
 variable {α β : Type*} [PseudoMetricSpace α]
 
 /-- Pseudometric space structure pulled back by a function. -/
-@[reducible, inline]
+@[reducible]
 def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β) :
     PseudoMetricSpace α where
   dist x y := dist (f x) (f y)

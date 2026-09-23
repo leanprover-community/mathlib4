@@ -25,7 +25,7 @@ variable {X : Type*} [Fintype X]
 
 variable (X) in
 /-- A numbering of a fintype `X` is a bijection between `X` and `Fin (card X)`. -/
-@[reducible, inline]
+@[reducible]
 def Numbering : Type _ := X ≃ Fin (card X)
 
 @[simp] lemma Fintype.card_numbering [DecidableEq X] : card (Numbering X) = (card X)! :=

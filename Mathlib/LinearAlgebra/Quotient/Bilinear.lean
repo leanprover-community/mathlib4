@@ -49,7 +49,7 @@ variable {R S M P : Type*} [AddCommGroup M] [CommRing R] [CommRing S]
 
 /-- Special case of `LinearMap.liftQ₂` with left and right spaces the same. Reducible so
 that simp lemmas about `LinearMap.liftQ₂` apply to it. -/
-@[reducible, inline]
+@[reducible]
 def IsRefl.liftQ₂ (f : M →ₛₗ[I₁] M →ₛₗ[I₂] P)
     (N : Submodule R M) (hf : f.IsRefl) (hN : N ≤ f.ker) :
     M ⧸ N →ₛₗ[I₁] M ⧸ N →ₛₗ[I₂] P :=

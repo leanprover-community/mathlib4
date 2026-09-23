@@ -31,7 +31,7 @@ variable {M G : Type*} [CommMonoid M] [CommGroup G]
 
 variable (M) in
 /-- The Grothendieck group of a monoid `M` is the localization at its top submonoid. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The Grothendieck group of an additive monoid `M` is the localization at its top submonoid. -/]
 def GrothendieckGroup : Type _ := Localization (⊤ : Submonoid M)
 
@@ -40,7 +40,7 @@ namespace GrothendieckGroup
 /-- The inclusion from a commutative monoid `M` to its Grothendieck group.
 
 Note that this is only injective if `M` is cancellative. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The inclusion from an additive commutative monoid `M` to its Grothendieck group.
 
 Note that this is only injective if `M` is cancellative. -/]

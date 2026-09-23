@@ -80,16 +80,16 @@ attribute [reassoc (attr := simp)] FunctorObjIndex.w
 variable [HasColimitsOfShape (Discrete (FunctorObjIndex f πX)) C]
 
 /-- The family of objects `A x.i` parametrized by `x : FunctorObjIndex f πX`. -/
-@[reducible, inline]
+@[reducible]
 def functorObjSrcFamily (x : FunctorObjIndex f πX) : C := A x.i
 
 /-- The family of objects `B x.i` parametrized by `x : FunctorObjIndex f πX`. -/
-@[reducible, inline]
+@[reducible]
 def functorObjTgtFamily (x : FunctorObjIndex f πX) : C := B x.i
 
 /-- The family of the morphisms `f x.i : A x.i ⟶ B x.i`
 parametrized by `x : FunctorObjIndex f πX`. -/
-@[reducible, inline]
+@[reducible]
 def functorObjLeftFamily (x : FunctorObjIndex f πX) :
     functorObjSrcFamily f πX x ⟶ functorObjTgtFamily f πX x := f x.i
 

@@ -344,12 +344,12 @@ def parallelPair.eqOfHomEq {f g f' g' : X ⟶ Y} (hf : f = f') (hg : g = g') :
   parallelPair.ext (Iso.refl _) (Iso.refl _) (by simp [hf]) (by simp [hg])
 
 /-- A fork on `f` and `g` is just a `Cone (parallelPair f g)`. -/
-@[reducible, inline]
+@[reducible]
 def Fork (f g : X ⟶ Y) :=
   Cone (parallelPair f g)
 
 /-- A cofork on `f` and `g` is just a `Cocone (parallelPair f g)`. -/
-@[reducible, inline]
+@[reducible]
 def Cofork (f g : X ⟶ Y) :=
   Cocone (parallelPair f g)
 
@@ -829,7 +829,7 @@ section
 
 /-- Two parallel morphisms `f` and `g` have an equalizer if the diagram `parallelPair f g` has a
 limit. -/
-@[reducible, inline]
+@[reducible]
 def HasEqualizer :=
   HasLimit (parallelPair f g)
 
@@ -1037,7 +1037,7 @@ section
 
 /-- Two parallel morphisms `f` and `g` have a coequalizer if the diagram `parallelPair f g` has a
 colimit. -/
-@[reducible, inline]
+@[reducible]
 def HasCoequalizer :=
   HasColimit (parallelPair f g)
 
@@ -1244,13 +1244,13 @@ variable (C)
 
 /-- A category `HasEqualizers` if it has all limits of shape `WalkingParallelPair`, i.e. if it has
 an equalizer for every parallel pair of morphisms. -/
-@[reducible, inline]
+@[reducible]
 def HasEqualizers :=
   HasLimitsOfShape WalkingParallelPair C
 
 /-- A category `HasCoequalizers` if it has all colimits of shape `WalkingParallelPair`, i.e. if it
 has a coequalizer for every parallel pair of morphisms. -/
-@[reducible, inline]
+@[reducible]
 def HasCoequalizers :=
   HasColimitsOfShape WalkingParallelPair C
 

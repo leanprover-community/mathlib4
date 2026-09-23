@@ -101,7 +101,7 @@ instance [OverClass X S] [OverClass Y S] [OverClass Z S]
 
 /-- `IsOverTower X Y S` is the typeclass asserting that the structure morphisms
 `X ↘ Y`, `Y ↘ S`, and `X ↘ S` commute. -/
-@[reducible, inline]
+@[reducible]
 def IsOverTower (X Y S : C) [OverClass X S] [OverClass Y S] [OverClass X Y] :=
   HomIsOver (X ↘ Y) S
 

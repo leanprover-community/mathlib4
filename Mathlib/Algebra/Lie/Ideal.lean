@@ -43,7 +43,7 @@ section LieIdeal
 variable [LieAlgebra R L] [LieModule R L M]
 
 /-- An ideal of a Lie algebra is a Lie submodule of the Lie algebra as a Lie module over itself. -/
-@[reducible, inline]
+@[reducible]
 def LieIdeal :=
   LieSubmodule R L L
 

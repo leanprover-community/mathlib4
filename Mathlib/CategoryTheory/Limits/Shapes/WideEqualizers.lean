@@ -194,12 +194,12 @@ def walkingParallelFamilyEquivWalkingParallelPair :
   functor_unitIso_comp := by rintro (_ | _) <;> cat_disch
 
 /-- A trident on `f` is just a `Cone (parallelFamily f)`. -/
-@[reducible, inline]
+@[reducible]
 def Trident :=
   Cone (parallelFamily f)
 
 /-- A cotrident on `f` and `g` is just a `Cocone (parallelFamily f)`. -/
-@[reducible, inline]
+@[reducible]
 def Cotrident :=
   Cocone (parallelFamily f)
 
@@ -208,14 +208,14 @@ variable {f}
 /-- A trident `t` on the parallel family `f : J → (X ⟶ Y)` consists of two morphisms
     `t.π.app zero : t.X ⟶ X` and `t.π.app one : t.X ⟶ Y`. Of these, only the first one is
     interesting, and we give it the shorter name `Trident.ι t`. -/
-@[reducible, inline]
+@[reducible]
 def Trident.ι (t : Trident f) :=
   t.π.app zero
 
 /-- A cotrident `t` on the parallel family `f : J → (X ⟶ Y)` consists of two morphisms
     `t.ι.app zero : X ⟶ t.X` and `t.ι.app one : Y ⟶ t.X`. Of these, only the second one is
     interesting, and we give it the shorter name `Cotrident.π t`. -/
-@[reducible, inline]
+@[reducible]
 def Cotrident.π (t : Cotrident f) :=
   t.ι.app one
 
@@ -541,7 +541,7 @@ section
 
 /-- A family `f` of parallel morphisms has a wide equalizer if the diagram `parallelFamily f` has a
 limit. -/
-@[reducible, inline]
+@[reducible]
 def HasWideEqualizer :=
   HasLimit (parallelFamily f)
 
@@ -549,19 +549,19 @@ variable [HasWideEqualizer f]
 
 /-- If a wide equalizer of `f` exists, we can access an arbitrary choice of such by
     saying `wideEqualizer f`. -/
-@[reducible, inline]
+@[reducible]
 def wideEqualizer : C :=
   limit (parallelFamily f)
 
 /-- If a wide equalizer of `f` exists, we can access the inclusion `wideEqualizer f ⟶ X` by
     saying `wideEqualizer.ι f`. -/
-@[reducible, inline]
+@[reducible]
 def wideEqualizer.ι : wideEqualizer f ⟶ X :=
   limit.π (parallelFamily f) zero
 
 /-- A wide equalizer cone for a parallel family `f`.
 -/
-@[reducible, inline]
+@[reducible]
 def wideEqualizer.trident : Trident f :=
   limit.cone (parallelFamily f)
 
@@ -586,7 +586,7 @@ variable {f}
 
 /-- A morphism `k : W ⟶ X` satisfying `∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂` factors through the
     wide equalizer of `f` via `wideEqualizer.lift : W ⟶ wideEqualizer f`. -/
-@[reducible, inline]
+@[reducible]
 def wideEqualizer.lift [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
     W ⟶ wideEqualizer f :=
   limit.lift (parallelFamily f) (Trident.ofι k h)
@@ -632,7 +632,7 @@ section
 
 /-- A family `f` of parallel morphisms has a wide coequalizer if the diagram `parallelFamily f` has
 a colimit. -/
-@[reducible, inline]
+@[reducible]
 def HasWideCoequalizer :=
   HasColimit (parallelFamily f)
 
@@ -640,19 +640,19 @@ variable [HasWideCoequalizer f]
 
 /-- If a wide coequalizer of `f` exists, we can access an arbitrary choice of such by
     saying `wideCoequalizer f`. -/
-@[reducible, inline]
+@[reducible]
 def wideCoequalizer : C :=
   colimit (parallelFamily f)
 
 /-- If a wideCoequalizer of `f` exists, we can access the corresponding projection by
     saying `wideCoequalizer.π f`. -/
-@[reducible, inline]
+@[reducible]
 def wideCoequalizer.π : Y ⟶ wideCoequalizer f :=
   colimit.ι (parallelFamily f) one
 
 /-- An arbitrary choice of coequalizer cocone for a parallel family `f`.
 -/
-@[reducible, inline]
+@[reducible]
 def wideCoequalizer.cotrident : Cotrident f :=
   colimit.cocone (parallelFamily f)
 
@@ -679,7 +679,7 @@ variable {f}
 
 /-- Any morphism `k : Y ⟶ W` satisfying `∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k` factors through the
     wide coequalizer of `f` via `wideCoequalizer.desc : wideCoequalizer f ⟶ W`. -/
-@[reducible, inline]
+@[reducible]
 def wideCoequalizer.desc [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     wideCoequalizer f ⟶ W :=
   colimit.desc (parallelFamily f) (Cotrident.ofπ k h)
@@ -725,13 +725,13 @@ variable (C)
 
 /-- A category `HasWideEqualizers` if it has all limits of shape `WalkingParallelFamily J`, i.e.
 if it has a wide equalizer for every family of parallel morphisms. -/
-@[reducible, inline]
+@[reducible]
 def HasWideEqualizers :=
   ∀ J, HasLimitsOfShape (WalkingParallelFamily.{w} J) C
 
 /-- A category `HasWideCoequalizers` if it has all colimits of shape `WalkingParallelFamily J`, i.e.
 if it has a wide coequalizer for every family of parallel morphisms. -/
-@[reducible, inline]
+@[reducible]
 def HasWideCoequalizers :=
   ∀ J, HasColimitsOfShape (WalkingParallelFamily.{w} J) C
 

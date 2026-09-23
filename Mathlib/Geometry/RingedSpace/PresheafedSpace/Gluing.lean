@@ -120,7 +120,7 @@ local notation "π₂⁻¹ " i ", " j ", " k =>
   (PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft (D.f i j) (D.f i k)).invApp
 
 /-- The glue data of topological spaces associated to a family of glue data of PresheafedSpaces. -/
-@[reducible, inline]
+@[reducible]
 def toTopGlueData : TopCat.GlueData :=
   { f_open := fun i j => (D.f_open i j).base_open
     toGlueData := 𝖣.mapGlueData (forget C) }
@@ -309,14 +309,14 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
 
 /-- (Implementation) Given an open subset of one of the spaces `U ⊆ Uᵢ`, the sheaf component of
 the image `ι '' U` in the glued space is the limit of this diagram. -/
-@[reducible, inline]
+@[reducible]
 def diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     (WalkingMultispan (.prod D.J))ᵒᵖ ⥤ C :=
   componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).functor.obj U)
 
 /-- (Implementation)
 The projection from the limit of `diagram_over_open` to a component of `D.U j`. -/
-@[reducible, inline]
+@[reducible]
 def diagramOverOpenπ {i : D.J} (U : Opens (D.U i).carrier) (j : D.J) :=
   limit.π (D.diagramOverOpen U) (op (WalkingMultispan.right j))
 
@@ -426,7 +426,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
       infer_instance
 
 /-- The `eqToHom` given by `ιInvApp_π`. -/
-@[reducible, inline]
+@[reducible]
 def ιInvAppπEqMap {i : D.J} (U : Opens (D.U i).carrier) :=
   (D.U i).presheaf.map (eqToIso (D.ιInvApp_π U).choose).inv
 
@@ -575,7 +575,7 @@ variable (D : GlueData C)
 local notation "𝖣" => D.toGlueData
 
 /-- The glue data of presheafed spaces associated to a family of glue data of sheafed spaces. -/
-@[reducible, inline]
+@[reducible]
 def toPresheafedSpaceGlueData : PresheafedSpace.GlueData C :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToPresheafedSpace }
@@ -583,7 +583,7 @@ def toPresheafedSpaceGlueData : PresheafedSpace.GlueData C :=
 variable [HasLimits C]
 
 /-- The gluing as sheafed spaces is isomorphic to the gluing as presheafed spaces. -/
-@[reducible, inline]
+@[reducible]
 def isoPresheafedSpace :
     𝖣.glued.toPresheafedSpace ≅ D.toPresheafedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToPresheafedSpace
@@ -652,13 +652,13 @@ variable (D : GlueData.{u})
 local notation "𝖣" => D.toGlueData
 
 /-- The glue data of ringed spaces associated to a family of glue data of locally ringed spaces. -/
-@[reducible, inline]
+@[reducible]
 def toSheafedSpaceGlueData : SheafedSpace.GlueData CommRingCat :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToSheafedSpace }
 
 /-- The gluing as locally ringed spaces is isomorphic to the gluing as ringed spaces. -/
-@[reducible, inline]
+@[reducible]
 def isoSheafedSpace : 𝖣.glued.toSheafedSpace ≅ D.toSheafedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToSheafedSpace
 

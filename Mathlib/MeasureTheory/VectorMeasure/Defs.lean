@@ -60,7 +60,7 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
     HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
 
 /-- A `SignedMeasure` is an `ℝ`-vector measure. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def SignedMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℝ
 

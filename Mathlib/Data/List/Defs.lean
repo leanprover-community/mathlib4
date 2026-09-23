@@ -486,7 +486,7 @@ end MapAccumr
 section consecutivePairs
 
 /-- `consecutivePairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
-@[reducible, inline]
+@[reducible]
 def consecutivePairs (l : List α) : List (α × α) := l.zip l.tail
 
 end consecutivePairs

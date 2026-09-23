@@ -522,7 +522,7 @@ attribute [instance] Hom.isMonHom_hom
 
 /-- Construct a morphism `M ⟶ N` of `Mon C` from a map `f : M ⟶ N` and
 compatibilities with the unit and the multiplication. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a morphism `M ⟶ N` of `AddMon C` from a map `f : M ⟶ N` and
 compatibilities with the zero and the addition. -/]
 def Hom.mk' {M N : Mon C} (f : M.X ⟶ N.X)
@@ -621,7 +621,7 @@ def mkIso' {M N : C} [MonObj M] [MonObj N] (e : M ≅ N) [IsMonHom e.hom] : mk M
 
 /-- Construct an isomorphism of monoid objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct an isomorphism of additive monoid objects by giving an isomorphism between
 the underlying objects and checking compatibility with zero and addition only in
 the forward direction. -/]
@@ -816,7 +816,7 @@ variable [F.LaxMonoidal] [F'.LaxMonoidal] [G.LaxMonoidal] (X Y : C) [MonObj X] [
   (f : X ⟶ Y) [IsMonHom f]
 
 /-- The image of a monoid object under a lax monoidal functor is a monoid object. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The image of an additive monoid object under a lax monoidal functor is an additive
 monoid object.-/]
 def monObjObj : MonObj (F.obj X) where
@@ -923,7 +923,7 @@ variable [F.OplaxMonoidal]
 
 open scoped MonObj in
 /-- Pullback a monoid object along a fully faithful oplax monoidal functor. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 (attr := simps)
 /-- Pullback an additive monoid object along a fully faithful oplax monoidal functor. -/]
 def FullyFaithful.monObj (hF : F.FullyFaithful) (X : C) [MonObj (F.obj X)] : MonObj X where

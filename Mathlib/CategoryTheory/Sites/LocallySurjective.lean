@@ -326,7 +326,7 @@ variable {F₁ F₂ F₃ : Sheaf J A} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
 
 /-- If `φ : F₁ ⟶ F₂` is a morphism of sheaves, this is an abbreviation for
 `Presheaf.IsLocallySurjective J φ.val`. -/
-@[reducible, inline]
+@[reducible]
 def IsLocallySurjective := Presheaf.IsLocallySurjective J φ.hom
 
 lemma isLocallySurjective_sheafToPresheaf_map_iff :

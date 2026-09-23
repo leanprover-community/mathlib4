@@ -33,37 +33,37 @@ variable {W X Y Z : C}
 
 /-- Two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z` have a weak pullback if the diagram
 `cospan f g` has a weak limit. -/
-@[reducible, inline]
+@[reducible]
 def HasWeakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasWeakLimit (cospan f g)
 
 /-- `weakPullback f g` computes the weak pullback of a pair of morphisms
 with the same target. -/
-@[reducible, inline]
+@[reducible]
 def weakPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :=
   weakLimit (cospan f g)
 
 /-- The cone associated to the weak pullback of `f` and `g` -/
-@[reducible, inline]
+@[reducible]
 def weakPullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasWeakPullback f g] : PullbackCone f g :=
   weakLimit.cone (cospan f g)
 
 /-- The first projection of the weak pullback of `f` and `g`. -/
-@[reducible, inline]
+@[reducible]
 def weakPullback.fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
     weakPullback f g ⟶ X :=
   weakLimit.π (cospan f g) WalkingCospan.left
 
 /-- The second projection of the weak pullback of `f` and `g`. -/
-@[reducible, inline]
+@[reducible]
 def weakPullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
     weakPullback f g ⟶ Y :=
   weakLimit.π (cospan f g) WalkingCospan.right
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `weakPullback.lift : W ⟶ weakPullback f g`. -/
-@[reducible, inline]
+@[reducible]
 def weakPullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakPullback f g] (h : W ⟶ X)
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ weakPullback f g :=
   weakLimit.lift _ (PullbackCone.mk h k w)
@@ -75,7 +75,7 @@ lemma weakPullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWea
   ⟨weakPullback.lift h k, by simp⟩
 
 /-- The cone associated to a weak pullback is a weak limit cone. -/
-@[reducible, inline]
+@[reducible]
 def weakPullback.isWeakLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g] :
     IsWeakLimit (weakPullback.cone f g) :=
   weakLimit.isWeakLimit (cospan f g)
@@ -126,7 +126,7 @@ W ⟶ Y
 X ⟶ Z
 ```
 -/
-@[reducible, inline]
+@[reducible]
 def weakPullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasWeakPullback f₁ f₂]
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) [HasWeakPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
@@ -136,7 +136,7 @@ def weakPullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasWea
 
 /-- A morphism from the weak pullback of `W ⟶ S` and `X ⟶ S` to the weak pullback of
 `Y ⟶ T` and `Z ⟶ T` given `S ⟶ T`. -/
-@[reducible, inline]
+@[reducible]
 def weakPullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [HasWeakPullback f g]
     [HasWeakPullback (f ≫ i) (g ≫ i)] : weakPullback f g ⟶ weakPullback (f ≫ i) (g ≫ i) :=
   weakPullback.map f g (f ≫ i) (g ≫ i) (𝟙 _) (𝟙 _) i (Category.id_comp _).symm
@@ -221,7 +221,7 @@ variable (C)
 
 /-- A category `HasWeakPullbacks` if it has all weak limits of shape `WalkingCospan`, i.e. if it
 has a weak pullback for every pair of morphisms with the same codomain. -/
-@[reducible, inline]
+@[reducible]
 def HasWeakPullbacks :=
   HasWeakLimitsOfShape WalkingCospan C
 

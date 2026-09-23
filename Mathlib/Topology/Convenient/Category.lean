@@ -42,7 +42,7 @@ open CategoryTheory Topology Limits
 variable {ι : Type t} (X : ι → Type u) [∀ i, TopologicalSpace (X i)]
 
 /-- The property of objects of `TopCat` which is satisfied by `X`-generated spaces. -/
-@[reducible, inline]
+@[reducible]
 def TopCat.generatedBy : ObjectProperty TopCat.{v} :=
   fun Y ↦ IsGeneratedBy X Y
 
@@ -50,27 +50,27 @@ lemma TopCat.generatedBy_def (Y : TopCat.{v}) :
     generatedBy X Y ↔ IsGeneratedBy X Y := Iff.rfl
 
 /-- The full subcategory of `TopCat` consisting of `X`-generated spaces. -/
-@[reducible, inline]
+@[reducible]
 def GeneratedByTopCat := (TopCat.generatedBy.{v} X).FullSubcategory
 
 namespace GeneratedByTopCat
 
 variable {X} in
 /-- The inclusion functor `GeneratedByTopCat X ⥤ TopCat`. -/
-@[reducible, inline]
+@[reducible]
 def toTopCat : GeneratedByTopCat.{v} X ⥤ TopCat.{v} := ObjectProperty.ι _
 
 instance (Y : GeneratedByTopCat.{v} X) : IsGeneratedBy X (toTopCat.obj Y) := Y.property
 
 /-- The inclusion functor `toTopCat : GeneratedByTopCat X ⥤ TopCat`
 is fully faithful. -/
-@[reducible, inline]
+@[reducible]
 def fullyFaithfulToTopCat : (toTopCat.{v} (X := X)).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
 variable {X} in
 /-- Constructor for objects in the category of `X`-generated spaces. -/
-@[reducible, inline]
+@[reducible]
 def of (Y : Type v) [TopologicalSpace Y] [IsGeneratedBy X Y] :
     GeneratedByTopCat.{v} X where
   obj := ↧Y
@@ -152,7 +152,7 @@ end ContinuousGeneratedByCat
 /-- The faithful functor `TopCat ⥤ ContinuousGeneratedByCat X` which sends
 a topological space `Y` to the same type `Y`, with the same topology, but
 considered as an object of `ContinuousGeneratedByCat X`. -/
-@[reducible, inline]
+@[reducible]
 def TopCat.toContinuousGeneratedByCat :
     TopCat.{v} ⥤ ContinuousGeneratedByCat.{v} X := forget₂ _ _
 
@@ -257,7 +257,7 @@ def equivalenceUnitIso :
       (TopCat.isoOfHomeo IsGeneratedBy.homeomorph.symm))
 
 /-- The counit isomorphism of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
-@[reducible, inline]
+@[reducible]
 def equivalenceCounitIso :
     toGeneratedByTopCat ⋙ fromGeneratedByTopCat ≅ 𝟭 (ContinuousGeneratedByCat X) :=
   adjUnitIso.symm

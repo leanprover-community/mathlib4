@@ -368,7 +368,7 @@ section
 /-- Given `P : ObjectProperty C` and `X : C`, this is the map which
 sends `i : CostructuredArrow P.ι X` to `i.left.obj : C`. The coproduct
 of this family is the source of the morphism `P.coproductFrom X`. -/
-@[reducible, inline]
+@[reducible]
 def coproductFromFamily (X : C) (i : CostructuredArrow P.ι X) : C := i.left.obj
 
 variable (X : C)
@@ -407,7 +407,7 @@ section
 /-- Given `P : ObjectProperty C` and `X : C`, this is the map which
 sends `i : StructuredArrow P.ι X` to `i.right.obj : C`. The product
 of this family is the target of the morphism `P.productTo X`. -/
-@[reducible, inline]
+@[reducible]
 def productToFamily (X : C) (i : StructuredArrow X P.ι) : C := i.right.obj
 
 variable (X : C)

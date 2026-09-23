@@ -187,7 +187,7 @@ lemma hom₂_ext {X Y : SpanBicat C Wₗ Wᵣ} {S S' : X ⟶ Y} {f g : S ⟶ S'}
   Span.hom_ext h
 
 /-- Constructor for 1-morphisms in `SpanBicat C _ _` -/
-@[reducible, inline]
+@[reducible]
 def mkHom {X Y : SpanBicat C Wₗ Wᵣ} {apex : C} (l : apex ⟶ X.of) (r : apex ⟶ Y.of)
     (wl : Wₗ l) (wr : Wᵣ r) :
     X ⟶ Y where
@@ -207,7 +207,7 @@ def mkHom₂ {X Y : SpanBicat C Wₗ Wᵣ} {S S' : X ⟶ Y}
   hom := e
 
 /-- Constructor for 2-isomorphisms in `SpanBicat C _ _` -/
-@[reducible, inline]
+@[reducible]
 def mkIso₂ {X Y : SpanBicat C Wₗ Wᵣ} {S S' : X ⟶ Y}
     (e : S.apex ≅ S'.apex)
     (hₗ : e.hom ≫ S'.l = S.l := by cat_disch)
@@ -470,7 +470,7 @@ lemma inv_hom_id_hom {S S' : X ⟶ Y} (e : S ≅ S') :
 
 /-- Extract the isomorphism between the apices from the data of an isomorphism of 1-morphisms
 in `SpanBicat C _ _`. -/
-@[reducible, inline, simps]
+@[reducible, simps]
 def apexIso {S S' : X ⟶ Y} (e : S ≅ S') :
     S.apex ≅ S'.apex where
   hom := e.hom.hom

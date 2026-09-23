@@ -37,7 +37,7 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- A character of a Lie algebra is a morphism to the scalars. -/
-@[reducible, inline]
+@[reducible]
 def LieCharacter :=
   L →ₗ⁅R⁆ R
 

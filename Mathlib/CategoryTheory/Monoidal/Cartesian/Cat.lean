@@ -25,7 +25,7 @@ open Limits
 
 attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat`. -/
-@[reducible, inline]
+@[reducible]
 def chosenTerminal : Cat.{v, u} := ↧(ULift (ULiftHom (Discrete Unit)))
 
 attribute [local instance] uliftCategory in

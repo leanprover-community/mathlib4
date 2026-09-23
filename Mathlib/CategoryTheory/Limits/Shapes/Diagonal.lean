@@ -35,7 +35,7 @@ section Diagonal
 variable (f : X ⟶ Y) [HasPullback f f]
 
 /-- The diagonal object of a morphism `f : X ⟶ Y` is `Δ_{X/Y} := pullback f f`. -/
-@[reducible, inline]
+@[reducible]
 def diagonalObj : C :=
   pullback f f
 
@@ -110,7 +110,7 @@ theorem pullback_diagonal_map_snd_snd_fst :
 variable [HasPullback i₁ i₂]
 
 /-- The underlying map of `pullbackDiagonalIso` -/
-@[reducible, inline]
+@[reducible]
 def pullbackDiagonalMapIso.hom :
     pullback (diagonal f)
         (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
@@ -124,7 +124,7 @@ def pullbackDiagonalMapIso.hom :
   · simp only [Category.assoc, condition])
 
 /-- The underlying inverse of `pullbackDiagonalIso` -/
-@[reducible, inline]
+@[reducible]
 def pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
     pullback (diagonal f)
         (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i

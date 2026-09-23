@@ -476,11 +476,11 @@ theorem WellFounded.listPairwise_reverse_compl (wf : WellFounded r) (h : l.IsCha
 variable (r)
 
 /-- The type of `r`-decreasing chains -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def List.chains := { l : List α // l.IsChain (flip r) }
 
 /-- The lexicographic order on the `r`-decreasing chains -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def List.lex_chains (l m : List.chains r) : Prop := List.Lex r l.val m.val
 
 variable {r}

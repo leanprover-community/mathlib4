@@ -167,7 +167,7 @@ variable (𝒜 : ι → Submodule R A)
 
 /-- A special case of `GradedRing` with `σ = Submodule R A`. This is useful both because it
 can avoid typeclass search, and because it provides a more concise name. -/
-@[reducible, inline]
+@[reducible]
 def GradedAlgebra :=
   GradedRing 𝒜
 
@@ -176,7 +176,7 @@ available. This makes the `left_inv` condition easier to prove, and phrases the 
 condition in a way that allows custom `@[ext]` lemmas to apply.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeAlgHom 𝒜).comp decompose = AlgHom.id R A)
     (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :

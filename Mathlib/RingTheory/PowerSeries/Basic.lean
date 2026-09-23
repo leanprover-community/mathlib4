@@ -56,7 +56,7 @@ noncomputable section
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/
-@[reducible, inline, wikidata Q1003025]
+@[reducible, wikidata Q1003025]
 def PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
 

@@ -43,7 +43,7 @@ theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
   Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
 
 /-- The functor from `Discrete PUnit` sending everything to the given object. -/
-@[reducible, inline]
+@[reducible]
 def fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
   (Functor.const _).obj X
 

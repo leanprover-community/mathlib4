@@ -45,7 +45,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [CopyDiscardCate
 /-- A morphism is deterministic if it preserves the comonoid structure.
 
 In probabilistic contexts, these are morphisms without randomness. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Deterministic {X Y : C} (f : X ⟶ Y) := IsComonHom f
 
 namespace Deterministic

@@ -68,7 +68,7 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
 of commutative rings, this is the pushforward functor from the category
 of presheaves of modules on `R` to the category of presheaves of
 modules on `F.op ⋙ R`. -/
-@[reducible, inline]
+@[reducible]
 def pushforward₀OfCommRingCat (R : Dᵒᵖ ⥤ CommRingCat.{u}) :
     PresheafOfModules.{v} (R ⋙ forget₂ _ _) ⥤
       PresheafOfModules.{v} ((F.op ⋙ R) ⋙ forget₂ _ _) :=

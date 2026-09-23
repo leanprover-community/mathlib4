@@ -109,7 +109,7 @@ noncomputable section
 namespace AlgebraicGeometry
 
 /-- A property is Zariski-local at target if it is local at target in the Zariski topology. -/
-@[reducible, inline]
+@[reducible]
 def IsZariskiLocalAtTarget (P : MorphismProperty Scheme.{u}) :=
   P.IsLocalAtTarget Scheme.zariskiPrecoverage
 
@@ -221,7 +221,7 @@ lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f
 end IsZariskiLocalAtTarget
 
 /-- A property is Zariski-local at source if it is local at source in the Zariski topology. -/
-@[reducible, inline]
+@[reducible]
 def IsZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) :=
   P.IsLocalAtSource Scheme.zariskiPrecoverage
 

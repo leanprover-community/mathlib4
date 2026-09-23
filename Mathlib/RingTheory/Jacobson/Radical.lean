@@ -126,7 +126,7 @@ namespace Ring
 
 /-- The Jacobson radical of a ring `R` is the Jacobson radical of `R` as an `R`-module. -/
 -- TODO: replace all `Ideal.jacobson ⊥` by this.
-@[reducible, inline]
+@[reducible]
 def jacobson : Ideal R := Module.jacobson R R
 
 theorem jacobson_eq_sInf_isMaximal : jacobson R = sInf {I : Ideal R | I.IsMaximal} := by

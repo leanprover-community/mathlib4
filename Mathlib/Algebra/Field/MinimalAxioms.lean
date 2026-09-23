@@ -27,7 +27,7 @@ universe u
 /-- Define a `Field` structure on a Type by proving a minimal set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul`, `div` and `sub`.
 See note [reducible non-instances]. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Field.ofMinimalAxioms (K : Type u)
     [Add K] [Mul K] [Neg K] [Inv K] [Zero K] [One K]
     (add_assoc : ∀ a b c : K, a + b + c = a + (b + c))

@@ -332,12 +332,12 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
-@[reducible, inline]
+@[reducible]
 def actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
-@[reducible, inline]
+@[reducible]
 def actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -646,12 +646,12 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
-@[reducible, inline]
+@[reducible]
 def actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
-@[reducible, inline]
+@[reducible]
 def actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 set_option backward.isDefEq.respectTransparency.types false in

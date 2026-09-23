@@ -36,15 +36,15 @@ variable {B : Type u} [Bicategory.{w, v} B]
 
 /-- A comonad in a bicategory `B` is a 1-morphism `t : a ⟶ a` together with 2-morphisms
 `Δ : t ⟶ t ≫ t` and `ε : t ⟶ 𝟙 a` satisfying the comonad laws. -/
-@[reducible, inline]
+@[reducible]
 def Comonad {a : B} (t : a ⟶ a) := ComonObj t
 
 /-- The counit 2-morphism of the comonad. -/
-@[reducible, inline]
+@[reducible]
 def Comonad.counit {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ 𝟙 a := ComonObj.counit
 
 /-- The comultiplication 2-morphism of the comonad. -/
-@[reducible, inline]
+@[reducible]
 def Comonad.comul {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ t ≫ t := ComonObj.comul
 
 @[inherit_doc] scoped notation "ε" => Comonad.counit

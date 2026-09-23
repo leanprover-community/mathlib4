@@ -45,7 +45,7 @@ variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : ou
     [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
 
 /-- The forgetful functor from a concrete category to the category of types. -/
-@[reducible, inline]
+@[reducible]
 def forget : C ⥤ Type w where
   obj X := ToType X
   map f := ↾f
@@ -94,7 +94,7 @@ class HasForget₂ where
 
 /-- The forgetful functor `C ⥤ D` between concrete categories for which we have an instance
 `HasForget₂ C`. -/
-@[reducible, inline]
+@[reducible]
 def forget₂ [HasForget₂ C D] : C ⥤ D :=
   HasForget₂.forget₂
 

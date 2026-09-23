@@ -235,7 +235,7 @@ instance : IsTopologicalAddTorsor P where
   continuous_vsub := uniformContinuous_vsub.continuous
 
 /-- Pullback of a normed add torsor along an injective map. -/
-@[reducible, inline]
+@[reducible]
 def Function.Injective.normedAddTorsor {Q : Type*} [VAdd V Q] [VSub V Q]
     [Nonempty Q] [PseudoMetricSpace Q] (f : Q → P) (hf : Function.Injective f)
     (vadd : ∀ (c : V) (x : Q), f (c +ᵥ x) = c +ᵥ f x)
@@ -245,7 +245,7 @@ def Function.Injective.normedAddTorsor {Q : Type*} [VAdd V Q] [VSub V Q]
   dist_eq_norm' x y := by simp [norm, NormedAddTorsor.dist_eq_norm', vsub]
 
 /-- Pushforward of a normed add torsor along a surjective map. -/
-@[reducible, inline]
+@[reducible]
 def Function.Surjective.normedAddTorsor
     {Q : Type*} [VAdd V Q] [VSub V Q] [PseudoMetricSpace Q]
     (f : P → Q) (hf : Surjective f)

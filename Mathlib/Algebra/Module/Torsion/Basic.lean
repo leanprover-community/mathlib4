@@ -200,7 +200,7 @@ def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S 
 
 /-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
-@[reducible, inline]
+@[reducible]
 def torsion :=
   torsion' R M R⁰
 
@@ -211,23 +211,23 @@ namespace Module
 variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- An `a`-torsion module is a module where every element is `a`-torsion. -/
-@[reducible, inline]
+@[reducible]
 def IsTorsionBy (a : R) :=
   ∀ ⦃x : M⦄, a • x = 0
 
 /-- A module where every element is `a`-torsion for all `a` in `s`. -/
-@[reducible, inline]
+@[reducible]
 def IsTorsionBySet (s : Set R) :=
   ∀ ⦃x : M⦄ ⦃a : s⦄, (a : R) • x = 0
 
 /-- An `S`-torsion module is a module where every element is `a`-torsion for some `a` in `S`. -/
-@[reducible, inline]
+@[reducible]
 def IsTorsion' (S : Type*) [SMul S M] :=
   ∀ ⦃x : M⦄, ∃ a : S, a • x = 0
 
 /-- A torsion module is a module where every element is `a`-torsion for some non-zero-divisor `a`.
 -/
-@[reducible, inline]
+@[reducible]
 def IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 
@@ -562,7 +562,7 @@ def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
     (by rwa [isTorsionBySet_iff_subset_annihilator] at hM) b
 
 /-- can't be an instance because `hM` can't be inferred -/
-@[reducible, inline]
+@[reducible]
 def IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M :=
   Module.IsTorsionBySet.hasSMul ?_
 where finally
@@ -608,7 +608,7 @@ theorem IsTorsionBySet.isSemisimpleModule_iff [I.IsTwoSided]
   (hM.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).symm
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
-@[reducible, inline]
+@[reducible]
 def IsTorsionBy.module [h : (Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M r) :
     Module (R ⧸ Ideal.span {r}) M :=
   IsTorsionBySet.module ?_

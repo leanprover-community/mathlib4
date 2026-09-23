@@ -30,12 +30,12 @@ The residue field at a prime ideal, defined to be the residue field of the local
 `Localization.Prime I`.
 We also provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 -/
-@[reducible, inline]
+@[reducible]
 def Ideal.ResidueField : Type _ :=
   IsLocalRing.ResidueField (Localization.AtPrime I)
 
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def Ideal.ResidueField.map (I : Ideal R) [I.IsPrime] (J : Ideal S) [J.IsPrime]
     (f : R →+* S) (hf : I = J.comap f) : I.ResidueField →+* J.ResidueField :=

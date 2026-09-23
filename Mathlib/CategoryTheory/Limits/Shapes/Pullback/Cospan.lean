@@ -35,66 +35,66 @@ namespace CategoryTheory.Limits
 
 /-- The type of objects for the diagram indexing a pullback, defined as a special case of
 `WidePullbackShape`. -/
-@[reducible, inline]
+@[reducible]
 def WalkingCospan : Type :=
   WidePullbackShape WalkingPair
 
 /-- The left point of the walking cospan. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def WalkingCospan.left : WalkingCospan :=
   some WalkingPair.left
 
 /-- The right point of the walking cospan. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def WalkingCospan.right : WalkingCospan :=
   some WalkingPair.right
 
 /-- The central point of the walking cospan. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def WalkingCospan.one : WalkingCospan :=
   none
 
 /-- The type of objects for the diagram indexing a pushout, defined as a special case of
 `WidePushoutShape`.
 -/
-@[reducible, inline]
+@[reducible]
 def WalkingSpan : Type :=
   WidePushoutShape WalkingPair
 
 /-- The left point of the walking span. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def WalkingSpan.left : WalkingSpan :=
   some WalkingPair.left
 
 /-- The right point of the walking span. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def WalkingSpan.right : WalkingSpan :=
   some WalkingPair.right
 
 /-- The central point of the walking span. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def WalkingSpan.zero : WalkingSpan :=
   none
 
 namespace WalkingCospan
 
 /-- The type of arrows for the diagram indexing a pullback. -/
-@[reducible, inline]
+@[reducible]
 def Hom : WalkingCospan → WalkingCospan → Type :=
   WidePullbackShape.Hom
 
 /-- The left arrow of the walking cospan. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def Hom.inl : left ⟶ one :=
   WidePullbackShape.Hom.term _
 
 /-- The right arrow of the walking cospan. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def Hom.inr : right ⟶ one :=
   WidePullbackShape.Hom.term _
 
 /-- The identity arrows of the walking cospan. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def Hom.id (X : WalkingCospan) : X ⟶ X :=
   WidePullbackShape.Hom.id X
 
@@ -106,22 +106,22 @@ end WalkingCospan
 namespace WalkingSpan
 
 /-- The type of arrows for the diagram indexing a pushout. -/
-@[reducible, inline]
+@[reducible]
 def Hom : WalkingSpan → WalkingSpan → Type :=
   WidePushoutShape.Hom
 
 /-- The left arrow of the walking span. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def Hom.fst : zero ⟶ left :=
   WidePushoutShape.Hom.init _
 
 /-- The right arrow of the walking span. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def Hom.snd : zero ⟶ right :=
   WidePushoutShape.Hom.init _
 
 /-- The identity arrows of the walking span. -/
-@[reducible, inline, match_pattern]
+@[reducible, match_pattern]
 def Hom.id (X : WalkingSpan) : X ⟶ X :=
   WidePushoutShape.Hom.id X
 

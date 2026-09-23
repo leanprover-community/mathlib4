@@ -66,7 +66,7 @@ instance (i : α) : HasBinaryBiproduct (K.op.X i) (K.op.X i) := by
 /-- The property that a homological complex `K` has a path object,
 i.e. that the morphism `K ⟶ K ⊞ K` induced by `𝟙 K` and `-𝟙 K`
 has a homotopy fiber. -/
-@[reducible, inline]
+@[reducible]
 def HasPathObject := HasHomotopyFiber (biprod.desc (𝟙 K) (-𝟙 K))
 
 instance [K.HasPathObject] :

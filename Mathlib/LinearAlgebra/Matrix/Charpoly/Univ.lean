@@ -48,7 +48,7 @@ see `Matrix.charpoly.univ_coeff_isHomogeneous`.
 By evaluating the coefficients at the entries of a matrix `M`,
 one obtains the characteristic polynomial of `M`,
 see `Matrix.charpoly.univ_map_eval₂Hom`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def univ : Polynomial (MvPolynomial (n × n) R) :=
   charpoly <| mvPolynomialX n n R

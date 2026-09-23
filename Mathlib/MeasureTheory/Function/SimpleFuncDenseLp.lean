@@ -477,7 +477,7 @@ attribute [local instance] simpleFunc.module simpleFunc.normedSpace simpleFunc.i
 section ToLp
 
 /-- Construct the equivalence class `[f]` of a simple function `f` satisfying `MemLp`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.MeasureTheory.SimpleFunc.toLp (f : α →ₛ E) (hf : MemLp f p μ) : Lp.simpleFunc E p μ :=
   ⟨hf.toLp f, ⟨f, rfl⟩⟩
 

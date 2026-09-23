@@ -248,7 +248,7 @@ initialize_simps_projections Category (-Hom)
 
 /-- `Category.mk'` is the dual of `Category.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[reducible, inline, to_dual existing mk]
+@[reducible, to_dual existing mk]
 def Category.mk' {obj : Type u} [CategoryStruct.{v} obj]
     (id_comp : ∀ {X Y : obj} (f : Y ⟶ X), f ≫ 𝟙 X = f)
     (comp_id : ∀ {X Y : obj} (f : Y ⟶ X), 𝟙 Y ≫ f = f)
@@ -262,12 +262,12 @@ example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
 the morphisms. It is useful for examples such as the category of types, or the category
 of groups, etc.
 -/
-@[reducible, inline]
+@[reducible]
 def LargeCategory (C : Type (u + 1)) : Type (u + 1) := Category.{u} C
 
 /-- A `SmallCategory` has objects and morphisms in the same universe level.
 -/
-@[reducible, inline]
+@[reducible]
 def SmallCategory (C : Type u) : Type (u + 1) := Category.{u} C
 
 section

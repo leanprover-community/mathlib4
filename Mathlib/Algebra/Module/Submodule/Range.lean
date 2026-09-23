@@ -152,7 +152,7 @@ lemma iterateRange_succ {f : M →ₗ[R] M} {n : ℕ} :
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible, inline]
+@[reducible]
 def rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : M →ₛₗ[τ₁₂] LinearMap.range f :=
   f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
 

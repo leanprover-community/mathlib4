@@ -25,7 +25,7 @@ open CategoryTheory
 variable (R : Type u) [CommRing R]
 
 /-- The category of finitely generated `R`-algebras. -/
-@[reducible, inline]
+@[reducible]
 def FGAlgCat := ObjectProperty.FullSubcategory
   fun A : CommAlgCat.{v, u} R ↦ Algebra.FiniteType R A
 

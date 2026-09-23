@@ -59,17 +59,17 @@ namespace Over
 variable {X : T}
 
 /-- The underlying object of an object in `Over X`. -/
-@[reducible, inline]
+@[reducible]
 def left (f : Over X) : T := Comma.left f
 
 /-- The morphism that is part of an object in `Over X`. -/
-@[reducible, inline]
+@[reducible]
 def hom (f : Over X) : f.left ⟶ X := Comma.hom f
 
 variable {f g : Over X} (φ : f ⟶ g)
 
 /-- The morphism that is part of a morphism in `Over X`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.left : f.left ⟶ g.left := CommaMorphism.left φ
 
 @[reassoc (attr := simp)]
@@ -653,17 +653,17 @@ namespace Under
 variable {X : T}
 
 /-- The underlying object of an object in `Under X`. -/
-@[reducible, inline]
+@[reducible]
 def right (f : Under X) : T := Comma.right f
 
 /-- The morphism that is part of an object in `Under X`. -/
-@[reducible, inline]
+@[reducible]
 def hom (f : Under X) : X ⟶ f.right := Comma.hom f
 
 variable {f g : Under X} (φ : f ⟶ g)
 
 /-- The morphism that is part of a morphism in `Under X`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.right : f.right ⟶ g.right := CommaMorphism.right φ
 
 @[reassoc (attr := simp)]

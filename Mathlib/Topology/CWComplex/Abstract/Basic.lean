@@ -59,7 +59,7 @@ namespace RelativeCWComplex
 
 /-- For each `n : ℕ`, this is the family of morphisms which sends the unique
 element of `Unit` to `diskBoundaryInclusion n : ∂𝔻 n ⟶ 𝔻 n`. -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 def basicCell (n : ℕ) (_ : Unit) : ∂𝔻 n ⟶ 𝔻 n := diskBoundaryInclusion n
 
 end RelativeCWComplex
@@ -69,11 +69,11 @@ open RelativeCWComplex in
 that `Y` identifies to the colimit of a functor `F : ℕ ⥤ TopCat` with that
 `F.obj 0 ≅ X` and for any `n : ℕ`, `F.obj (n + 1)` is obtained from `F.obj n`
 by attaching `n`-disks. -/
-@[reducible, inline]
+@[reducible]
 def RelativeCWComplex {X Y : TopCat.{u}} (f : X ⟶ Y) := RelativeCellComplex.{u} basicCell f
 
 /-- A CW-complex is a topological space such that `⊥_ _ ⟶ X` is a relative CW-complex. -/
-@[reducible, inline]
+@[reducible]
 def CWComplex (X : TopCat.{u}) := RelativeCWComplex (initial.to X)
 
 end TopCat

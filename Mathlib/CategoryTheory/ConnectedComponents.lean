@@ -85,16 +85,16 @@ def ConnectedComponents.objectProperty (j : ConnectedComponents J) :
     ObjectProperty J := fun k => Quotient.mk'' k = j
 
 /-- Given an index for a connected component, produce the actual component as a full subcategory. -/
-@[reducible, inline]
+@[reducible]
 def ConnectedComponents.Component (j : ConnectedComponents J) : Type u₁ :=
   j.objectProperty.FullSubcategory
 
 /-- The inclusion functor from a connected component to the whole category. -/
-@[reducible, inline]
+@[reducible]
 def ConnectedComponents.ι (j : ConnectedComponents J) : j.Component ⥤ J := j.objectProperty.ι
 
 /-- The connected component of an object in a category. -/
-@[reducible, inline]
+@[reducible]
 def ConnectedComponents.mk (j : J) : ConnectedComponents J :=
   Quotient.mk'' j
 
@@ -135,7 +135,7 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
 category structure.
 This category is equivalent to `J`.
 -/
-@[reducible, inline]
+@[reducible]
 def Decomposed (J : Type u₁) [Category.{v₁} J] :=
   Σ j : ConnectedComponents J, j.Component
 
@@ -144,7 +144,7 @@ def Decomposed (J : Type u₁) [Category.{v₁} J] :=
 The inclusion of each component into the decomposed category. This is just `sigma.incl` but having
 this abbreviation helps guide typeclass search to get the right category instance on `decomposed J`.
 -/
-@[reducible, inline]
+@[reducible]
 def inclusion (j : ConnectedComponents J) : j.Component ⥤ Decomposed J :=
   Sigma.incl _
 

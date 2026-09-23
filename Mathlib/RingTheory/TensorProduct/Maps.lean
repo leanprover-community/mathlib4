@@ -603,12 +603,12 @@ lemma comm_comp_map_apply (f : A →ₐ[R] C) (g : B →ₐ[R] D) (x) :
 
 variable (A) in
 /-- `lTensor A g : A ⊗ B →ₐ A ⊗ D` is the natural algebra morphism induced by `g : B →ₐ D`. -/
-@[reducible, inline]
+@[reducible]
 def lTensor (g : B →ₐ[R] D) : (A ⊗[R] B) →ₐ[S] (A ⊗[R] D) := map (.id S A) g
 
 variable (B) in
 /-- `rTensor B f : A ⊗ B →ₐ C ⊗ B` is the natural algebra morphism induced by `f : A →ₐ C`. -/
-@[reducible, inline]
+@[reducible]
 def rTensor (f : A →ₐ[S] C) : A ⊗[R] B →ₐ[S] C ⊗[R] B := map f (.id R B)
 
 /-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
@@ -735,7 +735,7 @@ variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 homomorphism.
 
 This is just a special case of `Algebra.TensorProduct.lift` for when `C` is commutative. -/
-@[reducible, inline]
+@[reducible]
 def productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   lift f g (fun _ _ => Commute.all _ _)
 

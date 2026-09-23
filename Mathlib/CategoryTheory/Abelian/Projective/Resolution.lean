@@ -199,7 +199,7 @@ end Abelian
 end ProjectiveResolution
 
 /-- An arbitrarily chosen projective resolution of an object. -/
-@[reducible, inline]
+@[reducible]
 def projectiveResolution (Z : C) [HasZeroObject C]
     [HasZeroMorphisms C] [HasProjectiveResolution Z] :
     ProjectiveResolution Z :=

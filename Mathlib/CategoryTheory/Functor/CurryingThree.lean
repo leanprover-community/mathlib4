@@ -34,11 +34,11 @@ def currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E 
   currying.trans (currying.trans (prod.associativity C₁ C₂ C₃).congrLeft)
 
 /-- Uncurrying a functor in three variables. -/
-@[reducible, inline]
+@[reducible]
 def uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E := currying₃.functor
 
 /-- Currying a functor in three variables. -/
-@[reducible, inline, simps! obj_map_app_app obj_obj_map_app obj_obj_obj_map map_app_app_app]
+@[reducible, simps! obj_map_app_app obj_obj_map_app obj_obj_obj_map map_app_app_app]
 def curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E := currying₃.inverse
 
 /-- Uncurrying functors in three variables gives a fully faithful functor. -/

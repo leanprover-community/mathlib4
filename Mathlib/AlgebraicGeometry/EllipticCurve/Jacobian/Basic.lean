@@ -43,7 +43,7 @@ group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.le
 
 All definitions and lemmas for Weierstrass curves in Jacobian coordinates live in the namespace
 `WeierstrassCurve.Jacobian` to distinguish them from those in other coordinates. This is simply an
-@[reducible, inline]
+@[reducible]
 defiation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toJacobian`. This
 can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Jacobian.toAffine`.
 
@@ -109,19 +109,19 @@ namespace WeierstrassCurve
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
-@[reducible, inline]
+@[reducible]
 def Jacobian : Type r :=
   WeierstrassCurve R
 
 /-- The conversion from a Weierstrass curve to Jacobian coordinates. -/
-@[reducible, inline]
+@[reducible]
 def toJacobian (W : WeierstrassCurve R) : Jacobian R :=
   W
 
 namespace Jacobian
 
 /-- The conversion from a Weierstrass curve in Jacobian coordinates to affine coordinates. -/
-@[reducible, inline]
+@[reducible]
 def toAffine (W' : Jacobian R) : Affine R :=
   W'
 
@@ -163,7 +163,7 @@ scoped instance : Setoid <| Fin 3 → R :=
 
 variable (R) in
 /-- The equivalence class of a Jacobian point representative on a Weierstrass curve. -/
-@[reducible, inline]
+@[reducible]
 def PointClass : Type r :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
@@ -512,13 +512,13 @@ lemma nonsingularLift_some (a b : R) :
 variable (W') (f : R →+* S)
 
 /-- The Weierstrass curve in Jacobian coordinates mapped over a ring homomorphism `f : R →+* S`. -/
-@[reducible, inline]
+@[reducible]
 def map : Jacobian S :=
   WeierstrassCurve.map W' f
 
 variable (S) in
 /-- The Weierstrass curve in Jacobian coordinates base changed to an algebra `S` over `R`. -/
-@[reducible, inline]
+@[reducible]
 def baseChange [Algebra R S] : Jacobian S :=
   WeierstrassCurve.baseChange W' S
 

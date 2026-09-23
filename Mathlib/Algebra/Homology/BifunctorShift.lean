@@ -49,7 +49,7 @@ variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂]
 
 /-- The condition that `((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂` has
 a total cochain complex. -/
-@[reducible, inline]
+@[reducible]
 def HasMapBifunctor := HomologicalComplex.HasMapBifunctor K₁ K₂ F (ComplexShape.up ℤ)
 
 /-- Given `K₁ : CochainComplex C₁ ℤ`, `K₂ : CochainComplex C₂ ℤ`,

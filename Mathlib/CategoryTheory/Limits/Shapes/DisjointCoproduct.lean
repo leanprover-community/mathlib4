@@ -145,7 +145,7 @@ end
 
 /-- The binary coproduct of `X` and `Y` is disjoint if the coproduct of the family `{X, Y}` is
 disjoint. -/
-@[reducible, inline]
+@[reducible]
 def BinaryCoproductDisjoint (X Y : C) :=
   CoproductDisjoint (fun j : WalkingPair ↦ (j.casesOn X Y : C))
 
@@ -233,7 +233,7 @@ class CoproductsOfShapeDisjoint (C : Type*) [Category* C] (ι : Type*) : Prop wh
   coproductDisjoint (X : ι → C) : CoproductDisjoint X
 
 /-- `C` has disjoint binary coproducts if every binary coproduct is disjoint. -/
-@[reducible, inline]
+@[reducible]
 def BinaryCoproductsDisjoint (C : Type*) [Category* C] : Prop :=
   CoproductsOfShapeDisjoint C WalkingPair
 

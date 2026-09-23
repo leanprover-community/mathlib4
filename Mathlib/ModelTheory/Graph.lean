@@ -50,7 +50,7 @@ protected def graph : Language := ⟨fun _ => Empty, graphRel⟩
   deriving IsRelational
 
 /-- The symbol representing the adjacency relation. -/
-@[reducible, inline]
+@[reducible]
 def adj : Language.graph.Relations 2 := .adj
 
 /-- Any simple graph can be thought of as a structure in the language of graphs. -/

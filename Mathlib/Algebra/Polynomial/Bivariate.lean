@@ -41,11 +41,11 @@ section Semiring
 variable [Semiring R]
 
 /-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
-@[reducible, inline]
+@[reducible]
 def evalEval (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
 
 /-- A constant viewed as a polynomial in two variables. -/
-@[reducible, inline]
+@[reducible]
 def CC (r : R) : R[X][Y] := C (C r)
 
 lemma evalEval_C (x y : R) (p : R[X]) : (C p).evalEval x y = p.eval x := by
@@ -229,7 +229,7 @@ def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
 
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, `aevalAeval x y` is
 the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
-@[reducible, inline]
+@[reducible]
 def aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
   aevalAevalEquiv R A ⟨x, y⟩
 

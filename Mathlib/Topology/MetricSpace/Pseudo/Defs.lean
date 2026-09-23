@@ -80,7 +80,7 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
   .ofFun dist dist_self dist_comm dist_triangle ofDist_aux
 
 /-- Construct a bornology from a distance function and metric space axioms. -/
-@[reducible, inline]
+@[reducible]
 def Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
     (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C }
@@ -1023,7 +1023,7 @@ theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
   { m with
@@ -1046,7 +1046,7 @@ provably (but typically non-definitionaly) equal to some given topological struc
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def PseudoMetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : PseudoMetricSpace γ)
     (H : U = m.toUniformSpace.toTopologicalSpace) : PseudoMetricSpace γ :=
   @PseudoMetricSpace.replaceUniformity γ (m.toUniformSpace.replaceTopology H) m rfl
@@ -1061,7 +1061,7 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
 push-forward of the edistance to reals. See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetricSpace X]
     (dist : X → X → ℝ) (dist_nonneg : ∀ x y, 0 ≤ dist x y)
     (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
@@ -1082,7 +1082,7 @@ def PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetricS
 /-- One gets a pseudometric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the pseudometric space and the emetric space. -/
-@[reducible, inline]
+@[reducible]
 def PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
     (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
@@ -1092,7 +1092,7 @@ def PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
     PseudoMetricSpace α :=

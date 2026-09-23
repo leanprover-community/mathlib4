@@ -152,7 +152,7 @@ def baseDomain := ⨆ c, u.stratum c
 
 /-- `ArchimedeanStrata.stratum` as a submodule of
 `ArchimedeanStrata.baseDomain`. -/
-@[reducible, inline]
+@[reducible]
 def stratum' (c : FiniteArchimedeanClass M) : Submodule K (baseDomain u) :=
   (u.stratum c).comap u.baseDomain.subtype
 
@@ -371,7 +371,7 @@ theorem isPartial_baseEmbedding [IsOrderedAddMonoid R] : IsPartial seed seed.bas
 end Seed
 
 /-- The type of all partial Hahn embeddings. -/
-@[reducible, inline]
+@[reducible]
 def Partial := {f : M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧ // IsPartial seed f}
 
 namespace Partial

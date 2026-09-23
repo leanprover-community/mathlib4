@@ -39,7 +39,7 @@ theorem reverseRec_concat {motive : List α → Sort*} (x : α) (xs : List α) (
   grind [reverseRec, cases List]
 
 /-- Like `reverseRec`, but with the list parameter placed first. -/
-@[reducible, inline, elab_as_elim]
+@[reducible, elab_as_elim]
 def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : motive l :=
   reverseRec nil append_singleton l
@@ -93,7 +93,7 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
   grind [bidirectionalRec, cases List]
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
-@[reducible, inline, elab_as_elim]
+@[reducible, elab_as_elim]
 def bidirectionalRecOn {C : List α → Sort*} (l : List α) (H0 : C []) (H1 : ∀ a : α, C [a])
     (Hn : ∀ (a : α) (l : List α) (b : α), C l → C (a :: (l ++ [b]))) : C l :=
   bidirectionalRec H0 H1 Hn l
@@ -132,7 +132,7 @@ A dependent recursion principle for nonempty lists. Useful for dealing with
 operations like `List.head` which are not defined on the empty list.
 Same as `List.recNeNil`, with a more convenient argument order.
 -/
-@[reducible, inline, elab_as_elim, simp]
+@[reducible, elab_as_elim, simp]
 def recOnNeNil {motive : (l : List α) → l ≠ [] → Sort*} (l : List α) (h : l ≠ [])
     (singleton : ∀ x, motive [x] (cons_ne_nil x []))
     (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :

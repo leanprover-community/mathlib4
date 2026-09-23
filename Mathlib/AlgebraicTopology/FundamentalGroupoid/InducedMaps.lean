@@ -133,7 +133,7 @@ open unitInterval (uhpath01)
 section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
-@[reducible, inline]
+@[reducible]
 def hcast {X : TopCat.{u}} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
   eqToHom <| FundamentalGroupoid.ext hx
 
@@ -212,7 +212,7 @@ theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x
 
 /-- An abbreviation for `prodToProdTop`, with some types already in place to help the
 typechecker. In particular, the first path should be on the ulifted unit interval. -/
-@[reducible, inline]
+@[reducible]
 def prodToProdTopI {a₁ a₂ : TopCat.of (ULift I)} {b₁ b₂ : X} (p₁ : fromTop a₁ ⟶ fromTop a₂)
     (p₂ : fromTop b₁ ⟶ fromTop b₂) :=
   (prodToProdTop ↧(ULift I) X).map (X := (⟨a₁⟩, ⟨b₁⟩)) (Y := (⟨a₂⟩, ⟨b₂⟩)) (p₁, p₂)

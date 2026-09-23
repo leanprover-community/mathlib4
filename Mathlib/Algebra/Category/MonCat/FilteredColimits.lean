@@ -45,7 +45,7 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.
 -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
       /-- The colimit of `F ⋙ forget AddMon` in the category of types.
       In the following, we will construct an additive monoid structure on `M`. -/]
 def M := (F ⋙ forget MonCat).ColimitType

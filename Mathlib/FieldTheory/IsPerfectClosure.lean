@@ -188,7 +188,7 @@ In this case the kernel of `i` is equal to the `p`-nilradical of `K`
 Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is present. A caveat is
 that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
 `PerfectRing` which has `ExpChar` as a prerequisite. -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 def IsPerfectClosure [ExpChar L p] [PerfectRing L p] := IsPRadical i p
 
 /-- If `i : K →+* L` is a ring homomorphism of exponential characteristic `p` rings, such that `L`

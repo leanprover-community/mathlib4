@@ -47,7 +47,7 @@ attribute [coe] AlgCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `AlgCat R`. -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type v) [Ring X] [Algebra R X] : AlgCat.{v} R :=
   ⟨X⟩
 
@@ -78,13 +78,13 @@ instance : ConcreteCategory (AlgCat.{v} R) (· →ₐ[R] ·) where
 
 variable {R} in
 /-- Turn a morphism in `AlgCat` back into an `AlgHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {A B : AlgCat.{v} R} (f : Hom A B) :=
   ConcreteCategory.hom (C := AlgCat R) f
 
 variable {R} in
 /-- Typecheck an `AlgHom` as a morphism in `AlgCat`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {A B : Type v} [Ring A] [Ring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     of R A ⟶ of R B :=
   ConcreteCategory.ofHom (C := AlgCat R) f

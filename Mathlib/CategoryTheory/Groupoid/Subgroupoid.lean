@@ -531,7 +531,7 @@ section Thin
 
 /-- A subgroupoid is thin (`CategoryTheory.Subgroupoid.IsThin`) if it has at most one arrow between
 any two vertices. -/
-@[reducible, inline]
+@[reducible]
 def IsThin :=
   Quiver.IsThin S.objs
 

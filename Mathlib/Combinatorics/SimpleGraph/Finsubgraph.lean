@@ -44,12 +44,12 @@ variable {V : Type u} {W : Type v} {G : SimpleGraph V} {F : SimpleGraph W}
 namespace SimpleGraph
 
 /-- The subtype of `G.subgraph` comprising those subgraphs with finite vertex sets. -/
-@[reducible, inline]
+@[reducible]
 def Finsubgraph (G : SimpleGraph V) :=
   { G' : G.Subgraph // G'.verts.Finite }
 
 /-- A graph homomorphism from a finite subgraph of G to F. -/
-@[reducible, inline]
+@[reducible]
 def FinsubgraphHom (G' : G.Finsubgraph) (F : SimpleGraph W) :=
   G'.val.coe →g F
 

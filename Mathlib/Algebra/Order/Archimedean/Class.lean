@@ -657,14 +657,14 @@ theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
 
 /-- An open ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /--An open ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`. -/]
 noncomputable
 def ballSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ioi c)
 
 /-- A closed ball defined by `MulArchimedeanClass.subgroup` of `UpperSet.Ici c`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- A closed ball defined by `ArchimedeanClass.addSubgroup` of `UpperSet.Ici c`. -/]
 noncomputable
 def closedBallSubgroup (c : MulArchimedeanClass M) := subgroup (UpperSet.Ici c)
@@ -707,7 +707,7 @@ It is defined as the subtype of non-top elements of `MulArchimedeanClass M`
 (`⊤ : MulArchimedeanClass M` is the archimedean class of `1`).
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 FiniteArchimedeanClass
 /-- `FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
 additive archimedean equivalence, where two elements `a` and `b` are in the same class iff

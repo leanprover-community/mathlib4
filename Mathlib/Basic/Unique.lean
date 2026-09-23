@@ -75,7 +75,7 @@ arbitrarily invent the `a : α` term. Nevertheless, these instances are all
 equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
@@ -136,7 +136,7 @@ instance subsingleton_unique : Subsingleton (Unique α) :=
 
 /-- Construct `Unique` from `Inhabited` and `Subsingleton`. Making this an instance would create
 a loop in the class inheritance graph. -/
-@[reducible, inline]
+@[reducible]
 def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
   { h₁ with uniq := fun _ ↦ Subsingleton.elim _ _ }
 

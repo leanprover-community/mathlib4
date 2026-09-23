@@ -320,7 +320,7 @@ def sections (M : PresheafOfModules.{v} R) : Type _ := (M.presheaf ⋙ forget _)
 
 /-- Given a presheaf of modules `M`, `s : M.sections` and `X : Cᵒᵖ`, this is the induced
 element in `M.obj X`. -/
-@[reducible, inline]
+@[reducible]
 def sections.eval {M : PresheafOfModules.{v} R} (s : M.sections) (X : Cᵒᵖ) : M.obj X := s.1 X
 
 @[simp]

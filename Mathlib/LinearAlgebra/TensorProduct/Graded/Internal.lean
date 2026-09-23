@@ -110,7 +110,7 @@ theorem hom_ext {M} [AddCommMonoid M] [Module R M] ⦃f g : 𝒜 ᵍ⊗[R] ℬ �
 
 variable (R) {𝒜 ℬ} in
 /-- The graded tensor product of two elements of graded rings. -/
-@[reducible, inline]
+@[reducible]
 def tmul (a : A) (b : B) : 𝒜 ᵍ⊗[R] ℬ := of R 𝒜 ℬ (a ⊗ₜ b)
 
 @[inherit_doc]

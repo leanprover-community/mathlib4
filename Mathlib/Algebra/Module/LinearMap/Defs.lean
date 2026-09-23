@@ -119,7 +119,7 @@ end
 
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
-@[reducible, inline]
+@[reducible]
 def LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
     [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
     [FunLike F M M₂] :=

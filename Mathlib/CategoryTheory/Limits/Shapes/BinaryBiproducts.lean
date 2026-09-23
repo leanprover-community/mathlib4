@@ -235,7 +235,7 @@ def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) w
     wι := fun i => WalkingPair.casesOn i f.winl f.winr }
 
 /-- A shorthand for `toBiconeFunctor.obj` -/
-@[reducible, inline]
+@[reducible]
 def toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
   toBiconeFunctor.obj b
 
@@ -295,7 +295,7 @@ def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone
     { hom := f.hom }
 
 /-- A shorthand for `toBinaryBiconeFunctor.obj` -/
-@[reducible, inline]
+@[reducible]
 def toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y :=
   toBinaryBiconeFunctor.obj b
 
@@ -483,7 +483,7 @@ def biprodIso (X Y : C) [HasBinaryBiproduct X Y] : Limits.prod X Y ≅ Limits.co
     IsColimit.coconePointUniqueUpToIso (BinaryBiproduct.isColimit X Y) (colimit.isColimit _)
 
 /-- An arbitrary choice of biproduct of a pair of objects. -/
-@[reducible, inline]
+@[reducible]
 def biprod (X Y : C) [HasBinaryBiproduct X Y] :=
   (BinaryBiproduct.bicone X Y).pt
 
@@ -491,22 +491,22 @@ def biprod (X Y : C) [HasBinaryBiproduct X Y] :=
 notation:20 X " ⊞ " Y:20 => biprod X Y
 
 /-- The projection onto the first summand of a binary biproduct. -/
-@[reducible, inline]
+@[reducible]
 def biprod.fst {X Y : C} [HasBinaryBiproduct X Y] : X ⊞ Y ⟶ X :=
   (BinaryBiproduct.bicone X Y).fst
 
 /-- The projection onto the second summand of a binary biproduct. -/
-@[reducible, inline]
+@[reducible]
 def biprod.snd {X Y : C} [HasBinaryBiproduct X Y] : X ⊞ Y ⟶ Y :=
   (BinaryBiproduct.bicone X Y).snd
 
 /-- The inclusion into the first summand of a binary biproduct. -/
-@[reducible, inline]
+@[reducible]
 def biprod.inl {X Y : C} [HasBinaryBiproduct X Y] : X ⟶ X ⊞ Y :=
   (BinaryBiproduct.bicone X Y).inl
 
 /-- The inclusion into the second summand of a binary biproduct. -/
-@[reducible, inline]
+@[reducible]
 def biprod.inr {X Y : C} [HasBinaryBiproduct X Y] : Y ⟶ X ⊞ Y :=
   (BinaryBiproduct.bicone X Y).inr
 
@@ -546,13 +546,13 @@ theorem biprod.inr_snd {X Y : C} [HasBinaryBiproduct X Y] :
 
 /-- Given a pair of maps into the summands of a binary biproduct,
 we obtain a map into the binary biproduct. -/
-@[reducible, inline]
+@[reducible]
 def biprod.lift {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⊞ Y :=
   BinaryFan.IsLimit.lift (BinaryBiproduct.isLimit X Y) f g
 
 /-- Given a pair of maps out of the summands of a binary biproduct,
 we obtain a map out of the binary biproduct. -/
-@[reducible, inline]
+@[reducible]
 def biprod.desc {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) : X ⊞ Y ⟶ W :=
   BinaryCofan.IsColimit.desc (BinaryBiproduct.isColimit X Y) f g
 
@@ -594,7 +594,7 @@ instance biprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryBiproduct X Y] (f : 
 
 /-- Given a pair of maps between the summands of a pair of binary biproducts,
 we obtain a map between the binary biproducts. -/
-@[reducible, inline]
+@[reducible]
 def biprod.map {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : W ⊞ X ⟶ Y ⊞ Z :=
   IsLimit.map (BinaryBiproduct.bicone W X).toCone (BinaryBiproduct.isLimit Y Z)
@@ -602,7 +602,7 @@ def biprod.map {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] (
 
 /-- An alternative to `biprod.map` constructed via colimits.
 This construction only exists in order to show it is equal to `biprod.map`. -/
-@[reducible, inline]
+@[reducible]
 def biprod.map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) : W ⊞ X ⟶ Y ⊞ Z :=
   IsColimit.map (BinaryBiproduct.isColimit W X) (BinaryBiproduct.bicone Y Z).toCocone

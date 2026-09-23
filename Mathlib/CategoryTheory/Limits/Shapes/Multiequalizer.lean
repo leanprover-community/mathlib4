@@ -507,12 +507,12 @@ end MultispanIndex
 variable {C : Type u} [Category.{v} C]
 
 /-- A multifork is a cone over a multicospan. -/
-@[reducible, inline]
+@[reducible]
 def Multifork {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :=
   Cone I.multicospan
 
 /-- A multicofork is a cocone over a multispan. -/
-@[reducible, inline]
+@[reducible]
 def Multicofork {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) :=
   Cocone I.multispan
 
@@ -1039,26 +1039,26 @@ end MultispanIndex
 
 /-- For `I : MulticospanIndex J C`, we say that it has a multiequalizer if the associated
   multicospan has a limit. -/
-@[reducible, inline]
+@[reducible]
 def HasMultiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :=
   HasLimit I.multicospan
 
 noncomputable section
 
 /-- The multiequalizer of `I : MulticospanIndex J C`. -/
-@[reducible, inline]
+@[reducible]
 def multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
     [HasMultiequalizer I] : C :=
   limit I.multicospan
 
 /-- For `I : MultispanIndex J C`, we say that it has a multicoequalizer if
   the associated multicospan has a limit. -/
-@[reducible, inline]
+@[reducible]
 def HasMulticoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) :=
   HasColimit I.multispan
 
 /-- The multicoequalizer of `I : MultispanIndex J C`. -/
-@[reducible, inline]
+@[reducible]
 def multicoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     [HasMulticoequalizer I] : C :=
   colimit I.multispan
@@ -1068,12 +1068,12 @@ namespace Multiequalizer
 variable {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) [HasMultiequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
-@[reducible, inline]
+@[reducible]
 def ι (a : J.L) : multiequalizer I ⟶ I.left a :=
   limit.π _ (WalkingMulticospan.left a)
 
 /-- The multifork associated to the multiequalizer. -/
-@[reducible, inline]
+@[reducible]
 def multifork : Multifork I :=
   limit.cone _
 
@@ -1092,7 +1092,7 @@ theorem condition (b) :
   Multifork.condition _ _
 
 /-- Construct a morphism to the multiequalizer from its universal property. -/
-@[reducible, inline]
+@[reducible]
 def lift (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (J.fst b) ≫ I.fst b = k (J.snd b) ≫ I.snd b) : W ⟶ multiequalizer I :=
   limit.lift _ (Multifork.ofι I _ k h)
@@ -1139,12 +1139,12 @@ namespace Multicoequalizer
 variable {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) [HasMulticoequalizer I]
 
 /-- The canonical map from the multiequalizer to the objects on the left. -/
-@[reducible, inline]
+@[reducible]
 def π (b : J.R) : I.right b ⟶ multicoequalizer I :=
   colimit.ι I.multispan (WalkingMultispan.right _)
 
 /-- The multicofork associated to the multicoequalizer. -/
-@[reducible, inline]
+@[reducible]
 def multicofork : Multicofork I :=
   colimit.cocone _
 
@@ -1168,7 +1168,7 @@ theorem condition (a) :
   Multicofork.condition _ _
 
 /-- Construct a morphism from the multicoequalizer from its universal property. -/
-@[reducible, inline]
+@[reducible]
 def desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (J.fst a) = I.snd a ≫ k (J.snd a)) : multicoequalizer I ⟶ W :=
   colimit.desc _ (Multicofork.ofπ I _ k h)

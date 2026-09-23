@@ -112,7 +112,7 @@ deriving Category
 variable {C X}
 
 /-- The underlying presheaf of a sheaf -/
-@[reducible, inline]
+@[reducible]
 def Sheaf.presheaf (F : X.Sheaf C) : TopCat.Presheaf C X :=
   F.1
 

@@ -39,7 +39,7 @@ instance : CoeSort Pointed Type* :=
   ⟨Pointed.X⟩
 
 /-- Turns a point into a pointed type. -/
-@[reducible, inline]
+@[reducible]
 def of {X : Type*} (point : X) : Pointed :=
   ⟨X, point⟩
 

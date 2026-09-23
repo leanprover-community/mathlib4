@@ -58,7 +58,7 @@ section Equalizer
 variable (f g : X ⟶ Y) [HasEqualizer f g]
 
 /-- The equalizer of morphisms `f g : X ⟶ Y` as a `Subobject X`. -/
-@[reducible, inline]
+@[reducible]
 def equalizerSubobject : Subobject X :=
   Subobject.mk (equalizer.ι f g)
 
@@ -118,7 +118,7 @@ section Kernel
 variable [HasZeroMorphisms C] (f : X ⟶ Y) [HasKernel f]
 
 /-- The kernel of a morphism `f : X ⟶ Y` as a `Subobject X`. -/
-@[reducible, inline]
+@[reducible]
 def kernelSubobject : Subobject X :=
   Subobject.mk (kernel.ι f)
 
@@ -312,7 +312,7 @@ section Image
 variable (f : X ⟶ Y) [HasImage f]
 
 /-- The image of a morphism `f g : X ⟶ Y` as a `Subobject Y`. -/
-@[reducible, inline]
+@[reducible]
 def imageSubobject : Subobject Y :=
   Subobject.mk (image.ι f)
 

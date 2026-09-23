@@ -68,7 +68,7 @@ instance : Subsingleton (Decomposition ℳ) :=
 
 /-- A convenience method to construct a decomposition from an `AddMonoidHom`, such that the proofs
 of left and right inverse can be constructed via `ext`. -/
-@[reducible, inline]
+@[reducible]
 def Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
     (h_left_inv : (DirectSum.coeAddMonoidHom ℳ).comp decompose = .id _)
     (h_right_inv : decompose.comp (DirectSum.coeAddMonoidHom ℳ) = .id _) : Decomposition ℳ where
@@ -248,7 +248,7 @@ variable (ℳ : ι → Submodule R M)
 
 /-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
 of left and right inverse can be constructed via `ext`. -/
-@[reducible, inline]
+@[reducible]
 def Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
     (h_left_inv : DirectSum.coeLinearMap ℳ ∘ₗ decompose = .id)
     (h_right_inv : decompose ∘ₗ DirectSum.coeLinearMap ℳ = .id) : Decomposition ℳ where

@@ -31,7 +31,7 @@ variable {R E F G : Type*}
 local notation3 "R≥0" => Nonneg R
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
-@[reducible, inline]
+@[reducible]
 def PointedCone (R E)
     [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E] :=
   Submodule (Nonneg R) E
@@ -65,12 +65,12 @@ lemma ofSubmodule_lt_ofSubmodule {S T : Submodule R E} : ofSubmodule S < ofSubmo
   .rfl
 
 /-- Coercion from submodules to pointed cones as an order embedding. -/
-@[reducible, inline]
+@[reducible]
 def ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
   restrictScalarsEmbedding ..
 
 /-- Coercion from submodules to pointed cones as a lattice homomorphism. -/
-@[reducible, inline]
+@[reducible]
 def ofSubmoduleLatticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
   restrictScalarsLatticeHom ..
 
@@ -188,7 +188,7 @@ variable (R) in
 
 Pointed cones being defined as submodules over nonnegative scalars, this is implemented as
 the submodule span of `s` w.r.t. nonnegative scalars. -/
-@[reducible, inline]
+@[reducible]
 def hull (s : Set E) : PointedCone R E := span R≥0 s
 
 lemma subset_hull {s : Set E} : s ⊆ PointedCone.hull R s := subset_span
@@ -403,7 +403,7 @@ variable {E : Type*} [AddCommGroup E] [Module R E]
 variable {C : PointedCone R E} {x : E}
 
 /-- A cone that is closed under negation forms a submodule. -/
-@[reducible, inline]
+@[reducible]
 def toSubmodule (hC : IsSelfNeg C) : Submodule R E where
   __ := C
   smul_mem' a x hx := by

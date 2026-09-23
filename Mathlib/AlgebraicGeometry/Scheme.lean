@@ -68,7 +68,7 @@ meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   `(↥$(← delab))
 
 /-- The type of open sets of a scheme. -/
-@[reducible, inline]
+@[reducible]
 def Opens (X : Scheme) : Type* := TopologicalSpace.Opens X
 
 /-- A morphism between schemes is a morphism between the underlying locally ringed spaces. -/
@@ -76,7 +76,7 @@ structure Hom (X Y : Scheme)
   extends toLRSHom' : X.toLocallyRingedSpace.Hom Y.toLocallyRingedSpace where
 
 /-- Cast a morphism of schemes into morphisms of local ringed spaces. -/
-@[reducible, inline]
+@[reducible]
 def Hom.toLRSHom {X Y : Scheme.{u}} (f : X.Hom Y) :
     X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace :=
   f.toLRSHom'
@@ -178,13 +178,13 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y) {U U' : Y.Opens} {V V' : X.Opens}
 this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`.
 
 This is treated as a suffix in lemma names. -/
-@[reducible, inline]
+@[reducible]
 def app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.c.app (op U)
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`.
 This is treated as a suffix in lemma names. -/
-@[reducible, inline]
+@[reducible]
 def appTop : Γ(Y, ⊤) ⟶ Γ(X, ⊤) :=
   f.app ⊤
 

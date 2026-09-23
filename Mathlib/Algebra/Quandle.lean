@@ -381,7 +381,7 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
 
 /-- The conjugation quandle of a group.  Each element of the group acts by
 the corresponding inner automorphism. -/
-@[reducible, inline]
+@[reducible]
 def Conj (G : Type*) := G
 
 instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G) where

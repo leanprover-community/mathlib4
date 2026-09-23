@@ -142,7 +142,7 @@ end Diag
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-@[reducible, inline]
+@[reducible]
 def onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 
 @[inherit_doc onFun]
@@ -152,7 +152,7 @@ scoped infixl:2 " on " => onFun
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
 in the reverse order. `swap f y x = f x y`. -/
-@[reducible, inline]
+@[reducible]
 def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl

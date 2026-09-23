@@ -344,7 +344,7 @@ theorem image_inter_image_iff (U V : Set α) :
 variable (G α)
 
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
     /-- The quotient by `AddAction.orbitRel`, given a name to enable dot notation. -/]
 def orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α

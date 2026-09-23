@@ -34,12 +34,12 @@ namespace Square
 variable (sq : Square C)
 
 /-- The pullback cone attached to a commutative square. -/
-@[reducible, inline]
+@[reducible]
 def pullbackCone : PullbackCone sq.f₂₄ sq.f₃₄ :=
   PullbackCone.mk sq.f₁₂ sq.f₁₃ sq.fac
 
 /-- The pushout cocone attached to a commutative square. -/
-@[reducible, inline]
+@[reducible]
 def pushoutCocone : PushoutCocone sq.f₁₂ sq.f₁₃ :=
   PushoutCocone.mk sq.f₂₄ sq.f₃₄ sq.fac
 

@@ -41,7 +41,7 @@ def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ �
 
 variable {J₁ J₂ C}
 /-- An abbreviation for the action of `externalProductBifunctor J₁ J₂ C` on objects. -/
-@[reducible, inline]
+@[reducible]
 def externalProduct (F₁ : J₁ ⥤ C) (F₂ : J₂ ⥤ C) :=
   externalProductBifunctor J₁ J₂ C |>.obj (F₁, F₂)
 

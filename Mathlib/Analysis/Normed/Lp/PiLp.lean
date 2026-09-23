@@ -84,7 +84,7 @@ noncomputable section
 already endowed with the `L^∞` distance, we need the type synonym to avoid confusing typeclass
 resolution. Also, we let it depend on `p`, to get a whole family of type on which we can put
 different distances. -/
-@[reducible, inline]
+@[reducible]
 def PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
   WithLp p (∀ i : ι, α i)
 
@@ -440,7 +440,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-@[reducible, inline]
+@[reducible]
 def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
@@ -1234,7 +1234,7 @@ variable [Fact (1 ≤ p)] [Fintype ι]
 /-- This definition allows to endow `Π i, α i` with the Lp distance with the uniformity and
 bornology being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with
 the Lp distance. -/
-@[reducible, inline]
+@[reducible]
 def pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] :
     PseudoMetricSpace (Π i, α i) :=
   (isUniformInducing_toLp p α).comapPseudoMetricSpace.replaceBornology
@@ -1248,7 +1248,7 @@ lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] (x y : Π i, 
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-@[reducible, inline]
+@[reducible]
 def seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
     SeminormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖
@@ -1284,7 +1284,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
 
 /-- This definition allows to endow `Π i, α i` with a normed space structure corresponding to
 the Lp norm. It is useful for type synonyms of `Π i, α i`. -/
-@[reducible, inline]
+@[reducible]
 def normedSpaceSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [NormedField R]
     [∀ i, NormedSpace R (α i)] :
@@ -1297,7 +1297,7 @@ def normedSpaceSeminormedAddCommGroupToPi
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-@[reducible, inline]
+@[reducible]
 def normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
     NormedAddCommGroup (Π i, α i) where
   norm x := ‖toLp p x‖

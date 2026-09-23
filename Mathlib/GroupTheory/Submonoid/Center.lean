@@ -65,7 +65,7 @@ variable {M N} [MulOneClass N]
 
 This is not an instance as it forms a non-defeq diamond with `Submonoid.toMonoid` in the `npow`
 field. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The center of an addition with zero is commutative and associative. -/]
 def center.commMonoid' : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }

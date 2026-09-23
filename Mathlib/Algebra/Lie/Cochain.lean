@@ -40,7 +40,7 @@ variable (L : Type*) [LieRing L] [LieAlgebra R L]
 variable (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- Lie algebra 1-cochains over `L` with coefficients in the module `M`. -/
-@[reducible, inline]
+@[reducible]
 def oneCochain := L →ₗ[R] M
 
 /-- Lie algebra 2-cochains over `L` with coefficients in the module `M`. -/

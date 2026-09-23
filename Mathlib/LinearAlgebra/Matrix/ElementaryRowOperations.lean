@@ -108,7 +108,7 @@ end GeneralLinearGroup
 section RowEquivalent
 
 /-- Row-equivalence via the left action of `GL m R` on `Matrix m n R`. -/
-@[reducible, inline]
+@[reducible]
 def RowEquivalent (A B : Matrix m n R) : Prop :=
   B ∈ MulAction.orbit (GL m R) A
 

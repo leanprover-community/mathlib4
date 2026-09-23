@@ -544,7 +544,7 @@ namespace CompleteBooleanAlgebra
 
 This is not made an instance to avoid typeclass loops. -/
 -- See note [reducible non-instances]
-@[reducible, inline]
+@[reducible]
 def toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     CompleteAtomicBooleanAlgebra α where
   __ := ‹CompleteBooleanAlgebra α›

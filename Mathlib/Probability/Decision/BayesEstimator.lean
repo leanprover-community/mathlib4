@@ -115,7 +115,7 @@ structure IsArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
   property : ∀ᵐ x ∂(P ∘ₘ π), ∫⁻ θ, ℓ θ (f x) ∂(P†π) x = ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x
 
 /-- Given an argmin estimator `f`, we can define a deterministic kernel. -/
-@[reducible, inline]
+@[reducible]
 protected
 noncomputable
 def IsArgminEstimator.kernel (h : IsArgminEstimator ℓ P π f) : Kernel 𝓧 𝓨 :=

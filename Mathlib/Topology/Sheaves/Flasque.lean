@@ -78,7 +78,7 @@ variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.obj.ob
 
 /-- Given a morphism of sheaves `g: F ⟶ G` and a section `s` of `G(U)`, `Under g s` is comprised of
 an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Under := StructuredArrow (Functor.elementsMk _ _ s) (Functor.whiskerRight g.hom
   (CategoryTheory.forget AddCommGrpCat.{u})).mapElements
 

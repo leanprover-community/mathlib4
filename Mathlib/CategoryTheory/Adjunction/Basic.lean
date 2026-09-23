@@ -171,7 +171,7 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
 
 /-- `homEquiv'` is the dual of `homEquiv`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[reducible, inline,
+@[reducible,
 to_dual existing homEquiv]
 def homEquiv' {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) (X : C) (Y : D) :
     (Y ⟶ F.obj X) ≃ (G.obj Y ⟶ X) := (homEquiv adj Y X).symm
@@ -719,7 +719,7 @@ def toAdjunction : e.functor ⊣ e.inverse where
 
 /-- `toAdjunction'` is the dual of `ToAdjunction`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[reducible, inline,
+@[reducible,
 to_dual existing toAdjunction]
 def toAdjunction' : e.inverse ⊣ e.functor := e.symm.toAdjunction
 

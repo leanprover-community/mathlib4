@@ -63,7 +63,7 @@ instance (S : SmallCategoryOfSet Ω) : SmallCategory S.obj where
 
 /-- The family of all categories such that the types of objects and
 morphisms are subtypes of a given type `Ω`. -/
-@[reducible, inline]
+@[reducible]
 def categoryFamily : SmallCategoryOfSet Ω → Type w := fun S ↦ S.obj
 
 end SmallCategoryOfSet
@@ -175,7 +175,7 @@ variable (κ : Cardinal.{w})
 
 /-- Given a cardinal `κ`, this is a representative family of all categories `C`
 such that `HasCardinalLT C κ`. -/
-@[reducible, inline]
+@[reducible]
 def categoryFamily (S : SmallCategoryCardinalLT κ) : Type w := S.1.obj
 
 lemma hasCardinalLT (S : SmallCategoryCardinalLT κ) :

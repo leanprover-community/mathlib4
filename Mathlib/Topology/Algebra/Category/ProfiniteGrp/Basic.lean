@@ -75,7 +75,7 @@ attribute [instance] ProfiniteGrp.group ProfiniteGrp.isTopologicalGroup
 compact and totally disconnected topological group.
 (The condition of being Hausdorff can be omitted here because totally disconnected implies that
 `{1}` is a closed set, thus implying Hausdorff in a topological group.) -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
 compact and totally disconnected topological additive group.
 (The condition of being Hausdorff can be omitted here because totally disconnected implies that
@@ -117,14 +117,14 @@ instance : ConcreteCategory ProfiniteGrp (fun X Y => X →ₜ* Y) where
   ofHom f := ⟨f⟩
 
 /-- The underlying `ContinuousMonoidHom`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The underlying `ContinuousAddMonoidHom`. -/]
 def ProfiniteGrp.Hom.hom {M N : ProfiniteGrp.{u}} (f : ProfiniteGrp.Hom M N) :
     M →ₜ* N :=
   ConcreteCategory.hom (C := ProfiniteGrp) f
 
 /-- Typecheck a `ContinuousMonoidHom` as a morphism in `ProfiniteGrp`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Typecheck a `ContinuousAddMonoidHom` as a morphism in `ProfiniteAddGrp`. -/]
 def ProfiniteGrp.ofHom {X Y : Type u} [Group X] [TopologicalSpace X] [IsTopologicalGroup X]
     [CompactSpace X] [TotallyDisconnectedSpace X] [Group Y] [TopologicalSpace Y]
@@ -202,7 +202,7 @@ theorem coe_comp {X Y Z : ProfiniteGrp} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
 profinite topological group. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
 profinite topological additive group. -/]
 def ofProfinite (G : Profinite) [Group G] [IsTopologicalGroup G] :
@@ -331,7 +331,7 @@ instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGr
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The explicit limit cone in `ProfiniteGrp`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The explicit limit cone in `ProfiniteAddGrp`. -/]
 def limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt
@@ -381,7 +381,7 @@ instance : CompactSpace (limitConePtAux F) :=
   inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)
 
 /-- The abbreviation for the limit of `ProfiniteGrp`s. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The abbreviation for the limit of `ProfiniteAddGrp`s. -/]
 def limit : ProfiniteGrp := ↧(ProfiniteGrp.limitConePtAux F)
 

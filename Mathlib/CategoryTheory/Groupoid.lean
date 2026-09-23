@@ -50,14 +50,14 @@ initialize_simps_projections Groupoid (-Hom)
 /-- A `LargeGroupoid` is a groupoid
 where the objects live in `Type (u+1)` while the morphisms live in `Type u`.
 -/
-@[reducible, inline]
+@[reducible]
 def LargeGroupoid (C : Type (u + 1)) : Type (u + 1) :=
   Groupoid.{u} C
 
 /-- A `SmallGroupoid` is a groupoid
 where the objects and morphisms live in the same universe.
 -/
-@[reducible, inline]
+@[reducible]
 def SmallGroupoid (C : Type u) : Type (u + 1) :=
   Groupoid.{u} C
 

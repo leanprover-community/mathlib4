@@ -32,7 +32,7 @@ universe u
 `∀ a, a⁻¹ * a = 1`.
 Note that this uses the default definitions for `npow`, `zpow` and `div`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Define an `AddGroup` structure on a Type by proving `∀ a, 0 + a = a` and
 `∀ a, -a + a = 0`.
 Note that this uses the default definitions for `nsmul`, `zsmul` and `sub`.
@@ -59,7 +59,7 @@ def Group.ofLeftAxioms {G : Type u} [Mul G] [Inv G] [One G]
 `∀ a, a * a⁻¹ = 1`.
 Note that this uses the default definitions for `npow`, `zpow` and `div`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Define an `AddGroup` structure on a Type by proving `∀ a, a + 0 = a` and
 `∀ a, a + -a = 0`.
 Note that this uses the default definitions for `nsmul`, `zsmul` and `sub`.

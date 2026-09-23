@@ -439,7 +439,7 @@ lemma coboundaries₁_le_cocycles₁ : coboundaries₁ A ≤ cocycles₁ A := by
 
 variable (A) in
 /-- Natural inclusion `B¹(G, A) →ₗ[k] Z¹(G, A)`. -/
-@[reducible, inline]
+@[reducible]
 def coboundariesToCocycles₁ : coboundaries₁ A →ₗ[k] cocycles₁ A :=
   Submodule.inclusion (coboundaries₁_le_cocycles₁ A)
 
@@ -474,7 +474,7 @@ lemma coboundaries₂_le_cocycles₂ : coboundaries₂ A ≤ cocycles₂ A := by
 
 variable (A) in
 /-- Natural inclusion `B²(G, A) →ₗ[k] Z²(G, A)`. -/
-@[reducible, inline]
+@[reducible]
 def coboundariesToCocycles₂ : coboundaries₂ A →ₗ[k] cocycles₂ A :=
   Submodule.inclusion (coboundaries₂_le_cocycles₂ A)
 
@@ -916,7 +916,7 @@ section H0
 
 /-- Shorthand for the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`,
 defined as the 0th cohomology of the complex of inhomogeneous cochains of `A`. -/
-@[reducible, inline]
+@[reducible]
 def H0 := groupCohomology A 0
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
@@ -965,7 +965,7 @@ section H1
 
 /-- Shorthand for the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`,
 defined as the 1st cohomology of the complex of inhomogeneous cochains of `A`. -/
-@[reducible, inline]
+@[reducible]
 def H1 := groupCohomology A 1
 
 /-- The quotient map from the 1-cocycles of `A`, as a submodule of `G → A`, to `H¹(G, A)`. -/
@@ -1047,7 +1047,7 @@ section H2
 
 /-- Shorthand for the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`,
 defined as the 2nd cohomology of the complex of inhomogeneous cochains of `A`. -/
-@[reducible, inline]
+@[reducible]
 def H2 := groupCohomology A 2
 
 /-- The quotient map from the 2-cocycles of `A`, as a submodule of `G × G → A`, to `H²(G, A)`. -/

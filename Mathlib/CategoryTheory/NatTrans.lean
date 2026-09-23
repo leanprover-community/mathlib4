@@ -63,7 +63,7 @@ lemma NatTrans.naturality' {F G : C ⥤ D} (self : NatTrans G F) ⦃X Y : C⦄ (
 
 /-- `NatTrans.mk'` is the dual of `NatTrans.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[reducible, inline, to_dual existing mk]
+@[reducible, to_dual existing mk]
 def NatTrans.mk' {F G : C ⥤ D} (app : (X : C) → G.obj X ⟶ F.obj X)
     (naturality : ∀ ⦃X Y : C⦄ (f : Y ⟶ X), app Y ≫ F.map f = G.map f ≫ app X) : NatTrans G F where
   app

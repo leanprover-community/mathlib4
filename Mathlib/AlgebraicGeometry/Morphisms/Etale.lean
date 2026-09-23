@@ -183,7 +183,7 @@ instance : (Etale.forget X).Faithful :=
 variable {X} in
 /-- Constructor for objects in the étale site of a scheme `X`: it takes
 an étale morphism `f : Y ⟶ X` as an input. -/
-@[reducible, inline]
+@[reducible]
 def Etale.mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] : X.Etale :=
   MorphismProperty.Over.mk _ f inferInstance
 

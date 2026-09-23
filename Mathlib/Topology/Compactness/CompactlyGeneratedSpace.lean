@@ -235,7 +235,7 @@ In this version, intended for topological purposes, the compact spaces are taken
 in the same universe as `X`. See `UCompactlyGeneratedSpace` for a version with an explicit
 universe parameter, intended for categorical purposes.
 -/
-@[reducible, inline]
+@[reducible]
 def CompactlyGeneratedSpace (X : Type u) [TopologicalSpace X] : Prop :=
   UCompactlyGeneratedSpace.{u} X
 

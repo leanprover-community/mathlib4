@@ -463,7 +463,7 @@ def numeratorUnit (s : S) : Units R[S⁻¹] where
 
 /-- The multiplicative homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the
 fraction `r /ₒ 1`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The additive homomorphism from `R` to `AddOreLocalization R S`,
   mapping `r : R` to the difference `r -ₒ 0`. -/]
 def numeratorHom : R →* R[S⁻¹] where

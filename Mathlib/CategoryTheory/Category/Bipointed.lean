@@ -36,7 +36,7 @@ namespace Bipointed
 instance : CoeSort Bipointed Type* := ⟨Bipointed.X⟩
 
 /-- Turns a bipointing into a bipointed type. -/
-@[reducible, inline]
+@[reducible]
 def of {X : Type*} (to_prod : X × X) : Bipointed :=
   ⟨X, to_prod⟩
 
@@ -81,7 +81,7 @@ instance largeCategory : LargeCategory Bipointed where
   comp := @Hom.comp
 
 /-- The subtype of functions corresponding to the morphisms in `Bipointed`. -/
-@[reducible, inline]
+@[reducible]
 def HomSubtype (X Y : Bipointed) :=
   { f : X → Y // f X.toProd.1 = Y.toProd.1 ∧ f X.toProd.2 = Y.toProd.2 }
 

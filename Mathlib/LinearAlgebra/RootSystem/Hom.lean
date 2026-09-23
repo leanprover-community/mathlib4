@@ -202,7 +202,7 @@ lemma indexEquiv_mul (P : RootPairing ι R M N) (x y : Hom P P) :
   rfl
 
 /-- The endomorphism monoid of a root pairing. -/
-@[reducible, inline]
+@[reducible]
 def _root_.RootPairing.End (P : RootPairing ι R M N) := Hom P P
 
 /-- The weight space representation of endomorphisms -/
@@ -564,7 +564,7 @@ lemma coweightEquiv_conj_coreflection :
 end Equiv
 
 /-- The automorphism group of a root pairing. -/
-@[reducible, inline]
+@[reducible]
 def Aut (P : RootPairing ι R M N) := (RootPairing.Equiv P P)
 
 namespace Equiv

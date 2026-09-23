@@ -33,14 +33,14 @@ variable {C : Type*} [Category* C]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₁ f ⟶ mk₁ fg` when `f ≫ g = fg` for some morphism `g`. -/
-@[reducible, inline]
+@[reducible]
 def twoδ₂Toδ₁ (h : f ≫ g = fg := by cat_disch) :
     mk₁ f ⟶ mk₁ fg :=
   homMk₁ (𝟙 _) g
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
-@[reducible, inline]
+@[reducible]
 def twoδ₁Toδ₀ (h : f ≫ g = fg := by cat_disch) :
     mk₁ fg ⟶ mk₁ g :=
   homMk₁ f (𝟙 _)
@@ -80,13 +80,13 @@ section
 variable {ι : Type*} [Preorder ι] (i₀ i₁ i₂ : ι) (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂)
 
 /-- Variant of `twoδ₁Toδ₀` for preorders. -/
-@[reducible, inline]
+@[reducible]
 def twoδ₁Toδ₀' :
     mk₁ (homOfLE (hi₀₁.trans hi₁₂)) ⟶ mk₁ (homOfLE hi₁₂) :=
   twoδ₁Toδ₀ (homOfLE hi₀₁) _ _ rfl
 
 /-- Variant of `twoδ₂Toδ₁` for preorders. -/
-@[reducible, inline]
+@[reducible]
 def twoδ₂Toδ₁' :
      mk₁ (homOfLE hi₀₁) ⟶ mk₁ (homOfLE (hi₀₁.trans hi₁₂)) :=
   twoδ₂Toδ₁ _ (homOfLE hi₁₂) _ rfl

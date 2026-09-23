@@ -36,7 +36,7 @@ variable (C)
 
 /-- The property of objects in `HomotopyCategory.Plus C` that is satisfied
 by acyclic complexes. -/
-@[reducible, inline]
+@[reducible]
 def subcategoryAcyclic :
     ObjectProperty (HomotopyCategory.Plus C) :=
   (HomotopyCategory.subcategoryAcyclic C).inverseImage (HomotopyCategory.Plus.ι C)
@@ -170,12 +170,12 @@ noncomputable abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
 
 /-- Given `X : DerivedCategory.Plus C` and `n : ℤ`, this property means
 that `X` is `≥ n` for the canonical t-structure. -/
-@[reducible, inline]
+@[reducible]
 def IsGE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsGE X n
 
 /-- Given `X : DerivedCategory.Plus C` and `n : ℤ`, this property means
 that `X` is `≤ n` for the canonical t-structure. -/
-@[reducible, inline]
+@[reducible]
 def IsLE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsLE X n
 
 lemma isGE_ι_obj_iff (X : Plus C) (n : ℤ) :

@@ -84,7 +84,7 @@ end Fintype
 
 /-- The odd components are the connected components of odd cardinality. This definition excludes
 infinite components. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
 set_option backward.isDefEq.respectTransparency.types false in

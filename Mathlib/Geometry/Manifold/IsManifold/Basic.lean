@@ -95,7 +95,7 @@ for `n : ℕ∞ω`.
 
 We also define `TangentSpace I (x : M)` as a type synonym of `E`, and `TangentBundle I M` as a
 type synonym for `Π (x : M), TangentSpace I x` (in the form of an
-@[reducible, inline]
+@[reducible]
 def of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`). Apart from basic typeclasses on
 `TangentSpace I x`, nothing is proved about them in this file, but it is useful to have them
 available as definitions early on to get a clean import structure below. The smooth bundle structure
@@ -542,7 +542,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
 
 /-- Special case of product model with corners, which is trivial on the second factor. This shows up
 as the model to tangent bundles. -/
-@[reducible, inline]
+@[reducible]
 def ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
@@ -1083,7 +1083,7 @@ variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
-@[reducible, inline, wikidata Q746550]
+@[reducible, wikidata Q746550]
 def TangentBundle := Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace

@@ -40,7 +40,7 @@ open LinearMap
 
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
 Defined as a subtype of matrices -/
-@[reducible, inline]
+@[reducible]
 def GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [Semiring R] :
     Type _ :=
   (Matrix n n R)ˣ

@@ -48,7 +48,7 @@ variable {F} (P : F.ObjectProperty)
 /-- Given `F : Pseudofunctor B Cat`, `P : F.ObjectProperty` and `X : B`, this is
 the full subcategory of `F.obj X` consisting of the objects satisfying the
 property `P`. -/
-@[reducible, inline]
+@[reducible]
 def Obj (X : B) := (P.prop X).FullSubcategory
 
 /-- If `P` is a property of objects for a pseudofunctor `F` to `Cat`,

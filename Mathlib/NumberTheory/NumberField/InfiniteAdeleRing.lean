@@ -73,7 +73,7 @@ instance locallyCompactSpace [NumberField K] : LocallyCompactSpace K∞ :=
 open scoped Classical in
 /-- The ring isomorphism between the infinite adele ring of a number field and the
 space `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of the number field. -/
-@[reducible, inline]
+@[reducible]
 def ringEquiv_mixedSpace : K∞ ≃+* mixedEmbedding.mixedSpace K :=
   RingEquiv.trans
     (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) => IsReal v)

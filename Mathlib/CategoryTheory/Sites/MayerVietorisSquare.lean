@@ -168,7 +168,7 @@ lemma sheafCondition_iff_comp_coyoneda {A : Type u'} [Category.{v'} A] (P : Cᵒ
 /-- Given a Mayer-Vietoris square `S` and a presheaf of types, this is the
 map from `P.obj (op S.X₄)` to the explicit fibre product of
 `P.map S.f₁₂.op` and `P.map S.f₁₃.op`. -/
-@[reducible, inline]
+@[reducible]
 def toPullbackObj (P : Cᵒᵖ ⥤ Type v') :
     P.obj (op S.X₄) → Types.PullbackObj (P.map S.f₁₂.op) (P.map S.f₁₃.op) :=
   (S.toSquare.op.map P).pullbackCone.toPullbackObj

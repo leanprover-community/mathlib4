@@ -281,7 +281,7 @@ variable {r} (ρ₁₂ : BifunctorComp₁₂IndexData r)
 `ρ₁₂ : BifunctorComp₁₂IndexData r`, this asserts that for all `i₁₂ : ρ₁₂.I₁₂` and `i₃ : I₃`,
 the functor `G(-, X₃ i₃)` commutes with the coproducts of the `F₁₂(X₁ i₁, X₂ i₂)`
 such that `ρ₁₂.p ⟨i₁, i₂⟩ = i₁₂`. -/
-@[reducible, inline]
+@[reducible]
 def HasGoodTrifunctor₁₂Obj :=
   ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), PreservesColimit
     (Discrete.functor (mapObjFun (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p i₁₂))
@@ -465,7 +465,7 @@ variable {r} (ρ₂₃ : BifunctorComp₂₃IndexData r)
 `ρ₂₃ : BifunctorComp₂₃IndexData r`, this asserts that for all `i₁ : I₁` and `i₂₃ : ρ₂₃.I₂₃`,
 the functor `F(X₁ i₁, _)` commutes with the coproducts of the `G₂₃(X₂ i₂, X₃ i₃)`
 such that `ρ₂₃.p ⟨i₂, i₃⟩ = i₂₃`. -/
-@[reducible, inline]
+@[reducible]
 def HasGoodTrifunctor₂₃Obj :=
   ∀ (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃), PreservesColimit (Discrete.functor
     (mapObjFun (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃) ρ₂₃.p i₂₃)) (F.obj (X₁ i₁))

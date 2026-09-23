@@ -152,7 +152,7 @@ end Metric
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : MetricSpace γ where
   toPseudoMetricSpace := PseudoMetricSpace.replaceUniformity m.toPseudoMetricSpace H
@@ -167,7 +167,7 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
   @MetricSpace.replaceUniformity γ (m.toUniformSpace.replaceTopology H) m rfl
@@ -182,7 +182,7 @@ theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : Metri
 See Note [forgetful inheritance].
 See Note [reducible non-instances].
 -/
-@[reducible, inline]
+@[reducible]
 def MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) : MetricSpace α :=
   { PseudoMetricSpace.replaceBornology _ H, m with toBornology := B }

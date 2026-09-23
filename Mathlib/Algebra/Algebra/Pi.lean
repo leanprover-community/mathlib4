@@ -68,7 +68,7 @@ theorem _root_.AlgHom.pi_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring
 variable (R)
 
 /-- Use `AlgHom.pi` instead. -/
-@[reducible, inline, deprecated AlgHom.pi (since := "2026-05-30")]
+@[reducible, deprecated AlgHom.pi (since := "2026-05-30")]
 def algHom {B : Type*} [Semiring B] [Algebra R B] (g : Π i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i :=
   .pi g
 

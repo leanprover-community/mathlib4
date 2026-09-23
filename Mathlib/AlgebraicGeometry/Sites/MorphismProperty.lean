@@ -68,7 +68,7 @@ instance : IsJointlySurjectivePreserving @IsOpenImmersion where
     rwa [← TopCat.comp_app, Iso.inv_hom_id_assoc]
 
 /-- The precoverage on `Scheme` of jointly surjective families. -/
-@[reducible, inline]
+@[reducible]
 def jointlySurjectivePrecoverage : Precoverage Scheme.{u} :=
   Types.jointlySurjectivePrecoverage.comap Scheme.forget
 
@@ -123,7 +123,7 @@ instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
 
 /-- The Zariski precoverage on the category of schemes is the precoverage defined by
 jointly surjective families of open immersions. -/
-@[reducible, inline]
+@[reducible]
 def zariskiPrecoverage : Precoverage Scheme.{u} := precoverage @IsOpenImmersion
 
 end AlgebraicGeometry.Scheme

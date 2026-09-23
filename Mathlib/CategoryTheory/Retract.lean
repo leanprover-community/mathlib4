@@ -107,7 +107,7 @@ end Retract
 ```
 A morphism `f : X ⟶ Y` is a retract of `g : Z ⟶ W` if there are morphisms `i : f ⟶ g`
 and `r : g ⟶ f` in the arrow category such that `i ≫ r = 𝟙 f`. -/
-@[reducible, inline,
+@[reducible,
 to_dual self]
 def RetractArrow {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) := Retract (Arrow.mk f) (Arrow.mk g)
 

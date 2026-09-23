@@ -53,7 +53,7 @@ instance LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
   ⟨fun x m ↦ by simp_rw [Subsingleton.eq_zero m, lie_zero]⟩
 
 /-- A Lie algebra is Abelian iff it is trivial as a Lie module over itself. -/
-@[reducible, inline]
+@[reducible]
 def IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
   LieModule.IsTrivial L L
 
@@ -283,7 +283,7 @@ namespace LieAlgebra
 /-- The center of a Lie algebra is the set of elements that commute with everything. It can
 be viewed as the maximal trivial submodule of the Lie algebra as a Lie module over itself via the
 adjoint representation. -/
-@[reducible, inline]
+@[reducible]
 def center : LieIdeal R L :=
   LieModule.maxTrivSubmodule R L L
 

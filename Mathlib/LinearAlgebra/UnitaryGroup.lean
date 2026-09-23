@@ -57,7 +57,7 @@ variable (α : Type v) [CommRing α] [StarRing α]
 /-- `Matrix.unitaryGroup n` is the group of `n` by `n` matrices where the star-transpose is the
 inverse.
 -/
-@[reducible, inline]
+@[reducible]
 def unitaryGroup : Submonoid (Matrix n n α) :=
   unitary (Matrix n n α)
 
@@ -293,7 +293,7 @@ attribute [local instance] starRingOfComm
 
 /-- `Matrix.orthogonalGroup n` is the group of `n` by `n` matrices where the transpose is the
 inverse. -/
-@[reducible, inline]
+@[reducible]
 def orthogonalGroup := unitaryGroup n R
 
 theorem mem_orthogonalGroup_iff {A : Matrix n n R} :
@@ -314,7 +314,7 @@ attribute [local instance] starRingOfComm
 
 /-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
 is one. (This definition is only correct if 2 is invertible.) -/
-@[reducible, inline]
+@[reducible]
 def specialOrthogonalGroup : Submonoid (Matrix n n R) := specialUnitaryGroup n R
 
 variable {n} {R} {A : Matrix n n R}

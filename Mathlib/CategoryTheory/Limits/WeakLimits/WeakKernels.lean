@@ -34,7 +34,7 @@ namespace CategoryTheory.Limits
 variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y)
 
 /-- A morphism `f` has a weak kernel if the functor `ParallelPair f 0` has a weak limit. -/
-@[reducible, inline]
+@[reducible]
 def HasWeakKernel : Prop :=
   HasWeakLimit (parallelPair f 0)
 
@@ -54,12 +54,12 @@ section
 variable [HasWeakKernel f]
 
 /-- The weak kernel of a morphism. -/
-@[reducible, inline]
+@[reducible]
 def weakKernel : C :=
   weakEqualizer f 0
 
 /-- The map from `weakKernel f` into the source of `f`. -/
-@[reducible, inline]
+@[reducible]
 def weakKernel.ι : weakKernel f ⟶ X :=
   weakEqualizer.ι f 0
 
@@ -78,7 +78,7 @@ def weakKernelIsWeakKernel :
 
 /-- Given any morphism `k : W ⟶ X` satisfying `k ≫ f = 0`, `k` factors through
 `weakKernel.ι f` via `weakKernel.lift : W ⟶ weakKernel f`. -/
-@[reducible, inline]
+@[reducible]
 def weakKernel.lift {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : W ⟶ weakKernel f :=
   (weakKernelIsWeakKernel f).lift (KernelFork.ofι k h)
 

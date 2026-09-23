@@ -287,7 +287,7 @@ end IsBipartiteWith
 section IsBipartite
 
 /-- The predicate for a simple graph to be bipartite. -/
-@[reducible, inline]
+@[reducible]
 def IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
 
 /-- If a simple graph `G` is bipartite, then there exist disjoint sets `s` and `t`

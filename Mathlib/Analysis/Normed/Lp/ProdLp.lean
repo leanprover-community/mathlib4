@@ -377,7 +377,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-@[reducible, inline]
+@[reducible]
 def prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
@@ -1017,7 +1017,7 @@ attribute [-instance] Prod.toNorm
 /-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp distance. -/
-@[reducible, inline]
+@[reducible]
 def pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (α × β) :=
   (isUniformInducing_toLp p α β).comapPseudoMetricSpace.replaceBornology
@@ -1031,7 +1031,7 @@ lemma dist_pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β]
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp norm. -/
-@[reducible, inline]
+@[reducible]
 def seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖
@@ -1068,7 +1068,7 @@ lemma normSMulClassSeminormedAddCommGroupToProd
 
 /-- This definition allows to endow `α × β` with a normed space structure corresponding to
 the Lp norm. It is useful for type synonyms of `α × β`. -/
-@[reducible, inline]
+@[reducible]
 def normedSpaceSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [NormedField R]
     [NormedSpace R α] [NormedSpace R β] :
@@ -1080,7 +1080,7 @@ def normedSpaceSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
-@[reducible, inline]
+@[reducible]
 def normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α × β) where
   norm x := ‖toLp p x‖

@@ -47,7 +47,7 @@ due to Zariski's main theorem.
 This class should not be used outside of this context,
 and `Algebra.QuasiFiniteAt` should be used instead.
 See `Algebra.QuasiFiniteAt.of_weaklyQuasiFiniteAt`. -/
-@[reducible, inline]
+@[reducible]
 def Algebra.WeaklyQuasiFiniteAt :=
   Algebra.QuasiFiniteAt R (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S))))
 

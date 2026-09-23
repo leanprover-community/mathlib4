@@ -46,7 +46,7 @@ variable {I} in
 lemma Ideal.IsMinimalPrime.le {p : Ideal R} (h : I.IsMinimalPrime p) : I ≤ p := h.1.2
 
 /-- `IsMinimalPrime p` says that `p` is a minimal prime of the ring. -/
-@[reducible, inline]
+@[reducible]
 def IsMinimalPrime (p : Ideal R) : Prop := (⊥ : Ideal R).IsMinimalPrime p
 
 lemma IsMinimalPrime.isPrime {p : Ideal R} (h : IsMinimalPrime p) : p.IsPrime := h.1.1
@@ -61,7 +61,7 @@ protected abbrev Ideal.minimalPrimes : Set (Ideal R) :=
 variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
-@[reducible, inline]
+@[reducible]
 def minimalPrimes : Set (Ideal R) :=
   {p | IsMinimalPrime p}
 

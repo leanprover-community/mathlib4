@@ -132,7 +132,7 @@ instance (J : Type*) [LinearOrder J] :
 attribute [local simp] SimplicialThickening.Hom_def
 
 /-- Auxiliary definition for `SimplicialThickening.functor` -/
-@[reducible, inline]
+@[reducible]
 def functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     (f : J →o K) (i j : SimplicialThickening J) :
       (i ⟶ j) ⥤ ((SimplicialThickening.mk <| f i.as) ⟶ (SimplicialThickening.mk <| f j.as)) where

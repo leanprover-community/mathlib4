@@ -373,7 +373,7 @@ open PartialEquiv Set Language.DirectLimit
 variable (M) (N) (L)
 
 /-- The type of equivalences between finitely generated substructures. -/
-@[reducible, inline]
+@[reducible]
 def FGEquiv := {f : M ≃ₚ[L] N // f.dom.FG}
 
 /-- Two structures `M` and `N` form an extension pair if the domain of any finitely-generated map

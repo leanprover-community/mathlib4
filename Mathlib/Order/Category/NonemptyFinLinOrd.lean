@@ -51,7 +51,7 @@ instance (X : NonemptyFinLinOrd) : BoundedOrder X :=
   Fintype.toBoundedOrder X
 
 /-- Construct a bundled `NonemptyFinLinOrd` from the underlying type and typeclass. -/
-@[reducible, inline]
+@[reducible]
 def of (α : Type*) [Nonempty α] [Fintype α] [LinearOrder α] : NonemptyFinLinOrd where
   carrier := α
 
@@ -64,7 +64,7 @@ theorem coe_of (α : Type*) [Nonempty α] [Fintype α] [LinearOrder α] : ↥(of
   rfl
 
 /-- Typecheck a `OrderHom` as a morphism in `NonemptyFinLinOrd`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X]
     [Nonempty Y] [LinearOrder Y] [Fintype Y] (f : X →o Y) :
     of X ⟶ of Y :=

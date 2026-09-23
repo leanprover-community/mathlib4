@@ -63,13 +63,13 @@ variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
-@[reducible, inline]
+@[reducible]
 def splitAt (i : N) : (I^N) ≃ₜ I × I^{ j // j ≠ i } :=
   funSplitAt I i
 
 /-- The backward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
-@[reducible, inline]
+@[reducible]
 def insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
   (funSplitAt I i).symm
 
@@ -85,7 +85,7 @@ variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`.
 Denoted as `Ω`, within the `Topology.Homotopy` namespace. -/
-@[reducible, inline]
+@[reducible]
 def LoopSpace :=
   Path x x
 
@@ -330,7 +330,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
   rfl
 
 /-- Composition with `Cube.insertAt` as a continuous map. -/
-@[reducible, inline]
+@[reducible]
 def cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f ↦ f.comp (Cube.insertAt i),
     (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
@@ -459,7 +459,7 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
   Quotient.congr (loopHomeo i).toEquiv fun _ _ ↦ ⟨homotopicTo i, homotopicFrom i⟩
 
 /-- Homotopy group of finite index, denoted as `π_n` within the Topology namespace. -/
-@[reducible, inline]
+@[reducible]
 def HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 
@@ -555,7 +555,7 @@ instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
 /-- Group structure on `HomotopyGroup` obtained by pulling back path composition along the
   `i`th direction. The group structures for two different `i j : N` distribute over each
   other, and therefore are equal by the Eckmann-Hilton argument. -/
-@[reducible, inline]
+@[reducible]
 def auxGroup (i : N) : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup i).group
 

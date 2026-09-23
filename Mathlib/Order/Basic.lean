@@ -670,7 +670,7 @@ end Function
 /-- Pull back a `Preorder` instance along an injective function.
 
 See note [reducible non-instances]. -/
-@[reducible, inline, to_dual self]
+@[reducible, to_dual self]
 def Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
     Preorder α where
@@ -682,7 +682,7 @@ def Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
 /-- Pull back a `PartialOrder` instance along an injective function.
 
 See note [reducible non-instances]. -/
-@[reducible, inline, to_dual self]
+@[reducible, to_dual self]
 def Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α → β)
     (hf : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
@@ -693,7 +693,7 @@ def Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α �
 /-- Pull back a `LinearOrder` instance along an injective function.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] [Min α] [Ord α]
     [DecidableEq α] [DecidableLE α] [DecidableLT α] (f : α → β)
     (hf : Function.Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
@@ -723,7 +723,7 @@ They should be avoided if the types already define any order or decidability ins
 See also `Function.Injective.preorder` when only the proof fields need to be transferred.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def Preorder.lift [Preorder β] (f : α → β) : Preorder α :=
   letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
   letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
@@ -735,7 +735,7 @@ function `f : α → β`.
 See also `Function.Injective.partialOrder` when only the proof fields need to be transferred.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
   letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
   letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
@@ -762,7 +762,7 @@ fields.
 See also `Function.Injective.linearOrder` when only the proof fields need to be transferred.
 
 See note [reducible non-instances]. -/
-@[reducible, inline, to_dual self (reorder := 4 5, hsup hinf)]
+@[reducible, to_dual self (reorder := 4 5, hsup hinf)]
 def LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
@@ -779,7 +779,7 @@ function `f : α → β`. This version autogenerates `min` and `max` fields. See
 for a version that takes `[Max α]` and `[Min α]`, then uses them as `max` and `min`. See
 `LinearOrder.liftWithOrd'` for a version which does not auto-generate `compare` fields.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def LinearOrder.lift' [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
   @LinearOrder.lift α β _ ⟨fun x y ↦ if f x ≤ f y then y else x⟩
     ⟨fun x y ↦ if f x ≤ f y then x else y⟩ f inj
@@ -792,7 +792,7 @@ them for `max` and `min` fields. It also takes `[Ord α]` as an argument and use
 fields. See `LinearOrder.lift` for a version that autogenerates `compare` fields, and
 `LinearOrder.liftWithOrd'` for one that auto-generates `min` and `max` fields.
 fields. See note [reducible non-instances]. -/
-@[reducible, inline,
+@[reducible,
 to_dual self (reorder := 4 5, hsup hinf)]
 def LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : α → β)
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
@@ -810,7 +810,7 @@ function `f : α → β`. This version auto-generates `min` and `max` fields. It
 as an argument and uses them for `compare` fields. See `LinearOrder.lift` for a version that
 autogenerates `compare` fields, and `LinearOrder.liftWithOrd` for one that doesn't auto-generate
 `min` and `max` fields. fields. See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
     (inj : Injective f)
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
@@ -1060,7 +1060,7 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
 /-- Construct the trivial linear order on any type with at most one element. -/
-@[reducible, inline]
+@[reducible]
 def LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
   le _ _ := True
   lt _ _ := False

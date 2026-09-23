@@ -95,7 +95,7 @@ theorem w : res F U ≫ leftRes F U = res F U ≫ rightRes F U := by
 
 /-- The equalizer diagram for the sheaf condition.
 -/
-@[reducible, inline]
+@[reducible]
 def diagram : WalkingParallelPair ⥤ C :=
   parallelPair (leftRes.{v'} F U) (rightRes F U)
 

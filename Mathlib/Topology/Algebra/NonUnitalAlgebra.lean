@@ -72,7 +72,7 @@ open scoped IsMulCommutative in
 topological closure.
 
 See note [reducible non-instances]. -/
-@[reducible, inline,
+@[reducible,
 deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 def nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
@@ -125,7 +125,7 @@ open scoped IsMulCommutative in
 topological closure.
 
 See note [reducible non-instances]. -/
-@[reducible, inline,
+@[reducible,
 deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 def nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=

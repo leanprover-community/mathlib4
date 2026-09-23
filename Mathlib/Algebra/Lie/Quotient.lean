@@ -70,7 +70,7 @@ instance inhabited : Inhabited (M ⧸ N) :=
 
 /-- Map sending an element of `M` to the corresponding element of `M ⧸ N`, when `N` is a
 Lie submodule of the Lie module `M`. -/
-@[reducible, inline]
+@[reducible]
 def mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 

@@ -51,7 +51,7 @@ instance : IsClosed ((generator H H').ker : Set (WithLp 2 (H × H'))) :=
   (generator H H').isClosed_ker
 
 /-- The sum of two RKHS embedding in the same space of functions `X → V`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def sumSpace := WithLp 2 (H × H') ⧸ (generator H H').ker
 
 /-- `H + H'` is shorthand for the RKHS `sumSpace H H'`, which is the sum of the two RKHS. -/

@@ -218,7 +218,7 @@ def last : PFunctor where
   B a := (P.B a).last
 
 /-- append arrows of a polynomial functor application -/
-@[reducible, inline]
+@[reducible]
 def appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P.B a ⟹ (α ::: β) :=
   splitFun f' f

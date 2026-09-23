@@ -221,7 +221,7 @@ end ShortExact
 end Preadditive
 
 /-- `ShortComplex.ShortExact` as an object property. -/
-@[reducible, inline]
+@[reducible]
 def shortExact (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :
     ObjectProperty (ShortComplex C) :=
   ShortComplex.ShortExact
@@ -229,7 +229,7 @@ def shortExact (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :
 end ShortComplex
 
 /-- The category of short exact sequences. -/
-@[reducible, inline]
+@[reducible]
 def ShortExactSequence (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :=
   (ShortComplex.shortExact C).FullSubcategory
 

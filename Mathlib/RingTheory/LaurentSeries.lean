@@ -99,7 +99,7 @@ noncomputable section
 
   It is implemented as a `HahnSeries` with value group `ℤ`.
 -/
-@[reducible, inline]
+@[reducible]
 def LaurentSeries (R : Type u) [Zero R] := R⟦ℤ⟧
 
 variable {R : Type*}
@@ -481,7 +481,7 @@ open scoped LaurentSeries
 
 /-- `polynomialValuationX` is an abbreviation for the `X`-adic valuation given by
 `(Polynomial.idealX K).valuation K⟮X⟯`. -/
-@[reducible, inline]
+@[reducible]
 def polynomialValuationX : Valuation K⟮X⟯ ℤᵐ⁰ :=
   (Polynomial.idealX K).valuation _
 
@@ -978,11 +978,11 @@ theorem continuous_coe : Continuous ((↑) : K⟮X⟯ → K⸨X⸩) :=
 
 variable (K) in
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
-@[reducible, inline]
+@[reducible]
 def RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
 
 /-- The `X`-adic completion as an abstract completion of `K⟮X⟯` -/
-@[reducible, inline]
+@[reducible]
 def ratfuncAdicComplPkg : AbstractCompletion (WithVal (polynomialValuationX K)) :=
   UniformSpace.Completion.cPkg
 
@@ -1020,7 +1020,7 @@ theorem LaurentSeries_coe (x : K⟮X⟯) :
 
 /-- Reinterpret the extension of `coe : WithVal ((idealX K).valuation _) → K⸨X⸩` as a ring
 homomorphism -/
-@[reducible, inline]
+@[reducible]
 def extensionAsRingHom :=
   UniformSpace.Completion.extensionHom <|
     (algebraMap K⟮X⟯ K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
@@ -1030,7 +1030,7 @@ instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
 
 /-- The uniform space isomorphism between two abstract completions of `ratfunc K` -/
-@[reducible, inline]
+@[reducible]
 def comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
   (adicCompletion.uniformEquiv _ _).trans <| compareEquiv ratfuncAdicComplPkg (LaurentSeriesPkg K)
 
@@ -1039,7 +1039,7 @@ lemma comparePkg_eq_extension (x : RatFuncAdicCompl K) :
       (extensionAsRingHom K (continuous_coe' _)) (adicCompletion.toCompletion x) := rfl
 
 /-- The ring equivalence between `RatFuncAdicCompl K` and `K⸨X⸩`. -/
-@[reducible, inline]
+@[reducible]
 def ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   { comparePkg K with
     map_mul' x y :=
@@ -1053,7 +1053,7 @@ def ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
-@[reducible, inline]
+@[reducible]
 def LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
@@ -1155,12 +1155,12 @@ section PowerSeries
 
 /-- In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
 `K⟮X⟯` we consider its alias as a subring of `K⸨X⸩`. -/
-@[reducible, inline]
+@[reducible]
 def powerSeries_as_subring : Subring K⸨X⸩ :=
   Subring.map (HahnSeries.ofPowerSeries ℤ K) ⊤
 
 /-- The ring `K⟦X⟧` is isomorphic to the subring `powerSeries_as_subring K` -/
-@[reducible, inline]
+@[reducible]
 def powerSeriesEquivSubring : K⟦X⟧ ≃+* powerSeries_as_subring K :=
   ((Subring.topEquiv).symm).trans (Subring.equivMapOfInjective ⊤ (ofPowerSeries ℤ K)
     ofPowerSeries_injective)
@@ -1207,7 +1207,7 @@ theorem powerSeries_ext_subring :
 
 /-- The ring isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
-@[reducible, inline]
+@[reducible]
 def powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers K⟮X⟯ :=
   ((powerSeriesEquivSubring K).trans (LaurentSeriesRingEquiv K).subringMap).trans
     <| RingEquiv.subringCongr (powerSeries_ext_subring K)

@@ -474,11 +474,11 @@ open Set
 variable {X Y Z}
 
 /-- The fiber product $X \times_Y Z$. -/
-@[reducible, inline]
+@[reducible]
 def Function.Pullback (f : X → Y) (g : Z → Y) := {p : X × Z // f p.1 = g p.2}
 
 /-- The fiber product $X \times_Y X$. -/
-@[reducible, inline]
+@[reducible]
 def Function.PullbackSelf (f : X → Y) := f.Pullback f
 
 /-- The projection from the fiber product to the first factor. -/

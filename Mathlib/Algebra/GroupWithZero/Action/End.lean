@@ -25,7 +25,7 @@ variable {M N A α β : Type*}
 
 See also `Function.Surjective.mulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[reducible, inline]
+@[reducible]
 def Function.Surjective.distribMulActionLeft {R S M : Type*} [Monoid R] [AddMonoid M]
     [DistribMulAction R M] [Monoid S] [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribMulAction S M :=
@@ -37,7 +37,7 @@ variable (A) [AddMonoid A] [Monoid M] [DistribMulAction M A]
 
 /-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
   { DistribSMul.compFun A f, MulAction.compHom A f with }
 
@@ -49,7 +49,7 @@ variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 
 /-- Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
   { MulAction.compHom A f with
     smul_one := fun x => smul_one (f x),

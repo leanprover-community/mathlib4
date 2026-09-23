@@ -67,11 +67,11 @@ namespace Language
 variable (L : Language.{u, v})
 
 /-- A language is relational when it has no function symbols. -/
-@[reducible, inline]
+@[reducible]
 def IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 
 /-- A language is algebraic when it has no relation symbols. -/
-@[reducible, inline]
+@[reducible]
 def IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
@@ -90,7 +90,7 @@ protected abbrev Constants :=
   L.Functions 0
 
 /-- The type of symbols in a given language. -/
-@[reducible, inline]
+@[reducible]
 def Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 

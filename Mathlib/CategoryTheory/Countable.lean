@@ -47,7 +47,7 @@ namespace CountableCategory
 variable (α : Type u) [Category.{v} α] [CountableCategory α]
 
 /-- A countable category `α` is equivalent to a category with objects in `Type`. -/
-@[reducible, inline]
+@[reducible]
 def ObjAsType : Type :=
   InducedCategory α (equivShrink.{0} α).symm
 

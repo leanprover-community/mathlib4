@@ -80,7 +80,7 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 
 /-- The opposite localizer morphism `LocalizerMorphism W₁.op W₂.op` deduced
 from `Φ : LocalizerMorphism W₁ W₂`. -/
-@[reducible, inline]
+@[reducible]
 def op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
   map _ _ _ hf := Φ.map _ hf
@@ -353,7 +353,7 @@ instance IsLocalizedFullyFaithful.comp
 
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
-@[reducible, inline]
+@[reducible]
 def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
   functor := Φ.functor.mapArrow
   map _ _ _ hf := ⟨Φ.map _ hf.1, Φ.map _ hf.2⟩

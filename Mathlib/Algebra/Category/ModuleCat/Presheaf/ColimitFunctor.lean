@@ -93,7 +93,7 @@ noncomputable instance : SMul cR.pt (ModuleColimit hcR hcM) where
 
 variable (cR) in
 /-- The "inclusion" maps to the colimit ring. -/
-@[reducible, inline]
+@[reducible]
 def ιR {U : Cᵒᵖ} : R.obj U →+* cR.pt := (cR.ι.app U).hom
 
 variable {hcR hcM} in

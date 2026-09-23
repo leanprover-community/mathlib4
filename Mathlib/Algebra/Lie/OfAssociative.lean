@@ -79,7 +79,7 @@ specifically we can build two mathematically-different `bracket A A`s:
   (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
-@[reducible, inline]
+@[reducible]
 def LieRingModule.ofAssociativeModule : LieRingModule A M where
   bracket := (· • ·)
   add_lie := add_smul

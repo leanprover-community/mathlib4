@@ -424,7 +424,7 @@ lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List �
 /-- The multinomial coefficients given by a list of natural numbers.
 
 See also `Multiset.multinomial` -/
-@[reducible, inline]
+@[reducible]
 def multinomial (l : List ℕ) : ℕ := l.toFinsupp.multinomial
 
 theorem multinomial_cons (x : ℕ) (l : List ℕ) :

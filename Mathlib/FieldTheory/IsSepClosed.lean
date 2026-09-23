@@ -346,7 +346,7 @@ instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separab
 algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
 `separableClosure.isSepClosure`, and it is Galois (`IsGalois`) by `separableClosure.isGalois`
 or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
-@[reducible, inline]
+@[reducible]
 def SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=

@@ -161,7 +161,7 @@ variable {a b : B}
 
 /-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ g` to 2-isomorphisms
 `F.map f ≅ F.map g`. -/
-@[reducible, inline, simps! -isSimp]
+@[reducible, simps! -isSimp]
 def map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
 

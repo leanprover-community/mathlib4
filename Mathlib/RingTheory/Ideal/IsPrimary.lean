@@ -31,7 +31,7 @@ namespace Ideal
 variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
 /-- A proper ideal `I` is primary as a submodule. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def IsPrimary (I : Ideal R) : Prop :=
   Submodule.IsPrimary I
 

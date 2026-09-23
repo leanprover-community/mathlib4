@@ -61,7 +61,7 @@ lemma leftAdjointObjIsDefined_of_adjunction {G : C ⥤ D} (adj : G ⊣ F) (X : C
   (adj.corepresentableBy X).isCorepresentable
 
 /-- The full subcategory where `F.partialLeftAdjoint` shall be defined. -/
-@[reducible, inline]
+@[reducible]
 def PartialLeftAdjointSource := F.leftAdjointObjIsDefined.FullSubcategory
 
 instance (X : F.PartialLeftAdjointSource) :
@@ -212,7 +212,7 @@ lemma rightAdjointObjIsDefined_of_adjunction {G : D ⥤ C} (adj : F ⊣ G) (Y : 
   (adj.representableBy Y).isRepresentable
 
 /-- The full subcategory where `F.partialRightAdjoint` shall be defined. -/
-@[reducible, inline]
+@[reducible]
 def PartialRightAdjointSource := F.rightAdjointObjIsDefined.FullSubcategory
 
 instance (Y : F.PartialRightAdjointSource) :

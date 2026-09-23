@@ -31,7 +31,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- A submodule `S` of a module `M` is co-finitely generated (CoFG) if the quotient
   space `M ⧸ S` is finitely generated. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def CoFG (S : Submodule R M) : Prop := Module.Finite R (M ⧸ S)
 
 /-- A submodule of a finite module is CoFG. -/

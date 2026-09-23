@@ -55,7 +55,7 @@ variable (P : Extension.{w} R S)
 The cotangent space on `P = R[X]`.
 This is isomorphic to `Sⁿ` with `n` being the number of variables of `P`.
 -/
-@[reducible, inline]
+@[reducible]
 def CotangentSpace : Type _ := S ⊗[P.Ring] Ω[P.Ring⁄R]
 
 /-- The cotangent complex given by a presentation `R[X] → S` (i.e. a closed embedding `S ↪ Aⁿ`). -/
@@ -317,7 +317,7 @@ lemma Cotangent.map_sub_map (f g : Hom P P') :
 
 variable (P) in
 /-- The projection map from the relative cotangent space to the module of differentials. -/
-@[reducible, inline]
+@[reducible]
 def toKaehler : P.CotangentSpace →ₗ[S] Ω[S⁄R] := mapBaseChange _ _ _
 
 lemma toKaehler_surjective : Function.Surjective P.toKaehler :=
@@ -545,7 +545,7 @@ variable [Algebra S' T] [IsScalarTower R S' T]
 variable (R S S' T)
 
 /-- `H¹(L_{S/R})`, the first homology of the (naive) cotangent complex of `S` over `R`. -/
-@[reducible, inline]
+@[reducible]
 def H1Cotangent : Type _ := (Generators.self R S).toExtension.H1Cotangent
 
 /-- The induced map on the first homology of the (naive) cotangent complex of `S` over `R`. -/
@@ -578,7 +578,7 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
 variable {R S S' T}
 
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
-@[reducible, inline]
+@[reducible]
 def Generators.equivH1Cotangent (P : Generators R S ι) :
     P.toExtension.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   Generators.H1Cotangent.equiv _ _

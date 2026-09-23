@@ -112,7 +112,7 @@ noncomputable def quotToDoubleCoset (H K : Subgroup G) (q : Quotient (H : Set G)
   doubleCoset q.out H K
 
 /-- Map from `G` to `H \ G / K` -/
-@[reducible, inline]
+@[reducible]
 def mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
   Quotient.mk'' a
 

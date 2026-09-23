@@ -52,7 +52,7 @@ namespace stdSimplex
 open Finset Opposite SimplexCategory
 
 /-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful. -/
-@[reducible, inline]
+@[reducible]
 def fullyFaithful : stdSimplex.{u}.FullyFaithful :=
   ULiftYoneda.fullyFaithful SimplexCategory
 
@@ -123,7 +123,7 @@ lemma σ_objEquiv_symm_apply
       (objEquiv (n := m) (m := op ⦋n + 1⦌)).symm (SimplexCategory.σ i ≫ f) := rfl
 
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
-@[reducible, inline]
+@[reducible]
 def objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     (f : Fin (len m.unop + 1) →o Fin (n.len + 1)) :
     (stdSimplex.{u}.obj n).obj m :=

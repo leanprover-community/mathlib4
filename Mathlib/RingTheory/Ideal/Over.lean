@@ -93,7 +93,7 @@ variable (A : Type*) [CommSemiring A] {B C : Type*} [Semiring B] [Semiring C] [A
   {G : Type*} [Group G] [MulSemiringAction G B] (g : G)
 
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
-@[reducible, inline]
+@[reducible]
 def under : Ideal A := Ideal.comap (algebraMap A B) P
 
 theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
@@ -386,7 +386,7 @@ instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
   Q.2.2
 
 /-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
-@[reducible, inline]
+@[reducible]
 def primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
   ⟨P, ⟨hPp, hp⟩⟩
 

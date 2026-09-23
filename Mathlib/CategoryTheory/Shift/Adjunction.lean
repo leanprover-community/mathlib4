@@ -71,7 +71,7 @@ variable {a b : A} (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, this expresses the compatibility of
 `e₁` and `e₂` with the unit of the adjunction `adj`.
 -/
-@[reducible, inline]
+@[reducible]
 def CompatibilityUnit :=
   ∀ (X : C), (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ G.map (e₁.hom.app X) ≫ e₂.hom.app _
 
@@ -80,7 +80,7 @@ def CompatibilityUnit :=
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, this expresses the compatibility of
 `e₁` and `e₂` with the counit of the adjunction `adj`.
 -/
-@[reducible, inline]
+@[reducible]
 def CompatibilityCounit :=
   ∀ (Y : D), adj.counit.app (Y⟦a⟧) = F.map (e₂.hom.app Y) ≫ e₁.hom.app _ ≫ (adj.counit.app Y)⟦a⟧'
 
@@ -514,7 +514,7 @@ variable (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
 If `E : C ≌ D` is an equivalence, this expresses the compatibility of `CommShift`
 structures on `E.functor` and `E.inverse`.
 -/
-@[reducible, inline]
+@[reducible]
 def CommShift [E.functor.CommShift A] [E.inverse.CommShift A] : Prop :=
   E.toAdjunction.CommShift A
 

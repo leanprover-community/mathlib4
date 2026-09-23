@@ -254,7 +254,7 @@ def linearizeOfMulActionIso (H : Type w) [MulAction G H] :
 
 variable (k G) in
 /-- This a type-changing equivalence to avoid abusing defeq. -/
-@[reducible, inline]
+@[reducible]
 def linearizeDiagonalEquiv (n : ℕ) : (linearize k G (Action.diagonal G n)).Equiv
     (diagonal k G n) := linearizeOfMulActionIso k G (Fin n → G)
 

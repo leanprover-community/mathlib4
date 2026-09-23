@@ -496,7 +496,7 @@ theorem symm_ofLinearMap (h₁ h₂) :
   rfl
 
 /-- If a linear map has an inverse, it is a linear equivalence. -/
-@[reducible, inline, deprecated ofLinearMap (since := "2026-06-23")]
+@[reducible, deprecated ofLinearMap (since := "2026-06-23")]
 def ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂ := ofLinearMap f g h₁ h₂
 
 @[deprecated coe_ofLinearMap +typeChanged (since := "2026-06-23")]

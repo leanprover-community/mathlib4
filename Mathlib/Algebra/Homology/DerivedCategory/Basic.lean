@@ -71,7 +71,7 @@ variable (C : Type u) [Category.{v} C] [Abelian C]
 /-- The assumption that a localized category for
 `(HomologicalComplex.quasiIso C (ComplexShape.up ℤ))` has been chosen, and that the morphisms
 in this chosen category are in `Type w`. -/
-@[reducible, inline]
+@[reducible]
 def HasDerivedCategory := MorphismProperty.HasLocalization.{w}
   (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
 
@@ -241,7 +241,7 @@ def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
 
 /-- The single functor `C ⥤ DerivedCategory C` which sends `X : C` to the
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
-@[reducible, inline]
+@[reducible]
 def singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
 set_option backward.defeqAttrib.useBackward true in

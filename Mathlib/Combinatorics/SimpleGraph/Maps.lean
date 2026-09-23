@@ -35,7 +35,7 @@ since its image is an induced subgraph.
 
 Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
 To make use of pre-existing simp lemmas, definitions involving morphisms are
-@[reducible, inline]
+@[reducible]
 defiations as well.
 -/
 
@@ -196,7 +196,7 @@ lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := 
 /-- Given a family of vertex types indexed by `ι`, pulling back from `⊤ : SimpleGraph ι`
 yields the complete multipartite graph on the family.
 Two vertices are adjacent if and only if their indices are not equal. -/
-@[reducible, inline]
+@[reducible]
 def completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) :=
   .comap Sigma.fst ⊤
 
@@ -226,7 +226,7 @@ adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`
 There is also a notion of induced subgraphs (see `SimpleGraph.Subgraph.induce`). -/
 /-- Restrict a graph to the vertices in the set `s`, deleting all edges incident to vertices
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
-@[reducible, inline]
+@[reducible]
 def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
 
@@ -252,7 +252,7 @@ lemma support_induce_subset_coe_preimage_support (s : Set V) :
 /-- Given a graph on a set of vertices, we can make it be a `SimpleGraph V` by
 adding in the remaining vertices without adding in any additional edges.
 This is a wrapper around `SimpleGraph.map`. -/
-@[reducible, inline]
+@[reducible]
 def spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 
@@ -294,7 +294,7 @@ theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u 
 /-- A graph homomorphism is a map on vertex sets that respects adjacency relations.
 
 The notation `G →g G'` represents the type of graph homomorphisms. -/
-@[reducible, inline]
+@[reducible]
 def Hom :=
   RelHom G.Adj G'.Adj
 
@@ -302,7 +302,7 @@ def Hom :=
 `G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
-@[reducible, inline]
+@[reducible]
 def Embedding :=
   RelEmbedding G.Adj G'.Adj
 
@@ -310,7 +310,7 @@ def Embedding :=
 
 The notation `G ≃g G'` represents the type of graph isomorphisms.
 -/
-@[reducible, inline]
+@[reducible]
 def Iso :=
   RelIso G.Adj G'.Adj
 
@@ -319,7 +319,7 @@ def Iso :=
 @[inherit_doc] infixl:50 " ≃g " => Iso
 
 /-- `HomClass F G H` asserts that `F` is a type of adjacency-preserving morphism. -/
-@[reducible, inline]
+@[reducible]
 def HomClass (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W) [FunLike F V W] :=
   RelHomClass F G.Adj H.Adj
 
@@ -434,7 +434,7 @@ theorem nonempty_hom_iff_exists_le_comap : Nonempty (H →g G) ↔ ∃ f, H ≤ 
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Composition of graph homomorphisms. -/
-@[reducible, inline]
+@[reducible]
 def comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
   RelHom.comp f' f
 
@@ -462,12 +462,12 @@ namespace Embedding
 variable {G G'} {H : SimpleGraph W} (f : G ↪g G')
 
 /-- The identity embedding from a graph to itself. -/
-@[reducible, inline]
+@[reducible]
 def refl : G ↪g G :=
   RelEmbedding.refl _
 
 /-- An embedding of graphs gives rise to a homomorphism of graphs. -/
-@[reducible, inline]
+@[reducible]
 def toHom : G →g G' :=
   f.toRelHom
 
@@ -559,7 +559,7 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α �
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Composition of graph embeddings. -/
-@[reducible, inline]
+@[reducible]
 def comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
   f.trans f'
 
@@ -638,22 +638,22 @@ namespace Iso
 variable {G G'} (f : G ≃g G')
 
 /-- The identity isomorphism of a graph with itself. -/
-@[reducible, inline]
+@[reducible]
 def refl : G ≃g G :=
   RelIso.refl _
 
 /-- An isomorphism of graphs gives rise to an embedding of graphs. -/
-@[reducible, inline]
+@[reducible]
 def toEmbedding : G ↪g G' :=
   f.toRelEmbedding
 
 /-- An isomorphism of graphs gives rise to a homomorphism of graphs. -/
-@[reducible, inline]
+@[reducible]
 def toHom : G →g G' :=
   f.toEmbedding.toHom
 
 /-- The inverse of a graph isomorphism. -/
-@[reducible, inline]
+@[reducible]
 def symm : G' ≃g G :=
   RelIso.symm f
 
@@ -754,11 +754,11 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Equivalence of homomorphisms induced by isomorphisms of graphs. -/
-@[reducible, inline]
+@[reducible]
 def homCongr (f' : G'' ≃g G''') : G →g G'' ≃ G' →g G''' := RelIso.relHomCongr f f'
 
 /-- Composition of graph isomorphisms. -/
-@[reducible, inline]
+@[reducible]
 def comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
   f.trans f'
 

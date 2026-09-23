@@ -37,12 +37,12 @@ noncomputable section
 namespace Condensed
 
 /-- The free condensed `R`-module on a finite set. -/
-@[reducible, inline]
+@[reducible]
 def finFree : FintypeCat.{u} ⥤ CondensedMod.{u} R :=
   FintypeCat.toProfinite ⋙ profiniteToCondensed ⋙ free R
 
 /-- The free condensed `R`-module on a profinite space. -/
-@[reducible, inline]
+@[reducible]
 def profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
   profiniteToCondensed ⋙ free R
 

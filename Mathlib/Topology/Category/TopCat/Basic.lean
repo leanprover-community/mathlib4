@@ -82,12 +82,12 @@ instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `TopCat` back into a `ContinuousMap`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {X Y : TopCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := TopCat) f
 
 /-- Typecheck a `ContinuousMap` as a morphism in `TopCat`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := TopCat) f
 
@@ -259,7 +259,7 @@ theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : 
   exact isOpenEmbedding_iff_isIso_comp f g
 
 /-- The `MorphismProperty` in `TopCat` of a morphism being an embedding. -/
-@[reducible, inline]
+@[reducible]
 def isEmbedding : MorphismProperty TopCat :=
   fun ⦃A X : TopCat⦄ (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom
 

@@ -33,7 +33,7 @@ open scoped Simplicial
 /-- The category of simplicial sets.
 This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
-@[reducible, inline]
+@[reducible]
 def SSet : Type (u + 1) :=
   SimplicialObject (Type u)
 
@@ -80,7 +80,7 @@ protected abbrev evaluation : SimplexCategoryᵒᵖ ⥤ SSet.{u} ⥤ Type u :=
   evaluation _ _
 
 /-- Truncated simplicial sets. -/
-@[reducible, inline]
+@[reducible]
 def Truncated (n : ℕ) := SimplicialObject.Truncated (Type u) n
 
 namespace Truncated
@@ -96,7 +96,7 @@ lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
   NatTrans.ext (funext w)
 
 /-- Further truncation of truncated simplicial sets. -/
-@[reducible, inline]
+@[reducible]
 def trunc (n m : ℕ) (h : m ≤ n := by lia) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
@@ -115,7 +115,7 @@ lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
 end Truncated
 
 /-- The truncation functor on simplicial sets. -/
-@[reducible, inline]
+@[reducible]
 def truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
 
 /-- For all `m ≤ n`, `truncation m` factors through `SSet.Truncated n`. -/
@@ -136,11 +136,11 @@ protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   SimplicialObject.Truncated.cosk n
 
 /-- The n-skeleton as an endofunctor on `SSet`. -/
-@[reducible, inline]
+@[reducible]
 def sk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.sk n
 
 /-- The n-coskeleton as an endofunctor on `SSet`. -/
-@[reducible, inline]
+@[reducible]
 def cosk (n : ℕ) : SSet.{u} ⥤ SSet.{u} := SimplicialObject.cosk n
 
 end
@@ -195,7 +195,7 @@ end adjunctions
 
 /-- The category of augmented simplicial sets, as a particular case of
 augmented simplicial objects. -/
-@[reducible, inline]
+@[reducible]
 def Augmented :=
   SimplicialObject.Augmented (Type u)
 

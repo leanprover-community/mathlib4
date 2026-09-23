@@ -69,7 +69,7 @@ theorem extendedHom_mk (I : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
   exact extendedHom_quotientMk A B I
 
 /-- The extension of a nonzero integral ideal along an injective extension of domains. -/
-@[reducible, inline]
+@[reducible]
 def extendedIdeal (I : (Ideal A)⁰) : (Ideal B)⁰ :=
   ⟨I.1.map (algebraMap A B), mem_nonZeroDivisors_iff_ne_zero.mpr <|
     (Ideal.map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective A B)).not.mpr

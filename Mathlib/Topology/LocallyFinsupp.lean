@@ -60,7 +60,7 @@ variable (X Y) in
 A function with locally finite support is a function with locally finite support within
 `⊤ : Set X`.
 -/
-@[reducible, inline]
+@[reducible]
 def Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (Set.univ : Set X) Y
 
 /--
@@ -139,7 +139,7 @@ lemma coe_mk [Zero Y] (f : X → Y) (h : f.support ⊆ U)
     ⇑(Function.locallyFinsuppWithin.mk f h h') = f := rfl
 
 /-- This allows writing `D.support` instead of `Function.support D` -/
-@[reducible, inline]
+@[reducible]
 def support [Zero Y] (D : locallyFinsuppWithin U Y) := Function.support D
 
 lemma supportWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :

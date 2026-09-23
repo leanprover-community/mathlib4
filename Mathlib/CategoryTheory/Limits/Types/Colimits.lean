@@ -144,7 +144,7 @@ namespace TypeMax
 /-- (internal implementation) the colimit cocone of a functor,
 implemented as a quotient of a sigma type
 -/
-@[reducible, inline]
+@[reducible]
 def colimitCocone (F : J ⥤ Type (max v u)) : Cocone F :=
   F.coconeTypesEquiv F.coconeTypes
 

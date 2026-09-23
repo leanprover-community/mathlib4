@@ -35,12 +35,12 @@ def currying₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C�
       (prod.associativity C₁ C₂ (C₃ × C₄))).congrLeft)))
 
 /-- Uncurrying a functor in four variables. -/
-@[reducible, inline]
+@[reducible]
 def uncurry₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ⥤ C₁ × C₂ × C₃ × C₄ ⥤ E :=
   currying₄.functor
 
 /-- Currying a functor in four variables. -/
-@[reducible, inline, simps! obj_map_app_app_app obj_obj_map_app_app
+@[reducible, simps! obj_map_app_app_app obj_obj_map_app_app
   obj_obj_obj_map_app obj_obj_obj_obj_map
   map_app_app_app_app]
 def curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E :=

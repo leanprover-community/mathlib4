@@ -57,23 +57,23 @@ theorem initial_incl {n m : ℕ} [NeZero n] (hm : n ≤ m) : (incl n m).Initial 
   apply Functor.initial_of_comp_full_faithful _ (inclusion m)
 
 /-- Abbreviation for face maps in the `n`-truncated simplex category. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def δ (m : Nat) {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
   (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated m) ⟶ ⟨⦋n + 1⦌, hn'⟩ := Hom.tr (SimplexCategory.δ i)
 
 /-- Abbreviation for degeneracy maps in the `n`-truncated simplex category. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def σ (m : Nat) {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
     (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated m) ⟶ ⟨⦋n⦌, hn'⟩ := Hom.tr (SimplexCategory.σ i)
 
 section Two
 
 /-- Abbreviation for face maps in the 2-truncated simplex category. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) := δ 2 i hn hn'
 
 /-- Abbreviation for face maps in the 2-truncated simplex category. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) := σ 2 i hn hn'
 
 @[reassoc (attr := simp)]

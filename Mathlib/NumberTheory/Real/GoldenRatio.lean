@@ -34,11 +34,11 @@ open Polynomial
 namespace Real
 
 /-- The golden ratio `φ := (1 + √5)/2`. -/
-@[reducible, inline]
+@[reducible]
 def goldenRatio : ℝ := (1 + √5) / 2
 
 /-- The conjugate of the golden ratio `ψ := (1 - √5)/2`. -/
-@[reducible, inline]
+@[reducible]
 def goldenConj : ℝ := (1 - √5) / 2
 
 @[inherit_doc] scoped[goldenRatio] notation "φ" => Real.goldenRatio

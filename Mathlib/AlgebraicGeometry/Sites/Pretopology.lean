@@ -40,7 +40,7 @@ def pretopology (P : MorphismProperty Scheme.{u}) [P.IsStableUnderBaseChange]
 
 /-- The Grothendieck topology on the category of schemes induced by the pretopology defined by
 `P`-covers. -/
-@[reducible, inline]
+@[reducible]
 def grothendieckTopology (P : MorphismProperty Scheme.{u}) :
     GrothendieckTopology Scheme.{u} :=
   (precoverage P).toGrothendieck

@@ -34,7 +34,7 @@ namespace CategoryTheory.Bicategory
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 /-- A bicategory is locally groupoidal if the categories of 1-morphisms are groupoids. -/
-@[reducible, inline, kerodon 009Q]
+@[reducible, kerodon 009Q]
 def IsLocallyGroupoid (B : Type u₁) [Bicategory.{w₁, v₁} B] := ∀ (b c : B), IsGroupoid (b ⟶ c)
 
 /-- Given a bicategory `B`, `Pith B` is the bicategory obtained by discarding the non-invertible

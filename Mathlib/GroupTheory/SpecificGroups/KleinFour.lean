@@ -156,7 +156,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
 
 /-- Any two `IsKleinFour` groups are isomorphic via any equivalence which sends the identity of one
 group to the identity of the other. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Any two `IsAddKleinFour` groups are isomorphic via any
 equivalence which sends the identity of one group to the identity of the other. -/]
 def mulEquiv [IsKleinFour G₂] (e : G₁ ≃ G₂) (he : e 1 = 1) : G₁ ≃* G₂ :=

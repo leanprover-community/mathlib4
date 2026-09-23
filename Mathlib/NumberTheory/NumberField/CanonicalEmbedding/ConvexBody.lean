@@ -315,7 +315,7 @@ theorem convexBodySumFun_continuous :
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
-@[reducible, inline]
+@[reducible]
 def convexBodySum : Set (mixedSpace K) := { x | convexBodySumFun x ≤ B }
 
 open scoped Classical in

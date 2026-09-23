@@ -95,7 +95,7 @@ end GroupCone
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
 
 /-- Construct a partial order by designating a cone in an abelian group. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a partial order by designating a cone in an abelian group. -/]
 def PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le a b := b / a ∈ C
@@ -110,7 +110,7 @@ lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
 
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/]
 def LinearOrder.mkOfGroupCone
     [GroupConeClass S G] [HasMemOrInvMem C] [DecidablePred (· ∈ C)] : LinearOrder G where

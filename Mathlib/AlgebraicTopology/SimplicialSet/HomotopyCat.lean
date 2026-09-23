@@ -535,7 +535,7 @@ end Truncated
 
 /-- The homotopy category of a simplicial set is defined as the homotopy
 category of its `2`-truncation. -/
-@[reducible, inline]
+@[reducible]
 def HomotopyCategory (X : SSet.{u}) : Type u := ((truncation 2).obj X).HomotopyCategory
 
 /-- The functor `X.HomotopyCategory ⥤ Y.HomotopyCategory` that is induced

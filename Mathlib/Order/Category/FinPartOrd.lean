@@ -44,7 +44,7 @@ instance (X : FinPartOrd) : PartialOrder X :=
 attribute [instance] FinPartOrd.isFintype
 
 /-- Construct a bundled `FinPartOrd` from `PartialOrder` + `Fintype`. -/
-@[reducible, inline]
+@[reducible]
 def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd where
   carrier := α
 
@@ -70,7 +70,7 @@ instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
   forget₂.map f := FintypeCat.homMk f.hom
 
 /-- Typecheck a `OrderHom` as a morphism in `FinPartOrd`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y] (f : X →o Y) :
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := FinPartOrd) f

@@ -57,12 +57,12 @@ namespace Path
 variable {n : ℕ} {X : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
 /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
-@[reducible, inline]
+@[reducible]
 def vertex (f : Path X m) (i : Fin (m + 1)) : X _⦋0⦌ₙ₊₁ :=
   Path₁.vertex f i
 
 /-- A path includes the data of `n` 1-simplices in `X`. -/
-@[reducible, inline]
+@[reducible]
 def arrow (f : Path X m) (i : Fin m) : X _⦋1⦌ₙ₊₁ :=
   Path₁.arrow f i
 
@@ -203,7 +203,7 @@ end Truncated
 
 /-- A path of length `n` in a simplicial set `X` is defined as a 1-truncated
 path in the 1-truncation of `X`. -/
-@[reducible, inline]
+@[reducible]
 def Path (X : SSet.{u}) (n : ℕ) := truncation 1 |>.obj X |>.Path n
 
 namespace Path
@@ -211,12 +211,12 @@ namespace Path
 variable {X : SSet.{u}} {n : ℕ}
 
 /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
-@[reducible, inline]
+@[reducible]
 def vertex (f : Path X n) (i : Fin (n + 1)) : X _⦋0⦌ :=
   Truncated.Path.vertex f i
 
 /-- A path includes the data of `n` 1-simplices in `X`. -/
-@[reducible, inline]
+@[reducible]
 def arrow (f : Path X n) (i : Fin n) : X _⦋1⦌ :=
   Truncated.Path.arrow f i
 

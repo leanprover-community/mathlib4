@@ -40,7 +40,7 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`.
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
 `Real`, `NNReal`, `EReal`, `ENNReal`, and tuples made of any of those types. -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 def ValuedCSP (D C : Type*) [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C] :=
   Set (Σ (n : ℕ), (Fin n → D) → C) -- Cost functions `D^n → C` for any `n`
 
@@ -63,7 +63,7 @@ def ValuedCSP.Term.evalSolution {Γ : ValuedCSP D C} {ι : Type*}
   t.f (x ∘ t.app)
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`. -/
-@[reducible, inline]
+@[reducible]
 def ValuedCSP.Instance (Γ : ValuedCSP D C) (ι : Type*) : Type _ :=
   Multiset (Γ.Term ι)
 
@@ -88,7 +88,7 @@ def Function.HasMaxCutProperty (f : (Fin 2 → D) → C) : Prop :=
   ∃ a b : D, a ≠ b ∧ f.HasMaxCutPropertyAt a b
 
 /-- Fractional operation is a finite unordered collection of D^m → D possibly with duplicates. -/
-@[reducible, inline]
+@[reducible]
 def FractionalOperation (D : Type*) (m : ℕ) : Type _ :=
   Multiset ((Fin m → D) → D)
 

@@ -1287,7 +1287,7 @@ noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [Decid
 
 /-- Define a `StrongNormalizedGCDMonoid` structure on a monoid just from
 the existence of a `gcd`. -/
-@[reducible, inline]
+@[reducible]
 def strongNormalizedGCDMonoidOfExistsGCD [StrongNormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : StrongNormalizedGCDMonoid α where
   __ := normalizedGCDMonoidOfExistsGCD h
@@ -1332,7 +1332,7 @@ noncomputable def normalizedGCDMonoidOfExistsLCM [NormalizationMonoid α] [Decid
 
 /-- Define a `StrongNormalizedGCDMonoid` structure on a monoid just from
 the existence of a `lcm`. -/
-@[reducible, inline]
+@[reducible]
 def strongNormalizedGCDMonoidOfExistsLCM [StrongNormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : StrongNormalizedGCDMonoid α where
   __ := normalizedGCDMonoidOfExistsLCM h

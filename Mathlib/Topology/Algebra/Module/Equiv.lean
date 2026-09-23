@@ -81,7 +81,7 @@ ContinuousSemilinearEquivClass.inv_continuous
 /-- `ContinuousLinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
 `R`-linear equivs `M → M₂`. This is an abbreviation for
 `ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`. -/
-@[reducible, inline]
+@[reducible]
 def ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
@@ -950,7 +950,7 @@ def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) wh
   __ := Fin.consLinearEquiv R M
 
 /-- `Fin.cons` in the codomain of continuous linear maps. -/
-@[reducible, inline]
+@[reducible]
 def _root_.ContinuousLinearMap.finCons
     [AddCommMonoid N] [Module R N] [TopologicalSpace N]
     (f : N →L[R] M 0) (fs : N →L[R] Π i, M (Fin.succ i)) :
@@ -1155,7 +1155,7 @@ end ContinuousLinearEquiv
 
 /-- The top submodule is continuous linearly equivalent to the module.
 This is the continuous version of `Submodule.topEquiv`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
   __ := Submodule.topEquiv

@@ -122,7 +122,7 @@ finite chosen products. -/
 -- Note: This is not an instance as one might already have a (different) `CartesianMonoidalCategory`
 -- instance on `D` (as for example with sheaves).
 -- See note [reducible non-instances]
-@[reducible, inline]
+@[reducible]
 def CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
     CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts

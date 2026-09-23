@@ -149,23 +149,23 @@ deriving LieRing, Inhabited, LieAlgebra R
 namespace LieAlgebra
 
 /-- The exceptional split Lie algebra of type e₆. -/
-@[reducible, inline]
+@[reducible]
 def e₆ := Matrix.ToLieAlgebra R (CartanMatrix.E 6)
 
 /-- The exceptional split Lie algebra of type e₇. -/
-@[reducible, inline]
+@[reducible]
 def e₇ := Matrix.ToLieAlgebra R (CartanMatrix.E 7)
 
 /-- The exceptional split Lie algebra of type e₈. -/
-@[reducible, inline]
+@[reducible]
 def e₈ := Matrix.ToLieAlgebra R (CartanMatrix.E 8)
 
 /-- The exceptional split Lie algebra of type f₄. -/
-@[reducible, inline]
+@[reducible]
 def f₄ := Matrix.ToLieAlgebra R CartanMatrix.F₄
 
 /-- The exceptional split Lie algebra of type g₂. -/
-@[reducible, inline]
+@[reducible]
 def g₂ := Matrix.ToLieAlgebra R CartanMatrix.G₂
 
 end LieAlgebra

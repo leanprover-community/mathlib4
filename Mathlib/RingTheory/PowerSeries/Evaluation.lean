@@ -58,7 +58,7 @@ section
 variable [TopologicalSpace R] [TopologicalSpace S]
 
 /-- Points at which evaluation of power series is well behaved -/
-@[reducible, inline]
+@[reducible]
 def HasEval (a : S) := IsTopologicallyNilpotent a
 
 theorem hasEval_def (a : S) : HasEval a ↔ IsTopologicallyNilpotent a := .rfl

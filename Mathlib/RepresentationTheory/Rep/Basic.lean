@@ -57,7 +57,7 @@ attribute [coe] V
 variable (ρ) in
 /-- The object in the category of representations associated to a type equipped a representation.
 This is the preferred way to construct a term of `Rep k G`. -/
-@[reducible, inline]
+@[reducible]
 def of : Rep.{w} k G := ⟨X, ρ⟩
 
 variable (X ρ) in
@@ -84,12 +84,12 @@ instance : ConcreteCategory (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ
 
 variable {A B} in
 /-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := Rep k G) f
 
 variable {A B} in
 /-- Typecheck an `IntertwiningMap` as a morphism in `Rep`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom (f : ρ.IntertwiningMap σ) : of ρ ⟶ of σ :=
   ConcreteCategory.ofHom (C := Rep.{w} k G) f
 
@@ -286,7 +286,7 @@ lemma ofHom_sum {ι : Type u'} {M N : Type v'} [AddCommGroup M] [AddCommGroup N]
 
 variable (k G) in
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
-@[reducible, inline]
+@[reducible]
 def trivial (V : Type w) [AddCommGroup V] [Module k V] : Rep k G :=
   Rep.of (Representation.trivial k G V)
 
@@ -332,29 +332,29 @@ variable (k G)
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-@[reducible, inline]
+@[reducible]
 def ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
-@[reducible, inline]
+@[reducible]
 def leftRegular : Rep k G :=
   ofMulAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-@[reducible, inline]
+@[reducible]
 def diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 
 /-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
 multiplication in `G`. -/
-@[reducible, inline]
+@[reducible]
 def diagonalOneIsoLeftRegular :
     diagonal k G 1 ≅ leftRegular k G := Rep.mkIso (Representation.diagonalOneEquivLeftRegular k G)
 
 /-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
 isomorphic to the trivial representation on `k`. -/
-@[reducible, inline]
+@[reducible]
 def ofMulActionSubsingletonIsoTrivial
     (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
     ofMulAction k G H ≅ trivial k G k :=
@@ -405,7 +405,7 @@ variable {k G}
 
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
-@[reducible, inline]
+@[reducible]
 def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
   Rep.ofHom ⟨Finsupp.lift A k G (fun g ↦ A.ρ g x) ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
     fun g ↦ by ext; simp⟩
@@ -418,7 +418,7 @@ variable (A : Rep k G)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
 restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
-@[reducible, inline]
+@[reducible]
 def subrepresentation (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
     Rep k G := Rep.of (A.ρ.subrepresentation W le_comap)
 
@@ -429,7 +429,7 @@ def subtype (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)` and a `G`-invariant `k`-submodule `W ≤ V`, this
 is the representation induced on `V ⧸ W` by `ρ`. -/
-@[reducible, inline]
+@[reducible]
 def quotient (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
     Rep k G := Rep.of (A.ρ.quotient W le_comap)
 
@@ -448,7 +448,7 @@ def trivialFunctor : ModuleCat.{w} k ⥤ Rep.{w} k G where
   map f := ofHom ⟨f.hom, fun _ ↦ rfl⟩
 
 /-- A predicate for representations that fix every element. -/
-@[reducible, inline]
+@[reducible]
 def IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
 instance (X : ModuleCat k) : ((trivialFunctor k G).obj X).IsTrivial where
@@ -473,7 +473,7 @@ instance hasForgetToModuleCat :
 
 /-- A morphism in `Rep k G` has an underlying linear map attached to it hence induce a morphism in
   `ModuleCat k`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.toModuleCatHom (f : A ⟶ B) : ModuleCat.of k A.V ⟶ ModuleCat.of k B.V :=
   ModuleCat.ofHom f.hom.toLinearMap
 
@@ -536,7 +536,7 @@ instance : (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)).Additive where
 
 /-- Forgetting `Rep` to `ModuleCat` is the same as first map to `Action`
   then forget to `ModuleCat`. -/
-@[reducible, inline]
+@[reducible]
 def forgetNatIsoActionForget : forget₂ (Rep.{w} k G) (ModuleCat k) ≅ (RepToAction k G) ⋙
     Action.forget (ModuleCat k) G := .refl _
 
@@ -643,7 +643,7 @@ instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
     simp [smul_hom]
 
 /-- The equivalence between `IntertwiningMap`s and morphism between `X Y : Rep k G` is linear. -/
-@[reducible, inline]
+@[reducible]
 def homLinearEquiv (X Y : Rep k G) : (X ⟶ Y) ≃ₗ[k] (X.ρ.IntertwiningMap Y.ρ) where
   __ := homEquiv
   map_add' := add_hom
@@ -910,7 +910,7 @@ variable (α : Type u') (A : Rep k G)
 
 variable {k G} in
 /-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
-@[reducible, inline]
+@[reducible]
 def finsupp : Rep k G :=
   Rep.of (Representation.finsupp A.ρ α)
 
@@ -918,21 +918,21 @@ def finsupp : Rep k G :=
 
 /-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
 `k[G]`. -/
-@[reducible, inline]
+@[reducible]
 def free : Rep k G := Rep.of (Representation.free k G α)
 
 variable {α}
 
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
-@[reducible, inline]
+@[reducible]
 def freeLift (f : α → A) :
     free k G α ⟶ A := Rep.ofHom (Representation.freeLift A.ρ f)
 
 variable (α) in
 /-- The natural linear equivalence between functions `α → A` and representation morphisms
 `(α →₀ k[G]) ⟶ A`. -/
-@[reducible, inline]
+@[reducible]
 def freeLiftLEquiv :
     (free k G α ⟶ A) ≃ₗ[k] (α → A) :=
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
@@ -951,13 +951,13 @@ variable (A B : Rep.{u} k G) (α : Type u) [DecidableEq α]
 open TensorProduct in
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
-@[reducible, inline]
+@[reducible]
 def finsuppTensorLeft : A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
   mkIso (Representation.finsuppTensorLeft A.ρ B.ρ α)
 
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `A ⊗ (α →₀ B) ≅ (A ⊗ B) →₀ α` sending `a ⊗ₜ single x b ↦ single x (a ⊗ₜ b)`. -/
-@[reducible, inline]
+@[reducible]
 def finsuppTensorRight : A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
   mkIso (Representation.finsuppTensorRight A.ρ B.ρ α)
 
@@ -966,7 +966,7 @@ section
 variable (k G α : Type u) [DecidableEq α] [CommRing k] [Monoid G]
 
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
-@[reducible, inline]
+@[reducible]
 def leftRegularTensorTrivialIsoFree : leftRegular k G ⊗ trivial k G k[α] ≅ free k G α :=
   mkIso (Representation.leftRegularTensorTrivialIsoFree α)
 
@@ -976,7 +976,7 @@ end Finsupp
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-@[reducible, inline, simps]
+@[reducible, simps]
 def linearization : Action (Type w) G ⥤ Rep.{max w u} k G where
   obj X := .of <| .linearize k G X
   map f := Rep.ofHom <| Representation.linearizeMap f
@@ -1043,7 +1043,7 @@ end
 variable (k G) in
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
-@[reducible, inline]
+@[reducible]
 def linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.trivial _ X) ≅ trivial k G k[X] :=
   Rep.mkIso (Representation.linearizeTrivialIso k G X)
@@ -1051,14 +1051,14 @@ def linearizationTrivialIso (X : Type u) :
 variable (k G) in
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
-@[reducible, inline]
+@[reducible]
 def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Rep.mkIso (Representation.linearizeOfMulActionIso k G H)
 
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
-@[reducible, inline]
+@[reducible]
 def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A :=
   homLinearEquiv _ _ ≪≫ₗ Representation.leftRegularMapEquiv A.ρ
 

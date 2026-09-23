@@ -32,7 +32,7 @@ variable (X)
 
 /-- The fundamental group is the automorphism group (vertex group) of the basepoint
 in the fundamental groupoid. -/
-@[reducible, inline]
+@[reducible]
 def FundamentalGroup (x : X) :=
   End (FundamentalGroupoid.mk x)
 
@@ -59,25 +59,25 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
   fundamentalGroupMulEquivOfPath (PathConnectedSpace.somePath x₀ x₁)
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
-@[reducible, inline]
+@[reducible]
 def toArrow {x : X} (p : FundamentalGroup X x) :
     FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
   p
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
-@[reducible, inline]
+@[reducible]
 def toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
   toArrow p
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-@[reducible, inline]
+@[reducible]
 def fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
     FundamentalGroup X x :=
   p
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
-@[reducible, inline]
+@[reducible]
 def fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
   fromArrow p
 

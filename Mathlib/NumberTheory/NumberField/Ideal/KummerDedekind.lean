@@ -107,7 +107,7 @@ variable (p θ) in
 /--
 The finite set of monic irreducible factors of `minpoly ℤ θ` modulo `p`.
 -/
-@[reducible, inline]
+@[reducible]
 def monicFactorsMod : Finset ((ZMod p)[X]) :=
   (normalizedFactors (map (Int.castRingHom (ZMod p)) (minpoly ℤ θ))).toFinset
 

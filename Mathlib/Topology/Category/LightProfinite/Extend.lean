@@ -176,12 +176,12 @@ variable (S : LightProfinite.{u})
 A functor `StructuredArrow S toLightProfinite ⥤ FintypeCat` whose limit in `LightProfinite` is
 isomorphic to `S`.
 -/
-@[reducible, inline]
+@[reducible]
 def fintypeDiagram' : StructuredArrow S toLightProfinite ⥤ FintypeCat :=
   StructuredArrow.proj S toLightProfinite
 
 /-- An abbreviation for `S.fintypeDiagram' ⋙ toLightProfinite`. -/
-@[reducible, inline]
+@[reducible]
 def diagram' : StructuredArrow S toLightProfinite ⥤ LightProfinite :=
   S.fintypeDiagram' ⋙ toLightProfinite
 

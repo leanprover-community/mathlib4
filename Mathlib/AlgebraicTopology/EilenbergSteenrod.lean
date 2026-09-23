@@ -149,7 +149,7 @@ export IsHomotopyInvariant (map_eq_of_homotopy)
 
 variable (C c) in
 /-- An abbreviation for `HomologyPretheory.IsHomotopyInvariant` as `ObjectProperty`. -/
-@[reducible, inline]
+@[reducible]
 def isHomotopyInvariant : ObjectProperty (HomologyPretheory.{u} C c) :=
   IsHomotopyInvariant
 

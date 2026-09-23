@@ -243,7 +243,7 @@ noncomputable abbrev ιSigmaBoundary : (∂Δ[d] : SSet) ⟶ sigmaBoundary i d :
 
 /-- Given a monomorphism `i : X ⟶ Y` of simplicial sets and a nondegenerate `d`-simplex
 of `Y` not in the range of `i`, this is the corresponding morphism `Δ[d] ⟶ Y`. -/
-@[reducible, inline]
+@[reducible]
 def map : Δ[d] ⟶ Y := yonedaEquiv.symm c.simplex
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -294,7 +294,7 @@ noncomputable abbrev b : sigmaStdSimplex i d ⟶ skeletonOfMono i (d + 1) :=
   Sigma.desc (fun c ↦ Subcomplex.lift c.map c.range_map_le)
 
 /-- the right morphism of the pushout square `isPushout i d`. -/
-@[reducible, inline]
+@[reducible]
 def r : (skeletonOfMono i d : SSet) ⟶ skeletonOfMono i (d + 1) :=
   Subcomplex.homOfLE ((skeletonOfMono i).monotone (by simp))
 

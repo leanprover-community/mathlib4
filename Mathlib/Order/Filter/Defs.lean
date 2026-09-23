@@ -306,7 +306,7 @@ def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
 `x ∈ s ↔ x ∈ t` belongs to `l`.
 
 This is definitionally `(· ∈ s) =ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
-@[reducible, inline]
+@[reducible]
 defiation) to avoid simp unfolding membership of concrete sets. -/
 def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
   EventuallyEq l (fun x => x ∈ s) (fun x => x ∈ t)
@@ -315,7 +315,7 @@ def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
 `x ∈ s → x ∈ t` belongs to `l`.
 
 This is definitionally `(· ∈ s) ≤ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
-@[reducible, inline]
+@[reducible]
 defiation) to avoid simp unfolding membership of concrete sets. -/
 def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
   EventuallyLE l (fun x => x ∈ s) (fun x => x ∈ t)

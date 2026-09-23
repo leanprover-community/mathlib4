@@ -49,7 +49,7 @@ variable (R V) in
 
 This is only meaningful when the module is finite and free,
 for otherwise, it coincides with the group of linear equivalences. -/
-@[reducible, inline]
+@[reducible]
 def SpecialLinearGroup := { u : V ≃ₗ[R] V // u.det = 1 }
 
 namespace SpecialLinearGroup

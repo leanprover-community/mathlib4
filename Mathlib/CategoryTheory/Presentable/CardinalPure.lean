@@ -56,7 +56,7 @@ variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 variable (C) in
 /-- `κ`-pure morphisms, as a property of morphisms in a category `C`. -/
-@[reducible, inline]
+@[reducible]
 def isCardinalPure : MorphismProperty C := fun _ _ f ↦ IsCardinalPure κ f
 
 instance {X Y : C} (f : X ⟶ Y) [IsSplitMono f] : IsCardinalPure κ f where

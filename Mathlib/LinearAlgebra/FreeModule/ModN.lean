@@ -24,7 +24,7 @@ variable {G H M : Type*} [AddCommGroup G] {n : ℕ}
 
 variable (G n) in
 /-- `ModN G n` denotes the quotient of `G` by multiples of `n` -/
-@[reducible, inline]
+@[reducible]
 def ModN : Type _ := G ⧸ LinearMap.range (LinearMap.lsmul ℤ G n)
 
 namespace ModN

@@ -232,19 +232,19 @@ def FinEncoding.toEncoding {α : Type u} {Γ : Type v} [Fintype Γ]
     (e : Encoding α Γ) : Encoding α Γ := e
 
 /-- Deprecated alias for `encodingNatBool`. -/
-@[reducible, inline, deprecated encodingNatBool (since := "2026-05-07")]
+@[reducible, deprecated encodingNatBool (since := "2026-05-07")]
 def finEncodingNatBool := encodingNatBool
 
 /-- Deprecated alias for `encodingNatΓ'`. -/
-@[reducible, inline, deprecated encodingNatΓ' (since := "2026-05-07")]
+@[reducible, deprecated encodingNatΓ' (since := "2026-05-07")]
 def finEncodingNatΓ' := encodingNatΓ'
 
 /-- Deprecated alias for `unaryEncodingNat`. -/
-@[reducible, inline, deprecated unaryEncodingNat (since := "2026-05-07")]
+@[reducible, deprecated unaryEncodingNat (since := "2026-05-07")]
 def unaryFinEncodingNat := unaryEncodingNat
 
 /-- Deprecated alias for `encodingBoolBool`. -/
-@[reducible, inline, deprecated encodingBoolBool (since := "2026-05-07")]
+@[reducible, deprecated encodingBoolBool (since := "2026-05-07")]
 def finEncodingBoolBool := encodingBoolBool
 
 /-- Deprecated alias for `encodingList`. -/

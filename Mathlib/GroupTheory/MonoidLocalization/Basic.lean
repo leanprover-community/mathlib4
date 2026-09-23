@@ -205,7 +205,7 @@ end Localization
 
 set_option linter.translateOverwrite false in
 /-- The localization of a `CommMonoid` at one of its submonoids (as a quotient type). -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 AddLocalization
 /-- The localization of an `AddCommMonoid` at one of its submonoids (as a quotient type). -/]
 def Localization := OreLocalization S M
@@ -406,7 +406,7 @@ namespace LocalizationMap
 
 /-- A localization map between monoids automatically preserves 1 and therefore
 is a monoid homomorphism. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- A localization map between additive monoids automatically preserves 0 and
 therefore is an additive monoid homomorphism. -/]
 def toMonoidHom (f : LocalizationMap S N) : M →* N where
@@ -888,7 +888,7 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
   (injective_iff <| Localization.monoidOf S).mpr (fun _ _ ↦ .all _) |>.nontrivial
 
 /-- Any localization of a cancellative commutative monoid is cancellative. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Any localization of a cancellative commutative additive monoid is cancellative. -/]
 def cancelCommMonoid {M N} [CancelCommMonoid M] {S : Submonoid M}
     [CommMonoid N] (f : S.LocalizationMap N) : CancelCommMonoid N where

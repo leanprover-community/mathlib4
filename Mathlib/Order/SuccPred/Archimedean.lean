@@ -120,7 +120,7 @@ lemma lt_or_le_of_codirected [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ 
 This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non-instances]
-@[reducible, inline]
+@[reducible]
 def IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsCodirectedOrder α] : LinearOrder α where
@@ -135,7 +135,7 @@ def IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
 This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non-instances]
-@[reducible, inline,
+@[reducible,
 to_dual existing]
 def IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]

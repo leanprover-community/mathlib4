@@ -83,7 +83,7 @@ protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
 
 See also `Function.Surjective.distribMulActionLeft`.
 -/
-@[reducible, inline]
+@[reducible]
 def Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroClass R M]
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
@@ -94,7 +94,7 @@ variable (A)
 
 /-- Compose a `SMulZeroClass` with a function, with scalar multiplication `f r' • m`.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def SMulZeroClass.compFun (f : N → M) :
     SMulZeroClass N A where
   smul := SMul.comp.smul f
@@ -303,7 +303,7 @@ protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f 
 
 See also `Function.Surjective.distribMulActionLeft`.
 -/
-@[reducible, inline]
+@[reducible]
 def Function.Surjective.distribSMulLeft {R S M : Type*} [AddZeroClass M] [DistribSMul R M]
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribSMul S M :=
@@ -314,7 +314,7 @@ variable (A)
 
 /-- Compose a `DistribSMul` with a function, with scalar multiplication `f r' • m`.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def DistribSMul.compFun (f : N → M) : DistribSMul N A :=
   { SMulZeroClass.compFun A f with
     smul_add := fun x => smul_add (f x) }

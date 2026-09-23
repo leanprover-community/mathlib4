@@ -73,7 +73,7 @@ theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton 
 /-- Construct a partial order from an `isStrictOrder` relation.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
@@ -95,7 +95,7 @@ def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
   let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
     ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
@@ -296,7 +296,7 @@ instance (r : α → α → Prop) [i : WellFounded r] : WellFounded (Relation.Tr
   WellFounded.transGen i
 
 /-- A class for a well-founded relation `<`. -/
-@[to_dual (attr := reducible, inline) /-- A class for a well-founded relation `>`. -/]
+@[to_dual (attr := reducible) /-- A class for a well-founded relation `>`. -/]
 def WellFoundedLT (α : Type*) [LT α] : Prop :=
   @WellFounded α (· < ·)
 

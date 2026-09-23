@@ -60,7 +60,7 @@ lemma w (pres : ColimitPresentation J X) {i j : J} (f : i ⟶ j) :
   simp
 
 /-- The cocone associated to a colimit presentation. -/
-@[reducible, inline]
+@[reducible]
 def cocone (pres : ColimitPresentation J X) : Cocone pres.diag :=
   Cocone.mk _ pres.ι
 
@@ -144,7 +144,7 @@ lemma w (pres : LimitPresentation J X) {i j : J} (f : i ⟶ j) :
   simpa using (pres.π.naturality f).symm
 
 /-- The cone associated to a limit presentation. -/
-@[reducible, inline]
+@[reducible]
 def cone (pres : LimitPresentation J X) : Cone pres.diag :=
   Cone.mk _ pres.π
 

@@ -35,7 +35,7 @@ formulae for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine
 
 All definitions and lemmas for Weierstrass curves in affine coordinates live in the namespace
 `WeierstrassCurve.Affine` to distinguish them from those in other coordinates. This is simply an
-@[reducible, inline]
+@[reducible]
 defiation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toAffine`.
 
 ## References
@@ -72,12 +72,12 @@ namespace WeierstrassCurve
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in affine coordinates. -/
-@[reducible, inline]
+@[reducible]
 def Affine : Type r :=
   WeierstrassCurve R
 
 /-- The conversion from a Weierstrass curve to affine coordinates. -/
-@[reducible, inline]
+@[reducible]
 def toAffine (W : WeierstrassCurve R) : Affine R :=
   W
 
@@ -258,13 +258,13 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
 variable (W) (f : R →+* S)
 
 /-- The Weierstrass curve in affine coordinates mapped over a ring homomorphism `f : R →+* S`. -/
-@[reducible, inline]
+@[reducible]
 def map : Affine S :=
   WeierstrassCurve.map W f
 
 variable (S) in
 /-- The Weierstrass curve in affine coordinates base changed to an algebra `S` over `R`. -/
-@[reducible, inline, simps!]
+@[reducible, simps!]
 def baseChange [Algebra R S] : Affine S :=
   WeierstrassCurve.baseChange W S
 

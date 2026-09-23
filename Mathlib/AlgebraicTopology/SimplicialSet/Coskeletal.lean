@@ -58,7 +58,7 @@ namespace isPointwiseRightKanExtensionAt
 
 /-- A morphism in `SimplexCategory` with domain `⦋0⦌`, `⦋1⦌`, or `⦋2⦌` defines an object in the
 comma category `StructuredArrow (op ⦋n⦌) (Truncated.inclusion (n := 2)).op`. -/
-@[reducible, inline]
+@[reducible]
 def strArrowMk₂ {i : ℕ} {n : ℕ} (φ : ⦋i⦌ ⟶ ⦋n⦌) (hi : i ≤ 2 := by lia) :
     StructuredArrow (op ⦋n⦌) (Truncated.inclusion 2).op :=
   StructuredArrow.mk (Y := op ⦋i⦌₂) φ.op

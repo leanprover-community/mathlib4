@@ -91,7 +91,7 @@ lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
   simpa only [moduleCat_exact_iff_range_eq_ker] using! hfg
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
-@[reducible, inline]
+@[reducible]
 def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
   S.f.hom.codRestrict _ S.moduleCat_zero_apply
 
@@ -205,7 +205,7 @@ variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N
 open CategoryTheory
 
 /-- Given a linear map `f : M → N`, we can obtain a short complex `0 → ker(f) → M → N`. -/
-@[reducible, inline]
+@[reducible]
 def LinearMap.shortComplexKer (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
   g := ModuleCat.ofHom.{v} f
@@ -221,7 +221,7 @@ theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.S
 variable {L : Type v} [AddCommGroup L] [Module R L]
 
 /-- The short complex in `ModuleCat` obtained from two linear map with composition equal to zero. -/
-@[reducible, inline]
+@[reducible]
 def ModuleCat.shortComplexOfCompEqZero (f : M →ₗ[R] N) (g : N →ₗ[R] L) (eq0 : g.comp f = 0) :
     ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom f
@@ -256,7 +256,7 @@ M'-----> N'-----> L'
 This complex is exact when we have `Function.Exact f g`, see
 `ModuleCat.shortComplexOfConj_exact`.
 -/
-@[reducible, inline]
+@[reducible]
 def ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
     ShortComplex (ModuleCat.{v} R) :=
   ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)

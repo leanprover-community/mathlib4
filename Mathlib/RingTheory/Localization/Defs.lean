@@ -101,7 +101,7 @@ class IsLocalization' : Prop extends M.IsLocalizationMap (algebraMap R S)
 
 /-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
-@[reducible, inline]
+@[reducible]
 def IsLocalization := @IsLocalization'
 
 theorem isLocalization_iff_isLocalizationMap :
@@ -145,7 +145,7 @@ theorem smul_bijective (m : M) : Bijective fun s : S ↦ m • s := by
   simpa only [Submonoid.smul_def, Algebra.smul_def] using! (map_units S m).smul_bijective
 
 /-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
-@[reducible, inline]
+@[reducible]
 def toLocalizationMap : M.LocalizationMap S where
   __ := algebraMap R S
   toFun := algebraMap R S

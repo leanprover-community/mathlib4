@@ -81,12 +81,12 @@ instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `SemiRingCat` back into a `RingHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {R S : SemiRingCat.{u}} (f : Hom R S) :=
   ConcreteCategory.hom (C := SemiRingCat) f
 
 /-- Typecheck a `RingHom` as a morphism in `SemiRingCat`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := SemiRingCat) f
 
@@ -241,12 +241,12 @@ instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `RingCat` back into a `RingHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {R S : RingCat.{u}} (f : Hom R S) :=
   ConcreteCategory.hom (C := RingCat) f
 
 /-- Typecheck a `RingHom` as a morphism in `RingCat`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := RingCat) f
 
@@ -410,12 +410,12 @@ instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `CommSemiRingCat` back into a `RingHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {R S : CommSemiRingCat.{u}} (f : Hom R S) :=
   ConcreteCategory.hom (C := CommSemiRingCat) f
 
 /-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := CommSemiRingCat) f
 
@@ -575,12 +575,12 @@ instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
   ofHom f := ⟨f⟩
 
 /-- The underlying ring hom. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {R S : CommRingCat.{u}} (f : Hom R S) :=
   ConcreteCategory.hom (C := CommRingCat) f
 
 /-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom (C := CommRingCat) f
 

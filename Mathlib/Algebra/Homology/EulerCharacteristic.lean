@@ -61,7 +61,7 @@ class EulerCharSigns where
 variable [c.EulerCharSigns]
 
 /-- The sign at index `i` for Euler characteristic computations. -/
-@[reducible, inline]
+@[reducible]
 def χ : ι → ℤˣ := EulerCharSigns.χ c
 
 /-- Signs alternate in the forward direction of the complex shape. -/

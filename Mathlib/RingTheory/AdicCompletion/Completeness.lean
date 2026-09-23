@@ -56,7 +56,7 @@ namespace AdicCompletion
 variable (M) in
 /-- The canonical inclusion from the adic completion of `I ^ n • M` to
 the adic completion of `M`. -/
-@[reducible, inline]
+@[reducible]
 def ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 

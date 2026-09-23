@@ -88,7 +88,7 @@ lemma apply_lie (x y : L) :
 lemma coe_toLinear_ne_zero_iff : (χ : L →ₗ[R] R) ≠ 0 ↔ χ.IsNonZero := by simp
 
 /-- The kernel of a weight of a Lie module with linear weights. -/
-@[reducible, inline]
+@[reducible]
 def ker := LinearMap.ker (χ : L →ₗ[R] R)
 
 end Weight

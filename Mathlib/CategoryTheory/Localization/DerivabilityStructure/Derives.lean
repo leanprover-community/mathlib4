@@ -48,7 +48,7 @@ morphism properties on `C₁` and `C₂`, and a functor `C₂ ⥤ H`, this
 is the property that `W₁` is inverted by `Φ.functor ⋙ F`.
 In case `Φ` is a (left/right) derivability structure, this allows
 the construction of a derived functor for `F` relatively to `W₂`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Derives : Prop := W₁.IsInvertedBy (Φ.functor ⋙ F)
 
 namespace Derives

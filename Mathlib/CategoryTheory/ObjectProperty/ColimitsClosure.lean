@@ -92,7 +92,7 @@ lemma colimitsClosure_isoClosure :
 
 /-- The closure of a property of objects of a category under colimits of
 shape `J` for a category `J`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def colimitClosure (J : Type*) [Category* J] : ObjectProperty C :=
   P.colimitsClosure (fun (_ : Unit) ↦ J)
 

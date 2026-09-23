@@ -31,7 +31,7 @@ namespace AlgebraicGeometry.Scheme
 variable (X Y : Scheme.{u})
 
 /-- The underlying sheaf of rings of a scheme. -/
-@[reducible, inline]
+@[reducible]
 def ringCatSheaf : TopCat.Sheaf RingCat.{u} X :=
   (sheafCompose _ (forget₂ CommRingCat RingCat.{u})).obj X.sheaf
 

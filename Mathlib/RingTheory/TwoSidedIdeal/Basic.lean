@@ -77,7 +77,7 @@ lemma mem_ofRingCon {x : R} {c : RingCon R} : x ∈ ofRingCon c ↔ c x 0 := Iff
 lemma coe_ofRingCon {c : RingCon R} : (ofRingCon c : Set R) = {x | c x 0} := rfl
 
 /-- A deprecated alias for `ofRingCon`. -/
-@[reducible, inline, deprecated ofRingCon (since := "2026-06-18")]
+@[reducible, deprecated ofRingCon (since := "2026-06-18")]
 def mk (c : RingCon R) : TwoSidedIdeal R := ofRingCon c
 
 @[deprecated mem_ofRingCon (since := "2026-06-18")]

@@ -662,7 +662,7 @@ lemma mulintEquivOfZPowersEqTop_strictAnti [CommGroup G] [PartialOrder G] [IsOrd
   exact zpow_right_strictAnti hg1 hxy
 
 /-- An infinite cyclic group is isomorphic to `Multiplicative ℤ`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def intCyclicMulEquiv [Group G] [IsCyclic G] : Multiplicative ℤ ≃* G :=
   intEquivOfZPowersEqTop _ (isCyclic_iff_exists_zpowers_eq_top.mp ‹IsCyclic G›).choose_spec
@@ -690,7 +690,7 @@ lemma intEquivOfZMultiplesEqTop_symm_apply_zsmul [AddGroup G]
   simp
 
 /-- An infinite cyclic additive group is isomorphic to `ℤ`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def intCyclicAddEquiv [AddGroup G] [IsAddCyclic G] : ℤ ≃+ G :=
   intEquivOfZMultiplesEqTop _ (isAddCyclic_iff_exists_zmultiples_eq_top.mp ‹_›).choose_spec

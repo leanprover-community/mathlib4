@@ -288,7 +288,7 @@ domain), either of these conditions implies the other; see
 `LinearMap.BilinForm.Nondegenerate.ofSeparatingLeft` and
 `LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot`, proved in a later file.
 -/
-@[reducible, inline]
+@[reducible]
 def Nondegenerate (B : BilinForm R M) : Prop :=
   LinearMap.Nondegenerate B
 

@@ -585,7 +585,7 @@ instance {n} : TopologicalSpace (Fin n) := ⊥
 instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 
 /-- A copy of a type equipped with the discrete topology. -/
-@[reducible, inline]
+@[reducible]
 def WithDiscreteTopology (α : Type*) := WithTopology α ⊥
 
 instance : DiscreteTopology (WithDiscreteTopology α) where

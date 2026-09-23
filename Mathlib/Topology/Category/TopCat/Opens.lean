@@ -370,7 +370,7 @@ instance IsOpenMap.functor_faithful {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpe
 We define `IsOpenEmbedding.functor` as `IsOpenEmbedding.isOpenMap.functor`, so it won't
 default to `IsInducing.functor` (which is equal but not defeq).
 -/
-@[reducible, inline]
+@[reducible]
 def Topology.IsOpenEmbedding.functor {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenEmbedding f) :=
     hf.isOpenMap.functor
 

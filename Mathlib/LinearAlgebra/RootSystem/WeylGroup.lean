@@ -160,7 +160,7 @@ lemma range_weylGroup_coweightHom :
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using! Subgroup.mul_mem _ h₁ h₂
 
 /-- The permutation representation of the Weyl group induced by `reflectionPerm`. -/
-@[reducible, inline]
+@[reducible]
 def weylGroupToPerm := (Equiv.indexHom P).domRestrict P.weylGroup
 
 lemma range_weylGroupToPerm :

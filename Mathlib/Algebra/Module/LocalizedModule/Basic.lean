@@ -86,7 +86,7 @@ instance r.setoid : Setoid (M × S) where
 /-- If `S` is a multiplicative subset of a ring `R` and `M` an `R`-module, then
 we can localize `M` by `S`.
 -/
-@[reducible, inline]
+@[reducible]
 def _root_.LocalizedModule : Type max u v :=
   OreLocalization S M
 
@@ -99,7 +99,7 @@ section
 variable {M S}
 
 /-- The canonical map sending `(m, s) ↦ m/s` -/
-@[reducible, inline]
+@[reducible]
 def mk (m : M) (s : S) : LocalizedModule S M := m /ₒ s
 
 theorem mk_eq {m m' : M} {s s' : S} : mk m s = mk m' s' ↔ ∃ u : S, u • s' • m = u • s • m' := by
@@ -448,7 +448,7 @@ instance : IsScalarTower R T (LocalizedModule S M) where
       smul'_mk, mul_smul]
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
-@[reducible, inline]
+@[reducible]
 def numeratorRingHom {A : Type*} [Semiring A] [Algebra R A] : A →+* A[S⁻¹] where
   toFun r := mk r 1
   map_one' := by simp [OreLocalization.one_def]
@@ -1152,7 +1152,7 @@ def liftOfLE : M₁ →ₗ[R] M₂ :=
   lift S₁ f₁ f₂ fun x ↦ map_units f₂ ⟨x.1, h x.2⟩
 
 /-- The natural map `Mₛ →ₗ[R] Mₜ` if `s ≤ t` (in `Submonoid R`). -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def _root_.LocalizedModule.liftOfLE : LocalizedModule S₁ M →ₗ[R] LocalizedModule S₂ M :=
   IsLocalizedModule.liftOfLE S₁ S₂ h

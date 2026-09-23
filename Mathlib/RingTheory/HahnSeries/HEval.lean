@@ -48,7 +48,7 @@ variable [CommRing V] [Algebra R V]
 /-- A summable family given by scalar multiples of powers of a positive order Hahn series.
 
 The scalar multiples are given by the coefficients of a power series. -/
-@[reducible, inline]
+@[reducible]
 def powerSeriesFamily (x : V⟦Γ⟧) (f : PowerSeries R) : SummableFamily Γ V ℕ :=
   smulFamily (fun n => f.coeff n) (powers x)
 

@@ -44,7 +44,7 @@ namespace Matrix
 section PartialOrder
 
 /-- The preorder on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
-@[reducible, inline]
+@[reducible]
 def instPreOrder : Preorder (Matrix n n 𝕜) where
   le A B := (B - A).PosSemidef
   le_refl A := sub_self A ▸ PosSemidef.zero
@@ -75,7 +75,7 @@ private lemma le_antisymm_aux {A : Matrix n n 𝕜} (h₁ : A.PosSemidef) (h₂ 
   simpa using le_antisymm h2 h1
 
 /-- The partial order on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
-@[reducible, inline]
+@[reducible]
 def instPartialOrder : PartialOrder (Matrix n n 𝕜) where
   le_antisymm A B h₁ h₂ := by
     simpa [sub_eq_zero, eq_comm] using le_antisymm_aux h₁

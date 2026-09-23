@@ -532,7 +532,7 @@ open UniversalFactorizationRing in
 This is the representing object of the functor
 `S ↦ "factorizations of p into coprime (monic deg m) * (monic deg k) in S"`.
 See `UniversalCoprimeFactorizationRing.homEquiv`. -/
-@[reducible, inline]
+@[reducible]
 def UniversalCoprimeFactorizationRing : Type _ :=
   Localization.Away (M := 𝓡) (presentation m k hn p).jacobian
 

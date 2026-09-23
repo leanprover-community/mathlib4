@@ -39,7 +39,7 @@ universe v u
 open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace CompHausLike
 
 /-- `LightProfinite` is the category of second countable profinite spaces. -/
-@[reducible, inline]
+@[reducible]
 def LightProfinite := CompHausLike
   (fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)
 
@@ -54,7 +54,7 @@ instance (X : Type*) [TopologicalSpace X]
 Construct a term of `LightProfinite` from a type endowed with the structure of a compact,
 Hausdorff, totally disconnected and second countable topological space.
 -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] [SecondCountableTopology X] : LightProfinite :=
   ↧X
@@ -76,23 +76,23 @@ instance {X : LightProfinite} : SecondCountableTopology X :=
 end LightProfinite
 
 /-- The fully faithful embedding of `LightProfinite` in `Profinite`. -/
-@[reducible, inline]
+@[reducible]
 def lightToProfinite : LightProfinite ⥤ Profinite :=
   CompHausLike.toCompHausLike (fun _ ↦ inferInstance)
 
 /-- `lightToProfinite` is fully faithful. -/
-@[reducible, inline]
+@[reducible]
 def lightToProfiniteFullyFaithful : lightToProfinite.FullyFaithful :=
   fullyFaithfulToCompHausLike _
 
 /-- The fully faithful embedding of `LightProfinite` in `CompHaus`. -/
-@[reducible, inline]
+@[reducible]
 def lightProfiniteToCompHaus : LightProfinite ⥤ CompHaus :=
   compHausLikeToCompHaus _
 
 /-- The fully faithful embedding of `LightProfinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
-@[reducible, inline]
+@[reducible]
 def LightProfinite.toTopCat : LightProfinite ⥤ TopCat :=
   CompHausLike.compHausLikeToTop _
 

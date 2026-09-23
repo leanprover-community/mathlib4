@@ -47,7 +47,7 @@ instance : CoeSort FinBoolAlg Type* :=
   ⟨fun X => X.carrier⟩
 
 /-- Construct a bundled `FinBoolAlg` from `BooleanAlgebra` + `Fintype`. -/
-@[reducible, inline]
+@[reducible]
 def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg where
   carrier := α
 

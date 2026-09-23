@@ -47,7 +47,7 @@ def OrderAddMonoidIso.toMultiplicativeRight {G H : Type*}
   right_inv e := by ext; simp
 
 /-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
-@[reducible, inline]
+@[reducible]
 def OrderMonoidIso.toAdditiveLeft {G H : Type*}
     [CommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
     (G ≃*o Multiplicative H) ≃ (Additive G ≃+o H) :=
@@ -63,7 +63,7 @@ def OrderAddMonoidIso.toMultiplicativeLeft {G H : Type*}
   right_inv e := by ext; simp
 
 /-- Reinterpret `Multiplicative G ≃*o H` as `G ≃+o Additive H` as. -/
-@[reducible, inline]
+@[reducible]
 def OrderMonoidIso.toAdditiveRight {G H : Type*}
     [AddCommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
     (Multiplicative G ≃*o H) ≃ (G ≃+o Additive H) :=

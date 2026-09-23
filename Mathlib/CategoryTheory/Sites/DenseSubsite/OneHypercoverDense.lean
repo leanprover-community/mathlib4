@@ -79,7 +79,7 @@ def toPreOneHypercover : PreOneHypercover X where
   w := data.w
 
 /-- The sigma type of all `data.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : data.I₀ × data.I₀`. -/
-@[reducible, inline]
+@[reducible]
 def I₁' : Type w := Sigma (fun (i : data.I₀ × data.I₀) ↦ data.I₁ i.1 i.2)
 
 /-- The shape of the multiforks attached to `data : F.PreOneHypercoverDenseData X`. -/

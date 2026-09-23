@@ -42,7 +42,7 @@ variable {A : X.Subcomplex} {ι : Type*}
 variable (A U V) in
 /-- Abbreviation for multicoequalizer diagrams in the complete lattice of
 subcomplexes of a simplicial set. -/
-@[reducible, inline]
+@[reducible]
 def MulticoequalizerDiagram := CompleteLattice.MulticoequalizerDiagram A U V
 
 namespace MulticoequalizerDiagram
@@ -82,7 +82,7 @@ end MulticoequalizerDiagram
 end
 
 /-- Abbreviation for bicartesian squares in the lattice of subcomplexes of a simplicial set. -/
-@[reducible, inline]
+@[reducible]
 def BicartSq (A₁ A₂ A₃ A₄ : X.Subcomplex) := Lattice.BicartSq A₁ A₂ A₃ A₄
 
 lemma BicartSq.isPushout {A₁ A₂ A₃ A₄ : X.Subcomplex} (sq : BicartSq A₁ A₂ A₃ A₄) :

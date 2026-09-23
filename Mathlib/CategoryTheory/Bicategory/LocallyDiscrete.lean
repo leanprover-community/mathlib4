@@ -112,7 +112,7 @@ end
 namespace Bicategory
 
 /-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
-@[reducible, inline]
+@[reducible]
 def IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete (b ⟶ c)
 
 instance (C : Type*) [Category* C] : IsLocallyDiscrete (LocallyDiscrete C) :=

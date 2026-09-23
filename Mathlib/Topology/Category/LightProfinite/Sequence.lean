@@ -50,7 +50,7 @@ lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInfty
 instance : MetrizableSpace (OnePoint ℕ) := isClosedEmbedding_natUnionInftyEmbedding.metrizableSpace
 
 /-- The one point compactification of the natural numbers as a light profinite set. -/
-@[reducible, inline]
+@[reducible]
 def NatUnionInfty : LightProfinite := of (OnePoint ℕ)
 
 @[inherit_doc]

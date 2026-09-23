@@ -129,11 +129,11 @@ lemma surjective (x : A.N) :
   · exact ⟨s, Or.inr (by rwa [N.ext_iff, SSet.N.ext_iff])⟩
 
 /-- The type (I) simplices of `h : A.PairingCore`, as a subset of `A.N`. -/
-@[reducible, inline]
+@[reducible]
 def I : Set A.N := Set.range h.type₁
 
 /-- The type (II) simplices of `h : A.PairingCore`, as a subset of `A.N`. -/
-@[reducible, inline]
+@[reducible]
 def II : Set A.N := Set.range h.type₂
 
 /-- The bijection `h.ι ≃ h.I` when `h : A.PairingCore`. -/

@@ -47,7 +47,7 @@ satisfied by `κ`-directed partially ordered types.
 (Note: for partially ordered types, "`κ`-directed" and
 "`κ`-filtered" are synonyms. This is implemented using the
 categorical notion `IsCardinalFiltered`.) -/
-@[reducible, inline]
+@[reducible]
 def isCardinalFiltered : ObjectProperty PartOrdEmb.{u} :=
   fun X ↦ IsCardinalFiltered X κ
 
@@ -101,7 +101,7 @@ variable (κ : Cardinal.{u}) [Fact κ.IsRegular]
 
 /-- The category of `κ`-filtered partially ordered types,
 with morphisms given by order embeddings. -/
-@[reducible, inline]
+@[reducible]
 def CardinalDirectedPoset :=
   (PartOrdEmb.isCardinalFiltered κ).FullSubcategory
 
@@ -110,14 +110,14 @@ variable {κ}
 /-- The embedding of the category of `κ`-directed
 partially ordered types in the category of partially
 ordered types. -/
-@[reducible, inline]
+@[reducible]
 def CardinalDirectedPoset.ι : CardinalDirectedPoset κ ⥤ PartOrdEmb :=
   ObjectProperty.ι _
 
 namespace CardinalDirectedPoset
 
 /-- Constructor for objects in `CardinalDirectedPoset κ`. -/
-@[reducible, inline]
+@[reducible]
 def of (J : PartOrdEmb.{u}) [IsCardinalFiltered J κ] : CardinalDirectedPoset κ where
   obj := J
   property := inferInstance
@@ -158,7 +158,7 @@ instance (J : CardinalDirectedPoset κ) (κ' : Cardinal.{u}) [Fact κ'.IsRegular
 
 /-- The map `CardinalDirectedPoset κ → CardinalDirectedPoset κ` which sends
 a partially ordered `κ`-filtered type `J` to `WithTop J`. -/
-@[reducible, inline]
+@[reducible]
 def withTop (J : CardinalDirectedPoset κ) : CardinalDirectedPoset κ :=
   ↧↧(WithTop J.obj)
 
@@ -330,7 +330,7 @@ lemma exists_mem_propSetWithTop (a : J.withTop.obj) :
 /-- If `J : CardinalDirectedPoset κ` and `κ'` is any regular cardinal,
 this is a colimit cocone which exhibits `J.withTop` as the `κ'`-filtered
 colimit of its subsets that are of cardinality `< κ'` and contain `⊤`. -/
-@[reducible, inline]
+@[reducible]
 def coconeWithTop : Cocone (functorOfPredicateSet (J.PropSetWithTop κ')) :=
   coconeOfPredicateSet (PropSetWithTop J κ')
 
@@ -421,7 +421,7 @@ instance : Nonempty (Subtype J.PropSet) :=
 /-- For any object `J : CardinalDirectedPoset κ`, this is a colimit
 cocone exhibiting `J` as the colimit of its subsets
 that are of cardinality `< κ` and have a terminal object. -/
-@[reducible, inline]
+@[reducible]
 def cocone : Cocone (functorOfPredicateSet J.PropSet) :=
   coconeOfPredicateSet J.PropSet
 
@@ -455,13 +455,13 @@ variable (κ) (X : Type u)
 
 /-- Given a cardinal `κ` and a type `X`, this is the subtype of `Set X`
 consisting of subsets of `X` of cardinality `< κ`. -/
-@[reducible, inline]
+@[reducible]
 def SetCardinalLT := Subtype (fun (S : Set X) ↦ HasCardinalLT S κ)
 
 variable {X} in
 /-- Given a regular cardinal `κ` and `x : X`, this is the singleton `{x}`,
 considered as a subset of `X` of cardinality `< κ`. -/
-@[reducible, inline]
+@[reducible]
 def SetCardinalLT.singleton (x : X) : SetCardinalLT κ X :=
   ⟨{x}, hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out)⟩
 
@@ -475,7 +475,7 @@ instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
 /-- Given a regular cardinal `κ` and a type `X`, this is the `κ`-filtered
 partially ordered type of subsets of `X` of cardinality `< κ`,
 as an object of the category `CardinalDirectedPoset κ`. -/
-@[reducible, inline]
+@[reducible]
 def setCardinalLT : CardinalDirectedPoset κ :=
   ↧↧(SetCardinalLT κ X)
 

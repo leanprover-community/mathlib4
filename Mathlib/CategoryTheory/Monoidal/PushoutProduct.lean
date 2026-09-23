@@ -68,7 +68,7 @@ pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following diagra
   A ⊗ Y --> B ⊗ Y
 ```
 -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def pushoutProduct [HasPushouts C] [MonoidalCategory C] :
     Arrow C ⥤ Arrow C ⥤ Arrow C := (curriedTensor C).leibnizPushout
@@ -84,7 +84,7 @@ bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the 
   B ⟹ Y --> A ⟹ Y
 ```
 -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
     (Arrow C)ᵒᵖ ⥤ Arrow C ⥤ Arrow C := MonoidalClosed.internalHom.leibnizPullback

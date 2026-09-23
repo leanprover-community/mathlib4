@@ -392,7 +392,7 @@ section Submonoid
 variable [Monoid N] {P : Submonoid M} {Q : Submonoid N}
 
 /-- A submonoid of `M` is finitely generated if it is the closure of a finite subset of `M`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- An additive submonoid of `N` is finitely generated if it is the closure of a
 finite subset of `M`. -/]
 def Submonoid.FG (P : Submonoid M) : Prop :=
@@ -480,7 +480,7 @@ section Monoid
 
 variable (M) in
 /-- A monoid is finitely generated if it is finitely generated as a submonoid of itself. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- An additive monoid is finitely generated if it is finitely generated as an
 additive submonoid of itself. -/]
 def Monoid.FG : Prop := IsMulFG M
@@ -607,7 +607,7 @@ variable {G H : Type*} [Group G] [AddGroup H]
 section Subgroup
 
 /-- A subgroup of `G` is finitely generated if it is the closure of a finite subset of `G`. -/
-@[to_additive (attr := reducible, inline)]
+@[to_additive (attr := reducible)]
 def Subgroup.FG (P : Subgroup G) : Prop :=
   IsMulFG P
 
@@ -690,7 +690,7 @@ section Group
 variable (G H)
 
 /-- A group is finitely generated if it is finitely generated as a subgroup of itself. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- An additive group is finitely generated if it is finitely generated as an additive
 subgroup of itself. -/]
 def Group.FG : Prop :=

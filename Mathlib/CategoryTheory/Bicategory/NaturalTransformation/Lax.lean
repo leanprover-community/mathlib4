@@ -105,12 +105,12 @@ instance : Inhabited (LaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/
-@[reducible, inline]
+@[reducible]
 def vCompApp (a : B) : F.obj a ⟶ H.obj a :=
   η.app a ≫ θ.app a
 
 /-- Auxiliary definition for `vComp`. -/
-@[reducible, inline]
+@[reducible]
 def vCompNaturality {a b : B} (f : a ⟶ b) :
     (η.app a ≫ θ.app a) ≫ H.map f ⟶ F.map f ≫ η.app b ≫ θ.app b :=
   (α_ _ _ _).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv ≫
@@ -234,11 +234,11 @@ instance : Inhabited (OplaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/
-@[reducible, inline]
+@[reducible]
 def vCompApp (a : B) : F.obj a ⟶ H.obj a := η.app a ≫ θ.app a
 
 /-- Auxiliary definition for `vComp`. -/
-@[reducible, inline]
+@[reducible]
 def vCompNaturality {a b : B} (f : a ⟶ b) :
     F.map f ≫ η.app b ≫ θ.app b ⟶ (η.app a ≫ θ.app a) ≫ H.map f :=
   (α_ _ _ _).inv ≫ η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom ≫

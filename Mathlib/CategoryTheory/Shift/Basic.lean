@@ -370,7 +370,7 @@ variable [AddMonoid A] [HasShift C A] (X Y : C) (f : X ⟶ Y)
 --  rfl
 
 /-- Shifting by `i + j` is the same as shifting by `i` and then shifting by `j`. -/
-@[reducible, inline]
+@[reducible]
 def shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
   (shiftFunctorAdd C i j).app _
 
@@ -381,7 +381,7 @@ theorem shift_shift' (i j : A) :
 variable (A)
 
 /-- Shifting by zero is the identity functor. -/
-@[reducible, inline]
+@[reducible]
 def shiftZero : X⟦(0 : A)⟧ ≅ X :=
   (shiftFunctorZero C A).app _
 
@@ -427,7 +427,7 @@ def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
       rfl
 
 /-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
-@[reducible, inline]
+@[reducible]
 def shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_cancel n)
 
 variable (X Y : C) (f : X ⟶ Y)
@@ -440,12 +440,12 @@ instance (i : A) : (shiftFunctor C i).IsEquivalence := by
 variable {C}
 
 /-- Shifting by `i` and then shifting by `-i` is the identity. -/
-@[reducible, inline]
+@[reducible]
 def shiftShiftNeg (i : A) : X⟦i⟧⟦-i⟧ ≅ X :=
   (shiftEquiv C i).unitIso.symm.app X
 
 /-- Shifting by `-i` and then shifting by `i` is the identity. -/
-@[reducible, inline]
+@[reducible]
 def shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
   (shiftEquiv C i).counitIso.app X
 
@@ -625,7 +625,7 @@ variable {C}
 variable (X Y : C) (f : X ⟶ Y)
 
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
-@[reducible, inline]
+@[reducible]
 def shiftComm (i j : A) : X⟦i⟧⟦j⟧ ≅ X⟦j⟧⟦i⟧ :=
   (shiftFunctorComm C i j).app X
 

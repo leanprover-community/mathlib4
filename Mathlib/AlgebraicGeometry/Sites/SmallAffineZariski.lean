@@ -53,7 +53,7 @@ def Scheme.AffineZariskiSite (X : Scheme.{u}) : Type u := { U : X.Opens // IsAff
 namespace Scheme.AffineZariskiSite
 
 /-- The inclusion from `X.AffineZariskiSite` to `X.Opens`. -/
-@[reducible, inline]
+@[reducible]
 def toOpens (U : X.AffineZariskiSite) : X.Opens := U.1
 
 instance : Preorder X.AffineZariskiSite where
@@ -202,7 +202,7 @@ variable [∀ (U : X.Opensᵒᵖ), Limits.HasLimitsOfShape (StructuredArrow U (t
 
 /-- The category of sheaves on `X.AffineZariskiSite` is equivalent to the categories of sheaves
 over `X`. -/
-@[reducible, inline]
+@[reducible]
 def sheafEquiv : Sheaf (grothendieckTopology X) A ≌ TopCat.Sheaf A X :=
     (toOpensFunctor X).sheafInducedTopologyEquivOfIsCoverDense _ _
 

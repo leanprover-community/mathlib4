@@ -75,7 +75,7 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   .rfl
 
 /-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroups of `G`. -/
-@[reducible, inline]
+@[reducible]
 def AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
 
@@ -99,7 +99,7 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
-@[reducible, inline]
+@[reducible]
 def Subgroup.toAddSubgroup' : Subgroup (Multiplicative A) ≃o AddSubgroup A :=
   AddSubgroup.toSubgroup.symm
 

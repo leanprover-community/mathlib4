@@ -74,7 +74,7 @@ lemma E_six_eq :
               0,  0,  0,  0, -1,  2] := by decide
 
 /-- Deprecated alias for `E 6`. -/
-@[reducible, inline, deprecated "Use `E 6` instead" (since := "2026-07-29")]
+@[reducible, deprecated "Use `E 6` instead" (since := "2026-07-29")]
 def E₆ : Matrix (Fin 6) (Fin 6) ℤ := E 6
 
 /-- `E 7` is the Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
@@ -88,7 +88,7 @@ lemma E_seven_eq :
               0,  0,  0,  0,  0, -1,  2] := by decide
 
 /-- Deprecated alias for `E 7`. -/
-@[reducible, inline, deprecated "Use `E 7` instead" (since := "2026-07-29")]
+@[reducible, deprecated "Use `E 7` instead" (since := "2026-07-29")]
 def E₇ : Matrix (Fin 7) (Fin 7) ℤ := E 7
 
 /-- `E 8` is the Cartan matrix of type E₈. See [bourbaki1968] plate VII, page 285. -/
@@ -103,7 +103,7 @@ lemma E_eight_eq :
               0,  0,  0,  0,  0,  0, -1,  2] := by decide
 
 /-- Deprecated alias for `E 8`. -/
-@[reducible, inline, deprecated "Use `E 8` instead" (since := "2026-07-29")]
+@[reducible, deprecated "Use `E 8` instead" (since := "2026-07-29")]
 def E₈ : Matrix (Fin 8) (Fin 8) ℤ := E 8
 
 /-- The Cartan matrix of type F₄. See [bourbaki1968] plate VIII, page 288. -/

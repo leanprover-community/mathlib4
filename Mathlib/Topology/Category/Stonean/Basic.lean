@@ -47,7 +47,7 @@ open CategoryTheory
 open scoped Topology
 
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
-@[reducible, inline]
+@[reducible]
 def Stonean := CompHausLike (fun X ↦ ExtremallyDisconnected X)
 
 namespace CompHaus
@@ -79,12 +79,12 @@ end CompHaus
 namespace Stonean
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
-@[reducible, inline]
+@[reducible]
 def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   compHausLikeToCompHaus _
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
-@[reducible, inline]
+@[reducible]
 def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful :=
   CompHausLike.fullyFaithfulToCompHausLike _
 
@@ -97,7 +97,7 @@ instance (X : Type*) [TopologicalSpace X]
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
 -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [ExtremallyDisconnected X] : Stonean := ↧X
 
@@ -109,7 +109,7 @@ meta def delabOf : Delab := CategoryTheory.delabOf
 instance (X : Stonean.{u}) : ExtremallyDisconnected X := X.prop
 
 /-- The functor from Stonean spaces to profinite spaces. -/
-@[reducible, inline]
+@[reducible]
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} :=
   CompHausLike.toCompHausLike (fun _ ↦ inferInstance)
 
@@ -220,7 +220,7 @@ instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
   (projectivePresentation X).epi
 
 /-- The underlying `CompHaus` of a `Stonean`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.Stonean.compHaus (X : Stonean) := Stonean.toCompHaus.obj X
 
 /--

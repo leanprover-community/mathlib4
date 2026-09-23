@@ -107,7 +107,7 @@ section IsCrystallographic
 variable [P.IsCrystallographic]
 
 /-- The Cartan matrix of a crystallographic root pairing, with respect to a base `b`. -/
-@[reducible, inline]
+@[reducible]
 def cartanMatrix :
     Matrix b.support b.support ℤ :=
   b.cartanMatrixIn ℤ

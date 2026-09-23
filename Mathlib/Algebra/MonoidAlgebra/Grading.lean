@@ -47,7 +47,7 @@ section
 variable (R) [CommSemiring R]
 
 /-- The submodule corresponding to each grade given by the degree function `f`. -/
-@[reducible, inline]
+@[reducible]
 def gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   carrier := { a | ∀ m, m ∈ a.coeff.support → f m = i }
   zero_mem' m h := by cases h
@@ -56,7 +56,7 @@ def gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   smul_mem' _ _ h := Set.Subset.trans Finsupp.support_smul h
 
 /-- The submodule corresponding to each grade. -/
-@[reducible, inline]
+@[reducible]
 def grade (m : M) : Submodule R R[M] :=
   gradeBy R id m
 

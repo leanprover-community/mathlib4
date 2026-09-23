@@ -61,7 +61,7 @@ open CategoryTheory.Limits
 
 Note that `R` can be any ring,
 but the main case of interest is when `R = k` is a field and `G` is a group. -/
-@[reducible, inline]
+@[reducible]
 def FDRep (R : Type u) (G : Type v) [Ring R] [Monoid G] :=
   Action (FGModuleCat.{u} R) G
 
@@ -118,7 +118,7 @@ theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
   cat_disch
 
 /-- Lift an unbundled representation to `FDRep`. -/
-@[reducible, inline, simps ρ]
+@[reducible, simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     (ρ : Representation R G V) : FDRep R G :=
   ⟨↧V, (MulEquiv.toMonoidHom (MulEquiv.symm InducedCategory.endEquiv)).comp

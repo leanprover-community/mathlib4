@@ -317,17 +317,17 @@ inductive BoundedFormula : ℕ → Type max u v u'
 
 /-- `Formula α` is the type of formulas with free variables indexed by `α` and no bound variables in
 scope. -/
-@[reducible, inline]
+@[reducible]
 def Formula :=
   L.BoundedFormula α 0
 
 /-- A sentence is a formula with no free variables. -/
-@[reducible, inline]
+@[reducible]
 def Sentence :=
   L.Formula Empty
 
 /-- A theory is a set of sentences. -/
-@[reducible, inline]
+@[reducible]
 def Theory :=
   Set L.Sentence
 

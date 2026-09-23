@@ -455,7 +455,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
   rfl
 
 /-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
-@[reducible, inline]
+@[reducible]
 def pemptyToPUnit : @emptyRelation PEmpty ≺i @emptyRelation PUnit :=
   (@ofIsEmpty _ _ emptyRelation _ _ PUnit.unit) fun _ => not_false
 

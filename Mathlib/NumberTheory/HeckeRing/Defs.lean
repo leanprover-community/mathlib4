@@ -149,7 +149,7 @@ This is an `abbrev` rather than a global instance: the subgroups `H₁, H₂` ca
 from the submonoid `Δ`, so this cannot participate in instance search (and a global instance
 would also create a `Setoid` diamond on `↥Δ` with the left-coset setoid). The quotient map is
 `HeckeCoset.mk`. -/
-@[reducible, inline]
+@[reducible]
 def HeckeCoset.setoid (Δ : Submonoid G) (H₁ H₂ : Subgroup G) : Setoid Δ :=
   (DoubleCoset.setoid (H₁ : Set G) H₂).comap Subtype.val
 
@@ -187,7 +187,7 @@ def HeckeCosetModule (Δ : Submonoid G) (H₁ H₂ : Subgroup G) (Z : Type*) [Ze
 /-- The Hecke ring `𝕋 Δ H Z` with coefficients in `Z`: the diagonal Hecke coset module
 `HeckeCosetModule Δ H H Z`, the finitely-supported `Z`-linear combinations of double cosets
 `H\Δ/H`. The convolution product making it a ring is developed in later files. -/
-@[reducible, inline]
+@[reducible]
 def HeckeRing (Δ : Submonoid G) (H : Subgroup G) (Z : Type*) [Zero Z] :=
   HeckeCosetModule Δ H H Z
 

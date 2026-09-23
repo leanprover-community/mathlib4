@@ -44,7 +44,7 @@ variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
 `R`-module `V` to `Γ`-Hahn series with coefficients in an `R`-module `W`. -/
-@[reducible, inline]
+@[reducible]
 def HVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [CommRing R]
     (V : Type*) (W : Type*) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
   V →ₗ[R] (HahnModule Γ R W)

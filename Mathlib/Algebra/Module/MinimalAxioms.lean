@@ -25,7 +25,7 @@ public section
 universe u v
 
 /-- Define a `Module` structure on a Type by proving a minimized set of axioms. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Module.ofMinimalAxioms {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [SMul R M]
     -- Scalar multiplication distributes over addition from the left.
     (smul_add : ∀ (r : R) (x y : M), r • (x + y) = r • x + r • y)

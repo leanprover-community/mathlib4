@@ -30,7 +30,7 @@ variable (f : X ⟶ Z) (g : Y ⟶ Z)
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/
-@[reducible, inline]
+@[reducible]
 def PullbackObj : Type u :=
   { p : X × Y // f p.1 = g p.2 }
 
@@ -41,7 +41,7 @@ example (p : PullbackObj f g) : X × Y :=
 /-- The explicit pullback cone on `PullbackObj f g`.
 This is bundled with the `IsLimit` data as `pullbackLimitCone f g`.
 -/
-@[reducible, inline]
+@[reducible]
 def pullbackCone : Limits.PullbackCone f g :=
   PullbackCone.mk (↾fun p : PullbackObj f g => p.1.1)
     (↾fun p => p.1.2) (by ext p; exact p.2)

@@ -36,7 +36,7 @@ instance Pi.instBornology : Bornology (∀ i, X i) where
   le_cofinite := iSup_le fun _ ↦ (comap_mono (Bornology.le_cofinite _)).trans (comap_cofinite_le _)
 
 /-- Inverse image of a bornology. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
   cobounded := comap f (cobounded β)
   le_cofinite := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)

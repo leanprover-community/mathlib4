@@ -24,7 +24,7 @@ universe u
 
 /-- The category `SSetPair` is the category of pairs of simplicial sets,
 i.e. monomorphisms `i : X ⟶ Y`, see `SSetPair.of`. -/
-@[reducible, inline]
+@[reducible]
 def SSetPair : Type (u + 1) := MorphismProperty.Arrow (.monomorphisms SSet.{u}) ⊤ ⊤
 
 namespace SSetPair
@@ -32,17 +32,17 @@ namespace SSetPair
 instance (P : SSetPair.{u}) : Mono P.hom := P.prop
 
 /-- Constructor for `SSetPair`. -/
-@[reducible, inline]
+@[reducible]
 def of {X Y : SSet.{u}} (i : X ⟶ Y) [Mono i] : SSetPair.{u} :=
   MorphismProperty.Arrow.mk i (by assumption)
 
 /-- The forget functor from `SSetPair` to the category `Arrow SSet`. -/
-@[reducible, inline]
+@[reducible]
 def forget : SSetPair.{u} ⥤ Arrow SSet.{u} :=
   MorphismProperty.Arrow.forget _ _ _
 
 /-- Constructor for morphisms in `SSetPair`. -/
-@[reducible, inline]
+@[reducible]
 def homMk {X Y : SSetPair.{u}} (left : X.left ⟶ Y.left) (right : X.right ⟶ Y.right)
     (w : left ≫ Y.hom = X.hom ≫ right := by cat_disch) : X ⟶ Y :=
   MorphismProperty.Arrow.Hom.mk (Arrow.homMk left right w) (by simp) (by simp)
@@ -51,7 +51,7 @@ end SSetPair
 
 /-- Given a subcomplex `A` of a simplical set `X`, this is the pair in `SSetPair`
 corresponding to the inclusion `A.ι : (A : SSet) ⟶ X`. -/
-@[reducible, inline]
+@[reducible]
 def SSet.Subcomplex.pair {X : SSet.{u}} (A : X.Subcomplex) : SSetPair.{u} := .of A.ι
 
 /-- Given `X : SSet`, this is the functor `X.Subcomplex ⥤ SSetPair` which sends
@@ -63,7 +63,7 @@ def SSet.Subcomplex.toPairFunctor (X : SSet.{u}) : X.Subcomplex ⥤ SSetPair.{u}
 
 /-- If `X` is a simplicial set, this is the pair in `SSetPair` corresponding
 to the inclusion of the empty subcomplex in `X`. -/
-@[reducible, inline]
+@[reducible]
 def SSet.pair (X : SSet.{u}) : SSetPair.{u} := SSet.Subcomplex.pair (X := X) ⊥
 
 /-- The functor `SSet ⥤ SSetPair` which sends `X : SSet` to the pair

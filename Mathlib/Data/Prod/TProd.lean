@@ -47,7 +47,7 @@ namespace List
 
 variable (α) in
 /-- The product of a family of types over a list. -/
-@[reducible, inline]
+@[reducible]
 def TProd (l : List ι) : Type v :=
   l.foldr (fun i β => α i × β) PUnit
 

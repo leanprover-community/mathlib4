@@ -389,7 +389,7 @@ following data:
 * `-a` unfolds to `a`
 * `0` unfolds to `⊥`
 -/
-@[reducible, inline]
+@[reducible]
 def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
     NonUnitalCommRing α where
   add := (· ∆ ·)
@@ -424,7 +424,7 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 * `0` unfolds to `⊥`
 * `1` unfolds to `⊤`
 -/
-@[reducible, inline]
+@[reducible]
 def BooleanAlgebra.toBooleanRing : BooleanRing α where
   __ := GeneralizedBooleanAlgebra.toNonUnitalCommRing
   one := ⊤

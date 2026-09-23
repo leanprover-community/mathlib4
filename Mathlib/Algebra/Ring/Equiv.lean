@@ -794,12 +794,12 @@ theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
   rfl
 
 /-- Reinterpret a ring equivalence as a monoid homomorphism. -/
-@[reducible, inline]
+@[reducible]
 def toMonoidHom (e : R ≃+* S) : R →* S :=
   e.toRingHom.toMonoidHom
 
 /-- Reinterpret a ring equivalence as an `AddMonoid` homomorphism. -/
-@[reducible, inline]
+@[reducible]
 def toAddMonoidHom (e : R ≃+* S) : R →+ S :=
   e.toRingHom.toAddMonoidHom
 

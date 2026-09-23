@@ -139,7 +139,7 @@ lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
 
 /-- The model of `S` over a `R₀` that contains the coefficients of `P` is `R₀[X]` quotiented by the
 same relations. -/
-@[reducible, inline]
+@[reducible]
 def ModelOfHasCoeffs : Type _ :=
   MvPolynomial ι R₀ ⧸ (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀))
 

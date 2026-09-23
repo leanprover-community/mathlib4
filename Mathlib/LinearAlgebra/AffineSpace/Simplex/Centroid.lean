@@ -57,7 +57,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [
 variable {n : ℕ}
 
 /-- The centroid of a simplex is the `Finset.centroid` of the set of all its vertices. -/
-@[reducible, inline]
+@[reducible]
 def centroid (t : Affine.Simplex k P n) : P := Finset.univ.centroid k t.points
 
 theorem univ_centroid_eq (s : Simplex k P n) :

@@ -74,11 +74,11 @@ class Definable (n) (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) where
 attribute [simp] Definable.mk_out
 
 /-- An abbrev of `ZFSet.Definable` for unary functions. -/
-@[reducible, inline]
+@[reducible]
 def Definable₁ (f : ZFSet.{u} → ZFSet.{u}) := Definable 1 (fun s ↦ f (s 0))
 
 /-- A simpler constructor for `ZFSet.Definable₁`. -/
-@[reducible, inline]
+@[reducible]
 def Definable₁.mk {f : ZFSet.{u} → ZFSet.{u}}
     (out : PSet.{u} → PSet.{u}) (mk_out : ∀ x, ⟦out x⟧ = f ⟦x⟧) :
     Definable₁ f where
@@ -86,7 +86,7 @@ def Definable₁.mk {f : ZFSet.{u} → ZFSet.{u}}
   mk_out xs := mk_out (xs 0)
 
 /-- Turns a unary definable function into a unary `PSet` function. -/
-@[reducible, inline]
+@[reducible]
 def Definable₁.out (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] :
     PSet.{u} → PSet.{u} :=
   fun x ↦ Definable.out (fun s ↦ f (s 0)) ![x]
@@ -97,11 +97,11 @@ lemma Definable₁.mk_out {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f]
   Definable.mk_out ![x]
 
 /-- An abbrev of `ZFSet.Definable` for binary functions. -/
-@[reducible, inline]
+@[reducible]
 def Definable₂ (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) := Definable 2 (fun s ↦ f (s 0) (s 1))
 
 /-- A simpler constructor for `ZFSet.Definable₂`. -/
-@[reducible, inline]
+@[reducible]
 def Definable₂.mk {f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}}
     (out : PSet.{u} → PSet.{u} → PSet.{u}) (mk_out : ∀ x y, ⟦out x y⟧ = f ⟦x⟧ ⟦y⟧) :
     Definable₂ f where
@@ -109,7 +109,7 @@ def Definable₂.mk {f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}}
   mk_out xs := mk_out (xs 0) (xs 1)
 
 /-- Turns a binary definable function into a binary `PSet` function. -/
-@[reducible, inline]
+@[reducible]
 def Definable₂.out (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) [Definable₂ f] :
     PSet.{u} → PSet.{u} → PSet.{u} :=
   fun x y ↦ Definable.out (fun s ↦ f (s 0) (s 1)) ![x, y]

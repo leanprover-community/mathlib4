@@ -48,7 +48,7 @@ instance : CoeSort (HopfAlgCat.{v} R) (Type v) :=
 
 variable (R) in
 /-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebra. -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgCat R where
   carrier := X
@@ -83,12 +83,12 @@ instance concreteCategory : ConcreteCategory (HopfAlgCat.{v} R) (· →ₐc[R] �
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `HopfAlgCat` back into a `BialgHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.toBialgHom {X Y : HopfAlgCat R} (f : Hom X Y) :=
   ConcreteCategory.hom (C := HopfAlgCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `HopfAlgCat R`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type v} [Ring X] [Ring Y]
     [HopfAlgebra R X] [HopfAlgebra R Y] (f : X →ₐc[R] Y) :
     of R X ⟶ of R Y :=

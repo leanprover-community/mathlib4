@@ -83,7 +83,7 @@ theorem comp_hom' {M N K : Bimon C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom 
 variable (C)
 
 /-- The forgetful functor from bimonoid objects to monoid objects. -/
-@[reducible, inline]
+@[reducible]
 def toMon : Bimon C ⥤ Mon C := Comon.forget (Mon C)
 
 /-- The forgetful functor from bimonoid objects to the underlying category. -/

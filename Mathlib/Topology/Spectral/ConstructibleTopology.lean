@@ -44,7 +44,7 @@ def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X 
   .generateFrom (constructibleTopologySubbasis X)
 
 /-- A type synonym for `X` that is equipped with the constructible topology of `X`. -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 def WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   WithTopology X (constructibleTopology X)
 

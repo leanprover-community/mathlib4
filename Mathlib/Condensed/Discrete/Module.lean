@@ -66,12 +66,12 @@ open Condensed
 variable (R : Type (u + 1)) [Ring R]
 
 /-- `functorToPresheaves` in the case of `CompHaus`. -/
-@[reducible, inline]
+@[reducible]
 def functorToPresheaves : ModuleCat.{u + 1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
   CompHausLike.LocallyConstantModule.functorToPresheaves.{u + 1, u} R
 
 /-- `functorToPresheaves` as a functor to condensed modules. -/
-@[reducible, inline]
+@[reducible]
 def functor : ModuleCat R ⥤ CondensedMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u + 1, u} R
     (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
@@ -179,12 +179,12 @@ open LightCondensed
 variable (R : Type u) [Ring R]
 
 /-- `functorToPresheaves` in the case of `LightProfinite`. -/
-@[reducible, inline]
+@[reducible]
 def functorToPresheaves : ModuleCat.{u} R ⥤ (LightProfinite.{u}ᵒᵖ ⥤ ModuleCat R) :=
   CompHausLike.LocallyConstantModule.functorToPresheaves.{u, u} R
 
 /-- `functorToPresheaves` as a functor to light condensed modules. -/
-@[reducible, inline]
+@[reducible]
 def functor : ModuleCat R ⥤ LightCondMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u, u} R
     (fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)

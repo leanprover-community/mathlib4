@@ -138,7 +138,7 @@ namespace ConnectedComponent
 variable (C : G.ConnectedComponent)
 
 /-- The induced subgraph of a connected component. -/
-@[reducible, inline]
+@[reducible]
 def toSubgraph : G.Subgraph :=
   .induce ⊤ C.supp
 

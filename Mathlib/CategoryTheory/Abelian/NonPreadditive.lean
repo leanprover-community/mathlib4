@@ -212,7 +212,7 @@ section
 
 /-- The composite `A ⟶ A ⨯ A ⟶ cokernel (Δ A)`, where the first map is `(𝟙 A, 0)` and the second map
 is the canonical projection into the cokernel. -/
-@[reducible, inline]
+@[reducible]
 def r (A : C) : A ⟶ cokernel (diag A) :=
   prod.lift (𝟙 A) 0 ≫ cokernel.π (diag A)
 
@@ -268,7 +268,7 @@ instance isIso_r {A : C} : IsIso (r A) :=
 /-- The composite `A ⨯ A ⟶ cokernel (diag A) ⟶ A` given by the natural projection into the cokernel
 followed by the inverse of `r`. In the category of modules, using the normal kernels and
 cokernels, this map is equal to the map `(a, b) ↦ a - b`, hence the name `σ` for "subtraction". -/
-@[reducible, inline]
+@[reducible]
 def σ {A : C} : A ⨯ A ⟶ A :=
   cokernel.π (diag A) ≫ inv (r A)
 

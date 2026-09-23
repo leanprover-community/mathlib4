@@ -48,7 +48,7 @@ open CategoryTheory CompHausLike
 open scoped Topology
 
 /-- The type of profinite topological spaces. -/
-@[reducible, inline, to_additive_do_translate] -- This is required
+@[reducible, to_additive_do_translate] -- This is required
 def Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
@@ -60,7 +60,7 @@ instance (X : Type*) [TopologicalSpace X]
 /-- Construct a term of `Profinite` from a type endowed with the structure of a
 compact, Hausdorff and totally disconnected topological space.
 -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
   ↧X
@@ -79,7 +79,7 @@ instance {X : Profinite} : TotallyDisconnectedSpace X :=
 end Profinite
 
 /-- The fully faithful embedding of `Profinite` in `CompHaus`. -/
-@[reducible, inline]
+@[reducible]
 def profiniteToCompHaus : Profinite ⥤ CompHaus :=
   compHausLikeToCompHaus _
 -- The `Full, Faithful` instances should be constructed by a deriving handler.
@@ -90,7 +90,7 @@ instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) 
 
 /-- The fully faithful embedding of `Profinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
-@[reducible, inline]
+@[reducible]
 def Profinite.toTopCat : Profinite ⥤ TopCat :=
   CompHausLike.compHausLikeToTop _
 -- The `Full, Faithful` instances should be constructed by a deriving handler.

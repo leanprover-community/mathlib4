@@ -99,7 +99,7 @@ lemma Hom.add_mul (a b c : X ⟶ R) : (a + b) * c = a * c + b * c := by
   rw [← add_mul_iff, RingObj.add_mul R]
 
 /-- If `G` is a ring object, then `Hom(X, G)` has a ring structure. -/
-@[reducible, inline]
+@[reducible]
 def Hom.ring {X : C} : Ring (X ⟶ R) where
   left_distrib := Hom.mul_add
   right_distrib := Hom.add_mul
@@ -117,7 +117,7 @@ ring object such that the multiplicative law is commutative. -/
 class CommRingObj (R : C) extends RingObj R, IsCommMonObj R where
 
 /-- If `G` is a commutative ring object, then `Hom(X, G)` has a commutative ring structure. -/
-@[reducible, inline]
+@[reducible]
 def Hom.commRing {R : C} {X : C} [CommRingObj R] : CommRing (X ⟶ R) where
 
 scoped[CategoryTheory.CommRingObj] attribute [instance] Hom.commRing

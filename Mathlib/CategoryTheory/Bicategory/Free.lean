@@ -214,7 +214,7 @@ instance bicategory : Bicategory (FreeBicategory B) where
 variable {a b c d : FreeBicategory B}
 
 /-- `Hom₂.mk η` is an abbreviation for `Quot.mk Rel η`. -/
-@[reducible, inline]
+@[reducible]
 def Hom₂.mk {f g : a ⟶ b} (η : Hom₂ f g) : f ⟶ g :=
   Quot.mk Rel η
 

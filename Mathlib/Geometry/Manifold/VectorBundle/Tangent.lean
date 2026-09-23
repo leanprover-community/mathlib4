@@ -14,7 +14,7 @@ This file defines the tangent bundle as a `C^n` vector bundle.
 
 Let `M` be a manifold with model `I` on `(E, H)`. The tangent space `TangentSpace I (x : M)` has
 already been defined as a type synonym for `E`, and the tangent bundle `TangentBundle I M` as an
-@[reducible, inline]
+@[reducible]
 def of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`.
 
 In this file, when `M` is `C^1`, we construct a vector bundle structure
@@ -141,7 +141,7 @@ outside the intersection of the sources of the two charts.
 
 Note that this definition takes advantage of the fact that `tangentBundleCore` has the same base
 sets as the preferred charts of the base manifold. -/
-@[reducible, inline]
+@[reducible]
 def tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
   (tangentBundleCore I M).coordChange (achart H x) (achart H y)
 

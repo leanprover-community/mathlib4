@@ -53,7 +53,7 @@ instance inhabitedGradedObject (β : Type w) (C : Type u) [Inhabited C] :
 /-- A type synonym for `β → C`, used for `β`-graded objects in a category `C`
 with a shift functor given by translation by `s`.
 -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 def GradedObjectWithShift {β : Type w} [AddCommGroup β] (_ : β) (C : Type u) : Type max w u :=
   GradedObject β C
 
@@ -154,7 +154,7 @@ section
 variable (C)
 
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
-@[reducible, inline]
+@[reducible]
 def comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
   Pi.comap (fun _ => C) h
 
@@ -284,14 +284,14 @@ variable {I J K : Type*} {C : Type*} [Category* C]
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
 for `i : I` such that `p i = j`. -/
-@[reducible, inline]
+@[reducible]
 def mapObjFun (j : J) (i : p ⁻¹' {j}) : C := X i
 
 variable (j : J)
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.HasMap p` is the condition that
 for all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
-@[reducible, inline]
+@[reducible]
 def HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
 
 variable {X Y} in
@@ -315,7 +315,7 @@ noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p 
 /-- Given `X : GradedObject I C`, `p : I → J` and `j : J`,
 `CofanMapObjFun X p j` is the type `Cofan (X.mapObjFun p j)`. The point object of
 such colimits cofans are isomorphic to `X.mapObj p j`, see `CofanMapObjFun.iso`. -/
-@[reducible, inline]
+@[reducible]
 def CofanMapObjFun (j : J) : Type _ := Cofan (X.mapObjFun p j)
 
 -- in order to use the cofan API, some definitions below

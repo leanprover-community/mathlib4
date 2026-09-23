@@ -264,7 +264,7 @@ lemma additiveFunctor_iff (F : C ⥤ D) :
     additiveFunctor C D F ↔ F.Additive := Iff.rfl
 
 /-- Bundled additive functors. -/
-@[reducible, inline]
+@[reducible]
 def AdditiveFunctor := (additiveFunctor C D).FullSubcategory
 
 instance (F : AdditiveFunctor C D) : F.obj.Additive := F.property
@@ -273,7 +273,7 @@ instance (F : AdditiveFunctor C D) : F.obj.Additive := F.property
 infixr:26 " ⥤+ " => AdditiveFunctor
 
 /-- An additive functor is in particular a functor. -/
-@[reducible, inline]
+@[reducible]
 def AdditiveFunctor.forget : (C ⥤+ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
@@ -339,17 +339,17 @@ lemma exactFunctor_le_additiveFunctor :
     (leftExactFunctor_le_additiveFunctor C D)
 
 /-- Turn a left exact functor into an additive functor. -/
-@[reducible, inline]
+@[reducible]
 def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
   ObjectProperty.ιOfLE (leftExactFunctor_le_additiveFunctor C D)
 
 /-- Turn a right exact functor into an additive functor. -/
-@[reducible, inline]
+@[reducible]
 def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
   ObjectProperty.ιOfLE (rightExactFunctor_le_additiveFunctor C D)
 
 /-- Turn an exact functor into an additive functor. -/
-@[reducible, inline]
+@[reducible]
 def AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_additiveFunctor C D)
 

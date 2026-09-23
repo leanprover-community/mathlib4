@@ -548,14 +548,14 @@ variable {R A B : Type*} [CommSemiring R]
 
 variable (R) in
 /-- Transfer `CoalgebraStruct` across a `LinearEquiv`. -/
-@[reducible, inline]
+@[reducible]
 def coalgebraStruct [CoalgebraStruct R B] (e : A ≃ₗ[R] B) : CoalgebraStruct R A where
   comul := TensorProduct.map e.symm e.symm ∘ₗ comul ∘ₗ e.toLinearMap
   counit := counit ∘ₗ e.toLinearMap
 
 variable (R) in
 /-- Transfer `Coalgebra` across a `LinearEquiv`. -/
-@[reducible, inline]
+@[reducible]
 def coalgebra [Coalgebra R B] (e : A ≃ₗ[R] B) : Coalgebra R A where
   __ := e.coalgebraStruct R
   rTensor_counit_comp_comul := by

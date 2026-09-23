@@ -45,7 +45,7 @@ section Clique
 variable {s t : Set α}
 
 /-- A clique in a graph is a set of vertices that are pairwise adjacent. -/
-@[reducible, inline]
+@[reducible]
 def IsClique (s : Set α) : Prop :=
   s.Pairwise G.Adj
 
@@ -904,7 +904,7 @@ section IndepSet
 variable {s : Set α}
 
 /-- An independent set in a graph is a set of vertices that are pairwise not adjacent. -/
-@[reducible, inline, wikidata Q1060343]
+@[reducible, wikidata Q1060343]
 def IsIndepSet (s : Set α) : Prop :=
   s.Pairwise (fun v w ↦ ¬G.Adj v w)
 

@@ -122,7 +122,7 @@ The class of schemes such that for each `x : X`,
 
 This is typically satisfied when `X` is integral or locally Noetherian.
 -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Scheme.IsGermInjective (X : Scheme.{u}) := ∀ x : X, X.IsGermInjectiveAt x
 
 lemma Scheme.IsGermInjective.of_openCover

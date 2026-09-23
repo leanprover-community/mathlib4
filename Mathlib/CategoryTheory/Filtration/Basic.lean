@@ -49,12 +49,12 @@ namespace Filtration
 variable {X : C} {I : Type*} [Category I]
 
 /-- The underlying diagram in `C` obtained by forgetting `MonoOver`. -/
-@[reducible, inline, simps! -isSimp]
+@[reducible, simps! -isSimp]
 def diagram (F : Filtration X I) : I ⥤ C :=
   F.toMonoOver ⋙ MonoOver.forget _ ⋙ Over.forget _
 
 /-- The object at index `i` (domain of the mono into `X`). -/
-@[reducible, inline]
+@[reducible]
 def obj (F : Filtration X I) (i : I) : C :=
   F.diagram.obj i
 
@@ -81,7 +81,7 @@ namespace FilteredObject
 variable {I : Type*} [Category I]
 
 /-- The filtration diagram in `C`. -/
-@[reducible, inline]
+@[reducible]
 def filtrationDiagram (F : FilteredObject C I) : I ⥤ C :=
   F.filtration.diagram
 
@@ -158,7 +158,7 @@ instance {F G H : FilteredObject C I} (f : F ⟶ G) (g : G ⟶ H)
 
 variable (C I) in
 /-- The morphism property of strict morphisms of filtered objects. -/
-@[reducible, inline]
+@[reducible]
 def isStrictHom : MorphismProperty (FilteredObject C I) :=
   fun _ _ f ↦ IsStrictHom f
 

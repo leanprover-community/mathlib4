@@ -441,7 +441,7 @@ variable [CommSemiring B] [Algebra R B]
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
-@[reducible, inline]
+@[reducible]
 def rightAlgebra : Algebra B (A ⊗[R] B) :=
   includeRight.toRingHom.toAlgebra' fun b x => by
     suffices LinearMap.mulLeft R (includeRight b) = LinearMap.mulRight R (includeRight b) from

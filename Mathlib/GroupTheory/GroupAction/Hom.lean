@@ -134,7 +134,7 @@ export AddActionSemiHomClass (map_vaddₛₗ)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/]
@@ -661,7 +661,7 @@ class MulDistribMulActionSemiHomClass (F : Type*)
 the monoid structure and equivariant with respect to the action of `M`.
 It is an abbreviation to `MulDistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `MulDistribMulActionHom`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 (dont_translate := M) DistribMulActionHomClass
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
 the additive monoid structure and equivariant with respect to the action of `M`.
@@ -905,7 +905,7 @@ class MulSemiringActionSemiHomClass (F : Type*)
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction` of `M` on `R` and `S`.
 -/
-@[reducible, inline]
+@[reducible]
 def MulSemiringActionHomClass
     (F : Type*)
     {M : outParam Type*} [Monoid M]

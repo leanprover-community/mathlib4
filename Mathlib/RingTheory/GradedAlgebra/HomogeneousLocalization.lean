@@ -289,7 +289,7 @@ section
 variable {𝒜 : ι → σ} {x : Submonoid A}
 
 /-- Construct an element of `HomogeneousLocalization 𝒜 x` from a homogeneous fraction. -/
-@[reducible, inline]
+@[reducible]
 def mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocalization 𝒜 x :=
   Quotient.mk'' y
 
@@ -567,7 +567,7 @@ variable [AddCommMonoid ι] [DecidableEq ι] [GradedRing 𝒜]
 variable (𝒜) (𝔭 : Ideal A) [Ideal.IsPrime 𝔭]
 
 /-- Localizing a ring homogeneously at a prime ideal. -/
-@[reducible, inline]
+@[reducible]
 def AtPrime :=
   HomogeneousLocalization 𝒜 𝔭.primeCompl
 
@@ -600,7 +600,7 @@ end
 section
 
 /-- Localizing away from powers of `f` homogeneously. -/
-@[reducible, inline]
+@[reducible]
 def Away (𝒜 : ι → σ) (f : A) :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 
@@ -695,7 +695,7 @@ variable (𝒜) in
 Let `A` be a graded ring and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
 at `P` embeds into the homogeneous localization of `A` at `Q`.
 -/
-@[reducible, inline]
+@[reducible]
 def mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
   map (.id _) h
@@ -881,7 +881,7 @@ variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜]
 variable {e d : ℕ} {f : A} (hf : f ∈ 𝒜 d) {g : A} (hg : g ∈ 𝒜 e)
 
 /-- The element `t := g ^ d / f ^ e` such that `A_{(fg)} = A_{(f)}[1/t]`. -/
-@[reducible, inline]
+@[reducible]
 def Away.isLocalizationElem : Away 𝒜 f :=
   Away.mk 𝒜 hf e (g ^ d) (by convert! SetLike.pow_mem_graded d hg using 2; exact mul_comm _ _)
 

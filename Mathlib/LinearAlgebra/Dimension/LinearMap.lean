@@ -36,7 +36,7 @@ variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₁] [Modul
 variable [AddCommMonoid V'] [Module K V']
 
 /-- `rank f` is the rank of a `LinearMap` `f`, defined as the dimension of `f.range`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def rank (f : V →ₗ[K] V') : Cardinal :=
   Module.rank K (LinearMap.range f)
 

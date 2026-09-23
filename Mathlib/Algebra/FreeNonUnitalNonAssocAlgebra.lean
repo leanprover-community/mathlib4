@@ -59,7 +59,7 @@ For example if `x` and `y` are terms of type `α` and
 `a`, `b` are terms of type `R` then `(3 * a * a) • (x * (y * x)) + (2 * b + 1) • (y * x)` is a
 "typical" element of `FreeNonUnitalNonAssocAlgebra R α`.
 -/
-@[reducible, inline]
+@[reducible]
 def FreeNonUnitalNonAssocAlgebra := R[FreeMagma X]
 
 namespace FreeNonUnitalNonAssocAlgebra

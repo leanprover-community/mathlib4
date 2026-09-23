@@ -120,7 +120,7 @@ lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _
 end
 
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
-@[reducible, inline]
+@[reducible]
 def I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) => E.I₁ i.1 i.2)
 
 /-- The `1`-components as a function from the sigma type over `E.I₁ i₁ i₂`. -/
@@ -1022,7 +1022,7 @@ section Category
 variable {S : C} {E : OneHypercover.{w} J S} {F : OneHypercover.{w'} J S}
 
 /-- A morphism of `1`-hypercovers is a morphism of the underlying pre-`1`-hypercovers. -/
-@[reducible, inline]
+@[reducible]
 def Hom (E : OneHypercover.{w} J S) (F : OneHypercover.{w'} J S) :=
   E.toPreOneHypercover.Hom F.toPreOneHypercover
 

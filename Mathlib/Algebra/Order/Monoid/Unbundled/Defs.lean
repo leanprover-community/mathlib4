@@ -129,7 +129,7 @@ namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def MulLeftMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (· * ·) (· ≤ ·)
 
@@ -138,7 +138,7 @@ namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def MulRightMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· ≤ ·)
 
@@ -147,7 +147,7 @@ namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def AddLeftMono [Add M] [LE M] : Prop :=
   CovariantClass M M (· + ·) (· ≤ ·)
 
@@ -156,7 +156,7 @@ namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def AddRightMono [Add M] [LE M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· ≤ ·)
 
@@ -167,7 +167,7 @@ namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def MulLeftStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (· * ·) (· < ·)
 
@@ -176,7 +176,7 @@ namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def MulRightStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· < ·)
 
@@ -185,7 +185,7 @@ namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def AddLeftStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (· + ·) (· < ·)
 
@@ -194,7 +194,7 @@ namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def AddRightStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· < ·)
 
@@ -205,7 +205,7 @@ namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def MulLeftReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (· * ·) (· < ·)
 
@@ -214,7 +214,7 @@ namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def MulRightReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (swap (· * ·)) (· < ·)
 
@@ -223,7 +223,7 @@ namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def AddLeftReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (· + ·) (· < ·)
 
@@ -232,7 +232,7 @@ namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-@[reducible, inline]
+@[reducible]
 def AddRightReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· < ·)
 

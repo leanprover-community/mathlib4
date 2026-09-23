@@ -44,7 +44,7 @@ def isInternallyProjective : ObjectProperty C := fun P ↦ (ihom P).PreservesEpi
 An object `P : C` is *internally projective* if the functor `P ⟶[C] -` taking internal homs
 out of `P` preserves epimorphisms.
 -/
-@[reducible, inline]
+@[reducible]
 def InternallyProjective (P : C) := isInternallyProjective.Is P
 
 instance InternallyProjective.preserves_epi (P : C) [InternallyProjective P] :

@@ -65,7 +65,7 @@ The fact that `SetRel` wasn't an `abbrev` confuses automation.
 But simply making it an `abbrev` would have killed the point of having a separate less see-through
 type to perform relation operations on. So we instead redefined it as
 ```
-@[reducible, inline]
+@[reducible]
 def SetRel (α β : Type*) := Set (α × β)
 ```
 This extra level of indirection guides automation correctly and prevents (some kinds of) leakage.
@@ -81,7 +81,7 @@ variable {α β γ δ : Type*} {ι : Sort*}
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction.
 
 We represent them as sets due to how relations are used in the context of uniform spaces. -/
-@[reducible, inline]
+@[reducible]
 def SetRel (α β : Type*) := Set (α × β)
 
 namespace SetRel
@@ -550,13 +550,13 @@ instance {R : α → α → Prop} [Std.Irrefl R] : SetRel.IsIrrefl {(a, b) | R a
 variable (R) in
 /-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
 -/
-@[reducible, inline]
+@[reducible]
 def IsWellFounded : Prop := WellFounded (· ~[R] ·)
 
 variable (R S) in
 /-- A relation homomorphism with respect to a given pair of relations `R` and `S` s is a function
 `f : α → β` such that `a ~[R] b → f a ~[s] f b`. -/
-@[reducible, inline]
+@[reducible]
 def Hom := (· ~[R] ·) →r (· ~[S] ·)
 
 end SetRel
@@ -619,5 +619,5 @@ end Set
 /-- A shorthand for `α → β → Prop`.
 
 Consider using `SetRel` instead if you want extra API for relations. -/
-@[reducible, inline]
+@[reducible]
 def Rel (α β : Sort*) : Sort _ := α → β → Prop

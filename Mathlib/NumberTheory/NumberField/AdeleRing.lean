@@ -81,7 +81,7 @@ def ofAdicCompletion (v : HeightOneSpectrum R) : v.adicCompletion K →* 𝔸[R,
   .prod 1 (FiniteAdeleRing.ofAdicCompletion K v)
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
-@[reducible, inline]
+@[reducible]
 def principalSubgroup : AddSubgroup 𝔸[R, K] := (algebraMap K 𝔸[R, K]).range.toAddSubgroup
 
 end AdeleRing
@@ -89,7 +89,7 @@ end AdeleRing
 open scoped AdeleRing
 
 /-- The idele group is the group of units of the adele ring. -/
-@[reducible, inline]
+@[reducible]
 def IdeleGroup := 𝔸[R, K]ˣ
 
 namespace IdeleGroup
@@ -110,14 +110,14 @@ def ofAdicCompletion (v : HeightOneSpectrum R) : (v.adicCompletion K)ˣ →* Ide
   Units.map (AdeleRing.ofAdicCompletion R K v)
 
 /-- The subgroup of principal ideles `(x)ᵥ` where `x ∈ Kˣ`. -/
-@[reducible, inline]
+@[reducible]
 def principalSubgroup : Subgroup (IdeleGroup R K) :=
   (IdeleGroup.unitEmbedding R K).range
 
 end IdeleGroup
 
 /-- The idele class group is the quotient of the idele group by the subgroup of principal ideles. -/
-@[reducible, inline]
+@[reducible]
 def IdeleClassGroup := IdeleGroup R K ⧸ IdeleGroup.principalSubgroup R K
 
 namespace IdeleClassGroup

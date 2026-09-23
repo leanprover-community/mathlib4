@@ -32,7 +32,7 @@ instance : HasExplicitFiniteCoproducts.{w, u} (fun _ ↦ True) where
 example : FinitaryExtensive CompHaus.{u} := inferInstance
 
 /-- A one-element space is terminal in `CompHaus` -/
-@[reducible, inline]
+@[reducible]
 def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit
 
 /-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/

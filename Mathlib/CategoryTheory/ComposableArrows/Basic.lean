@@ -63,7 +63,7 @@ open Category
 variable (C : Type*) [Category* C]
 
 /-- `ComposableArrows C n` is the type of functors `Fin (n + 1) ⥤ C`. -/
-@[reducible, inline]
+@[reducible]
 def ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 
 namespace ComposableArrows
@@ -77,12 +77,12 @@ macro "valid" : tactic =>
   `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | omega)
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
-@[reducible, inline, simp]
+@[reducible, simp]
 def obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by lia⟩
 
 /-- The map `F.obj' i ⟶ F.obj' j` when `F : ComposableArrows C n`, and `i` and `j`
 are natural numbers such that `i ≤ j ≤ n`. -/
-@[reducible, inline, simp]
+@[reducible, simp]
 def map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
     F.obj ⟨i, by lia⟩ ⟶ F.obj ⟨j, by lia⟩ :=
   F.map (homOfLE (by simp only [Fin.mk_le_mk]; valid))
@@ -95,22 +95,22 @@ lemma map'_comp (i j k : ℕ) (hij : i ≤ j := by valid)
   F.map_comp _ _
 
 /-- The leftmost object of `F : ComposableArrows C n`. -/
-@[reducible, inline]
+@[reducible]
 def left := obj' F 0
 
 /-- The rightmost object of `F : ComposableArrows C n`. -/
-@[reducible, inline]
+@[reducible]
 def right := obj' F n
 
 /-- The canonical map `F.left ⟶ F.right` for `F : ComposableArrows C n`. -/
-@[reducible, inline]
+@[reducible]
 def hom : F.left ⟶ F.right := map' F 0 n
 
 variable {F G}
 
 /-- The map `F.obj' i ⟶ G.obj' i` induced on `i`th objects by a morphism `F ⟶ G`
 in `ComposableArrows C n` when `i` is a natural number such that `i ≤ n`. -/
-@[reducible, inline, simp]
+@[reducible, simp]
 def app' (φ : F ⟶ G) (i : ℕ) (hi : i ≤ n := by valid) :
     F.obj' i ⟶ G.obj' i := φ.app _
 
@@ -463,23 +463,23 @@ def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
   map_comp g g' := Precomp.map_comp F f (leOfHom g) (leOfHom g')
 
 /-- Constructor for `ComposableArrows C 2`. -/
-@[reducible, inline]
+@[reducible]
 def mk₂ {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : ComposableArrows C 2 :=
   (mk₁ g).precomp f
 
 /-- Constructor for `ComposableArrows C 3`. -/
-@[reducible, inline]
+@[reducible]
 def mk₃ {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : ComposableArrows C 3 :=
   (mk₂ g h).precomp f
 
 /-- Constructor for `ComposableArrows C 4`. -/
-@[reducible, inline]
+@[reducible]
 def mk₄ {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) :
     ComposableArrows C 4 :=
   (mk₃ g h i).precomp f
 
 /-- Constructor for `ComposableArrows C 5`. -/
-@[reducible, inline]
+@[reducible]
 def mk₅ {X₀ X₁ X₂ X₃ X₄ X₅ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃)
     (i : X₃ ⟶ X₄) (j : X₄ ⟶ X₅) :
     ComposableArrows C 5 :=
@@ -558,7 +558,7 @@ def δ₀Functor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.succFunctor (n + 1))
 
 /-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
-@[reducible, inline]
+@[reducible]
 def δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
 
 @[simp]
@@ -577,7 +577,7 @@ def δlastFunctor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.castSuccFunctor (n + 1))
 
 /-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
-@[reducible, inline]
+@[reducible]
 def δlast (F : ComposableArrows C (n + 1)) := δlastFunctor.obj F
 
 section

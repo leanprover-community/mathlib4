@@ -45,7 +45,7 @@ namespace MeasureTheory
 open VectorMeasure
 
 /-- A `ComplexMeasure` is a `ℂ`-vector measure. -/
-@[reducible, inline]
+@[reducible]
 def ComplexMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℂ
 

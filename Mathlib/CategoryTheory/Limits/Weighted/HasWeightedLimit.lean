@@ -35,14 +35,14 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 
 /-- Given `W : J ⥤ Type w` and `F : J ⥤ C`, this is the type of cones for
 the functor `CategoryOfElements.π W ⋙ F : W.Elements ⥤ C`. -/
-@[reducible, inline]
+@[reducible]
 def WeightedCone (W : J ⥤ Type w) (F : J ⥤ C) :=
   Cone (Functor.Elements.π W ⋙ F)
 
 /-- Given a weight `W : J ⥤ Type w` and `F : J ⥤ C`, we say that
 the `W`-weighted limit of `F` exists if the functor
 `CategoryOfElements.π W ⋙ F : W.Elements ⥤ C` has a limit. -/
-@[reducible, inline]
+@[reducible]
 def HasWeightedLimit (W : J ⥤ Type w) (F : J ⥤ C) : Prop :=
   HasLimit (Functor.Elements.π W ⋙ F)
 
@@ -264,7 +264,7 @@ variable (C) in
 exist for functors `F : J ⥤ C`. Under this condition, we define a weighted limit functor
 `W.weightedLimObj : (J ⥤ C) ⥤ C`. (See also `HasWeightedLimFlipObj` for the "flipped"
 property for `F : J ⥤ C`.) -/
-@[reducible, inline]
+@[reducible]
 def HasWeightedLimObj : Prop :=
   ∀ (F : J ⥤ C), HasWeightedLimit W F
 
@@ -288,7 +288,7 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 
 /-- Given a functor `F : J ⥤ C`, this is the property satisfied by weights `W : J ⥤ Type w`
 such that the `W`-weighted limit of `F` exists. -/
-@[reducible, inline]
+@[reducible]
 def hasWeightedLimit : ObjectProperty (J ⥤ Type w) :=
   fun W ↦ HasWeightedLimit W F
 
@@ -307,7 +307,7 @@ noncomputable def weightedLimFlipObj' : (hasWeightedLimit.{w} F).FullSubcategory
 weights `W : J ⥤ Type w`. Under this condition, we define a weighted limit functor
 `F.weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C`. (See also `HasWeightedLimObj` for
 the "flipped" property for `W : J ⥤ Type w`.) -/
-@[reducible, inline]
+@[reducible]
 def HasWeightedLimFlipObj : Prop :=
   ∀ (W : J ⥤ Type w), HasWeightedLimit W F
 

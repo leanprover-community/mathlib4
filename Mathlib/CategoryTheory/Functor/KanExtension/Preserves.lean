@@ -84,7 +84,7 @@ class PreservesPointwiseLeftKanExtensionAt (c : C) where
 
 /-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all pointwise left Kan extensions
 of `F` along `L`. -/
-@[reducible, inline]
+@[reducible]
 def PreservesPointwiseLeftKanExtension := ∀ c : C, PreservesPointwiseLeftKanExtensionAt G F L c
 
 variable {F L} in
@@ -267,12 +267,12 @@ end
 
 /-- `G.PreservesLeftKanExtensions L` means that `G : B ⥤ D` preserves all left Kan extensions along
 `L : A ⥤ C` of every functor `A ⥤ B`. -/
-@[reducible, inline]
+@[reducible]
 def PreservesLeftKanExtensions := ∀ (F : A ⥤ B), G.PreservesLeftKanExtension F L
 
 /-- `G.PreservesPointwiseLeftKanExtensions L` means that `G : B ⥤ D` preserves all pointwise left
 Kan extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
-@[reducible, inline]
+@[reducible]
 def PreservesPointwiseLeftKanExtensions :=
   ∀ (F : A ⥤ B), G.PreservesPointwiseLeftKanExtension F L
 
@@ -348,7 +348,7 @@ class PreservesPointwiseRightKanExtensionAt (c : C) where
 
 /-- `G.PreservesRightKanExtensions L` asserts that `G` preserves all pointwise right Kan
 extensions of `F` along `L` for every `F`. -/
-@[reducible, inline]
+@[reducible]
 def PreservesPointwiseRightKanExtension := ∀ c : C, PreservesPointwiseRightKanExtensionAt G F L c
 
 variable {F L} in
@@ -523,12 +523,12 @@ end
 
 /-- `G.PreservesRightKanExtensions L` means that `G : B ⥤ D` preserves all right Kan extensions
 along `L : A ⥤ C` of every functor `A ⥤ B`. -/
-@[reducible, inline]
+@[reducible]
 def PreservesRightKanExtensions := ∀ (F : A ⥤ B), G.PreservesRightKanExtension F L
 
 /-- `G.PreservesPointwiseRightKanExtensions L` means that `G : B ⥤ D` preserves all pointwise right
 Kan extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
-@[reducible, inline]
+@[reducible]
 def PreservesPointwiseRightKanExtensions :=
   ∀ (F : A ⥤ B), G.PreservesPointwiseRightKanExtension F L
 

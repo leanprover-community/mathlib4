@@ -122,7 +122,7 @@ def toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor.{u} wher
 
 /-- The (colimit) cofork expressing `π₀ X` as a coequalizer
 of `X.δ 0 : X _⦋1⦌ → X _⦋0⦌` and `X.δ 1`. -/
-@[reducible, inline]
+@[reducible]
 def coforkπ₀ : Cofork (X.δ (1 : Fin 2)) (X.δ 0) :=
   Cofork.ofπ (↾π₀.mk) (by ext s; exact π₀.sound (Edge.mk' s))
 
@@ -143,7 +143,7 @@ def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
 `toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor`
 as a coequalizer of the two face maps, considered as
 natural transformations of functors `SSet.{u} ⥤ Type u`. -/
-@[reducible, inline]
+@[reducible]
 def coforkπ₀Functor :
     Cofork (SSet.evaluation.{u}.map (SimplexCategory.δ (1 : Fin 2)).op)
       (SSet.evaluation.map (SimplexCategory.δ (0 : Fin 2)).op) :=

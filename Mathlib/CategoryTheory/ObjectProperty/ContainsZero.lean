@@ -113,7 +113,7 @@ end ObjectProperty
 
 /-- Given a functor `F : C ⥤ D`, this is the property of objects of `C`
 satisfied by those `X : C` such that `IsZero (F.obj X)`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Functor.kernel (F : C ⥤ D) : ObjectProperty C :=
   ObjectProperty.inverseImage IsZero F
 

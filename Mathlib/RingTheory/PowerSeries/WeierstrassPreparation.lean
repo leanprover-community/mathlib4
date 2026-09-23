@@ -119,7 +119,7 @@ structure IsWeierstrassDivisionAt : Prop where
 
 /-- Version of `PowerSeries.IsWeierstrassDivisionAt` for local rings with respect to
 its maximal ideal. -/
-@[reducible, inline]
+@[reducible]
 def IsWeierstrassDivision [IsLocalRing A] : Prop :=
   f.IsWeierstrassDivisionAt g q r (IsLocalRing.maximalIdeal A)
 
@@ -174,7 +174,7 @@ def IsWeierstrassDivisorAt : Prop :=
 
 /-- Version of `PowerSeries.IsWeierstrassDivisorAt` for local rings with respect to
 its maximal ideal. -/
-@[reducible, inline]
+@[reducible]
 def IsWeierstrassDivisor [IsLocalRing A] : Prop :=
   g.IsWeierstrassDivisorAt (IsLocalRing.maximalIdeal A)
 
@@ -657,7 +657,7 @@ structure IsWeierstrassFactorizationAt (g : A⟦X⟧) (f : A[X]) (h : A⟦X⟧) 
 
 /-- Version of `PowerSeries.IsWeierstrassFactorizationAt` for local rings with respect to
 its maximal ideal. -/
-@[reducible, inline]
+@[reducible]
 def IsWeierstrassFactorization (g : A⟦X⟧) (f : A[X]) (h : A⟦X⟧) [IsLocalRing A] : Prop :=
   g.IsWeierstrassFactorizationAt f h (IsLocalRing.maximalIdeal A)
 

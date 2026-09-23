@@ -37,13 +37,13 @@ variable {V : Type u₁} [Category.{v₁} V] [MonoidalCategory V]
 
 /-- Given an extension `α : H ⟶ L ⋙ H'`, this is the canonical extension
 `H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K` it induces through bifunctoriality of the external product. -/
-@[reducible, inline]
+@[reducible]
 def extensionUnitLeft : H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K :=
     (externalProductBifunctor D E V).map (α ×ₘ K.leftUnitor.inv)
 
 /-- Given an extension `α : H ⟶ L ⋙ H'`, this is the canonical extension
 `K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H'` it induces through bifunctoriality of the external product. -/
-@[reducible, inline]
+@[reducible]
 def extensionUnitRight : K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H' :=
     (externalProductBifunctor E D V).map (K.leftUnitor.inv ×ₘ α)
 

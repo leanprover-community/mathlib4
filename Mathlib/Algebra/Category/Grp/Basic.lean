@@ -55,7 +55,7 @@ instance : CoeSort GrpCat (Type u) :=
 attribute [coe] AddGrpCat.carrier GrpCat.carrier
 
 /-- Construct a bundled `GrpCat` from the underlying type and typeclass. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a bundled `AddGrpCat` from the underlying type and typeclass. -/]
 def of (M : Type u) [Group M] : GrpCat := ⟨M⟩
 
@@ -103,13 +103,13 @@ instance : ConcreteCategory GrpCat (· →* ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `GrpCat` back into a `MonoidHom`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Turn a morphism in `AddGrpCat` back into an `AddMonoidHom`. -/]
 def Hom.hom {X Y : GrpCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := GrpCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `GrpCat`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddGrpCat`. -/]
 def ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := GrpCat) f
@@ -271,7 +271,7 @@ initialize_simps_projections AddCommGrpCat (carrier → coe, -str)
 initialize_simps_projections CommGrpCat (carrier → coe, -str)
 
 /-- `Ab` is an abbreviation for `AddCommGrpCat`, for the sake of mathematicians' sanity. -/
-@[reducible, inline]
+@[reducible]
 def Ab := AddCommGrpCat
 
 namespace CommGrpCat
@@ -283,7 +283,7 @@ instance : CoeSort CommGrpCat (Type u) :=
 attribute [coe] AddCommGrpCat.carrier CommGrpCat.carrier
 
 /-- Construct a bundled `CommGrpCat` from the underlying type and typeclass. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Construct a bundled `AddCommGrpCat` from the underlying type and typeclass. -/]
 def of (M : Type u) [CommGroup M] : CommGrpCat := ⟨M⟩
 
@@ -331,13 +331,13 @@ instance : ConcreteCategory CommGrpCat (· →* ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommGrpCat` back into a `MonoidHom`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Turn a morphism in `AddCommGrpCat` back into an `AddMonoidHom`. -/]
 def Hom.hom {X Y : CommGrpCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := CommGrpCat) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `CommGrpCat`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGrpCat`. -/]
 def ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommGrpCat) f
@@ -623,24 +623,24 @@ instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomo
 -- this variant is then renamed with an `Aux` suffix
 set_option linter.checkUnivs false in
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 GrpMaxAux
   /-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/]
 def GrpMax.{u1, u2} := GrpCat.{max u1 u2}
 
 set_option linter.checkUnivs false in
 /-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/
-@[reducible, inline]
+@[reducible]
 def AddGrpMax.{u1, u2} := AddGrpCat.{max u1 u2}
 
 set_option linter.checkUnivs false in
 /-- An alias for `CommGrpCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 AddCommGrpMaxAux
   /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/]
 def CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
 
 set_option linter.checkUnivs false in
 /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/
-@[reducible, inline]
+@[reducible]
 def AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}

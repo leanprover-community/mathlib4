@@ -48,7 +48,7 @@ class ExponentiableMorphism {I J : C} (f : I ⟶ J) [ChosenPullbacksAlong f] whe
 
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
 has a right adjoint. -/
-@[reducible, inline]
+@[reducible]
 def IsExponentiable [ChosenPullbacks C] : MorphismProperty C :=
   fun _ _ f ↦ IsLeftAdjoint (pullback f)
 

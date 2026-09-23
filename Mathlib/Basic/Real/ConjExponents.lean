@@ -56,7 +56,7 @@ equality `p⁻¹ + q⁻¹ = 1`. This is an abbreviation for `Real.HolderTriple p
 shows up in many theorems in analysis, notably related to `L^p` norms.
 
 It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `Real.holderConjugate_iff`. -/
-@[reducible, inline]
+@[reducible]
 def HolderConjugate (p q : ℝ) := HolderTriple p q 1
 
 /-- The conjugate exponent of `p` is `q = p / (p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
@@ -227,7 +227,7 @@ the equality `p⁻¹ + q⁻¹ = 1`. This is an abbreviation for `NNReal.HolderTr
 condition shows up in many theorems in analysis, notably related to `L^p` norms.
 
 It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `NNReal.holderConjugate_iff`. -/
-@[reducible, inline]
+@[reducible]
 def HolderConjugate (p q : ℝ≥0) := HolderTriple p q 1
 
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/

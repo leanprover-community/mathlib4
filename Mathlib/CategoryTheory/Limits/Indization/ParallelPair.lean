@@ -72,21 +72,21 @@ variable {A B : Cᵒᵖ ⥤ Type v₁} (f g : A ⟶ B) (P₁ : IndObjectPresenta
   (P₂ : IndObjectPresentation B)
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
-@[reducible, inline]
+@[reducible]
 def K : Type v₁ :=
   Comma ((P₁.toCostructuredArrow ⋙ CostructuredArrow.map f).prod'
     (P₁.toCostructuredArrow ⋙ CostructuredArrow.map g))
     (P₂.toCostructuredArrow.prod' P₂.toCostructuredArrow)
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
-@[reducible, inline]
+@[reducible]
 def F₁ : K f g P₁ P₂ ⥤ C := Comma.fst _ _ ⋙ P₁.F
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
-@[reducible, inline]
+@[reducible]
 def F₂ : K f g P₁ P₂ ⥤ C := Comma.snd _ _ ⋙ P₂.F
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
-@[reducible, inline]
+@[reducible]
 def ι₁ : F₁ f g P₁ P₂ ⋙ yoneda ⟶ (Functor.const (K f g P₁ P₂)).obj A :=
   whiskerLeft (Comma.fst _ _) P₁.ι
 
@@ -95,7 +95,7 @@ noncomputable abbrev isColimit₁ : IsColimit (Cocone.mk A (ι₁ f g P₁ P₂)
   (Functor.Final.isColimitWhiskerEquiv _ _).symm P₁.isColimit
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
-@[reducible, inline]
+@[reducible]
 def ι₂ : F₂ f g P₁ P₂ ⋙ yoneda ⟶ (Functor.const (K f g P₁ P₂)).obj B :=
   whiskerLeft (Comma.snd _ _) P₂.ι
 

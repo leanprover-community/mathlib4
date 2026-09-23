@@ -51,7 +51,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable (I G) in
 /-- The Lie algebra of a Lie group, i.e., its tangent space at the identity. We use the word
 `GroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The Lie algebra of an additive Lie group, i.e., its tangent space at zero. We use
 the word `AddGroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/]
 def GroupLieAlgebra : Type _ := TangentSpace% (1 : G)

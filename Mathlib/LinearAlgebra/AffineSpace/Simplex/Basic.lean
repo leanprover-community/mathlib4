@@ -50,7 +50,7 @@ structure Simplex (n : ℕ) where
   independent : AffineIndependent k points
 
 /-- A `Triangle k P` is a collection of three affinely independent points. -/
-@[reducible, inline]
+@[reducible]
 def Triangle :=
   Simplex k P 2
 

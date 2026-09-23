@@ -115,7 +115,7 @@ variable (M N α) [Monoid M] [Monoid N]
 
 /-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.
   This is not an instance to avoid diamonds for example when `α := M × N`. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 AddAction.prodOfVAddCommClass
 /-- Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
 This is not an instance to avoid diamonds for example when `α := M × N`. -/]

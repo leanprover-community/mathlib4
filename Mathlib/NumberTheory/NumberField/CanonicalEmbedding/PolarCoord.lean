@@ -63,7 +63,7 @@ noncomputable section realMixedSpace
 /--
 The real mixed space `ℝ^r₁ × (ℝ × ℝ)^r₂` with `(r₁, r₂)` the signature of `K`.
 -/
-@[reducible, inline]
+@[reducible]
 def realMixedSpace :=
   ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℝ × ℝ)
 
@@ -229,7 +229,7 @@ open MeasurableEquiv
 The space `ℝ^(r₁+r₂) × ℝ^r₂`, it is homeomorphic to the `realMixedSpace`, see
 `homeoRealMixedSpacePolarSpace`.
 -/
-@[reducible, inline]
+@[reducible]
 def polarSpace := ((InfinitePlace K) → ℝ) × ({w : InfinitePlace K // w.IsComplex} → ℝ)
 
 open scoped Classical in

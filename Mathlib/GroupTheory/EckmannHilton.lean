@@ -86,7 +86,7 @@ theorem mul_assoc : Std.Associative m₂ :=
 
 /-- If a type carries a unital magma structure that distributes over a unital binary
 operation, then the magma structure is a commutative monoid. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
       /-- If a type carries a unital additive magma structure that distributes over a unital binary
       operation, then the additive magma structure is a commutative additive monoid. -/]
 def commMonoid [h : MulOneClass X]
@@ -97,7 +97,7 @@ def commMonoid [h : MulOneClass X]
 
 /-- If a type carries a group structure that distributes over a unital binary operation,
 then the group is commutative. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
       /-- If a type carries an additive group structure that distributes over a unital binary
       operation, then the additive group is commutative. -/]
 def commGroup [G : Group X]

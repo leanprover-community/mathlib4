@@ -43,7 +43,7 @@ theorem isUniformEmbedding_iff' [PseudoMetricSpace β] {f : γ → β} :
   rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
 /-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
@@ -77,7 +77,7 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the metric space and the emetric space. In this definition, the distance
 is given separately, to be able to prescribe some expression which is not defeq to the push-forward
 of the edistance to reals. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
     (dist_nonneg : ∀ x y, 0 ≤ dist x y) (h : ∀ x y, edist x y = .ofReal (dist x y)) :
     MetricSpace α :=
@@ -87,14 +87,14 @@ def EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α 
 /-- One gets a metric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the metric space and the emetric space. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
     MetricSpace α :=
   EMetricSpace.toMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
     MetricSpace γ :=
   { PseudoMetricSpace.induced f m.toPseudoMetricSpace with
@@ -102,14 +102,14 @@ def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m :
 
 /-- Pull back a metric space structure by a uniform embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def IsUniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : IsUniformEmbedding f) : MetricSpace α :=
   .replaceUniformity (.induced f h.injective m) h.comap_uniformity.symm
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Topology.IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
     (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
   .replaceTopology (.induced f h.injective m) h.eq_induced
@@ -242,7 +242,7 @@ non-definitionally) equal to some given edistance. We also provide convenience v
 PseudoMetric, Emetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
-@[expose, reducible, inline]
+@[expose, reducible]
 def replaceEDist : PseudoEMetricSpace X where
   edist := d
   edist_self := by simp [hd]
@@ -267,7 +267,7 @@ non-definitionally) equal to some given distance. We also provide convenience ve
 PseudoEMetric, Emetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
-@[expose, reducible, inline]
+@[expose, reducible]
 def replaceDist : PseudoMetricSpace X where
   dist := d
   dist_self := by simp [hd]
@@ -324,7 +324,7 @@ non-definitionally) equal to some given distance. We also provide convenience ve
 PseudoEMetric, PseudoMatric and EMetric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
-@[expose, reducible, inline]
+@[expose, reducible]
 def replaceDist : MetricSpace X where
   dist := d
   dist_self := by simp [hd]

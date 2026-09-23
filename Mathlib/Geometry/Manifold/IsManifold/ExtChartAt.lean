@@ -324,7 +324,7 @@ end OpenPartialHomeomorph
 namespace ModelWithCorners
 
 /-- The change of charts from `e` to `e'` in the model vector space `E`. -/
-@[reducible, inline]
+@[reducible]
 def extendCoordChange (e e' : OpenPartialHomeomorph M H) : PartialEquiv E E :=
   (e.extend I).symm ≫ e'.extend I
 

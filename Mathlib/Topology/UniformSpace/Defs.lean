@@ -218,7 +218,7 @@ open scoped Uniformity
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure
 that is equal to `u.toTopologicalSpace`. -/
-@[reducible, inline]
+@[reducible]
 def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : TopologicalSpace α)
     (h : t = u.toTopologicalSpace) : UniformSpace α where
   __ := u
@@ -226,12 +226,12 @@ def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : Topologi
   nhds_eq_comap_uniformity x := by rw [h, u.nhds_toTopologicalSpace]
 
 /-- Construct a `UniformSpace` from a `UniformSpace.Core`. -/
-@[reducible, inline]
+@[reducible]
 def UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace α :=
   .ofCoreEq u _ rfl
 
 /-- Construct a `UniformSpace.Core` from a `UniformSpace`. -/
-@[reducible, inline]
+@[reducible]
 def UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
   __ := u
   refl := by
@@ -267,7 +267,7 @@ theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace
 
 /-- Replace topology in a `UniformSpace` instance with a propositionally (but possibly not
 definitionally) equal one. -/
-@[reducible, inline]
+@[reducible]
 def UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : UniformSpace α where
   __ := u

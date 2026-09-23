@@ -88,7 +88,7 @@ attribute [instance] Grp.grp AddGrp.addGrp
 namespace Grp
 
 /-- A group object is a monoid object. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 (attr := simps -isSimp X) toAddMon
 /-- An additive group object is an additive monoid object. -/]
 def toMon (A : Grp C) : Mon C := ⟨A.X⟩
@@ -220,7 +220,7 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
 
 /-- Transfer `GrpObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 (attr := simps! -isSimp) /-- Transfer `AddGrpObj` along an isomorphism. -/]
 def ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
@@ -425,7 +425,7 @@ def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [GrpObj H] [IsMonHom e.hom] : mk G
 
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 (attr := simps! -isSimp)
 /-- Construct an isomorphism of additive group objects by giving an isomorphism between
 the underlying objects and checking compatibility with zero and addition only in the
@@ -576,7 +576,7 @@ variable [F.Monoidal] [F'.Monoidal] [G.Monoidal]
 open scoped Obj
 
 /-- The image of a group object under a monoidal functor is a group object. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 (attr := simp)
 /-- The image of an additive group object under a monoidal functor is an additive group object. -/]
 def grpObjObj {G : C} [GrpObj G] : GrpObj (F.obj G) where
@@ -683,7 +683,7 @@ noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
   map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 (attr := simps)
 /-- Pullback an additive group object along a fully faithful monoidal functor. -/]
 def FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :

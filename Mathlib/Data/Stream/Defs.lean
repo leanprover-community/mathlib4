@@ -36,7 +36,7 @@ def cons (a : α) (s : Stream' α) : Stream' α
 def get (s : Stream' α) (n : ℕ) : α := s n
 
 /-- Head of a stream: `Stream'.head s = Stream'.get s 0`. -/
-@[reducible, inline]
+@[reducible]
 def head (s : Stream' α) : α := s.get 0
 
 /-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
@@ -103,7 +103,7 @@ def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
   corec Prod.fst (cmd.run ∘ Prod.snd) (cmd.run s)
 
 -- corec is also known as unfolds
-@[reducible, inline]
+@[reducible]
 def unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
   corec g f a
 

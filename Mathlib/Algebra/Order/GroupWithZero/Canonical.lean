@@ -73,7 +73,7 @@ instance (priority := 100) : IsCancelMulZero α where
 
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
     [Mul β] [Pow β ℕ] [LE β] [LT β] [Max β] [Min β] [Ord β]
     [DecidableEq β] [DecidableLE β] [DecidableLT β]

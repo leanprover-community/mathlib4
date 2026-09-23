@@ -378,7 +378,7 @@ lemma map_comp_apply (f : X → Y) (g : Y → Z) (x : stdSimplex S X) :
   simp [FunOnFinite.linearMap_comp]
 
 /-- The vertex corresponding to `x : X` in `stdSimplex S X`. -/
-@[reducible, inline, deprecated StdSimplex.single +typeChanged (since := "2026-08-29")]
+@[reducible, deprecated StdSimplex.single +typeChanged (since := "2026-08-29")]
 def vertex [DecidableEq X] (x : X) : stdSimplex S X :=
   ⟨Pi.single x 1, single_mem_stdSimplex S x⟩
 

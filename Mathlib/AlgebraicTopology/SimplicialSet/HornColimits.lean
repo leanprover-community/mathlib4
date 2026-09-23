@@ -48,11 +48,11 @@ lemma sq : Subcomplex.BicartSq.{u} (stdSimplex.face {0}) (stdSimplex.face {0, 1}
   inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 0]` which avoids `2`. -/
-@[reducible, inline]
+@[reducible]
 def ι₀₁ : Δ[1] ⟶ Λ[2, 0] := horn.ι.{u} 0 2 (by simp)
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 0]` which avoids `1`. -/
-@[reducible, inline]
+@[reducible]
 def ι₀₂ : Δ[1] ⟶ Λ[2, 0] := horn.ι.{u} 0 1 (by simp)
 
 lemma isPushout :
@@ -83,11 +83,11 @@ lemma sq : Subcomplex.BicartSq.{u} (stdSimplex.face {1}) (stdSimplex.face {0, 1}
   inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 1]` which avoids `2`. -/
-@[reducible, inline]
+@[reducible]
 def ι₀₁ : Δ[1] ⟶ Λ[2, 1] := horn.ι.{u} 1 2 (by simp)
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 1]` which avoids `0`. -/
-@[reducible, inline]
+@[reducible]
 def ι₁₂ : Δ[1] ⟶ Λ[2, 1] := horn.ι.{u} 1 0 (by simp)
 
 lemma isPushout :
@@ -118,11 +118,11 @@ lemma sq : Subcomplex.BicartSq.{u} (stdSimplex.face {2}) (stdSimplex.face {0, 2}
   inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 2]` which avoids `1`. -/
-@[reducible, inline]
+@[reducible]
 def ι₀₂ : Δ[1] ⟶ Λ[2, 2] := horn.ι.{u} 2 1 (by simp)
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 2]` which avoids `0`. -/
-@[reducible, inline]
+@[reducible]
 def ι₁₂ : Δ[1] ⟶ Λ[2, 2] := horn.ι.{u} 2 0 (by simp)
 
 lemma isPushout :
@@ -259,15 +259,15 @@ end horn
 namespace horn₃₁
 
 /-- The inclusion `Δ[2] ⟶ Λ[3, 1]` which avoids `0`. -/
-@[reducible, inline]
+@[reducible]
 def ι₀ : Δ[2] ⟶ Λ[3, 1] := horn.ι.{u} 1 0 (by simp)
 
 /-- The inclusion `Δ[2] ⟶ Λ[3, 1]` which avoids `2`. -/
-@[reducible, inline]
+@[reducible]
 def ι₂ : Δ[2] ⟶ Λ[3, 1] := horn.ι.{u} 1 2 (by simp)
 
 /-- The inclusion `Δ[2] ⟶ Λ[3, 1]` which avoids `3`. -/
-@[reducible, inline]
+@[reducible]
 def ι₃ : Δ[2] ⟶ Λ[3, 1] := horn.ι.{u} 1 3 (by simp)
 
 variable {X : SSet.{u}} (f₀ f₂ f₃ : Δ[2] ⟶ X)
@@ -349,15 +349,15 @@ end horn₃₁
 namespace horn₃₂
 
 /-- The inclusion `Δ[2] ⟶ Λ[3, 2]` which avoids `0`. -/
-@[reducible, inline]
+@[reducible]
 def ι₀ : Δ[2] ⟶ Λ[3, 2] := horn.ι.{u} 2 0 (by simp)
 
 /-- The inclusion `Δ[2] ⟶ Λ[3, 2]` which avoids `1`. -/
-@[reducible, inline]
+@[reducible]
 def ι₁ : Δ[2] ⟶ Λ[3, 2] := horn.ι.{u} 2 1 (by simp)
 
 /-- The inclusion `Δ[2] ⟶ Λ[3, 2]` which avoids `3`. -/
-@[reducible, inline]
+@[reducible]
 def ι₃ : Δ[2] ⟶ Λ[3, 2] := horn.ι.{u} 2 3 (by simp)
 
 variable {X : SSet.{u}} (f₀ f₁ f₃ : Δ[2] ⟶ X)

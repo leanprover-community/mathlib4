@@ -913,7 +913,7 @@ theorem toSpanNonzeroSingleton_one :
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural
 isomorphism from the span of `x` to `R` given by $r \cdot x \mapsto r$. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def coord : R ∙ x ≃ₗ[R] R :=
   (toSpanNonzeroSingleton R M x h).symm

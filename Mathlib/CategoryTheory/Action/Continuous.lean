@@ -56,7 +56,7 @@ variable {V G}
 
 /-- For `HasForget₂ V TopCat` a predicate on an `X : Action V G` saying that the induced action on
 the underlying topological space is continuous. -/
-@[reducible, inline]
+@[reducible]
 def IsContinuous (X : Action V G) : Prop :=
   ContinuousSMul G ((CategoryTheory.forget₂ _ TopCat).obj X)
 
@@ -71,12 +71,12 @@ open Action
 
 /-- When we have `HasForget₂ V TopCat`, this is the property of the objects
 in `Action V G` where the induced action is continuous. -/
-@[reducible, inline]
+@[reducible]
 def Action.isContinuous : ObjectProperty (Action V G) := IsContinuous
 
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
-@[reducible, inline]
+@[reducible]
 def ContAction : Type _ := ObjectProperty.FullSubcategory (isContinuous V G)
 
 namespace ContAction
@@ -94,7 +94,7 @@ variable {V G}
 
 /-- A predicate on an `X : ContAction V G` saying that the topology on the underlying type of `X`
 is discrete. -/
-@[reducible, inline]
+@[reducible]
 def IsDiscrete (X : ContAction V G) : Prop :=
   DiscreteTopology ((CategoryTheory.forget₂ _ TopCat).obj X)
 

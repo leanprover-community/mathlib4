@@ -47,7 +47,7 @@ instance : CoeSort (CoalgCat.{v} R) (Type v) :=
 
 variable (R) in
 /-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
     CoalgCat R :=
   { ModuleCat.of R X with
@@ -83,12 +83,12 @@ instance concreteCategory : ConcreteCategory (CoalgCat.{v} R) (· →ₗc[R] ·)
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `CoalgCat` back into a `CoalgHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.toCoalgHom {X Y : CoalgCat.{v} R} (f : Hom X Y) : X →ₗc[R] Y :=
   ConcreteCategory.hom (C := CoalgCat.{v} R) f
 
 /-- Typecheck a `CoalgHom` as a morphism in `CoalgCat R`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
     [Coalgebra R X] [Coalgebra R Y] (f : X →ₗc[R] Y) :
     of R X ⟶ of R Y :=

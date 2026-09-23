@@ -133,7 +133,7 @@ instance isMulCommutative_topologicalClosure [T2Space A] (s : StarSubalgebra R A
 open scoped IsMulCommutative in
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible, inline,
+@[reducible,
 deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 def commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
@@ -144,7 +144,7 @@ def commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
 open scoped IsMulCommutative in
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible, inline,
+@[reducible,
 deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 def commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] [IsSemitopologicalRing A] [ContinuousStar A]

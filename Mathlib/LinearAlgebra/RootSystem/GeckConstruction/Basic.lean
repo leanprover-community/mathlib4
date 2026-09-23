@@ -296,12 +296,12 @@ lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
 variable [DecidableEq ι]
 
 /-- Geck's name for the "left" basis elements of `b.support ⊕ ι`. -/
-@[reducible, inline]
+@[reducible]
 def u (i : b.support) : b.support ⊕ ι → R := Pi.single (Sum.inl i) 1
 
 variable (b) in
 /-- Geck's name for the "right" basis elements of `b.support ⊕ ι`. -/
-@[reducible, inline]
+@[reducible]
 def v (i : ι) : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
 
 variable (b) in

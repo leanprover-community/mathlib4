@@ -52,11 +52,11 @@ lemma Hom.isOver_iff [X.Over S] [Y.Over S] {f : X ⟶ Y} : f.IsOver S ↔ f ≫ 
 /-! Also note the existence of `CategoryTheory.IsOverTower X Y S`. -/
 
 /-- Given `X.Over S`, this is the bundled object of `Over S`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def asOver (X S : Scheme.{u}) [X.Over S] := OverClass.asOver X S
 
 /-- Given a morphism `X ⟶ Y` with `f.IsOver S`, this is the bundled morphism in `Over S`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def Hom.asOver (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S] [f.IsOver S] :=
   OverClass.asOverHom S f
 

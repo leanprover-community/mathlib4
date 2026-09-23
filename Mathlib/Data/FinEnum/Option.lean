@@ -109,7 +109,7 @@ In contrast to the `Fintype` case, data can be transported along such an `Equiv`
 Also, since order matters, the choice of element that gets replaced by `Option.none` has
 to be provided for every step.
 -/
-@[reducible, inline]
+@[reducible]
 def recOnEmptyOption {P : Type u → Sort v}
     {α : Type u} (aenum : FinEnum α)
     (finChoice : (n : ℕ) → Fin (n + 1))

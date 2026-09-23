@@ -49,7 +49,7 @@ def IsComplement : Prop :=
   Function.Bijective fun x : S × T => x.1.1 * x.2.1
 
 /-- `H` and `K` are complements if `(*) : H × K → G` is a bijection -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- `H` and `K` are complements if `(+) : H × K → G` is a bijection -/]
 def IsComplement' :=
   IsComplement (H : Set G) (K : Set G)
@@ -565,12 +565,12 @@ open scoped Pointwise
 open MulAction
 
 /-- The collection of left transversals of a subgroup -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The collection of left transversals of a subgroup. -/]
 def LeftTransversal (H : Subgroup G) := {S : Set G // IsComplement S H}
 
 /-- The collection of right transversals of a subgroup -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The collection of right transversals of a subgroup. -/]
 def RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 

@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Homology.HomologicalComplex
 Given a category `C` with zero morphisms and two complex shapes
 `c₁ : ComplexShape I₁` and `c₂ : ComplexShape I₂`, we define
 the type of bicomplexes `HomologicalComplex₂ C c₁ c₂` as an
-@[reducible, inline]
+@[reducible]
 defiation for `HomologicalComplex (HomologicalComplex C c₂) c₁`.
 In particular, if `K : HomologicalComplex₂ C c₁ c₂`, then
 for each `i₁ : I₁`, `K.X i₁` is a column of `K`.
@@ -36,7 +36,7 @@ variable (C : Type*) [Category* C] [HasZeroMorphisms C]
 the associated type of bicomplexes `HomologicalComplex₂ C c₁ c₂` is
 `K : HomologicalComplex (HomologicalComplex C c₂) c₁`. Then, the object in
 position `⟨i₁, i₂⟩` can be obtained as `(K.X i₁).X i₂`. -/
-@[reducible, inline]
+@[reducible]
 def HomologicalComplex₂ :=
   HomologicalComplex (HomologicalComplex C c₂) c₁
 

@@ -56,7 +56,7 @@ variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B :
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `k`-module `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.
 See `Representation.ind` for the induced `H`-representation on `IndV φ ρ`. -/
-@[reducible, inline]
+@[reducible]
 def IndV := Coinvariants (V := TensorProduct k k[H] A)
   (Representation.tprod ((leftRegular k H).comp φ) ρ)
 

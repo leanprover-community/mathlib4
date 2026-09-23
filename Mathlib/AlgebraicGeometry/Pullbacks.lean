@@ -88,7 +88,7 @@ theorem t_id (i : 𝒰.I₀) : t 𝒰 f g i i = 𝟙 _ := by
   · rw [← cancel_mono (𝒰.f i)]; simp only [pullback.condition, t_snd, Category.assoc]
 
 /-- The inclusion map of `V i j = (Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ Uᵢ ×[Z] Y` -/
-@[reducible, inline]
+@[reducible]
 def fV (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ pullback (𝒰.f i ≫ f) g :=
   pullback.fst _ _
 

@@ -47,7 +47,7 @@ def eqToHom {C : Type u₁} [CategoryStruct.{v₁} C] {X Y : C} (p : X = Y) :
 
 /-- `eqToHom'` is the dual of `eqToHom`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[reducible, inline,
+@[reducible,
 to_dual existing eqToHom]
 def eqToHom' {C : Type u₁} [CategoryStruct.{v₁} C] {X Y : C} (p : X = Y) : Y ⟶ X :=
   eqToHom p.symm

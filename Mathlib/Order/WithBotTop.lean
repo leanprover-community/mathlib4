@@ -20,7 +20,7 @@ variable {ι : Type*}
 
 variable (ι) in
 /-- The type obtained by adding both `⊥` and `⊤` to a type. -/
-@[to_dual (attr := reducible, inline)
+@[to_dual (attr := reducible)
 /-- The type obtained by adding both `⊤` and `⊥` to a type. -/]
 def WithBotTop := WithBot (WithTop ι)
 
@@ -79,5 +79,5 @@ lemma coe_monotone [Preorder ι] :
 end WithBotTop
 
 /-- The type of extended integers `[-∞, ∞]`, constructed as `WithBot (WithTop ℤ)`. -/
-@[reducible, inline]
+@[reducible]
 def EInt := WithBotTop ℤ

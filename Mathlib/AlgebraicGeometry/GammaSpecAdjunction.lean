@@ -105,7 +105,7 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) :=
 variable (r : Γ.obj (op X))
 
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
-@[reducible, inline]
+@[reducible]
 def toΓSpecMapBasicOpen : Opens X :=
   (Opens.map X.toΓSpecBase).obj (basicOpen r)
 
@@ -114,7 +114,7 @@ theorem toΓSpecMapBasicOpen_eq : X.toΓSpecMapBasicOpen r = X.toRingedSpace.bas
   Opens.ext (X.toΓSpec_preimage_basicOpen_eq r)
 
 /-- The map from the global sections `Γ(X)` to the sections on the (preimage of) a basic open. -/
-@[reducible, inline]
+@[reducible]
 def toToΓSpecMapBasicOpen :
     X.presheaf.obj (op ⊤) ⟶ X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
   X.presheaf.map (X.toΓSpecMapBasicOpen r).leTop.op

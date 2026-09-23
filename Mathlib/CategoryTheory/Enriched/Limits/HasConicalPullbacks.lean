@@ -24,7 +24,7 @@ variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 /-- `HasConicalPullback f g` represents the mere existence of a conical limit cone for the pair
 of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z` -/
-@[reducible, inline]
+@[reducible]
 def HasConicalPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasConicalLimit V (cospan f g)
 
@@ -38,7 +38,7 @@ variable (C)
 `HasConicalPullbacks` represents the existence of conical pullbacks for every pair of
 morphisms.
 -/
-@[reducible, inline]
+@[reducible]
 def HasConicalPullbacks : Prop := HasConicalLimitsOfShape WalkingCospan V C
 
 /-- Ensure pullbacks exist from the existence of conical pullbacks. -/

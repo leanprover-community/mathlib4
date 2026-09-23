@@ -97,7 +97,7 @@ end DividedPowerAlgebra
   in the variables `ℕ × M` by the ring relation defined by `DividedPowerAlgebra.Rel`.
   We will later show that that `DividedPowerAlgebra R M` has divided powers.
   It satisfies a weak universal property for morphisms to rings with divided powers. -/
-@[reducible, inline]
+@[reducible]
 def DividedPowerAlgebra := DividedPowerAlgebra.ringCon R M |>.Quotient
 
 namespace DividedPowerAlgebra

@@ -281,25 +281,25 @@ variable (C : Type u) [Category.{v} C]
 
 /-- A category `HasWidePullbacks` if it has all limits of shape `WidePullbackShape J`, i.e. if it
 has a wide pullback for every collection of morphisms with the same codomain. -/
-@[reducible, inline]
+@[reducible]
 def HasWidePullbacks : Prop :=
   ∀ J : Type w, HasLimitsOfShape (WidePullbackShape J) C
 
 /-- A category `HasWidePushouts` if it has all colimits of shape `WidePushoutShape J`, i.e. if it
 has a wide pushout for every collection of morphisms with the same domain. -/
-@[reducible, inline]
+@[reducible]
 def HasWidePushouts : Prop :=
   ∀ J : Type w, HasColimitsOfShape (WidePushoutShape J) C
 
 variable {C J}
 
 /-- `HasWidePullback B objs arrows` means that `wideCospan B objs arrows` has a limit. -/
-@[reducible, inline]
+@[reducible]
 def HasWidePullback (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Prop :=
   HasLimit (WidePullbackShape.wideCospan B objs arrows)
 
 /-- `HasWidePushout B objs arrows` means that `wideSpan B objs arrows` has a colimit. -/
-@[reducible, inline]
+@[reducible]
 def HasWidePushout (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : Prop :=
   HasColimit (WidePushoutShape.wideSpan B objs arrows)
 
@@ -376,7 +376,7 @@ theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
 end WidePullback
 
 /-- A wide pullback cone is a cone on the wide cospan formed by a family of morphisms. -/
-@[reducible, inline]
+@[reducible]
 def WidePullbackCone {ι : Type*} {X : C} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :=
   Cone (WidePullbackShape.wideCospan X Y f)
 

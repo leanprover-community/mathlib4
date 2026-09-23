@@ -79,7 +79,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/
-@[reducible, inline]
+@[reducible]
 def MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
   AddMonoidAlgebra R (σ →₀ ℕ)
 

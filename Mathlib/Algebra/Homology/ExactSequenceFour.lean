@@ -149,7 +149,7 @@ variable (k : ℕ) (hk : k ≤ n)
 
 /-- If `S` is an exact sequence, this is the morphism from a cokernel
 of `S.map' k (k + 1)` to a kernel of `S.map' (k + 2) (k + 3)`. -/
-@[reducible, inline]
+@[reducible]
 def cokerToKer' : cc.pt ⟶ kf.pt :=
   hS.toIsComplex.cokerToKer' k hk cc kf hcc hkf
 

@@ -56,7 +56,7 @@ variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndepOn R v s` states that the elements in the family `v` that are indexed by the
 elements of `s` are algebraically independent over `R`. -/
-@[reducible, inline]
+@[reducible]
 def AlgebraicIndepOn (s : Set ι) : Prop := AlgebraicIndependent R fun i : s ↦ x i
 
 variable {R} {x}

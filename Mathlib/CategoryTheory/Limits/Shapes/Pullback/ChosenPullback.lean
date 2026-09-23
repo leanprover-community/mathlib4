@@ -112,7 +112,7 @@ variable {X S : C} {f : X ⟶ S} (h : ChosenPullback f f)
 
 /-- Given `f : X ⟶ S` and `h : ChosenPullback f f`, this is the type of
 morphisms `l : X ⟶ h.pullback` that are equal to the diagonal map. -/
-@[reducible, inline]
+@[reducible]
 def Diagonal := h.LiftStruct (𝟙 X) (𝟙 X) f
 
 instance : Nonempty h.Diagonal := by apply LiftStruct.nonempty <;> cat_disch
@@ -145,7 +145,7 @@ namespace ChosenPullback₃
 variable {h₁₂ h₂₃ h₁₃} (h : ChosenPullback₃ h₁₂ h₂₃ h₁₃)
 
 /-- The chosen wide pullback of `(f₁, f₂, f₃)`. -/
-@[reducible, inline]
+@[reducible]
 def pullback := h.chosenPullback.pullback
 
 /-- The projection from the wide pullback of `(f₁, f₂, f₃)` to the pullback of `f₁` and `f₃`. -/

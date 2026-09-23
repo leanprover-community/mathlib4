@@ -210,7 +210,7 @@ section
 variable [Abelian C]
 
 /-- An arbitrarily chosen injective resolution of an object. -/
-@[reducible, inline]
+@[reducible]
 def injectiveResolution (Z : C) [HasInjectiveResolution Z] : InjectiveResolution Z :=
   (HasInjectiveResolution.out (Z := Z)).some
 

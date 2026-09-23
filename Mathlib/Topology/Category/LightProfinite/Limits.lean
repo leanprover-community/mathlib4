@@ -37,7 +37,7 @@ instance : HasExplicitFiniteCoproducts.{w, u}
       show SecondCountableTopology (Σ (_a : _), _) from inferInstance⟩ }
 
 /-- A one-element space is terminal in `Profinite` -/
-@[reducible, inline]
+@[reducible]
 def isTerminalPUnit : IsTerminal (LightProfinite.of PUnit.{u + 1}) :=
   CompHausLike.isTerminalPUnit
 

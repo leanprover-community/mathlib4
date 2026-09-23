@@ -782,7 +782,7 @@ end
 variable [HasImageMap sq]
 
 /-- The map on images induced by a commutative square. -/
-@[reducible, inline]
+@[reducible]
 def image.map : image f.hom ⟶ image g.hom :=
   (HasImageMap.imageMap sq).map
 

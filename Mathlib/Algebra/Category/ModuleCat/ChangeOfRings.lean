@@ -234,7 +234,7 @@ variable (R)
 
 /-- The restriction of scalars by the identity morphism identifies to the
 identity functor. -/
-@[reducible, inline]
+@[reducible]
 def restrictScalarsId := restrictScalarsId'.{v} (RingHom.id R) rfl
 
 end
@@ -288,7 +288,7 @@ lemma restrictScalarsComp'App_inv_naturality {M N : ModuleCat R₃} (φ : M ⟶ 
 
 /-- The restriction of scalars by a composition of ring morphisms identifies to the
 composition of the restriction of scalars functors. -/
-@[reducible, inline]
+@[reducible]
 def restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
 end

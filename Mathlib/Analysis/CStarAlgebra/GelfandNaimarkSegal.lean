@@ -145,7 +145,7 @@ variable [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] (f : A â
 /--
 The Hilbert space constructed from a positive linear functional on a Câ‹†-algebra.
 -/
-@[reducible, inline]
+@[reducible]
 def GNS := UniformSpace.Completion f.PreGNS
 
 /--

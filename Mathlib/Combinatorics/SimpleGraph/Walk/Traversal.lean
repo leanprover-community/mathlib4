@@ -146,7 +146,7 @@ theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.s
   exact h₀ ▸ h₁ ▸ p.adj_getVert_succ (i := k) <| by grind
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
-@[reducible, inline]
+@[reducible]
 def snd (p : G.Walk u v) : V := p.getVert 1
 
 @[simp] lemma adj_snd {p : G.Walk v w} (hp : ¬ p.Nil) :
@@ -170,7 +170,7 @@ lemma snd_eq_support_getElem_one {p : G.Walk u v} (hnil : ¬p.Nil) :
   support_getElem_one _ |>.symm
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
-@[reducible, inline]
+@[reducible]
 def penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
 
 @[simp]

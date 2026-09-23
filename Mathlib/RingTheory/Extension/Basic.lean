@@ -117,7 +117,7 @@ def self : Extension R S where
   algebraMap_σ _ := rfl
 
 /-- The kernel of an extension. -/
-@[reducible, inline]
+@[reducible]
 def ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
 
 section Localization

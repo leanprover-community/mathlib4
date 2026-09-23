@@ -79,7 +79,7 @@ class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : 
 /-- A morphism of SheafedSpaces is an open immersion if it is an open immersion as a morphism
 of PresheafedSpaces
 -/
-@[reducible, inline]
+@[reducible]
 def SheafedSpace.IsOpenImmersion {X Y : SheafedSpace C} (f : X ⟶ Y) : Prop :=
   PresheafedSpace.IsOpenImmersion f.hom
 
@@ -89,7 +89,7 @@ lemma SheafedSpace.isOpenImmersion_iff_hom {X Y : SheafedSpace C} (f : X ⟶ Y) 
 /-- A morphism of LocallyRingedSpaces is an open immersion if it is an open immersion as a morphism
 of SheafedSpaces
 -/
-@[reducible, inline]
+@[reducible]
 def LocallyRingedSpace.IsOpenImmersion {X Y : LocallyRingedSpace} (f : X ⟶ Y) : Prop :=
   SheafedSpace.IsOpenImmersion f.toShHom
 
@@ -107,7 +107,7 @@ section
 variable {X Y : PresheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-@[reducible, inline]
+@[reducible]
 def opensFunctor :=
   H.base_open.functor
 
@@ -782,7 +782,7 @@ section
 variable {X Y : SheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-@[reducible, inline]
+@[reducible]
 def opensFunctor : Opens X ⥤ Opens Y :=
   H.base_open.functor
 
@@ -1187,7 +1187,7 @@ noncomputable def isoRestrict {X Y : LocallyRingedSpace} (f : X ⟶ Y)
       (PresheafedSpace.IsOpenImmersion.isoRestrict f.1)
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-@[reducible, inline]
+@[reducible]
 def opensFunctor {X Y : LocallyRingedSpace} (f : X ⟶ Y)
     [H : LocallyRingedSpace.IsOpenImmersion f] : Opens X ⥤ Opens Y :=
   H.base_open.functor

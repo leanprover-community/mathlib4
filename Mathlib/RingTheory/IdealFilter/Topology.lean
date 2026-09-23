@@ -95,7 +95,7 @@ open IdealFilter
 variable {A : Type*} [Ring A] {F : IdealFilter A}
 
 /-- View an ideal of `A` as a subset of `WithIdealFilter F`. -/
-@[reducible, inline]
+@[reducible]
 def idealSet (I : Ideal A) : Set (WithIdealFilter F) := (I : Set A)
 
 /-- The topology on `A` induced by `addGroupFilterBasis`. -/

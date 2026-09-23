@@ -336,7 +336,7 @@ def _root_.MulEquiv.withZero [Group β] :
   right_inv _ := by ext x; cases x <;> simp
 
 /-- The inverse of `MulEquiv.withZero`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
     α ≃* β :=
   _root_.MulEquiv.withZero.symm e

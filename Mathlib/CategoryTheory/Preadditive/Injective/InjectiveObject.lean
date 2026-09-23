@@ -25,7 +25,7 @@ open Limits ZeroObject
 variable (C : Type u) [Category.{v} C]
 
 /-- The full subcategory of injective objects in a category `C`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def InjectiveObject : Type u := ObjectProperty.FullSubcategory (isInjective C)
 
 namespace InjectiveObject
@@ -53,7 +53,7 @@ instance [HasZeroMorphisms C] [HasZeroObject C] : (isInjective C).ContainsZero w
 
 /-- The inclusion `InjectiveObject C ⥤ C` of the full subcategory of
 injective objects in `C`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def ι : InjectiveObject C ⥤ C := ObjectProperty.ι _
 
 instance (X : InjectiveObject C) : Injective ((ι C).obj X) := X.2

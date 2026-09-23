@@ -104,7 +104,7 @@ noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalen
 variable {C}
 
 /-- The class of an object in the skeleton. -/
-@[reducible, inline]
+@[reducible]
 def toSkeleton (X : C) : Skeleton C := ⟦X⟧
 
 /-- The isomorphism between `⟦X⟧.out` and `X`. -/
@@ -227,7 +227,7 @@ def ThinSkeleton : Type u₁ :=
 
 variable {C} in
 /-- Convenience constructor for `ThinSkeleton`. -/
-@[reducible, inline]
+@[reducible]
 def ThinSkeleton.mk (c : C) : ThinSkeleton C := Quotient.mk' c
 
 instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=

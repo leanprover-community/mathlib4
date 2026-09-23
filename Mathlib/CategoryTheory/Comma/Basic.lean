@@ -103,7 +103,7 @@ theorem CommaMorphism.w' {X Y : Comma R L} (self : CommaMorphism Y X) :
 
 /-- `CommaMorphism.mk'` is the dual of `CommaMorphism.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[reducible, inline,
+@[reducible,
 to_dual existing mk]
 def CommaMorphism.mk' {X Y : Comma R L}
     (right : Y.right ⟶ X.right) (left : Y.left ⟶ X.left)

@@ -40,7 +40,7 @@ instance : CoeSort TwoP Type* :=
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
-@[reducible, inline]
+@[reducible]
 def of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
   ⟨X, toTwoPointing⟩
 

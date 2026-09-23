@@ -48,7 +48,7 @@ Over X ⥤ Over (F.obj X)
        F
 ```
 with `Over.forget` as vertical functors. -/
-@[reducible, inline]
+@[reducible]
 def TwoSquare.overPost :
     TwoSquare (Over.post F) (Over.forget X) (Over.forget (F.obj X)) F :=
   TwoSquare.mk _ _ _ _ (𝟙 _)

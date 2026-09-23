@@ -56,7 +56,7 @@ pairing `P` of a subcomplex of a simplicial set. This is defined
 as the dimension of the corresponding type (II) simplex.
 (In the case `P` is proper, the corresponding type (I) simplex
 will be of dimension `c.dim + 1`.) -/
-@[reducible, inline]
+@[reducible]
 def dim : ℕ := c.s.val.dim
 
 variable [P.IsProper]
@@ -76,7 +76,7 @@ protected noncomputable abbrev horn : (Δ[c.dim + 1] : SSet.{u}).Subcomplex :=
 
 /-- The morphism `Δ[c.dim + 1] ⟶ X` corresponding to a cell of
 a rank function for a proper pairing of a subcomplex of `X : SSet`. -/
-@[reducible, inline]
+@[reducible]
 def map : Δ[c.dim + 1] ⟶ X :=
   yonedaEquiv.symm
     ((P.p c.s).val.cast (P.isUniquelyCodimOneFace c.s).dim_eq).simplex

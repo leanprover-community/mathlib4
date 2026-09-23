@@ -47,7 +47,7 @@ lemma eqToHom_toOrderHom {x y : SimplexCategory} (h : WithInitial.of x = WithIni
 -- (Impl. note): This definition could easily be inlined in
 -- the definition of `tensorObjOf` below, but having it type check directly as an element
 -- of `SimplexCategory` avoids having to sprinkle `WithInitial.down` everywhere.
-@[reducible, inline]
+@[reducible]
 def tensorObjOf (m n : SimplexCategory) : SimplexCategory := .mk (m.len + n.len + 1)
 
 /-- The tensor product of two objects of `AugmentedSimplexCategory`. -/
@@ -92,7 +92,7 @@ def tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory} (f₁ : x₁ ⟶ 
   | .star, _, .star, _, _, _ => WithInitial.starInitial.to _
 
 /-- The unit for the monoidal structure on `AugmentedSimplexCategory` is the initial object. -/
-@[reducible, inline]
+@[reducible]
 def tensorUnit : AugmentedSimplexCategory := WithInitial.star
 
 /-- The associator isomorphism for the monoidal structure on `AugmentedSimplexCategory` -/
@@ -166,12 +166,12 @@ def inr (x y : AugmentedSimplexCategory) : y ⟶ x ⊗ y :=
 
 /-- To ease type checking, we also provide a version of inl that lives in
 `SimplexCategory`. -/
-@[reducible, inline]
+@[reducible]
 def inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down <| inl (.of x) (.of y)
 
 /-- To ease type checking, we also provide a version of inr that lives in
 `SimplexCategory`. -/
-@[reducible, inline]
+@[reducible]
 def inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :

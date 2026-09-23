@@ -145,12 +145,12 @@ variable (X : C) (Y : C) (e : X ≅ Y) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 /-- An object `X` in a category is `κ`-presentable (for `κ` a regular cardinal)
 when the functor `Hom(X, _)` preserves colimits indexed by
 `κ`-filtered categories. -/
-@[reducible, inline]
+@[reducible]
 def IsCardinalPresentable : Prop := (coyoneda.obj (op X)).IsCardinalAccessible κ
 
 variable (C) in
 /-- The property of objects that are `κ`-presentable. -/
-@[reducible, inline]
+@[reducible]
 def isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
 
 instance (X : (isCardinalPresentable C κ).FullSubcategory) :
@@ -399,7 +399,7 @@ variable (X : C)
 
 /-- An object of a category is presentable relative to a universe `w`
 if it is `κ`-presentable for some regular `κ : Cardinal.{w}`. -/
-@[reducible, inline, pp_with_univ]
+@[reducible, pp_with_univ]
 def IsPresentable (X : C) : Prop :=
   Functor.IsAccessible.{w} (coyoneda.obj (op X))
 

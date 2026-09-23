@@ -47,13 +47,13 @@ variable {C C' H H' D D' : Type*} [Category* C] [Category* C']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : D ⥤ H` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
-@[reducible, inline]
+@[reducible]
 def RightExtension (L : C ⥤ D) (F : C ⥤ H) :=
   CostructuredArrow ((whiskeringLeft C D H).obj L) F
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : D ⥤ H` equipped with a natural transformation `F ⟶ L ⋙ F'`. -/
-@[reducible, inline]
+@[reducible]
 def LeftExtension (L : C ⥤ D) (F : C ⥤ H) :=
   StructuredArrow F ((whiskeringLeft C D H).obj L)
 
@@ -258,7 +258,7 @@ end
 
 /-- This property `HasRightKanExtension L F` holds when the functor `F` has a right
 Kan extension along `L`. -/
-@[reducible, inline]
+@[reducible]
 def HasRightKanExtension (L : C ⥤ D) (F : C ⥤ H) := HasTerminal (RightExtension L F)
 
 lemma HasRightKanExtension.mk (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F)
@@ -267,7 +267,7 @@ lemma HasRightKanExtension.mk (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L
 
 /-- This property `HasLeftKanExtension L F` holds when the functor `F` has a left
 Kan extension along `L`. -/
-@[reducible, inline]
+@[reducible]
 def HasLeftKanExtension (L : C ⥤ D) (F : C ⥤ H) := HasInitial (LeftExtension L F)
 
 lemma HasLeftKanExtension.mk (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F')

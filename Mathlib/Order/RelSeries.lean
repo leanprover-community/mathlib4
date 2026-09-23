@@ -812,7 +812,7 @@ lemma SetRel.IsWellFounded.of_finiteDimensional [r.FiniteDimensional] : r.IsWell
   .inv_of_finiteDimensional r.inv
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
-@[reducible, inline]
+@[reducible]
 def FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   SetRel.FiniteDimensional {(a, b) : γ × γ | a < b}
 
@@ -823,7 +823,7 @@ instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] 
     exact (x.step ⟨0, by lia⟩).ne <| Subsingleton.elim _ _⟩
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
-@[reducible, inline]
+@[reducible]
 def InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   SetRel.InfiniteDimensional {(a, b) : γ × γ | a < b}
 
@@ -833,7 +833,7 @@ variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
-@[reducible, inline]
+@[reducible]
 def LTSeries := RelSeries {(a, b) : α × α | a < b}
 
 namespace LTSeries

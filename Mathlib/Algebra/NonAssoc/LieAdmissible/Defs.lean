@@ -137,7 +137,7 @@ variable [Ring L]
 
 /-- Every ring is Lie-admissible.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def := by
     suffices ∀ a b c : L, associator a b c = 0 by simp
@@ -152,7 +152,7 @@ attribute [local instance] Ring.instLieAdmissibleRing
 
 /-- Every algebra is Lie-admissible.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
   smul_comm := by simp
 

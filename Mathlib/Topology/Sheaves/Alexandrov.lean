@@ -71,13 +71,13 @@ lemma exists_le_of_le_sup {ι : Type v} {x : X}
   grind [principalOpen_le_iff, Opens.mem_iSup]
 
 /-- The right Kan extension of `F` along `X ⥤ (Opens X)ᵒᵖ`. -/
-@[reducible, inline]
+@[reducible]
 def principalsKanExtension : (Opens X)ᵒᵖ ⥤ C :=
   (principals X).pointwiseRightKanExtension F
 
 /-- Given a structured arrow `f` with domain `U : Opens X` over `principals X`,
 this functor sends `f` to its "generator", an element of `X`. -/
-@[reducible, inline]
+@[reducible]
 def generator (U : Opens X) :
     StructuredArrow (.op U) (principals X) ⥤ X :=
   StructuredArrow.proj (.op U) (principals X)

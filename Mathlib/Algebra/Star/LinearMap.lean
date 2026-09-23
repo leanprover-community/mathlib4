@@ -180,7 +180,7 @@ In finite-dimensional C⋆-algebras, under the GNS construction, and the adjoint
 coalgebra, we get this hypothesis.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def convIntrinsicStarRing [Coalgebra R C]
     (h : star (toConv comul) = toConv ((TensorProduct.comm R C C).toLinearMap ∘ₗ comul)) :
     StarRing (WithConv (C →ₗ[R] A)) where

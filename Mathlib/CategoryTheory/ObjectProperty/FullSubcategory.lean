@@ -89,7 +89,7 @@ lemma homMk_surjective {X Y : P.FullSubcategory} :
   fun f ↦ ⟨f.hom, rfl⟩
 
 /-- The inclusion of a full subcategory is fully faithful. -/
-@[reducible, inline]
+@[reducible]
 def fullyFaithfulι :
     P.ι.FullyFaithful where
   preimage f := homMk _

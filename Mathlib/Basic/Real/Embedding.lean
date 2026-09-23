@@ -66,7 +66,7 @@ namespace Archimedean
 
 /-- Set of rational numbers that are less than the "number" `x / 1`.
 Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
-@[reducible, inline]
+@[reducible]
 def ratLt (x : M) : Set ℚ := {r | r.num • 1 < r.den • x}
 
 theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
@@ -83,7 +83,7 @@ theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
 noncomputable abbrev ratLt' (x : M) : Set ℝ := (Rat.castHom ℝ) '' (ratLt x)
 
 /-- Mapping `M` to `ℝ`, defined as the supremum of `ratLt' x`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def embedRealFun (x : M) := sSup (ratLt' x)
 

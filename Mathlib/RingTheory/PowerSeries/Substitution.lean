@@ -37,7 +37,7 @@ variable
 open MvPowerSeries.WithPiTopology
 
 /-- (Possibly multivariate) power series which can be substituted in a `PowerSeries`. -/
-@[reducible, inline]
+@[reducible]
 def HasSubst (a : MvPowerSeries τ S) : Prop :=
   IsNilpotent (MvPowerSeries.constantCoeff a)
 

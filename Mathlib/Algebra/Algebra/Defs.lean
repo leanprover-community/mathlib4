@@ -168,7 +168,7 @@ See note [reducible non-instances].
 *Warning:* In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
 this will likely create a diamond. -/
-@[reducible, inline]
+@[reducible]
 def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
@@ -195,7 +195,7 @@ See note [reducible non-instances].
 *Warning:* In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
 this will likely create a diamond. -/
-@[reducible, inline]
+@[reducible]
 def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 
@@ -217,7 +217,7 @@ If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `
 over `R`.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def ofModule' [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
@@ -235,7 +235,7 @@ If `(r • x) * y = x * (r • y) = r • (x * y)` for all `r : R` and `x y : A`
 is an `Algebra` over `R`.
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
@@ -345,7 +345,7 @@ Compose an `Algebra` with a `RingHom`, with action `f s • m`.
 
 This is the algebra version of `Module.compHom`.
 -/
-@[reducible, inline]
+@[reducible]
 def compHom : Algebra S A where
   __ := Module.compHom A f
   algebraMap := (algebraMap R A).comp f
@@ -432,7 +432,7 @@ attribute [local instance] IsUnital.toSemiring in
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def IsUnital.toAlgebra {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [IsUnital A] : Algebra R A :=

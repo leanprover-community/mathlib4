@@ -53,7 +53,7 @@ variable (X : LocallyRingedSpace.{u})
 /-- An alias for `toSheafedSpace`, where the result type is a `RingedSpace`.
 This allows us to use dot-notation for the `RingedSpace` namespace.
 -/
-@[reducible, inline]
+@[reducible]
 def toRingedSpace : RingedSpace :=
   X.toSheafedSpace
 
@@ -83,7 +83,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
   prop : ∀ x, IsLocalHom (toHom.stalkMap x).hom
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
-@[reducible, inline]
+@[reducible]
 def Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
   X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.1
 

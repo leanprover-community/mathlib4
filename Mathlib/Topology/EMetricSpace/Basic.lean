@@ -272,7 +272,7 @@ theorem EMetric.isUniformEmbedding_iff' [PseudoEMetricSpace β] {f : γ → β} 
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
 -- TODO: make it an instance?
-@[expose, reducible, inline]
+@[expose, reducible]
 def EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with

@@ -26,14 +26,14 @@ variable {V : Type u} (G : SimpleGraph V) (K L M : Set V)
 namespace SimpleGraph
 
 /-- The components outside a given set of vertices `K` -/
-@[reducible, inline]
+@[reducible]
 def ComponentCompl :=
   (G.induce Kᶜ).ConnectedComponent
 
 variable {G} {K L M}
 
 /-- The connected component of `v` in `G.induce Kᶜ`. -/
-@[reducible, inline]
+@[reducible]
 def componentComplMk (G : SimpleGraph V) {v : V} (vK : v ∉ K) : G.ComponentCompl K :=
   connectedComponentMk (G.induce Kᶜ) ⟨v, vK⟩
 
@@ -155,7 +155,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
 /--
 If `K ⊆ L`, the components outside of `L` are all contained in a single component outside of `K`.
 -/
-@[reducible, inline]
+@[reducible]
 def hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
   C.map <| induceHom Hom.id <| Set.compl_subset_compl.2 h
 

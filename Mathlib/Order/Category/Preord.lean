@@ -64,12 +64,12 @@ instance : ConcreteCategory Preord (· →o ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Preord` back into a `OrderHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {X Y : Preord.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := Preord) f
 
 /-- Typecheck a `OrderHom` as a morphism in `Preord`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [Preorder X] [Preorder Y] (f : X →o Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := Preord) f
 

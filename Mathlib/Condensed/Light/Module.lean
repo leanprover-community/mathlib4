@@ -39,7 +39,7 @@ variable (R : Type u) [Ring R]
 The category of light condensed `R`-modules, defined as sheaves of `R`-modules over
 `LightProfinite.{u}` with respect to the coherent Grothendieck topology.
 -/
-@[reducible, inline]
+@[reducible]
 def LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 
 noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
@@ -83,7 +83,7 @@ instance : (LightCondensed.forget R).IsRightAdjoint := freeForgetAdjunction R |>
 The category of light condensed abelian groups, defined as sheaves of `ℤ`-modules over
 `LightProfinite.{0}` with respect to the coherent Grothendieck topology.
 -/
-@[reducible, inline]
+@[reducible]
 def LightCondAb := LightCondMod ℤ
 
 noncomputable example : Abelian LightCondAb := inferInstance

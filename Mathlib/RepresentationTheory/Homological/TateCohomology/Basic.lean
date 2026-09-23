@@ -94,7 +94,7 @@ def tateComplexConnectData :
   d₀_comp := Rep.tateNorm_comp_d _
 
 /-- The Tate complex defined by connecting inhomogeneous chains and cochains with the Tate norm. -/
-@[reducible, inline]
+@[reducible]
 def tateComplex : CochainComplex (ModuleCat R) ℤ :=
   CochainComplex.ConnectData.cochainComplex (tateComplexConnectData M)
 
@@ -143,7 +143,7 @@ def tateCohomologyFunctor (n : ℤ) : Rep R G ⥤ ModuleCat R :=
 
 /-- The shortcut path of taking Tate cohomology which aligns with
 `groupCohomology` and `groupHomology`. -/
-@[reducible, inline]
+@[reducible]
 def tateCohomology (n : ℤ) : ModuleCat R := (tateCohomologyFunctor n).obj M
 
 namespace TateCohomology

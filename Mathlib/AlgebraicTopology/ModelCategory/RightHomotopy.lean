@@ -116,7 +116,7 @@ variable {X Y : C}
 /-- Given a path object `P` for `X`, two maps `f` and `g` in `X ⟶ Y`
 are homotopic relative to `P` when there is a morphism `h : P.I ⟶ Y`
 such that `P.i₀ ≫ h = f` and `P.i₁ ≫ h = g`. -/
-@[reducible, inline]
+@[reducible]
 def RightHomotopy [CategoryWithWeakEquivalences C] (P : PathObject Y) (f g : X ⟶ Y) : Type v :=
   P.toPrepathObject.RightHomotopy f g
 
@@ -127,19 +127,19 @@ section
 variable [CategoryWithWeakEquivalences C] (P : PathObject Y)
 
 /-- `f : X ⟶ Y` is right homotopic to itself relative to any path object. -/
-@[reducible, inline]
+@[reducible]
 def refl (f : X ⟶ Y) : P.RightHomotopy f f := PrepathObject.RightHomotopy.refl _ f
 
 variable {P} in
 /-- If `f` and `g` are homotopic relative to a path object `P`, then `g` and `f`
 are homotopic relative to `P.symm`. -/
-@[reducible, inline]
+@[reducible]
 def symm {f g : X ⟶ Y} (h : P.RightHomotopy f g) : P.symm.RightHomotopy g f :=
   PrepathObject.RightHomotopy.symm h
 
 variable {P} in
 /-- Right homotopies are compatible with precomposition. -/
-@[reducible, inline]
+@[reducible]
 def precomp {f g : X ⟶ Y} (h : P.RightHomotopy f g) {Z : C} (i : Z ⟶ X) :
     P.RightHomotopy (i ≫ f) (i ≫ g) :=
   PrepathObject.RightHomotopy.precomp h i

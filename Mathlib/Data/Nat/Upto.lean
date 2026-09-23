@@ -34,7 +34,7 @@ natural numbers, up to and including the first value satisfying `p`.
 
 We will be particularly interested in the case where there exists a value
 satisfying `p`, because in this case the `>` relation is well-founded. -/
-@[reducible, inline]
+@[reducible]
 def Upto (p : ℕ → Prop) : Type :=
   { i : ℕ // ∀ j < i, ¬p j }
 

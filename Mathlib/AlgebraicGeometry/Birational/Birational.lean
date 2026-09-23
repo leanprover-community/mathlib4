@@ -52,7 +52,7 @@ variable {X Y Z S : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
 
 variable (sX sY) in
 /-- A partial iso is an `S`-map if the underlying morphism is. -/
-@[reducible, inline]
+@[reducible]
 def IsOver (f : X.PartialIso Y) : Prop :=
   f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX
 
@@ -164,7 +164,7 @@ def toPartialMap (f : X.PartialIso Y) : X.PartialMap Y where
   hom := f.iso.hom ≫ f.target.ι
 
 /-- The underlying rational map of a partial isomorphism. -/
-@[reducible, inline]
+@[reducible]
 def toRationalMap (f : X.PartialIso Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
 /-- A scheme isomorphism viewed as a partial isomorphism defined on all of `X` and `Y`. -/

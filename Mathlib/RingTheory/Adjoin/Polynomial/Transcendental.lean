@@ -115,7 +115,7 @@ open Polynomial
 variable {s}
 
 /-- Given a transcendental element `s : S` over `F`, `F[s]` is a euclidean domain. -/
-@[reducible, inline]
+@[reducible]
 def Transcendental.euclideanDomainAdjoin {F : Type*} [Field F] [Algebra F S]
     (h : Transcendental F s) : EuclideanDomain F[s] :=
   (algEquivOfTranscendental F s h).symm.euclideanDomain

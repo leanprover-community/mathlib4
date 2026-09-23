@@ -145,7 +145,7 @@ def homEquivFunctor {a b : SimplexCategory} :
   SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
 
 /-- The truncated simplex category. -/
-@[reducible, inline]
+@[reducible]
 def Truncated (n : ℕ) :=
   ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
 
@@ -157,7 +157,7 @@ instance {n} : Inhabited (Truncated n) :=
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
-@[reducible, inline]
+@[reducible]
 def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   ObjectProperty.ι _
 
@@ -190,7 +190,7 @@ scoped macro_rules
 
 /-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
 is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
@@ -214,7 +214,7 @@ lemma Hom.tr_comp' {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) {hb : b.len
   rfl
 
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-@[reducible, inline]
+@[reducible]
 def incl (n m : ℕ) (h : n ≤ m := by lia) : Truncated n ⥤ Truncated m :=
   ObjectProperty.ιOfLE (fun _ h' ↦ h'.trans h)
 

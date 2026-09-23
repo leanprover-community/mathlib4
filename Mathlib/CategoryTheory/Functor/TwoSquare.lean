@@ -52,12 +52,12 @@ def TwoSquare := T ⋙ R ⟶ L ⋙ B
 namespace TwoSquare
 
 /-- Constructor for `TwoSquare`. -/
-@[reducible, inline]
+@[reducible]
 def mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T} {L} {R} {B} in
 /-- The natural transformation associated to a 2-square. -/
-@[reducible, inline]
+@[reducible]
 def natTrans (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
 
 /-- The type of 2-squares on functors `T`, `L`, `R`, and `B` is trivially equivalent to

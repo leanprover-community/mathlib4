@@ -144,7 +144,7 @@ instance (n : ℕ) : ToString (Composition n) :=
   ⟨fun c => toString c.blocks⟩
 
 /-- The length of a composition, i.e., the number of blocks in the composition. -/
-@[reducible, inline]
+@[reducible]
 def length : ℕ :=
   c.blocks.length
 

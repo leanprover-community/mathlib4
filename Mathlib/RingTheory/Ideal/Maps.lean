@@ -940,7 +940,7 @@ end
 namespace Submodule
 
 /-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
-@[reducible, inline]
+@[reducible]
 def annihilator (N : Submodule R M) : Ideal R :=
   Module.annihilator R N
 

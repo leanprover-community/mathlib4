@@ -1164,7 +1164,7 @@ noncomputable def inverseMonoidal [e.functor.Monoidal] : e.inverse.Monoidal := b
 
 /-- An equivalence of categories involving monoidal functors is monoidal if the underlying
 adjunction satisfies certain compatibilities with respect to the monoidal functor data. -/
-@[reducible, inline]
+@[reducible]
 def IsMonoidal [e.functor.Monoidal] [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
 
 set_option backward.isDefEq.respectTransparency false in

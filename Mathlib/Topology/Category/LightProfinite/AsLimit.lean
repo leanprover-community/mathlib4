@@ -31,11 +31,11 @@ universe u
 variable (S : LightProfinite.{u})
 
 /-- The functor `ℕᵒᵖ ⥤ FintypeCat` whose limit is isomorphic to `S`. -/
-@[reducible, inline]
+@[reducible]
 def fintypeDiagram : ℕᵒᵖ ⥤ FintypeCat := S.toLightDiagram.diagram
 
 /-- An abbreviation for `S.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
-@[reducible, inline]
+@[reducible]
 def diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat.toLightProfinite
 
 /--
@@ -79,7 +79,7 @@ def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
 def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
 
 /-- The projection from `S` to the `n`th component of `S.diagram`. -/
-@[reducible, inline]
+@[reducible]
 def proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
@@ -95,16 +95,16 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
   exact DiscreteQuotient.proj_surjective _
 
 /-- An abbreviation for the `n`th component of `S.diagram`. -/
-@[reducible, inline]
+@[reducible]
 def component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-@[reducible, inline]
+@[reducible]
 def transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
-@[reducible, inline]
+@[reducible]
 def transitionMapLE {n m : ℕ} (h : n ≤ m) : S.component m ⟶ S.component n :=
   S.diagram.map ⟨homOfLE h⟩
 

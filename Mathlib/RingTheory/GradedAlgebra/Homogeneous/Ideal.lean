@@ -59,7 +59,7 @@ variable (I : Ideal A)
 
 /-- An `I : Ideal A` is homogeneous if for every `r ∈ I`, all homogeneous components
   of `r` are in `I`. -/
-@[reducible, inline]
+@[reducible]
 def Ideal.IsHomogeneous : Prop := Submodule.IsHomogeneous I 𝒜
 
 theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
@@ -67,13 +67,13 @@ theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
   AddSubmonoidClass.IsHomogeneous.mem_iff 𝒜 _ hI
 
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
-@[reducible, inline]
+@[reducible]
 def HomogeneousIdeal := HomogeneousSubmodule 𝒜 𝒜
 
 variable {𝒜}
 
 /-- Converting a homogeneous ideal to an ideal. -/
-@[reducible, inline]
+@[reducible]
 def HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
   I.toSubmodule
 

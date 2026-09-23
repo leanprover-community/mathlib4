@@ -125,7 +125,7 @@ class LocallyFiniteOrder (α : Type*) [Preorder α] where
 
 /-- `LocallyFiniteOrder.mk'` is the dual of `LocallyFiniteOrder.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[reducible, inline,
+@[reducible,
 to_dual existing mk]
 def LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
     (finsetIcc finsetIco finsetIoc finsetIoo : α → α → Finset α)
@@ -568,7 +568,7 @@ noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b
 This is not an instance as it would not be defeq to better instances such as
 `Fin.locallyFiniteOrder`.
 -/
-@[reducible, inline]
+@[reducible]
 def Fintype.toLocallyFiniteOrder [Fintype α] [DecidableLT α] [DecidableLE α] :
     LocallyFiniteOrder α where
   finsetIcc a b := (Set.Icc a b).toFinset
@@ -899,7 +899,7 @@ variable [Preorder α] [Preorder β]
 
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
-@[reducible, inline]
+@[reducible]
 def locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
   finsetIcc a b := (Icc (f a) (f b)).map f.symm.toEquiv.toEmbedding
   finsetIco a b := (Ico (f a) (f b)).map f.symm.toEquiv.toEmbedding
@@ -912,7 +912,7 @@ def locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteO
 
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderTop` across an `OrderIso`. -/
-@[to_dual (attr := reducible, inline)
+@[to_dual (attr := reducible)
 /-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/]
 def locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
   finsetIci a := (Ici (f a)).map f.symm.toEquiv.toEmbedding
@@ -1127,7 +1127,7 @@ end Set
 
 /-- A `LocallyFiniteOrder` can be transferred across an order isomorphism. -/
 -- See note [reducible non-instances]
-@[reducible, inline]
+@[reducible]
 def LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N]
     [EquivLike F M N] [OrderIsoClass F M N] (f : F) [LocallyFiniteOrder N] :
     LocallyFiniteOrder M where

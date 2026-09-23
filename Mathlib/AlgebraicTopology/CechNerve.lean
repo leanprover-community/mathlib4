@@ -166,7 +166,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve construction is right adjoint to the `toArrow` functor. -/
-@[reducible, inline]
+@[reducible]
 def cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
@@ -330,7 +330,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/
-@[reducible, inline]
+@[reducible]
 def cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ ⥤ Arrow C) :=
   Adjunction.mkOfHomEquiv { homEquiv := cechConerveEquiv }
 

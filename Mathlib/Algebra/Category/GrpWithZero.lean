@@ -51,7 +51,7 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero (MonoidWit
   ofHom f := f
 
 /-- Typecheck a `MonoidWithZeroHom` as a morphism in `GrpWithZero`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [GroupWithZero X] [GroupWithZero Y]
     (f : MonoidWithZeroHom X Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom f

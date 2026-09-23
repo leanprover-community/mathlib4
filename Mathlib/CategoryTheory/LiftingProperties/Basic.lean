@@ -130,10 +130,10 @@ lemma RetractArrow.rightLiftingProperty
 namespace Arrow
 
 /-- Given a morphism `φ : f ⟶ g` in the category `Arrow C`, this is an
-@[reducible, inline]
+@[reducible]
 defiation for the `CommSq.LiftStruct` structure for
 the square corresponding to `φ`. -/
-@[reducible, inline,
+@[reducible,
 to_dual self]
 def LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
 

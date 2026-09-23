@@ -32,7 +32,7 @@ instance : HasExplicitFiniteCoproducts.{w, u} (fun Y ↦ TotallyDisconnectedSpac
     show TotallyDisconnectedSpace (Σ (_a : _), _) from inferInstance }
 
 /-- A one-element space is terminal in `Profinite` -/
-@[reducible, inline]
+@[reducible]
 def isTerminalPUnit : IsTerminal (Profinite.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit
 
 example : FinitaryExtensive Profinite.{u} := inferInstance

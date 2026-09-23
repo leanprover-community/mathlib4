@@ -88,7 +88,7 @@ protected abbrev Structure.Sigma (f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σ
 local notation "Σˣ" => Structure.Sigma
 
 /-- Constructor for `FirstOrder.Language.Structure.Sigma` alias. -/
-@[reducible, inline]
+@[reducible]
 def Structure.Sigma.mk (i : ι) (x : G i) : Σˣ f := ⟨i, x⟩
 
 namespace DirectLimit

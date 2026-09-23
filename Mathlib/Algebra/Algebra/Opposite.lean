@@ -120,7 +120,7 @@ theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingH
   rfl
 
 /-- The 'unopposite' of an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`. Inverse to `RingHom.op`. -/
-@[reducible, inline]
+@[reducible]
 def unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) := AlgHom.op.symm
 
 theorem toRingHom_unop (f : Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) : f.unop.toRingHom = RingHom.unop f.toRingHom :=
@@ -158,7 +158,7 @@ theorem toRingEquiv_op (f : A ≃ₐ[R] B) :
   rfl
 
 /-- The 'unopposite' of an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`. Inverse to `AlgEquiv.op`. -/
-@[reducible, inline]
+@[reducible]
 def unop : (Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) ≃ A ≃ₐ[R] B := AlgEquiv.op.symm
 
 theorem toAlgHom_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) : f.unop.toAlgHom = AlgHom.unop f.toAlgHom :=

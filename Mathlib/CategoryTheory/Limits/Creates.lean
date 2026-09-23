@@ -93,7 +93,7 @@ class CreatesLimitsOfSize (F : C ⥤ D) where
     infer_instance
 
 /-- `F` creates small limits if it creates limits of shape `J` for any small `J`. -/
-@[reducible, inline]
+@[reducible]
 def CreatesLimits (F : C ⥤ D) :=
   CreatesLimitsOfSize.{v₂, v₂} F
 
@@ -124,7 +124,7 @@ class CreatesColimitsOfSize (F : C ⥤ D) where
     infer_instance
 
 /-- `F` creates small colimits if it creates colimits of shape `J` for any small `J`. -/
-@[reducible, inline]
+@[reducible]
 def CreatesColimits (F : C ⥤ D) :=
   CreatesColimitsOfSize.{v₂, v₂} F
 

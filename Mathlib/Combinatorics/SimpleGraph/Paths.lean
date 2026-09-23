@@ -691,7 +691,7 @@ end Walk
 /-! ### Type of paths -/
 
 /-- The type for paths between two vertices. -/
-@[reducible, inline]
+@[reducible]
 def Path (u v : V) := { p : G.Walk u v // p.IsPath }
 
 namespace Path

@@ -232,31 +232,31 @@ def threeShortAddLong : ι := P.reflectionPerm (short P) (long P)
 def threeShortAddTwoLong : ι := P.reflectionPerm (long P) <| P.reflectionPerm (short P) (long P)
 
 /-- The short root `α`. -/
-@[reducible, inline]
+@[reducible]
 def shortRoot := P.root (short P)
 
 /-- The long root `β`. -/
-@[reducible, inline]
+@[reducible]
 def longRoot := P.root (long P)
 
 /-- The short root `α + β`. -/
-@[reducible, inline]
+@[reducible]
 def shortAddLongRoot : M := P.root (shortAddLong P)
 
 /-- The short root `2α + β`. -/
-@[reducible, inline]
+@[reducible]
 def twoShortAddLongRoot : M := P.root (twoShortAddLong P)
 
 /-- The short root `3α + β`. -/
-@[reducible, inline]
+@[reducible]
 def threeShortAddLongRoot : M := P.root (threeShortAddLong P)
 
 /-- The short root `3α + 2β`. -/
-@[reducible, inline]
+@[reducible]
 def threeShortAddTwoLongRoot : M := P.root (threeShortAddTwoLong P)
 
 /-- The list of all 12 roots belonging to the embedded `𝔤₂`. -/
-@[reducible, inline]
+@[reducible]
 def allRoots : List M :=
   [ longRoot P, -longRoot P,
     shortRoot P, -shortRoot P,
@@ -312,7 +312,7 @@ lemma linearIndependent_short_long :
   simp [P.linearIndependent_iff_coxeterWeightIn_ne_four ℤ, coxeterWeightIn]
 
 /-- The coefficients of each root in the `𝔤₂` root pairing, relative to the base. -/
-@[reducible, inline]
+@[reducible]
 def allCoeffs : List (Fin 2 → ℤ) :=
   [![0, 1], ![0, -1], ![1, 0], ![-1, 0], ![1, 1], ![-1, -1],
     ![2, 1], ![-2, -1], ![3, 1], ![-3, -1], ![3, 2], ![-3, -2]]

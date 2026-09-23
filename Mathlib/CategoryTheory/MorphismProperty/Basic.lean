@@ -357,7 +357,7 @@ lemma ofHoms_le_iff {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) (P : 
   ⟨fun h i ↦ h _ (ofHoms.mk i), fun h _ _ _⟨i⟩ ↦ h i⟩
 
 /-- The class of morphisms containing a single morphism. -/
-@[reducible, inline]
+@[reducible]
 def single {X Y : C} (f : X ⟶ Y) : MorphismProperty C := .ofHoms (fun (_ : Unit) ↦ f)
 
 lemma prop_single {X Y : C} (f : X ⟶ Y) : (single f) f := by tauto
@@ -433,15 +433,15 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
-@[reducible, inline]
+@[reducible]
 def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
 
 /-- The `MorphismProperty C` satisfied by monomorphisms in `C`. -/
-@[reducible, inline]
+@[reducible]
 def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 
 /-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
-@[reducible, inline]
+@[reducible]
 def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
 
 @[simp]
@@ -455,7 +455,7 @@ variable {C}
 
 /-- `P` respects isomorphisms, if it respects the morphism property `isomorphisms C`, i.e.
 it is stable under pre- and postcomposition with isomorphisms. -/
-@[reducible, inline]
+@[reducible]
 def RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C)
 
 instance RespectsIso.inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] :

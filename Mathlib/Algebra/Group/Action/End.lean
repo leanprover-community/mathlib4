@@ -156,7 +156,7 @@ def MulAction.toEndHom [MulAction M α] : M →* Function.End α where
 /-- The monoid action induced by a monoid hom to `Function.End α`
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def MulAction.ofEndHom (f : M →* Function.End α) : MulAction M α := .compHom α f
 
 end Monoid
@@ -173,7 +173,7 @@ def AddAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def AddAction.ofEndHom (f : M →+ Additive (Function.End α)) : AddAction M α := .compHom α f
 
 end AddMonoid

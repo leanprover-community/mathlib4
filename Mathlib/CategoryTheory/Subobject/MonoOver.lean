@@ -54,7 +54,7 @@ variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The object property in `Over X` of the structure morphism being a monomorphism. -/
-@[reducible, inline]
+@[reducible]
 def Over.isMono (X : C) : ObjectProperty (Over X) :=
   fun f : Over X => Mono f.hom
 
@@ -63,7 +63,7 @@ This isn't skeletal, so it's not a partial order.
 
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
-@[reducible, inline]
+@[reducible]
 def MonoOver (X : C) := (Over.isMono X).FullSubcategory
 
 namespace MonoOver
@@ -77,7 +77,7 @@ def mk {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
   property := hf
 
 /-- The inclusion from monomorphisms over X to morphisms over X. -/
-@[reducible, inline]
+@[reducible]
 def forget (X : C) : MonoOver X ⥤ Over X :=
   ObjectProperty.ι _
 
@@ -92,7 +92,7 @@ theorem mk_coe {X A : C} (f : A ⟶ X) [Mono f] : (mk f : C) = A :=
   rfl
 
 /-- Convenience notation for the underlying arrow of a monomorphism over X. -/
-@[reducible, inline]
+@[reducible]
 def arrow (f : MonoOver X) : (f : C) ⟶ X := f.obj.hom
 
 @[simp]
@@ -124,7 +124,7 @@ theorem w {f g : MonoOver X} (k : f ⟶ g) : k.hom.left ≫ g.arrow = f.arrow :=
   Over.w _
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
-@[reducible, inline]
+@[reducible]
 def homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
     (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
   InducedCategory.homMk (Over.homMk h w)

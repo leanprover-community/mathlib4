@@ -34,13 +34,13 @@ def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
   ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.2 (f h)⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
   obj A := of (X := A.V) (A.ρ.comp f)
   map f' := resMap f f'
 
 /-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 
 variable (f : H →* G) (M : Rep k G)
@@ -73,7 +73,7 @@ instance : (resFunctor (k := k) f).Faithful where
 
 /-- Morphism between `X Y : Rep k G` can be lifted from restrictions associated with `f : H →* G`
   when `f` is surjective. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def liftHomOfSurj {X Y : Rep k G} (hf : Function.Surjective f) (f' : res f X ⟶ res f Y) :
     X ⟶ Y := ofHom ⟨f'.hom.toLinearMap, fun g ↦ by obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.2 h⟩
 
@@ -148,13 +148,13 @@ variable {G : Type v} [Group G] (A : Rep k G) (S : Subgroup G)
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
 through `G ⧸ S`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
 
 /-- A `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially induces a
 `G ⧸ S`-representation on `A`, and composing this with the quotient map `G → G ⧸ S` gives the
 original representation by definition. Useful for typechecking. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def resOfQuotientIso : (res (QuotientGroup.mk' S) (A.ofQuotient S)) ≅ A := Iso.refl _
 
 end

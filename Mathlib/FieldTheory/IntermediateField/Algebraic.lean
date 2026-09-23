@@ -34,7 +34,7 @@ def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAl
     (Set.singleton_subset_iff.mpr hx) (hS x hx).isIntegral.inv_mem_adjoin
 
 /-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
-@[reducible, inline]
+@[reducible]
 def Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
     IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
 

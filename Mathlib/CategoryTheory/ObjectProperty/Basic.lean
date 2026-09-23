@@ -31,7 +31,7 @@ universe v v' u u'
 namespace CategoryTheory
 
 /-- A property of objects in a category `C` is a predicate `C → Prop`. -/
-@[reducible, inline, nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 def ObjectProperty (C : Type u) [CategoryStruct.{v} C] : Type u := C → Prop
 
 namespace ObjectProperty
@@ -118,7 +118,7 @@ lemma ofObj_subtypeVal (P : ObjectProperty C) :
     fun hX ↦ ofObj_apply Subtype.val ⟨X, hX⟩⟩
 
 /-- The property of objects in a category that is satisfied by a single object `X : C`. -/
-@[reducible, inline]
+@[reducible]
 def singleton (X : C) : ObjectProperty C := ofObj (fun (_ : Unit) ↦ X)
 
 @[simp]

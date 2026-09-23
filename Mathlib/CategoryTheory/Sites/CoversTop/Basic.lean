@@ -59,7 +59,7 @@ include hY
 
 /-- The cover of any object `W : C` attached to a family of objects `Y` that satisfy
 `J.CoversTop Y` -/
-@[reducible, inline]
+@[reducible]
 def cover (W : C) : Cover J W := ⟨Sieve.ofObjects Y W, hY W⟩
 
 lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c.pt}

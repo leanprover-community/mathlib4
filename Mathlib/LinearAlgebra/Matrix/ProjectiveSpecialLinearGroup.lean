@@ -30,7 +30,7 @@ open scoped MatrixGroups
 variable (n : Type u) [DecidableEq n] [Fintype n] (R : Type v) [CommRing R]
 
 /-- A projective special linear group is the quotient of a special linear group by its center. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def ProjectiveSpecialLinearGroup : Type _ :=
     SpecialLinearGroup n R ⧸ Subgroup.center (SpecialLinearGroup n R)
 

@@ -37,7 +37,7 @@ variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
 /-- Since `eqToHom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
 is used to aid the simplifier. -/
-@[reducible, inline]
+@[reducible]
 def objEqToHom {i j : β} (h : i = j) :
     X.obj i ⟶ X.obj j :=
   eqToHom (congr_arg X.obj h)

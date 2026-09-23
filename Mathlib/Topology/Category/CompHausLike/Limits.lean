@@ -52,7 +52,7 @@ variable {P : TopCat.{max u w} → Prop} {α : Type w} [Finite α] (X : α → C
 A typeclass describing the property that forming the disjoint union is stable under the
 property `P`.
 -/
-@[reducible, inline]
+@[reducible]
 def HasExplicitFiniteCoproduct := HasProp P (Σ (a : α), X a)
 
 variable [HasExplicitFiniteCoproduct X]
@@ -61,7 +61,7 @@ variable [HasExplicitFiniteCoproduct X]
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
 union with its usual topology.
 -/
-@[reducible, inline]
+@[reducible]
 def finiteCoproduct : CompHausLike P := ↧(Σ (a : α), X a)
 
 /--
@@ -97,7 +97,7 @@ lemma finiteCoproduct.hom_ext {B : CompHausLike P} (f g : finiteCoproduct X ⟶ 
   exact h
 
 /-- The coproduct cocone associated to the explicit finite coproduct. -/
-@[reducible, inline]
+@[reducible]
 def finiteCoproduct.cofan : Limits.Cofan X :=
   Cofan.mk (finiteCoproduct X) (finiteCoproduct.ι X)
 
@@ -195,7 +195,7 @@ variable {P : TopCat.{u} → Prop} {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y
 /--
 A typeclass describing the property that an explicit pullback is stable under the property `P`.
 -/
-@[reducible, inline]
+@[reducible]
 def HasExplicitPullback := HasProp P { xy : X × Y | f xy.fst = g xy.snd }
 
 variable [HasExplicitPullback f g] -- (hP : P (TopCat.of { xy : X × Y | f xy.fst = g xy.snd }))

@@ -43,25 +43,25 @@ variable {C D D' H : Type*} [Category* C] [Category* D] [Category* D'] [Category
 /-- The condition that a functor `F` has a pointwise left Kan extension along `L` at `Y`.
 It means that the functor `CostructuredArrow.proj L Y ⋙ F : CostructuredArrow L Y ⥤ H`
 has a colimit. -/
-@[reducible, inline]
+@[reducible]
 def HasPointwiseLeftKanExtensionAt (Y : D) :=
   HasColimit (CostructuredArrow.proj L Y ⋙ F)
 
 /-- The condition that a functor `F` has a pointwise left Kan extension along `L`: it means
 that it has a pointwise left Kan extension at any object. -/
-@[reducible, inline]
+@[reducible]
 def HasPointwiseLeftKanExtension := ∀ (Y : D), HasPointwiseLeftKanExtensionAt L F Y
 
 /-- The condition that a functor `F` has a pointwise right Kan extension along `L` at `Y`.
 It means that the functor `StructuredArrow.proj Y L ⋙ F : StructuredArrow Y L ⥤ H`
 has a limit. -/
-@[reducible, inline]
+@[reducible]
 def HasPointwiseRightKanExtensionAt (Y : D) :=
   HasLimit (StructuredArrow.proj Y L ⋙ F)
 
 /-- The condition that a functor `F` has a pointwise right Kan extension along `L`: it means
 that it has a pointwise right Kan extension at any object. -/
-@[reducible, inline]
+@[reducible]
 def HasPointwiseRightKanExtension := ∀ (Y : D), HasPointwiseRightKanExtensionAt L F Y
 
 lemma hasPointwiseLeftKanExtensionAt_iff_of_iso {Y₁ Y₂ : D} (e : Y₁ ≅ Y₂) :
@@ -336,7 +336,7 @@ instance : E.isPointwiseLeftKanExtensionAt.IsClosedUnderIsomorphisms where
 
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension when
 it is a pointwise left Kan extension at any object. -/
-@[reducible, inline]
+@[reducible]
 def IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
 
 variable {E E'}
@@ -515,7 +515,7 @@ instance : E.isPointwiseRightKanExtensionAt.IsClosedUnderIsomorphisms where
 
 /-- A right extension `E : RightExtension L F` is a pointwise right Kan extension when
 it is a pointwise right Kan extension at any object. -/
-@[reducible, inline]
+@[reducible]
 def IsPointwiseRightKanExtension := ∀ (Y : D), E.IsPointwiseRightKanExtensionAt Y
 
 variable {E E'}

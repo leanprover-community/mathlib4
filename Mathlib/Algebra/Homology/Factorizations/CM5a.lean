@@ -418,7 +418,7 @@ lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
 
 /-- The category of factorisations of `f` as a monomorphism that is a quasi-isomorphism
 in degrees `≤ n` followed by a degreewise epimorphism with an injective kernel. -/
-@[reducible, inline]
+@[reducible]
 def CofFibFactorizationQuasiIsoLE (n : ℤ) := (quasiIsoLE (f := f) n).FullSubcategory
 
 variable [EnoughInjectives C]

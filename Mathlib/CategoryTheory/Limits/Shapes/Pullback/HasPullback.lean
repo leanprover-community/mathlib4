@@ -84,59 +84,59 @@ variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
 /-- Two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z` have a pullback if the diagram `cospan f g` has a
 limit. -/
-@[reducible, inline]
+@[reducible]
 def HasPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasLimit (cospan f g)
 
 /-- Two morphisms `f : X ⟶ Y` and `g : X ⟶ Z` have a pushout if the diagram `span f g` has a
 colimit. -/
-@[reducible, inline]
+@[reducible]
 def HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
   HasColimit (span f g)
 
 /-- `pullback f g` computes the pullback of a pair of morphisms with the same target. -/
-@[reducible, inline]
+@[reducible]
 def pullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
   limit (cospan f g)
 
 /-- The cone associated to the pullback of `f` and `g` -/
-@[reducible, inline]
+@[reducible]
 def pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : PullbackCone f g :=
   limit.cone (cospan f g)
 
 /-- `pushout f g` computes the pushout of a pair of morphisms with the same source. -/
-@[reducible, inline]
+@[reducible]
 def pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 
 /-- The cocone associated to the pushout of `f` and `g` -/
-@[reducible, inline]
+@[reducible]
 def pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
   colimit.cocone (span f g)
 
 /-- The first projection of the pullback of `f` and `g`. -/
-@[reducible, inline]
+@[reducible]
 def pullback.fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ X :=
   limit.π (cospan f g) WalkingCospan.left
 
 /-- The second projection of the pullback of `f` and `g`. -/
-@[reducible, inline]
+@[reducible]
 def pullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ Y :=
   limit.π (cospan f g) WalkingCospan.right
 
 /-- The first inclusion into the pushout of `f` and `g`. -/
-@[reducible, inline]
+@[reducible]
 def pushout.inl {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Y ⟶ pushout f g :=
   colimit.ι (span f g) WalkingSpan.left
 
 /-- The second inclusion into the pushout of `f` and `g`. -/
-@[reducible, inline]
+@[reducible]
 def pushout.inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Z ⟶ pushout f g :=
   colimit.ι (span f g) WalkingSpan.right
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
 `pullback.lift : W ⟶ pullback f g`. -/
-@[reducible, inline]
+@[reducible]
 def pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
@@ -148,7 +148,7 @@ lemma pullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullbac
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
 `pushout.desc : pushout f g ⟶ W`. -/
-@[reducible, inline]
+@[reducible]
 def pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k := by cat_disch) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
@@ -159,13 +159,13 @@ lemma pushout.exists_desc {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout 
   ⟨pushout.desc h k, by simp⟩
 
 /-- The cone associated to a pullback is a limit cone. -/
-@[reducible, inline]
+@[reducible]
 def pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsLimit (pullback.cone f g) :=
   limit.isLimit (cospan f g)
 
 /-- The cocone associated to a pushout is a colimit cone. -/
-@[reducible, inline]
+@[reducible]
 def pushout.isColimit {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     IsColimit (pushout.cocone f g) :=
   colimit.isColimit (span f g)
@@ -277,7 +277,7 @@ W ⟶ Y
 X ⟶ Z
 ```
 -/
-@[reducible, inline]
+@[reducible]
 def pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
@@ -285,7 +285,7 @@ def pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullbac
     (by simp only [Category.assoc, ← eq₁, ← eq₂, pullback.condition_assoc])
 
 /-- The canonical map `X ×ₛ Y ⟶ X ×ₜ Y` given `S ⟶ T`. -/
-@[reducible, inline]
+@[reducible]
 def pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [HasPullback f g]
     [HasPullback (f ≫ i) (g ≫ i)] : pullback f g ⟶ pullback (f ≫ i) (g ≫ i) :=
   pullback.map f g (f ≫ i) (g ≫ i) (𝟙 _) (𝟙 _) i (Category.id_comp _).symm (Category.id_comp _).symm
@@ -316,7 +316,7 @@ S ⟶ T
   X ⟶ Z
 ```
 -/
-@[reducible, inline]
+@[reducible]
 def pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
     (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
     (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
@@ -324,7 +324,7 @@ def pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout 
     (by simp only [reassoc_of% eq₁, reassoc_of% eq₂, condition])
 
 /-- The canonical map `X ⨿ₛ Y ⟶ X ⨿ₜ Y` given `S ⟶ T`. -/
-@[reducible, inline]
+@[reducible]
 def pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [HasPushout f g]
     [HasPushout (i ≫ f) (i ≫ g)] : pushout (i ≫ f) (i ≫ g) ⟶ pushout f g :=
   pushout.map (i ≫ f) (i ≫ g) f g (𝟙 _) (𝟙 _) i (Category.comp_id _) (Category.comp_id _)
@@ -556,25 +556,25 @@ end PushoutSymmetry
 
 /-- `HasPullbacksAlong f` states that pullbacks of all morphisms into `Y`
 along `f : X ⟶ Y` exist. -/
-@[reducible, inline]
+@[reducible]
 def HasPullbacksAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
 
 /-- `HasPushoutsAlong f` states that pushouts of all morphisms out of `X`
 along `f : X ⟶ Y` exist. -/
-@[reducible, inline]
+@[reducible]
 def HasPushoutsAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
 
 variable (C)
 
 /-- A category `HasPullbacks` if it has all limits of shape `WalkingCospan`, i.e. if it has a
 pullback for every pair of morphisms with the same codomain. -/
-@[reducible, inline, stacks 001W]
+@[reducible, stacks 001W]
 def HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 
 /-- A category `HasPushouts` if it has all colimits of shape `WalkingSpan`, i.e. if it has a
 pushout for every pair of morphisms with the same domain. -/
-@[reducible, inline]
+@[reducible]
 def HasPushouts :=
   HasColimitsOfShape WalkingSpan C
 

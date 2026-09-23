@@ -115,7 +115,7 @@ variable {G α : Type*} [Group G] [MulAction G α]
 variable (G α) in
 /-- An action of a group on a type `α` is `n`-pretransitive
 if the associated action on `Fin n ↪ α` is pretransitive. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- An additive action of an additive group on a type `α`
 is `n`-pretransitive if the associated action on `Fin n ↪ α` is pretransitive. -/]
 def IsMultiplyPretransitive (n : ℕ) := IsPretransitive G (Fin n ↪ α)

@@ -175,7 +175,7 @@ A functor is said to preserve cofiltered limits, if it preserves all limits of s
 `J` is a cofiltered category which is small relative to the universe in which morphisms of the
 source live.
 -/
-@[reducible, inline]
+@[reducible]
 def PreservesCofilteredLimits (F : C ⥤ D) : Prop :=
   PreservesCofilteredLimitsOfSize.{v₂, v₂} F
 
@@ -232,7 +232,7 @@ A functor is said to reflect cofiltered limits, if it reflects all limits of sha
 `J` is a cofiltered category which is small relative to the universe in which morphisms of the
 source live.
 -/
-@[reducible, inline]
+@[reducible]
 def ReflectsCofilteredLimits (F : C ⥤ D) : Prop :=
   ReflectsCofilteredLimitsOfSize.{v₂, v₂} F
 

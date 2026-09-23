@@ -39,7 +39,7 @@ instance : CoeSort BddOrd Type* :=
   InducedCategory.hasCoeToSort toPartOrd
 
 /-- Construct a bundled `BddOrd` from the underlying type and typeclass. -/
-@[reducible, inline]
+@[reducible]
 def of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
@@ -65,12 +65,12 @@ instance : ConcreteCategory BddOrd (BoundedOrderHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddOrd` back into a `BoundedOrderHom`. -/
-@[reducible, inline]
+@[reducible]
 def Hom.hom {X Y : BddOrd.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := BddOrd) f
 
 /-- Typecheck a `BoundedOrderHom` as a morphism in `BddOrd`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y] [BoundedOrder Y]
     (f : BoundedOrderHom X Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := BddOrd) f

@@ -111,7 +111,7 @@ variable [HasProp P X]
 /-- A constructor for objects of the category `CompHausLike P`,
 taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
-@[reducible, inline]
+@[reducible]
 def of : CompHausLike P where
   toTop := ↧X
   is_compact := ‹_›
@@ -140,7 +140,7 @@ variable {X} {Y : Type u} [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] [Has
 variable {Z : Type u} [TopologicalSpace Z] [CompactSpace Z] [T2Space Z] [HasProp P Z]
 
 /-- Typecheck a continuous map as a morphism in the category `CompHausLike P`. -/
-@[reducible, inline]
+@[reducible]
 def ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
 @[simp] lemma hom_ofHom (f : C(X, Y)) : ConcreteCategory.hom (ofHom P f) = f := rfl

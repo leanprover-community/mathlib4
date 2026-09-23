@@ -137,7 +137,7 @@ class HasSplitCoequalizer : Prop where
 The pair `f,g` is a `G`-split pair if there is an `h : G Y ⟶ Z` so that `G f, G g, h` forms a split
 coequalizer in `D`.
 -/
-@[reducible, inline]
+@[reducible]
 def Functor.IsSplitPair : Prop :=
   HasSplitCoequalizer (G.map f) (G.map g)
 

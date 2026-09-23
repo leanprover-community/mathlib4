@@ -335,24 +335,24 @@ theorem map_eq {X Y : TopCat.{u}} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homoto
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
-@[reducible, inline]
+@[reducible]
 def toTop {X : TopCat.{u}} (x : πₓ X) : X := x.as
 
 /-- Help the typechecker by converting a point in a topological space to a
 point in the fundamental groupoid of that space. -/
-@[reducible, inline]
+@[reducible]
 def fromTop {X : TopCat.{u}} (x : X) : πₓ X := ⟨x⟩
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
-@[reducible, inline]
+@[reducible]
 def toPath {X : TopCat.{u}} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
     Path.Homotopic.Quotient x₀.as x₁.as :=
   p
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
-@[reducible, inline]
+@[reducible]
 def fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 

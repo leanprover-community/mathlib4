@@ -146,11 +146,11 @@ instance : (toSheaf R).Additive where
 variable {R}
 
 /-- The type of sections of a sheaf of modules. -/
-@[reducible, inline]
+@[reducible]
 def sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 
 /-- The map `M.sections → N.sections` induced by a morphism `M ⟶ N` of sheaves of modules. -/
-@[reducible, inline]
+@[reducible]
 def sectionsMap {M N : SheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
   PresheafOfModules.sectionsMap f.val s
 
@@ -202,13 +202,13 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M₁ M₂ : PresheafOfModules.{v} R} (f 
 
 /-- A morphism of presheaves of modules is locally surjective
 if the underlying morphism of presheaves of abelian groups is. -/
-@[reducible, inline]
+@[reducible]
 def IsLocallySurjective : Prop :=
   Presheaf.IsLocallySurjective J ((PresheafOfModules.toPresheaf R).map f)
 
 /-- A morphism of presheaves of modules is locally injective
 if the underlying morphism of presheaves of abelian groups is. -/
-@[reducible, inline]
+@[reducible]
 def IsLocallyInjective : Prop :=
   Presheaf.IsLocallyInjective J ((PresheafOfModules.toPresheaf R).map f)
 

@@ -32,7 +32,7 @@ namespace ObjectProperty
 variable {K} in
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves the limit of a functor `F : K ⥤ J`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def preservesLimit (F : K ⥤ J) : ObjectProperty (J ⥤ C) := PreservesLimit F
 
 @[simp]
@@ -52,7 +52,7 @@ instance (F : K ⥤ J) : (preservesLimit (C := C) F).IsClosedUnderIsomorphisms w
 variable {K} in
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves the colimit of a functor `F : K ⥤ J`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def preservesColimit (F : K ⥤ J) : ObjectProperty (J ⥤ C) := PreservesColimit F
 
 @[simp]
@@ -71,7 +71,7 @@ instance (F : K ⥤ J) : (preservesColimit (C := C) F).IsClosedUnderIsomorphisms
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves limits of shape `K`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def preservesLimitsOfShape : ObjectProperty (J ⥤ C) := PreservesLimitsOfShape K
 
 @[simp]
@@ -99,7 +99,7 @@ instance : (preservesLimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphism
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves colimits of shape `K`. -/
-@[expose, reducible, inline]
+@[expose, reducible]
 def preservesColimitsOfShape : ObjectProperty (J ⥤ C) := PreservesColimitsOfShape K
 
 @[simp]
@@ -127,7 +127,7 @@ instance : (preservesColimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphi
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves finite limits. -/
-@[reducible, inline]
+@[reducible]
 def preservesFiniteLimits : ObjectProperty (J ⥤ C) := PreservesFiniteLimits
 
 lemma preservesFiniteLimits_iff (F : J ⥤ C) :
@@ -138,7 +138,7 @@ instance : (preservesFiniteLimits (J := J) (C := C)).IsClosedUnderIsomorphisms w
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves finite colimits. -/
-@[reducible, inline]
+@[reducible]
 def preservesFiniteColimits : ObjectProperty (J ⥤ C) := PreservesFiniteColimits
 
 instance : (preservesFiniteColimits (J := J) (C := C)).IsClosedUnderIsomorphisms where

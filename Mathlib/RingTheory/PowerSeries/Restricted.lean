@@ -26,7 +26,7 @@ open scoped Topology Pointwise
 variable {R : Type*} [NormedRing R] (c : ℝ) (f : PowerSeries R)
 
 /-- Predicate for when `f` is a restricted power series. -/
-@[reducible, inline]
+@[reducible]
 def IsRestricted :=
   MvPowerSeries.IsRestricted (σ := Unit) (fun _ ↦ c) f
 

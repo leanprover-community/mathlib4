@@ -52,7 +52,7 @@ noncomputable abbrev G : MonCat :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ GrpCat MonCat.{max v u})
 
 /-- The canonical projection into the colimit, as a quotient type. -/
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The canonical projection into the colimit, as a quotient type. -/]
 def G.mk : (Σ j, F.obj j) → G.{v, u} F :=
   fun x ↦ (F ⋙ forget GrpCat).ιColimitType x.1 x.2

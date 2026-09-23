@@ -166,7 +166,7 @@ section Ring
 
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-@[reducible, inline]
+@[reducible]
 def semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
@@ -175,7 +175,7 @@ def semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A 
     intCast_negSucc := fun z => by simp }
 
 /-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.RingHom.commSemiringToCommRing {R A : Type*} [CommRing R] [CommSemiring A]
     (φ : R →+* A) : CommRing A :=
   let _ : Algebra R A := RingHom.toAlgebra φ
@@ -501,7 +501,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- If there is a linear map `f : A →ₗ[R] B` that preserves `1`, then `algebraMap R B r` is
 invertible when `algebraMap R A r` is. -/
-@[reducible, inline]
+@[reducible]
 def Invertible.algebraMapOfInvertibleAlgebraMap (f : A →ₗ[R] B) (hf : f 1 = 1) {r : R}
     (h : Invertible (algebraMap R A r)) : Invertible (algebraMap R B r) where
   invOf := f ⅟(algebraMap R A r)
@@ -576,7 +576,7 @@ def LinearMap.extendScalarsOfSurjectiveEquiv (h : Surjective (algebraMap R S)) :
   invFun f := f.restrictScalars S
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
-@[reducible, inline]
+@[reducible]
 def LinearMap.extendScalarsOfSurjective (h : Surjective (algebraMap R S))
     (l : M →ₗ[R] N) : M →ₗ[S] N :=
   extendScalarsOfSurjectiveEquiv h l

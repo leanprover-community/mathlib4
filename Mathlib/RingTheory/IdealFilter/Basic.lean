@@ -69,7 +69,7 @@ ring theory, ideal, filter, uniform filter, Gabriel filter, torsion theory
 open scoped Pointwise
 
 /-- `IdealFilter A` is the type of `Order.PFilter`s on the lattice of ideals of `A`. -/
-@[reducible, inline]
+@[reducible]
 def IdealFilter (A : Type*) [Ring A] := Order.PFilter (Ideal A)
 
 namespace IdealFilter

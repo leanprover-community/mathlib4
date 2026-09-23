@@ -57,7 +57,7 @@ sometimes also called the *strong operator topology*. We avoid this terminology 
 things share similar names, and using "pointwise convergence" in the name is more informative.
 
 This topology is also known as the weak⋆-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
-@[reducible, inline]
+@[reducible]
 def PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
 
 @[inherit_doc]

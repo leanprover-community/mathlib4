@@ -377,7 +377,7 @@ lemma IntermediateField.adjoin_root_eq_top_of_isSplittingField :
 variable (a) (L)
 
 /-- An arbitrary choice of `ⁿ√a` in the splitting field of `Xⁿ - a`. -/
-@[reducible, inline]
+@[reducible]
 noncomputable
 def rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
     (L) [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)] : L :=

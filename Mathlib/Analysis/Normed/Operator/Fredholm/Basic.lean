@@ -155,7 +155,7 @@ structure _root_.FredholmDecomposition where
 /-- Given a Fredholm decomposition `dec` of the space `E`, `dec.proj` is the (continuous linear)
 projection onto the "essential part" `dec.X₁` along the "inessential part" `dec.X₀`.
 This is a Fredholm operator, see `FredholmDecomposition.isFredholm_proj`. -/
-@[reducible, inline]
+@[reducible]
 def _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
     E →L[𝕜] dec.X₁ := dec.X₁.projectionOntoL dec.X₀ dec.isTopCompl
 

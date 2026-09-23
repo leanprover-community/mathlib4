@@ -98,7 +98,7 @@ theorem assoc_flip (X : D) [ModObj M X] : M ⊴ₗ γ ≫ γ =
 variable (M) in
 /-- The action of a monoid object on itself. -/
 -- See note [reducible non-instances]
-@[to_additive (attr := reducible, inline)
+@[to_additive (attr := reducible)
 /-- The action of an additive monoid object on itself. -/]
 def regular : ModObj M M where
   smul := μ

@@ -58,25 +58,25 @@ namespace Presieve
 
 /-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
     presieve on `X`. -/
-@[reducible, inline]
+@[reducible]
 def category {X : C} (P : Presieve X) :=
   ObjectProperty.FullSubcategory fun f : Over X => P f.hom
 
 /-- Construct an object of `P.category`. -/
-@[reducible, inline]
+@[reducible]
 def categoryMk {X : C} (P : Presieve X) {Y : C} (f : Y ⟶ X) (hf : P f) : P.category :=
   ⟨Over.mk f, hf⟩
 
 /-- Given a sieve `S` on `X : C`, its associated diagram `S.diagram` is defined to be
     the natural functor from the full subcategory of the over category `C/X` consisting
     of arrows in `S` to `C`. -/
-@[reducible, inline]
+@[reducible]
 def diagram (S : Presieve X) : S.category ⥤ C :=
   ObjectProperty.ι _ ⋙ Over.forget X
 
 /-- Given a sieve `S` on `X : C`, its associated cocone `S.cocone` is defined to be
     the natural cocone over the diagram defined above with cocone point `X`. -/
-@[reducible, inline]
+@[reducible]
 def cocone (S : Presieve X) : Cocone S.diagram :=
   (Over.forgetCocone X).whisker (ObjectProperty.ι _)
 

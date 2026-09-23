@@ -35,7 +35,7 @@ namespace Presentation
 
 /-- The additional data that is necessary in order to obtain a presentation
 of the restriction of scalars of a module. -/
-@[reducible, inline]
+@[reducible]
 def RestrictScalarsData : Type _ :=
   (presB.finsupp presM.G).CokernelData
     (LinearMap.restrictScalars A presM.map)
