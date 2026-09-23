@@ -181,7 +181,7 @@ theorem inhomogeneousChains.d_comp_d :
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousChainsIso [DecidableEq G] :
+def inhomogeneousChainsIso :
     inhomogeneousChains A ≅ (barComplex k G).coinvariantsTensorObj A := by
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
