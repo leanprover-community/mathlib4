@@ -352,10 +352,9 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
 /--
-Separates curl's JSON report from the raw header values that follow it on
-the same line. JSON allows no raw control character other than whitespace
-(RFC 8259), so the first 0x1F (ASCII unit separator) on a line ends the
-report.
+Separates curl's JSON report from the raw header values after it on the
+same line. JSON allows no raw control character other than whitespace
+(RFC 8259), so the first 0x1F (ASCII unit separator) ends the report.
 -/
 def curlFieldSep : String := "\x1f"
 
@@ -367,8 +366,8 @@ def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-lengt
 value of each header in `curlGetHeaders`, each after `curlFieldSep`.
 curl writes a header value unescaped, so the values stay outside the JSON.
 
-curl before 7.83 prints `%header{…}` literally, and that text reaches only
-a failure line.
+A curl older than 7.83 prints `%header{…}` as literal text. That text
+appears only in a failure line.
 -/
 def curlGetWriteOut : String :=
   "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
@@ -669,17 +668,17 @@ def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Na
   return (decompressed, decompFailed)
 
 /--
-Appends per-transfer detail to a failure line, as `key=value` pairs. A
-status and an exit code say that a transfer failed; these say how.
+Returns the per-transfer detail for a failure line, as `key=value` pairs.
+A status and an exit code say that a transfer failed; these say how.
 
-* `bytes` — the payload this transfer moved, over the size
-  `content-length` promised. `bytes=4096/1421777` locates a truncation,
-  and `bytes=0/1421777` means nothing arrived at all.
-* `cf_ray` — Cloudflare's request id. The suffix names the colo, and the
-  id finds the request in Cloudflare's own logs.
+* `bytes` — the payload this transfer moved, over the size that
+  `content-length` promised when that header arrived. `bytes=4096/1421777`
+  locates a truncation, and `bytes=0/1421777` means nothing arrived.
+* `cf_ray` — Cloudflare's request id. The suffix names the Cloudflare data
+  center, and the id finds the request in Cloudflare's logs.
 * `cf_cache_status` — whether the edge cache served the body, or the read
   reached a backend.
-* `http_version` — the protocol that carried the transfer.
+* `http_version` — the HTTP version of the transfer.
 * `time_total` — how long the attempt lasted, which separates an immediate
   reset from a slow stall.
 
@@ -689,8 +688,8 @@ names the counter that holds the payload: a download reads
 `size_download`, an upload `size_upload`.
 
 Each value describes curl's final attempt, because `--retry` hides the
-earlier ones. This function skips an absent or empty value, so a backend
-that sends no `cf-*` header just contributes fewer pairs.
+earlier ones. The function skips an absent or empty value, so a backend
+without `cf-*` headers gives fewer pairs.
 -/
 def transferDiagnostics (payloadKey : String) (report : Lean.Json)
     (headers : List String) : String :=
@@ -704,7 +703,6 @@ def transferDiagnostics (payloadKey : String) (report : Lean.Json)
       | value  => some value.compress
   let pair (key : String) (value : Option String) : Option String :=
     value.map fun value => s!"{key}={value}"
-  -- Without `content-length` there is no size to compare against.
   let bytes := (field payloadKey).map fun got =>
     match header "content-length" with
     | some want => s!"bytes={got}/{want}"
@@ -746,8 +744,8 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
     let line := line.trimAscii
-    -- Only curl's report decides the verdict; the header values after it
-    -- reach the failure line and nothing else.
+    -- Only curl's report decides the verdict. The header values reach only
+    -- the failure line.
     let (report, headers) := splitWriteOut line.copy
     if !line.isEmpty then
       match Lean.Json.parse report with

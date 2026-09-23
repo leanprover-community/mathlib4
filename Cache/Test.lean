@@ -1794,10 +1794,10 @@ def test_splitWriteOut : IO Unit := do
   assertTrue "and carries no header values" hs.isEmpty
 
 /-- The split relies on curl escaping every control character in `%{json}`.
-A local `file://` copy to a file name that contains 0x1F and a quote checks
-that against the installed curl: the report still ends at the first
-separator and parses back to the same name. `file://` sends no headers, so
-each header value is empty. -/
+A local `file://` copy to a file name with 0x1F and a quote checks this
+against the installed curl: the report ends at the first separator and
+parses back to the same name. A `file://` transfer has no response headers,
+so each header value is empty. -/
 def test_curlGetWriteOut_real_curl : IO Unit := do
   IO.println "curlGetWriteOut (local curl run):"
   if System.Platform.isWindows then
