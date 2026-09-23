@@ -366,8 +366,7 @@ theorem mem_map {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} {y : B} :
   NonUnitalSubsemiring.mem_map
 
 theorem map_toSubmodule {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} :
-    -- TODO: introduce a better coercion from `NonUnitalAlgHomClass` to `LinearMap`
-    (map f S).toSubmodule = Submodule.map (LinearMap.ofClass f) S.toSubmodule :=
+    (map f S).toSubmodule = Submodule.map f.toLinearMap S.toSubmodule :=
   SetLike.coe_injective rfl
 
 theorem map_toNonUnitalSubsemiring {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} :

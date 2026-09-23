@@ -235,6 +235,26 @@ theorem to_mulHom_injective {f g : A →ₛₙₐ[φ] B} (h : (f : A →ₙ* B) 
   ext a
   exact DFunLike.congr_fun h a
 
+section ToLinearMap
+
+variable {R₁ A₁ B₁ : Type*} [Semiring R₁]
+variable [NonUnitalNonAssocSemiring A₁] [Module R₁ A₁]
+variable [NonUnitalNonAssocSemiring B₁] [Module R₁ B₁]
+
+/-- Reinterpret a non-unital algebra homomorphism as a linear map. -/
+def toLinearMap (f : A₁ →ₙₐ[R₁] B₁) : A₁ →ₗ[R₁] B₁ :=
+  .ofClass f
+
+@[simp]
+theorem coe_toLinearMap (f : A₁ →ₙₐ[R₁] B₁) : ⇑f.toLinearMap = f :=
+  rfl
+
+@[simp]
+theorem toLinearMap_apply (f : A₁ →ₙₐ[R₁] B₁) (x : A₁) : f.toLinearMap x = f x :=
+  rfl
+
+end ToLinearMap
+
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) : A →ₑ+[φ] B) = ⟨⟨f, h₁⟩, h₂, h₃⟩ := by
