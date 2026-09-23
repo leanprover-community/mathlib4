@@ -75,14 +75,18 @@ lemma isSMulRegular_map [SMul R M] [SMul S M] (f : R → S) (smul : ∀ m : M, f
 @[to_additive]
 protected alias ⟨IsSMulRegular.of_map, IsSMulRegular.map⟩ := isSMulRegular_map
 
-theorem isAddTorsionFree_iff' [AddMonoid M] : IsAddTorsionFree M ↔ ∀ n ≠ 0, IsSMulRegular M n :=
-  isAddTorsionFree_iff M
+theorem hasUniqueDiv_iff' [AddMonoid M] : HasUniqueDiv M ↔ ∀ n ≠ 0, IsSMulRegular M n :=
+  hasUniqueDiv_iff M
+
+@[deprecated (since := "2026-09-23")] alias isAddTorsionFree_iff' := hasUniqueDiv_iff'
 
 namespace IsSMulRegular
 
-theorem nat_of_isAddTorsionFree [AddMonoid M] [IsAddTorsionFree M] {n : ℕ} (h : n ≠ 0) :
+theorem nat_of_hasUniqueDiv [AddMonoid M] [HasUniqueDiv M] {n : ℕ} (h : n ≠ 0) :
     IsSMulRegular M n :=
-  isAddTorsionFree_iff'.mp ‹_› n h
+  hasUniqueDiv_iff'.mp ‹_› n h
+
+@[deprecated (since := "2026-09-23")] alias nat_of_isAddTorsionFree := nat_of_hasUniqueDiv
 
 @[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
     IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
