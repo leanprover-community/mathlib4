@@ -124,7 +124,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     (ν : Measure α) [IsLocallyFiniteMeasure ν] (hρ : ρ ≪ μ) (s : Set α)
     (hs : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ ν a) : ρ s ≤ ν s := by
   -- this follows from a covering argument using the sets satisfying `ρ a ≤ ν a`.
-  apply _root_.le_of_forall_pos_le_add fun ε hε ↦ ?_
+  apply le_of_forall_pos_le_add fun ε hε ↦ ?_
   obtain ⟨U, sU, U_open, νU⟩ : ∃ (U : Set α), s ⊆ U ∧ IsOpen U ∧ ν U ≤ ν s + ε :=
     exists_isOpen_le_add s ν hε.ne'
   let f : α → Set (Set α) := fun _ => {a | ρ a ≤ ν a ∧ a ⊆ U}
@@ -137,7 +137,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     apply Frequently.mono this
     rintro a ⟨ρa, _, aU⟩
     exact ⟨ρa, aU⟩
-  have _ : Countable h.index := h.index_countable
+  have : Countable h.index := h.index_countable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
     _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1
@@ -162,8 +162,7 @@ variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ
 as `μ a` is eventually positive by `ae_eventually_measure_pos`. -/
 theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 0) := by
-  have A : ∀ ε > 0, ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, ρ a < ε * μ a := by
-    intro ε hε
+  have A {ε : ℝ≥0∞} (hε : ε > 0) : ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, ρ a < ε * μ a := by
     rcases eq_top_or_lt_top ε with rfl | hε'
     · filter_upwards [v.ae_eventually_measure_pos] with x hx
       filter_upwards [hx, (ρ.finiteAt_nhds x).eventually.filter_mono inf_le_left] with s hs _
@@ -190,16 +189,17 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         exact hx.1
       _ ≤ ε⁻¹ * ρ o := by gcongr; apply inter_subset_right
       _ = 0 := by rw [ρo, mul_zero]
-  obtain ⟨u, _, hu, u_lim⟩ := dense_univ.exists_seq_strictAnti_tendsto_of_lt ENNReal.zero_lt_top
+  obtain ⟨u, -, hu, u_lim⟩ :
+    ∃ u : ℕ → ℝ≥0∞, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 ∞ ∩ univ) ∧ Tendsto u atTop (𝓝 0) :=
+    dense_univ.exists_seq_strictAnti_tendsto_of_lt ENNReal.zero_lt_top
   simp only [inter_univ, mem_Ioo] at hu
-  have B : ∀ᵐ x ∂μ, ∀ n, ∀ᶠ a in v.filterAt x, ρ a < (u n) * μ a :=
-    ae_all_iff.2 fun n ↦ A (u n) (hu n).1
+  have B : ∀ᵐ x ∂μ, ∀ n, ∀ᶠ a in v.filterAt x, ρ a < (u n) * μ a := ae_all_iff.2 fun n ↦ A (hu n).1
   filter_upwards [B, v.ae_eventually_measure_pos]
   intro x hx h'x
   refine ENNReal.nhds_zero_basis_Iic.tendsto_right_iff.2 fun ε hε ↦ ?_
   simp only [mem_Iic]
-  obtain ⟨w, w_pos, w_lt⟩ := exists_between hε
-  obtain ⟨n, hn⟩ := ((tendsto_order.1 u_lim).2 w w_pos).exists
+  obtain ⟨w, w_pos, w_lt⟩ : ∃ w, 0 < w ∧ w < ε := exists_between hε
+  obtain ⟨n, hn⟩ : ∃ n, u n < w := ((tendsto_order.1 u_lim).2 w w_pos).exists
   filter_upwards [hx n, h'x, v.eventually_measure_lt_top x] with a ha μa_pos μa_lt_top
   rw [ENNReal.div_le_iff μa_pos.ne' μa_lt_top.ne]
   exact ha.le.trans (mul_le_mul_left (hn.trans w_lt).le _)
@@ -215,7 +215,7 @@ that `ρ s ≤ c * μ s`, and the second one that `ρ s ≥ d * μ s`, a contrad
 theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0∞} (hcd : c < d) (s : Set α)
     (hc : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ c * μ a)
     (hd : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, d * μ a ≤ ρ a) : μ s = 0 := by
-  have _ := μ.smul_locallyfinite hcd.ne_top
+  have := μ.isLocallyFiniteMeasure_smul hcd.ne_top
   apply measure_null_of_locally_null s fun x _ => ?_
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ μ o < ∞ :=
     Measure.exists_isOpen_measure_lt_top μ x
@@ -231,7 +231,7 @@ theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0∞} (hcd : c < d) 
 /-- If `ρ` is absolutely continuous with respect to `μ`, then for almost every `x`,
 the ratio `ρ a / μ a` converges as `a` shrinks to `x` along a Vitali family for `μ`. -/
 theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 c) := by
-  obtain ⟨w, w_count, w_dense, _, w_top⟩ :
+  obtain ⟨w, w_count, w_dense, -, w_top⟩ :
     ∃ w : Set ℝ≥0∞, w.Countable ∧ Dense w ∧ 0 ∉ w ∧ ∞ ∉ w :=
     ENNReal.exists_countable_dense_no_zero_top
   have I : ∀ x ∈ w, x ≠ ∞ := fun x xs hx => w_top (hx ▸ xs)
@@ -342,7 +342,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
   have J : (ρ + μ) (w n) ≠ ∞ := by
     apply (lt_of_le_of_lt (measure_mono _) (measure_spanningSets_lt_top (ρ + μ) n)).ne
     exact inter_subset_right
-  have _ := μ.smul_locallyfinite hpq.ne_top
+  have := μ.isLocallyFiniteMeasure_smul hpq.ne_top
   have A :
     ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
       p * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
@@ -433,7 +433,7 @@ theorem measure_le_mul_of_subset_limRatioMeas_lt {p : ℝ≥0∞} {s : Set α}
     _ ≤ (p • μ) (s ∩ t) + ρ tᶜ := by gcongr; apply inter_subset_right
     _ ≤ p * μ (s ∩ t) := by simp [(hρ A)]
     _ ≤ p * μ s := by gcongr; apply inter_subset_left
-  have _ := μ.smul_locallyfinite hp.ne
+  have := μ.isLocallyFiniteMeasure_smul hp.ne
   refine v.measure_le_of_frequently_le (p • μ) hρ _ fun x hx => ?_
   have I : ∀ᶠ b : Set α in v.filterAt x, ρ b / μ b < p := (tendsto_order.1 hx.2).2 _ (h hx.1)
   apply I.frequently.mono fun a ha ↦ ?_
@@ -468,7 +468,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
   have A : Tendsto (fun q ↦ ρ s / q) (𝓝[Ioo 0 ∞] ∞) (𝓝 (ρ s / ∞)) :=
     (ENNReal.Tendsto.const_div tendsto_id (.inr ρs)).mono_left nhdsWithin_le_nhds
   rw [ENNReal.div_top] at A
-  have _ := right_nhdsWithin_Ioo_neBot (ENNReal.zero_lt_top)
+  have := right_nhdsWithin_Ioo_neBot (ENNReal.zero_lt_top)
   apply ge_of_tendsto A
   filter_upwards [self_mem_nhdsWithin] with x hx
   rw [ENNReal.le_div_iff_mul_le (.inl hx.1.ne') (.inr ρs), mul_comm]
@@ -613,7 +613,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
 
 theorem withDensity_limRatioMeas_eq : μ.withDensity (v.limRatioMeas hρ) = ρ := by
   ext1 s hs
-  have _ := left_nhdsWithin_Ioo_neBot ENNReal.one_lt_top
+  have := left_nhdsWithin_Ioo_neBot ENNReal.one_lt_top
   refine le_antisymm ?_ ?_
   · have : Tendsto (fun t ↦ (t ^ 2 * ρ s)) (𝓝[Ioo 1 ∞] 1) (𝓝 (1 ^ 2 * ρ s)) := by
       refine ENNReal.Tendsto.mul ?_ (by simp) tendsto_const_nhds (by simp)
@@ -818,10 +818,9 @@ theorem ae_tendsto_lintegral_enorm_sub_div_of_integrable {f : α → E} (hf : In
 theorem ae_tendsto_lintegral_enorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   rcases hf.exists_nat_integrableOn with ⟨u, u_open, u_univ, hu⟩
-  have : ∀ n, ∀ᵐ x ∂μ,
+  have (n : ℕ) : ∀ᵐ x ∂μ,
       Tendsto (fun a => (∫⁻ y in a, ‖(u n).indicator f y - (u n).indicator f x‖ₑ ∂μ) / μ a)
       (v.filterAt x) (𝓝 0) := by
-    intro n
     apply ae_tendsto_lintegral_enorm_sub_div_of_integrable
     exact (integrable_indicator_iff (u_open n).measurableSet).2 (hu n)
   filter_upwards [ae_all_iff.2 this] with x hx
