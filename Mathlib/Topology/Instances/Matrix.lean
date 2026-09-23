@@ -16,7 +16,7 @@ public import Mathlib.Topology.Algebra.Star
 
 This file is a place to collect topological results about matrices.
 
-## Main definitions:
+## Main definitions
 
 * `Matrix.topologicalRing`: square matrices form a topological ring
 
@@ -90,7 +90,7 @@ instance [Neg R] [ContinuousNeg R] : ContinuousNeg (Matrix m n R) :=
   Pi.continuousNeg
 
 instance [AddGroup R] [IsTopologicalAddGroup R] : IsTopologicalAddGroup (Matrix m n R) :=
-  Pi.topologicalAddGroup
+  Pi.isTopologicalAddGroup
 
 /-- To show a function into matrices is continuous it suffices to show the coefficients of the
 resulting matrix are continuous -/

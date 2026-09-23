@@ -30,7 +30,7 @@ variable [Module R M]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
-open Basis Cardinal Function Module Set Submodule
+open Cardinal Function Module Set Submodule
 
 /-- If every finite set of linearly independent vectors has cardinality at most `n`,
 then the same is true for arbitrary sets of linearly independent vectors.
@@ -179,7 +179,7 @@ theorem lt_aleph0_of_finite {ι : Type w}
 
 theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
     (h : LinearIndependent R f) : Finite ι :=
-  Cardinal.lt_aleph0_iff_finite.1 <| h.lt_aleph0_of_finite
+  Cardinal.lt_aleph0_iff_finite.1 h.lt_aleph0_of_finite
 
 theorem setFinite [Module.Finite R M] {b : Set M}
     (h : LinearIndependent R fun x : b => (x : M)) : b.Finite :=

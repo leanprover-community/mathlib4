@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Prod
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
@@ -147,7 +148,7 @@ private lemma exists_mem_rootSpace_lie_ne_zero' [IsKilling K L]
   obtain ⟨a', ha', b, hb, hab⟩ := exists_mem_rootSpace_lie_ne_zero hα h_ne_bot
   obtain ⟨t, rfl⟩ : ∃ t : K, t • a = a' :=
     Submodule.mem_span_singleton.mp <| by rwa [← toSubmodule_rootSpace_eq_span α hα a ha₀ ha]
-  exact ⟨b, hb, by contrapose! hab; simp [hab]⟩
+  exact ⟨b, hb, by contrapose hab; simp [hab]⟩
 
 lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSystem H).Base)
     (e f : b.support → L)
@@ -252,5 +253,21 @@ lemma exists_basis_of_base [IsKilling K L] (b : (rootSystem H).Base) :
         contrapose! this
         exact ⟨⟨χ, this⟩, hij, LinearMap.ext fun x ↦ by simp [hχ]⟩ }
   exact ⟨B, rfl, by simp [B]⟩
+
+open scoped Classical in
+/-- Lie algebras with equivalent root systems are equivalent. -/
+def equivOfRootSystemEquiv {L₂ : Type*} [LieRing L₂] [LieAlgebra K L₂] [FiniteDimensional K L₂]
+    {H₂ : LieSubalgebra K L₂} [H₂.IsCartanSubalgebra] [IsTriangularizable K H₂ L₂]
+    [IsSimple K L] [IsSimple K L₂]
+    (e : (rootSystem H).Equiv (rootSystem H₂)) :
+    L ≃ₗ⁅K⁆ L₂ :=
+  letI b := (rootSystem H).nonempty_base.some
+  letI B₁ := (exists_basis_of_base b).choose
+  letI B₂ := (exists_basis_of_base (b.map e)).choose
+  have hA : B₁.A.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) = B₂.A := by
+    have hB₁ : B₁.A = _ := (exists_basis_of_base b).choose_spec.1
+    have hB₂ : B₂.A = _ := (exists_basis_of_base (b.map e)).choose_spec.1
+    simp [hB₁, hB₂, b.map_equiv_cartanMatrix e]
+  LieAlgebra.Basis.equivOfReindex _ _ _ hA
 
 end LieAlgebra

@@ -790,7 +790,7 @@ namespace PiCountable
 variable {ι : Type*} [Encodable ι] {F : ι → Type*}
 
 section EDist
-variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι} {r : ℝ≥0∞}
+variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι}
 
 /-- Given a countable family of extended metric spaces,
 one may put an extended distance on their product `Π i, E i`.
@@ -807,11 +807,12 @@ lemma edist_eq_tsum (x y : ∀ i, F i) :
     edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
 
 lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
-    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := ENNReal.le_tsum _
+    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := by
+  grw [edist_eq_tsum, ← ENNReal.le_tsum i]
 
 lemma edist_le_two : edist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
-    rw [edist_eq_tsum]; gcongr; exact min_le_left ..
+    grw [edist_eq_tsum, min_le_left]
 
 lemma edist_lt_top : edist x y < ∞ := edist_le_two.trans_lt (by simp)
 
@@ -877,7 +878,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
           _ ≤ ε / 2 + ε / 2 := by gcongr; simpa [mul_comm] using hδ.le
           _ = ε := ENNReal.add_halves _
     · intro i ε hε₀
-      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by norm_num) _
+      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by simp) _
       refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
       simp only [and_imp, Prod.forall, ofPred_subset_ofPred, lt_min_iff, mem_principal]
       intro x y hn
@@ -1141,8 +1142,6 @@ lemma injective_distDenseSeq (x y : X) (hxy : x ≠ y) :
     ∃ n, distDenseSeq X n x ≠ distDenseSeq X n y := by
   obtain ⟨n, hn⟩ := separation ((isOpen_compl_singleton (x := y)).mem_nhds hxy)
   exact ⟨n, fun e ↦ by simp +contextual [e, ← exists_prop, mem_of_mem_nhds] at hn⟩
-
-variable (A : Type*) [TopologicalSpace A]
 
 lemma continuous_distDenseSeq_inv :
     Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (distDenseSeq X) → X) := by

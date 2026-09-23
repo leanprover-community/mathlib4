@@ -68,8 +68,8 @@ variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P] [Module A P]
 variable [IsScalarTower R A P]
 variable [AddCommMonoid Q] [Module R Q]
-variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
-variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
+variable [AddCommMonoid P'] [Module R P'] [Module A P']
+variable [IsScalarTower R A P']
 variable [AddCommMonoid Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
@@ -97,7 +97,7 @@ See note [partially-applied ext lemmas]. -/
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
   LinearMap.restrictScalars_injective R <|
-    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
+    curry_injective (congr_arg (LinearMap.restrictScalars R) h :)
 
 theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
@@ -326,7 +326,7 @@ def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P �
 
 @[simp]
 theorem congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=
-  LinearEquiv.toLinearMap_injective <| map_id
+  LinearEquiv.toLinearMap_injective map_id
 
 theorem congr_trans (f₁ : M ≃ₗ[A] P) (f₂ : P ≃ₗ[A] P') (g₁ : N ≃ₗ[R] Q) (g₂ : Q ≃ₗ[R] Q') :
     congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
@@ -474,11 +474,9 @@ theorem distribBaseChange_symm_tmul
 lemma cancelBaseChange_self_eq_lid :
     cancelBaseChange R A A A N = TensorProduct.lid A (A ⊗[R] N) := by
   ext x
-  induction x using TensorProduct.induction_on with
-  | zero => simp only [map_zero]
+  induction x using TensorProduct.inductionOn with
   | tmul b y =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | tmul a m =>
       simp only [cancelBaseChange_tmul, lid_tmul, smul_tmul', smul_eq_mul, mul_comm]
     | add x y hx hy =>
@@ -519,7 +517,6 @@ section rightComm
 variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- A tensor product analogue of `mul_right_comm`.
 
@@ -798,8 +795,8 @@ end Semiring
 
 section Ring
 
-variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {R A M N : Type*} [CommRing R]
+variable [Ring A] [Algebra R A]
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (f g : M →ₗ[R] N)
 
