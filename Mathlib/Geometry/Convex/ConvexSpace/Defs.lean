@@ -534,7 +534,7 @@ lemma iConvexComb_id (w : StdSimplex R X) : w.iConvexComb id = w.sConvexComb := 
   simp only [weights_map]
   -- TODO: This should just be `congr! 2 with i hi`.
   congr 1
-  refine Finsupp.mapDomain_congr fun i hi ↦ ?_
+  refine Finsupp.mapDomain_congr rfl fun i hi ↦ ?_
   exact hfg i (by simpa using hi)
 
 lemma iConvexComb_reindex (s : StdSimplex R I) (f : I ≃ J) (g : I → X) :
