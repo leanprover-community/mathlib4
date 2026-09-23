@@ -46,31 +46,26 @@ public register_option linter.congrFixedArgs : Bool := {
 namespace CongrFixedArgs
 
 /-- Given a `@[congr]` theorem `thm` whose conclusion is `f a₁ ... aₙ = f b₁ ... bₙ` (or `↔`),
-returns the positions `i` of the explicit arguments of `f` for which `aᵢ` and `bᵢ` are the
-same, but which `simp` would rewrite with the default congruence procedure. -/
-def fixedArgs (thm : SimpCongrTheorem) : MetaM (Array Nat) := do
-  let (_, _, type) ← forallMetaTelescopeReducing (← getConstInfo thm.theoremName).type
-  let some (lhs, rhs) := type.eqOrIff? | return #[]
-  let fnInfo ← getFunInfoNArgs lhs.getAppFn lhs.getAppNumArgs
-  let kinds ← getCongrSimpKinds lhs.getAppFn fnInfo
-  let args := lhs.getAppArgs.zip <| rhs.getAppArgs.zip <| fnInfo.paramInfo.zip kinds
-  let fixed : Array Bool ← args.mapM fun (a, b, p, k) ↦ do
-    return p.binderInfo.isExplicit && (k matches .eq) && a == b
-  return fixed.zipIdx.filterMap (fun x ↦ if x.fst == true then some x.snd else none)
+returns `aᵢ : T` as a `MessageData` for each explicit argument of `f` for which `aᵢ` and `bᵢ`
+are the same, but which `simp` would rewrite with the default congruence procedure.-/
+def fixedArgs (thm : SimpCongrTheorem) : MetaM (Array MessageData) := do
+  forallTelescopeReducing (← getConstInfo thm.theoremName).type fun _ type ↦ do
+    let some (lhs, rhs) := type.eqOrIff? | return #[]
+    let fnInfo ← getFunInfoNArgs lhs.getAppFn lhs.getAppNumArgs
+    let kinds ← getCongrSimpKinds lhs.getAppFn fnInfo
+    let args := lhs.getAppArgs.zip <| rhs.getAppArgs.zip <| fnInfo.paramInfo.zip kinds
+    args.filterMapM fun (a, b, p, k) ↦ do
+      unless p.binderInfo.isExplicit && (k matches .eq) && a == b do return none
+      return some (← addMessageContext m!"`{a} : {← inferType a}`")
 
 /-- Logs a warning at `ref` if the `@[congr]` theorem `thm` has fixed explicit arguments. -/
 def lintCongrTheorem (ref : Syntax) (thm : SimpCongrTheorem) : CommandElabM Unit := do
   let fixed ← liftTermElabM <| fixedArgs thm
   if fixed.isEmpty then return
-  -- Display each argument as `x : T`, as in the signature of the head function.
-  let args ← liftTermElabM <| forallTelescopeReducing (← getConstInfo thm.funName).type fun xs _ ↦
-    fixed.filterMapM fun i ↦ do
-      let some x := xs[i]? | return none
-      addMessageContext m!"`{x} : {← inferType x}`"
   logLint linter.congrFixedArgs ref m!"\
     The `@[congr]` theorem `{.ofConstName thm.theoremName}` does not allow the following explicit \
     arguments of `{.ofConstName thm.funName}` to change:\
-      {indentD (MessageData.joinSep args.toList "\n")}\n\
+      {indentD (MessageData.joinSep fixed.toList "\n")}\n\
     This violates the recommendation in the documentation of `@[congr]`."
 
 /-- Whether `stx` is the `congr` attribute. -/
