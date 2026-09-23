@@ -6,6 +6,9 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Mathlib.Util.BetterVersoDocstrings
+import all Mathlib.Geometry.Manifold.ContMDiff.Defs -- doc-string of ContMDiff etc.
+import all Mathlib.Geometry.Manifold.MFDeriv.Defs -- doc-string of mfderiv etc.
 
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
@@ -836,9 +839,15 @@ end Elab
 
 open Elab
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf MDifferentiableWithinAt}
+-/
 scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← ensureIsFunction <| ← Term.elabTerm f none
@@ -847,7 +856,10 @@ scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
 
 /-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
 trying to determine `I` and `J` from the local context.
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf MDifferentiableAt}
+-/
 scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
@@ -873,7 +885,10 @@ scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
 --       throwErrorAt t "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
 /-- `MDiff[s] f` elaborates to `MDifferentiableOn I J f s`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf MDifferentiableOn}
+-/
 scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let et ← ensureIsFunction <| ← Term.elabTerm t none
@@ -881,7 +896,10 @@ scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
 
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf MDifferentiable}
+-/
 scoped elab:max "MDiff" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
@@ -895,7 +913,10 @@ scoped elab:max "MDiff" ppSpace t:term:arg : term => do
 /-- `CMDiffAt[s] n f x` elaborates to `ContMDiffWithinAt I J n f s x`,
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf ContMDiffWithinAt}
+-/
 scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
@@ -906,7 +927,10 @@ scoped elab:max "CMDiffAt[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : 
 /-- `CMDiffAt n f x` elaborates to `ContMDiffAt I J n f x`
 trying to determine `I` and `J` from the local context.
 `n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf ContMDiffAt}
+-/
 scoped elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
@@ -915,7 +939,10 @@ scoped elab:max "CMDiffAt" ppSpace nt:term:arg ppSpace t:term:arg : term => do
 
 /-- `CMDiff[s] n f` elaborates to `ContMDiffOn I J n f s`,
 trying to determine `I` and `J` from the local context.
-`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
+
+{insertDocstringOf ContMDiffOn}
+-/
 scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
@@ -925,7 +952,10 @@ scoped elab:max "CMDiff[" s:term "]" ppSpace nt:term:arg ppSpace f:term:arg : te
 
 /-- `CMDiff n f` elaborates to `ContMDiff I J n f`,
 trying to determine `I` and `J` from the local context.
-`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported). -/
+`n` is coerced to `WithTop ℕ∞` if necessary (so passing a `ℕ`, `∞` or `ω` are all supported).
+
+{insertDocstringOf ContMDiff}
+-/
 scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
   let e ← ensureIsFunction <| ← Term.elabTerm f none
@@ -933,7 +963,10 @@ scoped elab:max "CMDiff" ppSpace nt:term:arg ppSpace f:term:arg : term => do
   mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
 
 /-- `mfderiv[u] f x` elaborates to `mfderivWithin I J f u x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mfderivWithin}
+-/
 scoped elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let e ← ensureIsFunction <| ← Term.elabTerm t none
@@ -941,14 +974,20 @@ scoped elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
 
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf mfderiv}
+-/
 scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
   mkAppM ``mfderiv #[srcI, tgtI, e]
 
 /-- `HasMFDerivAt[s] f x f'` elaborates to `HasMFDerivWithinAt I J f s x f'`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf HasMFDerivWithinAt}
+-/
 scoped elab:max "HasMFDerivAt[" s:term "]" ppSpace
     f:term:arg ppSpace x:term:arg ppSpace f':term:arg : term => do
   let es ← Term.elabTerm s none
@@ -959,7 +998,10 @@ scoped elab:max "HasMFDerivAt[" s:term "]" ppSpace
   mkAppM ``HasMFDerivWithinAt #[srcI, tgtI, ef, es, ex, ef']
 
 /-- `HasMFDerivAt% f x f'` elaborates to `HasMFDerivAt I J f x f'`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf HasMFDerivAt}
+-/
 scoped elab:max "HasMFDerivAt%" ppSpace
     f:term:arg ppSpace x:term:arg ppSpace f':term:arg : term => do
   let ef ← ensureIsFunction <|← Term.elabTerm f none
@@ -969,7 +1011,10 @@ scoped elab:max "HasMFDerivAt%" ppSpace
   mkAppM ``HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
 
 /-- `TangentSpace% x` elaborates to `TangentSpace I x`,
-trying to determine `I` from the local context. -/
+trying to determine `I` from the local context.
+
+{insertDocstringOf HasMFDerivAt}
+-/
 scoped elab:max "TangentSpace%" ppSpace x:term:arg : term => do
   let ex ← Term.elabTerm x none
   let extype ← instantiateMVars <| ← inferType ex
@@ -977,7 +1022,10 @@ scoped elab:max "TangentSpace%" ppSpace x:term:arg : term => do
   mkAppM ``TangentSpace #[src, ex]
 
 /-- `tangentMap[s] f` elaborates to `tangentMapWithin I J f s`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf tangentMapWithin}
+-/
 scoped elab:max "tangentMap[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← ensureIsFunction <|← Term.elabTerm f none
@@ -985,14 +1033,20 @@ scoped elab:max "tangentMap[" s:term "]" ppSpace f:term:arg : term => do
   mkAppM ``tangentMapWithin #[srcI, tgtI, ef, es]
 
 /-- `tangentMap% f` elaborates to `tangentMap I J f`,
-trying to determine `I` and `J` from the local context. -/
+trying to determine `I` and `J` from the local context.
+
+{insertDocstringOf tangentMap}
+-/
 scoped elab:max "tangentMap%" ppSpace f:term:arg : term => do
   let ef ← ensureIsFunction <|← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``tangentMap #[srcI, tgtI, ef]
 
 /-- `UniqueMDiff[s]` elaborates to `UniqueMDiffOn I s`,
-trying to determine `I` from the local context. -/
+trying to determine `I` from the local context.
+
+{insertDocstringOf UniqueMDiffOn}
+-/
 scoped elab:max "UniqueMDiff[" s:term "]" : term => do
   let es ← Term.elabTerm s none
   let estype : Expr ← inferType es
@@ -1004,7 +1058,10 @@ scoped elab:max "UniqueMDiff[" s:term "]" : term => do
 
 /-- `UniqueMDiffAt[s] x` elaborates to `UniqueMDiffWithinAt I s x`
 trying to determine `I` from the local context.
-The argument `x` can be omitted. -/
+The argument `x` can be omitted.
+
+{insertDocstringOf UniqueMDiffWithinAt}
+-/
 scoped elab:max "UniqueMDiffAt[" s:term "]" : term => do
   let es ← Term.elabTerm s none
   let estype : Expr ← inferType es
@@ -1069,7 +1126,9 @@ open Bundle PrettyPrinter Delaborator SubExpr
   -- TODO: this always adds parentheses; find a more parsimonious way!
   `((T% $σs)) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
+set_option doc.verso true
+
+/-- Delaborator for {name}`Bundle.TotalSpace.mk` using anonymous constructor notation. -/
 @[app_delab TotalSpace.mk] meta def delabTotalSpaceMk : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
@@ -1077,7 +1136,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let vd ← withNaryArg 4 delab
   `(⟨$bd, $vd⟩)
 
-/-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
+/-- Delaborator for {name}`Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
 @[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpaceMkPrime : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
@@ -1085,14 +1144,14 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let vd ← withNaryArg 4 delab
   `(⟨$bd, $vd⟩)
 
-/-- Delaborator for `mfderiv` using the custom elaborator -/
+/-- Delaborator for {name}`mfderiv` using the custom elaborator -/
 @[app_delab mfderiv] meta def delabMFDeriv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
   let fs ← withAppArg delab
   `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `mfderivWithin` using the custom elaborator -/
+/-- Delaborator for {name}`mfderivWithin` using the custom elaborator -/
 @[app_delab mfderivWithin] meta def delabMFDerivWithin : Delab := do
   whenPPOption getPPNotation do
   withOverApp 22 do
@@ -1100,21 +1159,21 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let fs ← withNaryArg 20 delab
   `(mfderiv[$ss] $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `MDifferentiable` using the custom elaborator -/
+/-- Delaborator for {name}`MDifferentiable` using the custom elaborator -/
 @[app_delab MDifferentiable] meta def delabMDifferentiable : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
   let fs ← withAppArg delab
   `(MDiff $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `MDifferentiableAt` using the custom elaborator -/
+/-- Delaborator for {name}`MDifferentiableAt` using the custom elaborator -/
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
   let fs ← withAppArg delab
   `(MDiffAt $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `MDifferentiableOn` using the custom elaborator -/
+/-- Delaborator for {name}`MDifferentiableOn` using the custom elaborator -/
 @[app_delab MDifferentiableOn] meta def delabMDifferentiableOn : Delab := do
   whenPPOption getPPNotation do
   withOverApp 22 do
@@ -1122,7 +1181,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let fs ← withNaryArg 20 delab
   `(MDiff[$ss] $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator -/
+/-- Delaborator for {name}`MDifferentiableWithinAt` using the custom elaborator -/
 @[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 22 do
@@ -1130,7 +1189,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let fs ← withNaryArg 20 delab
   `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator -/
+/-- Delaborator for {name}`HasMFDerivWithinAt` using the custom elaborator -/
 @[app_delab HasMFDerivWithinAt] meta def delabHasMFDerivWithinAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 24 do
@@ -1140,7 +1199,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let fs ← withNaryArg 20 delab
   `(HasMFDerivAt[$ss] $fs $xs $f') >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator -/
+/-- Delaborator for {name}`HasMFDerivWithinAt` using the custom elaborator -/
 @[app_delab HasMFDerivAt] meta def delabHasMFDerivAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 23 do
@@ -1149,14 +1208,14 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let fs ← withNaryArg 20 delab
   `(HasMFDerivAt% $fs $xs $f') >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `UniqueMDiffOn` using the custom elaborator. -/
+/-- Delaborator for {name}`UniqueMDiffOn` using the custom elaborator. -/
 @[app_delab UniqueMDiffOn] meta def delabUniqueMDiffOn : Delab := do
   whenPPOption getPPNotation do
   withOverApp 12 do
   let ss ← withAppArg delab
   `(UniqueMDiff[$ss]) >>= annotateGoToSyntaxDef
 
-/-- Delaborator for `UniqueMDiffWithinAt` using the custom elaborator. -/
+/-- Delaborator for {name}`UniqueMDiffWithinAt` using the custom elaborator. -/
 @[app_delab UniqueMDiffWithinAt] meta def delabUniqueMDiffWithinAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 12 do
