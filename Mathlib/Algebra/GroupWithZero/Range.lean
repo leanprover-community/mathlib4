@@ -301,7 +301,7 @@ theorem exists_mk (f : A →*₀ B) (x : valueGroup f) :
   have hx := x.2
   rw [mem_valueGroup_iff_of_comm'] at hx
   obtain ⟨r, hr, s, hs, hrs⟩ := hx
-  exact ⟨r, s, hr, hs,  by simp [valueGroup.mk, ← hrs, mul_comm]⟩
+  exact ⟨r, s, hr, hs, by simp [valueGroup.mk, ← hrs, mul_comm]⟩
 
 end valueGroup
 
