@@ -7,6 +7,8 @@ public import Mathlib.NumberTheory.NumberField.QuadraticField.Basic
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.Tactic.Polynomial.Basic
 
+set_option linter.style.header false
+
 @[expose] public section
 
 open Ideal
@@ -33,8 +35,8 @@ theorem QuadraticAlgebra.discr_intCast' {R : Type*} [CommRing R] (a b : ℤ) :
 open scoped NumberField Ideal in
 /-- A prime divides the discriminant exactly when some prime above it is ramified. -/
 theorem NumberField.dvd_discr_iff_exists_two_le_ramificationIdx (K 𝒪 : Type*) [Field K]
-    [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K] [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪]
-    [CharZero 𝒪] [Module.Finite ℤ 𝒪] [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
+    [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K] [Module.Finite ℤ 𝒪] [IsIntegralClosure 𝒪 ℤ K]
+    {p : ℤ} (hp : Prime p) :
     p ∣ discr K ↔
       ∃ P : Ideal 𝒪, P.IsMaximal ∧ P.LiesOver (span {p}) ∧ 2 ≤ P.ramificationIdx ℤ := by
   rw [← not_iff_not, NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
