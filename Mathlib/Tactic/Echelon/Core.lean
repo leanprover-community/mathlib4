@@ -48,14 +48,14 @@ structure RingOps (V : Type) where
   mul : V → V → V
   /-- Subtraction. -/
   sub : V → V → V
-  /-- Exact division: total on the quotients of the elimination and on a row scale by one of
-  the row's denominators. -/
+  /-- Exact division. -/
   divExact : V → V → V
   /-- The pivot zero test. -/
   isZero : V → Bool
 
-/-- The arithmetic of `V` on its literals: `decode` reads a literal into a value and `encode`
-writes a value as a literal. A literal `decode` rejects is read as `zero`. -/
+/-- The arithmetic of `V` on its literals. `decode` reads a literal into a value and `encode`
+writes a value as a literal. A literal `decode` rejects is read as 0. The literals
+reaching them are the ones `encode` wrote. -/
 def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → Option V) (encode : V → Expr) :
     RingOps Expr :=
   let read (e : Expr) : V := (decode e).getD ops.zero
@@ -147,9 +147,9 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       r := r + 1
   return { L, U := W, swaps, pivot := pivotCols }
 
-/-- The carriers a model computes on: the integers, or expressions of the ring. A model would
-name its carrier as a `Type`, but the registry stores models in `Type`, so the carriers are a
-closed set of codes interpreted by `Carrier.type`. -/
+/-- The carriers a model computes on, the integers or expressions of the ring.
+The most direct way is for a model to name this as a parameter in `Type`, but that
+puts the model in a higher universe level, and the registry can only store `Type 0` elements. -/
 inductive Carrier
   | int
   | expr
@@ -159,17 +159,16 @@ abbrev Carrier.type : Carrier → Type
   | .int => Int
   | .expr => Expr
 
-/-- A computation model of a ring on the carrier `V`: its arithmetic, the encoding of an
-entry of a matrix literal as a fraction of values, and the decoding of a value into an
-expression of the ring. -/
+/-- A computation model of a ring on the carrier `V`. -/
 structure Model (V : Type) where
   /-- The arithmetic of the carrier. -/
   ops : RingOps V
-  /-- An entry as a value with an optional denominator: `(n, some d)` denotes `n / d` for a
-  nonzero `d`, and `(n, none)` denotes `n`. -/
+  /-- An entry as a value with an optional denominator (used for the scaling optimisation).
+  `(n, some d)` denotes `n / d` for a nonzero `d`, and `(n, none)` denotes `n`. -/
   evalEntry : Expr → MetaM (V × Option V)
-  /-- A common multiple of two denominators, one that both divide exactly; by default their
-  product, and a least common multiple keeps the scaled entries small. -/
+  /-- A common multiple for eliminating the denominators. The default (mul) is always available. A
+  carrier type with a cheap lcm function could supply it as an optimisation to keep the
+  scaled entries small. -/
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Expr
@@ -178,8 +177,7 @@ structure Model (V : Type) where
 def Model.toExprData {V : Type} (m : Model V) (d : BareissData V) : MetaM (BareissData Expr) :=
   d.mapM m.mkEntry
 
-/-- Clear the denominators of the rows: a row with denominators is multiplied by a common
-multiple of them, recorded as its scale; a row without denominators is left as it is. -/
+/-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
     (rows : Array (Array (V × Option V))) : Array (Array V) × Array (Option V) :=
   let scale (row : Array (V × Option V)) : Option V :=
@@ -198,9 +196,8 @@ def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
       | some d => ops.mul nd.1 (ops.divExact s d)
   (scaled, scales)
 
-/-- Fold the row scales into the transform: column `j` of `L` is multiplied by the scale of
-the row that ends up in position `j`, so that the decomposition is one of the unscaled
-matrix. -/
+/-- Fold the row scales into the transform after the decomposition algorithm. Column `j` of
+`L` is multiplied by the scale of the row that ends up in position `j` after permutation. -/
 def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
     (d : BareissData V) : BareissData V :=
   if scales.all fun s => s.isNone then d

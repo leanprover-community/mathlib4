@@ -12,7 +12,7 @@ public import Mathlib.Tactic.NormNum.Basic
 /-!
 # The rational model for the Bareiss elimination
 
-The rational model of a ring: entries evaluate to rational numerals via `norm_num`, reported
+The computable model of ℚ. Entries evaluate to rational numerals via `norm_num`, reported
 as integer numerators with their denominators, so that the elimination runs on integer values.
 It is the fallback model the tactic uses when no ring-specific model matches the ring.
 -/
@@ -44,9 +44,7 @@ def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
   else
     return n
 
-/-- The rational model of a ring: entries evaluate to rational numerals, reported as integer
-numerators with their denominators, so that the elimination runs on integer values. It
-applies to every ring, as the fallback model. -/
+/-- The rational model. -/
 def ratModel (R : Expr) : MetaM ((c : Carrier) × Model c.type) := do
   let u ← getDecLevel R
   have α : Q(Type u) := R
@@ -70,8 +68,8 @@ def ratModel (R : Expr) : MetaM ((c : Carrier) × Model c.type) := do
     ops
     evalEntry := fun e => do
       let v ← evalRatEntry (p == 0) e
-      return (v.num, if v.den == 1 then none else some (v.den : ℤ))
-    commonMultiple := fun a b => (Int.lcm a b : ℤ)
+      return (v.num, if v.den == 1 then none else some (v.den : Int))
+    commonMultiple := fun a b => (Int.lcm a b : Int)
     mkEntry := mkIntNumeral α }⟩
 
 end Mathlib.Tactic.Echelon

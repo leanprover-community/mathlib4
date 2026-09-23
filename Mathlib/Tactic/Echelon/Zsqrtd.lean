@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.Echelon.Core
 
 public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
@@ -66,13 +65,13 @@ def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
   | Zsqrtd.mk _ re im => do return ⟨← intOfRawLit? re, ← intOfRawLit? im⟩
   | _ => none
 
-/-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components, for `d` the value
-of the integer literal `dQ`. -/
+/-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components. `d` is the value of
+the integer literal `dQ`. -/
 def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
   q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
 
-/-- The `ℤ√d` model, for `d` the value of the integer literal `dQ`: the elimination runs on
-literals with raw integer components, computed with the arithmetic of `ℤ√d`. -/
+/-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
+with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
 def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
   let ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
   ⟨.expr, {
