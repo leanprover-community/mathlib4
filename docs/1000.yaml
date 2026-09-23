@@ -725,6 +725,7 @@ Q679800:
 
 Q681406:
   title: Euler's rotation theorem
+  external: physlib
   date: 2025-09-02
   comment: possibly out of scope for mathlib; part of physlib
 
@@ -799,7 +800,7 @@ Q744440:
 
 Q748233:
   title: Sylvester–Gallai theorem
-  comment: part of LeanCamCombi
+  comment: part of cam-combi
 
 Q751120:
   title: Thue–Siegel–Roth theorem
@@ -888,7 +889,7 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
-  author: Yury Kudryashov
+  authors: Yury Kudryashov
   year: 2026
   decl: DiffContOnCl.circleIntegral_eq_zero
   comment: We have `DiffContOnCl.circleIntegral_eq_zero` for circle contours

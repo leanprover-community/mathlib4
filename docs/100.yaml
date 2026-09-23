@@ -39,7 +39,6 @@
   authors: Chris Hughes (first) and Michael Stoll (second)
 8:
   title  : The Impossibility of Trisecting the Angle and Doubling the Cube
-  # formalised outside of mathlib, in pre-AI days
 9:
   title  : The Area of a Circle
   decl   : Theorems100.area_disc
