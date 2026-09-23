@@ -91,7 +91,7 @@ theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁
 theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
     s₁.lcm f = s₂.lcm g := by
   subst hs
-  exact Finset.fold_congr rfl hfg
+  exact Finset.fold_congr rfl rfl rfl hfg
 
 theorem lcm_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ∣ g b) : s.lcm f ∣ s.lcm g :=
   lcm_dvd fun b hb ↦ (h b hb).trans (dvd_lcm hb)
@@ -170,7 +170,7 @@ theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁
 theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
     s₁.gcd f = s₂.gcd g := by
   subst hs
-  exact Finset.fold_congr rfl hfg
+  exact Finset.fold_congr rfl rfl rfl hfg
 
 theorem gcd_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ∣ g b) : s.gcd f ∣ s.gcd g :=
   dvd_gcd fun b hb ↦ (gcd_dvd hb).trans (h b hb)
