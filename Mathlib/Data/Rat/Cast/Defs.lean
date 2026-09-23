@@ -238,16 +238,16 @@ lemma ext_nnrat' (h : ∀ n : ℕ, f n = g n) : f = g :=
 
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
-lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀} (h : f.comp (.ofClass (Nat.castRingHom ℚ≥0)) =
-    g.comp (.ofClass (Nat.castRingHom ℚ≥0))) : f = g :=
+lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀} (h : f.comp (Nat.castRingHom ℚ≥0) =
+    g.comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0)) : f = g :=
   ext_nnrat' <| DFunLike.congr_fun h
 
 /-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the positive naturals then they are
 equal. -/
 lemma ext_nnrat_on_pnat (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_nnrat' <| DFunLike.congr_fun <| ext_nat''
-    ((.ofClass f : ℚ≥0 →*₀ M₀).comp (.ofClass (Nat.castRingHom ℚ≥0)))
-    ((.ofClass g : ℚ≥0 →*₀ M₀).comp (.ofClass (Nat.castRingHom ℚ≥0))) (by simpa)
+    ((.ofClass f : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0))
+    ((.ofClass g : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0)) (by simpa)
 
 end NNRat
 
@@ -266,7 +266,7 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
 theorem ext_rat {f g : ℚ →*₀ M₀}
-    (h : f.comp (.ofClass (Int.castRingHom ℚ)) = g.comp (.ofClass (Int.castRingHom ℚ))) : f = g :=
+    (h : f.comp (Int.castRingHom ℚ) = g.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)) : f = g :=
   ext_rat' <| DFunLike.congr_fun h
 
 /-- If monoid with zero homs `f` and `g` from `ℚ` agree on the positive naturals and `-1` then
@@ -276,8 +276,8 @@ theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
   ext_rat' <|
     DFunLike.congr_fun <|
       show
-        (.ofClass f : ℚ →*₀ M₀).comp (.ofClass (Int.castRingHom ℚ)) =
-          (.ofClass g : ℚ →*₀ M₀).comp (.ofClass (Int.castRingHom ℚ))
+        (.ofClass f : ℚ →*₀ M₀).comp (Int.castRingHom ℚ) =
+          (.ofClass g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ)
         from ext_int' (by simpa) (by simpa)
 
 end Rat
