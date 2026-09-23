@@ -403,7 +403,7 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
-  comment: gradually being upstreamed from the PNT+ project
+  comment: "pending pull requestion https://github.com/leanprover-community/mathlib4/pull/43238 gradually merged"
 
 Q388525:
   title: Bell's theorem
@@ -3924,7 +3924,7 @@ Q7996769:
 
 Q7999144:
   title: Wiener–Ikehara theorem
-  comment: done in the PNT+ project
+  comment: "pending pull request: https://github.com/leanprover-community/mathlib4/pull/43233"
 
 Q7999797:
   title: Beer's theorem
