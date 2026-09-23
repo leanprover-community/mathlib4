@@ -46,6 +46,7 @@ section Basic
 variable {X Y R : Type*} [Zero X] [Zero Y] [Zero R]
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
+@[macro_inline]
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
   coe_injective _ _ h := congr(⟨⟨$(h), _⟩, _⟩)

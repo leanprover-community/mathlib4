@@ -9,7 +9,7 @@ public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.RadonNikodym
 
 import Mathlib.Probability.Kernel.Composition.WithDensity
-import Mathlib.Probability.Kernel.CompProdEqIff
+import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 
 /-!
 # Radon-Nikodym derivative of a composition product

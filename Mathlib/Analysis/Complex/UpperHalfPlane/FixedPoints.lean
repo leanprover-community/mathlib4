@@ -185,7 +185,7 @@ theorem forall_smul_eq_self_iff_mem_center {g : GL (Fin 2) ℝ} :
     (∀ z : ℍ, g • z = z) ↔ g ∈ Subgroup.center _ := by
   constructor
   · intro hg
-    by_contra! hgc
+    by_contra hgc
     rcases g.det_ne_zero.lt_or_gt with hlt | hgt
     · obtain ⟨ha, hb⟩ := (gl_smul_I_eq_I_iff_of_neg hlt).mp (hg _)
       rw [eq_neg_iff_add_eq_zero, ← Matrix.trace_fin_two] at ha
