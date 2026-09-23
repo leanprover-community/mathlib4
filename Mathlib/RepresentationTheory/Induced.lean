@@ -165,9 +165,9 @@ noncomputable abbrev ind.counit (σ : Representation k H B) :
 /-- An equivariant map from an induced representation is determined by the generators at `1`. -/
 @[ext]
 lemma ind.hom_ext {f g : (ind φ ρ).IntertwiningMap σ}
-    (hfg : ∀ a, f (IndV.mk φ ρ 1 a) = g (IndV.mk φ ρ 1 a)) : f = g := by
+    (hfg : f.toLinearMap ∘ₗ IndV.mk φ ρ 1 = g.toLinearMap ∘ₗ IndV.mk φ ρ 1) : f = g := by
   ext h a
-  simpa [← IntertwiningMap.isIntertwining] using congrArg (σ h⁻¹) (hfg a)
+  simpa [← IntertwiningMap.isIntertwining] using congrArg (fun f => σ h⁻¹ (f a)) hfg
 
 /-- The universal property of induction, without bundled representation objects. -/
 noncomputable def indResHomEquiv (ρ : Representation k G A) (σ : Representation k H B) :
