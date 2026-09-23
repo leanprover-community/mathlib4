@@ -216,7 +216,9 @@ namespace covolume
 
 section General
 
-open Filter Fintype Pointwise Topology BoxIntegral Bornology
+open Filter Fintype Pointwise BoxIntegral Bornology
+
+open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L]
@@ -234,7 +236,7 @@ theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bo
     (tendsto_card_div_pow_atTop_volume ((b.ofZLatticeBasis ℝ).equivFun '' s) ?_ ?_ hs₃)
   · filter_upwards [eventually_gt_atTop 0] with n hn
     congr
-    refine Nat.card_congr <| ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.subtypeEquiv fun x ↦ ?_).symm
+    refine Nat.card_congr ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.subtypeEquiv fun x ↦ ?_).symm
     simp_rw [Set.mem_inter_iff, ← b.ofZLatticeBasis_span ℝ, LinearEquiv.coe_toEquiv,
       Basis.equivFun_apply, Set.mem_image, DFunLike.coe_fn_eq, EmbeddingLike.apply_eq_iff_eq,
       exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀
@@ -298,7 +300,9 @@ end General
 
 section Pi
 
-open Filter Fintype Pointwise Topology Bornology
+open Filter Fintype Pointwise Bornology
+
+open scoped Topology
 
 private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Finite ι]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
@@ -341,7 +345,9 @@ end Pi
 
 section InnerProductSpace
 
-open Filter Pointwise Topology Bornology
+open Filter Pointwise Bornology
+
+open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]

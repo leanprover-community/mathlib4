@@ -138,7 +138,7 @@ def hom (m : ComonadBicat B) : m.obj ⟶ m.obj :=
   m.toOplax.map (𝟙 (⟨⟨PUnit.unit⟩⟩ : LocallyDiscrete (Discrete PUnit)))
 
 instance (m : ComonadBicat B) : Comonad m.hom :=
-  Comonad.ofOplaxFromUnit <| m.toOplax
+  Comonad.ofOplaxFromUnit m.toOplax
 
 /-- Construct a comonad as an object in `ComonadBicat B`. -/
 def mkOfComonad {a : B} (t : a ⟶ a) [Comonad t] : ComonadBicat B :=

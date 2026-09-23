@@ -42,6 +42,10 @@ lemma mem_upperBounds_iff_subset_Iic : a ∈ upperBounds s ↔ s ⊆ Iic a := If
 theorem bddAbove_def : BddAbove s ↔ ∃ x, ∀ y ∈ s, y ≤ x :=
   Iff.rfl
 
+@[to_dual (attr := simp) bounded_ge]
+theorem Set.bounded_le : Set.Bounded LE.le s ↔ BddAbove s :=
+  .rfl
+
 @[to_dual]
 theorem top_mem_upperBounds [OrderTop α] (s : Set α) : ⊤ ∈ upperBounds s := fun _ _ => le_top
 
@@ -287,6 +291,10 @@ theorem IsLeast.lowerBounds_eq (h : IsLeast s a) : lowerBounds s = Iic a :=
 @[to_dual]
 theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
   ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
+
+@[to_dual]
+theorem IsGreatest.le_iff (h : IsGreatest s a) : b ≤ a ↔ ∃ x ∈ s, b ≤ x :=
+  ⟨fun hle ↦ ⟨a, h.1, hle⟩, fun ⟨_, hxs, hxb⟩ ↦ hxb.trans (h.2 hxs)⟩
 
 @[to_dual le_isGLB_iff]
 theorem isLUB_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
@@ -587,8 +595,16 @@ theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b
 #### Univ
 -/
 
+@[to_dual (attr := simp)]
+theorem mem_upperBounds_univ : a ∈ upperBounds univ ↔ IsTop a := by
+  simp [mem_upperBounds, IsTop]
+
 @[to_dual (attr := simp)] theorem isGreatest_univ_iff : IsGreatest univ a ↔ IsTop a := by
   simp [IsGreatest, mem_upperBounds, IsTop]
+
+@[to_dual (attr := simp)]
+theorem isLUB_univ_iff : IsLUB univ a ↔ IsTop a :=
+  ⟨(mem_upperBounds_univ.mp ·.left), (isGreatest_univ_iff.mpr · |>.isLUB)⟩
 
 @[to_dual]
 theorem isGreatest_univ [OrderTop α] : IsGreatest (univ : Set α) ⊤ :=

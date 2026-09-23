@@ -150,7 +150,7 @@ noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.c
         comp_id, Functor.comp_map, ← U.map_comp, assoc]
       dsimp
       rw [← adj₁.counit_naturality]
-      simp [dsimp% adj₂.homEquiv_unit _ _ f ]
+      simp [dsimp% adj₂.homEquiv_unit _ _ f]
     _ ≃ { z : F.obj (U.obj X) ⟶ R.obj Y // _ } := by
       apply (adj₁.homEquiv _ _).symm.subtypeEquiv
       intro g

@@ -100,7 +100,7 @@ namespace IsCompletelyPseudoMetrizableSpace
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `PseudoEMetricSpace.pseudoMetrizableSpace`. This prevents unnecessary attempts to infer
 completeness. -/
-instance (priority := 90) PseudoMetrizableSpace [TopologicalSpace X]
+instance (priority := 90) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] : PseudoMetrizableSpace X := by
   let := upgradeIsCompletelyPseudoMetrizable X
   infer_instance
@@ -211,7 +211,7 @@ namespace IsCompletelyMetrizableSpace
 
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `EMetricSpace.metrizableSpace`. This prevents unnecessary attempts to infer completeness. -/
-instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+instance (priority := 90) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     MetrizableSpace X := by
   let := upgradeIsCompletelyMetrizable X
   infer_instance

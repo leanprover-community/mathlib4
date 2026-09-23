@@ -35,7 +35,6 @@ private def parallel.aux2 : List (Computation α) → α ⊕ (List (Computation 
       | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
     (Sum.inr [])
 
-set_option backward.privateInPublic true in
 private def parallel.aux1 :
     List (Computation α) × WSeq (Computation α) →
       α ⊕ (List (Computation α) × WSeq (Computation α))
@@ -48,16 +47,12 @@ private def parallel.aux1 :
         | some (some c, S') => (c :: l', S'))
       (parallel.aux2 l)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Parallel computation of an infinite stream of computations,
   taking the first result -/
-def parallel (S : WSeq (Computation α)) : Computation α :=
+@[no_expose] def parallel (S : WSeq (Computation α)) : Computation α :=
   corec parallel.aux1 ([], S)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-theorem terminates_parallel.aux :
+private theorem terminates_parallel.aux :
     ∀ {l : List (Computation α)} {S c},
       c ∈ l → Terminates c → Terminates (corec parallel.aux1 (l, S)) := by
   have lem1 :
@@ -180,7 +175,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     ∀ C, a ∈ C → ∀ (l : List (Computation α)) (S),
       corec parallel.aux1 (l, S) = C → ∃ c, (c ∈ l ∨ c ∈ S) ∧ a ∈ c from
     let ⟨c, h1, h2⟩ := this _ h [] S rfl
-    ⟨c, h1.resolve_left <| List.not_mem_nil, h2⟩
+    ⟨c, h1.resolve_left List.not_mem_nil, h2⟩
   let F : List (Computation α) → α ⊕ (List (Computation α)) → Prop := by
     intro l a
     rcases a with a | l'

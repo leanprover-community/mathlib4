@@ -28,7 +28,7 @@ open scoped Topology Uniformity Interval
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
