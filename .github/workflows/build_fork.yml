@@ -116,12 +116,12 @@ jobs:
   build:
     name: ci (fork)
     needs: guard
-    # `guard` carries the fork/repository condition, hence the `result` test: without it
+    # `guard` checks the fork/repository condition, hence the `result` test: without it
     # the `!cancelled()` below would let every *non-fork* PR build here as well as in
-    # `build.yml`. `!cancelled()` is what makes this evaluate at all when `guard` did not
-    # succeed, so an infrastructure failure in `guard` builds rather than silently dropping
-    # the PR's CI — matching the step's own fail-open handling of API errors. A superseded
-    # run never reaches this job: `guard` cancels the run, taking the job with it.
+    # `build.yml`. `!cancelled()` makes it so an infrastructure failure in `guard` builds 
+    # rather than silently dropping the PR's CI, just as the step itself fails open on API 
+    # errors. A superseded run never reaches this job: `guard` cancels the run, 
+    # ending the job as well.
     if: ${{ !cancelled() && needs.guard.result != 'skipped' }}
     uses: ./.github/workflows/build_template.yml
     with:
