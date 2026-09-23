@@ -114,10 +114,10 @@ theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂
     exact (f.commutes r).trans (g.commutes r).symm
   | add x y hx hy ihx ihy =>
     have := congr_arg₂ (· + ·) ihx ihy
-    exact (map_add f _ _).trans (this.trans <| (map_add g _ _).symm)
+    exact (map_add f _ _).trans (this.trans (map_add g _ _).symm)
   | ι_mul_ι_mul m₁ m₂ x hx ih =>
     have := congr_arg₂ (· * ·) (LinearMap.congr_fun (LinearMap.congr_fun h m₁) m₂) ih
-    exact (map_mul f _ _).trans (this.trans <| (map_mul g _ _).symm)
+    exact (map_mul f _ _).trans (this.trans (map_mul g _ _).symm)
 
 variable {Q}
 
@@ -145,7 +145,7 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
         ```
         -/
       (acc.2.val m,
-        ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span <| ⟨_, _, rfl⟩⟩))
+        ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span ⟨_, _, rfl⟩⟩))
     (fun m₁ m₂ a =>
       Prod.ext (map_add _ m₁ m₂)
         (Subtype.ext <|

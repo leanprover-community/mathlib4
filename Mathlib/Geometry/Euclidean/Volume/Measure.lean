@@ -269,7 +269,7 @@ side is not with L²-norm, this is not an isometry.
 -/
 noncomputable def Submodule.measurableEquivProd (s : Submodule ℝ V) (p : P) : P ≃ᵐ s × sᗮ :=
   (IsometryEquiv.vaddConst p).toHomeomorph.toMeasurableEquiv.symm.trans <|
-  s.orthogonalDecomposition.toHomeomorph.toMeasurableEquiv.trans <|
+  s.orthogonalDecomposition.toHomeomorph.toMeasurableEquiv.trans
   (MeasurableEquiv.toLp 2 _).symm
 
 @[simp]
