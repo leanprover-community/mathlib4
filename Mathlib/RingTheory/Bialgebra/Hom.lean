@@ -77,7 +77,7 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
 @[coe]
 def toBialgHom (f : F) : A →ₐc[R] B :=
-  { CoalgHomClass.toCoalgHom f, AlgHom.ofClass f with
+  { CoalgHom.ofClass f, AlgHom.ofClass f with
     toFun := f }
 
 instance instCoeToBialgHom :
@@ -202,7 +202,7 @@ theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
 @[deprecated (since := "2026-05-05")] alias coe_algHom_injective := coe_toAlgHom_injective
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
-  CoalgHom.coe_linearMap_injective.comp coe_coalgHom_injective
+  CoalgHom.linearMapOfClass_injective.comp coe_coalgHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐc[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
   DFunLike.congr_fun H x
