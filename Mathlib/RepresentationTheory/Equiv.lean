@@ -100,7 +100,7 @@ def freeLiftLEquiv (α : Type w') : ((free k G α).IntertwiningMap σ) ≃ₗ[k]
   `α →₀ (V ⊗[k] W)`. -/
 def finsuppTensorLeft (α : Type w') :
     ((σ.finsupp α).tprod ρ).Equiv ((σ.tprod ρ).finsupp α) :=
-  open Classical in .mk (TensorProduct.finsuppLeft _ _ _ _ _) fun g ↦ by
+  open scoped Classical in .mk (TensorProduct.finsuppLeft _ _ _ _ _) fun g ↦ by
     ext; simp [TensorProduct.finsuppLeft_apply_tmul]
 
 lemma finsuppTensorLeft_apply_tmul {α : Type w'} (f : α →₀ V) (w : W) :
@@ -121,7 +121,7 @@ lemma finsuppTensorLeft_symm_apply_single {α : Type w'} (i : α) (v : V) (w : W
   `α →₀ (V ⊗[k] W)`. -/
 def finsuppTensorRight (α : Type w') :
     (σ.tprod (ρ.finsupp α)).Equiv ((σ.tprod ρ).finsupp α) :=
-  open Classical in .mk (TensorProduct.finsuppRight _ _ _ _ _) fun g ↦ by
+  open scoped Classical in .mk (TensorProduct.finsuppRight _ _ _ _ _) fun g ↦ by
     ext; simp [TensorProduct.finsuppRight_apply_tmul]
 
 lemma finsuppTensorRight_apply_tmul {α : Type w'} (v : V) (f : α →₀ W) :
