@@ -264,7 +264,16 @@ macro_rules
       $[[$sets:ident,*]]? $name:ident ($pat:term) $val:declVal) => withRef tk do
     let extName := mkIdentFrom name (name.getId ++ `normNumExt)
     let sets := sets.map (·.getElems) |>.getD #[mkIdentFrom tk `simp]
-    let attrs ← sets.mapM fun id => `(attribute%$tk [$kind $id:ident] $name)
+    let attrs ← sets.mapM fun id => withRef id do
+      let (attrName, attrKey) :=
+        if id.getId == `simp then (`simprocAttr, "simproc")
+        else if id.getId == `seval then (`sevalprocAttr, "sevalproc")
+        else
+          let procAttr := id.getId.appendAfter "_proc"
+          (`Parser.Attr ++ procAttr, procAttr.toString)
+      let attr : TSyntax `attr :=
+        ⟨mkNode attrName #[mkAtomFrom id attrKey, mkNullNode #[]]⟩
+      `(attribute%$tk [$kind $attr] $name)
     return mkNullNode <| #[
       (← `(/-- The `norm_num` extension underlying the companion simproc. -/
         public meta def%$tk $extName : NormNumExt $val:declVal)),

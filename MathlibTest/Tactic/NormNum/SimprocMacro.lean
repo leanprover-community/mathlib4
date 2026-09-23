@@ -1,6 +1,7 @@
 module
 
 public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 Tests for the `norm_num_simproc` command itself.
@@ -133,5 +134,23 @@ example : ∃ n : ℕ, wrap n + (1 + 1) = 5 := by
   simp only [evalLeak, Nat.reduceAdd]
   -- If the failed extension assigned the witness to 5, this would be impossible.
   exact (show wrap 3 + 2 = 5 from rfl)
+
+section
+
+-- A custom simp set has a corresponding simproc set.
+local norm_num_simproc [functor_norm] evalWrapCustom (wrap _) where
+  eval := evalWrap.normNumExt.eval
+
+example : wrap 21 = 21 := by
+  fail_if_success simp
+  simp only [functor_norm]
+
+end
+
+-- The bracketed names must name simproc sets, not arbitrary attributes.
+/-- error: Unknown attribute `[inline_proc]` -/
+#guard_msgs in
+norm_num_simproc [inline] evalWrapInvalid (wrap _) where
+  eval := evalWrap.normNumExt.eval
 
 end NormNumSimprocTest
