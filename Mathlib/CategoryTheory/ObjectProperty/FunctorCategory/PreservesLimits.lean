@@ -130,7 +130,6 @@ which preserves finite limits. -/
 @[reducible, inline]
 def preservesFiniteLimits : ObjectProperty (J ⥤ C) := PreservesFiniteLimits
 
-@[simp]
 lemma preservesFiniteLimits_iff (F : J ⥤ C) :
     preservesFiniteLimits F ↔ PreservesFiniteLimits F := Iff.rfl
 
@@ -145,7 +144,6 @@ def preservesFiniteColimits : ObjectProperty (J ⥤ C) := PreservesFiniteColimit
 instance : (preservesFiniteColimits (J := J) (C := C)).IsClosedUnderIsomorphisms where
   of_iso e _ := preservesFiniteColimits_of_natIso e
 
-@[simp]
 lemma preservesFiniteColimits_iff (F : J ⥤ C) :
     preservesFiniteColimits F ↔ PreservesFiniteColimits F := Iff.rfl
 
