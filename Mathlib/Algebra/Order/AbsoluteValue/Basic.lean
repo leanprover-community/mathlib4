@@ -380,7 +380,7 @@ lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
 
 lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1 := by
   obtain ⟨y, hy⟩ := h.exists_abv_gt_one
-  have hy₀ := v.ne_zero_iff.mp <| (zero_lt_one.trans hy).ne'
+  have hy₀ := v.ne_zero_iff.mp (zero_lt_one.trans hy).ne'
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
@@ -540,7 +540,7 @@ variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValu
 
 omit [IsOrderedRing S] in
 theorem abv_one' : abv 1 = 1 :=
-  (toAbsoluteValue abv).map_one_of_isLeftRegular <|
+  (toAbsoluteValue abv).map_one_of_isLeftRegular
     (IsRegular.of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
