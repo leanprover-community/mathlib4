@@ -5,7 +5,6 @@ Authors: Heather Macbeth, Floris van Doorn
 -/
 module
 
-public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Constructions
 
 /-!
@@ -523,6 +522,17 @@ theorem inCoordinates_apply_eq₂
   rw [inCoordinates_eq h₁x (by simp [h₂x, h₃x])]
   simp [hom_trivializationAt, Trivialization.continuousLinearMap_apply, h₂x]
 
+/-- Specialisation of `inCoordinates_apply_eq₂` to a trivial target bundle
+`E₃ = Bundle.Trivial B F₃`: no trivialization is needed on the output. -/
+lemma inCoordinates_apply_eq₂_of_trivial
+    {x₀ x : B} {ϕ : E₁ x →L[𝕜] E₂ x →L[𝕜] F₃} {v : F₁} {w : F₂}
+    (h₁x : x ∈ (trivializationAt F₁ E₁ x₀).baseSet)
+    (h₂x : x ∈ (trivializationAt F₂ E₂ x₀).baseSet) :
+    inCoordinates F₁ E₁ (F₂ →L[𝕜] F₃) (fun x ↦ E₂ x →L[𝕜] F₃) x₀ x x₀ x ϕ v w =
+      ϕ ((trivializationAt F₁ E₁ x₀).symm x v) ((trivializationAt F₂ E₂ x₀).symm x w) := by
+  rw [inCoordinates_apply_eq₂ h₁x h₂x (by simp [Trivial.fiberBundle_trivializationAt'])]
+  simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
+
 /-- Specialisation of `inCoordinates_apply_eq₂` to scalar-valued bilinear forms on a single
 bundle, i.e. `E₂ = E₁` and `E₃ = Bundle.Trivial B 𝕜`. -/
 lemma inCoordinates_apply_eq₂_bilin
@@ -530,8 +540,7 @@ lemma inCoordinates_apply_eq₂_bilin
     (hx : x ∈ (trivializationAt F₁ E₁ x₀).baseSet) :
     inCoordinates F₁ E₁ (F₁ →L[𝕜] 𝕜) (fun x ↦ E₁ x →L[𝕜] 𝕜) x₀ x x₀ x ϕ v w =
       ϕ ((trivializationAt F₁ E₁ x₀).symm x v) ((trivializationAt F₁ E₁ x₀).symm x w) := by
-  rw [inCoordinates_apply_eq₂ hx hx (by simp [Trivial.fiberBundle_trivializationAt'])]
-  simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
+  exact inCoordinates_apply_eq₂_of_trivial hx hx
 
 /-- The inverse trivialization of the bundle of scalar-valued bilinear forms
 `fun x ↦ E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜`, applied to a model form `ϕ` and then to fibre vectors
@@ -546,29 +555,19 @@ lemma trivializationAt_symm_apply_bilin
   let ψ := FiberBundle.trivializationAt (F₁ →L[𝕜] F₁ →L[𝕜] 𝕜)
       (fun (x : B) ↦ E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜) x₀
   let χ := trivializationAt F₁ E₁ x₀
-  let w := ψ.symm x ϕ
-  have hc : x ∈ ψ.baseSet := by
-    rw [hom_trivializationAt_baseSet]
-    simp only [hom_trivializationAt_baseSet, Trivial.fiberBundle_trivializationAt',
-      Trivial.trivialization_baseSet, inter_univ, inter_self]
-    exact hb
-  have h1 : ∀ u v,
-      (((Trivialization.continuousLinearMapAt 𝕜 ψ x) (ψ.symmL 𝕜 x ϕ)) u) v = ϕ u v :=
-    fun u v ↦ by rw [Trivialization.continuousLinearMapAt_symmL ψ hc]
-  have h2 : ∀ u v, ϕ u v = w (χ.symm x u) (χ.symm x v) := fun u v ↦ by
+  have hc : x ∈ ψ.baseSet := by simpa [ψ] using hb
+  have h1 (u v) : (((ψ.continuousLinearMapAt 𝕜 x) (ψ.symmL 𝕜 x ϕ)) u) v = ϕ u v := by
+    rw [Trivialization.continuousLinearMapAt_symmL ψ hc]
+  have h2 (u v) : ϕ u v = ψ.symm x ϕ (χ.symm x u) (χ.symm x v) := by
     rw [← h1, Trivialization.continuousLinearMapAt_apply, Trivialization.linearMapAt_apply,
-      hom_trivializationAt_apply, ite_eq_left hc, ← inCoordinates_apply_eq₂_bilin hb]
-    rw [Trivialization.symmL_apply]
-    exact hc
+      hom_trivializationAt_apply, ite_eq_left hc, ← inCoordinates_apply_eq₂_bilin hb,
+      Trivialization.symmL_apply _ hc]
   have h3 := Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb u
-  rw [Trivialization.symmL_apply] at h3
-  · have h4 :=
-      Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb v
-    rw [Trivialization.symmL_apply] at h4
-    · rw [show w u v = ϕ (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v) from by
-        rw [h2 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v), h3, h4]]
-    · exact hb
-  · exact hb
+  rw [Trivialization.symmL_apply _ hb] at h3
+  have h4 := Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb v
+  rw [Trivialization.symmL_apply _ hb] at h4
+  rw [show ψ.symm x ϕ u v = ϕ (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v)
+    from by rw [h2 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v), h3, h4]]
 
 end TwoVariables
 
