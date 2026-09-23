@@ -143,6 +143,14 @@ def Comp.mk {F : Type u → Type w} {G : Type v → Type u} {α : Type v} (x : F
 def Comp.run {F : Type u → Type w} {G : Type v → Type u} {α : Type v} (x : Comp F G α) : F (G α) :=
   x
 
+@[simp]
+theorem Comp.run_mk {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
+    (x : F (G α)) : (mk x).run = x := rfl
+
+@[simp]
+theorem Comp.mk_run {F : Type u → Type w} {G : Type v → Type u} {α : Type v}
+    (x : Comp F G α) : mk (x.run) = x := rfl
+
 namespace Comp
 
 variable {F : Type u → Type w} {G : Type v → Type u}

@@ -56,7 +56,7 @@ open Spec (structureSheaf)
 /-- The spectrum of a commutative ring, as a topological space.
 -/
 def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
-  TopCat.of (PrimeSpectrum R)
+  ↧(PrimeSpectrum R)
 
 @[simp] theorem Spec.topObj_forget {R} : ToType (Spec.topObj R) = PrimeSpectrum R :=
   rfl
@@ -192,17 +192,17 @@ lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :
     (Spec.locallyRingedSpaceObj R).sheaf = structureSheaf R := rfl
 
 lemma Spec.locallyRingedSpaceObj_sheaf' (R : Type u) [CommRing R] :
-    (Spec.locallyRingedSpaceObj <| CommRingCat.of R).sheaf = structureSheaf R := rfl
+    (Spec.locallyRingedSpaceObj ↧R).sheaf = structureSheaf R := rfl
 
 lemma Spec.locallyRingedSpaceObj_presheaf_map (R : CommRingCat.{u}) {U V} (i : U ⟶ V) :
     (Spec.locallyRingedSpaceObj R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
 
 lemma Spec.locallyRingedSpaceObj_presheaf' (R : Type u) [CommRing R] :
-    (Spec.locallyRingedSpaceObj <| CommRingCat.of R).presheaf = (structureSheaf R).1 := rfl
+    (Spec.locallyRingedSpaceObj ↧R).presheaf = (structureSheaf R).1 := rfl
 
 lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [CommRing R] {U V} (i : U ⟶ V) :
-    (Spec.locallyRingedSpaceObj <| CommRingCat.of R).presheaf.map i =
+    (Spec.locallyRingedSpaceObj ↧R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -233,7 +233,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
     (stalkIso S p).toCommRingCatIso.symm.comp_inv_eq.mpr <| CommRingCat.hom_ext <|
       Localization.localRingHom_unique _ _ _ (PrimeSpectrum.comap_asIdeal _ _) fun x => by
   dsimp [-RingEquiv.symm_mk]
-  simp only [AlgEquiv.commutes, RingEquiv.symm_apply_eq, AlgEquiv.coe_ringEquiv]
+  simp only [AlgEquiv.commutes, RingEquiv.symm_apply_eq, AlgEquiv.coe_toRingEquiv]
   exact stalkMap_toStalk_apply f p x
 
 set_option backward.isDefEq.respectTransparency false in
@@ -284,7 +284,6 @@ def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace
 instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) :=
   (ConcreteCategory.isIso_iff_bijective _).mpr algebraMap_obj_top_bijective
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by

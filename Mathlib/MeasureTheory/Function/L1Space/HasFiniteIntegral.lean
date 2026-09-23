@@ -32,7 +32,9 @@ finite integral
 
 noncomputable section
 
-open Topology ENNReal MeasureTheory NNReal
+open ENNReal MeasureTheory NNReal
+
+open scoped Topology
 
 open Set Filter TopologicalSpace ENNReal MeasureTheory
 
@@ -223,11 +225,11 @@ theorem HasFiniteIntegral.add_measure {f : α → ε} (hμ : HasFiniteIntegral f
 
 theorem HasFiniteIntegral.left_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f μ :=
-  h.mono_measure <| Measure.le_add_right <| le_rfl
+  h.mono_measure <| Measure.le_add_right le_rfl
 
 theorem HasFiniteIntegral.right_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f ν :=
-  h.mono_measure <| Measure.le_add_left <| le_rfl
+  h.mono_measure <| Measure.le_add_left le_rfl
 
 @[simp]
 theorem hasFiniteIntegral_add_measure {f : α → ε} :
@@ -507,7 +509,7 @@ end count
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → ε}
+variable {f : α → ε}
 
 @[fun_prop]
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :

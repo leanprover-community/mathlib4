@@ -145,7 +145,7 @@ variable (a : d → ℝ) {ι : Type*} (b : ι → ℝ)
 
 /-- The measurable equivalence between `UnitAddTorus` and a product of `Ioc` intervals. -/
 def measurableEquivPiIoc : UnitAddTorus ι ≃ᵐ {x : ι → ℝ // ∀ i, x i ∈ Ioc (b i) (b i + 1)} :=
-  (MeasurableEquiv.piCongrRight fun i => AddCircle.measurableEquivIoc 1 (b i)).trans <|
+  (MeasurableEquiv.piCongrRight fun i => AddCircle.measurableEquivIoc 1 (b i)).trans
   MeasurableEquiv.subtypePiEquivPi.symm
 
 theorem coe_measurableEquivPiIoc :
@@ -170,8 +170,8 @@ lemma measurePreserving_equivPiIoc :
     MeasurePreserving (measurableEquivPiIoc a) volume (Measure.comap Subtype.val volume) := by
   refine (⟨(measurableEquivPiIoc a).symm.measurable, symm ?_⟩ :
     MeasurePreserving (measurableEquivPiIoc a).symm _ _).symm
-  have := Measure.map_map (μ := volume.comap Subtype.val) (measurable_pi_lambda
-    (fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))
+  have := Measure.map_map (μ := volume.comap Subtype.val) (.of_eval
+    (f := fun (x : d → ℝ) => (fun i => x i : UnitAddTorus d))
     (fun i => AddCircle.measurable_mk'.comp (measurable_pi_apply i)))
     measurable_subtype_coe (α := {x : d → ℝ // ∀ i, x i ∈ Ioc (a i) (a i + 1)})
   simp only [Function.comp_def] at this
@@ -234,7 +234,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
   apply Finset.prod_eq_zero (Finset.mem_univ i)
   simpa only [eq_false_intro hi, ite_false, ContinuousMap.inner_toLp, ← fourier_neg,
-    ← fourier_add] using! (orthonormal_iff_ite.mp <| orthonormal_fourier) (m i) (n i)
+    ← fourier_add] using! (orthonormal_iff_ite.mp orthonormal_fourier) (m i) (n i)
 
 end Lp
 

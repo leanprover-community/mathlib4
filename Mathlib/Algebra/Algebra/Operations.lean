@@ -214,7 +214,7 @@ consists of finite sums of elements `m * n` for `m ∈ M` and `n ∈ N`. -/
 instance mul : Mul (Submodule R A) where
   mul := (· • ·)
 
-variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
+variable {M N P : Submodule R A} {m n : A}
 
 theorem mul_mem_mul (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
   smul_mem_smul hm hn
@@ -690,7 +690,7 @@ submodules. -/
 def equivOpposite : Submodule R Aᵐᵒᵖ ≃+* (Submodule R A)ᵐᵒᵖ where
   toFun p := op <| p.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ)
   invFun p := p.unop.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A)
-  left_inv _ := SetLike.coe_injective <| rfl
+  left_inv _ := SetLike.coe_injective rfl
   right_inv _ := unop_injective <| SetLike.coe_injective rfl
   map_add' p q := by simp [comap_equiv_eq_map_symm, ← op_add]
   map_mul' _ _ := congr_arg op <| comap_op_mul _ _

@@ -6,7 +6,7 @@ Authors: Oliver Butterley
 module
 
 public import Mathlib.Data.Finset.Range
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Indexed
 public import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!

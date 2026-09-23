@@ -5,7 +5,6 @@ Authors: Johan Commelin, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -14,6 +13,8 @@ public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
 /-!
 # Rank of matrices
@@ -175,7 +176,7 @@ theorem rank_le_card_width [CommSemiring R] [StrongRankCondition R] (A : Matrix 
 
 theorem rank_le_width [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ n :=
-  A.rank_le_card_width.trans <| (Fintype.card_fin n).le
+  A.rank_le_card_width.trans (Fintype.card_fin n).le
 
 theorem rank_mul_le_left [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
     (B : Matrix n o R) : (A * B).rank ≤ A.rank := by

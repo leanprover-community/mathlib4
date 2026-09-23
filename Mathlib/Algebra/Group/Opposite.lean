@@ -241,6 +241,14 @@ attribute [nolint simpComm] AddOpposite.addCommute_unop
 @[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
   MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›
 
+@[to_additive (attr := simp)]
+theorem isMulCommutative_op_iff [Mul α] : IsMulCommutative αᵐᵒᵖ ↔ IsMulCommutative α := by
+  simp [isMulCommutative_iff, ← commute_iff_eq]
+
+@[to_additive]
+instance [Mul α] [IsMulCommutative α] : IsMulCommutative αᵐᵒᵖ :=
+  isMulCommutative_op_iff.mpr ‹_›
+
 end MulOpposite
 
 /-!
@@ -294,6 +302,6 @@ instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
 
 @[to_additive]
 instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=
-  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
+  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp unop_injective⟩
 
 end AddOpposite

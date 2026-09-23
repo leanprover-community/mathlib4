@@ -5,13 +5,10 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
-public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.SheafOfModules
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.Topology.Sheaves.Module
@@ -51,6 +48,9 @@ noncomputable instance : Abelian X.Modules :=
   inferInstanceAs <| Abelian (SheafOfModules.{u} X.ringCatSheaf)
 instance : HasLimits X.Modules := inferInstanceAs (HasLimits (SheafOfModules X.ringCatSheaf))
 instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules X.ringCatSheaf))
+
+instance : IsGrothendieckAbelian.{u} X.Modules :=
+  inferInstanceAs (IsGrothendieckAbelian (SheafOfModules _))
 
 section Functor
 
@@ -306,7 +306,6 @@ lemma pseudofunctor_right_unitality :
   simp [← this]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
   conjugateEquiv_pullbackId_hom Adjunction.ofCat_comp conjugateEquiv_pullbackComp_inv in
@@ -320,7 +319,7 @@ these categories.) -/
 def pseudofunctor :
     Pseudofunctor (LocallyDiscrete Scheme.{u}ᵒᵖ) (Adj Cat) :=
   LocallyDiscrete.mkPseudofunctor
-    (fun X ↦ Adj.mk (Cat.of X.unop.Modules))
+    (fun X ↦ Adj.mk ↧X.unop.Modules)
     (fun f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
     (fun _ ↦ Adj.iso₂Mk (Cat.Hom.isoMk (pullbackId _))
         (Cat.Hom.isoMk (pushforwardId _).symm))
@@ -389,7 +388,7 @@ lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : 
 
 /-- `Scheme.Modules.restrict` along an open immersion `X ⟶ Y` sends `𝒪_Y` to `𝒪_X`. -/
 def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
-    restrict (.unit <| Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
+    restrict (.unit Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
   refine (fullyFaithfulForget _).preimageIso <| PresheafOfModules.isoMk (fun U ↦ ?_) ?_
   · refine ModuleCat.isoMk
       ((forget₂ CommRingCat RingCat ⋙ forget₂ _ Ab).mapIso (f.appIso U.unop)) ?_
@@ -424,7 +423,7 @@ def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
     exact congr($this x)
 
 instance : IsIso (restrictAdjunction f).counit :=
-  inferInstanceAs (IsIso <| (restrictFunctorAdjCounitIso f).hom)
+  inferInstanceAs (IsIso (restrictFunctorAdjCounitIso f).hom)
 
 instance : (restrictFunctor f).IsLeftAdjoint := (restrictAdjunction f).isLeftAdjoint
 instance : (pushforward f).Full := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.full

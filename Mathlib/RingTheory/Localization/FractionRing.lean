@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -250,7 +251,7 @@ variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
     mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   haveI := (algebraMap A K).domain_nontrivial
-  mk'_eq_iff_eq_mul.2 <|
+  mk'_eq_iff_eq_mul.2
     (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 
@@ -492,7 +493,6 @@ noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[(f : A →+* B)] L :=
 { ringEquivOfRingEquiv f with
   map_smul' r x := by simp [Algebra.smul_def] }
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_apply (x : K) :
     (semilinearEquivOfRingEquiv K L f) x = (ringEquivOfRingEquiv f) x := rfl
 
@@ -502,7 +502,6 @@ lemma semilinearEquivOfRingEquiv_algebraMap (a : A) :
     semilinearEquivOfRingEquiv K L f (algebraMap A K a) = algebraMap B L (f a) := by
   simp [semilinearEquivOfRingEquiv, ringEquivOfRingEquiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_symm_apply (x : L) :
     (semilinearEquivOfRingEquiv K L f).symm x = (ringEquivOfRingEquiv f).symm x := rfl
 
@@ -516,7 +515,7 @@ lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [Comm
       (semilinearEquivOfRingEquiv K L f)
       (semilinearEquivOfRingEquiv L M g) := by
   ext a
-  simp [-RingEquiv.coe_ringHom_trans, semilinearEquivOfRingEquiv_apply,
+  simp [-RingEquiv.toRingHom_trans, semilinearEquivOfRingEquiv_apply,
     semilinearEquivOfRingEquiv_apply K M, ringEquivOfRingEquiv_comp K L M]
 
 end semilinearEquivOfRingEquiv
@@ -683,6 +682,21 @@ protected theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
     simp [Algebra.smul_def, map_div₀, ← IsScalarTower.algebraMap_apply A K L,
       IsScalarTower.algebraMap_apply A B L, smul_mul', smul_div₀',
       ← algebraMap.coe_smul', smul_algebraMap]⟩
+
+variable {A B} in
+/-- If `K` is the fraction field of `A` and `L` is the fraction field of `B` with `A ⊆ B`,
+then for `G` acting on `B` and `L`, the fixing subgroup of `A` in `B` equals the fixing subgroup
+of `K` in `L`. -/
+theorem fixingSubgroup_range_algebraMap :
+    fixingSubgroup G (Set.range (algebraMap A B)) =
+      fixingSubgroup G (Set.range (algebraMap K L)) := by
+  simp_rw [Subgroup.ext_iff, mem_fixingSubgroup_iff, Set.forall_mem_range]
+  refine fun g ↦ ⟨fun h x ↦ ?_, fun h x ↦ FaithfulSMul.algebraMap_injective B L ?_⟩
+  · obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A B L, smul_div₀', ← algebraMap.smul', h]
+  · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A K L, h]
 
 end MulAction
 

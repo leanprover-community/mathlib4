@@ -202,7 +202,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   have x : X := Nonempty.some inferInstance
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-  let := ((Scheme.ΓSpecIso (.of K)).commRingCatIsoToRingEquiv.toMulEquiv.isField
+  let := ((Scheme.ΓSpecIso ↧K).commRingCatIsoToRingEquiv.toMulEquiv.isField
     (Field.toIsField K)).toField
   let := (isField_of_universallyClosed K f).toField
   have : Nonempty U := ⟨⟨x, hxU⟩⟩

@@ -84,7 +84,7 @@ theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
 
 @[simp]
 theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
-  LinearMap.ext <| hasseDeriv_zero'
+  LinearMap.ext hasseDeriv_zero'
 
 theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     hasseDeriv n p = 0 := by
@@ -98,7 +98,7 @@ theorem hasseDeriv_one' : hasseDeriv 1 f = derivative f := by
 
 @[simp]
 theorem hasseDeriv_one : @hasseDeriv R _ 1 = derivative :=
-  LinearMap.ext <| hasseDeriv_one'
+  LinearMap.ext hasseDeriv_one'
 
 @[simp]
 theorem hasseDeriv_monomial (n : ℕ) (r : R) :
@@ -123,6 +123,12 @@ theorem hasseDeriv_apply_one (hk : 0 < k) : hasseDeriv k (1 : R[X]) = 0 := by
 theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     zero_mul, monomial_zero_right]
+
+@[simp]
+theorem hasseDeriv_map {S : Type*} [Semiring S] (f : R →+* S) (k : ℕ) (p : R[X]) :
+    hasseDeriv k (p.map f) = (hasseDeriv k p).map f := by
+  ext
+  simp [hasseDeriv_coeff]
 
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction k with

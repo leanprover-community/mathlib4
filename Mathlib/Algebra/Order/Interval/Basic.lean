@@ -259,7 +259,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
+variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
@@ -439,7 +439,7 @@ instance : Inv (Interval α) :=
 
 namespace NonemptyInterval
 
-variable (s t : NonemptyInterval α) (a : α)
+variable (s : NonemptyInterval α) (a : α)
 
 @[to_additive (attr := simp)]
 theorem fst_inv : s⁻¹.fst = s.snd⁻¹ :=

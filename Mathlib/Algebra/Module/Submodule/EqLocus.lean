@@ -78,7 +78,7 @@ include τ₁₂ in
 theorem eqOn_sup {f g : F} {S T : Submodule R M}
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
-  rw [← LinearMap.coe_coe (f := f), ← LinearMap.coe_coe (f := g), ← le_eqLocus] at hS hT ⊢
+  rw [← LinearMap.coe_ofClass (f := f), ← LinearMap.coe_ofClass (f := g), ← le_eqLocus] at hS hT ⊢
   exact sup_le hS hT
 
 include τ₁₂ in
