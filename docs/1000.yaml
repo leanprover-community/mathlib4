@@ -403,7 +403,7 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
-  comment: "pending pull requestion https://github.com/leanprover-community/mathlib4/pull/43238 gradually merged"
+  comment: "pending pull request on https://github.com/leanprover-community/mathlib4/pull/43238, gradually getting merged"
 
 Q388525:
   title: Bell's theorem
