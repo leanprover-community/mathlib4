@@ -353,8 +353,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
     refine ⟨homMk e.hom.left ?_, rfl⟩
-    · rw [← cancel_mono f, assoc]
-      apply w e
+    rw [← cancel_mono f, assoc]
+    apply w e
 
 instance faithful_map (f : X ⟶ Y) [Mono f] : Functor.Faithful (map f) where
 

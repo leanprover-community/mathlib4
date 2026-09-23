@@ -366,10 +366,10 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
   refine LinearMap.ext ?_
   refine fun z ↦
     PiTensorProduct.induction_on' z ?_ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
-  · intro r f
-    rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
-    apply congr_arg
-    exact MultilinearMap.congr_fun H f
+  intro r f
+  rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
+  apply congr_arg
+  exact MultilinearMap.congr_fun H f
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
 the tensor product. -/

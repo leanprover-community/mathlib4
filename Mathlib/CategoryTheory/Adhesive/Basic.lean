@@ -80,9 +80,9 @@ lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.
   · refine (H' (pullback.fst αX f) l h' i' (pullback.snd αX f) αX αY αZ
       (IsPullback.of_hasPullback αX f) ?_
         hh.toCommSq hi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
-    · refine IsPullback.of_right' ?_ hi
-      rw [← H.w]
-      exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
+    refine IsPullback.of_right' ?_ hi
+    rw [← H.w]
+    exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
 
 theorem IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) :
     H.flip.IsVanKampen := by
@@ -165,9 +165,9 @@ theorem IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
       obtain ⟨W'', f'', g'', αW', hf', hg', hP⟩ := (H' h' i' αX αY αZ sq_h sq_i).1 ⟨hh, hi⟩
       refine hP.of_iso (IsPullback.isoIsPullback _ _ hf' hf)
         (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) ?_ (by simp) (by simp)
-      · apply hi.hom_ext
-        · simp [← cs.w, hP.w]
-        · simp [hg.w, hg'.w]
+      apply hi.hom_ext
+      · simp [← cs.w, hP.w]
+      · simp [hg.w, hg'.w]
 
 lemma IsPushout.isVanKampen_isPullback_isPullback_hom_ext
     {H : IsPushout f g h i} (H' : H.IsVanKampen)

@@ -605,10 +605,10 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   suffices IsCompatible F.obj V sf by
     -- Since `F` is a sheaf, we can glue all the local preimages together to get a global preimage.
     obtain ⟨s, s_spec, -⟩ := F.existsUnique_gluing' V U iVU V_cover sf this
-    · use s
-      apply G.eq_of_locally_eq' V U iVU V_cover
-      intro x
-      rw [← ConcreteCategory.comp_apply, ← f.1.naturality, ConcreteCategory.comp_apply, s_spec, heq]
+    use s
+    apply G.eq_of_locally_eq' V U iVU V_cover
+    intro x
+    rw [← ConcreteCategory.comp_apply, ← f.1.naturality, ConcreteCategory.comp_apply, s_spec, heq]
   intro x y
   -- What's left to show here is that the sections `sf` are compatible, i.e. they agree on
   -- the intersections `V x ⊓ V y`. We prove this by showing that all germs are equal.

@@ -293,13 +293,13 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
     have : ∀ (X : Coalgebra adj.toComonad), IsIso ((comparisonAdjunction adj).counit.app X) := by
       intro X
       apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Comonad.forget adj.toComonad) ?_ _
-      · change IsIso ((comparisonAdjunction adj).counit.app X).f
-        rw [comparisonAdjunction_counit_f]
-        change
-          IsIso
-            (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
-                (counitLimitOfPreservesEqualizer X)).inv
-        exact (IsLimit.conePointUniqueUpToIso _ _).isIso_inv
+      change IsIso ((comparisonAdjunction adj).counit.app X).f
+      rw [comparisonAdjunction_counit_f]
+      change
+        IsIso
+          (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
+              (counitLimitOfPreservesEqualizer X)).inv
+      exact (IsLimit.conePointUniqueUpToIso _ _).isIso_inv
     have : ∀ (Y : C), IsIso ((comparisonAdjunction adj).unit.app Y) := by
       intro Y
       rw [comparisonAdjunction_unit_app]
@@ -389,10 +389,10 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
       intro X
       apply
         @isIso_of_reflects_iso _ _ _ _ _ _ _ (Comonad.forget adj.toComonad) ?_ _
-      · change IsIso ((comparisonAdjunction adj).counit.app X).f
-        rw [comparisonAdjunction_counit_f]
-        exact (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
-          (counitLimitOfPreservesEqualizer X)).isIso_inv
+      change IsIso ((comparisonAdjunction adj).counit.app X).f
+      rw [comparisonAdjunction_counit_f]
+      exact (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
+        (counitLimitOfPreservesEqualizer X)).isIso_inv
     have : ∀ (Y : C), IsIso ((comparisonAdjunction adj).unit.app Y) := by
       intro Y
       rw [comparisonAdjunction_unit_app]

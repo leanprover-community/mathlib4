@@ -95,7 +95,7 @@ theorem cardinalMk_le_lift_cardinalMk_of_commute (hc : ∀ s s' : S, Commute s s
   have key (x : X) (s s' : S) (h : s • x = s' • x) (hc : Commute s s') : x /ₒ s = x /ₒ s' := by
     rw [oreDiv_eq_iff]
     refine ⟨s, s'.1, h, ?_⟩
-    · exact_mod_cast hc
+    exact_mod_cast hc
   let i (x : X × S) := x.1 /ₒ x.2
   have hsurj : Surjective i := Quotient.mk''_surjective
   have hi := rightInverse_surjInv hsurj

@@ -773,7 +773,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
     · rw [KaehlerDifferential.ker_map]
       congr 1
       convert! Submodule.comap_id _
-      · ext; simp
+      ext; simp
     rw [Submodule.map_le_iff_le_comap, kerTotal, Submodule.span_le]
     rintro f ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩)
     · use 0; simp
