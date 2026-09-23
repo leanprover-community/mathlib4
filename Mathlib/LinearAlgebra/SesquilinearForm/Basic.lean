@@ -562,11 +562,15 @@ end SelfadjointPair
 
 section Nondegenerate
 
-section CommSemiring
+section SMulCommClass
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
-  [Module R₁ M₁] [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
-  {I₁ : R₁ →+* R} {I₂ : R₂ →+* R}
+variable {S₁ S₂ : Type*} [Semiring S₁] [Semiring S₂] [Semiring R₁] [Semiring R₂]
+  [AddCommMonoid M] [Module S₁ M] [Module S₂ M] [SMulCommClass S₂ S₁ M]
+  [AddCommMonoid M₁] [Module R₁ M₁]
+  [AddCommMonoid M₂] [Module R₂ M₂]
+  {I₁ : R₁ →+* S₁} {I₂ : R₂ →+* S₂}
+
+local instance : SMulCommClass S₁ S₂ M := SMulCommClass.symm _ _ _
 
 /-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,
@@ -574,14 +578,11 @@ for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`. 
 def SeparatingLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ x : M₁, (∀ y : M₂, B x y = 0) → x = 0
 
-variable (M₁ M₂ I₁ I₂)
-
+variable (M₁ M₂ I₁ I₂) in
 /-- In a non-trivial module, zero is not non-degenerate. -/
 theorem not_separatingLeft_zero [Nontrivial M₁] : ¬(0 : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M).SeparatingLeft :=
   let ⟨m, hm⟩ := exists_ne (0 : M₁)
   fun h ↦ hm (h m fun _n ↦ rfl)
-
-variable {M₁ M₂ I₁ I₂}
 
 theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
     (h : B.SeparatingLeft) : B ≠ 0 := fun h0 ↦ not_separatingLeft_zero M₁ M₂ I₁ I₂ <| h0 ▸ h
@@ -600,6 +601,7 @@ section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
 
+variable {R : Type*} [CommSemiring R] [Module R M]
 variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
@@ -679,18 +681,19 @@ theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ke
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 
 /-- The identity pairing is left-separating. -/
-protected theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
+protected theorem SeparatingLeft.id : SeparatingLeft (.id : (M₁ →ₛₗ[I₁] M) →ₗ[S₂] M₁ →ₛₗ[I₁] M) :=
   separatingLeft_iff_ker_eq_bot.mpr ker_id
 
 alias id_separatingLeft := SeparatingLeft.id
 
 /-- The pairing `Dual.eval` is right-separating. -/
-protected theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight :=
+protected theorem SeparatingRight.eval [CommSemiring R] [Module R M] :
+    (Dual.eval R M).SeparatingRight :=
   id_separatingLeft
 
 alias eval_separatingRight := SeparatingRight.eval
 
-end CommSemiring
+end SMulCommClass
 
 section CommRing
 
