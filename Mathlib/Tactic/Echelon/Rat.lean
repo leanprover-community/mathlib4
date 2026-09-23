@@ -56,10 +56,10 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
   let ops : RingOps Int := {
     zero := 0
     one := 1
-    mul x y := x * y
-    sub x y := x - y
-    divExact x y := x / y
-    isZero x := if p == 0 then x == 0 else x % p == 0 }
+    mul := (· * ·)
+    sub := (· - ·)
+    divExact := (· / ·)
+    isZero := if p == 0 then (· == 0) else fun v => v % p == 0 }
   return ⟨.int, {
     ops
     evalEntry := fun e => do
