@@ -33,6 +33,43 @@ open Filter Fin.NatCast Function MeasureTheory Set
 
 open scoped Topology
 
+/-- Translating both the domain interval and the function argument preserves absolute
+continuity. -/
+theorem AbsolutelyContinuousOnInterval.comp_add_right
+    {f : ℝ → X} {a b c : ℝ} (hf : AbsolutelyContinuousOnInterval f (a + c) (b + c)) :
+    AbsolutelyContinuousOnInterval (fun x ↦ f (x + c)) a b := by
+  rw [absolutelyContinuousOnInterval_iff] at hf ⊢
+  intro ε hε
+  obtain ⟨δ, hδ, hfδ⟩ := hf ε hε
+  refine ⟨δ, hδ, ?_⟩
+  rintro ⟨n, I⟩ hI hlength
+  let J : ℕ → ℝ × ℝ := fun i ↦ ((I i).1 + c, (I i).2 + c)
+  have hJ : (n, J) ∈ AbsolutelyContinuousOnInterval.disjWithin (a + c) (b + c) := by
+    constructor
+    · intro i hi
+      constructor
+      · simp only [uIcc, mem_Icc, min_add_add_right, max_add_add_right, J]
+        exact ⟨by simpa only [add_comm] using add_le_add_right (hI.1 i hi).1.1 c,
+          by simpa only [add_comm] using add_le_add_right (hI.1 i hi).1.2 c⟩
+      · simp only [uIcc, mem_Icc, min_add_add_right, max_add_add_right, J]
+        exact ⟨by simpa only [add_comm] using add_le_add_right (hI.1 i hi).2.1 c,
+          by simpa only [add_comm] using add_le_add_right (hI.1 i hi).2.2 c⟩
+    · intro i hi j hj hij
+      change Disjoint (uIoc ((I i).1 + c) ((I i).2 + c))
+        (uIoc ((I j).1 + c) ((I j).2 + c))
+      rw [Set.disjoint_left]
+      intro z hzi hzj
+      have hzi' : z - c ∈ uIoc (I i).1 (I i).2 := by
+        simp only [uIoc, mem_Ioc, min_add_add_right, max_add_add_right] at hzi ⊢
+        constructor <;> linarith [hzi.1, hzi.2]
+      have hzj' : z - c ∈ uIoc (I j).1 (I j).2 := by
+        simp only [uIoc, mem_Ioc, min_add_add_right, max_add_add_right] at hzj ⊢
+        constructor <;> linarith [hzj.1, hzj.2]
+      exact Set.disjoint_left.1 (hI.2 hi hj hij) hzi' hzj'
+  have hlengthJ : ∑ i ∈ Finset.range n, dist (J i).1 (J i).2 < δ := by
+    simpa only [J, Real.dist_eq, add_sub_add_right_eq_sub] using hlength
+  simpa only [J] using hfδ (n, J) hJ hlengthJ
+
 /-- If `f` has derivative `f'` a.e. on `[d, b]` and `η` is positive, then there is a collection of
 pairwise disjoint closed subintervals of `[a, b]` of total length `b - a` where the slope of `f`
 on each subinterval `[x, y]` differs from `f' x` by at most `η`. -/
