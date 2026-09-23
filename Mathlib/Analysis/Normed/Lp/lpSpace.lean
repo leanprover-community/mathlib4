@@ -731,7 +731,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     apply nnnorm_smul_le
 
 instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
-  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
+  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le Fact.out).ne'
 
 end IsBoundedSMul
 

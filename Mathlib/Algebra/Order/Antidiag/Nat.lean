@@ -57,7 +57,7 @@ namespace Nat
 def finMulAntidiag (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   if hn : 0 < n then
     (Finset.finAntidiagonal d (Additive.ofMul (α := ℕ+) ⟨n, hn⟩)).map <|
-      .arrowCongrRight <| Additive.toMul.toEmbedding.trans <| ⟨PNat.val, PNat.coe_injective⟩
+      .arrowCongrRight <| Additive.toMul.toEmbedding.trans ⟨PNat.val, PNat.coe_injective⟩
   else
     ∅
 

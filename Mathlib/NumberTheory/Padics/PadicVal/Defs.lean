@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 module
 
-public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.PadicValNat
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Factors
 
@@ -46,14 +46,6 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
     · simp
     · simp [← padicValNat_eq_emultiplicity_of_ne_one, *]
 
-theorem padicValNat_def {n : ℕ} : padicValNat p n = multiplicity p n := by
-  by_cases hn : n = 0
-  · simp [hn]
-  by_cases hp : p = 1
-  · simp [hp]
-  exact (multiplicity_eq_of_emultiplicity_eq_some
-    (padicValNat_eq_emultiplicity_of_ne_one hp hn).symm).symm
-
 @[deprecated (since := "2026-09-08")] alias padicValNat_def' := padicValNat_def
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
@@ -68,7 +60,7 @@ namespace padicValNat
 alias maxPowDiv_eq_emultiplicity := padicValNat_eq_emultiplicity
 
 @[deprecated (since := "2026-03-15")]
-alias maxPowDiv_eq_multiplicity := padicValNat_def'
+alias maxPowDiv_eq_multiplicity := padicValNat_def
 
 @[deprecated padicValNat_zero_right (since := "2026-03-15")]
 protected theorem zero : padicValNat p 0 = 0 := padicValNat_zero_right p

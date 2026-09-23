@@ -269,7 +269,7 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
   refine ⟨fun h => ?_, fun h => h.1 ▸ h.2 ▸ rfl⟩
   have hle : f₁ ≤ f₂ ∧ g₁ ≤ g₂ := prod_le_prod.1 h.le
   have := neBot_of_le hle.1; have := neBot_of_le hle.2
-  exact ⟨hle.1.antisymm <| (prod_le_prod.1 h.ge).1, hle.2.antisymm <| (prod_le_prod.1 h.ge).2⟩
+  exact ⟨hle.1.antisymm (prod_le_prod.1 h.ge).1, hle.2.antisymm (prod_le_prod.1 h.ge).2⟩
 
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ˢ g, p x) ↔ ∀ᶠ y : β × α in g ×ˢ f, p y.swap := by

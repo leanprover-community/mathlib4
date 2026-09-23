@@ -157,7 +157,7 @@ theorem le_comap_pow_ramificationIdx' : p ≤ comap f (P ^ ramificationIdx' p P)
   le_comap_pow_ramificationIdx'
 
 theorem le_comap_of_ramificationIdx'_ne_zero (h : ramificationIdx' p P ≠ 0) : p ≤ comap f P :=
-  Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx'.trans <| Ideal.pow_le_self <| h
+  Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx'.trans <| Ideal.pow_le_self h
 
 @[deprecated (since := "2026-07-01")] alias le_comap_of_ramificationIdx_ne_zero :=
   le_comap_of_ramificationIdx'_ne_zero
@@ -271,7 +271,7 @@ theorem ramificationIdx'_eq_normalizedFactors_count
 theorem ramificationIdx'_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) :
     ramificationIdx' p P = multiplicity P (Ideal.map f p) := by
   by_cases hP₂ : P = ⊥
-  · rw [hP₂, ← Ideal.zero_eq_bot, multiplicity_zero_eq_zero_of_ne_zero _ hp]
+  · rw [hP₂, ← Ideal.zero_eq_bot, multiplicity_zero_left]
     exact Ideal.ramificationIdx'_of_not_le (mt le_bot_iff.mp hp)
   rw [multiplicity_eq_of_emultiplicity_eq_some]
   rw [ramificationIdx'_eq_normalizedFactors_count hp hP hP₂, ← normalize_eq P,

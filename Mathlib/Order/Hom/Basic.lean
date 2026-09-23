@@ -663,8 +663,8 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
 @[to_dual /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
 also has `(· > ·)` well-founded. -/]
-protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
-  wf := f.wellFounded IsWellFounded.wf
+protected theorem wellFoundedLT [i : WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α :=
+  f.wellFounded i
 
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
@@ -856,7 +856,7 @@ theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = 
 theorem eq_symm_apply (e : α ≃o β) {x : α} {y : β} : x = e.symm y ↔ e x = y :=
   e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
   e.eq_symm_apply.symm
 

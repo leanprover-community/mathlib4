@@ -71,6 +71,11 @@ instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [NonUnitalCommSemir
 instance instCommSemiring [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
   { (inferInstance : Semiring (R × S)), (inferInstance : CommMonoid (R × S)) with }
 
+/-- Product of two `AddCommGroupWithOne`s is an `AddCommGroupWithOne`. -/
+instance instAddCommGroupWithOne [AddCommGroupWithOne R] [AddCommGroupWithOne S] :
+    AddCommGroupWithOne (R × S) :=
+  { (inferInstance : AddGroupWithOne (R × S)), (inferInstance : AddCommGroup (R × S)) with }
+
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] :
     NonUnitalNonAssocRing (R × S) :=
   { (inferInstance : AddCommGroup (R × S)),
