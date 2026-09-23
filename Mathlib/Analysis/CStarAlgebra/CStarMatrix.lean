@@ -424,13 +424,11 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       rw [star_apply, star_apply]
       simp [Matrix.submatrix_apply] }
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A]
     [Module R A] {e : m ≃ n} {M : CStarMatrix m m A}
     {i : n} {j : n} : reindexₐ R A e M i j = Matrix.reindex e e M i j := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
@@ -455,7 +453,7 @@ def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
   map_mul' M N := by
     ext
     -- Un-squeezing this `simp` seems to add about half a second elaboration time.
-    simp only [mapₗ_apply, map, LinearMap.coe_coe, ofMatrix_apply, mul_apply, map_sum, map_mul,
+    simp only [mapₗ_apply, map, LinearMap.coe_ofClass, ofMatrix_apply, mul_apply, map_sum, map_mul,
       ofMatrix_apply]
   map_star' M := by ext; simp [map, star_apply, map_star]
 

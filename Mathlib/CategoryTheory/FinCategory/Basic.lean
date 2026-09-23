@@ -37,9 +37,8 @@ instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
 instance {α : Type*} [Finite α] : Finite (Discrete α) :=
   Finite.of_equiv α discreteEquiv.symm
 
-instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
-  classical
-  apply ULift.fintype
+@[no_expose]
+instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := .ofFinite _
 
 /-- A category with a `Fintype` of objects, and a `Fintype` for each morphism space. -/
 class FinCategory (J : Type v) [SmallCategory J] where

@@ -74,7 +74,6 @@ lemma exists_lift_trans_eq {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j
       pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp) y = x :=
   LocallyDirected.directed x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_of_f_eq_f {i j : 𝒰.I₀} (xi : 𝒰.X i) (xj : 𝒰.X j) (h : 𝒰.f i xi = 𝒰.f j xj) :
     ∃ (k : 𝒰.I₀) (fi : k ⟶ i) (fj : k ⟶ j) (xk : 𝒰.X k),
       𝒰.trans fi xk = xi ∧ 𝒰.trans fj xk = xj := by
@@ -295,7 +294,6 @@ lemma Cover.LocallyDirected.ofIsBasisOpensRange_le_iff (i j : 𝒰.I₀) :
     letI := Cover.LocallyDirected.ofIsBasisOpensRange hle H
     i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange := hle
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Cover.LocallyDirected.ofIsBasisOpensRange_trans {i j : 𝒰.I₀} :
     letI := Cover.LocallyDirected.ofIsBasisOpensRange hle H
     (hij : i ≤ j) → 𝒰.trans (homOfLE hij) = IsOpenImmersion.lift (𝒰.f j) (𝒰.f i) (hle.mp hij) :=
@@ -327,7 +325,6 @@ instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
     convert! X.isBasis_affineOpens
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma directedAffineCover_trans {U V : X.affineOpens} (hUV : U ≤ V) :
     Cover.trans X.directedAffineCover (homOfLE hUV) = X.homOfLE hUV := rfl

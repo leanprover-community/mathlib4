@@ -64,7 +64,9 @@ We use this to prove several versions of the Borel isomorphism theorem.
 @[expose] public section
 
 
-open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
+open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter MeasureTheory
+
+open scoped Topology
 
 /-! ### Standard Borel Spaces -/
 
@@ -576,7 +578,7 @@ if and only if the set is measurable in `Set.range f`. -/
 theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparated (range f)]
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
-  have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
+  have hf' : Measurable (rangeFactorization f) := by fun_prop
   hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s)
     rangeFactorization_surjective
 
@@ -748,7 +750,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
       intro m n
       rw [← not_disjoint_iff_nonempty_inter]
-      by_contra! h
+      by_contra h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
         (mem_iInter.1 this h :)

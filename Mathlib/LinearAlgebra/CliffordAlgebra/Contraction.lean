@@ -242,8 +242,7 @@ def changeForm (h : B.toQuadraticMap = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cli
   foldr Q (changeFormAux Q' B)
     (fun m x =>
       (changeFormAux_changeFormAux Q' B m x).trans <| by
-        dsimp only [← BilinMap.toQuadraticMap_apply]
-        rw [h, QuadraticMap.sub_apply, sub_sub_cancel])
+        rw [← BilinMap.toQuadraticMap_apply, h, sub_apply, sub_sub_cancel])
     1
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
@@ -308,7 +307,7 @@ theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
 @[simp]
 theorem changeForm_self :
     changeForm changeForm.zero_proof = (LinearMap.id : CliffordAlgebra Q →ₗ[R] _) :=
-  LinearMap.ext <| changeForm_self_apply
+  LinearMap.ext changeForm_self_apply
 
 /-- This is [bourbaki2007] §9 Lemma 3. -/
 theorem changeForm_changeForm (x : CliffordAlgebra Q) :

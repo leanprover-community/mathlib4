@@ -89,7 +89,7 @@ lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     refine isCoprime_of_gcd_eq_one_of_FLT ?_ HF
     convert! Hgcd using 2
     rw [Finset.pair_comm, Finset.insert_comm]
-  by_contra! h3b
+  by_contra h3b
   by_cases h3c : 3 ∣ c
   · apply h3b
     rw [add_assoc, add_comm (b ^ 3), ← add_assoc] at HF
@@ -212,7 +212,7 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
-  .of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
+  .of_not_isUnit hζ.zeta_sub_one_prime'.not_isUnit S'.hc
 
 /-- Given `S' : Solution'`, `S'.multiplicity` is the multiplicity of `λ` in `S'.c`, as a natural
 number. -/

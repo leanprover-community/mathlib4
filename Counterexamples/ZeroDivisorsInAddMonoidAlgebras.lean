@@ -69,7 +69,6 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:
@@ -244,8 +243,8 @@ example : ¬UniqueProds ℕ := by
 
 /-- Some Types that do not have `UniqueSums`. -/
 example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
-  haveI : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
-  haveI : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
+  have : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
+  have : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
   rintro ⟨h⟩
   refine not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) ?_
   suffices ∀ x y : ZMod n, ∃ x' y' : ZMod n, x' + y' = x + y ∧ (x' = x → ¬y' = y) by

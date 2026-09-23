@@ -157,7 +157,6 @@ lemma ext_iff_of_isSymm (hB : IsSymm B) (hC : IsSymm C) :
 
 end polarization
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     IsSymm B ↔ ∀ i j, B (b i) (b j) = B (b j) (b i) where
   mp := fun ⟨h⟩ i j ↦ h _ _
@@ -349,7 +348,7 @@ variable [FiniteDimensional K V]
 /-- Given a nondegenerate bilinear form `B` on a finite-dimensional vector space, `B.toDual` is
 the linear equivalence between a vector space and its dual. -/
 noncomputable def toDual (B : BilinForm K V) (b : B.Nondegenerate) : V ≃ₗ[K] Module.Dual K V :=
-  B.linearEquivOfInjective (LinearMap.ker_eq_bot.mp <| b.ker_eq_bot)
+  B.linearEquivOfInjective (LinearMap.ker_eq_bot.mp b.ker_eq_bot)
     Subspace.dual_finrank_eq.symm
 
 theorem toDual_def {B : BilinForm K V} (b : B.Nondegenerate) {m n : V} : B.toDual b m n = B m n :=
@@ -361,8 +360,6 @@ lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
     B ((B.toDual hB).symm f) v = f v := by
   change B.toDual hB ((B.toDual hB).symm f) v = f v
   simp only [LinearEquiv.apply_symm_apply]
-
-@[deprecated (since := "2026-01-17")] alias nonDegenerateFlip_iff := nondegenerate_flip_iff
 
 end FiniteDimensional
 

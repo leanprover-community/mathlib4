@@ -117,7 +117,7 @@ def leastExt : ι → ι :=
   wellFounded_lt.fix fun i ih ↦
     let s := range fun j : Iio i ↦ b (ih j j.2)
     wellFounded_lt.min {k | b k ∉ adjoin F s} <| by
-      rw [← compl_ofPred, nonempty_compl]; by_contra!
+      rw [← compl_ofPred, nonempty_compl]; by_contra
       simp_rw [eq_univ_iff_forall, mem_ofPred] at this
       have := adjoin_le_iff.mpr (range_subset_iff.mpr this)
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
@@ -142,7 +142,7 @@ local notation "E⟮<" i "⟯" => adjoin F (b ∘ φ '' Iio i)
 
 theorem isLeast_leastExt (i : ι) : IsLeast {k | b k ∉ E⟮<i⟯} (φ i) := by
   rw [image_eq_range, leastExt, wellFounded_lt.fix_eq]
-  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (wellFounded_lt.min_le ·)⟩
+  exact ⟨wellFounded_lt.min_mem _ _, fun _ ↦ (WellFoundedLT.min_le ·)⟩
 
 theorem strictMono_leastExt : StrictMono φ := fun i j h ↦ by
   have least := isLeast_leastExt (F := F) (E := E)
@@ -236,7 +236,9 @@ private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i)
 
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/
 def equivSucc (i : WithTop ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē) × factor i :=
-  i.recTopCoe (((equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <| .symm <| .prodPUnit _)
+  i.recTopCoe
+    (((IntermediateField.equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <|
+      .symm <| .prodPUnit _)
     (succEquiv ·)
 
 theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ i) f := by
@@ -291,7 +293,7 @@ def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
       simp
   right_inv f := Subtype.ext <| funext fun j ↦ by
     have := Nonempty.intro j
-    simp_rw [dif_pos this]
+    simp_rw [dite_eq_left this]
     apply Subalgebra.iSupLift_comp_inclusion
 
 theorem equivLim_coherence (x l) : (equivLim hi x).1 l = embFunctor F E (mem_Iio.mp l.2).le x :=

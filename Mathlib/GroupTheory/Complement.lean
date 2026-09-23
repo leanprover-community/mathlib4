@@ -276,7 +276,7 @@ lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S 
     QuotientGroup.mk g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · simp [Function.update, dif_neg hq, q.out_eq']
+  · simp [Function.update, dite_eq_right hq, q.out_eq']
 
 @[to_additive]
 lemma exists_isComplement_right (H : Subgroup G) (g : G) :
@@ -286,7 +286,7 @@ lemma exists_isComplement_right (H : Subgroup G) (g : G) :
     Quotient.mk'' g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · simp [Function.update, dif_neg hq, q.out_eq']
+  · simp [Function.update, dite_eq_right hq, q.out_eq']
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
@@ -435,7 +435,7 @@ theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :
 set_option backward.isDefEq.respectTransparency false in
 theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
     hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
+  rw [← Equiv.eq_symm_apply]; simp [equiv]
 
 theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
     ((hST.equiv g).fst : G) = g ↔ g ∈ S := by
@@ -486,7 +486,7 @@ theorem quotientGroupMk_leftQuotientEquiv (hS : IsComplement S H) (q : G ⧸ H) 
 theorem leftQuotientEquiv_apply {f : G ⧸ H → G} (hf : ∀ q, (f q : G ⧸ H) = q) (q : G ⧸ H) :
     (leftQuotientEquiv (isComplement_range_left hf) q : G) = f q := by
   refine (Subtype.ext_iff.mp ?_).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
-  exact (leftQuotientEquiv (isComplement_range_left hf)).apply_eq_iff_eq_symm_apply.mpr (hf q).symm
+  exact (leftQuotientEquiv (isComplement_range_left hf)).eq_symm_apply.mp (hf q).symm
 
 /-- A left transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that left coset. -/
@@ -530,7 +530,7 @@ theorem rightQuotientEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
     (hf : ∀ q, Quotient.mk'' (f q) = q) (q : Quotient (QuotientGroup.rightRel H)) :
     (rightQuotientEquiv (isComplement_range_right hf) q : G) = f q := by
   refine (Subtype.ext_iff.mp ?_).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
-  exact (rightQuotientEquiv (isComplement_range_right hf)).apply_eq_iff_eq_symm_apply.2 (hf q).symm
+  exact (rightQuotientEquiv (isComplement_range_right hf)).eq_symm_apply.1 (hf q).symm
 
 /-- A right transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that right coset. -/
@@ -653,13 +653,15 @@ noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement'
   { h.leftQuotientEquiv.symm with
     map_mul' := fun _ _ ↦ rfl }
 
-theorem IsComplement.card_mul (h : IsComplement S T) :
-    Nat.card S * Nat.card T = Nat.card G :=
-  (Nat.card_prod _ _).symm.trans (Nat.card_eq_of_bijective _ h)
-
-theorem IsComplement'.card_mul (h : IsComplement' H K) :
+theorem IsComplement'.card_mul_card (h : IsComplement' H K) :
     Nat.card H * Nat.card K = Nat.card G :=
-  IsComplement.card_mul h
+  IsComplement.card_mul_card h
+
+@[deprecated (since := "2026-08-06")]
+alias IsComplement.card_mul := IsComplement.card_mul_card
+
+@[deprecated (since := "2026-08-06")]
+alias IsComplement'.card_mul := IsComplement'.card_mul_card
 
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
@@ -675,7 +677,7 @@ theorem isComplement'_of_card_mul_and_disjoint [Finite G]
 
 theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
     IsComplement' H K ↔ Nat.card H * Nat.card K = Nat.card G ∧ Disjoint H K :=
-  ⟨fun h => ⟨h.card_mul, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
+  ⟨fun h => ⟨h.card_mul_card, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
 
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)
