@@ -353,8 +353,9 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
 
 /--
 Separates curl's JSON report from the raw header values that follow it on
-the same line. curl escapes control characters inside `%{json}`, so the
-first separator on a line ends the report.
+the same line. JSON allows no raw control character other than whitespace
+(RFC 8259), so the first 0x1F (ASCII unit separator) on a line ends the
+report.
 -/
 def curlFieldSep : String := "\x1f"
 
@@ -371,6 +372,13 @@ a failure line.
 -/
 def curlGetWriteOut : String :=
   "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
+
+/-- Splits a `--write-out` line into curl's JSON report and the header
+values after it. A line without `curlFieldSep` is all report. -/
+def splitWriteOut (line : String) : String × List String :=
+  match line.splitOn curlFieldSep with
+  | report :: headers => (report, headers)
+  | [] => (line, [])
 
 /--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
@@ -740,7 +748,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     let line := line.trimAscii
     -- Only curl's report decides the verdict; the header values after it
     -- reach the failure line and nothing else.
-    let report :: headers := line.copy.splitOn curlFieldSep | unreachable!
+    let (report, headers) := splitWriteOut line.copy
     if !line.isEmpty then
       match Lean.Json.parse report with
       | .ok result =>
