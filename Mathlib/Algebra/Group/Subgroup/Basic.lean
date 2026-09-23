@@ -1097,8 +1097,8 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
     (hdis : Disjoint H₁ H₂) (x y : G) (hx : x ∈ H₁) (hy : y ∈ H₂) : Commute x y := by
   suffices x * y * x⁻¹ * y⁻¹ = 1 by
     change x * y = y * x
-    · rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
-      simpa
+    rw [mul_assoc, mul_eq_one_iff_eq_inv] at this
+    simpa
   apply hdis.le_bot
   constructor
   · suffices x * (y * x⁻¹ * y⁻¹) ∈ H₁ by simpa [mul_assoc]
