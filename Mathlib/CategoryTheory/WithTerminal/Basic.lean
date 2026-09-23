@@ -838,7 +838,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
   inverse :=
     { obj := fun x ↦
       match x with
-        | .of x => op <| .of <| x.unop
+        | .of x => op <| .of x.unop
         | .star => op .star
       map := fun {x y} f ↦
         match x, y, f with
@@ -901,7 +901,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
   inverse :=
     { obj := fun x ↦
         match x with
-        | .of x => op <| .of <| x.unop
+        | .of x => op <| .of x.unop
         | .star => op .star
       map := fun {x y} f ↦
         match x, y, f with

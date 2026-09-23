@@ -56,7 +56,7 @@ given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 def abLeftHomologyData : S.LeftHomologyData where
   K := ↧S.g.hom.ker
   H := ↧(S.g.hom.ker ⧸ S.abToCycles.range)
-  i := AddCommGrpCat.ofHom <| (AddMonoidHom.ker S.g.hom).subtype
+  i := AddCommGrpCat.ofHom (AddMonoidHom.ker S.g.hom).subtype
   π := AddCommGrpCat.ofHom <| QuotientAddGroup.mk' _
   wi := by
     ext ⟨_, hx⟩

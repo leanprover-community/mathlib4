@@ -301,7 +301,7 @@ instance Red.decidableRel : DecidableRel (@Red α)
   | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion rfl (heq_of_eq (Red.nil_iff.1 H))
   | (x, b) :: tl, [] =>
     match Red.decidableRel tl [(x, not b)] with
-    | isTrue H => isTrue <| Red.trans (Red.cons_cons H) <| (@Red.Step.not _ [] [] _ _).to_red
+    | isTrue H => isTrue <| Red.trans (Red.cons_cons H) (@Red.Step.not _ [] [] _ _).to_red
     | isFalse H => isFalse fun H2 => H <| Red.cons_nil_iff_singleton.1 H2
   | (x1, b1) :: tl1, (x2, b2) :: tl2 =>
     if h : (x1, b1) = (x2, b2) then

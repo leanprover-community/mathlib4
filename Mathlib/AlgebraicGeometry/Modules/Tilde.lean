@@ -619,7 +619,7 @@ lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X
       ∀ i, Nonempty (M.restrict (𝒰.f i)).Presentation := by
   obtain ⟨ι, U, pres, hU, hU'⟩ := M.exists_isOpenCover_presentation
   refine ⟨Scheme.AffineOpenCover.ofIsOpenCover _ hU hU', fun i ↦ ⟨?_⟩⟩
-  exact SheafOfModules.Presentation.ofIsIso.{u, u, u} ((restrictFunctorComp _ _).app M).inv <|
+  exact SheafOfModules.Presentation.ofIsIso.{u, u, u} ((restrictFunctorComp _ _).app M).inv
     (presentationRestrict (hU' i).isoSpec.inv (pres i))
 
 namespace QuasicoherentTilde
@@ -748,7 +748,7 @@ private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Open
           ← homOfLE_comp (basicOpen_mul_le_right _ _) (hgle i), op_comp, M.presheaf.map_comp_apply,
           M.map_smul_Spec, ha, M.map_smul_Spec, pow_add, mul_smul, smul_comm, ht i]
     · intro i j
-      have : Function.Injective (M.presheaf.map (eqToHom <| (basicOpen_mul (g i) (g j))).op) :=
+      have : Function.Injective (M.presheaf.map (eqToHom (basicOpen_mul (g i) (g j))).op) :=
         ConcreteCategory.injective_of_mono_of_preservesPullback _
       apply this
       dsimp [Opens.infLELeft, Opens.infLERight]
@@ -869,7 +869,7 @@ theorem isQuasicoherent_iff_isIso_fromTildeΓ (M : (Spec R).Modules) :
     M.IsQuasicoherent ↔ IsIso M.fromTildeΓ := by
   refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
   exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso
-    (asIso <| M.fromTildeΓ) inferInstance
+    (asIso M.fromTildeΓ) inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -880,7 +880,7 @@ lemma essImage_tilde : (tilde.functor R).essImage =
     exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso e
       (by dsimp; infer_instance)
   · intro M (h : M.IsQuasicoherent)
-    exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso <| M.fromTildeΓ⟩⟩
+    exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso M.fromTildeΓ⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

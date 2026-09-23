@@ -171,7 +171,7 @@ theorem ramificationIdx_eq_factors_count [IsDedekindDomain S]
     q.ramificationIdx R = (factors (p.map (algebraMap R S))).count q := by
   by_cases hq : q.IsPrime; swap
   · rw [ramificationIdx_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
-    contrapose! hq
+    contrapose hq
     exact isPrime_of_prime (prime_of_factor q hq)
   have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
   rw [← ramificationIdx'_eq_ramificationIdx' p q hp0, ramificationIdx'_eq_factors_count hp0 ‹_› hq0]

@@ -158,7 +158,7 @@ lemma tendsto_dist_agmSequences_atTop_zero :
     rw [← zero_mul (dist x y / 2)]
     enter [1, n]
     rw [pow_succ', ← div_div, div_eq_inv_mul, ← inv_pow]
-  exact (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)).mul_const _
+  exact (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)).mul_const _
 
 /-- The arithmetic-geometric mean of two `NNReal`s, defined as the infimum of arithmetic means. -/
 noncomputable def agm (x y : ℝ≥0) : ℝ≥0 :=

@@ -288,7 +288,7 @@ lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
   let := Localization.AtPrime.algebraOfLiesOver (Q.under R[t]) Q
   refine ⟨t, ?_, RingHom.injective _, ?_⟩
   · refine Set.ext fun Q' ↦ ⟨fun ⟨_, _⟩ ↦ ?_, fun e ↦ by exact ⟨e ▸ inferInstance, ⟨e ▸ rfl⟩⟩⟩
-    by_contra! H
+    by_contra H
     have : Q'.LiesOver p := .trans _ (Q.under (R[t])) _
     exact htQ (mem_of_le_of_mem (Q'.over_def (Q.under (R[t]))).ge
       (x := ⟨t, self_mem_adjoin_singleton _ _⟩) (htQ' Q' ⟨‹_›, ‹_›⟩ H))

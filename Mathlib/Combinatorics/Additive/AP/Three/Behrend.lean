@@ -342,7 +342,7 @@ noncomputable def nValue (N : ℕ) : ℕ :=
 noncomputable def dValue (N : ℕ) : ℕ := ⌊(N : ℝ) ^ (nValue N : ℝ)⁻¹ / 2⌋₊
 
 theorem nValue_pos (hN : 2 ≤ N) : 0 < nValue N :=
-  ceil_pos.2 <| Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 <| hN
+  ceil_pos.2 <| Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 hN
 
 theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   rw [nValue, ← lt_iff_add_one_le, lt_ceil, cast_two]

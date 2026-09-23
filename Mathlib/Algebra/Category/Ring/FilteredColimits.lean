@@ -218,7 +218,7 @@ def colimit : CommSemiRingCat.{max v u} :=
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).ι.app X).hom
       naturality _ _ f := by
         ext
@@ -276,7 +276,7 @@ def colimit : RingCat.{max v u} :=
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).ι.app X).hom
       naturality _ _ f := by
         ext
@@ -339,7 +339,7 @@ def colimit : CommRingCat.{max v u} :=
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((RingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((RingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommRingCat RingCat.{max v u})).ι.app X).hom
       naturality _ _ f := by
         ext

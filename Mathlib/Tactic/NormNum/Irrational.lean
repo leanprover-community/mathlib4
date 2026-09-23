@@ -101,7 +101,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
     subst h_coprime
     use 1
     simp
-  by_contra! h
+  by_contra h
   rw [← Rat.num_div_den q] at h
   set x' := q.num
   set y := q.den

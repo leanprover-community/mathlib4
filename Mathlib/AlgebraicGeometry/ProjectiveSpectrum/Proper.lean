@@ -328,7 +328,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
     exact hi
-  let φ : Spec (.of <| K) ⟶ _ := IsOpenImmersion.lift _ _ this
+  let φ : Spec (.of K) ⟶ _ := IsOpenImmersion.lift _ _ this
   have H : Spec.preimage i₂ ≫ CommRingCat.ofHom (algebraMap O K) =
       CommRingCat.ofHom (fromZeroRingHom 𝒜 _) ≫ Spec.preimage φ := by
     apply Spec.map_injective

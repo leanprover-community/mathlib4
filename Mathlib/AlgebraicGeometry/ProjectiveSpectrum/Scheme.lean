@@ -133,7 +133,7 @@ macro "Proj| " U:term : term =>
 /-- the underlying topological space of `Proj` restricted to some open set -/
 local notation "Proj.T| " U => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
   <| LocallyRingedSpace.toSheafedSpace
-    <| (LocallyRingedSpace.restrict Proj (Opens.isOpenEmbedding (X := Proj.T) (U : Opens Proj.T)))
+    (LocallyRingedSpace.restrict Proj (Opens.isOpenEmbedding (X := Proj.T) (U : Opens Proj.T)))
 
 /-- basic open sets in `Proj` -/
 local notation "pbo " x => ProjectiveSpectrum.basicOpen 𝒜 x
@@ -834,7 +834,7 @@ lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
   have : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) :=
     LocallyRingedSpace.IsOpenImmersion.of_stalk_iso (toSpec 𝒜 f)
-      (TopCat.homeoOfIso (asIso <| (toSpec 𝒜 f).base)).isOpenEmbedding
+      (TopCat.homeoOfIso (asIso (toSpec 𝒜 f).base)).isOpenEmbedding
   exact LocallyRingedSpace.IsOpenImmersion.to_iso _
 
 end ProjectiveSpectrum.Proj

@@ -55,17 +55,52 @@ complete lattice, well-founded, compact
 
 @[expose] public section
 
+variable {ι : Sort*} {α : Type*} {f : ι → α}
+
 open Set
 /-- An element `k` is compact if any directed set with `LUB` (least upper bound) above
 `k` has already got above `k` at some point in the set.
 Such an element is also called "finite" or "S-compact". -/
-def IsCompactElement {α : Type*} [PartialOrder α] (k : α) :=
+def IsCompactElement [Preorder α] (k : α) :=
   ∀ (s : Set α) (u : α),
     s.Nonempty →
     DirectedOn (· ≤ ·) s →
     IsLUB s u →
     k ≤ u →
     ∃ x ∈ s, k ≤ x
+
+section Preorder
+
+variable [Preorder α] {a b : α}
+
+theorem isCompactElement_congr (hab : a ≤ b) (hba : b ≤ a) :
+    IsCompactElement a ↔ IsCompactElement b := by
+  grind [IsCompactElement]
+
+theorem IsBot.isCompactElement (h : IsBot a) : IsCompactElement a :=
+  fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, h x⟩
+
+@[simp]
+protected theorem IsCompactElement.bot [OrderBot α] : IsCompactElement (⊥ : α) :=
+  isBot_bot.isCompactElement
+
+variable (a) in
+@[simp]
+theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement a := by
+  intro s u hne hdir hlub hle
+  have ⟨m, hm⟩ := ‹WellFoundedGT α›.exists_maximal s hne
+  exact ⟨m, hm.prop, hle.trans <| hlub.right <| hdir.maximal_iff_isGreatest.mp hm |>.right⟩
+
+end Preorder
+
+@[simp, grind .]
+protected theorem IsCompactElement.sup [SemilatticeSup α] {a b : α} (ha : IsCompactElement a)
+    (hb : IsCompactElement b) : IsCompactElement (a ⊔ b) := by
+  intro s u hne hdir hlub hle
+  have ⟨a', ha's, haa'⟩ := ha s u hne hdir hlub <| le_sup_left.trans hle
+  have ⟨b', hb's, hbb'⟩ := hb s u hne hdir hlub <| le_sup_right.trans hle
+  obtain ⟨x, hxs, ha'x, hb'x⟩ := hdir a' ha's b' hb's
+  exact ⟨x, hxs, sup_le (haa'.trans ha'x) (hbb'.trans hb'x)⟩
 
 section CompleteLattice
 variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α} {s : Set α}
@@ -206,6 +241,12 @@ protected lemma IsCompactElement.iSup [Finite ι] (h : ∀ i, IsCompactElement (
   cases nonempty_fintype (PLift ι)
   simpa [Finset.sup_eq_iSup] using isCompactElement_finsetSup .univ fun (i : PLift ι) _ ↦ h i.down
 
+protected lemma IsCompactElement.biSup {ι : Type*} {s : Set ι} (hs : s.Finite) {f : ι → α}
+    (h : ∀ i ∈ s, IsCompactElement (f i)) : IsCompactElement (⨆ i ∈ s, f i) := by
+  rw [← iSup_subtype'']
+  have := hs.to_subtype
+  exact .iSup fun i ↦ h i i.prop
+
 protected lemma IsCompactElement.sSup (hs : s.Finite) (h : ∀ a ∈ s, IsCompactElement a) :
     IsCompactElement (sSup s) := by
   have := hs.to_subtype; rw [sSup_eq_iSup']; exact .iSup fun a ↦ h _ a.2
@@ -336,38 +377,64 @@ theorem WellFoundedLT.finite_of_iSupIndep [WellFoundedLT α] {ι : Type*}
   haveI := (WellFoundedLT.finite_of_sSupIndep ht.sSupIndep_range).to_subtype
   Finite.of_injective_finite_range (ht.injective h_ne_bot)
 
+end CompleteLattice
+
 /-- A complete lattice is said to be compactly generated if any
-element is the `sSup` of compact elements. -/
-class IsCompactlyGenerated (α : Type*) [CompleteLattice α] : Prop where
+element is the least upper bound of compact elements. -/
+class IsCompactlyGenerated (α : Type*) [Preorder α] : Prop where
   /-- In a compactly generated complete lattice,
-  every element is the `sSup` of some set of compact elements. -/
-  exists_sSup_eq : ∀ x : α, ∃ s : Set α, (∀ x ∈ s, IsCompactElement x) ∧ sSup s = x
+  every element is the least upper bound of some set of compact elements. -/
+  exists_isLUB (a : α) : ∃ s : Set α, (∀ x ∈ s, IsCompactElement x) ∧ IsLUB s a
+
+section Preorder
+
+variable [Preorder α] (a b : α)
+
+theorem isLUB_setOfPred_le_and_isCompactElement [IsCompactlyGenerated α] :
+    IsLUB {x ≤ a | IsCompactElement x} a :=
+  have ⟨_, hs, hsa⟩ := IsCompactlyGenerated.exists_isLUB a
+  ⟨fun _ ↦ And.left, fun _ hb ↦ hsa.right fun x hxs ↦ hb ⟨hsa.left hxs, hs x hxs⟩⟩
+
+variable {a b} in
+theorem le_iff_forall_isCompactElement [IsCompactlyGenerated α] :
+    a ≤ b ↔ ∀ x : α, IsCompactElement x → x ≤ a → x ≤ b :=
+  have := isLUB_le_iff <| isLUB_setOfPred_le_and_isCompactElement a
+  this.trans ⟨fun h _ hx hxa ↦ h ⟨hxa, hx⟩, fun h x ⟨hxa, hx⟩ ↦ h x hx hxa⟩
+
+@[deprecated (since := "2026-09-17")]
+alias le_iff_compact_le_imp := le_iff_forall_isCompactElement
+
+theorem IsCompactlyGenerated.of_wellFoundedGT [WellFoundedGT α] : IsCompactlyGenerated α :=
+  ⟨(⟨{·}, fun x _ ↦ .of_wellFoundedGT x, isLUB_singleton⟩)⟩
+
+@[deprecated (since := "2026-09-17")]
+alias CompleteLattice.isCompactlyGenerated_of_wellFoundedGT := IsCompactlyGenerated.of_wellFoundedGT
+
+end Preorder
+
+variable [CompleteLattice α]
 
 section IsCompactlyGenerated
 variable [IsCompactlyGenerated α] {a : α} {s : Set α}
 
+variable (a) in
+theorem IsCompactlyGenerated.exists_sSup_eq : ∃ s, (∀ x ∈ s, IsCompactElement x) ∧ sSup s = a :=
+  IsCompactlyGenerated.exists_isLUB a |>.imp fun _ ⟨hs, hsa⟩ ↦ ⟨hs, hsa.sSup_eq⟩
+
 @[simp]
-theorem sSup_compact_le_eq (b) :
-    sSup { c : α | IsCompactElement c ∧ c ≤ b } = b := by
-  rcases IsCompactlyGenerated.exists_sSup_eq b with ⟨s, hs, rfl⟩
-  exact le_antisymm (sSup_le fun c hc => hc.2) (sSup_le_sSup fun c cs => ⟨hs c cs, le_sSup cs⟩)
+theorem sSup_compact_le_eq (b) : sSup { c : α | IsCompactElement c ∧ c ≤ b } = b := by
+  grind [isLUB_setOfPred_le_and_isCompactElement b |>.sSup_eq]
 
 @[simp]
 theorem sSup_compact_eq_top : sSup { a : α | IsCompactElement a } = ⊤ := by
   rw [← sSup_compact_le_eq ⊤]
   simp_rw [le_top, and_true]
 
-theorem le_iff_compact_le_imp {a b : α} :
-    a ≤ b ↔ ∀ c : α, IsCompactElement c → c ≤ a → c ≤ b :=
-  ⟨fun ab _ _ ca => le_trans ca ab, fun h => by
-    rw [← sSup_compact_le_eq a, ← sSup_compact_le_eq b]
-    exact sSup_le_sSup fun c hc => ⟨hc.1, h c hc.1 hc.2⟩⟩
-
 /-- This property is sometimes referred to as `α` being upper continuous. -/
 theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   le_antisymm
     (by
-      rw [le_iff_compact_le_imp]
+      rw [le_iff_forall_isCompactElement]
       by_cases hs : s.Nonempty
       · intro c hc hcinf
         rw [isCompactElement_iff_le_of_directed_sSup_le] at hc
@@ -412,7 +479,7 @@ theorem inf_sSup_eq_iSup_inf_sup_finset :
     a ⊓ sSup s = ⨆ (t : Finset α) (_ : ↑t ⊆ s), a ⊓ t.sup id :=
   le_antisymm
     (by
-      rw [le_iff_compact_le_imp]
+      rw [le_iff_forall_isCompactElement]
       intro c hc hcinf
       rw [isCompactElement_iff_exists_le_sSup_of_le_sSup] at hc
       rw [le_inf_iff] at hcinf
@@ -442,7 +509,7 @@ lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
   refine ⟨fun h ↦ h.supIndep', fun h ↦ iSupIndep_def'.mpr fun i ↦ ?_⟩
   classical
   have hf : Set.InjOn f {i : ι | f i ≠ ⊥} := by
-    by_contra! hf
+    by_contra hf
     simp_all only [Set.InjOn, ne_eq, Set.mem_ofPred_eq, not_forall]
     obtain ⟨x₁, hx₁, x₂, hx₂, hfeq, hneq⟩ := hf
     specialize h ({x₁, x₂} : Finset ι)
@@ -531,12 +598,6 @@ lemma isCompactElement_iff_exists_finite_isAtom [IsCompactlyGenerated α] :
 end IsAtomistic
 
 namespace CompleteLattice
-
-theorem isCompactlyGenerated_of_wellFoundedGT [h : WellFoundedGT α] :
-    IsCompactlyGenerated α := by
-  rw [wellFoundedGT_iff_isSupFiniteCompact, isSupFiniteCompact_iff_all_elements_compact] at h
-  -- x is the join of the set of compact elements {x}
-  exact ⟨fun x => ⟨{x}, ⟨fun x _ => h x, sSup_singleton⟩⟩⟩
 
 /-- A compact element `k` has the property that any `b < k` lies below a "maximal element below
 `k`", which is to say `[⊥, k]` is coatomic. -/
@@ -731,8 +792,8 @@ lemma IsAtom.isCompactElement_of_frame {x : α} (h : IsAtom x) : IsCompactElemen
   rwa [← hu.sSup_eq, IsAtom.le_sSup h] at hx
 
 instance [IsAtomistic α] : IsCompactlyGenerated α where
-  exists_sSup_eq x := by
-    obtain ⟨s, hx, hs⟩ := isLUB_atoms x
-    exact ⟨s, (hs · · |>.isCompactElement_of_frame), hx.sSup_eq⟩
+  exists_isLUB x :=
+    have ⟨s, hx, hs⟩ := isLUB_atoms x
+    ⟨s, (hs · · |>.isCompactElement_of_frame), hx⟩
 
 end Frame

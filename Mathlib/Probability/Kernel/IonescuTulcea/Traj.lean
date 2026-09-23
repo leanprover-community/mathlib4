@@ -363,7 +363,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- `χₙ` is measurable.
   have mχ n : Measurable (χ n) := by
     simp_rw [χ, A_eq]
-    exact (measurable_indicator_const_iff 1).2 <| (mS n).cylinder
+    exact (measurable_indicator_const_iff 1).2 (mS n).cylinder
   -- `χₙ` only depends on the first coordinates.
   have χ_dep n : DependsOn (χ n) (Iic (a n)) := by
     simp_rw [χ, A_eq]

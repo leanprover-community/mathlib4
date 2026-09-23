@@ -144,7 +144,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
   obtain rfl | hZ := eq_or_ne Z 0
   · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
   let Y' : Multiset α := Y.filter (· < z)
-  refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_) <|
+  refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_)
     ⟨X + Z, Y', z, add_right_comm .., by simp [hN, add_comm (_ + _)], by simp [Y']⟩
   · rw [add_add_tsub_cancel (filter_le ..), hM]
   · simp only [sub_filter_eq_filter_not, mem_filter, Y'] at hy

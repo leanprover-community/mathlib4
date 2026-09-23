@@ -506,7 +506,7 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
         simp
       exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hr
   · rintro ⟨H₁, H₂⟩
-    refine ⟨IsColimit.ofIsoColimit ?_ <| (isoBinaryCofanMk _).symm⟩
+    refine ⟨IsColimit.ofIsoColimit ?_ (isoBinaryCofanMk _).symm⟩
     let e₁ : X' ≅ _ := H₁.isLimit.conePointUniqueUpToIso (limits _ _)
     let e₂ : Y' ≅ _ := H₂.isLimit.conePointUniqueUpToIso (limits _ _)
     have he₁ : c'.inl = e₁.hom ≫ (cones f c.inl).fst := by simp [e₁]

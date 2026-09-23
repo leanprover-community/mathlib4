@@ -190,7 +190,7 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
   { Equiv.ofBijective
         ((@MulEquiv.toMonoidHom (MonoidHom.mrange (kerLift f)) _ _ _ <|
               MulEquiv.submonoidCongr kerLift_range_eq).comp
-          (kerLift f).mrangeRestrict) <|
+          (kerLift f).mrangeRestrict)
       ((Equiv.bijective (@MulEquiv.toEquiv (MonoidHom.mrange (kerLift f)) _ _ _ <|
           MulEquiv.submonoidCongr kerLift_range_eq)).comp
         ⟨fun x y h =>

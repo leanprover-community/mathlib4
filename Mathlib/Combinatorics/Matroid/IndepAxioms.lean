@@ -195,7 +195,7 @@ This needs choice, since it can be used to prove that every vector space has a b
     obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximalFor f _ hJfin hne
     refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
     obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
-    · exact hxmax hyJ hle <| (hf _ hyJ).2
+    · exact hxmax hyJ hle (hf _ hyJ).2
     · exact hle (hf _ hyJ).2
   subset_ground := subset_ground
 

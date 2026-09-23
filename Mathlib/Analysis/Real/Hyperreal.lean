@@ -306,7 +306,7 @@ theorem archimedeanClassMk_pos_of_tendsto {x : ℝ*} (hx : x.Tendsto (𝓝 0)) :
 
 @[simp]
 theorem stdPart_epsilon : stdPart ε = 0 :=
-  stdPart_eq_zero.2 <| archimedeanClassMk_epsilon_pos.ne'
+  stdPart_eq_zero.2 archimedeanClassMk_epsilon_pos.ne'
 
 theorem epsilon_lt_of_pos {r : ℝ} : 0 < r → ε < r :=
   lt_of_pos_of_archimedean coeRingHom archimedeanClassMk_epsilon_pos
@@ -339,7 +339,7 @@ theorem tendsto_atTop_iff {x : ℝ*} : x.Tendsto atTop ↔ 0 < x ∧ mk x < 0 wh
   mpr h := by
     rcases ofSeq_surjective x with ⟨f, rfl⟩
     rw [tendsto_ofSeq, tendsto_atTop]
-    exact fun r ↦ ofSeq_le_ofSeq.1 <|
+    exact fun r ↦ ofSeq_le_ofSeq.1
       (lt_of_mk_lt_mk_of_nonneg (h.2.trans_le <| archimedeanClassMk_coe_nonneg r) h.1.le).le
 
 theorem tendsto_atBot_iff {x : ℝ*} : x.Tendsto atBot ↔ x < 0 ∧ mk x < 0 where
@@ -347,7 +347,7 @@ theorem tendsto_atBot_iff {x : ℝ*} : x.Tendsto atBot ↔ x < 0 ∧ mk x < 0 wh
   mpr h := by
     rcases ofSeq_surjective x with ⟨f, rfl⟩
     rw [tendsto_ofSeq, tendsto_atBot]
-    exact fun r ↦ ofSeq_le_ofSeq.1 <|
+    exact fun r ↦ ofSeq_le_ofSeq.1
       (lt_of_mk_lt_mk_of_nonpos (h.2.trans_le <| archimedeanClassMk_coe_nonneg r) h.1.le).le
 
 end Hyperreal

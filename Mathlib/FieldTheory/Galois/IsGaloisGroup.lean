@@ -290,7 +290,7 @@ noncomputable def intermediateFieldEquivSubgroup [Finite G] :
     IntermediateField K L ≃o (Subgroup G)ᵒᵈ :=
   have := isGalois G K L
   have := finiteDimensional G K L
-  IsGalois.intermediateFieldEquivSubgroup.trans <| (mulEquivAlgEquiv G K L).comapSubgroup.dual
+  IsGalois.intermediateFieldEquivSubgroup.trans (mulEquivAlgEquiv G K L).comapSubgroup.dual
 
 @[simp] theorem intermediateFieldEquivSubgroup_apply [Finite G] {F} :
     intermediateFieldEquivSubgroup G K L F = .toDual (fixingSubgroup G (F : Set L)) := rfl
