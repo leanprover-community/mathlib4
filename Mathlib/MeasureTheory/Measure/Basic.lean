@@ -113,8 +113,8 @@ lemma measure_symmDiff_eq (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet 
     using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
 
 lemma measure_symmDiff_le (s t u : Set α) :
-    μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
-  le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))
+    μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) := by
+  grw [← measure_union_le, symmDiff_triangle s t u]; rfl
 
 theorem measure_symmDiff_eq_top (hs : μ s ≠ ∞) (ht : μ t = ∞) : μ (s ∆ t) = ∞ :=
   measure_mono_top subset_union_right (measure_sdiff_eq_top ht hs)

@@ -45,7 +45,7 @@ def stepBound (n : ℕ) : ℕ :=
 theorem le_stepBound : id ≤ stepBound := fun n =>
   Nat.le_mul_of_pos_right _ <| pow_pos (by simp) n
 
-theorem stepBound_mono : Monotone stepBound := fun _ _ h => by unfold stepBound; gcongr; decide
+theorem stepBound_mono : Monotone stepBound := fun _ _ h => by unfold stepBound; gcongr
 
 theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
   mul_pos_iff_of_pos_right <| by positivity

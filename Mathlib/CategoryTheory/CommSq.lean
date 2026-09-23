@@ -193,7 +193,6 @@ structure LiftStruct (sq : CommSq f i p g) where
   fac_right : l ≫ p = g := by cat_disch
 
 attribute [to_dual self] LiftStruct.ext
-attribute [to_dual existing fac_left] LiftStruct.fac_right
 attribute [to_dual self (reorder := A Y, B X, f g, i p, fac_left fac_right)] LiftStruct.mk
 
 namespace LiftStruct

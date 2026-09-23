@@ -188,7 +188,7 @@ def WitnessRing := Subring.closure ({aEnd, bEnd} : Set (AddMonoid.End M))
 open scoped IsMulCommutative
 
 instance : IsMulCommutative WitnessRing :=
-  Subring.isMulCommutative_closure fun _ hx _ hy ↦ generators_commute hx hy
+  Subring.isMulCommutative_closure fun _ hx _ hy _ ↦ generators_commute hx hy
 
 /-- The element `aEnd`, as an element of `WitnessRing`. -/
 def aw : WitnessRing := ⟨aEnd, Subring.subset_closure (Set.mem_insert _ _)⟩

@@ -425,4 +425,17 @@ def kabstractFindsPositions (e p : Expr) (targetPos : SubExpr.Pos) : MetaM Bool 
   catch _ =>
     return false
 
+/-- Determine which metavariables count as "unhelpful", given the old and new metavariables.
+This is used in suggestions of e.g. `apply`, to filter out suggestions with unhelpful metavariables.
+
+A metavariable is unhelpful if it was freshly introduced, and is not used in the assignment
+of a previously appearing metavariable.
+-/
+def hasUnhelpfulMVars (newMVars : Array MVarId) (oldMVars newExpressions : Array Expr) :
+    MetaM Bool := do
+  let used ← oldMVars.foldlM (init := {}) (Expr.collectMVars · <$> instantiateMVars ·)
+  let used := used.result
+  let unhelpful := newMVars.filter (!used.contains ·)
+  return newExpressions.any (·.findMVar? unhelpful.contains |>.isSome)
+
 end Mathlib.Tactic.ClickSuggestions

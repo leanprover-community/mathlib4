@@ -243,9 +243,8 @@ theorem linearIndepOn_pair (D D' : ℙ K V) :
   by_cases h : D = D'
   · simpa [h] using D'.rep_nonzero
   rw [← ne_eq, ← linearIndependent_pair_iff_ne, LinearIndependent.pair_symm_iff,
-    ← linearIndepOn_id_range_iff] at h
-  · simpa using h
-  · simpa [injective_pair_iff_ne, injective_pair_iff_ne, ne_eq] using h.injective
+    ← linearIndepOn_id_range_iff h.injective] at h
+  simpa using h
 
 end linearIndependent
 

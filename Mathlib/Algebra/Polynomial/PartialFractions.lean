@@ -439,9 +439,6 @@ theorem div_prod_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]
   simp_rw [Algebra.cast, div_eq_mul_inv]
   exact hf
 
-@[deprecated (since := "2026-02-08")]
-alias _root_.div_eq_quo_add_sum_rem_div := div_prod_eq_quo_add_sum_rem_div
-
 /-- Let `R` be an integral domain and `f : R[X]`. Let `s` be a finite index set.
 Then a fraction of the form `f / ∏ i ∈ s, g i` evaluated in a field `K` containing `R[X]`
 can be rewritten as `q + ∑ i ∈ s, r i / g i` in at most one way, where
@@ -487,9 +484,6 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   obtain ⟨q, r, hr, hf⟩ := div_prod_eq_quo_add_sum_rem_div K f hg hcoprime
   refine ⟨q, r true, r false, hr true (Finset.mem_univ true), hr false (Finset.mem_univ false), ?_⟩
   simpa [g, add_assoc] using hf
-
-@[deprecated (since := "2026-02-08")]
-alias _root_.div_eq_quo_add_rem_div_add_rem_div := div_eq_quo_add_rem_div_add_rem_div
 
 /-- Let `R` be an integral domain and `f, g₁, g₂ : R[X]`. Let `g₁` and `g₂` be monic and coprime.
 Then the representation of `f / (g₁ * g₂)` as `q + r₁ / g₁ + r₂ / g₂` for `q r₁ r₂ : R[X]` and

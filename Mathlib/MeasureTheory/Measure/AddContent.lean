@@ -86,6 +86,7 @@ instance : Inhabited (AddContent G C) :=
     empty' := by simp
     sUnion' := by simp }⟩
 
+@[macro_inline]
 instance : FunLike (AddContent G C) (Set α) G where
   coe m s := m.toFun s
   coe_injective m m' _ := by
@@ -541,7 +542,7 @@ def IsSetRing.addContent_of_union (m : Set α → G) (hC : IsSetRing C) (m_empty
         exact h_ss.2 hn
       rw [Set.sUnion_insert, m_add h_ss.1 h_sUnion_mem (Set.disjoint_sUnion_right.mpr h_dis.2),
         Finset.sum_insert hsI, h h_ss.2 h_dis.1]
-      rwa [Set.sUnion_insert] at h_mem
+      exact h_sUnion_mem
 
 variable [PartialOrder G] [CanonicallyOrderedAdd G]
 

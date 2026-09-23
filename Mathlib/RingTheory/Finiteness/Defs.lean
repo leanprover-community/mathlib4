@@ -24,6 +24,11 @@ In this file we define a notion of finiteness that is common in commutative alge
 - `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
   all of these express that some object is finitely generated *as module* over some base ring.
 
+## TODO
+
+Redefine `Submodule.FG` to be in terms of `Module.FG` (rather than the other way around) to match
+finite generation in the group theory folder.
+
 -/
 
 @[expose] public section
@@ -48,14 +53,14 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
   have := h.exists_finset_coe
   tauto
 
-theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure]⟩,
-    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
+theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG := by
+  simp_rw [fg_def, ← toAddSubmonoid_inj, span_nat_eq_addSubmonoidClosure,
+    AddSubmonoid.isAddFG_iff_finite]
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
-    P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure]⟩,
-    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
+    P.FG ↔ P.toAddSubgroup.FG := by
+  simp_rw [fg_def, ← toAddSubgroup_inj, span_int_eq_addSubgroupClosure,
+    AddSubgroup.isAddFG_iff_finite]
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by

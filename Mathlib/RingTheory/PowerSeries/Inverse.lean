@@ -186,6 +186,9 @@ theorem inv_eq_iff_mul_eq_one {φ ψ : k⟦X⟧} (h : constantCoeff ψ ≠ 0) :
 protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ :=
   MvPowerSeries.mul_inv_rev _ _
 
+protected theorem inv_pow (φ : k⟦X⟧) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹ :=
+  MvPowerSeries.inv_pow _
+
 @[simp]
 theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=
   MvPowerSeries.C_inv _

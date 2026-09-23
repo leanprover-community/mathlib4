@@ -124,7 +124,7 @@ lemma embedding_generator' :
 
 lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
   rw [← map_subtype_inj, MonoidHom.map_zpowers,
-    subtype_apply, ← MonoidHom.range_eq_map, Subgroup.subtype_range]
+    subtype_apply, Subgroup.map_top, Subgroup.subtype_range]
   apply generator_zpowers_eq_valueGroup
 
 lemma generator'_lt_one : generator' v < 1 :=

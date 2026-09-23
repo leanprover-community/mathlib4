@@ -643,21 +643,21 @@ theorem nondegenerate_congr_iff :
 
 end Linear
 
+variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
+
 @[simp]
-theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.flip.SeparatingRight ↔ B.SeparatingLeft :=
+theorem flip_separatingRight : B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 
 @[simp]
-theorem flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.flip.SeparatingLeft ↔ SeparatingRight B := by rw [← flip_separatingRight, flip_flip]
+theorem flip_separatingLeft : B.flip.SeparatingLeft ↔ SeparatingRight B := by
+  rw [← flip_separatingRight, flip_flip]
 
 @[simp]
-theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} : B.flip.Nondegenerate ↔ B.Nondegenerate :=
+theorem flip_nondegenerate : B.flip.Nondegenerate ↔ B.Nondegenerate :=
   Iff.trans and_comm (and_congr flip_separatingRight flip_separatingLeft)
 
-theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
+theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
   · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
   have h' : B x = 0 := by
@@ -666,19 +666,29 @@ theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →�
     exact hB _
   exact h x h'
 
-theorem separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
+theorem separatingRight_iff_linear_flip_nontrivial :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 
 /-- A bilinear map is left-separating if and only if it has a trivial kernel. -/
-theorem separatingLeft_iff_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
+theorem separatingLeft_iff_ker_eq_bot : B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
   Iff.trans separatingLeft_iff_linear_nontrivial LinearMap.ker_eq_bot'.symm
 
 /-- A bilinear map is right-separating if and only if its flip has a trivial kernel. -/
-theorem separatingRight_iff_flip_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
+theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
+
+/-- The identity pairing is left-separating. -/
+protected theorem SeparatingLeft.id : SeparatingLeft (M₁ := M₁ →ₛₗ[I₁] M) .id :=
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+alias id_separatingLeft := SeparatingLeft.id
+
+/-- The pairing `Dual.eval` is right-separating. -/
+protected theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight :=
+  id_separatingLeft
+
+alias eval_separatingRight := SeparatingRight.eval
 
 end CommSemiring
 

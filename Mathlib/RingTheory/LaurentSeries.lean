@@ -964,9 +964,8 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
         simp [v_def, valuation_coe_ratFunc]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      rw [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
+      rwa [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
         valuation_eq_LaurentSeries_valuation, map_sub]
-      assumption
 
 theorem uniformContinuous_withVal_equiv :
     UniformContinuous (WithVal.equiv (polynomialValuationX K)) :=

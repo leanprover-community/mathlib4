@@ -144,12 +144,12 @@ variable (θ : ℝ) (n : ℤ)
 
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cos θ` to the
 value `cos (n * θ)`. -/
-@[simp]
+@[simp, dlmf 18.5.E1]
 theorem T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := mod_cast T_complex_cos θ n
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
-@[simp]
+@[simp, dlmf 18.5.E2]
 theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) :=
   mod_cast U_complex_cos θ n
 
@@ -167,12 +167,12 @@ theorem S_two_mul_real_cos : (S ℝ n).eval (2 * cos θ) * sin θ = sin ((n + 1)
 
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cosh θ` to the
 value `cosh (n * θ)`. -/
-@[simp]
+@[simp, dlmf 18.5.E1]
 theorem T_real_cosh (n : ℤ) : (T ℝ n).eval (cosh θ) = cosh (n * θ) := mod_cast T_complex_cosh θ n
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cosh θ` to the
 value `sinh ((n + 1) * θ) / sinh θ`. -/
-@[simp]
+@[simp, dlmf 18.5.E2]
 theorem U_real_cosh (n : ℤ) : (U ℝ n).eval (cosh θ) * sinh θ = sinh ((n + 1) * θ) :=
   mod_cast U_complex_cosh θ n
 

@@ -103,9 +103,9 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       intro hf0
       apply hf
       simp [hf0]
-  have H' : coeff (m.degree f) (m.reduce hb f) = 0 := by
+  have H' : (m.reduce hb f).coeff (m.degree f) = 0 := by
     simp only [reduce, coeff_sub, sub_eq_zero]
-    nth_rewrite 2 [H]
+    nth_rewrite 3 [H]
     rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial, mul_comm, ← mul_assoc,
       IsUnit.mul_val_inv, one_mul, ← leadingCoeff]
   rw [lt_iff_le_and_ne]
@@ -209,8 +209,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
       exact bot_le
     · exact (div hb) (m.subLTerm f)
-termination_by WellFounded.wrap
-  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wellFoundedLT_syn) (m.toSyn (m.degree f))
+termination_by WellFounded.wrap m.wellFoundedLT_syn (m.toSyn (m.degree f))
 decreasing_by
   · exact deg_reduce
   · apply degree_sub_LTerm_lt

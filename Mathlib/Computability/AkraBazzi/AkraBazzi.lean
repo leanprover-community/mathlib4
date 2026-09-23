@@ -478,7 +478,6 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                     (n₀ : ℝ) / b' ≤ ⌈n₀ / b'⌉₊ := Nat.le_ceil (↑n₀ / b')
                     _ ≤ n := by exact_mod_cast n₀_div_le_n
                 rwa [div_le_iff₀, mul_comm] at this
-                grind only
         _ ≤ r i n := by grind
   have r_le_n : ∀ i, r i n < n := by grind [AkraBazziRecurrence]
   intro C hC h_ind
@@ -585,7 +584,6 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                     (n₀ : ℝ) / b' ≤ ⌈n₀ / b'⌉₊ := Nat.le_ceil (↑n₀ / b')
                     _ ≤ n := by exact_mod_cast n₀_div_le_n
                 rwa [div_le_iff₀, mul_comm] at this
-                grind only
         _ ≤ r i n := by grind
   have r_le_n : ∀ i, r i n < n := by grind [AkraBazziRecurrence]
   intro C hC h_ind

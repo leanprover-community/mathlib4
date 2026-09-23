@@ -755,8 +755,7 @@ theorem valAux_mul (f g : PreTilt O p) :
   have hfg : coeff (max m n + 1) (f * g) ≠ 0 := by
     rw [map_mul]
     refine ModP.mul_ne_zero_of_pow_p_ne_zero (hv := hv) ?_ ?_
-    · rw [coeff_pow_p f]; assumption
-    · rw [coeff_pow_p g]; assumption
+    <;> rwa [coeff_pow_p]
   rw [valAux_eq hv (coeff_add_ne_zero hm 1),
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]

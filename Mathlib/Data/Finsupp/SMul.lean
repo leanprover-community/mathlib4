@@ -97,7 +97,7 @@ attribute [local instance] comapSMul comapMulAction comapDistribMulAction
 @[simp]
 theorem comapSMul_apply (g : G) (f : α →₀ M) (a : α) : (g • f) a = f (g⁻¹ • a) := by
   conv_lhs => rw [← smul_inv_smul g a]
-  exact mapDomain_apply (MulAction.injective g) _ (g⁻¹ • a)
+  exact mapDomain_apply_of_injective (MulAction.injective g) _ (g⁻¹ • a)
 
 end
 

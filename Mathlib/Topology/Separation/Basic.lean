@@ -89,6 +89,9 @@ theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 
+instance [T0Space X] : IsPartialOrder X Specializes where
+  antisymm _ _ := (·.antisymm · |>.eq)
+
 /-- A topology inducing map from a T₀ space is injective. -/
 protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
     (hf : IsInducing f) : Injective f := fun _ _ h =>
@@ -258,6 +261,24 @@ theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s �
     let ⟨s, hxs, hso, hs⟩ := h x
     ⟨s, hxs, (hxy.mem_open_iff hso).1 hxs, hs⟩
 
+variable (X) in
+-- since this instance is usually the desired instance, its priority is not lowered
+-- see Note [lower instance priority]
+instance [T0Space X] [Nontrivial X] : NontrivialTopology X := by
+  obtain ⟨a, b, hab⟩ := exists_pair_ne X
+  exact nontrivial_iff_exists_not_inseparable.mpr ⟨a, b, mt Inseparable.eq hab⟩
+
+theorem subsingleton_iff_indiscreteTopology [T0Space X] :
+    Subsingleton X ↔ IndiscreteTopology X := by
+  refine ⟨?_, Function.mtr ?_⟩
+  · intro; infer_instance
+  · rw [not_subsingleton_iff_nontrivial, not_indiscrete_iff]
+    intro; infer_instance
+
+theorem nontrivial_iff_nontrivialTopology [T0Space X] : Nontrivial X ↔ NontrivialTopology X := by
+  rw [← not_subsingleton_iff_nontrivial, ← not_indiscrete_iff, not_iff_not]
+  exact subsingleton_iff_indiscreteTopology
+
 /-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
 
 In other words, given two points `x y : X`,
@@ -284,6 +305,9 @@ theorem Specializes.symm (h : x ⤳ y) : y ⤳ x :=
 
 /-- In an R₀ space, the `Specializes` relation is symmetric, `Iff` version. -/
 theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
+
+instance : IsEquiv X Specializes where
+  toSymm := specializes_symm
 
 /-- In an R₀ space, `Specializes` is equivalent to `Inseparable`. -/
 theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
@@ -808,6 +832,10 @@ instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X
 
 lemma Set.Finite.isDiscrete [T1Space X] {s : Set X} (hs : s.Finite) : IsDiscrete s :=
   ⟨@Finite.instDiscreteTopology _ _ _ hs.to_subtype⟩
+
+theorem subsingleton_iff_discrete_and_indiscrete :
+    Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ subsingleton_iff_indiscreteTopology.2 ‹_›⟩
 
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by

@@ -346,7 +346,7 @@ theorem eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
   RingHom.ext <| eq_intCast f
 
 theorem ext_int {R : Type*} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
-  coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
+  toAddMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 
 instance Int.subsingleton_ringHom {R : Type*} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
   ⟨RingHom.ext_int⟩

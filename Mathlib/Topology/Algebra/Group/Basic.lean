@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Topology.Algebra.Group.ContinuousInv
 
 /-!

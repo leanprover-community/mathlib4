@@ -20,7 +20,7 @@ public section
 
 open Set
 
-variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
+variable {α β : Type*} [PartialOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
 
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
 the whole space. -/

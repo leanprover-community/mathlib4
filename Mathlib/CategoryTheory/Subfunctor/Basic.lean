@@ -96,8 +96,8 @@ lemma le_def (S T : Subfunctor F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := If
 
 variable (F)
 
-@[simp] lemma top_obj (i : C) : (⊤ : Subfunctor F).obj i = ⊤ := rfl
-@[simp] lemma bot_obj (i : C) : (⊥ : Subfunctor F).obj i = ⊥ := rfl
+@[simp] lemma top_obj (i : C) : (⊤ : Subfunctor F).obj i = .univ := rfl
+@[simp] lemma bot_obj (i : C) : (⊥ : Subfunctor F).obj i = ∅ := rfl
 
 variable {F}
 
@@ -137,7 +137,7 @@ instance : Nonempty (Subfunctor F) :=
   inferInstance
 
 /-- The subfunctor as a functor. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 def toFunctor : C ⥤ Type w where
   obj U := G.obj U
   map i := ↾fun x => ⟨F.map i x, G.map i x.prop⟩
@@ -187,8 +187,6 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
 theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
-
-@[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor
 

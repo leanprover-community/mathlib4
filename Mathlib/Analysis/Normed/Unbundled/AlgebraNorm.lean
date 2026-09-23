@@ -56,6 +56,7 @@ variable {R : Type*} [SeminormedCommRing R] {S : Type*} [Ring S] [Algebra R S] {
 def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
   f.toRingNorm.toRingSeminorm
 
+@[macro_inline]
 instance : FunLike (AlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective f f' h := by
@@ -152,6 +153,7 @@ namespace MulAlgebraNorm
 variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
   {f : AlgebraNorm R S}
 
+@[macro_inline]
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
   coe_injective f f' h := by

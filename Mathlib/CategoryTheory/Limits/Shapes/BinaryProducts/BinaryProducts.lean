@@ -6,6 +6,8 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryFan
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Binary (co)products
@@ -289,7 +291,6 @@ end ProdLemmas
 
 noncomputable section CoprodLemmas
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, simp]
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
@@ -312,12 +313,10 @@ theorem coprod.inr_map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduc
 theorem coprod.map_id_id {X Y : C} [HasBinaryCoproduct X Y] : coprod.map (𝟙 X) (𝟙 Y) = 𝟙 _ := by
   ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coprod.desc_inl_inr {X Y : C} [HasBinaryCoproduct X Y] :
     coprod.desc coprod.inl coprod.inr = 𝟙 (X ⨿ Y) := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 -- The simp linter says simp can prove the reassoc version of this lemma.
 @[reassoc, simp]
 theorem coprod.map_desc {S T U V W : C} [HasBinaryCoproduct U W] [HasBinaryCoproduct T V]
@@ -513,7 +512,6 @@ noncomputable section
 variable {C}
 variable [HasBinaryCoproducts C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism which swaps a binary coproduct. -/
 @[simps]
 def coprod.braiding (P Q : C) : P ⨿ Q ≅ Q ⨿ P where
@@ -529,14 +527,12 @@ theorem coprod.symmetry' (P Q : C) :
 theorem coprod.symmetry (P Q : C) : (coprod.braiding P Q).hom ≫ (coprod.braiding Q P).hom = 𝟙 _ :=
   coprod.symmetry' _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism for binary coproducts. -/
 @[simps]
 def coprod.associator (P Q R : C) : (P ⨿ Q) ⨿ R ≅ P ⨿ Q ⨿ R where
   hom := coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ coprod.inr)
   inv := coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) coprod.inr)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coprod.pentagon (W X Y Z : C) :
     coprod.map (coprod.associator W X Y).hom (𝟙 Z) ≫
         (coprod.associator W (X ⨿ Y) Z).hom ≫ coprod.map (𝟙 W) (coprod.associator X Y Z).hom =
@@ -551,7 +547,6 @@ theorem coprod.associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ :
 
 variable [HasInitial C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for binary coproducts with the initial object. -/
 @[simps]
 def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
@@ -564,7 +559,6 @@ theorem coprod.leftUnitor_naturality (f : X ⟶ Y) :
     coprod.map (𝟙 _) f ≫ (coprod.leftUnitor Y).hom = (coprod.leftUnitor X).hom ≫ f := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for binary coproducts with the initial object. -/
 @[simps]
 def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
@@ -577,7 +571,6 @@ theorem coprod.rightUnitor_naturality (f : X ⟶ Y) :
     coprod.map f (𝟙 _) ≫ (coprod.rightUnitor Y).hom = (coprod.rightUnitor X).hom ≫ f := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coprod.triangle (X Y : C) :
     (coprod.associator X (⊥_ C) Y).hom ≫ coprod.map (𝟙 X) (coprod.leftUnitor Y).hom =
       coprod.map (coprod.rightUnitor X).hom (𝟙 Y) := by

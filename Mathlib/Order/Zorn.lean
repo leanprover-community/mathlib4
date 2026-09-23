@@ -100,13 +100,16 @@ section Preorder
 
 variable [Preorder α]
 
+@[to_dual zorn_ge]
 theorem zorn_le (h : ∀ c : Set α, IsChain (· ≤ ·) c → BddAbove c) : ∃ m : α, IsMax m :=
   exists_maximal_of_chains_bounded h le_trans
 
+@[to_dual zorn_ge_nonempty]
 theorem zorn_le_nonempty [Nonempty α]
     (h : ∀ c : Set α, IsChain (· ≤ ·) c → c.Nonempty → BddAbove c) : ∃ m : α, IsMax m :=
   exists_maximal_of_nonempty_chains_bounded h le_trans
 
+@[to_dual zorn_ge₀]
 theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) :
     ∃ m, Maximal (· ∈ s) m :=
   let ⟨⟨m, hms⟩, h⟩ :=
@@ -119,6 +122,7 @@ theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃
       ⟨⟨ub, hubs⟩, fun ⟨_, _⟩ hc => hub _ ⟨_, hc, rfl⟩⟩
   ⟨m, hms, fun z hzs hmz => @h ⟨z, hzs⟩ hmz⟩
 
+@[to_dual zorn_ge_nonempty₀]
 theorem zorn_le_nonempty₀ (s : Set α)
     (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ s, ∀ z ∈ c, z ≤ ub) (x : α) (hxs : x ∈ s) :
     ∃ m, x ≤ m ∧ Maximal (· ∈ s) m := by
@@ -130,6 +134,7 @@ theorem zorn_le_nonempty₀ (s : Set α)
     · rcases ih c (fun z hz => (hcs hz).1) hc y hy with ⟨z, hzs, hz⟩
       exact ⟨z, ⟨hzs, (hcs hy).2.trans <| hz _ hy⟩, hz⟩
 
+@[to_dual zorn_ge_nonempty_Iic₀]
 theorem zorn_le_nonempty_Ici₀ (a : α)
     (ih : ∀ c ⊆ Ici a, IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub) (x : α) (hax : a ≤ x) :
     ∃ m, x ≤ m ∧ IsMax m := by

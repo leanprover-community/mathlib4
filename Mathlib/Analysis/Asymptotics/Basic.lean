@@ -248,6 +248,10 @@ theorem IsLittleO.comp_tendsto (hfg : f =o[l] g) {k : β → α} {l' : Filter β
     (f ∘ k) =o[l'] (g ∘ k) :=
   IsLittleO.of_isBigOWith fun _c cpos => (hfg.forall_isBigOWith cpos).comp_tendsto hk
 
+theorem IsTheta.comp_tendsto (hfg : f =Θ[l] g) {k : β → α} {l' : Filter β} (hk : Tendsto k l' l) :
+    (f ∘ k) =Θ[l'] (g ∘ k) :=
+  ⟨hfg.isBigO.comp_tendsto hk, hfg.isBigO_symm.comp_tendsto hk⟩
+
 @[simp]
 theorem isBigOWith_map {k : β → α} {l : Filter β} :
     IsBigOWith c (map k l) f g ↔ IsBigOWith c l (f ∘ k) (g ∘ k) := by

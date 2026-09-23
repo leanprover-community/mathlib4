@@ -256,9 +256,6 @@ theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     simp
   · simp [totalLengthFilter, comap_comap, Function.comp_def]
 
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuousOn :=
-  uniformContinuousOn
-
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     ContinuousOn f (uIcc a b) :=

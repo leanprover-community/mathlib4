@@ -188,7 +188,7 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -259,7 +259,7 @@ theorem ne_one_of_map {R S F : Type*} [One R] [One S] [FunLike F R S] [OneHomCla
 
 /-- Turn an element of a type `F` satisfying `OneHomClass F M N` into an actual
 `OneHom`. This is declared as the default coercion from `F` to `OneHom M N`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := coe, instance_reducible)
 /-- Turn an element of a type `F` satisfying `ZeroHomClass F M N` into an actual
 `ZeroHom`. This is declared as the default coercion from `F` to `ZeroHom M N`. -/]
 def OneHomClass.toOneHom [OneHomClass F M N] (f : F) : OneHom M N where
@@ -309,7 +309,7 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -332,7 +332,7 @@ lemma map_comp_mul [MulHomClass F M N] (f : F) (g h : ι → M) : f ∘ (g * h) 
 
 /-- Turn an element of a type `F` satisfying `MulHomClass F M N` into an actual
 `MulHom`. This is declared as the default coercion from `F` to `M →ₙ* N`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := coe, instance_reducible)
 /-- Turn an element of a type `F` satisfying `AddHomClass F M N` into an actual
 `AddHom`. This is declared as the default coercion from `F` to `M →ₙ+ N`. -/]
 def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
@@ -379,7 +379,7 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
   [FunLike F M N] : Prop
   extends MulHomClass F M N, OneHomClass F M N
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
   coe_injective f g h := by
@@ -400,21 +400,28 @@ variable [FunLike F M N]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/
-@[to_additive (attr := coe)
+@[to_additive (attr := coe, instance_reducible)
 /-- Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an
-actual `MonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. -/]
-def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
+actual `AddMonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. -/]
+def MonoidHom.ofClass [MonoidHomClass F M N] (f : F) : M →* N :=
   { (f : M →ₙ* N), (f : OneHom M N) with }
 
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias MonoidHomClass.toMonoidHom := MonoidHom.ofClass
+
 /-- Any type satisfying `MonoidHomClass` can be cast into `MonoidHom` via
-`MonoidHomClass.toMonoidHom`. -/
+`MonoidHom.ofClass`. -/
 @[to_additive /-- Any type satisfying `AddMonoidHomClass` can be cast into `AddMonoidHom` via
-`AddMonoidHomClass.toAddMonoidHom`. -/]
+`AddMonoidHom.ofClass`. -/]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
-  ⟨MonoidHomClass.toMonoidHom⟩
+  ⟨MonoidHom.ofClass⟩
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
+theorem MonoidHom.coe_ofClass [MonoidHomClass F M N] (f : F) :
+    ((.ofClass f : M →* N) : M → N) = f := rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias MonoidHom.coe_coe := MonoidHom.coe_ofClass
 
 @[to_additive]
 theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :
@@ -961,7 +968,7 @@ protected def End := M →* M
 
 namespace End
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
 
 @[to_additive (attr := ext)]

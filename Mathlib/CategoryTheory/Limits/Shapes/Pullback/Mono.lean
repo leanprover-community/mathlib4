@@ -309,7 +309,6 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
     Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
 instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :

@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.BooleanAlgebra
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Data.Fintype.Defs

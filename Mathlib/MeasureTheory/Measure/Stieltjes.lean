@@ -619,9 +619,8 @@ theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     rw [this, measure_Icc, leftLim_eq_of_isBot isBot_bot,
       tendsto_nhds_unique hf (tendsto_pure_nhds f ⊥)]
   have : NoMinOrder R := NoBotOrder.to_noMinOrder R
-  refine tendsto_nhds_unique (tendsto_measure_Ioc_atBot _ _) ?_
-  simp_rw [measure_Ioc]
-  exact ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)
+  exact tendsto_nhds_unique_of_forall (tendsto_measure_Ioc_atBot _ _)
+    (ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)) (by simp)
 
 lemma measure_Iio {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iio x) = ofReal (leftLim f x - l) := by
@@ -638,9 +637,8 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     rw [atTop_eq_pure_of_isTop isTop_top] at hf
     rw [this, measure_Icc, tendsto_nhds_unique hf (tendsto_pure_nhds f ⊤)]
   have : NoMaxOrder R := NoTopOrder.to_noMaxOrder R
-  refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
-  simp_rw [measure_Ico]
-  exact ENNReal.tendsto_ofReal (Tendsto.sub_const (tendsto_leftLim_atTop_of_tendsto hf) _)
+  exact tendsto_nhds_unique_of_forall (tendsto_measure_Ico_atTop _ _)
+    (ENNReal.tendsto_ofReal (Tendsto.sub_const (tendsto_leftLim_atTop_of_tendsto hf) _)) (by simp)
 
 lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ioi x) = ofReal (l - f x) := by
@@ -683,9 +681,8 @@ lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
 theorem measure_univ [Nonempty R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by
-  refine tendsto_nhds_unique (tendsto_measure_Iic_atTop _) ?_
-  simp_rw [measure_Iic f hfl]
-  exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
+  exact tendsto_nhds_unique_of_forall (tendsto_measure_Iic_atTop _)
+    (ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)) (by simp [measure_Iic f hfl])
 
 lemma measure_univ_of_tendsto_atTop_atTop [Nonempty R] (hf : Tendsto f atTop atTop) :
     f.measure univ = ∞ := by

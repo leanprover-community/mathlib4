@@ -69,12 +69,6 @@ abbrev Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddCommGroup S] [Module R S]
 instance (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
   .trans _ (⊥ : Ideal p.ResidueField) _
 
-/-- If `q` is a prime ideal of `p.Fiber S`,  then the localization `(p.Fiber S)_q` is an algebra
-over the localization `R_p` since `p.Fiber S` is already an `R_p`-algebra. This `R_p`-algebra
-structure on `(p.Fiber S)_q` agrees with the one coming from the fact that `q` lies over `p`. -/
-instance (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAlgebra p q where
-  algebraMap_eq := (Localization.localRingHom_unique p q _ (Ideal.over_def q p) fun _ ↦ rfl).symm
-
 lemma Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
     (Algebra.TensorProduct.comm _ _ _ x)
@@ -136,7 +130,7 @@ noncomputable def Fiber.algEquivAux₂ (q : Ideal (p.Fiber S)) [q.IsPrime] :
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
 noncomputable def Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
-    [Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))] :
     letI r := q.comap includeRight
     letI Sr := Localization.AtPrime r
     Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=

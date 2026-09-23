@@ -448,7 +448,7 @@ instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
       QuotientGroup.ker_mk', Submodule.fg_iff_addSubgroup_fg,
       AddSubgroup.toIntSubmodule_toAddSubgroup, ← AddGroup.fg_iff_addSubgroup_fg]
     have : Finite (Subgroup.toAddSubgroup (torsion K)) := (inferInstance : Finite (torsion K))
-    exact AddGroup.fg_of_finite
+    infer_instance
 
 instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]

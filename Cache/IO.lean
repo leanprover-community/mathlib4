@@ -84,9 +84,13 @@ actually asked for as missing and rebuilt them), and, worse, two curls writing o
 -/
 initialize PROCTAG : String ← toString <$> IO.Process.getPID
 
-/-- Target file path for `curl` configurations. One per process; see `PROCTAG`. -/
+/-- The curl configuration file this process writes under `dir`; see `PROCTAG`. -/
+def curlConfigIn (dir : FilePath) : FilePath :=
+  dir / s!"curl-{PROCTAG}.cfg"
+
+/-- This process's curl configuration file in the local cache directory (`curlConfigIn`). -/
 def CURLCFG :=
-  IO.CACHEDIR / s!"curl-{PROCTAG}.cfg"
+  curlConfigIn IO.CACHEDIR
 
 /--
 Suffix for a download still in flight, before it is renamed to `<hash>.ltar`. One per process; see
@@ -225,16 +229,19 @@ where
       loop h (← processLine a line)
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
+def runCmd (cmd : String) (args : Array String)
+    (throwFailure stderrAsErr showArgsOnError := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
   if (out.exitCode != 0 || stderrAsErr && !out.stderr.isEmpty) && throwFailure then
-    throw <| IO.userError s!"failure in {cmd} {args}:\n{out.stderr}"
+    let invocation := if showArgsOnError then s!"{cmd} {args}" else cmd
+    throw <| IO.userError s!"failure in {invocation}:\n{out.stderr}"
   else if !out.stderr.isEmpty then
     IO.eprintln out.stderr
   return out.stdout
 
-def runCurl (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
-  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr
+def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true) :
+    IO String := do
+  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr showArgsOnError
 
 def validateCurl : IO Bool := do
   if (← CURLBIN.pathExists) then return true
@@ -258,11 +265,15 @@ def validateCurl : IO Bool := do
           "-L", "-o", CURLBIN.toString]
         let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
         return true
-      if version >= (7, 70) then
+      -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
+      -- and read the `exitcode` and `errormsg` fields of the per-transfer
+      -- JSON report (curl 7.75); an older curl rejects the flag or omits
+      -- the fields.
+      if version >= (7, 75) then
         IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
         return true
       else
-        IO.println s!"Warning: recommended `curl` version ≥7.70. Found {v}. Can't use `--parallel`."
+        IO.println s!"Warning: recommended `curl` version ≥7.75. Found {v}. Can't use `--parallel`."
         return false
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"

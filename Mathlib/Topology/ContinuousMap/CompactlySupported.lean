@@ -72,6 +72,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β]
 
+@[macro_inline]
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
   coe_injective f g h := by

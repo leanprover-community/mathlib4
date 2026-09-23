@@ -733,7 +733,7 @@ theorem ker_unitGroupToResidueFieldUnits :
   ext
   simp_rw [Subgroup.mem_comap, Subgroup.coe_subtype, coe_mem_principalUnitGroup_iff,
     unitGroupToResidueFieldUnits, IsLocalRing.residue, RingHom.toMonoidHom_eq_coe,
-    MulEquiv.toMonoidHom_eq_coe, MonoidHom.mem_ker, MonoidHom.coe_comp, MonoidHom.coe_coe,
+    MulEquiv.toMonoidHom_eq_coe, MonoidHom.mem_ker, MonoidHom.coe_comp, MonoidHom.coe_ofClass,
     Function.comp_apply]
 
 theorem surjective_unitGroupToResidueFieldUnits :

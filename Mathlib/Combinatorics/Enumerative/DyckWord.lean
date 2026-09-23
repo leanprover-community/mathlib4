@@ -351,7 +351,7 @@ def outsidePart : DyckWord :=
 include h in
 @[simp]
 lemma insidePart_add : (p + q).insidePart = p.insidePart := by
-  simp_rw [insidePart, firstReturn_add, add_eq_zero', h, false_and, dite_false, ite_false,
+  simp_rw [insidePart, firstReturn_add, add_eq_zero, h, false_and, dite_false, ite_false,
     DyckWord.ext_iff, take]
   congr 3
   exact take_append_of_le_length (firstReturn_lt_length h)
@@ -359,7 +359,7 @@ lemma insidePart_add : (p + q).insidePart = p.insidePart := by
 include h in
 @[simp]
 lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
-  simp_rw [outsidePart, firstReturn_add, add_eq_zero', h, false_and, dite_false, ite_false,
+  simp_rw [outsidePart, firstReturn_add, add_eq_zero, h, false_and, dite_false, ite_false,
     DyckWord.ext_iff, drop]
   exact drop_append_of_le_length (firstReturn_lt_length h)
 
@@ -531,8 +531,6 @@ lemma numNodes_toTree (p : DyckWord) : p.toTree.numNodes = p.semilength := by
       numNodes_toTree p.insidePart, numNodes_toTree p.outsidePart]
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
-
-@[deprecated (since := "2026-02-03")] alias semilength_eq_numNodes_equivTree := numNodes_toTree
 
 /-- Equivalence between Dyck words of semilength `n` and rooted binary trees with
 `n` internal nodes. -/

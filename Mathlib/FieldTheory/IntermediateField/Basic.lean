@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Field.Subfield.Basic
@@ -407,6 +408,12 @@ instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : IntermediateField K L)
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
+
+-- Over `ℚ`, the algebra structure inherited from the ambient field and the one coming from the
+-- `DivisionRing` structure of the intermediate field are the same instance.
+example {L : Type*} [Field L] [CharZero L] (S : IntermediateField ℚ L) :
+    (S.algebra' : Algebra ℚ S) = DivisionRing.toRatAlgebra := by
+  with_implicit rfl
 
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=

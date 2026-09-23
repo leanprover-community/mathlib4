@@ -238,7 +238,7 @@ public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F 
   rw [AddMonoidHom.mrange_eq_top] at hg
   rw [← image_preimage_eq (f ⁻¹' s) hg]
   apply image
-  rw [← preimage_comp, ← AddMonoidHom.coe_coe, ← AddMonoidHom.coe_comp]
+  rw [← preimage_comp, ← AddMonoidHom.coe_ofClass, ← AddMonoidHom.coe_comp]
   exact Nat.isSemilinearSet_preimage hs _
 
 /-! ### Semilinear sets are included in finitely generated submonoids -/

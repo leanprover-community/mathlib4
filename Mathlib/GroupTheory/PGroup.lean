@@ -471,7 +471,7 @@ def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
   commGroupOfCyclicCenterQuotient _ (QuotientGroup.ker_mk' <| center G).le
 
-@[deprecated isMulCommutative_of_card_eq_prime_sq (since := "2026-05-26")]
+@[deprecated isMulCommutative_of_card_eq_prime_sq +typeChanged (since := "2026-05-26")]
 theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G, a * b = b * a :=
   isMulCommutative_of_card_eq_prime_sq hG |>.is_comm.comm
 

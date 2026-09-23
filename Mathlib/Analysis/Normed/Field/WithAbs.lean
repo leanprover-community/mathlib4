@@ -87,8 +87,9 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : AbsoluteValue K �
   (w : AbsoluteValue L ℝ) [w.LiesOver v]
 
 theorem isometry_map : Isometry (WithAbs.map v w (algebraMap K L)) := by
-  rw [← AbsoluteValue.LiesOver.comp_eq w v, AddMonoidHomClass.isometry_iff_norm]
-  simp [norm_eq_apply_ofAbs]
+  rw [← AbsoluteValue.LiesOver.under_eq w v, AddMonoidHomClass.isometry_iff_norm]
+  simp_rw [map_apply, norm_eq_apply_ofAbs]
+  simp [AbsoluteValue.under_def]
 
 end WithAbs
 

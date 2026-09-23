@@ -55,7 +55,12 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
     [ContinuousSMul R M] : TopModuleCat R :=
   have : ContinuousNeg M := ⟨by convert! continuous_const_smul (-1 : R) (T := M); ext; simp⟩
   have : IsTopologicalAddGroup M := ⟨⟩
-  ⟨.of R M⟩
+  ⟨↧M⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `TopModuleCat.of R X` as `↧X`. -/
+@[app_delab TopModuleCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
@@ -176,12 +181,12 @@ instance (M : TopModuleCat R) : IsTopologicalAddGroup M := M.3
 
 instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
   forget₂ :=
-  { obj M := ModuleCat.of R M
+  { obj M := ↧M
     map φ := ModuleCat.ofHom φ.hom }
 
 instance : HasForget₂ (TopModuleCat R) TopCat where
   forget₂ :=
-  { obj M := .of M
+  { obj M := ↧M
     map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
 instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
@@ -213,7 +218,7 @@ def coinduced : TopModuleCat R :=
       ∀ i, (X i).topologicalSpace.coinduced (f i) ≤ t }
   have : ContinuousAdd M := continuousAdd_sInf fun _ hs ↦ hs.2.1
   have : ContinuousSMul R M := continuousSMul_sInf fun _ hs ↦ hs.1
-  .of R M
+  ↧M
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The maps into the coinduced topology as homs in `TopModuleCat R`. -/
@@ -275,7 +280,7 @@ def induced : TopModuleCat R :=
   letI : TopologicalSpace M := ⨅ i, (X i).topologicalSpace.induced (f i)
   have : ContinuousAdd M := continuousAdd_iInf fun _ ↦ continuousAdd_induced _
   have : ContinuousSMul R M := continuousSMul_iInf fun _ ↦ continuousSMul_induced _
-  .of R M
+  ↧M
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The maps from the induced topology as homs in `TopModuleCat R`. -/
@@ -353,7 +358,7 @@ def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where
   obj X :=
     letI := moduleTopology R X
     letI := IsModuleTopology.isTopologicalAddGroup R X
-    .of R X
+    ↧X
   map {X Y} f :=
     letI := moduleTopology R X
     letI := moduleTopology R Y
@@ -365,7 +370,7 @@ set_option backward.isDefEq.respectTransparency false in
 def withModuleTopologyAdj : withModuleTopology R ⊣ forget₂ (TopModuleCat R) (ModuleCat R) where
   unit := 𝟙 _
   counit :=
-  { app X := ofHom (X := (withModuleTopology R).obj (.of R X))
+  { app X := ofHom (X := (withModuleTopology R).obj ↧X)
       ⟨.id, IsModuleTopology.continuous_of_linearMap _⟩ }
 
 instance : (forget₂ (TopModuleCat R) (ModuleCat R)).IsRightAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
@@ -378,7 +383,7 @@ def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
     letI : TopologicalSpace X := ⊤
     haveI : ContinuousAdd X := ⟨by rw [continuous_iff_coinduced_le]; exact le_top⟩
     haveI : ContinuousSMul R X := ⟨by rw [continuous_iff_coinduced_le]; exact le_top⟩
-    .of R X
+    ↧X
   map {X Y} f :=
     letI : TopologicalSpace X := ⊤
     letI : TopologicalSpace Y := ⊤

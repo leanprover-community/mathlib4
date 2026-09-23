@@ -8,11 +8,11 @@ module
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Basic.Rel
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Sigma
-public import Mathlib.Data.Rel
 public import Mathlib.Order.OrderIsoNat
 
 /-!

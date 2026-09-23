@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Data.Real.Embedding
-public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Basic.Real.Embedding
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Sym.Sym2
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Positivity
 
@@ -69,7 +69,7 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
       Archimedean.exists_orderAddMonoidHom_real_injective (Additive (ValueGroup₀ (.ofClass v))ˣ)
     let e := AddMonoidHom.toMultiplicativeRight (α := (ValueGroup₀ (.ofClass v))ˣ) (β := ℝ) f
     have he : StrictMono e := by
-      simp only [AddMonoidHom.coe_toMultiplicativeRight, AddMonoidHom.coe_coe, e]
+      simp only [AddMonoidHom.coe_toMultiplicativeRight, AddMonoidHom.coe_ofClass, e]
       -- toAdd_strictMono is already in an applied form, do defeq abuse instead
       exact StrictMono.comp strictMono_id (f.monotone'.strictMono_of_injective hf)
     let rf : Multiplicative ℝ →* ℝ≥0ˣ := {

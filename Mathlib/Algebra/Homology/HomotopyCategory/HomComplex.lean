@@ -563,7 +563,7 @@ open HomComplex
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
 @[simps! X d_hom_apply]
 def HomComplex : CochainComplex AddCommGrpCat ℤ where
-  X i := AddCommGrpCat.of (Cochain F G i)
+  X i := ↧(Cochain F G i)
   d i j := AddCommGrpCat.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; simp [δ_shape _ _ hij]
   d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]

@@ -96,7 +96,6 @@ lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
     P.tensorCotangentSpace T (t ⊗ₜ x) = t • CotangentSpace.map (P.toBaseChange T) x := by
   dsimp only [CotangentSpace] at x
   induction x with
-  | zero => rw [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero, smul_zero]
   | add x y hx hy => rw [tmul_add, LinearEquiv.map_add, LinearMap.map_add, smul_add, hx, hy]
   | tmul s y =>
   simp [tensorCotangentSpace_tmul_tmul, CotangentSpace.map_tmul_eq_tmul_map,

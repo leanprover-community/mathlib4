@@ -49,6 +49,7 @@ namespace AbstractMeasure
 section NoContinuousSMul
 
 /-- Inherit `FunLike` structure from `C(X, R) →L[R] E`. -/
+@[macro_inline]
 instance : FunLike (AbstractMeasure X R E) C(X, R) E :=
   inferInstanceAs (FunLike (C(X, R) →L[R] E) C(X, R) E)
 
@@ -251,7 +252,6 @@ lemma prodMk_eq_prodMk' : prodMk μ ν = prodMk' μ ν := by
   apply DFunLike.coe_injective
   apply denseRange_tensorHom.equalizer (by fun_prop) (by fun_prop) (funext fun h ↦ ?_)
   induction h with
-  | zero => simp
   | add => grind
   | tmul f g => simp [prodMul_def, prodMk_prod_apply μ, prodMk'_prod_apply μ]
 

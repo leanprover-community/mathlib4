@@ -205,7 +205,7 @@ theorem Algebra.restrictScalars_adjoin_of_algEquiv
     [IsScalarTower F L E] [IsScalarTower F L' E] (i : L ≃ₐ[F] L')
     (hi : algebraMap L E = (algebraMap L' E) ∘ i) (S : Set E) :
     (Algebra.adjoin L S).restrictScalars F = (Algebra.adjoin L' S).restrictScalars F := by
-  apply_fun Subalgebra.toSubsemiring using fun K K' h ↦ by rwa [SetLike.ext'_iff] at h ⊢
+  apply_fun Subalgebra.toSubsemiring using fun K K' h ↦ by rw [SetLike.ext'_iff] at h ⊢; assumption
   change Subsemiring.closure _ = Subsemiring.closure _
   rw [hi, Set.range_comp, EquivLike.range_eq_univ, Set.image_univ]
 

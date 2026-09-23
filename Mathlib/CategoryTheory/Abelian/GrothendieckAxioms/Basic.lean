@@ -55,8 +55,6 @@ namespace CategoryTheory
 
 open Limits CategoryTheory.Functor
 
-attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
-
 universe w w' w₂ w₂' v v' v'' u u' u''
 
 variable (C : Type u) [Category.{v} C]

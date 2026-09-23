@@ -95,8 +95,7 @@ but `derivedSet Set.univ = Set.univ`. -/
 lemma derivedSet_closure [T1Space X] (A : Set X) : derivedSet (closure A) = derivedSet A := by
   refine le_antisymm (fun x hx => ?_) (derivedSet_mono _ _ subset_closure)
   rw [mem_derivedSet, AccPt, (nhdsWithin_basis_open x {x}ᶜ).inf_principal_neBot_iff] at hx ⊢
-  peel hx with u hu _
-  obtain ⟨-, hu_open⟩ := hu
+  gconvert hx using 2 with u ⟨-, hu_open⟩
   exact mem_closure_iff.mp this.some_mem.2 (u ∩ {x}ᶜ) (hu_open.inter isOpen_compl_singleton)
     this.some_mem.1
 

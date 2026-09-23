@@ -13,9 +13,6 @@ public import Mathlib.Data.Finset.Sups
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Data.Rat.Defs
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # The Ahlswede-Zhang identity

@@ -59,30 +59,6 @@ theorem integerNormalization_support (p : S[X]) :
     (integerNormalization M p).support ⊆ p.support :=
   (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.2.choose_spec.2
 
-/-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
-`integerNormalization p` -/
-@[deprecated integerNormalization (since := "2026-02-05")]
-noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
-  (integerNormalization M p).coeff i
-
-@[deprecated integerNormalization_support (since := "2026-02-05")]
-theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
-    coeffIntegerNormalization M p i = 0 :=
-  notMem_support_iff.mp <| Finset.not_mem_subset (integerNormalization_support M p) <|
-    notMem_support_iff.mpr h
-
-@[deprecated integerNormalization_support (since := "2026-02-05")]
-theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
-    (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
-  contrapose h
-  simp only [mem_support_iff, ne_eq, not_not] at h
-  exact coeffIntegerNormalization_of_coeff_zero M p i h
-
-@[deprecated integerNormalization_spec (since := "2026-02-05")]
-theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
-    (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
-  rfl
-
 variable {M} in
 theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
     integerNormalization M p = 0 ↔ p = 0 := by
@@ -94,12 +70,6 @@ theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisor
     exact IsLocalization.injective S hM
   rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
   exact smul_eq_zero_iff_right <| nonZeroDivisors.ne_zero (hM hb₁)
-
-@[deprecated integerNormalization_spec (since := "2026-02-05")]
-theorem integerNormalization_map_to_map (p : S[X]) :
-    ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
-  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec M p
-  exact ⟨⟨b, hb₁⟩, hb₂⟩
 
 variable {R' : Type*} [CommRing R']
 

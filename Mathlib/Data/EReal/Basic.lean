@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # The extended real numbers

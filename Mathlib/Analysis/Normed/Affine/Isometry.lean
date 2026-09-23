@@ -73,6 +73,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   ext
   rfl
 
+@[macro_inline]
 instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ where
   coe f := f.toFun
   coe_injective f g := by cases f; cases g; simp
@@ -311,6 +312,7 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   ext
   rfl
 
+@[macro_inline]
 instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ where
   coe f := f.toFun
   inv f := f.invFun

@@ -434,9 +434,14 @@ theorem monic_X_pow_sub {n : ℕ} (H : degree p < n) : Monic (X ^ n - p) := by
   simpa [sub_eq_add_neg] using monic_X_pow_add (show degree (-p) < n by rwa [← degree_neg p] at H)
 
 /-- `X ^ n - a` is monic. -/
-theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
+theorem monic_X_pow_sub_C {R : Type*} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
     (X ^ n - C a).Monic := by
   simpa only [map_neg, ← sub_eq_add_neg] using monic_X_pow_add_C (-a) h
+
+/-- `X ^ n - 1` is monic. -/
+theorem monic_X_pow_sub_one {R : Type*} [Ring R] {n : ℕ} (h : n ≠ 0) :
+    (X ^ n - 1 : R[X]).Monic := by
+  simpa using monic_X_pow_sub_C (1 : R) h
 
 theorem not_isUnit_X_pow_sub_one (R : Type*) [Ring R] [Nontrivial R] (n : ℕ) :
     ¬IsUnit (X ^ n - 1 : R[X]) := by
@@ -551,7 +556,7 @@ theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S
 
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
     Monic (h.unit⁻¹ • p) := by
-  rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
+  rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (IsSMulRegular.all _), Units.smul_def]
   simp
 
 theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q : R[X]} :

@@ -316,7 +316,7 @@ lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRin
   let : Star A := ⟨id⟩
   let : Star B := ⟨id⟩
   have : StarHomClass F A B := ⟨fun _ _ ↦ rfl⟩
-  let e := StarAlgEquivClass.toStarAlgEquiv f
+  let e := StarAlgEquiv.ofClass f
   apply subset_antisymm
   · exact NonUnitalAlgHom.quasispectrum_apply_subset' R e a
   · simpa using! NonUnitalAlgHom.quasispectrum_apply_subset' R e.symm (e a)

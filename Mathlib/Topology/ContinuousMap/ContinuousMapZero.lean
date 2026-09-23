@@ -46,6 +46,7 @@ section Basic
 variable {X Y R : Type*} [Zero X] [Zero Y] [Zero R]
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
+@[macro_inline]
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
   coe_injective _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
@@ -127,8 +128,6 @@ lemma continuous_precomp (f : C(X, Y)₀) : Continuous fun g : C(Y, R)₀ ↦ g.
   rw [continuous_induced_rng]
   change Continuous fun g : C(Y, R)₀ ↦ (g : C(Y, R)).comp (f : C(X, Y))
   fun_prop
-
-@[deprecated (since := "2026-02-20")] alias continuous_comp_left := continuous_precomp
 
 theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
     Injective (g.comp : C(X, Y)₀ → C(X, R)₀) :=
