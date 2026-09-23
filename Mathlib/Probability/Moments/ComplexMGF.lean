@@ -65,7 +65,7 @@ open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ} {z ε : ℂ}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u : ℝ} {z ε : ℂ}
 
 /-- Complex extension of the moment-generating function. -/
 noncomputable

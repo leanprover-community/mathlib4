@@ -26,7 +26,7 @@ assert_not_exists Fintype
 
 open Function
 
-variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G H : Type*}
+variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G : Type*}
 
 variable [EquivLike F α β]
 
