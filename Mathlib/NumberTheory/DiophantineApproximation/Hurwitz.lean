@@ -157,8 +157,6 @@ private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b)
 
 private lemma sub_eq_one_div_mul {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
     (hdet : q * r - p * s = 1) : (r : ℝ) / s - p / q = 1 / ((q : ℝ) * s) := by
-  have hqR : (0 : ℝ) < q := mod_cast hq
-  have hsR : (0 : ℝ) < s := mod_cast hs
   have hdetR : (q : ℝ) * r - p * s = 1 := mod_cast hdet
   field_simp
   linear_combination hdetR
