@@ -183,6 +183,18 @@ theorem IsLocalMin.fderiv_eq_zero (h : IsLocalMin f a) : fderiv ℝ f a = 0 := b
   exact if hf : DifferentiableAt ℝ f a then h.hasFDerivAt_eq_zero hf.hasFDerivAt
   else fderiv_zero_of_not_differentiableAt hf
 
+/-- If two differentiable real-valued functions are ordered everywhere and agree at a point, then
+their derivatives agree at that point. -/
+theorem HasFDerivAt.eq_of_le {g : E → ℝ} {g' : StrongDual ℝ E}
+    (hf : HasFDerivAt f f' a) (hg : HasFDerivAt g g' a) (hfg : f ≤ g)
+    (ha : f a = g a) : f' = g' := by
+  have hmin : IsLocalMin (fun x ↦ g x - f x) a := by
+    refine Filter.Eventually.of_forall fun x ↦ ?_
+    change g a - f a ≤ g x - f x
+    rw [sub_eq_zero.mpr ha.symm]
+    exact sub_nonneg.mpr (hfg x)
+  exact (sub_eq_zero.mp (hmin.hasFDerivAt_eq_zero (hg.sub hf))).symm
+
 /-- **Fermat's Theorem**: the derivative of a function at a local maximum equals zero. -/
 theorem IsLocalMax.hasFDerivAt_eq_zero (h : IsLocalMax f a) (hf : HasFDerivAt f f' a) : f' = 0 :=
   neg_eq_zero.1 <| h.neg.hasFDerivAt_eq_zero hf.neg
@@ -242,6 +254,17 @@ theorem IsLocalMin.deriv_eq_zero (h : IsLocalMin f a) : deriv f a = 0 := by
   classical
   exact if hf : DifferentiableAt ℝ f a then h.hasDerivAt_eq_zero hf.hasDerivAt
   else deriv_zero_of_not_differentiableAt hf
+
+/-- If two differentiable real functions are ordered everywhere and agree at a point, then their
+derivatives agree at that point. -/
+theorem HasDerivAt.eq_of_le {g : ℝ → ℝ} {g' : ℝ} (hf : HasDerivAt f f' a)
+    (hg : HasDerivAt g g' a) (hfg : f ≤ g) (ha : f a = g a) : f' = g' := by
+  have hmin : IsLocalMin (fun x ↦ g x - f x) a := by
+    refine Filter.Eventually.of_forall fun x ↦ ?_
+    change g a - f a ≤ g x - f x
+    rw [sub_eq_zero.mpr ha.symm]
+    exact sub_nonneg.mpr (hfg x)
+  exact (sub_eq_zero.mp (hmin.hasDerivAt_eq_zero (hg.sub hf))).symm
 
 /-- **Fermat's Theorem**: the derivative of a function at a local maximum equals zero. -/
 theorem IsLocalMax.hasDerivAt_eq_zero (h : IsLocalMax f a) (hf : HasDerivAt f f' a) : f' = 0 :=
