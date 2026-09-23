@@ -242,16 +242,6 @@ structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y)where
 
 end Embedding
 
-section Complement
-
-/-- Two morphisms `f : A ⟶ X` and `g : B ⟶ X` in `TopPair` are complements if their first and second
-components are complements in `TopCat`. -/
-protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
-  fst : IsCompl (Set.range (Hom.fst f)) (Set.range (Hom.fst g))
-  snd : IsCompl (Set.range (Hom.snd f)) (Set.range (Hom.snd g))
-
-end Complement
-
 /-- A morphism `g : (V, C) ⟶ (X, A)` in `TopPair` is excisive if it is an embedding,
 `g(C) = g(V) ∩ C`, and `cl(g(V)ᶜ) ⊆ int(A)`. -/
 class IsExcisive ⦃V X : TopPair.{u}⦄ (g : V ⟶ X) : Prop where
