@@ -36,11 +36,15 @@ containers a consumer reads from:
 | Consumer                | Default lookup chain |
 |-------------------------|----------------------|
 | mathlib4                | `master`             |
-| nightly-testing         | `nightly-testing`    |
+| nightly-testing         | `nightly-testing`, `forks` |
 | forks (PRs)             | `master`, `forks`    |
 
-The nightly default excludes the low-trust container, so a poisoned upload from
-an experimental toolchain branch cannot reach a trusted nightly consumer.
+The table shows trust classes; every chain also ends with the
+read-only `legacy` container, omitted here. The nightly chain includes `forks`
+because PRs from that repo into mathlib4 upload there; it excludes
+`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
+branch cannot reach a trusted nightly consumer.
+
 Branches that legitimately need to read their own prior low-trust uploads opt
 into a wider chain explicitly.
 
@@ -51,23 +55,29 @@ guarantees and additional containment.
 
 ### 1. Token-scoped uploads (server-side)
 
-Before uploading, the workflow obtains a short-lived token for the writer
-identity tied to its container. The identity provider issues the token only
-when the workflow's identity — stamped by GitHub from the repo, event type, and
-ref — matches a pre-registered credential. The token's scope is fixed when it
-is issued and cannot be widened afterward.
+Before uploading, the workflow obtains a short-lived credential for the writer
+identity tied to its container. The identity provider issues the credential
+only when the workflow's identity — stamped by GitHub from the repo, event
+type, and ref — matches a pre-registered grant. The credential's scope is
+fixed when it is issued and cannot be widened afterward.
+
+Two credential mechanisms implement this. Azure writes mint an OIDC-federated
+bearer token whose RBAC role covers exactly one container. An S3-compatible
+destination takes a short-lived credential pair scoped to one container's
+namespace, and the tool signs each request with it (SigV4); CI mints the
+pair per job the same OIDC-gated way.
 
 This is the boundary's anchor: a compromised cache binary, a tampered workflow,
-or a malicious PR that captures and replays the token still cannot upload
-outside the one container the token grants.
+or a malicious PR that captures and replays the credential still cannot upload
+outside the one container the credential grants.
 
 ### 2. Isolation of the cache binary
 
 The cache binary is built from a trusted branch, never from the PR's checkout,
 so the PR's toolchain never reaches the compiler that produces it. The binary
-runs in two separate jobs — one that fetches and packs artifacts, and one that
-uploads them — and each builds its own copy from the trusted source. The PR's
-own build writes only its artifacts, which the trusted binary later packs.
+runs in two separate jobs — one that fetches and packs artifacts, one that
+uploads them — and each job builds its own copy from the trusted source. The
+PR's own build writes only its artifacts, which the trusted binary later packs.
 
 The two jobs also run on different runner pools, and the upload token is minted
 only in the upload job, so it never reaches the build host; a compromised build
@@ -135,6 +145,11 @@ The trust model does not attempt to defend against:
   whichever host answers a read carries the storage tenant's trust. That is the
   default read host `https://cache.mathlib.org`, or a host named by
   `MATHLIB_CACHE_GET_URL`.
+- **Substituted write endpoint** — the cache does not verify the host it uploads
+  to: whichever host `MATHLIB_CACHE_PUT_URL` or `MATHLIB_CACHE_PUT_BASE_URL`
+  names receives the upload, and on the azure backend the bearer token with it.
+  The trusted branch's workflow defines the upload job's environment, and a
+  token captured this way stays bounded by Layer 1.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
 - **Maintainer trust on the trusted branches** — write access to a branch the
   cache binary is built from can land a bad tool, workflow, or toolchain.
@@ -148,9 +163,12 @@ The trust model does not attempt to defend against:
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
 | Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
-| Read-fallback resolution, upload URL, dispatch | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`, `effectiveUploadURL`) |
+| Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`)      |
+| Backend selection, destination arbitration     | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`, `stagedUploadDest`), [`Cache/Upload.lean`](Upload.lean) (`runPut`) |
+| Upload backends: credentials, destination, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
+| Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean), [`Cache/Upload/Dest.lean`](Upload/Dest.lean) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
-| User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
+| User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md), [`Cache/CI.md`](CI.md) |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
 | Caller `cache_application_id` wiring           | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |

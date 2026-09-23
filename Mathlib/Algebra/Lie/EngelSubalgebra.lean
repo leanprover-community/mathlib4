@@ -118,7 +118,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
   have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
-    eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow
+    eventually_atTop.mp dx.eventually_codisjoint_ker_pow_range_pow
   specialize hk (k + 1) (Nat.le_add_right k 1)
   rw [← Submodule.map_subtype_top N.toSubmodule, Submodule.map_le_iff_le_comap]
   apply hk

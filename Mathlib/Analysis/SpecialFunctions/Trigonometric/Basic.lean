@@ -171,6 +171,8 @@ theorem pi_div_two_pos : 0 < π / 2 :=
 
 theorem two_pi_pos : 0 < 2 * π := by linarith [pi_pos]
 
+@[simp] theorem abs_pi : |π| = π := abs_of_pos pi_pos
+
 end Real
 
 namespace Mathlib.Meta.Positivity
@@ -218,7 +220,7 @@ theorem sin_pi : sin π = 0 := by
 @[simp]
 theorem cos_pi : cos π = -1 := by
   rw [← mul_div_cancel_left₀ π two_ne_zero, mul_div_assoc, cos_two_mul, cos_pi_div_two]
-  norm_num
+  simp
 
 @[simp]
 theorem sin_two_pi : sin (2 * π) = 0 := by simp [two_mul, sin_add]
@@ -421,6 +423,21 @@ theorem sin_nonneg_of_mem_Icc {x : ℝ} (hx : x ∈ Icc 0 π) : 0 ≤ sin x := b
 
 theorem sin_nonneg_of_nonneg_of_le_pi {x : ℝ} (h0x : 0 ≤ x) (hxp : x ≤ π) : 0 ≤ sin x :=
   sin_nonneg_of_mem_Icc ⟨h0x, hxp⟩
+
+theorem sin_add_le_sin_add_sin {x y : ℝ} (hx : 0 ≤ sin x) (hy : 0 ≤ sin y) :
+    sin (x + y) ≤ sin x + sin y := by
+  grw [sin_add, cos_le_one, cos_le_one, mul_one, one_mul]
+
+theorem abs_sin_add_le (x y : ℝ) : |sin (x + y)| ≤ |sin x| + |sin y| := by
+  grw [sin_add, abs_add_le, abs_mul, abs_mul, abs_cos_le_one, abs_cos_le_one, mul_one, one_mul]
+
+theorem abs_sin_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℝ) :
+    |sin (∑ i ∈ s, f i)| ≤ ∑ i ∈ s, |sin (f i)| := by
+  classical
+  induction s using Finset.induction_on' with
+  | empty => simp
+  | insert i _ hi ht hit h =>
+    grw [Finset.sum_insert hit, abs_sin_add_le, h, Finset.sum_insert hit]
 
 theorem sin_neg_of_neg_of_neg_pi_lt {x : ℝ} (hx0 : x < 0) (hpx : -π < x) : sin x < 0 :=
   neg_pos.1 <| sin_neg x ▸ sin_pos_of_pos_of_lt_pi (neg_pos.2 hx0) (neg_lt.1 hpx)
@@ -857,7 +874,7 @@ theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
   · simp [h]; linarith
   · absurd (show 0 ≤ c from cos_nonneg_of_mem_Icc <| by constructor <;> linarith [pi_pos.le])
     rw [not_le, h]
-    exact div_neg_of_neg_of_pos (by norm_num [lt_sqrt]) (by positivity)
+    exact div_neg_of_neg_of_pos (by simp [lt_sqrt]) (by positivity)
 
 end CosDivSq
 
@@ -1261,9 +1278,9 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   refine mul_le_mul_of_nonpos_left (mul_le_mul this ?_ ?_ ((Real.exp_pos _).le.trans this)) ha
   · exact
       Real.cos_le_cos_of_nonneg_of_le_pi (_root_.abs_nonneg _)
-        (hb.trans <| half_le_self <| Real.pi_pos.le) hz
+        (hb.trans <| half_le_self Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
-    exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
+    exact (neg_nonpos.2 Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
 
 theorem sinh_antiperiodic : Function.Antiperiodic sinh (π * I) := by
   simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]

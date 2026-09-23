@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -381,6 +382,11 @@ protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
   ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
 
+@[simp] protected theorem star_iff
+    {R : Type*} [TopologicalSpace R] [InvolutiveStar R] [ContinuousStar R] {f : α → R} :
+    AEStronglyMeasurable (star f) μ ↔ AEStronglyMeasurable f μ :=
+  ⟨fun h ↦ by simpa using h.star, fun h ↦ h.star⟩
+
 end Star
 
 section Order
@@ -544,7 +550,7 @@ theorem _root_.aestronglyMeasurable_indicator_iff [Zero β] {s : Set α} (hs : M
   · intro h
     refine ⟨indicator s (h.mk f), h.stronglyMeasurable_mk.indicator hs, ?_⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (h.mk f) :=
-      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs).symm)
+      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans (indicator_ae_eq_restrict hs).symm)
     have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (h.mk f) :=
       (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
@@ -760,6 +766,13 @@ theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
     rw [Set.mem_compl_iff] at hx_mem
     simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_notMem, hx hx_mem]
 
+theorem piecewise_iff {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
+    AEStronglyMeasurable (s.piecewise f g) μ ↔
+      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable g (μ.restrict sᶜ) := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨hf, hg⟩ ↦ hf.piecewise hs hg⟩
+  · exact h.restrict.congr (piecewise_ae_eq_restrict hs)
+  · exact h.restrict.congr (piecewise_ae_eq_restrict_compl hs)
+
 @[fun_prop]
 theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι → Measure α}
     (h : ∀ i, AEStronglyMeasurable f (μ i)) : AEStronglyMeasurable f (Measure.sum μ) := by
@@ -798,7 +811,7 @@ theorem add_measure [PseudoMetrizableSpace β] {ν : Measure α} {f : α → β}
 protected theorem iUnion [PseudoMetrizableSpace β] {s : ι → Set α}
     (h : ∀ i, AEStronglyMeasurable f (μ.restrict (s i))) :
     AEStronglyMeasurable f (μ.restrict (⋃ i, s i)) :=
-  (sum_measure h).mono_measure <| restrict_iUnion_le
+  (sum_measure h).mono_measure restrict_iUnion_le
 
 @[simp]
 theorem _root_.aestronglyMeasurable_iUnion_iff [PseudoMetrizableSpace β] {s : ι → Set α} :
