@@ -175,22 +175,25 @@ theorem discr_ediv_emod {D : ℤ} (hD : D % 4 = 0 ∨ D % 4 = 1) :
     discr (D / 4) (D % 4) = D := by
   grind [discr_def]
 
+private theorem algEquivEdivEmod_aux {a b : ℤ} :
+    a = discr a b / 4 - discr a b % 4 * (b / 2) - (b / 2) ^ 2 := by
+  rw [discr_def]
+  have : (b % 2) * (b / 2) = b ^ 2 / 4 - (b / 2) ^ 2 := by
+    obtain ⟨k, rfl | rfl⟩ := b.even_or_odd'
+    · rw [Int.mul_emod_right, zero_mul]
+      grind
+    · rw [Int.mul_add_emod_self_left, Int.one_emod_two, one_mul]
+      grind
+  grind [Units.val_one, Int.mul_ediv_cancel_left _ (NeZero.ne 4), Int.add_mul_emod_self_left,
+    Int.sq_emod_four]
+
 /-- Every quadratic algebra over `ℤ` is isomorphic to the canonical representative of its
 discriminant, obtained by translating `ω` by the integer `⌊b / 2⌋`. -/
 @[simps!]
 def algEquivEdivEmod (a b : ℤ) :
     QuadraticAlgebra ℤ a b ≃ₐ[ℤ] QuadraticAlgebra ℤ (discr a b / 4) (discr a b % 4) :=
   changeGeneratorEquiv (discr a b / 4) (discr a b % 4) 1 (b / 2)
-    (by
-      rw [discr_def]
-      have : (b % 2) * (b / 2) = b ^ 2 / 4 - (b / 2) ^ 2 := by
-        obtain ⟨k, rfl | rfl⟩ := b.even_or_odd'
-        · rw [Int.mul_emod_right, zero_mul]
-          grind
-        · rw [Int.mul_add_emod_self_left, Int.one_emod_two, one_mul]
-          grind
-      grind [Units.val_one, Int.mul_ediv_cancel_left _ (NeZero.ne 4), Int.add_mul_emod_self_left,
-        Int.sq_emod_four])
+    (by simpa using algEquivEdivEmod_aux)
     (by simpa [discr_def, Int.sq_emod_four, add_comm] using (Int.mul_ediv_add_emod b 2).symm)
 
 @[simp]
