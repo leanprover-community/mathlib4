@@ -291,7 +291,7 @@ theorem hom_ext {f g : PolynomialModule R M →ₗ[R] M'}
 
 /-- The image of a polynomial under a linear map. -/
 def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=
-  (coeffLinearEquiv ..).symm.toLinearMap.comp <| (Finsupp.mapRange.linearMap f).comp <|
+  (coeffLinearEquiv ..).symm.toLinearMap.comp <| (Finsupp.mapRange.linearMap f).comp
     (coeffLinearEquiv ..).toLinearMap
 
 @[simp]

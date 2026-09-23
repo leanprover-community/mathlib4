@@ -106,7 +106,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
 @[simps! toFunctor]
 def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
-  Functor.toCatHom <| {
+  Functor.toCatHom {
     obj :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt

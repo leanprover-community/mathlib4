@@ -613,7 +613,7 @@ variable [CompleteSpace E]
 
 lemma closed_range_of_antilipschitz {f : E →SL[σ] F} {c : ℝ≥0} (hf : AntilipschitzWith c f) :
     f.range.topologicalClosure = f.range :=
-  SetLike.ext'_iff.mpr <| (hf.isClosed_range f.uniformContinuous).closure_eq
+  SetLike.ext'_iff.mpr (hf.isClosed_range f.uniformContinuous).closure_eq
 
 variable [CompleteSpace F]
 

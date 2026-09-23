@@ -241,7 +241,7 @@ instance : IsMulTorsionFree (FreeGroup α) where
     have hm : reduceCyclically x.toWord = reduceCyclically y.toWord := by
       simp only [replicate_succ, flatten_cons, append_assoc] at heq'
       exact (List.append_inj heq' <| mul_left_cancel₀ hn <| by grind).1
-    have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
+    have := congr_arg mk (conj_conjugator_reduceCyclically x.toWord).symm
     rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
 end IsMulTorsionFree

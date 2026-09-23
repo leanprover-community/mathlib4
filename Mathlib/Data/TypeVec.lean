@@ -409,7 +409,7 @@ def Curry (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n)
   F (β ::: α)
 
 instance Curry.inhabited (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n)
-    [I : Inhabited (F <| (β ::: α))] : Inhabited (Curry F α β) :=
+    [I : Inhabited (F (β ::: α))] : Inhabited (Curry F α β) :=
   I
 
 /-- arrow to remove one element of a `repeat` vector -/

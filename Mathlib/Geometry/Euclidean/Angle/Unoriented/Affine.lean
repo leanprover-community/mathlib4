@@ -417,7 +417,7 @@ lemma angle_pointReflection_right {p₁ p₂ p₃ : P} :
     field
   rw [eq_sub_iff_add_eq]
   apply EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
-  exact Sbtw.angle₁₂₃_eq_pi <| (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
+  exact Sbtw.angle₁₂₃_eq_pi (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
 
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/

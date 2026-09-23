@@ -172,7 +172,7 @@ lemma coe_transpose (A : SpecialLinearGroup n R) : ↑ₘAᵀ = (↑ₘA)ᵀ :=
 
 theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
-  norm_num
+  simp
 
 theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i ≠ 0 := fun h =>
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
@@ -227,7 +227,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
     ⟨f.mapMatrix ↑ₘg, by
       rw [← f.map_det]
       simp [g.prop]⟩
-  map_one' := Subtype.ext <| f.mapMatrix.map_one
+  map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
 section center
@@ -514,7 +514,7 @@ lemma transvection_smul_single_fst {i j : ι} (hij : i ≠ j) (b : F) :
   simp [SpecialLinearGroup.smul_def, -mulVec_single, transvection_coe,
     add_mulVec, single_mulVec_eq, hij]
 
-@[deprecated transvection_smul_single_fst (since := "2026-06-22")]
+@[deprecated transvection_smul_single_fst +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_self {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b).1 *ᵥ (Pi.single i (1 : F)) = Pi.single i 1 := by
   rw [transvection_coe]
@@ -526,7 +526,7 @@ lemma transvection_smul_single_snd {i j : ι} (hij : i ≠ j) (b : F) :
   simp [SpecialLinearGroup.smul_def, transvection_coe, -mulVec_single,
     add_mulVec, single_mulVec_eq]
 
-@[deprecated transvection_smul_single_snd (since := "2026-06-22")]
+@[deprecated transvection_smul_single_snd +typeChanged (since := "2026-06-22")]
 lemma transvection_mulVec_single_other {i j : ι} (hij : i ≠ j) (b : F) :
     (transvection hij b).1 *ᵥ (Pi.single j (1 : F)) = Pi.single j 1 + b • Pi.single i 1 := by
   rw [transvection_coe]

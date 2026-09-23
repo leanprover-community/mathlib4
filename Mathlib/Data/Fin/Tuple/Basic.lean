@@ -1289,7 +1289,6 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
     (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [j.succAbove_of_castSucc_lt, contractNth_apply_of_lt]
-    · rwa [Fin.lt_def]
   · exact False.elim (hjk h.symm)
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
     · exact Fin.le_iff_val_le_val.2 (le_of_lt h)

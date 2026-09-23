@@ -482,7 +482,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 16 do
   let ss ← withAppArg delab
-  let fs ← withNaryArg 14 <| delab
+  let fs ← withNaryArg 14 delab
   `(d[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `mvfderiv`. -/
@@ -543,13 +543,7 @@ lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : 
   simp [mul_comm]
 
 @[simp]
-lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffAt[s] x) :
-    d[s] (0 : M → F) x = 0 := by
-  have : d[s] (0 : M → F) x + d[s] (0 : M → F) x = d[s] (0 : M → F) x := by
-    rw [← mvfderivWithin_add (by exact mdifferentiableWithinAt_const)
-      (by exact mdifferentiableWithinAt_const) hs]
-    simp
-  simpa using this
+lemma mvfderivWithin_zero {s : Set M} : d[s] (0 : M → F) x = 0 := mvfderivWithin_const 0
 
 lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
   simp [mvfderiv, mfderiv_const]
@@ -587,11 +581,7 @@ lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g
   simp [mul_comm _ (g x)]
 
 @[simp]
-lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
-  have : d% (0 : M → F) x + d% (0 : M → F) x = d% (0 : M → F) x := by
-    rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
-    simp
-  simpa using this
+lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := mvfderiv_const 0
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
 
 -- TODO: the next two lemmas are more type correct than their `mvfderiv` cousins, but not entirely:
@@ -612,7 +602,7 @@ variable {f : E → E'} {s : Set E} {x : E}
 /-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide. -/
 @[simp]
 theorem mvfderivWithin_eq_fderivWithin :
-    d[s] f x = fderivWithin 𝕜 f s x := by
+    d[s] f x = (fderivWithin 𝕜 f s x) ∘L (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
   by_cases h : MDiffAt[s] f x
   · simp [mvfderivWithin, mfderivWithin, h, chartAt_self_eq]
     rfl
@@ -622,15 +612,22 @@ theorem mvfderivWithin_eq_fderivWithin :
 
 /-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide. -/
 @[simp]
-theorem mvfderiv_eq_fderiv : d% f x = fderiv 𝕜 f x := by
+theorem mvfderiv_eq_fderiv :
+    d% f x = (fderiv 𝕜 f x) ∘L (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
   rw [← mvfderivWithin_univ, ← fderivWithin_univ, mvfderivWithin_eq_fderivWithin]
 
 /-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide. -/
-theorem mfderivWithin_eq_fderivWithin : mfderiv[s] f x = fderivWithin 𝕜 f s x := by
+theorem mfderivWithin_eq_fderivWithin :
+    mfderiv[s] f x =
+      (NormedSpace.fromTangentSpace (𝕜 := 𝕜) (f x)).symm ∘L (fderivWithin 𝕜 f s x) ∘L
+        (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
   convert! mvfderivWithin_eq_fderivWithin
 
 /-- For maps between vector spaces, `mfderiv` and `fderiv` coincide. -/
-theorem mfderiv_eq_fderiv : mfderiv% f x = fderiv 𝕜 f x := by
+theorem mfderiv_eq_fderiv :
+    mfderiv% f x =
+      (NormedSpace.fromTangentSpace (𝕜 := 𝕜) (f x)).symm ∘L (fderiv 𝕜 f x) ∘L
+        (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
   convert! mvfderiv_eq_fderiv
 
 end

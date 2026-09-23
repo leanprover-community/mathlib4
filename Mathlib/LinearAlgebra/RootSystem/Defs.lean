@@ -99,13 +99,16 @@ structure RootPairing extends M →ₗ[R] N →ₗ[R] R where
 
 attribute [instance] RootPairing.isPerfPair_toLinearMap
 
-/-- A root datum is a root pairing with coefficients in the integers and for which the root and
-coroot spaces are finitely-generated free Abelian groups.
+/-- Informally a root datum is a root pairing with coefficients in the integers, for which the root
+and coroot spaces are finitely-generated free Abelian groups.
 
-Note that the latter assumptions `[Finite ℤ X₁] [Finite ℤ X₂]` should be supplied as mixins, and
-that freeness follows automatically since two finitely-generated Abelian groups in perfect pairing
-are necessarily free. Moreover Lean knows this, e.g., via `PerfectPairing.reflexive_left`,
-`IsReflexive.to_isTorsionFree`, `Module.free_of_finite_type_torsion_free'`. -/
+Formally `RootDatum` does not demand the finite generation hypotheses. Thus to capture the informal
+concept one must supply the two assumptions `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]`.
+
+Finally note that if `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]` are supplied, one does not need to
+assume freeness since it follows automatically. Moreover Mathlib knows this via
+`Module.IsReflexive.of_isPerfPair`, `Module.IsReflexive.to_isTorsionFree`,
+`Module.free_of_finite_type_torsion_free'`. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
 namespace RootPairing

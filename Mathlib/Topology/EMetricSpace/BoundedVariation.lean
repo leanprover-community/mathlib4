@@ -1190,7 +1190,7 @@ theorem MonotoneOn.eVariationOn_eq (hf : MonotoneOn f s) (as : a ∈ s) (bs : b 
     grw [← h.dist_le (x := a) (y := b)] <;> grind [Real.dist_eq]
   · simp [hab, hf bs as hab.le]
 
-@[deprecated MonotoneOn.eVariationOn_eq (since := "2026-07-08")]
+@[deprecated MonotoneOn.eVariationOn_eq +typeChanged (since := "2026-07-08")]
 theorem MonotoneOn.eVariationOn_le (hf : MonotoneOn f s) (as : a ∈ s) (bs : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) ≤ .ofReal (f b - f a) := (hf.eVariationOn_eq as bs).le
 

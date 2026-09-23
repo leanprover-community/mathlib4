@@ -94,7 +94,7 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
 
 @[simp]
 theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
-    ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
+    ofFn (fun i : Fin l.length => f l[(i : Nat)]) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
 
 -- Note there is a now another `mem_ofFn` defined in Lean, with an existential on the RHS,
@@ -178,7 +178,7 @@ theorem forall_iff_forall_tuple {P : List α → Prop} :
 /-- `Fin.sigma_eq_iff_eq_comp_cast` may be useful to work with the RHS of this expression. -/
 theorem ofFn_inj' {m n : ℕ} {f : Fin m → α} {g : Fin n → α} :
     ofFn f = ofFn g ↔ (⟨m, f⟩ : Σ n, Fin n → α) = ⟨n, g⟩ :=
-  Iff.symm <| equivSigmaTuple.symm.injective.eq_iff.symm
+  Iff.symm equivSigmaTuple.symm.injective.eq_iff.symm
 
 /-- Note we can only state this when the two functions are indexed by defeq `n`. -/
 theorem ofFn_injective {n : ℕ} : Function.Injective (ofFn : (Fin n → α) → List α) := fun f g h =>

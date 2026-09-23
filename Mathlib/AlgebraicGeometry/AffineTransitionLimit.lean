@@ -491,7 +491,6 @@ noncomputable section
 variable {D t f c} [∀ {i j : I} (f : i ⟶ j), IsAffineHom (D.map f)]
 variable (A : ExistsHomHomCompEqCompAux D t f)
 
-set_option backward.isDefEq.respectTransparency false in
 omit [LocallyOfFiniteType f] in
 lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
     ((D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)) ⁻¹'

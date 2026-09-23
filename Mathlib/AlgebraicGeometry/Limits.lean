@@ -228,7 +228,8 @@ instance : HasFiniteCoproducts Scheme.{u} where
   out := inferInstance
 
 instance : MonoCoprod Scheme.{u} :=
-  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
+  .mk' fun X Y ↦
+    ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]

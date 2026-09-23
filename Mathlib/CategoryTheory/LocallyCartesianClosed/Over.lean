@@ -67,7 +67,6 @@ abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :

@@ -273,7 +273,7 @@ lemma exact_map_mkQ_range (f : M →ₗ[R] N) :
 
 lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
     Exact (Submodule.subtype (ker g)) g :=
-  exact_iff.mpr <| (Submodule.range_subtype _).symm
+  exact_iff.mpr (Submodule.range_subtype _).symm
 
 @[simp]
 lemma exact_zero_iff_injective {M N : Type*} (P : Type*)

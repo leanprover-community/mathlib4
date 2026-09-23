@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Star.TensorProduct
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Lift
 public import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
@@ -37,57 +37,6 @@ open scoped TensorProduct
 
 open TensorProduct
 
-
-namespace LinearMap
-
-section liftBaseChange
-
-variable {R M N} (A) [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
-variable [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
-
-/--
-If `M` is an `R`-module and `N` is an `A`-module, then `A`-linear maps `A ⊗[R] M →ₗ[A] N`
-correspond to `R` linear maps `M →ₗ[R] N` by composing with `M → A ⊗ M`, `x ↦ 1 ⊗ x`.
--/
-def liftBaseChangeEquiv : (M →ₗ[R] N) ≃ₗ[A] (A ⊗[R] M →ₗ[A] N) :=
-  (LinearMap.ringLmapEquivSelf _ _ _).symm.trans (AlgebraTensorModule.lift.equiv _ _ _ _ _ _)
-
-/-- If `N` is an `A` module, we may lift a linear map `M →ₗ[R] N` to `A ⊗[R] M →ₗ[A] N` -/
-abbrev liftBaseChange (l : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] N :=
-  LinearMap.liftBaseChangeEquiv A l
-
-@[simp]
-lemma liftBaseChange_tmul (l : M →ₗ[R] N) (x y) : l.liftBaseChange A (x ⊗ₜ y) = x • l y := rfl
-
-lemma liftBaseChange_one_tmul (l : M →ₗ[R] N) (y) : l.liftBaseChange A (1 ⊗ₜ y) = l y := by simp
-
-@[simp]
-lemma liftBaseChangeEquiv_symm_apply (l : A ⊗[R] M →ₗ[A] N) (x) :
-    (liftBaseChangeEquiv A).symm l x = l (1 ⊗ₜ x) := rfl
-
-lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module A P] [Module R P] [IsScalarTower R A P]
-    (l : M →ₗ[R] N) (l' : N →ₗ[A] P) :
-      l' ∘ₗ l.liftBaseChange A = (l'.restrictScalars R ∘ₗ l).liftBaseChange A := by
-  ext
-  simp
-
-@[simp]
-lemma range_liftBaseChange (l : M →ₗ[R] N) :
-    LinearMap.range (l.liftBaseChange A) = Submodule.span A (LinearMap.range l) := by
-  apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
-    induction x using TensorProduct.inductionOn
-    · rw [LinearMap.liftBaseChange_tmul]
-      exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, rfl⟩)
-    · rw [map_add]
-      exact add_mem ‹_› ‹_›
-  · rw [Submodule.span_le]
-    rintro _ ⟨x, rfl⟩
-    exact ⟨1 ⊗ₜ x, by simp⟩
-
-end liftBaseChange
-
-end LinearMap
 
 namespace Algebra
 
@@ -197,6 +146,17 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
         rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
       | add x y hx hy => simp [smul_add, add_mul _, *]
     | add x y hx hy => simp [smul_add, mul_add _, *]
+
+open scoped RingTheory.LinearMap in
+lemma _root_.LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (f : M →ₗ[R] R ⊗[R] A) (g : N →ₗ[R] A) :
+    μ[R] ∘ₗ ((TensorProduct.lid R A ∘ₗ f) ⊗ₘ g) =
+      TensorProduct.lid R A ∘ₗ LinearMap.lTensor R μ ∘ₗ
+        (TensorProduct.assoc R R A A).toLinearMap ∘ₗ (f ⊗ₘ g) := by
+  trans μ[R] ∘ₗ (LinearMap.rTensor A (TensorProduct.lid R A)) ∘ₗ (f ⊗ₘ g)
+  · ext; simp
+  simp only [← LinearMap.comp_assoc]
+  congr 1; ext; simp
 
 end NonUnitalNonAssocSemiring
 

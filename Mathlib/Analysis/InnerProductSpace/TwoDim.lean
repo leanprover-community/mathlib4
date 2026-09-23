@@ -289,7 +289,7 @@ theorem rightAngleRotation_neg_orientation (x : E) :
 @[simp]
 theorem rightAngleRotation_trans_neg_orientation :
     (-o).rightAngleRotation = o.rightAngleRotation.trans (LinearIsometryEquiv.neg ℝ) :=
-  LinearIsometryEquiv.ext <| o.rightAngleRotation_neg_orientation
+  LinearIsometryEquiv.ext o.rightAngleRotation_neg_orientation
 
 theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x : F) :

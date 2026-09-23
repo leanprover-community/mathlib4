@@ -133,7 +133,7 @@ theorem ContinuousLinearMap.curry_uncurryLeft
 @[simp]
 theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
     f.curryLeft.uncurryLeft = f :=
-  ContinuousMultilinearMap.toMultilinearMap_injective <| f.toMultilinearMap.uncurry_curryLeft
+  ContinuousMultilinearMap.toMultilinearMap_injective f.toMultilinearMap.uncurry_curryLeft
 
 variable (𝕜 Ei G)
 

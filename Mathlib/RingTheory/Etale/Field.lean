@@ -223,7 +223,7 @@ def equivPiOfIsSepClosed [EssFiniteType K A] [FormallyEtale K A] [IsSepClosed K]
     Ideal.Quotient.field m.asIdeal
   ((IsArtinianRing.equivPi _).restrictScalars K).trans <|
     (AlgEquiv.piCongrRight fun _ ↦ (AlgEquiv.ofBijective (Algebra.ofId K _)
-      (IsSepClosed.algebraMap_bijective _ _)).symm).trans <|
+      (IsSepClosed.algebraMap_bijective _ _)).symm).trans
     (AlgEquiv.piCongrLeft _ (fun _ ↦ K) IsArtinianRing.primeSpectrumEquivMaximalSpectrum).symm
 
 variable {K} in

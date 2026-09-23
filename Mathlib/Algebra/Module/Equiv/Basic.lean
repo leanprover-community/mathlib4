@@ -65,7 +65,7 @@ end RestrictScalars
 theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
   ⟨fun h ↦
-    Function.bijective_iff_has_inverse.mpr <|
+    Function.bijective_iff_has_inverse.mpr
       ⟨h.unit.inv,
         ⟨Module.End.isUnit_inv_apply_apply_of_isUnit h,
         Module.End.isUnit_apply_inv_apply_of_isUnit h⟩⟩,
@@ -84,7 +84,7 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_assoc _ _ _ := rfl
   mul_one _ := ext fun _ ↦ rfl
   one_mul _ := ext fun _ ↦ rfl
-  inv_mul_cancel f := ext <| f.left_inv
+  inv_mul_cancel f := ext f.left_inv
 
 lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
 lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
@@ -120,7 +120,7 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
-  smul := (· <| ·)
+  smul := (· ·)
   smul_zero := map_zero
   smul_add := map_add
   one_smul _ := rfl
@@ -499,7 +499,7 @@ theorem symm_ofLinearMap (h₁ h₂) :
 @[deprecated ofLinearMap (since := "2026-06-23")]
 abbrev ofLinear (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) : M ≃ₛₗ[σ₁₂] M₂ := ofLinearMap f g h₁ h₂
 
-@[deprecated coe_ofLinearMap (since := "2026-06-23")]
+@[deprecated coe_ofLinearMap +typeChanged (since := "2026-06-23")]
 theorem ofLinear_apply {h₁ h₂} (x : M) : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) x = f x :=
   rfl
 

@@ -322,11 +322,7 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget CommMonCat.{u}) where
   preservesLimitsOfShape {_} _ := { }
 
-instance _root_.AddCommMonCat.forget_preservesLimits :
-    PreservesLimits (forget AddCommMonCat.{u}) :=
-  AddCommMonCat.forget_preservesLimitsOfSize.{u, u}
-
-@[to_additive existing]
+@[to_additive]
 instance forget_preservesLimits : PreservesLimits (forget CommMonCat.{u}) :=
   CommMonCat.forget_preservesLimitsOfSize.{u, u}
 

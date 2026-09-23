@@ -62,7 +62,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
     Function.Bijective (toIntegralClosure R T B) := by
   let e := (Algebra.TensorProduct.cancelBaseChange ..).symm.trans <|
       (Algebra.TensorProduct.congr (.refl (R := T) (A₁ := T)) (.ofBijective _ H)).trans <|
-      (AlgEquiv.ofBijective _ H').trans <|
+      (AlgEquiv.ofBijective _ H').trans
       (AlgEquiv.mapIntegralClosure (Algebra.TensorProduct.cancelBaseChange ..))
   convert! e.bijective
   rw [← e.coe_toAlgHom]

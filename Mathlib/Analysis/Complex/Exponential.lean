@@ -610,7 +610,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       rw [show 3 = 1 + 1 + 1 from rfl]
       repeat rw [Finset.sum_range_succ]
-      norm_num [Nat.factorial]
+      simp [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
 
@@ -642,8 +642,7 @@ lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
 
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-    rwa [Nat.cast_zero] at ht'
+  · simp_all
   calc
     (1 - t / n) ^ n ≤ rexp (-(t / n)) ^ n := by
       gcongr

@@ -446,8 +446,7 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯
       obtain ⟨p, q⟩ := pq
       obtain ⟨p', q'⟩ := p'q'
       rw [← ofFractionRing_add, Localization.add_mk]
-      simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-        liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+      simp only [RingHom.coe_toMonoidWithZeroHom, liftMonoidWithZeroHom_apply_ofFractionRing_mk]
       rw [div_add_div, div_eq_div_iff]
       · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
         simp only [map_add, map_mul, Submonoid.coe_mul]

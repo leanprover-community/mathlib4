@@ -689,7 +689,7 @@ theorem map_radical_le : map f (radical I) ≤ radical (map f I) :=
 theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
   map_le_iff_le_comap.1 <|
     (Ideal.map_mul f (comap f K) (comap f L)).symm ▸
-      mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
+      mul_mono (map_le_iff_le_comap.2 le_rfl) (map_le_iff_le_comap.2 le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
   induction n with
@@ -724,7 +724,7 @@ its image in `S` is not equal to `⊤`.
 -/
 theorem comap_map_eq_self_of_isMaximal (f : R →+* S) {p : Ideal R} [hP' : p.IsMaximal]
     (hP : Ideal.map f p ≠ ⊤) : (map f p).comap f = p :=
-  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp <| le_comap_map
+  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp le_comap_map
 
 end CommRing
 
@@ -972,7 +972,7 @@ theorem annihilator_sup (N P : Submodule R M) :
   rw [← sSup_pair, sSup_eq_iSup, iSup_subtype', annihilator_iSup, ← iInf_pair, iInf_subtype']
 
 theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
-  simp_rw [← le_bot_iff, smul_le, SetLike.le_def, mem_annihilator]; rfl
+  simp_rw [← le_bot_iff, smul_le, IsConcreteLE.le_iff, mem_annihilator]; rfl
 
 @[simp]
 theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=

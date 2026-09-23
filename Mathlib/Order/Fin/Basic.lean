@@ -48,20 +48,19 @@ variable {m n : ℕ}
 
 /-! ### Instances -/
 
-instance : Max (Fin n) where max x y := ⟨max x y, max_rec' (· < n) x.2 y.2⟩
-instance : Min (Fin n) where min x y := ⟨min x y, min_rec' (· < n) x.2 y.2⟩
+attribute [norm_cast] Fin.val_max Fin.val_min
 
-@[simp, norm_cast]
+@[deprecated Fin.val_max (since := "2026-09-09")]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
 
-@[simp, norm_cast]
+@[deprecated Fin.val_min (since := "2026-09-09")]
 theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
 
 theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
 
 instance instLinearOrder : LinearOrder (Fin n) :=
   Fin.val_injective.linearOrder _
-    Fin.le_iff_val_le_val Fin.lt_def coe_min coe_max compare_eq_compare_val
+    Fin.le_iff_val_le_val Fin.lt_def val_min val_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
@@ -94,7 +93,7 @@ instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInst
 instance [NeZero n] : IsBotZeroClass (Fin n) where
   isBot_zero := isBot_bot
 
-@[deprecated _root_.bot_eq_zero (since := "2026-05-07")]
+@[deprecated _root_.bot_eq_zero +typeChanged (since := "2026-05-07")]
 protected lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := _root_.bot_eq_zero
 
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
@@ -354,11 +353,19 @@ def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strict
 @[simps! apply toEmbedding]
 def castLEOrderEmb (h : n ≤ m) : Fin n ↪o Fin m := .ofStrictMono (castLE h) (strictMono_castLE h)
 
+@[simp]
+theorem coe_castLEOrderEmb (h : n ≤ m) : castLEOrderEmb h = castLE h :=
+  rfl
+
 /-- `Fin.castAdd` as an `OrderEmbedding`.
 
 `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
 @[simps! apply toEmbedding]
 def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (strictMono_castAdd m)
+
+@[simp]
+theorem coe_castAddOrderEmb (m : ℕ) : (castAddOrderEmb m : Fin n → _) = castAdd m :=
+  rfl
 
 /-- `Fin.castSucc` as an `OrderEmbedding`.
 
@@ -366,11 +373,19 @@ def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (s
 @[simps! apply toEmbedding]
 def castSuccOrderEmb : Fin n ↪o Fin (n + 1) := .ofStrictMono castSucc strictMono_castSucc
 
+@[simp]
+theorem coe_castSuccOrderEmb : (castSuccOrderEmb : Fin n → _) = castSucc :=
+  rfl
+
 /-- `Fin.addNat` as an `OrderEmbedding`.
 
 `addNatOrderEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
 @[simps! apply toEmbedding]
 def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (strictMono_addNat m)
+
+@[simp]
+theorem coe_addNatOrderEmb (m : ℕ) : (addNatOrderEmb m : Fin n → _) = (addNat · m) :=
+  rfl
 
 /-- `Fin.natAdd` as an `OrderEmbedding`.
 
@@ -378,15 +393,22 @@ def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (
 @[simps! apply toEmbedding]
 def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (strictMono_natAdd n)
 
+@[simp]
+theorem coe_natAddOrderEmb (n : ℕ) : (natAddOrderEmb n : Fin m → _) = natAdd n :=
+  rfl
+
 /-- `Fin.succAbove p` as an `OrderEmbedding`. -/
 @[simps! apply toEmbedding]
 def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
 
 @[simp]
+theorem coe_succAboveOrderEmb (p : Fin (n + 1)) : succAboveOrderEmb p = succAbove p :=
+  rfl
+
 lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
     Set.range (Fin.succAboveOrderEmb i) = {i}ᶜ := by
-  aesop
+  simp
 
 /-! ### Uniqueness of order isomorphisms -/
 

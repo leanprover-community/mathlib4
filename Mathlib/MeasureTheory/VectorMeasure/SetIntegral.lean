@@ -234,7 +234,7 @@ theorem setIntegral_eq_zero_of_forall_eq_zero (ht_eq : ∀ x ∈ t, f x = 0) :
 theorem frequently_ae_ne_zero_of_setIntegral_ne_zero (hU : ∫ᵛ x in t, f x ∂[B; μ] ≠ 0) :
     ∃ᶠ x in ae (μ.variation.restrict t), f x ≠ 0 := by
   have ht : MeasurableSet t := by
-    contrapose! hU
+    contrapose hU
     simp [setIntegral_eq_zero_of_not_measurableSet hU]
   rw [← variation_restrict ht]
   exact frequently_ae_ne_zero_of_integral_ne_zero hU

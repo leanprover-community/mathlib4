@@ -238,7 +238,7 @@ public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F 
   rw [AddMonoidHom.mrange_eq_top] at hg
   rw [← image_preimage_eq (f ⁻¹' s) hg]
   apply image
-  rw [← preimage_comp, ← AddMonoidHom.coe_coe, ← AddMonoidHom.coe_comp]
+  rw [← preimage_comp, ← AddMonoidHom.coe_ofClass, ← AddMonoidHom.coe_comp]
   exact Nat.isSemilinearSet_preimage hs _
 
 /-! ### Semilinear sets are included in finitely generated submonoids -/
@@ -765,7 +765,7 @@ private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Se
     (hs : IsProperLinearSet s) : IsSemilinearSet sᶜ := by
   convert!
     hs.isSemilinearSet_setOfFractNe.union <|
-      hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using 1
+      hs.isSemilinearSet_setOfFloorNeg.union hs.isSemilinearSet_setOfFloorPos using 1
   ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
     IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_ofPred_eq]

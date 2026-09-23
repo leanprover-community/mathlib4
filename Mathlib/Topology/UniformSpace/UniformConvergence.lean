@@ -155,7 +155,7 @@ theorem TendstoUniformlyOnFilter.tendsto_at (h : TendstoUniformlyOnFilter F f p 
 theorem TendstoUniformlyOn.tendsto_at (h : TendstoUniformlyOn F f p s) (hx : x ∈ s) :
     Tendsto (fun n => F n x) p <| 𝓝 (f x) :=
   h.tendstoUniformlyOnFilter.tendsto_at
-    (le_principal_iff.mpr <| mem_principal.mpr <| singleton_subset_iff.mpr <| hx)
+    (le_principal_iff.mpr <| mem_principal.mpr <| singleton_subset_iff.mpr hx)
 
 /-- Uniform convergence implies pointwise convergence. -/
 theorem TendstoUniformly.tendsto_at (h : TendstoUniformly F f p) (x : α) :

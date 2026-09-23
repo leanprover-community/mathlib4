@@ -661,7 +661,6 @@ lemma Over.Hom.ext {A B : P.Over Q X} {f g : A ⟶ B} (h : f.left = g.left) : f 
   · exact h
   · simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Over.w {A B : P.Over Q X} (f : A ⟶ B) :
     f.left ≫ B.hom = A.hom := by

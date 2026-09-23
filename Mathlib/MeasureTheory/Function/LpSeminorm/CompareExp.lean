@@ -92,7 +92,7 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos
   · apply eLpNorm_le_eLpNorm_mul_rpow_measure_univ hpq hf
   simp only [hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable, one_div, top_le_iff]
   apply ENNReal.top_mul
-  have A : μ ≠ 0 := by contrapose! hf; simp [hf]
+  have A : μ ≠ 0 := by contrapose hf; simp [hf]
   have B : q.toReal⁻¹ ≤ p.toReal⁻¹ := by
     rcases eq_top_or_lt_top q with rfl | hq
     · simp
@@ -222,14 +222,14 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable_ennreal
   · simp only [eLpNorm_of_not_aestronglyMeasurable hf]
     rw [mul_top, top_mul]
     · simp
-    · contrapose! h'g
+    · contrapose h'g
       rwa [← eLpNorm_eq_zero_iff hq]
     · simp [hc.ne']
   · simp only [eLpNorm_of_not_aestronglyMeasurable hg]
     rw [mul_top]
     · simp
     have : eLpNorm f p μ ≠ 0 := by
-      contrapose! h'f
+      contrapose h'f
       rwa [← eLpNorm_eq_zero_iff hp]
     simp [mul_eq_zero, hc.ne', this]
 
@@ -307,7 +307,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞)
   apply le_top.trans_eq
   rw [mul_top]
   have : eLpNorm f ∞ μ ≠ 0 := by
-    contrapose! h'f
+    contrapose h'f
     rwa [← eLpNorm_eq_zero_iff top_ne_zero]
   simp [mul_eq_zero, hc.ne', this]
 

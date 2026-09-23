@@ -126,7 +126,7 @@ theorem uniqueDiffWithinAt_congr (st : 𝓝[s] x = 𝓝[t] x) :
 
 theorem uniqueDiffWithinAt_inter (ht : t ∈ 𝓝 x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x ↔ UniqueDiffWithinAt 𝕜 s x :=
-  uniqueDiffWithinAt_congr <| (nhdsWithin_restrict' _ ht).symm
+  uniqueDiffWithinAt_congr (nhdsWithin_restrict' _ ht).symm
 
 theorem UniqueDiffWithinAt.inter (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝 x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x :=
@@ -137,7 +137,7 @@ theorem UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDi
 
 theorem uniqueDiffWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x ↔ UniqueDiffWithinAt 𝕜 s x :=
-  uniqueDiffWithinAt_congr <| (nhdsWithin_restrict'' _ ht).symm
+  uniqueDiffWithinAt_congr (nhdsWithin_restrict'' _ ht).symm
 
 theorem UniqueDiffWithinAt.inter' (hs : UniqueDiffWithinAt 𝕜 s x) (ht : t ∈ 𝓝[s] x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x :=
@@ -177,7 +177,7 @@ theorem AccPt.of_mem_tangentConeAt_ne_zero [T2Space E] {y : E} (hy : y ∈ tange
 
 theorem UniqueDiffWithinAt.accPt [T2Space E] [Nontrivial E] (h : UniqueDiffWithinAt 𝕜 s x) :
     AccPt x (𝓟 s) := by
-  by_contra! h'
+  by_contra h'
   have : Dense (Submodule.span 𝕜 (0 : Set E) : Set E) :=
     h.1.mono <| by gcongr; exact tangentConeAt_subset_zero h'
   simp [dense_iff_closure_eq] at this

@@ -436,7 +436,7 @@ theorem coe_inv_det (f : M ≃ₗ[R] M) : ↑(LinearEquiv.det f)⁻¹ = LinearMa
 
 @[simp]
 theorem det_refl : LinearEquiv.det (LinearEquiv.refl R M) = 1 :=
-  Units.ext <| LinearMap.det_id
+  Units.ext LinearMap.det_id
 
 @[simp]
 theorem det_trans (f g : M ≃ₗ[R] M) :

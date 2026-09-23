@@ -562,7 +562,6 @@ lemma FinitaryPreExtensive.isIso_sigmaDesc_fst [FinitaryPreExtensive C] {α : Ty
     (by simp) (by simp [c]) (by simp [pullback.condition, c])
   exact pullback.isLimit _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
 coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
 For an `IsPullback` version, see `FinitaryPreExtensive.isPullback_sigmaDesc`. -/

@@ -406,11 +406,7 @@ types.) -/]
 instance forget_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget CommGrpCat.{u}) := inferInstance
 
-noncomputable instance _root_.AddCommGrpCat.forget_preservesLimits :
-    PreservesLimits (forget AddCommGrpCat.{u}) :=
-  AddCommGrpCat.forget_preservesLimitsOfSize.{u, u}
-
-@[to_additive existing]
+@[to_additive]
 noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrpCat.{u}) :=
   CommGrpCat.forget_preservesLimitsOfSize.{u, u}
 

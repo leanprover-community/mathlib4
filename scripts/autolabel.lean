@@ -262,7 +262,6 @@ def mathlibLabelData : (l : Label) → LabelData l
     exclusions := #[
       "scripts" / "lint-style.lean",
       "scripts" / "lint-style.py",
-      "scripts" / "noshake.json",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
       "scripts" / "nolints_prime_decls.txt",
@@ -342,7 +341,6 @@ section Tests
 #guard getMatchingLabels #["scripts" / "lint-style.lean"] == #[.«t-linter»]
 #guard getMatchingLabels #["Mathlib" / "Tactic" / "Linter" / "TextBased.lean",
   "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #[.«t-linter»]
-#guard getMatchingLabels #["scripts" / "noshake.json"] == #[]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/

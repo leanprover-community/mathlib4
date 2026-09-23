@@ -296,11 +296,11 @@ theorem coe_symm_comp_coe (e : A ≃A[R] B) :
 
 @[simp]
 theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id := by
-  exact funext <| e.symm_apply_apply
+  exact funext e.symm_apply_apply
 
 @[simp]
 theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=
-  funext <| e.apply_symm_apply
+  funext e.apply_symm_apply
 
 @[simp]
 theorem symm_symm (e : A ≃A[R] B) : e.symm.symm = e := rfl

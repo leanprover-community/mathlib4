@@ -863,7 +863,6 @@ set_option backward.defeqAttrib.useBackward true in
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.rightUnitor
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
 @[simps!]

@@ -552,14 +552,14 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
     (RelEmbedding.sumLexInr r s).collapse.principalSumRelIso with
   | Sum.inl f, Sum.inr g => Sum.inl <| f.transRelIso g.symm
   | Sum.inr f, Sum.inl g => Sum.inr <| g.transRelIso f.symm
-  | Sum.inr f, Sum.inr g => Sum.inl <| (f.trans g.symm).toInitialSeg
+  | Sum.inr f, Sum.inr g => Sum.inl (f.trans g.symm).toInitialSeg
   | Sum.inl f, Sum.inl g => Classical.choice <| by
       obtain h | h | h := trichotomous_of (Sum.Lex r s) f.top g.top
       · exact ⟨Sum.inl <| (f.codRestrict {x | Sum.Lex r s x g.top}
           (fun a => _root_.trans (f.lt_top a) h) h).transRelIso g.subrelIso⟩
       · let f := f.subrelIso
         rw [h] at f
-        exact ⟨Sum.inl <| (f.symm.trans g.subrelIso).toInitialSeg⟩
+        exact ⟨Sum.inl (f.symm.trans g.subrelIso).toInitialSeg⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
 

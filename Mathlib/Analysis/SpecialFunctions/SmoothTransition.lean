@@ -159,7 +159,7 @@ theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
     fun hx => add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
 
 theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
-  (div_eq_one_iff_eq <| (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
+  (div_eq_one_iff_eq (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
 
 @[simp]
 nonrec theorem zero_iff_nonpos : smoothTransition x = 0 ↔ x ≤ 0 := by
