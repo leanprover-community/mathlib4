@@ -15,8 +15,6 @@ public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 
 @[expose] public section
 
-assert_not_exists TwoSidedIdeal
-
 open CategoryTheory Category Limits Preadditive
 
 universe v u
