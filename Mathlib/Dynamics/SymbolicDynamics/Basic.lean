@@ -460,7 +460,7 @@ lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Inhabited A] [Monoid G]
   -- unfold `MapsTo`
   intro x hx p hp g
   specialize hx p hp (h * g)
-  contrapose! hx
+  contrapose hx
   simpa [mulOccursInAt_mulShift] using hx
 
 end Pattern
