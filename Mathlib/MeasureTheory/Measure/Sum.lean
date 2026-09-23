@@ -32,8 +32,8 @@ noncomputable def sum (μ : ι → Measure α) : Measure α :=
     le_trans (le_iInf fun _ => le_toOuterMeasure_caratheodory _)
       (OuterMeasure.le_sum_caratheodory _)
 
-theorem le_sum_apply (μ : ι → Measure α) (s : Set α) : ∑' i, μ i s ≤ sum μ s :=
-  le_toMeasure_apply _ _ _
+theorem le_sum_apply (μ : ι → Measure α) (s : Set α) : ∑' i, μ i s ≤ sum μ s := by
+  grw [sum, ← le_toMeasure_apply]; rfl
 
 @[simp]
 theorem sum_apply (μ : ι → Measure α) (hs : MeasurableSet s) :
@@ -68,7 +68,7 @@ theorem sum_apply_of_countable [Countable ι] (μ : ι → Measure α) (s : Set 
   _ = ∑' i, μ i s := by simp [ht]
 
 theorem le_sum (μ : ι → Measure α) (i : ι) : μ i ≤ sum μ :=
-  le_iff.2 fun s hs ↦ by simpa only [sum_apply μ hs] using ENNReal.le_tsum i
+  le_iff.2 fun s hs ↦ by grw [sum_apply μ hs, ← ENNReal.le_tsum i]
 
 @[simp]
 theorem sum_apply_eq_zero [Countable ι] :

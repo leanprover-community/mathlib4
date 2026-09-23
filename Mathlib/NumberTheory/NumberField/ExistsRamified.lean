@@ -83,7 +83,7 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
   obtain ⟨P, _, hP'⟩ := NumberField.exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H.ne'
   obtain ⟨p, hp : _ = Ideal.span _⟩ := IsPrincipalIdealRing.principal (P.under ℤ)
   have hp0 : p ≠ 0 := fun hp0 ↦ Ideal.IsMaximal.ne_bot_of_isIntegral_int _
-    (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
+    (Ideal.eq_bot_of_under_eq_bot (hp.trans (by aesop)))
   have : Prime p := by rw [← Ideal.span_singleton_prime hp0, ← hp]; infer_instance
   refine ⟨p.natAbs, Int.prime_iff_natAbs_prime.mp this, fun Q _ hQ ↦ ?_⟩
   replace hQ : (p : 𝒪) ∈ Q := Q.mem_of_dvd

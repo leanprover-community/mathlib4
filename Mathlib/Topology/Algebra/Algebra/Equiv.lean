@@ -78,6 +78,7 @@ def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
 instance : CoeOut (A ≃A[R] B) (A →A[R] B) where coe := toContinuousAlgHom
 instance : CoeOut (A ≃A[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
+@[macro_inline]
 instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -295,11 +296,11 @@ theorem coe_symm_comp_coe (e : A ≃A[R] B) :
 
 @[simp]
 theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id := by
-  exact funext <| e.symm_apply_apply
+  exact funext e.symm_apply_apply
 
 @[simp]
 theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=
-  funext <| e.apply_symm_apply
+  funext e.apply_symm_apply
 
 @[simp]
 theorem symm_symm (e : A ≃A[R] B) : e.symm.symm = e := rfl

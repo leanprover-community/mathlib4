@@ -208,7 +208,7 @@ theorem leadingCoeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
     replace hPdeg : d ≤ n := (WithBot.coe_le rfl).mp hPdeg
     rw [leadingCoeff, natDegree_eq_of_degree_eq_some hd.symm]
     grw [coeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd, hPdeg]
-    norm_num
+    simp
 
 theorem coeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
@@ -233,7 +233,7 @@ theorem leadingCoeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]} (hn : 2 
   contrapose! hP
   have : d - 1 < n - 1 := by grind [Nat.cast_withBot, WithBot.coe_le_coe, WithBot.coe_lt_coe]
   calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd
-  _ < 2 ^ (n - 1) := by gcongr; norm_num
+  _ < 2 ^ (n - 1) := by gcongr; simp
 
 /-- Coefficients used to compute the iterated derivative of a polynomial given its values on the
 Chebyshev nodes. -/
@@ -257,11 +257,11 @@ private theorem negOnePow_mul_iterateDerivativeC_nonneg
     {n k i : ℕ} (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
     0 ≤ (-1) ^ i * iterateDerivativeC n k x i := by
   rw [iterateDerivativeC, ← mul_assoc]
-  refine mul_nonneg ?_ (Finset.sum_nonneg' ?_)
+  refine mul_nonneg ?_ (Finset.sum_nonneg fun t _ => ?_)
   · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
     exact le_of_lt <| mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k)
       (negOnePow_mul_leadingCoeffC_pos hi)
-  · exact fun t => Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
+  · exact Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
 
 private theorem negOnePow_mul_iterateDerivativeC_pos
     {n k i : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :

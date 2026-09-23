@@ -112,6 +112,7 @@ section SMul
 
 variable [SMul 𝕜 E]
 
+@[macro_inline]
 instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -214,7 +215,7 @@ instance instSup : Max (Seminorm 𝕜 E) where
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
-        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans <|
+        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans
           (mul_max_of_nonneg _ _ <| norm_nonneg x).symm }
 
 @[simp]
@@ -332,7 +333,7 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
-@[deprecated IsOrderedSMul.smul_le_smul (since := "2026-07-31")]
+@[deprecated IsOrderedSMul.smul_le_smul +typeChanged (since := "2026-07-31")]
 protected theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
@@ -842,7 +843,7 @@ theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ �
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
   refine fun a ha b hb ↦ mul_lt_mul' ha hb (apply_nonneg _ _) ?_
-  exact hr₁.lt_or_gt.resolve_left <| ((norm_nonneg a).trans ha).not_gt
+  exact hr₁.lt_or_gt.resolve_left ((norm_nonneg a).trans ha).not_gt
 
 theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr₂ : r₂ ≠ 0) :
     Metric.ball (0 : 𝕜) r₁ • p.closedBall 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
