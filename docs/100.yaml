@@ -23,18 +23,8 @@
   authors: Joseph Myers
 5:
   title   : Prime Number Theorem
-  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
-  links   :
-    Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
-    With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
-    website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
 6:
   title  : Gödel’s Incompleteness Theorem
-  authors: Shogo Saito
-  links  :
-    First incompleteness theorem: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/First.lean#L24-L53
-    Second incompleteness theorem: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Second.lean#L15-L18
-    website: https://formalizedformallogic.github.io/Catalogue/
 7:
   title  : Law of Quadratic Reciprocity
   decls  :
@@ -43,9 +33,6 @@
   authors: Chris Hughes (first) and Michael Stoll (second)
 8:
   title  : The Impossibility of Trisecting the Angle and Doubling the Cube
-  authors: Weiyi Wang
-  links  :
-    result: https://github.com/wwylele/Compass/blob/master/Solution.lean
 9:
   title  : The Area of a Circle
   decl   : Theorems100.area_disc
@@ -104,11 +91,6 @@
   authors: Paul van Wamelen
 24:
   title  : The Independence of the Continuum Hypothesis
-  authors: Jesse Michael Han and Floris van Doorn
-  links  :
-    result: https://github.com/flypitch/flypitch/blob/master/src/summary.lean
-    website: https://flypitch.github.io/
-  note   : see the `README` file in the [linked repository](https://github.com/flypitch/flypitch/).
 25:
   title  : Schroeder-Bernstein Theorem
   decl   : Function.Embedding.schroeder_bernstein
@@ -131,15 +113,10 @@
   decl   : Ballot.ballot_problem
 31:
   title  : Ramsey’s Theorem
-  authors: Bhavik Mehta
-  links  :
-    result: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
 32:
   title  : The Four Color Problem
 33:
   title  : Fermat’s Last Theorem
-  statement: FermatLastTheorem
-  note: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
@@ -153,9 +130,6 @@
   authors: Moritz Doll
 36:
   title  : Brouwer Fixed Point Theorem
-  authors: Brendan Seamas Murphy
-  links  :
-    result: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
 37:
   title  : The Solution of a Cubic
   authors: Jeoff Lee
@@ -275,10 +249,6 @@
   authors: Sander R. Dahmen (finite) and Johannes Hölzl (infinite)
 67:
   title  : e is Transcendental
-  authors: Jujian Zhang
-  links  :
-    result: https://github.com/jjaassoonn/transcendental/blob/master/src/e_transcendental.lean
-    website: https://jjaassoonn.github.io/transcendental/
 68:
   title  : Sum of an arithmetic series
   decl   : Finset.sum_range_id
@@ -417,14 +387,6 @@
   authors: Manuel Candales
 96:
   title  : Principle of Inclusion/Exclusion
-  decls  :
-    - Finset.inclusion_exclusion_sum_biUnion
-    - Finset.inclusion_exclusion_card_biUnion
-    - Finset.inclusion_exclusion_sum_inf_compl
-    - Finset.inclusion_exclusion_card_inf_compl
-  links  :
-    github : https://github.com/NeilStrickland/lean_lib/blob/f88d162da2f990b87c4d34f5f46bbca2bbc5948e/src/combinatorics/matching.lean#L304
-  authors: Neil Strickland (outside mathlib), Yaël Dillies (in mathlib)
 97:
   title  : Cramer’s Rule
   decl   : Matrix.mulVec_cramer

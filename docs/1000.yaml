@@ -29,9 +29,6 @@ Q32182:
 
 Q33481:
   title: Arrow's impossibility theorem
-  authors: Benjamin Davidson, Andrew Souther
-  date: 2021
-  url: https://github.com/asouther4/lean-social-choice/blob/master/src/arrows_theorem.lean
 
 Q98831:
   title: Multiplication theorem
@@ -50,8 +47,6 @@ Q132427:
 
 Q132469:
   title: Fermat's Last Theorem
-  statement: FermatLastTheorem
-  comment: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
 
 Q137164:
   title: Besicovitch covering theorem
@@ -190,8 +185,6 @@ Q195133:
 
 Q200787:
   title: Gödel's incompleteness theorem
-  authors: Shogo Saito
-  url: https://formalizedformallogic.github.io/Catalogue/
 
 Q203565:
   title: Solutions of a general cubic equation
@@ -201,9 +194,6 @@ Q203565:
 
 Q204884:
   title: Löb's theorem
-  url: https://github.com/FormalizedFormalLogic/Foundation/blob/3c1ddf8af9d2ac715114fe83da0cb2f1c762e02b/Foundation/FirstOrder/Incompleteness/L%C3%B6b.lean#L16
-  authors: Shogo Saito, Mashu Noguchi
-  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/L___b___s-Theorem/#l___b-theorem"
 
 Q205966:
   title: Critical line theorem
@@ -216,9 +206,6 @@ Q207244:
 
 Q208416:
   title: Independence of the continuum hypothesis
-  url: https://github.com/flypitch/flypitch/blob/d72904c17fbb874f01ffe168667ba12663a7b853/src/summary.lean#L90
-  authors: Floris van Doorn and Jesse Michael Han
-  date: 2019-09-17
 
 Q208756:
   title: Castelnuovo theorem
@@ -285,10 +272,6 @@ Q256303:
 
 Q257387:
   title: Vitali theorem
-  # i.e. existence of the Vitali set
-  authors: Ching-Tsun Chou
-  url: https://github.com/ctchou/my_lean/blob/main/MyLean/NonMeasurable.lean
-  comment: "mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722"
 
 Q258374:
   title: Carathéodory's theorem (measure theory)
@@ -411,15 +394,6 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
-  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
-  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
-  date: 2025
-  # TODO: cannot display several URLs nicely yet
-  # links   :
-  #  Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
-  #  With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
-  #  website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
-  comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
 
 Q388525:
   title: Bell's theorem
@@ -565,9 +539,6 @@ Q570779:
 
 Q574902:
   title: Tarski's undefinability theorem
-  url: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Tarski.lean#L18
-  authors: Shogo Saito, Mashu Noguchi
-  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/Tarski___s-Undefinability-Theorem/#tarski-undefinability"
 
 Q576478:
   title: Liouville's theorem (complex analysis)
@@ -581,10 +552,6 @@ Q579515:
 
 Q583147:
   title: Sard's theorem
-  url: https://github.com/urkud/SardMoreira
-  authors: Yury Kudryashov
-  date: 2025-12-16
-  comment: the manifold version is in progress by Michael Rothgang at https://github.com/fpvandoorn/sard
 
 Q586051:
   title: Haag–Łopuszański–Sohnius theorem
@@ -594,9 +561,6 @@ Q587081:
 
 Q588218:
   title: Koebe 1/4 theorem
-  url: https://github.com/girving/ray/blob/main/Ray/Koebe/Koebe.lean
-  authors: Geoffrey Irving
-  date: 2025-09-02
 
 Q594571:
   title: Van Aubel's theorem
@@ -750,7 +714,6 @@ Q679800:
 
 Q681406:
   title: Euler's rotation theorem
-  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/Mathematics/SO3/Basic.lean#L161
 
 Q685437:
   title: Titchmarsh theorem
@@ -802,8 +765,6 @@ Q733081:
 
 Q737851:
   title: Banach–Tarski theorem
-  url: https://github.com/aetilley/banach-tarski/blob/a920deea0a3f3207049f8201fc1e7a0bb8cf4c93/BanachTarski/Basic.lean#L2577
-  comment: "Note that this statement of the paradox allows reflections in the set of isometries"
 
 Q737892:
   title: Bendixson–Dulac theorem
@@ -825,9 +786,6 @@ Q744440:
 
 Q748233:
   title: Sylvester–Gallai theorem
-  authors: Bhavik Mehta
-  url: https://github.com/YaelDillies/LeanCamCombi/blob/6a6a670f324b2af82ae17f21f9d51ac0bc859f6f/LeanCamCombi/SylvesterChvatal.lean#L610
-  date: 2022
 
 Q751120:
   title: Thue–Siegel–Roth theorem
@@ -916,17 +874,12 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
-  comment: We have `DiffContOnCl.circleIntegral_eq_zero` for circle contours
-  url: https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Complex/CauchyIntegral.html#DiffContOnCl.circleIntegral_eq_zero
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem
 
 Q837506:
   title: Theorem on friends and strangers
-  authors: Bhavik Mehta
-  url: https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Small.20Ramsey.20numbers/near/490303695
-  comment: "will enter mathlib in 2024"
 
 Q837551:
   title: Frobenius theorem (differential topology)
@@ -962,7 +915,6 @@ Q848810:
 
 Q850495:
   title: Wick's theorem
-  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/QFT/PerturbationTheory/WickAlgebra/WicksTheorem.lean#L82
 
 Q851166:
   title: Pappus's hexagon theorem
@@ -1073,8 +1025,6 @@ Q915474:
 
 Q918099:
   title: Ramsey's theorem
-  authors: Bhavik Mehta
-  url: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
 
 Q922012:
   title: Green–Tao theorem
@@ -1091,9 +1041,6 @@ Q925854:
 
 Q927051:
   title: Riemann mapping theorem
-  authors: Vincent Beffara
-  url: https://github.com/vbeffara/RMT4
-  date: 2024
 
 Q928813:
   title: Menger's theorem
@@ -1132,9 +1079,6 @@ Q944297:
 
 Q948664:
   title: Kneser's addition theorem (combinatorics)
-  authors: Mantas Bakšys, Yaël Dillies
-  url: https://github.com/YaelDillies/LeanCamCombi/blob/master/LeanCamCombi/Kneser/Kneser.lean
-  date: 2022
 
 Q951327:
   title: Pasch's theorem
@@ -1238,8 +1182,6 @@ Q1050203:
 
 Q1050932:
   title: Hartogs's theorem
-  url: https://github.com/girving/ray/blob/main/Ray/Hartogs/Hartogs.lean
-  authors: Geoffrey Irving
 
 Q1051404:
   title: Cesàro's theorem
@@ -1317,7 +1259,6 @@ Q1068976:
 
 Q1075398:
   title: Jung's theorem
-  url: https://github.com/michelsol/bounding-sphere-math/blob/ba35028924776ad7e175b424c3ba681ac9736567/BoundingSphere/Jung.lean#L381
 
 Q1076274:
   title: Choquet–Bishop–de Leeuw theorem
@@ -1338,8 +1279,6 @@ Q1082910:
 
 Q1095330:
   title: Apéry's theorem
-  url: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/pi.20is.20irrational.3F/near/478674074
-  # TODO: insert a link to a repository, and perhaps get that into mathlib :-)
 
 Q1097021:
   title: Minkowski's theorem
@@ -1373,9 +1312,6 @@ Q1134296:
 
 Q1134776:
   title: Dilworth's theorem
-  url: https://github.com/vlad902/misc-lean-proofs/blob/main/MiscLeanProofs/Dilworth.lean
-  authors: Vlad Tsyrklevich
-  date: 2025
 
 Q1135706:
   title: Harnack's theorem
@@ -1422,9 +1358,6 @@ Q1143540:
 
 Q1144897:
   title: Brouwer fixed-point theorem
-  authors: Brendan Seamas Murphy
-  url: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
-  comment: "in Lean 3"
 
 Q1146791:
   title: Fermat polygonal number theorem
@@ -1519,8 +1452,6 @@ Q1196538:
 
 Q1196729:
   title: Mertens's theorems
-  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/58e860034029b94547abe9bd2065f5b3e3f82ebb/PrimeNumberTheoremAnd/RosserSchoenfeldPrime.lean#L788
-  comment: "This link is to a proof of Mertens' second theorem"
 
 Q1202608:
   title: De Gua's theorem
@@ -1590,9 +1521,6 @@ Q1307676:
 
 Q1308502:
   title: Church–Rosser theorem
-  authors: Chris Henson, Maximiliano Onofre Martínez
-  url: https://github.com/leanprover/cslib/
-  comment: "CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction."
 
 Q1315949:
   title: Mittag-Leffler's theorem
@@ -1823,9 +1751,6 @@ Q1683356:
 
 Q1687147:
   title: Sprague–Grundy theorem
-  url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
-  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
-  date: 2020
 
 Q1694565:
   title: Vinogradov's theorem
@@ -2397,9 +2322,6 @@ Q3526993:
 
 Q3526996:
   title: Kolmogorov extension theorem
-  authors: Rémy Degenne, Peter Pfaffelhuber
-  date: 2023
-  url: https://github.com/RemyDegenne/kolmogorov_extension4
 
 Q3526998:
   title: Excision theorem
@@ -3509,10 +3431,6 @@ Q6749789:
 
 Q6757284:
   title: Marcinkiewicz theorem
-  authors: Jim Portegies
-  date: 2024-09-06
-  url: https://github.com/fpvandoorn/carleson/blob/master/Carleson/RealInterpolation.lean
-  # will become part of mathlib; update URL in this case!
 
 Q6760432:
   title: Marginal value theorem
@@ -3718,8 +3636,6 @@ Q7308146:
 
 Q7309601:
   title: Whitney–Graustein Theorem
-  url: https://github.com/MetalCreator666/WhitneyGraustein/
-  comment: "assumes some basic topology statements as axioms; use the sphere eversion project"
 
 Q7310041:
   title: Reider's theorem
@@ -3979,11 +3895,6 @@ Q7996769:
 
 Q7999144:
   title: Wiener–Ikehara theorem
-  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
-  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
-  date: 2024
-  # TODO: cannot display several URLs nicely yet
-  # link: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/655055549f8725b3fd4de577435259932129dc4c/PrimeNumberTheoremAnd/Wiener.lean#L2078
 
 Q7999797:
   title: Beer's theorem
