@@ -209,9 +209,10 @@ protected def induce {u v : V} :
 @[simp] lemma induce_cons (huu' : G.Adj u u') (w : G.Walk u' v) (hw) :
     (w.cons huu').induce s hw = .cons (induce_adj.2 huu') (w.induce s <| by simp_all) := rfl
 
+@[simp]
 lemma nil_induce {w : G.Walk u v} (hw) : (w.induce s hw).Nil ↔ w.Nil := by cases w <;> simp
 
-lemma length_induce {u v} : ∀ (w : G.Walk u v) (hw), (w.induce s hw).length = w.length
+lemma length_induce {u v} : ∀ {w : G.Walk u v} (hw), (w.induce s hw).length = w.length
   | nil, _ => rfl
   | cons .., _ => by simp [length_induce]
 
@@ -220,11 +221,11 @@ lemma length_induce {u v} : ∀ (w : G.Walk u v) (hw), (w.induce s hw).length = 
   | .nil, hw => rfl
   | .cons (v := u') hu w, hw => by simp [support_induce]
 
-lemma edges_induce {u v} : ∀ (w : G.Walk u v) (hw),
+lemma edges_induce {u v} : ∀ {w : G.Walk u v} (hw),
     (w.induce s hw).edges = w.edges.attach.map
-      fun ⟨e, he⟩ ↦ Sym2.attachWith e fun x hx ↦ hw x (mem_support_of_mem_edges he hx)
+      fun ⟨e, he⟩ ↦ e.attachWith (hw · <| mem_support_of_mem_edges he ·)
   | nil, _ => rfl
-  | cons .., _ => by simpa [edges_induce] using (by rfl)
+  | cons .., _ => by simp [edges_induce]
 
 @[simp] lemma map_induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
