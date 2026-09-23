@@ -39,11 +39,15 @@ def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
   fiber.obj U := ULift.{u} (PLift (x ∈ U))
   fiber.map f := ↾fun h ↦ ⟨⟨leOfHom f h.down.down⟩⟩
   isCofiltered :=
-    { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
-      cone_objs := by
-        rintro ⟨U, ⟨⟨hU⟩⟩⟩ ⟨V, ⟨⟨hV⟩⟩⟩
-        exact ⟨⟨U ⊓ V, ⟨⟨⟨hU, hV⟩⟩⟩⟩, ⟨homOfLE (by simp), rfl⟩,
-          ⟨homOfLE (by simp), rfl⟩, ⟨⟩⟩
+    { nonempty := ⟨.mk (obj := ⊤) ⟨⟨by simp⟩⟩⟩
+      cone_objs U V := by
+        induction U with | @mk U hU
+        induction V with | @mk V hV
+        obtain ⟨⟨hU⟩⟩ := hU
+        obtain ⟨⟨hV⟩⟩ := hV
+        exact ⟨.mk (obj := U ⊓ V) ⟨⟨hU, hV⟩⟩,
+          Functor.Elements.homMk (homOfLE (by simp)) rfl,
+          Functor.Elements.homMk (homOfLE (by simp)) rfl, by tauto⟩
       cone_maps _ _ _ _ := ⟨_, 𝟙 _, rfl⟩ }
   initiallySmall := initiallySmall_of_essentiallySmall _
   jointly_surjective := by

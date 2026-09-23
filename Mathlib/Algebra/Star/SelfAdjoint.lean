@@ -664,6 +664,14 @@ protected instance val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R
     IsStarNormal (↑x⁻¹ : R) where
   star_comm_self := by simpa [← Units.coe_star_inv, -Commute.units_val_iff] using star_comm_self
 
+protected instance pow [Monoid R] [StarMul R] {x : R} [IsStarNormal x] (n : ℕ) :
+    IsStarNormal (x ^ n) where
+  star_comm_self := star_pow x n ▸ (star_comm_self.pow_pow n n)
+
+protected instance zpow [Group R] [StarMul R] {x : R} [IsStarNormal x] (n : ℤ) :
+    IsStarNormal (x ^ n) where
+  star_comm_self := star_zpow x n ▸ (star_comm_self.zpow_zpow n n)
+
 protected instance map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
