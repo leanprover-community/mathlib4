@@ -538,6 +538,16 @@ induced by the preferred trivialisation at each `b`. -/
 noncomputable def VectorBundle.continuousLinearEquivAt (b : B) : E b ≃L[R] F :=
   (trivializationAt F E b).continuousLinearEquivAt R b (FiberBundle.mem_baseSet_trivializationAt' b)
 
+variable (F) in
+/-- If the model fiber of a vector bundle `E → B` is a complete space, so is each fiber `E x`. -/
+lemma VectorBundle.completeSpace [CompleteSpace F]
+    (E : B → Type*) [(x : B) → AddCommGroup (E x)] [(x : B) → Module R (E x)]
+    [TopologicalSpace (TotalSpace F E)] [(x : B) → UniformSpace (E x)]
+    [(x : B) → IsUniformAddGroup (E x)] [FiberBundle F E] [VectorBundle R F E] (b : B) :
+    CompleteSpace (E b) := by
+  let e := VectorBundle.continuousLinearEquivAt R F E b
+  rwa [completeSpace_congr (e := e.toEquiv) e.isUniformEmbedding]
+
 /-! ### Constructing vector bundles -/
 
 variable (B F)
@@ -976,7 +986,7 @@ theorem inCoordinates_eq {x₀ x : B} {y₀ y : B'} {ϕ : E x →SL[σ] E' y}
     (hx : x ∈ (trivializationAt F E x₀).baseSet) (hy : y ∈ (trivializationAt F' E' y₀).baseSet) :
     inCoordinates F E F' E' x₀ x y₀ y ϕ =
       ((trivializationAt F' E' y₀).continuousLinearEquivAt 𝕜₂ y hy : E' y →L[𝕜₂] F').comp
-        (ϕ.comp <|
+        (ϕ.comp
           (((trivializationAt F E x₀).continuousLinearEquivAt 𝕜₁ x hx).symm : F →L[𝕜₁] E x)) := by
   ext
   simp_rw [inCoordinates, ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe,

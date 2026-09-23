@@ -109,7 +109,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
     on_goal 2 => rw [show f.natDegree = 1 by lia]
     on_goal 3 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by lia]
-      norm_num
+      simp
     on_goal 6 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add]
       #adaptation_note
@@ -400,7 +400,6 @@ theorem resultant_C_left (r : R) :
     f.resultant (X + C r) m 1 = (-1) ^ m * eval (-r) f := by
   rw [← resultant_X_sub_C_right f m (-r) hf, map_neg, sub_neg_eq_add]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` and `g` are monic and splits, then `Res(f, g) = ∏ (α - β)`,
 where `α` and `β` runs through the roots of `f` and `g` respectively. -/
 lemma resultant_eq_prod_roots_sub
@@ -931,7 +930,6 @@ discriminant. -/
 noncomputable def discr (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant of a constant polynomial is `1`. -/
 @[simp] lemma discr_C (r : R) : discr (C r) = 1 := by
   let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)

@@ -5,6 +5,7 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
+public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
@@ -69,7 +70,7 @@ abbrev NatTrans.mk' {F G : C ⥤ D} (app : (X : C) → G.obj X ⟶ F.obj X)
 
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transformations moving earlier.
-attribute [reassoc (attr := simp)] NatTrans.naturality
+attribute [map (attr := reassoc (attr := simp))] NatTrans.naturality
 
 attribute [grind _=_] NatTrans.naturality
 
@@ -87,8 +88,6 @@ protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)
 theorem id_app' (F : C ⥤ D) (X : C) : (NatTrans.id F).app X = 𝟙 (F.obj X) := rfl
 
 instance (F : C ⥤ D) : Inhabited (NatTrans F F) := ⟨NatTrans.id F⟩
-
-open Category
 
 open CategoryTheory.Functor
 

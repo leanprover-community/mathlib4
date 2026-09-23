@@ -34,9 +34,10 @@ literature.
 
 noncomputable section
 
-open scoped BoundedContinuousFunction NNReal ENNReal
-open Set Function TopologicalSpace CompactlySupported CompactlySupportedContinuousMap
+open Set Function TopologicalSpace CompactlySupportedContinuousMap
   MeasureTheory
+
+open scoped BoundedContinuousFunction NNReal ENNReal CompactlySupported
 
 variable {X : Type*} [TopologicalSpace X]
 variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
@@ -157,9 +158,9 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
   have soopen (j : Fin 2) : IsOpen (so j) := by
     fin_cases j
     · simp only [hso, Fin.zero_eta, Fin.isValue, ↓reduceIte, isOpen_compl_iff]
-      exact IsCompact.isClosed <| s₀_compact
+      exact IsCompact.isClosed s₀_compact
     · simp only [hso, Fin.isValue, Fin.mk_one, one_ne_zero, ↓reduceIte, isOpen_compl_iff]
-      exact IsCompact.isClosed <| s₁_compact
+      exact IsCompact.isClosed s₁_compact
   have hsot : t ⊆ ⋃ j, so j := by
     rw [hso]
     simp only [Fin.isValue]
