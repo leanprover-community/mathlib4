@@ -446,14 +446,8 @@ bounded by `R` and at distance at least `1`. For a version not assuming `c` and 
 theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) :
     ∃ f : ℕ → E, (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
-  have : Std.Symm fun x y : E => 1 ≤ ‖x - y‖ := by
-    constructor
-    intro x y hxy
-    rw [← norm_neg]
-    simpa
-  apply
-    exists_seq_of_forall_finset_exists' (fun x : E => ‖x‖ ≤ R) fun (x : E) (y : E) => 1 ≤ ‖x - y‖
-  rintro s -
+  have : Std.Symm fun x y : E => 1 ≤ ‖x - y‖ := by simp [symm_def, norm_sub_rev]
+  refine exists_seq_of_forall_finset_exists' (‖·‖ ≤ R) (1 ≤ ‖· - ·‖) fun s _ ↦ ?_
   exact exists_norm_le_le_norm_sub_of_finset hc hR h s
 
 theorem exists_seq_norm_le_one_le_norm_sub (h : ¬FiniteDimensional 𝕜 E) :
