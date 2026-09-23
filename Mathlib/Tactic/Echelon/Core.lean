@@ -178,7 +178,8 @@ structure Model (V : Type) where
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Expr
-  /-- The entry certifier, or `none` to close the entry propositions by `decide`. -/
+  /-- The entry certifier, or `none` to close the conditions by kernel evaluation (`decide` on the
+  entries, `Eq.refl` on the product). -/
   entryCertifier? : Option EntryCertifier := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/

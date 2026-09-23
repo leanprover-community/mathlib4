@@ -26,9 +26,9 @@ variable {α : Type*}
 
 /-! ### Lower triangularity and nonzero diagonal of `L`
 
-Both conditions read the same suffix of each row, so they are certified together: one sweep whose
-cell for row `k` holds the nonzero diagonal entry and the equation of the zeros after it, which
-the kernel checks in one pass over the rows as one term. -/
+Both conditions read the same suffix of each row, so one sweep certifies them together. The cell
+for row `k` holds the nonzero diagonal entry and the equation of the zeros after it, and the
+kernel checks the sweep as one term in one pass over the rows. -/
 
 /-- `c` rows starting at row `k`, each with a nonzero entry at its diagonal position and zeros
 after it to the end of the row. -/
@@ -80,10 +80,9 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
 
 variable {n : ℕ}
 
-/-- `l` split at `k` in one traversal instead of two.
-Core defines this function as the `go` of `List.splitRevAt` for merge sort and does not export it.
-`List.splitAt` is optimised for compilation and tail-recursive, but requires a reverse and therefore
-two traversals as well. -/
+/-- `l` split at `k`, with the prefix reversed, in one traversal. Core defines this function as
+the `go` of `List.splitRevAt` without exporting it, and `List.splitAt` reverses its accumulator in
+a second traversal. -/
 def splitRevAt : List α → ℕ → List α → List α × List α
   | x :: xs, k + 1, acc => splitRevAt xs k (x :: acc)
   | xs, _, acc => (acc, xs)
@@ -104,8 +103,8 @@ def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) 
     | (_, []) => False
     | (zs, d :: _) => d ≠ 0 ∧ zs = List.replicate k 0 ∧ IsPivotedList ks rows
 
-/-- The pivot function of the list of pivot columns.
-`WithTop` is an option under the hood, so the lookup directly matches the result. -/
+/-- The pivot function of the list of pivot columns. `WithTop (Fin n)` is `Option (Fin n)`, so
+the lookup `cols[i]?` is the value. -/
 def pivotOfList (cols : List (Fin n)) (i : ℕ) : WithTop (Fin n) := cols[i]?
 
 theorem pivotOfList_eq_coe {cols : List (Fin n)} {i : ℕ} {c : Fin n} (hc : cols[i]? = some c) :

@@ -25,9 +25,10 @@ individual entries supplied by an entry certifier.
 The elimination records its echelon form `U`, making the product `L * A_σ = U` a certificate
 obligation of its own.
 
-The product is proved on the row lists of the literals: `ListMatrix.mul` on them is expanded
-to the sums of products of the entries, which the certifier proves equal to the recorded
-entries of `U`, and the equation of the matrix literals follows by a single definitional hint.
+The product is proved on the row lists of the literals. `ListMatrix.mul` on them is expanded
+to the sums of products of the entries, each proved equal to the recorded entry of `U` by the
+entry certifier or by kernel evaluation, and the equation of the matrix literals follows by a
+single definitional hint.
 Stated entrywise on the matrices, every entry would carry indexed reads, which the kernel
 evaluates by walking the literal.
 -/
@@ -38,9 +39,11 @@ open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Build the numeral of `i` in `Fin $n`. -/
-def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
-  mkNumeral q(Fin $n) i
+/-- Build the literal `⟨i, _⟩ : Fin n` with its bound decided. -/
+def mkFinLit (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
+  have iQ : Q(Nat) := mkNatLit i
+  let hi : Q($iQ < $n) ← mkDecideProofQ q($iQ < $n)
+  return q((⟨$iQ, $hi⟩ : Fin $n))
 
 /-- The suffix of the list literal `l` after its first `k` cells. -/
 def consDrop (l : Expr) : Nat → Expr
@@ -48,7 +51,7 @@ def consDrop (l : Expr) : Nat → Expr
   | k + 1 => consDrop l.appArg! k
 
 /-- Three views of one matrix literal. -/
-structure MatrixViews (u : Level) (m n : ℕ) (α : Q(Type u)) where
+structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
   /-- The matrix, the `ofLists` term on `lit`. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
   /-- The entries as a list of rows. -/
@@ -64,30 +67,27 @@ def mkMatrixViews {u : Level} {α : Q(Type u)} (_cr : Q(CommRing $α)) (m n : Na
   { matrix := q(ofLists $m $n $lit), lit, entries }
 
 /-- Build the list of pivot columns `[c₀, c₁, …]`, each with its bound. -/
-def mkPivotList (n : ℕ) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
-  let cols ← pivots.toList.mapM fun c => do
-    have cQ : Q(ℕ) := mkNatLit c
-    let hc : Q($cQ < $n) ← mkDecideProofQ q($cQ < $n)
-    return (q((⟨$cQ, $hc⟩ : Fin $n)) : Q(Fin $n))
+def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
+  let cols ← pivots.toList.mapM (mkFinLit n)
   return mkListLitQ (u := .zero) (α := q(Fin $n)) cols
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m)) := do
   let mut acc : Q(Equiv.Perm (Fin $m)) := q(Equiv.refl (Fin $m))
   for (a, b) in swaps do
-    acc := q((Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b)).trans $acc)
+    acc := q((Equiv.swap $(← mkFinLit m a) $(← mkFinLit m b)).trans $acc)
   return acc
 
 /-- Prove `L.IsLowerTriangular` and `∀ i, L.diag i ≠ 0` from the rows of `L`, with `certifier`
 proving the diagonal entries nonzero. -/
-def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) (certifier : EntryCertifier) :
     MetaM (Q(($(L.matrix)).IsLowerTriangular) × Q(∀ i, ($(L.matrix)).diag i ≠ 0)) := do
   have rows : Q(List (List $α)) := L.lit
   -- one cell per row: the nonzero diagonal entry, then the `Eq.refl` of the zeros after it
   let chain : Expr ← L.entries.zipIdx.foldrM (init := q(True.intro)) fun (row, k) rest => do
     have entry : Q($α) := row[k]!
-    have c : Q(ℕ) := mkNatLit (m - (k + 1))
+    have c : Q(Nat) := mkNatLit (m - (k + 1))
     mkAppM ``And.intro #[← certifier q($entry ≠ 0),
       ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $c (0 : $α))), rest]]
   have h : Q(IsLowerTriangularDiagList 0 $m $rows) := chain
@@ -95,7 +95,7 @@ def certifyLowerTriangularDiag {u : Level} {m : ℕ} {α : Q(Type u)} (_cr : Q(C
     mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
 
 /-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/
-def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (U : MatrixViews u m n α) (cols : Q(List (Fin $n))) (pivots : Array Nat)
     (certifier : EntryCertifier) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) := do
@@ -107,7 +107,7 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
   let zeroRows : Expr := q(Eq.refl $tail)
   let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (k, i) rest => do
     have entry : Q($α) := (U.entries[i]!)[k]!
-    have kQ : Q(ℕ) := mkNatLit k
+    have kQ : Q(Nat) := mkNatLit k
     mkAppM ``And.intro #[← certifier q($entry ≠ 0),
       ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $kQ (0 : $α))), rest]]
   have h : Q(IsPivotedList $cols $rows) := chain
@@ -115,23 +115,23 @@ def certifyPivotedBy {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
     q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i)
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ`. -/
-def certifyPermEq {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
+def certifyPermEq {u : Level} {m n : Nat} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
     (Aσ : Q(Matrix (Fin $m) (Fin $n) $α)) (σ : Q(Equiv.Perm (Fin $m))) :
-    MetaM Q(($A).submatrix $σ id = $Aσ) := do
-  mkExpectedTypeHint
-    q(congrArg (fun f => Matrix.of f) (FinVec.etaExpand_eq (fun i => $A ($σ i))).symm)
+    Q(($A).submatrix $σ id = $Aσ) :=
+  mkExpectedPropHint
+    q(congrArg (fun f ↦ Matrix.of f) (FinVec.etaExpand_eq (fun i ↦ $A ($σ i))).symm)
     q(($A).submatrix $σ id = $Aσ)
 
 /-- Prove the product `L * Aσ = U` from the rows of the views. -/
-def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
     MetaM Q($(L.matrix) * $(Aσ.matrix) = $(U.matrix)) := do
   let r := proveMul (← synthInstanceQ q(Zero $α)) (← synthInstanceQ q(Add $α))
     (← synthInstanceQ q(Mul $α)) m m n L.entries Aσ.entries
-  have F : Q(List (List $α)) := r.expr
-  have listU : Q(List (List $α)) := U.lit
-  let hV : Q($F = $listU) ← match certifier? with
-    | none => pure (mkExpectedPropHint q(Eq.refl $F) q($F = $listU))
+  have prod : Q(List (List $α)) := r.expr
+  have litU : Q(List (List $α)) := U.lit
+  let hlit : Q($prod = $litU) ← match certifier? with
+    | none => pure (mkExpectedPropHint q(Eq.refl $prod) q($prod = $litU))
     | some certifier => do
       let rowEqs ← r.rows.zipIdx.mapM fun (row, i) =>
         mkListCongr <$> row.zipIdx.mapM fun (fold, j) => do
@@ -139,13 +139,13 @@ def certifyProductEq {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing 
           return ⟨fold, entry, ← certifier q($fold = $entry)⟩
       let ⟨_, _, h⟩ := mkListCongr (α := q(List $α)) rowEqs
       pure h
-  let pf ← mkAppM ``ofLists_mul #[← mkEqTrans r.proof hV]
+  let pf ← mkAppM ``ofLists_mul #[← mkEqTrans r.proof hlit]
   return mkExpectedPropHint pf q($(L.matrix) * $(Aσ.matrix) = $(U.matrix))
 
-/-- The structure of all certificates constructed for a decomposition.
-This preserves the full intermediate certs constructed instead of only exposing the required part
-in `Echelon.Decomposition`, so downstream tactics do not need to rebuild them. -/
-structure DecompositionCert {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+/-- The certificates of a decomposition with the terms they are stated on. Every intermediate
+certificate is kept, beyond the part `Echelon.Decomposition` exposes, so downstream tactics need
+not rebuild them. -/
+structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
   /-- The transformation matrix. -/
   L : Q(Matrix (Fin $m) (Fin $m) $α)
@@ -165,17 +165,17 @@ structure DecompositionCert {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(Co
   L_diag_ne_zero : Q(∀ i, ($L).diag i ≠ 0)
 
 /-- The `Echelon.Decomposition` certificate assembled from the parts. -/
-def DecompositionCert.toDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)}
+def DecompositionCert.toDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
     {_cr : Q(CommRing $α)}
-    {A : Q(Matrix (Fin $m) (Fin $n) $α)} (c : DecompositionCert _cr A) :
+    {A : Q(Matrix (Fin $m) (Fin $n) $α)} (cert : DecompositionCert _cr A) :
     Q(Echelon.Decomposition $A) :=
   -- the fields as locals: Qq identifies a spliced term only by its variable
-  let ⟨L, σ, pivot, _U, mul_eq, isPivotedBy, L_lowerTriangular, L_diag_ne_zero⟩ := c
+  let ⟨L, σ, pivot, _U, mul_eq, isPivotedBy, L_lowerTriangular, L_diag_ne_zero⟩ := cert
   q(⟨$L, $σ, $pivot, $mul_eq ▸ $isPivotedBy, $L_lowerTriangular, $L_diag_ne_zero⟩)
 
 /-- Build the `DecompositionCert` of `A` from the decomposition data and the parsed entries
 of `A`. -/
-def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
     (data : BareissData Expr) (certifier? : Option EntryCertifier) :
     MetaM (DecompositionCert _cr A) := do
@@ -184,16 +184,16 @@ def certifyDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommR
   let aEntries := data.rowOrder.map (entries[·]!)
   have Aσ := mkMatrixViews _cr m n aEntries
   let σ ← mkPerm m data.swaps
-  have cols : Q(List (Fin $n)) := ← mkPivotList n data.pivot
-  have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
+  let cols : Q(List (Fin $n)) ← mkPivotList n data.pivot
+  let pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
   have Lm := L.matrix
   have Aσm := Aσ.matrix
   have Um := U.matrix
-  let hperm ← certifyPermEq A Aσm σ
-  have hprod : Q($Lm * $Aσm = $Um) := ← certifyProductEq _cr L Aσ U certifier?
-  have hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
+  have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
+  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq _cr L Aσ U certifier?
+  let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
-  have hpivot : Q(($Um).IsPivotedBy $pivot) := ← certifyPivotedBy _cr U cols data.pivot certifier
+  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy _cr U cols data.pivot certifier
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag _cr L certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag

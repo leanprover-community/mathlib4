@@ -13,8 +13,7 @@ public import Mathlib.Tactic.Echelon.Rat
 
 Given a matrix literal `A` over a commutative domain, the entry point
 `mkBareissDecomposition` selects a computation model for the element type, runs the
-elimination, and elaborates the certificate of the decomposition with the terms and proofs it
-is assembled from.
+elimination, and elaborates the certificate of the decomposition.
 The elimination itself is the model-parameterized `bareissDecomp` in
 `Mathlib.Tactic.Echelon.Core`, and the certificate construction `certifyDecomposition` in
 `Mathlib.Tactic.Echelon.Cert`.
@@ -28,15 +27,17 @@ initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Check whether the equality with zero in `α` directly reduces to a verdict by `decide`.
-Note that ℝ has a `DecidableEq` instance via classical that isn't usable, so a mere instance
-synthesis check is insufficient. -/
+/-- Check whether `decide` reduces the nonzero-ness of a numeral of `α` to a verdict, the shape
+of the entry conditions the certificate closes by `decide`. ℝ has a classical `DecidableEq`
+instance, so instance synthesis alone does not settle this. -/
 def checkDecideEq {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) : MetaM Bool := do
-  -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
+  let two : Q($α) ← mkIntNumeral α 2
+  -- `Decidable` of the single disequality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
-  let some _inst ← synthInstanceQ? q(Decidable (((1 : ℤ) : $α) = 0)) | return false
-  let d := q(decide (((1 : ℤ) : $α) = 0))
-  return (Kernel.whnf (← getEnv) (← getLCtx) d).toOption.any (·.isConstOf ``Bool.false)
+  let some _inst ← synthInstanceQ? q(Decidable ($two ≠ 0)) | return false
+  let dec := q(decide ($two ≠ 0))
+  return (Kernel.whnf (← getEnv) (← getLCtx) dec).toOption.any fun r =>
+    r.isConstOf ``Bool.true || r.isConstOf ``Bool.false
 
 /-- `norm_num`'s core as an entry certifier. -/
 def normNumCertifier : EntryCertifier := fun p => do
@@ -75,7 +76,7 @@ def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
 
 /-- The result of producer evaluation and certificate construction, together with the carrier
 model. -/
-structure BareissResult {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
   /-- The certificate, as constructed by the certifier. -/
   cert : DecompositionCert _cr A
@@ -88,7 +89,7 @@ structure BareissResult {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRi
 
 /-- Produce the decomposition of the matrix literal `A` and elaborate its certificate with the
 terms and proofs it is assembled from. -/
-def mkBareissDecomposition {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) :
     MetaM (BareissResult _cr A) := do
   let ⟨carrier, model⟩ ← modelFor α _cr
