@@ -22,12 +22,12 @@ universe v
 variable {𝕜 α : Type*} [Small.{v} α] [NormedField 𝕜]
 
 instance [SeminormedAddCommGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
-  (equivShrink α).symm.seminormedAddCommGroup
+  fast_instance% (equivShrink α).symm.seminormedAddCommGroup
 
 instance [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
-  (equivShrink α).symm.normedAddCommGroup
+  fast_instance% (equivShrink α).symm.normedAddCommGroup
 
 instance [SeminormedAddCommGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
-  (Shrink.addEquiv (α := α)).normedSpace 𝕜
+  fast_instance% (Shrink.addEquiv (α := α)).normedSpace 𝕜
 
 end Shrink
