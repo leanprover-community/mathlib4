@@ -357,7 +357,7 @@ def yonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   map ψ :=
   { app _ := MonCat.ofHom <| IsMonHom.monoidHom _ _
     naturality {_ _} φ := MonCat.hom_ext <| MonoidHom.ext fun f ↦ Category.assoc φ.unop f ψ.hom }
-  map_id _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_id
+  map_id _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext IsMonHom.monoidHom_id
   map_comp _ _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_comp _ _
 
 #adaptation_note

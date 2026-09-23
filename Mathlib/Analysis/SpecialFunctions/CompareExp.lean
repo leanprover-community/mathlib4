@@ -126,7 +126,7 @@ theorem isLittleO_log_norm_re (hl : IsExpCmpFilter l) : (fun z => Real.log ‖z�
           rw [← Real.log_mul, Real.log_le_log_iff, ← abs_of_nonneg (le_trans zero_le_one hz)]
           exacts [norm_le_sqrt_two_mul_max z, one_pos.trans_le hz', mul_pos h2 hm₀, h2.ne', hm₀.ne']
     _ =o[l] re :=
-      IsLittleO.add (isLittleO_const_left.2 <| Or.inr <| hl.tendsto_abs_re) <|
+      IsLittleO.add (isLittleO_const_left.2 <| Or.inr hl.tendsto_abs_re) <|
         isLittleO_iff_nat_mul_le.2 fun n => by
           filter_upwards [isLittleO_iff_nat_mul_le'.1 hl.isLittleO_log_re_re n,
             hl.abs_im_pow_eventuallyLE_exp_re n,

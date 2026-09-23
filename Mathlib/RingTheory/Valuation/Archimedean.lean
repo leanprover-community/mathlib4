@@ -33,7 +33,7 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
 
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (.ofClass v : F →*₀ Γ₀)))
+  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (v : F →*₀ Γ₀)))
 
 namespace Valuation.Integers
 

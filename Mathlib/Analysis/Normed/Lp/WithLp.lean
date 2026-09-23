@@ -133,7 +133,7 @@ theorem map_comp (f : V' → V'') (g : V → V') :
 
 /-- Lift an equivalence to `WithLp`. -/
 protected def congr (f : V ≃ V') : WithLp p V ≃ WithLp p V' :=
-  (WithLp.equiv p V).trans <| f.trans <| (WithLp.equiv p V').symm
+  (WithLp.equiv p V).trans <| f.trans (WithLp.equiv p V').symm
 
 @[simp]
 theorem coe_congr (f : V ≃ V') : ⇑(WithLp.congr p f) = WithLp.map p f :=
@@ -289,7 +289,7 @@ namespace LinearEquiv
 
 /-- Lift a (semi)linear equivalence to `WithLp`. -/
 def withLpCongr (f : V ≃ₛₗ[σ] V') : WithLp p V ≃ₛₗ[σ] WithLp p V' :=
-  (WithLp.linearEquiv p K V).trans <| f.trans <| (WithLp.linearEquiv p K' V').symm
+  (WithLp.linearEquiv p K V).trans <| f.trans (WithLp.linearEquiv p K' V').symm
 
 @[simp]
 theorem coe_withLpCongr (f : V ≃ₛₗ[σ] V') : ⇑(withLpCongr p f) = WithLp.map p f :=

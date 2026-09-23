@@ -397,7 +397,7 @@ instance : IsEquiv (List α) IsRotated where
   symm _ _ := .symm
   trans _ _ _ := .trans
 
-@[deprecated Equivalence.of_isEquiv (since := "2026-09-09")]
+@[deprecated Equivalence.of_isEquiv +typeChanged (since := "2026-09-09")]
 theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
   .of_isEquiv IsRotated
 

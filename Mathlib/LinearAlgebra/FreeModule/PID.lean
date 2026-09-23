@@ -305,7 +305,7 @@ theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
   obtain ⟨n, b'⟩ := Submodule.basisOfPid b ⊥
   let e : Fin n ≃ Fin 0 := b'.indexEquiv (Basis.empty _ : Basis (Fin 0) R (⊥ : Submodule R M))
   obtain rfl : n = 0 := by simpa using Fintype.card_eq.mpr ⟨e⟩
-  exact Sigma.eq rfl (Basis.eq_of_apply_eq <| finZeroElim)
+  exact Sigma.eq rfl (Basis.eq_of_apply_eq finZeroElim)
 
 /-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -335,7 +335,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
         ∀ i ∉ I, ∃ a : R, a ≠ 0 ∧ a • s i ∈ span R (s '' I)⟩ :=
       this.choose_spec
-    let N := span R (range <| (s ∘ (fun x => x) : I → M))
+    let N := span R (range (s ∘ (fun x => x) : I → M))
     -- same as `span R (s '' I)` but more convenient
     let _sI : I → N := fun i ↦ ⟨s i.1, subset_span (mem_range_self i)⟩
     -- `s` restricted to `I` is a basis of `N`

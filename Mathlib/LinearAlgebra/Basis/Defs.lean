@@ -186,10 +186,10 @@ variable (e : ι ≃ ι')
 def reindex : Basis ι' R M :=
   .ofRepr (b.repr.trans (Finsupp.domLCongr e))
 
-theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
-  show (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
+theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') := by
+  change (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
     b.repr.symm (Finsupp.single (e.symm i') 1)
-  by rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
+  rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
 
 @[simp]
 theorem coe_reindex : (b.reindex e : ι' → M) = b ∘ e.symm :=

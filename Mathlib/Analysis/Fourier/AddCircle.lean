@@ -134,7 +134,7 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
     Circle.coe_exp, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
     Complex.ofReal_mul, Complex.ofReal_intCast]
-  norm_num
+  simp
   congr 1; ring
 
 @[simp]

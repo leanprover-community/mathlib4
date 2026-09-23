@@ -433,7 +433,7 @@ lemma Convex.Ioo_subset_of_mem_closure {s : Set 𝕜} (hs : Convex 𝕜 s) {a b 
     simp only [nontrivial_coe_sort] at h'
     calc Ioo a b
     _ = interior (Ioo a b) := interior_Ioo.symm
-    _ ⊆ interior (openSegment 𝕜 a b) := interior_mono <| Ioo_subset_openSegment
+    _ ⊆ interior (openSegment 𝕜 a b) := interior_mono Ioo_subset_openSegment
     _ ⊆ interior (closure s) := interior_mono <| hs.closure.openSegment_subset has hbs
     _ = interior s := hs.interior_closure_eq_interior_of_nonempty_interior <|
       hs.nontrivial_iff_nonempty_interior.1 h'

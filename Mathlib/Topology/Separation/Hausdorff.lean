@@ -635,7 +635,7 @@ theorem CompactExhaustion.isClosed [T2Space X] (K : CompactExhaustion X) (n : �
 @[compactness .]
 theorem IsCompact.inter [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ∩ t) :=
-  hs.inter_right <| ht.isClosed
+  hs.inter_right ht.isClosed
 
 theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (closure s)) {f : X → Y}
     (hf : ContinuousOn f (closure s)) : f '' closure s = closure (f '' s) :=

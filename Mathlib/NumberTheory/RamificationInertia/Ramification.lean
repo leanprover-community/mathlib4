@@ -157,7 +157,7 @@ theorem le_comap_pow_ramificationIdx' : p ≤ comap f (P ^ ramificationIdx' p P)
   le_comap_pow_ramificationIdx'
 
 theorem le_comap_of_ramificationIdx'_ne_zero (h : ramificationIdx' p P ≠ 0) : p ≤ comap f P :=
-  Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx'.trans <| Ideal.pow_le_self <| h
+  Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx'.trans <| Ideal.pow_le_self h
 
 @[deprecated (since := "2026-07-01")] alias le_comap_of_ramificationIdx_ne_zero :=
   le_comap_of_ramificationIdx'_ne_zero

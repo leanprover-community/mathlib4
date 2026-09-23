@@ -321,7 +321,7 @@ theorem eLpNormEssSup_congr_ae {f g : α → ε'} (hfg : f =ᵐ[μ] g) :
 
 theorem eLpNormEssSup_mono_enorm_ae {f : α → ε'} {g : α → ε''} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
-  essSup_mono_ae <| hfg
+  essSup_mono_ae hfg
 
 theorem eLpNormEssSup_mono_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
@@ -432,7 +432,7 @@ theorem eLpNorm_congr_enorm_ae [TopologicalSpace ε']
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_enorm_ae hf <| EventuallyEq.le hfg)
-    (eLpNorm_mono_enorm_ae hg <| (EventuallyEq.symm hfg).le)
+    (eLpNorm_mono_enorm_ae hg (EventuallyEq.symm hfg).le)
 
 /-- See also `eLpNorm_zero_of_ae_enorm_zero` dropping the measurability assumption
 but assuming that the space is an enormed monoid. -/
@@ -447,7 +447,7 @@ theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMe
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_nnnorm_ae hf <| EventuallyEq.le hfg)
-    (eLpNorm_mono_nnnorm_ae hg <| (EventuallyEq.symm hfg).le)
+    (eLpNorm_mono_nnnorm_ae hg (EventuallyEq.symm hfg).le)
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
@@ -467,7 +467,7 @@ theorem eLpNorm_indicator_sub_indicator {s t : Set α} (f : α → E)
     exact eLpNorm_congr_norm_ae hf this <| ae_of_all _ fun x ↦ by
       simp [Set.apply_indicator_symmDiff norm_neg]
   · have : ¬ (AEStronglyMeasurable ((s ∆ t).indicator f) μ) := by
-      contrapose! hf
+      contrapose hf
       convert (hf.indicator₀ (hs.diff ht)).sub (hf.indicator₀ (ht.diff hs)) using 1
       ext x
       simp only [Set.indicator, Pi.sub_apply]
@@ -729,7 +729,7 @@ theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_ne_zero :
   rcases eq_zero_or_pos c with rfl | hc
   · simp [hp']
   · have : ¬AEStronglyMeasurable f (c • μ) := by
-      contrapose! hf
+      contrapose hf
       exact AEStronglyMeasurable.mono_ac (Measure.AbsolutelyContinuous.smul_right .rfl hc.ne') hf
     simp only [this, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable, one_div,
       ENNReal.toReal_inv, hf, smul_eq_mul]
@@ -747,7 +747,7 @@ theorem eLpNorm_smul_measure_of_ne_zero {c : ℝ≥0∞} (hc : c ≠ 0) (f : α 
     · simp [*, eLpNorm_exponent_top (hf.smul_measure c), eLpNorm_exponent_top hf]
     apply eLpNorm_smul_measure_of_ne_zero_of_ne_top hp0 hp_top
   · have : ¬AEStronglyMeasurable f (c • μ) := by
-      contrapose! hf
+      contrapose hf
       exact AEStronglyMeasurable.mono_ac (Measure.AbsolutelyContinuous.smul_right .rfl hc) hf
     simp only [this, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable, one_div,
       ENNReal.toReal_inv, hf, smul_eq_mul]
@@ -813,7 +813,7 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
       eLpNorm_one_eq_lintegral_enorm hfν, lintegral_add_measure _ μ ν]
   · by_cases hfμ : AEStronglyMeasurable f μ
     · have : ¬ (AEStronglyMeasurable f ν) := by
-        contrapose! hadd
+        contrapose hadd
         apply hfμ.add_measure hadd
       simp [eLpNorm_of_not_aestronglyMeasurable, hadd, this]
     · simp [eLpNorm_of_not_aestronglyMeasurable, hadd, hfμ]
@@ -948,7 +948,7 @@ theorem eLpNorm_eq_zero_iff {f : α → ε} (h0 : p ≠ 0) :
   by_cases! hf : ¬ AEStronglyMeasurable f μ
   · rw [eLpNorm_of_not_aestronglyMeasurable hf]
     simp only [ENNReal.top_ne_zero, false_iff]
-    contrapose! hf
+    contrapose hf
     exact ⟨0, stronglyMeasurable_zero, hf⟩
   by_cases h_top : p = ∞
   · rw [h_top, eLpNorm_exponent_top hf, eLpNormEssSup_eq_zero_iff]

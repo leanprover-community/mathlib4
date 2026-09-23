@@ -315,7 +315,7 @@ lemma covarianceBilinDual_comm (L₁ L₂ : StrongDual ℝ E) :
     covarianceBilinDual μ L₁ L₂ = covarianceBilinDual μ L₂ L₁ := by
   by_cases h : MemLp (fun x ↦ x - ∫ y, y ∂μ) 2 μ
   · have h' : MemLp id 2 (Measure.map (fun x ↦ x - ∫ (x : E), x ∂μ) μ) :=
-      (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr <| h
+      (measurableEmbedding_subRight _).memLp_map_measure_iff.mpr h
     simp_rw [covarianceBilinDual, uncenteredCovarianceBilinDual_apply h', mul_comm (L₁ _)]
   · simp [h, covarianceBilinDual_of_not_memLp']
 

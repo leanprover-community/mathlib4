@@ -192,7 +192,7 @@ lemma coeff_killCompl {s} :
     · simp only [coeff_zero, Finsupp.zero_apply, coeff_monomial, right_eq_ite_iff]
       intro rfl
       contrapose! h
-      apply subset_trans <| SetLike.coe_subset_coe.mpr <| Finsupp.mapDomain_support
+      apply subset_trans <| SetLike.coe_subset_coe.mpr Finsupp.mapDomain_support
       simp
   · simp_intro ..
 

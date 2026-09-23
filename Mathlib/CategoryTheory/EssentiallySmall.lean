@@ -262,7 +262,7 @@ section FullSubcategory
 
 instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : ObjectProperty C) :
     LocallySmall.{w} P.FullSubcategory :=
-  locallySmall_of_faithful <| P.ι
+  locallySmall_of_faithful P.ι
 
 instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [LocallySmall.{w} C] :
     EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=

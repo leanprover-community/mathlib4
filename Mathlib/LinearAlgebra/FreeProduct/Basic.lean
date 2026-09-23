@@ -194,7 +194,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 @[simps] def lift : ({i : I} → A i →ₐ[R] B) ≃ (FreeProduct R A →ₐ[R] B) where
   toFun maps :=
     RingCon.liftₐ _
-      (TensorAlgebra.lift R <| DirectSum.toModule R I B <| (@maps · |>.toLinearMap))
+      (TensorAlgebra.lift R <| DirectSum.toModule R I B (@maps · |>.toLinearMap))
         <| RingCon.ringConGen_le.2 fun x y r ↦ by
           cases r with
           | id => simp

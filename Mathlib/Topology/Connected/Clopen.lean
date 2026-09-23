@@ -475,7 +475,8 @@ theorem Topology.IsCoinducing.isConnected_preimage_of_isClosed
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 
-@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed (since := "2026-04-01")]
+@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed +typeChanged
+  (since := "2026-04-01")]
 theorem preimage_connectedComponent_connected (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
     (hcl : IsCoinducing f) (t : β) :
     IsConnected (f ⁻¹' connectedComponent t) := by

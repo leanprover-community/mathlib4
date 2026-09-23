@@ -73,7 +73,7 @@ lemma mulHeight_ne_zero (x : Projectivization K (ι → K)) : mulHeight x ≠ 0 
 
 lemma logHeight_nonneg (x : Projectivization K (ι → K)) : 0 ≤ logHeight x := by
   rw [logHeight_eq_log_mulHeight]
-  exact log_nonneg <| x.one_le_mulHeight
+  exact log_nonneg x.one_le_mulHeight
 
 end Projectivization
 

@@ -121,7 +121,7 @@ theorem neg_bot : -(⊥ : Submodule R M) = ⊥ :=
 
 @[simp]
 theorem neg_top : -(⊤ : Submodule R M) = ⊤ :=
-  SetLike.coe_injective <| Set.neg_univ
+  SetLike.coe_injective Set.neg_univ
 
 @[simp]
 theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=

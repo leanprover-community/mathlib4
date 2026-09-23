@@ -105,7 +105,7 @@ variable {k G} (A : Rep.{w} k G)
 /-- `Tor` can be computed using a projective resolution. -/
 abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
     ((Rep.Tor k G n).obj A).obj B ≅ (P.complex.coinvariantsTensorObj A).homology n :=
-  P.isoLeftDerivedObj _ n
+  P.isoLeftDerivedObj ((coinvariantsTensor k G).obj A) n
 
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :

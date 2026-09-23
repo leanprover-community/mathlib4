@@ -251,7 +251,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       suffices (Function.support f) ⊆ {n | IsPrimePow n} from
         tsum_subtype_eq_of_support_subset this
       intro n hn
-      contrapose! hn
+      contrapose hn
       simp [f, vonMangoldt_eq_zero_iff.mpr hn]
 
 /-- For `1 < s.re`, the Dirichlet L-function is the exponential of the `L`-series of

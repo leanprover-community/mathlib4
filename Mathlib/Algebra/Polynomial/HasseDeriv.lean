@@ -84,7 +84,7 @@ theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
 
 @[simp]
 theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
-  LinearMap.ext <| hasseDeriv_zero'
+  LinearMap.ext hasseDeriv_zero'
 
 theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     hasseDeriv n p = 0 := by
@@ -98,7 +98,7 @@ theorem hasseDeriv_one' : hasseDeriv 1 f = derivative f := by
 
 @[simp]
 theorem hasseDeriv_one : @hasseDeriv R _ 1 = derivative :=
-  LinearMap.ext <| hasseDeriv_one'
+  LinearMap.ext hasseDeriv_one'
 
 @[simp]
 theorem hasseDeriv_monomial (n : ℕ) (r : R) :

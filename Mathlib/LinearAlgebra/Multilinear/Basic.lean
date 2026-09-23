@@ -188,7 +188,6 @@ instance : Add (MultilinearMap R M₁ M₂) :=
       simp [smul_add]⟩⟩
 
 instance : IsAddApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -196,7 +195,6 @@ instance : Zero (MultilinearMap R M₁ M₂) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
 instance : IsZeroApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  zero_apply _ := rfl
 
 instance : Inhabited (MultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -213,7 +211,6 @@ instance : SMul S (MultilinearMap R M₁ M₂) :=
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
 instance : IsSMulApply S (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -1290,7 +1287,6 @@ instance : Neg (MultilinearMap R M₁ M₂) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
 instance : IsNegApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -1302,7 +1298,6 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
 instance : IsSubApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 

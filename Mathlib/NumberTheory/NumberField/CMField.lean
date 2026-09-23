@@ -278,7 +278,7 @@ theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ)
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
   simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
     RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
-    AlgEquiv.coe_ringEquiv, Units.complexConj_eq_self_iff,
+    AlgEquiv.coe_toRingEquiv, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
 
 variable [NumberField K]
@@ -457,7 +457,7 @@ variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [CharZero K] [Algeb
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
     E = maximalRealSubfield K := by
   refine le_antisymm (IsTotallyReal.le_maximalRealSubfield E) ?_
-  by_contra! h
+  by_contra h
   have h' : E ⊔ (maximalRealSubfield K) = ⊤ := by
     let L : IntermediateField E K := (E ⊔ (maximalRealSubfield K)).toIntermediateField
       (fun x ↦ (le_sup_left (a := E)) x.prop)

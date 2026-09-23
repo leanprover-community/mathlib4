@@ -175,7 +175,7 @@ theorem vertexCoverNum_top : vertexCoverNum (completeGraph V) = ENat.card V - 1 
     refine add_le_of_le_tsub_right_of_le (Order.add_one_le_of_lt ENat.one_lt_card) ?_
     grw [ht₁, ENat.natCast_sub, hn]
     simp [add_assoc, one_add_one_eq_two, le_tsub_add]
-  obtain ⟨a, b, _, _, hne⟩ := Set.one_lt_encard_iff.mp <| this
+  obtain ⟨a, b, _, _, hne⟩ := Set.one_lt_encard_iff.mp this
   have := @ht₂ a b (by simp [hne])
   grind
 

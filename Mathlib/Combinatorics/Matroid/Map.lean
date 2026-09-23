@@ -118,7 +118,7 @@ Elements with the same (nonloop) image are parallel and the ground set is `f ⁻
 The matroids `M.comap f` and `M ↾ range f` have isomorphic simplifications;
 the preimage of each nonloop of `M ↾ range f` is a parallel class. -/
 def comap (N : Matroid β) (f : α → β) : Matroid α :=
-  IndepMatroid.matroid <|
+  IndepMatroid.matroid
   { E := f ⁻¹' N.E
     Indep := fun I ↦ N.Indep (f '' I) ∧ InjOn f I
     indep_empty := by simp

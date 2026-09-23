@@ -267,7 +267,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           convert! (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field
       refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
-      exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
+      exact le_trans (by simp : (-2 : ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by

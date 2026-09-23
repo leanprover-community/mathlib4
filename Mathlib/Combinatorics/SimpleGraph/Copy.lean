@@ -568,7 +568,7 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
     G.copyCount H = 1 := by
   cases nonempty_fintype W
   exact (copyCount_le_labelledCopyCount.trans_eq <| labelledCopyCount_of_isEmpty ..).antisymm <|
-    copyCount_pos.2 <| .of_isEmpty
+    copyCount_pos.2 .of_isEmpty
 
 end CopyCount
 
@@ -627,7 +627,7 @@ lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := b
     @forall_comm _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
     not_exists, not_nonempty_iff, Nonempty.forall, Free]
   exact forall_congr' fun G' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
-    (Subgraph.edgeSet_subset _ <| (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
+    (Subgraph.edgeSet_subset _ (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
 
 protected lemma Free.killCopies_eq_left (hHG : H.Free G) : G.killCopies H = G := by
   obtain rfl | hH := eq_or_ne H ⊥

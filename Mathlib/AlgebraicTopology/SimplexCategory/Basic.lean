@@ -46,7 +46,7 @@ lemma congr_toOrderHom_apply {a b : SimplexCategory} {f g : a ⟶ b} (h : f = g)
 
 /-- The constant morphism from ⦋0⦌. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
-  Hom.mk <| ⟨fun _ => i, by tauto⟩
+  Hom.mk ⟨fun _ => i, by tauto⟩
 
 @[simp]
 lemma const_eq_id : const ⦋0⦌ ⦋0⦌ 0 = 𝟙 _ := by aesop

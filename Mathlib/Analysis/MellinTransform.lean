@@ -211,7 +211,7 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
   · refine AEStronglyMeasurable.mul ?_ (hfc.mono_set (Ioi_subset_Ioi he'.le))
     refine (continuousOn_of_forall_continuousAt fun t ht => ?_).aestronglyMeasurable
       measurableSet_Ioi
-    exact continuousAt_rpow_const _ _ (Or.inl <| (he'.trans ht).ne')
+    exact continuousAt_rpow_const _ _ (Or.inl (he'.trans ht).ne')
   · have : ∀ᵐ t : ℝ ∂volume.restrict (Ioi <| max e 1),
         ‖t ^ (s - 1) * f t‖ ≤ t ^ (s - 1 + -a) * d := by
       refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht => ?_

@@ -792,7 +792,7 @@ theorem destruct_join (S : WSeq (WSeq α)) :
   intro c1 c2 h
   exact
     match c1, c2, h with
-    | c, _, Or.inl <| rfl => by cases c.destruct <;> simp
+    | c, _, Or.inl rfl => by cases c.destruct <;> simp
     | _, _, Or.inr ⟨S, rfl, rfl⟩ => by
       induction S using WSeq.recOn
       case nil | cons => simp

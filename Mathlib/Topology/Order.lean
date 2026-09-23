@@ -185,7 +185,7 @@ def gciGenerateFrom (α : Type*) :
   gc := gc_generateFrom α
   u_l_le _ s hs := TopologicalSpace.GenerateOpen.basic s hs
   choice g hg := TopologicalSpace.mkOfClosure g
-    (Subset.antisymm hg <| le_generateFrom_iff_subset_isOpen.1 <| le_rfl)
+    (Subset.antisymm hg <| le_generateFrom_iff_subset_isOpen.1 le_rfl)
   choice_eq _ _ := mkOfClosure_sets
 
 /-- Topologies on `α` form a complete lattice, with `⊥` the discrete topology
@@ -495,7 +495,7 @@ theorem coinduced_sSup {s : Set (TopologicalSpace α)} :
 
 theorem induced_id [t : TopologicalSpace α] : t.induced id = t :=
   TopologicalSpace.ext <|
-    funext fun s => propext <| ⟨fun ⟨_, hs, h⟩ => h ▸ hs, fun hs => ⟨s, hs, rfl⟩⟩
+    funext fun s => propext ⟨fun ⟨_, hs, h⟩ => h ▸ hs, fun hs => ⟨s, hs, rfl⟩⟩
 
 theorem induced_fun_id {t : TopologicalSpace α} : t.induced (·) = t := induced_id
 

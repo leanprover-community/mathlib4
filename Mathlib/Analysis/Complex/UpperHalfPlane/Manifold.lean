@@ -199,7 +199,7 @@ lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
   refine DifferentiableOn.analyticAt (fun z hz ↦ ?_) (isOpen_upperHalfPlaneSet.mem_nhds τ.im_pos)
   apply DifferentiableAt.differentiableWithinAt
   simpa [mdifferentiableAt_iff] using!
-    (mdifferentiable_coe.comp <| (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)
+    (mdifferentiable_coe.comp (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)
 
 lemma meromorphicOrderAt_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
     meromorphicOrderAt (fun z ↦ f (g • ofComplex z)) τ =

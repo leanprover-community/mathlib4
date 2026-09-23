@@ -292,7 +292,6 @@ instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
 
 instance : IsSMulApply S₂ (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
-  smul_apply _ _ _ := rfl
 
 @[simp, norm_cast]
 theorem toLinearMap_smul (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
@@ -327,7 +326,6 @@ instance zero : Zero (M₁ →SL[σ₁₂] M₂) :=
   ⟨⟨0, continuous_zero⟩⟩
 
 instance : IsZeroApply (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
-  zero_apply _ := rfl
 
 instance inhabited : Inhabited (M₁ →SL[σ₁₂] M₂) :=
   ⟨0⟩
@@ -376,7 +374,6 @@ instance one : One (M₁ →L[R₁] M₁) :=
 theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
 instance instIsOneApply : IsOneApplyEqSelf (M₁ →L[R₁] M₁) M₁ where
-  one_apply_eq_self _ := rfl
 
 @[simp]
 theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
@@ -420,7 +417,6 @@ instance add : Add (M₁ →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
 instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
-  add_apply _ _ _ := rfl
 
 @[simp, norm_cast]
 theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ →ₛₗ[σ₁₂] M₂) = f + g :=
@@ -571,7 +567,6 @@ instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
 
 instance : IsMulApplyEqComp (M₁ →L[R₁] M₁) M₁ where
-  mul_apply_eq_comp _ _ _ := rfl
 
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
   rfl
@@ -602,7 +597,6 @@ instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
 
 instance instIsNatCastApply [ContinuousAdd M₁] : IsNatCastApply (M₁ →L[R₁] M₁) M₁ where
-  natCast_apply _ _ := rfl
 
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
   fast_instance% FunLike.semiring
@@ -829,7 +823,6 @@ instance neg : Neg (M →SL[σ₁₂] M₂) :=
   ⟨fun f => ⟨-f, f.2.neg⟩⟩
 
 instance : IsNegApply (M →SL[σ₁₂] M₂) M M₂ where
-  neg_apply _ _ := rfl
 
 @[simp, norm_cast]
 theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ₁₂] M₂) = -f :=
@@ -849,7 +842,6 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
 instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
-  sub_apply _ _ _ := rfl
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommGroup
 
@@ -899,7 +891,6 @@ instance [IsTopologicalAddGroup M] : IntCast (M →L[R] M) where
   intCast z := z • (1 : M →L[R] M)
 
 instance instIsIntCastApply [IsTopologicalAddGroup M] : IsIntCastApply (M →L[R] M) M where
-  intCast_apply _ _ := rfl
 
 @[deprecated (since := "2026-05-20")] alias intCast_apply := _root_.intCast_apply
 

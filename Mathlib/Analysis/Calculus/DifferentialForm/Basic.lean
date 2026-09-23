@@ -244,7 +244,7 @@ theorem extDerivWithin_pullback {ω : F → F [⋀^Fin n]→L[𝕜] G} {f : E �
     extDerivWithin (fun x ↦ (ω (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x)) s x =
       (extDerivWithin ω t (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x) := by
   have hdf : DifferentiableWithinAt 𝕜 f s x :=
-    hf.differentiableWithinAt <| (two_pos.trans_le <| le_minSmoothness.trans hr).ne'
+    hf.differentiableWithinAt (two_pos.trans_le <| le_minSmoothness.trans hr).ne'
   have hd2f : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 f s) s x :=
     (hf.fderivWithin_right hs (le_minSmoothness.trans hr) hxs).differentiableWithinAt one_ne_zero
   rw [extDerivWithin,

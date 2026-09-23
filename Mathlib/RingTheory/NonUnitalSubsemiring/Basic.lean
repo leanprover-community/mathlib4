@@ -387,7 +387,7 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalSemiring R] {s : Set R}
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
 semiring. -/
-@[deprecated isMulCommutative_closure (since := "2026-03-11")]
+@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
 abbrev closureNonUnitalCommSemiringOfComm {R : Type*} [NonUnitalSemiring R] {s : Set R}
     (hcomm : s.Pairwise Commute) : NonUnitalCommSemiring (closure s) :=
   have := isMulCommutative_closure hcomm
@@ -745,7 +745,7 @@ theorem range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
 
 @[simp]
 theorem range_snd : NonUnitalRingHom.srange (snd R S) = ⊤ :=
-  NonUnitalRingHom.srange_eq_top_of_surjective (snd R S) <| Prod.snd_surjective
+  NonUnitalRingHom.srange_eq_top_of_surjective (snd R S) Prod.snd_surjective
 
 end NonUnitalSubsemiring
 

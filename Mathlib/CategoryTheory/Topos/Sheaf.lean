@@ -213,7 +213,7 @@ lemma χ_unique (m : F ⟶ G) [Mono m] (χ' : G ⟶ Sheaf.Ω J)
   apply Presheaf.χ_unique _
   have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
     (closedSieves J).ι := IsPullback.of_horiz_isIso_mono (by simp)
-  have : IsPullback m.hom ?_ χ'.hom <| (truth J).hom := by
+  have : IsPullback m.hom ?_ χ'.hom (truth J).hom := by
     simpa using hχ'.map (sheafToPresheaf J _)
   simpa using this.paste_horiz pb
 

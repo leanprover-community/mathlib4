@@ -321,7 +321,7 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   apply TopologicalSpace.noetherian_univ_iff.mp
   let 𝒰 := X.affineCover.finiteSubcover
   rw [← 𝒰.iUnion_range]
-  suffices ∀ i : 𝒰.I₀, NoetherianSpace (Set.range <| (𝒰.f i)) by
+  suffices ∀ i : 𝒰.I₀, NoetherianSpace (Set.range (𝒰.f i)) by
     apply NoetherianSpace.iUnion
   intro i
   have : IsAffine (𝒰.X i) := by

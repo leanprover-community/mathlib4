@@ -66,7 +66,7 @@ def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
     (fun (x : IntermediateField F E) => (x : Set E)) where
   choice s hs := (adjoin F s).copy s <| le_antisymm (gc.le_u_l s) hs
   gc := IntermediateField.gc
-  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 <| le_rfl
+  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 le_rfl
   choice_eq _ _ := copy_eq _ _ _
 
 instance : CompleteLattice (IntermediateField F E) where

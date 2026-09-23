@@ -1124,7 +1124,7 @@ This is a generalization of the fact that, for fixed `U`, the comap of the ident
 to OO_X(U) is the identity.
 -/
 theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
-    (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU <| hpV) =
+    (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU hpV) =
       ((structureSheaf R).1.map iVU.op).hom :=
   RingHom.ext fun s => Subtype.ext <| funext fun p => by
     rw [comap_apply]

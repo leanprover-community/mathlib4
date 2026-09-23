@@ -951,7 +951,6 @@ instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
   ext x
   simpa using α.inv.app x ≫= congr_app m.w x
 
-set_option backward.isDefEq.respectTransparency false in
 instance isLeftKanExtensionAlongEquivalence' (L : C ⥤ D) (α : F₀ ⟶ L ⋙ F₁)
     [IsEquivalence L] [IsIso α] :
     F₁.IsLeftKanExtension α :=
@@ -969,7 +968,6 @@ instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) 
   ext x
   simpa using congr_app m.w x =≫ α.inv.app x
 
-set_option backward.isDefEq.respectTransparency false in
 instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶ F₀)
     [IsEquivalence L] [IsIso α] :
     F₁.IsRightKanExtension α :=

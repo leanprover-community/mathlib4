@@ -44,7 +44,7 @@ lemma TensorProduct.map_injective_of_flat_flat_of_isDomain
   have H₆ := Module.Flat.rTensor_preserves_injective_linearMap (M := P ⊗[R] Q)
     (Algebra.linearMap R K) (FaithfulSMul.algebraMap_injective R K)
   have H₇ := (TensorProduct.lid R (P ⊗[R] Q)).symm.injective
-  convert! H₅.comp <| H₃.comp <| H₁.comp <| H₂.comp <| H₄.comp <| H₆.comp <| H₇
+  convert! H₅.comp <| H₃.comp <| H₁.comp <| H₂.comp <| H₄.comp <| H₆.comp H₇
   dsimp only [← LinearMap.coe_comp, ← LinearEquiv.coe_toLinearMap,
     ← @LinearMap.coe_restrictScalars R K]
   congr! 1

@@ -171,7 +171,7 @@ defined by the reflector. -/
 def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
   inverse := i.essImage.ι ⋙ reflector i
-  unitIso := (asIso <| (reflectorAdjunction i).counit).symm
+  unitIso := (asIso (reflectorAdjunction i).counit).symm
   counitIso := Functor.fullyFaithfulCancelRight i.essImage.ι <|
     NatIso.ofComponents (fun X ↦ (asIso ((reflectorAdjunction i).unit.app X.obj)).symm)
 

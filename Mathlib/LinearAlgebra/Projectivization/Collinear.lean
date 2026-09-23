@@ -50,7 +50,7 @@ lemma IsCollinear_iff_rank :
   rw [IsCollinear_iff]
   refine ⟨fun ⟨M, hM1, hM2, hM3⟩ ↦ ⟨M, ?_, hM3⟩, fun ⟨M, hM1, hM2⟩ ↦ ⟨M, ?_, ?_, hM2⟩⟩
   · exact FiniteDimensional.finrank_le_iff_rank_le (K := K) (V := M.submodule) (n := 2)|>.1 hM2
-  · exact Module.rank_lt_aleph0_iff.1 (hM1.trans_lt (by norm_num))
+  · exact Module.rank_lt_aleph0_iff.1 (hM1.trans_lt (by simp))
   · exact Module.finrank_le_of_rank_le hM1
 
 @[simp]

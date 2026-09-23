@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Sigma
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Order.Filter.Map
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Closure
 
 /-!
 # Basic results on filter bases
@@ -763,6 +764,20 @@ theorem HasBasis.coprod {ι ι' : Type*} {pa : ι → Prop} {sa : ι → Set α}
   (hla.comap Prod.fst).sup (hlb.comap Prod.snd)
 
 end TwoTypes
+
+/-- A filter `l` which has a basis of sets contained in the filter which satisfy some
+predicate `p` that is preserved under a `ClosureOperator` `c` has a basis which consists
+of sets contained in `l` which satisfy predicate `p` and are _closed_ under `c`. -/
+theorem HasBasis.and_isClosed
+    {l : Filter α} {p : Set α → Prop} {c : ClosureOperator (Set α)}
+    (hlp : l.HasBasis (fun t ↦ t ∈ l ∧ p t) id) (hlc : l.HasBasis (fun t ↦ t ∈ l ∧ c.IsClosed t) id)
+    (hcp : ∀ t ∈ l, p t → p (c t)) :
+    l.HasBasis (fun t : Set α ↦ t ∈ l ∧ p t ∧ c.IsClosed t) id :=
+  hasBasis_self.mpr fun t ht ↦ by
+    obtain ⟨t₁, ⟨ht₁l, ht₁c⟩, ht₁t⟩ := (hlc.mem_iff' t).mp ht
+    obtain ⟨t₂, ⟨ht₂l, ht₂p⟩, ht₂t₁⟩ := (hlp.mem_iff' t₁).mp ht₁l
+    exact ⟨c t₂, l.mem_of_superset ht₂l (c.le_closure t₂),
+      ⟨hcp t₂ ht₂l ht₂p, c.isClosed_closure _⟩, (c.closure_min ht₂t₁ ht₁c).trans ht₁t⟩
 
 theorem map_sigma_mk_comap {π : α → Type*} {π' : β → Type*} {f : α → β}
     (hf : Function.Injective f) (g : ∀ a, π a → π' (f a)) (a : α) (l : Filter (π' (f a))) :

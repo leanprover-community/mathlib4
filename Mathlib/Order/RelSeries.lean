@@ -232,7 +232,7 @@ def last (x : RelSeries r) : α := x <| Fin.last _
 
 lemma apply_zero (p : RelSeries r) : p 0 = p.head := rfl
 
-lemma apply_last (x : RelSeries r) : x (Fin.last <| x.length) = x.last := rfl
+lemma apply_last (x : RelSeries r) : x (Fin.last x.length) = x.last := rfl
 
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 

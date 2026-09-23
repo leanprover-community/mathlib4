@@ -441,7 +441,7 @@ noncomputable def equiv {π : P →+* R} (m : PerfectionMap p π) : P ≃+* Perf
   RingEquiv.ofBijective (Perfection.lift p P R π)
     ⟨fun _ _ hxy => m.injective fun n => (congr_arg (Perfection.coeff R p n) hxy :), fun f =>
       let ⟨x, hx⟩ := m.surjective f.1 f.2
-      ⟨x, Perfection.ext <| hx⟩⟩
+      ⟨x, Perfection.ext hx⟩⟩
 
 theorem equiv_apply {π : P →+* R} (m : PerfectionMap p π) (x : P) :
     m.equiv x = Perfection.lift p P R π x := rfl
@@ -521,7 +521,7 @@ abbrev ModP :=
 namespace ModP
 
 instance [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] : CharP (ModP O p) p :=
-  CharP.quotient O p <| hvp.1
+  CharP.quotient O p hvp.1
 
 instance [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] : Nontrivial (ModP O p) :=
   CharP.nontrivial_of_char_ne_one hp.1.ne_one

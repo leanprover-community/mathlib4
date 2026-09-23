@@ -42,7 +42,7 @@ This map is always surjective (`tensorCotangentHom_surjective`) and injective
 if `T` is `R`-flat (`tensorCotangentHom_injective_of_flat`). -/
 def tensorCotangentHom :
     T ⊗[R] I.Cotangent →ₗ[T]
-      (I.map <| (Algebra.TensorProduct.includeRight.toRingHom : S →+* T ⊗[R] S)).Cotangent :=
+      (I.map (Algebra.TensorProduct.includeRight.toRingHom : S →+* T ⊗[R] S)).Cotangent :=
   LinearMap.liftBaseChange T <|
     Cotangent.lift
       ((map (algebraMap S (T ⊗[R] S)) I).toCotangent.restrictScalars R ∘ₗ

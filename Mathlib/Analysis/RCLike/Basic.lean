@@ -565,7 +565,7 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 @[simp 1100, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
 
 instance (priority := 100) : CStarRing K where
-  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
+  norm_mul_self_le x := le_of_eq ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
 instance : StarModule ℝ K where
   star_smul r a := by
@@ -1190,7 +1190,7 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
 theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
-  ofRealLI.lipschitz
+  ofRealLI.lipschitzWith
 
 lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   intro x y

@@ -314,6 +314,13 @@ theorem infs_right_comm : s ⊼ t ⊼ u = s ⊼ u ⊼ t :=
 theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image2_image2_image2_comm inf_inf_inf_comm
 
+@[simp]
+theorem infs_eq_inter {s t : Set α} (hs : IsLowerSet s) (ht : IsLowerSet t) : s ⊼ t = s ∩ t := by
+  ext u
+  simp only [mem_infs, mem_inter_iff]
+  exact ⟨fun ⟨a, ha, b, hb, h⟩ ↦ ⟨hs (h ▸ inf_le_left) ha, ht (h ▸ inf_le_right) hb⟩,
+    fun ⟨hu_s, hu_t⟩ ↦ ⟨u, hu_s, u, hu_t, inf_idem u⟩⟩
+
 end Infs
 
 open SetFamily
@@ -335,6 +342,9 @@ theorem infs_sups_subset_right : (t ⊻ u) ⊼ s ⊆ t ⊼ s ⊻ u ⊼ s :=
   image2_distrib_subset_right inf_sup_right
 
 end DistribLattice
+
+@[simp]
+theorem isLowerSet_powerset (s : Set α) : IsLowerSet (𝒫 s) := fun _t _u htu hu ↦ htu.trans hu
 
 end Set
 

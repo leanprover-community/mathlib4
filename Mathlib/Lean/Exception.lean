@@ -17,7 +17,7 @@ This file contains two additional methods for working with `Exception`s
 
 -/
 
-@[expose] public section
+public section
 
 open Lean
 

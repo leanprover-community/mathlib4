@@ -159,7 +159,7 @@ theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime
 theorem inertia_smul {R : Type*} [Ring R] [MulSemiringAction M R]
     (g : M) (I : Ideal R) : (g • I).inertia M = (I.inertia M).map (MulAut.conj g) := by
   ext x
-  simp_rw [Subgroup.map_equiv_eq_comap_symm, Subgroup.mem_comap, MonoidHom.coe_coe,
+  simp_rw [Subgroup.map_equiv_eq_comap_symm, Subgroup.mem_comap, MonoidHom.coe_ofClass,
     MulAut.conj_symm_apply, mem_inertia, mem_pointwise_smul_iff_inv_smul_mem]
   rw [← (MulAction.toPerm g).forall_congr_right]
   simp [mul_smul, smul_sub]

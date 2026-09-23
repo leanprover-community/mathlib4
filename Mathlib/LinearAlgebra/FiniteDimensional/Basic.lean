@@ -421,12 +421,12 @@ theorem coe_ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) :
 @[simp]
 theorem ofInjectiveEndo_right_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     f * (ofInjectiveEndo f h_inj).symm = 1 :=
-  LinearMap.ext <| (ofInjectiveEndo f h_inj).apply_symm_apply
+  LinearMap.ext (ofInjectiveEndo f h_inj).apply_symm_apply
 
 @[simp]
 theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
-  LinearMap.ext <| (ofInjectiveEndo f h_inj).symm_apply_apply
+  LinearMap.ext (ofInjectiveEndo f h_inj).symm_apply_apply
 
 variable {V' : Type*} [AddCommGroup V'] [Module K V'] [FiniteDimensional K V']
 omit [FiniteDimensional K V]

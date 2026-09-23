@@ -453,7 +453,7 @@ theorem ker_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ker (prod f g) 
 
 theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
     range (prod f g) ≤ (range f).prod (range g) := by
-  simp only [SetLike.le_def, prod_apply, mem_range, mem_prod, exists_imp]
+  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp]
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
@@ -859,7 +859,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
   refine le_antisymm (f.range_prod_le g) ?_
-  simp only [SetLike.le_def, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
+  simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
     Prod.forall, Function.prod_apply]
   rintro _ _ x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
@@ -927,7 +927,7 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
     ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
   obtain ⟨f', hf'⟩ :=
     AddMonoidHom.exists_mrange_eq_mgraph (G := G) (H := H) (I := I) (f := f) hf₁ hf
-  simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_coe,
+  simp only [SetLike.ext_iff, AddMonoidHom.mem_mrange, AddMonoidHom.coe_ofClass,
     AddMonoidHom.mem_mgraph] at hf'
   use
   { toFun := f'.toFun
@@ -941,7 +941,7 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
       rw [LinearMap.mem_range, hf'] }
   ext x
   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
-    coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x
+    coe_mk, AddHom.coe_mk, AddMonoidHom.coe_ofClass, Set.mem_range] using hf' x
 
 /-- **Vertical line test** for linear maps.
 

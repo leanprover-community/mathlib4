@@ -729,7 +729,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
 def coneOpEquiv {F : J ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.op where
   functor.obj c := c.unop.op
   functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w j.unop).op) }
-  inverse.obj c := .op <| c.unop
+  inverse.obj c := .op c.unop
   inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w (.op j)).unop) }⟩
   unitIso := Iso.refl _
   counitIso := Iso.refl _

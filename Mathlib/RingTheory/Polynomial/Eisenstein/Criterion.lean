@@ -104,7 +104,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
     apply IsUnit.map
     apply hf_prim
-    rwa [leadingCoeff_C] at hgP
+    exact hg_div
   by_contra hg'
   apply hgP
   rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, ite_eq_right hg', zero_add,

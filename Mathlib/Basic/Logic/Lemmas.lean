@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Basic.Logic.Basic
-public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Tauto
 
@@ -63,10 +62,3 @@ theorem ite_ite_distrib_left : ite p a (ite q b c) = ite q (ite p a b) (ite p a 
 
 theorem ite_ite_distrib_right : ite p (ite q a b) c = ite q (ite p a c) (ite p b c) :=
   dite_dite_distrib_right
-
-lemma Prop.forall {f : Prop → Prop} : (∀ p, f p) ↔ f True ∧ f False :=
-  ⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
-
-lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
-  ⟨fun ⟨p, h⟩ ↦ by refine (em p).imp ?_ ?_ <;> intro H <;> convert! h <;> simp [H],
-    by rintro (h | h) <;> exact ⟨_, h⟩⟩

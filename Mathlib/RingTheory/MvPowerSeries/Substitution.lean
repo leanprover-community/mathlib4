@@ -354,7 +354,7 @@ theorem map_subst {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+*
   rw [coeff_subst (ha.map h), coeff_map, coeff_subst ha, this, AddMonoidHom.map_finsum _
     (coeff_subst_finite ha _ _), finsum_congr]
   intro d
-  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
+  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_ofClass, map_mul,
     ← coeff_map, Finsupp.prod]
 
 lemma subst_zero_eq_C_constantCoeff {f : MvPowerSeries σ R} :

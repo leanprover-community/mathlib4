@@ -55,11 +55,11 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 
 attribute [to_dual existing app_inv] app_hom
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[map (attr := reassoc +to_dual (attr := simp)), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) := by cat_disch
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[map (attr := reassoc +to_dual (attr := simp)), grind =]
 theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) := by cat_disch
 

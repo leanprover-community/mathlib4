@@ -198,7 +198,7 @@ private theorem fixed_of_fixed1_aux1 :
     rw [Ideal.IsPrime.inf_le' inferInstance]
     rintro ⟨g, hg1, hg2⟩
     exact (Finset.mem_filter.mp hg1).2 (smul_eq_of_smul_le hg2)
-  obtain ⟨b, hbP, hbQ⟩ := SetLike.not_le_iff_exists.mp h1
+  obtain ⟨b, hbP, hbQ⟩ := IsConcreteLE.not_le_iff_exists.mp h1
   replace hbP : ∀ g : G, g • Q ≠ Q → b ∈ g • Q :=
     fun g hg ↦ (Finset.inf_le (Finset.mem_filter.mpr ⟨Finset.mem_univ g, hg⟩) : P ≤ g • Q) hbP
   let f := MulSemiringAction.charpoly G b
@@ -354,7 +354,7 @@ theorem IsFractionRing.stabilizerHom_surjective :
   intro f
   obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
     (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.2))
-  exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
+  exact ⟨g, by rw [AlgEquiv.ext_iff] at hg ⊢; assumption⟩
 
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
 theorem Ideal.Quotient.stabilizerHom_surjective :
@@ -527,7 +527,8 @@ theorem map_inertia_of_surjective (hf_surj : Function.Surjective f) (hf_ker : H 
     refine ⟨v, ?_, by simp [v, hf_ker]⟩
     rw [SetLike.mem_coe, coe_mem_inertia, ← Quotient.ker_stabilizerHom q (q.under ℤ) G,
       MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one]
-    rwa [AlgEquiv.ext_iff] at hg' ⊢
+    rw [AlgEquiv.ext_iff] at hg' ⊢
+    assumption
 
 variable [MulSemiringAction G R] [SMulDistribClass G R S]
   [H.Normal] [MulSemiringAction (G ⧸ H) R] [IsScalarTower G (G ⧸ H) R]

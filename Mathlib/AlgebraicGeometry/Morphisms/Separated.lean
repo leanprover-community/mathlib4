@@ -129,7 +129,6 @@ instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [IsSeparat
   MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i)
     inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : X ⟶ Y` and `g : Y ⟶ Z` such that `g` is separated, the induced map
 `X ⟶ X ×[Z] Y` is a closed immersion. -/
 instance [IsSeparated g] :

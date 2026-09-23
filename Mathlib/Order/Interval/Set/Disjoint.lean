@@ -178,7 +178,7 @@ theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici 
   refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x ↦ mem_biUnion h.left
   exact Ici_subset_Ici.mpr <| h.right hx
 
-@[to_dual (attr := deprecated IsLeast.biUnion_Ici_eq_Ici (since := "2026-08-13"))]
+@[to_dual (attr := deprecated IsLeast.biUnion_Ici_eq_Ici +typeChanged (since := "2026-08-13"))]
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Ici x = Ici a :=
   a_glb.isLeast a_mem |>.biUnion_Ici_eq_Ici
 

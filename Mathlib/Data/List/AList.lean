@@ -238,7 +238,7 @@ theorem lookup_erase_ne {a a'} {s : AList β} (h : a ≠ a') : lookup a (erase a
   dlookup_kerase_ne h
 
 theorem erase_erase (a a' : α) (s : AList β) : (s.erase a).erase a' = (s.erase a').erase a :=
-  ext <| kerase_kerase
+  ext kerase_kerase
 
 /-! ### insert -/
 

@@ -384,7 +384,7 @@ instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace 
     obtain ⟨_, ⟨n, rfl⟩, hn⟩ : (range (denseSeq G) ∩ (fun y => x * y) ⁻¹' L).Nonempty := by
       rw [← (Homeomorph.mulLeft x).apply_symm_apply 1] at hL1
       exact (denseRange_denseSeq G).inter_nhds_nonempty
-          ((Homeomorph.mulLeft x).continuous.continuousAt <| hL1)
+          ((Homeomorph.mulLeft x).continuous.continuousAt hL1)
     exact ⟨n, hn⟩
 
 /-- Given two compact sets in a noncompact topological group, there is a translate of the second

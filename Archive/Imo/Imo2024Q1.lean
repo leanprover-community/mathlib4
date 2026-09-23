@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.ToIntervalMod
 public import Mathlib.Tactic.Peel
-public import Mathlib.Tactic.Recall
 
 /-!
 # IMO 2024 Q1

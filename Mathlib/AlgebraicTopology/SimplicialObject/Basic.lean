@@ -964,7 +964,7 @@ def cosimplicialToSimplicialAugmented :
     CosimplicialObject.Augmented Cᵒᵖ ⥤ (SimplicialObject.Augmented C)ᵒᵖ where
   obj X := Opposite.op X.leftOp
   map f :=
-    Quiver.Hom.op <|
+    Quiver.Hom.op
       { left := NatTrans.leftOp f.right
         right := f.left.unop
         w := by

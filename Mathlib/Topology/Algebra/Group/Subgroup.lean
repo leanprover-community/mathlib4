@@ -124,7 +124,7 @@ open scoped IsMulCommutative in
 
 See note [reducible non-instances]. -/
 @[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
-(since := "2026-07-29"))
+  +typeChanged (since := "2026-07-29"))
   /-- If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 

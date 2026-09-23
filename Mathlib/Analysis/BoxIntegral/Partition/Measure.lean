@@ -47,7 +47,7 @@ theorem measure_Icc_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure �
   show μ (Icc I.lower I.upper) < ∞ from I.isCompact_Icc.measure_lt_top
 
 theorem measure_coe_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ I < ∞ :=
-  (measure_mono <| coe_subset_Icc).trans_lt (I.measure_Icc_lt_top μ)
+  (measure_mono coe_subset_Icc).trans_lt (I.measure_Icc_lt_top μ)
 
 section Countable
 

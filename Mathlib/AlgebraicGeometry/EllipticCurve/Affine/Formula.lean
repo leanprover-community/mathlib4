@@ -431,12 +431,12 @@ lemma den_duplication_ne_zero_or_num_duplication_ne_zero {x y : F} (h : W.Nonsin
   by_cases H : 2 * y + W.a₁ * x + W.a₃ = 0
   · right
     replace h₂ : W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ := by grind
-    contrapose! h₂
+    contrapose h₂
     rw [b₄, b₆, b₈] at h₂
     grobner
   · left
     clear h₂
-    contrapose! H
+    contrapose H
     rw [b₂, b₄, b₆] at H
     grobner
 

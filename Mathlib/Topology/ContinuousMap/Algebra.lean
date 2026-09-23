@@ -609,6 +609,15 @@ def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
 
+/-- Coercion to a function as a `ContinuousLinearMap`. -/
+@[simps! apply]
+def coeFnCLM : C(α, M) →L[R] α → M where
+  __ := coeFnLinearMap R
+  cont := continuous_coeFun
+
+@[simp]
+lemma toLinearMap_coeFnCLM : (coeFnCLM R (α := α) (M := M)).toLinearMap = coeFnLinearMap R := rfl
+
 variable (M) in
 /-- Composition on the right by a continuous map, as a `ContinuousLinearMap`. -/
 @[simps]

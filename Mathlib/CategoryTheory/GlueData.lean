@@ -431,7 +431,6 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
         (by delta f'; aesop) (by delta f'; aesop)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 The constructed `GlueData` of a `GlueData'`, where `GlueData'` is a variant of `GlueData` that only

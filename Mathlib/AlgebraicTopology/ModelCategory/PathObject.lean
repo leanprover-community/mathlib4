@@ -78,7 +78,6 @@ def symm : PrepathObject A where
   p₁ := P.p₀
   ι := P.ι
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two pre-path objects. -/
 @[simps]
 noncomputable def trans (P' : PrepathObject A) [HasPullback P.p₁ P'.p₀] :

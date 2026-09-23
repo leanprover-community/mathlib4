@@ -120,7 +120,7 @@ theorem vonNeumann_zero : V_ 0 = ∅ :=
 theorem vonNeumann_add_one (o : Ordinal) : V_ (o + 1) = powerset (V_ o) :=
   ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_add_one_iff]
 
-@[deprecated vonNeumann_add_one (since := "2026-05-25")]
+@[deprecated vonNeumann_add_one +typeChanged (since := "2026-05-25")]
 theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
   vonNeumann_add_one o
 

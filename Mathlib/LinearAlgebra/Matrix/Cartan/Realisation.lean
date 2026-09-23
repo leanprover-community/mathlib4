@@ -549,7 +549,7 @@ lemma isIrreducible_toRootPairing [Nonempty n] {k V W : Type*} [Field k] [CharZe
     obtain ⟨v, hv⟩ := rl.matrix.isIndecomposable_iff_blockTriangular_const.mp hA' _ hbt
     rcases eq_or_ne v 0 with rfl | hv'
     · exact Or.inr fun i hi ↦ by simpa [hi] using congr_fun hv i
-    · exact Or.inl fun i ↦ by contrapose! hv'; simpa [hv'] using (congr_fun hv i).symm
+    · exact Or.inl fun i ↦ by contrapose hv'; simpa [hv'] using (congr_fun hv i).symm
   rcases hA' with hfΦ | hfΦ
   · obtain ⟨rfl⟩ : q = ⊤ := by
       rw [eq_top_iff, ← hr, Submodule.span_le]

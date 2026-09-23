@@ -657,7 +657,7 @@ in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bo
 `log p n`. -/
 theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
     padicValNat p (choose n k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
-  exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| (choose_ne_zero hkn)) ▸
+  exact_mod_cast (padicValNat_eq_emultiplicity (p := p) (choose_ne_zero hkn)) ▸
     Prime.emultiplicity_choose hp.out hkn hnb
 
 /-- **Kummer's Theorem**

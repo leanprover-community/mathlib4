@@ -132,7 +132,7 @@ saved context. Fails if the variable has no value. -/
 def MatchState.withVar {α : Type} (s : MatchState) (name : Name)
     (m : DelabM α) : DelabM α := do
   let some (se, lctx, linsts) := s.vars[name]? | failure
-  withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) <| m
+  withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) m
 
 /-- Delaborate the given variable's value. Fails if the variable has no value.
 If `checkNot` is provided, then checks that the expression being delaborated is not
@@ -195,7 +195,7 @@ def natLitMatcher (n : Nat) : Matcher := fun s => do
 
 /-- Matches applications. -/
 def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
-  guard <| (← getExpr).isApp
+  guard (← getExpr).isApp
   let s ← withAppFn <| matchFun s
   let s ← withAppArg <| matchArg s
   return s
@@ -203,14 +203,14 @@ def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
 /-- Matches pi types. The name `n` should be unique, and `matchBody` should use `n`
 as the `userName` of its fvar. -/
 def matchForall (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
-  guard <| (← getExpr).isForall
+  guard (← getExpr).isForall
   let s ← withBindingDomain <| matchDom s
   let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
   return s
 
 /-- Matches lambdas. The `matchBody` takes the fvar introduced when visiting the body. -/
 def matchLambda (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
-  guard <| (← getExpr).isLambda
+  guard (← getExpr).isLambda
   let s ← withBindingDomain <| matchDom s
   let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
   return s

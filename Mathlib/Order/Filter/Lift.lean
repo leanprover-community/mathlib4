@@ -209,7 +209,7 @@ theorem lift'_top (h : Set α → Set β) : (⊤ : Filter α).lift' h = 𝓟 (h 
   lift_top _
 
 theorem mem_lift' {t : Set α} (ht : t ∈ f) : h t ∈ f.lift' h :=
-  le_principal_iff.mp <| show f.lift' h ≤ 𝓟 (h t) from iInf_le_of_le t <| iInf_le_of_le ht <| le_rfl
+  le_principal_iff.mp <| show f.lift' h ≤ 𝓟 (h t) from iInf_le_of_le t <| iInf_le_of_le ht le_rfl
 
 theorem tendsto_lift' {m : γ → β} {l : Filter γ} :
     Tendsto m l (f.lift' h) ↔ ∀ s ∈ f, ∀ᶠ a in l, m a ∈ h s := by
@@ -242,7 +242,7 @@ theorem lift'_mono' (hh : ∀ s ∈ f, h₁ s ⊆ h₂ s) : f.lift' h₁ ≤ f.l
 
 theorem lift'_cong (hh : ∀ s ∈ f, h₁ s = h₂ s) : f.lift' h₁ = f.lift' h₂ :=
   le_antisymm (lift'_mono' fun s hs => le_of_eq <| hh s hs)
-    (lift'_mono' fun s hs => le_of_eq <| (hh s hs).symm)
+    (lift'_mono' fun s hs => le_of_eq (hh s hs).symm)
 
 theorem map_lift'_eq {m : β → γ} (hh : Monotone h) : map m (f.lift' h) = f.lift' (image m ∘ h) :=
   calc

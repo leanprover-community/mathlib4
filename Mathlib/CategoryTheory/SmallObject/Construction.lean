@@ -134,12 +134,10 @@ noncomputable abbrev π'FunctorObj : ∐ functorObjTgtFamily f πX ⟶ S := Sigm
 noncomputable def πFunctorObj : functorObj f πX ⟶ S :=
   pushout.desc πX (π'FunctorObj f πX) (by ext; simp [π'FunctorObj])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ρFunctorObj_π : ρFunctorObj f πX ≫ πFunctorObj f πX = π'FunctorObj f πX := by
   simp [πFunctorObj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιFunctorObj_πFunctorObj : ιFunctorObj f πX ≫ πFunctorObj f πX = πX := by
   simp [ιFunctorObj, πFunctorObj]
@@ -263,7 +261,6 @@ noncomputable def functorMap : functorObj f πX ⟶ functorObj f πY :=
   pushout.map _ _ _ _ τ.left (functorMapTgt f τ) (functorMapSrc f τ) (by simp)
     (functorMap_comm f τ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma functorMap_π : functorMap f τ ≫ πFunctorObj f πY = πFunctorObj f πX ≫ τ.right := by
   ext ⟨i, t, b, w⟩
@@ -271,7 +268,6 @@ lemma functorMap_π : functorMap f τ ≫ πFunctorObj f πY = πFunctorObj f π
   · simp [functorMap, ι_functorMapTgt_assoc f τ i t b w _ rfl]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 @[simp]
 lemma functorMap_id : functorMap f (𝟙 (Arrow.mk πX)) = 𝟙 _ := by
@@ -280,7 +276,6 @@ lemma functorMap_id : functorMap f (𝟙 (Arrow.mk πX)) = 𝟙 _ := by
   · simp [functorMap,
       ι_functorMapTgt_assoc f (𝟙 (Arrow.mk πX)) i t b w b (by simp) t (by simp)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιFunctorObj_naturality :
     ιFunctorObj f πX ≫ functorMap f τ = τ.left ≫ ιFunctorObj f πY := by

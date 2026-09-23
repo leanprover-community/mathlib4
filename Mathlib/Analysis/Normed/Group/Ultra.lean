@@ -213,7 +213,7 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
       simp only [Finset.prod_cons, Finset.mem_cons, exists_eq_or_imp]
       refine (le_total ‖∏ i ∈ t, f i‖ ‖f j‖).imp ?_ ?_ <;> intro h
       · exact (norm_mul_le_max _ _).trans (max_eq_left h).le
-      · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans <|
+      · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
 /-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the

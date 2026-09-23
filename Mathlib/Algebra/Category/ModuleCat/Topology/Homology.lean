@@ -40,7 +40,7 @@ abbrev ker : TopModuleCat R := .of R φ.hom.ker
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
 def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
 
-instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) <| Subtype.val_injective
+instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) Subtype.val_injective
 
 @[simp] lemma kerι_comp : kerι φ ≫ φ = 0 := by ext ⟨_, hm⟩; exact hm
 
@@ -64,7 +64,7 @@ section cokernel
 abbrev coker : TopModuleCat R := .of R (N ⧸ φ.hom.range)
 
 /-- The projection map to the cokernel in `TopModuleCat R`. -/
-def cokerπ : N ⟶ coker φ := ofHom <| ⟨Submodule.mkQ _, by tauto⟩
+def cokerπ : N ⟶ coker φ := ofHom ⟨Submodule.mkQ _, by tauto⟩
 
 @[simp]
 lemma hom_cokerπ (x) : (cokerπ φ).hom x = Submodule.mkQ _ x := rfl
@@ -82,7 +82,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- `TopModuleCat.coker` is indeed the cokernel in `TopModuleCat R`. -/
 def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ φ)) :=
   isColimitAux (.ofπ (cokerπ φ) (comp_cokerπ φ))
-  (fun s ↦ ofHom <|
+  (fun s ↦ ofHom
     { toLinearMap := φ.hom.range.liftQ s.π.hom.toLinearMap
         (LinearMap.range_le_ker_iff.mpr <| show (φ ≫ s.π).hom.toLinearMap = 0 by
           rw [s.condition, hom_zero, ContinuousLinearMap.toLinearMap_zero])

@@ -581,7 +581,7 @@ theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
   exact
     (Q b hb).ne_bot hdb
       (eq_bot_iff.2 <|
-        (le_inf ((Q b hb).le hdb) <| (Q c hc).le hdc).trans <| (P.disjoint hb hc hbc).le_bot)
+        (le_inf ((Q b hb).le hdb) <| (Q c hc).le hdc).trans (P.disjoint hb hc hbc).le_bot)
 
 end Bind
 

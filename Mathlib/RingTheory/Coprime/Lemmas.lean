@@ -210,7 +210,7 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 
 theorem IsCoprime.pow_right_iff (hm : 0 < m) : IsCoprime x (y ^ m) ↔ IsCoprime x y :=
-  isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans <| isCoprime_comm
+  isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans isCoprime_comm
 
 theorem IsCoprime.pow_iff (hm : 0 < m) (hn : 0 < n) : IsCoprime (x ^ m) (y ^ n) ↔ IsCoprime x y :=
   (IsCoprime.pow_left_iff hm).trans <| IsCoprime.pow_right_iff hn
@@ -298,7 +298,7 @@ theorem pow_left_iff (hm : 0 < m) : IsRelPrime (x ^ m) y ↔ IsRelPrime x y := b
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 
 theorem pow_right_iff (hm : 0 < m) : IsRelPrime x (y ^ m) ↔ IsRelPrime x y :=
-  isRelPrime_comm.trans <| (IsRelPrime.pow_left_iff hm).trans <| isRelPrime_comm
+  isRelPrime_comm.trans <| (IsRelPrime.pow_left_iff hm).trans isRelPrime_comm
 
 theorem pow_iff (hm : 0 < m) (hn : 0 < n) :
     IsRelPrime (x ^ m) (y ^ n) ↔ IsRelPrime x y :=

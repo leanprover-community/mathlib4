@@ -615,4 +615,4 @@ end Set
 /-- A shorthand for `α → β → Prop`.
 
 Consider using `SetRel` instead if you want extra API for relations. -/
-abbrev Rel (α β : Type*) : Type _ := α → β → Prop
+abbrev Rel (α β : Sort*) : Sort _ := α → β → Prop

@@ -187,10 +187,10 @@ theorem comap_equiv_eq_map_symm' (f : N ≃* G) (K : Subgroup G) :
 theorem map_symm_eq_iff_map_eq {H : Subgroup N} {e : G ≃* N} :
     H.map ↑e.symm = K ↔ K.map ↑e = H := by
   constructor <;> rintro rfl
-  · rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
-      MulEquiv.coe_monoidHom_refl, map_id]
-  · rw [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
-      MulEquiv.coe_monoidHom_refl, map_id]
+  · rw [map_map, ← MulEquiv.toMonoidHom_trans, MulEquiv.symm_trans_self,
+      MulEquiv.toMonoidHom_refl, map_id]
+  · rw [map_map, ← MulEquiv.toMonoidHom_trans, MulEquiv.self_trans_symm,
+      MulEquiv.toMonoidHom_refl, map_id]
 
 @[to_additive]
 theorem map_le_iff_le_comap {f : G →* N} {K : Subgroup G} {H : Subgroup N} :

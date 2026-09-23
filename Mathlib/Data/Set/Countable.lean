@@ -305,7 +305,7 @@ theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs
 
 protected theorem Countable.prod {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable) :
     Set.Countable (s ×ˢ t) :=
-  have := hs.to_subtype; have := ht.to_subtype; .of_equiv _ <| (Equiv.Set.prod _ _).symm
+  have := hs.to_subtype; have := ht.to_subtype; .of_equiv _ (Equiv.Set.prod _ _).symm
 
 theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable)
     (f : α → β → γ) : (image2 f s t).Countable := by

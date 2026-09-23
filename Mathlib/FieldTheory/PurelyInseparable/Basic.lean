@@ -332,7 +332,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
     by_cases h : (⊥ : IntermediateField F E) = ⊤
     · rw [← finrank_top', ← h, IntermediateField.finrank_bot] at hd
       exact ⟨0, ((pow_zero q).trans hd).symm⟩
-    obtain ⟨x, -, hx⟩ := SetLike.exists_of_lt (lt_of_le_of_ne bot_le h :)
+    obtain ⟨x, -, hx⟩ := IsConcreteLE.exists_of_lt (lt_of_le_of_ne bot_le h :)
     obtain ⟨m, y, e⟩ := IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x
     have : finrank F F⟮x⟯ = q ^ m := by
       rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, natDegree_sub_C, natDegree_X_pow]
@@ -380,7 +380,7 @@ theorem injective_comp_algebraMap [CommRing L] [IsReduced L] :
 
 theorem injective_restrictDomain [CommRing L] [IsReduced L] [Algebra R L] [IsScalarTower R F E] :
     Function.Injective (AlgHom.domRestrict (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
-  AlgHom.coe_ringHom_injective <| injective_comp_algebraMap F E L <| congr_arg AlgHom.toRingHom eq
+  AlgHom.toRingHom_injective <| injective_comp_algebraMap F E L <| congr_arg AlgHom.toRingHom eq
 
 instance [Field L] [PerfectField L] [Algebra F L] : Nonempty (E →ₐ[F] L) :=
   nonempty_algHom_of_splits fun x ↦ ⟨IsPurelyInseparable.isIntegral' _ _,
@@ -398,7 +398,7 @@ theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsSca
     Function.Bijective (AlgHom.domRestrict (A := R) F (C := E) (D := L)) :=
   ⟨injective_restrictDomain F E R L, fun g ↦ let _ := g.toAlgebra
     let f := Classical.arbitrary (E →ₐ[F] L)
-    ⟨f.restrictScalars R, AlgHom.coe_ringHom_injective f.comp_algebraMap⟩⟩
+    ⟨f.restrictScalars R, AlgHom.toRingHom_injective f.comp_algebraMap⟩⟩
 
 end IsPurelyInseparable
 
@@ -406,7 +406,7 @@ end IsPurelyInseparable
 `F`-algebra homomorphism from `E` to `L`. -/
 instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
     [CommRing L] [IsReduced L] [Algebra F L] : Subsingleton (E →ₐ[F] L) where
-  allEq f g := AlgHom.coe_ringHom_injective <|
+  allEq f g := AlgHom.toRingHom_injective <|
     IsPurelyInseparable.injective_comp_algebraMap F E L (by simp_rw [AlgHom.comp_algebraMap])
 
 instance instUniqueAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)

@@ -263,7 +263,7 @@ theorem mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
   constructor
   · rw [← insert_endpoints_openSegment]
     rintro H (rfl | rfl | hx)
-    exacts [Or.inl rfl, Or.inr rfl, Or.inl <| (H hx).1]
+    exacts [Or.inl rfl, Or.inr rfl, Or.inl (H hx).1]
   · intro H hx
     rcases H (openSegment_subset_segment _ _ _ hx) with (rfl | rfl)
     exacts [⟨rfl, (left_mem_openSegment_iff.1 hx).symm⟩, ⟨right_mem_openSegment_iff.1 hx, rfl⟩]

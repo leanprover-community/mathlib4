@@ -5,10 +5,12 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
 module
 
-public import Mathlib.GroupTheory.Solvable
-public import Mathlib.GroupTheory.Sylow
 public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.GroupTheory.Commutator.Finite
+public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.QuotientGroup.Simple
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 
@@ -191,24 +193,13 @@ instance (n : ℕ) : Characteristic (upperCentralSeries G n) :=
 @[to_additive (attr := simp)]
 theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 
+@[to_additive upperCentralSeries_one]
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_ofPred_eq, mem_center_iff]
   exact forall_congr' fun y => by
     rw [commutatorElement_def, mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
-
-theorem _root_.AddSubgroup.upperCentralSeries_one (G : Type*) [AddGroup G] :
-    AddSubgroup.upperCentralSeries G 1 = AddSubgroup.center G := by
-  ext
-  simp only [AddSubgroup.upperCentralSeries, AddSubgroup.upperCentralSeriesAux,
-    AddSubgroup.upperCentralSeriesStep, AddSubgroup.mem_bot, AddSubgroup.mem_mk,
-    AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_ofPred_eq, AddSubgroup.mem_center_iff]
-  exact forall_congr' fun y => by
-    rw [addCommutatorElement_def, add_neg_eq_zero, add_neg_eq_iff_eq_add, eq_comm]
-
-attribute [to_additive existing (attr := simp) AddSubgroup.upperCentralSeries_one]
-  upperCentralSeries_one
 
 variable {G}
 
@@ -1186,18 +1177,26 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
 
+/-- A simple nilpotent group is commutative. -/
+@[to_additive /-- A simple nilpotent additive group is commutative. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
-  ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
+  Group.commGroupOfCenterEqTop <|
+    (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
+      (Group.IsNilpotent.center_ne_bot G)
 
+/-- A simple nilpotent group is cyclic. -/
+@[to_additive /-- A simple nilpotent additive group is cyclic. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
   inferInstance
 
 namespace Group
 
+@[to_additive AddGroup.nilpotencyClass_le_one_of_isSimple_of_isNilpotent]
 lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [IsSimpleGroup G] [IsNilpotent G] :
     nilpotencyClass G ≤ 1 :=
   CommGroup.nilpotencyClass_le_one
 
+@[to_additive]
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition
   rw [normalizerCondition_iff_only_full_group_self_normalizing]
@@ -1234,6 +1233,42 @@ theorem IsNilpotent.commute_of_orderOf_coprime [IsNilpotent G] {x y : G}
   simp
 
 end Group
+
+namespace Subgroup
+
+/-- In a nilpotent group, the maximal subgroups are exactly the subgroups of prime index. -/
+@[to_additive]
+theorem isCoatom_iff_index_prime [Group.IsNilpotent G] (H : Subgroup G) :
+    IsCoatom H ↔ H.index.Prime := by
+  refine ⟨fun h ↦ ?_, isCoatom_of_index_prime⟩
+  have : H.Normal := Group.normalizerCondition_of_isNilpotent.normal_of_coatom H h
+  have : IsSimpleGroup (G ⧸ H) := Group.isSimpleGroup_of_isCoatom h
+  rwa [index_eq_card, ← Group.is_simple_iff_prime_card]
+
+end Subgroup
+
+namespace IsPGroup
+
+variable {p : ℕ} [hp : Fact p.Prime]
+
+/-- In a nilpotent p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
+theorem isCoatom_iff_index_eq_prime [Group.IsNilpotent G] (hG : IsPGroup p G) {H : Subgroup G} :
+    IsCoatom H ↔ H.index = p := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Subgroup.isCoatom_of_index_prime (h ▸ hp.out)⟩
+  have hHp := H.isCoatom_iff_index_prime.mp h
+  have : H.FiniteIndex := ⟨hHp.ne_zero⟩
+  obtain ⟨k, hk⟩ := IsPGroup.index hG H
+  exact Nat.prime_eq_prime_of_dvd_pow hHp hp.out hk.dvd
+
+/-- A nilpotent p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
+theorem not_isCyclic_iff_exists_ne_index_eq_prime [Group.IsNilpotent G]
+    [IsCoatomic (Subgroup G)] (hG : IsPGroup p G) :
+    ¬ IsCyclic G ↔ ∃ H₁ H₂ : Subgroup G, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by
+  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, hne, h₁, h₂⟩ _ ↦ hne ?_⟩
+  · grind [isCyclic_of_isCoatom_subsingleton, isCoatom_iff_index_eq_prime]
+  · rw [IsCyclic.subgroup_eq_iff_index_eq, h₁, h₂]
+
+end IsPGroup
 
 end WithGroup
 
@@ -1391,9 +1426,11 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
   lowerCentralSeries_nilpotencyClass
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
   lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
   lowerCentralSeries_map_subtype_le
 @[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries.map := lowerCentralSeries.map
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ_eq_bot :=
   lowerCentralSeries_succ_eq_bot

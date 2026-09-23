@@ -127,7 +127,7 @@ noncomputable def quotientTensorEquiv (I : Ideal A) :
     (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) where
   __ := (TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
     (tensorQuotientEquiv (R := R) R A T I).toRingEquiv.trans <|
-    Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv <| (I.map_map _ _).symm
+    Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv (I.map_map _ _).symm
   commutes' _ := rfl
 
 @[simp]

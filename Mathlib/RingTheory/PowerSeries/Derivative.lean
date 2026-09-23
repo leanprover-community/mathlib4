@@ -161,7 +161,7 @@ The formal derivative of a power series in one variable.
 This is defined here as a function, but will be packaged as a
 derivation `derivative` on `R⟦X⟧`.
 -/
-@[deprecated derivative (since := "2026-06-26")]
+@[deprecated derivative +typeChanged (since := "2026-06-26")]
 noncomputable def derivativeFun (f : R⟦X⟧) := derivative.toFun f
 
 set_option linter.deprecated false in

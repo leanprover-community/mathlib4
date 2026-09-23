@@ -60,7 +60,7 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
     if let some msg := s.messageData? then
       pure <| SuggestionText.string <| ← msg.toString
     else
-      pure <| s.suggestion
+      pure s.suggestion
   match suggestion with
   | .tsyntax (kind := ``tacticSeq) stx =>
     return stx

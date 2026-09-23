@@ -181,7 +181,7 @@ def len : Skeleton → ℕ :=
 
 @[ext]
 theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
-  ULift.ext _ _
+  ULift.ext
 
 instance : SmallCategory Skeleton.{u} where
   Hom X Y := ULift.{u} (Fin X.len) → ULift.{u} (Fin Y.len)
@@ -191,7 +191,7 @@ instance : SmallCategory Skeleton.{u} where
 theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
   ext _ _ <|
     Fin.equiv_iff_eq.mp <|
-      Nonempty.intro <|
+      Nonempty.intro
         { toFun := fun x => (h.hom ⟨x⟩).down
           invFun := fun x => (h.inv ⟨x⟩).down
           left_inv := by

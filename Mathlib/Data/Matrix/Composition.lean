@@ -32,7 +32,14 @@ namespace Matrix
 variable (I J K L R R' : Type*)
 
 /-- An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
-    an `I × K` by `J × L` matrix -/
+an `I × K` by `J × L` matrix.
+
+This is available in bundled forms as:
+* `Matrix.compAddEquiv`
+* `Matrix.compLinearEquiv`
+* `Matrix.compRingEquiv`
+* `Matrix.compAlgEquiv`
+-/
 @[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
@@ -96,7 +103,7 @@ theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I �
 @[simp]
 theorem comp_symm_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I × J → R) :
     (comp I I J J R).symm (diagonal d) = diagonal fun i => diagonal fun j => d (i, j) :=
-  (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j => d (i, j)).symm
+  (comp I I J J R).symm_apply_eq.2 (comp_diagonal_diagonal fun i j => d (i, j)).symm
 
 theorem comp_transpose (M : Matrix I J (Matrix K L R)) :
     comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl

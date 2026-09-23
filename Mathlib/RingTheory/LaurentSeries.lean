@@ -446,7 +446,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
-  rw [intValuation_if_neg _ hP, intValuation_if_neg _ <| (by simp [hP])]
+  rw [intValuation_if_neg _ hP, intValuation_if_neg _ (by simp [hP])]
   simp only [idealX_span, exp_neg, inv_inj, exp_inj, Nat.cast_inj]
   have span_ne_zero :
     (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
@@ -490,7 +490,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert!
     @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
-      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
+      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 (by simp [h])⟩
   · simp [← IsScalarTower.algebraMap_apply K[X] K⟮X⟯ K⸨X⸩]
   exacts [intValuation_eq_of_coe _, intValuation_eq_of_coe _]
 
@@ -674,7 +674,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
       hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
     rw [← hx]
-    nth_rw 2 [← Valuation.coe_ofClass]
+    nth_rw 2 [← Valuation.coe_toMonoidWithZeroHom]
     rw [← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
     simp_rw [← Valued.v.restrict_lt_iff_lt_embedding]
     exact (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem
@@ -706,7 +706,7 @@ result in full generality and deduce the case `Γ = ℤ` from that one. -/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v.restrict (P.snd - P.fst) < 1}
-  let ζ : (MonoidWithZeroHom.ValueGroup₀ <| .ofClass (Valued.v (R := K⸨X⸩)))ˣ :=
+  let ζ : (Valued.v (R := K⸨X⸩)).ValueGroup₀ˣ :=
     Units.mk0 1 (zero_ne_one.symm)
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
@@ -900,9 +900,9 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  have := (embedding γ.1)
+  have := embedding γ.1
   obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f
-    <| γ.map (embedding (f := .ofClass (valued K).v))
+    <| γ.map (embedding (f := ((valued K).v : K⸨X⸩ →*₀ ℤᵐ⁰)))
   use P
   apply hT₁
   apply hγ
@@ -1037,11 +1037,11 @@ abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   { comparePkg K with
     map_mul' x y :=
       (comparePkg_eq_extension K (x * y)).trans <|
-        (map_mul _ x.toCompletion y.toCompletion).trans <|
+        (map_mul _ x.toCompletion y.toCompletion).trans
         (congrArg₂ (· * ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm
     map_add' x y :=
       (comparePkg_eq_extension K (x + y)).trans <|
-        (map_add _ x.toCompletion y.toCompletion).trans <|
+        (map_add _ x.toCompletion y.toCompletion).trans
         (congrArg₂ (· + ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm }
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring

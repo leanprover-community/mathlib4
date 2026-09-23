@@ -644,11 +644,11 @@ theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p => 
 theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p = comp p q :=
   rfl
 
-theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
-  rw [IsRoot, eval_mul, IsRoot.def.1 H, mul_zero]
+theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} (hq : IsRoot q a) : IsRoot (p * q) a := by
+  rw [IsRoot, eval_mul, IsRoot.def.1 hq, mul_zero]
 
-theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H =>
-  by rw [IsRoot, eval_mul, IsRoot.def.1 H, zero_mul]
+theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) (hp : IsRoot p a) : IsRoot (p * q) a := by
+  rw [IsRoot, eval_mul, IsRoot.def.1 hp, zero_mul]
 
 theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
     eval₂ f x s.prod = (s.map (eval₂ f x)).prod :=

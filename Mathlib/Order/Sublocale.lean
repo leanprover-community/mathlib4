@@ -56,7 +56,7 @@ instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
   coe_injective s1 s2 h := by cases s1; congr
 
-instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
+instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X)
 
 @[simp] lemma mem_carrier : a ∈ S.carrier ↔ a ∈ S := .rfl
 

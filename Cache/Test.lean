@@ -7,6 +7,7 @@ Authors: Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
+import Cache.Upload
 import Cache.Query
 import Cache.Warning
 import Cache.Lean
@@ -84,6 +85,13 @@ def assertEq (name expected actual : String) : IO Unit := do
   else
     IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
     failures.modify (· + 1)
+
+/-- Run `body` with the `--scope=` override (`scopeOverride`) restored on
+completion, including on exception, so a test that sets it leaves the tests
+after it unaffected. -/
+private def withSavedScopeOverride (body : IO Unit) : IO Unit := do
+  let saved ← scopeOverride.get
+  try body finally scopeOverride.set saved
 
 /-- Run `action` with both stdout and stderr redirected to the platform null
 device. Restores both on completion, including on exception. Apply this to every
@@ -528,6 +536,10 @@ def test_tempFileNames : IO Unit := do
     ((IO.CURLCFG.toString.splitOn IO.PROCTAG).length == 2)
   assertTrue "the curl config sits in the cache directory"
     (IO.CURLCFG.parent == some IO.CACHEDIR)
+  assertTrue "an upload's curl config sits under the given directory"
+    ((IO.curlConfigIn "staging").parent == some "staging")
+  assertTrue "an upload's curl config carries the same tagged name"
+    ((IO.curlConfigIn "staging").fileName == IO.CURLCFG.fileName)
   -- The tag must not reintroduce a path separator or a shell/curl-config hazard.
   assertTrue "the tag is a bare identifier" (IO.PROCTAG.all fun c => c.isAlphanum)
 
@@ -603,33 +615,40 @@ end RoundTrip
 
 section Marker
 
-/-- URL shape for the per-SHA marker blob written by `put-staged`. Probed by
-`cache query` with a HEAD request. The marker lives at `/m/{repo}/{sha}` in
-the chosen container; its presence is a 200 HEAD response that signals "all
-artifacts for this commit were uploaded". This shape enables cheap per-commit
-discovery via HEAD (no blob-listing). -/
+/-- URL shape for the per-SHA marker blob `cache put` writes
+(`StagedUploadDest.markerURL`, on the destination `stagedUploadDestFrom`
+resolves) and `cache query` probes with a HEAD request. The marker lives at
+`/m/{repo}/{sha}` under the base; a 200 HEAD response signals that all
+artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
-  IO.println "markerURL:"
-  assertEq "forks marker URL"
+  IO.println "StagedUploadDest.markerURL:"
+  let dest (backend : UploadBackend) (container? : Option Container)
+      (putBase? : Option String) : String :=
+    ((stagedUploadDestFrom backend none putBase? container? "alice/mathlib4"
+      none).toOption.map (·.markerURL "abc123")).getD "(unresolved)"
+  assertEq "forks marker URL under the Azure base"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
-    (markerURL .forks "alice/mathlib4" "abc123")
+    (dest .azure (some .forks) none)
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/m/leanprover-community/mathlib4/deadbeef"
-    (markerURL .forks MATHLIBREPO "deadbeef")
-  assertEq "marker URL respects the container base"
-    "https://lakecache.blob.core.windows.net/mathlib4/m/someorg/mathlib4/sha9999"
-    (markerURL .legacy "someorg/mathlib4" "sha9999")
+    "m/leanprover-community/mathlib4/deadbeef"
+    (markerPath MATHLIBREPO "deadbeef")
+  -- A put base rebases the marker with the artifacts it marks: the same
+  -- `{base}/{container}` resolution feeds both (see `stagedUploadDestFrom`).
+  assertEq "marker URL follows a rebased upload destination"
+    "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
+    (dest .s3 (some .forks) (some "https://bucket.example.org/mirror"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
-    (markerURL .forks "Alice/Mathlib4" "abc123")
+    "m/alice/mathlib4/abc123"
+    (markerPath "Alice/Mathlib4" "abc123")
 
-/-- Marker probes read through the base URL; marker writes address Azure
-directly (`markerURL`). Without a base-URL override, both positions of the
-legacy switch are pinned: probes address the endpoint by default, and under
-legacy they match the write URL. -/
+/-- Marker probes read through the container's read base; marker writes follow
+the resolved upload destination (`StagedUploadDest.markerURL`). Without a
+base-URL override, both positions of the legacy switch are pinned: probes
+address the container's service endpoint by default, and under legacy they
+match the Azure write URL. -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
   let base ← getBaseURL
@@ -646,8 +665,8 @@ def test_markerReadURL : IO Unit := do
       s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
       (← markerReadURL .forks "alice/mathlib4" "abc123")
     useLegacy.set true
-    assertEq "legacy probe URL matches the write URL"
-      (markerURL .forks "alice/mathlib4" "abc123")
+    assertEq "legacy probe URL matches the Azure write URL"
+      s!"{Container.forks.azureURL}/{markerPath "alice/mathlib4" "abc123"}"
       (← markerReadURL .forks "alice/mathlib4" "abc123")
     useLegacy.set ambient
 
@@ -663,9 +682,7 @@ needs process state, so it is exercised by the CI integration tests rather than
 here. -/
 def test_getRepoScope : IO Unit := do
   IO.println "getRepoScope:"
-  -- Guard the IORef so a leak doesn't pollute subsequent tests.
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
     assertTrue "no scope set returns none" ((← withSuppressedOutput getRepoScope) == none)
 
@@ -679,8 +696,6 @@ def test_getRepoScope : IO Unit := do
 
     scopeOverride.set none
     assertTrue "clearing the flag returns none" ((← withSuppressedOutput getRepoScope) == none)
-  finally
-    scopeOverride.set saved
 
 end ScopeResolution
 
@@ -694,7 +709,8 @@ reader off the repo's default trust boundary:
    the checked-out HEAD;
 2. `--cache-from=LIST` differs from the repo's default chain (passing the
    default explicitly is not widening);
-3. `--repo=` is given and differs from the detected git remote.
+3. `--repo=` is given and differs from the detected git remote, or names a
+   non-canonical repo with no detectable remote to compare against.
 
 The behavior the tests pin most carefully: a plain `cache get` with no flags
 never warns, even on a fork checkout whose remote isn't the canonical repo.
@@ -702,9 +718,7 @@ never warns, even on a fork checkout whose remote isn't the canonical repo.
 deterministic without needing a real checkout. -/
 def test_shouldWarnNonDefaultScope : IO Unit := do
   IO.println "shouldWarnNonDefaultScope:"
-  -- Sandbox the IORef for the duration of this test.
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
 
     assertTrue "plain get with no flags does not warn"
@@ -760,8 +774,6 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     assertTrue "no --unsafe (none window) does not warn on its own"
       (!(← withSuppressedOutput
           (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := none))))
-  finally
-    scopeOverride.set saved
 
 /-- `getNonDefaultScopeReason` produces the `Reason:` line in the warning, naming
 the specific input that triggered it so the user can match it to their command
@@ -769,8 +781,7 @@ line. When several inputs apply at once it reports the most specific first —
 scope, then `--cache-from`, then `--repo` — and that order is pinned here. -/
 def test_getNonDefaultScopeReason : IO Unit := do
   IO.println "getNonDefaultScopeReason:"
-  let saved ← scopeOverride.get
-  try
+  withSavedScopeOverride do
     scopeOverride.set none
 
     -- A placeholder rather than a crash if nothing matches.
@@ -823,8 +834,6 @@ def test_getNonDefaultScopeReason : IO Unit := do
     assertTrue "unsafe reason names the window and outranks scope/cache-from/repo"
       (reason == "--unsafe (automatic walk over up to 7 fork commit(s); trusting whoever built them)")
     scopeOverride.set none
-  finally
-    scopeOverride.set saved
 
 /-- `findMostRecentSHAWithCache` returns the first candidate SHA whose per-SHA
 marker exists in the `forks` container, used by `cache query` to find the most
@@ -944,6 +953,7 @@ def test_isKnownOpt : IO Unit := do
   assertTrue "--container=master is known"   (isKnownOpt "--container=master")
   assertTrue "--staging-dir=/tmp is known"   (isKnownOpt "--staging-dir=/tmp")
   assertTrue "--unsafe-window=5 is known" (isKnownOpt "--unsafe-window=5")
+  assertTrue "--backend=s3 is known"         (isKnownOpt "--backend=s3")
 
   -- Empty value passes recognition (parseNamedOpt returns the empty string
   -- for these — callers decide whether to treat that as an error).
@@ -1116,8 +1126,8 @@ section RunCmdErrors
 
 /-- With `showArgsOnError := false` a failing command's error names only the
 command: the argument list can carry a credential (the marker uploads pass
-`--oauth2-bearer` and SAS-tokened URLs). The default keeps the argument list
-in the message. -/
+`--oauth2-bearer` or the S3 `--user` keypair). The default keeps the argument
+list in the message. -/
 def test_runCmd_showArgsOnError : IO Unit := do
   IO.println "runCmd showArgsOnError:"
   let secret := "hunter2-credential"
@@ -1218,9 +1228,16 @@ per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
 parses. -/
 def test_mkPutConfigContent : IO Unit := do
   IO.println "mkPutConfigContent:"
-  let cfg ← mkPutConfigContent (some .master) MATHLIBREPO "https://example.invalid"
-    #["/tmp/00000000deadbeef.ltar"] (.azureSas "tok")
+  let dest : StagedUploadDest :=
+    { base := "https://example.invalid"
+      label := "master"
+      filesPrefix := "mathlib4-master/f"
+      markerPrefix := "mathlib4-master/m/leanprover-community/mathlib4" }
+  let cfg := mkPutConfigContent dest #["/tmp/00000000deadbeef.ltar"]
   assertTrue "uploads the file" ((cfg.splitOn "-T /tmp/00000000deadbeef.ltar").length == 2)
+  assertTrue "addresses {base}/{filesPrefix}/{name}"
+    ((cfg.splitOn
+      "url = https://example.invalid/mathlib4-master/f/00000000deadbeef.ltar").length == 2)
   assertTrue "discards the response body" ((cfg.splitOn s!"-o {IO.nullDevice}").length == 2)
 
 /-- `classifyUpload`: a clean 200/201 delivers, a 409/412 skips for a
@@ -1243,6 +1260,394 @@ def test_classifyUpload : IO Unit := do
     (classifyUpload none 0 true matches .failed)
 
 end TransferClassification
+
+section UploadDestination
+
+/-- `UploadBackend.parse?` accepts the known backend names, case-insensitively. -/
+def test_uploadBackendParse : IO Unit := do
+  IO.println "UploadBackend.parse?:"
+  assertTrue "azure parses" (UploadBackend.parse? "azure" == some .azure)
+  assertTrue "s3 parses, case-insensitively" (UploadBackend.parse? "S3" == some .s3)
+  assertTrue "an unknown name is rejected" ((UploadBackend.parse? "gcs").isNone)
+
+/-- `azureAuthFrom` resolves the azure backend's credential: the bearer
+token. A missing bearer errors naming the fix. -/
+def test_azureAuthFrom : IO Unit := do
+  IO.println "azureAuthFrom:"
+  assertTrue "bearer token" (azureAuthFrom (some "bear") matches .ok "bear")
+  assertTrue "no bearer errors" (azureAuthFrom none matches .error _)
+
+/-- `s3AuthFrom` resolves the s3 backend's credentials: the pair with its
+optional session token. A half-set pair errors instead of resolving. -/
+def test_s3AuthFrom : IO Unit := do
+  IO.println "s3AuthFrom:"
+  assertTrue "pair with a session token"
+    (s3AuthFrom (some "AK") (some "SK") (some "ST")
+      matches .ok ⟨"AK", "SK", some "ST"⟩)
+  assertTrue "pair without a session token"
+    (s3AuthFrom (some "AK") (some "SK") none matches .ok ⟨"AK", "SK", none⟩)
+  assertTrue "key id without a secret errors"
+    (s3AuthFrom (some "AK") none none matches .error _)
+  assertTrue "secret without a key id errors"
+    (s3AuthFrom none (some "SK") none matches .error _)
+  assertTrue "a stray session token alone errors"
+    (s3AuthFrom none none (some "ST") matches .error _)
+
+/-- `s3RegionFrom` resolves the s3 backend's signing region. An unset region
+errors, and so does a value that is not a region name. -/
+def test_s3RegionFrom : IO Unit := do
+  IO.println "s3RegionFrom:"
+  assertTrue "a plain name" (s3RegionFrom (some "auto") matches .ok "auto")
+  assertTrue "an AWS region" (s3RegionFrom (some "eu-west-1") matches .ok "eu-west-1")
+  assertTrue "unset errors" (s3RegionFrom none matches .error _)
+  assertTrue "a value with a colon errors" (s3RegionFrom (some "eu:west") matches .error _)
+
+/-- `isValidScope` gates every scope before it reaches a URL path or a file
+name (the fork namespace, the marker path, and the marker's local temp file):
+hex SHAs pass; a value with path characters or ref syntax is rejected, and
+`getRepoScope` throws on it. -/
+def test_isValidScope : IO Unit := do
+  IO.println "isValidScope:"
+  assertTrue "a full SHA passes"
+    (isValidScope "5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e")
+  assertTrue "a short SHA passes" (isValidScope "deadbeef")
+  assertTrue "uppercase hex passes" (isValidScope "DEADBEEF")
+  assertTrue "empty is rejected" (!isValidScope "")
+  assertTrue "a path separator is rejected" (!isValidScope "abc/def")
+  assertTrue "an absolute path is rejected" (!isValidScope "/tmp/pwned")
+  assertTrue "dot-dot is rejected" (!isValidScope "..")
+  assertTrue "a ref name is rejected" (!isValidScope "HEAD")
+  assertTrue "a branch name is rejected" (!isValidScope "nightly-testing")
+  assertTrue "an overlong value is rejected" (!isValidScope (String.ofList (List.replicate 65 'a')))
+  -- The IO accessor enforces the guard for both scope sources.
+  withSavedScopeOverride do
+    scopeOverride.set (some "/tmp/pwned")
+    let threw ← try discard <| withSuppressedOutput getRepoScope; pure false
+      catch _ => pure true
+    assertTrue "getRepoScope throws on a malformed scope" threw
+    scopeOverride.set (some "deadbeef")
+    assertTrue "getRepoScope passes a hex scope through"
+      ((← withSuppressedOutput getRepoScope) == some "deadbeef")
+
+/-- `fileDirPath` is the one path policy behind `mkFileURL` and every
+upload tool: bare `f` for a flat container, repo-namespaced otherwise, with
+the per-SHA scope appended when given, and the repo lowercased. -/
+def test_fileDirPath : IO Unit := do
+  IO.println "fileDirPath:"
+  assertEq "flat container → bare f"
+    "f" (fileDirPath (some .master) MATHLIBREPO (some "sha1"))
+  assertEq "namespaced container → repo segment"
+    "f/alice/mathlib4" (fileDirPath (some .forks) "alice/mathlib4" none)
+  assertEq "scope appends the per-commit segment"
+    "f/alice/mathlib4/sha1" (fileDirPath (some .forks) "alice/mathlib4" (some "sha1"))
+  assertEq "no container follows the repo (flat for canonical)"
+    "f" (fileDirPath none MATHLIBREPO (some "sha1"))
+  assertEq "no container follows the repo (namespaced for a fork)"
+    "f/alice/mathlib4/sha1" (fileDirPath none "alice/mathlib4" (some "sha1"))
+  assertEq "the repo is lowercased"
+    "f/alice/mathlib4" (fileDirPath (some .forks) "Alice/Mathlib4" none)
+
+/-- `stagedUploadDestFrom` resolves the destination contract per backend:
+each backend writes the container layout under the base
+MATHLIB_CACHE_PUT_BASE_URL names. The azure backend defaults to the Azure
+account; the s3 backend has no default. MATHLIB_CACHE_PUT_URL overrides both
+with one flat endpoint. The prefixes carry no trailing slashes and build on
+the same `fileDirPath` policy as every other upload path. -/
+def test_stagedUploadDestFrom : IO Unit := do
+  IO.println "stagedUploadDestFrom:"
+  let putBase := "https://s3.example.org/bucket-prefix"
+  let expectForksScoped : StagedUploadDest :=
+    { base := putBase
+      label := "forks"
+      filesPrefix := "mathlib4-forks/f/alice/mathlib4/sha1"
+      markerPrefix := "mathlib4-forks/m/alice/mathlib4" }
+  assertTrue "s3: put base + forks + scope"
+    ((stagedUploadDestFrom .s3 none (some putBase) (some .forks)
+        "Alice/Mathlib4" (some "sha1")).toOption == some expectForksScoped)
+  let expectMasterFlat : StagedUploadDest :=
+    { base := putBase
+      label := "master"
+      filesPrefix := "mathlib4-master/f"
+      markerPrefix := "mathlib4-master/m/leanprover-community/mathlib4" }
+  assertTrue "s3: put base + master is flat"
+    ((stagedUploadDestFrom .s3 none (some putBase) (some .master)
+        MATHLIBREPO none).toOption == some expectMasterFlat)
+  let expectFlatUrl : StagedUploadDest :=
+    { base := "https://my.example.org"
+      label := "(env override)"
+      filesPrefix := "f"
+      markerPrefix := "m/leanprover-community/mathlib4" }
+  assertTrue "PUT_URL is flat with the container policy off"
+    ((stagedUploadDestFrom .azure (some "https://my.example.org") none none
+        MATHLIBREPO none).toOption == some expectFlatUrl)
+  assertTrue "PUT_URL applies on the s3 backend too"
+    ((stagedUploadDestFrom .s3 (some "https://my.example.org/bucket") none none
+        MATHLIBREPO none).toOption ==
+      some { expectFlatUrl with base := "https://my.example.org/bucket" })
+  -- A base without a bucket path fails at resolution.
+  assertTrue "s3: a put base without a bucket path errors"
+    (stagedUploadDestFrom .s3 none (some "https://s3.example.org") (some .forks)
+      "alice/mathlib4" none matches .error _)
+  assertTrue "s3: a PUT_URL without a bucket path errors"
+    (stagedUploadDestFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
+      matches .error _)
+  let expectAzureForks : StagedUploadDest :=
+    { base := azureAccountURL
+      label := "forks"
+      filesPrefix := "mathlib4-forks/f/alice/mathlib4/sha1"
+      markerPrefix := "mathlib4-forks/m/alice/mathlib4" }
+  assertTrue "azure: the Azure account for the container"
+    ((stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
+        (some "sha1")).toOption == some expectAzureForks)
+  -- The label says where the bytes go: a `legacy` write must name that
+  -- container in the progress message, not an override.
+  let expectLegacy : StagedUploadDest :=
+    { base := azureAccountURL
+      label := "legacy"
+      filesPrefix := "mathlib4/f/alice/mathlib4"
+      markerPrefix := "mathlib4/m/alice/mathlib4" }
+  assertTrue "azure: an explicit legacy container"
+    ((stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none).toOption ==
+      some expectLegacy)
+  -- Each backend rejects a destination that contradicts it, instead of
+  -- resolving one the operator did not select.
+  assertTrue "azure: no container errors"
+    (stagedUploadDestFrom .azure none none none "alice/mathlib4" none
+      matches .error _)
+  assertTrue "s3: a put base without a container errors"
+    (stagedUploadDestFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
+      matches .error _)
+  assertTrue "s3: no put base errors"
+    (stagedUploadDestFrom .s3 none none (some .forks) "alice/mathlib4" none
+      matches .error _)
+  assertTrue "azure: a put base rebases the container write"
+    ((stagedUploadDestFrom .azure none (some putBase) (some .forks)
+        "Alice/Mathlib4" (some "sha1")).toOption == some expectForksScoped)
+  -- PUT_URL keeps the opposite empty rule from every read variable: any set
+  -- value counts, an empty one included, so a misconfigured endpoint fails
+  -- the upload rather than divert it to the backend's destination.
+  assertTrue "an empty PUT_URL still counts"
+    ((stagedUploadDestFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.base) ==
+      some "")
+  assertTrue "azure: an empty put base means unset"
+    ((stagedUploadDestFrom .azure none (some "") (some .forks) "alice/mathlib4" none).toOption.map
+      (·.base) == some azureAccountURL)
+  assertTrue "s3: an empty put base means unset, so it errors"
+    (stagedUploadDestFrom .s3 none (some "") (some .forks) "alice/mathlib4" none
+      matches .error _)
+  assertTrue "s3: a put base loses its trailing slashes"
+    ((stagedUploadDestFrom .s3 none (some "https://s3.example.org/bucket-prefix//") (some .forks)
+      "alice/mathlib4" none).toOption.map (·.base) == some "https://s3.example.org/bucket-prefix")
+  -- The resolved destination follows the read-side URL policy: `fileURL` is
+  -- exactly `mkFileURL` against the same base.
+  if let .ok d := stagedUploadDestFrom .s3 none (some putBase)
+      (some .forks) "Alice/Mathlib4" (some "sha1") then
+    assertEq "files prefix matches the curl URL shape"
+      (mkFileURL (some .forks) "Alice/Mathlib4"
+        s!"{putBase}/mathlib4-forks" "x.ltar" (some "sha1"))
+      (d.fileURL "x.ltar")
+    assertEq "marker prefix matches the marker path"
+      s!"{d.base}/mathlib4-forks/{markerPath "Alice/Mathlib4" "sha1"}"
+      (d.markerURL "sha1")
+  else
+    assertTrue "put-base destination resolves" false
+  -- The same cross-pin for the flat PUT_URL case.
+  if let .ok d := stagedUploadDestFrom .azure (some "https://my.example.org") none none
+      "alice/mathlib4" (some "abc1") then
+    assertEq "flat-URL files prefix matches the curl URL shape"
+      (mkFileURL none "alice/mathlib4" "https://my.example.org" "x.ltar" (some "abc1"))
+      (d.fileURL "x.ltar")
+  else
+    assertTrue "flat-URL destination resolves" false
+  -- And for the Azure account and the legacy container rows, so all four
+  -- resolution rows are pinned against `mkFileURL`'s shape.
+  if let .ok d := stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
+      (some "abc1") then
+    assertEq "Azure-account prefix matches the curl URL shape"
+      (mkFileURL (some .forks) "alice/mathlib4" Container.forks.azureURL "x.ltar" (some "abc1"))
+      (d.fileURL "x.ltar")
+  else
+    assertTrue "Azure-account destination resolves" false
+  if let .ok d := stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none then
+    assertEq "legacy-container prefix matches the curl URL shape"
+      (mkFileURL (some .legacy) "alice/mathlib4" Container.legacy.azureURL "x.ltar" none)
+      (d.fileURL "x.ltar")
+  else
+    assertTrue "legacy-container destination resolves" false
+
+/-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
+and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
+every backend (`uploadPutArgs`). Pins the S3 shape: SigV4 in the given region,
+the `UNSIGNED-PAYLOAD` hash that lets curl sign a `-T` upload, and the
+session-token header for temporary credentials. The azure arguments spawn
+`date`, so this covers S3 only. -/
+def test_s3CurlArgs : IO Unit := do
+  IO.println "s3CurlArgs:"
+  let s3 := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", some "ST"⟩ "auto") (overwrite := false)
+  assertTrue "S3 signs with SigV4 in the given region"
+    ((s3.toList.zip s3.toList.tail).contains ("--aws-sigv4", "aws:amz:auto:s3"))
+  assertTrue "S3 carries the keypair as --user"
+    ((s3.toList.zip s3.toList.tail).contains ("--user", "AK:SK"))
+  assertTrue "S3 signs the upload as UNSIGNED-PAYLOAD"
+    (s3.contains "x-amz-content-sha256: UNSIGNED-PAYLOAD")
+  assertTrue "S3 sends the session token" (s3.contains "x-amz-security-token: ST")
+  assertTrue "non-overwrite adds If-None-Match" (s3.contains "If-None-Match: *")
+  assertTrue "S3 sends no Azure blob-type header"
+    (!s3.contains "x-ms-blob-type: BlockBlob")
+  let s3Static := uploadPutArgs (s3CurlArgs ⟨"AK", "SK", none⟩ "auto") (overwrite := true)
+  assertTrue "a static keypair sends no session token"
+    (s3Static.all (!·.startsWith "x-amz-security-token"))
+  assertTrue "overwrite drops If-None-Match" (!s3Static.contains "If-None-Match: *")
+
+/-- The transfer-tool policy for the s3 backend: rclone when available, curl
+otherwise; MATHLIB_CACHE_PUT_FORCE_CURL selects curl regardless. The azure
+backend has no policy to test: it always transfers with curl
+(`azurePutStaged`). -/
+def test_s3UploadToolFrom : IO Unit := do
+  IO.println "s3UploadToolFrom:"
+  assertTrue "rclone when available"
+    (s3UploadToolFrom (forceCurl := false) (rcloneAvailable := true) == .rclone)
+  assertTrue "curl without rclone"
+    (s3UploadToolFrom (forceCurl := false) (rcloneAvailable := false) == .curl)
+  assertTrue "the flag forces curl past an available rclone"
+    (s3UploadToolFrom (forceCurl := true) (rcloneAvailable := true) == .curl)
+
+/-- The endpoint/bucket split the rclone tool builds its remote from. -/
+def test_s3EndpointSplit : IO Unit := do
+  IO.println "s3EndpointSplit:"
+  assertTrue "endpoint and bucket split"
+    ((s3EndpointSplit "https://acct.r2.cloudflarestorage.com/devbucket").toOption ==
+      some ("https://acct.r2.cloudflarestorage.com", "devbucket"))
+  assertTrue "a deeper path stays with the bucket"
+    ((s3EndpointSplit "https://host.example/bucket/prefix").toOption ==
+      some ("https://host.example", "bucket/prefix"))
+  assertTrue "a base without a bucket path errors"
+    (s3EndpointSplit "https://host.example" matches .error _)
+  assertTrue "a trailing slash errors rather than yield an empty segment"
+    (s3EndpointSplit "https://host.example/bucket/" matches .error _)
+  assertTrue "a non-URL errors"
+    (s3EndpointSplit "host.example/bucket" matches .error _)
+
+/-- The rclone invocations, pinned: the files copy is restricted to the
+caller's `--files-from` list and skips existing objects (the curl tool's
+`If-None-Match: *`); the marker copy overwrites freely, like the curl marker
+put; and both remotes are the same `{prefix}/{name}` shape every other tool
+addresses. -/
+def test_rcloneArgs : IO Unit := do
+  IO.println "rcloneArgs:"
+  if let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
+      (some .forks) "alice/mathlib4" (some "abc1") then
+    let files := rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+      (overwrite := false)
+    assertEq "files copy remote matches the destination contract"
+      s!":s3:devbucket/{dest.filesPrefix}" files[2]!
+    assertTrue "files copy is a copy" (files[0]! == "copy")
+    assertTrue "files copy is restricted to the caller's file list"
+      ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
+    assertTrue "a non-overwrite copy skips existing objects"
+      (files.contains "--ignore-existing")
+    assertTrue "an overwrite copy replaces existing objects"
+      (!(rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+        (overwrite := true)).contains "--ignore-existing")
+    assertTrue "files copy skips the bucket-creation probe"
+      (files.contains "--s3-no-check-bucket")
+    let marker := rcloneMarkerArgs "devbucket" dest "tmp/abc1" "abc1"
+    assertEq "marker remote matches the marker path contract"
+      s!":s3:devbucket/{Container.forks.pathSegment}/{markerPath "alice/mathlib4" "abc1"}"
+      marker[2]!
+    assertTrue "marker copy is a copyto" (marker[0]! == "copyto")
+    assertTrue "marker copy overwrites freely"
+      !(marker.contains "--ignore-existing")
+  else
+    assertTrue "rclone destination resolves" false
+
+/-- The child environment the rclone tool runs under: credentials and
+endpoint set, a stale session token cleared when the credential has none,
+and nothing else touched. -/
+def test_rcloneEnv : IO Unit := do
+  IO.println "rcloneEnv:"
+  let env := rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://host.example" "Other" "auto"
+  assertTrue "credentials and endpoint are set"
+    (env.contains ("RCLONE_S3_ACCESS_KEY_ID", some "AK") &&
+     env.contains ("RCLONE_S3_SECRET_ACCESS_KEY", some "SK") &&
+     env.contains ("RCLONE_S3_ENDPOINT", some "https://host.example") &&
+     env.contains ("RCLONE_S3_SESSION_TOKEN", some "tok"))
+  assertTrue "config comes from the tool, not ambient credentials"
+    (env.contains ("RCLONE_S3_ENV_AUTH", some "false"))
+  assertTrue "the region is the one given"
+    (env.contains ("RCLONE_S3_REGION", some "auto"))
+  assertTrue "the provider is set (rclone refuses to run without one)"
+    (env.contains ("RCLONE_S3_PROVIDER", some "Other"))
+  let noSession := rcloneEnv ⟨"AK", "SK", none⟩ "https://host.example" "Other" "auto"
+  assertTrue "a static keypair clears any ambient session token"
+    (noSession.contains ("RCLONE_S3_SESSION_TOKEN", none))
+
+/-- `putStagedViaRclone` end to end against a recording fake binary: the
+files copy runs first with the child environment the caller assembled
+(`rcloneEnv`), the marker copy follows with the SHA-named temp file, and a
+marker failure warns without failing the put. -/
+def test_putStagedViaRclone : IO Unit := do
+  IO.println "putStagedViaRclone (fake binary):"
+  if System.Platform.isWindows then
+    IO.println "  (skipped on Windows)"
+    return
+  let dir ← IO.FS.createTempDir
+  try
+    let staging := dir / "staging"
+    IO.FS.createDirAll staging
+    IO.FS.writeFile (staging / "aa.ltar") "x"
+    let fake := dir / "fake-rclone"
+    IO.FS.writeFile fake <|
+      "#!/bin/sh\n" ++
+      s!"printf '%s\\n' \"$@\" > \"{dir}/args-$1\"\n" ++
+      s!"env | grep '^RCLONE_S3_\\|^HOME=' | sort > \"{dir}/env-$1\"\n" ++
+      -- The files-from list is a temp file the tool deletes after the run, so
+      -- the fake preserves its content for the assertions below.
+      "prev=''\n" ++
+      "for a in \"$@\"; do\n" ++
+      s!"  if [ \"$prev\" = --files-from ]; then cp \"$a\" \"{dir}/files-from-copy\"; fi\n" ++
+      "  prev=\"$a\"\n" ++
+      "done\n" ++
+      "if [ \"$1\" = copyto ]; then exit 3; fi\n" ++
+      "exit 0\n"
+    discard <| IO.runCmd "chmod" #["+x", fake.toString]
+    let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
+        (some .forks) "alice/mathlib4" (some "abc1")
+      | assertTrue "rclone destination resolves" false
+    withSuppressedOutput <| putStagedViaRclone dest
+      (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other" "auto")
+      "devbucket" (some "abc1") staging
+      #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
+    let copyArgs ← IO.FS.readFile (dir / "args-copy")
+    assertTrue "files copy targets the staging dir"
+      ((copyArgs.splitOn "\n").any (· == staging.toString))
+    assertTrue "files copy addresses the resolved remote"
+      ((copyArgs.splitOn "\n").any (· == s!":s3:devbucket/{dest.filesPrefix}"))
+    assertEq "the files-from list holds exactly the caller's file names"
+      "aa.ltar\n" (← IO.FS.readFile (dir / "files-from-copy"))
+    let copyEnv ← IO.FS.readFile (dir / "env-copy")
+    assertTrue "the credentials travel in the child environment"
+      ((copyEnv.splitOn "\n").contains "RCLONE_S3_ACCESS_KEY_ID=AK" &&
+       (copyEnv.splitOn "\n").contains "RCLONE_S3_SESSION_TOKEN=tok" &&
+       (copyEnv.splitOn "\n").contains "RCLONE_S3_ENDPOINT=https://acct.example")
+    -- The env parameter extends the parent environment (each pair sets or
+    -- unsets one variable), so the child keeps HOME, PATH, and any RCLONE_*
+    -- tuning of the caller. Pinned here so a runtime change cannot silently
+    -- drop them from rclone's environment.
+    assertTrue "the parent environment is inherited alongside the credentials"
+      ((copyEnv.splitOn "\n").any (·.startsWith "HOME="))
+    -- The fake exits 3 on `copyto`, so this pins the marker invocation shape
+    -- and that a marker failure warns without failing the put.
+    let markerArgs ← IO.FS.readFile (dir / "args-copyto")
+    assertTrue "the marker temp file is named after the SHA"
+      ((markerArgs.splitOn "\n").any (·.endsWith "/abc1"))
+    assertTrue "the marker addresses the marker path"
+      ((markerArgs.splitOn "\n").any
+        (· == s!":s3:devbucket/{dest.markerPrefix}/abc1"))
+  finally
+    IO.FS.removeDirAll dir
+
+end UploadDestination
 
 section UnsafeRounds
 
@@ -1409,6 +1814,19 @@ def runAll : IO Unit := do
   test_classifyDownload
   test_classifyUpload
   test_mkPutConfigContent
+  test_uploadBackendParse
+  test_azureAuthFrom
+  test_s3AuthFrom
+  test_s3RegionFrom
+  test_isValidScope
+  test_fileDirPath
+  test_stagedUploadDestFrom
+  test_s3CurlArgs
+  test_s3UploadToolFrom
+  test_s3EndpointSplit
+  test_rcloneArgs
+  test_rcloneEnv
+  test_putStagedViaRclone
   test_expandDownloadRounds
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state

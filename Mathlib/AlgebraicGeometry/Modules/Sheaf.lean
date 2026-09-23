@@ -388,7 +388,7 @@ lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : 
 
 /-- `Scheme.Modules.restrict` along an open immersion `X ⟶ Y` sends `𝒪_Y` to `𝒪_X`. -/
 def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
-    restrict (.unit <| Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
+    restrict (.unit Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
   refine (fullyFaithfulForget _).preimageIso <| PresheafOfModules.isoMk (fun U ↦ ?_) ?_
   · refine ModuleCat.isoMk
       ((forget₂ CommRingCat RingCat ⋙ forget₂ _ Ab).mapIso (f.appIso U.unop)) ?_
@@ -423,7 +423,7 @@ def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
     exact congr($this x)
 
 instance : IsIso (restrictAdjunction f).counit :=
-  inferInstanceAs (IsIso <| (restrictFunctorAdjCounitIso f).hom)
+  inferInstanceAs (IsIso (restrictFunctorAdjCounitIso f).hom)
 
 instance : (restrictFunctor f).IsLeftAdjoint := (restrictAdjunction f).isLeftAdjoint
 instance : (pushforward f).Full := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.full

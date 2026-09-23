@@ -250,8 +250,6 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-attribute [to_additive existing] prod_reverse
-
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
     ∀ l l' : List M,

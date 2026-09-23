@@ -171,7 +171,7 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
 
 /-- Note this is safe as an instance as it carries no data. -/
 instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
-  ⟨(norm_diagonal _).trans <| norm_one⟩
+  ⟨(norm_diagonal _).trans norm_one⟩
 
 end SeminormedAddCommGroup
 

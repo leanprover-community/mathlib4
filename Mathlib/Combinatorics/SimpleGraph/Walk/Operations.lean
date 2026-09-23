@@ -358,7 +358,7 @@ theorem dropLast_support_concat (p : G.Walk u v) : p.support.dropLast ++ [v] = p
   have ⟨_, _, _, hp⟩ := p.exists_cons_eq_concat h
   simp [hp]
 
-@[deprecated dropLast_support_concat (since := "2026-03-16")]
+@[deprecated dropLast_support_concat +typeChanged (since := "2026-03-16")]
 theorem support_eq_concat (p : G.Walk u v) : p.support = p.support.dropLast.concat v := by
   simp
 

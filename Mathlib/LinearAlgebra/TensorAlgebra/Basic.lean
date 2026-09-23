@@ -118,7 +118,7 @@ irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
       exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.add
     map_smul' := fun r x => by
       rw [← RingCon.coe_smul]
-      exact Quotient.sound <| RingConGen.Rel.of _ _ <| Rel.smul}
+      exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.smul}
 
 theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
     RingCon.mkₐ R (ringCon R M) (FreeAlgebra.ι R m) = ι R m := by

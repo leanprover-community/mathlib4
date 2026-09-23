@@ -81,7 +81,6 @@ section Fintype
 
 variable {J : Type*} [Fintype J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a preadditive category, we can construct a biproduct for `f : J → C` from
 any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.X`.
 
@@ -154,7 +153,6 @@ def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functo
   isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cone.ext (Iso.refl _) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
 bicone. -/
 def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
@@ -896,7 +894,6 @@ lemma preservesProductsOfShape_of_preservesBiproductsOfShape [PreservesBiproduct
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite products
 preserves finite biproducts. -/
@@ -970,7 +967,6 @@ lemma preservesCoproductsOfShape_of_preservesBiproductsOfShape [PreservesBiprodu
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite coproducts
 preserves finite biproducts. -/

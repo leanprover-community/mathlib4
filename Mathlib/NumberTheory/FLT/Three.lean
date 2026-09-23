@@ -89,7 +89,7 @@ lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     refine isCoprime_of_gcd_eq_one_of_FLT ?_ HF
     convert! Hgcd using 2
     rw [Finset.pair_comm, Finset.insert_comm]
-  by_contra! h3b
+  by_contra h3b
   by_cases h3c : 3 ∣ c
   · apply h3b
     rw [add_assoc, add_comm (b ^ 3), ← add_assoc] at HF

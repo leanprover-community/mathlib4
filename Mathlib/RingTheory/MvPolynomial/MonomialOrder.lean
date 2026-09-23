@@ -598,7 +598,7 @@ theorem degree_pow_of_not_isNilpotent {f : MvPolynomial σ R} (n : ℕ)
     (h : ¬IsNilpotent (m.leadingCoeff f)) :
     m.degree (f ^ n) = n • m.degree f := by
   apply degree_pow_of_pow_leadingCoeff_ne_zero
-  contrapose! h
+  contrapose h
   exact IsNilpotent.mk _ n h
 
 /-- Leading coefficient of powers (when the leading term is not nilpotent) -/
@@ -1236,7 +1236,7 @@ theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : m.degree f
   by_cases hl : f - m.leadingTerm f = 0
   · simpa [hl, toSyn_lt_iff_ne_zero]
   · apply lt_of_le_of_ne (m.degree_sub_leadingTerm_le f)
-    by_contra! h'
+    by_contra h'
     simp only [EmbeddingLike.apply_eq_iff_eq] at h'
     apply m.degree_mem_support at hl
     rw [h', mem_support_iff] at hl

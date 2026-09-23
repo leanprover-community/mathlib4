@@ -74,13 +74,6 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) where
         _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
   mul_comm := Fin.mul_comm
 
--- Shortcut instances to replace the power operation on `Fin` with a more efficient one
-instance (n : ℕ) [NeZero n] : HPow (Fin n) ℕ (Fin n) where
-  hPow a m := npowRecAuto m a
-
-instance (n : ℕ) [NeZero n] : Pow (Fin n) ℕ where
-  pow a m := npowRecAuto m a
-
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
   Fin.eq_of_val_eq <|
@@ -102,6 +95,10 @@ instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) 
 instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
   one_mul := Fin.one_mul
   mul_one := Fin.mul_one
+  -- Use core's `Fin.npow`, which computes by modular exponentiation.
+  npow n x := Fin.npow x n
+  npow_zero := Fin.pow_zero
+  npow_succ n x := Fin.pow_succ x n
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where

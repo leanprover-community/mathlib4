@@ -291,6 +291,15 @@ theorem mul_continuousOn {f g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
 @[deprecated (since := "2026-07-01")] alias fun_smul_of_continuousOn := fun_continuousOn_smul
 @[deprecated (since := "2026-07-01")] alias fun_mul_of_continuousOn := fun_continuousOn_mul
 
+@[simp]
+theorem circleIntegrable_iff_circleIntegrable_const_smul [NormedSpace ℂ E] {f : ℂ → E} {s : ℂ}
+    (h : s ≠ 0) :
+    CircleIntegrable (s • f) c R ↔ CircleIntegrable f c R := by
+  constructor <;> intro hf
+  · rw [show f = s⁻¹ • s • f by simp_all]
+    fun_prop
+  · fun_prop
+
 /-- The function we actually integrate over `[0, 2π]` in the definition of `circleIntegral` is
 integrable. -/
 theorem out [NormedSpace ℂ E] (hf : CircleIntegrable f c R) :
@@ -481,7 +490,7 @@ theorem integral_sub_inv_smul_sub_smul (f : ℂ → E) (c w : ℂ) (R : ℝ) :
   have : (circleMap c R ⁻¹' {w}).Countable := (countable_singleton _).preimage_circleMap c hR
   refine intervalIntegral.integral_congr_ae ((this.ae_notMem _).mono fun θ hθ _' => ?_)
   change circleMap c R θ ≠ w at hθ
-  simp only [inv_smul_smul₀ (sub_ne_zero.2 <| hθ)]
+  simp only [inv_smul_smul₀ (sub_ne_zero.2 hθ)]
 
 theorem integral_undef {f : ℂ → E} {c : ℂ} {R : ℝ} (hf : ¬CircleIntegrable f c R) :
     (∮ z in C(c, R), f z) = 0 :=

@@ -141,7 +141,7 @@ def b : K[X] :=
     ((φ E).map (algebraMap E K⟮X⟯))).choose
 
 lemma b_ne_zero : b E ≠ 0 :=
-  nonZeroDivisors.ne_zero <| (IsLocalization.integerNormalization_spec _
+  nonZeroDivisors.ne_zero (IsLocalization.integerNormalization_spec _
     ((φ E).map (algebraMap ..))).choose_spec.1
 
 lemma Φ'_map :

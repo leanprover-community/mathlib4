@@ -37,6 +37,39 @@ namespace Monoidal
 
 variable (M₁ M₂ M₃ M₄ : PresheafOfModulesOfCommRing.{u} R)
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`TensorProduct.CompatibleSMul ↑(R.obj Y) ↑(R.obj Y) ↑(M₁.obj Y) ↑(M₂.obj Y)`
+
+The failure happens while applying `@TensorProduct.CompatibleSMul.isScalarTower`: assigning one of
+its instance-implicit-argument metavariables is rejected because the metavariable's type and the
+type of the assigned value do not match at `.instances` transparency. The metavariable's expected
+type is `DistribMulAction ↑(R.obj Y) ↑(M₂.obj Y)`, whereas the assigned value
+`ModuleCat.instModuleCarrierObjRestrictScalars.toDistribMulAction` has type
+```
+DistribMulAction ↑((R ⋙ forget₂ CommRingCat RingCat).obj Y)
+  ↑((ModuleCat.restrictScalars (RingCat.Hom.hom ((R ⋙ forget₂ CommRingCat RingCat).map f))).obj
+      (M₂.obj Y))
+```
+Lean falls back to synthesize an instance of the correct type, but it returns
+`(M₂.obj Y).isModule.toDistribMulAction`, which is again not defeq to the assigned value. Both
+comparisons bottom out at `↑(R.obj Y) =?= ↑((R ⋙ forget₂ CommRingCat RingCat).obj Y)`, the same
+ring bundled once as a `CommRingCat` and once as a `RingCat`; seeing that these agree requires
+unfolding `⋙`, which is `@[implicit_reducible]`.
+
+Potential fix: Concentrate on removing `respectTransparency false` first.
+For example, do this by making `ModuleCat.RestrictScalars.obj'` and `ModuleCat.restrictScalars`
+implicit-reducible *at their definition site*.
+Without the backward-compatibility flag `respectTransparency false`, Lean bumps transparency for
+instance-implicit arguments to `implicit`, thereby comparing the synthesized and unified instances
+at implicit transparency instead of the stricter instance transparency.
+After that, you can remove `instanceSearchTypes false`, too.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `tensorObj`. -/
 noncomputable def tensorObjMap {X Y : Cᵒᵖ} (f : X ⟶ Y) : M₁.obj X ⊗ M₂.obj X ⟶
@@ -119,18 +152,30 @@ noncomputable instance monoidalCategory :
     MonoidalCategory (PresheafOfModulesOfCommRing.{u} R) where
   tensorHom_def _ _ := by ext1; apply tensorHom_def
   id_tensorHom_id _ _ := by ext1; apply id_tensorHom_id
-  tensorHom_comp_tensorHom _ _ _ _ := by ext1; apply tensorHom_comp_tensorHom
+  tensorHom_comp_tensorHom _ _ _ _ := by
+    ext1 X
+    apply tensorHom_comp_tensorHom (C := ModuleCat (R.obj X))
   whiskerLeft_id M₁ M₂ := by
     ext1 X
     apply MonoidalCategory.whiskerLeft_id (C := ModuleCat (R.obj X))
   id_whiskerRight _ _ := by
     ext1 X
     apply MonoidalCategory.id_whiskerRight (C := ModuleCat (R.obj X))
-  associator_naturality _ _ _ := by ext1; apply associator_naturality
-  leftUnitor_naturality _ := by ext1; apply leftUnitor_naturality
-  rightUnitor_naturality _ := by ext1; apply rightUnitor_naturality
-  pentagon _ _ _ _ := by ext1; apply pentagon
-  triangle _ _ := by ext1; apply triangle
+  associator_naturality _ _ _ := by
+    ext1 X
+    apply associator_naturality (C := ModuleCat (R.obj X))
+  leftUnitor_naturality _ := by
+    ext1 X
+    apply leftUnitor_naturality (C := ModuleCat (R.obj X))
+  rightUnitor_naturality _ := by
+    ext1 X
+    apply rightUnitor_naturality (C := ModuleCat (R.obj X))
+  pentagon _ _ _ _ := by
+    ext1 X
+    apply pentagon (C := ModuleCat (R.obj X))
+  triangle _ _ := by
+    ext1 X
+    apply triangle (C := ModuleCat (R.obj X))
 
 open BraidedCategory
 

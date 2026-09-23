@@ -129,7 +129,7 @@ lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
     legendreSym (mersenne p) 3 = -1 := by
-  rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)
+  rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by simp)
     (mersenne_mod_four (by lia)),
     legendreSym.mod]
   rw_mod_cast [mersenne_mod_three odd hp]
@@ -603,7 +603,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime)
   have := X.ω_pow_trace (q := mersenne (p' + 2)) (by simp)
     (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by lia))
     (legendreSym_mersenne_two w) (by simp [pow_add])
-  rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by norm_num, mul_div_cancel_right₀ _ (by norm_num)]
+  rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by simp, mul_div_cancel_right₀ _ (by simp)]
     at this
   simp [this]
 

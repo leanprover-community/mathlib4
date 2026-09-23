@@ -320,6 +320,7 @@ section Ordered
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 /-- The infinite version of `Finset.prod_one_add_ordered`. -/
+@[to_dual tprod_one_add_ordered']
 theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 + f j))
     (hprod : Multipliable (1 + f ·)) :
@@ -340,6 +341,7 @@ theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
   grind
 
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
+@[to_dual tprod_one_sub_ordered']
 theorem tprod_one_sub_ordered {α : Type*} {f : ι → α}
     [CommRing α] [TopologicalSpace α] [T2Space α] [IsTopologicalAddGroup α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))

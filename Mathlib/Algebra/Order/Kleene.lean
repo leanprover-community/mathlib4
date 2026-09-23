@@ -200,7 +200,7 @@ theorem le_kstar : a ≤ a∗ :=
 @[gcongr, mono]
 theorem kstar_mono : Monotone (KStar.kstar : α → α) :=
   fun _ _ h ↦
-    kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) <| mul_kstar_le_kstar
+    kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) mul_kstar_le_kstar
 
 @[simp]
 theorem kstar_eq_one : a∗ = 1 ↔ a ≤ 1 :=
@@ -215,7 +215,7 @@ theorem kstar_one : (1 : α)∗ = 1 :=
 
 @[simp]
 theorem kstar_mul_kstar (a : α) : a∗ * a∗ = a∗ :=
-  (mul_kstar_le le_rfl <| kstar_mul_le_kstar).antisymm <| le_mul_of_one_le_left' one_le_kstar
+  (mul_kstar_le le_rfl kstar_mul_le_kstar).antisymm <| le_mul_of_one_le_left' one_le_kstar
 
 @[simp]
 theorem kstar_eq_self : a∗ = a ↔ a * a = a ∧ 1 ≤ a :=

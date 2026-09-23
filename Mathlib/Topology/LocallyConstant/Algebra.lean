@@ -131,21 +131,17 @@ instance [CommSemigroup Y] : CommSemigroup (LocallyConstant X Y) :=
 
 variable {α R : Type*}
 
-@[to_additive]
-instance smul [SMul α Y] : SMul α (LocallyConstant X Y) where
-  smul n f := f.map (n • ·)
-
-@[to_additive (attr := simp)]
-theorem coe_smul [SMul R Y] (r : R) (f : LocallyConstant X Y) : ⇑(r • f) = r • (f : X → Y) :=
-  rfl
-
-@[to_additive]
-theorem smul_apply [SMul R Y] (r : R) (f : LocallyConstant X Y) (x : X) : (r • f) x = r • f x :=
-  rfl
-
-@[to_additive existing LocallyConstant.smul]
+@[to_additive (attr := to_additive) instSMul]
 instance [Pow Y α] : Pow (LocallyConstant X Y) α where
   pow f n := f.map (· ^ n)
+
+@[to_additive (attr := simp, to_additive) coe_smul]
+theorem coe_pow [Pow Y R] (r : R) (f : LocallyConstant X Y) : ⇑(f ^ r) = (f : X → Y) ^ r :=
+  rfl
+
+@[to_additive (attr := to_additive) smul_apply]
+theorem pow_apply [Pow Y R] (r : R) (f : LocallyConstant X Y) (x : X) : (f ^ r) x = f x ^ r :=
+  rfl
 
 @[to_additive]
 instance [Monoid Y] : Monoid (LocallyConstant X Y) :=

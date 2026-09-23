@@ -104,7 +104,7 @@ noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u)
 
 theorem eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f := by
   funext x
-  apply (IsSheafFor.valid_glue _ _ _ <| ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩).trans
+  apply (IsSheafFor.valid_glue _ _ _ ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩).trans
   convert! ConcreteCategory.congr_hom (S.map_id _) _
 
 theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by

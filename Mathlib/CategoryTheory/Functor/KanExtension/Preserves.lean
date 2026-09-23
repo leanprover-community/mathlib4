@@ -49,7 +49,7 @@ lemma PreservesLeftKanExtension.mk'
     G.PreservesLeftKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsInitial.equivOfIso
-        (LeftExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+        (LeftExtension.postcompose₂ObjMkIso _ _) (preserves h.nonempty_isUniversal.some).some⟩⟩
 
 /-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
 Kan extension. -/
@@ -308,7 +308,7 @@ lemma PreservesRightKanExtension.mk'
     G.PreservesRightKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsTerminal.equivOfIso
-        (RightExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+        (RightExtension.postcompose₂ObjMkIso _ _) (preserves h.nonempty_isUniversal.some).some⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a right

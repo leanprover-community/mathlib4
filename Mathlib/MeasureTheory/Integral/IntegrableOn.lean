@@ -537,7 +537,7 @@ theorem _root_.MeasurableEmbedding.integrableAtFilter_iff_comap [MeasurableSpace
     IntegrableAtFilter f (l.map e) μ ↔ IntegrableAtFilter (f ∘ e) l (μ.comap e) := by
   simp_rw [← he.integrableAtFilter_map_iff, IntegrableAtFilter, he.map_comap]
   constructor <;> rintro ⟨s, hs, int⟩
-  · exact ⟨s, hs, int.mono_measure <| μ.restrict_le_self⟩
+  · exact ⟨s, hs, int.mono_measure μ.restrict_le_self⟩
   · exact ⟨_, inter_mem hs range_mem_map, int.inter_of_restrict⟩
 
 theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :

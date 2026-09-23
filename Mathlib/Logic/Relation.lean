@@ -645,7 +645,7 @@ lemma reflGen_eq_self [Std.Refl r] : ReflGen r = r := by
   ext x y
   simpa only [reflGen_iff, or_iff_right_iff_imp] using fun h ↦ h ▸ refl y
 
-@[deprecated inferInstance (since := "2026-03-27")]
+@[deprecated inferInstance +typeChanged (since := "2026-03-27")]
 lemma reflexive_reflGen : Std.Refl (ReflGen r) := inferInstance
 
 lemma reflGen_minimal {r' : α → α → Prop} [Std.Refl r'] (h : r ≤ r') : ReflGen r ≤ r' := by
@@ -686,13 +686,13 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
 
 @[grind =]
 theorem transGen_eq_self [IsTrans α r] : TransGen r = r :=
-  funext₂ fun a b ↦ propext <|
+  funext₂ fun a b ↦ propext
     ⟨fun h ↦ by
       induction h with
       | single hc => exact hc
       | tail _ hcd hac => exact IsTrans.trans _ _ _ hac hcd, TransGen.single⟩
 
-@[deprecated transGen_eq_self (since := "2026-03-27"), grind =]
+@[deprecated transGen_eq_self +typeChanged (since := "2026-03-27"), grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self
 
@@ -775,10 +775,10 @@ instance : IsPreorder α (ReflTransGen r) where
   refl := @ReflTransGen.refl α r
   trans := @ReflTransGen.trans α r
 
-@[deprecated inferInstance (since := "2026-03-27")]
+@[deprecated inferInstance +typeChanged (since := "2026-03-27")]
 theorem reflexive_reflTransGen : Std.Refl (ReflTransGen r) := inferInstance
 
-@[deprecated reflTransGen_eq_self (since := "2026-03-27"), grind =]
+@[deprecated reflTransGen_eq_self +typeChanged (since := "2026-03-27"), grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self
 
@@ -1021,6 +1021,6 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
-  funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
+  funext fun _ ↦ funext fun _ ↦ propext h.eqvGen_iff
 
 end EqvGen

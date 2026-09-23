@@ -613,7 +613,7 @@ theorem mk'_eq_iff_eq' {x₁ x₂} {y₁ y₂ : S} :
 @[to_additive]
 protected theorem eq {a₁ b₁} {a₂ b₂ : S} :
     f.mk' a₁ a₂ = f.mk' b₁ b₂ ↔ ∃ c : S, ↑c * (↑b₂ * a₁) = c * (a₂ * b₁) :=
-  f.mk'_eq_iff_eq.trans <| f.eq_iff_exists
+  f.mk'_eq_iff_eq.trans f.eq_iff_exists
 
 @[to_additive]
 protected theorem eq' {a₁ b₁} {a₂ b₂ : S} :
@@ -638,7 +638,7 @@ and `y₁ ∈ S`, if `x₂ : M, y₂ ∈ S` are such that `(f x₁ - f y₁) + f
 `c ∈ S` such that `x₁ + y₂ + c = x₂ + y₁ + c`. -/]
 theorem exists_of_sec_mk' (x) (y : S) :
     ∃ c : S, ↑c * (↑(f.sec <| f.mk' x y).2 * x) = c * (y * (f.sec <| f.mk' x y).1) :=
-  f.eq_iff_exists.1 <| f.mk'_eq_iff_eq.1 <| (mk'_sec _ _).symm
+  f.eq_iff_exists.1 <| f.mk'_eq_iff_eq.1 (mk'_sec _ _).symm
 
 @[to_additive]
 theorem mk'_eq_of_eq {a₁ b₁ : M} {a₂ b₂ : S} (H : ↑a₂ * b₁ = ↑b₂ * a₁) :

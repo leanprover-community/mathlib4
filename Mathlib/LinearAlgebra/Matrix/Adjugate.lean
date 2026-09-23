@@ -514,7 +514,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
 /-- A weaker version of `Matrix.adjugate_adjugate` that uses `Nontrivial`. -/
 theorem adjugate_adjugate' (A : Matrix n n α) [Nontrivial n] :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A :=
-  adjugate_adjugate _ <| Fintype.one_lt_card.ne'
+  adjugate_adjugate _ Fintype.one_lt_card.ne'
 
 end Adjugate
 

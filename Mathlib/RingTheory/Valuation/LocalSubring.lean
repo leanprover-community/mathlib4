@@ -100,7 +100,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   have hx0 : x ≠ 0 := fun e ↦ hx (e ▸ zero_mem _)
   let := invertibleOfNonzero hx0
   let S := R.toSubring[x]
-  have : R.toSubring < S.toSubring := SetLike.lt_iff_le_and_exists.mpr
+  have : R.toSubring < S.toSubring := IsConcreteLE.lt_iff_le_and_exists.mpr
     ⟨fun r hr ↦ algebraMap_mem S ⟨r, hr⟩, ⟨x, self_mem_adjoin_singleton _ _, hx⟩⟩
   have ⟨p, hp, hpx⟩ := exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top x _
     (maximalIdeal.isMaximal R.toSubring).ne_top

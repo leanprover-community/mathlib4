@@ -331,7 +331,7 @@ def idealOpensGI :
     congr_arg _ <|
       Ideal.ext
         (Set.ext_iff.mp
-          (isClosed_of_closure_subset <|
+          (isClosed_of_closure_subset
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
 
 theorem idealOfSet_isMaximal_iff (s : Opens X) :

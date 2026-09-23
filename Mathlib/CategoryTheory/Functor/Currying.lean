@@ -108,10 +108,12 @@ def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
 
 /-- The functor `uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E` is fully faithful. -/
+@[implicit_reducible]
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulFunctor
 
 /-- The functor `curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E` is fully faithful. -/
+@[implicit_reducible]
 def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulInverse
 
@@ -130,7 +132,7 @@ instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
 /-- Given functors `F₁ : C ⥤ D`, `F₂ : C' ⥤ D'` and `G : D × D' ⥤ E`, this is the isomorphism
 between `curry.obj ((F₁.prod F₂).comp G)` and
 `F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂` in the category `C ⥤ C' ⥤ E`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def curryObjProdComp {C' D' : Type*} [Category* C'] [Category* D']
     (F₁ : C ⥤ D) (F₂ : C' ⥤ D') (G : D × D' ⥤ E) :
     curry.obj ((F₁.prod F₂).comp G) ≅

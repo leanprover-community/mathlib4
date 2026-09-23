@@ -331,7 +331,7 @@ variable {arrows} in
 /-- Lift a collection of morphisms to a morphism to the pullback. -/
 noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
     (w : ∀ j, fs j ≫ arrows j = f) : X ⟶ widePullback _ _ arrows :=
-  limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs <| w)
+  limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs w)
 
 variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
@@ -350,7 +350,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   intro h1 h2
   apply
     (limit.isLimit (WidePullbackShape.wideCospan B objs arrows)).uniq
-      (WidePullbackShape.mkCone f fs <| w)
+      (WidePullbackShape.mkCone f fs w)
   rintro (_ | _)
   · apply h2
   · apply h1
@@ -511,7 +511,7 @@ variable {arrows} in
 /-- Descend a collection of morphisms to a morphism from the pushout. -/
 noncomputable abbrev desc {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
     (w : ∀ j, arrows j ≫ fs j = f) : widePushout _ _ arrows ⟶ X :=
-  colimit.desc (WidePushoutShape.wideSpan B objs arrows) (WidePushoutShape.mkCocone f fs <| w)
+  colimit.desc (WidePushoutShape.wideSpan B objs arrows) (WidePushoutShape.mkCocone f fs w)
 
 variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
@@ -530,7 +530,7 @@ theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
   intro h1 h2
   apply
     (colimit.isColimit (WidePushoutShape.wideSpan B objs arrows)).uniq
-      (WidePushoutShape.mkCocone f fs <| w)
+      (WidePushoutShape.mkCocone f fs w)
   rintro (_ | _)
   · apply h2
   · apply h1

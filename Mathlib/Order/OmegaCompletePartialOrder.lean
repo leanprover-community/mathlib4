@@ -401,7 +401,7 @@ instance [∀ a, OmegaCompletePartialOrder (β a)] :
     ωSup_le _ _ <| by
       rintro i
       apply hf
-  le_ωSup _ _ _ := le_ωSup_of_le _ <| le_rfl
+  le_ωSup _ _ _ := le_ωSup_of_le _ le_rfl
 
 namespace OmegaCompletePartialOrder
 

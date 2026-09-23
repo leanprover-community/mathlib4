@@ -167,7 +167,7 @@ lemma isUnit_jacobian_iff_aevalDifferential_bijective :
 lemma isUnit_jacobian_of_linearIndependent_of_span_eq_top
     (hli : LinearIndependent S (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j)))
     (hsp : Submodule.span S
-      (Set.range <| (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
+      (Set.range (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
     IsUnit P.jacobian := by
   classical
   rw [isUnit_jacobian_iff_aevalDifferential_bijective]
@@ -557,7 +557,7 @@ noncomputable def comp : SubmersivePresentation R T (ι' ⊕ ι) (σ' ⊕ σ) wh
   __ := Q.toPreSubmersivePresentation.comp P.toPreSubmersivePresentation
   jacobian_isUnit := by
     rw [comp_jacobian_eq_jacobian_smul_jacobian, Algebra.smul_def, IsUnit.mul_iff]
-    exact ⟨RingHom.isUnit_map _ <| P.jacobian_isUnit, Q.jacobian_isUnit⟩
+    exact ⟨RingHom.isUnit_map _ P.jacobian_isUnit, Q.jacobian_isUnit⟩
 
 end Composition
 

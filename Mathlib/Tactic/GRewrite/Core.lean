@@ -168,10 +168,16 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
     goal.assign proof
     return true
   let mctx ← getMCtx
+  -- `@[gcongr_forward]` extensions are metaprograms retrieved from `forwardExt`, so `shake` sees
+  -- no reference to the module that registered them. We record that module below, for whichever
+  -- extension closes the goal.
   for (n, tac) in (forwardExt.getState (← getEnv)).2 do
     -- Explicitly exclude a few `gcongr_forward` extensions that are not relevant here.
     if n matches ``GCongr.exact | ``GCongr.exactRefl then continue
-    try tac.eval proof goal; return true
+    try
+      tac.eval proof goal
+      recordExtraModUseFromDecl (isMeta := true) n
+      return true
     catch _ => setMCtx mctx
   return false
 

@@ -327,7 +327,7 @@ the diagonal and zero elsewhere.
 See also `Matrix.blockDiagonal'` if the matrices may not have the same size everywhere.
 -/
 def blockDiagonal (M : o → Matrix m n α) : Matrix (m × o) (n × o) α :=
-  of <| (fun ⟨i, k⟩ ⟨j, k'⟩ => if k = k' then M k i j else 0 : m × o → n × o → α)
+  of (fun ⟨i, k⟩ ⟨j, k'⟩ => if k = k' then M k i j else 0 : m × o → n × o → α)
 
 -- TODO: set as an equation lemma for `blockDiagonal`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
@@ -568,7 +568,7 @@ and zero elsewhere.
 
 This is the dependently-typed version of `Matrix.blockDiagonal`. -/
 def blockDiagonal' (M : ∀ i, Matrix (m' i) (n' i) α) : Matrix (Σ i, m' i) (Σ i, n' i) α :=
-  of <|
+  of
     (fun ⟨k, i⟩ ⟨k', j⟩ => if h : k = k' then M k i (cast (congr_arg n' h.symm) j) else 0 :
       (Σ i, m' i) → (Σ i, n' i) → α)
 

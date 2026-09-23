@@ -182,7 +182,7 @@ instance (priority := 100) OrderDual.borelSpace {α : Type*} [TopologicalSpace �
 /-- In a `BorelSpace` all open sets are measurable. -/
 instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] : OpensMeasurableSpace α :=
-  ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
+  ⟨ge_of_eq BorelSpace.measurable_eq⟩
 
 instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [hα : BorelSpace α] (p : α → Prop) : BorelSpace (Subtype p) :=
@@ -465,7 +465,7 @@ theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : �
 
 theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     closure s =ᵐ[μ] s :=
-  ((ae_le_set.2 h).trans interior_subset.eventuallySubset).antisymm <|
+  ((ae_le_set.2 h).trans interior_subset.eventuallySubset).antisymm
     subset_closure.eventuallySubset
 
 theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
@@ -491,7 +491,7 @@ instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
 is measurable. -/
 @[fun_prop]
 theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f :=
-  hf.borel_measurable.mono OpensMeasurableSpace.borel_le (le_of_eq <| BorelSpace.measurable_eq)
+  hf.borel_measurable.mono OpensMeasurableSpace.borel_le (le_of_eq BorelSpace.measurable_eq)
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is ae-measurable. -/
@@ -635,7 +635,7 @@ theorem pi_le_borel_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace 
   have : ‹∀ i, MeasurableSpace (X i)› = fun i => borel (X i) :=
     funext fun i => BorelSpace.measurable_eq
   rw [this]
-  exact iSup_le fun i => comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
+  exact iSup_le fun i => comap_le_iff_le_map.2 (continuous_apply i).borel_measurable
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]
