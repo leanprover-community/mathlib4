@@ -375,6 +375,14 @@ instance : LatticeHomClass (LatticeHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
 
+/-- Reinterpret a lattice homomorphism as an order homomorphism. -/
+def toOrderHom (f : LatticeHom α β) : α →o β :=
+  .ofClass f
+
+@[simp]
+theorem coe_toOrderHom (f : LatticeHom α β) : ⇑f.toOrderHom = f :=
+  rfl
+
 lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl
 
 @[to_dual (attr := simp)] lemma coe_toSupHom (f : LatticeHom α β) : ⇑f.toSupHom = f := rfl
