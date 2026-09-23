@@ -94,17 +94,20 @@ lemma ord_one : ord (1 : X.functionField) = 0 := by
     rw [ord_eq_iff hz one_ne_zero]
     simp
 
+@[simp]
 lemma ord_inv {z : X} {f : X.functionField} (hf : f ≠ 0) : ord f⁻¹ z = -ord f z := by
   have h := ord_mul (x := z) hf (inv_ne_zero hf)
   rw [mul_inv_cancel₀ hf] at h
   simp only [ord_one, Pi.zero_apply] at h
   omega
 
+@[simp]
 lemma ord_div {z : X} {f g : X.functionField} (hf : f ≠ 0) (hg : g ≠ 0) :
     ord (f / g) z = ord f z - ord g z := by
   rw [div_eq_mul_inv, ord_mul hf (inv_ne_zero hg), ord_inv hg]
   ring
 
+@[simp]
 lemma ord_pow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℕ) :
     ord (f ^ n) z = n * ord f z := by
   induction n with
@@ -114,6 +117,7 @@ lemma ord_pow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℕ) :
     push_cast
     ring
 
+@[simp]
 lemma ord_zpow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℤ) :
     ord (f ^ n) z = n * ord f z := by
   cases n with
@@ -124,6 +128,7 @@ lemma ord_zpow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℤ) :
     push_cast
     ring
 
+@[simp]
 lemma ord_prod {ι : Type*} {z : X} (T : Finset ι) (F : ι → X.functionField)
     (hF : ∀ i ∈ T, F i ≠ 0) : ord (∏ i ∈ T, F i) z = ∑ i ∈ T, ord (F i) z := by
   classical
@@ -136,6 +141,7 @@ lemma ord_prod {ι : Type*} {z : X} (T : Finset ι) (F : ι → X.functionField)
       ord_mul (hF a (Finset.mem_insert_self a T)) hprod,
       ih fun i hi => hF i (Finset.mem_insert_of_mem hi)]
 
+@[simp]
 lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
     (hx' : x ∈ U) : ord (X.germToFunctionField U f) x = 0 := by
   by_cases! hx : coheight x ≠ 1
