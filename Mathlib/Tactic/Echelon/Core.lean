@@ -184,7 +184,7 @@ def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
     row.foldl (init := none) fun scale entry => Option.merge commonMultiple scale entry.2
   let scaled := rows.zipWith (bs := scales) fun row scale =>
     match scale with
-    | none => row.map fun entry => entry.1
+    | none => row.map Prod.fst
     | some scale => row.map fun entry =>
       match entry.2 with
       | none => ops.mul entry.1 scale
@@ -195,11 +195,11 @@ def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
 `L` is multiplied by the scale of the row that ends up in position `j` after permutation. -/
 def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
     (d : BareissData V) : BareissData V :=
-  if scales.all fun scale => scale.isNone then d
+  if scales.all Option.isNone then d
   else
     let colScale := d.rowOrder.map fun i => scales.getD i none
-    { d with L := d.L.map fun row => row.mapIdx fun j a =>
-        match colScale.getD j none with
+    { d with L := d.L.map fun row => row.zipWith (bs := colScale) fun a scale? =>
+        match scale? with
         | none => a
         | some scale => ops.mul a scale }
 
