@@ -985,12 +985,13 @@ end ChineseRemainder
 
 namespace Ideal
 
-/-- `⊤` is the unit ideal, so nothing has positive multiplicity in it. -/
+/-- Every ideal has multiplicity `0` in `⊤`, the unit ideal. -/
+@[simp]
 theorem multiplicity_top_right {S : Type*} [CommSemiring S] (I : Ideal S) :
     multiplicity I ⊤ = 0 := by
   rw [← one_eq_top, multiplicity_one_right]
 
-/-- `⊤` is the unit ideal, so nothing but the unit ideal has positive multiplicity in it. -/
+/-- A proper ideal has multiplicity `0` in `⊤`, the unit ideal. -/
 theorem emultiplicity_of_top_right {S : Type*} [CommSemiring S] {I : Ideal S} (hI : I ≠ ⊤) :
     emultiplicity I ⊤ = 0 := by
   rw [← one_eq_top, emultiplicity_of_one_right (by rwa [Ideal.isUnit_iff])]
