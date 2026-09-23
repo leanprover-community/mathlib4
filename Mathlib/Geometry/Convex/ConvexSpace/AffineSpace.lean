@@ -200,8 +200,7 @@ variable [ConvexSpace R P] [IsAffineConvexSpace R V P]
 variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module R V₂]
 variable [AffineSpace V₂ P₂] [ConvexSpace R P₂] [IsAffineConvexSpace R V₂ P₂]
 
-lemma AffineMap.isAffineMap
-    (f : P →ᵃ[R] P₂) : IsAffineMap R f  where
+lemma AffineMap.isAffineMap (f : P →ᵃ[R] P₂) : IsAffineMap R f  where
   map_sConvexComb s := by
      rw [sConvexComb_eq_affineCombination, Finset.map_affineCombination s.weights.support _root_.id
       s.weights s.total, ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
