@@ -587,7 +587,29 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` and `respectTransparency` backward compatibility flags to
+make an instance search succeed. Concretely, the following instance cannot be synthesized:
+`CoeFun (R ≃ₛₗ[↑f] S) ?m`
+so without them the application below reports
+`Function expected at f.symm.toSemilinearEquiv.symm`.
+
+The failure happens while applying `@instEquivLike` to `EquivLike (R ≃ₛₗ[↑f] S) ?α ?β`: assigning
+one of its instance-implicit-argument metavariables is rejected because the metavariable's type and
+the type of the assigned value do not match at `.instances` transparency. The metavariable's
+expected type is `RingHomInvPair ↑f ↑f.symm`, whereas the assigned value
+`RingHomInvPair.symm ↑f.symm ↑f.symm.symm` has type `RingHomInvPair ↑f.symm.symm ↑f.symm`. Lean
+falls back to synthesizing `RingHomInvPair ↑f ↑f.symm`, but no such instnace is found, so the
+assignment fails.
+
+This is the intended behavior.
+A quick fix could be to provide the required instance via `haveI` or as a local instance.
+-/
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 @[simp]
 lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
   f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl

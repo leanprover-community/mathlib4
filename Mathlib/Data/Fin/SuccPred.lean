@@ -223,7 +223,7 @@ theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := b
   · grind [castSucc_ne_zero_iff]
 
 theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ last n :=
-  not_iff_not.mpr <| succ_eq_last_succ
+  not_iff_not.mpr succ_eq_last_succ
 
 theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
   grind

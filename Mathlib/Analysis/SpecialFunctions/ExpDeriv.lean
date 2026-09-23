@@ -166,7 +166,7 @@ theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
 
 theorem HasFDerivAt.cexp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
-  hasFDerivWithinAt_univ.1 <| hf.hasFDerivWithinAt.cexp
+  hasFDerivWithinAt_univ.1 hf.hasFDerivWithinAt.cexp
 
 theorem DifferentiableWithinAt.cexp (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (fun x => Complex.exp (f x)) s x :=
