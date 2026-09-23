@@ -16,10 +16,6 @@ Given an embedding `e : c.Embedding c'` of complex shapes, we define
 a functor `stupidTruncFunctor : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
 which sends `K` to `K.stupidTrunc e` which is defined as `(K.restriction e).extend e`.
 
-## TODO (@joelriou)
-* define the inclusion `e.stupidTruncFunctor C ⟶ 𝟭 _` when `[e.IsTruncGE]`;
-* define the projection `𝟭 _ ⟶ e.stupidTruncFunctor C` when `[e.IsTruncLE]`.
-
 -/
 
 @[expose] public section
@@ -37,7 +33,8 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 /-- The stupid truncation of a complex `K : HomologicalComplex C c'` relatively to
 an embedding `e : c.Embedding c'` of complex shapes. -/
-noncomputable def stupidTrunc : HomologicalComplex C c' := ((K.restriction e).extend e)
+@[local implicit_reducible]
+noncomputable def stupidTrunc : HomologicalComplex C c' := (K.restriction e).extend e
 
 instance : IsStrictlySupported (K.stupidTrunc e) e := by
   dsimp [stupidTrunc]
@@ -47,6 +44,15 @@ instance : IsStrictlySupported (K.stupidTrunc e) e := by
 noncomputable def stupidTruncXIso {i : ι} {i' : ι'} (hi' : e.f i = i') :
     (K.stupidTrunc e).X i' ≅ K.X i' :=
   (K.restriction e).extendXIso e hi' ≪≫ eqToIso (by subst hi'; rfl)
+
+lemma congr_stupidTruncXIso {i₁ i₂ : ι} {i' : ι'} (hi₁ : e.f i₁ = i') (hi₂ : e.f i₂ = i') :
+    K.stupidTruncXIso e hi₁ = K.stupidTruncXIso e hi₂ := by
+  obtain rfl : i₁ = i₂ := e.injective_f (by aesop)
+  rfl
+
+lemma stupidTruncXIso_rfl (i : ι) :
+    K.stupidTruncXIso e (i := i) rfl = (K.restriction e).extendXIso e rfl := by
+  simp [stupidTruncXIso]
 
 lemma isZero_stupidTrunc_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     IsZero ((K.stupidTrunc e).X i') :=
@@ -89,13 +95,188 @@ lemma stupidTruncMap_comp :
     stupidTruncMap (φ ≫ φ') e = stupidTruncMap φ e ≫ stupidTruncMap φ' e := by
   simp [stupidTruncMap, stupidTrunc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma stupidTruncMap_stupidTruncXIso_hom {i : ι} {i' : ι'} (hi : e.f i = i') :
     (stupidTruncMap φ e).f i' ≫ (L.stupidTruncXIso e hi).hom =
       (K.stupidTruncXIso e hi).hom ≫ φ.f i' := by
   subst hi
   simp [stupidTruncMap, stupidTruncXIso, extendMap_f _ _ rfl]
+
+section
+
+variable (K L : HomologicalComplex C c') (φ : K ⟶ L)
+  (e : c.Embedding c')
+
+open Classical in
+/-- Auxiliary definition for `ιStupidTrunc`. -/
+noncomputable def ιStupidTruncf [e.IsRelIff] (i' : ι') : (K.stupidTrunc e).X i' ⟶ K.X i' :=
+  if h : ∃ (i : ι), e.f i = i'
+  then (K.stupidTruncXIso e h.choose_spec).hom
+  else 0
+
+lemma ιStupidTruncf_eq [e.IsRelIff] (i : ι) :
+    K.ιStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).hom := by
+  dsimp [ιStupidTruncf]
+  rw [dite_eq_left ⟨i, rfl⟩, congr_stupidTruncXIso _ _ _ rfl, stupidTruncXIso_rfl]
+
+lemma ιStupidTruncf'_eq [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
+    K.ιStupidTruncf e i' = ((K.restriction e).extendXIso e h).hom ≫
+      (K.restrictionXIso e h).hom := by
+  subst h
+  simp [ιStupidTruncf_eq, restrictionXIso]
+
+variable [e.IsTruncGE]
+
+/-- The monomorphism `K.stupidTrunc e ⟶ K` when the embedding `e` of complex shapes
+satisfies `e.IsTruncGE`. -/
+@[simps -isSimp]
+noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
+  f := K.ιStupidTruncf e
+  comm' i' j' hij' := by
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      obtain ⟨j, rfl⟩ := e.mem_next hij'
+      simp [ιStupidTruncf_eq, stupidTrunc, (K.restriction e).extend_d_eq e rfl rfl]
+    · apply (K.isZero_stupidTrunc_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+lemma isIso_ιStupidTrunc_f {i' : ι'} {i : ι} (h : e.f i = i') :
+    IsIso ((K.ιStupidTrunc e).f i') := by
+  subst h
+  rw [ιStupidTrunc_f, ιStupidTruncf_eq]
+  infer_instance
+
+instance (i : ι) : IsIso ((K.ιStupidTrunc e).f (e.f i)) :=
+  K.isIso_ιStupidTrunc_f e rfl
+
+instance (i' : ι') : Mono ((K.ιStupidTrunc e).f i') := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    infer_instance
+  · exact ⟨fun _ _ _ ↦ (isZero_extend_X _ _ _ (by simpa using hi')).eq_of_tgt ..⟩
+
+instance : Mono (K.ιStupidTrunc e) := mono_of_mono_f _ inferInstance
+
+lemma isIso_ιStupidTrunc_iff :
+    IsIso (K.ιStupidTrunc e) ↔ K.IsStrictlySupported e := by
+  refine ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.ιStupidTrunc e)) _,
+    fun _ ↦ ?_⟩
+  have (i' : ι') : IsIso ((K.ιStupidTrunc e).f i') := by
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      infer_instance
+    · apply IsZero.isIso
+      all_goals exact isZero_X_of_isStrictlySupported _ e _ (by simpa using hi')
+  apply Hom.isIso_of_components
+
+instance [K.IsStrictlySupported e] : IsIso (K.ιStupidTrunc e) := by
+  rw [isIso_ιStupidTrunc_iff]
+  infer_instance
+
+variable {K L}
+
+@[reassoc (attr := simp)]
+lemma ιStupidTrunc_naturality :
+    stupidTruncMap φ e ≫ L.ιStupidTrunc e = K.ιStupidTrunc e ≫ φ := by
+  ext i'
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    simp [ιStupidTrunc, ιStupidTruncf_eq, stupidTruncMap, extendMap_f _ e rfl]
+  · apply (K.isZero_stupidTrunc_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+@[reassoc (attr := simp)]
+lemma ιStupidTrunc_f_naturality (i' : ι') :
+    (stupidTruncMap φ e).f i' ≫ (L.ιStupidTrunc e).f i' = (K.ιStupidTrunc e).f i' ≫ φ.f i' := by
+  simp only [← comp_f, ιStupidTrunc_naturality]
+
+end
+
+section
+
+variable (K L : HomologicalComplex C c') (φ : K ⟶ L)
+  (e : c.Embedding c')
+
+open Classical in
+/-- Auxiliary definition for `πStupidTrunc`. -/
+noncomputable def πStupidTruncf [e.IsRelIff] (i' : ι') : K.X i' ⟶ (K.stupidTrunc e).X i' :=
+  if h : ∃ (i : ι), e.f i = i'
+  then (K.stupidTruncXIso e h.choose_spec).inv
+  else 0
+
+lemma πStupidTruncf_eq [e.IsRelIff] (i : ι) :
+    K.πStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).inv := by
+  dsimp [πStupidTruncf]
+  rw [dite_eq_left ⟨i, rfl⟩, congr_stupidTruncXIso _ _ _ rfl, stupidTruncXIso_rfl]
+
+lemma πStupidTruncf_eq' [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
+    K.πStupidTruncf e i' = (K.restrictionXIso e h).inv ≫
+      ((K.restriction e).extendXIso e h).inv := by
+  subst h
+  simp [πStupidTruncf_eq, restrictionXIso]
+
+variable [e.IsTruncLE]
+
+/-- The epimorphism `K ⟶ K.stupidTrunc e` when the embedding `e` of complex shapes
+satisfies `e.IsTruncLE`. -/
+@[simps -isSimp]
+noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
+  f := K.πStupidTruncf e
+  comm' i' j' hij' := by
+    by_cases hj' : ∃ j, e.f j = j'
+    · obtain ⟨j, rfl⟩ := hj'
+      obtain ⟨i, rfl⟩ := e.mem_prev hij'
+      simp [πStupidTruncf_eq, stupidTrunc, (K.restriction e).extend_d_eq e rfl rfl]
+    · apply (K.isZero_stupidTrunc_X e j' (fun j hj => hj' ⟨j, hj⟩)).eq_of_tgt
+
+lemma isIso_πStupidTrunc_f {i' : ι'} {i : ι} (h : e.f i = i') :
+    IsIso ((K.πStupidTrunc e).f i') := by
+  subst h
+  rw [πStupidTrunc_f, πStupidTruncf_eq]
+  infer_instance
+
+instance (i : ι) : IsIso ((K.πStupidTrunc e).f (e.f i)) :=
+  K.isIso_πStupidTrunc_f e rfl
+
+instance (i' : ι') : Epi ((K.πStupidTrunc e).f i') := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    infer_instance
+  · exact ⟨fun _ _ _ ↦ (isZero_extend_X _ _ _ (by simpa using hi')).eq_of_src ..⟩
+
+instance : Epi (K.πStupidTrunc e) := epi_of_epi_f _ inferInstance
+
+lemma isIso_πStupidTrunc_iff :
+    IsIso (K.πStupidTrunc e) ↔ K.IsStrictlySupported e := by
+  refine ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.πStupidTrunc e)).symm _,
+    fun _ ↦ ?_⟩
+  have (i' : ι') : IsIso ((K.πStupidTrunc e).f i') := by
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      infer_instance
+    · apply IsZero.isIso
+      all_goals exact isZero_X_of_isStrictlySupported _ e _ (by simpa using hi')
+  apply Hom.isIso_of_components
+
+instance [K.IsStrictlySupported e] : IsIso (K.πStupidTrunc e) := by
+  rw [isIso_πStupidTrunc_iff]
+  infer_instance
+
+variable {K L}
+
+@[reassoc (attr := simp)]
+lemma πStupidTrunc_naturality :
+    K.πStupidTrunc e ≫ stupidTruncMap φ e = φ ≫ L.πStupidTrunc e := by
+  ext i'
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    simp [πStupidTrunc, πStupidTruncf_eq, stupidTruncMap, extendMap_f _ e rfl]
+  · apply (L.isZero_stupidTrunc_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_tgt
+
+@[reassoc (attr := simp)]
+lemma πStupidTrunc_f_naturality (i' : ι') :
+    (K.πStupidTrunc e).f i' ≫ (stupidTruncMap φ e).f i' = φ.f i' ≫ (L.πStupidTrunc e).f i' := by
+  simp only [← comp_f, πStupidTrunc_naturality]
+
+end
 
 end HomologicalComplex
 
@@ -105,10 +286,26 @@ variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroMorphisms C] [Ha
 
 /-- The stupid truncation functor `HomologicalComplex C c' ⥤ HomologicalComplex C c'`
 given by an embedding `e : Embedding c c'` of complex shapes. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def stupidTruncFunctor [e.IsRelIff] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c' where
   obj K := K.stupidTrunc e
   map φ := HomologicalComplex.stupidTruncMap φ e
+
+/-- When `e : Embedding c c'` satisfies `[e.IsTruncGE]`, this is
+the natural transformation `K.ιStupidTrunc e : K.stupidTrunc e ⟶ K`
+for all `K : HomologicalComplex C c'`. -/
+@[simps]
+noncomputable def ιStupidTruncNatTrans [e.IsTruncGE] :
+    e.stupidTruncFunctor C ⟶ 𝟭 _ where
+  app K := K.ιStupidTrunc e
+
+/-- When `e : Embedding c c'` satisfies `[e.IsTruncLE]`, this is
+the natural transformation `K.πStupidTrunc e : K ⟶ K.stupidTrunc e`
+for all `K : HomologicalComplex C c'`. -/
+@[simps]
+noncomputable def πStupidTruncNatTrans [e.IsTruncLE] :
+    𝟭 _ ⟶ e.stupidTruncFunctor C  where
+  app K := K.πStupidTrunc e
 
 end ComplexShape.Embedding
