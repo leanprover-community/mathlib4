@@ -129,7 +129,6 @@ instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [IsSeparat
   MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i)
     inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : X ⟶ Y` and `g : Y ⟶ Z` such that `g` is separated, the induced map
 `X ⟶ X ×[Z] Y` is a closed immersion. -/
 instance [IsSeparated g] :
@@ -273,7 +272,6 @@ variable {f g} in
 lemma IsAffineHom.comp_iff [IsAffineHom g] : IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 01KM]
 instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSeparated Y.hom]
     (f g : X ⟶ Y) : IsClosedImmersion (equalizer.ι f g).left := by

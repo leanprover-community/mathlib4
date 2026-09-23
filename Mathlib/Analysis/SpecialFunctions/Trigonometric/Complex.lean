@@ -81,7 +81,6 @@ See also `Complex.tan_eq_zero_iff` for a version that takes into account junk va
 theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
   simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
-set_option linter.flexible false in -- Non-terminal simp, used to be field_simp
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
     cos x = cos y ↔ cos x - cos y = 0 := sub_eq_zero.symm
@@ -90,7 +89,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
     _ ↔ sin ((x - y) / 2) = 0 ∨ sin ((x + y) / 2) = 0 := or_comm
     _ ↔ (∃ k : ℤ, y = 2 * k * π + x) ∨ ∃ k : ℤ, y = 2 * k * π - x := by
       apply or_congr <;>
-        simp [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
+        simp only [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
           sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
       constructor <;> · rintro ⟨k, rfl⟩; use -k; simp
     _ ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x := exists_or.symm

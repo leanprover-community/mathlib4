@@ -145,7 +145,7 @@ open scoped MonObj
 
 namespace Mathlib.Tactic.MonTauto
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
-  {M W X X₁ X₂ X₃ Y Y₁ Y₂ Y₃ Z Z₁ Z₂ : C} [MonObj M]
+  {M W X X₁ X₂ Y Y₁ Y₂ Z Z₁ Z₂ : C} [MonObj M]
 
 attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   id_tensorHom_id tensorμ tensorδ
@@ -219,11 +219,7 @@ attribute [to_additive existing (attr := reassoc (attr := simp))] IsMonHom.one_h
 @[to_additive]
 instance : IsMonHom (𝟙 M) where
 
-instance instIsAddMonHomComp {M N O : C} [AddMonObj M] [AddMonObj N] [AddMonObj O]
-    (f : M ⟶ N) (g : N ⟶ O)
-    [IsAddMonHom f] [IsAddMonHom g] : IsAddMonHom (f ≫ g) where
-
-@[to_additive existing]
+@[to_additive]
 instance instIsMonHomComp (f : M ⟶ N) (g : N ⟶ O) [IsMonHom f] [IsMonHom g] : IsMonHom (f ≫ g) where
 
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
@@ -956,14 +952,7 @@ protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
         F.map_injective <| by simpa [← hg, cancel_epi] using IsMonHom.mul_hom f.hom },
       Mon.Hom.ext hg⟩
 
-instance FullyFaithful.isAddMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
-    [AddMonObj X] [AddMonObj Y] (f : F.obj X ⟶ F.obj Y) [IsAddMonHom f] :
-    IsAddMonHom (hF.preimage f) where
-  zero_hom := hF.map_injective (by simp [← cancel_epi (ε F), ← obj.ζ_def_assoc, ← obj.ζ_def])
-  add_hom := hF.map_injective (by
-    simp [← obj.σ_def_assoc, ← obj.σ_def, ← μ_natural_assoc, ← cancel_epi (LaxMonoidal.μ F ..)])
-
-@[to_additive existing]
+@[to_additive]
 instance FullyFaithful.isMonHom_preimage (hF : F.FullyFaithful) {X Y : C}
     [MonObj X] [MonObj Y] (f : F.obj X ⟶ F.obj Y) [IsMonHom f] :
     IsMonHom (hF.preimage f) where

@@ -95,12 +95,18 @@ protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
 theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
-protected theorem lipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).lipschitz
+protected theorem lipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
+  (SemilinearIsometryClass.isometry f).lipschitzWith
 
-protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := SemilinearIsometryClass.lipschitzWith
+
+protected theorem antilipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     AntilipschitzWith 1 f :=
-  (SemilinearIsometryClass.isometry f).antilipschitz
+  (SemilinearIsometryClass.isometry f).antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := SemilinearIsometryClass.antilipschitzWith
 
 theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
     Metric.ediam (f '' s) = Metric.ediam s :=
@@ -139,6 +145,7 @@ theorem toLinearMap_injective : Injective (toLinearMap : (E →ₛₗᵢ[σ₁�
 theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = g.toLinearMap ↔ f = g :=
   toLinearMap_injective.eq_iff
 
+@[macro_inline]
 instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
@@ -232,11 +239,17 @@ theorem map_eq_iff {x y : F} : f₁ x = f₁ y ↔ x = y :=
 theorem map_ne {x y : F} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
-protected theorem lipschitz : LipschitzWith 1 f :=
-  f.isometry.lipschitz
+protected theorem lipschitzWith : LipschitzWith 1 f :=
+  f.isometry.lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 f :=
-  f.isometry.antilipschitz
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := LinearIsometry.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 f :=
+  f.isometry.antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := LinearIsometry.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
@@ -368,7 +381,7 @@ theorem coe_pow (f : E →ₗᵢ[R] E) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
 
 section submoduleMap
 
-variable {R R₁ R₂ M M₁ : Type*}
+variable {R M M₁ : Type*}
 variable [Ring R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₁]
 variable [Module R M] [Module R M₁]
 
@@ -477,6 +490,7 @@ theorem toLinearEquiv_injective : Injective (toLinearEquiv : (E ≃ₛₗᵢ[σ�
 theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEquiv = g.toLinearEquiv ↔ f = g :=
   toLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun
@@ -906,11 +920,17 @@ theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
 theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
-protected theorem lipschitz : LipschitzWith 1 e :=
-  e.isometry.lipschitz
+protected theorem lipschitzWith : LipschitzWith 1 e :=
+  e.isometry.lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 e :=
-  e.isometry.antilipschitz
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := LinearIsometryEquiv.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 e :=
+  e.isometry.antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := LinearIsometryEquiv.antilipschitzWith
 
 theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s
@@ -1065,7 +1085,7 @@ theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 
 section submoduleMap
 
-variable {R R₁ R₂ M M₂ : Type*}
+variable {R R₂ M M₂ : Type*}
 variable [Ring R] [Ring R₂] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₂]
 variable [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
