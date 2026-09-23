@@ -128,6 +128,56 @@ variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
   simpa using! congr($(f.hom.2 g) a)
 
+instance : AddCommGroup (A ⟶ B) := ConcreteCategory.homEquiv.addCommGroup
+
+lemma hom_add (f g : A ⟶ B) : (f + g).hom = f.hom + g.hom := rfl
+
+lemma hom_sub (f g : A ⟶ B) : (f - g).hom = f.hom - g.hom := rfl
+
+lemma ofHom_add (f g : ρ →ⁱL σ) : ofHom (f + g) = ofHom f + ofHom g := rfl
+
+lemma ofHom_sub (f g : ρ →ⁱL σ) : ofHom (f - g) = ofHom f - ofHom g := rfl
+
+lemma comp_add' (f : A ⟶ B) (g h : B ⟶ C) : f ≫ (g + h) = f ≫ g + f ≫ h := by
+  ext : 1; simp [hom_add, ContIntertwiningMap.add_comp]
+
+lemma add_comp' (f g : A ⟶ B) (h : B ⟶ C) : (f + g) ≫ h = f ≫ h + g ≫ h := by
+  ext : 1; simp [hom_add, ContIntertwiningMap.comp_add]
+
+instance : Preadditive (TopRep k G) where
+  homGroup := inferInstance
+  add_comp := TopRep.add_comp'
+  comp_add := TopRep.comp_add'
+
+section Linear
+
+variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing k]
+  [IsTopologicalRing k] [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
+  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
+  [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
+  {σ : ContRepresentation k G Y} {A B C : TopRep k G}
+
+instance : Module k (A ⟶ B) := ConcreteCategory.homEquiv.module k
+
+lemma hom_smul (r : k) (f : A ⟶ B) : (r • f).hom = r • f.hom := rfl
+
+lemma ofHom_smul (r : k) (f : ρ →ⁱL σ) : ofHom (r • f) = r • ofHom f := rfl
+
+variable (A B C) in
+lemma smul_comp' (r : k) (f : A ⟶ B) (g : B ⟶ C) : (r • f) ≫ g = r • (f ≫ g) := by
+  ext; simp [hom_smul, ContIntertwiningMap.comp_smul]
+
+variable (A B C) in
+lemma comp_smul' (f : A ⟶ B) (r : k) (g : B ⟶ C) : f ≫ (r • g) = r • (f ≫ g) := by
+  ext; simp [hom_smul, ContIntertwiningMap.smul_comp]
+
+instance : CategoryTheory.Linear k (TopRep k G) where
+  homModule := inferInstance
+  smul_comp := smul_comp'
+  comp_smul := comp_smul'
+
+end Linear
+
 section equivAction
 
 /-- The functor sending a topological representation to the corresponding object in

@@ -29,7 +29,7 @@ variable (X : SSet.{u})
 
 /-- If `X : SSet`, this is the functor `X.N ⥤ SSet` which sends a
 nondegenerate simplex of `X` to the subcomplex of `X` that it generates. -/
-@[expose, simps! obj]
+@[expose, simps! obj map]
 public def functorN : X.N ⥤ SSet.{u} :=
   X.orderEmbeddingN.monotone.functor ⋙ Subcomplex.toSSetFunctor
 

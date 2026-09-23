@@ -377,6 +377,56 @@ lemma Hom.sieve₀_le_sieve₀ {E F : PreZeroHypercover S} (f : E.Hom F) : E.sie
 lemma sieve₀_eq_of_iso {E F : PreZeroHypercover S} (e : E ≅ F) : E.sieve₀ = F.sieve₀ :=
   le_antisymm e.hom.sieve₀_le_sieve₀ e.inv.sieve₀_le_sieve₀
 
+/-- The equivalence on index types induced by an isomorphism of pre-`0`-hypercovers. -/
+@[simps]
+def equivOfIso {E F : PreZeroHypercover.{w} S} (e : E ≅ F) : E.I₀ ≃ F.I₀ where
+  toFun := e.hom.s₀
+  invFun := e.inv.s₀
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+lemma mem_of_iso {K : Precoverage C} [K.IsStableUnderComposition] [K.HasIsos] {X : C}
+    {E F : PreZeroHypercover.{w} X} (e : E ≅ F) (hE : E.presieve₀ ∈ K X) :
+    F.presieve₀ ∈ K X := by
+  have : F.presieve₀ =
+      Presieve.ofArrows (fun (i : Σ (_ : F.I₀), Unit) ↦ _) (fun i ↦ e.inv.h₀ i.1 ≫ E.f _) := by
+    simp only [Hom.w₀]
+    refine le_antisymm ?_ ?_
+    · rw [Presieve.ofArrows_le_iff]
+      intro i
+      exact .mk (⟨i, ⟨⟩⟩ : Σ (_ : F.I₀), Unit)
+    · simp [Presieve.ofArrows_le_iff]
+  rw [this]
+  refine K.comp_mem_coverings (fun i ↦ E.f (e.inv.s₀ i)) ?_ (fun i (k : Unit) ↦ e.inv.h₀ i) ?_
+  · rwa [← E.presieve₀_reindex (PreZeroHypercover.equivOfIso e.symm)] at hE
+  · intro i
+    rw [Presieve.ofArrows_pUnit]
+    exact K.mem_coverings_of_isIso _
+
+lemma mem_iff_of_iso {K : Precoverage C} [K.IsStableUnderComposition] [K.HasIsos] {X : C}
+    {E F : PreZeroHypercover.{w} X} (e : E ≅ F) :
+    E.presieve₀ ∈ K X ↔ F.presieve₀ ∈ K X :=
+  ⟨fun h ↦ PreZeroHypercover.mem_of_iso e h, fun h ↦ PreZeroHypercover.mem_of_iso e.symm h⟩
+
+/-- Compose a pre-`0`-hypercover with a morphism on the right. -/
+@[simps]
+def pushforward {X Y : C} (f : X ⟶ Y) (E : PreZeroHypercover.{w} X) :
+    PreZeroHypercover.{w} Y where
+  I₀ := E.I₀
+  X := E.X
+  f i := E.f i ≫ f
+
+lemma presieve₀_pushforward {X Y : C} (f : X ⟶ Y) (E : PreZeroHypercover.{w} X) :
+    (E.pushforward f).presieve₀ = E.presieve₀.pushforward f := by
+  simp [presieve₀, Presieve.pushforward_ofArrows, pushforward]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Pushforward along a morphism is the same as refining the singleton pre-`0`-hypercover. -/
+@[simps!]
+def pushforwardIsoBind {X Y : C} (f : X ⟶ Y) (E : PreZeroHypercover.{w} X) :
+    E.pushforward f ≅ (singleton f).bind fun _ ↦ E :=
+  isoMk ((Equiv.uniqueSigma fun i ↦ E.I₀).symm) (fun _ ↦ Iso.refl _)
+
 end Category
 
 section Functoriality
@@ -727,6 +777,16 @@ def weaken {K L : Precoverage C} {X : C} (E : Precoverage.ZeroHypercover K X) (h
     Precoverage.ZeroHypercover L X where
   __ := E
   mem₀ := h _ E.mem₀
+
+/-- Compose a `0`-hypercover with a morphism on the right. -/
+@[simps toPreZeroHypercover]
+def pushforward [J.IsStableUnderComposition] [J.HasIsos] {X Y : C} (f : X ⟶ Y)
+    (hf : .singleton f ∈ J _) (E : ZeroHypercover.{w} J X) :
+    ZeroHypercover.{w} J Y where
+  __ := E.toPreZeroHypercover.pushforward f
+  mem₀ := by
+    rw [PreZeroHypercover.mem_iff_of_iso (E.pushforwardIsoBind _)]
+    exact ((ZeroHypercover.singleton f hf).bind _).mem₀
 
 instance (K : Precoverage C) [K.HasPullbacks] {X Y : C} (E : K.ZeroHypercover X) (f : Y ⟶ X) :
     E.presieve₀.HasPullbacks f :=

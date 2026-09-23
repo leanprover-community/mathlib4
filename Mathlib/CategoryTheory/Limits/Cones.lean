@@ -151,12 +151,10 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
   }⟩
 
 set_option backward.defeqAttrib.useBackward true in
-@[to_dual (attr := reassoc (attr := simp))]
+@[to_dual (attr := reassoc (attr := simp), elementwise)]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
   simpa using (c.π.naturality f).symm
-
-attribute [elementwise] Cocone.w Cone.w
 
 end
 

@@ -49,6 +49,7 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 
 @[expose] public section
 
+universe u
 
 open Filter Function Order Set
 
@@ -344,6 +345,14 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
     rcases h U with ⟨Us, hUs, rfl⟩
     rcases mem_sSup.1 hx with ⟨U, Us, xU⟩
     exact ⟨U, hUs Us, xU, le_sSup Us⟩
+
+lemma IsBasis.exists_iSup_eq {X : Type u} [TopologicalSpace X] {ι : Type*}
+    {U : ι → TopologicalSpace.Opens X} (hU : TopologicalSpace.Opens.IsBasis (Set.range U))
+    (W : TopologicalSpace.Opens X) : ∃ (κ : Type u) (a : κ → ι), W = ⨆ (k : κ), U (a k) := by
+  obtain ⟨Us, hsub, hUs⟩ := Opens.isBasis_iff_cover.mp hU W
+  choose a ha using hsub
+  use Us, fun i ↦ a i.2
+  simp [hUs, ha, sSup_eq_iSup' Us]
 
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
   it is a finite union of some elements in the basis -/

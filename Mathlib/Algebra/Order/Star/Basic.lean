@@ -81,6 +81,24 @@ class StarOrderedRing (R : Type*) [NonUnitalSemiring R] [PartialOrder R] [StarRi
   le_iff :
     ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
 
+/-- A class to encode that self-adjoint elements may be expressed as the
+difference of nonnegative elements. This is satisfied by any type with a
+`NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint` instance.
+However, it can also be satisfied by continuous linear functionals equipped
+with the intrinsic star operation.
+
+This type class can be used to guarantee `PositiveLinearMap` is a `StarHomClass`. -/
+class SelfAdjointDecompose (R : Type*) [AddGroup R] [Star R]
+    [PartialOrder R] where
+  /-- Every self-adjoint element is the difference of nonnegative elements. -/
+  exists_nonneg_sub_nonneg {a : R} (ha : IsSelfAdjoint a) :
+    ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c
+
+lemma IsSelfAdjoint.exists_nonneg_sub_nonneg {R : Type*} [AddGroup R] [Star R]
+    [PartialOrder R] [SelfAdjointDecompose R] {a : R} (ha : IsSelfAdjoint a) :
+    ∃ (b c : R), 0 ≤ b ∧ 0 ≤ c ∧ a = b - c :=
+  SelfAdjointDecompose.exists_nonneg_sub_nonneg ha
+
 namespace StarOrderedRing
 section NonUnitalSemiring
 variable [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
@@ -451,6 +469,24 @@ instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S
     have f_inv_f (r : R) : f_inv (f r) = r := EquivLike.inv_apply_apply f r
     rw [← f_inv_f x, ← f_inv_f y]
     exact NonUnitalStarRingHom.map_le_map_of_map_star f_inv h
+
+/-- While `IsSelfAdjoint.map` assumes the map is star-preserving, this lemma instead assumes the
+map is an order-preserving additive map from a space where self-adjoint elements can be expressed as
+differences of nonnegative elemens, and whose codomain is a star-ordered ring. When such maps are
+linear over `ℂ`, they are also star-preserving, and this lemma is used to establish that one by
+splitting into real and imaginary parts. -/
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+lemma IsSelfAdjoint.map' {F E R : Type*} [AddCommGroup E] [PartialOrder E] [StarAddMonoid E]
+    [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+    [SelfAdjointDecompose E] [FunLike F E R] [OrderHomClass F E R] [AddMonoidHomClass F E R]
+    {a : E} (ha : IsSelfAdjoint a) (f : F) :
+    IsSelfAdjoint (f a) := by
+  obtain ⟨b, c, hb, hc, rfl⟩ := ha.exists_nonneg_sub_nonneg
+  have h₁ := OrderHomClass.mono f hb
+  have h₂ := OrderHomClass.mono f hc
+  cfc_tac
+
+@[deprecated (since := "2026-06-12")] alias map_isSelfAdjoint := IsSelfAdjoint.map'
 
 end OrderClass
 

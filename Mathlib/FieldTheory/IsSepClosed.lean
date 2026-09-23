@@ -6,6 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 # Separably Closed Field
@@ -311,3 +312,43 @@ noncomputable def equiv : L ≃ₐ[K] M :=
     (IsSepClosed.lift : L →ₐ[K] M) (IsSepClosed.lift : M →ₐ[K] L)).1
 
 end IsSepClosure
+
+section separableClosure
+
+variable (F E : Type*) [Field F] [Field E] [Algebra F E]
+
+/-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
+normal and separable) over `F`. -/
+@[stacks 0EXK]
+instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
+  to_isSeparable := separableClosure.isSeparable F E
+  to_normal := by
+    rw [← separableClosure.normalClosure_eq_self]
+    exact normalClosure.normal F _ E
+
+/-- If `E / F` is a field extension and `E` is separably closed, then the separable closure
+of `F` in `E` is equal to `F` if and only if `F` is separably closed. -/
+theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
+    separableClosure F E = ⊥ ↔ IsSepClosed F := by
+  refine ⟨fun h ↦ IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_,
+    fun _ ↦ IntermediateField.eq_bot_of_isSepClosed_of_isSeparable _⟩
+  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
+  obtain ⟨x, rfl⟩ := h ▸ mem_separableClosure_iff.2 (hsep.of_dvd <| minpoly.dvd _ x hx)
+  exact ⟨x, by simpa [Algebra.ofId_apply] using hx⟩
+
+/-- If `E` is separably closed, then the separable closure of `F` in `E` is an absolute
+separable closure of `F`. -/
+instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
+  ⟨(IsSepClosed.separableClosure_eq_bot_iff _ E).mp (separableClosure.separableClosure_eq_bot F E),
+    isSeparable F E⟩
+
+/-- The absolute separable closure is defined to be the relative separable closure inside the
+algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
+`separableClosure.isSepClosure`, and it is Galois (`IsGalois`) by `separableClosure.isGalois`
+or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
+abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
+
+instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
+  (inferInstance : IsSepClosure F (SeparableClosure F)).sep_closed
+
+end separableClosure

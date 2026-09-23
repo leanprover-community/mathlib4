@@ -149,20 +149,64 @@ namespace Scheme
 
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
 protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
-deriving Category, HasPullbacks
+deriving Category, HasPullbacks, HasFiniteLimits
 
 variable (X : Scheme.{u})
 
-instance (Y : X.Etale) : Etale Y.hom := Y.prop
+set_option backward.defeqAttrib.useBackward true in
+instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop
+
+instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
+  have : Etale (f.left ≫ Y.hom) := by rw [CategoryTheory.Over.w]; infer_instance
+  exact Etale.of_comp f.left Y.hom
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @Etale ⊤ X
-deriving Functor.Full, Functor.Faithful
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
+
+-- Note: using `deriving Functor.Full/Faithful` in the declaration of `Etale.forget`
+-- would "succeed", but it seems it would fail to create the next two instances
+instance : (Etale.forget X).Full :=
+  (Etale.forgetFullyFaithful X).full
+
+instance : (Etale.forget X).Faithful :=
+  (Etale.forgetFullyFaithful X).faithful
+
+variable {X} in
+/-- Constructor for objects in the étale site of a scheme `X`: it takes
+an étale morphism `f : Y ⟶ X` as an input. -/
+abbrev Etale.mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] : X.Etale :=
+  MorphismProperty.Over.mk _ f inferInstance
+
+variable {X} in
+@[simp]
+lemma Etale.forget_mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] :
+    (Etale.forget X).obj (.mk f) = Over.mk f := rfl
+
+@[simp]
+lemma Etale.forget_obj_left (Y : X.Etale) :
+    ((Etale.forget X).obj Y).left = Y.left := rfl
+
+@[simp]
+lemma Etale.forget_obj_hom (Y : X.Etale) :
+    ((Etale.forget X).obj Y).hom = Y.hom := rfl
+
+instance (Y : X.Etale) : Etale (Y.left ↘ X) := Y.prop
+
+/-- Induction principle for the objects of the small étale site of a scheme. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def Etale.rec {motive : X.Etale → Sort*}
+    (mk : ∀ (Y : Scheme.{u}) (f : Y ⟶ X) (_ : Etale f), motive (Etale.mk f))
+    (T : X.Etale) :
+    motive T :=
+  mk _ _ T.prop
+
+instance : PreservesFiniteLimits (Etale.forget X) :=
+  inferInstanceAs (PreservesFiniteLimits (MorphismProperty.Over.forget _ ⊤ X))
 
 end Scheme
 

@@ -186,3 +186,23 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 -/
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra.lean):  title."
+
+#guard_msgs in
+#check_title "feat(ModularForm): E2 is bounded at ImInfty"
+
+#guard_msgs in
+#check_title "feat(ModuleForm): 2E is bounded at ImInfty"
+
+#guard_msgs in
+#check_title "feat(ModuleForm): 2e is less than 6"
+
+/-- info: Message: 'error: the PR subject should be lowercased' -/
+#guard_msgs in
+#check_title "feat(ModuleForm): W3c"
+
+#guard_msgs in
+#check_title "feat(ModuleForm): W3C"
+
+/-- info: Message: 'error: the PR subject should be lowercased' -/
+#guard_msgs in
+#check_title "feat(ModuleForm): A new lemma"

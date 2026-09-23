@@ -29,36 +29,37 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 section MFDerivFDeriv
 
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
-    UniqueMDiffWithinAt 𝓘(𝕜, E) s x ↔ UniqueDiffWithinAt 𝕜 s x := by
+    UniqueMDiffAt[s] x ↔ UniqueDiffWithinAt 𝕜 s x := by
   simp only [UniqueMDiffWithinAt, mfld_simps]
 
 alias ⟨UniqueMDiffWithinAt.uniqueDiffWithinAt, UniqueDiffWithinAt.uniqueMDiffWithinAt⟩ :=
   uniqueMDiffWithinAt_iff_uniqueDiffWithinAt
 
-theorem uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiffOn 𝓘(𝕜, E) s ↔ UniqueDiffOn 𝕜 s := by
+theorem uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiff[s] ↔ UniqueDiffOn 𝕜 s := by
   simp [UniqueMDiffOn, UniqueDiffOn, uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
 
 alias ⟨UniqueMDiffOn.uniqueDiffOn, UniqueDiffOn.uniqueMDiffOn⟩ := uniqueMDiffOn_iff_uniqueDiffOn
 
 theorem ModelWithCorners.uniqueMDiffOn {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) : UniqueMDiffOn 𝓘(𝕜, E) (Set.range I) :=
+    (I : ModelWithCorners 𝕜 E H) : UniqueMDiff[Set.range I] :=
   I.uniqueDiffOn.uniqueMDiffOn
 
 @[simp, mfld_simps]
 theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl
 
+variable {f' : TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, E') (f x)}
+
 set_option backward.isDefEq.respectTransparency false in
-theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt {f'} :
-    HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x f' ↔ HasFDerivWithinAt f f' s x := by
+theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt :
+    HasMFDerivAt[s] f x f' ↔ HasFDerivWithinAt f f' s x := by
   simpa only [HasMFDerivWithinAt, and_iff_right_iff_imp, mfld_simps] using
     HasFDerivWithinAt.continuousWithinAt
 
 alias ⟨HasMFDerivWithinAt.hasFDerivWithinAt, HasFDerivWithinAt.hasMFDerivWithinAt⟩ :=
   hasMFDerivWithinAt_iff_hasFDerivWithinAt
 
-theorem hasMFDerivAt_iff_hasFDerivAt {f'} :
-    HasMFDerivAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x f' ↔ HasFDerivAt f f' x := by
+theorem hasMFDerivAt_iff_hasFDerivAt : HasMFDerivAt% f x f' ↔ HasFDerivAt f f' x := by
   rw [← hasMFDerivWithinAt_univ, hasMFDerivWithinAt_iff_hasFDerivWithinAt, hasFDerivWithinAt_univ]
 
 alias ⟨HasMFDerivAt.hasFDerivAt, HasFDerivAt.hasMFDerivAt⟩ := hasMFDerivAt_iff_hasFDerivAt

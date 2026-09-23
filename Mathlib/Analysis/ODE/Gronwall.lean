@@ -174,7 +174,7 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
   simp only [dist_eq_norm] at ha ⊢
   have h_deriv : ∀ t ∈ Ico a b, HasDerivWithinAt (fun t => f t - g t) (f' t - g' t) (Ici t) t :=
     fun t ht => (hf' t ht).sub (hg' t ht)
-  apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
+  apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.fun_sub hg) h_deriv ha
   intro t ht
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
   have := (hv t ht).dist_le_mul _ (hfs t ht) _ (hgs t ht)

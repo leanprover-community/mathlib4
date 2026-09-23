@@ -218,12 +218,12 @@ theorem openSegment_eq_image' (x y : E) :
 
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
-  convert! segment_eq_image 𝕜 x y using 2
+  convert segment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
-  convert! openSegment_eq_image 𝕜 x y using 2
+  convert openSegment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :

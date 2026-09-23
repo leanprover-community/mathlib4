@@ -109,7 +109,6 @@ short complex `c₁.pt ⟶ c₂.pt ⟶ c₃.pt`. -/
 @[simps]
 def colim.mapShortComplex : ShortComplex C :=
   ShortComplex.mk f g (hc₁.hom_ext (fun j ↦ by
-    dsimp
     rw [reassoc_of% (hf j), hg j, comp_zero, ← NatTrans.comp_app_assoc, S.zero,
       zero_app, zero_comp]))
 

@@ -51,7 +51,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
       let w : K := K.orthogonalProjectionOnto x
       let v := x - w
       have : ⟪v, w⟫ = 0 := starProjection_inner_eq_zero x w w.2
-      convert! norm_sub_eq_norm_add this using 2
+      convert norm_sub_eq_norm_add this
       · dsimp [reflectionLinearEquiv, v, w]
         abel
       · simp only [v, add_sub_cancel] }

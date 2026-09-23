@@ -119,6 +119,14 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
   rw [← image_univ]
   exact hf.isChain_image (isChain_of_trichotomous _)
 
+lemma Antitone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Antitone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
+  hf.dual_left.isChain_image hs.symm
+
+theorem Antitone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+    IsChain (· ≤ ·) (range f) :=
+  hf.dual_left.isChain_range
+
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
@@ -221,6 +229,15 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
   exact ⟨z', mem5, _root_.trans H1 H3, _root_.trans H2 H3, H4⟩
 
 end Total
+
+/-- A chain in a partial order is a linear order. -/
+@[implicit_reducible]
+def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : IsChain (· ≤ ·) s) :
+    LinearOrder s where
+  le_total := by
+    rintro ⟨a, ha⟩ ⟨b, hb⟩
+    exact hs.total ha hb
+  toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
 
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by

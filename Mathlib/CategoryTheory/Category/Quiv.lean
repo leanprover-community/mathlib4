@@ -22,8 +22,8 @@ universe v u v₁ v₂ v₃ u₁ u₂ u₃ w
 namespace CategoryTheory
 
 -- intended to be used with explicit universe parameters
+set_option linter.checkUnivs false in
 /-- Category of quivers. -/
-@[nolint checkUnivs]
 def Quiv :=
   Bundled Quiver.{v, u}
 

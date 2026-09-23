@@ -132,7 +132,7 @@ run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
     #[`linter.checkInitImports, `linter.allScriptsDocumented]
   let env ← getEnv
-  let ls := linterSetsExt.getEntries env
+  let ls := (linterSetsExt.getState env).localEntries
   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
     throwError m!"'linter.mathlibStandardSet' is not defined."
   let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |

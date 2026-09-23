@@ -174,7 +174,7 @@ theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) :=
 /-- The projection from the product of localizations at primes to the product of
 localizations at maximal ideals. -/
 def piLocalizationToMaximal : PiLocalization R →ₐ[R] MaximalSpectrum.PiLocalization R :=
-  Pi.algHom _ _  fun I ↦ Pi.evalAlgHom _ _ I.toPrimeSpectrum
+  AlgHom.pi fun I ↦ Pi.evalAlgHom _ _ I.toPrimeSpectrum
 
 open scoped Classical in
 theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) :=

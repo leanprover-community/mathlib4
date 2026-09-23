@@ -99,8 +99,7 @@ lemma FormalMultilinearSeries.iteratedFDerivSeries_eq_zero {k n : ℕ}
       ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
       LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply,
-      continuousMultilinearCurryLeftEquiv_symm_apply, ContinuousMultilinearMap.zero_apply,
-      _root_.zero_apply,
+      continuousMultilinearCurryLeftEquiv_symm_apply, _root_.zero_apply,
       derivSeries_eq_zero _ (ih (p.congr_zero (Nat.succ_add_eq_add_succ _ _).symm h))]
 
 /-- If the `n`-th term in a power series is zero, then the `n`-th derivative of the corresponding
@@ -111,8 +110,7 @@ lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_zero
     iteratedFDerivWithin 𝕜 n f s x = 0 := by
   have : iteratedFDerivWithin 𝕜 n f s x = p.iteratedFDerivSeries n 0 (fun _ ↦ 0) :=
     ((h.iteratedFDerivWithin h' n hu hx).coeff_zero _).symm
-  rw [this, p.iteratedFDerivSeries_eq_zero (p.congr_zero (Nat.zero_add n).symm hn),
-    ContinuousMultilinearMap.zero_apply]
+  rw [this, p.iteratedFDerivSeries_eq_zero (p.congr_zero (Nat.zero_add n).symm hn), zero_apply]
 
 lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
     {n : ℕ} (f : E [×n]→L[𝕜] F) (x : E) (v : Fin n → E) :
@@ -122,7 +120,7 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   change iteratedFDeriv 𝕜 n (f ∘ g) x v = _
   rw [ContinuousLinearMap.iteratedFDeriv_comp_right _ f.contDiff _ le_rfl, f.iteratedFDeriv_eq]
   simp only [ContinuousMultilinearMap.iteratedFDeriv,
-    ContinuousMultilinearMap.compContinuousLinearMap_apply, ContinuousMultilinearMap.sum_apply,
+    ContinuousMultilinearMap.compContinuousLinearMap_apply, sum_apply,
     ContinuousMultilinearMap.iteratedFDerivComponent_apply, Set.mem_range, Pi.compRightL_apply]
   rw [← sum_comp (Equiv.embeddingEquivOfFinite (Fin n))]
   congr with σ

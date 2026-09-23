@@ -177,7 +177,7 @@ section Fubini
 variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
-  {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
+  {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopologyEither W V]
 
 variable {σ : ℂ →+* ℂ} [RingHomIsometric σ]
 

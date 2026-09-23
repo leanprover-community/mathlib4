@@ -104,14 +104,18 @@ section Aliases
 we provide match patterns that preserve the defeq correctly in their type. -/
 
 variable {M} [Semigroup M] (a : Stream' M) (m : M) (h : FP a.tail m)
+
+set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.head'`. -/
 @[to_additive (attr := match_pattern, nolint defLemma)
   /-- Constructor for `FS`. This is the preferred spelling over `FS.head'`. -/]
 abbrev FP.head : a.head ∈ FP a := FP.head' a
+set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.tail'`. -/
 @[to_additive (attr := match_pattern, nolint defLemma)
   /-- Constructor for `FS`. This is the preferred spelling over `FS.tail'`. -/]
 abbrev FP.tail : m ∈ FP a := FP.tail' a m h
+set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.cons'`. -/
 @[to_additive (attr := match_pattern, nolint defLemma)
   /-- Constructor for `FS`. This is the preferred spelling over `FS.cons'`. -/]

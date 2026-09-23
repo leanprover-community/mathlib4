@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Connected.LocallyPathConnected
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.Analysis.Complex.Exponential
@@ -27,7 +27,7 @@ open Set
 
 namespace Complex
 
-variable {X : Type*} [TopologicalSpace X] [LocPathConnectedSpace X] {U : Set X}
+variable {X : Type*} [TopologicalSpace X] [LocallyPathConnectedSpace X] {U : Set X}
 
 /-- If `g : X → ℂ` defined on a locally path connected space
 is continuous on an open simply connected set `U` and `0 ∉ g '' U`,
@@ -39,7 +39,7 @@ theorem exists_continuousOn_eqOn_exp_comp (hUc : IsSimplyConnected U) (hUo : IsO
     ∃ f : X → ℂ, ContinuousOn f U ∧ EqOn (exp ∘ f) g U := by
   classical
   have := hUc.simplyConnectedSpace
-  have := hUo.locPathConnectedSpace
+  have := hUo.locallyPathConnectedSpace
   rcases hUc.nonempty with ⟨x₀, hx₀U⟩
   have hx₀ : g x₀ ≠ 0 := ne_of_mem_of_not_mem (mem_image_of_mem g hx₀U) hU₀
   lift x₀ to U using hx₀U

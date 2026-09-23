@@ -46,7 +46,7 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
     apply ofHom_injective
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
-    rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
+    erw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
     exact DFunLike.congr_fun eq (Quot.ι F j x)
   · set c' : Cocone F :=
       { pt := AddCommGrpCat.of (ULift (AddCircle (1 : ℚ)))

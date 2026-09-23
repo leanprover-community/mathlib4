@@ -33,6 +33,12 @@ on:
         # federated credential is scoped to; it must match the writer `cache_application_id`.
         type: string
         required: true
+      publish_cache:
+        # On a successful build, publish this run's `.ltar` set as `cache-snapshot`.
+        # Set by callers ONLY for the master-`push` build — the single producer.
+        type: boolean
+        required: false
+        default: false
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -51,7 +57,6 @@ jobs:
       archive-outcome: ${{ steps.archive.outcome }}
       counterexamples-outcome: ${{ steps.counterexamples.outcome }}
       cache-staging-has-files: ${{ steps.cache_staging_check.outputs.has_files }}
-      get-cache-outcome: ${{ steps.get.outcome }}
       lint-outcome: ${{ steps.lint.outcome }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
@@ -313,95 +318,12 @@ jobs:
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
-      - name: get cache (1/3 - setup and initial fetch)
-        id: get_cache_part1_setup
-        shell: bash # only runs `cache get` from `tools-branch`, so doesn't need to be inside landrun
-        run: |
-          cd pr-branch
-          echo "Removing old Mathlib build directories prior to cache fetch..."
-          rm -rf .lake/build/lib/lean/Mathlib
-
-          # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          echo "Attempting to fetch olean for Mathlib/Init.lean from cache..."
-          ../tools-branch/.lake/build/bin/cache get Mathlib/Init.lean
-
-      - name: get cache (2/3 - test Mathlib.Init cache)
-        id: get_cache_part2_test
-        continue-on-error: true # Allow workflow to proceed to Part 3 to check outcome
-        # This step uses the job's default shell, which is landrun-wrapped bash
-        run: |
-          cd pr-branch
-
-          echo "Attempting: lake build --no-build -v Mathlib.Init (this runs under landrun)"
-          lake build --no-build -v Mathlib.Init
-
-      - name: get cache (3/3 - finalize cache operation)
-        id: get
-        shell: bash # only runs git and `cache get` from `tools-branch`, so doesn't need to be inside landrun
-        env:
-          BEFORE_SHA: ${{ github.event.before || '' }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        run: |
-          cd pr-branch
-          if [[ "${{ steps.get_cache_part2_test.outcome }}" != "success" ]]; then
-            echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
-            echo "No cache for 'Mathlib.Init' available or it could not be prepared."
-            exit 0
-          fi
-
-          ORIG_SHA="$(git rev-parse HEAD)"
-          PREV_SHA=""
-          PREV_SHA_SOURCE=""
-
-          # When a ref is newly created, github.event.before can be all-zero.
-          if [[ "$BEFORE_SHA" =~ ^0{40}$ ]]; then
-            BEFORE_SHA=""
-          fi
-
-          if [[ -n "$BEFORE_SHA" ]]; then
-            PREV_SHA="$BEFORE_SHA"
-            PREV_SHA_SOURCE="github.event.before"
-          elif [[ -n "$BASE_SHA" ]]; then
-            PREV_SHA="$BASE_SHA"
-            PREV_SHA_SOURCE="pull_request.base.sha"
-          else
-            PREV_SHA="$(git rev-parse --verify --quiet HEAD^ || true)"
-            if [[ -n "$PREV_SHA" ]]; then
-              PREV_SHA_SOURCE="HEAD^"
-            fi
-          fi
-
-          if [[ -n "$PREV_SHA" ]]; then
-            # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
-            echo "Warming up cache using previous commit: $PREV_SHA (source: $PREV_SHA_SOURCE)"
-            if git cat-file -e "$PREV_SHA^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PREV_SHA"; then
-              # Skip warmup if the previous commit uses a different toolchain
-              PREV_TOOLCHAIN=$(git show "$PREV_SHA:lean-toolchain" 2>/dev/null || true)
-              if [[ "$PREV_TOOLCHAIN" != "$(cat lean-toolchain)" ]]; then
-                echo "Previous commit $PREV_SHA uses a different toolchain ($PREV_TOOLCHAIN); skipping warmup."
-              else
-                git checkout "$PREV_SHA"
-                ../tools-branch/.lake/build/bin/cache get
-                # Run again with --repo, to ensure we actually get the oleans.
-                ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
-
-                echo "Switching back to branch head"
-                git checkout "$ORIG_SHA"
-              fi
-            else
-              echo "Could not fetch $PREV_SHA; skipping parent warmup cache fetch."
-            fi
-          else
-            echo "No previous commit candidate found; skipping parent warmup cache fetch."
-          fi
-
-          echo "Fetching all remaining cache..."
-
-          ../tools-branch/.lake/build/bin/cache get
-
-          # Run again with --repo, to ensure we actually get the oleans.
-          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
+      # Get this commit's oleans into the local cache — see the action for the steps.
+      - name: Get cache
+        uses: ./workflow-actions/.github/actions/get-cache
+        with:
+          working_directory: pr-branch
+          cache_bin: ../tools-branch/.lake/build/bin/cache
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -521,6 +443,30 @@ jobs:
         with:
           name: cache-staging
           path: cache-staging/
+
+      # Prune to this commit's `.ltar` set so the published snapshot is exactly master's
+      # current cache (the local dir also holds the previous snapshot it warmed from).
+      - name: prune local cache to this commit's set
+        if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
+        continue-on-error: true # best-effort; never fail the build
+        shell: bash # runs the trusted tools-branch `cache` binary, so no landrun needed
+        run: |
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache clean
+
+      # Publish this run's pruned `.ltar` set as `cache-snapshot` for other runs to warm
+      # from. Already on disk (no Azure egress) and already zstd-compressed (skip
+      # recompression); retention covers how far back a PR's merge-base can be matched.
+      - name: upload cache snapshot warming artifact
+        if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
+        continue-on-error: true # best-effort; never fail the build
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cache-snapshot
+          path: /home/lean/.cache/mathlib/*.ltar
+          compression-level: 0
+          retention-days: 14
+          if-no-files-found: warn
 
       - name: Check if building Archive or Counterexamples failed
         if: steps.archive.outcome == 'failure' || steps.counterexamples.outcome == 'failure'
@@ -748,21 +694,8 @@ jobs:
           # $MATHLIB_CACHE_PRIMARY is set by the `Compute cache trust dispatch`
           # step above, from the shared composite action that owns the (repo,
           # branch) → container mapping for both this job and the read-side
-          # jobs (build, post_steps).
-          # Dual-write to the legacy `mathlib4` container first, then the
-          # primary. Only master CI dual-writes: older cache tools read only
-          # `legacy`, so it must stay fresh for them, while forks and nightly
-          # never write `legacy` (keeping low-trust artifacts out of what those
-          # readers trust). Writing `legacy` first keeps it a superset of
-          # `master` for as long as we dual-write: with `set -e`, a failed
-          # legacy write aborts the step before `master` gets artifacts that
-          # `legacy` lacks. (`put-staged` exits non-zero on real upload
-          # failures; already-present 409/412 blobs are not failures.)
-          if [ "$MATHLIB_CACHE_PRIMARY" = "master" ]; then
-            echo "Dual-writing to legacy container first (keeps legacy a superset of master)..."
-            lake env "$CACHE_BIN" put-staged --container=legacy --staging-dir="cache-staging" --repo="$REPO"
-          fi
-
+          # jobs (build, post_steps). Each job writes only into its own trust-level
+          # container.
           echo "Uploading cache to Azure (container: $MATHLIB_CACHE_PRIMARY)..."
           lake env "$CACHE_BIN" put-staged --container="$MATHLIB_CACHE_PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
 

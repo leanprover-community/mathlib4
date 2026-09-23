@@ -51,7 +51,6 @@ def mgraph (f : G →* H) : Submonoid (G × H) where
 -- TODO: Can `to_additive` be smarter about `simps`?
 attribute [simps! coe] mgraph
 attribute [simps! coe] AddMonoidHom.mgraph
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_mgraph
 
 @[to_additive (attr := simp)]
@@ -163,7 +162,6 @@ def graph (f : G →* H) : Subgroup (G × H) where
 -- TODO: Can `to_additive` be smarter about `simps`?
 attribute [simps! coe toSubmonoid] graph
 attribute [simps! coe toAddSubmonoid] AddMonoidHom.graph
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_graph graph_toSubmonoid
 
 @[to_additive]

@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
@@ -545,6 +545,38 @@ theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ �
 theorem eq_liftAlgHom_comp_mkAlgHom {s : A → A → Prop} (f : RingQuot s →ₐ[S] B) :
     f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ :=
   liftAlgHom_unique S (f.comp (mkAlgHom S s)) (fun _ _ h ↦ congr_arg (⇑f) (mkAlgHom_rel S h)) f rfl
+
+open scoped Function -- required for scoped `on` notation
+
+variable {S}
+
+/-- If two `S`-algebras are `S`-equivalent and their quotients by a relation `rel` are defined,
+then their quotients are also `S`-equivalent.
+
+(Special case of the third isomorphism theorem.) -/
+def algEquivQuotAlgEquiv (f : A ≃ₐ[S] B) (rel : A → A → Prop) :
+    RingQuot rel ≃ₐ[S] RingQuot (rel on f.symm) :=
+  AlgEquiv.ofAlgHom
+    (RingQuot.liftAlgHom S (s := rel)
+      ⟨AlgHom.comp (RingQuot.mkAlgHom S (rel on f.symm)) f,
+      fun x y h_rel ↦ by
+        apply RingQuot.mkAlgHom_rel
+        simpa [Function.onFun]⟩)
+    ((RingQuot.liftAlgHom S (s := rel on f.symm)
+      ⟨AlgHom.comp (RingQuot.mkAlgHom S rel) f.symm,
+      fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
+    (by ext b; simp) (by ext a; simp)
+
+/-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
+then their quotients are also equivalent.
+
+(Special case of `algEquivQuotAlgEquiv` when `S = ℕ`, which in turn is a special
+case of the third isomorphism theorem.) -/
+def equivQuotEquiv (f : A ≃+* B) (rel : A → A → Prop) :
+    RingQuot rel ≃+* RingQuot (rel on f.symm) :=
+  let f_alg : A ≃ₐ[ℕ] B :=
+    AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
+  algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
 
 end Algebra
 

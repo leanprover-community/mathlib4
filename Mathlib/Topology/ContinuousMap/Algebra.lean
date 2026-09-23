@@ -492,8 +492,6 @@ end ContinuousMap
 
 end RingStructure
 
-attribute [local ext] Subtype.eq
-
 section ModuleStructure
 
 /-!

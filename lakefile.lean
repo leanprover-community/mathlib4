@@ -50,6 +50,12 @@ package mathlib where
   testDriver := "MathlibTest"
   lintDriver := "batteries/runLinter"
   lintDriverArgs := #["Mathlib"]
+  -- A version of Mathlib only supports the toolchain it is built with.
+  fixedToolchain := true
+  -- Mathlib oleans are built on Linux CI and used across platforms.
+  platformIndependent := true
+  -- Mathlib currently expects artifacts to be in the build directory.
+  restoreAllArtifacts := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,

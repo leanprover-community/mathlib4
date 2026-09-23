@@ -146,6 +146,7 @@ variable {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
   {c₃ : Cocone <| uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)}
   (hc₃ : IsColimit c₃)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Characterize the inverse direction of the isomorphism
 `PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
@@ -231,10 +232,9 @@ instance of_preservesColimits_in_each_variable
           apply (P j₁).hom_ext
           intro j₂
           haveI := (P j₁).fac s j₂
+          simp only [Functor.mapCocone_pt, Functor.mapCocone_ι_app, Q₀, s] at this
           simp only [Functor.mapCocone_pt,
-            Functor.const_obj_obj, Functor.mapCocone_ι_app, Q₀, s] at this
-          simp only [Functor.mapCocone_pt,
-            Functor.const_obj_obj, Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s])
+            Functor.mapCocone_ι_app, NatTrans.naturality, this, Q₀, s])
     ⟨IsColimit.ofCoconeUncurry P <| IsColimit.precomposeHomEquiv E₀ _ <|
       IsColimit.ofIsoColimit (isColimitOfPreserves _ hc₁) E₁.symm⟩
 

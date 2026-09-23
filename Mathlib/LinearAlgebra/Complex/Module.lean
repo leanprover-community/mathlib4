@@ -491,6 +491,19 @@ lemma ComplexStarModule.ext_iff {x y : A} : x = y ↔ ℜ x = ℜ y ∧ ℑ x = 
   mp := by grind
   mpr h := ext h.1 h.2
 
+section StarHomClass
+
+variable {B F : Type*} [AddCommGroup B] [Module ℂ B] [StarAddMonoid B] [StarModule ℂ B]
+    [FunLike F A B] [StarHomClass F A B] [LinearMapClass F ℂ A B]
+
+lemma map_realPart (f : F) (x : A) : f (ℜ x) = ℜ (f x) := by
+  simp [realPart_apply_coe, ← Complex.coe_smul, map_star]
+
+lemma map_imaginaryPart (f : F) (x : A) : f (ℑ x) = ℑ (f x) := by
+  simp [imaginaryPart_apply_coe, ← Complex.coe_smul, map_star]
+
+end StarHomClass
+
 @[simp]
 theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := by
   ext x
@@ -637,5 +650,15 @@ lemma mem_unitary_iff_isStarNormal_and_realPart_sq_add_imaginaryPart_sq_eq_one [
   · have : IsStarNormal x := ⟨h.trans h'.symm⟩
     exact ⟨this, by simp [sq, ← star_mul_self_eq_realPart_sq_add_imaginaryPart_sq x, h]⟩
   · simp [← hx.star_comm_self.eq, star_mul_self_eq_realPart_sq_add_imaginaryPart_sq, ← sq, h]
+
+instance {F E A : Type*} [AddCommGroup E] [PartialOrder E]
+    [StarAddMonoid E] [SelfAdjointDecompose E] [Module ℂ E] [StarModule ℂ E]
+    [NonUnitalRing A] [PartialOrder A] [StarRing A]
+    [StarOrderedRing A] [Module ℂ A] [StarModule ℂ A]
+    [FunLike F E A] [OrderHomClass F E A] [LinearMapClass F ℂ E A] :
+    StarHomClass F E A where
+  map_star φ x := by
+    rw [← realPart_add_I_smul_imaginaryPart x]
+    simp [(ℜ x).2.map' φ, IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
 
 end RealImaginaryPart

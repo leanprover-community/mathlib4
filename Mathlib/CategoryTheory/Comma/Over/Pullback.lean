@@ -87,6 +87,12 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
             · simp
             · simpa using (Over.w v).symm } }
 
+instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.map f).IsLeftAdjoint :=
+  (Over.mapPullbackAdj f).isLeftAdjoint
+
+instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.pullback f).IsRightAdjoint :=
+  (Over.mapPullbackAdj f).isRightAdjoint
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The pullback along an epi that's preserved under pullbacks is faithful.
 

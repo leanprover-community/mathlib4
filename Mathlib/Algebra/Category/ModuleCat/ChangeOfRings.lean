@@ -87,6 +87,17 @@ def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →
   obj := RestrictScalars.obj' f
   map := RestrictScalars.map' f
 
+@[simp]
+lemma smul_restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) (r : R)
+    (M : ModuleCat S) :
+    dsimp% ((ModuleCat.restrictScalars f).obj M).smul r = M.smul (f r) :=
+  rfl
+
+lemma forget₂_map_restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
+    {M N : ModuleCat S} (g : M ⟶ N) :
+    (forget₂ _ Ab).map ((ModuleCat.restrictScalars f).map g) = (forget₂ _ Ab).map g :=
+  rfl
+
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).Faithful where
   map_injective h := by
