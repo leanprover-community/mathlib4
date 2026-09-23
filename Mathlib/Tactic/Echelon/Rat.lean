@@ -26,7 +26,7 @@ namespace Mathlib.Tactic.Echelon
 Fraction values are accepted only in characteristic zero. -/
 def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
-  let r ← try some <$> Mathlib.Meta.NormNum.derive eQ catch _ => pure none
+  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
   if let some v := r.bind (·.toRat) then
     if v.den == 1 || charZero then
       return v
