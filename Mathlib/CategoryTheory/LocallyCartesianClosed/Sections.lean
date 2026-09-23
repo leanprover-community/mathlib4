@@ -38,7 +38,7 @@ variable (I : C) [Closed I]
 
 /-- The first leg of a cospan to define `sectionsObj` as a pullback in `C`. -/
 abbrev curryRightUnitorHom : 𝟙_ C ⟶ (I ⟶[C] I) :=
-  curry <| (ρ_ _).hom
+  curry (ρ_ _).hom
 
 variable {I}
 

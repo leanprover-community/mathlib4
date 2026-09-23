@@ -91,7 +91,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
     exact isUnit_C.mpr (inv_ne_zero <| leadingCoeff_ne_zero.mpr g_ne_0).isUnit
   let algeq :=
     (Subalgebra.equivOfEq _ _ <| integralClosure_eq_bot R _).trans
-      (Algebra.botEquivOfInjective <| IsFractionRing.injective R <| K)
+      (Algebra.botEquivOfInjective <| IsFractionRing.injective R K)
   have :
     (algebraMap R _).comp algeq.toAlgHom.toRingHom = (integralClosure R _).toSubring.subtype := by
     ext x; (conv_rhs => rw [← algeq.symm_apply_apply x]); rfl
