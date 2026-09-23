@@ -155,6 +155,15 @@ theorem bijOn_lambertWNegOne : BijOn W₋₁ (Ico (-(rexp 1)⁻¹) 0) (Iic (-1))
   obtain ⟨y, ⟨hy, hyx⟩, -⟩ := existsUnique_mem_Iic_mul_exp_eq_of_mem_Ico hx
   rwa [← hyx, lambertWNegOne_mul_exp_of_le hy]
 
+theorem bijOn_mul_exp_Ici : BijOn (fun y => y * rexp y) (Ici (-1)) (Ici (-(rexp 1)⁻¹)) :=
+  invOn_lambertWZero_mul_exp.bijOn (fun x _ => neg_exp_one_inv_le_mul_exp x)
+    fun _y hy => bijOn_lambertWZero.mapsTo hy
+
+theorem bijOn_mul_exp_Iic : BijOn (fun y => y * rexp y) (Iic (-1)) (Ico (-(rexp 1)⁻¹) 0) := by
+  refine invOn_lambertWNegOne_mul_exp.bijOn (fun x hx => ⟨neg_exp_one_inv_le_mul_exp x, ?_⟩)
+    fun y hy => bijOn_lambertWNegOne.mapsTo hy
+  simp [exp_pos x, mul_neg_iff, hx.trans_lt]
+
 theorem lambertWZero_mul_exp_lambertWZero_of_le (hx : -(rexp 1)⁻¹ ≤ x) :
     W₀ x * rexp (W₀ x) = x :=
   invOn_mul_exp_lambertWZero.left hx

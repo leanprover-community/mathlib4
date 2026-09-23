@@ -861,6 +861,23 @@ public theorem existsUnique_mem_range_mul_exp_eq (hz : z ∈ domain k) :
     existsUnique_mem_range_neg_one (by rwa [domain_of_ne_zero (by decide)] at hz),
     existsUnique_mem_range_of_ne hk hk' (by rwa [domain_of_ne_zero hk] at hz)]
 
+/-- TODO doc -/
+public protected theorem mapsTo_mul_exp_arg_add_im_eq :
+    MapsTo (fun w => w * cexp w) { w : ℂ | w.arg + w.im = π ∧ w.im > 0 }
+      (Iio (-(rexp 1)⁻¹) ×ℂ {0}) := by
+  intro w hw
+  have hw₀ : w ≠ 0 := fun nh => ne_of_gt hw.right (by simp [nh])
+  have hzr : w * cexp w = -rexp ((w + log w).re) :=
+    mul_exp_eq_of_arg_add_im_eq (i := 0) hw₀ (by simpa using hw.left)
+  have hzre : (w * cexp w).re = -rexp ((w + log w).re) := by
+    simpa only [neg_re, ofReal_re] using congr(($hzr).re)
+  have hzim : (w * cexp w).im = 0 := by
+    simpa only [neg_im, ofReal_im, neg_zero] using congr(($hzr).im)
+  refine ⟨?_, hzim⟩
+  by_contra hlt
+  exact ne_of_gt hw.right <| im_eq_zero_of_arg_add_im_eq_pi_of_mul_exp_mem hw.left
+    ⟨⟨le_of_not_gt hlt, hzre ▸ neg_lt_zero.mpr <| exp_pos (w + log w).re⟩, hzim⟩
+
 --  Public theorems about bijectivity.
 
 public theorem mul_exp_mem_domain (hw : w ∈ range k) : w * cexp w ∈ domain k := by

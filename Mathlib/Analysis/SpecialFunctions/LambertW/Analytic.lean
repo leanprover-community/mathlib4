@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
-public import Mathlib.Analysis.SpecialFunctions.LambertW.Basic
+public import Mathlib.Analysis.SpecialFunctions.LambertW.Real
 
 /-!
 # Analytic
@@ -57,10 +57,6 @@ namespace LambertW
 def branchCut (k : ℤ) : Set ℂ :=
   Iic (if k = 0 then -(rexp 1)⁻¹ else 0) ×ℂ {0}
 
--- /-- TODO doc -/
--- def LambertW.openBranchCut (k : ℤ) : Set ℂ :=
---   Iio (if k = 0 then -(rexp 1)⁻¹ else 0) ×ℂ {0}
-
 /-- TODO doc -/
 def slitPlane (k : ℤ) : Set ℂ :=
   (branchCut k)ᶜ
@@ -96,10 +92,7 @@ theorem zero_mem_slitPlane_iff : 0 ∈ slitPlane k ↔ k = 0 := by
   by_cases hk : k = 0 <;> simp [slitPlane, branchCut, mem_reProdIm, hk, Real.exp_pos]
 
 theorem slitPlane_subset_domain : slitPlane k ⊆ domain k := by
-  by_cases hk : k = 0
-  · simp [hk]
-  rw [domain_of_ne_zero hk, slitPlane, branchCut, ite_eq_right hk]
-  simp [mem_reProdIm]
+  by_cases hk : k = 0 <;> simp [slitPlane, branchCut, domain, hk, mem_reProdIm]
 
 theorem openRange_subset_range : openRange k ⊆ range k := by
   intro z
@@ -112,8 +105,7 @@ theorem openRange_subset_range : openRange k ⊆ range k := by
   simpa only [mem_range_iff_of_ne hk hk'] using fun ⟨hz1, hz2⟩ => ⟨hz1, hz2.le⟩
 
 theorem isOpen_domain : IsOpen (domain k) := by
-  change (if _ then _ else _ : Set ℂ) ∈ {y | IsOpen y}
-  simp [ite_mem]
+  by_cases hk : k = 0 <;> simp [domain, hk]
 
 theorem isClosed_branchCut : IsClosed (branchCut k) :=
   isClosed_Iic.reProdIm isClosed_singleton
@@ -147,8 +139,7 @@ private theorem isOpen_openRange_zero : IsOpen (openRange 0) := by
       rw [Complex.mem_slitPlane_iff, not_or, not_not, not_lt] at hs
       obtain ⟨hre, him⟩ := hs
       rcases lt_or_eq_of_le hre with hre | hre
-      · have : π + w.im < π := (arg_eq_pi_iff.mpr ⟨hre, him⟩) ▸ hidx.right
-        simp [him] at this
+      · grind [arg_eq_pi_iff]
       · exact Or.inr <| (Complex.ext (w := 0) hre him) ▸ Metric.mem_ball_self zero_lt_one
     · rw [mem_preimage, mem_singleton_iff] at him
       refine Or.inr <| mem_ball_zero_iff.mpr ?_
@@ -161,7 +152,7 @@ private theorem isOpen_openRange_zero : IsOpen (openRange 0) := by
   · obtain ⟨hre, him⟩ := Complex.arg_eq_pi_iff.mp harg
     refine Or.inr ⟨⟨?_, hre⟩, him⟩
     rw [Complex.ext (z := w) (w := w.re) rfl him, norm_real, norm_eq_abs, abs_of_neg hre] at hb
-    linarith
+    grind
   left
   replace harg : w.arg ∈ Ioo (-π) π := ⟨neg_pi_lt_arg w, lt_of_le_of_ne (arg_le_pi w) harg⟩
   rw [mem_ofPred, ← norm_mul_sin_arg]
@@ -182,8 +173,7 @@ private theorem isOpen_openRange_of_ne (hk : k ≠ 0) : IsOpen (openRange k) := 
   rw [mem_slitPlane_iff_arg, not_and_or, not_not, not_not] at nh
   rw [mem_ofPred] at hw
   rcases nh with nh | nh
-  · rw [arg_eq_pi_iff.mp nh |>.right, add_zero] at hw
-    simp [nh, field, sub_lt_iff_lt_add, one_add_one_eq_two] at hw
+  · simp [nh, field, arg_eq_pi_iff.mp nh |>.right] at hw
     norm_cast at hw
     omega
   · simp [nh, field, pi_pos, mul_neg_iff, pi_pos.not_gt] at hw
@@ -193,15 +183,87 @@ private theorem isOpen_openRange_of_ne (hk : k ≠ 0) : IsOpen (openRange k) := 
 theorem isOpen_openRange : IsOpen (openRange k) :=
   em (k = 0) |>.elim (fun hk => hk ▸ isOpen_openRange_zero) isOpen_openRange_of_ne
 
--- need this?
-theorem interior_range : interior (range k) = openRange k := by
-  sorry
+private theorem arg_mul_exp_eq_of_mem (hw : w ≠ 0)
+    (h : w.arg + w.im ∈ Ioc ((2 * k - 1) * π) ((2 * k + 1) * π)) :
+    (w * cexp w).arg = w.arg + w.im - k * (2 * π) := by
+  rw [← exp_log hw, ← exp_add, mul_comm, arg_exp, add_im, log_im, toIocMod_eq_iff, exp_log hw]
+  exact ⟨by grind [pi_pos], k, by ring⟩
 
 theorem mapsTo_lambertW_slitPlane : MapsTo (W_ k) (slitPlane k) (openRange k) := by
-  sorry
+  have Hw : MapsTo (W_ k) (domain k) (range k) := bijOn_lambertW_domain_range (k := k) |>.mapsTo
+  intro z hz
+  specialize Hw <| slitPlane_subset_domain hz
+  have hwz := lambertW_mul_exp_lambertW_of_mem_domain <| slitPlane_subset_domain hz
+  set w := W_ k z
+  by_contra nh
+  simp only [slitPlane, branchCut, mem_compl_iff, mem_reProdIm, mem_Iic, mem_singleton_iff,
+    not_and] at hz
+  rcases (show (k = 0 ∨ k = -1 ∨ (k ≠ 0 ∧ k ≠ -1)) by tauto) with rfl | rfl | ⟨hk, hk'⟩
+  · simp only [mem_range_zero_iff, openRange_zero, ite_true, mem_reProdIm, mem_union] at Hw nh hz
+    push _ ∈ _ at Hw nh
+    push +distrib ¬ _ at Hw nh hz
+    have hw1 : w.arg + w.im = π := by grind
+    have hw2 : w.im > 0 := by
+      rcases lt_trichotomy w.im 0 with hw2 | hw2 | hw2
+      · grind [arg_le_pi]
+      · simp only [hw2, add_zero] at hw1
+        simp [hw1, hw2, pi_pos, arg_eq_pi_iff.mp hw1 |>.left.not_ge] at Hw nh
+        have hw : w = -1 := by
+          apply Complex.ext
+          · grind [neg_re, one_re]
+          · simpa
+        simp [hw, exp_neg] at hwz
+        simp [← hwz, exp_re, normSq, exp_im] at hz
+      · exact hw2
+    have : z ∈ Iio (-(rexp 1)⁻¹) ×ℂ {0} :=
+      hwz ▸ Complex.LambertW.mapsTo_mul_exp_arg_add_im_eq ⟨hw1, hw2⟩
+    grind [mem_reProdIm]
+  all_goals have hw₀ : w ≠ 0 := by grind [zero_mem_range_iff]
+  · simp only [mem_range_neg_one_iff, openRange_of_ne_zero,
+      neg_eq_zero, one_ne_zero, ne_eq, not_false_eq_true, ite_false] at Hw nh hz
+    rcases Hw with Hw | Hw
+    · grind [arg_eq_pi_iff, arg_mul_exp_eq_of_mem hw₀ (k := -1) (by grind [pi_pos])]
+    · rw [Complex.ext_iff] at hwz
+      simp [Hw, exp_im, exp_re] at hwz
+      apply hz ?_ hwz.right.symm
+      rw [← hwz.left]
+      nlinarith [exp_pos w.re]
+  · simp only [mem_range_iff_of_ne hk hk', openRange_of_ne_zero hk, hk, ite_false] at Hw nh hz
+    grind [arg_eq_pi_iff, arg_mul_exp_eq_of_mem hw₀ (k := k) (by grind [pi_pos])]
 
 theorem mapsTo_mul_exp_openRange : MapsTo (fun w => w * cexp w) (openRange k) (slitPlane k) := by
-  sorry
+  have Hz : MapsTo (fun w => w * cexp w) (range k) (domain k) :=
+    bijOn_mul_exp_range_domain (k := k) |>.mapsTo
+  intro w hw
+  specialize Hz <| openRange_subset_range hw
+  dsimp only at Hz ⊢
+  have hwz : W_ k (w * cexp w) = w := lambertW_mul_exp_of_mem_range <| openRange_subset_range hw
+  set z : ℂ := w * cexp w
+  by_contra nh
+  simp only [slitPlane, branchCut, mem_compl_iff, not_not] at nh
+  by_cases hw₀ : w = 0
+  · simp [hw₀, zero_mem_openRange_iff] at hw
+    simp [hw, z, hw₀, mem_reProdIm, exp_pos 1 |>.not_ge] at nh
+  rcases eq_or_ne k 0 with rfl | hk
+  · simp only [↓reduceIte, openRange, mem_Ioo, mem_union, mem_ofPred_eq] at nh hw
+    have hz : z.arg = π := arg_eq_pi_iff.mpr ⟨nh.left.trans_lt <| by simp [exp_pos], nh.right⟩
+    rcases hw with hw | hw
+    · grind [arg_mul_exp_eq_of_mem hw₀ (k := 0) (by grind)]
+    · simp only [mem_reProdIm, mem_Ioo, mem_singleton_iff] at hw
+      replace nh : w.re * rexp w.re ≤ -(rexp 1)⁻¹ := by
+        simpa [z, mem_reProdIm, exp_re, exp_im, hw.right] using nh
+      have : (-1) * rexp (-1) < w.re * rexp w.re :=
+        Function.strictMonoOn_of_rightInvOn_of_mapsTo Real.strictMonoOn_lambertWZero
+          invOn_mul_exp_lambertWZero.right bijOn_mul_exp_Ici.mapsTo
+            le_rfl hw.left.left.le hw.left.left
+      grind [Real.exp_neg, neg_exp_one_inv_le_mul_exp w.re]
+  · simp only [hk, ↓reduceIte, ne_eq, not_false_eq_true, domain_of_ne_zero, mem_compl_iff,
+      mem_singleton_iff] at nh Hz
+    have hz : z.arg = π :=
+      arg_eq_pi_iff.mpr ⟨lt_of_le_of_ne nh.left
+        (fun nh' => Hz <| Complex.ext nh' nh.right), nh.right⟩
+    rw [openRange_of_ne_zero hk] at hw
+    grind [arg_mul_exp_eq_of_mem hw₀ ⟨hw.left, hw.right.le⟩]
 
 end LambertW
 
