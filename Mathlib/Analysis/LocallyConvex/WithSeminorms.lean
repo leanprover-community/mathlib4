@@ -950,15 +950,9 @@ lemma induction_add_of_continuous [TopologicalSpace E] (hp : WithSeminorms p)
     (le : ∀ r s, r ≤ s → motive s → motive r)
     (smul : ∀ r (C : ℝ≥0), motive r → motive (C • r))
     {q : Seminorm 𝕜 E} (cont : Continuous q) :
-    motive q := by
-  classical
-  rcases bound_sum_of_continuous hp q cont with ⟨s, C, hC, hs⟩
-  refine le _ _ hs (smul _ _ ?_)
-  refine s.induction_on ?_ ?_
-  · simpa using zero
-  · intro i t i_nmem ht
-    rw [Finset.sum_insert i_nmem]
-    exact add _ _ (base _) ht
+    motive q :=
+  induction_sup_of_continuous hp base zero 
+    (fun r s hr hs ↦ le _ _ (fun x ↦ by simp) (add r s hr hs)) le smul cont
 
 end Seminorm
 
