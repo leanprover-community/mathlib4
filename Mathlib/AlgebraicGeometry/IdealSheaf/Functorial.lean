@@ -1,0 +1,224 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+
+/-!
+# Functorial constructions of ideal sheaves
+
+We define the pullback and pushforward of ideal sheaves in this file.
+
+## Main definitions
+- `AlgebraicGeometry.Scheme.IdealSheafData.comap`: The pullback of an ideal sheaf.
+- `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
+- `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
+  The Galois connection between pullback and pushforward.
+
+-/
+
+@[expose] public section
+
+noncomputable section
+
+universe u
+
+open CategoryTheory Limits
+
+namespace AlgebraicGeometry
+
+variable {X Y Z : Scheme.{u}}
+
+namespace Scheme.IdealSheafData
+
+/-- The pullback of an ideal sheaf. -/
+def comap (I : Y.IdealSheafData) (f : X ⟶ Y) : X.IdealSheafData :=
+  (pullback.fst f I.subschemeι).ker
+
+/-- The subscheme associated to the pullback ideal sheaf is isomorphic to the fibred product. -/
+def comapIso (I : Y.IdealSheafData) (f : X ⟶ Y) :
+    (I.comap f).subscheme ≅ pullback f I.subschemeι :=
+  (asIso (pullback.fst f I.subschemeι).toImage).symm
+
+@[reassoc (attr := simp)]
+lemma comapIso_inv_subschemeι (I : Y.IdealSheafData) (f : X ⟶ Y) :
+    (I.comapIso f).inv ≫ (I.comap f).subschemeι = pullback.fst _ _ :=
+  (pullback.fst f I.subschemeι).toImage_imageι
+
+@[reassoc (attr := simp)]
+lemma comapIso_hom_fst (I : Y.IdealSheafData) (f : X ⟶ Y) :
+    (I.comapIso f).hom ≫ pullback.fst _ _ = (I.comap f).subschemeι := by
+  rw [← comapIso_inv_subschemeι, Iso.hom_inv_id_assoc]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma comap_comp (I : Z.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    I.comap (f ≫ g) = (I.comap g).comap f := by
+  let e : pullback f (I.comap g).subschemeι ≅ pullback (f ≫ g) I.subschemeι :=
+    asIso (pullback.map _ _ _ _ (𝟙 _) (I.comapIso g).hom (𝟙 _) (by simp) (by simp)) ≪≫
+      pullbackRightPullbackFstIso _ _ _
+  rw [comap, comap, ← Scheme.Hom.ker_comp_of_isIso e.hom]
+  simp [e]
+
+@[simp]
+lemma comap_id (I : Z.IdealSheafData) :
+    I.comap (𝟙 _) = I := by
+  rw [comap, ← Scheme.Hom.ker_comp_of_isIso (inv (pullback.snd _ _)),
+    pullback_inv_snd_fst_of_left_isIso, IsIso.inv_id, Category.comp_id, ker_subschemeι]
+
+@[simp]
+lemma support_comap (I : Y.IdealSheafData) (f : X ⟶ Y) :
+    (I.comap f).support = I.support.preimage f.continuous := by
+  ext1
+  rw [comap, Scheme.Hom.support_ker, Pullback.range_fst, range_subschemeι,
+    TopologicalSpace.Closeds.coe_preimage, (I.support.isClosed.preimage f.continuous).closure_eq]
+
+lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersion i] :
+    (pullback.fst f i).ker = i.ker.comap f := by
+  delta IdealSheafData.comap
+  rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
+    (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- To show that the pullback of the closed immersion `iX` along `f` is the closed immersion
+`iY`, it suffices to check that the preimage of `ker iY` under `f` is `ker iX`. -/
+lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
+    {ZX ZY X Y : Scheme} (iX : ZX ⟶ X) (iY : ZY ⟶ Y) (Zf : ZX ⟶ ZY) (f : X ⟶ Y)
+    [IsClosedImmersion iX] [IsClosedImmersion iY]
+    (h : iX ≫ f = Zf ≫ iY) (h' : iY.ker.comap f = iX.ker) : IsPullback iX Zf f iY := by
+  suffices IsIso (pullback.lift _ _ h) by
+    simpa using (IsPullback.of_vert_isIso (show CommSq iX (pullback.lift iX Zf h)
+      (𝟙 X) (pullback.fst _ _) from ⟨by simp⟩)).paste_vert (IsPullback.of_hasPullback f iY)
+  refine IsClosedImmersion.isIso_of_ker_eq iX (pullback.fst f iY) _ (by simp) ?_
+  rw [ker_fst_of_isClosedImmersion, h']
+
+/-- The pushforward of an ideal sheaf. -/
+def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
+  (I.subschemeι ≫ f).ker
+
+lemma le_map_iff_comap_le {I : X.IdealSheafData} {f : X ⟶ Y} {J : Y.IdealSheafData} :
+    J ≤ I.map f ↔ J.comap f ≤ I := by
+  constructor
+  · intro H
+    rw [← I.ker_subschemeι, ← pullback.lift_fst (f := f) (g := J.subschemeι) I.subschemeι
+      ((I.subschemeι ≫ f).toImage ≫ inclusion H) (by simp)]
+    exact Hom.le_ker_comp _ _
+  · intro H
+    have : (inclusion H ≫ (J.comapIso f).hom ≫ pullback.snd _ _) ≫ J.subschemeι =
+        I.subschemeι ≫ f := by simp [← pullback.condition]
+    rw [map, ← J.ker_subschemeι, ← this]
+    exact Hom.le_ker_comp _ _
+
+section gc
+
+variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : X ⟶ Y)
+
+/-- Pushforward and pullback of ideal sheaves forms a Galois connection. -/
+lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
+
+section
+set_option linter.style.whitespace false -- manual alignment is not recognised
+
+lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
+lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
+lemma le_map_comap      : J ≤ (J.comap f).map f                       := (map_gc f).le_u_l J
+lemma comap_map_le      : (I.map f).comap f ≤ I                       := (map_gc f).l_u_le I
+@[simp] lemma map_top   : map ⊤ f = ⊤                                 := (map_gc f).u_top
+@[simp] lemma comap_bot : comap ⊥ f = ⊥                               := (map_gc f).l_bot
+@[simp] lemma map_inf   : map (I₁ ⊓ I₂) f = map I₁ f ⊓ map I₂ f       := (map_gc f).u_inf
+@[simp] lemma comap_sup : comap (J₁ ⊔ J₂) f = comap J₁ f ⊔ comap J₂ f := (map_gc f).l_sup
+
+end
+
+end gc
+
+@[simp]
+lemma map_bot (f : X ⟶ Y) : map ⊥ f = f.ker := by
+  simp [map, Scheme.Hom.ker_comp_of_isIso]
+
+@[simp]
+lemma comap_top (f : X ⟶ Y) : comap ⊤ f = ⊤ := by
+  rw [comap, Hom.ker_eq_top_iff_isEmpty]
+  exact Function.isEmpty (pullback.snd f _)
+
+@[simp]
+lemma map_comp (I : X.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    I.map (f ≫ g) = (I.map f).map g := by
+  apply le_antisymm
+  · rw [le_map_iff_comap_le, le_map_iff_comap_le, ← comap_comp]; exact comap_map_le _ _
+  · rw [le_map_iff_comap_le, comap_comp]
+    exact (comap_mono _ (comap_map_le _ _)).trans (comap_map_le _ _)
+
+@[simp]
+lemma map_id (I : Z.IdealSheafData) :
+    I.map (𝟙 _) = I := by
+  simp [map]
+
+lemma map_ker (f : X ⟶ Y) (g : Y ⟶ Z) : f.ker.map g = (f ≫ g).ker := by
+  simp [← map_bot]
+
+lemma _root_.AlgebraicGeometry.Scheme.Hom.ker_comp
+    (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).ker = f.ker.map g := (map_ker f g).symm
+
+lemma map_vanishingIdeal {X Y : Scheme} (f : X ⟶ Y) (Z : TopologicalSpace.Closeds X) :
+    (vanishingIdeal Z).map f = vanishingIdeal (.closure (f '' Z)) := by
+  apply le_antisymm
+  · rw [map, ← le_support_iff_le_vanishingIdeal, TopologicalSpace.Closeds.closure_le]
+    refine .trans ?_ (Hom.range_subset_ker_support _)
+    rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp,
+      range_subschemeι, coe_support_vanishingIdeal]
+  · simp [le_map_iff_comap_le, ← le_support_iff_le_vanishingIdeal, ← Set.image_subset_iff,
+      subset_closure, ← SetLike.coe_subset_coe]
+
+@[simp]
+lemma support_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] :
+    (I.map f).support = .closure (f '' I.support) := by
+  ext1
+  rw [map, Scheme.Hom.support_ker, Scheme.Hom.comp_base, TopCat.coe_comp,
+    Set.range_comp, range_subschemeι, TopologicalSpace.Closeds.coe_closure]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.affineOpens)
+    (H : IsAffineOpen (f ⁻¹ᵁ U)) :
+    (I.map f).ideal U = (I.ideal ⟨_, H⟩).comap (f.app U).hom := by
+  have : RingHom.ker (I.subschemeObjIso ⟨_, H⟩).inv.hom = ⊥ :=
+    RingHom.ker_coe_equiv (I.subschemeObjIso ⟨_, H⟩).symm.commRingCatIsoToRingEquiv
+  simp [map, ← RingHom.comap_ker, subschemeι_app _ ⟨_, H⟩,
+    this, ← RingHom.ker_eq_comap_bot]
+
+lemma ideal_map_of_isAffineHom
+    (I : X.IdealSheafData) (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpens) :
+    (I.map f).ideal U = (I.ideal ⟨_, U.2.preimage f⟩).comap (f.app U).hom :=
+  ideal_map I f U (U.2.preimage f)
+
+lemma ideal_comap_of_isOpenImmersion
+    (I : Y.IdealSheafData) (f : X ⟶ Y) [IsOpenImmersion f] (U : X.affineOpens) :
+    (I.comap f).ideal U = (I.ideal ⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩).comap
+      (f.appIso U).inv.hom := by
+  refine (ker_ideal_of_isPullback_of_isOpenImmersion _ _ _ _
+    (IsPullback.of_hasPullback f I.subschemeι) U).trans ?_
+  simp
+
+/-- If `J ≤ I.map f`, then `f` restricts to a map `I ⟶ J` between the closed subschemes. -/
+def subschemeMap (I : X.IdealSheafData) (J : Y.IdealSheafData)
+    (f : X ⟶ Y) (H : J ≤ I.map f) : I.subscheme ⟶ J.subscheme :=
+  IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using H)
+
+@[reassoc (attr := simp)]
+lemma subschemeMap_subschemeι (I : X.IdealSheafData) (J : Y.IdealSheafData)
+    (f : X ⟶ Y) (H : J ≤ I.map f) : subschemeMap I J f H ≫ J.subschemeι = I.subschemeι ≫ f :=
+  IsClosedImmersion.lift_fac _ _ _
+
+@[reassoc (attr := simp)]
+lemma comapIso_hom_snd (I : Y.IdealSheafData) (f : X ⟶ Y) :
+    (I.comapIso f).hom ≫ pullback.snd _ _ = subschemeMap _ _ f (I.le_map_comap f) := by
+  rw [← cancel_mono I.subschemeι]
+  simp [← pullback.condition]
+
+end Scheme.IdealSheafData
+
+end AlgebraicGeometry

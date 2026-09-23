@@ -1,0 +1,295 @@
+/-
+Copyright (c) 2022 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Noetherian.Basic
+
+/-!
+
+# Associated primes of a module
+
+We provide the definition and related lemmas about associated primes of modules.
+
+## Main definition
+- `IsAssociatedPrime`: `IsAssociatedPrime I M` if the prime ideal `I` is the
+  radical of the annihilator of some `x : M`.
+- `associatedPrimes`: The set of associated primes of a module.
+
+## Main results
+- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a Noetherian ring, any `ann(x)` is
+  contained in an associated prime for `x ≠ 0`.
+- `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
+  associated prime of `R ⧸ I` when `I` is primary.
+
+## Implementation details
+
+The presence of the radical in the definition of `IsAssociatedPrime` is slightly nonstandard but
+gives the correct characterization of the prime ideals of any minimal primary decomposition in the
+non-Noetherian setting (see Theorem 4.5 in Atiyah-Macdonald). If the ring `R` is assumed to be
+Noetherian, then the radical can be dropped from the definition (see `isAssociatedPrime_iff`).
+
+See also [Stacks: Lemma 0566](https://stacks.math.columbia.edu/tag/0566) which states that a
+prime `p` is minimal among primes containing an annihilator an element of `M` if and only if
+`p R_p` is an associated prime of `M_p` (including the radical).
+
+## TODO
+
+Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
+
+## References
+
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+-/
+
+@[expose] public section
+
+open LinearMap Submodule
+
+namespace Submodule
+
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (N : Submodule R M)
+  (I : Ideal R) (x : M)
+
+/-- `I : Ideal R` is an associated prime of a submodule `N : Submodule R M` if `I` is prime
+and `I = (colon N {x}).radical` for some `x : M`. -/
+protected structure IsAssociatedPrime : Prop extends I.IsPrime where
+  eq_radical_colon : ∃ x, I = (colon N {x}).radical
+
+/-- The set of associated primes of a submodule. -/
+protected def associatedPrimes : Set (Ideal R) :=
+  { I | N.IsAssociatedPrime I }
+
+variable {N I}
+
+protected theorem isAssociatedPrime_def :
+    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (colon N {x}).radical :=
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+
+protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
+    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
+  constructor
+  · rintro ⟨hx, x, rfl⟩
+    refine ⟨hx, exists_eq_colon_of_mem_minimalPrimes (x := x) ?_⟩
+    rw [← Ideal.radical_minimalPrimes, Ideal.minimalPrimes_eq_subsingleton_self,
+      Set.mem_singleton_iff]
+  · rintro ⟨hx, x, rfl⟩
+    exact ⟨hx, x, hx.radical.symm⟩
+
+instance (I : N.associatedPrimes) : I.1.IsPrime := I.2.1
+
+protected theorem AssociatePrimes.mem_iff : I ∈ N.associatedPrimes ↔ N.IsAssociatedPrime I :=
+  .rfl
+
+end Submodule
+
+section Semiring
+
+variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid M] [Module R M]
+
+/-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
+of some `x : M`. -/
+def IsAssociatedPrime : Prop :=
+  (⊥ : Submodule R M).IsAssociatedPrime I
+
+variable (R) in
+/-- The set of associated primes of a module. -/
+def associatedPrimes : Set (Ideal R) :=
+  { I | IsAssociatedPrime I M }
+
+variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
+
+theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
+
+@[deprecated (since := "2025-11-24")]
+alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
+
+theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
+
+instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1
+
+theorem isAssociatedPrime_iff [IsNoetherianRing R] :
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x : M, I = colon ⊥ {x} :=
+  (⊥ : Submodule R M).isAssociatedPrime_iff
+
+theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
+    IsAssociatedPrime I M' := by
+  obtain ⟨x, rfl⟩ := h.2
+  refine ⟨h.1, ⟨f x, ?_⟩⟩
+  ext r
+  simp_rw [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot, ← map_smul, map_eq_zero_iff f hf]
+
+theorem LinearEquiv.isAssociatedPrime_iff (l : M ≃ₗ[R] M') :
+    IsAssociatedPrime I M ↔ IsAssociatedPrime I M' :=
+  ⟨fun h => h.map_of_injective l l.injective,
+    fun h => h.map_of_injective l.symm l.symm.injective⟩
+
+theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedPrime I M := by
+  rintro ⟨hI, x, hx⟩
+  apply hI.ne_top
+  simp [hx, Subsingleton.elim x 0]
+
+variable (R) in
+theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
+    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (⊥ : Submodule R M).colon {x} ≤ P := by
+  simp only [isAssociatedPrime_iff]
+  obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
+    set_has_maximal_iff_noetherian.mpr H
+      { P | (⊥ : Submodule R M).colon {x} ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (⊥ : Submodule R M).colon {y} }
+      ⟨_, rfl.le, by simpa, x, rfl⟩
+  refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
+  intro a b hab
+  rw [or_iff_not_imp_left]
+  intro ha
+  rw [mem_colon_singleton] at ha hab
+  have H₁ : (⊥ : Submodule R M).colon {y} ≤ (⊥ : Submodule R M).colon {a • y} := by
+    intro c hc
+    rw [mem_colon_singleton, mem_bot] at hc ⊢
+    rw [smul_comm, hc, smul_zero]
+  rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩),
+    mem_colon_singleton, smul_comm, smul_smul]
+
+namespace associatedPrimes
+
+variable {f} {M'' : Type*} [AddCommMonoid M''] [Module R M''] {g : M' →ₗ[R] M''}
+
+/-- If `M → M'` is injective, then the set of associated primes of `M` is
+contained in that of `M'`. -/
+@[stacks 02M3 "first part"]
+theorem subset_of_injective (hf : Function.Injective f) :
+    associatedPrimes R M ⊆ associatedPrimes R M' := fun _I h => h.map_of_injective f hf
+
+/-- If `0 → M → M' → M''` is an exact sequence, then the set of associated primes of `M'` is
+contained in the union of those of `M` and `M''`. -/
+@[stacks 02M3 "second part"]
+theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
+    associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
+  rintro p ⟨_, x, hx⟩
+  by_cases! h : ∃ a ∈ p.primeCompl, ∃ y : M, ∃ k, f y = a ^ k • x
+  · obtain ⟨a, ha, y, k, h⟩ := h
+    left
+    refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b ⟨n, hb⟩ ↦ ?_)⟩
+    · rw [hx] at hb
+      obtain ⟨n, hb⟩ := hb
+      use n
+      rw [mem_colon_singleton, mem_bot] at hb ⊢
+      apply_fun _ using hf
+      rw [map_smul, h, smul_comm, hb, smul_zero, map_zero]
+    · rw [mem_colon_singleton, mem_bot] at hb
+      apply_fun f at hb
+      rw [map_smul, map_zero, h, ← mul_smul, ← mem_bot R, ← mem_colon_singleton] at hb
+      replace hb := hx.ge (Ideal.le_radical hb)
+      contrapose hb
+      exact p.primeCompl.mul_mem (p.primeCompl.pow_mem hb n) (p.primeCompl.pow_mem ha k)
+  · right
+    refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b ⟨n, hb⟩ ↦ ?_)⟩
+    · rw [hx] at hb
+      refine Ideal.radical_mono (fun b hb ↦ ?_) hb
+      rw [mem_colon_singleton, mem_bot] at hb ⊢
+      rw [← map_smul, hb, map_zero]
+    · rw [mem_colon_singleton, mem_bot, ← map_smul, ← LinearMap.mem_ker,
+        hfg.linearMap_ker_eq] at hb
+      obtain ⟨y, hy⟩ := hb
+      by_contra H
+      exact h b H y n hy
+
+variable (R M M') in
+/-- The set of associated primes of the product of two modules is equal to
+the union of those of the two modules. -/
+@[stacks 02M3 "third part"]
+theorem prod : associatedPrimes R (M × M') = associatedPrimes R M ∪ associatedPrimes R M' :=
+  (subset_union_of_exact LinearMap.inl_injective .inl_snd).antisymm (Set.union_subset_iff.2
+    ⟨subset_of_injective LinearMap.inl_injective, subset_of_injective LinearMap.inr_injective⟩)
+
+end associatedPrimes
+
+theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
+    associatedPrimes R M = associatedPrimes R M' :=
+  le_antisymm (associatedPrimes.subset_of_injective l.injective)
+    (associatedPrimes.subset_of_injective l.symm.injective)
+
+theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedPrimes R M = ∅ := by
+  ext; simp only [Set.mem_empty_iff_false, iff_false]
+  apply not_isAssociatedPrime_of_subsingleton
+
+variable (R M)
+
+theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
+    (associatedPrimes R M).Nonempty := by
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  obtain ⟨P, hP, _⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x hx
+  exact ⟨P, hP⟩
+
+theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R M, p = { r : R | ∃ x : M, x ≠ 0 ∧ r • x = 0 } := by
+  simp only [AssociatedPrimes.mem_iff, isAssociatedPrime_iff]
+  refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
+  · rintro _ ⟨h, x, ⟨⟩⟩ r h'
+    exact ⟨x, by simpa using h.ne_top, by simpa using h'⟩
+  · intro r ⟨x, h, h'⟩
+    obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
+    rw [isAssociatedPrime_iff] at hP
+    exact Set.mem_iUnion₂_of_mem hP (hx (by rwa [mem_colon_singleton]))
+
+theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
+  (biUnion_associatedPrimes_eq_zero_divisors R R).trans <| by
+    ext; simp [← nonZeroDivisorsLeft_eq_nonZeroDivisors, and_comm]
+
+variable {R M}
+
+theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
+    (⊤ : Submodule R M).annihilator ≤ I := by
+  obtain ⟨hI, x, rfl⟩ := h
+  rw [bot_colon']
+  exact (annihilator_mono le_top).trans Ideal.le_radical
+
+end Semiring
+
+variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+
+theorem isAssociatedPrime_iff_exists_injective_linearMap [IsNoetherianRing R] :
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ (f : R ⧸ I →ₗ[R] M), Function.Injective f := by
+  rw [isAssociatedPrime_iff, and_congr_right_iff]
+  refine fun _ ↦ ⟨fun ⟨x, h⟩ ↦ ?_, fun ⟨f, h⟩ ↦ ⟨(f ∘ₗ mkQ I) 1, ?_⟩⟩
+  · replace h : I = ker (toSpanSingleton R M x) := by simp [h, SetLike.ext_iff]
+    exact ⟨liftQ _ _ h.le, ker_eq_bot.mp (ker_liftQ_eq_bot' _ _ h)⟩
+  · conv_lhs => rw [← I.ker_mkQ, ← ker_comp_of_ker_eq_bot (mkQ I) (ker_eq_bot_of_injective h)]
+    simp [SetLike.ext_iff, ← Ideal.Quotient.algebraMap_eq, Algebra.algebraMap_eq_smul_one]
+
+variable {I J M}
+
+theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
+    J = I.radical := by
+  obtain ⟨hJ, x, e⟩ := h
+  have : x ≠ 0 := by
+    rintro rfl
+    apply hJ.1
+    rwa [colon_singleton_zero, Ideal.radical_top] at e
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
+  have h {y} : y ∈ colon ⊥ {(Ideal.Quotient.mk I) x} ↔ Ideal.Quotient.mk I (y * x) = 0 := by
+    rw [mem_colon_singleton, Algebra.smul_def, Ideal.Quotient.algebraMap_eq, ← map_mul, mem_bot]
+  simp only [e, Ideal.Quotient.mkₐ_eq_mk, ne_eq, Ideal.Quotient.eq_zero_iff_mem] at this h ⊢
+  refine le_antisymm (Ideal.radical_le_radical_iff.mpr fun y hy ↦ ?_)
+    (Ideal.radical_mono fun y ↦ h.mpr ∘ I.mul_mem_right x)
+  rw [← I.colon_univ, ← Set.top_eq_univ]
+  exact (hI.mem_or_mem (h.mp hy)).resolve_left this
+
+theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.IsPrimary) :
+    associatedPrimes R (R ⧸ I) = {I.radical} := by
+  ext J
+  rw [Set.mem_singleton_iff]
+  refine ⟨IsAssociatedPrime.eq_radical hI, ?_⟩
+  rintro rfl
+  haveI : Nontrivial (R ⧸ I) := by
+    refine ⟨(Ideal.Quotient.mk I :) 1, (Ideal.Quotient.mk I :) 0, ?_⟩
+    rw [Ne, Ideal.Quotient.eq, sub_zero, ← Ideal.eq_top_iff_one]
+    exact hI.1
+  obtain ⟨a, ha⟩ := associatedPrimes.nonempty R (R ⧸ I)
+  exact ha.eq_radical hI ▸ ha

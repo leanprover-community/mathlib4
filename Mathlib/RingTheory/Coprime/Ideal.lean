@@ -3,10 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.Ideal.Operations
+module
 
-#align_import ring_theory.coprime.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # An additional lemma about coprime ideals
@@ -14,6 +15,8 @@ import Mathlib.RingTheory.Ideal.Operations
 This lemma generalises `exists_sum_eq_one_iff_pairwise_coprime` to the case of non-principal ideals.
 It is on a separate file due to import requirements.
 -/
+
+public section
 
 
 namespace Ideal
@@ -33,18 +36,17 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
       (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
   haveI : DecidableEq ι := Classical.decEq ι
   rw [eq_top_iff_one, Submodule.mem_iSup_finset_iff_exists_sum]
-  refine' h.cons_induction _ _ <;> clear t h
-  · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true_iff]
-    refine' fun a => ⟨fun i => if h : i = a then ⟨1, _⟩ else 0, _⟩
+  refine h.cons_induction ?_ ?_ <;> clear t h
+  · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true]
+    refine fun a => ⟨fun i => if h : i = a then ⟨1, ?_⟩ else 0, ?_⟩
     · simp [h]
-    · simp only [dif_pos, dif_ctx_congr, Submodule.coe_mk, eq_self_iff_true]
+    · simp only [dif_pos, Submodule.coe_mk]
   intro a t hat h ih
   rw [Finset.coe_cons,
     Set.pairwise_insert_of_symmetric fun i j (h : I i ⊔ I j = ⊤) ↦ (sup_comm _ _).trans h]
   constructor
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ
-    -- Porting note: `refine` yields goals in a different order than in lean3.
     refine ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, ?a1⟩ + fun i => ⟨μ i, ?a2⟩, ?a3⟩, fun b hb ab => ?a4⟩
     case a1 =>
       have := Submodule.coe_mem (μ a)
@@ -74,8 +76,8 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     case a4 =>
       rw [eq_top_iff_one, Submodule.mem_sup]
       rw [add_comm] at hμ
-      refine' ⟨_, _, _, _, hμ⟩
-      · refine' sum_mem _ fun x hx => _
+      refine ⟨_, ?_, _, ?_, hμ⟩
+      · refine sum_mem _ fun x hx => ?_
         have := Submodule.coe_mem (μ x)
         simp only [mem_iInf] at this
         apply this _ (Finset.mem_cons_self _ _)
@@ -89,7 +91,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     have := sup_iInf_eq_top fun b hb => Hb b hb (ne_of_mem_of_not_mem hb hat).symm
     rw [eq_top_iff_one, Submodule.mem_sup] at this
     obtain ⟨u, hu, v, hv, huv⟩ := this
-    refine' ⟨fun i => if hi : i = a then ⟨v, _⟩ else ⟨u * μ i, _⟩, _⟩
+    refine ⟨fun i => if hi : i = a then ⟨v, ?_⟩ else ⟨u * μ i, ?_⟩, ?_⟩
     · simp only [mem_iInf] at hv ⊢
       intro j hj ij
       rw [Finset.mem_cons, ← hi] at hj
@@ -110,6 +112,5 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
       rw [dif_neg]
       rintro rfl
       exact hat hj
-#align ideal.supr_infi_eq_top_iff_pairwise Ideal.iSup_iInf_eq_top_iff_pairwise
 
 end Ideal

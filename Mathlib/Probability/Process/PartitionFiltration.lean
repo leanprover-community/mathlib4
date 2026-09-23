@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-import Mathlib.Probability.Process.Filtration
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+public import Mathlib.Probability.Process.Filtration
 
 /-!
 # Filtration built from the finite partitions of a countably generated measurable space
@@ -34,6 +36,8 @@ function on `α`.
   space on `α`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory MeasurableSpace
 
@@ -86,6 +90,7 @@ lemma measurable_memPartitionSet (ht : ∀ n, MeasurableSet (t n)) (n : ℕ) :
 lemma iSup_partitionFiltration_eq_generateFrom_range (ht : ∀ n, MeasurableSet (t n)) :
     ⨆ n, partitionFiltration ht n = generateFrom (Set.range t) := by
   conv_rhs => rw [← generateFrom_iUnion_memPartition t, ← iSup_generateFrom]
+  rfl
 
 lemma iSup_partitionFiltration (ht : ∀ n, MeasurableSet (t n))
     (ht_range : generateFrom (Set.range t) = m) :
@@ -136,6 +141,7 @@ lemma measurable_countablePartitionSet (α : Type*) [MeasurableSpace α] [Counta
 lemma iSup_countableFiltration (α : Type*) [m : MeasurableSpace α] [CountablyGenerated α] :
     ⨆ n, countableFiltration α n = m := by
   conv_rhs => rw [← generateFrom_iUnion_countablePartition α, ← iSup_generateFrom]
+  rfl
 
 end CountableFiltration
 

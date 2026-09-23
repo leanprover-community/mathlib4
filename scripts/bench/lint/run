@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+BENCH="scripts/bench"
+
+lake build runLinter
+LEAN_ABORT_ON_PANIC=1 "$BENCH/measure.py" --append -t lint -d -- \
+  lake exe runLinter Mathlib

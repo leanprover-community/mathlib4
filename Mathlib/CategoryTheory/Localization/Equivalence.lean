@@ -3,15 +3,18 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-!
 # Localization functors are preserved through equivalences
 
-In `Localization/Predicate.lean`, the lemma `Localization.of_equivalence_target` already
-showed that the predicate of localized categories is unchanged when we replace the
-target category (i.e. the candidate localized category) by an equivalent category.
+In `Mathlib/CategoryTheory/Localization/Predicate.lean`, the lemma
+`Localization.of_equivalence_target` already showed that the predicate of localized categories is
+unchanged when we replace the target category (i.e. the candidate localized category) by an
+equivalent category.
 In this file, we show the same for the source category (`Localization.of_equivalence_source`).
 More generally, `Localization.of_equivalences` shows that we may replace both the
 source and target categories by equivalent categories. This is obtained using
@@ -20,12 +23,14 @@ that a functor between localized categories is an equivalence.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ D D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D]
-  [Category D₁] [Category D₂]
+variable {C₁ C₂ D D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D]
+  [Category* D₁] [Category* D₂]
 
 namespace Localization
 
@@ -51,9 +56,10 @@ lemma equivalence_counitIso_app (X : C₂) :
   dsimp [Lifting.iso]
   rw [comp_id]
 
+include L₁ W₁ L₂ W₂ G F F' α β in
 /-- Basic constructor of an equivalence between localized categories -/
-noncomputable def isEquivalence : IsEquivalence G' :=
-  IsEquivalence.ofEquivalence (equivalence L₁ W₁ L₂ W₂ G G' F F' α β)
+lemma isEquivalence : G'.IsEquivalence :=
+  (equivalence L₁ W₁ L₂ W₂ G G' F F' α β).isEquivalence_functor
 
 end Localization
 
@@ -66,16 +72,16 @@ the case of a functor `L₂ : C₂ ⥤ D` for a suitable `W₂ : MorphismPropert
 we have an equivalence of category `E : C₁ ≌ C₂` and an isomorphism `E.functor ⋙ L₂ ≅ L₁`. -/
 lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
     (L₂ : C₂ ⥤ D) (W₂ : MorphismProperty C₂)
-    (E : C₁ ≌ C₂) (hW₁ : W₁ ⊆ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂)
+    (E : C₁ ≌ C₂) (hW₁ : W₁ ≤ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂)
     [L₁.IsLocalization W₁] (iso : E.functor ⋙ L₂ ≅ L₁) : L₂.IsLocalization W₂ := by
   have h : W₁.IsInvertedBy (E.functor ⋙ W₂.Q) := fun _ _ f hf => by
     obtain ⟨_, _, f', hf', ⟨e⟩⟩ := hW₁ f hf
-    exact ((MorphismProperty.RespectsIso.isomorphisms _).arrow_mk_iso_iff
+    exact ((MorphismProperty.isomorphisms _).arrow_mk_iso_iff
       (W₂.Q.mapArrow.mapIso e)).1 (Localization.inverts W₂.Q W₂ _ hf')
   exact
     { inverts := hW₂
-      nonempty_isEquivalence :=
-        ⟨Localization.isEquivalence W₂.Q W₂ L₁ W₁ L₂ (Construction.lift L₂ hW₂)
+      isEquivalence :=
+        Localization.isEquivalence W₂.Q W₂ L₁ W₁ L₂ (Construction.lift L₂ hW₂)
           (E.functor ⋙ W₂.Q) (Localization.lift (E.functor ⋙ W₂.Q) h L₁) (by
             calc
               L₂ ⋙ lift (E.functor ⋙ W₂.Q) h L₁ ≅ _ := (leftUnitor _).symm
@@ -90,7 +96,7 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
               _ ≅ (E.inverse ⋙ E.functor) ⋙ W₂.Q := (Functor.associator _ _ _).symm
               _ ≅ 𝟭 C₂ ⋙ W₂.Q := isoWhiskerRight E.counitIso _
               _ ≅ W₂.Q := leftUnitor _)
-          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso)⟩ }
+          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _) ≪≫ iso) }
 
 /-- If `L₁ : C₁ ⥤ D₁` is a localization functor for `W₁ : MorphismProperty C₁`, then if we
 transport this functor `L₁` via equivalences `C₁ ≌ C₂` and `D₁ ≌ D₂` to get a functor
@@ -99,7 +105,7 @@ a suitable `W₂ : MorphismProperty C₂`. -/
 lemma of_equivalences (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
     (L₂ : C₂ ⥤ D₂) (W₂ : MorphismProperty C₂)
     (E : C₁ ≌ C₂) (E' : D₁ ≌ D₂) [CatCommSq E.functor L₁ L₂ E'.functor]
-    (hW₁ : W₁ ⊆ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂) :
+    (hW₁ : W₁ ≤ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂) :
     L₂.IsLocalization W₂ := by
   haveI : (E.functor ⋙ L₂).IsLocalization W₁ :=
     of_equivalence_target L₁ W₁ _ E' ((CatCommSq.iso _ _ _ _).symm)

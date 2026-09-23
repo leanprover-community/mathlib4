@@ -1,0 +1,239 @@
+# Sanity checks for mathlib-ci usage in workflow files
+#
+# 1. Prevent CI breakages caused by stale or mistyped `CI_SCRIPTS_DIR` paths
+#    in workflow files by validating references against a fresh checkout of
+#    `leanprover-community/mathlib-ci`.
+#    On workflow changes, this job scans `.github/workflows/*.{yml,yaml}`
+#    for `$CI_SCRIPTS_DIR/...` and `${CI_SCRIPTS_DIR}/...` literals (excluding comments
+#    and this validator file), then fails if any referenced path is missing or escapes
+#    the checked out scripts directory.
+#
+# 2. Ensure workflow files do not check out `leanprover-community/mathlib-ci`
+#    directly and instead use the local `get-mathlib-ci` action.
+#
+# The logic is fairly naive and the point is to prevent mistakes rather than a bulletproof validation of all possible dynamic path constructions, but it should catch common typos and missing files in mathlib-ci.
+name: Validate mathlib-ci script paths
+
+on:
+  # Validate references whenever workflow files change.
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-ci-scripts-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        id: get_mathlib_ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: master # Check paths against the latest version of the repo, which should be 'the objective' version for any workflow
+
+      # We scan literal "$CI_SCRIPTS_DIR/..." and "${CI_SCRIPTS_DIR}/..."
+      # references in workflow text and check those paths in the checked out mathlib-ci ref; dynamically
+      # constructed paths or non-default variable names are not covered by this best-effort check,
+      # but this should catch common typos and missing files in mathlib-ci.
+      - name: Validate CI_SCRIPTS_DIR references
+        env:
+          CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
+        shell: python
+        run: |
+          import os
+          import re
+          import sys
+          from collections import defaultdict
+          from pathlib import Path
+
+          workflows_dir = Path(".github/workflows")
+          scripts_dir = Path(os.environ["CI_SCRIPTS_DIR"])
+
+          # Match both ${CI_SCRIPTS_DIR}/... and $CI_SCRIPTS_DIR/... forms.
+          pattern = re.compile(r"(?:\$\{CI_SCRIPTS_DIR\}|\$CI_SCRIPTS_DIR)/([A-Za-z0-9._/-]+)")
+          references = defaultdict(list)
+
+          def strip_yaml_comment(line: str) -> str:
+            """Strip YAML comments, preserving # characters inside quotes."""
+            in_single = False
+            in_double = False
+            escaped = False
+            for i, ch in enumerate(line):
+              if in_double:
+                if escaped:
+                  escaped = False
+                elif ch == "\\":
+                  escaped = True
+                elif ch == '"':
+                  in_double = False
+              elif in_single:
+                if ch == "'":
+                  in_single = False
+              else:
+                if ch == '"':
+                  in_double = True
+                elif ch == "'":
+                  in_single = True
+                elif ch == "#":
+                  return line[:i]
+            return line
+
+          workflow_files = sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml"))
+          for workflow in workflow_files:
+            # Skip this validator workflow to avoid matching its own example strings.
+            if workflow.name == "validate_mathlib_ci_paths.yml":
+              continue
+            for line_number, line in enumerate(workflow.read_text().splitlines(), start=1):
+              if line.lstrip().startswith("#"):
+                continue
+              content = strip_yaml_comment(line)
+              for match in pattern.finditer(content):
+                rel_path = match.group(1)
+                if rel_path == "...":
+                  continue
+                references[rel_path].append(f"{workflow}:{line_number}")
+
+          missing = []
+          scripts_root = scripts_dir.resolve()
+          for rel_path, locations in sorted(references.items()):
+            full_path = (scripts_dir / rel_path).resolve()
+            # Reject any path that escapes the checked out scripts directory.
+            if scripts_root not in full_path.parents and full_path != scripts_root:
+              missing.append((rel_path, locations))
+              continue
+            if not full_path.exists():
+              missing.append((rel_path, locations))
+
+          if missing:
+            print("Validation failures:")
+            print("Missing paths in mathlib-ci checkout:")
+            for rel_path, locations in missing:
+              print(f"- {rel_path}")
+              print(f"  used at: {', '.join(locations)}")
+            sys.exit(1)
+
+          print(f"Validated {len(references)} CI_SCRIPTS_DIR reference(s).")
+
+      # Ensure workflow files do not check out leanprover-community/mathlib-ci
+      # directly. They should use the local get-mathlib-ci action instead.
+      # Parsing is intentionally lightweight: scan lines, strip YAML comments,
+      # and use indentation to stay within one step's `with:` block.
+      - name: Validate mathlib-ci checkout usage
+        shell: python
+        run: |
+          import re
+          import sys
+          from pathlib import Path
+
+          workflows_dir = Path(".github/workflows")
+
+          def strip_yaml_comment(line: str) -> str:
+            """Strip YAML comments, preserving # characters inside quotes."""
+            in_single = False
+            in_double = False
+            escaped = False
+            for i, ch in enumerate(line):
+              if in_double:
+                if escaped:
+                  escaped = False
+                elif ch == "\\":
+                  escaped = True
+                elif ch == '"':
+                  in_double = False
+              elif in_single:
+                if ch == "'":
+                  in_single = False
+              else:
+                if ch == '"':
+                  in_double = True
+                elif ch == "'":
+                  in_single = True
+                elif ch == "#":
+                  return line[:i]
+            return line
+
+          def leading_spaces(line: str) -> int:
+            """Return indentation width using plain leading spaces."""
+            return len(line) - len(line.lstrip(" "))
+
+          def collect_mathlib_ci_checkouts(workflow, workflow_text):
+            """Find direct `actions/checkout` steps that target `mathlib-ci`."""
+            lines = workflow_text.splitlines()
+            results = []
+
+            for i, raw_line in enumerate(lines):
+              content = strip_yaml_comment(raw_line).rstrip()
+              repo_match = re.match(r"^\s*repository:\s*(.*?)\s*$", content)
+              if not repo_match:
+                continue
+
+              repository = strip_yaml_comment(repo_match.group(1)).strip()
+              if len(repository) >= 2 and repository[0] == repository[-1] and repository[0] in {"'", '"'}:
+                repository = repository[1:-1]
+              if not repository.endswith("/mathlib-ci"):
+                continue
+
+              repo_indent = leading_spaces(content)
+              step_uses_checkout = False
+              j = i
+              while j >= 0:
+                # Walk upward to the containing `-` step and confirm it is an
+                # `actions/checkout` step before treating this as a checkout ref.
+                previous = strip_yaml_comment(lines[j]).rstrip()
+                if not previous.strip():
+                  j -= 1
+                  continue
+                if re.match(r"^\s*-\s+", previous) and leading_spaces(previous) < repo_indent:
+                  for k in range(j, i + 1):
+                    candidate = strip_yaml_comment(lines[k]).rstrip()
+                    if re.match(r"^\s*uses:\s*actions/checkout@", candidate):
+                      step_uses_checkout = True
+                      break
+                  break
+                j -= 1
+
+              if not step_uses_checkout:
+                continue
+
+              results.append(
+                {
+                  "workflow": workflow.name,
+                  "repository_line": i + 1,
+                }
+              )
+            return results
+
+          workflow_files = sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml"))
+          errors = []
+          for workflow in workflow_files:
+            # Skip this validator workflow to avoid validating its checkout.
+            if workflow.name == "validate_mathlib_ci_paths.yml":
+              continue
+            workflow_text = workflow.read_text()
+            checkout_steps = collect_mathlib_ci_checkouts(workflow, workflow_text)
+            for step in checkout_steps:
+              errors.append(
+                f"{workflow}:{step['repository_line']} checks out mathlib-ci directly; "
+                "use `./workflow-actions/.github/actions/get-mathlib-ci` instead."
+              )
+
+          if errors:
+            print("Validation failures:")
+            for error in errors:
+              print(error)
+            sys.exit(1)
+
+          print("Validated that workflow files use the local get-mathlib-ci action.")

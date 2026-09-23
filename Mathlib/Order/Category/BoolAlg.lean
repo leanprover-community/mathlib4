@@ -3,17 +3,19 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.HeytAlg
+module
 
-#align_import order.category.BoolAlg from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
+public import Mathlib.Order.Category.HeytAlg
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# The category of boolean algebras
+# The category of Boolean algebras
 
-This defines `BoolAlg`, the category of boolean algebras.
+This defines `BoolAlg`, the category of Boolean algebras.
 -/
 
-set_option linter.uppercaseLean3 false
+@[expose] public section
+
 
 open OrderDual Opposite Set
 
@@ -21,51 +23,144 @@ universe u
 
 open CategoryTheory
 
-/-- The category of boolean algebras. -/
-def BoolAlg :=
-  Bundled BooleanAlgebra
-#align BoolAlg BoolAlg
+/-- The category of Boolean algebras. -/
+structure BoolAlg where
+  /-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying Boolean algebra. -/
+  carrier : Type*
+  [str : BooleanAlgebra carrier]
+
+attribute [instance] BoolAlg.str
+
+initialize_simps_projections BoolAlg (carrier → coe, -str)
 
 namespace BoolAlg
 
-instance : CoeSort BoolAlg (Type*) :=
-  Bundled.coeSort
+instance : CoeSort BoolAlg (Type _) :=
+  ⟨BoolAlg.carrier⟩
 
-instance instBooleanAlgebra (X : BoolAlg) : BooleanAlgebra X :=
-  X.str
+attribute [coe] BoolAlg.carrier
 
-/-- Construct a bundled `BoolAlg` from a `BooleanAlgebra`. -/
-def of (α : Type*) [BooleanAlgebra α] : BoolAlg :=
-  Bundled.of α
-#align BoolAlg.of BoolAlg.of
+set_option backward.privateInPublic true in
+/-- The type of morphisms in `BoolAlg R`. -/
+@[ext]
+structure Hom (X Y : BoolAlg.{u}) where
+  private mk ::
+  /-- The underlying `BoundedLatticeHom`. -/
+  hom' : BoundedLatticeHom X Y
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+instance : Category BoolAlg.{u} where
+  Hom X Y := Hom X Y
+  id X := ⟨BoundedLatticeHom.id X⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+instance : ConcreteCategory BoolAlg (BoundedLatticeHom · ·) where
+  hom := Hom.hom'
+  ofHom := Hom.mk
+
+/-- Turn a morphism in `BoolAlg` back into a `BoundedLatticeHom`. -/
+abbrev Hom.hom {X Y : BoolAlg.{u}} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := BoolAlg) f
+
+/-- Typecheck a `BoundedLatticeHom` as a morphism in `BoolAlg`. -/
+abbrev ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
+    of X ⟶ of Y :=
+  ConcreteCategory.ofHom (C := BoolAlg) f
+
+variable {R} in
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (X Y : BoolAlg.{u}) (f : Hom X Y) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 
 @[simp]
-theorem coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
+lemma coe_id {X : BoolAlg} : (𝟙 X : X → X) = id := rfl
+
+@[simp]
+lemma coe_comp {X Y Z : BoolAlg} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[simp]
+lemma forget_map {X Y : BoolAlg} (f : X ⟶ Y) :
+    (forget BoolAlg).map f = (f : _ → _) := rfl
+
+@[ext]
+lemma ext {X Y : BoolAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  ConcreteCategory.hom_ext _ _ w
+
+-- This is not `simp` to avoid rewriting in types of terms.
+theorem coe_of (X : Type u) [BooleanAlgebra X] : (BoolAlg.of X : Type u) = X := rfl
+
+@[simp]
+lemma hom_id {X : BoolAlg} : (𝟙 X : X ⟶ X).hom = BoundedLatticeHom.id _ := rfl
+
+/- Provided for rewriting. -/
+lemma id_apply (X : BoolAlg) (x : X) :
+    (𝟙 X : X ⟶ X) x = x := by simp
+
+@[simp]
+lemma hom_comp {X Y Z : BoolAlg} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {X Y Z : BoolAlg} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g) x = g (f x) := by simp
+
+@[ext]
+lemma hom_ext {X Y : BoolAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext hf
+
+@[simp]
+lemma hom_ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
+    (ofHom f).hom = f :=
   rfl
-#align BoolAlg.coe_of BoolAlg.coe_of
+
+@[simp]
+lemma ofHom_hom {X Y : BoolAlg} (f : X ⟶ Y) :
+    ofHom (Hom.hom f) = f := rfl
+
+@[simp]
+lemma ofHom_id {X : Type u} [BooleanAlgebra X] : ofHom (BoundedLatticeHom.id _) = 𝟙 (of X) := rfl
+
+@[simp]
+lemma ofHom_comp {X Y Z : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] [BooleanAlgebra Z]
+    (f : BoundedLatticeHom X Y) (g : BoundedLatticeHom Y Z) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
+  rfl
+
+lemma ofHom_apply {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y]
+    (f : BoundedLatticeHom X Y) (x : X) :
+    (ofHom f) x = f x := rfl
+
+lemma inv_hom_apply {X Y : BoolAlg} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
+  simp
+
+lemma hom_inv_apply {X Y : BoolAlg} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
+  simp
 
 instance : Inhabited BoolAlg :=
   ⟨of PUnit⟩
 
 /-- Turn a `BoolAlg` into a `BddDistLat` by forgetting its complement operation. -/
 def toBddDistLat (X : BoolAlg) : BddDistLat :=
-  BddDistLat.of X
-#align BoolAlg.to_BddDistLat BoolAlg.toBddDistLat
+  .of X
 
 @[simp]
 theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
   rfl
-#align BoolAlg.coe_to_BddDistLat BoolAlg.coe_toBddDistLat
 
-instance : LargeCategory.{u} BoolAlg :=
-  InducedCategory.category toBddDistLat
-
-instance : ConcreteCategory BoolAlg :=
-  InducedCategory.concreteCategory toBddDistLat
-
-instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat :=
-  InducedCategory.hasForget₂ toBddDistLat
-#align BoolAlg.has_forget_to_BddDistLat BoolAlg.hasForgetToBddDistLat
+instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat where
+  forget₂.obj X := .of X
+  forget₂.map f := BddDistLat.ofHom f.hom
 
 section
 
@@ -73,31 +168,22 @@ attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 
 @[simps]
 instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
-  forget₂ :=
-    { obj := fun X => {α := X}
-      -- Porting note: was `fun {X Y} f => show BoundedLatticeHom X Y from f`
-      -- which already looks like a hack, but I don't understand why this hack works now and
-      -- the old one didn't
-      map := fun {X Y} (f : BoundedLatticeHom X Y) => show HeytingHom X Y from f }
-#align BoolAlg.has_forget_to_HeytAlg BoolAlg.hasForgetToHeytAlg
+  forget₂.obj X := .of X
+  forget₂.map {X Y} f := HeytAlg.ofHom f.hom
 
 end
 
 /-- Constructs an equivalence between Boolean algebras from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom α β)
-  inv := (e.symm : BoundedLatticeHom β α)
-  hom_inv_id := by ext; exact e.symm_apply_apply _
-  inv_hom_id := by ext; exact e.apply_symm_apply _
-#align BoolAlg.iso.mk BoolAlg.Iso.mk
+  hom := ofHom e
+  inv := ofHom e.symm
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : BoolAlg ⥤ BoolAlg where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
-#align BoolAlg.dual BoolAlg.dual
+  map f := ofHom f.hom.dual
 
 /-- The equivalence between `BoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -106,7 +192,6 @@ def dualEquiv : BoolAlg ≌ BoolAlg where
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-#align BoolAlg.dual_equiv BoolAlg.dualEquiv
 
 end BoolAlg
 
@@ -114,4 +199,9 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
     BoolAlg.dual ⋙ forget₂ BoolAlg BddDistLat =
     forget₂ BoolAlg BddDistLat ⋙ BddDistLat.dual :=
   rfl
-#align BoolAlg_dual_comp_forget_to_BddDistLat boolAlg_dual_comp_forget_to_bddDistLat
+
+/-- The powerset functor. `Set` as a contravariant functor. -/
+@[simps]
+def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
+  obj X := op <| .of (Set X)
+  map {X Y} f := Quiver.Hom.op (BoolAlg.ofHom (CompleteLatticeHom.setPreimage f))

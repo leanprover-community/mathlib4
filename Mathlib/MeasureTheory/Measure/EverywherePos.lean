@@ -3,8 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Topology.UrysohnsLemma
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Tactic.Group
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces
@@ -35,6 +38,8 @@ assuming additionally that `s` has finite measure.
   measures.
 -/
 
+@[expose] public section
+
 open scoped Topology ENNReal NNReal
 open Set Filter
 
@@ -45,12 +50,12 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
 /-- A set `s` is *everywhere positive* (also called *self-supporting*) with respect to a
 measure `μ` if it has positive measure around each of its points, i.e., if all neighborhoods `n`
 of points of `s` satisfy `μ (s ∩ n) > 0`. -/
-@[pp_dot] def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
+def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
   ∀ x ∈ s, ∀ n ∈ 𝓝[s] x, 0 < μ n
 
-/-- * The everywhere positive subset of a set is the subset made of those points all of whose
+/-- The everywhere positive subset of a set is the subset made of those points all of whose
 neighborhoods have positive measure inside the set. -/
-@[pp_dot] def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
+def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
   {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
 
 lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywherePosSubset s ⊆ s :=
@@ -59,7 +64,7 @@ lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywhereP
 /-- The everywhere positive subset of a set is obtained by removing an open set. -/
 lemma exists_isOpen_everywherePosSubset_eq_diff (μ : Measure α) (s : Set α) :
     ∃ u, IsOpen u ∧ μ.everywherePosSubset s = s \ u := by
-  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, zero_lt_iff]⟩
+  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, pos_iff_ne_zero]⟩
   rw [isOpen_iff_mem_nhds]
   intro x ⟨n, ns, hx⟩
   rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 ns with ⟨v, vx, hv⟩
@@ -101,15 +106,15 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
   · exact fun s t hst ht ↦ measure_mono_null hst ht
   · exact fun s t hs ht ↦ measure_union_null hs ht
   · intro x hx
-    obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 :=
-      by simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
-    exact ⟨u, nhdsWithin_mono x (h'k.trans (diff_subset _ _)) ux, hu⟩
+    obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 := by
+      simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
+    exact ⟨u, nhdsWithin_mono x (h'k.trans diff_subset) ux, hu⟩
 
 /-- In a space with an inner regular measure, any measurable set coincides almost everywhere with
 its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact, ENNReal.iSup_eq_zero]
   intro k hk h'k
   exact measure_eq_zero_of_subset_diff_everywherePosSubset h'k hk
@@ -120,8 +125,8 @@ lemma everywherePosSubset_ae_eq_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
-    ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+    ((measure_mono diff_subset).trans_lt h's.lt_top).ne
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]
   intro k hk h'k
@@ -176,8 +181,8 @@ lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) : IsEverywherePos ν s := by
   intro x hx n hn
   rcases h x hx with ⟨t, t_mem, ht⟩
-  apply lt_of_lt_of_le _ (measure_mono (inter_subset_left n t))
-  rw [ht _ (inter_subset_right n t)]
+  grw [← inter_subset_left (s := n)]
+  rw [ht (n ∩ t) inter_subset_right]
   exact hs x hx _ (inter_mem hn (mem_nhdsWithin_of_mem_nhds t_mem))
 
 /-- If two measures coincide locally, then a set is everywhere positive for the former iff it is
@@ -196,13 +201,13 @@ lemma _root_.IsOpen.isEverywherePos [IsOpenPosMeasure μ] (hs : IsOpen s) : IsEv
   apply lt_of_lt_of_le _ (measure_mono hu)
   exact (u_open.inter hs).measure_pos μ ⟨x, ⟨xu, xs⟩⟩
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
   [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If a compact closed set is everywhere positive with respect to a left-invariant measure on a
 topological group, then it is a Gδ set. This is nontrivial, as there is no second-countability or
@@ -239,19 +244,19 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
-  have A n : μ (((x * z ⁻¹) • k) \ k) ≤ u n := by
+  have A n : μ (((x * z⁻¹) • k) \ k) ≤ u n := by
     apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
-      (((mapClusterPt_iff _ _ _).1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
+      ((hz.frequently this).and_eventually (eventually_gt_atTop n)).exists
     refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
-    have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
+    have J : x * (y i)⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
-  have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
-    le_antisymm (ge_of_tendsto u_lim (eventually_of_forall A)) bot_le
+  have B : μ (((x * z⁻¹) • k) \ k) = 0 :=
+    le_antisymm (ge_of_tendsto u_lim (Eventually.of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
-    have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
+    have : μ ((z * x⁻¹) • (((x * z⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
     group
     simp
@@ -259,8 +264,8 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   have : k ∩ ((z * x⁻¹) • k)ᶜ ∈ 𝓝[k] z := by
     apply inter_mem_nhdsWithin k
     apply IsOpen.mem_nhds (by simpa using h'k.smul _)
-    simp only [mem_compl_iff]
-    contrapose! H
+    push _ ∈ _
+    contrapose H
     simpa [mem_smul_set_iff_inv_smul_mem] using H
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
   exact lt_irrefl _ (C.le.trans_lt this)
@@ -294,3 +299,9 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     apply measure_congr
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
+
+end IsTopologicalGroup
+
+end Measure
+
+end MeasureTheory

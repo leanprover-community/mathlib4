@@ -3,10 +3,14 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Expr
-import Mathlib.Data.Matrix.Reflection
+module
 
-#align_import data.matrix.auto from "leanprover-community/mathlib"@"6b711d2ba5d470c040677ddda0c26b0d72283886"
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Util.CompileInductive
 
 /-! # Automatically generated lemmas for working with concrete matrices
 
@@ -21,11 +25,9 @@ example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
   rw [of_mul_of_fin]
 ```
 
-Porting note: these magic lemmas have been skipped for now, though the plumbing lemmas in
-`Mathlib.Data.Matrix.Reflection` are still available
+TODO: These magic lemmas have been skipped for now, though the plumbing lemmas in
+`Mathlib/Data/Matrix/Reflection.lean` are still available.
+They should probably be implemented as simprocs.
 -/
 
-#noalign fin.mmap
-#noalign matrix.fin_eta
-#noalign matrix.fin_to_pexpr
-#noalign matrix.of_mul_of_fin
+public section
