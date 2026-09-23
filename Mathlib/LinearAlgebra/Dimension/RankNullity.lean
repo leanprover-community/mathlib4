@@ -261,13 +261,10 @@ lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul 
 lemma Submodule.finrank_comap_mkQ [Module.Finite R M] (N : Submodule R M)
     (P : Submodule R (M ⧸ N)) :
     finrank R (P.comap N.mkQ) = finrank R P + finrank R N := by
-  have e := quotientQuotientEquivQuotient N _ (N.ker_mkQ.ge.trans (comap_mono (q' := P) bot_le))
+  have e := quotientQuotientEquivQuotient N _ (N.le_comap_mkQ P)
   rw [map_comap_eq_of_surjective N.mkQ_surjective] at e
-  have := e.finrank_eq (R := R)
-  have := P.finrank_quotient_add_finrank (R := R) (M := M ⧸ N)
-  have := (P.comap N.mkQ).finrank_quotient_add_finrank (R := R)
-  have := N.finrank_quotient_add_finrank (R := R)
-  omega
+  grind [e.finrank_eq, P.finrank_quotient_add_finrank, N.finrank_quotient_add_finrank,
+    (P.comap N.mkQ).finrank_quotient_add_finrank]
 
 lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N : Type*}
     [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
@@ -307,11 +304,9 @@ lemma Submodule.exists_le_finrank_eq (N : Submodule R M) {k : ℕ}
     (h₁ : finrank R N ≤ k) (h₂ : k ≤ finrank R M) :
     ∃ W : Submodule R M, N ≤ W ∧ finrank R W = k := by
   have := nontrivial_of_invariantBasisNumber R
-  have := N.finrank_quotient_add_finrank (R := R)
   obtain ⟨f, hf⟩ := exists_linearIndependent_of_le_finrank (R := R) (M := M ⧸ N)
-    (n := k - finrank R N) (by omega)
-  refine ⟨_, N.ker_mkQ.ge.trans (comap_mono (q' := span R (Set.range f)) bot_le), ?_⟩
-  rw [N.finrank_comap_mkQ, finrank_span_eq_card hf, Fintype.card_fin]
-  omega
+    (n := k - finrank R N) (by grind [N.finrank_quotient_add_finrank])
+  exact ⟨_, N.le_comap_mkQ (span R (Set.range f)), by
+    grind [N.finrank_comap_mkQ (span R (Set.range f)), finrank_span_eq_card hf, Fintype.card_fin]⟩
 
 end
