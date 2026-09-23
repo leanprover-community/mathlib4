@@ -226,7 +226,7 @@ lemma variance_eval_multivariateGaussian (hS : S.PosSemidef) (i : ι) :
 lemma measurePreserving_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
     MeasurePreserving (fun x ↦ x i) (multivariateGaussian μ S)
       (gaussianReal (μ i) (S i i).toNNReal) where
-  aemeasurable := (by fun_prop : Measurable _).aemeasurable
+  aemeasurable := by fun_prop
   map_eq := by
     rw [← EuclideanSpace.coe_proj, IsGaussian.map_eq_gaussianReal,
       ContinuousLinearMap.integral_comp_id_comm]

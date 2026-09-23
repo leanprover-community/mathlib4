@@ -478,6 +478,11 @@ protected theorem AEMeasurable.eval {g : α → Π a, X a} (hg : AEMeasurable g 
   use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
   exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
 
+@[fun_prop]
+theorem aemeasurable_pi_apply (μ : Measure (∀ a, X a)) (a : δ) :
+    AEMeasurable (fun f : ∀ a, X a => f a) μ :=
+  measurable_pi_apply .. |>.aemeasurable
+
 variable [Countable δ]
 
 theorem aemeasurable_pi_iff {g : α → Π a, X a} :

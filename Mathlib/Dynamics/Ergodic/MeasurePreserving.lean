@@ -60,9 +60,11 @@ namespace MeasurePreserving
 protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨aemeasurable_id, map_id⟩
 
-protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : AEMeasurable f' μa)
-    (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
-  refine ⟨hf', ?_⟩
+/-- Being measure preserving only depends on the a.e. equivalence class of the map. -/
+@[gcongr]
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (h : f =ᵐ[μa] f') :
+    MeasurePreserving f' μa μb := by
+  refine ⟨hf.aemeasurable.congr h, ?_⟩
   rw [Measure.map_congr h.symm]
   exact hf.map_eq
 
