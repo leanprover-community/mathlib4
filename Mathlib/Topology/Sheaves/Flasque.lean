@@ -115,7 +115,7 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
-theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.ShortExact)
+theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S.ShortExact)
     [IsFlasque S.X₁] : Epi (S.g.1.app (op U)) := by
   refine (AddCommGrpCat.epi_iff_surjective _).mpr (fun s ↦ ?_)
   -- We want to find a preimage of `s` by `S.g`.
@@ -183,7 +183,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
-theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat X)}
+theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)}
     (hS : S.ShortExact) [IsFlasque S.X₁] [IsFlasque S.X₂] : IsFlasque S.X₃ where
   epi {U V} i := by
     have : Epi (S.g.1.app U ≫ S.X₃.obj.map i) := by
