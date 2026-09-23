@@ -1,0 +1,118 @@
+# This file tracks additional formalizations of theorems from the 1000+ theorems project
+# (https://1000-plus.github.io/), which are outside of mathlib but we want to still list on the
+# mathlib webpage.
+#
+# Note: the criteria for inclusion in this list are rather strict: a theorem can be listed only if
+# it is part of one of the following repositories:
+# - cslib or physlib (de-facto official libraries for CS and Physics, respectively)
+# - LeanCamCombi (quasi-official library for combinatorics that cannot be in mathlib yet)
+# - combinatorialgames (used to be part of mathlib, now maintained separately)
+#
+# Further additions must be decided on by the mathlib maintainers.
+
+Q386292:
+  title: Prime number theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2025
+  # TODO: cannot display several URLs nicely yet
+  # links   :
+  #  Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
+  #  With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
+  #  website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  comment: "completed formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
+
+Q681406:
+  title: Euler's rotation theorem
+  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/Mathematics/SO3/Basic.lean#L161
+
+Q748233:
+  title: Sylvester–Gallai theorem
+  authors: Bhavik Mehta
+  url: https://github.com/YaelDillies/LeanCamCombi/blob/6a6a670f324b2af82ae17f21f9d51ac0bc859f6f/LeanCamCombi/SylvesterChvatal.lean#L610
+  date: 2022
+
+Q850495:
+  title: Wick's theorem
+  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/QFT/PerturbationTheory/WickAlgebra/WicksTheorem.lean#L82
+
+Q948664:
+  title: Kneser's addition theorem (combinatorics)
+  authors: Mantas Bakšys, Yaël Dillies
+  url: https://github.com/YaelDillies/LeanCamCombi/blob/master/LeanCamCombi/Kneser/Kneser.lean
+  date: 2022
+
+Q1144897:
+  title: Brouwer fixed-point theorem
+  authors: Brendan Seamas Murphy
+  url: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
+  comment: "in Lean 3"
+
+Q1196729:
+  title: Mertens's theorems
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/58e860034029b94547abe9bd2065f5b3e3f82ebb/PrimeNumberTheoremAnd/RosserSchoenfeldPrime.lean#L788
+  comment: "This link is to a proof of Mertens' second theorem"
+
+Q1308502:
+  title: Church–Rosser theorem
+  authors: Chris Henson, Maximiliano Onofre Martínez
+  url: https://github.com/leanprover/cslib/
+  comment: "CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction."
+
+Q1687147:
+  title: Sprague–Grundy theorem
+  url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
+  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
+  date: 2020
+
+Q3526996:
+  title: Kolmogorov extension theorem
+  authors: Rémy Degenne, Peter Pfaffelhuber
+  date: 2023
+  url: https://github.com/RemyDegenne/kolmogorov_extension4
+
+Q583147:
+  title: Sard's theorem
+  url: https://github.com/urkud/SardMoreira
+  authors: Yury Kudryashov
+  date: 2025-12-16
+  comment: the manifold version is in progress by Michael Rothgang at https://github.com/fpvandoorn/sard
+
+Q6757284:
+  title: Marcinkiewicz theorem
+  authors: Jim Portegies
+  date: 2024-09-06
+  url: https://github.com/fpvandoorn/carleson/blob/master/Carleson/RealInterpolation.lean
+  # will become part of mathlib; update URL in this case!
+
+Q7999144:
+  title: Wiener–Ikehara theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2024
+  # TODO: cannot display several URLs nicely yet
+  # link: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/655055549f8725b3fd4de577435259932129dc4c/PrimeNumberTheoremAnd/Wiener.lean#L2078
+
+
+# MR proposes further for inclusion
+# Prime Number Theorem        part of the mathlib halo
+# Wiener-Ikahara theorem      part of the mathlib halo
+# Sard's theorem              part of the mathlib halo
+# Kolmogorov extension theorem  part of the mathlib halo
+# Marcinkiewicz theorem         part of the mathlib halo (Carleson)
+
+# Proposed for omission
+# - Arrow's theorem
+# - Banach-Tarski theorem
+# - Gödel's incompleteness theorem
+# - Löb's theorem
+# - Tarski's undefinability theorem: all logic
+# - Vitali's theorem      can add once the review process converges
+# - Koebe 1/4 theorem     nice achievement, but code not exceptional quality
+# - Hartog's theorem
+# - Riemann mapping theorem   similar
+# - Jung's theorem
+# - Dilworth's theorem        not sure if good enough
+# - Whitney–Graustein Theorem   less clear
+# flypitch: TODO think!
+# Brouwer: TODO think!
