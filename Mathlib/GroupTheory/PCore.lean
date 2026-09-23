@@ -73,8 +73,8 @@ constrains element orders only through the primes dividing `n`, so for `n ≥ 1`
 not of this form: `IsPGroup 0` holds vacuously, so the only Sylow `0`-subgroup of `H` is `⊤` and
 `pCore 0 H = H` (`pCore_zero`), rather than the `⊥` that `Nat.primeFactors 0 = ∅` would
 suggest. -/
+-- Intersect before mapping, so that `pCore_le` does not need `Sylow p H` to be nonempty.
 def pCore (p : ℕ) (H : Subgroup G) : Subgroup G :=
-  -- Intersect before mapping, so that `pCore_le` does not need `Sylow p H` to be nonempty.
   (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype
 
 /-- The `p`-core equals the intersection of all Sylow `p`-subgroups of `H`,
