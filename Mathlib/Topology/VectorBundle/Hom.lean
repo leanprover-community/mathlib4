@@ -566,8 +566,8 @@ lemma trivializationAt_symm_apply_bilin
   rw [Trivialization.symmL_apply _ hb] at h3
   have h4 := Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb v
   rw [Trivialization.symmL_apply _ hb] at h4
-  rw [show ψ.symm x ϕ u v = ϕ (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v)
-    from by rw [h2 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v), h3, h4]]
+  change ψ.symm x ϕ u v = ϕ (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v)
+  rw [h2 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v), h3, h4]
 
 end TwoVariables
 
