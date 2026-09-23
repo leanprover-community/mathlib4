@@ -14,9 +14,7 @@ public import Mathlib.NumberTheory.Zsqrtd.Basic
 /-!
 # The `ℤ√d` model for the Bareiss elimination
 
-The computable model of the quadratic extensions `ℤ√d`: the elimination runs on `ℤ√d`
-values with the ring's own arithmetic, with exact division by conjugation. Entries are
-`⟨a, b⟩` literals, `√d`, or numerals.
+The computable model of the quadratic extensions `ℤ√d`.
 -/
 
 public meta section
@@ -42,26 +40,47 @@ def evalZsqrtdEntry (d : ℤ) (e : Expr) : MetaM (ℤ√d) := do
   | Zsqrtd.sqrtd _ => return .sqrtd
   | _ => return ⟨← evalInt e, 0⟩
 
-/-- The `ℤ√d` model, for `d` the value of the integer literal `dQ`: the elimination runs
-on `ℤ√d` values with the ring's own arithmetic. -/
-def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
-  let ops : RingOps (ℤ√d) := {
-    zero := 0
-    one := 1
-    mul := (· * ·)
-    sub := (· - ·)
-    divExact := fun x y =>
-      let z := x * star y
-      let n := y.norm
-      ⟨z.re / n, z.im / n⟩
-    isZero := (· == 0) }
-  let prepare (entries : Array (Array Expr)) :
-      MetaM (Array (Array (ℤ√d)) × (BareissData (ℤ√d) → BareissData (ℤ√d))) := do
-    let values ← entries.mapM (·.mapM (evalZsqrtdEntry d))
-    return (values, id)
-  let mkEntry : ℤ√d → MetaM Expr := fun v =>
-    return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
-  mkProducer ops prepare mkEntry
+/-- The arithmetic of `ℤ√d`, with exact division by conjugation. -/
+def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
+  zero := 0
+  one := 1
+  mul := Mul.mul
+  sub := Sub.sub
+  divExact x y :=
+    let z := x * star y
+    let n := y.norm
+    ⟨z.re / n, z.im / n⟩
+  isZero x := x == 0
+
+/-- The integer of a raw literal `Int.ofNat n` or `Int.negOfNat n`. -/
+def intOfRawLit? (e : Expr) : Option ℤ :=
+  match_expr e with
+  | Int.ofNat n => n.rawNatLit?
+  | Int.negOfNat n => n.rawNatLit?.map fun n => -n
+  | _ => none
+
+/-- The value of a literal `⟨re, im⟩ : ℤ√d` with raw integer components. -/
+def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
+  match_expr e with
+  | Zsqrtd.mk _ re im => do return ⟨← intOfRawLit? re, ← intOfRawLit? im⟩
+  | _ => none
+
+/-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components. `d` is the value of
+the integer literal `dQ`. -/
+def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
+  q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
+
+/-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
+with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
+def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
+  let ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
+  ⟨.expr, {
+    ops
+    evalEntry := fun e => return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
+    mkEntry := fun e => do
+      let some v := zsqrtdOfRawLit? d e
+        | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
+      return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }⟩
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`, whose
 equality `decide` settles, so the model needs no entry certifier. -/
@@ -72,6 +91,6 @@ equality `decide` settles, so the model needs no entry certifier. -/
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE
-    return some { producer := zsqrtdProducer dQ d }
+    return some (zsqrtdModel dQ d)
 
 end Mathlib.Tactic.Echelon
