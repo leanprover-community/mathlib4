@@ -26,7 +26,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCat
 open scoped CommRingObj RingObj
 
 /-- If `R` is a ring object, then `Hom(-, R)` is a presheaf of rings. -/
-@[simps! obj]
+@[implicit_reducible, simps! obj]
 def yonedaRingObj (R : C) [RingObj R] : Cᵒᵖ ⥤ RingCat.{v} where
   obj X := ↧(X.unop ⟶ R)
   map f := RingCat.ofHom
@@ -42,7 +42,6 @@ lemma yonedaRingObj_map_apply {R : C} [RingObj R] {X Y : Cᵒᵖ} (f : X ⟶ Y) 
     dsimp% (yonedaRingObj R).map f x = f.unop ≫ x := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `RingObjCat C` into presheaves of rings. -/
 def yonedaRing : RingObjCat C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
   obj R := yonedaRingObj R.X
@@ -55,7 +54,7 @@ def yonedaRing : RingObjCat C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
           map_add' _ _ := AddMonObj.add_comp _ _ _ } }
 
 /-- If `R` is a commutative ring object, then `Hom(-, R)` is a presheaf of commutative rings. -/
-@[simps obj]
+@[implicit_reducible, simps obj]
 def yonedaCommRingObj (R : C) [CommRingObj R] : Cᵒᵖ ⥤ CommRingCat.{v} where
   obj X := ↧(X.unop ⟶ R)
   map f := CommRingCat.ofHom ((yonedaRingObj R).map f).hom
@@ -66,7 +65,6 @@ lemma yonedaCommRingObj_map_apply {R : C} [CommRingObj R] {X Y : Cᵒᵖ} (f : X
     dsimp% (yonedaCommRingObj R).map f x = f.unop ≫ x := rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `CommRingObjCat C` into presheaves of commutative rings. -/
 @[simps obj]
 def yonedaCommRing : CommRingObjCat C ⥤ Cᵒᵖ ⥤ CommRingCat.{v} where

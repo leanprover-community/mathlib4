@@ -65,7 +65,7 @@ that is by the universal property of chosen pullbacks.
   𝟙_ C   ----->  I ⟹ I
 ```
 -/
-@[simps]
+@[implicit_reducible, simps]
 def sections : Over I ⥤ C where
   obj X := pullbackObj (ihom I |>.map X.hom) (curryRightUnitorHom I)
   map u := pullbackMap _ _ _ _ (ihom I |>.map u.left) (𝟙 _) (𝟙 _)
@@ -77,7 +77,6 @@ open ChosenPullbacksAlong
 
 variable [BraidedCategory C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The currying operation `Hom ((toOver I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
@@ -88,7 +87,6 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     simp [braiding_hom_snd])
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The uncurrying operation `Hom A (section X) → Hom ((toOver I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X :=
@@ -125,7 +123,6 @@ open Adjunction
 
 variable (I)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition which is used to define the adjunction between the star functor
 and the sections functor. See `starSectionsAdjunction`. -/
 @[simps homEquiv]

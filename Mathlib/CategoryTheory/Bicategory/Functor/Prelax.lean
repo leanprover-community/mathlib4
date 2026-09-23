@@ -69,7 +69,7 @@ namespace PrelaxFunctorStruct
 
 /-- Construct a lax prefunctor from a map on objects, and prefunctors between the corresponding
 hom types. -/
-@[simps]
+@[implicit_reducible, simps]
 def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a ⟶ b) (F a ⟶ F b)) :
     PrelaxFunctorStruct B C where
   obj := F
@@ -86,7 +86,7 @@ instance : Inhabited (PrelaxFunctorStruct B B) :=
   ⟨PrelaxFunctorStruct.id B⟩
 
 /-- Composition of lax prefunctors. -/
-@[simps]
+@[implicit_reducible, simps]
 def comp (F : PrelaxFunctorStruct B C) (G : PrelaxFunctorStruct C D) : PrelaxFunctorStruct B D where
   toPrefunctor := F.toPrefunctor.comp G.toPrefunctor
   map₂ := fun η => G.map₂ (F.map₂ η)
@@ -122,7 +122,7 @@ variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
 /-- Construct a prelax functor from a map on objects, and functors between the corresponding
 hom types. -/
-@[simps]
+@[implicit_reducible, simps]
 def mkOfHomFunctors (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F a ⟶ F b)) :
     PrelaxFunctor B C where
   toPrelaxFunctorStruct := PrelaxFunctorStruct.mkOfHomPrefunctors F fun a b => (F' a b).toPrefunctor
@@ -140,7 +140,7 @@ instance : Inhabited (PrelaxFunctor B B) :=
 variable (F : PrelaxFunctor B C)
 
 /-- Composition of prelax functors. -/
-@[simps]
+@[implicit_reducible, simps]
 def comp (G : PrelaxFunctor C D) : PrelaxFunctor B D where
   toPrelaxFunctorStruct := PrelaxFunctorStruct.comp F.toPrelaxFunctorStruct G.toPrelaxFunctorStruct
 

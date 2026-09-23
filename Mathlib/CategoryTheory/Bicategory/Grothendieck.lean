@@ -315,7 +315,7 @@ instance category : Category (∫ᶜ F) where
 variable (F)
 
 /-- The projection `∫ᶜ F ⥤ 𝒮` given by projecting both objects and homs to the first factor. -/
-@[simps]
+@[implicit_reducible, simps]
 def forget (F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}) : ∫ᶜ F ⥤ 𝒮 where
   obj X := X.base
   map f := f.base

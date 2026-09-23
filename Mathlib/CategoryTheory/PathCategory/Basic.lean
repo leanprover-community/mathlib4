@@ -108,6 +108,7 @@ attribute [local ext (iff := false)] Functor.ext
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
+@[implicit_reducible]
 def lift {C} [Category* C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
   map {X} {Y} f :=

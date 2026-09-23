@@ -157,6 +157,7 @@ theorem congr_hom_app {X Y : SheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U)
 variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
+@[implicit_reducible]
 def forget : SheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat)
   map {_ _} f := f.hom.base

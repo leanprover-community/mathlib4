@@ -468,13 +468,13 @@ def precomp (c : B) (f : a ⟶ b) : (b ⟶ c) ⥤ (a ⟶ c) where
 set_option backward.defeqAttrib.useBackward true in
 /-- Precomposition of a 1-morphism as a functor from the category of 1-morphisms `a ⟶ b` into the
 category of functors `(b ⟶ c) ⥤ (a ⟶ c)`. -/
-@[simps]
+@[implicit_reducible, simps]
 def precomposing (a b c : B) : (a ⟶ b) ⥤ (b ⟶ c) ⥤ (a ⟶ c) where
   obj f := precomp c f
   map η := { app := (η ▷ ·) }
 
 /-- Postcomposition of a 1-morphism as a functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def postcomp (a : B) (f : b ⟶ c) : (a ⟶ b) ⥤ (a ⟶ c) where
   obj := (· ≫ f)
   map := (· ▷ f)

@@ -78,6 +78,7 @@ def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
 end PartialFun
 
 /-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
+@[implicit_reducible]
 def typeToPartialFun : Type u ⥤ PartialFun where
   obj := id
   map f := PFun.lift (f : _ → _)
@@ -167,7 +168,6 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
       rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
 @[simps!]
