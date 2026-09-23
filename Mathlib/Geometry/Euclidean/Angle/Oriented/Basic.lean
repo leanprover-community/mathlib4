@@ -612,7 +612,7 @@ theorem eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero {x y : V}
   by_cases hy : y = 0; · simp [hy]
   rw [o.angle_eq_abs_oangle_toReal hx hy]
   rw [Real.Angle.sign_eq_zero_iff] at h
-  rcases h with (h | h) <;> simp [h, Real.pi_pos.le]
+  rcases h with (h | h) <;> simp [h]
 
 /-- If two unoriented angles are equal, and the signs of the corresponding oriented angles are
 equal, then the oriented angles are equal (even in degenerate cases). -/
@@ -724,8 +724,7 @@ theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
   · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
-    simp [Real.pi_pos.le]
+  · simp [o.angle_eq_abs_oangle_toReal hx hy, h]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
     rw [h] at ha
     simpa using ha
