@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
@@ -97,7 +98,7 @@ theorem of_subsingleton' [Subsingleton R] (x y : M) : SameRay R x y :=
 /-- `SameRay` is reflexive. -/
 @[refl]
 theorem refl (x : M) : SameRay R x x :=
-  Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
+  Or.inr (Or.inr ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
 
 protected theorem rfl : SameRay R x x :=
   refl _
@@ -126,7 +127,7 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   · exact (hy rfl).elim (fun h => (hx h).elim) fun h => (hz h).elim
   rcases hxy.exists_pos hx hy with ⟨r₁, r₂, hr₁, hr₂, h₁⟩
   rcases hyz.exists_pos hy hz with ⟨r₃, r₄, hr₃, hr₄, h₂⟩
-  refine Or.inr (Or.inr <| ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
+  refine Or.inr (Or.inr ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 
 variable {S : Type*} [CommSemiring S] [PartialOrder S]
@@ -204,7 +205,9 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
   rcases hy.exists_pos hy₀ hz₀ with ⟨ry, rz₂, hry, hrz₂, Hy⟩
   refine Or.inr (Or.inr ⟨rx * ry, ry * rz₁ + rx * rz₂, mul_pos hrx hry, ?_, ?_⟩)
   · positivity
-  · convert! congr(ry • $Hx + rx • $Hy) using 1 <;> module
+  · have h := congr(ry • $Hx + rx • $Hy)
+    module_nf at h ⊢
+    exact h
 
 /-- If `y` and `z` are on the same ray as `x`, then so is `y + z`. -/
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
@@ -241,7 +244,7 @@ def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
 /-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
     (x : Module.Ray R M) : C x :=
-  Quotient.ind (Subtype.rec <| h) x
+  Quotient.ind (Subtype.rec h) x
 
 variable {R}
 

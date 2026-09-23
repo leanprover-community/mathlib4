@@ -23,13 +23,11 @@ define the space of modular forms, cusp forms and prove that the product of two 
 modular form.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open Complex UpperHalfPlane Matrix.SpecialLinearGroup
 
 open scoped Topology Manifold MatrixGroups ComplexConjugate
-
-noncomputable section
 
 section ModularForm
 
@@ -102,6 +100,7 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k 
   holo : ∀ f : F, MDiff (f : ℍ → ℂ)
   zero_at_cusps (f : F) {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsZeroAt f k
 
+@[macro_inline]
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
@@ -119,6 +118,7 @@ lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     Continuous f :=
   (ModularFormClass.holo f).continuous
 
+@[macro_inline]
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
@@ -227,7 +227,7 @@ lemma eq_zero_of_neg_one_mem [Γ.HasDetOne] (h_neg_one : -1 ∈ Γ) (hk : Odd k)
   have hf := slash_action_eqn'' f h_neg_one z
   rw [neg_smul, one_smul, denom_neg, denom_one, hk.neg_one_zpow] at hf
   have h2 : (2 : ℂ) * f z = 0 := by linear_combination hf
-  exact (mul_eq_zero.mp h2).resolve_left (by norm_num)
+  exact (mul_eq_zero.mp h2).resolve_left (by simp)
 
 section
 -- scalar multiplication by real types (no assumption on `Γ`)
@@ -621,7 +621,7 @@ open Filter SlashInvariantForm
 /-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
 @[simps! -fullyApplied]
-def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
+def prod {ι : Type*} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
   toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i))
@@ -637,7 +637,7 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
 /-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
 those indexed by `s : Finset ι` with weight `#s * k`. -/
 @[simps! -fullyApplied]
-def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
+def prodEqualWeights {ι : Type*} {s : Finset ι} {k : ℤ}
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
   prod (s := s) (s.card * k) (by simp) F
@@ -645,48 +645,6 @@ def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
 end GradedRing
 
 end ModularForm
-
-section translate
-
-open ModularForm OnePoint
-
-variable {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} {F : Type*} [FunLike F ℍ ℂ] (f : F)
-
-open ConjAct Pointwise in
-/-- Translating a `ModularForm` by `GL(2, ℝ)`, to obtain a new `ModularForm`. -/
-noncomputable def ModularForm.translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    ModularForm (toConjAct g⁻¹ • Γ) k where
-  __ := SlashInvariantForm.translate f g
-  bdd_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, SlashInvariantForm.coe_translate,
-      ← SlashAction.slash_mul, ← isBoundedAt_infty_iff, ← OnePoint.IsBoundedAt.smul_iff]
-    apply ModularFormClass.bdd_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-  holo' := (ModularFormClass.holo f).slash k g
-
-@[simp]
-lemma ModularForm.coe_translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-open ConjAct Pointwise in
-/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`. -/
-noncomputable def CuspForm.translate [CuspFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    CuspForm (toConjAct g⁻¹ • Γ) k where
-  __ := ModularForm.translate f g
-  zero_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, ModularForm.toSlashInvariantForm_coe,
-      ModularForm.coe_translate, ← SlashAction.slash_mul, ← isZeroAt_infty_iff,
-      ← OnePoint.IsZeroAt.smul_iff]
-    apply CuspFormClass.zero_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-
-@[simp]
-lemma CuspForm.coe_translate [CuspFormClass F Γ k] (g : SL(2, ℤ)) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-end translate
 
 section SL2Z
 
@@ -723,3 +681,5 @@ lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k] :
   exact ⟨g, by simp [mapGL]⟩
 
 end SL2Z
+
+end
