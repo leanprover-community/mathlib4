@@ -738,7 +738,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
 /-- Weak convergence of finite measures is equivalent to convergence of integrals against every
 bounded Lipschitz real-valued function. -/
 theorem FiniteMeasure.tendsto_iff_forall_lipschitz_integral_tendsto
-    {γ Ω : Type*} {F : Filter γ} [F.IsCountablyGenerated] [MeasurableSpace Ω]
+    {γ Ω : Type*} {F : Filter γ} [F.IsCountablyGenerated] [Nonempty Ω] [MeasurableSpace Ω]
     [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔
@@ -756,9 +756,15 @@ theorem FiniteMeasure.tendsto_iff_forall_lipschitz_integral_tendsto
         map_bounded' := hfBound }
     simpa [f'] using hall f'
   · intro h
+    have integral_one_eq_mass (ν : FiniteMeasure Ω) :
+        ∫ _ : Ω, (1 : ℝ) ∂(ν : Measure Ω) = (ν.mass : ℝ) := by
+      rw [integral_const]
+      simp only [smul_eq_mul, mul_one, Measure.real_def]
+      rw [← FiniteMeasure.ennreal_mass]
+      exact ENNReal.coe_toReal ν.mass
     have hmassReal : Tendsto (fun i ↦ ((μs i).mass : ℝ)) F (𝓝 (μ.mass : ℝ)) := by
       have hone := h (fun _ : Ω ↦ 1) ⟨0, by simp⟩ ⟨0, LipschitzWith.const 1⟩
-      simpa using hone
+      simpa only [integral_one_eq_mass] using hone
     have hmass : Tendsto (fun i ↦ (μs i).mass) F (𝓝 μ.mass) :=
       NNReal.tendsto_coe.mp hmassReal
     by_cases hμ : μ = 0
@@ -774,7 +780,8 @@ theorem FiniteMeasure.tendsto_iff_forall_lipschitz_integral_tendsto
         have hi' : (μs i).mass ≠ 0 := by simpa using hi
         exact (μs i).mass_nonzero_iff.mp hi'
       have hnormalize : Tendsto (fun i ↦ (μs i).normalize) F (𝓝 μ.normalize) := by
-        apply tendsto_iff_forall_lipschitz_integral_tendsto.mpr
+        apply (MeasureTheory.tendsto_iff_forall_lipschitz_integral_tendsto
+          (μs := fun i ↦ (μs i).normalize) (μ := μ.normalize)).mpr
         intro f hfBound hfLip
         have hintegral := h f hfBound hfLip
         have hproduct := (hmassReal.inv₀ hμMassReal).mul hintegral
