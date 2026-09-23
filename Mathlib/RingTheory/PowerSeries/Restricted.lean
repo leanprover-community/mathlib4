@@ -74,7 +74,7 @@ lemma isRestricted.neg (hf : IsRestricted c f) : IsRestricted c (-f) :=
 
 lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) :=
-  hf.mul (fun _ ↦ c) hg
+  hf.mul hg
 
 namespace IsRestricted
 
