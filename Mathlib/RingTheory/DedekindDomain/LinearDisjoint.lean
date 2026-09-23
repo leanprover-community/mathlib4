@@ -162,7 +162,7 @@ theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free
       rw [← Submodule.span_span_of_tower R₁ B]
       exact Submodule.subset_span
     · exact traceDual_le_span_map_traceDual A B R₁ R₂ h₁ h₂
-  have := dvd_of_eq <|
+  have := dvd_of_eq
     (IsDedekindDomain.differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃).symm
   rwa [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal (K := L), coeIdeal_differentIdeal R₁ F₁,
     inv_le_comm, ← extendedHom_coeIdeal_eq_map (K := F₂), coeIdeal_differentIdeal A K, map_inv₀,
