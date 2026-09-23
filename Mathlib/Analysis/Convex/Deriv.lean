@@ -931,6 +931,37 @@ lemma deriv_le_slope (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hx
     deriv f y ≤ slope f x y :=
   hfc.le_slope_of_hasDerivAt hx hy hxy hfd.hasDerivAt
 
+/-- A concave real function is globally maximized on its domain at any point where its derivative
+vanishes. -/
+theorem le_of_hasDerivAt_eq_zero (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S)
+    (hzero : HasDerivAt f 0 x) : f y ≤ f x := by
+  rcases lt_trichotomy y x with hyx | rfl | hxy
+  · have hslope : 0 ≤ slope f y x := hfc.le_slope_of_hasDerivAt hy hx hyx hzero
+    rw [slope_def_field] at hslope
+    have hden : 0 < x - y := sub_pos.mpr hyx
+    have hnum : 0 ≤ f x - f y := by
+      rcases div_nonneg_iff.mp hslope with h | h
+      · exact h.1
+      · exact False.elim ((not_le.mpr hden) h.2)
+    exact sub_nonneg.mp hnum
+  · exact le_rfl
+  · have hslope : slope f x y ≤ 0 := hfc.slope_le_of_hasDerivAt hx hy hxy hzero
+    rw [slope_def_field] at hslope
+    have hden : 0 < y - x := sub_pos.mpr hxy
+    have hnum : f y - f x ≤ 0 := by
+      rcases div_nonpos_iff.mp hslope with h | h
+      · exact False.elim ((not_le.mpr hden) h.2)
+      · exact h.1
+    exact sub_nonpos.mp hnum
+
+/-- A concave real function attains its greatest value on its domain at any point where its
+derivative vanishes. -/
+theorem isGreatest_of_hasDerivAt_eq_zero (hfc : ConcaveOn ℝ S f) (hx : x ∈ S)
+    (hzero : HasDerivAt f 0 x) : IsGreatest (f '' S) (f x) := by
+  refine ⟨⟨x, hx, rfl⟩, ?_⟩
+  rintro _ ⟨y, hy, rfl⟩
+  exact hfc.le_of_hasDerivAt_eq_zero hx hy hzero
+
 end right
 /-!
 ### Concave functions, anti-monotonicity of derivative
