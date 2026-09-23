@@ -352,23 +352,25 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
 /--
-`--write-out` format for the get path. curl's `%{json}` report carries no
-response headers, so this format nests that report inside an object that
-also records the headers a failed transfer needs.
+Separates curl's JSON report from the raw header values that follow it on
+the same line. curl escapes control characters inside `%{json}`, so the
+first separator on a line ends the report.
+-/
+def curlFieldSep : String := "\x1f"
 
-`cf-ray` identifies the request in Cloudflare's logs and names the colo.
-`cf-cache-status` says whether the edge cache served the body.
-`content-length` gives the size the body should have reached.
+/-- The response headers that the get path records, in output order. -/
+def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-length"]
 
-A backend that sends no such header still reports curl's own fields,
-because `transferDiagnostics` skips an empty value. `monitorCurl` reads
-curl's own fields from the nested object.
+/--
+`--write-out` format for the get path: curl's `%{json}` report, then the
+value of each header in `curlGetHeaders`, each after `curlFieldSep`.
+curl writes a header value unescaped, so the values stay outside the JSON.
+
+curl before 7.83 prints `%header{…}` literally, and that text reaches only
+a failure line.
 -/
 def curlGetWriteOut : String :=
-  "{\"curl\":%{json}," ++
-  "\"cf_ray\":\"%header{cf-ray}\"," ++
-  "\"cf_cache_status\":\"%header{cf-cache-status}\"," ++
-  "\"content_length\":\"%header{content-length}\"}\n"
+  "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
 
 /--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
@@ -673,31 +675,35 @@ status and an exit code say that a transfer failed; these say how.
 * `time_total` — how long the attempt lasted, which separates an immediate
   reset from a slow stall.
 
-`report` holds curl's own fields and the recorded response headers in one
-object. `payloadKey` names the counter that holds the payload: a download
-reads `size_download`, an upload `size_upload`.
+`report` is curl's own JSON report. `headers` holds the values of
+`curlGetHeaders`, in order, and is empty on the upload path. `payloadKey`
+names the counter that holds the payload: a download reads
+`size_download`, an upload `size_upload`.
 
 Each value describes curl's final attempt, because `--retry` hides the
-earlier ones. This function skips a key that the report lacks, so a
-backend that sends no `cf-*` header just contributes fewer pairs.
+earlier ones. This function skips an absent or empty value, so a backend
+that sends no `cf-*` header just contributes fewer pairs.
 -/
-def transferDiagnostics (payloadKey : String) (report : Lean.Json) : String :=
-  -- An empty header reads as absent, so a backend that omits one drops out.
-  let scalar : Lean.Json → Option String
-    | .str s => if s.isEmpty then none else some s
-    | .null  => none
-    | value  => some value.compress
+def transferDiagnostics (payloadKey : String) (report : Lean.Json)
+    (headers : List String) : String :=
+  let nonEmpty (s : String) : Option String := if s.isEmpty then none else some s
+  let header (name : String) : Option String :=
+    ((curlGetHeaders.zip headers).lookup name).bind nonEmpty
   let field (key : String) : Option String :=
-    (report.getObjVal? key).toOption.bind scalar
-  let pair (key : String) : Option String :=
-    (field key).map fun value => s!"{key}={value}"
+    (report.getObjVal? key).toOption.bind fun
+      | .str s => nonEmpty s
+      | .null  => none
+      | value  => some value.compress
+  let pair (key : String) (value : Option String) : Option String :=
+    value.map fun value => s!"{key}={value}"
   -- Without `content-length` there is no size to compare against.
   let bytes := (field payloadKey).map fun got =>
-    match field "content_length" with
+    match header "content-length" with
     | some want => s!"bytes={got}/{want}"
     | none      => s!"bytes={got}"
   " ".intercalate <| List.reduceOption
-    [bytes, pair "cf_ray", pair "cf_cache_status", pair "http_version", pair "time_total"]
+    [bytes, pair "cf_ray" (header "cf-ray"), pair "cf_cache_status" (header "cf-cache-status"),
+      pair "http_version" (field "http_version"), pair "time_total" (field "time_total")]
 
 def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     (caption : String) (speedVar : String)
@@ -732,12 +738,12 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
     let line := line.trimAscii
+    -- Only curl's report decides the verdict; the header values after it
+    -- reach the failure line and nothing else.
+    let report :: headers := line.copy.splitOn curlFieldSep | unreachable!
     if !line.isEmpty then
-      match Lean.Json.parse line.copy with
-      | .ok outer =>
-        -- The get path wraps curl's report to carry response headers too; the
-        -- upload path writes curl's object on its own.
-        let result := (outer.getObjVal? "curl").toOption.getD outer
+      match Lean.Json.parse report with
+      | .ok result =>
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
         -- The per-transfer JSON report carries `exitcode` from curl 7.75 on;
@@ -796,12 +802,10 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
-              -- `result` and the headers live in one object only here, on the
-              -- rare failure path.
               let payloadKey := match dir with
                 | .download => "size_download"
                 | .upload => "size_upload"
-              let diag := transferDiagnostics payloadKey (Lean.Json.mergeObj result outer)
+              let diag := transferDiagnostics payloadKey result headers
               if !diag.isEmpty then
                 msg := s!"{msg} [{diag}]"
               return msg
