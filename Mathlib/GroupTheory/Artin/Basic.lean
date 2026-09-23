@@ -52,11 +52,11 @@ variable (M : CoxeterMatrix B)
 
 /-- The Artin relation for indices `i` and `j`: the two alternating words of length `M i j`
 are equal. This is encoded as
-`FreeGroup.ofList (CoxeterSystem.alternatingWord i j (M i j)) *
-  FreeGroup.ofList (CoxeterSystem.alternatingWord j i (M i j))⁻¹ = 1`. -/
+`FreeGroup.ofFreeMonoid (FreeMonoid.ofList (CoxeterSystem.alternatingWord i j (M i j))) *
+  FreeGroup.ofFreeMonoid (FreeMonoid.ofList (CoxeterSystem.alternatingWord j i (M i j)))⁻¹ = 1`. -/
 def artinRelation (i j : B) : FreeGroup B :=
-  FreeGroup.ofList (CoxeterSystem.alternatingWord i j (M i j)) *
-    (FreeGroup.ofList (CoxeterSystem.alternatingWord j i (M i j)))⁻¹
+  FreeGroup.ofFreeMonoid (FreeMonoid.ofList (CoxeterSystem.alternatingWord i j (M i j))) *
+    (FreeGroup.ofFreeMonoid (FreeMonoid.ofList (CoxeterSystem.alternatingWord j i (M i j))))⁻¹
 
 /-- The set of all Artin relations associated to the Coxeter matrix `M`. -/
 def artinRelationsSet : Set (FreeGroup B) :=
@@ -105,13 +105,15 @@ theorem alternatingProd_succ {G : Type*} [Monoid G] (f : B → G) (i j : B) (m :
 
 theorem ofList_alternatingWord_eq_lift_alternatingProd {G : Type*} [Group G] (f : B → G)
     (i j : B) (m : ℕ) :
-    FreeGroup.lift f (FreeGroup.ofList (CoxeterSystem.alternatingWord i j m)) =
+    FreeGroup.lift f
+        (FreeGroup.ofFreeMonoid (FreeMonoid.ofList (CoxeterSystem.alternatingWord i j m))) =
       alternatingProd f i j m := by
   induction m generalizing i j with
-  | zero => simp [FreeGroup.ofList, alternatingProd, CoxeterSystem.alternatingWord]
+  | zero => simp [alternatingProd, CoxeterSystem.alternatingWord]
   | succ m ih =>
-    rw [CoxeterSystem.alternatingWord_succ, FreeGroup.ofList_concat]
-    rw [MonoidHom.map_mul, ih, FreeGroup.lift_apply_of, alternatingProd_succ]
+    rw [CoxeterSystem.alternatingWord_succ, List.concat_eq_append, FreeMonoid.ofList_append,
+      MonoidHom.map_mul, MonoidHom.map_mul, ih, FreeMonoid.ofList_singleton,
+      FreeMonoid.lift_eval_of, FreeGroup.lift_apply_of, alternatingProd_succ]
 
 /-- A function `f : B → G` is liftable to the Artin group if it satisfies the braid relations:
 for all `i, j`, the alternating products of length `M i j` are equal. -/
