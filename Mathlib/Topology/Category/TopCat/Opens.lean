@@ -159,7 +159,7 @@ def _root_.TopCat.Hom.frameHom (f : X ⟶ Y) : FrameHom (Opens Y) (Opens X) wher
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
 given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X :=
-  (OrderHom.ofClass f.frameHom).toFunctor
+  f.frameHom.toOrderHom.toFunctor
 
 lemma map_def (f : X ⟶ Y) : map f =
   { obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩

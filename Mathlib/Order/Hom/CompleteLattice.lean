@@ -352,10 +352,15 @@ instance : FrameHomClass (FrameHom α β) α β where
 def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
   f
 
+/-- Reinterpret a `FrameHom` as an `OrderHom`. -/
+def toOrderHom (f : FrameHom α β) : α →o β :=
+  .ofClass f
+
 lemma toFun_eq_coe (f : FrameHom α β) : f.toFun = f := rfl
 
 @[simp] lemma coe_toInfTopHom (f : FrameHom α β) : ⇑f.toInfTopHom = f := rfl
 @[simp] lemma coe_toLatticeHom (f : FrameHom α β) : ⇑f.toLatticeHom = f := rfl
+@[simp] lemma coe_toOrderHom (f : FrameHom α β) : ⇑f.toOrderHom = f := rfl
 @[simp] lemma coe_mk (f : InfTopHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
