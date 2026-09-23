@@ -148,16 +148,6 @@ def ofBifunctor {C : Type*} [Category* C] (tensor : C ⥤ C ⥤ C) (unit : C)
   associator X Y Z := ((associator.app X).app Y).app Z
   leftUnitor X := leftUnitor.app X
   rightUnitor X := rightUnitor.app X
-  tensorHom_def := by intros; rfl
-  id_tensorHom_id X Y := (uncurry.obj tensor).map_id ⟨X, Y⟩
-  tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := by
-    let f : (X₁, X₂) ⟶ (Y₁, Y₂) := ⟨f₁, f₂⟩
-    let g : (Y₁, Y₂) ⟶ (Z₁, Z₂) := ⟨g₁, g₂⟩
-    change (uncurry.obj tensor).map f ≫ (uncurry.obj tensor).map g =
-      (uncurry.obj tensor).map (f ≫ g)
-    exact ((uncurry.obj tensor).map_comp f g).symm
-  whiskerLeft_id X Y := (tensor.obj X).map_id Y
-  id_whiskerRight X Y := NatTrans.congr_app (tensor.map_id X) Y
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by
     dsimp
     simp only [Functor.map_comp, NatTrans.comp_app, Category.assoc]
@@ -180,7 +170,6 @@ def ofBifunctor {C : Type*} [Category* C] (tensor : C ⥤ C ⥤ C) (unit : C)
       NatTrans.congr_app (NatTrans.congr_app (associator.hom.naturality f₁) X₂) X₃
     slice_lhs 1 2 => rw [h₁]
     simp only [Category.assoc]
-  leftUnitor_naturality f := leftUnitor.hom.naturality f
   rightUnitor_naturality f := rightUnitor.hom.naturality f
   pentagon W X Y Z :=
     NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app
