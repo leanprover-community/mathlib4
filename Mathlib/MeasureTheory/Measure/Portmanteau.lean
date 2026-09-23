@@ -735,6 +735,67 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     ring
   · exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
 
+/-- Weak convergence of finite measures is equivalent to convergence of integrals against every
+bounded Lipschitz real-valued function. -/
+theorem FiniteMeasure.tendsto_iff_forall_lipschitz_integral_tendsto
+    {γ Ω : Type*} {F : Filter γ} [F.IsCountablyGenerated] [MeasurableSpace Ω]
+    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
+    {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
+    Tendsto μs F (𝓝 μ) ↔
+      ∀ f : Ω → ℝ,
+        (∃ C : ℝ, ∀ x y, dist (f x) (f y) ≤ C) →
+        (∃ L, LipschitzWith L f) →
+        Tendsto (fun i ↦ ∫ x, f x ∂(μs i : Measure Ω)) F
+          (𝓝 (∫ x, f x ∂(μ : Measure Ω))) := by
+  constructor
+  · intro h f hfBound hfLip
+    have hall := FiniteMeasure.tendsto_iff_forall_integral_tendsto.mp h
+    let f' : BoundedContinuousFunction Ω ℝ :=
+      { toFun := f
+        continuous_toFun := hfLip.choose_spec.continuous
+        map_bounded' := hfBound }
+    simpa [f'] using hall f'
+  · intro h
+    have hmassReal : Tendsto (fun i ↦ ((μs i).mass : ℝ)) F (𝓝 (μ.mass : ℝ)) := by
+      have hone := h (fun _ : Ω ↦ 1) ⟨0, by simp⟩ ⟨0, LipschitzWith.const 1⟩
+      simpa using hone
+    have hmass : Tendsto (fun i ↦ (μs i).mass) F (𝓝 μ.mass) :=
+      NNReal.tendsto_coe.mp hmassReal
+    by_cases hμ : μ = 0
+    · subst μ
+      exact FiniteMeasure.tendsto_zero_of_tendsto_zero_mass hmass
+    · have hμMassReal : (μ.mass : ℝ) ≠ 0 := by
+        exact_mod_cast μ.mass_nonzero_iff.mpr hμ
+      have heventuallyNonzero : ∀ᶠ i in F, μs i ≠ 0 := by
+        have hopen : ({0} : Set ℝ≥0)ᶜ ∈ 𝓝 μ.mass :=
+          isOpen_compl_singleton.mem_nhds (μ.mass_nonzero_iff.mpr hμ)
+        filter_upwards [hmass hopen] with i hi
+        change (μs i).mass ∈ ({0} : Set ℝ≥0)ᶜ at hi
+        have hi' : (μs i).mass ≠ 0 := by simpa using hi
+        exact (μs i).mass_nonzero_iff.mp hi'
+      have hnormalize : Tendsto (fun i ↦ (μs i).normalize) F (𝓝 μ.normalize) := by
+        apply tendsto_iff_forall_lipschitz_integral_tendsto.mpr
+        intro f hfBound hfLip
+        have hintegral := h f hfBound hfLip
+        have hproduct := (hmassReal.inv₀ hμMassReal).mul hintegral
+        have hstage : ∀ᶠ i in F,
+            ∫ x, f x ∂((μs i).normalize : Measure Ω) =
+              (((μs i).mass : ℝ)⁻¹) * ∫ x, f x ∂(μs i : Measure Ω) := by
+          filter_upwards [heventuallyNonzero] with i hi
+          rw [(μs i).toMeasure_normalize_eq_of_nonzero hi, integral_smul_nnreal_measure]
+          change ((↑((μs i).mass⁻¹) : ℝ) * ∫ x, f x ∂(μs i : Measure Ω)) = _
+          rw [NNReal.coe_inv]
+        have htarget :
+            ∫ x, f x ∂(μ.normalize : Measure Ω) =
+              ((μ.mass : ℝ)⁻¹) * ∫ x, f x ∂(μ : Measure Ω) := by
+          rw [μ.toMeasure_normalize_eq_of_nonzero hμ, integral_smul_nnreal_measure]
+          change ((↑(μ.mass⁻¹) : ℝ) * ∫ x, f x ∂(μ : Measure Ω)) = _
+          rw [NNReal.coe_inv]
+        rw [htarget]
+        exact hproduct.congr' (hstage.mono fun _ hi ↦ hi.symm)
+      exact FiniteMeasure.tendsto_of_tendsto_normalize_testAgainstNN_of_tendsto_mass
+        hnormalize hmass
+
 end Lipschitz
 
 section convergenceCriterion
