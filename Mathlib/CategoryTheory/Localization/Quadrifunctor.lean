@@ -120,8 +120,6 @@ noncomputable def lift₄NatTrans : F₁' ⟶ F₂' :=
       (uncurry₄.obj F₁) (uncurry₄.obj F₂) (uncurry₄.obj F₁') (uncurry₄.obj F₂')
       (uncurry₄.map τ))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift₄NatTrans_app_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((lift₄NatTrans L₁ L₂ L₃ L₄ W₁ W₂ W₃ W₄ F₁ F₂ F₁' F₂' τ).app
@@ -149,7 +147,6 @@ theorem natTrans₄_ext {τ τ' : F₁' ⟶ F₂'}
     (natTrans_ext (L₁.prod (L₂.prod (L₃.prod L₄))) (W₁.prod (W₂.prod (W₃.prod W₄)))
       (fun _ ↦ h _ _ _ _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `F₁' ≅ F₂'` of quadrifunctors induced by a natural isomorphism
 `e : F₁ ≅ F₂` when `F₁'` and `F₂'` lift `F₁` and `F₂`, respectively. -/
 @[implicit_reducible, simps]
