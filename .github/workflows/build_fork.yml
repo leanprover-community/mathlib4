@@ -14,10 +14,9 @@ on:
       - '.github/**'
 
 concurrency:
-  # Collapse duplicate runs for the *same* commit: GitHub does dispatch these, two
-  # `pull_request_target` events arriving within a second of each other. Keyed on the head
-  # sha, so runs for *different* commits are never in the same group and so never cancel
-  # each other by arrival order — ordering those is the `guard` job's business. The PR
+  # Collapse duplicate runs for the *same* commit. Keyed on the head sha, so runs for
+  # *different* commits are never in the same group and so never cancel each other 
+  # by arrival order (that part is taken care of by the `guard` job below). The PR
   # number is in the key as well because two PRs can share a single fork branch.
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
   cancel-in-progress: true
