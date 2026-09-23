@@ -40,23 +40,50 @@ open CochainComplex.HomComplex
 
 variable (K : ChainComplex C ℕ) (R : Type*) [Ring R] [Linear R C] (Y : C)
 
-def φ (n : ℤ) : ℤˣ := sorry
+def φ (n : ℤ) : ℤˣ := ((n * (n + 1)) / 2).negOnePow
+
+lemma φ_succ (n : ℤ) : φ (n + 1) = φ n * (n + 1).negOnePow := by
+  simp [φ, ← Int.negOnePow_add]
+  grind
 
 noncomputable def linearYonedaObjXIso (n : ℤ) (k : ℕ) (h : k = n := by lia) :
     (K.linearYonedaObj R Y).X k ≅
       (CochainComplex.linearHomComplex R (K.extend ComplexShape.embeddingDownNat)
         ((CochainComplex.singleFunctor C 0).obj Y)).X n :=
-  φ n • LinearEquiv.toModuleIso
-    ((Linear.homCongr R (HomologicalComplex.extendXIso K ComplexShape.embeddingDownNat
+  ((n * (n + 1)) / 2).negOnePow • LinearEquiv.toModuleIso
+    ((Linear.homCongr R (K.extendXIso ComplexShape.embeddingDownNat
         (by simpa)).symm (Iso.refl Y)).trans
       (Cochain.toSingleLinearEquiv (Int.add_left_neg n)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma linearYonedaObjXIso_hom_apply
+    (m n : ℤ) (k : ℕ) (f : K.X k ⟶ Y) (hn : k = n := by lia) (hm : m + n = 0) :
+    dsimp% (K.linearYonedaObjXIso R Y n k hn).hom f =
+      ((n * (n + 1)) / 2).negOnePow • Cochain.toSingleMk
+        ((K.extendXIso ComplexShape.embeddingDownNat (by simp; lia)).hom≫ f) hm := by
+  obtain rfl : m = -n := by lia
+  simp [linearYonedaObjXIso, Linear.homCongr]
+  rfl
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def linearYonedaObjIso :
-    (K.linearYonedaObj R Y) ≅
+    K.linearYonedaObj R Y ≅
     (CochainComplex.linearHomComplex R (K.extend ComplexShape.embeddingDownNat)
         ((CochainComplex.singleFunctor C 0).obj Y)).restriction ComplexShape.embeddingUpNat :=
-  HomologicalComplex.Hom.isoOfComponents (fun k ↦ K.linearYonedaObjXIso R Y k k rfl) (by
-    sorry)
+  HomologicalComplex.Hom.isoOfComponents (fun k ↦ K.linearYonedaObjXIso R Y k k rfl)
+    (fun n m h ↦ by
+      ext (f : K.X n ⟶ Y) : 2
+      dsimp
+      simp only [dsimp% K.linearYonedaObjXIso_hom_apply R Y (-n) n n _ (by lia) (by lia),
+        dsimp% K.linearYonedaObjXIso_hom_apply R Y (-m) m m _ (by lia) (by lia),
+        Cochain.δ_toSingleMk (p := -n) (q := 0) (n := n) _ (by lia) m (-m) (by lia),
+        K.extend_d_eq ComplexShape.embeddingDownNat (i' := -m) (j' := -n) (i := m) (j := n)
+          (by simp) (by simp), smul_smul, δ_units_smul, Category.assoc, Iso.inv_hom_id_assoc]
+      congr 1
+      obtain rfl : n + 1 = m := by simpa using h
+      rw [← Int.negOnePow_add]
+      grind)
 
 def linearYonedaObjHomologyIso (n : ℤ) (k : ℕ) (h : k = n := by lia) :
     (K.linearYonedaObj R Y).homology k ≅
