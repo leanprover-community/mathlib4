@@ -1794,23 +1794,30 @@ def test_splitWriteOut : IO Unit := do
   assertTrue "and carries no header values" hs.isEmpty
 
 /-- The split relies on curl escaping every control character in `%{json}`.
-A local `file://` copy to a file name with 0x1F and a quote checks this
-against the installed curl: the report ends at the first separator and
-parses back to the same name. A `file://` transfer has no response headers,
-so each header value is empty. -/
+A local `file://` copy checks this against the installed curl: the report
+ends at the first separator and parses back to the output name, and the
+separator byte in the format reaches curl through its argument list and
+comes back on stdout. The output name carries 0x1F and a quote where the
+file system allows them; Windows allows neither, so there the name is
+plain. A `file://` transfer has no response headers, so each header value
+is empty. `%header{…}` needs curl 7.83, so the test skips an older curl. -/
 def test_curlGetWriteOut_real_curl : IO Unit := do
   IO.println "curlGetWriteOut (local curl run):"
-  if System.Platform.isWindows then
-    IO.println "  (skipped on Windows)"
+  let curl ← Cache.IO.getCurl
+  let (maj, min) ← Cache.IO.curlVersion curl
+  if maj < 7 || (maj == 7 && min < 83) then
+    IO.println s!"  (skipped: curl {maj}.{min} has no %header\{…})"
     return
   let dir ← IO.FS.createTempDir
   try
     let src := dir / "src"
     IO.FS.writeFile src "x"
-    let out := dir / "a\x1fb\"c"
-    let args := #["--silent", "--write-out", curlGetWriteOut, "-o", out.toString,
-      s!"file://{src}"]
-    let res ← IO.Process.output { cmd := ← Cache.IO.getCurl, args }
+    let out := dir / (if System.Platform.isWindows then "abc" else "a\x1fb\"c")
+    -- A Windows path needs forward slashes and the `file:///C:/…` form.
+    let srcSlashed := src.toString.replace "\\" "/"
+    let url := if System.Platform.isWindows then s!"file:///{srcSlashed}" else s!"file://{src}"
+    let args := #["--silent", "--write-out", curlGetWriteOut, "-o", out.toString, url]
+    let res ← IO.Process.output { cmd := curl, args }
     let (report, headers) := splitWriteOut res.stdout.trimAscii.copy
     let name := (Lean.Json.parse report).toOption.bind
       (·.getObjValAs? String "filename_effective" |>.toOption)
