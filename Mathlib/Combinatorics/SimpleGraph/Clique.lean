@@ -669,7 +669,7 @@ theorem cliqueFreeOn_iff_cliqueFree_subgraph (s : Set α) (n : ℕ) :
 theorem Embedding.cliqueFreeOn_iff {G : SimpleGraph α} {G' : SimpleGraph β}
     (f : G ↪g G') (s : Set α) (n : ℕ) : G.CliqueFreeOn s n ↔ G'.CliqueFreeOn (f '' s) n := by
   repeat rw [cliqueFreeOn_iff_cliqueFree_subgraph]
-  exact (f.induce_image.cliqueFree_iff n).symm
+  exact (f.induceImage.cliqueFree_iff n).symm
 
 end CliqueFreeOn
 
