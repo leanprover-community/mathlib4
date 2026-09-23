@@ -86,7 +86,7 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
 theorem le_eLpNorm_of_bddBelow' (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → ε} (C : ℝ≥0∞) {s : Set α}
-    (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖ₑ) :
+    (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖ₑ) :
     C * μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
   by_cases hmeas : AEStronglyMeasurable f μ; swap
   · rw [eLpNorm_of_not_aestronglyMeasurable hmeas]; exact le_top
@@ -95,9 +95,10 @@ theorem le_eLpNorm_of_bddBelow' (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → ε}
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
     inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const]
   apply (lintegral_mono_ae _).trans (setLIntegral_le_lintegral s _)
-  rw [← ae_restrict_iff'₀ hs] at hf
-  filter_upwards [hf] with x hx
-  exact ENNReal.rpow_le_rpow hx ENNReal.toReal_nonneg
+  rw [ae_restrict_iff₀]
+  · filter_upwards [hf] with x hfx hx
+    exact ENNReal.rpow_le_rpow (hfx hx) ENNReal.toReal_nonneg
+  · exact nullMeasurableSet_le aemeasurable_const (by fun_prop)
 
 end ESeminormedAddMonoid
 
@@ -235,10 +236,10 @@ theorem MemLp.of_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : Me
 end Monotonicity
 
 theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C : ℝ≥0) {s : Set α}
-    (hs : NullMeasurableSet s μ) (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
+    (hf : ∀ᵐ x ∂μ, x ∈ s → C ≤ ‖f x‖₊) :
     C • μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
   rw [ENNReal.smul_def, smul_eq_mul]
-  apply le_eLpNorm_of_bddBelow' hp hp' C hs
+  apply le_eLpNorm_of_bddBelow' hp hp' C
   simpa only [coe_le_enorm]
 
 section Star
