@@ -46,7 +46,7 @@ public noncomputable section
 
 open Set Real Filter Topology
 
-open scoped ComplexLambertW
+open scoped ComplexLambertW ComplexConjugate
 namespace Complex
 
 variable {α : Type*} {s : Set ℂ} {w z : ℂ} {k : ℤ}
@@ -265,14 +265,37 @@ theorem mapsTo_mul_exp_openRange : MapsTo (fun w => w * cexp w) (openRange k) (s
     rw [openRange_of_ne_zero hk] at hw
     grind [arg_mul_exp_eq_of_mem hw₀ ⟨hw.left, hw.right.le⟩]
 
+theorem conj_mem_openRange (hw : w ∈ openRange k) : conj w ∈ openRange (-k) := by
+  rcases eq_or_ne k 0 with rfl | hk
+  · rw [neg_zero, openRange_zero] at *
+    rcases hw with hw | hw
+    · rw [mem_ofPred, mem_Ioo] at hw
+      by_cases hw' : w.arg = π
+      · simp [hw', arg_eq_pi_iff.mp hw' |>.right] at hw
+      · grind [arg_conj, conj_im]
+    · simpa [mem_reProdIm] using Or.inr <| hw
+  · rw [openRange_of_ne_zero (by simpa), mem_ofPred] at hw ⊢
+    have hw' : w.arg ≠ π := by
+      intro h
+      simp [h, arg_eq_pi_iff.mp h |>.right, field] at hw
+      norm_cast at hw
+      omega
+    grind [arg_conj, conj_im]
+
 end LambertW
 
 open LambertW
 
 -- /-- **TODO** doc -/
--- theorem conj_lambertW_eq_lambertW_neg_conj (hz : z ∈ LambertW.slitPlane k) :
---     conj (W_ k z) = W_ (-k) (conj z) := by
---   sorry
+theorem conj_lambertW_eq_lambertW_neg_conj (hz : z ∈ LambertW.slitPlane k) :
+    conj (W_ k z) = W_ (-k) (conj z) := by
+  rw [← lambertW_mul_exp_of_mem_range <| openRange_subset_range <|
+    conj_mem_openRange <| mapsTo_lambertW_slitPlane hz, exp_conj, ← map_mul,
+    lambertW_mul_exp_lambertW_of_mem_domain <| slitPlane_subset_domain hz]
+
+theorem conj_lambertW_zero (hz : z ∈ LambertW.slitPlane 0) :
+    conj (W₀ z) = W₀ (conj z) := by
+  rw [conj_lambertW_eq_lambertW_neg_conj hz, neg_zero]
 
 -- use which one? `((1 + W_ k z) * cexp (W_ k z))⁻¹`, `(z + cexp (W_ k z))⁻¹`.
 theorem _root_.hasStrictDerivAt_lambertW (hz : z ∈ LambertW.slitPlane k) :
