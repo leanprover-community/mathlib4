@@ -131,7 +131,7 @@ protected theorem lt_tsub_iff_left_of_le (hc : AddLECancellable c) (h : c ≤ b)
 
 protected theorem tsub_inj_right (hab : AddLECancellable (a - b)) (h₁ : b ≤ a) (h₂ : c ≤ a)
     (h₃ : a - b = a - c) : b = c := by
-  rw [← hab.inj]
+  rw [← hab.inj_right]
   rw [tsub_add_cancel_of_le h₁, h₃, tsub_add_cancel_of_le h₂]
 
 protected theorem lt_of_tsub_lt_tsub_left_of_le [AddLeftReflectLT α]

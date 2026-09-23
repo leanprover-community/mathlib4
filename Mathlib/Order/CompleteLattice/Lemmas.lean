@@ -38,13 +38,13 @@ public section
 
 open Function OrderDual Set
 
-variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β : Type*} {ι : Sort*}
 
 open OrderDual
 
 section
 
-variable [CompleteLattice α] {f g s : ι → α} {a b : α}
+variable [CompleteLattice α] {f : ι → α} {a b : α}
 
 /-!
 ### `iSup` and `iInf` under `Bool`
@@ -192,7 +192,7 @@ theorem down_iSup [SupSet α] (f : ι → ULift.{v} α) : (⨆ i, f i).down = �
 
 @[to_dual]
 theorem up_iSup [SupSet α] (f : ι → α) : up (⨆ i, f i) = ⨆ i, up (f i) :=
-  congr_arg ULift.up <| (down_iSup _).symm
+  congr_arg ULift.up (down_iSup _).symm
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
   ULift.down_injective.completeLattice _ .rfl .rfl down_sup down_inf

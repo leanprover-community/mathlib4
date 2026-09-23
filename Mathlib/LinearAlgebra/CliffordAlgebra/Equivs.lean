@@ -106,7 +106,7 @@ theorem involute_eq_id :
 /-- The clifford algebra over a 0-dimensional vector space is isomorphic to its scalars. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
-    (CliffordAlgebra.lift (0 : QuadraticForm R Unit) <|
+    (CliffordAlgebra.lift (0 : QuadraticForm R Unit)
       ⟨0, fun _ : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
     (Algebra.ofId R _) (by ext)
     (by ext : 1; rw [ι_eq_zero, LinearMap.comp_zero, LinearMap.comp_zero])
@@ -341,8 +341,9 @@ variable {R : Type*} [CommRing R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, map_smul, map_smul,
-    smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, map_zero, smul_zero]
+    smul_mul_smul_comm, ι_sq_scalar, zero_apply, map_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
 the dual numbers. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
@@ -354,11 +355,13 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
       fun _ => (Algebra.commutes _ _).symm⟩)
     (by ext : 1; simp) (by ext : 2; simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε := by
   dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
   exact (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equiv_symm_eps :
     CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 := by

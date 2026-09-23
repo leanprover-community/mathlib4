@@ -232,6 +232,7 @@ instance (X : ChainComplex C ℕ) :
     CochainComplex.IsStrictlyLE (X.extend embeddingDownNat) 0 where
   isZero _ _ := isZero_extend_X _ _ _ (by aesop)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A cochain complex that is both strictly `≤ n` and `≥ n` is isomorphic to
 a complex `(single _ _ n).obj M` for some object `M`. -/
 lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
@@ -310,6 +311,24 @@ lemma quasiIso_truncLEMap_iff :
     exact h k _ (by dsimp; lia)
   · rintro h i i' rfl
     exact h _ (by dsimp; lia)
+
+end
+
+section
+
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
+
+lemma isStrictlyGE_mapHomologicalComplex_obj_iff
+    (F : C ⥤ D) [F.Faithful] [F.PreservesZeroMorphisms] (n : ℤ) :
+    CochainComplex.IsStrictlyGE ((F.mapHomologicalComplex (.up ℤ)).obj K) n ↔
+      K.IsStrictlyGE n :=
+  isStrictlySupported_mapHomologicalComplex_obj_iff ..
+
+lemma isStrictlyLE_mapHomologicalComplex_obj_iff
+    (F : C ⥤ D) [F.Faithful] [F.PreservesZeroMorphisms] (n : ℤ) :
+    CochainComplex.IsStrictlyLE ((F.mapHomologicalComplex (.up ℤ)).obj K) n ↔
+      K.IsStrictlyLE n :=
+  isStrictlySupported_mapHomologicalComplex_obj_iff ..
 
 end
 

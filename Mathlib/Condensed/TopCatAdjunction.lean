@@ -38,11 +38,11 @@ set_option backward.privateInPublic.warn false in
 /-- Let `X` be a condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from compact Hausdorff `S` spaces to `X(*)`, corresponding to elements of `X(S)`.
 In other words, the topology coinduced by the map `CondensedSet.coinducingCoprod` above. -/
-local instance : TopologicalSpace (X.obj.obj ⟨CompHaus.of PUnit⟩) :=
+local instance : TopologicalSpace (X.obj.obj ⟨↧PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `CondensedSet ⥤ TopCat` -/
-abbrev CondensedSet.toTopCat : TopCat.{u + 1} := TopCat.of (X.obj.obj ⟨of PUnit⟩)
+abbrev CondensedSet.toTopCat : TopCat.{u + 1} := ↧(X.obj.obj ⟨of PUnit⟩)
 
 namespace CondensedSet
 
@@ -82,21 +82,15 @@ def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1} where
 
 namespace CondensedSet
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
+@[simps!]
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
       rw [continuous_coinduced_dom]
       continuity }
-
-/-- `simp`-normal form of the lemma that `@[simps]` would generate. -/
-@[simp] lemma topCatAdjunctionCounit_hom_apply (X : TopCat) (x) :
-    -- We have to specify here to not infer the `TopologicalSpace` instance on `C(PUnit, X)`,
-    -- which suggests type synonyms are being unfolded too far somewhere.
-    DFunLike.coe (F := @ContinuousMap C(PUnit, X) X (_) _)
-        (TopCat.Hom.hom (topCatAdjunctionCounit X)) x =
-      x PUnit.unit := rfl
 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
@@ -110,6 +104,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
   (topCatAdjunctionCounitEquiv X).bijective
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
@@ -159,7 +154,7 @@ instance (X : CondensedSet.{u}) :
 
 /-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
 def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u + 1} where
-  obj X := CompactlyGenerated.of (condensedSetToTopCat.obj X)
+  obj X := ↧(condensedSetToTopCat.obj X)
   map f := InducedCategory.homMk (toTopCatMap f)
 
 /--

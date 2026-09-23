@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Bounds on specific values of the exponential
@@ -71,7 +72,7 @@ theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   suffices |log 2 - 287209 / 414355| ≤ 1 / 17179869184 + (1 / 10 ^ 10 - 1 / 2 ^ 34) by
     norm_num1 at *
     assumption
-  have t : |(2⁻¹ : ℝ)| = 2⁻¹ := by rw [abs_of_pos]; norm_num
+  have t : |(2⁻¹ : ℝ)| = 2⁻¹ := by rw [abs_of_pos]; simp
   have z := Real.abs_log_sub_add_sum_range_le (show |(2⁻¹ : ℝ)| < 1 by rw [t]; norm_num) 34
   rw [t] at z
   norm_num1 at z
@@ -103,6 +104,8 @@ theorem log_three_gt_d9 : 1.0986122885 < log 3 :=
 theorem log_three_lt_d9 : log 3 < 1.0986122888 :=
   lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 log_three_near_10).1) (by norm_num)
 
+theorem log_four_eq : log 4 = 2 * log 2 := by norm_num [← log_rpow]
+
 theorem log_five_near_10 : |log 5 - 160943791243 / 100000000000| ≤ 1 / 10 ^ 10 := by
   suffices |log 5 - 160943791243 / 100000000000| ≤
       (4 / 5) ^ 131 / 5⁻¹ + (1 / 10 ^ 10 - (4 / 5) ^ 131 / 5⁻¹) by
@@ -120,5 +123,7 @@ theorem log_five_gt_d9 : 1.6094379123 < log 5 :=
 
 theorem log_five_lt_d9 : log 5 < 1.6094379126 :=
   lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 log_five_near_10).1) (by norm_num)
+
+theorem log_ten_eq : log 10 = log 2 + log 5 := by norm_num [← log_mul]
 
 end Real

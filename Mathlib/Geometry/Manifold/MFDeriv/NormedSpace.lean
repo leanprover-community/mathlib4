@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! # Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -35,7 +34,8 @@ In addition to the above, this file provides two important definitions.
 This file contains
 * results about the differentiability of scalar multiplication (`mfderiv_smul` and friends),
 * basic lemmas about `mvfderiv` (such as addition, subtraction, multiplication and constants),
-* analogous lemmas about `mvfderivWithin`.
+* analogous lemmas about `mvfderivWithin`,
+* composition lemmas about `mvfderivWithin` and `mvfderiv`.
 
 -/
 
@@ -105,6 +105,7 @@ section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
@@ -310,15 +311,18 @@ theorem MDifferentiableWithinAt.smul
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
     (hf.prodMk hg)
 
+@[to_fun]
 theorem MDifferentiableAt.smul (hf : MDiffAt f x)
-    (hg : MDiffAt g x) : MDiffAt (fun p ↦ f p • g p) x :=
+    (hg : MDiffAt g x) : MDiffAt (f • g) x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)
 
+@[to_fun]
 theorem MDifferentiableOn.smul (hf : MDiff[s] f)
-    (hg : MDiff[s] g) : MDiff[s] (fun p ↦ f p • g p) :=
+    (hg : MDiff[s] g) : MDiff[s] (f • g) :=
   fun x hx ↦ (hf x hx).smul (hg x hx)
 
-theorem MDifferentiable.smul (hf : MDiff f) (hg : MDiff g) : MDiff fun p ↦ f p • g p :=
+@[to_fun]
+theorem MDifferentiable.smul (hf : MDiff f) (hg : MDiff g) : MDiff (f • g) :=
   fun x ↦ (hf x).smul (hg x)
 
 -- TODO: deprecate in favour of `mvfderiv_smul`, then delete this lemma
@@ -454,7 +458,7 @@ open Lean Meta Elab Tactic
 
 set_option doc.verso true in
 set_option doc.verso.suggestions false in
-/-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I J f s x`,
+/-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I f s x`,
 trying to determine `I` and `J` from the local context.
 
 {insertDocstringOf mfderivWithin}
@@ -465,7 +469,7 @@ scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderivWithin #[srcI, e, es]
 
-/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
+/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I f x`,
 trying to determine `I` and `J` from the local context.
 
 {insertDocstringOf mvfderiv} -/
@@ -484,7 +488,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 16 do
   let ss ← withAppArg delab
-  let fs ← withNaryArg 14 <| delab
+  let fs ← withNaryArg 14 delab
   `(d[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `mvfderiv`. -/
@@ -545,13 +549,7 @@ lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : 
   simp [mul_comm]
 
 @[simp]
-lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffAt[s] x) :
-    d[s] (0 : M → F) x = 0 := by
-  have : d[s] (0 : M → F) x + d[s] (0 : M → F) x = d[s] (0 : M → F) x := by
-    rw [← mvfderivWithin_add (by exact mdifferentiableWithinAt_const)
-      (by exact mdifferentiableWithinAt_const) hs]
-    simp
-  simpa using this
+lemma mvfderivWithin_zero {s : Set M} : d[s] (0 : M → F) x = 0 := mvfderivWithin_const 0
 
 lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
   simp [mvfderiv, mfderiv_const]
@@ -589,9 +587,108 @@ lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g
   simp [mul_comm _ (g x)]
 
 @[simp]
-lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
-  have : d% (0 : M → F) x + d% (0 : M → F) x = d% (0 : M → F) x := by
-    rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
-    simp
-  simpa using this
+lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := mvfderiv_const 0
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
+
+-- TODO: the next two lemmas are more type correct than their `mvfderiv` cousins, but not entirely:
+-- the right hand side should be of the form `fderiv ∘SL TangentSpaceCastModel`.
+protected theorem MDifferentiableWithinAt.mvfderivWithin {f : M → E'} (h : MDiffAt[s] f x) :
+    d[s] f x = fderivWithin 𝕜 (writtenInExtChartAt I 𝓘(𝕜, E') x f)
+      ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  convert! h.mfderivWithin
+
+protected theorem MDifferentiableAt.mvfderiv {f : M → E'} (h : MDiffAt f x) :
+    d% f x = fderivWithin 𝕜 (writtenInExtChartAt I 𝓘(𝕜, E') x f) (range I) (extChartAt I x x) := by
+  convert! h.mfderiv
+
+section
+
+variable {f : E → E'} {s : Set E} {x : E}
+
+/-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide. -/
+@[simp]
+theorem mvfderivWithin_eq_fderivWithin :
+    d[s] f x = (fderivWithin 𝕜 f s x) ∘L (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
+  by_cases h : MDiffAt[s] f x
+  · simp [mvfderivWithin, mfderivWithin, h, chartAt_self_eq]
+    rfl
+  · simp only [mvfderivWithin, mfderivWithin, h]
+    rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
+    exact (fderivWithin_zero_of_not_differentiableWithinAt h).symm
+
+/-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide. -/
+@[simp]
+theorem mvfderiv_eq_fderiv :
+    d% f x = (fderiv 𝕜 f x) ∘L (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
+  rw [← mvfderivWithin_univ, ← fderivWithin_univ, mvfderivWithin_eq_fderivWithin]
+
+/-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide. -/
+theorem mfderivWithin_eq_fderivWithin :
+    mfderiv[s] f x =
+      (NormedSpace.fromTangentSpace (𝕜 := 𝕜) (f x)).symm ∘L (fderivWithin 𝕜 f s x) ∘L
+        (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
+  convert! mvfderivWithin_eq_fderivWithin
+
+/-- For maps between vector spaces, `mfderiv` and `fderiv` coincide. -/
+theorem mfderiv_eq_fderiv :
+    mfderiv% f x =
+      (NormedSpace.fromTangentSpace (𝕜 := 𝕜) (f x)).symm ∘L (fderiv 𝕜 f x) ∘L
+        (NormedSpace.fromTangentSpace (𝕜 := 𝕜) x) := by
+  convert! mvfderiv_eq_fderiv
+
+end
+
+/-! ## Composition lemmas for `mvfderiv(Within)` -/
+section
+
+variable {f : M' → M} {g : M → F} {x : M'} {y : M} {u : Set M} {s : Set M'}
+
+theorem mvfderivWithin_comp (x : M') (hg : MDiffAt[u] g (f x)) (hf : MDiffAt[s] f x)
+    (h : s ⊆ f ⁻¹' u) (hxs : UniqueMDiffAt[s] x) :
+    d[s] (g ∘ f) x = (d[u] g (f x)).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp x hg hf h hxs
+
+theorem mvfderivWithin_comp_of_eq (hg : MDiffAt[u] g y) (hf : MDiffAt[s] f x)
+    (h : s ⊆ f ⁻¹' u) (hxs : UniqueMDiffAt[s] x) (hy : f x = y) :
+    d[s] (g ∘ f) x = (d[u] g y).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp_of_eq hg hf h hxs hy
+
+theorem mvfderivWithin_comp_of_preimage_mem_nhdsWithin (x : M') (hg : MDiffAt[u] g (f x))
+    (hf : MDiffAt[s] f x) (h : f ⁻¹' u ∈ 𝓝[s] x) (hxs : UniqueMDiffAt[s] x) :
+    d[s] (g ∘ f) x = (d[u] g (f x)).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp_of_preimage_mem_nhdsWithin x hg hf h hxs
+
+theorem mvfderivWithin_comp_of_preimage_mem_nhdsWithin_of_eq (x : M') (hg : MDiffAt[u] g y)
+    (hf : MDiffAt[s] f x) (h : f ⁻¹' u ∈ 𝓝[s] x) (hxs : UniqueMDiffAt[s] x) (hy : f x = y) :
+    d[s] (g ∘ f) x = (d[u] g y).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp_of_preimage_mem_nhdsWithin_of_eq x hg hf h hxs hy
+
+theorem mvfderiv_comp_mfderivWithin
+    (x : M') (hg : MDiffAt g (f x)) (hf : MDiffAt[s] f x) (hxs : UniqueMDiffAt[s] x) :
+    d[s] (g ∘ f) x = (d% g (f x)).comp (mfderiv[s] f x) :=
+  mfderiv_comp_mfderivWithin x hg hf hxs
+
+theorem mvfderiv_comp_mfderivWithin_of_eq
+    (hg : MDiffAt g y) (hf : MDiffAt[s] f x) (hxs : UniqueMDiffAt[s] x) (hy : f x = y) :
+    d[s] (g ∘ f) x = (d% g y).comp (mfderiv[s] f x) :=
+  mfderiv_comp_mfderivWithin_of_eq hg hf hxs hy
+
+theorem mvfderiv_comp (x : M') (hg : MDiffAt g (f x)) (hf : MDiffAt f x) :
+    d% (g ∘ f) x = (d% g (f x)).comp (mfderiv% f x) :=
+  mfderiv_comp x hg hf
+
+theorem mvfderiv_comp_of_eq {y : M} (hg : MDiffAt g y) (hf : MDiffAt f x) (hy : f x = y) :
+    d% (g ∘ f) x = (d% g (f x)).comp (mfderiv% f x) :=
+  mfderiv_comp_of_eq hg hf hy
+
+theorem mvfderiv_comp_apply
+    (x : M') (hg : MDiffAt g (f x)) (hf : MDiffAt f x) (v : TangentSpace% x) :
+    d% (g ∘ f) x v = (d% g (f x)) ((mfderiv% f x) v) :=
+  mfderiv_comp_apply x hg hf v
+
+theorem mvfderiv_comp_apply_of_eq
+    (x : M') (hg : MDiffAt g y) (hf : MDiffAt f x) (hy : f x = y) (v : TangentSpace% x) :
+    d% (g ∘ f) x v = (d% g y) ((mfderiv% f x) v) :=
+  mfderiv_comp_apply_of_eq x hg hf hy v
+
+end

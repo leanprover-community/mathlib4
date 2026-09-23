@@ -25,7 +25,6 @@ public section
 assert_not_exists Field
 
 variable {G : Type*} [Group G]
-variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
 
@@ -160,6 +159,10 @@ theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H �
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
 
 @[to_additive]
+theorem card_lt_of_lt {H K : Subgroup G} [Finite K] (h : H < K) : Nat.card H < Nat.card K :=
+  (Set.toFinite _).card_lt_card h
+
+@[to_additive]
 theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
     (hf : Function.Injective f) :
     Nat.card (map f K) = Nat.card K := by
@@ -217,7 +220,7 @@ section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
     x ∈ Subgroup.normalizer S := by
-  haveI := Classical.propDecidable; cases nonempty_fintype S
+  have := Classical.propDecidable; cases nonempty_fintype S
   exact fun n =>
     ⟨h n, fun h₁ =>
       have heq : (fun n => x * n * x⁻¹) '' S = S :=

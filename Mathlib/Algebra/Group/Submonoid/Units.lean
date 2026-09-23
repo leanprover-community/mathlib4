@@ -184,12 +184,12 @@ elements of `S`. -/
 @[to_additive /-- The equivalence between the additive subgroup of additive units of
 `S` and the additive submonoid of additive unit elements of `S`. -/]
 noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsUnit.submonoid S :=
-S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
+  S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 
 end Units
 
 instance instSubsingletonUnits [Subsingleton Mˣ] {S : Submonoid M} : Subsingleton Sˣ :=
-   .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
+  .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
 
 end Submonoid
 

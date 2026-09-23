@@ -23,7 +23,7 @@ namespace Polynomial
 
 universe u v y
 
-variable {R : Type u} {S : Type v} {a b : R} {m n : ℕ} {ι : Type y}
+variable {R : Type u} {S : Type v} {a : R} {m n : ℕ}
 
 section IntegralNormalization
 
@@ -63,7 +63,7 @@ theorem support_integralNormalization_subset :
   simp +contextual [sum_def, integralNormalization, coeff_monomial, mem_support_iff]
 
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
-    (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, if_pos hi]
+    (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, ite_eq_left hi]
 
 theorem integralNormalization_coeff_natDegree (hp : p ≠ 0) :
     (integralNormalization p).coeff (natDegree p) = 1 :=
@@ -71,7 +71,7 @@ theorem integralNormalization_coeff_natDegree (hp : p ≠ 0) :
 
 theorem integralNormalization_coeff_degree_ne {i : ℕ} (hi : p.degree ≠ i) :
     coeff (integralNormalization p) i = coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) := by
-  rw [integralNormalization_coeff, if_neg hi]
+  rw [integralNormalization_coeff, ite_eq_right hi]
 
 theorem integralNormalization_coeff_ne_natDegree {i : ℕ} (hi : i ≠ natDegree p) :
     coeff (integralNormalization p) i = coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) :=
@@ -125,9 +125,6 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
       exact coe_lt_degree.mp h'
     · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
 
-@[deprecated (since := "2025-11-24")] alias integralNormalization_degree :=
-  degree_integralNormalization
-
 variable {A : Type*} [CommSemiring S] [Semiring A]
 
 theorem leadingCoeff_smul_integralNormalization (p : S[X]) :
@@ -149,6 +146,13 @@ theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (
     (integralNormalization p).eval₂ f (f p.leadingCoeff * x) =
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x :=
   integralNormalization_eval₂_leadingCoeff_mul_of_commute h _ _ (.all _ _) (.all _ _)
+
+lemma integralNormalization_aeval_smul {R} [CommSemiring R] [Algebra R S] {p : R[X]}
+    (h : 1 ≤ p.natDegree) (x : S) :
+    p.integralNormalization.aeval (p.leadingCoeff • x) =
+      p.leadingCoeff ^ (p.natDegree - 1) • p.aeval x := by
+  simp_rw [Algebra.smul_def, map_pow]
+  exact integralNormalization_eval₂_leadingCoeff_mul h _ _
 
 theorem integralNormalization_eval₂_eq_zero_of_commute {p : R[X]} (f : R →+* A) {z : A}
     (hz : eval₂ f z p = 0) (h₁ : Commute (f p.leadingCoeff) z) (h₂ : ∀ {r r'}, Commute (f r) (f r'))
@@ -188,7 +192,7 @@ variable [Semiring R] [IsCancelMulZero R]
 @[simp]
 theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
-  nontriviality R using Subsingleton.eq_zero
+  nontriviality R using Subsingleton.eq_zero (α := R[X])
   have : IsDomain R := {}
   by_cases hf : f = 0; · simp [hf]
   ext i

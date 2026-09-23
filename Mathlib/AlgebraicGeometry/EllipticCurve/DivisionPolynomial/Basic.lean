@@ -273,12 +273,12 @@ lemma ΨSq_neg (n : ℤ) : W.ΨSq (-n) = W.ΨSq n := by
 lemma ΨSq_even (m : ℤ) : W.ΨSq (2 * m) =
     (W.preΨ (m - 1) ^ 2 * W.preΨ m * W.preΨ (m + 2) -
       W.preΨ (m - 2) * W.preΨ m * W.preΨ (m + 1) ^ 2) ^ 2 * W.Ψ₂Sq := by
-  rw [ΨSq, preΨ_even, if_pos <| even_two_mul m]
+  rw [ΨSq, preΨ_even, ite_eq_left <| even_two_mul m]
 
 lemma ΨSq_odd (m : ℤ) : W.ΨSq (2 * m + 1) =
     (W.preΨ (m + 2) * W.preΨ m ^ 3 * (if Even m then W.Ψ₂Sq ^ 2 else 1) -
       W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3 * (if Even m then 1 else W.Ψ₂Sq ^ 2)) ^ 2 := by
-  rw [ΨSq, preΨ_odd, if_neg m.not_even_two_mul_add_one, mul_one]
+  rw [ΨSq, preΨ_odd, ite_eq_right m.not_even_two_mul_add_one, mul_one]
 
 end ΨSq
 
@@ -322,8 +322,8 @@ lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
 
 lemma Ψ_even (m : ℤ) : W.Ψ (2 * m) * W.ψ₂ =
     W.Ψ (m - 1) ^ 2 * W.Ψ m * W.Ψ (m + 2) - W.Ψ (m - 2) * W.Ψ m * W.Ψ (m + 1) ^ 2 := by
-  simp_rw [Ψ, preΨ_even, if_pos <| even_two_mul m, Int.even_add, Int.even_sub, even_two, iff_true,
-    Int.not_even_one, iff_false]
+  simp_rw [Ψ, preΨ_even, ite_eq_left <| even_two_mul m, Int.even_add, Int.even_sub, even_two,
+    iff_true, Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> ring1
 
 lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
@@ -331,8 +331,8 @@ lemma Ψ_odd (m : ℤ) : W.Ψ (2 * m + 1) =
       W.toAffine.polynomial * (16 * W.toAffine.polynomial - 8 * W.ψ₂ ^ 2) *
         C (if Even m then W.preΨ (m + 2) * W.preΨ m ^ 3
             else -W.preΨ (m - 1) * W.preΨ (m + 1) ^ 3) := by
-  simp_rw [Ψ, preΨ_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub, even_two,
-    iff_true, Int.not_even_one, iff_false]
+  simp_rw [Ψ, preΨ_odd, ite_eq_right m.not_even_two_mul_add_one, Int.even_add, Int.even_sub,
+    even_two, iff_true, Int.not_even_one, iff_false]
   split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
 
 lemma Affine.CoordinateRing.mk_Ψ_sq (n : ℤ) : mk W (W.Ψ n) ^ 2 = mk W (C <| W.ΨSq n) := by
@@ -369,21 +369,21 @@ lemma Φ_one : W.Φ 1 = X := by
 
 @[simp]
 lemma Φ_two : W.Φ 2 = X ^ 4 - C W.b₄ * X ^ 2 - C (2 * W.b₆) * X - C W.b₈ := by
-  rw [show 2 = ((1 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_two, if_neg Nat.not_even_one, Ψ₂Sq,
-    preΨ'_three, preΨ'_one, if_neg Nat.not_even_one, Ψ₃]
+  rw [show 2 = ((1 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_two, ite_eq_right Nat.not_even_one, Ψ₂Sq,
+    preΨ'_three, preΨ'_one, ite_eq_right Nat.not_even_one, Ψ₃]
   C_simp
   ring1
 
 @[simp]
 lemma Φ_three : W.Φ 3 = X * W.Ψ₃ ^ 2 - W.preΨ₄ * W.Ψ₂Sq := by
-  rw [show 3 = ((2 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_three, if_pos <| by decide, mul_one,
-    preΨ'_four, preΨ'_two, mul_one, if_pos even_two]
+  rw [show 3 = ((2 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_three, ite_eq_left <| by decide, mul_one,
+    preΨ'_four, preΨ'_two, mul_one, ite_eq_left even_two]
 
 @[simp]
 lemma Φ_four : W.Φ 4 = X * W.preΨ₄ ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.preΨ₄ * W.Ψ₂Sq ^ 2 - W.Ψ₃ ^ 3) := by
-  rw [show 4 = ((3 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_four, if_neg <| by decide,
-    show 3 + 2 = 2 * 2 + 1 by rfl, preΨ'_odd, preΨ'_four, preΨ'_two, if_pos Even.zero, preΨ'_one,
-    preΨ'_three, if_pos Even.zero, if_neg <| by decide]
+  rw [show 4 = ((3 : ℕ) + 1 : ℤ) by rfl, Φ_ofNat, preΨ'_four, ite_eq_right <| by decide,
+    show 3 + 2 = 2 * 2 + 1 by rfl, preΨ'_odd, preΨ'_four, preΨ'_two, ite_eq_left Even.zero,
+    preΨ'_one, preΨ'_three, ite_eq_left Even.zero, ite_eq_right <| by decide]
   ring1
 
 @[simp]
