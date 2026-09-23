@@ -132,6 +132,8 @@ example (f : Nat → Nat) (hf : ∀ x, f x < 5)
     (hfg : ∀ x, g (f x) (hf x) = x)
     (c : Nat) (s : Nat → Prop) :
     (∃ x, ∃ h : ∃ y, s y ∧ f y = x, g x (by grind) = c) ↔ s c := by
+   -- The body depends on `h` so `exists_prop` is not applicable
+  fail_if_success simp only [exists_prop]
   simp only [existsAndEq]
   guard_target = (∃ y, ∃ _ : s y ∧ True, g (f y) (hf y) = c) ↔ s c
   grind
