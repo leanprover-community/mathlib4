@@ -43,7 +43,7 @@ def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
     return n
 
 /-- The rational model. -/
-def ratModel {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
+def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     MetaM ((c : Carrier) × Model c.type) := do
   -- the characteristic determines the zero test
   let pQ : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)

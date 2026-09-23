@@ -31,19 +31,19 @@ namespace Mathlib.Tactic.Echelon
 with kernel-decidable equality. -/
 def checkBareissApplicable {u : Level} (α : Q(Type u)) :
     MetaM (Except MessageData Q(CommRing $α)) := do
-  let .some _cr ← trySynthInstanceQ q(CommRing $α)
+  let .some rα ← trySynthInstanceQ q(CommRing $α)
     | return .error m!"expected the element type to be a commutative ring"
   let .some _ ← trySynthInstanceQ q(IsDomain $α)
     | return .error m!"expected the element type to be a domain"
   try
-    checkKernelDecide α _cr
+    checkKernelDecide α rα
   catch e =>
     return .error e.toMessageData
-  return .ok _cr
+  return .ok rα
 
 /-- Select the first registered computation model for the element type `α`, or the default
 rational model. -/
-def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
+def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     MetaM ((c : Carrier) × Model c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
     if let some model ← ext.model? α then
@@ -51,7 +51,7 @@ def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
       return model
   trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
     model for{indentExpr α}"
-  ratModel α _cr
+  ratModel α rα
 
 /-- The result of producer evaluation and certificate construction, together with the carrier
 model. -/
@@ -67,14 +67,14 @@ structure BareissResult where
 
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
 `A`. -/
-def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) :
     MetaM BareissResult := do
-  let ⟨carrier, model⟩ ← modelFor α _cr
+  let ⟨carrier, model⟩ ← modelFor α rα
   let fractions ← entries.mapM fun row => row.mapM model.evalEntry
   let (values, scales) := scaleRows model.ops model.commonMultiple fractions
   let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
   let d ← data.mapM model.mkEntry
-  return { cert := ← mkCertificate _cr A entries d, carrier, model, data }
+  return { cert := ← mkCertificate rα A entries d, carrier, model, data }
 
 end Mathlib.Tactic.Echelon
