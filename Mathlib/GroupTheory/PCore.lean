@@ -63,18 +63,8 @@ open scoped Pointwise
 
 variable {G : Type*} [Group G] {p : ℕ} {H : Subgroup G}
 
-/-- The **`p`-core** `O_p(H)` of a subgroup `H` of `G`: the intersection of the Sylow
-`p`-subgroups of `H`, embedded back into `G` via `H.subtype`. It is a `Subgroup G` contained
-in `H` (see `pCore_le`); by `isPGroup_pCore` it is a `p`-group and by `pCore_subgroupOf_normal`
-it is normal in `H`, and `le_pCore` says it is the largest such, so it agrees with the usual
-definition as the supremum of all normal `p`-subgroups (`pCore_eq_iSup`).
-
-Taking the intersection of the Sylow `p`-subgroups rather than the supremum of the normal
-`p`-subgroups needs no finiteness hypothesis either way, but it keeps the definition free of
-the subtype of normal `p`-subgroups. The intersection is taken inside `H` and then mapped, rather
-than the other way round, so that `pCore_le` and `pCore_subgroupOf_eq_iInf_sylow` are immediate
-from `map_subtype_le` and `comap_map_eq_self_of_injective`, with no appeal to `Sylow p H` being
-nonempty.
+/-- The **`p`-core** `O_p(H)`, the largest normal `p`-subgroup of `H`, viewed as a subgroup
+of `G`.
 
 The parameter is an arbitrary natural number, and `pCore` is prime-agnostic: `IsPGroup n N`
 constrains element orders only through the primes dividing `n`, so for `n ≥ 1` the value of
@@ -84,6 +74,7 @@ not of this form: `IsPGroup 0` holds vacuously, so the only Sylow `0`-subgroup o
 `pCore 0 H = H` (`pCore_zero`), rather than the `⊥` that `Nat.primeFactors 0 = ∅` would
 suggest. -/
 def pCore (p : ℕ) (H : Subgroup G) : Subgroup G :=
+  -- Intersect before mapping, so that `pCore_le` does not need `Sylow p H` to be nonempty.
   (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype
 
 /-- The `p`-core equals the intersection of all Sylow `p`-subgroups of `H`,
