@@ -180,33 +180,28 @@ def Model.toExprData {V : Type} (m : Model V) (d : BareissData V) : MetaM (Barei
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
     (rows : Array (Array (V × Option V))) : Array (Array V) × Array (Option V) :=
-  let scale (row : Array (V × Option V)) : Option V :=
-    row.foldl (init := none) fun s nd =>
-      match s, nd.2 with
-      | none, d => d
-      | some s, none => some s
-      | some s, some d => some (commonMultiple s d)
-  let scales := rows.map scale
-  let scaled := rows.zipWith (bs := scales) fun row s =>
-    match s with
-    | none => row.map fun nd => nd.1
-    | some s => row.map fun nd =>
-      match nd.2 with
-      | none => ops.mul nd.1 s
-      | some d => ops.mul nd.1 (ops.divExact s d)
+  let scales := rows.map fun row =>
+    row.foldl (init := none) fun scale entry => Option.merge commonMultiple scale entry.2
+  let scaled := rows.zipWith (bs := scales) fun row scale =>
+    match scale with
+    | none => row.map fun entry => entry.1
+    | some scale => row.map fun entry =>
+      match entry.2 with
+      | none => ops.mul entry.1 scale
+      | some den => ops.mul entry.1 (ops.divExact scale den)
   (scaled, scales)
 
 /-- Fold the row scales into the transform after the decomposition algorithm. Column `j` of
 `L` is multiplied by the scale of the row that ends up in position `j` after permutation. -/
 def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
     (d : BareissData V) : BareissData V :=
-  if scales.all fun s => s.isNone then d
+  if scales.all fun scale => scale.isNone then d
   else
     let colScale := d.rowOrder.map fun i => scales.getD i none
     { d with L := d.L.map fun row => row.mapIdx fun j a =>
         match colScale.getD j none with
         | none => a
-        | some s => ops.mul a s }
+        | some scale => ops.mul a scale }
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
