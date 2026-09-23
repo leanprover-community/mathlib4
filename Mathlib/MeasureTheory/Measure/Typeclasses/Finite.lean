@@ -316,7 +316,7 @@ theorem Measure.isLocallyFiniteMeasure_smul [TopologicalSpace α] (μ : Measure 
     [IsLocallyFiniteMeasure μ] {c : ℝ≥0∞} (h : c ≠ ∞) :
     IsLocallyFiniteMeasure (c • μ) := by
   refine ⟨fun x ↦ ?_⟩
-  obtain ⟨o, xo, o_open, μo⟩ := μ.exists_isOpen_measure_lt_top x
+  obtain ⟨o, xo, o_open, μo⟩ : ∃ s, x ∈ s ∧ IsOpen s ∧ μ s < ∞ := μ.exists_isOpen_measure_lt_top x
   exact ⟨o, o_open.mem_nhds xo, ENNReal.mul_lt_top h.lt_top μo⟩
 
 instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α)

@@ -190,7 +190,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
       _ ≤ ε⁻¹ * ρ o := by gcongr; apply inter_subset_right
       _ = 0 := by rw [ρo, mul_zero]
   obtain ⟨u, -, hu, u_lim⟩ :
-    ∃ u : ℕ → ℝ≥0∞, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 ∞ ∩ univ) ∧ Tendsto u atTop (𝓝 0) :=
+    ∃ u : ℕ → ℝ≥0∞, StrictAnti u ∧ (∀ n, u n ∈ Ioo 0 ∞ ∩ univ) ∧ Tendsto u atTop (𝓝 0) :=
     dense_univ.exists_seq_strictAnti_tendsto_of_lt ENNReal.zero_lt_top
   simp only [inter_univ, mem_Ioo] at hu
   have B : ∀ᵐ x ∂μ, ∀ n, ∀ᶠ a in v.filterAt x, ρ a < (u n) * μ a := ae_all_iff.2 fun n ↦ A (hu n).1
