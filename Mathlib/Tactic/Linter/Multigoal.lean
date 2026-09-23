@@ -167,9 +167,9 @@ def getNonTerminalCdots : Syntax → Array String.Pos.Raw
     for i in [:args.size] do
       if i % 2 == 1 then continue
       let argi := args[i]!
-      if (! wasCDot?) && argi.isOfKind ``cdot then
+      if (!wasCDot?) && argi.isOfKind ``cdot then
         nonCDotFollowers := nonCDotFollowers.push (argi.getPos?.getD default)
-      wasCDot? := argi.isOfKind `cdot
+      wasCDot? := argi.isOfKind ``cdot
     return nonCDotFollowers ++ (args.map getNonTerminalCdots).flatten
   | _ => default
 

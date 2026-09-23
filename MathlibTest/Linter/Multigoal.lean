@@ -272,6 +272,12 @@ Note: This linter can be disabled with `set_option linter.style.multiGoal false`
 example : True := by
   · · exact .intro
 
+-- False positive inside by_cases.
+example (n : Nat) : True := by
+  by_cases hn : n > 2
+  · trivial
+  · trivial
+
 -- Test that `grind` interactive mode is treated properly, following the above tests
 -- we have to pick slightly less trivial goals that `grind only` will not immediately close
 
