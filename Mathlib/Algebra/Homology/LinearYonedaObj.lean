@@ -6,9 +6,8 @@ Authors: Kim Morrison, Adam Topaz, Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Opposite
-public import Mathlib.Algebra.Homology.Embedding.Extend
-public import Mathlib.Algebra.Homology.Embedding.Restriction
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
+public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.CategoryTheory.Linear.Yoneda
 
@@ -36,7 +35,7 @@ def linearYonedaObj
     CochainComplex (ModuleCat A) α :=
   ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
 
-open CochainComplex.HomComplex
+open CochainComplex.HomComplex HomologicalComplex
 
 variable (K : ChainComplex C ℕ) (R : Type*) [Ring R] [Linear R C] (Y : C)
 
@@ -71,7 +70,7 @@ noncomputable def linearYonedaObjIso :
     K.linearYonedaObj R Y ≅
     (CochainComplex.linearHomComplex R (K.extend ComplexShape.embeddingDownNat)
         ((CochainComplex.singleFunctor C 0).obj Y)).restriction ComplexShape.embeddingUpNat :=
-  HomologicalComplex.Hom.isoOfComponents (fun k ↦ K.linearYonedaObjXIso R Y k k rfl)
+  Hom.isoOfComponents (fun k ↦ K.linearYonedaObjXIso R Y k k rfl)
     (fun n m h ↦ by
       ext (f : K.X n ⟶ Y) : 2
       dsimp
@@ -85,11 +84,23 @@ noncomputable def linearYonedaObjIso :
       rw [← Int.negOnePow_add]
       grind)
 
-def linearYonedaObjHomologyIso (n : ℤ) (k : ℕ) (h : k = n := by lia) :
+noncomputable def extendLinearYonedaObjIso :
+    (K.linearYonedaObj R Y).extend ComplexShape.embeddingUpNat ≅
+      CochainComplex.linearHomComplex R (K.extend ComplexShape.embeddingDownNat)
+        ((CochainComplex.singleFunctor C 0).obj Y) :=
+  (ComplexShape.embeddingUpNat.extendFunctor _).mapIso (K.linearYonedaObjIso R Y) ≪≫ by
+    let Z := CochainComplex.linearHomComplex R (extend K ComplexShape.embeddingDownNat)
+      ((CochainComplex.singleFunctor C 0).obj Y)
+    change Z.stupidTrunc ComplexShape.embeddingUpNat ≅ Z
+    sorry
+
+noncomputable def linearYonedaObjHomologyIso (n : ℤ) (k : ℕ) (h : k = n := by lia) :
     (K.linearYonedaObj R Y).homology k ≅
       ↧(CochainComplex.HomComplex.CohomologyClass (K.extend ComplexShape.embeddingDownNat)
-        ((CochainComplex.singleFunctor _ 0).obj Y) n) := by
-  sorry
+        ((CochainComplex.singleFunctor _ 0).obj Y) n) :=
+  (extendHomologyIso (K.linearYonedaObj R Y) _ h).symm ≪≫
+    homologyMapIso (K.extendLinearYonedaObjIso R Y) n ≪≫
+    (CochainComplex.HomComplex.linearLeftHomologyData' R _ _ _ _ _ (by simp) (by simp)).homologyIso
 
 end ChainComplex
 
