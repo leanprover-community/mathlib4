@@ -5,11 +5,10 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
-
 public meta import Mathlib.NumberTheory.Zsqrtd.Basic
-public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # The `ℤ√d` model for the Bareiss elimination
@@ -24,19 +23,19 @@ open Lean Meta Qq
 namespace Mathlib.Tactic.Echelon
 
 /-- Evaluate an entry or component of the `ℤ√d` model to an integer, via `norm_num`. -/
-def evalInt (e : Expr) : MetaM Int := do
+def evalInt (e : Expr) : MetaM ℤ := do
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
-  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
+  let r ← try some <$> Mathlib.Meta.NormNum.derive eQ catch _ => pure none
   if let some v := r.bind (·.toRat) then
     if v.den == 1 then
       return v.num
   throwError "the following entry cannot be simplified to an integer numeral{indentExpr e}"
 
-/-- Evaluate a `ℤ√d` entry to a `ℤ√d` value: a `⟨a, b⟩` literal, `√d` itself, or an
-entry without `√d` content evaluating through `norm_num`. -/
+/-- Evaluate a `ℤ√d` entry to its value. The entry is a `⟨re, im⟩` literal, `√d` itself, or
+an entry without `√d` content, which `norm_num` evaluates. -/
 def evalZsqrtdEntry (d : ℤ) (e : Expr) : MetaM (ℤ√d) := do
   match_expr e with
-  | Zsqrtd.mk _ a b => return ⟨← evalInt a, ← evalInt b⟩
+  | Zsqrtd.mk _ re im => return ⟨← evalInt re, ← evalInt im⟩
   | Zsqrtd.sqrtd _ => return .sqrtd
   | _ => return ⟨← evalInt e, 0⟩
 
@@ -56,7 +55,7 @@ def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
 def intOfRawLit? (e : Expr) : Option ℤ :=
   match_expr e with
   | Int.ofNat n => n.rawNatLit?
-  | Int.negOfNat n => n.rawNatLit?.map fun n => -n
+  | Int.negOfNat n => n.rawNatLit?.map fun k => -k
   | _ => none
 
 /-- The value of a literal `⟨re, im⟩ : ℤ√d` with raw integer components. -/
@@ -68,7 +67,7 @@ def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
 /-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components. `d` is the value of
 the integer literal `dQ`. -/
 def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
-  q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
+  q(⟨$(Mathlib.Meta.NormNum.mkRawIntLit v.re), $(Mathlib.Meta.NormNum.mkRawIntLit v.im)⟩)
 
 /-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
 with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
@@ -82,8 +81,8 @@ def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
         | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
       return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }⟩
 
-/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`, whose
-equality `decide` settles, so the model needs no entry certifier. -/
+/-- The registration of the `ℤ√d` model for `Zsqrtd d` with an integer literal `d`.
+Equality in `ℤ√d` is settled by `decide`, so the model has no entry certifier. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   model? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching
