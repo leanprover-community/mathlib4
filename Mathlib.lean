@@ -7979,6 +7979,7 @@ public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Algebra.PontryaginDual
+public import Mathlib.Topology.Algebra.Projectivization
 public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
