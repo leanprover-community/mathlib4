@@ -76,10 +76,11 @@ namespace Shrink
 def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
 
 @[to_additive]
-instance [Semigroup α] : Semigroup (Shrink.{v} α) := (equivShrink α).symm.semigroup
+instance [Semigroup α] : Semigroup (Shrink.{v} α) := fast_instance% (equivShrink α).symm.semigroup
 
 @[to_additive]
-instance [CommSemigroup α] : CommSemigroup (Shrink.{v} α) := (equivShrink α).symm.commSemigroup
+instance [CommSemigroup α] : CommSemigroup (Shrink.{v} α) :=
+  fast_instance% (equivShrink α).symm.commSemigroup
 
 @[to_additive]
 instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Shrink.{v} α) :=
@@ -93,21 +94,27 @@ instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Shrink.{v} α) :=
 instance [Mul α] [IsCancelMul α] : IsCancelMul (Shrink.{v} α) := (equivShrink α).symm.isCancelMul
 
 @[to_additive]
-instance [MulOneClass α] : MulOneClass (Shrink.{v} α) := (equivShrink α).symm.mulOneClass
+instance [MulOneClass α] : MulOneClass (Shrink.{v} α) :=
+  fast_instance% (equivShrink α).symm.mulOneClass
 
 @[to_additive]
-instance [Monoid α] : Monoid (Shrink.{v} α) := (equivShrink α).symm.monoid
+instance [Monoid α] : Monoid (Shrink.{v} α) :=
+  fast_instance% (equivShrink α).symm.monoid
 
 @[to_additive]
-instance [CommMonoid α] : CommMonoid (Shrink.{v} α) := (equivShrink α).symm.commMonoid
+instance [CommMonoid α] : CommMonoid (Shrink.{v} α) :=
+  fast_instance% (equivShrink α).symm.commMonoid
 
 @[to_additive]
-instance [Group α] : Group (Shrink.{v} α) := (equivShrink α).symm.group
+instance [Group α] : Group (Shrink.{v} α) :=
+  fast_instance% (equivShrink α).symm.group
 
 @[to_additive]
-instance [CommGroup α] : CommGroup (Shrink.{v} α) := (equivShrink α).symm.commGroup
+instance [CommGroup α] : CommGroup (Shrink.{v} α) :=
+  fast_instance% (equivShrink α).symm.commGroup
 
 @[to_additive]
-instance [Monoid M] [MulAction M α] : MulAction M (Shrink.{v} α) := (equivShrink α).symm.mulAction M
+instance [Monoid M] [MulAction M α] : MulAction M (Shrink.{v} α) :=
+  (equivShrink α).symm.mulAction M
 
 end Shrink
