@@ -30,11 +30,12 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
 namespace Representation
 
 variable {k G V W : Type*} [CommRing k] [Group G] {S : Subgroup G} [AddCommGroup V] [Module k V]
-  [AddCommGroup W] [Module k W] {ρ : Representation k S V} [DecidablePred (· ∈ S)]
+  [AddCommGroup W] [Module k W] {ρ : Representation k S V}
 
 variable (ρ) in
 /-- The function `G → End V` supported on `S`, with value `ρ s` at `s : S`. -/
-def indToCoindAux (g : G) : Module.End k V := if hg : g ∈ S then ρ ⟨g, hg⟩ else 0
+noncomputable def indToCoindAux (g : G) : Module.End k V :=
+  open scoped Classical in if hg : g ∈ S then ρ ⟨g, hg⟩ else 0
 
 @[simp]
 lemma indToCoindAux_coe (s : S) : ρ.indToCoindAux (s : G) = ρ s := dite_eq_left s.prop
@@ -87,7 +88,6 @@ noncomputable def coindToIndAux (c : G ⧸ S) :
       rw [this, mul_inv_rev, IndV.mk_map_inv_mul, ← mem_coindV.mp f.prop]
       simp
 
-omit [DecidablePred (· ∈ S)] in
 @[simp]
 lemma coindToIndAux_mk (g : G) (f : coindV S.subtype ρ) :
     ρ.coindToIndAux g f = IndV.mk S.subtype ρ g⁻¹ (f g⁻¹) := rfl
@@ -104,7 +104,6 @@ noncomputable def coindToInd : (coind S.subtype ρ).IntertwiningMap (ind S.subty
   isIntertwining' g := LinearMap.ext fun _ => by
     simpa using Fintype.sum_equiv (MulAction.toPerm g⁻¹) _ _ fun c => c.inductionOn (by simp)
 
-omit [DecidablePred (· ∈ S)] in
 lemma coindToInd_apply (f : coindV S.subtype ρ) :
     ρ.coindToInd f = ∑ c : G ⧸ S, coindToIndAux ρ c f :=
   LinearMap.sum_apply _ _ _
@@ -132,8 +131,7 @@ universe w u v
 
 open CategoryTheory Representation
 
-variable {k : Type u} {G : Type v} [CommRing k] [Group G] {S : Subgroup G} [DecidablePred (· ∈ S)]
-  [S.FiniteIndex]
+variable {k : Type u} {G : Type v} [CommRing k] [Group G] {S : Subgroup G} [S.FiniteIndex]
 
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is an isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)`.
@@ -164,9 +162,7 @@ noncomputable def resIndAdjunction :
     resFunctor.{max w u v} S.subtype ⊣ indFunctor.{max w u v} k S.subtype :=
   (resCoindAdjunction.{max w u v} k S.subtype).ofNatIsoRight (indCoindNatIso.{max w u v} k S).symm
 
-omit [DecidablePred (· ∈ S)] in
-@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
-theorem instIsRightAdjointSubtypeMemSubgroupIndFunctorSubtype :
+instance instIsRightAdjointSubtypeMemSubgroupIndFunctorSubtype :
     (indFunctor.{max w u v} k S.subtype).IsRightAdjoint :=
   open scoped Classical in (resIndAdjunction k S).isRightAdjoint
 
@@ -203,10 +199,7 @@ noncomputable def coindResAdjunction :
     coindFunctor.{max w u v} k S.subtype ⊣ resFunctor.{max w u v} S.subtype :=
   (indResAdjunction.{max w u v} S.subtype).ofNatIsoLeft (indCoindNatIso.{max w u v} k S)
 
-omit [DecidablePred (· ∈ S)] in
-@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
-theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
-    (coindFunctor.{max w u v} k S.subtype).IsLeftAdjoint :=
+instance : (coindFunctor.{max w u v} k S.subtype).IsLeftAdjoint :=
   open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
 
 @[simp]
