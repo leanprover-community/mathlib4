@@ -798,7 +798,7 @@ variable (f g : A →⋆ₐ[R] B)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (StarAlgHom.ofClass f : A →ₐ[R] B) (StarAlgHom.ofClass g)
+  toSubalgebra := AlgHom.equalizer f.toAlgHom g.toAlgHom
   star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using! congrArg star ha
 
 @[simp]
