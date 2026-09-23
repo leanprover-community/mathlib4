@@ -64,7 +64,6 @@ def firstMap
     (bifunctorComp₂₃Functor.map associator.hom).app tensor ≫
       (trifunctorComp₂₃₄Functor.obj tensor).map associator.hom
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma firstMap_app_app_app_app
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
@@ -83,7 +82,6 @@ def secondMap
   (bifunctorComp₁₂Functor.obj tensor).map associator.hom ≫
     (trifunctorComp₃₄Functor.map associator.hom).app tensor
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma secondMap_app_app_app_app
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
@@ -103,7 +101,6 @@ abbrev source (unit : C) : C ⥤ C ⥤ C := tensor.flip.obj unit ⋙ tensor
 abbrev middle (unit : C) : C ⥤ C ⥤ C :=
   tensor ⋙ (Functor.whiskeringRight C C C).flip.obj (tensor.obj unit)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The associator edge of the monoidal triangle. -/
 @[implicit_reducible, simps!]
 def associatorMap (unit : C)
@@ -167,7 +164,6 @@ end ofBifunctor
 
 open ofBifunctor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a monoidal category from a tensor bifunctor, associator and unitor natural
 isomorphisms, and pentagon and triangle identities between multifunctor transformations. -/
 @[instance_reducible]
