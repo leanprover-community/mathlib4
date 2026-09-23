@@ -192,7 +192,7 @@ theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrim
 theorem ne_zero_of_coprime (hc : Int.gcd x y = 1) : z ≠ 0 := by
   suffices 0 < z * z by
     rintro rfl
-    norm_num at this
+    simp at this
   rw [← h.eq, ← sq, ← sq]
   have hc' : Int.gcd x y ≠ 0 := by
     rw [hc]
@@ -494,7 +494,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
       · lia
-    norm_num [h2.1, h1.2.2.1] at hyo
+    simp [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
     h.IsPrimitiveClassified := by

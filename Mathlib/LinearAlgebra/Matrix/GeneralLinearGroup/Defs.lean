@@ -185,7 +185,7 @@ variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
 @[simps! apply_val]
-def map (f : R →+* S) : GL n R →* GL n S := Units.map <| (RingHom.mapMatrix f).toMonoidHom
+def map (f : R →+* S) : GL n R →* GL n S := Units.map (RingHom.mapMatrix f).toMonoidHom
 
 @[simp]
 theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
@@ -221,7 +221,7 @@ protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
   ext
   simp only [map,
-    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
+    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_ofClass]
   exact Eq.symm (RingHom.map_det f g.1)
 
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
@@ -413,8 +413,8 @@ variable {n : Type u} [DecidableEq n] [Fintype n]
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
   toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.prop.symm ▸ zero_lt_one⟩
-  map_one' := Subtype.ext <| Units.ext <| rfl
-  map_mul' _ _ := Subtype.ext <| Units.ext <| rfl
+  map_one' := Subtype.ext <| Units.ext rfl
+  map_mul' _ _ := Subtype.ext <| Units.ext rfl
 
 instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
   ⟨toGLPos⟩

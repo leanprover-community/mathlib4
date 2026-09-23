@@ -180,7 +180,7 @@ theorem IsConnected.biUnion_of_reflTransGen {ι : Type*} {t : Set ι} {s : ι �
     (ht : t.Nonempty) (H : ∀ i ∈ t, IsConnected (s i))
     (K : ∀ i, i ∈ t → ∀ j, j ∈ t → ReflTransGen (fun i j : ι => (s i ∩ s j).Nonempty ∧ i ∈ t) i j) :
     IsConnected (⋃ n ∈ t, s n) :=
-  ⟨nonempty_biUnion.2 <| ⟨ht.some, ht.some_mem, (H _ ht.some_mem).nonempty⟩,
+  ⟨nonempty_biUnion.2 ⟨ht.some, ht.some_mem, (H _ ht.some_mem).nonempty⟩,
     IsPreconnected.biUnion_of_reflTransGen (fun i hi => (H i hi).isPreconnected) K⟩
 
 /-- Preconnectedness of the iUnion of a family of preconnected sets
@@ -260,7 +260,7 @@ theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : O
 theorem IsConnected.biUnion_of_chain {s : β → Set α} {t : Set β} (hnt : t.Nonempty)
     (ht : OrdConnected t) (H : ∀ n ∈ t, IsConnected (s n))
     (K : ∀ n : β, n ∈ t → succ n ∈ t → (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n ∈ t, s n) :=
-  ⟨nonempty_biUnion.2 <| ⟨hnt.some, hnt.some_mem, (H _ hnt.some_mem).nonempty⟩,
+  ⟨nonempty_biUnion.2 ⟨hnt.some, hnt.some_mem, (H _ hnt.some_mem).nonempty⟩,
     IsPreconnected.biUnion_of_chain ht (fun i hi => (H i hi).isPreconnected) K⟩
 
 end SuccOrder
@@ -288,7 +288,7 @@ protected theorem IsPreconnected.closure {s : Set α} (H : IsPreconnected s) :
 
 /-- The closure of a connected set is connected as well. -/
 protected theorem IsConnected.closure {s : Set α} (H : IsConnected s) : IsConnected (closure s) :=
-  IsConnected.subset_closure H subset_closure <| Subset.rfl
+  IsConnected.subset_closure H subset_closure Subset.rfl
 
 /-- The image of a preconnected set is preconnected as well. -/
 protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : IsPreconnected s)
@@ -620,7 +620,7 @@ theorem ContinuousOn.image_connectedComponentIn_subset [TopologicalSpace β] {f 
     |>.subset_connectedComponentIn (mem_image_of_mem _ <| mem_connectedComponentIn hx)
       (image_mono <| connectedComponentIn_subset _ _)
 
-@[deprecated ContinuousOn.image_connectedComponentIn_subset (since := "2026-07-27")]
+@[deprecated ContinuousOn.image_connectedComponentIn_subset +typeChanged (since := "2026-07-27")]
 theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
     {a : α} (hf : Continuous f) (hx : a ∈ s) :
     f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
@@ -635,7 +635,7 @@ theorem ContinuousOn.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α �
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
   mapsTo_iff_image_subset.2 <| h.image_connectedComponentIn_subset hx
 
-@[deprecated ContinuousOn.mapsTo_connectedComponentIn (since := "2026-07-27")]
+@[deprecated ContinuousOn.mapsTo_connectedComponentIn +typeChanged (since := "2026-07-27")]
 theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
     (h : Continuous f) {a : α} (hx : a ∈ s) :
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
