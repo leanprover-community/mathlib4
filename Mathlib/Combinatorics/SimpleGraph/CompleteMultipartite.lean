@@ -502,7 +502,6 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
       · simp_rw [mem_cons, forall_eq_or_imp]
         exact ⟨hs, fun p ↦ K.card_mem_parts⟩
       · rw [coe_cons]
-        have : Std.Symm G.IsCompleteBetween := by simp [symm_def, isCompleteBetween_comm]
         exact K.isCompleteBetween.insert_of_symm fun p hp _ ↦ hadj p hp |>.symm
 
 end CompleteEquipartiteSubgraph
