@@ -176,6 +176,24 @@ Scalar multiples of harmonic functions are harmonic.
 theorem HarmonicOnNhd.const_smul (h : HarmonicOnNhd f s) :
     HarmonicOnNhd (c • f) s := fun x hx ↦ (h x hx).const_smul
 
+/--
+Translations preserve harmonicity.
+-/
+theorem HarmonicAt.comp_add_iff {f : E → F} {a x : E} :
+    HarmonicAt (fun y ↦ f (y + a)) x ↔ HarmonicAt f (x + a) := by
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨ContDiffAt_comp_add_iff.mp h₁, ?_⟩,
+    fun ⟨h₁, h₂⟩ ↦ ⟨ContDiffAt_comp_add_iff.mpr h₁, ?_⟩⟩
+  · have h₂' : (fun y ↦ Δ (fun z ↦ f (z + a)) y) =ᶠ[𝓝 x] (fun y ↦ Δ f (y + a)) := by
+      filter_upwards with y
+      exact laplacian_comp_add
+    rw [← map_add_right_nhds a x, Filter.eventuallyEq_map, Pi.zero_comp]
+    exact h₂'.symm.trans h₂
+  · have hcont : Continuous (fun y ↦ y + a) := by fun_prop
+    have h : Δ (fun y ↦ f (y + a)) = fun y ↦ Δ f (y + a) := by
+      funext y
+      exact laplacian_comp_add
+    exact h ▸ h₂.comp_tendsto (hcont.tendsto x)
+
 /-!
 ## Compatibility with Linear Maps
 -/

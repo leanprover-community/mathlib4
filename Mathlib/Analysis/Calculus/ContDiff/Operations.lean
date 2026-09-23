@@ -307,6 +307,13 @@ theorem ContDiffWithinAt.sub {s : Set E} {f g : E → F} (hf : ContDiffWithinAt 
 theorem ContDiffAt.sub {f g : E → F} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     ContDiffAt 𝕜 n (fun x => f x - g x) x := by simpa only [sub_eq_add_neg] using hf.add hg.neg
 
+/-- Translations preserve `C^n` regularity. -/
+theorem ContDiffAt_comp_add_iff {k : E} :
+    ContDiffAt 𝕜 n (fun y ↦ f (y + k)) x ↔ ContDiffAt 𝕜 n f (x + k) := by
+  refine ⟨fun _ ↦ ?_, fun h ↦ ContDiffAt.comp _ h (by fun_prop)⟩
+  rw [show f = (fun y ↦ f (y + k)) ∘ fun z ↦ (z - k) by simp [Function.comp_def]]
+  exact ContDiffAt.comp _ (by simpa) (by fun_prop)
+
 /-- The difference of two `C^n` functions on a domain is `C^n`. -/
 @[fun_prop]
 theorem ContDiffOn.sub {s : Set E} {f g : E → F} (hf : ContDiffOn 𝕜 n f s)
