@@ -102,7 +102,7 @@ include hHG
 
 lemma edgeMap'_eq (hiH : i ∈ I(H)) (hiG : i ∈ I(G)) :
     (edgeMap' H ⟨i, hiH⟩ : E) = (edgeMap' G ⟨i, hiG⟩ : E) := by
-  obtain ⟨⟨_, _⟩, he, rfl⟩ :=
+  obtain ⟨_, he, rfl⟩ :=
     (hHG.edgeFiber_eq (edgeMap' H ⟨i, hiH⟩).property).subset ⟨⟨i, hiH⟩, rfl, rfl⟩
   exact he.symm
 
