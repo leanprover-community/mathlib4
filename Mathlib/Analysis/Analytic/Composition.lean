@@ -192,7 +192,7 @@ def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : C
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ f (p.applyComposition c v))
       (fun v i x y ↦ by simp only [applyComposition_update, map_update_add])
-      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul])
+      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul, RingHom.id_apply])
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
