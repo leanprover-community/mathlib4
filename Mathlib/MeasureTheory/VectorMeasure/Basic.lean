@@ -242,7 +242,6 @@ instance instSMul : SMul R (VectorMeasure α M) :=
   ⟨smul⟩
 
 instance : IsSMulApply R (VectorMeasure α M) (Set α) M where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_smul := FunLike.coe_smul
 
@@ -258,7 +257,6 @@ instance instZero : Zero (VectorMeasure α M) :=
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
 
 instance : IsZeroApply (VectorMeasure α M) (Set α) M where
-  zero_apply _ := rfl
 
 instance instInhabited : Inhabited (VectorMeasure α M) :=
   ⟨0⟩
@@ -295,7 +293,6 @@ instance instPSMul : SMul ℕ+ (VectorMeasure α M) :=
     by simp, fun _ hi ↦ by simp [hi], fun _ hf₁ hf₂ ↦ HasSum.psmul (v.m_iUnion hf₁ hf₂) _⟩⟩
 
 instance : IsAddApply (VectorMeasure α M) (Set α) M where
-  add_apply _ _ _ := rfl
 
 instance : IsSMulApply ℕ+ (VectorMeasure α M) (Set α) M where
   smul_apply _ _ _ := rfl
@@ -330,7 +327,6 @@ instance instNeg : Neg (VectorMeasure α M) :=
   ⟨neg⟩
 
 instance : IsNegApply (VectorMeasure α M) (Set α) M where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_neg := FunLike.coe_neg
 
@@ -347,7 +343,6 @@ instance instSub : Sub (VectorMeasure α M) :=
   ⟨sub⟩
 
 instance : IsSubApply (VectorMeasure α M) (Set α) M where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_sub := FunLike.coe_sub
 

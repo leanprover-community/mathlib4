@@ -239,7 +239,7 @@ theorem abs_sub_coe_le_dist : ‖f x - g x‖ ≤ dist f g := by
 @[deprecated (since := "2026-06-03")] alias abs_diff_coe_le_dist := abs_sub_coe_le_dist
 
 theorem coe_le_coe_add_dist {f g : α →ᵇ ℝ} : f x ≤ g x + dist f g :=
-  sub_le_iff_le_add'.1 <| (abs_le.1 <| @dist_coe_le_dist _ _ _ _ f g x).2
+  sub_le_iff_le_add'.1 (abs_le.1 <| @dist_coe_le_dist _ _ _ _ f g x).2
 
 theorem norm_compContinuous_le [TopologicalSpace γ] (f : α →ᵇ β) (g : C(γ, α)) :
     ‖f.compContinuous g‖ ≤ ‖f‖ :=
