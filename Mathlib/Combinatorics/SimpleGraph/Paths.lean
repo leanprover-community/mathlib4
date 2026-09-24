@@ -238,9 +238,10 @@ theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
   simpa [isPath_def, support_append] using List.Nodup.of_append_left
 
-theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
-    (p.append q).IsPath → q.IsPath := by
-  simpa [isPath_def, support_append_eq_support_dropLast_append] using List.Nodup.of_append_right
+theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (h : (p.append q).IsPath) : q.IsPath := by
+  simp_rw [isPath_def, support_append_eq_support_dropLast_append] at h ⊢
+  exact h.of_append_right
 
 theorem isTrail_of_isSubwalk {v w v' w'} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
     (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsTrail) : p₁.IsTrail := by
