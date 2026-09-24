@@ -172,13 +172,13 @@ instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe := toSet
   coe_injective := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
 
-instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C) (Σ c d : C, c ⟶ d)
+instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C)
 
 theorem mem_iff (S : Subgroupoid C) (F : Σ c d, c ⟶ d) : F ∈ S ↔ F.2.2 ∈ S.arrows F.1 F.2.1 :=
   Iff.rfl
 
 theorem le_iff (S T : Subgroupoid C) : S ≤ T ↔ ∀ {c d}, S.arrows c d ⊆ T.arrows c d := by
-  rw [SetLike.le_def, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
+  rw [IsConcreteLE.le_iff, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
 
 instance : Top (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => Set.univ

@@ -384,7 +384,7 @@ def compContinuousMultilinearMapL :
     cont := by
       apply continuous_of_tendsto_nhds_zero aux
       rw [ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff <|
-        ContinuousLinearMap.hasBasis_nhds_zero_of_basis <|
+        ContinuousLinearMap.hasBasis_nhds_zero_of_basis
         ContinuousMultilinearMap.hasBasis_nhds_zero]
       rintro ⟨U, V, W⟩ ⟨hU, hV, hW⟩
       refine ⟨(.image2 (fun f v ↦ f v) U V, W), ⟨?_, hW⟩, ?_⟩
