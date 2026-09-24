@@ -56,7 +56,7 @@ section mrange
 
 variable {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H] (f : G →*₀ H)
 
-lemma mrange_nontrivial : Nontrivial f.toMonoidHom.mrange :=
+lemma mrange_nontrivial : Nontrivial (f : G →* H).mrange :=
   ⟨1, 0, by simp [Subtype.ext_iff]⟩
 
 lemma range_nontrivial : (Set.range f).Nontrivial :=

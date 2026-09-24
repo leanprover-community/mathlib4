@@ -41,7 +41,7 @@ attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 private theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
   obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C.toMonoidHom M) p
-  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe, C_eq_algebraMap, algebraMap_eq,
+  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, C_eq_algebraMap, algebraMap_eq,
     algebraMap_smul] at h
   obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts h
   exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
@@ -430,7 +430,7 @@ protected lemma IsLocalization.integralClosure
     obtain ⟨m₃, hm₃, hm₃s⟩ := IsLocalization.exists_isIntegral_smul_of_isIntegral_map (Sₘ := Sf)
       M (x := m₂ • x) <| by
         simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, ← e,
-          MonoidHom.coe_coe, ← mul_assoc]
+          MonoidHom.coe_ofClass, ← mul_assoc]
         exact hm₂s.mul (.algebraMap (Algebra.IsIntegral.isIntegral _))
     refine ⟨⟨⟨_, hm₃s⟩, _, _, mul_mem hm₁ (mul_mem hm₂ hm₃), rfl⟩, ?_⟩
     · apply (FaithfulSMul.algebraMap_injective (integralClosure Rf Sf) Sf)

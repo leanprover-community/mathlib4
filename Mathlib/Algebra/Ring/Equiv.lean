@@ -618,6 +618,7 @@ protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
   EmbeddingLike.map_ne_one_iff
 
+@[simp]
 theorem toMonoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
   rfl
 

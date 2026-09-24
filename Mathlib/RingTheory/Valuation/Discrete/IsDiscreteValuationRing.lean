@@ -130,7 +130,7 @@ theorem associated_of_valuation_eq (x y : K)
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1
   simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1,
-    MonoidHom.coe_coe (algebraMap A K) ▸ h.2]
+    MonoidHom.coe_ofClass (algebraMap A K) ▸ h.2]
   field_simp
 
 theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =

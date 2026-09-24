@@ -99,7 +99,7 @@ variable [Algebra Rₚ Aₚ] [Algebra Rₚ Bₚ] [IsScalarTower R Rₚ Aₚ] [Is
 namespace IsLocalization
 
 instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
-    IsLocalization ((algebraMapSubmonoid A M).map (MonoidHomClass.toMonoidHom f)) Bₚ := by
+    IsLocalization ((algebraMapSubmonoid A M).map (f : A →* B)) Bₚ := by
   rw [algebraMapSubmonoid_map_eq M f]
   infer_instance
 

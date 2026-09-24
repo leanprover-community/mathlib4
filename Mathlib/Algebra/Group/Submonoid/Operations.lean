@@ -210,15 +210,7 @@ def map (f : M →* N) (S : Submonoid M) :
 theorem coe_map (f : M →* N) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 
--- now a syntactic tautology
---@[to_additive (attr := simp)]
---theorem map_coe_toMonoidHom (f : M →* N) (S : Submonoid M) : S.map (f : M →* N) = S.map f :=
---  rfl
 
--- now a tautology also
--- @[to_additive (attr := simp)]
--- theorem map_coe_toMulEquiv (f : M ≃* N) (S : Submonoid M) : S.map f = S.map f.toMonoidHom :=
---   rfl
 
 @[to_additive (attr := simp)]
 theorem mem_map {f : M →* N} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
@@ -249,7 +241,8 @@ theorem map_le_iff_le_comap {f : M →* N} {S : Submonoid M} {T : Submonoid N} :
 
 variable (f) in
 @[to_additive]
-theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ => map_le_iff_le_comap
+theorem gc_map_comap : GaloisConnection (map f) (comap f) :=
+  fun _ _ => map_le_iff_le_comap
 
 @[to_additive]
 theorem map_le_of_le_comap : S ≤ T.comap f → S.map f ≤ T :=
@@ -547,7 +540,6 @@ theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
     K.comap f = K.map (f.symm : M →* N) :=
   (map_equiv_eq_comap_symm f.symm K).symm
 
--- TODO: should this lemma be fixed to generalise to any surjective monoid homomorphism instead?
 @[to_additive (attr := simp)]
 theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map (f : M →* N) = ⊤ :=
   SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
@@ -1134,7 +1126,7 @@ See `MonoidHom.submonoidMap` for a variant for `MonoidHom`s. -/
   /-- An `AddEquiv` `φ` between two additive monoids `M` and `N` induces an `AddEquiv`
   between a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`. See
   `AddMonoidHom.addSubmonoidMap` for a variant for `AddMonoidHom`s. -/]
-def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e.toMonoidHom :=
+def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map (e : M →* N) :=
   { (e : M ≃ N).image S with map_mul' := fun _ _ => Subtype.ext (map_mul e _ _) }
 
 @[to_additive (attr := simp)]
