@@ -306,21 +306,11 @@ def cache : Cmd :=
           overwriting."
         (flags := #[]) (modules := false) (runUnstage true)])
 
-/-- Leading flags moved after the command: `cache --repo=X get` reads as
-`cache get --repo=X`. CI names the repo before the command. Arguments that
-are all flags, or that start with a command, are returned as they are. -/
-def normalizeArgs (args : List String) : List String :=
-  let (flags, rest) := args.span (·.startsWith "-")
-  match rest with
-  | cmd :: tail => cmd :: (flags ++ tail)
-  | [] => flags
-
 /-- The entry point: the legacy switch, then the command tree. A first
 argument that names no command is reported as such. -/
 def main (args : List String) : IO UInt32 := do
   -- Resolve the legacy switch once, before anything builds a read URL.
   useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
-  let args := normalizeArgs args
   if let some cmd := args.head? then
     if !cmd.startsWith "-" && !cache.hasSubCmd cmd then
       cache.printError s!"Unknown command `{cmd}`."

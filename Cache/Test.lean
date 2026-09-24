@@ -1016,10 +1016,7 @@ def test_commandLine : IO Unit := do
     (parses ["query"] && parses ["query", "HEAD", "--repo=alice/mathlib4"])
   assertTrue "an unknown command is rejected" (!parses ["fetch"])
   assertTrue "pack takes no flags" (!parses ["pack", "--repo=alice/mathlib4"])
-  -- A flag before the command.
-  assertTrue "flags may precede the command"
-    (Commands.normalizeArgs ["--repo=a/b", "get", "Archive"] == ["get", "--repo=a/b", "Archive"])
-  assertTrue "flags alone stay in place" (Commands.normalizeArgs ["--help"] == ["--help"])
+  assertTrue "a flag before the command is rejected" (!parses ["--repo=a/b", "get"])
   -- The chain-read triggers are the decision's own list, pinned here: a flag
   -- a workflow adds does not move a canonical read to another workflow.
   assertTrue "the chain-read flags are --cache-from, --scope, --unsafe, --unsafe-window"
