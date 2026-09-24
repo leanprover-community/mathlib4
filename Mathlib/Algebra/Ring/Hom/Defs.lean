@@ -421,6 +421,10 @@ theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 
 @[simp]
+theorem coe_toMonoidHom (f : α →+* β) : ⇑(f : α →* β) = f :=
+  rfl
+
+@[simp]
 theorem toMonoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
 
@@ -429,6 +433,10 @@ alias coe_monoidHom_mk := toMonoidHom_mk
 
 @[simp]
 theorem toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
+  rfl
+
+@[simp]
+theorem coe_toAddMonoidHom (f : α →+* β) : ⇑(f : α →+ β) = f :=
   rfl
 
 @[simp]
