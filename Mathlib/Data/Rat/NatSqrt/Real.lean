@@ -1,6 +1,5 @@
-module
+module -- shake: keep-all
 
-public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Tactic.Positivity
+public import Mathlib.Analysis.Rat.NatSqrt.Real
 
 deprecated_module (since := "2026-05-29")
