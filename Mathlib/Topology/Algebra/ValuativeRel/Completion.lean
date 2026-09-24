@@ -25,10 +25,14 @@ This file defines the extension of a valuation on a field `K` to its uniform com
 
 ## Main statements
 
+- `Valuation.hasBasis_nhds_coe_zero` : the neighbourhoods of `0` in the completion of `K`
+  have a basis given by the open balls of `v.extension.restrict`.
 - `UniformSpace.Completion.isValuativeTopology` : the extended valuative relation on
   `Completion K` is compatible with the topology.
 - `Valuation.compatible_extension` : if `v` is compatible with the valuative relation on `K`,
   then `v.extension` is compatible with the valuative relation on `Completion K`.
+- `Valuation.isEquiv_extension` : if `v` and `v'` are two valuations compatible with the
+  valuative relation on `K`, then `v.extension` are `v'.extension` are equivalent to each other.
 
 ## TODO
 
@@ -91,7 +95,7 @@ instance (priority := 100) : IsTopologicalDivisionRing K where
     rw [mem_map, (valuation K).mem_nhds_iff]
     let γ' := Units.mk0 (Valuation.restrict _ x) ((valuation K).restrict.ne_zero_iff.mpr x_ne)
     refine ⟨min (γ * (γ' * γ')) γ', fun y y_in ↦ hs ?_⟩
-    refine inversion_estimate (Γ₀ := (ofClass (valuation K)).ValueGroup₀) _ x_ne ?_
+    refine inversion_estimate (Γ₀ := (valuation K).ValueGroup₀) _ x_ne ?_
     simpa [γ'] using y_in
 
 -- This instance will be tried in all `T2Space` synthesis, but it will
@@ -131,11 +135,11 @@ theorem continuous_valuation_of_surjective (hsurj : Function.Surjective v) : Con
 
 /-- Restricting the codomain of a valuation to `ValueGroup₀` (equipped with `WithZeroTopology`)
 makes it continuous. Without this restriction, it is not continuous in general. -/
-theorem continuous_restrict : Continuous (v.restrict : K → (ValueGroup₀ (.ofClass v))) :=
+theorem continuous_restrict : Continuous (v.restrict : K → v.ValueGroup₀) :=
   continuous_valuation_of_surjective v.restrict (restrict₀_surjective _)
 
 lemma isClosedMap_restrict :
-    IsClosedMap (v.restrict : K → (ValueGroup₀ (.ofClass v))) := by
+    IsClosedMap (v.restrict : K → v.ValueGroup₀) := by
   refine IsClosedMap.of_nonempty fun U hU hU' ↦ ?_
   simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, v.mem_nhds_iff,
     subset_compl_comm, compl_ofPred, not_lt] at hU
@@ -159,7 +163,7 @@ namespace IsValuativeTopology
 /-- A valued field is completable. -/
 instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
   nice F hF h0 := by
-    obtain ⟨γ₀, M₀, M₀_in, H₀⟩ : ∃ γ₀ : (ValueGroup₀ (.ofClass (valuation K)))ˣ, ∃ M ∈ F,
+    obtain ⟨γ₀, M₀, M₀_in, H₀⟩ : ∃ γ₀ : ((valuation K).ValueGroup₀)ˣ, ∃ M ∈ F,
         ∀ x ∈ M, (γ₀.1) ≤ (valuation K).restrict x := by
       rcases inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
       rcases ((valuation K).mem_nhds_zero_iff _).mp U_in with ⟨γ₀, hU⟩
@@ -184,7 +188,7 @@ variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) [v.Compa
 open WithZeroTopology
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
-noncomputable def extensionFun : Completion K → ValueGroup₀ (.ofClass v) :=
+noncomputable def extensionFun : Completion K → v.ValueGroup₀ :=
   Completion.isDenseInducing_coe.extend v.restrict
 
 @[simp, norm_cast]
@@ -248,7 +252,8 @@ noncomputable def extension : Valuation (Completion K) Γ₀ where
     · intro x y
       exact_mod_cast Valuation.map_mul _ _ _
   map_add_le_max' x y := by
-    simp_rw [le_max_iff, Function.comp_apply]
+    rw [le_max_iff]
+    simp only [Function.comp_apply]
     rw [embedding_strictMono.le_iff_le, embedding_strictMono.le_iff_le (f := embedding)]
     apply Completion.induction_on₂ x y (p := fun x y ↦ v.extensionFun (x + y) ≤
       v.extensionFun x ∨ v.extensionFun (x + y) ≤ v.extensionFun y)
@@ -274,7 +279,7 @@ lemma extensionFun_eq_zero_iff {x : Completion K} : v.extensionFun x = 0 ↔ x =
 
 lemma extension_le_iff_extensionFun_le {x y : Completion K} :
     v.extension x ≤ v.extension y ↔ v.extensionFun x ≤ v.extensionFun y :=
-  embedding_strictMono (f := ofClass v).le_iff_le
+  embedding_strictMono (f := (v : K →*₀ Γ₀)).le_iff_le
 
 /-- The extension of `v` to the completion of `K` is locally constant away from `0`. -/
 lemma extension_locally_const {x : Completion K} (h : x ≠ 0) :
@@ -293,8 +298,8 @@ lemma exists_coe_mem_extension_eq {x : Completion K} {U : Set (Completion K)} (h
       Completion.denseRange_coe.mem_nhds (inter_mem hU (v.extension_locally_const h))
     exact ⟨r, hr, by simpa using hr'.symm⟩
 
-/-- Every neighbourhood of `(x, y)` in the completion of `K` contains a pair `(r, s)` of elements
-of `K` with `v r = v.extension x` and `v s = v.extension y`. -/
+/-- Every neighbourhood of `(x, y)` in `Completion K × Completion K` contains a pair `(r, s)`
+of elements of `K` with `v r = v.extension x` and `v s = v.extension y`. -/
 lemma exists_coe_mem_extension_eq₂ {x y : Completion K} {U : Set (Completion K × Completion K)}
     (hU : U ∈ 𝓝 (x, y)) : ∃ r s : K, ((r : Completion K), (s : Completion K)) ∈ U ∧
       v.extension x = v r ∧ v.extension y = v s := by
@@ -343,27 +348,28 @@ theorem closure_image_coe_ofPred_map_mul_map_lt_map {r s : K} (hr : r ≠ 0) (hs
 /-- The function underlying `Valuation.valueGroup₀ExtensionHom`: it sends `v.restrict x` to
 `v.extension.restrict x` for `x : K`. It is characterised by
 `Valuation.embedding_valueGroup₀ExtensionHomFun`. -/
-noncomputable def valueGroup₀ExtensionHomFun (a : ValueGroup₀ (.ofClass v)) :
-    ValueGroup₀ (.ofClass v.extension) :=
-  v.extension.restrict (Function.surjInv (restrict₀_surjective (.ofClass v)) a : K)
+noncomputable def valueGroup₀ExtensionHomFun (a : v.ValueGroup₀) :
+    v.extension.ValueGroup₀ :=
+  v.extension.restrict (Function.surjInv (restrict₀_surjective (v : K →*₀ Γ₀)) a : K)
 
 @[simp]
-theorem embedding_valueGroup₀ExtensionHomFun (a : ValueGroup₀ (.ofClass v)) :
+theorem embedding_valueGroup₀ExtensionHomFun (a : v.ValueGroup₀) :
     embedding (v.valueGroup₀ExtensionHomFun a) = embedding a := by
   rw [valueGroup₀ExtensionHomFun, embedding_restrict, extension_apply_coe, ← v.embedding_restrict,
-    v.restrict_def, Function.surjInv_eq (restrict₀_surjective (.ofClass v)) a]
+    v.restrict_def, Function.surjInv_eq (restrict₀_surjective (v : K →*₀ Γ₀)) a]
 
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
-that of the extension to its completion. -/
+that of the extension to its completion. It will be upgraded to an `MulEquiv` later, see
+`valueGroup₀ExtensionEquiv`. -/
 noncomputable def valueGroup₀ExtensionHom :
-    ValueGroup₀ (.ofClass v) →*₀ ValueGroup₀ (.ofClass v.extension) where
+    v.ValueGroup₀ →*₀ v.extension.ValueGroup₀ where
   toFun := v.valueGroup₀ExtensionHomFun
   map_zero' := embedding_injective (by simp)
   map_one' := embedding_injective (by simp)
   map_mul' _ _ := embedding_injective (by simp)
 
 @[simp]
-theorem embedding_valueGroup₀ExtensionHom (a : ValueGroup₀ (.ofClass v)) :
+theorem embedding_valueGroup₀ExtensionHom (a : v.ValueGroup₀) :
     embedding (v.valueGroup₀ExtensionHom a) = embedding a :=
   v.embedding_valueGroup₀ExtensionHomFun a
 
@@ -375,25 +381,25 @@ theorem valueGroup₀ExtensionHom_restrict (x : K) :
 /-- The isomorphism from the `ValueGroup₀` of the valuation on `K` to that of the extension to
 its completion. -/
 noncomputable def valueGroup₀ExtensionEquiv :
-    ValueGroup₀ (.ofClass v) ≃* ValueGroup₀ (.ofClass v.extension) :=
+    v.ValueGroup₀ ≃* v.extension.ValueGroup₀ :=
   MulEquiv.ofBijective v.valueGroup₀ExtensionHom
     ⟨fun _ _ h ↦ embedding_injective (by simpa using congrArg embedding h), fun y ↦ by
-      obtain ⟨z, rfl⟩ := restrict₀_surjective (.ofClass v.extension) y
+      obtain ⟨z, rfl⟩ := restrict₀_surjective (v.extension : (Completion K) →*₀ Γ₀) y
       obtain ⟨r, hr⟩ := v.exists_coe_eq_map z
       exact ⟨v.restrict r, embedding_injective (by simp [hr])⟩⟩
 
 @[simp]
-theorem embedding_valueGroup₀ExtensionEquiv (a : ValueGroup₀ (.ofClass v)) :
+theorem embedding_valueGroup₀ExtensionEquiv (a : v.ValueGroup₀) :
     embedding (v.valueGroup₀ExtensionEquiv a) = embedding a :=
   v.embedding_valueGroup₀ExtensionHom a
 
 @[simp]
-theorem embedding_valueGroup₀ExtensionEquiv_symm (a : ValueGroup₀ (.ofClass v.extension)) :
+theorem embedding_valueGroup₀ExtensionEquiv_symm (a : v.extension.ValueGroup₀) :
     embedding (v.valueGroup₀ExtensionEquiv.symm a) = embedding a := by
   rw [← v.embedding_valueGroup₀ExtensionEquiv, MulEquiv.apply_symm_apply]
 
 /-- `Valuation.closure_image_coe_ofPred_map_lt`, stated for the open balls of `v.restrict`. -/
-theorem closure_image_coe_ofPred_restrict_lt (γ : (ValueGroup₀ (.ofClass v))ˣ) :
+theorem closure_image_coe_ofPred_restrict_lt (γ : v.ValueGroup₀ˣ) :
     closure ((↑) '' {x : K | v.restrict x < γ.1}) =
       {x : Completion K | v.extension x < embedding γ.1} := by
   rw [show {x : K | v.restrict x < γ.1} = {x : K | v x < embedding γ.1} from
@@ -405,10 +411,9 @@ theorem closure_image_coe_ofPred_restrict_lt (γ : (ValueGroup₀ (.ofClass v))�
 the instance `IsValuativeTopology (Completion K)` is available. -/
 theorem hasBasis_nhds_coe_zero :
     (𝓝 (0 : Completion K)).HasBasis (fun _ ↦ True)
-      fun γ : (ValueGroup₀ (.ofClass v.extension))ˣ ↦ {x | v.extension.restrict x < γ.1} := by
+      fun γ : v.extension.ValueGroup₀ˣ ↦ {x | v.extension.restrict x < γ.1} := by
   have h := v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
-  rw [Completion.coe_zero] at h
-  simp only [closure_image_coe_ofPred_restrict_lt] at h
+  simp only [Completion.coe_zero, closure_image_coe_ofPred_restrict_lt] at h
   refine h.to_hasBasis (fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv γ.1) (by simp),
       trivial, fun x hx ↦ ?_⟩) fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv.symm γ.1)
       (by simp), trivial, fun x hx ↦ ?_⟩
@@ -453,7 +458,7 @@ instance valuativeExtension : ValuativeExtension K (Completion K) where
 
 end UniformSpace.Completion
 
-variable {Γ₀ Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀]
   [LinearOrderedCommGroupWithZero Γ₀'] (v : Valuation K Γ₀) [v.Compatible]
   (v' : Valuation K Γ₀') [v'.Compatible]
 
@@ -463,6 +468,8 @@ instance UniformSpace.Completion.isValuativeTopology : IsValuativeTopology (Comp
 
 namespace Valuation
 
+/-- if `v` and `v'` are two valuations compatible with the valuative relation on `K`,
+then `v.extension` are `v'.extension` are equivalent to each other. -/
 theorem isEquiv_extension : v.extension.IsEquiv v'.extension := by
   have h := v.closure_image_coe_le
   rw [show {(x, y) : K × K | v x ≤ v y} = {(x, y) : K × K | v' x ≤ v' y} from
