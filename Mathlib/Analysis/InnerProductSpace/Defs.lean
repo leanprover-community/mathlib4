@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Complex.Basic
+public import Mathlib.Basic.Complex.Basic
 
 /-!
 # Inner product spaces
@@ -69,7 +69,9 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp Bornology
+open RCLike Real Filter Bornology
+
+open scoped Topology ComplexConjugate
 
 open LinearMap (BilinForm)
 
@@ -272,7 +274,7 @@ theorem ne_zero_of_inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 → x ≠ 0 :=
   mt inner_self_of_eq_zero
 
 theorem inner_self_ofReal_re (x : F) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ := by
-  norm_num [ext_iff, inner_self_im]
+  simp [ext_iff, inner_self_im]
 
 theorem norm_inner_symm (x y : F) : ‖⟪x, y⟫‖ = ‖⟪y, x⟫‖ := by rw [← inner_conj_symm, norm_conj]
 
@@ -510,7 +512,7 @@ lemma topology_eq
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
   let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
     InnerProductSpace.Core.toNormedSpace
-  suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
+  suffices WithSeminorms (fun (i : Unit) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
     simp
   have : p.ball 0 1 = {v | re (cd.inner v v) < 1} := by

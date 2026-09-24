@@ -51,6 +51,10 @@ instance addGroupWithOne [∀ i, AddGroupWithOne (f i)] : AddGroupWithOne (∀ i
   intCast_ofNat n := funext fun _ ↦ AddGroupWithOne.intCast_ofNat n
   intCast_negSucc n := funext fun _ ↦ AddGroupWithOne.intCast_negSucc n
 
+/-- A product of `AddCommGroupWithOne`s is an `AddCommGroupWithOne`. -/
+instance addCommGroupWithOne [∀ i, AddCommGroupWithOne (f i)] : AddCommGroupWithOne (∀ i, f i) :=
+  { Pi.addGroupWithOne, Pi.addCommGroup with }
+
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
   { Pi.distrib, Pi.addCommMonoid, Pi.mulZeroClass with }

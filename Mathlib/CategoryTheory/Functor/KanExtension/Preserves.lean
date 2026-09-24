@@ -49,7 +49,7 @@ lemma PreservesLeftKanExtension.mk'
     G.PreservesLeftKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsInitial.equivOfIso
-        (LeftExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+        (LeftExtension.postcompose₂ObjMkIso _ _) (preserves h.nonempty_isUniversal.some).some⟩⟩
 
 /-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
 Kan extension. -/
@@ -106,7 +106,6 @@ def LeftExtension.IsPointwiseLeftKanExtension.postcompose
     LeftExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseLeftKanExtension := fun c ↦
   (hE c).postcompose G
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cocone at a point of the whiskering right by `G` of an extension is isomorphic to the
 action of `G` on the cocone at that point for the original extension. -/
@@ -309,7 +308,7 @@ lemma PreservesRightKanExtension.mk'
     G.PreservesRightKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsTerminal.equivOfIso
-        (RightExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+        (RightExtension.postcompose₂ObjMkIso _ _) (preserves h.nonempty_isUniversal.some).some⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a right
@@ -367,7 +366,6 @@ def RightExtension.IsPointwiseRightKanExtension.postcompose
     RightExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseRightKanExtension := fun c ↦
   (hE c).postcompose G
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cone at a point of the whiskering right by `G` of an extension is isomorphic to the
 action of `G` on the cone at that point for the original extension. -/

@@ -21,7 +21,7 @@ underlying types are just the limits in the category of types.
 @[expose] public section
 
 
-open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
+open TopologicalSpace CategoryTheory CategoryTheory.Limits
 
 universe v u u' w
 
@@ -41,7 +41,7 @@ Generally you should just use `limit.cone F`, unless you need the actual definit
 (which is in terms of `Types.limitCone`).
 -/
 def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
-  pt := TopCat.of { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
+  pt := ↧{ u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
   π :=
     { app := fun j => ofHom
         { toFun := fun u => u.val j
@@ -141,7 +141,6 @@ theorem induced_of_isLimit :
 
 end IsLimit
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
     (hc : IsLimit ((forget).mapCone c)) :
     Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
@@ -159,7 +158,6 @@ theorem limit_topology [HasLimit F] :
     (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
   induced_of_isLimit _ (limit.isLimit _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasLimit_iff_small_sections :
     HasLimit F ↔ Small.{u} ((F ⋙ forget).sections) := by
   rw [← Types.hasLimit_iff_small_sections]
@@ -243,7 +241,6 @@ variable (c : Cocone F) (hc : IsColimit c)
 
 include hc
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem coinduced_of_isColimit :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
@@ -278,7 +275,6 @@ lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt �
 
 end IsColimit
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
     Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
@@ -300,7 +296,6 @@ theorem colimit_isOpen_iff (F : J ⥤ TopCat.{u}) [HasColimit F]
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   apply isOpen_iff_of_isColimit _ (colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasColimit_iff_small_colimitType :
     HasColimit F ↔ Small.{u} (F ⋙ forget).ColimitType := by
   rw [← Types.hasColimit_iff_small_colimitType]
@@ -333,7 +328,7 @@ def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/
-def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
+def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ ↧PUnit :=
   terminalIsTerminal.uniqueUpToIso isTerminalPUnit
 
 /-- The initial object of `Top` is `PEmpty`. -/
@@ -343,7 +338,7 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/
-def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
+def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ ↧PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
 
 /-- The unique map ∅ ⟶ X is inducing. -/

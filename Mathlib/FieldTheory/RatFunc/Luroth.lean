@@ -84,10 +84,10 @@ public def generator : K⟮X⟯ :=
   if h : E = ⊥ then 0 else (φ E).coeff (generatorIndex h)
 
 public lemma generator_eq_zero (h : E = ⊥) : generator E = 0 :=
-  dif_pos h
+  dite_eq_left h
 
 lemma generator_eq_coeff (h : E ≠ ⊥) : generator E = (φ E).coeff (generatorIndex h) :=
-  dif_neg h
+  dite_eq_right h
 
 public lemma generator_mem : generator E ∈ E := by
   by_cases h : E = ⊥
@@ -141,7 +141,7 @@ def b : K[X] :=
     ((φ E).map (algebraMap E K⟮X⟯))).choose
 
 lemma b_ne_zero : b E ≠ 0 :=
-  nonZeroDivisors.ne_zero <| (IsLocalization.integerNormalization_spec _
+  nonZeroDivisors.ne_zero (IsLocalization.integerNormalization_spec _
     ((φ E).map (algebraMap ..))).choose_spec.1
 
 lemma Φ'_map :

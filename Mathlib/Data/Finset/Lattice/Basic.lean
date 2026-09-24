@@ -39,7 +39,7 @@ public section
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset
 
 universe u
 
@@ -232,7 +232,7 @@ theorem inter_right_comm (s₁ s₂ s₃ : Finset α) : s₁ ∩ s₂ ∩ s₃ =
 
 @[simp]
 theorem inter_self (s : Finset α) : s ∩ s = s :=
-  ext fun _ => mem_inter.trans <| and_self_iff
+  ext fun _ => mem_inter.trans and_self_iff
 
 @[simp]
 theorem inter_union_self (s t : Finset α) : s ∩ (t ∪ s) = s := by

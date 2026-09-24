@@ -41,7 +41,6 @@ def TensorProduct.toIntegralClosure
     S ⊗[R] integralClosure R B →ₐ[S] integralClosure S (S ⊗[R] B) :=
     (Algebra.TensorProduct.map (.id _ _) (integralClosure R B).val).codRestrict _ fun x ↦ by
   induction x with
-  | zero => simp
   | add x y _ _ => rw [map_add]; exact add_mem ‹_› ‹_›
   | tmul x y =>
     convert!
@@ -63,7 +62,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
     Function.Bijective (toIntegralClosure R T B) := by
   let e := (Algebra.TensorProduct.cancelBaseChange ..).symm.trans <|
       (Algebra.TensorProduct.congr (.refl (R := T) (A₁ := T)) (.ofBijective _ H)).trans <|
-      (AlgEquiv.ofBijective _ H').trans <|
+      (AlgEquiv.ofBijective _ H').trans
       (AlgEquiv.mapIntegralClosure (Algebra.TensorProduct.cancelBaseChange ..))
   convert! e.bijective
   rw [← e.coe_toAlgHom]
@@ -122,7 +121,6 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
         (AlgHom.id R (integralClosure R B))).toLinearMap)
       (φ r).toLinearMap (toIntegralClosure R S B).toLinearMap (1 ⊗ₜ x)).1)
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 /-- Base changing to `MvPolynomial σ R` preserves integral closure. -/
 lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :

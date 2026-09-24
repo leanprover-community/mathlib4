@@ -33,10 +33,10 @@ namespace CategoryTheory.Limits.SequentialProduct
 variable {C : Type*} {M N : ℕ → C}
 
 lemma functorObj_eq_pos {n m : ℕ} (h : m < n) :
-    (fun i ↦ if _ : i < n then M i else N i) m = M m := dif_pos h
+    (fun i ↦ if _ : i < n then M i else N i) m = M m := dite_eq_left h
 
 lemma functorObj_eq_neg {n m : ℕ} (h : ¬(m < n)) :
-    (fun i ↦ if _ : i < n then M i else N i) m = N m := dif_neg h
+    (fun i ↦ if _ : i < n then M i else N i) m = N m := dite_eq_right h
 
 variable [Category* C] (f : ∀ n, M n ⟶ N n) [HasCountableProducts C]
 
@@ -89,7 +89,7 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
       functorMap, dite_eq_ite]
     split_ifs
     · omega
-    simp [dif_neg (by lia : ¬(k < m)), dif_neg hh]
+    simp [dite_eq_right (by lia : ¬(k < m)), dite_eq_right hh]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
@@ -135,7 +135,7 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
       Functor.const_obj_map, Category.id_comp, Pi.map_π, Functor.ofOpSequence_map_homOfLE_succ,
       functorMap, Category.assoc, Pi.map_π_assoc]
     split
-    · simp [dif_pos (by lia : m < n + 1)]
+    · simp [dite_eq_left (by lia : m < n + 1)]
     · split
       all_goals simp
 
@@ -149,14 +149,14 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m⟩ ≫
     Pi.π (fun i ↦ if _ : i < m then M i else N i) n =
     Pi.π _ n ≫ eqToHom (functorObj_eq_pos h).symm := by
-  simp [cone_π_app, dif_pos h]
+  simp [cone_π_app, dite_eq_left h]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =
     Pi.π _ n ≫ f n ≫ eqToHom (functorObj_eq_neg h).symm := by
-  simp [cone_π_app, dif_neg h]
+  simp [cone_π_app, dite_eq_right h]
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -169,7 +169,7 @@ with cone point `∏ M` is indeed a limit cone.
 noncomputable def isLimit : IsLimit (cone f) where
   lift s := Pi.lift fun m ↦
     s.π.app ⟨m + 1⟩ ≫ Pi.π (fun i ↦ if _ : i < m + 1 then M i else N i) m ≫
-      eqToHom (dif_pos (by lia : m < m + 1))
+      eqToHom (dite_eq_left (by lia : m < m + 1))
   fac s := by
     intro ⟨n⟩
     apply Pi.hom_ext
@@ -190,14 +190,14 @@ noncomputable def isLimit : IsLimit (cone f) where
         simp only [Nat.succ_eq_add_one, homOfLE_leOfHom,
           Functor.ofOpSequence_map_homOfLE_succ, Category.assoc]
         have h₁ : (if _ : m < m + 1 then M m else N m) = if _ : m < n then M m else N m := by
-          rw [dif_pos (by lia), dif_pos (by lia)]
+          rw [dite_eq_left (by lia), dite_eq_left (by lia)]
         have h₂ : (if _ : m < n then M m else N m) = if _ : m < n + 1 then M m else N m := by
-          rw [dif_pos h, dif_pos (by lia)]
+          rw [dite_eq_left h, dite_eq_left (by lia)]
         rw [← eqToHom_trans h₁ h₂]
         slice_lhs 2 4 => rw [ih (by lia)]
         simp only [functorMap, dite_eq_ite, Pi.π, Pi.map_π_assoc]
         split_ifs
-        rw [dif_pos (by lia)]
+        rw [dite_eq_left (by lia)]
         simp
     · simp only [Category.assoc]
       rw [cone_π_app_comp_Pi_π_neg f _ _ h]

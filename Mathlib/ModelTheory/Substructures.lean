@@ -107,7 +107,7 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
-instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M) M
+instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M)
 
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
@@ -246,7 +246,7 @@ theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := f
   hP (subset_closure h)
 
 @[simp]
-theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
+theorem closed (S : L.Substructure M) : (S : Set M) ∈ (closure L).closed :=
   congr rfl ((closure L).eq_of_le Set.Subset.rfl fun _x xS => mem_closure.2 fun _T hT => hT xS)
 
 open Set

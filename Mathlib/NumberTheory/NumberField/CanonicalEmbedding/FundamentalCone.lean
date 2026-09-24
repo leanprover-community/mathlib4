@@ -136,7 +136,7 @@ theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
 
 theorem logMap_unit_smul (u : (𝓞 K)ˣ) (hx : mixedEmbedding.norm x ≠ 0) :
     logMap (u • x) = logEmbedding K (Additive.ofMul u) + logMap x := by
-  rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; norm_num) hx, logMap_eq_logEmbedding]
+  rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; simp) hx, logMap_eq_logEmbedding]
 
 variable (x) in
 theorem logMap_torsion_smul {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
@@ -277,7 +277,7 @@ theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ i
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
-  by_contra!
+  by_contra
   exact a.prop.1.2 (this.symm ▸ mixedEmbedding.norm.map_zero')
 
 open scoped nonZeroDivisors
@@ -522,7 +522,6 @@ variable {K J}
 theorem idealSetEquiv_apply (a : idealSet K J) :
     (idealSetEquiv K J a : mixedSpace K) = a := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem idealSetEquiv_symm_apply
     (a : {a : integerSet K // (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K)) }) :
     ((idealSetEquiv K J).symm a : mixedSpace K) = a := by
@@ -534,7 +533,6 @@ theorem intNorm_idealSetEquiv_apply (a : idealSet K J) :
 
 variable (K J)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For an integer `n`, The equivalence between the elements of `idealSet K` of norm `n` and
 the product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
 torsion of `K`. -/

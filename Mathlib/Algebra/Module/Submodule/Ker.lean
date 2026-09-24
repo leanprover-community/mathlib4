@@ -36,7 +36,7 @@ open scoped Pointwise
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {V : Type*} {V₂ : Type*}
 
 /-! ### Properties of linear maps -/
@@ -77,7 +77,7 @@ theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmo
 
 theorem le_ker_iff_comp_subtype_eq_zero {N : Submodule R M} {f : M →ₛₗ[τ₁₂] M₂} :
     N ≤ ker f ↔ f ∘ₛₗ N.subtype = 0 := by
-  rw [SetLike.le_def, LinearMap.ext_iff, Subtype.forall]; rfl
+  rw [IsConcreteLE.le_iff, LinearMap.ext_iff, Subtype.forall]; rfl
 
 theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp (ker f).subtype = 0 :=
   LinearMap.ext fun x => mem_ker.1 x.2

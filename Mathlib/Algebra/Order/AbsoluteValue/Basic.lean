@@ -28,7 +28,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 @[expose] public section
 
-variable {ι α R S : Type*}
+variable {α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy
@@ -52,6 +52,7 @@ section Semiring
 
 variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 
+@[macro_inline]
 instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
@@ -162,11 +163,15 @@ instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S
     map_one := fun f => f.map_one }
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*`, `0` and `1`. -/
+@[coe]
 def toMonoidWithZeroHom : R →*₀ S :=
-  .ofClass abv
+  { (abv : R →* S) with
+    map_zero' := abv.map_zero }
+
+instance : Coe (AbsoluteValue R S) (R →*₀ S) := ⟨fun f ↦ f.toMonoidWithZeroHom⟩
 
 @[simp]
-theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
+theorem coe_toMonoidWithZeroHom : ⇑(abv : R →*₀ S) = abv :=
   rfl
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*` and `1`. -/
@@ -262,8 +267,7 @@ end OrderedCommRing
 
 section LinearOrderedRing
 
-variable {R S : Type*} [Semiring R] [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
-  (abv : AbsoluteValue R S)
+variable {S : Type*} [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
 @[simps]
@@ -317,7 +321,7 @@ def trivial : AbsoluteValue R S where
 
 @[simp]
 lemma trivial_apply {x : R} (hx : x ≠ 0) : AbsoluteValue.trivial (S := S) x = 1 :=
-  if_neg hx
+  ite_eq_right hx
 
 end trivial
 
@@ -376,7 +380,7 @@ lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
 
 lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1 := by
   obtain ⟨y, hy⟩ := h.exists_abv_gt_one
-  have hy₀ := v.ne_zero_iff.mp <| (zero_lt_one.trans hy).ne'
+  have hy₀ := v.ne_zero_iff.mp (zero_lt_one.trans hy).ne'
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
@@ -536,7 +540,7 @@ variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValu
 
 omit [IsOrderedRing S] in
 theorem abv_one' : abv 1 = 1 :=
-  (toAbsoluteValue abv).map_one_of_isLeftRegular <|
+  (toAbsoluteValue abv).map_one_of_isLeftRegular
     (IsRegular.of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
