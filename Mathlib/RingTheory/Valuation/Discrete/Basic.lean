@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
@@ -452,10 +453,11 @@ instance valuationSubring_isDiscreteValuationRing [IsCyclic v.valueGroup]
 
 end Field
 
-section IsEquiv
+section Ring
 
 variable {R Γ' : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ'] {v : Valuation R Γ}
   {w : Valuation R Γ'}
+section IsEquiv
 
 theorem isRankOneDiscrete_of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v] :
     IsRankOneDiscrete w := by
@@ -470,5 +472,51 @@ theorem IsEquiv.isRankOneDiscrete_iff (h : v.IsEquiv w) :
   ⟨fun _ ↦ isRankOneDiscrete_of_isEquiv h, fun _ ↦ isRankOneDiscrete_of_isEquiv h.symm⟩
 
 end IsEquiv
+
+theorem IsRankOneDiscrete.valueGroup_genLTOne_eq_generator' [v.IsRankOneDiscrete] :
+    LinearOrderedCommGroup.genLTOne (v : R →*₀ Γ).valueGroup = generator' v := by
+  simp only [LinearOrderedCommGroup.genLTOne_eq_of_top]
+  let f := Subgroup.topOrderMonoidIso (G := (v : R →*₀ Γ).valueGroup)
+  rw [← f.symm.injective.eq_iff]
+  simp only [OrderMonoidIso.toMulEquiv_eq_coe,
+     OrderMonoidIso.coe_mulEquiv ]
+  rw [f.symm.map_genLTOne, eq_comm]
+  apply LinearOrderedCommGroup.Subgroup.genLTOne_unique
+  · rw [← map_one f.symm, OrderMonoidIso.lt_symm_apply]
+    simp [generator'_lt_one v]
+  · simp only [Subgroup.eq_top_iff', Subtype.forall, Subgroup.mem_top, forall_true_left]
+    intro γ hγ
+    rw [← generator_zpowers_eq_valueGroup, Subgroup.mem_zpowers_iff] at hγ
+    obtain ⟨k, hk⟩ := hγ
+    exact ⟨k, by simp only [← hk]; rfl⟩
+
+end Ring
+
+section Field
+
+variable {K Γ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ)
+  [IsRankOneDiscrete v]
+
+instance : IsRankOneDiscrete v.valuationSubring.valuation :=
+  Valuation.isRankOneDiscrete_of_isEquiv v.isEquiv_valuation_valuationSubring
+
+variable {v}
+
+theorem exists_zpow_Uniformizer {r : K} (hr : r ≠ 0) (x : Uniformizer v) :
+    ∃ n : ℤ, ∃ u : (v.valuationSubring)ˣ, r = (x.1 ^ n) * u.1 := by
+  obtain ⟨num, den, hd, rfl⟩ := IsFractionRing.div_surjective (A := v.valuationSubring) r
+  have hnum : num ≠ 0 := fun h ↦ by simp [h] at hr
+  have hden : den ≠ 0 := fun h ↦ by simp [h] at hr
+  obtain ⟨n1, u1, h1⟩ := exists_pow_Uniformizer hnum x
+  obtain ⟨n2, u2, h2⟩ := exists_pow_Uniformizer hden x
+  have hu2 : ((u2 : v.valuationSubring) : K)⁻¹ = u2⁻¹ :=
+    inv_eq_of_mul_eq_one_left (by norm_cast; simp)
+  use ((n1 : ℤ) - n2), u1 * u2⁻¹
+  simp only [ValuationSubring.algebraMap_apply, h1, SubmonoidClass.coe_pow, h2, div_eq_mul_inv,
+    mul_inv_rev, hu2, zpow_sub₀ (Uniformizer.ne_zero x), zpow_natCast, Units.val_mul,
+    MulMemClass.coe_mul]
+  ring
+
+end Field
 
 end Valuation

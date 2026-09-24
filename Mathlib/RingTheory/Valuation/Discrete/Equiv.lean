@@ -3,14 +3,31 @@ Copyright (c) 2026 María Inés de Frutos-Fernández, Xavier Généreux. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Xavier Généreux
 -/
-import Mathlib.Algebra.Group.Int.TypeTags
-import Mathlib.Analysis.AbsoluteValue.Equivalence
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.RingTheory.Valuation.Discrete.RankOne
-import Mathlib.RingTheory.Valuation.ValuativeRel.Quotient
-import Mathlib.Topology.Algebra.Valued.NormedValued
+module
 
-/-! # Equivalent discrete valuations. -/
+public import Mathlib.Algebra.Group.Int.TypeTags
+public import Mathlib.Analysis.AbsoluteValue.Equivalence
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.RingTheory.Valuation.Discrete.RankOne
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Quotient
+
+/-! # Equivalent discrete valuations.
+
+## Main Definitions and Results
+
+* `Valuation. isEquiv_iff_isUniformizer`: two discrete valuations are equivalent if and only if
+  they have the same uniformizers.
+* `Valuation.isEquiv_iff_of_withZeroMulInt `: two `ℤᵐ⁰`-valued valuations `v`
+  and `w` are equivalent if and only if there exist positive integers `n` and `d` such that
+  `v r ^ d = w r ^ n` for all `r` in the domain.
+
+## Tags
+
+valuation, discrete, equivalent
+
+-/
+
+@[expose] public section
 
 namespace Valuation
 
@@ -46,6 +63,7 @@ theorem IsUniformizer.eq_one_iff_mul_isUniformizer {π : R} (hπ : v.IsUniformiz
   exact ⟨fun h ↦ h ▸ mul_one _,
     fun h ↦ mul_left_cancel₀ (generator_ne_zero v) (h.trans (mul_one _).symm)⟩
 
+/-- Two discrete valuations are equivalent if and only if they have the same uniformizers. -/
 theorem isEquiv_iff_isUniformizer {K Γ Γ' : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ]
     [LinearOrderedCommGroupWithZero Γ'] {v : Valuation K Γ} {w : Valuation K Γ'}
     [v.IsRankOneDiscrete] [w.IsRankOneDiscrete] :
@@ -63,15 +81,8 @@ end IsEquiv
 
 section AbsoluteValue
 
--- TODO: generalize to `Ring K`
-variable {K Γ : Type*} [LinearOrderedCommGroupWithZero Γ] [Field K] {v w : Valuation K Γ}
+variable {K Γ : Type*} [LinearOrderedCommGroupWithZero Γ] [DivisionRing K] {v w : Valuation K Γ}
   [hv : IsRankOneDiscrete v] [hw : IsRankOneDiscrete w] {e : NNReal} (he : 1 < e)
-
-/-- Absolute value corresponding to a discrete valuation. -/
-@[simps!]
-noncomputable def IsRankOneDiscrete.absoluteValue : AbsoluteValue K ℝ :=
-  let : v.RankOne := hv.rankOne v he
-  v.absoluteValue
 
 lemma isEquiv_iff_absoluteValue_isEquiv :
     v.IsEquiv w ↔ (hv.absoluteValue he).IsEquiv (hw.absoluteValue he) := by
@@ -79,13 +90,6 @@ lemma isEquiv_iff_absoluteValue_isEquiv :
   let : w.RankOne := hw.rankOne w he
   simp [IsEquiv, AbsoluteValue.IsEquiv, v.norm_def, w.norm_def,
     (RankOne.strictMono v).le_iff_le, (RankOne.strictMono w).le_iff_le]
-
--- TODO: PR to [Mathlib.RingTheory.Valuation.Discrete.RankOne]
-lemma IsRankOneDiscrete.rankOne_hom_eq :
-    (hv.rankOne v he).hom =
-      (WithZeroMulInt.toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp
-        (ofClass (valueGroup₀_equiv_withZeroMulInt v)) :=
-  rfl
 
 end AbsoluteValue
 
@@ -136,31 +140,11 @@ theorem IsRankOneDiscrete.eq_of_isEquiv_of_mem_range {v w : Valuation R ℤᵐ�
     _ = w x := by
       simp [onQuotSuppExtend, IsScalarTower.algebraMap_apply R (R ⧸ vr.supp) K x, onQuotSupp_mk]
 
-lemma valueGroup₀_equiv_withZeroMulInt_restrict_zpow_eq {v : Valuation R ℤᵐ⁰}
-    [hv : IsRankOneDiscrete v] (hv0 : ∀ x ≠ 0, v x ≠ 0) (x : R) :
-    ((hv.valueGroup₀_equiv_withZeroMulInt v) (v.restrict x)) ^ (- logEquiv hv.generator) = v x := by
-  by_cases hx : x = 0
-  · simp only [hx, map_zero, logEquiv_apply, zpow_neg, inv_eq_zero]
-    rw [zero_zpow]
-    simp [ne_eq, ← exp_inj (y := (0 : ℤ)), (IsRankOneDiscrete.generator_lt_one v).ne]
-  obtain ⟨c, hc⟩ : ∃ c : ℤ, (hv.generator' : ValueGroup₀ (ofClass v))⁻¹ ^ c = v.restrict x := by
-    rw [restrict_def, ValueGroup₀.restrict₀_of_ne_zero (by simp [hv0, hx])]
-    simp [← coe_inv, ← coe_zpow, coe_inj,-inv_zpow', ← Subgroup.mem_zpowers_iff,
-       hv.generator'_zpowers_eq_top, Subgroup.mem_top]
-  have hc' : hv.generator ^ (- c) = v x := by
-    simp [← v.embedding_restrict, ← hc, hv.embedding_generator']
-  rw [restrict_def, ValueGroup₀.restrict₀_of_ne_zero (by simp [hv0, hx])] at hc ⊢
-  simp only [← coe_inv, ← coe_zpow, coe_inj] at hc
-  rw [IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt_apply, map'_coe, MonoidHom.coe_coe]
-  have hg' : Subgroup.zpowers (hv.generator' v)⁻¹ = ⊤ := by
-    simp [Subgroup.zpowers_inv, IsRankOneDiscrete.generator'_zpowers_eq_top v]
-  rw [← hc, mulintEquivOfZPowersEqTop_symm_apply_zpow hg' c]
-  simp only [logEquiv_apply, ← hc', zpow_neg]
-  nth_rw 2 [← exp_log (hv.generator_ne_zero v)]
-  simp [exp, ← WithZero.coe_zpow, ← Int.ofAdd_mul, mul_comm c]
-
 end Ring
 
+open NNReal Real in
+/-- Two `ℤᵐ⁰`-valued valuations `v` and `w` are equivalent if and only if there exist positive
+  integers `n` and `d` such that `v r ^ d = w r ^ n` for all `r` in the domain. -/
 lemma isEquiv_iff_of_withZeroMulInt {K : Type*} [Field K] {v w : Valuation K ℤᵐ⁰}
     [hv : IsRankOneDiscrete v] [hw : IsRankOneDiscrete w] :
     v.IsEquiv w ↔ ∃ (n : ℤ) (d : ℤ), 0 < n ∧ 0 < d ∧ ∀ (r : K), v r ^ d = w r ^ n := by
@@ -182,8 +166,11 @@ lemma isEquiv_iff_of_withZeroMulInt {K : Type*} [Field K] {v w : Valuation K ℤ
   have ha1'' : ¬unzero ha0' = 1 := by
       rw [← WithZero.coe_inj]
       simp [- IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt_apply, ha1']
-  have h0' : Multiplicative.toAdd (unzero ha0') ≠ 0 := by
-    simpa [valueGroup₀_equiv_withZeroMulInt_apply, ne_eq, toAdd_eq_zero]
+  have h0' : ((valueGroup₀_equiv_withZeroMulInt v) (v.restrict a)).log ≠ 0 := by
+    rw [← toAdd_unzero_eq_log ha0']
+    simpa
+  /- `v` and `w` being equivalent if and only if the associated absolute values are. We use `2` as
+    the basis for these absolute values, but any `e : ℝ≥0` with `1 < e` would work. -/
   rw [v.isEquiv_iff_absoluteValue_isEquiv one_lt_two, AbsoluteValue.isEquiv_iff_exists_rpow_eq] at h
   /- Since the absolute values associated to `v` and `w` are equivalent, there exists `c : ℝ`
     such that `0 < c` and `|x|_v ^ c = |x|_w` for all `x : K`. -/
@@ -193,46 +180,45 @@ lemma isEquiv_iff_of_withZeroMulInt {K : Type*} [Field K] {v w : Valuation K ℤ
   /- In particular, `|a|_v ^ c = |a|_w`. Since `|a|_v` is equal to 2 raised to the negative
     of the additive valuation `a_v(a)` associated to `v` (and analogously for `w`), we can take
     log_2 on both sides and simplify to deduce that `c` is the coercion of a rational number. -/
-  have hc := h_eq a -- take log_2 and deduce c is rational.
-  simp only [MonoidWithZeroHom.coe_ofClass] at hc
+  have hc := h_eq a
+  simp only [MulEquiv.coe_toMonoidWithZeroHom, OrderMonoidIso.coe_mulEquiv] at hc
   rw [toNNReal_neg_apply _ ha0, toNNReal_neg_apply _ ha0'] at hc
-  · simp_rw [NNReal.coe_zpow, NNReal.coe_ofNat, ← Real.rpow_intCast] at hc
-    rw [← Real.rpow_mul zero_le_two, Real.rpow_right_inj zero_lt_two (by linarith), mul_comm,
+  · simp_rw [coe_zpow, NNReal.coe_ofNat, ← Real.rpow_intCast] at hc
+    rw [← rpow_mul zero_le_two, rpow_right_inj zero_lt_two (by linarith), mul_comm,
       ← eq_mul_inv_iff_mul_eq₀ (by simpa)] at hc
     /- We take `n` and `d` to be the absolute values of the denominator and the numerator of the
-      (positive) rational number found in the previous step. -/
-    -- TODO: update comment
-    · refine ⟨- log hv.generator * |Multiplicative.toAdd (unzero ha0')|,
-        - log hw.generator * |Multiplicative.toAdd (unzero ha0)|, ?_, ?_, ?_⟩
+      (positive) rational number `c` found in the previous step. -/
+    set n := log ((valueGroup₀_equiv_withZeroMulInt w) (w.restrict a))
+    set d := log ((valueGroup₀_equiv_withZeroMulInt v) (v.restrict a))
+    · refine ⟨- log hv.generator * |d|, - log hw.generator * |n|, ?_, ?_, ?_⟩
       · apply mul_pos _ (by simpa [abs_pos, ne_eq])
-        simp only [Int.neg_pos, log_lt_iff_lt_exp (hv.generator_ne_zero v), exp_zero]
+        simp only [Int.neg_pos, log_lt_iff_lt_exp (hv.generator_ne_zero v)]
         exact hv.generator_lt_one v
       · apply mul_pos
-        · simp only [Int.neg_pos, log_lt_iff_lt_exp (hw.generator_ne_zero w), exp_zero]
+        · simp only [Int.neg_pos, log_lt_iff_lt_exp (hw.generator_ne_zero w)]
           exact hw.generator_lt_one w
-        · rw [abs_pos, ne_eq, toAdd_eq_zero, ← WithZero.coe_inj]
+        · simp only [n]
+          rw [abs_pos, ne_eq, ← toAdd_unzero_eq_log ha0, toAdd_eq_zero, ← WithZero.coe_inj]
           simp [- IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt_apply,
             w.restrict_eq_one_iff, ha1]
       · have (a b c d : ℝ) : a * ((b * c) * d) = (c * d) * (b * a) := by ring
         /- We use the definitions of `c`, `n` and `d` to conclude the result. -/
         intro x
         simp only [← (toNNReal_strictMono one_lt_two).injective.eq_iff, ← NNReal.coe_inj,
-          map_zpow₀, NNReal.coe_zpow, ← Real.rpow_intCast]
-        rw [← Real.rpow_left_inj (z := (↑|Multiplicative.toAdd (unzero ha0')|)⁻¹)
-          (by positivity) (by positivity) (by simpa),
-          ← Real.rpow_mul NNReal.zero_le_coe, ← Real.rpow_mul NNReal.zero_le_coe]
+          map_zpow₀, coe_zpow, ← Real.rpow_intCast]
+        rw [← rpow_left_inj (z := (↑|d|)⁻¹) (by positivity) (by positivity) (by simpa),
+          ← rpow_mul zero_le_coe, ← rpow_mul zero_le_coe]
         conv_rhs => rw [Int.cast_mul, mul_assoc, mul_inv_cancel₀ (by simpa), mul_one]
         rw [← NNReal.coe_rpow, ← valueGroup₀_equiv_withZeroMulInt_restrict_zpow_eq (by simp),
           ← valueGroup₀_equiv_withZeroMulInt_restrict_zpow_eq (by simp)]
-        simp only [logEquiv_apply, map_zpow₀,  Int.cast_mul, Int.cast_abs, NNReal.coe_rpow,
-            NNReal.coe_zpow]
-        rw [← Real.rpow_intCast, ← Real.rpow_mul (NNReal.zero_le_coe),
-          ← Real.rpow_intCast, ← Real.rpow_mul (NNReal.zero_le_coe), this,
-          Real.rpow_mul NNReal.zero_le_coe]
-        simp only [MonoidWithZeroHom.coe_ofClass, valueGroup₀_equiv_withZeroMulInt_apply] at h_eq
+        simp only [logEquiv_apply, map_zpow₀,  Int.cast_mul, Int.cast_abs, coe_rpow, coe_zpow]
+        rw [← Real.rpow_intCast, ← rpow_mul zero_le_coe, ← Real.rpow_intCast,
+          ← rpow_mul zero_le_coe, this, rpow_mul zero_le_coe]
+        simp only [MulEquiv.coe_toMonoidWithZeroHom, OrderMonoidIso.coe_mulEquiv,
+          valueGroup₀_equiv_withZeroMulInt_apply] at h_eq
         simp only [valueGroup₀_equiv_withZeroMulInt_apply, ← h_eq]
         rw [← abs_eq_self.mpr (le_of_lt hc_pos)]
-        simp [hc, valueGroup₀_equiv_withZeroMulInt_apply]
+        simp [n, d, hc, valueGroup₀_equiv_withZeroMulInt_apply]
 
 end WithZeroMulInt
 
