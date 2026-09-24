@@ -258,7 +258,7 @@ def isLimitSigmaOfIsColimitEquiv {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E
     [PreservesLimit (Discrete.functor fun i ↦ Opposite.op (E.Y' i)) F] :
     IsLimit ((E.sigmaOfIsColimit hc hd).multifork F) ≃ IsLimit (E.multifork F) := by
   refine (Multifork.isLimitEquivOfIsos _ _ ?_ ?_ ?_ ?_ ?_ ?_).trans
-    (IsLimit.ofConeEquiv <| (MulticospanIndex.multiforkOfParallelHomsEquivFork
+    (IsLimit.ofConeEquiv (MulticospanIndex.multiforkOfParallelHomsEquivFork
       (E.sigmaOfIsColimit hc hd).multicospanShape _ _).symm) |>.trans
       (E.isLimitMultiforkEquivIsLimitFork hc hd F).symm
   · exact .refl _
