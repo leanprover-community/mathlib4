@@ -135,6 +135,16 @@ def flatPath (c : Container) (repo : String) : Bool :=
   | .legacy => repo == MATHLIBREPO
   | _ => false
 
+/--
+Whether the container holds per-commit namespaces, `/f/{repo}/{sha}/...`,
+which a scope addresses. Only `forks` does: each fork PR build uploads under
+its head commit, so one commit's artifacts never serve another commit on the
+same fork (see `SECURITY.md`).
+-/
+def perCommit : Container → Bool
+  | .forks => true
+  | _ => false
+
 end Container
 
 /--
@@ -143,7 +153,7 @@ layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
 a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
 is lowercased via `normalizeRepo`. A file lives at
 `{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
-`stagedUploadDestFrom` both build on this, so reads and uploads share one path
+`containerUploadDest` both build on this, so reads and uploads share one path
 contract. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no
 trailing slash.
 -/
@@ -196,8 +206,9 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes resolve their own
-destination per the selected backend (`stagedUploadDest`).
+Only reads follow this base. Uploads and marker writes go under the
+container's root, the Azure account or `MATHLIB_CACHE_PUT_URL`
+(`stagedUploadDest`).
 -/
 def getBaseURLFrom (envValue? : Option String) (useLegacy : Bool) : String :=
   (normalizeBaseURL envValue?).getD (defaultGetBaseURL useLegacy)

@@ -10,12 +10,11 @@ import Cache.Marker
 # The upload destination contract
 
 The resolved destination every upload consumes (`StagedUploadDest`) and the
-shared container-write builder (`containerUploadDest`). Each backend module
-resolves its own destination on top of these (`azureUploadDestFrom` in
-`Cache/Upload/Azure.lean`, `s3UploadDestFrom` in `Cache/Upload/S3.lean`), and
-`Cache/Upload/Defs.lean` arbitrates. The prefixes build on `fileDirPath` and
-`markerDirPath` (`Cache/Infra.lean`, `Cache/Marker.lean`), the same policies
-the reads use, so every upload path follows the read-side path contract.
+container write it resolves to (`containerUploadDest`). `stagedUploadDest`
+(`Cache/Upload/Defs.lean`) picks the container's base. The prefixes build on
+`fileDirPath` and `markerDirPath` (`Cache/Infra.lean`, `Cache/Marker.lean`),
+the same policies the reads use, so every upload follows the read-side path
+contract.
 -/
 
 namespace Cache.Requests
@@ -26,7 +25,7 @@ base; the prefixes are relative to it and carry no trailing slash.
 Every staged file goes under `filesPrefix` and keeps its base name; the
 per-SHA marker goes under `markerPrefix` with the SHA as its name (`fileURL`,
 `markerURL`). `label` names the destination in progress and warning messages:
-the container name, or a note that an endpoint override applies.
+the container name.
 -/
 structure StagedUploadDest where
   base : String
@@ -46,16 +45,16 @@ def StagedUploadDest.markerURL (dest : StagedUploadDest) (sha : String) : String
   s!"{dest.base}/{dest.markerPrefix}/{sha}"
 
 /--
-The destination of a container write under `base`: the container's path
-segment, then the container's file layout (`fileDirPath`) and the marker
-directory (`markerDirPath`). Both backends build their container
-destinations with this, so a container write has one shape wherever it
-lands.
+The destination of a write to container `c` whose root is `base`: the
+container's file layout (`fileDirPath`) and marker directory
+(`markerDirPath`) under it. The root is the URL that holds the container's
+`f/` and `m/` trees, such as `Container.azureURL`, so a container write has
+one shape wherever it lands.
 -/
 def containerUploadDest (base : String) (c : Container) (repo : String)
     (scope? : Option String) : StagedUploadDest :=
   { base, label := c.name,
-    filesPrefix := s!"{c.pathSegment}/{fileDirPath (some c) repo scope?}",
-    markerPrefix := s!"{c.pathSegment}/{markerDirPath repo}" }
+    filesPrefix := fileDirPath (some c) repo scope?,
+    markerPrefix := markerDirPath repo }
 
 end Cache.Requests
