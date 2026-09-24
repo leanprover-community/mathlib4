@@ -16,8 +16,8 @@ implies `P x`. Well-founded relations can be used for induction and recursion, i
 construction of fixed points in the space of dependent functions `Π x : α, β x`.
 
 The predicate `WellFounded` is defined in the core library. In this file we prove some extra lemmas
-and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
-and an induction principle `WellFounded.induction_bot`.
+and provide a few new definitions: `WellFounded.min`, `Function.argmin`, and an induction principle
+`WellFounded.induction_bot`.
 -/
 
 @[expose] public section
@@ -84,7 +84,7 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
     s.Nonempty → ∃ a ∈ s, ∀ x ∈ s, ¬r x a
   | ⟨a, ha⟩ => show ∃ b ∈ s, ∀ x ∈ s, ¬r x b from
     Acc.recOn (H.apply a) (fun x _ IH =>
-        not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
+        not_imp_not.1 fun hne hx => hne ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
 
 theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTotal r := by
@@ -187,10 +187,12 @@ theorem not_rel_apply_succ [h : WellFounded r] (f : ℕ → α) : ∃ n, ¬ r (f
 open Set
 
 /-- The supremum of a bounded, well-founded order -/
+@[deprecated "write down the definition explicitly" (since := "2026-09-14")]
 protected noncomputable def sup {r : α → α → Prop} (wf : WellFounded r) (s : Set α)
     (h : Bounded r s) : α :=
   wf.min { x | ∀ a ∈ s, r a x } h
 
+@[deprecated "WellFounded.sup is deprecated" (since := "2026-09-14")]
 protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set α} (h : Bounded r s) {x}
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
