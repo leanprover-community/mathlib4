@@ -13,9 +13,9 @@ public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 /-!
 # The `ℤ√d` model for the Bareiss elimination
 
-The computable model of the quadratic extensions `ℤ√d`: the elimination runs on `ℤ√d`
-values with the ring's own arithmetic, with exact division by conjugation. Entries are
-`⟨a, b⟩` literals, `√d`, or numerals.
+The computable model of the quadratic extensions `ℤ√d`. The elimination runs on `Expr` representing
+`⟨a, b⟩` literals with raw integer components. Accepted entries are `⟨a, b⟩` literals, `√d`, or
+numerals.
 -/
 
 public meta section
