@@ -317,6 +317,9 @@ protected alias Measure.QuasiMeasurePreserving.liminf_preimage_iterate_ae_eq :=
 protected alias Measure.QuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae :=
   MeasureTheory.QuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae
 @[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.restrict :=
+  MeasureTheory.QuasiMeasurePreserving.restrict
+@[deprecated (since := "2026-09-23")]
 protected alias Measure.QuasiMeasurePreserving.smul_ae_eq_of_ae_eq :=
   MeasureTheory.QuasiMeasurePreserving.smul_ae_eq_of_ae_eq
 @[deprecated (since := "2026-09-23")]
