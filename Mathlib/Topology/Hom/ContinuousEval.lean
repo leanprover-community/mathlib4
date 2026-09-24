@@ -23,7 +23,7 @@ open Filter
 
 /-- A typeclass saying that `F` is a bundled morphism class (in the sense of `FunLike`)
 with a topology such that `fun (f, x) : F × X ↦ f x` is a continuous function. -/
-class ContinuousEval (F : Type*) (X Y : outParam Type*) [FunLike F X Y]
+class ContinuousEval (F X Y : Type*) [FunLike F X Y]
     [TopologicalSpace F] [TopologicalSpace X] [TopologicalSpace Y] : Prop where
   /-- Evaluation of a bundled morphism at a point is continuous in both variables. -/
   continuous_eval : Continuous fun fx : F × X ↦ fx.1 fx.2

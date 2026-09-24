@@ -129,7 +129,9 @@ def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
 
 /-- The constructed binary fan is indeed a limit -/
 def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
-  lift := fun S : BinaryFan X Y => ofHom { toFun s := (S.fst s, S.snd s) }
+  lift := fun S : BinaryFan X Y => ofHom {
+    toFun s := (S.fst s, S.snd s)
+    continuous_toFun := by dsimp; fun_prop }
   fac := by
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
@@ -230,7 +232,7 @@ protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
   refine Limits.BinaryCofan.isColimitMk (fun s => ofHom
     { toFun := Sum.elim s.inl s.inr, continuous_toFun := ?_ }) ?_ ?_ ?_
-  · fun_prop
+  · dsimp; fun_prop
   · intro s
     ext
     rfl
@@ -279,7 +281,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
             convert_to Continuous (f ∘ h₁.isEmbedding.toHomeomorph.symm)
             · ext ⟨x, hx⟩
               exact dite_eq_left hx
-            fun_prop
+            dsimp; fun_prop
           · exact h₁.isOpen_range
         · revert h x
           simp only [← mem_compl_iff]
@@ -294,7 +296,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
               exact dite_eq_right hx
             apply Continuous.comp
             · exact g.hom.continuous_toFun
-            · apply Continuous.comp (by fun_prop)
+            · apply Continuous.comp (by dsimp; fun_prop)
               rw [IsEmbedding.subtypeVal.isInducing.continuous_iff]
               exact continuous_subtype_val
           · change IsOpen (Set.range c.inl)ᶜ

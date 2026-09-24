@@ -183,7 +183,7 @@ section AlgebraInstances
 
 open IsLocalRing Valuation ValuationSubring
 
-variable {K L Γ₀ Γ₁ : outParam Type*} [Field K] [Field L] [Algebra K L]
+variable {K L Γ₀ Γ₁ : Type*} [Field K] [Field L] [Algebra K L]
   [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₁] (vK : Valuation K Γ₀)
   (vL : Valuation L Γ₁) [vK.HasExtension vL]
 

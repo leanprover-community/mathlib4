@@ -77,8 +77,8 @@ notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
-    (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M]
-    (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
+    (σ : outParam <| R →+* S) (M : Type*) [TopologicalSpace M] [AddCommMonoid M]
+    (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [FunLike F M M₂] : Prop
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂
 
@@ -86,7 +86,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
 `R`-linear maps `M → M₂`.  This is an abbreviation for
 `ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
-    (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
+    (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
 

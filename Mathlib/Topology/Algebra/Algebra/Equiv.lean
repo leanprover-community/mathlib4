@@ -56,7 +56,7 @@ attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
   structure-preserving equivalences. You should extend this class when you
   extend `ContinuousAlgEquiv`.
 -/
-class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
+class ContinuousAlgEquivClass (F : Type*) (R : outParam Type*) (A B : Type*) [CommSemiring R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B]
     [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
     extends AlgEquivClass F R A B, HomeomorphClass F A B

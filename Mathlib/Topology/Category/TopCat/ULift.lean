@@ -56,10 +56,11 @@ with the one defined on categories of types. -/
 def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} ≅
     forget TopCat.{u} ⋙ CategoryTheory.uliftFunctor.{v, u} := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `ULift` functor on categories of topological spaces is fully faithful. -/
 def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where
-  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop⟩
+  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by
+    have : Continuous (ConcreteCategory.hom f) := by fun_prop
+    fun_prop⟩
 
 instance : uliftFunctor.{v, u}.Full :=
   uliftFunctorFullyFaithful.full

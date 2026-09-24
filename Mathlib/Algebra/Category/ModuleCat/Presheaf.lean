@@ -222,7 +222,7 @@ noncomputable def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
     M₁ ⟶ M₂ where
   app X := ModuleCat.ofHom
     { toFun := φ.app X
-      map_add' := by simp +instances
+      map_add' := map_add (ConcreteCategory.hom (φ.app X))
       map_smul' := hφ X }
   naturality := fun f ↦ by
     ext x

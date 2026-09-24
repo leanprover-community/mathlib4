@@ -64,7 +64,8 @@ The Fontaine's θ map inverting `p`. Note that if `p = 0` in `R`, then this is t
 def fontaineThetaInvertP :
     Localization.Away (p : 𝕎 R♭) →+* Localization.Away (p : R) :=
   Localization.awayLift ((algebraMap R _).comp (fontaineTheta R p)) (p : 𝕎 R♭)
-      (by simpa using IsLocalization.Away.algebraMap_isUnit (p : R))
+      (by simpa using
+        IsLocalization.Away.algebraMap_isUnit (S := (Localization.Away (p : R))) (p : R))
 
 /--
 The de Rham period ring $\mathbb{B}_{dR}^+$ for general perfectoid ring.

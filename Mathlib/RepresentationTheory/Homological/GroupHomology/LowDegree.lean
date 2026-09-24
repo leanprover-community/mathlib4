@@ -1001,7 +1001,7 @@ def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[
       (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
       simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
         shortComplexH1, isTrivial_apply]).comp <|
-          AddMonoidHom.ofClass (H1Iso A).hom.hom).toIntLinearMap
+          (AddMonoidHom.ofClass (H1Iso A).hom.hom :)).toIntLinearMap
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

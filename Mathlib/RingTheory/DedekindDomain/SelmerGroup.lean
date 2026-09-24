@@ -150,7 +150,9 @@ theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
     QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
-    valuation_of_unit_eq, QuotientGroup.mk_one, map_one]
+    valuation_of_unit_eq, QuotientGroup.mk_one]
+  change Int.quotientZMultiplesEquivZMod n 0 = 0
+  apply map_zero
 
 end HeightOneSpectrum
 

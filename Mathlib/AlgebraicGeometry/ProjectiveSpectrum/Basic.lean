@@ -116,7 +116,7 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     · rw [DirectSum.decompose_of_mem_ne 𝒜 hn hn', sub_zero]
       exact Ideal.subset_span ⟨_, rfl⟩
   | algebraMap r =>
-    convert! zero_mem (Ideal.span _)
+    convert! zero_mem (M := A) (Ideal.span _)
     rw [sub_eq_zero]
     exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
   | add x y hx hy _ _ =>

@@ -43,7 +43,7 @@ section
 /-- `ContinuousOpenMapClass F α β` states that `F` is a type of continuous open maps.
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
-class ContinuousOpenMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
+class ContinuousOpenMapClass (F α β : Type*) [TopologicalSpace α]
   [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
 

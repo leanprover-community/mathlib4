@@ -21,7 +21,7 @@ cones in rings and the corresponding ordered rings.
 @[expose] public section
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
-class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R] : Prop
+class RingConeClass (S R : Type*) [Ring R] [SetLike S R] : Prop
     extends AddGroupConeClass S R, SubsemiringClass S R
 
 /-- A (positive) cone in a ring is a subsemiring that

@@ -464,7 +464,7 @@ noncomputable
 def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
   toFun x := .of (Ideal.mapCotangent (R := R) _ _ f.toAlgHom
     (fun x hx ↦ by simpa using RingHom.congr_arg (algebraMap S S') hx) x.val)
-  map_add' x y := ext (map_add _ x.val y.val)
+  map_add' x y := ext (map_add (Ideal.mapCotangent _ _ _ _) x.val y.val)
   map_smul' r x := by
     ext
     obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x

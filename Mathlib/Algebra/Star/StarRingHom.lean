@@ -57,7 +57,7 @@ add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
 /-- `NonUnitalStarRingHomClass F A B` states that `F` is a type of non-unital ⋆-ring homomorphisms.
 You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
-class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
+class NonUnitalStarRingHomClass (F A B : Type*)
     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
     [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
 
@@ -250,7 +250,7 @@ add_decl_doc StarRingEquiv.toRingEquiv
 /-- `StarRingEquivClass F A B` asserts `F` is a type of bundled ⋆-ring equivalences between `A` and
 `B`.
 You should also extend this typeclass when you extend `StarRingEquiv`. -/
-class StarRingEquivClass (F : Type*) (A B : outParam Type*)
+class StarRingEquivClass (F A B : Type*)
     [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B] : Prop
     extends RingEquivClass F A B where
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/

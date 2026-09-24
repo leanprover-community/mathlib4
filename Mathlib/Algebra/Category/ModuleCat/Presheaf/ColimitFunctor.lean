@@ -290,7 +290,7 @@ set_option backward.defeqAttrib.useBackward true in
 noncomputable def map (f : M ⟶ M') :
     ModuleColimit hcR hcM →ₗ[cR.pt] ModuleColimit hcR hcM' where
   toFun := hcM.desc ((Cocone.precompose ((toPresheaf _).map f)).obj cM')
-  map_add' _ _ := map_add _ _ _
+  map_add' := map_add (ConcreteCategory.hom (hcM.desc _))
   map_smul' r m := by
     obtain ⟨U, r, m, rfl, rfl⟩ := ModuleColimit.jointly_surjective₂ r m
     let c := (Cocone.precompose ((toPresheaf _).map f)).obj cM'

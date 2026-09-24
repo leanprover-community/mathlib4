@@ -57,7 +57,8 @@ noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
     lightProfiniteToLightCondSet.{u} ≅ LightProfinite.toTopCat.{u} ⋙ topCatToLightCondSet.{u} :=
   dsimp% NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
     NatIso.ofComponents fun S ↦ {
-      hom := ↾fun f ↦ { toFun := f.hom }
+      hom := ↾fun f ↦ {
+        toFun := f.hom, continuous_toFun := map_continuous (ConcreteCategory.hom f.hom) }
       inv := ↾fun f ↦ InducedCategory.homMk (TopCat.ofHom f) }
 
 /--

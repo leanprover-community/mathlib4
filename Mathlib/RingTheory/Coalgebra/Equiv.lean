@@ -43,7 +43,7 @@ notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 
 /-- `CoalgEquivClass F R A B` asserts `F` is a type of bundled coalgebra equivalences
 from `A` to `B`. -/
-class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
+class CoalgEquivClass (F : Type*) (R : outParam Type*) (A B : Type*) [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
     extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B

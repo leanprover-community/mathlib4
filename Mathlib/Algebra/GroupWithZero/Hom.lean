@@ -46,7 +46,7 @@ lemma of_map (f : F) [neZero : NeZero (f a)] : NeZero a :=
   ⟨fun h ↦ ne (f a) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
 
 lemma of_injective {f : F} (hf : Injective f) [NeZero a] : NeZero (f a) :=
-  ⟨by rw [← ZeroHomClass.map_zero f]; exact hf.ne NeZero.out⟩
+  ⟨by rw [← map_zero f]; exact hf.ne NeZero.out⟩
 
 end NeZero
 
@@ -57,7 +57,7 @@ variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] 
 `MonoidWithZero`-preserving homomorphisms.
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`. -/
-class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [MulZeroOneClass α]
+class MonoidWithZeroHomClass (F α β : Type*) [MulZeroOneClass α]
     [MulZeroOneClass β] [FunLike F α β] : Prop
   extends MonoidHomClass F α β, ZeroHomClass F α β
 

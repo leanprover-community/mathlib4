@@ -175,19 +175,19 @@ def structureSheafInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     AddCommGroup ((structureSheafInType R M).obj.obj U) :=
-  (sectionsSubmodule M U.unop).toAddSubgroup.toAddCommGroup
+  fast_instance% (sectionsSubmodule M U.unop).toAddSubgroup.toAddCommGroup
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module R ((structureSheafInType R M).obj.obj U) :=
-  (sectionsSubmodule M U.unop).module
+  fast_instance% (sectionsSubmodule M U.unop).module
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     CommRing ((structureSheafInType R A).obj.obj U) :=
-  (sectionsSubalgebra A U.unop).toCommRing
+  fast_instance% (sectionsSubalgebra A U.unop).toCommRing
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Algebra R ((structureSheafInType R A).obj.obj U) :=
-  (sectionsSubalgebra A U.unop).algebra
+  fast_instance% (sectionsSubalgebra A U.unop).algebra
 
 local notation "Γ(" M ", " U ")" =>
   (Functor.obj (ObjectProperty.FullSubcategory.obj (structureSheafInType _ M))) (Opposite.op U)
@@ -532,7 +532,6 @@ public lemma algebraMap_obj_top_bijective :
     Function.Bijective (algebraMap R Γ(R, (⊤ : Opens (PrimeSpectrum.Top R)))) :=
   toOpenₗ_top_bijective
 
-set_option backward.isDefEq.respectTransparency false in
 public instance (f : R) : IsLocalization.Away f Γ(R, basicOpen f) :=
   (isLocalizedModule_iff_isLocalization' _ _).mp <|
     inferInstanceAs (IsLocalizedModule.Away f (toOpenₗ R R (basicOpen f)))
@@ -640,7 +639,7 @@ theorem toOpenₗ_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top 
 
 theorem isUnit_toStalk (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOpen f) :
     IsUnit (toStalk R x f) := by
-  convert! (isUnit_basicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
+  convert! (IsUnit.map ((structurePresheafInCommRingCat R).germ _ x hf).hom (isUnit_basicOpen f))
   exact ((structurePresheafInCommRingCat R).germ_res_apply (homOfLE (le_top : basicOpen f ≤ ⊤))
     x hf (algebraMap R Γ(R, ⊤) f)).symm
 

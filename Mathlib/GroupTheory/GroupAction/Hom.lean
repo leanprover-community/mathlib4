@@ -113,9 +113,9 @@ notation:25 (name := «AddActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => AddA
 You should extend this class when you extend `AddActionHom`. -/
 class AddActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
-    (X Y : outParam Type*) [VAdd M X] [VAdd N Y] [FunLike F X Y] : Prop where
+    (X Y : Type*) [VAdd M X] [VAdd N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
-  map_vaddₛₗ : ∀ (f : F) (c : M) (x : X), f (c +ᵥ x) = (φ c) +ᵥ (f x)
+  protected map_vaddₛₗ : ∀ (f : F) (c : M) (x : X), f (c +ᵥ x) = (φ c) +ᵥ (f x)
 
 /-- `MulActionSemiHomClass F φ X Y` states that
   `F` is a type of morphisms which are `φ`-equivariant.
@@ -124,12 +124,25 @@ You should extend this class when you extend `MulActionHom`. -/
 @[to_additive]
 class MulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
-    (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
+    (X Y : Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
-  map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
+  protected map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 
-export MulActionSemiHomClass (map_smulₛₗ)
-export AddActionSemiHomClass (map_vaddₛₗ)
+-- We need to restate the following lemmas so that they have the right binder info. See https://github.com/leanprover/lean4/issues/9727
+
+@[inherit_doc AddActionSemiHomClass.map_vaddₛₗ]
+lemma map_vaddₛₗ {F M N : Type*} {φ : M → N} {X Y : Type*}
+    [VAdd M X] [VAdd N Y] [FunLike F X Y] [AddActionSemiHomClass F φ X Y]
+    (f : F) (c : M) (x : X) :
+    f (c +ᵥ x) = (φ c) +ᵥ (f x) :=
+  AddActionSemiHomClass.map_vaddₛₗ f c x
+
+@[to_additive existing map_vaddₛₗ, inherit_doc MulActionSemiHomClass.map_smulₛₗ]
+lemma map_smulₛₗ {F M N : Type*} {φ : M → N} {X Y : Type*}
+    [SMul M X] [SMul N Y] [FunLike F X Y] [MulActionSemiHomClass F φ X Y]
+    (f : F) (c : M) (x : X) :
+    f (c • x) = (φ c) • (f x) :=
+  MulActionSemiHomClass.map_smulₛₗ f c x
 
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
@@ -137,8 +150,7 @@ This is an abbreviation of `MulActionSemiHomClass`. -/
 @[to_additive /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/]
-abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
-    (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
+abbrev MulActionHomClass (F M X Y : Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
 @[to_additive (attr := macro_inline)] instance : FunLike (MulActionHom φ X Y) X Y where
@@ -638,7 +650,7 @@ preserving the additive monoid structure and equivariant with respect to `φ`.
 You should extend this class when you extend `DistribMulActionSemiHom`. -/
 class DistribMulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
-    (A B : outParam Type*)
+    (A B : Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
     [FunLike F A B] : Prop
@@ -650,7 +662,7 @@ You should extend this class when you extend `MulDistribMulActionSemiHom`. -/
 @[to_additive existing (dont_translate := M N) DistribMulActionSemiHomClass]
 class MulDistribMulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
-    (A B : outParam Type*)
+    (A B : Type*)
     [Monoid M] [Monoid N]
     [Monoid A] [Monoid B] [MulDistribMulAction M A] [MulDistribMulAction N B]
     [FunLike F A B] : Prop
@@ -665,8 +677,7 @@ You should extend this class when you extend `MulDistribMulActionHom`. -/
 the additive monoid structure and equivariant with respect to the action of `M`.
 It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `DistribMulActionHom`. -/]
-abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
-    (A B : outParam Type*) [Monoid M] [Monoid A] [Monoid B]
+abbrev MulDistribMulActionHomClass (F M A B : Type*) [Monoid M] [Monoid A] [Monoid B]
     [MulDistribMulAction M A] [MulDistribMulAction M B] [FunLike F A B] :=
     MulDistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
@@ -896,7 +907,7 @@ You should extend this class when you extend `MulSemiringActionHom`. -/
 class MulSemiringActionSemiHomClass (F : Type*)
     {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
-    (R S : outParam Type*) [Semiring R] [Semiring S]
+    (R S : Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S] : Prop
     extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 
@@ -905,8 +916,8 @@ the ring structure and equivariant with respect to a `DistribMulAction` of `M` o
 -/
 abbrev MulSemiringActionHomClass
     (F : Type*)
-    {M : outParam Type*} [Monoid M]
-    (R S : outParam Type*) [Semiring R] [Semiring S]
+    {M : Type*} [Monoid M]
+    (R S : Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction M S] [FunLike F R S] :=
   MulSemiringActionSemiHomClass F (MonoidHom.id M) R S
 

@@ -371,7 +371,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
   · let P' : Presentation R S (Unit ⊕ α) (Unit ⊕ σ) :=
       { toGenerators := .ofSurjective (fun i : Unit ⊕ α ↦ 0) (Function.surjective_to_subsingleton _)
         relation _ := 1
-        span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
+        span_range_relation_eq_ker := by simp [RingHom.ker_eq_top_of_subsingleton] }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
@@ -423,7 +423,7 @@ public lemma exists_presentation_of_free_cotangent [Algebra.FinitePresentation R
   · let P' : Presentation R S (Unit ⊕ α) (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent)) :=
       { toGenerators := .ofSurjective (fun i : Unit ⊕ α ↦ 0) (Function.surjective_to_subsingleton _)
         relation _ := 1
-        span_range_relation_eq_ker := by simpa using! (RingHom.ker_eq_top_of_subsingleton _).symm }
+        span_range_relation_eq_ker := by simp [RingHom.ker_eq_top_of_subsingleton]; rfl }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
   have : Module.Finite S P.toExtension.Cotangent :=

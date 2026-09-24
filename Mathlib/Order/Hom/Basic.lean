@@ -121,7 +121,7 @@ instance (α β : Type*) [LE α] [LE β] : FunLike (α ≃o β) α β := RelIso.
 section
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
+abbrev OrderHomClass (F α β : Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
 to_dual_insert_cast OrderHomClass := by grind only [RelHomClass]
@@ -129,18 +129,18 @@ to_dual_insert_cast OrderHomClass := by grind only [RelHomClass]
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
 You should extend this class when you extend `OrderIso`. -/
-class OrderIsoClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [EquivLike F α β] :
-    Prop where
+class OrderIsoClass (F α β : Type*) [LE α] [LE β] [EquivLike F α β] : Prop where
   /-- An order isomorphism respects `≤`. -/
-  map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
+  protected map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 
 attribute [to_dual self] OrderIsoClass.map_le_map_iff
 
 end
 
-export OrderIsoClass (map_le_map_iff)
-
-attribute [simp] map_le_map_iff
+@[simp, to_dual self, inherit_doc OrderIsoClass.map_le_map_iff]
+lemma map_le_map_iff [EquivLike F α β] [LE α] [LE β] [OrderIsoClass F α β] (f : F) {a b : α} :
+    f a ≤ f b ↔ a ≤ b :=
+  OrderIsoClass.map_le_map_iff f
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/

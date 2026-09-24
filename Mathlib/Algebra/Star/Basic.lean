@@ -447,11 +447,16 @@ end RingHomInvPair
 section
 
 /-- `StarHomClass F R S` states that `F` is a type of `star`-preserving maps from `R` to `S`. -/
-class StarHomClass (F : Type*) (R S : outParam Type*) [Star R] [Star S] [FunLike F R S] : Prop where
+class StarHomClass (F R S : Type*) [Star R] [Star S] [FunLike F R S] : Prop where
   /-- the maps preserve star -/
-  map_star : ∀ (f : F) (r : R), f (star r) = star (f r)
+  protected map_star : ∀ (f : F) (r : R), f (star r) = star (f r)
 
-export StarHomClass (map_star)
+-- We need to restate this lemmas so that it has the right binder info. See https://github.com/leanprover/lean4/issues/9727
+
+@[inherit_doc StarHomClass.map_star]
+lemma map_star {F R S : Type*} [FunLike F R S] [Star R] [Star S] [StarHomClass F R S]
+    (f : F) (r : R) : f (star r) = star (f r) :=
+  StarHomClass.map_star f r
 
 end
 

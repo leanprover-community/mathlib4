@@ -73,9 +73,14 @@ structure Dilation where
 
 /-- `DilationClass F α β r` states that `F` is a type of `r`-dilations.
 You should extend this typeclass when you extend `Dilation`. -/
-class DilationClass (F : Type*) (α β : outParam Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+class DilationClass (F α β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     [FunLike F α β] : Prop where
-  edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y
+  protected edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y
+
+theorem DilationClass.edist_eq'' {F α β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    [FunLike F α β] [DilationClass F α β] (f : F) :
+    ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y :=
+  DilationClass.edist_eq' f
 
 end Defs
 
@@ -133,7 +138,7 @@ open scoped Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
-  if ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤ then 1 else (DilationClass.edist_eq' f).choose
+  if ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤ then 1 else (DilationClass.edist_eq'' f).choose
 
 theorem ratio_of_trivial [DilationClass F α β] (f : F)
     (h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞) : ratio f = 1 :=
@@ -155,7 +160,7 @@ theorem ratio_pos [DilationClass F α β] (f : F) : 0 < ratio f :=
 theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
     edist (f x) (f y) = ratio f * edist x y := by
   rw [ratio]; split_ifs with key
-  · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
+  · rcases DilationClass.edist_eq'' f with ⟨r, hne, hr⟩
     replace hr := hr x y
     rcases key x y with h | h
     · simp only [hr, h, mul_zero]

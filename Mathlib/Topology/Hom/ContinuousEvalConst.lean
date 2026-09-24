@@ -28,11 +28,13 @@ open Filter
 
 /-- A typeclass saying that `F` is a type of bundled morphisms (in the sense of `DFunLike`)
 with a topology on `F` such that evaluation at a point is continuous in `f : F`. -/
-class ContinuousEvalConst (F : Type*) (α X : outParam Type*) [FunLike F α X]
+class ContinuousEvalConst (F α X : Type*) [FunLike F α X]
     [TopologicalSpace F] [TopologicalSpace X] : Prop where
-  continuous_eval_const (x : α) : Continuous fun f : F ↦ f x
+  protected continuous_eval_const (x : α) : Continuous fun f : F ↦ f x
 
-export ContinuousEvalConst (continuous_eval_const)
+lemma continuous_eval_const {F α X : Type*} [FunLike F α X] [TopologicalSpace F]
+    [TopologicalSpace X] [ContinuousEvalConst F α X] (x : α) : Continuous fun f : F ↦ f x :=
+  ContinuousEvalConst.continuous_eval_const x
 
 section ContinuousEvalConst
 

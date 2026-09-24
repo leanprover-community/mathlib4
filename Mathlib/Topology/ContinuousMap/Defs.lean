@@ -44,16 +44,17 @@ section
 /-- `ContinuousMapClass F X Y` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F : Type*) (X Y : outParam Type*)
+class ContinuousMapClass (F X Y : Type*)
     [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X Y] : Prop where
   /-- Continuity -/
-  map_continuous (f : F) : Continuous f
+  protected map_continuous (f : F) : Continuous f
 
 end
 
-export ContinuousMapClass (map_continuous)
-
-attribute [continuity, fun_prop] map_continuous
+@[continuity, fun_prop]
+lemma map_continuous {F X Y : Type*} [FunLike F X Y] [TopologicalSpace X] [TopologicalSpace Y]
+    [ContinuousMapClass F X Y] (f : F) : Continuous f :=
+  ContinuousMapClass.map_continuous f
 
 section ContinuousMapClass
 

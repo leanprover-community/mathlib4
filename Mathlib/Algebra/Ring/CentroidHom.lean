@@ -65,15 +65,24 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F : Type*) (α : outParam Type*)
+class CentroidHomClass (F α : Type*)
     [NonUnitalNonAssocSemiring α] [FunLike F α α] : Prop extends AddMonoidHomClass F α α where
   /-- Commutativity of centroid homomorphisms with left multiplication. -/
-  map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
+  protected map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
   /-- Commutativity of centroid homomorphisms with right multiplication. -/
-  map_mul_right (f : F) (a b : α) : f (a * b) = f a * b
+  protected map_mul_right (f : F) (a b : α) : f (a * b) = f a * b
 
+-- We need to restate the following lemmas so that they have the right binder info. See https://github.com/leanprover/lean4/issues/9727
 
-export CentroidHomClass (map_mul_left map_mul_right)
+@[inherit_doc CentroidHomClass.map_mul_left]
+lemma map_mul_left [FunLike F α α] [NonUnitalNonAssocSemiring α] [CentroidHomClass F α]
+    (f : F) (a b : α) : f (a * b) = a * f b :=
+  CentroidHomClass.map_mul_left f a b
+
+@[inherit_doc CentroidHomClass.map_mul_right]
+lemma map_mul_right [FunLike F α α] [NonUnitalNonAssocSemiring α] [CentroidHomClass F α]
+    (f : F) (a b : α) : f (a * b) = f a * b :=
+  CentroidHomClass.map_mul_right f a b
 
 instance [NonUnitalNonAssocSemiring α] [FunLike F α α] [CentroidHomClass F α] :
     CoeTC F (CentroidHom α) :=

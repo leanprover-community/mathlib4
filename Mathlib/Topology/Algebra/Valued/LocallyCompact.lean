@@ -170,9 +170,6 @@ open Valued
 
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
-  -- This `change` line will become unnecessary once `MonoidHom.mrange` accepts `MonoidHom`
-  -- directly instead of a `MonoidHomClass` instance.
-  change Nonempty (LocallyFiniteOrder (MonoidHom.mrange Valued.v)ˣ)
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor

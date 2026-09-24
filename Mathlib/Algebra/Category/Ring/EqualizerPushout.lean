@@ -49,8 +49,7 @@ noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyF
       (pushoutCocone R S S).inl (pushoutCocone R S S).inr :=
     ⟨⟨PushoutCocone.condition (pushoutCocone R S S)⟩, ⟨pushoutCoconeIsColimit R S S⟩⟩
   let isLimit : IsLimit fork :=
-    (Fork.isLimitEquivOfIsos _
-      (equalizerFork (pushoutCocone R S S).inl (pushoutCocone R S S).inr) (Iso.refl _) (Iso.refl _)
+    (Fork.isLimitEquivOfIsos fork _ (Iso.refl _) (Iso.refl _)
       (RingEquiv.toCommRingCatIso <| RingEquiv.ofBijective _
         (Algebra.codRestrictEqLocusPushoutCocone.bijective_of_faithfullyFlat R S))
       (by cat_disch) (by cat_disch) (by cat_disch)).symm

@@ -144,7 +144,7 @@ instance (priority := 100) OrderIsoClass.toHeytingHomClass [HeytingAlgebra α]
     map_himp := fun f a b =>
       eq_of_forall_le_iff fun c => by
         simp only [← map_inv_le_iff, le_himp_iff]
-        rw [← OrderIsoClass.map_le_map_iff f]
+        rw [← map_le_map_iff f]
         simp }
 
 -- See note [lower instance priority]
@@ -154,7 +154,7 @@ instance (priority := 100) OrderIsoClass.toCoheytingHomClass [CoheytingAlgebra �
     map_sdiff := fun f a b =>
       eq_of_forall_ge_iff fun c => by
         simp only [← le_map_inv_iff, sdiff_le_iff]
-        rw [← OrderIsoClass.map_le_map_iff f]
+        rw [← map_le_map_iff f]
         simp }
 
 -- See note [lower instance priority]
@@ -164,12 +164,12 @@ instance (priority := 100) OrderIsoClass.toBiheytingHomClass [BiheytingAlgebra �
     map_himp := fun f a b =>
       eq_of_forall_le_iff fun c => by
         simp only [← map_inv_le_iff, le_himp_iff]
-        rw [← OrderIsoClass.map_le_map_iff f]
+        rw [← map_le_map_iff f]
         simp
     map_sdiff := fun f a b =>
       eq_of_forall_ge_iff fun c => by
         simp only [← le_map_inv_iff, sdiff_le_iff]
-        rw [← OrderIsoClass.map_le_map_iff f]
+        rw [← map_le_map_iff f]
         simp }
 
 end Equiv

@@ -51,7 +51,7 @@ class IsFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop where
   is_le {i j} : i < j → F i ≤ F_lt j
   is_sup (B : σ) (j : ι) : (∀ i < j, F i ≤ B) → F_lt j ≤ B
 
-lemma IsFiltration.F_lt_le_F (F : ι → σ) (F_lt : outParam <| ι → σ) (i : ι) [IsFiltration F F_lt] :
+lemma IsFiltration.F_lt_le_F (F : ι → σ) (F_lt : ι → σ) (i : ι) [IsFiltration F F_lt] :
     F_lt i ≤ F i :=
   is_sup (F i) i (fun _ hi ↦ IsFiltration.mono (le_of_lt hi))
 
@@ -93,7 +93,7 @@ an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration if 
 and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`.
 
 The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/
-class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingFiltration F F_lt]
+class IsModuleFiltration (F : ι → σ) (F_lt : ι → σ) [IsRingFiltration F F_lt]
     (F' : ιM → σM) (F'_lt : outParam <| ιM → σM) : Prop
     extends IsFiltration F' F'_lt, SetLike.GradedSMul F F'
 

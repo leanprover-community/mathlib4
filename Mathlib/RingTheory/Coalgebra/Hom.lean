@@ -48,7 +48,7 @@ notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 
 /-- `CoalgHomClass F R A B` asserts `F` is a type of bundled coalgebra homomorphisms
 from `A` to `B`. -/
-class CoalgHomClass (F : Type*) (R A B : outParam Type*)
+class CoalgHomClass (F : Type*) (R : outParam Type*) (A B : Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
     extends SemilinearMapClass F (RingHom.id R) A B where

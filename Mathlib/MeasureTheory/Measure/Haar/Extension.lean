@@ -215,7 +215,7 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     obtain ⟨K, hK, hb, hKU⟩ := exists_compact_subset hU hb
     obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
     have hf0 : 0 ≤ H.pushforward μA ⟨f, hf2⟩ := by
-      rw [← map_zero (H.pushforward μA)]
+      rw [← map_zero (H.pushforward (E := ℝ) μA)]
       apply pushforward_mono
       exact fun x ↦ (hf4 x).1
     grw [← pos_iff_ne_zero, inducedMeasure,

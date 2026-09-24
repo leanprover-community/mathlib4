@@ -121,11 +121,8 @@ structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSe
 the additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
-class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*)
-    [AddGroup α] [FunLike F α ℝ] : Prop
-    extends NonarchimedeanHomClass F α ℝ where
-  /-- The image of zero is zero. -/
-  protected map_zero (f : F) : f 0 = 0
+class NonarchAddGroupSeminormClass (F α : Type*) [AddGroup α] [FunLike F α ℝ] : Prop
+    extends NonarchimedeanHomClass F α ℝ, ZeroHomClass F α ℝ where
   /-- The seminorm is invariant under negation. -/
   protected map_neg_eq_map' (f : F) (a : α) : f (-a) = f a
 
@@ -133,7 +130,7 @@ class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*)
 additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupNorm`. -/
-class NonarchAddGroupNormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ] : Prop
+class NonarchAddGroupNormClass (F α : Type*) [AddGroup α] [FunLike F α ℝ] : Prop
     extends NonarchAddGroupSeminormClass F α where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
@@ -155,7 +152,7 @@ instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
     map_add_le_add := fun f _ _ =>
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
         intro a
-        rw [← NonarchAddGroupSeminormClass.map_zero f, ← sub_self a]
+        rw [← map_zero f, ← sub_self a]
         exact le_trans (map_sub_le_max _ _ _) (by rw [max_self (f a)])
       le_trans (map_add_le_max _ _ _)
         (max_le (le_add_of_nonneg_right (h_nonneg _)) (le_add_of_nonneg_left (h_nonneg _)))

@@ -59,22 +59,25 @@ section NonAssoc
 variable [MulOneClass M] {s : Set M}
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type*) (M : outParam Type*) [One M] [SetLike S M] : Prop where
+class OneMemClass (S M : Type*) [One M] [SetLike S M] : Prop where
   /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
-  one_mem : ∀ s : S, (1 : M) ∈ s
-
-export OneMemClass (one_mem)
+  protected one_mem : ∀ s : S, (1 : M) ∈ s
 
 /-- `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
-class ZeroMemClass (S : Type*) (M : outParam Type*) [Zero M] [SetLike S M] : Prop where
+class ZeroMemClass (S M : Type*) [Zero M] [SetLike S M] : Prop where
   /-- By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. -/
-  zero_mem : ∀ s : S, (0 : M) ∈ s
-
-export ZeroMemClass (zero_mem)
+  protected zero_mem : ∀ s : S, (0 : M) ∈ s
 
 attribute [to_additive] OneMemClass
 
-attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
+-- We need to restate this lemma so that it has the right binder info. See https://github.com/leanprover/lean4/issues/9727
+
+@[to_additive (attr := simp, aesop safe (rule_sets := [SetLike])), inherit_doc OneMemClass.one_mem]
+lemma one_mem {S M : Type*} [SetLike S M] [One M] [OneMemClass S M] (s : S) :
+    (1 : M) ∈ s :=
+  OneMemClass.one_mem s
+
+attribute [inherit_doc ZeroMemClass.zero_mem] zero_mem
 
 /-- The underlying set of a term of a `OneMemClass` is nonempty. -/
 @[to_additive (attr := simp)
@@ -97,7 +100,7 @@ add_decl_doc Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S M] : Prop
+class SubmonoidClass (S M : Type*) [MulOneClass M] [SetLike S M] : Prop
     extends MulMemClass S M, OneMemClass S M
 
 section
@@ -116,7 +119,7 @@ add_decl_doc AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLike S M] : Prop
+class AddSubmonoidClass (S M : Type*) [AddZeroClass M] [SetLike S M] : Prop
   extends AddMemClass S M, ZeroMemClass S M
 
 attribute [to_additive] Submonoid SubmonoidClass

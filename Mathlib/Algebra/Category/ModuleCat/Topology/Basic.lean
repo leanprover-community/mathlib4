@@ -243,11 +243,10 @@ def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     IsColimit (ofCocone c) where
   desc s := ofHom (X := (ofCocone c).pt) ⟨(hc.desc ((forget₂ _ _).mapCocone s)).hom, by
     rw [continuous_iff_le_induced]
-    refine sInf_le ⟨continuousSMul_induced (M₂ := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom,
-      continuousAdd_induced (N := s.pt) (hc.desc ((forget₂ _ _).mapCocone s)).hom, fun i ↦ ?_⟩
+    set z : c.pt ⟶ s.pt.toModuleCat := hc.desc ((forget₂ _ _).mapCocone s)
+    refine sInf_le ⟨continuousSMul_induced z.hom, continuousAdd_induced z.hom, fun i ↦ ?_⟩
     rw [coinduced_le_iff_le_induced, induced_compose, ← continuous_iff_le_induced]
-    change Continuous (X := F.obj i) (Y := s.pt)
-      (c.ι.app i ≫ hc.desc ((forget₂ _ (ModuleCat R)).mapCocone s)).hom
+    change Continuous (X := F.obj i) (c.ι.app i ≫ z).hom
     rw [hc.fac]
     exact (s.ι.app i).hom.2⟩
   fac s i := by ext x; exact congr($(hc.fac ((forget₂ _ _).mapCocone s) i).hom x)

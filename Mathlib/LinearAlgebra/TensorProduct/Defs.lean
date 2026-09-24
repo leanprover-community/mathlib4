@@ -220,7 +220,7 @@ Note that in the special case that `R = R'`, since `R` is commutative, we just g
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
 instance leftHasSMul : SMul R' (M ⊗[R] N) :=
-  id ⟨fun r =>
+  ⟨fun r => show M ⊗[R] N →+ M ⊗[R] N from
     (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
       AddCon.addConGen_le.2 fun x y hxy =>
         match x, y, hxy with

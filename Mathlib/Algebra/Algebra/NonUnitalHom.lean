@@ -72,7 +72,7 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`. -/
 class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
-    (φ : outParam (R →* S)) (A B : outParam Type*)
+    (φ : outParam (R →* S)) (A B : Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B] : Prop
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
@@ -81,7 +81,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Mo
 from `A` to `B` which are `R`-linear.
 
   This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
-abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
+abbrev NonUnitalAlgHomClass (F R A B : Type*)
     [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
@@ -90,9 +90,9 @@ namespace NonUnitalAlgHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
-    {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
-    {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
-    {_ : NonUnitalNonAssocSemiring B} [DistribMulAction S B] [FunLike F A B]
+    {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : R →* S}
+    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with }
 
@@ -103,7 +103,7 @@ variable [Semiring R] [Semiring S] {φ : R →+* S}
 -- see Note [lower instance priority]
 instance (priority := 100) {F R S A B : Type*}
     {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}
-    {_ : NonUnitalSemiring A} {_ : NonUnitalSemiring B} [Module R A] [Module S B] [FunLike F A B]
+    [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R A] [Module S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass (R := R) (S := S) F φ A B] :
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }

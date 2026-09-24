@@ -491,7 +491,7 @@ def toHomeomorphOfDiscrete [DiscreteTopology X] [DiscreteTopology Y] (e : X ≃ 
 end Equiv
 
 /-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms. -/
-class HomeomorphClass (F : Type*) (A B : outParam Type*)
+class HomeomorphClass (F A B : Type*)
     [TopologicalSpace A] [TopologicalSpace B] [h : EquivLike F A B] : Prop where
   map_continuous : ∀ (f : F), Continuous f
   inv_continuous : ∀ (f : F), Continuous (h.inv f)

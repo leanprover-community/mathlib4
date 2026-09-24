@@ -161,6 +161,7 @@ def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).o
     map_one' := rfl
     map_mul' _ _ := rfl
     continuous_toFun := show Continuous ((limitCone <| diagram P).π.app U ∘ toLimit P) by
+      have : Continuous ((limitCone <| diagram P).π.app U) := by fun_prop
       fun_prop
   }
 

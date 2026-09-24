@@ -70,7 +70,8 @@ variable {α β : Type*} [AddGroup α] (a : α) [AddAction α β] (b : β)
 noncomputable def zmultiplesQuotientStabilizerEquiv :
     zmultiples a ⧸ stabilizer (zmultiples a) b ≃+ ZMod (minimalPeriod (a +ᵥ ·) b) :=
   (ofBijective
-          (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
+          (map (zmultiples _) (stabilizer (zmultiples a) b)
+            (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩)
             (by
               rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, natCast_zsmul]
               simp_rw [← vadd_iterate]

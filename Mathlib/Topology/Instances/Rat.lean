@@ -120,8 +120,8 @@ set_option linter.style.whitespace false in -- linter false positive
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 
 instance : IsTopologicalSemiring ℚ≥0 where
-  toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
-  toContinuousMul := continuousMul_induced Nonneg.coeRingHom
+  toContinuousAdd := show ContinuousAdd (Nonneg ℚ) from continuousAdd_induced Nonneg.coeRingHom
+  toContinuousMul := show ContinuousMul (Nonneg ℚ) from continuousMul_induced Nonneg.coeRingHom
 
 instance : ContinuousSub ℚ≥0 := ⟨Continuous.subtype_mk (by fun_prop) _⟩
 

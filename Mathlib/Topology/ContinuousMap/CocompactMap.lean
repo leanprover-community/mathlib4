@@ -38,22 +38,21 @@ structure CocompactMap (α : Type u) (β : Type v) [TopologicalSpace α] [Topolo
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto' : Tendsto toFun (cocompact α) (cocompact β)
 
-section
-
 /-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
-class CocompactMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
+class CocompactMapClass (F α β : Type*) [TopologicalSpace α]
   [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
-  cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
-
-end
+  protected cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
 
 namespace CocompactMapClass
 
 variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable [FunLike F α β] [CocompactMapClass F α β]
+
+lemma _root_.cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β) :=
+  CocompactMapClass.cocompact_tendsto f
 
 /-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
 `CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
@@ -66,8 +65,6 @@ instance : CoeTC F (CocompactMap α β) :=
   ⟨toCocompactMap⟩
 
 end CocompactMapClass
-
-export CocompactMapClass (cocompact_tendsto)
 
 namespace CocompactMap
 

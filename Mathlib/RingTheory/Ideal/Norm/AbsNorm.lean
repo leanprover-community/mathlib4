@@ -368,6 +368,8 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
     have : (1 : S) ≠ 0 := one_ne_zero
     have : (1 : S) = 0 := EquivLike.injective e (Subsingleton.elim _ _)
     contradiction
+  have : AddEquivClass E S ↥(Submodule.restrictScalars ℤ I) :=
+    inferInstanceAs <| AddEquivClass E S I
   exact Submodule.natAbs_det_equiv (I.restrictScalars ℤ) e
 
 /-- Let `b` be a basis for `S` over `ℤ` and `bI` a basis for `I` over `ℤ` of the same dimension.

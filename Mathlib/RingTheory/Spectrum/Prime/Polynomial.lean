@@ -82,7 +82,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
     simp only [mem_zeroLocus, Set.singleton_subset_iff, SetLike.mem_coe] at hqg hqf
     have hs : Ideal.span s ≤ RingHom.ker (algebraMap A q.asIdeal.ResidueField) := by
       rwa [Ideal.span_le, Ideal.ker_algebraMap_residueField]
-    let F : (A ⧸ Ideal.span s) ⊗[R] (q.asIdeal.comap (algebraMap R A)).ResidueField →ₐ[A]
+    let F : (A ⧸ Ideal.span s) ⊗[R] (comap (algebraMap R A) q).asIdeal.ResidueField →ₐ[A]
         q.asIdeal.ResidueField :=
       Algebra.TensorProduct.lift
         (Ideal.Quotient.liftₐ (Ideal.span s) (Algebra.ofId A _) hs)

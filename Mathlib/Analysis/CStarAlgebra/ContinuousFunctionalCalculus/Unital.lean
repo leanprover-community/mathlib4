@@ -394,7 +394,7 @@ lemma cfc_map_spectrum (ha : p a := by cfc_tac)
 
 lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :
     cfc (fun _ ↦ r) a = algebraMap R A r := by
-  rw [cfc_apply (fun _ : R ↦ r) a, ← AlgHomClass.commutes (cfcHom ha (p := p)) r]
+  rw [cfc_apply (fun _ : R ↦ r) a, ← (cfcHom ha).toAlgHom.commutes r]
   congr
 
 variable (R) in
@@ -701,7 +701,7 @@ lemma cfc_algebraMap (r : R) (f : R → R) : cfc f (algebraMap R A r) = algebraM
   have h₁ : ContinuousOn f (spectrum R (algebraMap R A r)) :=
   continuousOn_singleton _ _ |>.mono <| CFC.spectrum_algebraMap_subset r
   rw [cfc_apply f (algebraMap R A r) (cfc_predicate_algebraMap r),
-    ← AlgHomClass.commutes (cfcHom (p := p) (cfc_predicate_algebraMap r)) (f r)]
+    ← (cfcHom (cfc_predicate_algebraMap r)).toAlgHom.commutes (f r), StarAlgHom.coe_toAlgHom]
   congr
   ext ⟨x, hx⟩
   apply CFC.spectrum_algebraMap_subset r at hx

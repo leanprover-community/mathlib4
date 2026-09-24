@@ -566,7 +566,7 @@ section Notation
 
 namespace Valued
 
-variable (K : Type*) [Field K] {Γ₀ : outParam Type*}
+variable (K : Type*) [Field K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] [vK : Valued K Γ₀]
 
 /-- A `Valued` version of `Valuation.integer`, enabling the notation `𝒪[K]` for the

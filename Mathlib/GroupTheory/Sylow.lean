@@ -312,8 +312,7 @@ theorem smul_subtype {P : Sylow p G} {H : Subgroup G} (hP : P ≤ H) (h : H) :
 
 theorem smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
     g • P = P ↔ g ∈ normalizer P := by
-  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff (G := G) (H := normalizer P),
-      mem_set_normalizer_iff, inv_inv]
+  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff, mem_set_normalizer_iff, inv_inv]
   exact
     forall_congr' fun h =>
       iff_congr Iff.rfl

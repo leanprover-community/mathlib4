@@ -69,7 +69,7 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
       (rightToMax U₁ U₂ ≫ leftToMax (max U₁ U₂) V) (leftToMax U₂ V ≫ rightToMax U₁ (max U₂ V))
       (rightToMax (max U₁ U₂) V) (rightToMax U₂ V ≫ rightToMax U₁ (max U₂ V))
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
-    dsimp
+    dsimp +instances
     simp only [map_mul, ← ConcreteCategory.comp_apply, ← Functor.map_comp, mul_smul, *]
   one_smul m := Quot.induction_on m <| by
     rintro ⟨V, b⟩
@@ -109,7 +109,7 @@ noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.c
       (leftToMax U₂ V ≫ rightToMax (max U₁ V) (max U₂ V))
       (rightToMax U₁ U₂ ≫ leftToMax (max U₁ U₂) V)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ β α ?_
-    dsimp
+    dsimp +instances
     simp only [add_smul, map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
   zero_smul m := Quot.induction_on m <| by
     rintro ⟨V, b⟩

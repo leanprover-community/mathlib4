@@ -612,7 +612,8 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
           simp [ModuleCat.restrictScalars.smul_def (M := ↧S), mul_smul] }
     map_add' y1 y2 := (CoextendScalars.equiv _ _).injective <|
       LinearMap.ext fun s : S => by
-        simp [smul_add]
+        rw [map_add] -- TODO: why does simp fail to apply this lemma?
+        simp
     map_smul' s (y : Y) := (CoextendScalars.equiv _ _).injective <|
       LinearMap.ext fun t : S => by
         simp [mul_smul] }
@@ -773,8 +774,7 @@ def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
       simp only [LinearMap.coe_mk]
       change S at x
       dsimp
-      erw [← map_smul, ExtendScalars.smul_tmul, mul_one x]
-      rfl
+      rw [← map_smul (f := ConcreteCategory.hom g), ExtendScalars.smul_tmul, mul_one x]
     | add _ _ ih1 ih2 => rw [map_add, map_add, ih1, ih2]
   right_inv g := by
     let m1 : Module R S := Module.compHom S f; let m2 : Module R Y := Module.compHom Y f

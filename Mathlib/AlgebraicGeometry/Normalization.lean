@@ -344,9 +344,10 @@ set_option backward.defeqAttrib.useBackward true in
 @[stacks 0AXN]
 instance [IsReduced X] : IsReduced f.normalization :=
   have (i : _) : IsReduced ((normalizationOpenCover f).X i) := by
-    have : _root_.IsReduced ((normalizationDiagram f).obj (.op i.1)) :=
+    have : _root_.IsReduced ((normalizationDiagram f).obj (.op i.1)) := by
       let := (f.app i.1).hom.toAlgebra
-      isReduced_of_injective (Subalgebra.val _) Subtype.val_injective
+      apply isReduced_of_injective (Subalgebra.val _)
+      exact Subtype.val_injective
     dsimp [normalizationOpenCover, normalizationGlueData, relativeGluingData]
     infer_instance
   .of_openCover _ f.normalizationOpenCover

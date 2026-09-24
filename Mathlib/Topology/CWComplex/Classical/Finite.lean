@@ -75,7 +75,7 @@ end CWComplex
 `finite_cell` and relax the condition `mapsTo`. -/
 @[simps -isSimp, instance_reducible]
 def RelCWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
-    (D : outParam (Set X))
+    (D : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))
     (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = ball 0 1)
@@ -108,7 +108,7 @@ def RelCWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
 
 /-- A CW complex that was constructed using `RelCWComplex.mkFiniteType` is of finite type. -/
 lemma RelCWComplex.finiteType_mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
-    (D : outParam (Set X))
+    (D : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))
     (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = ball 0 1)
@@ -186,7 +186,7 @@ lemma CWComplex.finiteType_mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C
 `closed'`. -/
 @[simps -isSimp, instance_reducible]
 def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
-    (D : outParam (Set X)) (cell : (n : ℕ) → Type u)
+    (D : Set X) (cell : (n : ℕ) → Type u)
     (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (eventually_isEmpty_cell : ∀ᶠ n in Filter.atTop, IsEmpty (cell n))
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))
@@ -235,7 +235,7 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
 
 /-- A CW complex that was constructed using `RelCWComplex.mkFinite` is finite. -/
 lemma RelCWComplex.finite_mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
-    (D : outParam (Set X)) (cell : (n : ℕ) → Type u)
+    (D : Set X) (cell : (n : ℕ) → Type u)
     (map : (n : ℕ) → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
     (eventually_isEmpty_cell : ∀ᶠ n in Filter.atTop, IsEmpty (cell n))
     (finite_cell : ∀ (n : ℕ), _root_.Finite (cell n))

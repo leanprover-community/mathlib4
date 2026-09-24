@@ -345,7 +345,7 @@ variable {J : Type u'} [SmallCategory J] (F : J ⥤ CommRingCat.{u}) {c : Cone F
 
 theorem isUnit_iff_forall_isUnit (hc : IsLimit c) (r : c.pt) : IsUnit r ↔
     ∀ (j : J), IsUnit (c.π.app j r) := by
-  refine ⟨fun h _ ↦ h.map _, fun h ↦ ?_⟩
+  refine ⟨fun h _ ↦ IsUnit.map _ h, fun h ↦ ?_⟩
   simp only [isUnit_iff_exists_inv] at h ⊢
   choose inv h_inv using h
   have map_inv {j k : J} (f : j ⟶ k) : F.map f (inv j) = inv k := by

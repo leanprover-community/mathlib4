@@ -289,7 +289,7 @@ theorem MetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : Met
     letI := m.induced f hf; Isometry f := fun _ _ ↦ rfl
 
 /-- `IsometryClass F α β` states that `F` is a type of isometries. -/
-class IsometryClass (F : Type*) (α β : outParam Type*)
+class IsometryClass (F α β : Type*)
     [PseudoEMetricSpace α] [PseudoEMetricSpace β] [FunLike F α β] : Prop where
   protected isometry (f : F) : Isometry f
 

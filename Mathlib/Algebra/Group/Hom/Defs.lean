@@ -92,8 +92,7 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
-class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] :
-    Prop where
+class ZeroHomClass (F M N : Type*) [Zero M] [Zero N] [FunLike F M N] : Prop where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 
@@ -123,7 +122,7 @@ infixr:25 " →ₙ+ " => AddHom
 /-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
 You should declare an instance of this typeclass when you extend `AddHom`.
 -/
-class AddHomClass (F : Type*) (M N : outParam Type*) [Add M] [Add N] [FunLike F M N] : Prop where
+class AddHomClass (F M N : Type*) [Add M] [Add N] [FunLike F M N] : Prop where
   /-- The proposition that the function preserves addition -/
   map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
 
@@ -155,7 +154,7 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
-class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
+class AddMonoidHomClass (F M N : Type*)
     [AddZero M] [AddZero N] [FunLike F M N] : Prop
     extends AddHomClass F M N, ZeroHomClass F M N
 
@@ -184,7 +183,7 @@ structure OneHom (M : Type*) (N : Type*) [One M] [One N] where
 You should extend this typeclass when you extend `OneHom`.
 -/
 @[to_additive]
-class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F M N] : Prop where
+class OneHomClass (F M N : Type*) [One M] [One N] [FunLike F M N] : Prop where
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 
@@ -305,7 +304,7 @@ infixr:25 " →ₙ* " => MulHom
 You should declare an instance of this typeclass when you extend `MulHom`.
 -/
 @[to_additive]
-class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F M N] : Prop where
+class MulHomClass (F M N : Type*) [Mul M] [Mul N] [FunLike F M N] : Prop where
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 
@@ -375,8 +374,7 @@ infixr:25 " →* " => MonoidHom
 /-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
-class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOne M] [MulOne N]
-  [FunLike F M N] : Prop
+class MonoidHomClass (F M N : Type*) [MulOne M] [MulOne N] [FunLike F M N] : Prop
   extends MulHomClass F M N, OneHomClass F M N
 
 @[to_additive (attr := macro_inline)]

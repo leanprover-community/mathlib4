@@ -198,7 +198,7 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
     AdjoinRoot.algebraMap_eq,
     X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
-  exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
+  exact IsPrimitiveRoot.injOn_pow_mul (hζ.map_of_injective (algebraMap K K[n√a]).injective)
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
 variable (n)

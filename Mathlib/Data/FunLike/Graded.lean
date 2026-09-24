@@ -25,7 +25,7 @@ characterisation of certain types of graded homomorphisms, such as `GradedRingHo
 `GradedAlgHom`. For example, what would be called `"GradedRingHomClass F 𝒜 ℬ`" would be expressed
 as `[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]`.
 -/
-class GradedFunLike (F : Type*) {A B σ τ ι : outParam Type*}
+class GradedFunLike (F : Type*) {A B : Type*} {σ τ ι : outParam Type*}
     [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)
     [FunLike F A B] where
   map_mem (f : F) {i x} : x ∈ 𝒜 i → f x ∈ ℬ i
@@ -46,7 +46,7 @@ end GradedFunLike
 
 /-- The class `GradedEquivLike E 𝒜 ℬ` says that `E` is a type of grading-preserving isomorphisms
 between `𝒜` and `ℬ`. It is the combination of `GradedFunLike E 𝒜 ℬ` and `EquivLike E A B`. -/
-class GradedEquivLike (E : Type*) {A B σ τ ι : outParam Type*}
+class GradedEquivLike (E : Type*) {A B : Type*} {σ τ ι : outParam Type*}
     [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)
     [EquivLike E A B] where
   map_mem_iff (e : E) {i x} : e x ∈ ℬ i ↔ x ∈ 𝒜 i

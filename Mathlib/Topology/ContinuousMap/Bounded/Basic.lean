@@ -49,7 +49,7 @@ section
 /-- `BoundedContinuousMapClass F α β` states that `F` is a type of bounded continuous maps.
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
-class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
+class BoundedContinuousMapClass (F α β : Type*) [TopologicalSpace α]
     [PseudoMetricSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 

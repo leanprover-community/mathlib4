@@ -85,7 +85,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+  (M M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
   [EquivLike F M M₂] : Prop
   extends AddEquivClass F M M₂ where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
@@ -96,7 +96,7 @@ class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semi
 /-- `LinearEquivClass F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
 This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam Type*) [Semiring R] [AddCommMonoid M]
+abbrev LinearEquivClass (F R M M₂ : Type*) [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   SemilinearEquivClass F (RingHom.id R) M M₂
 

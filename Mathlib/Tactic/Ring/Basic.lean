@@ -521,7 +521,7 @@ class CSLift (α : Type u) (β : outParam (Type u)) where
 
 /-- `CSLiftVal a b` means that `b = lift a`. This is used by `ring` to construct an expression `b`
 from the input expression `a`, and then run the usual ring algorithm on `b`. -/
-class CSLiftVal {α} {β : outParam (Type u)} [CSLift α β] (a : α) (b : outParam β) : Prop where
+class CSLiftVal {α} {β : Type u} [CSLift α β] (a : α) (b : outParam β) : Prop where
   /-- The output value `b` is equal to the lift of `a`. This can be supplied by the default
   instance which sets `b := lift a`, but `ring` will treat this as an atom so it is more useful
   when there are other instances which distribute addition or multiplication. -/

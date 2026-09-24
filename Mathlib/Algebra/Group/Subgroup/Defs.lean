@@ -65,14 +65,14 @@ variable {G : Type*} [Group G] {A : Type*} [AddGroup A]
 section SubgroupClass
 
 /-- `InvMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under inverses. -/
-class InvMemClass (S : Type*) (G : outParam Type*) [Inv G] [SetLike S G] : Prop where
+class InvMemClass (S G : Type*) [Inv G] [SetLike S G] : Prop where
   /-- `s` is closed under inverses -/
   inv_mem : ∀ {s : S} {x}, x ∈ s → x⁻¹ ∈ s
 
 export InvMemClass (inv_mem)
 
 /-- `NegMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
-class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop where
+class NegMemClass (S G : Type*) [Neg G] [SetLike S G] : Prop where
   /-- `s` is closed under negation -/
   neg_mem : ∀ {s : S} {x}, x ∈ s → -x ∈ s
 
@@ -107,12 +107,12 @@ theorem mem_of_inv_notMem (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
 end HasMemOrInvMem
 
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
-class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
+class SubgroupClass (S G : Type*) [DivInvMonoid G] [SetLike S G] : Prop
     extends SubmonoidClass S G, InvMemClass S G
 
 /-- `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are
 additive subgroups of `G`. -/
-class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G] : Prop
+class AddSubgroupClass (S G : Type*) [SubNegMonoid G] [SetLike S G] : Prop
     extends AddSubmonoidClass S G, NegMemClass S G
 
 attribute [to_additive] InvMemClass SubgroupClass

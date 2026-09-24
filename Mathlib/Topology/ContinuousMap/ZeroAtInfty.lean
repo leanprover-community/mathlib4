@@ -61,14 +61,18 @@ section
 vanish at infinity.
 
 You should also extend this typeclass when you extend `ZeroAtInftyContinuousMap`. -/
-class ZeroAtInftyContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
+class ZeroAtInftyContinuousMapClass (F α β : Type*) [TopologicalSpace α]
     [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   /-- Each member of the class tends to zero along the `cocompact` filter. -/
-  zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
+  protected zero_at_infty (f : F) : Tendsto f (cocompact α) (𝓝 0)
 
 end
 
-export ZeroAtInftyContinuousMapClass (zero_at_infty)
+@[inherit_doc ZeroAtInftyContinuousMapClass.zero_at_infty]
+lemma zero_at_infty {F α β : Type*} [FunLike F α β] [TopologicalSpace α]
+    [Zero β] [TopologicalSpace β] [ZeroAtInftyContinuousMapClass F α β] (f : F) :
+    Tendsto f (cocompact α) (𝓝 0) :=
+  ZeroAtInftyContinuousMapClass.zero_at_infty f
 
 namespace ZeroAtInftyContinuousMap
 

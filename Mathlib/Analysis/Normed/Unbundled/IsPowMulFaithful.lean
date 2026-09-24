@@ -33,7 +33,7 @@ open scoped Topology
 
 /-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
   power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
-theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)} [Ring α]
+theorem contraction_of_isPowMul_of_boundedWrt {F α : Type*} [Ring α]
     [FunLike F α ℝ] [RingSeminormClass F α ℝ] {β : Type*} [Ring β] (nα : F) {nβ : β → ℝ}
     (hβ : IsPowMul nβ) {f : α →+* β} (hf : f.IsBoundedWrt nα nβ) (x : α) : nβ (f x) ≤ nα x := by
   obtain ⟨C, hC0, hC⟩ := hf
@@ -62,7 +62,7 @@ theorem contraction_of_isPowMul {α β : Type*} [SeminormedRing α] [SeminormedR
 
 /-- Given two power-multiplicative ring seminorms `f, g` on `α`, if `f` is bounded by a positive
   multiple of `g` and vice versa, then `f = g`. -/
-theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α ℝ]
+theorem eq_seminorms {F α : Type*} [Ring α] [FunLike F α ℝ]
     [RingSeminormClass F α ℝ] {f g : F} (hfpm : IsPowMul f) (hgpm : IsPowMul g)
     (hfg : ∃ (r : ℝ) (_ : 0 < r), ∀ a : α, f a ≤ r * g a)
     (hgf : ∃ (r : ℝ) (_ : 0 < r), ∀ a : α, g a ≤ r * f a) : f = g := by

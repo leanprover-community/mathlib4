@@ -404,7 +404,8 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
   · intro x hx; rw [algebraMap_pushforward_stalk, toPushforwardStalk_comp]
     change IsUnit ((TopCat.Presheaf.stalkFunctor CommRingCat p).map
       (Spec.sheafedSpaceMap (CommRingCat.ofHom (algebraMap ↑R ↑S))).hom.c _)
-    exact (IsLocalization.map_units ((structureSheaf R).presheaf.stalk p) ⟨x, hx⟩).map _
+    apply IsUnit.map
+    exact IsLocalization.map_units ((structureSheaf R).presheaf.stalk p) ⟨x, hx⟩
   · apply isLocalizedModule_toPushforwardStalkAlgHom_aux
   · intro x hx
     rw [toPushforwardStalkAlgHom_apply,

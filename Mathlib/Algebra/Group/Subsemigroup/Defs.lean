@@ -59,14 +59,14 @@ section NonAssoc
 variable [Mul M] {s : Set M}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
-class MulMemClass (S : Type*) (M : outParam Type*) [Mul M] [SetLike S M] : Prop where
+class MulMemClass (S M : Type*) [Mul M] [SetLike S M] : Prop where
   /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 
 export MulMemClass (mul_mem)
 
 /-- `AddMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
-class AddMemClass (S : Type*) (M : outParam Type*) [Add M] [SetLike S M] : Prop where
+class AddMemClass (S M : Type*) [Add M] [SetLike S M] : Prop where
   /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 

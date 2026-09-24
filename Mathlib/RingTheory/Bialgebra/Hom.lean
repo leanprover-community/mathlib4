@@ -50,7 +50,7 @@ notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 
 /-- `BialgHomClass F R A B` asserts `F` is a type of bundled bialgebra homomorphisms
 from `A` to `B`. -/
-class BialgHomClass (F : Type*) (R A B : outParam Type*)
+class BialgHomClass (F : Type*) (R : outParam Type*) (A B : Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
     extends CoalgHomClass F R A B, MonoidHomClass F A B

@@ -74,18 +74,18 @@ section Def
 section Zero
 
 /-- `IsZeroApply F α β` states for all `x : α`, `(0 : F) x = 0`. -/
-class IsZeroApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Zero β] [Zero F] where
+class IsZeroApply (F α β : Type*) [FunLike F α β] [Zero β] [Zero F] where
   zero_apply (x : α) : (0 : F) x = 0
 
 /-- `IsOneApply F α β` states for all `x : α`, `(1 : F) x = 1`. -/
 @[to_additive]
-class IsOneApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [One β] [One F] where
+class IsOneApply (F α β : Type*) [FunLike F α β] [One β] [One F] where
   one_apply (x : α) : (1 : F) x = 1
 
 @[to_additive (attr := simp, grind =)] alias one_apply := IsOneApply.one_apply
 
 /-- `IsOneApplyEqSelf F α α` states for all `x : α`, `(1 : F) x = x`. -/
-class IsOneApplyEqSelf (F : Type*) (α : outParam Type*) [FunLike F α α] [One F] where
+class IsOneApplyEqSelf (F α : Type*) [FunLike F α α] [One F] where
   one_apply_eq_self (x : α) : (1 : F) x = x
 
 @[simp, grind =]
@@ -96,18 +96,18 @@ end Zero
 section Add
 
 /-- `IsAddApply F α β` states for all `f g : F` and `x : α`, `(f + g) x = f x + g x`. -/
-class IsAddApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Add β] [Add F] where
+class IsAddApply (F α β : Type*) [FunLike F α β] [Add β] [Add F] where
   add_apply (f g : F) (x : α) : (f + g) x = f x + g x
 
 /-- `IsMulApply F α β` states for all `f g : F` and `x : α`, `(f * g) x = f x * g x`. -/
 @[to_additive]
-class IsMulApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Mul β] [Mul F] where
+class IsMulApply (F α β : Type*) [FunLike F α β] [Mul β] [Mul F] where
   mul_apply (f g : F) (x : α) : (f * g) x = f x * g x
 
 @[to_additive (attr := simp, grind =)] alias mul_apply := IsMulApply.mul_apply
 
 /-- `IsMulApplyEqComp F α α` states for all `x : α`, `(f * g) x = f (g x)`. -/
-class IsMulApplyEqComp (F : Type*) (α : outParam Type*) [FunLike F α α] [Mul F] where
+class IsMulApplyEqComp (F α : Type*) [FunLike F α α] [Mul F] where
   mul_apply_eq_comp (f g : F) (x : α) : (f * g) x = f (g x)
 
 @[simp, grind =]
@@ -126,12 +126,12 @@ end Add
 section Sub
 
 /-- `IsSubApply F α β` states for all `f g : F` and `x : α`, `(f - g) x = f x - g x`. -/
-class IsSubApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Sub β] [Sub F] where
+class IsSubApply (F α β : Type*) [FunLike F α β] [Sub β] [Sub F] where
   sub_apply (f g : F) (x : α) : (f - g) x = f x - g x
 
 /-- `IsDivApply F α β` states for all `f g : F` and `x : α`, `(f / g) x = f x / g x`. -/
 @[to_additive]
-class IsDivApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Div β] [Div F] where
+class IsDivApply (F α β : Type*) [FunLike F α β] [Div β] [Div F] where
   div_apply (f g : F) (x : α) : (f / g) x = f x / g x
 
 @[to_additive (attr := simp, grind =)] alias div_apply := IsDivApply.div_apply
@@ -141,50 +141,55 @@ end Sub
 section Neg
 
 /-- `IsNegApply F α β` states for all `f : F` and `x : α`, `(-f) x = -f x`. -/
-class IsNegApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Neg β] [Neg F] where
+class IsNegApply (F α β : Type*) [FunLike F α β] [Neg β] [Neg F] where
   neg_apply (f : F) (x : α) : (-f) x = -f x
 
 /-- `IsInvApply F α β` states for all `f : F` and `x : α`, `f⁻¹ x = (f x)⁻¹`. -/
 @[to_additive]
-class IsInvApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Inv β] [Inv F] where
+class IsInvApply (F α β : Type*) [FunLike F α β] [Inv β] [Inv F] where
   inv_apply (f : F) (x : α) : f⁻¹ x = (f x)⁻¹
 
-@[to_additive (attr := simp, grind =)] alias inv_apply := IsInvApply.inv_apply
+@[to_additive (attr := simp, grind =)]
+lemma inv_apply {F α β : Type*} [FunLike F α β] [Inv β] [Inv F] [IsInvApply F α β] (f : F) (x : α) :
+    f⁻¹ x = (f x)⁻¹ :=
+  IsInvApply.inv_apply f x
 
 end Neg
 
 section SMul
 
 /-- `IsVAddApply M F α β` states for all `f : F`, `n : M` and `x : α`, `(n +ᵥ f) x = n +ᵥ f x`. -/
-class IsVAddApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [VAdd M β] [VAdd M F] where
+class IsVAddApply (M F α β : Type*) [FunLike F α β] [VAdd M β] [VAdd M F] where
   vadd_apply (f : F) (n : M) (x : α) : (n +ᵥ f) x = n +ᵥ f x
 
 /-- `IsSMulApply M F α β` states for all `f : F`, `n : M` and `x : α`, `(n • f) x = n • f x`. -/
 @[to_additive]
-class IsSMulApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [SMul M β] [SMul M F] where
+class IsSMulApply (M F α β : Type*) [FunLike F α β] [SMul M β] [SMul M F] where
   smul_apply (f : F) (r : M) (x : α) : (r • f) x = r • f x
 
 /-- `IsPowApply M F α β` states for all `f : F`, `n : M` and `x : α`, `(f ^ n) x = (f x) ^ n`. -/
 @[to_additive IsSMulApply]
-class IsPowApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [Pow β M] [Pow F M] where
+class IsPowApply (M F α β : Type*) [FunLike F α β] [Pow β M] [Pow F M] where
   pow_apply (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n
 
 @[to_additive (attr := simp, grind =, to_additive) smul_apply]
-alias pow_apply := IsPowApply.pow_apply
+lemma pow_apply {M F α β : Type*} [FunLike F α β] [Pow β M] [Pow F M] [IsPowApply M F α β]
+    (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n :=
+  IsPowApply.pow_apply f n x
 
 end SMul
 
 section Cast
 
 /-- `IsNatCastApply F α` states for all `n : ℕ` and `x : α`, `(n : F) x = n • x`. -/
-class IsNatCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [NatCast F] [SMul Nat α] where
+class IsNatCastApply (F α : Type*) [FunLike F α α] [NatCast F] [SMul Nat α] where
   natCast_apply (n : Nat) (x : α) : (n : F) x = n • x
 
 @[simp, grind =]
 alias natCast_apply := IsNatCastApply.natCast_apply
 
 /-- `IsIntCastApply F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n • x`. -/
-class IsIntCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [IntCast F] [SMul Int α] where
+class IsIntCastApply (F α : Type*) [FunLike F α α] [IntCast F] [SMul Int α] where
   intCast_apply (n : Int) (x : α) : (n : F) x = n • x
 
 @[simp, grind =]

@@ -133,7 +133,7 @@ def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
   __ := σ.toSubmodule
   smul_mem' c v hv := by
     induction c using MonoidAlgebra.induction_linear with
-    | zero => simp [zero_smul]
+    | zero => simpa [Representation.asModule] using! zero_mem _
     | add x y hx hy => rw [add_smul]; exact σ.toSubmodule.add_mem' hx hy
     | single g a =>
       rw [Representation.single_smul]

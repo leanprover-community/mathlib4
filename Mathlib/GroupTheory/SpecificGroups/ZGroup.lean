@@ -78,7 +78,7 @@ theorem of_surjective [Finite G] [hG : IsZGroup G] (hf : Function.Surjective f) 
   have := Fact.mk hp
   obtain ⟨Q, rfl⟩ := Sylow.mapSurjective_surjective hf p P
   specialize hG p hp Q
-  exact isCyclic_of_surjective _ (f.subgroupMap_surjective Q)
+  exact (isCyclic_of_surjective _ (f.subgroupMap_surjective Q) :)
 
 instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H) :=
   of_surjective (QuotientGroup.mk'_surjective H)
@@ -253,7 +253,7 @@ theorem normalizer_le_centralizer_or_le_commutator :
   let Q : Sylow p (Subgroup.normalizer P) := P.subtype P.le_normalizer
   have : Q.Normal := P.normal_in_normalizer
   have : IsCyclic Q :=
-    isCyclic_of_surjective _ (Subgroup.subgroupOfEquivOfLe P.le_normalizer).symm.surjective
+    (isCyclic_of_surjective _ (Subgroup.subgroupOfEquivOfLe P.le_normalizer).symm.surjective :)
   refine (le_center_or_le_commutator Q).imp (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [← SetLike.coe_subset_coe, ← Subgroup.centralizer_eq_top_iff_subset, eq_top_iff,
       ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_top,

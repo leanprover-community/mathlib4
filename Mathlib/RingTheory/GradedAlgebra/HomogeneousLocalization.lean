@@ -978,14 +978,14 @@ theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
         congr
         refine (DirectSum.decompose_of_mem_same _ ?_).symm
         exact H ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
-    · convert! zero_mem (Submodule.span (𝒜 0) _)
+    · convert! zero_mem (Submodule.span (𝒜 0) (M := Away 𝒜 f) _)
       ext
       have : (DirectSum.decompose 𝒜 (∏ i : ι', v i ^ ai i) n).1 = 0 := by
         refine DirectSum.decompose_of_mem_ne _ ?_ H
         exact SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
       simp [this, Localization.mk_zero]
   | zero =>
-    convert! zero_mem (Submodule.span (𝒜 0) _)
+    convert! zero_mem (Submodule.span (𝒜 0) (M := Away 𝒜 f) _)
     ext; simp [Localization.mk_zero]
   | add s t hs ht hs' ht' =>
     convert! add_mem hs' ht'

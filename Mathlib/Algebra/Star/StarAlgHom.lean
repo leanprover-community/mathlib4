@@ -81,7 +81,11 @@ def _root_.NonUnitalStarAlgHom.ofClass [StarHomClass F A B] (f : F) : A →⋆�
 
 @[deprecated (since := "2026-09-02")] alias toNonUnitalStarAlgHom := NonUnitalStarAlgHom.ofClass
 
-instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
+-- If we use normal instance binders then the `synthOrder` of this instance ends up wrong,
+-- because it tries to synthesize `Monoid R` before knowing what `R` is.
+instance {R : Type*} {_ : Monoid R} {_ : DistribMulAction R A} {_ : DistribMulAction R B}
+    [NonUnitalAlgHomClass F R A B] [StarHomClass F A B] :
+    NonUnitalStarRingHomClass F A B :=
   NonUnitalStarRingHomClass.mk
 
 end NonUnitalStarAlgHomClass
@@ -644,7 +648,7 @@ add_decl_doc StarAlgEquiv.toStarRingEquiv
 Mostly an implementation detail for the ⋆-algebra equivalence class
 which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
 -/
-class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
+class NonUnitalAlgEquivClass (F : Type*) (R : outParam Type*) (A B : Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
   extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
 

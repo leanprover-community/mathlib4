@@ -68,8 +68,8 @@ homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `
 and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
     [Semiring R] [Semiring S] (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R}
-    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam Type*) [TopologicalSpace M]
-    [AddCommMonoid M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
+    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
+    [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [EquivLike F M M₂] : Prop extends SemilinearEquivClass F σ M M₂ where
   map_continuous : ∀ f : F, Continuous f := by first | fun_prop | dsimp; fun_prop
   inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by first | fun_prop | dsimp; fun_prop
@@ -82,7 +82,7 @@ ContinuousSemilinearEquivClass.inv_continuous
 `R`-linear equivs `M → M₂`. This is an abbreviation for
 `ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
-    (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
+    (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   ContinuousSemilinearEquivClass F (RingHom.id R) M M₂
 

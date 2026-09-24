@@ -66,19 +66,17 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F : Type*) (α β : outParam Type*) [Top α] [Top β] [FunLike F α β] :
-    Prop where
+class TopHomClass (F α β : Type*) [Top α] [Top β] [FunLike F α β] : Prop where
   /-- A `TopHomClass` morphism preserves the top element. -/
-  map_top (f : F) : f ⊤ = ⊤
+  protected map_top (f : F) : f ⊤ = ⊤
 
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
 @[to_dual]
-class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLike F α β] :
-    Prop where
+class BotHomClass (F α β : Type*) [Bot α] [Bot β] [FunLike F α β] : Prop where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
-  map_bot (f : F) : f ⊥ = ⊥
+  protected map_bot (f : F) : f ⊥ = ⊥
 
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
@@ -95,11 +93,17 @@ attribute [to_dual existing] BoundedOrderHomClass.map_bot
 
 end
 
-export TopHomClass (map_top)
+-- We need to restate the following lemmas so that they have the right binder info. See https://github.com/leanprover/lean4/issues/9727
 
-export BotHomClass (map_bot)
+@[simp, inherit_doc TopHomClass.map_top]
+lemma map_top [FunLike F α β] [Top α] [Top β] [TopHomClass F α β] (f : F) :
+    f ⊤ = ⊤ :=
+  TopHomClass.map_top f
 
-attribute [simp] map_top map_bot
+@[to_dual existing, simp, inherit_doc BotHomClass.map_bot]
+lemma map_bot [FunLike F α β] [Bot α] [Bot β] [BotHomClass F α β] (f : F) :
+    f ⊥ = ⊥ :=
+  BotHomClass.map_bot f
 
 section Hom
 

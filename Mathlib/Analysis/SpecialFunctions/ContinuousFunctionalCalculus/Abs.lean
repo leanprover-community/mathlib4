@@ -239,7 +239,7 @@ lemma abs_algebraMap_nnreal (x : ℝ≥0) : abs (algebraMap ℝ≥0 A x) = algeb
 
 @[simp]
 lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
-  simpa only [map_natCast, Nat.abs_cast] using abs_algebraMap_nnreal (n : ℝ≥0)
+  simpa only [map_natCast, Nat.abs_cast] using abs_algebraMap_nnreal (A := A) (n : ℝ≥0)
 
 @[simp]
 lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] : abs (ofNat(n) : A) = ofNat(n) := by
