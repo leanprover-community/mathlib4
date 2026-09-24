@@ -59,9 +59,12 @@ structure RingOps (V : Type) where
   /-- The pivot zero test. -/
   isZero : V → Bool
 
-/-- The arithmetic of `V` on its literals. `decode` reads a literal into a value and `encode`
-writes a value as a literal. A literal `decode` rejects is read as 0. The literals
-reaching them are the ones `encode` wrote. -/
+/-- The arithmetic of `V` on its literals with a `decode`-`encode` roundtrip per operation.
+This is less efficient than performing the elimination directly on `V`, but is a workaround for
+a restriction in the registry (see `Carrier`). Certificate construction is the bottleneck so
+this does not lead to much overall performance degradation.
+A literal `decode` rejects is read as 0 (should never happen for the literals provided by
+`encode`). -/
 def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → Option V) (encode : V → Expr) :
     RingOps Expr :=
   let read (e : Expr) : V := (decode e).getD ops.zero
