@@ -6,6 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+public import Mathlib.Geometry.Euclidean.PerpBisector
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
@@ -575,6 +576,43 @@ lemma reflection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSu
     [(s'.map s.subtype).direction.HasOrthogonalProjection] (p : s) :
     (reflection s' p : P) = reflection (s'.map s.subtype) p := by
   simp [reflection_apply', orthogonalProjection_subtype]
+
+section perpBisector
+
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+
+theorem le_perpBisector_reflection (s : AffineSubspace ℝ P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (a : P) :
+    s ≤ perpBisector a (reflection s a) := by
+  intro b hb
+  rw [mem_perpBisector_iff_dist_eq, dist_reflection_eq_of_mem _ hb]
+
+theorem le_perpBisector_reflection' (s : AffineSubspace ℝ P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (a : P) :
+    s ≤ perpBisector (reflection s a) a :=
+  perpBisector_comm (reflection s a) a ▸ le_perpBisector_reflection s a
+
+@[simp]
+theorem reflection_perpBisector (a b : P) [(perpBisector a b).direction.HasOrthogonalProjection] :
+    haveI : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
+    reflection (perpBisector a b) a = b := by
+  have : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
+  rw [reflection_apply_of_mem _ _ (midpoint_mem_perpBisector a b)]
+  simp_rw [direction_perpBisector]
+  rw [Submodule.reflection_orthogonal_apply, ← map_neg, neg_vsub_eq_vsub_rev,
+    (Submodule.reflection_eq_self_iff _).mpr (by simp), Eq.comm, eq_vadd_iff_vsub_eq]
+  simp
+
+@[simp]
+theorem reflection_perpBisector' (a b : P) [(perpBisector b a).direction.HasOrthogonalProjection] :
+    haveI : Nonempty (perpBisector b a) := perpBisector_nonempty.to_subtype
+    reflection (perpBisector b a) a = b := by
+  have : (perpBisector a b).direction.HasOrthogonalProjection :=
+    perpBisector_comm a b ▸ ‹(perpBisector b a).direction.HasOrthogonalProjection›
+  simpa [perpBisector_comm a b] using reflection_perpBisector a b
+
+end perpBisector
 
 end EuclideanGeometry
 
