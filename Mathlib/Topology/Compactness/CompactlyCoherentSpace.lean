@@ -100,7 +100,7 @@ lemma isOpen_iff_forall_compactSpace [CompactlyCoherentSpace X] (s : Set X) :
     IsOpen s ↔
       ∀ (K : Type u) [TopologicalSpace K] [CompactSpace K],
       ∀ (f : K → X), Continuous f → IsOpen (f ⁻¹' s) := by
-  refine ⟨fun hs _ _ _ _ hf ↦ hs.preimage hf, fun hs ↦ isOpen_iff |>.mpr ?_⟩
+  refine ⟨fun hs _ _ _ _ hf ↦ hs.preimage hf, fun hs ↦ isOpen_iff.mpr ?_⟩
   intro K hK
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
   exact hs K Subtype.val continuous_subtype_val

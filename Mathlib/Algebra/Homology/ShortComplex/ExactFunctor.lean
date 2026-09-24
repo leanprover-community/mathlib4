@@ -144,7 +144,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     exact preservesFiniteLimits_of_preservesKernels F
   tfae_have 4 → 1
   | ⟨_⟩, S, hS =>
-    (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
+    (S.map F).exact_and_mono_f_iff_f_is_kernel.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
   tfae_finish
 
 lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
@@ -202,7 +202,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
   | hF => by
     exact preservesFiniteColimits_of_preservesCokernels F
   tfae_have 4 → 1
-  | ⟨_⟩, S, hS => (S.map F).exact_and_epi_g_iff_g_is_cokernel |>.2
+  | ⟨_⟩, S, hS => (S.map F).exact_and_epi_g_iff_g_is_cokernel.2
     ⟨CokernelCofork.mapIsColimit _ hS.gIsCokernel F⟩
   tfae_finish
 

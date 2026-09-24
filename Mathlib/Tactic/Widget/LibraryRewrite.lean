@@ -515,7 +515,7 @@ def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     return .text "rw??: the selected expression should be in the main goal."
   goal.ctx.val.runMetaM {} do
     let md ← goal.mvarId.getDecl
-    let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
+    let lctx := md.lctx.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
 
       let rootExpr ← loc.rootExpr

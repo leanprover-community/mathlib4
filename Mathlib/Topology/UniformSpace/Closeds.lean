@@ -300,7 +300,7 @@ theorem TotallyBounded.nhds_vietoris_le_nhds_hausdorff {s : Set α} (hs : Totall
     @nhds _ (.vietoris α) s ≤ 𝓝 s := by
   open UniformSpace TopologicalSpace.vietoris in
   simp_rw [nhds_eq_comap_uniformity,
-    uniformity_hasBasis_open.uniformity_hausdorff |>.comap _ |>.ge_iff, Function.comp_id,
+    uniformity_hasBasis_open.uniformity_hausdorff.comap _ |>.ge_iff, Function.comp_id,
     hausdorffEntourage, Set.preimage_ofPred_eq, Set.ofPred_and]
   intro U ⟨hU₁, hU₂⟩
   have : U.IsRefl := ⟨fun _ => refl_mem_uniformity hU₁⟩

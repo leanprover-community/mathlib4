@@ -63,7 +63,7 @@ TODO: generalize the two constructions in the setting of maps from a bornologica
 convex one, or define a `NormableSpace` class to deduce this case from the normed case.
 -/
 def ContinuousLinearMap.evalL : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F :=
-  LinearMap.toContinuousLinearMap.symm.toLinearMap |>.flip |>.toContinuousBilinearMap
+  LinearMap.toContinuousLinearMap.symm.toLinearMap.flip |>.toContinuousBilinearMap
 
 @[simp]
 lemma ContinuousLinearMap.evalL_apply (x : E) (φ : E →L[𝕜] F) : φ.evalL 𝕜 E F x = φ x := rfl

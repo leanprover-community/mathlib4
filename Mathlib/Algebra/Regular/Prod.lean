@@ -27,7 +27,7 @@ theorem Prod.isLeftRegular_mk {a : R} {b : S} :
 @[to_additive (attr := simp)]
 theorem Prod.isRightRegular_mk {a : R} {b : S} :
     IsRightRegular (a, b) ↔ IsRightRegular a ∧ IsRightRegular b :=
-  have : Nonempty R := ⟨a⟩; have : Nonempty S := ⟨b⟩; Iff.symm <| Prod.map_injective |>.symm
+  have : Nonempty R := ⟨a⟩; have : Nonempty S := ⟨b⟩; Iff.symm <| Prod.map_injective.symm
 
 @[to_additive (attr := simp)]
 theorem Prod.isRegular_mk {a : R} {b : S} : IsRegular (a, b) ↔ IsRegular a ∧ IsRegular b := by

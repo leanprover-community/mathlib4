@@ -34,7 +34,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
   let g := MvPolynomial.mapAlgHom (R := R) (σ := s) (Polynomial.aeval (R := R) f)
   replace hf : Function.Injective g := MvPolynomial.map_injective _ hf
   let u := (Subalgebra.val _).comp
-    ((optionEquivRight R s).symm |>.trans
+    ((optionEquivRight R s).symm.trans
       (renameEquiv R (Set.subtypeInsertEquivOption h).symm) |>.trans
       (supportedEquivMvPolynomial _).symm).toAlgHom |>.comp
     g |>.comp

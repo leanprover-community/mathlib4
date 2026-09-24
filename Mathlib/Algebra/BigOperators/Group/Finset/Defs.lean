@@ -125,16 +125,16 @@ meta def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSynt
     | `(bigOpBinder| $x:term) =>
       match x with
       | `(($a + $b = $n)) => -- Maybe this is too cute.
-        return processed |>.push (← `(⟨$a, $b⟩), ← `(Finset.Nat.antidiagonal $n))
-      | _ => return processed |>.push (x, ← ``(Finset.univ))
-    | `(bigOpBinder| $x : $t) => return processed |>.push (x, ← ``((Finset.univ : Finset $t)))
-    | `(bigOpBinder| $x ∈ $s) => return processed |>.push (x, ← `(finset% $s))
-    | `(bigOpBinder| $x ∉ $s) => return processed |>.push (x, ← `(finset% $sᶜ))
-    | `(bigOpBinder| $x ≠ $n) => return processed |>.push (x, ← `(Finset.univ.erase $n))
-    | `(bigOpBinder| $x < $n) => return processed |>.push (x, ← `(Finset.Iio $n))
-    | `(bigOpBinder| $x ≤ $n) => return processed |>.push (x, ← `(Finset.Iic $n))
-    | `(bigOpBinder| $x > $n) => return processed |>.push (x, ← `(Finset.Ioi $n))
-    | `(bigOpBinder| $x ≥ $n) => return processed |>.push (x, ← `(Finset.Ici $n))
+        return processed.push (← `(⟨$a, $b⟩), ← `(Finset.Nat.antidiagonal $n))
+      | _ => return processed.push (x, ← ``(Finset.univ))
+    | `(bigOpBinder| $x : $t) => return processed.push (x, ← ``((Finset.univ : Finset $t)))
+    | `(bigOpBinder| $x ∈ $s) => return processed.push (x, ← `(finset% $s))
+    | `(bigOpBinder| $x ∉ $s) => return processed.push (x, ← `(finset% $sᶜ))
+    | `(bigOpBinder| $x ≠ $n) => return processed.push (x, ← `(Finset.univ.erase $n))
+    | `(bigOpBinder| $x < $n) => return processed.push (x, ← `(Finset.Iio $n))
+    | `(bigOpBinder| $x ≤ $n) => return processed.push (x, ← `(Finset.Iic $n))
+    | `(bigOpBinder| $x > $n) => return processed.push (x, ← `(Finset.Ioi $n))
+    | `(bigOpBinder| $x ≥ $n) => return processed.push (x, ← `(Finset.Ici $n))
     | _ => Macro.throwUnsupported
 
 /-- Collects the binder/Finset pairs for the given `bigOpBinders`. -/

@@ -121,7 +121,7 @@ theorem Module.finite_of_rank_eq_nat [Module.Free R M] {n : ℕ} (h : Module.ran
   nontriviality R
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   have := mk_lt_aleph0_iff.mp <|
-    b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt natCast_lt_aleph0
+    b.linearIndependent.cardinal_le_rank.trans_eq h |>.trans_lt natCast_lt_aleph0
   exact Module.Finite.of_basis b
 
 theorem Module.finite_of_rank_eq_one [Module.Free R M] (h : Module.rank R M = 1) :

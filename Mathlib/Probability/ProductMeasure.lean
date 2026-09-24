@@ -191,7 +191,7 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
     ext x s ms
     by_cases hs : s.Nonempty
     · rw [Subsingleton.eq_univ_of_nonempty hs, @measure_univ .., measure_univ]
-      exact (IsMarkovKernel.map _ (measurable_restrict₂ _)) |>.isProbabilityMeasure x
+      exact (IsMarkovKernel.map _ (measurable_restrict₂ _)).isProbabilityMeasure x
     · rw [Set.not_nonempty_iff_eq_empty.1 hs]
       simp
 

@@ -213,7 +213,7 @@ lemma SurjectiveOnStalks.tensorProductMap
     (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
   convert!
     RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
-      (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
+      (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks.comp <|
         RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
           (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
   simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
