@@ -48,6 +48,7 @@ variable (R A W) in
 /-- A triple of a ring `R`, `R`-affine space `A` and `R`-vector space `W` is a homogenization if
 `W` is linearly equivalent to the canonical homogenization. -/
 structure IsHomogenization where ofRepr ::
+  /-- The linear equivalence between the vector space and the canonical homogenization. -/
   repr : W ≃ₗ[R] Homogenization R A
 
 namespace IsHomogenization
