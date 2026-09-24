@@ -582,19 +582,20 @@ section perpBisector
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
-theorem le_perpBisector_reflection (s : AffineSubspace ℝ P) [Nonempty s]
+theorem le_perpBisector_self_reflection (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (a : P) :
     s ≤ perpBisector a (reflection s a) := by
   intro b hb
   rw [mem_perpBisector_iff_dist_eq, dist_reflection_eq_of_mem _ hb]
 
-theorem le_perpBisector_reflection' (s : AffineSubspace ℝ P) [Nonempty s]
+theorem le_perpBisector_reflection_self (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (a : P) :
     s ≤ perpBisector (reflection s a) a :=
-  perpBisector_comm (reflection s a) a ▸ le_perpBisector_reflection s a
+  perpBisector_comm (reflection s a) a ▸ le_perpBisector_self_reflection s a
 
 @[simp]
-theorem reflection_perpBisector (a b : P) [(perpBisector a b).direction.HasOrthogonalProjection] :
+theorem reflection_perpBisector_left (a b : P)
+    [(perpBisector a b).direction.HasOrthogonalProjection] :
     haveI : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
     reflection (perpBisector a b) a = b := by
   have : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
@@ -605,12 +606,13 @@ theorem reflection_perpBisector (a b : P) [(perpBisector a b).direction.HasOrtho
   simp
 
 @[simp]
-theorem reflection_perpBisector' (a b : P) [(perpBisector b a).direction.HasOrthogonalProjection] :
+theorem reflection_perpBisector_right (a b : P)
+    [(perpBisector b a).direction.HasOrthogonalProjection] :
     haveI : Nonempty (perpBisector b a) := perpBisector_nonempty.to_subtype
     reflection (perpBisector b a) a = b := by
   have : (perpBisector a b).direction.HasOrthogonalProjection :=
     perpBisector_comm a b ▸ ‹(perpBisector b a).direction.HasOrthogonalProjection›
-  simpa [perpBisector_comm a b] using reflection_perpBisector a b
+  simpa [perpBisector_comm a b] using reflection_perpBisector_left a b
 
 end perpBisector
 
