@@ -126,26 +126,33 @@ def certifyPermEq {u : Level} {m n : Nat} {α : Q(Type u)} (A : Q(Matrix (Fin $m
     q(congrArg (fun f ↦ Matrix.of f) (FinVec.etaExpand_eq (fun i ↦ $A ($σ i))).symm)
     q(($A).submatrix $σ id = $Aσ)
 
-/-- Prove the product `L * Aσ = U` from the expansion `r` of the product of the row lists of
-`L` and `Aσ`, whose literals are `r.A` and `r.B`. -/
+/-- Prove the row literals of `rows₁` and `rows₂` equal from the entrywise equations `a = b`,
+each proved by `certifier`. Returns the two literals with the proof. -/
+def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier)
+    (rows₁ rows₂ : List (List Q($α))) :
+    MetaM ((l₁ : Q(List (List $α))) × (l₂ : Q(List (List $α))) × Q($l₁ = $l₂)) := do
+  let rowEqs ← rows₁.zipWithM (bs := rows₂) fun row₁ row₂ =>
+    mkListCongr <$> row₁.zipWithM (bs := row₂) fun a b => do
+      return ⟨a, b, ← certifier q($a = $b)⟩
+  return mkListCongr (α := q(List $α)) rowEqs
+
+/-- Prove the product `L * Aσ = U` from the expansion `mulEq` of the product of the row lists of
+`L` and `Aσ`, whose literals are `mulEq.A` and `mulEq.B`. -/
 def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
-    {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (r : MulEq zα aα mα m m n)
+    {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
     (U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
-    MetaM Q((ofLists $m $m $(r.A)) * ofLists $m $n $(r.B) = $(U.matrix)) := do
+    MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
   let h : Expr ← match certifier? with
     | none =>
-      -- Stated on `r.expr`; the closing hint is where the kernel evaluates `r.expr ≡ U.lit`,
-      -- argument-wise under `ofLists`.
-      pure r.proof
+      -- Stated on `mulEq.expr`; the closing hint is where the kernel evaluates
+      -- `mulEq.expr ≡ U.lit`, argument-wise under `ofLists`.
+      pure mulEq.proof
     | some certifier => do
-      let rowEqs ← r.rows.zipIdx.mapM fun (row, i) =>
-        mkListCongr <$> row.zipIdx.mapM fun (fold, j) => do
-          have entry : Q($α) := (U.entries[i]!)[j]!
-          return ⟨fold, entry, ← certifier q($fold = $entry)⟩
-      let ⟨_, _, hlit⟩ := mkListCongr (α := q(List $α)) rowEqs
-      mkEqTrans r.proof hlit
+      let ⟨_, _, hlit⟩ ← certifyRowsEq certifier mulEq.rows U.entries
+      mkEqTrans mulEq.proof hlit
   let pf ← mkAppM ``ofLists_mul #[h]
-  return mkExpectedPropHint pf q((ofLists $m $m $(r.A)) * ofLists $m $n $(r.B) = $(U.matrix))
+  return mkExpectedPropHint pf
+    q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
 
 /-- The certificates of a decomposition with the terms they are stated on. Every intermediate
 certificate is kept, beyond the part `Echelon.Decomposition` exposes, so downstream tactics need
@@ -190,9 +197,9 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let lRows : List (List Q($α)) := data.L.toList.map Array.toList
   let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
   -- `proveMul` first, so that the views of `L` and `Aσ` are stated on the literals it built
-  let r := proveMul zα aα mα m m n lRows aRows
-  have L := MatrixViews.ofLit rα m m r.A lRows
-  have Aσ := MatrixViews.ofLit rα m n r.B aRows
+  let mulEq := proveMul zα aα mα m m n lRows aRows
+  have L := MatrixViews.ofLit rα m m mulEq.A lRows
+  have Aσ := MatrixViews.ofLit rα m n mulEq.B aRows
   have U := mkMatrixViews rα m n data.U
   let σ ← mkPerm m data.swaps
   let cols : Q(List (Fin $n)) ← mkPivotList n data.pivot
@@ -201,7 +208,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   have Aσm := Aσ.matrix
   have Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
-  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq rα r U certifier?
+  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq rα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
   let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy rα U cols data.pivot certifier
