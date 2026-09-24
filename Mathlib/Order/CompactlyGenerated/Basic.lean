@@ -509,7 +509,7 @@ lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
   refine ⟨fun h ↦ h.supIndep', fun h ↦ iSupIndep_def'.mpr fun i ↦ ?_⟩
   classical
   have hf : Set.InjOn f {i : ι | f i ≠ ⊥} := by
-    by_contra! hf
+    by_contra hf
     simp_all only [Set.InjOn, ne_eq, Set.mem_ofPred_eq, not_forall]
     obtain ⟨x₁, hx₁, x₂, hx₂, hfeq, hneq⟩ := hf
     specialize h ({x₁, x₂} : Finset ι)
