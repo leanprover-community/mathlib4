@@ -70,7 +70,7 @@ def t : HNNExtension G A B φ :=
 
 theorem t_mul_of (a : A) :
     t * (of (a : G) : HNNExtension G A B φ) = of (φ a : G) * t :=
-  (Con.eq _).2 <| ConGen.Rel.of _ _ <| ⟨a, by simp⟩
+  (Con.eq _).2 <| ConGen.Rel.of _ _ ⟨a, by simp⟩
 
 theorem of_mul_t (b : B) :
     (of (b : G) : HNNExtension G A B φ) * t = t * of (φ.symm b : G) := by

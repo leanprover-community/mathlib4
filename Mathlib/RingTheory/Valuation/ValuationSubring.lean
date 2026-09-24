@@ -90,7 +90,7 @@ instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
 instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 
 instance : Top (ValuationSubring K) :=
-  Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
+  Top.mk { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
 
 @[simp]
 theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
@@ -240,7 +240,7 @@ section Order
 
 instance : SemilatticeSup (ValuationSubring K) :=
   { (inferInstance : PartialOrder (ValuationSubring K)) with
-    sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) <| le_sup_left
+    sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) le_sup_left
     le_sup_left := fun R S _ hx => (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
     le_sup_right := fun R S _ hx => (le_sup_right : S.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
     sup_le := fun R S T hR hT _ hx => (sup_le hR hT : R.toSubring ⊔ S.toSubring ≤ T.toSubring) hx }
@@ -720,7 +720,7 @@ theorem principalUnitGroup_symm_apply (a : (Units.map (IsLocalRing.residue A).to
 
 /-- The canonical map from the unit group of `A` to the units of the residue field of `A`. -/
 def unitGroupToResidueFieldUnits : A.unitGroup →* (IsLocalRing.ResidueField A)ˣ :=
-  MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
+  MonoidHom.comp (Units.map (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
