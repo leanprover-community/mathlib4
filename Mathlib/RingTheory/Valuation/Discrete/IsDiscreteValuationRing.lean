@@ -128,8 +128,8 @@ theorem associated_of_valuation_eq (x y : K)
   rw [mker_valuation_eq_isUnitSubmonoid] at this
   obtain ⟨u, h⟩ := this
   use IsUnit.unit h.1
-  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1,
-    MonoidHom.coe_ofClass (algebraMap A K) ▸ h.2]
+  simp only [MonoidHom.coe_ofClass] at h
+  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec h.1, h.2]
   field_simp
 
 theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =

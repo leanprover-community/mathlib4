@@ -169,14 +169,14 @@ section CompactDVR
 open Valued
 
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
-    Nonempty (LocallyFiniteOrder ((Valued.v : Valuation K Γ₀).mrange)ˣ) := by
+    Nonempty (LocallyFiniteOrder (Valued.v : Valuation K Γ₀).mrangeˣ) := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor
   refine LocallyFiniteOrder.ofFiniteIcc ?_
   -- We only need to show that we can construct a finite set for some set between
   -- a non-zero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
-  suffices ∀ z : ((Valued.v (R := K)).mrange)ˣ,
+  suffices ∀ z : (Valued.v (R := K)).mrangeˣ,
       (Set.Icc z 1).Finite by
     rintro x y
     rcases lt_trichotomy y x with hxy | rfl | hxy
@@ -288,7 +288,7 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   -- is a PIR iff the value group is not densely ordered.
   refine hi.isPrincipalIdealRing_iff_not_denselyOrdered_mrange.mpr fun _ ↦ ?_
   -- since we are densely ordered, we necessarily are nontrivial
-  exact not_subsingleton ((v : Valuation K Γ₀).mrange)ˣ
+  exact not_subsingleton (v : Valuation K Γ₀).mrangeˣ
     (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)
 
 theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]

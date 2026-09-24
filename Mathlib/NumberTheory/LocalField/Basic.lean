@@ -122,7 +122,7 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
     ⟨.ofBijective ((valuation K).mrange).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
   have : Nontrivial (ValueGroupWithZero K)ˣ := isNontrivial_iff_nontrivial_units.mp inferInstance
-  have : Nontrivial ((valuation K).mrange)ˣ :=
+  have : Nontrivial (valuation K).mrangeˣ :=
     (Units.map_injective (f := (e.symm : ValueGroupWithZero K →* _)) e.symm.injective).nontrivial
   exact e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv (valuation K).mrange)
 

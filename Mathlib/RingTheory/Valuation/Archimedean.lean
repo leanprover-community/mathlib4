@@ -44,10 +44,10 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
 open scoped Function WithZero in
-lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (v.toMonoidHom.mrange)ˣ]
+lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial v.mrangeˣ]
     (hv : Integers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
-      Nonempty (v.toMonoidHom.mrange ≃*o ℤᵐ⁰) := by
+      Nonempty (v.mrange ≃*o ℤᵐ⁰) := by
   rw [←
     LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
     one_ne_zero, ← Set.wellFoundedOn_range]
@@ -59,7 +59,7 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (v.toMonoidHom.mrange)
     intro hx
     obtain ⟨y, rfl⟩ := hv.exists_of_le_one hx
     exact ⟨y, by simp⟩
-  · exact fun x ↦ if hx : x ∈ v.toMonoidHom.mrange then ⟨x, hx⟩ else 1
+  · exact fun x ↦ if hx : x ∈ v.mrange then ⟨x, hx⟩ else 1
   · intro
     simp only [Set.mem_range, Function.comp_apply, MonoidHom.mem_mrange, Set.mem_ofPred_eq,
       forall_exists_index]
@@ -67,11 +67,11 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (v.toMonoidHom.mrange)
     simp [← Subtype.coe_le_coe, hv.map_le_one]
   · simp [Function.onFun]
 
-lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean v.toMonoidHom.mrange]
+lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean v.mrange]
     (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
-  rcases subsingleton_or_nontrivial (v.toMonoidHom.mrange)ˣ with hs | _
+  rcases subsingleton_or_nontrivial v.mrangeˣ with hs | _
   · have := bijective_algebraMap_of_subsingleton_units_mrange hv
     exact .of_surjective _ (RingEquiv.ofBijective _ this).symm.surjective
   have : IsDomain O := hv.hom_inj.isDomain
@@ -81,9 +81,9 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean v.toMonoidHom.
     LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
   exact H
 
-lemma isPrincipalIdealRing_iff_not_denselyOrdered_mrange [MulArchimedean v.toMonoidHom.mrange]
+lemma isPrincipalIdealRing_iff_not_denselyOrdered_mrange [MulArchimedean v.mrange]
     (hv : Integers v O) :
-    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered v.toMonoidHom.mrange :=
+    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered v.mrange :=
   isPrincipalIdealRing_iff_not_denselyOrdered hv
 
 end Valuation.Integers
