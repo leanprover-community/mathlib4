@@ -5,8 +5,9 @@ This directory contains the implementation of Mathlib's build cache system (`lak
 > **Note**: A new `lake cache` command is currently being designed and implemented in Lake itself. This will eventually replace the Mathlib-specific `lake exe cache` and work for all repositories. Until then, this cache system remains the primary way to get pre-built artifacts for Mathlib.
 
 > **Trust model & security**: see [`SECURITY.md`](./SECURITY.md) for the
-> trust model behind the multi-container split, and [`WORKFLOWS.md`](./WORKFLOWS.md)
-> for the three workflows the tool runs.
+> trust model behind the multi-container split, [`WORKFLOWS.md`](./WORKFLOWS.md)
+> for the three workflows the tool runs, and [`INTERNALS.md`](./INTERNALS.md) for
+> the structure of the code.
 
 ## Quick Start
 
