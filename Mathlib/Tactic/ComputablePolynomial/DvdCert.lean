@@ -10,6 +10,7 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Linarith
+public import Mathlib.Util.Qq
 
 /-!
 # `poly_dvd_cert`: divisibility of `Polynomial K` by **symbolic certificate**
@@ -19,7 +20,7 @@ A `polyrith`/`linarith`-style tactic: search for the quotient uncertified, then 
 For `p q : Polynomial K` over any field `K` (coefficients may be concrete *or* symbolic), it:
 
 1. parses `p`, `q` into dense vectors of coefficient **expressions** (elements of `K`);
-2. runs **pseudo-division in `MetaM`** — plain compiled Lean, like `norm_num`'s arithmetic, so it
+2. runs **pseudo-division as plain compiled Lean**, like `norm_num`'s arithmetic, so it
    never enters the proof term and adds **no axiom**, in particular **no `native_decide`** —
    producing
    a quotient `Q` and the scale `d ^ δ` (`d` = leading coefficient of `p`, `δ = deg q - deg p + 1`)
@@ -33,163 +34,175 @@ input is that `d ^ δ` is a unit, i.e. `d ≠ 0`; this side goal is discharged a
 a nonzero numeral or follows from a hypothesis, and otherwise is **left for the user** (e.g. a
 symbolic
 non-monic divisor needs its leading coefficient `≠ 0`). Monic divisors need nothing — they even work
-over any commutative ring.
+over any commutative ring, and over a commutative semiring with subtraction such as `ℕ` (where the
+certificate is still checked by `ring`, so a wrong quotient from truncated subtraction is rejected
+rather than believed).
 -/
 
 public meta section
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Qq
 
 namespace Polynomial.DvdCert
 
-/-- Read a `ℕ` literal `Expr` (a raw `Nat` literal or one wrapped in `OfNat.ofNat`). -/
-private def natLit? (e : Expr) : Option ℕ :=
-  let raw (x : Expr) : Option ℕ := match x with
-    | .lit (.natVal m) => some m
-    | _ => none
-  match e.getAppFnArgs with
-  | (``OfNat.ofNat, #[_, lit, _]) => raw lit
-  | _ => raw e
+variable {u : Level} {K : Q(Type u)}
 
-/-- Is `e` the numeral `n` (raw literal or via `OfNat`)? -/
-private def isNatLit (n : ℕ) (e : Expr) : Bool := natLit? e == some n
+/-! ### Smart constructors for coefficient (`K`-valued) expressions, with `0`/`1` peephole
 
-/-! ### Smart constructors for coefficient (`K`-valued) expressions, with `0`/`1` peephole -/
+`cs`, `sub` and `neg` are the coefficient ring's instances, resolved once per `poly_dvd_cert`
+call so that nothing is searched for inside the pseudo-division loops. `neg` is `none` over a
+semiring that has no negation, such as `ℕ`. -/
 
-private def kMul (a b : Expr) : MetaM Expr := do
-  if isNatLit 0 a then return a
-  if isNatLit 0 b then return b
-  if isNatLit 1 a then return b
-  if isNatLit 1 b then return a
-  mkAppM ``HMul.hMul #[a, b]
+private def kMul (cs : Q(CommSemiring $K)) (a b : Q($K)) : Q($K) :=
+  if a.nat? == some 0 then a
+  else if b.nat? == some 0 then b
+  else if a.nat? == some 1 then b
+  else if b.nat? == some 1 then a
+  else q($a * $b)
 
-private def kAdd (a b : Expr) : MetaM Expr := do
-  if isNatLit 0 a then return b
-  if isNatLit 0 b then return a
-  mkAppM ``HAdd.hAdd #[a, b]
+private def kAdd (cs : Q(CommSemiring $K)) (a b : Q($K)) : Q($K) :=
+  if a.nat? == some 0 then b
+  else if b.nat? == some 0 then a
+  else q($a + $b)
 
-private def kSub (a b : Expr) : MetaM Expr := do
-  if isNatLit 0 b then return a
-  if isNatLit 0 a then return (← mkAppM ``Neg.neg #[b])
-  mkAppM ``HSub.hSub #[a, b]
+private def kSub (sub : Q(Sub $K)) (neg : Option Q(Neg $K)) (a b : Q($K)) : Q($K) :=
+  if b.nat? == some 0 then a
+  else if a.nat? == some 0 then
+    match neg with
+    | some _nK => q(-$b)
+    | none => q($a - $b)
+  else q($a - $b)
 
-private def kNeg (a : Expr) : MetaM Expr := do
-  if isNatLit 0 a then return a
-  mkAppM ``Neg.neg #[a]
+private def kNeg (nK : Q(Neg $K)) (a : Q($K)) : Q($K) :=
+  if a.nat? == some 0 then a
+  else q(-$a)
 
 /-! ### Dense polynomial arithmetic over coefficient expressions
 (index `i` ↦ coefficient of `Xⁱ`) -/
 
 /-- Pointwise combine, padding the shorter vector with the zero expression `z`. -/
-private def kZip (op : Expr → Expr → MetaM Expr) (z : Expr) (a b : Array Expr) :
-    MetaM (Array Expr) := do
+private def kZip (op : Q($K) → Q($K) → Q($K)) (z : Q($K)) (a b : Array Q($K)) :
+    Array Q($K) := Id.run do
   let n := max a.size b.size
   let mut r := (List.replicate n z).toArray
   for i in [0:n] do
-    r := r.set! i (← op (a.getD i z) (b.getD i z))
+    r := r.set! i (op (a.getD i z) (b.getD i z))
   return r
 
-private def kConv (z : Expr) (a b : Array Expr) : MetaM (Array Expr) := do
+private def kConv (cs : Q(CommSemiring $K)) (a b : Array Q($K)) : Array Q($K) := Id.run do
   if a.isEmpty || b.isEmpty then return #[]
-  let mut r := (List.replicate (a.size + b.size - 1) z).toArray
+  let mut r := (List.replicate (a.size + b.size - 1) (q(0) : Q($K))).toArray
   for i in [0:a.size] do
     for j in [0:b.size] do
-      r := r.set! (i + j) (← kAdd r[i + j]! (← kMul a[i]! b[j]!))
+      r := r.set! (i + j) (kAdd cs r[i + j]! (kMul cs a[i]! b[j]!))
   return r
 
-private def kPow (z one : Expr) (a : Array Expr) : ℕ → MetaM (Array Expr)
-  | 0 => pure #[one]
-  | n + 1 => do kConv z a (← kPow z one a n)
+private def kPow (cs : Q(CommSemiring $K)) (a : Array Q($K)) : ℕ → Array Q($K)
+  | 0 => #[q(1)]
+  | n + 1 => kConv cs a (kPow cs a n)
 
 /-- Drop trailing zero coefficients. -/
-private partial def trimZeros (a : Array Expr) : Array Expr :=
+private partial def trimZeros (a : Array Q($K)) : Array Q($K) :=
   if 0 < a.size then
-    if isNatLit 0 a[a.size - 1]! then trimZeros a.pop else a
+    if a[a.size - 1]!.nat? == some 0 then trimZeros a.pop else a
   else a
 
-/-- Parse a `Polynomial K` expression into a dense vector of coefficient expressions in `K`
-(`z`, `one` are the expressions `(0 : K)`, `(1 : K)`). -/
-private partial def toCoeffs (K z one : Expr) (e : Expr) : MetaM (Array Expr) := do
+/-- Parse a `Polynomial K` expression into a dense vector of coefficient expressions in `K`. -/
+private partial def toCoeffs (cs : Q(CommSemiring $K)) (sub : Q(Sub $K))
+    (neg : Option Q(Neg $K)) (e : Expr) : MetaM (Array Q($K)) := do
   match e.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, _, _, a, b]) => kZip kAdd z (← toCoeffs K z one a) (← toCoeffs K z one b)
-  | (``HSub.hSub, #[_, _, _, _, a, b]) => kZip kSub z (← toCoeffs K z one a) (← toCoeffs K z one b)
-  | (``HMul.hMul, #[_, _, _, _, a, b]) => kConv z (← toCoeffs K z one a) (← toCoeffs K z one b)
+  | (``HAdd.hAdd, #[_, _, _, _, a, b]) =>
+      return kZip (kAdd cs) q(0) (← toCoeffs cs sub neg a) (← toCoeffs cs sub neg b)
+  | (``HSub.hSub, #[_, _, _, _, a, b]) =>
+      return kZip (kSub sub neg) q(0) (← toCoeffs cs sub neg a) (← toCoeffs cs sub neg b)
+  | (``HMul.hMul, #[_, _, _, _, a, b]) =>
+      return kConv cs (← toCoeffs cs sub neg a) (← toCoeffs cs sub neg b)
   | (``HPow.hPow, #[_, _, _, _, a, k]) =>
-      let some n := natLit? k | throwError "poly_dvd_cert: non-literal exponent {k}"
-      kPow z one (← toCoeffs K z one a) n
-  | (``Neg.neg, #[_, _, a]) => (← toCoeffs K z one a).mapM kNeg
-  | (``Polynomial.X, _) => pure #[z, one]
+      let some n := k.nat? | throwError "poly_dvd_cert: non-literal exponent {k}"
+      return kPow cs (← toCoeffs cs sub neg a) n
+  | (``Neg.neg, #[_, _, a]) =>
+      let some nK := neg | throwError "poly_dvd_cert: `{K}` has no negation"
+      return (← toCoeffs cs sub neg a).map (kNeg nK)
+  | (``Polynomial.X, _) => pure #[q(0), q(1)]
   | (``DFunLike.coe, #[_, _, _, _, f, c]) =>
       match f.getAppFnArgs with
       | (``Polynomial.C, _) => pure #[c]                            -- `C c`  ↦  constant `c`
       | (``algebraMap, _) => pure #[c]                              -- `algebraMap _ _ c`  ↦  `c`
       | (``Polynomial.monomial, #[_, _, n]) =>                     -- `monomial k c` ↦ `c * X ^ k`
-          let some k := natLit? n | throwError "poly_dvd_cert: non-literal monomial degree {n}"
-          pure ((List.replicate k z).toArray.push c)
+          let some k := n.nat? | throwError "poly_dvd_cert: non-literal monomial degree {n}"
+          pure ((List.replicate k (q(0) : Q($K))).toArray.push c)
       | _ => throwError "poly_dvd_cert: cannot parse {e}"
   | (``OfNat.ofNat, #[_, lit, _]) => pure #[← mkAppOptM ``OfNat.ofNat #[some K, some lit, none]]
   | (``Nat.cast, #[_, _, n]) => pure #[← mkAppOptM ``Nat.cast #[some K, none, some n]]
   | (``Int.cast, #[_, _, n]) => pure #[← mkAppOptM ``Int.cast #[some K, none, some n]]
   | _ => throwError "poly_dvd_cert: cannot parse polynomial {e}"
 
-/-- Pseudo-division `d ^ δ • q = p * Q + R` over the coefficient ring (no division): returns the
-quotient vector `Q`, where `dp = deg p`, `dq = deg q`, `d = lc p`, `δ = dq - dp + 1`. -/
-private def pseudoQuotient (z : Expr) (pc qc : Array Expr) (dp dq : ℕ) (d : Expr) :
-    MetaM (Array Expr) := do
+/-- Pseudo-division `lc p ^ δ • q = p * Q + R` over the coefficient ring (no division): returns
+the quotient vector `Q`, where `δ = deg q - deg p + 1`. Expects `pc`, `qc` trimmed and `pc`
+nonempty. -/
+private def pseudoQuotient (cs : Q(CommSemiring $K)) (sub : Q(Sub $K))
+    (neg : Option Q(Neg $K)) (pc qc : Array Q($K)) : Array Q($K) := Id.run do
+  let dp := pc.size - 1
+  let dq := qc.size - 1
+  let d := pc[dp]!
   let δ := dq - dp + 1
-  let mut Q := (List.replicate δ z).toArray
+  let mut quot := (List.replicate δ (q(0) : Q($K))).toArray
   let mut R := qc
   for k in [0:δ] do
     let w := dq - k
     let lc := R[w]!
     let shift := w - dp
-    Q ← Q.mapM (kMul d)
-    Q := Q.set! shift (← kAdd Q[shift]! lc)
-    R ← R.mapM (kMul d)
+    quot := quot.map (kMul cs d)
+    quot := quot.set! shift (kAdd cs quot[shift]! lc)
+    R := R.map (kMul cs d)
     for i in [0:dp + 1] do
-      R := R.set! (i + shift) (← kSub R[i + shift]! (← kMul lc pc[i]!))
-  return Q
+      R := R.set! (i + shift) (kSub sub neg R[i + shift]! (kMul cs lc pc[i]!))
+  return quot
 
 /-- Prove `p ∣ q` for `p q : Polynomial K` (any field `K`) by searching for the quotient with
-`MetaM` pseudo-division and certifying the division-free identity `C (lc p ^ δ) * q = p * Q` with
+pseudo-division and certifying the division-free identity `C (lc p ^ δ) * q = p * Q` with
 `ring`, then cancelling the leading-coefficient unit. Axiom-free; never `native_decide`. -/
 elab "poly_dvd_cert" : tactic => withMainContext do
   let g ← getMainGoal
   let tgt ← whnfR (← g.getType)
   let (``Dvd.dvd, #[ty, _, p, q]) := tgt.getAppFnArgs
     | throwError "poly_dvd_cert: goal is not `p ∣ q`"
-  let (``Polynomial, #[K, _]) := ty.getAppFnArgs
+  let (``Polynomial, #[KE, _]) := ty.getAppFnArgs
     | throwError "poly_dvd_cert: not a divisibility of polynomials"
-  let z ← mkAppOptM ``OfNat.ofNat #[some K, some (mkRawNatLit 0), none]
-  let one ← mkAppOptM ``OfNat.ofNat #[some K, some (mkRawNatLit 1), none]
-  let pc := trimZeros (← toCoeffs K z one p)
-  let qc := trimZeros (← toCoeffs K z one q)
+  let .sort (.succ u) ← whnf (← inferType KE) | throwError "poly_dvd_cert: `{KE}` is not a type"
+  have K : Q(Type u) := KE
+  have cs : Q(CommSemiring $K) := ← synthInstanceQ q(CommSemiring $K)
+  let some sub ← synthInstanceQ? q(Sub $K)
+    | throwError "poly_dvd_cert: `{K}` has no subtraction, so pseudo-division is unavailable"
+  let neg ← synthInstanceQ? q(Neg $K)
+  let pc := trimZeros (← toCoeffs cs sub neg p)
+  let qc := trimZeros (← toCoeffs cs sub neg q)
   if pc.isEmpty then throwError "poly_dvd_cert: divisor is the zero polynomial"
   let dp := pc.size - 1
   let d := pc[dp]!
-  -- Build the quotient `Q`. `scale = none` ⇒ a division-free witness `q = p * Q` (monic divisor, or
+  -- Build the quotient. `scale = none` ⇒ a division-free witness `q = p * Q` (monic divisor, or
   -- `deg q < deg p`), which works over *any commutative ring*. `scale = some (lc p ^ δ)` ⇒ the
   -- denominator-cleared identity, needing the leading coefficient to be a unit (a field).
-  let (Q, scale) ←
+  let (quot, scale) : Array Q($K) × Option Q($K) :=
     if qc.isEmpty || qc.size - 1 < dp then
-      pure (#[], none)                     -- `deg q < deg p`: quotient `0`, witness `q = p * 0`
+      (#[], none)                            -- `deg q < deg p`: quotient `0`, witness `q = p * 0`
     else
       let dq := qc.size - 1
-      let Q ← pseudoQuotient z pc qc dp dq d
-      if isNatLit 1 d then pure (Q, none)  -- monic: `d ^ δ = 1`, no scaling needed
-      else pure (Q, some (← mkAppM ``HPow.hPow #[d, mkNatLit (dq - dp + 1)]))
-  -- reflect `Q` back to a `Polynomial K` term `∑ C (Qᵢ) * X ^ i`
-  let CHom ← mkAppOptM ``Polynomial.C #[some K, none]
-  let xPoly ← mkAppOptM ``Polynomial.X #[some K, none]
-  let mut terms : Array Expr := #[]
-  for i in [0:Q.size] do
-    if isNatLit 0 Q[i]! then continue
-    let cc ← mkAppM ``DFunLike.coe #[CHom, Q[i]!]
-    let term ← if i == 0 then pure cc
-      else mkAppM ``HMul.hMul #[cc, ← mkAppM ``HPow.hPow #[xPoly, mkNatLit i]]
-    terms := terms.push term
-  let Qexpr ← if terms.isEmpty then mkAppOptM ``OfNat.ofNat #[some ty, some (mkRawNatLit 0), none]
-    else terms[1:].foldlM (fun a b => mkAppM ``HAdd.hAdd #[a, b]) terms[0]!
+      let quot := pseudoQuotient cs sub neg pc qc
+      if d.nat? == some 1 then (quot, none)      -- monic: `d ^ δ = 1`, no scaling needed
+      else
+        have δ : Q(ℕ) := mkNatLit (dq - dp + 1)
+        (quot, some q($d ^ $δ))
+  -- reflect the quotient back to a `Polynomial K` term `∑ C (Qᵢ) * X ^ i`
+  let mut terms : Array Q(Polynomial $K) := #[]
+  for i in [0:quot.size] do
+    if quot[i]!.nat? == some 0 then continue
+    have c : Q($K) := quot[i]!
+    terms := terms.push <| if i == 0 then q(Polynomial.C ($c)) else
+      have n : Q(ℕ) := mkNatLit i
+      q(Polynomial.C ($c) * Polynomial.X ^ $n)
+  let Qexpr : Q(Polynomial $K) :=
+    if terms.isEmpty then q(0) else terms[1:].foldl (fun a b => q($a + $b)) terms[0]!
   let Qstx ← Term.exprToSyntax Qexpr
   -- the `ring` check that the reflected witness is correct, after pushing `C` to atoms/numerals;
   -- a failure here means the computed quotient does not check out, i.e. `p` does not divide `q`.
