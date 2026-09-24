@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Hom.GroupNorm
+public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.Multiset.OrderedMonoid
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
