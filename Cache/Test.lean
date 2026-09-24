@@ -203,7 +203,8 @@ def test_readBaseFrom : IO Unit := do
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
   assertEq "empty value counts as unset" endpoint (readBaseFrom endpoint (some "") false)
-  assertEq "whitespace-only value counts as unset" endpoint (readBaseFrom endpoint (some " \n") false)
+  assertEq "whitespace-only value counts as unset"
+    endpoint (readBaseFrom endpoint (some " \n") false)
   assertEq "override is trimmed"
     "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org\n") false)
   -- A base written with a trailing slash must not double the separator in
@@ -317,7 +318,8 @@ def test_Upload : IO Unit := do
     (prefixOf r2Leg ==
       some ("https://acct.example/devbucket/mathlib4-forks", "f/alice/mathlib4/abc123"))
   assertTrue "no container fails" (fails { putURL? := some "https://acct.example/x" })
-  assertTrue "a scope on master fails" (fails { container? := some .master, scope? := some envScope })
+  assertTrue "a scope on master fails"
+    (fails { container? := some .master, scope? := some envScope })
   assertTrue "s3 without a put URL fails" (fails { container? := some .forks, backend := .s3 })
 
 /-- Downstream repo resolution honors only a canonical detection, so a fork
@@ -851,7 +853,8 @@ def test_Notice_reason : IO Unit := do
   if let some head := head? then
     assertEq "a HEAD scope yields the cache-from reason"
       "--cache-from=forks, nightly-testing (explicit container override)"
-      (← reason { base with scope? := some ⟨head, .env⟩, chain := { cli? := some [.forks, .nightlyTesting] } })
+      (← reason { base with
+        scope? := some ⟨head, .env⟩, chain := { cli? := some [.forks, .nightlyTesting] } })
 
   assertEq "cache-from reason names the container list"
     "--cache-from=forks, nightly-testing (explicit container override)"
@@ -994,7 +997,8 @@ def test_commandLine : IO Unit := do
   -- The chain-read triggers are the decision's own list, pinned here: a flag
   -- a workflow adds does not move a canonical read to another workflow.
   assertTrue "the chain-read flags are --cache-from, --scope, --unsafe, --unsafe-window"
-    (Workflow.chainReadFlags.map (·.longName) == ["cache-from", "scope", "unsafe", "unsafe-window"])
+    (Workflow.chainReadFlags.map (·.longName) ==
+      ["cache-from", "scope", "unsafe", "unsafe-window"])
   assertTrue "the chain-read variables are MATHLIB_CACHE_FROM and MATHLIB_CACHE_REPO_SCOPE"
     (Workflow.chainReadVariables == ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"])
   -- The chain-read flags select the developer workflow on the canonical repo,
@@ -1579,7 +1583,8 @@ Only a container with per-commit namespaces (`Container.perCommit`, that is
 else one round per `--unsafe` SHA. Every other container reads unscoped. -/
 def test_chainRounds : IO Unit := do
   IO.println "Chain.rounds:"
-  let chain : List (Container × String) := [(.master, "U_m"), (.forks, "U_f"), (.nightlyTesting, "U_n")]
+  let chain : List (Container × String) :=
+    [(.master, "U_m"), (.forks, "U_f"), (.nightlyTesting, "U_n")]
   let round (c : Container) (url : String) (scope? : Option String := none) : DownloadRound :=
     { container? := some c, url, scope? }
 

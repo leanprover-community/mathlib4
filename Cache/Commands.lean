@@ -17,9 +17,9 @@ declares the flags of every read workflow (`Workflow.flags`), decides the
 workflow (`Cache.Workflow`), and hands it the parsed command line, from which
 the workflow reads its own flags. A `put` decides its destination
 (`Upload.decide`) from the container `--container` names and
-`MATHLIB_CACHE_PUT_URL`; `query` is a developer-cache command; the local commands (`pack`, `unpack`, `clean`,
-`lookup`, and the staging commands) depend on none of this. `main` is the
-entry point.
+`MATHLIB_CACHE_PUT_URL`; `query` is a developer-cache command; the local
+commands (`pack`, `unpack`, `clean`, `lookup`, and the staging commands)
+depend on none of this. `main` is the entry point.
 -/
 
 namespace Cache.Commands

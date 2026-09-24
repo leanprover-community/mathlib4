@@ -14,13 +14,14 @@ import Cache.Workflow.Developer.Query
 The workflow of a fork checkout, and of any read that names a chain, a scope,
 or `--unsafe`. A read walks the trust-ordered chain `containers`: `master`
 from the public cache, then the fork's per-commit namespace in `forks` from
-the developer cache. The per-commit scope of the `forks` round, the
-`--unsafe` walk over cached fork commits and its summary, the hint for
-missing files, and the non-default-scope notice all belong here. CI uploads a fork build to `forks`
-under the commit's scope, with the marker `query` probes to find a fork's
-cached commits (`Cache.Workflow.Developer.Query`); `query` is a command of
-this workflow, and answers for the canonical repositories that they have no
-per-commit namespace.
+the developer bucket (`readURL` names the hosts). The per-commit scope of the
+`forks` round, the `--unsafe` walk over cached fork commits and its summary,
+the hint for missing files, and the non-default-scope notice all belong here.
+CI uploads a fork build to `forks` under the commit's scope, with the marker
+`query` probes to find a fork's cached commits
+(`Cache.Workflow.Developer.Query`); `query` is a command of this workflow, and
+answers for the canonical repositories that they have no per-commit
+namespace.
 
 The workflow owns the flags `--cache-from`, `--scope`, `--unsafe` and
 `--unsafe-window` (`flags`) and the variables `MATHLIB_CACHE_FROM` and
