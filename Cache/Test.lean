@@ -27,12 +27,13 @@ These tests cover the pure logic of the cache system, including:
 - Transfer classification (`classifyDownload`/`classifyUpload`): delivered,
   miss, skip, or failed, per HTTP status and curl exit code
 - The two retry-flag tiers (`curlRetryArgs`)
+- Failure-line diagnostics (`splitWriteOut`, `transferDiagnostics`)
 - Utility functions (URL extraction, filename hashing, etc.)
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
-two local processes, `curl --version` and one leantar run on a nonexistent
-archive; neither makes a network request.
+local processes only: `curl --version`, one curl `file://` copy, and one
+leantar run on a nonexistent archive; none makes a network request.
 
 ## Invariants these tests defend
 
@@ -1774,6 +1775,78 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
 
 end DecompPipeline
 
+section TransferDiagnostics
+
+/-- Only curl's report decides a transfer's verdict, so a header value must
+never reach `Lean.Json.parse`. The split must hold for any header value,
+including one that carries a quote or the separator itself, and a line
+without the separator (the upload path) must be all report. -/
+def test_splitWriteOut : IO Unit := do
+  IO.println "splitWriteOut:"
+  let report := "{\"http_code\":200}"
+  let (r, hs) := splitWriteOut
+    (report ++ curlFieldSep ++ "a\"b\\" ++ curlFieldSep ++ "HIT" ++ curlFieldSep ++ "1" ++ curlFieldSep ++ "2")
+  assertEq "report ends at the first separator" report r
+  assertTrue "report parses" (Lean.Json.parse r).toBool
+  assertTrue "a separator inside a value only shifts the values" (hs == ["a\"b\\", "HIT", "1", "2"])
+  let (r, hs) := splitWriteOut report
+  assertEq "a line without a separator is all report" report r
+  assertTrue "and carries no header values" hs.isEmpty
+
+/-- The split relies on curl escaping every control character in `%{json}`.
+A local `file://` copy checks this against the installed curl: the report
+ends at the first separator and parses back to the output name, and the
+separator byte in the format reaches curl through its argument list and
+comes back on stdout. The output name carries 0x1F and a quote where the
+file system allows them; Windows allows neither, so there the name is
+plain. A `file://` transfer has no response headers, so each header value
+is empty. `%header{…}` needs curl 7.84, so the test skips an older curl. -/
+def test_curlGetWriteOut_real_curl : IO Unit := do
+  IO.println "curlGetWriteOut (local curl run):"
+  let curl ← Cache.IO.getCurl
+  let (maj, min) ← Cache.IO.curlVersion curl
+  if maj < 7 || (maj == 7 && min < 84) then
+    IO.println s!"  (skipped: curl {maj}.{min} has no %header\{…})"
+    return
+  let dir ← IO.FS.createTempDir
+  try
+    let src := dir / "src"
+    IO.FS.writeFile src "x"
+    let out := dir / (if System.Platform.isWindows then "abc" else "a\x1fb\"c")
+    -- A Windows path needs forward slashes and the `file:///C:/…` form.
+    let srcSlashed := src.toString.replace "\\" "/"
+    let url := if System.Platform.isWindows then s!"file:///{srcSlashed}" else s!"file://{src}"
+    let args := #["--silent", "--write-out", curlGetWriteOut, "-o", out.toString, url]
+    let res ← IO.Process.output { cmd := curl, args }
+    let (report, headers) := splitWriteOut res.stdout.trimAscii.copy
+    let name := (Lean.Json.parse report).toOption.bind
+      (·.getObjValAs? String "filename_effective" |>.toOption)
+    assertTrue "the report parses back to the file name" (name == some out.toString)
+    assertTrue "one empty value per recorded header"
+      (headers == curlGetHeaders.map fun _ => "")
+  finally
+    IO.FS.removeDirAll dir
+
+/-- The failure-line suffix: `bytes` follows the transfer direction and
+shows the promised size only when `content-length` arrived, and an empty
+header value drops its pair. -/
+def test_transferDiagnostics : IO Unit := do
+  IO.println "transferDiagnostics:"
+  let report := (Lean.Json.parse
+    "{\"size_download\":4096,\"size_upload\":10,\"http_version\":\"1.1\",\"time_total\":0.5}")
+    |>.toOption.getD .null
+  assertEq "download with every header"
+    "bytes=4096/100000 cf_ray=a3f2-EZE cf_cache_status=HIT http_version=1.1 time_total=0.5"
+    (transferDiagnostics .download report ["a3f2-EZE", "HIT", "100000"])
+  assertEq "a backend without cf-* headers or content-length"
+    "bytes=4096 http_version=1.1 time_total=0.5"
+    (transferDiagnostics .download report ["", "", ""])
+  assertEq "upload counts size_upload and has no header values"
+    "bytes=10 http_version=1.1 time_total=0.5"
+    (transferDiagnostics .upload report [])
+
+end TransferDiagnostics
+
 def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
@@ -1830,6 +1903,9 @@ def runAll : IO Unit := do
   test_expandDownloadRounds
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
+  test_splitWriteOut
+  test_curlGetWriteOut_real_curl
+  test_transferDiagnostics
 
 end Cache.Test
 

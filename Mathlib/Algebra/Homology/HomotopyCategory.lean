@@ -253,17 +253,13 @@ lemma Functor.mapHomotopyCategoryFactors_hom_app (F : V ⥤ W) [F.Additive] {c :
     (K : HomologicalComplex V c) :
     (F.mapHomotopyCategoryFactors c).hom.app K = 𝟙 _ := rfl
 
--- TODO develop lifting of natural transformations for general quotient categories so that
--- `NatTrans.mapHomotopyCategory` become a particular case of it
 /-- A natural transformation induces a natural transformation between
   the induced functors on the homotopy category. -/
-@[simps]
+@[simps!]
 def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ⟶ G)
-    (c : ComplexShape ι) : F.mapHomotopyCategory c ⟶ G.mapHomotopyCategory c where
-  app C := (HomotopyCategory.quotient W c).map ((NatTrans.mapHomologicalComplex α c).app C.as)
-  naturality := by
-    rintro ⟨C⟩ ⟨D⟩ ⟨f : C ⟶ D⟩
-    simp [HomotopyCategory.quot_mk_eq_quotient_map]
+    (c : ComplexShape ι) : F.mapHomotopyCategory c ⟶ G.mapHomotopyCategory c :=
+  Quotient.natTransLift _ (Functor.whiskerRight (α.mapHomologicalComplex c)
+    (HomotopyCategory.quotient W c))
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
@@ -274,6 +270,13 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
     [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomotopyCategory (α ≫ β) c =
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
+
+/-- A natural isomorphism induces a natural isomorphism between
+  the induced functors on the homotopy category. -/
+@[simps!] def NatIso.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (e : F ≅ G)
+    (c : ComplexShape ι) : F.mapHomotopyCategory c ≅ G.mapHomotopyCategory c :=
+  Quotient.natIsoLift _ (Functor.isoWhiskerRight (NatIso.mapHomologicalComplex e c)
+    (HomotopyCategory.quotient W c))
 
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     (F.mapHomotopyCategory c).Additive :=
