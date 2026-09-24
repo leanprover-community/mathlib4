@@ -142,15 +142,17 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing 
     {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
     (U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
     MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
-  let h : Expr ← match certifier? with
+  let hmul : Q(ListMatrix.mul $m $m $n $(mulEq.A) $(mulEq.B) = $(U.lit)) ← match certifier? with
     | none =>
-      -- Stated on `mulEq.expr`; the closing hint is where the kernel evaluates
-      -- `mulEq.expr ≡ U.lit`, argument-wise under `ofLists`.
+      -- Returns a proof with RHS being `mulEq.expr` without a bridge to
+      -- `U.lit`. A model passes `none` when equality of its literals is settled by kernel
+      -- evaluation, so the kernel establishes the defeq itself at the closing hint entry-wise
+      -- under `ofLists`.
       pure mulEq.proof
     | some certifier => do
-      let ⟨_, _, hlit⟩ ← certifyRowsEq certifier mulEq.rows U.entries
-      mkEqTrans mulEq.proof hlit
-  let pf ← mkAppM ``ofLists_mul #[h]
+      let ⟨_, _, hrows⟩ ← certifyRowsEq certifier mulEq.rows U.entries
+      mkEqTrans mulEq.proof hrows
+  let pf ← mkAppM ``ofLists_mul #[hmul]
   return mkExpectedPropHint pf
     q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
 
