@@ -78,6 +78,8 @@ def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
   ⟨.expr, {
     ops
     evalEntry := fun e => return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
+    -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
+    -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
     mkEntry := fun e => do
       let some v := zsqrtdOfRawLit? d e
         | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
