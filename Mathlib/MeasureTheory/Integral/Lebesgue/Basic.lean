@@ -28,7 +28,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 @[expose] public section
 
-assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
+assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving
 
 open Set hiding restrict restrict_apply
 
@@ -67,7 +67,7 @@ notation3"∫⁻ "(...)" in "s", "r:60:(scoped f => lintegral (Measure.restrict 
 theorem SimpleFunc.lintegral_eq_lintegral {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) :
     ∫⁻ a, f a ∂μ = f.lintegral μ := by
   rw [MeasureTheory.lintegral]
-  exact le_antisymm (iSup₂_le fun g hg => lintegral_mono hg <| le_rfl)
+  exact le_antisymm (iSup₂_le fun g hg => lintegral_mono hg le_rfl)
     (le_iSup₂_of_le f le_rfl le_rfl)
 
 @[gcongr, mono]
@@ -188,7 +188,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
   simp_rw [lt_iSup_iff, iSup_lt_iff, iSup_le_iff] at this
   rcases this with ⟨φ, hle : ∀ x, ↑(φ x) ≤ f x, b, hbφ, hb⟩
   refine ⟨φ, hle, fun ψ hψ => ?_⟩
-  have : (map (↑) φ).lintegral μ ≠ ∞ := ne_top_of_le_ne_top h (by exact le_iSup₂ (α := ℝ≥0∞) φ hle)
+  have : (map (↑) φ).lintegral μ ≠ ∞ := ne_top_of_le_ne_top h (by grw [← le_iSup₂ φ hle])
   rw [← ENNReal.add_lt_add_iff_left this, ← add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
   refine (hb _ fun x => le_trans ?_ (max_le (hle x) (hψ x))).trans_lt hbφ
   simp only [SimpleFunc.add_apply, SimpleFunc.sub_apply, add_tsub_eq_max]
@@ -273,7 +273,7 @@ lemma setLIntegral_le_iSup_mul (f : α → ℝ≥0∞) {s : Set α} (hs : Measur
   _ = (⨆ x ∈ s, f x) * μ s := by simp
 
 theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ :=
-  le_antisymm (lintegral_mono_ae <| h.le) (lintegral_mono_ae <| h.symm.le)
+  le_antisymm (lintegral_mono_ae h.le) (lintegral_mono_ae h.symm.le)
 
 theorem lintegral_congr {f g : α → ℝ≥0∞} (h : ∀ a, f a = g a) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
   simp only [h]
@@ -548,7 +548,7 @@ theorem setLIntegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : �
 
 @[to_fun lintegral_indicator_fun_one_le]
 theorem lintegral_indicator_one_le (s : Set α) : ∫⁻ a, s.indicator 1 a ∂μ ≤ μ s :=
-  (lintegral_indicator_const_le _ _).trans <| (one_mul _).le
+  (lintegral_indicator_const_le _ _).trans (one_mul _).le
 
 @[to_fun (attr := simp) lintegral_indicator_fun_one₀]
 theorem lintegral_indicator_one₀ {s : Set α} (hs : NullMeasurableSet s μ) :

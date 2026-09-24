@@ -37,7 +37,9 @@ universe v u v' u'
 
 noncomputable section
 
-open SimplexCategory Simplicial Opposite
+open SimplexCategory Opposite
+
+open scoped Simplicial
 
 namespace CategoryTheory.SimplicialObject
 
