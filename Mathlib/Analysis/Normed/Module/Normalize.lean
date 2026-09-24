@@ -83,4 +83,7 @@ theorem sameRay_iff_normalize_eq {x y : V} :
     SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ normalize x = normalize y :=
   sameRay_iff_inv_norm_smul_eq
 
+lemma SameRay.of_normalize_eq {x y : V} (h : normalize x = normalize y) : SameRay ℝ x y :=
+  sameRay_iff_normalize_eq.mpr (.inr (.inr h))
+
 end NormedSpace

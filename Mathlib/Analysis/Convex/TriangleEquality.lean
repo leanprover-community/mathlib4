@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Module.Normalize
 # Triangle equality for finite sums
 
 The triangle inequality `‖∑ i ∈ s, v i‖ ≤ ∑ i ∈ s, ‖v i‖` is an equality exactly when the
-summands pairwise lie on a common closed ray. This extends `sameRay_iff_norm_add`, the two-vector
+summands pairwise lie on a common closed ray (`SameRay`). This extends `sameRay_iff_norm_add`, the two-vector
 statement in a strictly convex space, to finite families. Equivalently, the nonzero summands all
 have the same `NormedSpace.normalize`, i.e. every summand is a nonnegative real multiple of a
 single vector.
@@ -30,13 +30,6 @@ single vector.
   the summands have the same normalization.
 * `norm_sum_eq_iff_exists_smul`: triangle equality holds iff every summand is a nonnegative real
   multiple of a single vector.
-
-## Implementation notes
-
-The results are proved by induction on the `Finset`, applying `sameRay_iff_norm_add` to the two
-vectors `v a` and `∑ j ∈ t, v j` at each step, so no inner-product structure is involved. Each is
-stated with the weakest structure it needs, which is why the forcing direction is separated from
-the iff: only it can fail without strict convexity.
 
 ## Tags
 
@@ -81,18 +74,11 @@ lemma sum_ne_zero_of_pairwise_sameRay (hp : (s : Set ι).Pairwise (SameRay ℝ o
 exactly when the summands pairwise lie on a common closed ray. -/
 theorem norm_sum_eq_iff_pairwise_sameRay :
     ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ (s : Set ι).Pairwise (SameRay ℝ on v) := by
-  refine ⟨?_, norm_sum_eq_of_pairwise_sameRay⟩
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a t ha ih =>
-    simp only [sum_cons, coe_cons, Set.pairwise_insert_of_symm_of_notMem ha]
-    intro h
-    have ht : ‖∑ j ∈ t, v j‖ = ∑ j ∈ t, ‖v j‖ :=
-      le_antisymm (norm_sum_le _ _) (by linarith [norm_add_le (v a) (∑ j ∈ t, v j)])
-    refine ⟨ih ht, ?_⟩
-    have hat : SameRay ℝ (v a) (∑ j ∈ t, v j) := sameRay_iff_norm_add.2 (by rw [h, ht])
-    exact fun j hj ↦ hat.trans (sameRay_sum_right_of_pairwise (ih ht) hj).symm fun h0 ↦
-      Or.inr <| not_imp_not.1 (sum_ne_zero_of_pairwise_sameRay (ih ht) hj) h0
+  refine ⟨fun h i hi j hj hij ↦ ?_, norm_sum_eq_of_pairwise_sameRay⟩
+  classical
+  have : {i, j} ⊆ s := by grind
+  rw [← sum_sdiff this, ← sum_sdiff this, sum_pair hij, sum_pair hij] at h
+  grind [sameRay_iff_norm_add, norm_sum_le, norm_add_le]
 
 omit [StrictConvexSpace ℝ E] in
 /-- If the summands pairwise lie on a common closed ray and one of them is nonzero, then it has
@@ -107,24 +93,20 @@ exactly when all the summands have the same normalization. -/
 theorem norm_sum_eq_iff_pairwise_normalize_eq (hv : ∀ i ∈ s, v i ≠ 0) :
     ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔
       ∀ i ∈ s, ∀ j ∈ s, NormedSpace.normalize (v i) = NormedSpace.normalize (v j) := by
-  rw [norm_sum_eq_iff_pairwise_sameRay]
-  exact ⟨fun h i hi j hj ↦
-      (NormedSpace.sameRay_iff_normalize_eq_of_ne (hv i hi) (hv j hj)).1 (h.forall₂ hi hj),
-    fun h i hi j hj _ ↦
-      (NormedSpace.sameRay_iff_normalize_eq_of_ne (hv i hi) (hv j hj)).2 (h i hi j hj)⟩
+  simp +contextual only [norm_sum_eq_iff_pairwise_sameRay,
+    ← NormedSpace.sameRay_iff_normalize_eq_of_ne (hv _ _) (hv _ _)]
+  exact ⟨fun h i hi j hj ↦ h.forall₂ hi hj, fun h i hi j hj hij ↦ h _ hi _ hj⟩
 
 /-- **Triangle equality**: the norm of a finite sum equals the sum of the norms exactly when every
 summand is a nonnegative real multiple of a single vector. -/
 theorem norm_sum_eq_iff_exists_smul :
     ‖∑ i ∈ s, v i‖ = ∑ i ∈ s, ‖v i‖ ↔ ∃ c : E, ∀ i ∈ s, v i = ‖v i‖ • c := by
+  rw [norm_sum_eq_iff_pairwise_sameRay]
   refine ⟨fun h ↦ ⟨NormedSpace.normalize (∑ i ∈ s, v i), fun i hi ↦ ?_⟩, ?_⟩
   · rcases eq_or_ne (v i) 0 with hv | hv
     · simp [hv]
-    · rw [← normalize_eq_of_pairwise_sameRay (norm_sum_eq_iff_pairwise_sameRay.1 h) hi hv,
-        NormedSpace.norm_smul_normalize]
-  · rintro ⟨c, hvc⟩
-    rw [norm_sum_eq_iff_pairwise_sameRay]
-    intro i hi j hj _
+    · rw [← normalize_eq_of_pairwise_sameRay h hi hv, NormedSpace.norm_smul_normalize]
+  · rintro ⟨c, hvc⟩ i hi j hj _
     rw [Function.onFun, hvc i hi, hvc j hj]
     exact (SameRay.sameRay_nonneg_smul_left c (norm_nonneg _)).nonneg_smul_right (norm_nonneg _)
 
