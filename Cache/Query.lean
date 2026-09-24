@@ -5,7 +5,7 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Cache.Marker
+public import Cache.Requests
 
 /-!
 # The `cache query` subcommand
@@ -75,6 +75,12 @@ def headIsAncestorOfMaster (cwd : FilePath := ".") : IO Bool := do
   catch _ =>
     pure false
 
+/-- The URL a probe reads the per-SHA marker of `sha` from: the marker of the
+container's location on its read base (`Container.getURL`). Marker writes
+address the upload location instead (`uploadLocation`). -/
+def markerProbeURL (container : Container) (repo sha : String) : IO String := do
+  return (container.location (← container.getURL) repo (some sha)).markerURL sha
+
 /--
 Probe a single container for the per-SHA marker blob.
 
@@ -88,7 +94,7 @@ billed as a Read op.
 -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  let url ← markerReadURL container repo sha
+  let url ← markerProbeURL container repo sha
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
   let out ← IO.Process.output
