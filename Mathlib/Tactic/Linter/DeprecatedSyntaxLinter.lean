@@ -223,6 +223,8 @@ def getDeprecatedSyntax (fmap : FileMap) : Syntax → Array (SyntaxNodeKind × S
           return rargs.push (`MaxHeartbeats, stx,
             s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
               as in\nset_option {opt} {n} in\n-- reason for change\n...")
+        else
+          return rargs
     | ``«term_<|_» =>
       -- Suggest `f a` in place of `f <| a` when appropriate.
       if h : args.size = 3 then
