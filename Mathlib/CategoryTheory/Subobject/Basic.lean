@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Category.GaloisConnection
 
@@ -635,6 +636,43 @@ theorem isPullback (f : X ⟶ Y) (y : Subobject Y) :
 lemma le_pullback_of_comm (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
     (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : X' ≤ (pullback f).obj Y' :=
   le_of_comm ((isPullback f Y').lift u X'.arrow h) ((isPullback f Y').lift_snd u X'.arrow h)
+
+section
+
+variable [HasZeroMorphisms C] {A : Subobject X} (f : X ⟶ Y) (B : Subobject Y)
+
+/-- If `A.arrow ≫ f = 0`, then `A` is contained in the pullback of any subobject `B` along `f`. -/
+lemma le_pullback_of_comp_eq_zero (h : A.arrow ≫ f = 0) : A ≤ (pullback f).obj B :=
+  le_pullback_of_comm f 0 (by simp [h])
+
+/-- If `A.arrow ≫ f = 0`, the canonical inclusion of `A` into the pullback of `B` along `f`,
+composed with the projection `Subobject.pullbackπ` onto `B`, vanishes. -/
+lemma ofLE_comp_pullbackπ_eq_zero (h : A.arrow ≫ f = 0) :
+    ofLE A _ (le_pullback_of_comp_eq_zero f B h) ≫ pullbackπ f B = 0 := by
+  apply (cancel_mono B.arrow).mp
+  rw [Category.assoc, (isPullback f B).toCommSq.w, ← Category.assoc,
+    ofLE_arrow (le_pullback_of_comp_eq_zero f B h), h, zero_comp]
+
+/-- If `A.arrow` is a kernel of `f`, then the canonical inclusion of `A` into the pullback of a
+subobject `B` along `f` is a kernel of `Subobject.pullbackπ f B`.
+
+This is a form of the fact that the horizontal maps in a pullback square have the same
+kernel. -/
+def isLimitKernelForkPullbackπ (h : A.arrow ≫ f = 0)
+    (hA : IsLimit (KernelFork.ofι A.arrow h)) :
+    IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_eq_zero f B h)) := by
+  apply KernelFork.IsLimit.ofι' _ (ofLE_comp_pullbackπ_eq_zero f B h)
+  intro Z z hz
+  -- a map into the pullback killed by `pullbackπ` is, after the arrow, killed by `f`,
+  -- so it factors through `A`; that factorization is the required lift
+  have hz' : (z ≫ ((pullback f).obj B).arrow) ≫ f = 0 := by
+    rw [Category.assoc, ← (isPullback f B).toCommSq.w, ← Category.assoc, hz, zero_comp]
+  refine ⟨hA.lift (KernelFork.ofι (z ≫ ((pullback f).obj B).arrow) hz'), ?_⟩
+  apply (cancel_mono ((pullback f).obj B).arrow).mp
+  rw [Category.assoc, ofLE_arrow (le_pullback_of_comp_eq_zero f B h)]
+  exact Fork.IsLimit.lift_ι hA
+
+end
 
 end Pullback
 
