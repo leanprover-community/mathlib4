@@ -3351,6 +3351,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
 public import Mathlib.CategoryTheory.ObjectProperty.SiteLocal
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ObjectProperty.Subobject
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.PEmpty
 public import Mathlib.CategoryTheory.PUnit

@@ -5,11 +5,9 @@ Authors: Blake Farman
 -/
 module
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.ObjectProperty.OrthogonalClosed
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-public import Mathlib.CategoryTheory.ObjectProperty.Extensions
-public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.CategoryTheory.Abelian.ShortExact
+public import Mathlib.CategoryTheory.ObjectProperty.Subobject
 
 /-!
 # Torsion Theory
@@ -32,19 +30,20 @@ and its objects *torsion-free objects*.
 
 * `CategoryTheory.Abelian.isTorsionClass_iff`: in a well-powered abelian category with
   coproducts, `P` is a torsion class if and only if it is closed under quotients, extensions,
-  and coproducts (a theorem of Dickson).
+  and coproducts (a theorem of S. E. Dickson).
 * `CategoryTheory.Abelian.isTorsionFreeClass_iff`: dually, in a well-copowered abelian
   category with products, `P` is a torsion-free class if and only if it is closed under
   subobjects, extensions, and products.
 
 ## References
 
+* [S. E. Dickson, *A torsion theory for Abelian categories*][dickson1966]
 * [Bo Stenström, *Rings and Modules of Quotients*][stenstrom1971]
 * [Bo Stenström, *Rings of Quotients*][stenstrom1975]
 
 ## Tags
 
-category theory, preradical, torsion theory
+torsion theory, torsion class, torsion-free class, orthogonal
 -/
 
 @[expose] public section
@@ -59,95 +58,9 @@ variable {C : Type u} [Category.{v} C]
 
 variable [Abelian C]
 
-namespace Abelian
-
-/-- In an abelian category, the projection `Subobject.pullbackπ f B` from the pullback of a
-subobject `B` along an epimorphism `f` is an epimorphism. -/
-instance {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) : Epi (Subobject.pullbackπ f B) :=
-  epi_fst_of_isLimit _ _ (Subobject.isPullback f B).isLimit
-
-section PullbackCokernel
-
-variable {X : C} {A : Subobject X} (B : Subobject (cokernel A.arrow))
-
-/-- For `A : Subobject X`, the pullback of `B : Subobject (cokernel A.arrow)` along
-`cokernel.π A.arrow` is a subobject of `X` that contains `A`. -/
-lemma le_pullback_cokernel_π :
-    A ≤ (Subobject.pullback (cokernel.π A.arrow)).obj B :=
-  Subobject.le_of_comm
-    ((Subobject.isPullback (cokernel.π A.arrow) B).lift 0 A.arrow (by simp))
-    ((Subobject.isPullback (cokernel.π A.arrow) B).lift_snd 0 A.arrow (by simp))
-
-/-- The canonical inclusion of `A` into the pullback of `B` along `cokernel.π A.arrow`,
-composed with the projection `Subobject.pullbackπ` onto `B`, vanishes. -/
-lemma ofLE_comp_pullbackπ_cokernel_π :
-    Subobject.ofLE A _ (le_pullback_cokernel_π B) ≫
-      Subobject.pullbackπ (cokernel.π A.arrow) B = 0 := by
-  apply (cancel_mono B.arrow).mp
-  rw [Category.assoc, (Subobject.isPullback (cokernel.π A.arrow) B).toCommSq.w,
-    ← Category.assoc, Subobject.ofLE_arrow (le_pullback_cokernel_π B), cokernel.condition,
-    zero_comp]
-
-/-- Given a subobject `A` of `X` and a subobject `B` of `cokernel A.arrow`, the canonical
-inclusion of `A` into the pullback of `B` along `cokernel.π A.arrow` is a kernel of
-`Subobject.pullbackπ (cokernel.π A.arrow) B`. -/
-noncomputable def isLimitKernelForkPullbackπCokernelπ :
-    IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_cokernel_π B)) := by
-  let A' := (Subobject.pullback (cokernel.π A.arrow)).obj B
-  -- `A.arrow` is a kernel of `cokernel.π A.arrow`, since it is a monomorphism
-  have hker := monoIsKernelOfCokernel
-    (CokernelCofork.ofπ (cokernel.π A.arrow) (cokernel.condition A.arrow))
-    (cokernelIsCokernel A.arrow)
-  apply KernelFork.IsLimit.ofι' _ (ofLE_comp_pullbackπ_cokernel_π B)
-  intro Z f hf
-  -- a map into `A'` killed by `pullbackπ` is, after `A'.arrow`, killed by `cokernel.π A.arrow`,
-  -- so it factors through `A`; that factorization is the required lift
-  have hf' : (f ≫ A'.arrow) ≫ cokernel.π A.arrow = 0 := by
-    rw [Category.assoc, ← (Subobject.isPullback (cokernel.π A.arrow) B).toCommSq.w,
-      ← Category.assoc, hf, zero_comp]
-  let s : KernelFork (cokernel.π A.arrow) := KernelFork.ofι (f ≫ A'.arrow) hf'
-  refine ⟨hker.lift s, ?_⟩
-  apply (cancel_mono A'.arrow).mp
-  rw [Category.assoc, Subobject.ofLE_arrow (le_pullback_cokernel_π B)]
-  exact Fork.IsLimit.lift_ι hker
-
-/-- Given a subobject `A` of `X` and a subobject `B` of `cokernel A.arrow`, the short complex
-`A ⟶ (Subobject.pullback (cokernel.π A.arrow)).obj B ⟶ B` with first map the canonical
-inclusion and second map `Subobject.pullbackπ`. -/
-noncomputable def shortComplexPullbackπCokernelπ : ShortComplex C :=
-  ShortComplex.mk _ _ (ofLE_comp_pullbackπ_cokernel_π B)
-
-/-- The short complex `A ⟶ (Subobject.pullback (cokernel.π A.arrow)).obj B ⟶ B` is short
-exact; that is, the pullback of `B` along `cokernel.π A.arrow` is an extension of `B`
-by `A`. -/
-lemma shortExact_shortComplexPullbackπCokernelπ :
-    (shortComplexPullbackπCokernelπ B).ShortExact where
-  exact := ShortComplex.exact_of_f_is_kernel _ (isLimitKernelForkPullbackπCokernelπ B)
-  mono_f := by dsimp [shortComplexPullbackπCokernelπ]; infer_instance
-  epi_g := by dsimp [shortComplexPullbackπCokernelπ]; infer_instance
-
-end PullbackCokernel
-
-end Abelian
-
 namespace ObjectProperty
 
 open Abelian
-
-/-- If `P` is closed under quotients and coproducts, then the supremum of the `P`-subobjects
-of any object satisfies `P`; that is, every object has a largest `P`-subobject. -/
-lemma prop_sSup (P : ObjectProperty C)
-    [P.IsClosedUnderQuotients] [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]
-    [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] (X : C) :
-    P (Subobject.sSup {A : Subobject X | P (A : C)}) := by
-  -- `Subobject.sSup s` is the image of the canonical map out of the coproduct of the
-  -- members of `s`, so it is a quotient of a coproduct of objects satisfying `P`.
-  apply P.prop_of_iso
-    (Subobject.underlyingIso (Limits.image.ι (Subobject.smallCoproductDesc _))).symm
-  apply P.prop_of_epi (Limits.factorThruImage _)
-  apply ObjectProperty.prop_colimit
-  rintro ⟨⟨_, S, hS, rfl⟩⟩
-  simpa using hS
 
 /-- If `P` is closed under quotients, extensions, and coproducts, then for any `X`, the
 cokernel of the arrow of the largest `P`-subobject of `X` satisfies `P.rightOrthogonal`. -/
@@ -167,7 +80,8 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
   -- so it satisfies `P` and is therefore contained in `A`.
   let A' : Subobject X := (Subobject.pullback (cokernel.π A.arrow)).obj B
   have hA' : P (A' : C) :=
-    P.prop_X₂_of_shortExact (shortExact_shortComplexPullbackπCokernelπ B) (prop_sSup P X) hB
+    P.prop_X₂_of_shortExact (shortExact_shortComplexPullbackπCokernelπ B)
+      (P.prop_sSup _ fun _ hA ↦ hA) hB
   have hle : A' ≤ A := Subobject.le_sSup _ _ hA'
   -- Hence the projection of `A'` onto `B` vanishes, so `B`, and with it the image of `f`,
   -- is zero.
@@ -194,7 +108,7 @@ lemma leftOrthogonal_rightOrthogonal_le (P : ObjectProperty C)
     let A : Subobject X := Subobject.sSup {A : Subobject X | P (A : C)}
     haveI : Epi A.arrow :=
       Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSup P X))
-    P.prop_of_epi A.arrow (prop_sSup P X)
+    P.prop_of_epi A.arrow (P.prop_sSup _ fun _ hA ↦ hA)
 
 /-- If an object property `P` in an abelian category is closed under quotients, extensions,
 and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. -/
@@ -386,7 +300,8 @@ end IsTorsionFreeClass
 
 /-- In a well-powered abelian category with coproducts, a property of objects `P` is a torsion
 class if and only if it is closed under quotients, extensions, and coproducts. This is a
-theorem of Dickson; see [Bo Stenström, *Rings of Quotients*][stenstrom1975], Chapter VI. -/
+theorem of [S. E. Dickson][dickson1966]; see also
+[Bo Stenström, *Rings of Quotients*][stenstrom1975], Chapter VI. -/
 theorem isTorsionClass_iff (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C] :
     IsTorsionClass P ↔
@@ -412,14 +327,14 @@ theorem isTorsionFreeClass_iff (P : ObjectProperty C)
     [LocallySmall.{w} C] [WellPowered.{w} Cᵒᵖ] [HasProducts.{w} C] :
     IsTorsionFreeClass P ↔
       P.IsClosedUnderSubobjects ∧ P.IsClosedUnderExtensions ∧
-        ∀ J : Type w, P.IsClosedUnderLimitsOfShape (Discrete J) :=
-  (isTorsionFreeClass_iff_isTorsionClass_op P).trans <|
-    (isTorsionClass_iff P.op).trans <|
-      and_congr (ObjectProperty.isClosedUnderQuotients_op_iff P) <|
-        and_congr (ObjectProperty.isClosedUnderExtensions_op_iff P) <|
-          forall_congr' fun J ↦
-            ((P.isClosedUnderLimitsOfShape_iff_op (Discrete J)).trans
-              (P.op.isClosedUnderColimitsOfShape_iff_of_equivalence (Discrete.opposite J))).symm
+        ∀ J : Type w, P.IsClosedUnderLimitsOfShape (Discrete J) := by
+  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, fun _ ↦ inferInstance⟩, ?_⟩
+  -- these hypotheses are consumed as instances by the `P.op` transfer instances
+  rintro ⟨hsub, hext, hprod⟩
+  rw [isTorsionFreeClass_iff_isTorsionClass_op]
+  refine (isTorsionClass_iff P.op).mpr ⟨inferInstance, inferInstance, fun J ↦ ?_⟩
+  exact (P.op.isClosedUnderColimitsOfShape_iff_of_equivalence (Discrete.opposite J)).mp
+    inferInstance
 
 end Abelian
 
