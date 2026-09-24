@@ -16,19 +16,14 @@ public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 Let `P` be a property of objects in a category with zero morphisms. We show that the left
 orthogonal `P.leftOrthogonal` is closed under quotients and under colimits of any shape, and,
 dually, that the right orthogonal `P.rightOrthogonal` is closed under subobjects and under
-limits of any shape. These are registered as instances of `IsClosedUnderQuotients`,
-`IsClosedUnderColimitsOfShape`, `IsClosedUnderSubobjects` and `IsClosedUnderLimitsOfShape`.
+limits of any shape. When the category is moreover preadditive and balanced, so that a short
+exact sequence exhibits its first map as a kernel and its second map as a cokernel, both
+orthogonals are also closed under extensions.
 
-We also relate the closure properties of `P` to those of `P.op`: closure under subobjects
-corresponds to closure under quotients in the opposite category, and closure under extensions
-is self-dual.
-
-## Main results
-
-* `CategoryTheory.ObjectProperty.isClosedUnderQuotients_op_iff`: `P.op` is closed under
-  quotients iff `P` is closed under subobjects.
-* `CategoryTheory.ObjectProperty.isClosedUnderExtensions_op_iff`: `P.op` is closed under
-  extensions iff `P` is.
+These are registered as instances of `IsClosedUnderQuotients`, `IsClosedUnderColimitsOfShape`,
+`IsClosedUnderSubobjects`, `IsClosedUnderLimitsOfShape` and `IsClosedUnderExtensions`.
+Together they form the easy direction of [S. E. Dickson][dickson1966]'s characterisation of
+torsion classes, see `CategoryTheory.Abelian.isTorsionClass_iff`.
 -/
 
 @[expose] public section
@@ -76,21 +71,6 @@ instance (P : ObjectProperty C) {J : Type u'} [Category.{v'} J] :
     intro j
     simp only [zero_comp]
     exact hX.prop_diag_obj j (f ≫ hX.π.app j) hY
-
-omit [HasZeroMorphisms C] in
-/-- A property of objects `P.op` is closed under quotients iff `P` is closed under
-subobjects, since epimorphisms in `Cᵒᵖ` correspond to monomorphisms in `C`. -/
-lemma isClosedUnderQuotients_op_iff (P : ObjectProperty C) :
-    P.op.IsClosedUnderQuotients ↔ P.IsClosedUnderSubobjects :=
-  ⟨fun h ↦ ⟨fun i _ hY ↦ h.prop_of_epi i.op hY⟩,
-    fun h ↦ ⟨fun f _ hA ↦ h.prop_of_mono f.unop hA⟩⟩
-
-/-- A property of objects `P.op` is closed under extensions iff `P` is, since a short
-complex in `Cᵒᵖ` is short exact iff the corresponding short complex in `C` is. -/
-lemma isClosedUnderExtensions_op_iff (P : ObjectProperty C) :
-    P.op.IsClosedUnderExtensions ↔ P.IsClosedUnderExtensions :=
-  ⟨fun h ↦ ⟨fun hS h₁ h₃ ↦ h.prop_X₂_of_shortExact hS.op h₃ h₁⟩,
-    fun h ↦ ⟨fun hS h₁ h₃ ↦ h.prop_X₂_of_shortExact hS.unop h₃ h₁⟩⟩
 
 end HasZeroMorphisms
 
