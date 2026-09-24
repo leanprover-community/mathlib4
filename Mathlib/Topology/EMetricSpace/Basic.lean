@@ -224,7 +224,7 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   let ⟨t, hts, htc, hst⟩ := hmetric
   ⟨t, hts, htc, hst.trans <| closure.mono WeakPseudoEMetricSpace.topology_le⟩
 
-@[deprecated TopologicalSpace.subset_countable_closure_of_compact (since := "2026-08-06")]
+@[deprecated (since := "2026-08-06")]
 alias subset_countable_closure_of_compact :=
   TopologicalSpace.subset_countable_closure_of_compact
 
