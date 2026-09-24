@@ -58,12 +58,6 @@ inductive Container where
   | nightlyTesting
   /-- Container for toolchain-PR test runs. -/
   | prToolchainTests
-  /-- The bare `mathlib4` container that older cache clients read from. CI does
-  not upload here; it is a read-only store of the master-built artifacts that
-  were mirrored from `mathlib4-master`, kept reachable so those older clients
-  can resolve them. The `master` container is a self-contained cache, so reads
-  fall back to `legacy` only for artifacts predating the write cutover. -/
-  | legacy
   deriving DecidableEq, Repr, BEq, Inhabited
 
 /-- Base URL of the `lakecache` Azure Blob Storage account. -/
@@ -77,11 +71,10 @@ def name : Container → String
   | .forks            => "forks"
   | .nightlyTesting   => "nightly-testing"
   | .prToolchainTests => "pr-toolchain-tests"
-  | .legacy           => "legacy"
 
 /-- All known containers, listed in their canonical declaration order. -/
 def all : List Container :=
-  [.master, .forks, .nightlyTesting, .prToolchainTests, .legacy]
+  [.master, .forks, .nightlyTesting, .prToolchainTests]
 
 /-- Parse a short name back into a `Container`. Matching is case-insensitive. -/
 def parse? (s : String) : Option Container :=
@@ -90,7 +83,6 @@ def parse? (s : String) : Option Container :=
   | "forks"              => some .forks
   | "nightly-testing"    => some .nightlyTesting
   | "pr-toolchain-tests" => some .prToolchainTests
-  | "legacy"             => some .legacy
   | _                    => none
 
 /--
@@ -99,12 +91,10 @@ The container's segment in the URL contract: read URLs are
 key prefix. The segment is also the Azure storage container name on the
 `lakecache` account; `Container.azureURL` builds its URL from it.
 
-Trust-level containers follow the `mathlib4-{name}` convention; `legacy` is the
-bare `mathlib4` segment.
+Every container follows the `mathlib4-{name}` convention.
 -/
-def pathSegment : Container → String
-  | .legacy => "mathlib4"
-  | c       => s!"mathlib4-{c.name}"
+def pathSegment (c : Container) : String :=
+  s!"mathlib4-{c.name}"
 
 /-- Public Azure Blob Storage base URL for a container. -/
 def azureURL (c : Container) : String :=
@@ -121,18 +111,14 @@ writers in sync.
 
 - `master` is flat: RBAC admits only master CI, whose writes all carry
   `repo == MATHLIBREPO`, so a single hash never collides.
-- `legacy` keys the layout on the writer: `MATHLIBREPO` writes are flat (where
-  older `mathlib4` readers look for them), fork writes are repo-namespaced.
 - `forks`, `nightly-testing`, and `pr-toolchain-tests` always namespace by
   repo. They collect artifacts from many writers — different forks, different
   toolchain refs, and canonical-repo builds whose trust is fork-equivalent
   (`ci-dev/*`, `bors trying`) — so identical hashes from different writers must
   stay on distinct paths.
 -/
-def flatPath (c : Container) (repo : String) : Bool :=
-  match c with
+def flatPath : Container → Bool
   | .master => true
-  | .legacy => repo == MATHLIBREPO
   | _ => false
 
 end Container
@@ -151,7 +137,7 @@ def fileDirPath (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=
   let repo := normalizeRepo repo
   let flat := match container with
-    | some c => c.flatPath repo
+    | some c => c.flatPath
     | none => repo == MATHLIBREPO
   if flat then "f"
   else match repoScope with
@@ -224,8 +210,9 @@ def parseCacheFromList (s : String) : Option (List Container) := do
 
 /--
 Trust-ordered containers to try when downloading for a given GitHub repo, most
-trusted first. Each repo reads from its own trust-level container, with `legacy`
-appended so older clients' artifacts stay reachable.
+trusted first. Each repo reads from its own trust-level container. The public
+endpoint serves the artifacts of the retired `mathlib4` container behind the
+`master` namespace, so the chains need no fallback of their own.
 
 Fork chains lead with `master`. The layout is fixed per container
 (`Container.flatPath`), so the `master` container is read flat at `/f/{hash}`
@@ -238,12 +225,12 @@ toolchain, so its root hash differs and a master probe never matches.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
-    [.master, .legacy]
+    [.master]
   else if repo == NIGHTLY_TESTING_REPO then
     -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
     -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
-    [.nightlyTesting, .forks, .legacy]
+    [.nightlyTesting, .forks]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
-    -- own container for PR-specific files, then `legacy`.
-    [.master, .forks, .legacy]
+    -- own container for PR-specific files.
+    [.master, .forks]
