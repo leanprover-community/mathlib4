@@ -813,25 +813,6 @@ theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* 
 theorem toRingHom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 
--- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
-@[simp]
-theorem toMonoidHom_refl' : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
-  rfl
-
--- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toAddMonoidHom`, in #43765.
-@[simp]
-theorem toAddMonoidHom_refl' : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
-  rfl
-
-@[simp]
-theorem toMonoidHom_refl' : MonoidHomClass.toMonoidHom (RingEquiv.refl R) = MonoidHom.id R :=
-  rfl
-
-@[simp]
-theorem toAddMonoidHom_refl' : AddMonoidHomClass.toAddMonoidHom (RingEquiv.refl R) =
-    AddMonoidHom.id R :=
-  rfl
-
 theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toRingHom (e.symm.toRingHom y) = y :=
   e.toEquiv.apply_symm_apply
