@@ -158,9 +158,6 @@ class PPow (M : Type*) where
 instance PPow.toPow {M : Type*} [PPow M] : Pow M ℕ+ :=
   ⟨fun x n ↦ PPow.ppow n x⟩
 
-@[to_additive ofSMul]
-instance PPow.ofPow {M : Type*} [Pow M ℕ+] : PPow M := ⟨fun n x ↦ Pow.pow x n⟩
-
 /--
 An abbreviation for `ppowRec` with an additional assumption on associativity
 so that we can use `@[csimp]` to replace it with an implementation by repeated
