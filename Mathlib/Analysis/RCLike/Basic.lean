@@ -467,6 +467,9 @@ theorem mul_conj (z : K) : z * conj z = ‖z‖ ^ 2 := by
 
 theorem conj_mul (z : K) : conj z * z = ‖z‖ ^ 2 := by rw [mul_comm, mul_conj]
 
+theorem conj_div_mul_eq_norm (z : K) : conj (z / ‖z‖) * z = ‖z‖ := by
+  simp [div_mul_eq_mul_div, conj_mul, sq]
+
 lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z :=
   inv_eq_of_mul_eq_one_left <| by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
 
