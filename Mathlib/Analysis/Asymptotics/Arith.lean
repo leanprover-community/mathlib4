@@ -303,7 +303,8 @@ section ZeroConst
 
 variable (g g' l)
 
-theorem isLittleO_zero : (fun _x => (0 : E')) =o[l] g' :=
+@[to_fun (attr := simp)]
+theorem isLittleO_zero : (0 : α → E') =o[l] g' :=
   IsLittleO.of_bound fun c hc =>
     univ_mem' fun x => by simpa using mul_nonneg hc.le (norm_nonneg <| g' x)
 
@@ -313,7 +314,8 @@ theorem isBigOWith_zero (hc : 0 ≤ c) : IsBigOWith c l (fun _x => (0 : E')) g' 
 theorem isBigOWith_zero' : IsBigOWith 0 l (fun _x => (0 : E')) g :=
   IsBigOWith.of_bound <| univ_mem' fun x => by simp
 
-theorem isBigO_zero : (fun _x => (0 : E')) =O[l] g :=
+@[to_fun (attr := simp)]
+theorem isBigO_zero : (0 : α → E') =O[l] g :=
   isBigO_iff_isBigOWith.2 ⟨0, isBigOWith_zero' _ _⟩
 
 theorem isBigO_refl_left : (fun x => f' x - f' x) =O[l] g' :=
@@ -422,7 +424,7 @@ theorem IsBigO.sum_congr (hAB : ∀ i ∈ s, A i =O[l] B i) :
 theorem IsLittleO.sum_congr (hAB : ∀ i ∈ s, A i =o[l] B i) :
     (fun H => ∑ i ∈ s, A i H) =o[l] fun H => ∑ i ∈ s, ‖B i H‖ := by
   induction s using Finset.cons_induction with
-  | empty => simp [isLittleO_zero]
+  | empty => simp
   | cons i s his h =>
   simp_rw [Finset.sum_cons]
   calc (fun H => A i H + ∑ j ∈ s, A j H)

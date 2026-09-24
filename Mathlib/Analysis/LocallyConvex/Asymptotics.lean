@@ -29,7 +29,12 @@ and families of seminorms.
 open scoped NNReal
 open Filter
 
-variable {ι κ α 𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+variable {ι κ α 𝕜 E F G : Type*}
+  [NontriviallyNormedField 𝕜]
+
+section TVS
+
+variable
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
@@ -205,4 +210,62 @@ theorem isLittleOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
 
 end WithSeminorms
 
-end
+end TVS
+
+section NormedSpace
+
+variable
+  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
+
+namespace WithSeminorms
+
+variable {p : SeminormFamily 𝕜 E ι}
+
+theorem isBigOTVS_iff_norm_right (hp : WithSeminorms p) :
+    f =O[𝕜; l] g ↔ ∀ i : ι, (p i ∘ f) =O[l] fun x ↦ ‖g x‖ := by
+  rw [hp.isBigOTVS_iff (norm_withSeminorms 𝕜 F)]
+  congrm (∀ i, ?_)
+  constructor
+  · intro ⟨s, h⟩
+    by_cases! h' : s.Nonempty
+    · simp only [h'.eq_univ, Finset.univ_unique, PUnit.default_eq_unit, Finset.sup_singleton,
+      coe_normSeminorm] at h
+      exact h
+    · simp only [h', Finset.sup_empty, Seminorm.coe_bot, Pi.zero_comp] at h
+      grw [h]
+      -- should be a separate lemma
+      rw [Asymptotics.isBigO_iff]
+      use 0
+      filter_upwards with x
+      simp
+  · intro h
+    use {1}
+    simpa
+
+theorem isLittleOTVS_iff_norm_right (hp : WithSeminorms p) :
+    f =o[𝕜; l] g ↔ ∀ i : ι, (p i ∘ f) =o[l] fun x ↦ ‖g x‖ := by
+  rw [hp.isLittleOTVS_iff (norm_withSeminorms 𝕜 F)]
+  congrm (∀ i, ?_)
+  constructor
+  · intro ⟨s, h⟩
+    by_cases! h' : s.Nonempty
+    · simp only [h'.eq_univ, Finset.univ_unique, PUnit.default_eq_unit, Finset.sup_singleton,
+      coe_normSeminorm] at h
+      exact h
+    · simp only [h', Finset.sup_empty, Seminorm.coe_bot, Pi.zero_comp] at h
+      apply h.trans
+      -- should be a separate lemma
+      rw [Asymptotics.isLittleO_iff]
+      intros
+      filter_upwards with x
+      simp only [Pi.zero_apply, norm_zero, norm_norm]
+      positivity
+  · intro h
+    use {1}
+    simpa
+
+end WithSeminorms
+
+end NormedSpace

@@ -418,7 +418,7 @@ theorem isLittleO_const_left_of_ne {c : E''} (hc : c ≠ 0) :
 theorem isLittleO_const_left {c : E''} :
     (fun _x => c) =o[l] g'' ↔ c = 0 ∨ Tendsto (norm ∘ g'') l atTop := by
   rcases eq_or_ne c 0 with (rfl | hc)
-  · simp only [isLittleO_zero, true_or]
+  · simp
   · simp only [hc, false_or, isLittleO_const_left_of_ne hc]; rfl
 
 @[simp high] -- Increase priority so that this triggers before `isLittleO_const_left`
