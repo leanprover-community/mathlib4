@@ -549,7 +549,7 @@ theorem isBigO_iff_div_isBoundedUnder {α : Type*} {l : Filter α} {f g : α →
 theorem isBigO_of_div_tendsto_nhds {α : Type*} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) (c : 𝕜) (H : Filter.Tendsto (f / g) l (𝓝 c)) :
     f =O[l] g :=
-  (isBigO_iff_div_isBoundedUnder hgf).2 <| H.norm.isBoundedUnder_le
+  (isBigO_iff_div_isBoundedUnder hgf).2 H.norm.isBoundedUnder_le
 
 theorem IsLittleO.tendsto_zero_of_tendsto {u : α → E'} {v : α → 𝕜} {l : Filter α} {y : 𝕜}
     (huv : u =o[l] v) (hv : Tendsto v l (𝓝 y)) :
