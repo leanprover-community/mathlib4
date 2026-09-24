@@ -122,7 +122,7 @@ public def delabMax : Delab :=
     let x ← withNaryArg 2 delab
     let y ← withNaryArg 3 delab
     let stx ← `($x ∪ $y)
-    return stx
+    annotateGoToDef stx decl_name%
 
 /-- Delaborate `min x y` into `x ∩ y` if the type is tagged with `@[use_set_notation_for_order]`. -/
 @[app_delab Min.min]
@@ -134,7 +134,7 @@ public def delabMin : Delab :=
     let x ← withNaryArg 2 delab
     let y ← withNaryArg 3 delab
     let stx ← `($x ∩ $y)
-    return stx
+    annotateGoToDef stx decl_name%
 
 /-! ## Elaboration -/
 

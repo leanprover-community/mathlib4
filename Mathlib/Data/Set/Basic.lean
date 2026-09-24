@@ -94,11 +94,11 @@ theorem top_eq_univ : (⊤ : Set α) = univ :=
 theorem bot_eq_empty : (⊥ : Set α) = ∅ :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-08-01"), nolint synTaut]
+@[deprecated "This is now a syntactic equality" (since := "2026-09-25"), nolint synTaut]
 theorem sup_eq_union : ((· ⊔ ·) : Set α → Set α → Set α) = (· ∪ ·) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-08-01"), nolint synTaut]
+@[deprecated "This is now a syntactic equality" (since := "2026-09-25"), nolint synTaut]
 theorem inf_eq_inter : ((· ⊓ ·) : Set α → Set α → Set α) = (· ∩ ·) :=
   rfl
 
