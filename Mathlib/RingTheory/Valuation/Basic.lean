@@ -901,7 +901,8 @@ theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
 
 /-- The order preserving isomorphism between the `valueGroup`s of the underlying
 `MonoidWithZeroHom`s of two equivalent valuations. -/
-def orderMonoidIso' (h : v.IsEquiv w) : valueGroup (ofClass v) ≃*o valueGroup (ofClass w) where
+def orderMonoidIso' (h : v.IsEquiv w) :
+    valueGroup (v : R →*₀ Γ₀) ≃*o valueGroup (w :  R →*₀ Γ'₀) where
   toFun x     := (h.orderMonoidIso x).unzero (not_eq_of_beq_eq_false rfl)
   invFun x    := (h.symm.orderMonoidIso x).unzero (not_eq_of_beq_eq_false rfl)
   left_inv x  := WithZero.coe_inj.mp (h.orderMonoidIso.left_inv x)
@@ -909,7 +910,7 @@ def orderMonoidIso' (h : v.IsEquiv w) : valueGroup (ofClass v) ≃*o valueGroup 
   map_mul'    := by simp [← WithZero.coe_inj, map_mul]
   map_le_map_iff' {x y} := by rw [← WithZero.coe_le_coe]; simp
 
-lemma orderMonoidIso'_eq (h : v.IsEquiv w) (x : valueGroup (.ofClass v)) :
+lemma orderMonoidIso'_eq (h : v.IsEquiv w) (x : valueGroup (v : R →*₀ Γ₀)) :
     h.orderMonoidIso' x = h.orderMonoidIso x := rfl
 
 end IsEquiv
