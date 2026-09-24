@@ -32,10 +32,11 @@ def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
       return v
   throwError "the following entry cannot be simplified to a numeral{indentExpr e}"
 
-/-- Build the numeral of the integer `i` in `α`, as `mkNumeral` of its absolute value under a
-negation when `i` is negative. -/
+/-- Build the numeral of an integer in `α`: `mkNumeral` on the absolute value, negated if
+`i` is negative. -/
 def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
-  let n : Q($α) ← mkNumeral α i.natAbs
+  let n ← mkNumeral α i.natAbs
+  have n : Q($α) := n
   if i < 0 then
     let _ ← synthInstanceQ q(Neg $α)
     return q(-$n)
@@ -49,8 +50,8 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
   let pQ : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
   let .some _ ← trySynthInstanceQ q(CharP $α $pQ)
     | throwError "could not determine the characteristic of the element type{indentExpr α}"
-  -- the ambient transparency inside `simp` is `reducible` and does not reduce the numeral to a
-  -- literal, hence `whnfD`
+  -- `whnfD`: the ambient transparency inside `simp` is `reducible`, which does not reduce
+  -- the numeral to a literal
   let some p := (← whnfD (← instantiateMVars pQ)).rawNatLit?
     | throwError "the characteristic of the element type is not a literal{indentExpr α}"
   let ops : RingOps Int := {

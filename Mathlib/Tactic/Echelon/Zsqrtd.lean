@@ -25,7 +25,7 @@ open Lean Meta Qq
 namespace Mathlib.Tactic.Echelon
 
 /-- Evaluate an entry or component of the `ℤ√d` model to an integer, via `norm_num`. -/
-def evalInt (e : Expr) : MetaM ℤ := do
+def evalInt (e : Expr) : MetaM Int := do
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
   let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
   if let some v := r.bind (·.toRat) then
@@ -85,7 +85,7 @@ def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
         | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
       return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }⟩
 
-/-- The registration of the `ℤ√d` model for `Zsqrtd d` with an integer literal `d`. -/
+/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   model? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching

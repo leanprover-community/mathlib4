@@ -89,17 +89,20 @@ structure BareissData (V : Type) where
 /-- Map over the entries of the transform. -/
 def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
     MetaM (BareissData W) :=
-  return { L := ← d.L.mapM fun row => row.mapM f
-           U := ← d.U.mapM fun row => row.mapM f
-           swaps := d.swaps
-           pivot := d.pivot }
+  return { L := ← d.L.mapM (·.mapM f), U := ← d.U.mapM (·.mapM f),
+           swaps := d.swaps, pivot := d.pivot }
 
-/-- The row arrangement `σ` of the swaps. The entry at position `i` is the original index of
-the row the swaps move to position `i`. -/
+/-- The row arrangement of the swaps: the entry at position `i` is the original row index
+that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- Core algorithm of fraction-free Gaussian elimination. -/
+/-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
+by the model.
+
+A single sweep accumulates the transform `L` alongside the working matrix `W`, maintaining
+`L * (A.submatrix σ id) = W` for the row arrangement `σ` so far. The divisions are exact
+by Sylvester's identity, although the data-only computation does not prove that. -/
 def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     MetaM (BareissData V) := do
   let rows := A.size
