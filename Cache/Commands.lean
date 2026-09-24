@@ -47,9 +47,6 @@ def furtherInformation : String := "ARGUMENTS
     hot-fix must force a re-download, a re-pack, or an overwrite. Linked files
     are the local cache files with corresponding Lean sources.
 
-    A flag may precede the command: `cache --repo=OWNER/REPO get` reads as
-    `cache get --repo=OWNER/REPO`.
-
 WORKFLOWS
     get runs one of three workflows, chosen from the repository the checkout
     names (its git remote, or --repo) and the flags. Each workflow accepts its
@@ -57,17 +54,17 @@ WORKFLOWS
 
     public cache: a canonical mathlib checkout, a project that depends on
         Mathlib, or any get with MATHLIB_CACHE_GET_URL set. get fetches from the
-        public cache at https://cache.mathlib.org/mathlib4 (or from that URL)
-        and nothing else. No flags of its own.
+        public cache at https://cache.mathlib.org/mathlib4-master (or from that
+        URL) and nothing else. No flags of its own.
     developer cache: a fork checkout, or any get with --cache-from, --scope or
         --unsafe (or MATHLIB_CACHE_FROM, MATHLIB_CACHE_REPO_SCOPE set). get walks
-        the trust-ordered container chain: master from the public cache, the
-        fork's per-commit namespace in forks from the developer cache at
-        https://devcache.mathlib.org, then legacy. Flags: --cache-from, --scope,
-        --unsafe, --unsafe-window.
-    nightly: the nightly-testing repository. get walks its own chain in the
-        developer cache: nightly-testing, forks, legacy. Flags: --cache-from,
-        --scope.
+        the trust-ordered container chain: master from the public cache, then
+        the fork's per-commit namespace in forks from the developer cache at
+        https://r2devcache.mathlib.org. Flags: --cache-from, --scope, --unsafe,
+        --unsafe-window.
+    nightly: the nightly-testing repository. get walks its own chain,
+        nightly-testing then forks, through https://cache.mathlib.org. Flags:
+        --cache-from, --scope.
 
     In a project that depends on Mathlib, a fork remote on the dependency
     checkout does not select the developer-cache workflow; --repo does.

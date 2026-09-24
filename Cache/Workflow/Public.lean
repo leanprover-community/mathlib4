@@ -55,8 +55,8 @@ endpoint, under the read base rule (`Container.readURL`),
 `https://cache.mathlib.org/mathlib4-master` by default. A file is read flat at
 `{url}/f/{hash}.ltar`.
 
-The public endpoint serves the older `legacy` artifacts behind the `master`
-namespace, so the workflow needs no fallback of its own.
+The public endpoint serves the artifacts of the retired `mathlib4` container
+behind the `master` namespace, so the workflow needs no fallback of its own.
 -/
 def url (getURL? : Option String) : IO String := do
   match getURL? with

@@ -47,7 +47,7 @@ namespace Upload
 def containerFlag : Cli.Flag := {
   longName := "container"
   description := s!"The container the upload writes, one of \
-    {", ".intercalate (uploadContainers.map Container.name)}. It decides the layout: flat for \
+    {", ".intercalate (Container.all.map Container.name)}. It decides the layout: flat for \
     master, repo-namespaced for the others, and with --scope the per-commit namespace of \
     forks. The files go under the container on the Azure storage account, or under the root \
     MATHLIB_CACHE_PUT_URL names."

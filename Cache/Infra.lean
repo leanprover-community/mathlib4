@@ -65,12 +65,6 @@ inductive Container where
   | nightlyTesting
   /-- Container for toolchain-PR test runs. -/
   | prToolchainTests
-  /-- The bare `mathlib4` container that older cache clients read from. CI does
-  not upload here; it is a read-only store of the master-built artifacts that
-  were mirrored from `mathlib4-master`, kept reachable so those older clients
-  can resolve them. The `master` container is a self-contained cache, so reads
-  fall back to `legacy` only for artifacts predating the write cutover. -/
-  | legacy
   deriving DecidableEq, Repr, BEq, Inhabited
 
 /-- Base URL of the `lakecache` Azure Blob Storage account. -/
@@ -84,11 +78,10 @@ def name : Container → String
   | .forks            => "forks"
   | .nightlyTesting   => "nightly-testing"
   | .prToolchainTests => "pr-toolchain-tests"
-  | .legacy           => "legacy"
 
 /-- All known containers, listed in their canonical declaration order. -/
 def all : List Container :=
-  [.master, .forks, .nightlyTesting, .prToolchainTests, .legacy]
+  [.master, .forks, .nightlyTesting, .prToolchainTests]
 
 /-- Parse a short name back into a `Container`: the inverse of `name` over
 `all`, so the three stay in agreement by construction. Matching is
@@ -102,12 +95,10 @@ The container's segment in the URL contract: read URLs are
 key prefix. The segment is also the Azure storage container name on the
 `lakecache` account; `Container.azureURL` builds its URL from it.
 
-Trust-level containers follow the `mathlib4-{name}` convention; `legacy` is the
-bare `mathlib4` segment.
+Every container follows the `mathlib4-{name}` convention.
 -/
-def pathSegment : Container → String
-  | .legacy => "mathlib4"
-  | c       => s!"mathlib4-{c.name}"
+def pathSegment (c : Container) : String :=
+  s!"mathlib4-{c.name}"
 
 /-- Public Azure Blob Storage base URL for a container. -/
 def azureURL (c : Container) : String :=
@@ -124,18 +115,14 @@ writers in sync.
 
 - `master` is flat: RBAC admits only master CI, whose writes all carry
   `repo == MATHLIBREPO`, so a single hash never collides.
-- `legacy` keys the layout on the writer: `MATHLIBREPO` writes are flat (where
-  older `mathlib4` readers look for them), fork writes are repo-namespaced.
 - `forks`, `nightly-testing`, and `pr-toolchain-tests` always namespace by
   repo. They collect artifacts from many writers — different forks, different
   toolchain refs, and canonical-repo builds whose trust is fork-equivalent
   (`ci-dev/*`, `bors trying`) — so identical hashes from different writers must
   stay on distinct paths.
 -/
-def flatPath (c : Container) (repo : String) : Bool :=
-  match c with
+def flatPath : Container → Bool
   | .master => true
-  | .legacy => repo == MATHLIBREPO
   | _ => false
 
 /--
@@ -153,8 +140,9 @@ end Container
 /--
 Blob path of the directory that holds the cache artifacts, per the container's
 layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
-a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
-is lowercased via `normalizeRepo`. A file lives at
+a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. No
+container is a flat endpoint, such as `MATHLIB_CACHE_GET_URL`. `repo` is
+lowercased via `normalizeRepo`. A file lives at
 `{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
 `containerUploadDest` both build on this, so reads and uploads share one path
 contract. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no
@@ -163,10 +151,7 @@ trailing slash.
 def fileDirPath (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=
   let repo := normalizeRepo repo
-  let flat := match container with
-    | some c => c.flatPath repo
-    | none => repo == MATHLIBREPO
-  if flat then "f"
+  if container.all (·.flatPath) then "f"
   else match repoScope with
     | some s => s!"f/{repo}/{s}"
     | none => s!"f/{repo}"

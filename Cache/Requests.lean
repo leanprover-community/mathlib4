@@ -86,9 +86,8 @@ flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
 container (see `Container.flatPath`), not the repo: the same hash under
 `repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
 
-`container` is `none` for the user-supplied `MATHLIB_CACHE_GET_URL` /
-`MATHLIB_CACHE_PUT_URL` URLs, where no container policy applies; the path then
-follows the repo directly — flat for `MATHLIBREPO`, prefixed otherwise.
+`container` is `none` for the flat endpoint `MATHLIB_CACHE_GET_URL` names:
+the path is flat whatever the repo.
 
 `repo` is lowercased via `normalizeRepo` so the repo-namespaced path is
 case-insensitive in the GitHub owner/repo name.
@@ -146,18 +145,12 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
       -o {(IO.CACHEDIR / (fileName ++ IO.PARTSUFFIX)).toString.quote}\n"
 
 /--
-Whether an HTTP status returned for a single-file read should be treated as a
-cache miss (fall through to the next container in the chain) rather than a
-transfer failure worth reporting.
-
-`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
-set, which callers do for the `legacy` container: when its public read access is
-revoked ahead of retirement it answers reads with `403`, and old clients whose
-chain still lists `legacy` should fall through quietly instead of printing a
-per-file transfer failure. Any other status is a real failure.
+Whether an HTTP status returned for a single-file read is a cache miss (fall
+through to the next container in the chain) rather than a transfer failure
+worth reporting: `404` is the only miss.
 -/
-def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
-  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+def isCacheMissStatus (httpCode : Nat) : Bool :=
+  httpCode == 404
 
 /--
 Whether an HTTP status is the one Azure returns for a blob that already exists,
@@ -200,13 +193,12 @@ Classify one finished download; the parallel and serial paths share this
 table. A transfer delivers only when the status is 200/201 and curl exited
 cleanly: a nonzero exit code after a 200 means the body is truncated. The
 status alone decides a miss. `httpCode?` is `none` when there is no status
-to parse; `treatForbiddenAsMiss` is the `legacy` 403 policy.
+to parse.
 -/
-def classifyDownload (httpCode? : Option Nat) (exitCode : Nat)
-    (treatForbiddenAsMiss : Bool) : TransferVerdict .download :=
+def classifyDownload (httpCode? : Option Nat) (exitCode : Nat) : TransferVerdict .download :=
   match httpCode? with
   | some 200 | some 201 => if exitCode == 0 then .delivered else .failed
-  | some code => if isCacheMissStatus code treatForbiddenAsMiss then .miss else .failed
+  | some code => if isCacheMissStatus code then .miss else .failed
   | none => .failed
 
 /--
@@ -223,12 +215,9 @@ def classifyUpload (httpCode? : Option Nat) (exitCode : Nat)
   | none => .failed
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
-(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`).
-`treatForbiddenAsMiss` mirrors the parallel path: a `legacy` `403` (public read
-access revoked ahead of retirement) is a miss, not a failure. -/
+(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`). -/
 def downloadFile (container : Option Container) (repo containerURL : String)
-    (hash : UInt64) (scope? : Option String) (treatForbiddenAsMiss : Bool := false) :
-    IO (TransferVerdict .download) := do
+    (hash : UInt64) (scope? : Option String) : IO (TransferVerdict .download) := do
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
@@ -242,7 +231,6 @@ def downloadFile (container : Option Container) (repo containerURL : String)
         #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- Anything short of a delivery leaves at most an error body in the part file.
   let verdict := classifyDownload out.stdout.trimAscii.toNat? out.exitCode.toNat
-    treatForbiddenAsMiss
   if verdict matches .delivered then
     IO.FS.rename partPath path
   else if ← partPath.pathExists then
@@ -546,10 +534,6 @@ private def downloadFilesFromContainer
     (scope? : Option String) (decompState : DecompState) :
     IO (TransferState × Std.HashSet UInt64) := do
   let size := hashMap.size
-  -- `legacy` answers reads with 403 once its public access is revoked ahead
-  -- of retirement; treat that as a miss so the chain stays quiet for clients
-  -- whose chain still lists it.
-  let treatForbiddenAsMiss := container == some Container.legacy
   if parallel then
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent container repo containerURL hashMap scope?)
     let args := #["--request", "GET", "--parallel", "--silent"] ++
@@ -558,16 +542,16 @@ private def downloadFilesFromContainer
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
       #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
-      (classifyDownload · · treatForbiddenAsMiss) (removeOnError := true)
+      classifyDownload (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
-        downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
+        downloadFile container repo containerURL hash scope?) :: acc
     -- Served hashes carry the remaining files to the next container; hard
-    -- failures (anything but a 404/legacy-403 miss, including a task that threw)
+    -- failures (anything but a 404 miss, including a task that threw)
     -- feed `TransferState.failed`, so they drive the exit code exactly as the
     -- parallel path threads its own `failed` count.
     let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))

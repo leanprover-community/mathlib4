@@ -124,7 +124,6 @@ def test_Container_name : IO Unit := do
   assertEq "forks"              "forks"              Container.forks.name
   assertEq "nightly-testing"    "nightly-testing"    Container.nightlyTesting.name
   assertEq "pr-toolchain-tests" "pr-toolchain-tests" Container.prToolchainTests.name
-  assertEq "legacy"             "legacy"             Container.legacy.name
 
 /-- Parser is the inverse of `Container.name` on valid inputs, and rejects everything else. -/
 def test_Container_parse : IO Unit := do
@@ -135,7 +134,7 @@ def test_Container_parse : IO Unit := do
   assertTrue "nightly-testing parses" (Container.parse? "nightly-testing" == some .nightlyTesting)
   assertTrue "pr-toolchain-tests parses"
     (Container.parse? "pr-toolchain-tests" == some .prToolchainTests)
-  assertTrue "legacy parses"          (Container.parse? "legacy" == some .legacy)
+  assertTrue "the retired legacy name is rejected" (Container.parse? "legacy" == none)
   -- Matching is case-insensitive, so `--cache-from=Master` canonicalizes too.
   assertTrue "case-insensitive"       (Container.parse? "Master" == some .master)
   -- An unknown name returns `none` so `--cache-from=bogus` errors out rather than
@@ -143,8 +142,7 @@ def test_Container_parse : IO Unit := do
   assertTrue "unknown rejected"       (Container.parse? "bogus" == none)
   assertTrue "empty rejected"         (Container.parse? "" == none)
 
-/-- The Azure URL each container resolves to: `mathlib4-{name}` for the
-trust-level containers, bare `mathlib4` for `legacy`. These URLs go into every
+/-- The Azure URL each container resolves to: `mathlib4-{name}`. These URLs go into every
 request, and changing one means re-coordinating the Azure side with every
 consumer, so they are pinned here. -/
 def test_Container_azureURL : IO Unit := do
@@ -161,10 +159,6 @@ def test_Container_azureURL : IO Unit := do
   assertEq "pr-toolchain-tests URL"
     "https://lakecache.blob.core.windows.net/mathlib4-pr-toolchain-tests"
     Container.prToolchainTests.azureURL
-  -- `legacy` is the bare `mathlib4` container, with no `-legacy` suffix.
-  assertEq "legacy URL"
-    "https://lakecache.blob.core.windows.net/mathlib4"
-    Container.legacy.azureURL
 
 /-- A variable that names a read URL or a read chain arrives trimmed, and an
 empty or whitespace-only value means unset. `MATHLIB_CACHE_BASE_URL`,
@@ -224,28 +218,13 @@ container's writers stay on non-colliding paths:
 - `forks`, `nightly-testing`, and `pr-toolchain-tests` are prefixed for every
   repo, including the canonical one, so fork-trust uploads from the canonical
   repo coexist with fork uploads.
-- `legacy` is flat for the canonical repo and prefixed otherwise.
 -/
 def test_Container_flatPath : IO Unit := do
   IO.println "Container.flatPath:"
-  assertTrue "master is flat for the canonical repo"
-    (Container.master.flatPath MATHLIBREPO == true)
-  assertTrue "master is flat for a fork repo too"
-    (Container.master.flatPath "alice/mathlib4" == true)
-  assertTrue "legacy is flat for the canonical repo"
-    (Container.legacy.flatPath MATHLIBREPO == true)
-  assertTrue "legacy is prefixed for a fork repo"
-    (Container.legacy.flatPath "alice/mathlib4" == false)
-  assertTrue "forks is prefixed for the canonical repo"
-    (Container.forks.flatPath MATHLIBREPO == false)
-  assertTrue "forks is prefixed for a fork repo"
-    (Container.forks.flatPath "alice/mathlib4" == false)
-  assertTrue "nightly-testing is prefixed for the nightly-testing repo"
-    (Container.nightlyTesting.flatPath NIGHTLY_TESTING_REPO == false)
-  assertTrue "nightly-testing is prefixed for the canonical repo"
-    (Container.nightlyTesting.flatPath MATHLIBREPO == false)
-  assertTrue "pr-toolchain-tests is prefixed for the nightly-testing repo"
-    (Container.prToolchainTests.flatPath NIGHTLY_TESTING_REPO == false)
+  assertTrue "master is flat" Container.master.flatPath
+  assertTrue "forks is prefixed" (!Container.forks.flatPath)
+  assertTrue "nightly-testing is prefixed" (!Container.nightlyTesting.flatPath)
+  assertTrue "pr-toolchain-tests is prefixed" (!Container.prToolchainTests.flatPath)
 
 end ContainerModel
 
@@ -258,23 +237,17 @@ section PerRepoAllowlist
   root hash) and `pr-toolchain-tests` (a poisoned toolchain-experiment upload
   must not reach a trusted nightly consumer); it includes `forks` for the PRs
   opened from that repo into mathlib4.
-- Both chains end with `legacy`, so older clients' artifacts stay reachable.
 -/
 def test_workflowContainers : IO Unit := do
   IO.println "Developer.containers / Nightly.containers:"
-  assertTrue "developer chain → [master, forks, legacy]"
-    (Developer.containers == [.master, .forks, .legacy])
-  assertTrue "nightly chain → [nightly-testing, forks, legacy]"
-    (Nightly.containers == [.nightlyTesting, .forks, .legacy])
+  assertTrue "developer chain → [master, forks]"
+    (Developer.containers == [.master, .forks])
+  assertTrue "nightly chain → [nightly-testing, forks]"
+    (Nightly.containers == [.nightlyTesting, .forks])
   assertTrue "nightly chain excludes pr-toolchain-tests"
     (!Nightly.containers.contains .prToolchainTests)
   assertTrue "nightly chain excludes master"
     (!Nightly.containers.contains .master)
-  -- Every chain ends with `legacy`; dropping it would quietly shrink hit rates.
-  assertTrue "developer chain ends with legacy"
-    (Developer.containers.getLast? == some .legacy)
-  assertTrue "nightly chain ends with legacy"
-    (Nightly.containers.getLast? == some .legacy)
 
 /-- `Workflow.forRead` is the boundary between the three read workflows. A
 read on the canonical repo is public unless a chain, a scope, or `--unsafe`
@@ -344,7 +317,6 @@ def test_Upload : IO Unit := do
     (prefixOf r2Leg ==
       some ("https://acct.example/devbucket/mathlib4-forks", "f/alice/mathlib4/abc123"))
   assertTrue "no container fails" (fails { putURL? := some "https://acct.example/x" })
-  assertTrue "legacy fails" (fails { container? := some .legacy })
   assertTrue "a scope on master fails" (fails { container? := some .master, scope? := some envScope })
   assertTrue "s3 without a put URL fails" (fails { container? := some .forks, backend := .s3 })
 
@@ -416,13 +388,11 @@ def test_readURLs : IO Unit := do
   assertTrue "developer chain: forks on the developer cache's host, the rest on the public one"
     ((← Chain.withURLs Developer.containers Developer.readURL) ==
       [(.master, s!"{publicBase}/mathlib4-master"),
-       (.forks, s!"{developerBase}/mathlib4-forks"),
-       (.legacy, s!"{publicBase}/mathlib4")])
+       (.forks, s!"{developerBase}/mathlib4-forks")])
   assertTrue "nightly chain: every container on the public endpoint"
     ((← Chain.withURLs Nightly.containers Nightly.readURL) ==
       [(.nightlyTesting, s!"{publicBase}/mathlib4-nightly-testing"),
-       (.forks, s!"{publicBase}/mathlib4-forks"),
-       (.legacy, s!"{publicBase}/mathlib4")])
+       (.forks, s!"{publicBase}/mathlib4-forks")])
   -- A base-URL override answers for both switch positions, so the pinned
   -- assertions run only without one.
   if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
@@ -490,19 +460,13 @@ def test_mkFileURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4-pr-toolchain-tests/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
     (mkFileURL (some .prToolchainTests) NIGHTLY_TESTING_REPO
       Container.prToolchainTests.azureURL "abc.ltar")
-  assertEq "legacy is flat for the canonical repo"
-    "https://lakecache.blob.core.windows.net/mathlib4/f/abc.ltar"
-    (mkFileURL (some .legacy) MATHLIBREPO Container.legacy.azureURL "abc.ltar")
-  assertEq "legacy prefixes by repo for a fork repo"
-    "https://lakecache.blob.core.windows.net/mathlib4/f/alice/mathlib4/abc.ltar"
-    (mkFileURL (some .legacy) "alice/mathlib4" Container.legacy.azureURL "abc.ltar")
-  -- No container (user-supplied URL): the shape follows the repo — flat for the
-  -- canonical repo, prefixed otherwise.
-  assertEq "user URL is flat for the canonical repo"
+  -- No container (the flat endpoint `MATHLIB_CACHE_GET_URL` names): flat
+  -- whatever the repo.
+  assertEq "a flat endpoint is flat for the canonical repo"
     "https://custom.example/cache/f/abc.ltar"
     (mkFileURL none MATHLIBREPO "https://custom.example/cache" "abc.ltar")
-  assertEq "user URL prefixes by repo for a fork repo"
-    "https://custom.example/cache/f/alice/mathlib4/abc.ltar"
+  assertEq "a flat endpoint is flat for a fork repo too"
+    "https://custom.example/cache/f/abc.ltar"
     (mkFileURL none "alice/mathlib4" "https://custom.example/cache" "abc.ltar")
   -- A scope adds a `{sha}` path segment on prefixed paths.
   assertEq "scope adds a SHA segment on a fork path"
@@ -515,9 +479,6 @@ def test_mkFileURL : IO Unit := do
   assertEq "scope is ignored on a flat master path"
     "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
     (mkFileURL (some .master) MATHLIBREPO Container.master.azureURL "abc.ltar" (some "abc123def"))
-  assertEq "scope is ignored on a flat legacy path"
-    "https://lakecache.blob.core.windows.net/mathlib4/f/abc.ltar"
-    (mkFileURL (some .legacy) MATHLIBREPO Container.legacy.azureURL "abc.ltar" (some "abc123def"))
   -- The repo segment is lowercased, so a mixed-case GitHub owner resolves to the
   -- same path whether it reaches the cache from CI or a local remote URL.
   assertEq "fork repo is lowercased in the path"
@@ -538,11 +499,11 @@ def test_parseCacheFromList : IO Unit := do
     (parseCacheFromList "master" == some [.master])
   assertTrue "two containers"
     (parseCacheFromList "master,forks" == some [.master, .forks])
-  assertTrue "all five containers"
-    (parseCacheFromList "master,forks,nightly-testing,pr-toolchain-tests,legacy" ==
-      some [.master, .forks, .nightlyTesting, .prToolchainTests, .legacy])
-  assertTrue "master,legacy"
-    (parseCacheFromList "master,legacy" == some [.master, .legacy])
+  assertTrue "all four containers"
+    (parseCacheFromList "master,forks,nightly-testing,pr-toolchain-tests" ==
+      some [.master, .forks, .nightlyTesting, .prToolchainTests])
+  assertTrue "the retired legacy name fails the list"
+    (parseCacheFromList "master,legacy" == none)
   -- Order is preserved, not normalized: `forks,master` reverses the priority.
   assertTrue "preserves the given order"
     (parseCacheFromList "forks,master" == some [.forks, .master])
@@ -831,9 +792,9 @@ def test_Notice_applies : IO Unit := do
   assertTrue "--cache-from equal to the chain does not warn"
     (!(← applies { base with chain := { cli? := some chain } }))
   assertTrue "--cache-from widening the chain warns"
-    (← applies { base with chain := { cli? := some [.master, .forks, .prToolchainTests, .legacy] } })
+    (← applies { base with chain := { cli? := some [.master, .forks, .prToolchainTests] } })
   assertTrue "--cache-from reordering the chain warns"
-    (← applies { base with chain := { cli? := some [.forks, .master, .legacy] } })
+    (← applies { base with chain := { cli? := some [.forks, .master] } })
   assertTrue "MATHLIB_CACHE_FROM is CI's setting and does not warn"
     (!(← applies { base with chain := { env? := some [.master] } }))
 
@@ -888,12 +849,12 @@ def test_Notice_reason : IO Unit := do
   let head? ← try some <$> withSuppressedOutput getGitCommitHash catch _ => pure none
   if let some head := head? then
     assertEq "a HEAD scope yields the cache-from reason"
-      "--cache-from=forks, legacy (explicit container override)"
-      (← reason { base with scope? := some ⟨head, .env⟩, chain := { cli? := some [.forks, .legacy] } })
+      "--cache-from=forks, nightly-testing (explicit container override)"
+      (← reason { base with scope? := some ⟨head, .env⟩, chain := { cli? := some [.forks, .nightlyTesting] } })
 
   assertEq "cache-from reason names the container list"
-    "--cache-from=forks, legacy (explicit container override)"
-    (← reason { base with chain := { cli? := some [.forks, .legacy] } })
+    "--cache-from=forks, nightly-testing (explicit container override)"
+    (← reason { base with chain := { cli? := some [.forks, .nightlyTesting] } })
   assertEq "repo reason names the override and the detected remote"
     "--repo=bob/mathlib4 (overrides detected git remote: alice/mathlib4)"
     (← reason { base with repoExplicit? := some "bob/mathlib4" } (some "alice/mathlib4"))
@@ -1193,27 +1154,19 @@ end RunCmdErrors
 section CacheMissStatus
 
 /-- `isCacheMissStatus` decides whether a read's HTTP status is a benign miss
-(fall through to the next container) or a real transfer failure. `404` is always
-a miss; `403` is a miss only for a container flagged `treatForbiddenAsMiss`
-(currently `legacy`, whose reads start returning `403` once public access is
-revoked ahead of retirement). This guards old clients — whose chain still lists
-`legacy` — against per-file failures when the container is brought down. -/
+(fall through to the next container) or a real transfer failure: `404` is the
+only miss. -/
 def test_isCacheMissStatus : IO Unit := do
   IO.println "isCacheMissStatus:"
-  -- 404 is a miss regardless of the flag.
-  assertTrue "404 is a miss (flag off)"        (isCacheMissStatus 404 false)
-  assertTrue "404 is a miss (flag on)"         (isCacheMissStatus 404 true)
-  -- 403 is a miss only when the flag is set (i.e. for `legacy`).
-  assertTrue "403 is a failure when flag off"  (!isCacheMissStatus 403 false)
-  assertTrue "403 is a miss when flag on"      (isCacheMissStatus 403 true)
-  -- Success and server errors are never misses; they must surface.
-  assertTrue "200 is not a miss"               (!isCacheMissStatus 200 true)
-  assertTrue "500 is not a miss"               (!isCacheMissStatus 500 true)
-  assertTrue "403-as-miss is scoped to 403"    (!isCacheMissStatus 401 true)
+  assertTrue "404 is a miss"      (isCacheMissStatus 404)
+  -- Forbidden, success, and server errors are never misses; they must surface.
+  assertTrue "403 is not a miss"  (!isCacheMissStatus 403)
+  assertTrue "200 is not a miss"  (!isCacheMissStatus 200)
+  assertTrue "500 is not a miss"  (!isCacheMissStatus 500)
   -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
   -- here. A miss verdict would make it look like an empty cache and send the
   -- read silently down the container chain, so it counts as a failure.
-  assertTrue "302 is not a miss"               (!isCacheMissStatus 302 true)
+  assertTrue "302 is not a miss"  (!isCacheMissStatus 302)
 
 end CacheMissStatus
 
@@ -1243,30 +1196,28 @@ def test_classifyDownload : IO Unit := do
   IO.println "classifyDownload:"
   -- A clean 200/201 delivers.
   assertTrue "200 + exit 0 delivers"
-    (classifyDownload (some 200) 0 false matches .delivered)
+    (classifyDownload (some 200) 0 matches .delivered)
   assertTrue "201 + exit 0 delivers"
-    (classifyDownload (some 201) 0 false matches .delivered)
+    (classifyDownload (some 201) 0 matches .delivered)
   -- A 200 with a nonzero exit code carries a truncated body.
   assertTrue "200 + exit 18 fails"
-    (classifyDownload (some 200) 18 false matches .failed)
+    (classifyDownload (some 200) 18 matches .failed)
   assertTrue "201 + exit 18 fails"
-    (classifyDownload (some 201) 18 false matches .failed)
+    (classifyDownload (some 201) 18 matches .failed)
   -- The status alone decides a miss.
   assertTrue "404 is a miss"
-    (classifyDownload (some 404) 0 false matches .miss)
+    (classifyDownload (some 404) 0 matches .miss)
   assertTrue "404 + nonzero exit is still a miss"
-    (classifyDownload (some 404) 18 false matches .miss)
-  assertTrue "403 is a miss with treatForbiddenAsMiss"
-    (classifyDownload (some 403) 0 true matches .miss)
-  assertTrue "403 fails otherwise"
-    (classifyDownload (some 403) 0 false matches .failed)
+    (classifyDownload (some 404) 18 matches .miss)
+  assertTrue "403 fails"
+    (classifyDownload (some 403) 0 matches .failed)
   assertTrue "409 fails on a read"
-    (classifyDownload (some 409) 0 false matches .failed)
+    (classifyDownload (some 409) 0 matches .failed)
   -- No usable status is a failure (a connection error reports `000`).
   assertTrue "status 0 fails"
-    (classifyDownload (some 0) 0 false matches .failed)
+    (classifyDownload (some 0) 0 matches .failed)
   assertTrue "no status fails"
-    (classifyDownload none 0 false matches .failed)
+    (classifyDownload none 0 matches .failed)
 
 /-- The put config discards every response body: stdout must carry only the
 per-transfer JSON reports (`--write-out '%{json}'`) that `monitorCurl`
@@ -1381,10 +1332,10 @@ def test_fileDirPath : IO Unit := do
     "f/alice/mathlib4" (fileDirPath (some .forks) "alice/mathlib4" none)
   assertEq "scope appends the per-commit segment"
     "f/alice/mathlib4/sha1" (fileDirPath (some .forks) "alice/mathlib4" (some "sha1"))
-  assertEq "no container follows the repo (flat for canonical)"
+  assertEq "no container is flat for the canonical repo"
     "f" (fileDirPath none MATHLIBREPO (some "sha1"))
-  assertEq "no container follows the repo (namespaced for a fork)"
-    "f/alice/mathlib4/sha1" (fileDirPath none "alice/mathlib4" (some "sha1"))
+  assertEq "no container is flat for a fork too"
+    "f" (fileDirPath none "alice/mathlib4" (some "sha1"))
   assertEq "the repo is lowercased"
     "f/alice/mathlib4" (fileDirPath (some .forks) "Alice/Mathlib4" none)
 
@@ -1436,8 +1387,6 @@ def test_stagedUploadDestFrom : IO Unit := do
   assertTrue "no container errors"
     (stagedUploadDestFrom .azure (some "https://my.example.org") none MATHLIBREPO none
       matches .error _)
-  assertTrue "legacy is read-only"
-    (stagedUploadDestFrom .azure none (some .legacy) MATHLIBREPO none matches .error _)
   assertTrue "a scope on master errors"
     (stagedUploadDestFrom .azure none (some .master) MATHLIBREPO (some "sha1")
       matches .error _)
@@ -1659,7 +1608,7 @@ Only a container with per-commit namespaces (`Container.perCommit`, that is
 else one round per `--unsafe` SHA. Every other container reads unscoped. -/
 def test_chainRounds : IO Unit := do
   IO.println "Chain.rounds:"
-  let chain : List (Container × String) := [(.master, "U_m"), (.forks, "U_f"), (.legacy, "U_l")]
+  let chain : List (Container × String) := [(.master, "U_m"), (.forks, "U_f"), (.nightlyTesting, "U_n")]
   let round (c : Container) (url : String) (scope? : Option String := none) : DownloadRound :=
     { container? := some c, url, scope? }
 
@@ -1669,28 +1618,28 @@ def test_chainRounds : IO Unit := do
   -- No unsafe scopes: one round per container; only forks carries a scope.
   assertTrue "no scopes → one unscoped round per container"
     (Chain.rounds chain none [] ==
-      [round .master "U_m", round .forks "U_f", round .legacy "U_l"])
+      [round .master "U_m", round .forks "U_f", round .nightlyTesting "U_n"])
   assertTrue "explicit scope reaches the forks round only"
     (Chain.rounds chain (some "S") [] ==
-      [round .master "U_m", round .forks "U_f" (some "S"), round .legacy "U_l"])
+      [round .master "U_m", round .forks "U_f" (some "S"), round .nightlyTesting "U_n"])
 
   -- With no explicit scope the forks round defaults to the HEAD scope; the other
   -- containers' layouts are not SHA-scoped, so it must not leak into them.
   assertTrue "head scope → forks at head, others unscoped"
     (Chain.rounds chain none [] (some "H") ==
-      [round .master "U_m", round .forks "U_f" (some "H"), round .legacy "U_l"])
+      [round .master "U_m", round .forks "U_f" (some "H"), round .nightlyTesting "U_n"])
   assertTrue "explicit scope wins over head scope"
     (Chain.rounds chain (some "S") [] (some "H") ==
-      [round .master "U_m", round .forks "U_f" (some "S"), round .legacy "U_l"])
+      [round .master "U_m", round .forks "U_f" (some "S"), round .nightlyTesting "U_n"])
   assertTrue "unsafe mode ignores head scope"
     (Chain.rounds chain none ["a"] (some "H") ==
-      [round .master "U_m", round .forks "U_f" (some "a"), round .legacy "U_l"])
+      [round .master "U_m", round .forks "U_f" (some "a"), round .nightlyTesting "U_n"])
 
   -- Unsafe scopes: only forks fans out, in order; others unscoped, base dropped.
   assertTrue "unsafe scopes fan out forks (in order), others unscoped"
     (Chain.rounds chain (some "ignored") ["a", "b"] ==
       [round .master "U_m", round .forks "U_f" (some "a"), round .forks "U_f" (some "b"),
-       round .legacy "U_l"])
+       round .nightlyTesting "U_n"])
 
   -- The nightly containers are unscoped whatever the scope: a scoped path
   -- there is one no writer fills.
@@ -1700,8 +1649,8 @@ def test_chainRounds : IO Unit := do
 
   -- A chain without forks admits no SHA-scoped reads, so it is left unchanged.
   assertTrue "no forks container → unsafe scopes have no effect"
-    (Chain.rounds [(.master, "U_m"), (.legacy, "U_l")] none ["a", "b"] ==
-      [round .master "U_m", round .legacy "U_l"])
+    (Chain.rounds [(.master, "U_m"), (.nightlyTesting, "U_n")] none ["a", "b"] ==
+      [round .master "U_m", round .nightlyTesting "U_n"])
 
 end UnsafeRounds
 
@@ -1765,7 +1714,7 @@ def test_monitorCurl_carries_decomp_state : IO Unit := do
     decompFailed := 1 }
   let (s, served) ← withSuppressedOutput <|
     monitorCurl #["--version"] 1 "Downloaded" "speed_download"
-      (classifyDownload · · false) (decompState := carried)
+      classifyDownload (decompState := carried)
   assertTrue "no transfers → an empty served set" served.isEmpty
   assertTrue "pending files survive the round" (s.decomp.pending.size == 1)
   assertTrue "the in-flight task survives the round" s.decomp.currentTask.isSome

@@ -13,8 +13,8 @@ import Cache.Workflow.Developer.Query
 
 The workflow of a fork checkout, and of any read that names a chain, a scope,
 or `--unsafe`. A read walks the trust-ordered chain `containers`: `master`
-from the public cache, the fork's per-commit namespace in `forks` from the
-developer cache, then `legacy`. The per-commit scope of the `forks` round, the
+from the public cache, then the fork's per-commit namespace in `forks` from
+the developer cache. The per-commit scope of the `forks` round, the
 `--unsafe` walk over cached fork commits, the uncached-HEAD hint, and the
 non-default-scope notice all belong here. CI uploads a fork build to `forks`
 under the commit's scope, with the marker `query` probes to find a fork's
@@ -95,12 +95,12 @@ def parseOptions (p : Cli.Parsed) (cwd : FilePath := ".") : IO Options := do
 
 /--
 The developer chain, most trusted first: `master` for the shared upstream
-artifacts (the bulk of any fork's files), `forks` for the fork's own
-per-commit uploads, then `legacy` so older clients' artifacts stay reachable.
-The layout is fixed per container (`Container.flatPath`), so `master` is read
-flat whatever the repo is, and `forks` at `/f/{repo}/{scope}/...`.
+artifacts (the bulk of any fork's files), then `forks` for the fork's own
+per-commit uploads. The layout is fixed per container (`Container.flatPath`),
+so `master` is read flat whatever the repo is, and `forks` at
+`/f/{repo}/{scope}/...`.
 -/
-def containers : List Container := [.master, .forks, .legacy]
+def containers : List Container := [.master, .forks]
 
 /--
 If the user is on a commit that hasn't been cached for this fork (no marker

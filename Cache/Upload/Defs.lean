@@ -63,9 +63,6 @@ def parse? (s : String) : Option UploadBackend :=
 
 end UploadBackend
 
-/-- The containers an upload can write: every container but the read-only `legacy`. -/
-def uploadContainers : List Container := Container.all.filter (· != .legacy)
-
 /--
 Resolve where a staged set uploads. The artifact puts and the marker put, on
 every tool, address `{base}/{prefix}/{name}` of the result.
@@ -81,14 +78,13 @@ in the form `https://endpoint/bucket[/prefix]` (`s3EndpointSplit`). An empty
 value means unset.
 
 A scope addresses a per-commit namespace, so it is an error on a container
-without one (`Container.perCommit`). `legacy` is read-only.
+without one (`Container.perCommit`).
 -/
 def stagedUploadDestFrom (backend : UploadBackend) (putURL? : Option String)
     (container? : Option Container) (repo : String) (scope? : Option String) :
     Except String StagedUploadDest := do
   let some c := container? | throw s!"an upload writes one container: pass --container=NAME \
-    (one of {", ".intercalate (uploadContainers.map Container.name)})"
-  if c == .legacy then throw "the legacy container is read-only"
+    (one of {", ".intercalate (Container.all.map Container.name)})"
   if let some sha := scope? then
     unless c.perCommit do
       throw s!"scope {sha} set for an upload to {c.name}, which has no per-commit namespaces: \

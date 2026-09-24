@@ -55,14 +55,14 @@ def parseOptions (p : Cli.Parsed) (cwd : FilePath := ".") : IO Options := do
 
 /--
 The nightly chain, most trusted first: `nightly-testing` for the repository's
-own trusted builds, `forks` for the PRs opened from that repository into
-mathlib4 (their CI uploads land there, in the per-commit namespace), then
-`legacy`. `master` is absent: the nightly root hash differs, so a master probe
+own trusted builds, then `forks` for the PRs opened from that repository into
+mathlib4 (their CI uploads land there, in the per-commit namespace). `master`
+is absent: the nightly root hash differs, so a master probe
 misses. `pr-toolchain-tests` is absent too, so the default chain keeps an
 upload from an experimental toolchain branch away from a trusted nightly
 consumer; CI widens the chain for those branches through `MATHLIB_CACHE_FROM`.
 -/
-def containers : List Container := [.nightlyTesting, .forks, .legacy]
+def containers : List Container := [.nightlyTesting, .forks]
 
 /-- The read URL of each container in a nightly read: the public endpoint,
 which resolves the nightly containers to their storage, under the read base
