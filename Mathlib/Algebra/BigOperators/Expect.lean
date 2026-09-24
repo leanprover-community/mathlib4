@@ -92,9 +92,9 @@ open Batteries.ExtendedBinder
 /-- Delaborator for `Finset.expect`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
 @[scoped app_delab Finset.expect] meta def delabFinsetExpect : Delab :=
-  whenPPOption getPPNotation <| withOverApp 6 <| do
+  whenPPOption getPPNotation <| withOverApp 6 do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
+  guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
@@ -107,7 +107,7 @@ to show the domain type when the expect is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident)
     `(𝔼 $binder:bigOpBinder, $body)
   else
-    let ss ← withNaryArg 4 <| delab
+    let ss ← withNaryArg 4 delab
     `(𝔼 $(.mk i):ident ∈ $ss, $body)
 
 end BigOperators
@@ -276,11 +276,9 @@ lemma expect_image [DecidableEq ι] {m : κ → ι} (hm : (t : Set κ).InjOn m) 
 
 end bij
 
-@[simp] lemma expect_inv_index [DecidableEq ι] [InvolutiveInv ι] (s : Finset ι) (f : ι → M) :
+@[to_additive (attr := simp)]
+lemma expect_inv_index [DecidableEq ι] [InvolutiveInv ι] (s : Finset ι) (f : ι → M) :
     𝔼 i ∈ s⁻¹, f i = 𝔼 i ∈ s, f i⁻¹ := expect_image inv_injective.injOn
-
-@[simp] lemma expect_neg_index [DecidableEq ι] [InvolutiveNeg ι] (s : Finset ι) (f : ι → M) :
-    𝔼 i ∈ -s, f i = 𝔼 i ∈ s, f (-i) := expect_image neg_injective.injOn
 
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :

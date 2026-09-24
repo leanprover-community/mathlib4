@@ -208,7 +208,7 @@ lemma isCompact_setOfPred_finiteMeasure_le_of_isCompact
         ofPred_subset_ofPred, F, T]
       intro μ hμ
       rw [Measure.map_apply hf.continuous.measurable hK.measurableSet.compl]
-      refine ⟨(mass_map_le _ _).trans hμ, by simp [f]⟩
+      refine ⟨(mass_map_le hf.measurable.aemeasurable).trans hμ, by simp [f]⟩
   rw [this]
   apply IsCompact.image _ (by fun_prop)
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
@@ -697,7 +697,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     _ ⊆ ⋃ i ≤ km (δ_inv + 1), closure (ball (D i) (u δ_inv)) := iInter_subset ..
     _ ⊆ ⋃ i ≤ km (δ_inv + 1), ball (D i) δ := by
         gcongr
-        exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball <| hδ_inv
+        exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball hδ_inv
   -- Closedness
   · simp_rw [bigK, ← Set.mem_Iic]
     exact isClosed_iInter fun n =>

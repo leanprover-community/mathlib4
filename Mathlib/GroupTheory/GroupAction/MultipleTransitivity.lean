@@ -95,8 +95,6 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   apply hf
   simp only [← hf.mulActionHom_embedding_apply, hxy]
 
-variable (hf' : Function.Bijective f)
-
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :
     Function.Bijective (hf.injective.mulActionHom_embedding ι) := by
@@ -632,7 +630,7 @@ theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   rw [← is_one_pretransitive_iff]
   let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
-  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
+  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by simp) h)]
 
 /-- The action of the alternating group has trivial blocks.
 

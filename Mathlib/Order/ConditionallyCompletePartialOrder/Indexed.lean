@@ -101,7 +101,7 @@ lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
 @[to_dual]
 lemma ciSup_eq_ite {p : Prop} [Decidable p] {f : p → α} :
     (⨆ h : p, f h) = if h : p then f h else sSup (∅ : Set α) := by
-  by_cases H : p <;> simp [ciSup_neg, H]
+  by_cases H : p <;> simp [H]
 
 @[to_dual]
 theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :
@@ -149,7 +149,7 @@ theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [Preorder β] [IsDirectedOrder
   have : Nonempty β := ⟨n⟩
   have h₁ : ∀ m, f m ≤ g n := fun m => hf.forall_le_of_antitone hg h m n
   have h₂ : Directed (· ≤ ·) f := hf.directed_le
-  exact ⟨h₂.le_ciSup ⟨g <| n, forall_mem_range.2 h₁⟩ _, h₂.ciSup_le h₁⟩
+  exact ⟨h₂.le_ciSup ⟨g n, forall_mem_range.2 h₁⟩ _, h₂.ciSup_le h₁⟩
 
 /-- Nested intervals lemma: if `[f n, g n]` is an antitone sequence of nonempty
 closed intervals, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
