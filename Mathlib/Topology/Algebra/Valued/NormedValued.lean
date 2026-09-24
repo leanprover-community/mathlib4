@@ -122,19 +122,15 @@ def norm : R → ℝ := fun x : R ↦ hv.hom' (v.restrict x)
 theorem norm_def {x : R} : v.norm x = hv.hom' (v.restrict x) := rfl
 
 theorem norm_nonneg (x : R) : 0 ≤ v.norm x := by simp [norm]
-theorem norm_nonneg (x : R) : 0 ≤ v.norm x := by simp [norm]
 
 theorem norm_add_le (x y : R) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
-  simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono']
-  exact le_max_iff.mp (Valuation.map_add_le_max' v.restrict _ _)
+  simp [norm_def, hv.strictMono'.le_iff_le]
 
 theorem norm_eq_zero (v : Valuation L Γ₀) [RankLeOne v] {x : L} (hx : v.norm x = 0) : x = 0 := by
-  simpa [v.restrict_def, norm, NNReal.coe_eq_zero, zero_iff] using hx
+  simpa [norm_def] using hx
 
 theorem norm_pos_iff_valuation_pos {x : R} : 0 < v.norm x ↔ (0 : Γ₀) < v x := by
-  rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankLeOne.hom' v),
-    StrictMono.lt_iff_lt (RankLeOne.strictMono' (v := v))]
-  rw [v.restrict_pos_iff]
+  simpa [norm_def] using (RankLeOne.strictMono' (v := v)).lt_iff_lt (a := 0) (b := (v.restrict x))
 
 end Valuation
 
