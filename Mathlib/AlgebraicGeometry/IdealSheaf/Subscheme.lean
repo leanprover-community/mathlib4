@@ -271,7 +271,6 @@ private lemma glueDataT'Aux_snd_ι (U V W U₀ : X.affineOpens) (hU₀ : U.1 ⊓
       pullback.fst _ _ ≫ pullback.fst _ _ ≫ I.glueDataObjι U ≫ U.1.ι :=
   (pullback.lift_snd_assoc _ _ _ _).trans (IsOpenImmersion.lift_fac _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The glue data for `𝒪ₓ/I`. -/
 @[simps]
 noncomputable
