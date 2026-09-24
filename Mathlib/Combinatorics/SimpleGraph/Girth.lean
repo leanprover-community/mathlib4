@@ -221,7 +221,7 @@ lemma exists_girth_eq_length :
 lemma girth_le_two_mul_ediam_add_one : G.girth ≤ 2 * G.ediam + 1 := by
   by_cases h : G.IsAcyclic
   · simp [girth_eq_zero.mpr h]
-  · exact le_trans natCast_girth_le_egirth <| egirth_le_two_mul_ediam_add_one h
+  · exact le_trans G.natCast_girth_le_egirth <| egirth_le_two_mul_ediam_add_one h
 
 lemma girth_le_two_mul_diam_add_one (h : G.ediam ≠ ⊤) : G.girth ≤ 2 * G.diam + 1 := by
   exact_mod_cast natCast_diam_eq_ediam_iff.mpr h ▸ girth_le_two_mul_ediam_add_one
