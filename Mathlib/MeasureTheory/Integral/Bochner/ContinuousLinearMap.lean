@@ -195,7 +195,7 @@ theorem setIntegral_re_add_im {f : X → 𝕜} {i : Set X} (hf : IntegrableOn f 
 theorem enorm_integral_mul_starRingEnd_comm {f g : X → 𝕜} :
     ‖∫ x, f x * starRingEnd 𝕜 (g x) ∂μ‖ₑ = ‖∫ x, g x * starRingEnd 𝕜 (f x) ∂μ‖ₑ := by
   rw [← RCLike.enorm_conj, ← integral_conj]
-  simp_rw [map_mul, RCLike.conj_conj, mul_comm]
+  simp [mul_comm]
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
