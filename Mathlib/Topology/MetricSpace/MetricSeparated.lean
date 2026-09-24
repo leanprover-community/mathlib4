@@ -45,7 +45,7 @@ def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < edist �
 
 lemma isSeparated_iff_setRelIsSeparated :
     IsSeparated ε s ↔ SetRel.IsSeparated {(x, y) | edist x y ≤ ε} s := by
-  simp [IsSeparated, SetRel.IsSeparated]
+  simp [IsSeparated, SetRel.IsSeparated, Pi.compl_def]
 
 @[grind .]
 protected lemma IsSeparated.empty : IsSeparated ε (∅ : Set X) := pairwise_empty _
