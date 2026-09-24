@@ -72,6 +72,8 @@ theorem midpoint_mem_perpBisector (p₁ p₂ : P) :
 theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
   ⟨_, midpoint_mem_perpBisector _ _⟩
 
+instance : Nonempty (perpBisector p₁ p₂) := perpBisector_nonempty.to_subtype
+
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :
     (perpBisector p₁ p₂).direction = (ℝ ∙ (p₂ -ᵥ p₁))ᗮ := by

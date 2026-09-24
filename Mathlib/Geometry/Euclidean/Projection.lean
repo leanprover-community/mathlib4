@@ -596,9 +596,7 @@ theorem le_perpBisector_reflection_self (s : AffineSubspace ℝ P) [Nonempty s]
 @[simp]
 theorem reflection_perpBisector_left (a b : P)
     [(perpBisector a b).direction.HasOrthogonalProjection] :
-    haveI : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
     reflection (perpBisector a b) a = b := by
-  have : Nonempty (perpBisector a b) := perpBisector_nonempty.to_subtype
   rw [reflection_apply_of_mem _ _ (midpoint_mem_perpBisector a b)]
   simp_rw [direction_perpBisector]
   rw [Submodule.reflection_orthogonal_apply, ← map_neg, neg_vsub_eq_vsub_rev,
@@ -608,7 +606,6 @@ theorem reflection_perpBisector_left (a b : P)
 @[simp]
 theorem reflection_perpBisector_right (a b : P)
     [(perpBisector b a).direction.HasOrthogonalProjection] :
-    haveI : Nonempty (perpBisector b a) := perpBisector_nonempty.to_subtype
     reflection (perpBisector b a) a = b := by
   have : (perpBisector a b).direction.HasOrthogonalProjection :=
     perpBisector_comm a b ▸ ‹(perpBisector b a).direction.HasOrthogonalProjection›
