@@ -74,7 +74,6 @@ lemma exists_lift_trans_eq {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j
       pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp) y = x :=
   LocallyDirected.directed x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_of_f_eq_f {i j : 𝒰.I₀} (xi : 𝒰.X i) (xj : 𝒰.X j) (h : 𝒰.f i xi = 𝒰.f j xj) :
     ∃ (k : 𝒰.I₀) (fi : k ⟶ i) (fj : k ⟶ j) (xk : 𝒰.X k),
       𝒰.trans fi xk = xi ∧ 𝒰.trans fj xk = xj := by

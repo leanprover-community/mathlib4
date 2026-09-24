@@ -87,7 +87,7 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   -- Note that, because `V ∈ 𝓕₁`, `H` may be rewritten as `𝓕₁ = 𝓕₂ ⊓ 𝓟 V`.
   replace H : 𝓕₁ = 𝓕₂ ⊓ 𝓟 V := by simpa [← H]
   -- Because both `t₁` and `t₂` are additive group topologies, it is enough to show `𝓕₁ = 𝓕₂`.
-  suffices 𝓕₁ = 𝓕₂ by rwa [IsTopologicalAddGroup.ext_iff] <;> infer_instance
+  suffices 𝓕₁ = 𝓕₂ by rwa [IsTopologicalAddGroup.ext_iff]
   -- If we can show that `V ∈ 𝓕₂` we are done, because then `𝓕₁ = 𝓕₂ ⊓ 𝓟 V = 𝓕₂`.
   suffices V ∈ 𝓕₂ by simpa [H]
   -- Hence, let us show that `V ∈ 𝓕₂`. Fix a scalar `c` with `0 < ‖c‖ < 1`.

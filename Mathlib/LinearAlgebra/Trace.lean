@@ -307,7 +307,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
 @[simp] theorem trace_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W]
     [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)] [AlgEquivClass F K _ _]
     (f : F) (x : End K V) : (f x).trace K W = x.trace K V :=
-  have ⟨_, h⟩ := (AlgEquivClass.toAlgEquiv f).eq_linearEquivConjAlgEquiv
+  have ⟨_, h⟩ := (AlgEquiv.ofClass f).eq_linearEquivConjAlgEquiv
   (by simpa using congr($h x)) ▸ trace_conj' _ _
 
 @[simp] theorem _root_.Matrix.trace_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
@@ -315,13 +315,13 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).trace = x.trace := by
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
     LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans
-      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
+      (AlgEquiv.ofClass f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 @[simp] theorem _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
     (f x).trace = x.trace := by
   by_cases! Nonempty m
-  · exact Matrix.trace_map (AlgEquiv.ofBijective _ (AlgHomClass.toAlgHom f).bijective) x
+  · exact Matrix.trace_map (AlgEquiv.ofBijective _ (AlgHom.ofClass f).bijective) x
   · simp
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
