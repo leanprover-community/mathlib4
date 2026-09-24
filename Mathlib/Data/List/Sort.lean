@@ -8,6 +8,7 @@ module
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Order.Fin.Basic
 
 /-!
@@ -109,9 +110,16 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
     · simp [h]
     · simpa [h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 
+@[simp]
 theorem orderedInsert_perm_orderedInsert_iff {l₁ l₂ : List α} (x : α) :
     l₁.orderedInsert r x ~ l₂.orderedInsert r x ↔ l₁ ~ l₂ := by
   rw [(perm_orderedInsert r x l₁).congr_left, (perm_orderedInsert r x l₂).congr_right, perm_cons]
+
+@[simp]
+theorem orderedInsert_perm_orderedInsert_iff_left {l : List α} {x y : α} :
+    l.orderedInsert r x ~ l.orderedInsert r y ↔ x = y := by
+  rw [(perm_orderedInsert r x l).congr_left, (perm_orderedInsert r y l).congr_right,
+    cons_perm_cons_left]
 
 theorem orderedInsert_subperm_orderedInsert_iff {l₁ l₂ : List α} (x : α) :
     l₁.orderedInsert r x <+~ l₂.orderedInsert r x ↔ l₁ <+~ l₂ := by
