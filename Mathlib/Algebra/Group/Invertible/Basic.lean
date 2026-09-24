@@ -132,9 +132,8 @@ end Monoid
 
 /-- Monoid homs preserve invertibility. -/
 @[instance_reducible]
-def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneClass S]
-    [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
-    Invertible (f r) where
+def Invertible.map {R : Type*} {S : Type*} [MulOneClass R] [MulOneClass S]
+    (f : R →* S) (r : R) [Invertible r] : Invertible (f r) where
   invOf := f (⅟r)
   invOf_mul_self := by rw [← map_mul, invOf_mul_self, map_one]
   mul_invOf_self := by rw [← map_mul, mul_invOf_self, map_one]
@@ -145,23 +144,23 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     [FunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
     [Invertible r] [ifr : Invertible (f r)] :
     f (⅟r) = ⅟(f r) := by
-  obtain rfl : ifr = Invertible.map f r := Subsingleton.elim _ _; rfl
+  obtain rfl : ifr = Invertible.map (f : R →* S) r := Subsingleton.elim _ _; rfl
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,
   then `r : R` is invertible if `f r` is.
 
 The inverse is computed as `g (⅟(f r))` -/
 @[simps! -isSimp, instance_reducible]
-def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R] [MulOneClass S]
-    [FunLike G S R] [MonoidHomClass G S R] (f : R → S) (g : G) (r : R)
+def Invertible.ofLeftInverse {R : Type*} {S : Type*} [MulOneClass R] [MulOneClass S]
+    (f : R → S) (g : S →* R) (r : R)
     (h : Function.LeftInverse g f) [Invertible (f r)] : Invertible r :=
   (Invertible.map g (f r)).copy _ (h r).symm
 
 /-- Invertibility on either side of a monoid hom with a left-inverse is equivalent. -/
 @[simps]
-def invertibleEquivOfLeftInverse {R : Type*} {S : Type*} {F G : Type*} [Monoid R] [Monoid S]
-    [FunLike F R S] [MonoidHomClass F R S] [FunLike G S R] [MonoidHomClass G S R]
-    (f : F) (g : G) (r : R) (h : Function.LeftInverse g f) : Invertible (f r) ≃ Invertible r where
+def invertibleEquivOfLeftInverse {R : Type*} {S : Type*} [Monoid R] [Monoid S]
+    (f : R →* S) (g : S →* R) (r : R) (h : Function.LeftInverse g f) :
+    Invertible (f r) ≃ Invertible r where
   toFun _ := Invertible.ofLeftInverse f _ _ h
   invFun _ := Invertible.map f _
   left_inv _ := Subsingleton.elim _ _

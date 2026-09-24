@@ -111,7 +111,7 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     let : Invertible (ι Q a) := by rwa [ha]
     let : Invertible (Q a) := invertibleOfInvertibleι Q a
     let := invertibleNeg (ι Q a)
-    let := Invertible.map involute (ι Q a)
+    let := Invertible.map involute.toMonoidHom (ι Q a)
     simp_rw [← invOf_units x, inv_inv, ← ha, map_invOf, involute_ι, invOf_neg, neg_mul,
       invOf_ι_mul_ι_mul_ι, ← map_neg, LinearMap.mem_range_self]
   | one => simp_rw [inv_one, Units.val_one, map_one, one_mul, mul_one, LinearMap.mem_range_self]

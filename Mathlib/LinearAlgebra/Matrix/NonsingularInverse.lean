@@ -522,7 +522,7 @@ attribute [local instance] Invertible.map in
 @[instance_reducible]
 def diagonalInvertible {α} [NonAssocSemiring α] (v : n → α) [Invertible v] :
     Invertible (diagonal v) :=
-  inferInstanceAs <| Invertible (diagonalRingHom n α v)
+  inferInstanceAs <| Invertible ((diagonalRingHom n α : _ →* Matrix n n α) v)
 
 theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Invertible (diagonal v)] :
     ⅟(diagonal v) = diagonal (⅟v) := by

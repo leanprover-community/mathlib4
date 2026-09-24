@@ -1089,7 +1089,7 @@ theorem mapDomain_mul [MulSemiringAction α β] [MulSemiringAction α₂ β]
   `∀ (a : G) (x : k), a • x = (f a) • x`, then `mapDomain f` is a ring homomorphism
   between their skew monoid algebras. -/
 def mapDomainRingHom [MulSemiringAction α β] [MulSemiringAction α₂ β]
-    [MonoidHomClass F α α₂] {f : F} (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
+    {f : α →* α₂} (hf : ∀ (a : α) (x : β), a • x = (f a) • x) :
     SkewMonoidAlgebra β α →+* SkewMonoidAlgebra β α₂ where
   __ := (mapDomain f : SkewMonoidAlgebra β α →+ SkewMonoidAlgebra β α₂)
   map_one' := mapDomain_one f

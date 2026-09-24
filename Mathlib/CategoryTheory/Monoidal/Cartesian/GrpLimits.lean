@@ -41,7 +41,7 @@ noncomputable def Grp.limitAux (F : J ⥤ Grp C) : Grp C where
       (F ⋙ forget₂Mon C) ≪≫ (preservesLimitIso (forget₂ GrpCat MonCat)
         (F ⋙ shrinkYonedaGrp.{max w v} ⋙ (evaluation _ _).obj (.op X))).symm
     letI := (limit (F ⋙ shrinkYonedaGrp.{max w v} ⋙ (evaluation _ _).obj (.op X))).str
-    ((invertibleOfGroup (e f)).map e.symm).copy f (e.symm_apply_apply f).symm
+    ((invertibleOfGroup (e f)).map e.symm.toMonoidHom).copy f (e.symm_apply_apply f).symm
 
 noncomputable instance : CreatesLimitsOfShape J (forget₂Mon C) where
   CreatesLimit {F} := createsLimitOfFullyFaithfulOfIso (limitAux F) (.refl (limitAux F).toMon)
