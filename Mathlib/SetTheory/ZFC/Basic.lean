@@ -377,10 +377,10 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
     fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
-        ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
+        ⟨⟨b, by simpa only [← ZFSet.sound hb]⟩, hb⟩,
         fun ⟨b, pb⟩ =>
         let ⟨a, ha⟩ := βα b
-        ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩
+        ⟨⟨a, by simpa only [ZFSet.sound ha]⟩, ha⟩⟩
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
 instance : Sep ZFSet ZFSet :=

@@ -177,7 +177,7 @@ theorem AccPt.of_mem_tangentConeAt_ne_zero [T2Space E] {y : E} (hy : y ∈ tange
 
 theorem UniqueDiffWithinAt.accPt [T2Space E] [Nontrivial E] (h : UniqueDiffWithinAt 𝕜 s x) :
     AccPt x (𝓟 s) := by
-  by_contra! h'
+  by_contra h'
   have : Dense (Submodule.span 𝕜 (0 : Set E) : Set E) :=
     h.1.mono <| by gcongr; exact tangentConeAt_subset_zero h'
   simp [dense_iff_closure_eq] at this
