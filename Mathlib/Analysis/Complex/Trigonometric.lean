@@ -946,11 +946,20 @@ theorem norm_cos_add_sin_mul_I (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by
   have := Real.sin_sq_add_cos_sq x
   simp_all [add_comm, norm_def, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
 
-@[simp]
+-- @[simp]
 theorem norm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ = 1 := by
   rw [exp_mul_I, norm_cos_add_sin_mul_I]
 
 @[simp]
+theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
+  rw [exp_eq_exp_re_mul_sin_add_cos, Complex.norm_mul, norm_exp_ofReal, norm_cos_add_sin_mul_I,
+    mul_one]
+
+-- @[simp]
+theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
+  rw [norm_exp, mul_I_re]
+
+-- @[simp]
 theorem norm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ = 1 := by
   rw [mul_comm, norm_exp_ofReal_mul_I]
 
@@ -980,15 +989,8 @@ theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 *
     show -(ofReal (x / 2)) = ofReal (-x / 2) by norm_cast; exact neg_div' 2 x,
     norm_exp_ofReal_mul_I, one_mul, ← norm_neg, neg_sub, mul_comm]
 
-theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
-  rw [exp_eq_exp_re_mul_sin_add_cos, Complex.norm_mul, norm_exp_ofReal, norm_cos_add_sin_mul_I,
-    mul_one]
-
 theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
-
-theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
-  rw [norm_exp, mul_I_re]
 
 theorem one_sub_rexp_re_le_norm_one_sub_cexp (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ := by
   rw [← norm_exp]
