@@ -55,7 +55,7 @@ theorem npow_val_eq_ppow [Monoid M] (n : ℕ+) (x : M) : x ^ n.val = x ^ n := by
   | hsucc n IH => simp [pow_succ, IH]
 
 -- This lemma is higher priority than later `smul_zero` so that the `simpNF` is happy
-@[to_additive (attr := simp high) psmul_zero] lemma one_ppow [Monoid M] (n : ℕ+) :
+@[to_additive (attr := simp) psmul_zero] lemma one_ppow [Monoid M] (n : ℕ+) :
     (1 : M) ^ n = 1 := by
   rw [← npow_val_eq_ppow, one_pow]
 
