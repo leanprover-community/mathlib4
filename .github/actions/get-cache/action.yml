@@ -29,15 +29,19 @@ runs:
         HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       run: |
         set -uo pipefail
-        runs="repos/leanprover-community/mathlib4/actions/workflows/build.yml/runs?branch=master&event=push&status=success"
+        # The helpers select the successful runs in jq. The server-side `status=success`
+        # filter, combined with `event=push`, can return stale results that omit every
+        # recent run.
+        runs="repos/leanprover-community/mathlib4/actions/workflows/build.yml/runs?branch=master&event=push"
+        first_success='[.workflow_runs[] | select(.conclusion == "success")][0].id // empty'
 
         # Each helper prints a matching successful master-push run-id, or empty.
-        run_at()     { gh api "${runs}&head_sha=$1" --jq '.workflow_runs[0].id // empty' 2>/dev/null || true; }
-        latest_run() { gh api "${runs}&per_page=1"  --jq '.workflow_runs[0].id // empty' 2>/dev/null || true; }
+        run_at()     { gh api "${runs}&head_sha=$1" --jq "${first_success}" 2>/dev/null || true; }
+        latest_run() { gh api "${runs}&per_page=20" --jq "${first_success}" 2>/dev/null || true; }
         # newest run created at-or-before date $1, but not older than cutoff $2
         newest_before() {
           gh api "${runs}&per_page=100" 2>/dev/null | jq -r --arg d "$1" --arg c "$2" \
-            '[.workflow_runs[] | select(.created_at <= $d and ($c == "" or .created_at >= $c))][0].id // empty' \
+            '[.workflow_runs[] | select(.conclusion == "success" and .created_at <= $d and ($c == "" or .created_at >= $c))][0].id // empty' \
             2>/dev/null || true
         }
         # True if run-id $1 actually carries a `cache-snapshot` artifact. Older runs
