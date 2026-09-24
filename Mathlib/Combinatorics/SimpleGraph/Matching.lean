@@ -351,7 +351,7 @@ def IsMatchingFree (G : SimpleGraph V) := ∀ M : Subgraph G, ¬ M.IsPerfectMatc
 lemma IsMatchingFree.mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatchingFree) :
     G.IsMatchingFree := by
   intro x
-  by_contra! hc
+  by_contra hc
   apply hmf (x.map (SimpleGraph.Hom.ofLE h))
   refine ⟨hc.1.map_ofLE h, ?_⟩
   intro v

@@ -58,7 +58,7 @@ However, it does *not* merge binders.
 @[app_unexpander ExistsUnique] meta def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
   | `($(_) fun $x:ident ↦ $b)                      => `(∃! $x:ident, $b)
   | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! $x:ident : $t, $b)
-  | _                                               => throw ()
+  | _                                              => throw ()
 
 /--
 `∃! x ∈ s, p x` means `∃! x, x ∈ s ∧ p x`, which is to say that there exists a unique `x ∈ s`
