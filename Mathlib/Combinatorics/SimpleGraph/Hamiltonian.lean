@@ -48,7 +48,7 @@ lemma IsHamiltonian.map (hf : Bijective f) (hp : p.IsHamiltonian) :
 
 /-- Hamiltonian paths are paths. -/
 lemma IsHamiltonian.isPath (hp : p.IsHamiltonian) : p.IsPath :=
-  IsPath.mk' <| List.nodup_iff_count_le_one.2 <| (le_of_eq <| hp ·)
+  IsPath.mk' <| List.nodup_iff_count_le_one.2 (le_of_eq <| hp ·)
 
 /-- A path whose support contains every vertex is Hamiltonian. -/
 lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support) :
@@ -143,6 +143,14 @@ lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
   refine (Fintype.equivFinOfCardEq ?_).symm
   simp_rw [length_support, h, Nat.sub_one_add_one Fintype.card_ne_zero]
 
+@[simp]
+theorem isHamiltonian_transfer [Finite α] {H : SimpleGraph α} (h) :
+    (p.transfer H h).IsHamiltonian ↔ p.IsHamiltonian := by
+  cases nonempty_fintype α
+  simp [isHamiltonian_iff_isPath_and_length_eq]
+
+alias ⟨_, IsHamiltonian.transfer⟩ := isHamiltonian_transfer
+
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
@@ -219,6 +227,14 @@ lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
 protected alias ⟨IsHamiltonianCycle.of_rotate, IsHamiltonianCycle.rotate⟩ :=
   isHamiltonianCycle_rotate
 
+@[simp]
+theorem isHamiltonianCycle_transfer [Finite α] {H : SimpleGraph α} {p : G.Walk v v} (h) :
+    (p.transfer H h).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+  cases nonempty_fintype α
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
+
+alias ⟨_, IsHamiltonianCycle.transfer⟩ := isHamiltonianCycle_transfer
+
 end Walk
 
 variable [Fintype α]
@@ -270,7 +286,7 @@ lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
   exact p.adj_snd hp.not_nil
 
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
-  of_card_eq_one <| Fintype.card_unique
+  of_card_eq_one Fintype.card_unique
 
 /-- A finite simple graph with a bridge is not hamiltonian. -/
 theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHamiltonian := by

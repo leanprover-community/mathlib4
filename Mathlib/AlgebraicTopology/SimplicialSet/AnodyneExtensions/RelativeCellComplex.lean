@@ -25,8 +25,6 @@ cell complex with basic cells given by horn inclusions.
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 universe v u
@@ -81,12 +79,10 @@ abbrev map : Δ[c.dim + 1] ⟶ X :=
   yonedaEquiv.symm
     ((P.p c.s).val.cast (P.isUniquelyCodimOneFace c.s).dim_eq).simplex
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma range_map : Subcomplex.range c.map = (P.p c.s).val.subcomplex := by
   rw [range_eq_ofSimplex, Equiv.apply_symm_apply, S.ofSimplex_eq_subcomplex_mk,
     ← S.cast_eq_self _ (P.dim_p c.s)]
-  dsimp [S.subcomplex]
 
 lemma map_app_objEquiv_symm_δ_index :
     c.map.app (op ⦋c.dim⦌) (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index)) =
@@ -126,6 +122,7 @@ noncomputable abbrev basicCell (i : ι) (c : f.Cell i) : (c.horn : SSet) ⟶ Δ[
 
 /-- The filtration of a simplicial set given by a rank function
 for a proper pairing of a subcomplex. -/
+@[implicit_reducible]
 def filtration (i : ι) : X.Subcomplex :=
   A ⊔ ⨆ (j : ι) (_ : j < i) (c : f.Cell j), (P.p c.s).val.subcomplex
 
@@ -394,7 +391,7 @@ pairing of a subcomplex of a simplicial set, this is
 the nondegenerate simplex in `f.sigmaStdSimplex j`
 not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
 which corresponds to `c.ιSigmaStdSimplex`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def Cell.type₁ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m j)).N where
   simplex := c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm (𝟙 _))
   nonDegenerate := by
@@ -413,7 +410,7 @@ pairing of a subcomplex of a simplicial set, this is
 the nondegenerate simplex in `f.sigmaStdSimplex j`
 not in the image of `f.m j : f.sigmaHorn j ⟶ f.sigmaStdSimplex j`
 which corresponds to the `c.index`th-face of `c.type₁`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def Cell.type₂ {j : ι} (c : f.Cell j) : (Subcomplex.range (f.m j)).N where
   simplex := c.ιSigmaStdSimplex.app _
     (stdSimplex.objEquiv.symm (SimplexCategory.δ c.index))
@@ -497,7 +494,6 @@ lemma isPullback (j : ι) :
     · rw [← NatTrans.comp_app_apply]
       simp)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_homOfLE_app_union_range_b_app (j : ι) (d : SimplexCategoryᵒᵖ) :
     Set.range ((homOfLE (f.filtration_monotone (Order.le_succ j))).app d) ⊔
       Set.range ((f.b j).app d) = Set.univ := by
@@ -521,7 +517,6 @@ corresponding to an element in `(Subcomplex.range (f.m j)).N`. -/
 noncomputable def mapN {j : ι} (x : (Subcomplex.range (f.m j)).N) : X.S :=
   S.mk ((f.b j).app _ x.simplex).val
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mapN_type₁ {j : ι} (c : f.Cell j) : f.mapN c.type₁ = S.mk (P.p c.s).val.simplex := by
   dsimp only [Cell.type₁, mapN]
@@ -530,7 +525,6 @@ lemma mapN_type₁ {j : ι} (c : f.Cell j) : f.mapN c.type₁ = S.mk (P.p c.s).v
   rw [S.ext_iff, c.ι_b_app_apply]
   apply yonedaEquiv_symm_app_id
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapN_type₂ {j : ι} (c : f.Cell j) : f.mapN c.type₂ = S.mk c.s.val.simplex := by
   dsimp [mapN]

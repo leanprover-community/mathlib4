@@ -348,7 +348,6 @@ namespace PullbackObjObj
 
 attribute [reassoc (attr := simp)] π_fst π_snd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `PullbackObjObj` structure given by the pullback of the limits API. -/
 @[simps]
 noncomputable def ofHasPullback

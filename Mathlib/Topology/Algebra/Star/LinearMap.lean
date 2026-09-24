@@ -35,8 +35,8 @@ open WithConv
 
 /-- The intrinsic star operation on continuous linear maps defined by
 `(star f) x = star (f (star x))`. -/
-instance intrinsicStar : Star (WithConv (E →L[R] F)) where star f := toConv <|
-  { (star (toConv f.ofConv.toLinearMap)).ofConv with }
+instance intrinsicStar : Star (WithConv (E →L[R] F)) where
+  star f := toConv { (star (toConv f.ofConv.toLinearMap)).ofConv with }
 
 @[simp] theorem intrinsicStar_apply (f : WithConv (E →L[R] F)) (x : E) :
     star f x = star (f (star x)) := rfl

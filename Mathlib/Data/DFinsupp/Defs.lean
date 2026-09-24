@@ -74,6 +74,7 @@ section Basic
 
 variable [∀ i, Zero (β i)] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 
+@[macro_inline]
 instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
   ⟨fun f => f.toFun, fun ⟨f₁, s₁⟩ ⟨f₂, s₁⟩ ↦ fun (h : f₁ = f₂) ↦ by
     subst h
@@ -91,7 +92,7 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
 
 instance : Zero (Π₀ i, β i) :=
-  ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
+  ⟨⟨0, Trunc.mk ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
 
 instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
@@ -1045,7 +1046,7 @@ noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Functio
   support' :=
     f.support'.map fun s =>
       ⟨(s.1.finite_toSet.preimage hh.injOn).toFinset.val, fun x =>
-        (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr <| hx⟩
+        (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr hx⟩
 
 @[simp]
 theorem comapDomain_apply [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h) (f : Π₀ i, β i)

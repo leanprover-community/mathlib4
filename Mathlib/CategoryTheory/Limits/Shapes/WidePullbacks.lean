@@ -243,7 +243,7 @@ variable {arrows} in
 @[to_dual desc /-- Descend a collection of morphisms to a morphism from the pushout. -/]
 noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
     (w : ∀ j, fs j ≫ arrows j = f) : X ⟶ widePullback _ _ arrows :=
-  limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs <| w)
+  limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs w)
 
 variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
@@ -261,7 +261,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   intro h1 h2
   apply
     (limit.isLimit (WidePullbackShape.wideCospan B objs arrows)).uniq
-      (WidePullbackShape.mkCone f fs <| w)
+      (WidePullbackShape.mkCone f fs w)
   rintro (_ | _)
   · apply h2
   · apply h1
