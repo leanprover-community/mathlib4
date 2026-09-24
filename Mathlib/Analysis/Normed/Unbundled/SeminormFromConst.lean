@@ -103,7 +103,9 @@ theorem tendsto_seminormFromConst_seq_atTop (x : R) :
     (seminormFromConst_bddBelow c f x)
 
 /-- For a ring seminorm `f` on `R` and `c ∈ R`, the ring seminorm on `R` defined as the limit of
-`f (x * c ^ n) / (f c) ^ n`. -/
+`f (x * c ^ n) / (f c) ^ n`.
+
+We leave this definition unexposed. Use the limit `tendsto_seminormFromConst` instead. -/
 @[no_expose]
 def seminormFromConst : RingSeminorm R :=
   let g x : ℝ := iInf (seminormFromConst_seq c f x)
