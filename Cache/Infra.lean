@@ -96,9 +96,14 @@ Every container follows the `mathlib4-{name}` convention.
 def pathSegment (c : Container) : String :=
   s!"mathlib4-{c.name}"
 
+/-- The container's URL under `base`, a host or an upload base that serves the
+`/{container}/{key}` namespace: `{base}/{pathSegment}`. -/
+def urlUnder (c : Container) (base : String) : String :=
+  s!"{base}/{c.pathSegment}"
+
 /-- Public Azure Blob Storage base URL for a container. -/
 def azureURL (c : Container) : String :=
-  s!"{azureAccountURL}/{c.pathSegment}"
+  c.urlUnder azureAccountURL
 
 /--
 Whether file lookups in this container use the flat `/f/<hash>` layout, or
@@ -128,10 +133,9 @@ Blob path of the directory that holds the cache artifacts, per the container's
 layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
 a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
 is lowercased via `normalizeRepo`. A file lives at
-`{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
-`stagedUploadDestFrom` both build on this, so reads and uploads share one path
-contract. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no
-trailing slash.
+`{fileDirPath container repo scope}/{fileName}`; every `Location` builds on
+this, so reads and uploads share one path contract. Like `markerDirPath`
+(`Cache/Marker.lean`), the path carries no trailing slash.
 -/
 def fileDirPath (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=
@@ -184,7 +188,7 @@ CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
 Only reads follow this base. Uploads and marker writes resolve their own
-destination per the selected backend (`stagedUploadDest`).
+location per the selected backend (`uploadLocation`).
 -/
 def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool) : String :=
   (normalizeBaseURL envValue?).getD (defaultGetBaseURL c useLegacy)
@@ -198,7 +202,7 @@ def getBaseURL (c : Container) : IO String := do
 
 /-- Read URL for a container: `{getBaseURL c}/{pathSegment}`. -/
 def Container.getURL (c : Container) : IO String := do
-  return s!"{← getBaseURL c}/{c.pathSegment}"
+  return c.urlUnder (← getBaseURL c)
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.

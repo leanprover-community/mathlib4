@@ -183,7 +183,7 @@ def main (args : List String) : IO Unit := do
     | some cs => cacheFromOverride.set (some cs)
 
   -- Parse `--container=NAME`. Validation is unconditional; `put` enforces that
-  -- the flag is set (via `stagedUploadDest`).
+  -- the flag is set (via `uploadLocation`).
   let container? ← match containerStr? with
     | none => pure none
     | some s => match Container.parse? s with

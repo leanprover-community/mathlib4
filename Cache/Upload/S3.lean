@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Upload.Dest
 import Cache.Upload.Curl
 import Cache.Upload.Rclone
 
@@ -15,7 +14,7 @@ The complete s3 upload path. This module holds:
 
 * the credential set (`S3Credentials`), its resolution (`s3AuthFrom`), and the
   signing region (`s3RegionFrom`);
-* the destination resolution (`s3UploadDestFrom`);
+* the location resolution (`s3UploadLocationFrom`);
 * the transfer-tool policy (`s3UploadToolFrom`);
 * the SigV4 curl arguments (`s3CurlArgs`);
 * the rclone tool's configuration (`rcloneEnv`) and the endpoint and bucket
@@ -26,25 +25,6 @@ The complete s3 upload path. This module holds:
 namespace Cache.Requests
 
 open System (FilePath)
-
-/--
-The upload destination for the s3 backend: the container write rebased under
-the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
-`MATHLIB_CACHE_BASE_URL` rebases reads. A bucket URL is account-specific, so
-the backend has no default endpoint and an unset base errors. A base without
-`--container` errors, since a base rebases a container write.
--/
-def s3UploadDestFrom (putBase? : Option String) (container? : Option Container)
-    (repo : String) (scope? : Option String) : Except String StagedUploadDest :=
-  match putBase?, container? with
-  | some base, some c => .ok (containerUploadDest base c repo scope?)
-  | some _, none => .error
-      "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
-      pass --container=NAME to name the container."
-  | none, _ => .error
-      "the s3 backend uploads to the bucket endpoint MATHLIB_CACHE_PUT_BASE_URL \
-      names (https://host/bucket): set it, or set MATHLIB_CACHE_PUT_URL for a \
-      flat upload"
 
 /-- S3-compatible credentials for a direct bucket write. `sessionToken?`
 carries the session token of a temporary credential and is absent for a
@@ -122,7 +102,7 @@ def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
 Split an S3 upload base into the endpoint origin and the bucket path:
 `https://host/bucket[/prefix]` becomes `(https://host, bucket[/prefix])`.
 rclone addresses a destination as `:s3:{bucket}/{key}` against an endpoint.
-`stagedUploadDestFrom` rejects an s3 base that does not split.
+`uploadLocationFrom` rejects an s3 root that does not split.
 -/
 def s3EndpointSplit (base : String) : Except String (String × String) :=
   match base.splitOn "://" with
@@ -136,6 +116,29 @@ def s3EndpointSplit (base : String) : Except String (String × String) :=
         .ok (s!"{scheme}://{host}", "/".intercalate parts)
     | [] => .error s!"the upload base '{base}' is not a URL"
   | _ => .error s!"the upload base '{base}' is not a URL"
+
+/--
+The upload location for the s3 backend: the container write rebased under
+the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
+`MATHLIB_CACHE_BASE_URL` rebases reads. A bucket URL is account-specific, so
+the backend has no default endpoint and an unset base errors. A base without
+`--container` errors, since a base rebases a container write.
+-/
+def s3UploadLocationFrom (putBase? : Option String) (container? : Option Container)
+    (repo : String) (scope? : Option String) : Except String Location :=
+  match putBase?, container? with
+  | some base, some c => do
+    -- The base names the bucket; validate it before the container's segment
+    -- joins it, which would otherwise pass for a bucket name.
+    discard (s3EndpointSplit base)
+    return c.location (c.urlUnder base) repo scope?
+  | some _, none => .error
+      "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
+      pass --container=NAME to name the container."
+  | none, _ => .error
+      "the s3 backend uploads to the bucket endpoint MATHLIB_CACHE_PUT_BASE_URL \
+      names (https://host/bucket): set it, or set MATHLIB_CACHE_PUT_URL for a \
+      flat upload"
 
 /--
 The rclone S3 backend configuration. It is passed in the child environment,
@@ -180,19 +183,17 @@ the transfer tool (`s3UploadToolFrom`), and transfer, each request signed with
 `MATHLIB_CACHE_PUT_FORCE_CURL` flag, and the availability probe runs only when
 the flag does not already force curl.
 -/
-def s3PutStaged (dest : StagedUploadDest) (creds : S3Credentials) (region : String)
-    (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
-    (markerSha? : Option String) : IO Unit := do
-  let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.base)
+def s3PutStaged (dest : Location) (creds : S3Credentials) (region : String)
+    (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
+  let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.root)
   let forceCurl ← getEnvFlag "MATHLIB_CACHE_PUT_FORCE_CURL" (ifUnset := false)
   let available ← if forceCurl then pure false else rcloneAvailable
   match s3UploadToolFrom forceCurl available with
   | .curl =>
     putStagedViaCurl dest (pure (s3CurlArgs creds region)) srcDir fileNames overwrite
-      markerSha?
   | .rclone =>
     let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
     putStagedViaRclone dest (rcloneEnv creds endpoint provider region) bucketPath
-      markerSha? srcDir fileNames overwrite
+      srcDir fileNames overwrite
 
 end Cache.Requests
