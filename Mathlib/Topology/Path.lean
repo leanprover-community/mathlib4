@@ -63,6 +63,7 @@ structure Path (x y : X) extends C(I, X) where
   /-- The end point of a `Path`. -/
   target' : toFun 1 = y
 
+@[macro_inline]
 instance Path.instFunLike : FunLike (Path x y) I X where
   coe γ := ⇑γ.toContinuousMap
   coe_injective γ₁ γ₂ h := by
@@ -330,7 +331,7 @@ theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     EqOn.image_eq fun t ht ↦ extend_trans_of_le_half _ _ (mem_Iic.1 ht),
     EqOn.image_eq fun t ht ↦ extend_trans_of_half_le _ _ (mem_Ici.1 ht),
     ← image_image γ₁.extend, ← image_image (γ₂.extend <| · - 1), ← image_image γ₂.extend]
-  norm_num [image_mul_left_Ici, image_mul_left_Iic,
+  simp [image_mul_left_Ici, image_mul_left_Iic,
     image_extend_of_subset, Icc_subset_Iic_self, Icc_subset_Ici_self]
 
 /-- Image of a path from `x` to `y` by a map which is continuous on the path. -/

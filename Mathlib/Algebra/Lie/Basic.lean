@@ -344,6 +344,7 @@ attribute [coe] LieHom.toLinearMap
 instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
   ⟨LieHom.toLinearMap⟩
 
+@[macro_inline]
 instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
   coe f := f.toFun
   coe_injective x y h := by
@@ -383,7 +384,6 @@ instance : Zero (L₁ →ₗ⁅R⁆ L₂) :=
   ⟨{ (0 : L₁ →ₗ[R] L₂) with map_lie' := by simp }⟩
 
 instance : IsZeroApply (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
 
@@ -394,7 +394,6 @@ instance : One (L₁ →ₗ⁅R⁆ L₁) :=
   ⟨id⟩
 
 instance : IsOneApplyEqSelf (L₁ →ₗ⁅R⁆ L₁) L₁ where
-  one_apply_eq_self _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_one := FunLike.coe_one_eq_id
 
@@ -530,6 +529,7 @@ instance hasCoeToLieHom : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ →ₗ⁅R⁆ L₂
 instance hasCoeToLinearEquiv : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ ≃ₗ[R] L₂) :=
   ⟨toLinearEquiv⟩
 
+@[macro_inline]
 instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -576,7 +576,6 @@ instance : One (L₁ ≃ₗ⁅R⁆ L₁) :=
   ⟨{ (1 : L₁ ≃ₗ[R] L₁) with map_lie' := rfl }⟩
 
 instance : IsOneApplyEqSelf (L₁ ≃ₗ⁅R⁆ L₁) L₁ where
-  one_apply_eq_self _ := rfl
 
 @[deprecated (since := "2026-07-27")] protected alias one_apply := one_apply_eq_self
 
@@ -692,6 +691,7 @@ attribute [coe] LieModuleHom.toLinearMap
 instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
+@[macro_inline]
 instance : FunLike (M →ₗ⁅R,L⁆ N) M N where
   coe f := f.toFun
   coe_injective x y h := by cases x; cases y; simp at h; simp [h]
@@ -730,7 +730,6 @@ instance : Zero (M →ₗ⁅R,L⁆ N) :=
   ⟨{ (0 : M →ₗ[R] N) with map_lie' := by simp }⟩
 
 instance : IsZeroApply (M →ₗ⁅R,L⁆ N) M N where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
 
@@ -741,7 +740,6 @@ instance : One (M →ₗ⁅R,L⁆ M) :=
   ⟨id⟩
 
 instance : IsOneApplyEqSelf (M →ₗ⁅R,L⁆ M) M where
-  one_apply_eq_self _ := rfl
 
 instance : Inhabited (M →ₗ⁅R,L⁆ N) :=
   ⟨0⟩
@@ -803,18 +801,15 @@ instance : Add (M →ₗ⁅R,L⁆ N) where
   add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : IsAddApply (M →ₗ⁅R,L⁆ N) M N where
-  add_apply _ _ _ := rfl
 
 instance : Sub (M →ₗ⁅R,L⁆ N) where
   sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : IsSubApply (M →ₗ⁅R,L⁆ N) M N where
-  sub_apply _ _ _ := rfl
 
 instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : IsNegApply (M →ₗ⁅R,L⁆ N) M N where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_add := FunLike.coe_add
 
@@ -832,7 +827,6 @@ instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : IsSMulApply ℕ (M →ₗ⁅R,L⁆ N) M N where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_nsmul := FunLike.coe_smul
 
@@ -842,7 +836,6 @@ instance hasZSMul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
   smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : IsSMulApply ℤ (M →ₗ⁅R,L⁆ N) M N where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_zsmul := FunLike.coe_smul
 
@@ -856,7 +849,6 @@ instance : SMul R (M →ₗ⁅R,L⁆ N) where
   smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : IsSMulApply R (M →ₗ⁅R,L⁆ N) M N where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_smul := FunLike.coe_smul
 
@@ -904,6 +896,7 @@ instance hasCoeToLieModuleHom : Coe (M ≃ₗ⁅R,L⁆ N) (M →ₗ⁅R,L⁆ N) 
 instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
   ⟨toLinearEquiv⟩
 
+@[macro_inline]
 instance : EquivLike (M ≃ₗ⁅R,L⁆ N) M N where
   coe f := f.toFun
   inv f := f.invFun
@@ -954,7 +947,6 @@ instance : One (M ≃ₗ⁅R,L⁆ M) :=
   ⟨{ (1 : M ≃ₗ[R] M) with map_lie' := rfl }⟩
 
 instance : IsOneApplyEqSelf (M ≃ₗ⁅R,L⁆ M) M where
-  one_apply_eq_self _ := rfl
 
 @[deprecated (since := "2026-07-27")] protected alias one_apply := one_apply_eq_self
 
@@ -990,7 +982,7 @@ theorem symm_apply_eq {m : M} {n : N} (e : M ≃ₗ⁅R,L⁆ N) : e.symm n = m �
 theorem eq_symm_apply {m : M} {n : N} (e : M ≃ₗ⁅R,L⁆ N) : m = e.symm n ↔ e m = n :=
   e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply {m : M} {n : N} (e : M ≃ₗ⁅R,L⁆ N) :
     e m = n ↔ m = e.symm n :=
   e.eq_symm_apply.symm

@@ -9,7 +9,6 @@ import MathlibTest.ClickSuggestions.TestImpl
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Set.Insert
-import MathlibTest.ClickSuggestions.TestImpl
 import Mathlib.Data.Finset.Max
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.Algebra.Lie.OfAssociative
@@ -191,3 +190,11 @@ example : True := by
   · click_test h "" => "rw [← true_eq_false_of_false h] at h"
     trivial
   · trivial
+
+example (h₁ : n ≤ m) (h₂ : m ≤ k) : n ≤ k := by
+  -- This doesn't suggest `Nat.le_trans h₁ h₂`, because that requires a metavariable assignment:
+  click_test => "apply Nat.le_trans"
+  apply Nat.le_trans
+  click_test => "exact h₁"
+  exact h₁
+  exact h₂

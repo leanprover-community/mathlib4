@@ -95,7 +95,7 @@ def toValued : Valued K ℝ≥0 :=
           simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
         refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
-        · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
+        · exact NNReal.coe_pos.mpr <| embedding_unit_pos _
         · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
@@ -121,6 +121,7 @@ def norm : R → ℝ := fun x : R ↦ hv.hom' (v.restrict x)
 
 theorem norm_def {x : R} : v.norm x = hv.hom' (v.restrict x) := rfl
 
+theorem norm_nonneg (x : R) : 0 ≤ v.norm x := by simp [norm]
 theorem norm_nonneg (x : R) : 0 ≤ v.norm x := by simp [norm]
 
 theorem norm_add_le (x y : R) : v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by

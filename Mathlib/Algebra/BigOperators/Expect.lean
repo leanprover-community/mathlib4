@@ -92,9 +92,9 @@ open Batteries.ExtendedBinder
 /-- Delaborator for `Finset.expect`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
 @[scoped app_delab Finset.expect] meta def delabFinsetExpect : Delab :=
-  whenPPOption getPPNotation <| withOverApp 6 <| do
+  whenPPOption getPPNotation <| withOverApp 6 do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
-  guard <| f.isLambda
+  guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
@@ -107,7 +107,7 @@ to show the domain type when the expect is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident)
     `(𝔼 $binder:bigOpBinder, $body)
   else
-    let ss ← withNaryArg 4 <| delab
+    let ss ← withNaryArg 4 delab
     `(𝔼 $(.mk i):ident ∈ $ss, $body)
 
 end BigOperators
