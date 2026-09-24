@@ -113,7 +113,7 @@ the entries.
 `listA`/`listB` are the rows of the `l × m` and `m × n` matrix respectively.
 The rows are not checked against `l`, `m` and `n`. -/
 def proveMul (l m n : Nat) (listA listB : List (List Q($α))) : MulEq zα aα mα l m n :=
-  let Bt := let : Zero Q($α) := ⟨q(0)⟩; ListMatrix.transpose n listB
+  let Bt := let : Zero Q($α) := ⟨default⟩; ListMatrix.transpose n listB
   -- Each row and column literal is built once and named by every cell that uses it, and `A` is
   -- the literal of the row literals, so the kernel meets one object per row and per column.
   let rowLits : List Q(List $α) := listA.map mkListLitQ
