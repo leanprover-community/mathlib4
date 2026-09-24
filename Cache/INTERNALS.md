@@ -9,30 +9,47 @@ read workflows is in [`WORKFLOWS.md`](./WORKFLOWS.md), the trust model in
 
 Each layer imports only the layers below it.
 
-```mermaid
-flowchart TB
-  commands["Command: Commands"]
-  dispatch["Dispatch: Workflow"]
-  workflows["Workflows: Workflow/Public, Workflow/Developer, Workflow/Nightly"]
-  mechanisms["Read mechanisms: Workflow/Chain, Workflow/Notice, Workflow/Developer/Query, Workflow/Defs"]
-  cli["Command vocabulary: Cli"]
-  transport["Transport, git, backends: Requests, Repo, Upload, Upload/*"]
-  domain["Domain: Infra, Scope, Marker"]
-  env["Environment: Env"]
-  commands --> dispatch --> workflows --> mechanisms --> cli --> transport --> domain --> env
-  commands --> transport
+```text
+Commands                     command: settings, parse, exit status
+  │
+  ▼
+Workflow                     dispatch: decide, plan, read
+  │
+  ▼
+Workflow/Public              workflows: flags, hosts, options
+Workflow/Developer
+Workflow/Nightly
+  │
+  ▼
+Workflow/Chain               read mechanisms
+Workflow/Notice
+Workflow/Developer/Query
+Workflow/Defs
+  │
+  ▼
+Cli                          command vocabulary
+  │
+  ▼
+Requests, Repo,              transport, git, backends
+Upload, Upload/*             (Commands also imports Upload)
+  │
+  ▼
+Infra, Scope, Marker         domain
+  │
+  ▼
+Env                          environment
 ```
 
-| Layer | Modules | Rules |
-|-------|---------|-------|
-| Command | `Commands` | Reads the decision variables once per command (`Settings.read`). Turns an error into exit status 1 (`reportErrors`). |
-| Dispatch | `Workflow` | Decides the workflow of a read, plans it, and runs it. |
-| Workflows | `Workflow/Public`, `Workflow/Developer`, `Workflow/Nightly` | Each owns its flags, its read hosts, and its option checks. Reads no environment variable and does not exit: it takes `Settings` from `ReadContext` and throws on an invalid option (`fail`). |
-| Read mechanisms | `Workflow/Chain`, `Workflow/Notice`, `Workflow/Developer/Query`, `Workflow/Defs` | The chain read, the security notice, and the marker probes. The caller gives each read URL. |
-| Command vocabulary | `Cli` | The flag value types, the flags no workflow owns (`CommonFlag`), and `Scope.flag` and `Scope.parse`. |
-| Transport, git, backends | `Requests`, `Repo`, `Upload`, `Upload/*` | The download rounds, the repository detection, and the upload backends. A backend reads its own credentials. |
-| Domain | `Infra`, `Scope`, `Marker` | The containers, their layouts and paths, the read base rule, the scope, and the marker paths. |
-| Environment | `Env` | The `Settings` record and the rules that parse a variable's value. |
+| Layer | Rules |
+|-------|-------|
+| Command | Reads the decision variables once per command (`Settings.read`). Turns an error into exit status 1 (`reportErrors`). |
+| Dispatch | Decides the workflow of a read, plans it, and runs it. |
+| Workflows | Each owns its flags, its read hosts, and its option checks. Reads no environment variable and does not exit: it takes `Settings` from `ReadContext` and throws on an invalid option (`fail`). |
+| Read mechanisms | The chain read, the security notice, and the marker probes. The caller gives each read URL. |
+| Command vocabulary | The flag value types, the flags no workflow owns (`CommonFlag`), and `Scope.flag` and `Scope.parse`. |
+| Transport, git, backends | The download rounds, the repository detection, and the upload backends. A backend reads its own credentials. |
+| Domain | The containers, their layouts and paths, the read base rule, the scope, and the marker paths. |
+| Environment | The `Settings` record and the rules that parse a variable's value. |
 
 `Hashing`, `IO`, and `Lean` compute the file hashes and hold the local cache
 mechanics; every layer above them can use them.
@@ -46,17 +63,23 @@ Then the handler of the subcommand runs inside `reportErrors`.
 
 A `get` runs in this order (`runGet`):
 
-```mermaid
-flowchart TD
-  s["Settings.read"] --> r["resolveRepo: --repo, else the git remote"]
-  r --> d["Workflow.forRead: decide"]
-  d --> p["Workflow.plan: parse and check the workflow's options"]
-  p --> h["hashMemoFor: hash the files"]
-  h --> rd["Plan.read: the workflow's read"]
-  rd --> pub["Public.get: one flat round"]
-  rd --> chain["Developer.get, Nightly.get: notice, then Chain.readRounds"]
-  pub --> gf["Requests.getFiles"]
-  chain --> gf
+```text
+Settings.read
+  │
+resolveRepo                  --repo, else the git remote
+  │
+Workflow.forRead             decide
+  │
+Workflow.plan                parse and check the workflow's options
+  │
+hashMemoFor                  hash the files
+  │
+Plan.read
+  ├── Public.get             one flat round ─────────────┐
+  └── Developer.get,         notice, then                │
+      Nightly.get            Chain.readRounds ───────────┤
+                                                         ▼
+                                              Requests.getFiles
 ```
 
 The plan comes before the hash, so an invalid option fails before the
