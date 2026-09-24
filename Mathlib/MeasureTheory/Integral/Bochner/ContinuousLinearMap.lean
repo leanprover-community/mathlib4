@@ -192,8 +192,9 @@ theorem setIntegral_re_add_im {f : X → 𝕜} {i : Set X} (hf : IntegrableOn f 
       ∫ x in i, f x ∂μ :=
   integral_re_add_im hf
 
-theorem enorm_integral_mul_starRingEnd_comm {f g : X → 𝕜} :
-    ‖∫ x, f x * starRingEnd 𝕜 (g x) ∂μ‖ₑ = ‖∫ x, g x * starRingEnd 𝕜 (f x) ∂μ‖ₑ := by
+open scoped ComplexConjugate in
+theorem enorm_integral_mul_conj_comm {f g : X → 𝕜} :
+    ‖∫ x, f x * conj (g x) ∂μ‖ₑ = ‖∫ x, g x * conj (f x) ∂μ‖ₑ := by
   rw [← RCLike.enorm_conj, ← integral_conj]
   simp [mul_comm]
 
