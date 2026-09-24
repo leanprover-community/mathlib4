@@ -99,7 +99,6 @@ instance : IsZeroApply (Kernel α β) α (Measure β) where
 instance : IsAddApply (Kernel α β) α (Measure β) where
 
 instance : IsSMulApply ℕ+ (Kernel α β) α (Measure β) where
-  smul_apply _ _ _ := rfl
 
 instance : IsSMulApply ℕ (Kernel α β) α (Measure β) where
 

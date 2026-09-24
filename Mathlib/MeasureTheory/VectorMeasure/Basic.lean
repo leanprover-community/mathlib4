@@ -295,7 +295,6 @@ instance instPSMul : SMul ℕ+ (VectorMeasure α M) :=
 instance : IsAddApply (VectorMeasure α M) (Set α) M where
 
 instance : IsSMulApply ℕ+ (VectorMeasure α M) (Set α) M where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] alias coe_add := FunLike.coe_add
 

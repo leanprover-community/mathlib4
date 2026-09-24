@@ -232,7 +232,6 @@ theorem coe_psmul (f : M [⋀^ι]→L[R] N) (c : ℕ+) : ⇑(c • f) = c • �
   rfl
 
 instance : IsSMulApply ℕ+ (M [⋀^ι]→L[R] N) (ι → M) N where
-  smul_apply _ _ _ := rfl
 
 @[simp]
 theorem toContinuousMultilinearMap_psmul (c : ℕ+) (f : M [⋀^ι]→L[R] N) :

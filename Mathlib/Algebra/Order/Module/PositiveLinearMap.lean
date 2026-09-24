@@ -187,7 +187,6 @@ lemma toLinearMap_psmul (f : E₁ →ₚ[R] E₂) (n : ℕ+) :
 
 @[simp]
 instance : IsSMulApply ℕ+ (E₁ →ₚ[R] E₂) E₁ E₂ where
-  smul_apply _ _ _ := rfl
 
 instance : SMul ℕ (E₁ →ₚ[R] E₂) where
   smul n f := .mk (n • f.toLinearMap) fun x y h ↦ by

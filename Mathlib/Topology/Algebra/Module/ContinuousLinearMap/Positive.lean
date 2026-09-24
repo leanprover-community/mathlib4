@@ -207,7 +207,6 @@ lemma toContinuousLinearMap_psmul (f : E₁ →P[R] E₂) (n : ℕ+) :
   rfl
 
 instance : IsSMulApply ℕ+ (E₁ →P[R] E₂) E₁ E₂ where
-  smul_apply _ _ _ := rfl
 
 instance : SMul ℕ (E₁ →P[R] E₂) where
   smul n f := .mk (n • f.toPositiveLinearMap) <|

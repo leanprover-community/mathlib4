@@ -230,7 +230,6 @@ theorem coeFn_smul (c : S) (f : M [⋀^ι]→ₗ[R] N) : ⇑(c • f) = c • �
 
 @[simp]
 instance : IsSMulApply ℕ+ (M [⋀^ι]→ₗ[R] N) (ι → M) N where
-  smul_apply _ _ _ := rfl
 
 @[norm_cast]
 theorem coe_psmul (c : ℕ+) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : ι => M) N) :=

@@ -424,7 +424,6 @@ instance : SMul ℕ+ (QuadraticMap R M N) :=
         ⟨a • B, by simp [h]⟩ }⟩
 
 instance : IsSMulApply ℕ+ (QuadraticMap R M N) M N where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-27")] protected alias smul_apply := smul_apply
 

@@ -436,7 +436,6 @@ instance instPSMul : SMul ℕ+ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), f.2.const_smul c⟩
 
 instance : IsSMulApply ℕ+ (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
-  smul_apply _ _ _ := rfl
 
 @[simp, norm_cast]
 theorem toLinearMap_psmul (c : ℕ+) (f : M₁ →SL[σ₁₂] M₂) :

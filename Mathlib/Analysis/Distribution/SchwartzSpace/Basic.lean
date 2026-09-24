@@ -274,7 +274,6 @@ instance instPSMul : SMul ℕ+ 𝓢(E, F) :=
         simpa [← nsmul_val_eq_psmul, ← Nat.cast_smul_eq_nsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
 instance : IsSMulApply ℕ+ 𝓢(E, F) E F where
-  smul_apply _ _ _ := rfl
 
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>

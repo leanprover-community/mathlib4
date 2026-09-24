@@ -272,7 +272,6 @@ theorem coe_psmul_linearMap (r : ℕ+) (D : LieDerivation R L M) : ↑(r • D) 
   rfl
 
 instance : IsSMulApply ℕ+ (LieDerivation R L M) L M where
-  smul_apply _ _ _ := rfl
 
 instance instSMulBase : SMulBracketCommClass R L M := ⟨fun s l a ↦ (lie_smul s l a).symm⟩
 

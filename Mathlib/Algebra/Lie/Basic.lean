@@ -839,7 +839,6 @@ theorem coe_psmul (n : ℕ+) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (�
   rfl
 
 instance : IsSMulApply ℕ+ (M →ₗ⁅R,L⁆ N) M N where
-  smul_apply _ _ _ := rfl
 
 instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }

@@ -475,7 +475,6 @@ theorem coe_psmul (r : ℕ+) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = 
 
 @[simp]
 instance : IsSMulApply ℕ+ (NormedAddGroupHom V₁ V₂) V₁ V₂ where
-  smul_apply _ _ _ := rfl
 
 instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
   smul n f :=
