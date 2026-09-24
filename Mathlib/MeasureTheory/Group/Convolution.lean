@@ -198,7 +198,7 @@ lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoi
     (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
   suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)) ∗ (ν.map (L : E →+ F)) by simpa
   rw [map_conv_addMonoidHom]
-  rw [AddMonoidHom.coe_coe]
+  rw [AddMonoidHom.coe_ofClass]
   fun_prop
 
 end Measure

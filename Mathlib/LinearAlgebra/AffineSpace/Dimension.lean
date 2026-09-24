@@ -172,7 +172,7 @@ theorem lift_dim_map_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective 
   · simp_all
   rw [dim_eq_rank hs, dim_eq_rank (by simp_all), map_direction]
   simp only [WithBot.map_coe, WithBot.coe_inj]
-  refine LinearEquiv.lift_rank_eq <| (Submodule.equivMapOfInjective _ ?_ _).symm
+  refine LinearEquiv.lift_rank_eq (Submodule.equivMapOfInjective _ ?_ _).symm
   exact f.linear_injective_iff.mpr hf
 
 theorem dim_map_of_injective {f : A →ᵃ[R] A₁} (hf : Function.Injective f)
@@ -185,7 +185,7 @@ theorem finDim_map_of_injective {f : A →ᵃ[R] A'} (hf : Function.Injective f)
   · simp_all
   rw [finDim_eq_finrank hs, finDim_eq_finrank (by simp_all), map_direction]
   norm_cast
-  refine LinearEquiv.finrank_eq <| (Submodule.equivMapOfInjective _ ?_ _).symm
+  refine LinearEquiv.finrank_eq (Submodule.equivMapOfInjective _ ?_ _).symm
   exact f.linear_injective_iff.mpr hf
 
 @[simp]
