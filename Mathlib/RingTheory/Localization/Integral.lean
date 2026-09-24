@@ -424,7 +424,6 @@ protected lemma IsLocalization.integralClosure
     simp [← IsScalarTower.algebraMap_apply]
   · rintro ⟨s, hs⟩
     obtain ⟨⟨x, _, m₁, hm₁, rfl⟩, e⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid S M) s
-    -- used to fire: simp only [← IsScalarTower.algebraMap_apply] at e
     obtain ⟨⟨m₂, hm₂⟩, hm₂s⟩ := IsIntegral.exists_multiple_integral_of_isLocalization M _ hs
     simp only [Submonoid.smul_def, Algebra.smul_def] at hm₂s
     obtain ⟨m₃, hm₃, hm₃s⟩ := IsLocalization.exists_isIntegral_smul_of_isIntegral_map (Sₘ := Sf)

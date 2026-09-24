@@ -449,8 +449,7 @@ lemma IsLocalization.Away.tensorProductEquivTMulRight_tmul (g : A) (B : Type*) [
       ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)
         (B := A) : A →* S ⊗[R] A))
       (Localization.Away ((1 : S) ⊗ₜ[R] g)) := by
-    simp only [Submonoid.map_powers, MonoidHom.coe_ofClass,
-      Algebra.TensorProduct.includeRight_apply]
+    simp only [Submonoid.map_powers, Algebra.TensorProduct.includeRight_apply]
     infer_instance
   IsLocalization.tensorProductEquivOfMapIncludeRight_tmul _ _ _ _ _ _
 

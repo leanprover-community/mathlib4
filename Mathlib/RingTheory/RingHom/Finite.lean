@@ -121,7 +121,7 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ :=
     IsLocalization.smul_mem_finsetIntegerMultiple_span (Submonoid.powers (r : R))
       (Localization.Away (f r)) _ (s₁ r) hn₁
-  simp only [toMonoidHom_eq_coe, Submonoid.map_powers, ← Algebra.smul_def, Submonoid.smul_def,
+  simp only [Submonoid.map_powers, ← Algebra.smul_def, Submonoid.smul_def,
     smul_smul, ← pow_add] at hn₂
   use n₂ + n₁
   exact le_iSup (fun x : s => Submodule.span R (sf x : Set S)) r hn₂

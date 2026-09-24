@@ -76,8 +76,7 @@ theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S']
       (M.map (algebraMap R S : R →* S)) x s (Algebra.adjoin R _)
       Algebra.subset_adjoin (by rintro _ ⟨a, _, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
   refine ⟨⟨a, ha⟩, ?_⟩
-  rw [Submonoid.smul_def] at e
-  simpa [-smul_eq_mul, algebraMap_smul] using e
+  simpa [Submonoid.smul_def, -smul_eq_mul, algebraMap_smul] using e
 
 /-- Finite-type can be checked on a standard covering of the target. -/
 lemma Algebra.FiniteType.of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
