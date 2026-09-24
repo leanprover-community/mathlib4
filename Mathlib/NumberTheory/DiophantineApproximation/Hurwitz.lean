@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Hurwitz's Theorem in Diophantine Approximation
@@ -86,19 +87,14 @@ structure IsFarey (ξ : ℝ) (p q r s : ℤ) : Prop where
 def IsGoodApprox (ξ : ℝ) (x y : ℤ) : Prop :=
   0 < y ∧ |(y : ℝ) * ξ - x| * y * √5 < 1
 
--- Frequently used lemmas about sqrt 5
 private lemma sq_sqrt_five : √5 ^ 2 = 5 := sq_sqrt (by norm_num)
-
-private lemma two_lt_sqrt_five : 2 < √5 := by
-  nlinarith [sq_sqrt_five, sqrt_nonneg 5]
 
 -- A lemma to bound the denominators of a Farey interval given both endpoints fail the Hurwitz bound
 private theorem aux₀ {a b c d : ℤ} (hdet : b * c - a * d = 1) (hA : 1 ≤ √5 * b * ((b : ℝ) * ξ - a))
     (hB : 1 ≤ √5 * d * ((c : ℝ) - d * ξ)) : (b : ℝ) ^ 2 + (d : ℝ) ^ 2 ≤ √5 * (b * d) := by
   have hdetR : (b : ℝ) * c - a * d = 1 := mod_cast hdet
-  have hdiff : (d : ℝ) * (b * ξ - a) + b * (c - d * ξ) = 1 := by linear_combination hdetR
   have H : (d : ℝ) ^ 2 * √5 * b * (b * ξ - a) + b ^ 2 * √5 * d * (c - d * ξ) = √5 * b * d := by
-    linear_combination hdiff * (√5 * b * d)
+    linear_combination hdetR * (√5 * b * d)
   have h1 := mul_le_mul_of_nonneg_left hA (sq_nonneg (d : ℝ))
   have h2 := mul_le_mul_of_nonneg_left hB (sq_nonneg (b : ℝ))
   linarith
@@ -108,7 +104,7 @@ which can be used both ways to derive a contradiction -/
 private theorem aux₁ {b d : ℝ} (hb : 0 < b) (h : b ^ 2 + d ^ 2 ≤ √5 * (b * d)) :
     (√5 - 1) * b ≤ 2 * d ∧ 2 * d ≤ (√5 + 1) * b := by
   have hprod : (2 * d - (√5 - 1) * b) * (2 * d - (√5 + 1) * b) ≤ 0 := by
-    nlinarith [sq_sqrt_five, two_lt_sqrt_five]
+    nlinarith [sq_sqrt_five]
   constructor <;> nlinarith
 
 private theorem aux₁' {b d : ℝ} (hd : 0 < d) (h : b ^ 2 + d ^ 2 ≤ √5 * (b * d)) :
@@ -212,13 +208,13 @@ private theorem of_mediant_lt {p q r s : ℤ} (h : IsFarey ξ p q r s)
 
 private theorem abs_sub_left_lt {p q r s : ℤ} (h : IsFarey ξ p q r s) :
     |ξ - (p : ℝ) / q| < 1 / ((q : ℝ) * s) := by
-  have hpos : ξ - (p : ℝ) / q > 0 := by linarith [h.left]
+  have hpos : ξ - (p : ℝ) / q > 0 := sub_pos.mpr h.left
   rw [abs_of_pos hpos, ← sub_eq_one_div_mul h.q_pos h.s_pos h.det]
   linarith [h.right]
 
 private theorem abs_sub_right_lt {p q r s : ℤ} (h : IsFarey ξ p q r s) :
     |ξ - (r : ℝ) / s| < 1 / ((q : ℝ) * s) := by
-  have hneg : ξ - (r : ℝ) / s < 0 := by linarith [h.right]
+  have hneg : ξ - (r : ℝ) / s < 0 := sub_neg.mpr h.right
   rw [abs_of_neg hneg, ← sub_eq_one_div_mul h.q_pos h.s_pos h.det]
   linarith [h.left]
 
@@ -340,7 +336,7 @@ private lemma isGoodApprox_bound_rat {x y : ℤ} (hg : IsGoodApprox ξ x y) :
   apply one_div_le_one_div_of_le (by positivity)
   have hsq : (q.den : ℝ) ^ 2 ≤ (y : ℝ) ^ 2 := by
     apply pow_le_pow_left₀ hden_pos.le hden_le
-  have h5 : (0 : ℝ) < √5 := by linarith [two_lt_sqrt_five]
+  have h5 : (0 : ℝ) < √5 := by positivity
   nlinarith
 
 private lemma add_le_two_mul_mul {q s : ℤ} (hq : 0 < q) (hs : 0 < s) :
