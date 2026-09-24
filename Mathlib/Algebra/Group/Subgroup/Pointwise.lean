@@ -498,8 +498,8 @@ theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T �
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
 
-theorem _root_.MulAut.coe_conj_apply {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
-    (MulAut.conj g h : G) = MulAut.conj (g : G) (h : G) := by
+theorem _root_.MulAut.coe_conj_apply {H : Subgroup G} (g h : H) :
+    (MulAut.conj g h : G) = MulAut.conj (g : G) (h : G) :=
   rfl
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :

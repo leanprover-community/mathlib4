@@ -11,15 +11,15 @@ public import Mathlib.GroupTheory.Perm.Cycle.Factors
 /-!
 # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
 
-We prove some lemmas related to the action of `ConjAct (Perm α)` on `Perm α`:
+We prove some lemmas related to the conjugation action of `Perm α` on `Perm α`:
 
 Let `α` be a decidable fintype.
 
-* `conj_support_eq` relates the support of `k • g` with that of `g`
+* `support_conj_eq_smul_support` relates the support of `MulAut.conj k g` with that of `g`.
 
 * `cycleFactorsFinset_conj_eq`, `mem_cycleFactorsFinset_conj'`
   and `cycleFactorsFinset_conj` relate the set of cycles of `g`, `g.cycleFactorsFinset`,
-  with that for `k • g`
+  with that for `MulAut.conj k g`.
 
 -/
 
@@ -31,8 +31,8 @@ open scoped Pointwise
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
-/-- `a : α` belongs to the support of `k • g` iff
-  `k⁻¹ * a` belongs to the support of `g` -/
+/-- `a : α` belongs to the support of `MulAut.conj k g` iff
+  `k⁻¹ a` belongs to the support of `g` -/
 theorem mem_conj_support (k g : Perm α) (a : α) :
     a ∈ (MulAut.conj k g).support ↔ k⁻¹ a ∈ g.support := by
   simp

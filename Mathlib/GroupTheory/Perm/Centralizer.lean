@@ -39,8 +39,8 @@ commute with `g`. It is accessed here as `MulAction.stabilizer
 
 We compute this subgroup as follows.
 
-* If `h : Subgroup.centralizer {g}`, then the action of `ConjAct.toConjAct h`
-  by conjugation on `Equiv.Perm α` stabilizes `g.cycleFactorsFinset`.
+* If `h : Subgroup.centralizer {g}`, then the action of `MulAut.conj h`
+  on `Equiv.Perm α` stabilizes `g.cycleFactorsFinset`.
   That induces an action of `Subgroup.centralizer {g}` on
   `g.cycleFactorsFinset` which is defined as an instance.
 
