@@ -440,7 +440,7 @@ lemma pow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : 
     exact pow_nonneg ha₀ n
 
 -- not `Antitone` because no order on `ℕ+` here
-lemma ppow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) ⦃m n : ℕ+⦄ (hm : m.val ≤ n.val) :
+lemma ppow_right_anti₀ [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) ⦃m n : ℕ+⦄ (hm : m ≤ n) :
     a ^ n ≤ a ^ m := by
   rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
   exact pow_right_anti₀ ha₀ ha₁ hm
@@ -658,28 +658,28 @@ lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
 @[gcongr]
 lemma pow_lt_pow_right₀ (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono₀ h hmn
 
-lemma ppow_lt_ppow_right₀ (h : 1 < a) {m n : ℕ+} (hmn : m.val < n.val) : a ^ m < a ^ n := by
+lemma ppow_lt_ppow_right₀ (h : 1 < a) {m n : ℕ+} (hmn : m < n) : a ^ m < a ^ n := by
   rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
   exact pow_right_strictMono₀ h hmn
 
 lemma pow_lt_pow_iff_right₀ (h : 1 < a) : a ^ n < a ^ m ↔ n < m :=
   (pow_right_strictMono₀ h).lt_iff_lt
 
-lemma ppow_lt_ppow_iff_right₀ (h : 1 < a) {m n : ℕ+} : a ^ m < a ^ n ↔ m.val < n.val := by
+lemma ppow_lt_ppow_iff_right₀ (h : 1 < a) {m n : ℕ+} : a ^ m < a ^ n ↔ m < n := by
   rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
   exact (pow_right_strictMono₀ h).lt_iff_lt
 
 lemma pow_le_pow_iff_right₀ (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
   (pow_right_strictMono₀ h).le_iff_le
 
-lemma ppow_le_ppow_iff_right₀ (h : 1 < a) {m n : ℕ+} : a ^ m ≤ a ^ n ↔ m.val ≤ n.val := by
+lemma ppow_le_ppow_iff_right₀ (h : 1 < a) {m n : ℕ+} : a ^ m ≤ a ^ n ↔ m ≤ n := by
   rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
   exact (pow_right_strictMono₀ h).le_iff_le
 
 lemma lt_self_pow₀ (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
   simpa only [pow_one] using pow_lt_pow_right₀ h hm
 
-lemma lt_self_ppow₀ (h : 1 < a) {n : ℕ+} (hn : 1 < n.val) : a < a ^ n := by
+lemma lt_self_ppow₀ (h : 1 < a) {n : ℕ+} (hn : 1 < n) : a < a ^ n := by
   simpa only [ppow_one] using ppow_lt_ppow_right₀ (m := 1) (n := n) h hn
 
 end ZeroLEOneClass
@@ -693,7 +693,7 @@ lemma pow_le_pow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ m 
   (pow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
 
 lemma ppow_le_ppow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) {m n : ℕ+} :
-    a ^ m ≤ a ^ n ↔ n.val ≤ m.val := by
+    a ^ m ≤ a ^ n ↔ n ≤ m := by
   rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
   exact (pow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
 
@@ -701,21 +701,21 @@ lemma pow_lt_pow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < 
   (pow_right_strictAnti₀ h₀ h₁).lt_iff_gt
 
 lemma ppow_lt_ppow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {m n : ℕ+} :
-    a ^ m < a ^ n ↔ n.val < m.val := by
+    a ^ m < a ^ n ↔ n < m := by
   rw [← npow_val_eq_ppow, ← npow_val_eq_ppow]
   exact (pow_right_strictAnti₀ h₀ h₁).lt_iff_gt
 
 lemma pow_lt_pow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   (pow_lt_pow_iff_right_of_lt_one₀ h₀ h₁).2 hmn
 
-lemma ppow_lt_ppow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {m n : ℕ+} (hmn : m.val < n.val) :
+lemma ppow_lt_ppow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {m n : ℕ+} (hmn : m < n) :
     a ^ n < a ^ m :=
   (ppow_lt_ppow_iff_right_of_lt_one₀ h₀ h₁).2 hmn
 
 lemma pow_lt_self_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n < a := by
   simpa only [pow_one] using pow_lt_pow_right_of_lt_one₀ h₀ h₁ hn
 
-lemma ppow_lt_self_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {n : ℕ+} (hn : 1 < n.val) : a ^ n < a := by
+lemma ppow_lt_self_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) {n : ℕ+} (hn : 1 < n) : a ^ n < a := by
   simpa only [ppow_one] using ppow_lt_ppow_right_of_lt_one₀ (m := 1) (n := n) h₀ h₁ hn
 
 end strict_mono
