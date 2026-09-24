@@ -137,7 +137,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
           (fun a => .var (Sum.inl (Sum.inl a)))
           (fun i => (termOfFreeCommRing (genericPolyMap mons i)).relabel
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
-  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
+  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp surjOn).relabel Sum.inr)
 
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :

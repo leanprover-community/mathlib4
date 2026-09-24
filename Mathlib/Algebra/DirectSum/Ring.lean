@@ -339,7 +339,7 @@ variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 -- Porting note: overspecified fields in ml4
 /-- The `Ring` derived from `GSemiring A`. -/
 instance ring : Ring (⨁ i, A i) where
-  toIntCast.intCast z := of A 0 <| (GRing.intCast z)
+  toIntCast.intCast z := of A 0 (GRing.intCast z)
   intCast_ofNat _ := congrArg (of A 0) <| GRing.intCast_ofNat _
   intCast_negSucc _ :=
     (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _

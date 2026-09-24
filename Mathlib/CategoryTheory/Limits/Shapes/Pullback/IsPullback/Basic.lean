@@ -1040,7 +1040,7 @@ namespace Limits
 instance {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) {X' : C} (i : X' ⟶ X) [IsIso i] [HasPullback f g] :
     HasPullback (i ≫ f) g :=
   IsPullback.paste_vert
-    (IsPullback.of_vert_isIso_mono (fst := pullback.fst _ _ ≫ inv i) (snd := 𝟙 (pullback f g)) <|
+    (IsPullback.of_vert_isIso_mono (fst := pullback.fst _ _ ≫ inv i) (snd := 𝟙 (pullback f g))
       ⟨by simp⟩) (.of_hasPullback f g) |>.hasPullback
 
 @[simp]
@@ -1063,7 +1063,7 @@ lemma HasPullback.comp_left_right_iff_of_isIso
 instance {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) {X' : C} (i : X ⟶ X') [IsIso i] [HasPushout f g] :
     HasPushout (f ≫ i) g :=
   IsPushout.paste_horiz (.of_hasPushout f g)
-    (IsPushout.of_horiz_isIso_epi (inl := inv i ≫ pushout.inl _ _) (inr := 𝟙 (pushout f g)) <|
+    (IsPushout.of_horiz_isIso_epi (inl := inv i ≫ pushout.inl _ _) (inr := 𝟙 (pushout f g))
       ⟨by simp⟩) |>.hasPushout
 
 @[simp]

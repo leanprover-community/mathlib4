@@ -634,10 +634,11 @@ alias coe_addMonoidHom_refl := toAddMonoidHom_refl
 /-! `RingEquiv.coe_mulEquiv_refl` and `RingEquiv.coe_addEquiv_refl` are proved above
 in higher generality -/
 
-
 @[simp]
-theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
+theorem toRingHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_refl := toRingHom_refl
 
 @[simp]
 theorem toMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
@@ -659,9 +660,11 @@ alias coe_addMonoidHom_trans := toAddMonoidHom_trans
 in higher generality -/
 
 @[simp]
-theorem coe_ringHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toRingHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans
 
 @[simp]
 theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
@@ -777,10 +780,13 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 
-theorem coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+theorem toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
 
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_inj_iff := toRingHom_inj_iff
+
+-- TODO : rename lemma
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]
 theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
@@ -795,22 +801,26 @@ abbrev toMonoidHom (e : R ≃+* S) : R →* S :=
 abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
   e.toRingHom.toAddMonoidHom
 
+-- TODO : rename lemma
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidMom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
 
+-- TODO : rename lemma
 /-- The two paths coercion can take to a `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
 
+-- TODO : rename lemma
 /-- The two paths coercion can take to an `Equiv` are equivalent -/
 theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
   rfl
 
+-- TODO: remove lemma when we remove the RingHom.ofClass coercion
 @[simp]
-theorem toRingHom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
+theorem toRingHom_refl' : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 
 -- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
@@ -831,8 +841,9 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 
+-- TODO: remove lemma when we remove the RingHom.ofClass coercion
 @[simp]
-theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toRingHom_trans' (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
 
@@ -934,12 +945,15 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
 
 attribute [simp] ofRingHom_apply
 
-theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
+theorem toRingHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl
 
 @[simp]
-theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
+theorem ofRingHom_toRingHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
   ext fun _ ↦ rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_ofRingHom := toRingHom_ofRingHom
+@[deprecated (since := "2026-05-05")] alias ofRingHom_coe_ringHom := ofRingHom_toRingHom
 
 @[simp]
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :

@@ -120,7 +120,7 @@ private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ
     rw [← zpow_neg_one, ← zpow_zero ↑p]
     gcongr
     · exact_mod_cast Nat.Prime.one_le hp.elim
-    · norm_num
+    · simp
 
 set_option backward.privateInPublic true in
 private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ideal.span {↑p}) :

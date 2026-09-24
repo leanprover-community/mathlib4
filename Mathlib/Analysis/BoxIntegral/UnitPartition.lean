@@ -121,7 +121,7 @@ theorem mem_box_iff [NeZero n] {ν : ι → ℤ} {x : ι → ℝ} :
 variable {n} in
 theorem mem_box_iff' [NeZero n] {ν : ι → ℤ} {x : ι → ℝ} :
     x ∈ box n ν ↔ ∀ i, ν i < n * x i ∧ n * x i ≤ ν i + 1 := by
-  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr n.pos_of_neZero
   simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h, ← div_lt_iff₀' h]
 
 /-- The tag of (the index of) a `unitPartition.box`. -/
@@ -143,7 +143,7 @@ theorem tag_mem (ν : ι → ℤ) :
     tag n ν ∈ box n ν := by
   refine mem_box_iff.mpr fun _ ↦ ?_
   rw [tag, add_div]
-  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr n.pos_of_neZero
   exact ⟨lt_add_of_pos_right _ (by positivity), le_rfl⟩
 
 /-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.box` to which
@@ -286,7 +286,7 @@ theorem prepartition_isSubordinate (B : Box ι) {r : ℝ} (hr : 0 < r) (hn : 1 /
 
 private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
     a < x ↔ a ≤ (⌈n * x⌉ - 1) / (n : ℝ) := by
-  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr n.pos_of_neZero
   rw [le_div_iff₀' h, le_sub_iff_add_le,
     show (n : ℝ) * a + 1 = (n * a + 1 : ℤ) by norm_cast,
     Int.cast_le, Int.add_one_le_iff, Int.lt_ceil, Int.cast_mul, Int.cast_natCast,
@@ -294,7 +294,7 @@ private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
 
 private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
     x ≤ a ↔ (⌈n * x⌉ - 1 + 1) / (n : ℝ) ≤ a := by
-  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr n.pos_of_neZero
   rw [sub_add_cancel, div_le_iff₀' h,
     show (n : ℝ) * a = (n * a : ℤ) by norm_cast,
     Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_iff_right₀ h]

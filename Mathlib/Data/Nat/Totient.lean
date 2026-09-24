@@ -263,7 +263,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
     exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
-  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
+  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> simp
 
 theorem odd_totient_iff_eq_one {n : ℕ} :
     Odd (φ n) ↔ φ n = 1 := by
@@ -425,7 +425,7 @@ theorem prime_pow_pow_totient_ediv_prod {p k : ℕ} (hp : p.Prime) (hk : 0 < k) 
   have h : p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
     rw [mul_left_comm]
     refine le_mul_of_one_le_right (Nat.zero_le _) ?_
-    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt <| hp.one_lt
+    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt hp.one_lt
   simp_rw [Nat.totient_prime_pow hp hk, Nat.primeFactors_prime_pow hk.ne' hp, Finset.prod_singleton,
     Nat.mul_div_left _ (Nat.sub_pos_of_lt hp.one_lt), ← pow_mul]
   rw [Nat.pow_div h hp.pos]

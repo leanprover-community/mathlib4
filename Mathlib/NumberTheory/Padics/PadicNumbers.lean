@@ -600,8 +600,8 @@ end Padic
 canonical form of this function is the normed space instance, with notation `‖ ‖`. -/
 def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   toFun := Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
-  map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
-  nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
+  map_mul' q r := Quotient.inductionOn₂ q r PadicSeq.norm_mul
+  nonneg' q := Quotient.inductionOn q PadicSeq.norm_nonneg
   eq_zero' q := Quotient.inductionOn q fun r ↦ by
     rw [Padic.zero_def, Quotient.lift_mk, PadicSeq.norm_zero_iff r]
     exact Quotient.eq.symm
@@ -647,7 +647,7 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
 equivalent theorems about `norm` (`‖ ‖`). -/
 theorem nonarchimedean' (q r : ℚ_[p]) :
     padicNormE (q + r : ℚ_[p]) ≤ max (padicNormE q) (padicNormE r) :=
-  Quotient.inductionOn₂ q r <| norm_nonarchimedean
+  Quotient.inductionOn₂ q r norm_nonarchimedean
 
 /-- Theorems about `padicNormE` are named with a `'` so the names do not conflict with the
 equivalent theorems about `norm` (`‖ ‖`). -/
@@ -902,7 +902,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      norm_num [this]
+      simp [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [eq_padicNorm]

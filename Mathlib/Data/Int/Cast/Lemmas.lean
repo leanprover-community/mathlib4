@@ -281,7 +281,7 @@ def zmultiplesHom : β ≃ (ℤ →+ β) where
 /-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
-  ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicativeLeft
+  ofMul.trans <| (zmultiplesHom _).trans AddMonoidHom.toMultiplicativeLeft
 
 @[simp] lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 

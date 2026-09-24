@@ -57,7 +57,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
       _ < 1 := h
     apply AnalyticAt.harmonicAt_log_norm (by fun_prop)
     rw [sub_ne_zero]
-    by_contra! hCon
+    by_contra hCon
     rwa [← hCon, CStarRing.norm_of_mem_unitary (unitary ℂ).one_mem, lt_self_iff_false] at this
 
 /-!
@@ -155,7 +155,7 @@ theorem circleAverage_log_norm_sub_const₂ (h : 1 < ‖a‖) :
   intro x hx
   apply AnalyticAt.harmonicAt_log_norm (by fun_prop)
   rw [sub_ne_zero]
-  by_contra!
+  by_contra
   simp_all only [abs_one, Metric.mem_closedBall, dist_zero_right]
   linarith
 

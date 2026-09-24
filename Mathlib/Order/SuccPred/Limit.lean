@@ -403,7 +403,7 @@ theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
 
 @[to_dual]
 theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (succ : α → α) ∨ IsSuccPrelimit a :=
-  or_iff_not_imp_right.2 <| mem_range_succ_of_not_isSuccPrelimit
+  or_iff_not_imp_right.2 mem_range_succ_of_not_isSuccPrelimit
 
 @[to_dual]
 theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
@@ -481,7 +481,7 @@ alias isPredPrelimit_iff := isPredPrelimit_iff_isMax
 
 @[to_dual (attr := simp)]
 theorem not_isSuccLimit_of_isSuccArchimedean : ¬ IsSuccLimit a :=
-  fun h ↦ h.not_isMin <| h.isSuccPrelimit.isMin
+  fun h ↦ h.not_isMin h.isSuccPrelimit.isMin
 
 @[deprecated (since := "2026-04-19")]
 alias not_isSuccLimit := not_isSuccLimit_of_isSuccArchimedean

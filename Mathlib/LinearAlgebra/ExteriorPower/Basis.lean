@@ -76,7 +76,7 @@ lemma ιMultiDual_apply_nondiag (s t : powersetCard I n) (hst : s ≠ t) :
   simp_rw [Matrix.of_apply, Basis.coord_apply, Function.comp_apply, Basis.repr_self]
   intro j
   apply Finsupp.single_eq_of_ne
-  by_contra! h
+  by_contra h
   apply hit
   rw [h, powersetCard.ofFinEmbEquiv_symm_apply, ← powersetCard.mem_coe_iff]
   exact Finset.orderEmbOfFin_mem t.val t.prop j

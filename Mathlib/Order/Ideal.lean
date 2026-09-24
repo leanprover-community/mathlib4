@@ -323,7 +323,7 @@ variable [OrderTop P]
 
 @[simp]
 theorem principal_top : principal (⊤ : P) = ⊤ :=
-  toLowerSet_injective <| LowerSet.Iic_top
+  toLowerSet_injective LowerSet.Iic_top
 
 end OrderTop
 

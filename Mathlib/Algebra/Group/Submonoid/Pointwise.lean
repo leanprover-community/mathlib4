@@ -193,7 +193,7 @@ theorem inv_bot : (⊥ : Submonoid G)⁻¹ = ⊥ :=
 
 @[to_additive (attr := simp)]
 theorem inv_top : (⊤ : Submonoid G)⁻¹ = ⊤ :=
-  SetLike.coe_injective <| Set.inv_univ
+  SetLike.coe_injective Set.inv_univ
 
 @[to_additive (attr := simp)]
 theorem inv_iInf {ι : Sort*} (S : ι → Submonoid G) : (⨅ i, S i)⁻¹ = ⨅ i, (S i)⁻¹ :=

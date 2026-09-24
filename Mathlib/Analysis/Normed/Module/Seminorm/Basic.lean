@@ -135,7 +135,6 @@ instance instZero : Zero (Seminorm 𝕜 E) :=
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
 instance : IsZeroApply (Seminorm 𝕜 E) E ℝ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_zero := FunLike.coe_zero
 
@@ -156,7 +155,6 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         rw [map_smul_eq_mul, mul_left_comm] }
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) E ℝ where
-  smul_apply _ _ _ := rfl
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
@@ -173,7 +171,6 @@ instance instAdd : Add (Seminorm 𝕜 E) where
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
 instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_add := FunLike.coe_add
 
@@ -215,7 +212,7 @@ instance instSup : Max (Seminorm 𝕜 E) where
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
-        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans <|
+        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans
           (mul_max_of_nonneg _ _ <| norm_nonneg x).symm }
 
 @[simp]
@@ -843,7 +840,7 @@ theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ �
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
   refine fun a ha b hb ↦ mul_lt_mul' ha hb (apply_nonneg _ _) ?_
-  exact hr₁.lt_or_gt.resolve_left <| ((norm_nonneg a).trans ha).not_gt
+  exact hr₁.lt_or_gt.resolve_left ((norm_nonneg a).trans ha).not_gt
 
 theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr₂ : r₂ ≠ 0) :
     Metric.ball (0 : 𝕜) r₁ • p.closedBall 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by

@@ -429,7 +429,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
   refine ⟨?_, ?_⟩
   · intro h
     refine ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective, ?_⟩
-    exact h.disjoint_span_image <| isCompl_range_inl_range_inr.disjoint
+    exact h.disjoint_span_image isCompl_range_inl_range_inr.disjoint
   rintro ⟨hl, hr, hlr⟩
   rw [linearIndependent_iff'] at *
   intro s g hg i hi

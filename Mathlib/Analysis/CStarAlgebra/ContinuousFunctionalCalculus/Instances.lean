@@ -74,7 +74,7 @@ functional calculus.
 -/
 noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
   (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
-      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
+      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
     |>.comp ContinuousMapZero.toContinuousMapHom
 
@@ -82,7 +82,7 @@ lemma cfcₙAux_id : cfcₙAux hp₁ a ha (.id _) = a := cfcHom_id (hp₁.mpr ha
 
 lemma continuous_cfcₙAux : Continuous (cfcₙAux hp₁ a ha) :=
   (cfcHom_continuous (hp₁.mpr ha)).comp <|
-    (ContinuousMap.continuous_precomp _).comp <|
+    (ContinuousMap.continuous_precomp _).comp
     ContinuousMapZero.isEmbedding_toContinuousMap.continuous
 
 lemma cfcₙAux_injective : Function.Injective (cfcₙAux hp₁ a ha) :=

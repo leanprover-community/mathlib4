@@ -451,7 +451,7 @@ theorem bijective_iff_isIso_ofHom {X Y : Type u} (f : X → Y) :
 
 instance : SplitEpiCategory (Type u) where
   isSplitEpi_of_epi f hf :=
-    IsSplitEpi.mk' <|
+    IsSplitEpi.mk'
       { section_ := ofHom <| Function.surjInv <| (epi_iff_surjective f).1 hf
         id := by
           ext x

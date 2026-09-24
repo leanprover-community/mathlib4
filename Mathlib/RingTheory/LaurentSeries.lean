@@ -446,7 +446,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
-  rw [intValuation_if_neg _ hP, intValuation_if_neg _ <| (by simp [hP])]
+  rw [intValuation_if_neg _ hP, intValuation_if_neg _ (by simp [hP])]
   simp only [idealX_span, exp_neg, inv_inj, exp_inj, Nat.cast_inj]
   have span_ne_zero :
     (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
@@ -490,7 +490,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert!
     @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
-      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
+      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 (by simp [h])⟩
   · simp [← IsScalarTower.algebraMap_apply K[X] K⟮X⟯ K⸨X⸩]
   exacts [intValuation_eq_of_coe _, intValuation_eq_of_coe _]
 
@@ -1037,11 +1037,11 @@ abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   { comparePkg K with
     map_mul' x y :=
       (comparePkg_eq_extension K (x * y)).trans <|
-        (map_mul _ x.toCompletion y.toCompletion).trans <|
+        (map_mul _ x.toCompletion y.toCompletion).trans
         (congrArg₂ (· * ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm
     map_add' x y :=
       (comparePkg_eq_extension K (x + y)).trans <|
-        (map_add _ x.toCompletion y.toCompletion).trans <|
+        (map_add _ x.toCompletion y.toCompletion).trans
         (congrArg₂ (· + ·) (comparePkg_eq_extension K x) (comparePkg_eq_extension K y)).symm }
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring

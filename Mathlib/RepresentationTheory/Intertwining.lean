@@ -302,7 +302,7 @@ lemma range_inr : (inr A ρ σ).range = (fst A ρ σ).ker :=
   IntertwiningMap.ext <| LinearMap.snd_comp_inr ..
 
 @[simp] lemma coprod_inl_inr : (inl A ρ σ).comp (fst A ρ σ) + (inr A ρ σ).comp (snd A ρ σ) =
-    .id _ := IntertwiningMap.ext <| LinearMap.coprod_inl_inr
+    .id _ := IntertwiningMap.ext LinearMap.coprod_inl_inr
 
 end prod
 

@@ -92,7 +92,7 @@ variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 @[simps!]
 def functorToCore (F : G ⥤ C) : G ⥤ Core C where
   obj X := .mk <| F.obj X
-  map f := .mk <| { hom := F.map f, inv := F.map (Groupoid.inv f) }
+  map f := .mk { hom := F.map f, inv := F.map (Groupoid.inv f) }
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,
 a functor from the groupoid to `C`, simply by composing with the embedding `Core C ⥤ C`.
@@ -270,7 +270,7 @@ to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
     Core (Type u₁) ⥤ Core (Type u₂) where
   obj x := .mk <| m x.of
-  map f := .mk <| (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
+  map f := .mk (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
   map_id α := by ext x; exact congr_fun (EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext

@@ -122,7 +122,7 @@ protected theorem eq {a b c d : α} : s(a, b) = s(c, d) ↔ Rel α (a, b) (c, d)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=
-  Quot.ind <| Prod.rec <| h
+  Quot.ind <| Prod.rec h
 
 @[elab_as_elim]
 protected theorem inductionOn {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x y, f s(x, y)) : f i :=
@@ -1038,7 +1038,7 @@ lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.
   simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, uncurry, Sym2.map_mk]
 
 lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
-  preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
+  preimage_injective.mpr Sym2.mk_surjective Set.prod_inter_prod.symm
 
 lemma sym2_iInter {ι : Type*} (f : ι → Set α) : (⋂ i, f i).sym2 = ⋂ i, (f i).sym2 := by
   ext ⟨x, y⟩; simp [forall_and]

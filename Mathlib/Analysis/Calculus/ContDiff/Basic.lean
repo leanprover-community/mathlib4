@@ -650,7 +650,7 @@ theorem contDiff_prodAssoc {n : ℕ∞ω} : ContDiff 𝕜 n <| Equiv.prodAssoc E
 
 Warning: see remarks attached to `contDiff_prodAssoc`
 -/
-theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
+theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n (Equiv.prodAssoc E F G).symm :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff
 
 /-- The iterated derivatives up to order `m` of a smooth compactly supported function are

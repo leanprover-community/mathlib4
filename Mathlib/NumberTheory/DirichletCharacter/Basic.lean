@@ -279,7 +279,7 @@ lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
 
 lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet χ) :
     χ.conductor ≤ (Classical.choose hd.2).conductor := by
-  refine Nat.sInf_le <| (mem_conductorSet_iff χ).mpr <|
+  refine Nat.sInf_le <| (mem_conductorSet_iff χ).mpr
     ⟨dvd_trans (conductor_dvd_level _) hd.1,
      (factorsThrough_conductor (Classical.choose hd.2)).2.choose, ?_⟩
   rw [changeLevel_trans _ (conductor_dvd_level _) hd.dvd,
@@ -470,7 +470,7 @@ theorem mem_annihilator_iff_mem_closure {H : Set (ZMod n)ˣ} {χ : DirichletChar
   simp only [annihilator, MonoidHom.mem_ker, MulChar.domRestrictHom_apply,
     MulChar.domRestrict_eq_one_iff]
   refine ⟨fun hχ x hx ↦ ?_, fun h u ↦ ?_⟩
-  · exact hχ <| (Submonoid.unitsEquivUnitsType _) <|
+  · exact hχ <| (Submonoid.unitsEquivUnitsType _)
       ⟨x, Submonoid.mem_units_of_val_mem_inv_val_mem _ ⟨x, hx, rfl⟩
         ⟨x⁻¹, by simpa [← Subgroup.closure_toSubmonoid_of_finite] using hx, rfl⟩⟩
   · obtain ⟨y, hy, hyu⟩ := Submonoid.mem_map.mp u.val.prop

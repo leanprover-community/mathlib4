@@ -42,7 +42,7 @@ instance : T0Space X :=
 
 instance : QuasiSober X := by
   apply +allowSynthFailures
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.f x))
+    quasiSober_of_open_cover (Set.range fun x => Set.range (X.affineCover.f x))
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.f i).isOpenEmbedding.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @IsOpenEmbedding.quasiSober _ _ _ _ _

@@ -102,7 +102,7 @@ def CAlgHom : A →ₐ[R] A[X] where
 theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hC : f.comp CAlgHom = g.comp CAlgHom)
     (hX : f X = g X) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
+  AlgHom.toRingHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
 
 set_option backward.defeqAttrib.useBackward true in
 variable (R) in
@@ -178,9 +178,11 @@ theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
   AlgHom.ext fun _x => map_id
 
 @[simp]
-theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
+theorem toRingHom_mapAlgHom (f : A →ₐ[R] B) :
     ↑(mapAlgHom f : _ →ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias mapAlgHom_coe_ringHom := toRingHom_mapAlgHom
 
 @[simp]
 theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
@@ -216,9 +218,11 @@ theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl 
   AlgEquiv.ext fun _x => map_id
 
 @[simp]
-theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
+theorem toRingHom_mapAlgEquiv (f : A ≃ₐ[R] B) :
     ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias mapAlgEquiv_coe_ringHom := toRingHom_mapAlgEquiv
 
 @[simp]
 theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
@@ -581,7 +585,7 @@ theorem aevalTower_toAlgHom (x : R) : aevalTower g y (IsScalarTower.toAlgHom S R
 
 @[simp]
 theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom S R R[X]) = g :=
-  AlgHom.coe_ringHom_injective <| aevalTower_comp_algebraMap _ _
+  AlgHom.toRingHom_injective <| aevalTower_comp_algebraMap _ _
 
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by

@@ -44,7 +44,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → Subalgebra R A) (�
 protected def gi : GaloisInsertion (adjoin R : Set A → Subalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (Algebra.gc.le_u_l s) hs
   gc := Algebra.gc
-  le_l_u S := (Algebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
+  le_l_u S := (Algebra.gc (S : Set A) (adjoin R S)).1 le_rfl
   choice_eq _ _ := Subalgebra.copy_eq _ _ _
 
 instance : CompleteLattice (Subalgebra R A) where

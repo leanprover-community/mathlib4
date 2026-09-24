@@ -47,7 +47,6 @@ instance instZero : Zero (OuterMeasure α) :=
       iUnion_nat _ _ := zero_le }⟩
 
 instance : IsZeroApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_zero := FunLike.coe_zero
 
@@ -66,7 +65,6 @@ instance instAdd : Add (OuterMeasure α) :=
           _ = _ := ENNReal.tsum_add.symm }⟩
 
 instance : IsAddApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_add := FunLike.coe_add
 
@@ -89,7 +87,6 @@ instance instSMul : SMul R (OuterMeasure α) :=
         exact mul_right_mono (measure_iUnion_le _) }⟩
 
 instance : IsSMulApply R (OuterMeasure α) (Set α) ℝ≥0∞ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_smul := FunLike.coe_smul
 

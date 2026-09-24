@@ -142,7 +142,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     simp at h
   wlog hp : p < 2⁻¹
   · have hp : 1 - p < 2⁻¹ := by
-      rw [sub_lt_comm]; norm_num at *; linarith +splitNe
+      rw [sub_lt_comm]; simp at *; linarith +splitNe
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
   obtain hp₀ | hp₀ := le_or_gt p 0
@@ -286,7 +286,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
     convert! ContinuousWithinAt.tendsto_nhdsWithin (x := (1 : ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
-  · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
+  · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by simp
     filter_upwards [Ico_mem_nhdsLT h₁] with p hx
     gcongr
     exact hx.1
@@ -303,7 +303,7 @@ lemma not_continuousAt_deriv_qaryEntropy_one :
     exact tendsto_log_one_sub_sub_log_nhdsLT_one_atBot
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoBot) nhdsWithin_le_nhds
   · simp only [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
-  filter_upwards [Ioo_mem_nhdsLT (show 1 - 2⁻¹ < (1 : ℝ) by norm_num)]
+  filter_upwards [Ioo_mem_nhdsLT (show 1 - 2⁻¹ < (1 : ℝ) by simp)]
   intros
   apply (deriv_qaryEntropy _ _).symm
   · simp_all only [mem_Ioo, ne_eq]
@@ -320,7 +320,7 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
     exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsGT_atAtop
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
   · simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
-  filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by norm_num)]
+  filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by simp)]
   intros
   apply (deriv_qaryEntropy _ _).symm
   · simp_all only [mem_Ioo, ne_eq]
@@ -427,7 +427,7 @@ lemma binEntropy_strictMonoOn : StrictMonoOn binEntropy (Icc 0 2⁻¹) := by
 
 /-- Binary entropy is strictly decreasing in interval [1/2, 1]. -/
 lemma binEntropy_strictAntiOn : StrictAntiOn binEntropy (Icc 2⁻¹ 1) := by
-  rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1 / 2) 1 by norm_num, ← qaryEntropy_two]
+  rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1 / 2) 1 by simp, ← qaryEntropy_two]
   convert! qaryEntropy_strictAntiOn (by rfl) using 1
   norm_num
 

@@ -468,7 +468,7 @@ theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v}
 
 theorem nil_of_isIsolated_of_mem_support {p : G.Walk u v} (hw : G.IsIsolated w)
     (hwp : w ∈ p.support) : p.Nil := by
-  contrapose! hw with hnil
+  contrapose hw with hnil
   have ⟨e, hep, hwe⟩ := mem_support_iff_exists_mem_edges_of_not_nil hnil |>.mp hwp
   exact not_isIsolated_iff_exists_edgeSet_mem.mpr ⟨e, p.edges_subset_edgeSet hep, hwe⟩
 

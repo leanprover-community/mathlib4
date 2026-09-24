@@ -592,7 +592,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebr
 protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (NonUnitalAlgebra.gc.le_u_l s) hs
   gc := NonUnitalAlgebra.gc
-  le_l_u S := (NonUnitalAlgebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
+  le_l_u S := (NonUnitalAlgebra.gc (S : Set A) (adjoin R S)).1 le_rfl
   choice_eq _ _ := NonUnitalSubalgebra.copy_eq _ _ _
 
 instance : CompleteLattice (NonUnitalSubalgebra R A) :=

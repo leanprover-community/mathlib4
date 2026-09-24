@@ -287,7 +287,7 @@ theorem comap_injective {f : A →⋆ₐ[R] B} (hf : Function.Surjective f) :
 
 @[simp]
 theorem comap_id (S : StarSubalgebra R A) : S.comap (StarAlgHom.id R A) = S :=
-  SetLike.coe_injective <| Set.preimage_id
+  SetLike.coe_injective Set.preimage_id
 
 theorem comap_comap (S : StarSubalgebra R C) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ[R] B) :
     (S.comap g).comap f = S.comap (g.comp f) :=
@@ -473,7 +473,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → StarSubalgebra R A
 protected def gi : GaloisInsertion (adjoin R : Set A → StarSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (StarAlgebra.gc.le_u_l s) hs
   gc := StarAlgebra.gc
-  le_l_u S := (StarAlgebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
+  le_l_u S := (StarAlgebra.gc (S : Set A) (adjoin R S)).1 le_rfl
   choice_eq _ _ := StarSubalgebra.copy_eq _ _ _
 
 theorem adjoin_le {S : StarSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
@@ -798,7 +798,7 @@ variable (f g : A →⋆ₐ[R] B)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (StarAlgHom.ofClass f : A →ₐ[R] B) (StarAlgHom.ofClass g)
+  toSubalgebra := AlgHom.equalizer f.toAlgHom g.toAlgHom
   star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using! congrArg star ha
 
 @[simp]

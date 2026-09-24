@@ -352,6 +352,36 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
 /--
+Separates curl's JSON report from the raw header values after it on the
+same line. JSON allows no raw control character other than whitespace
+(RFC 8259), so the first 0x1F (ASCII unit separator) ends the report.
+-/
+def curlFieldSep : String := "\x1f"
+
+/-- The response headers that the get path records, in output order. -/
+def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-length"]
+
+/--
+`--write-out` format for the get path: curl's `%{json}` report, then the
+value of each header in `curlGetHeaders`, each after `curlFieldSep`.
+curl writes a header value unescaped, so the values stay outside the JSON.
+
+`%header{…}` needs curl 7.84. curl 7.83 shipped it as experimental only.
+Below 7.84, `validateCurl` downloads a newer curl on Linux. A curl that
+old on another platform prints `%header{…}` as literal text, and that text
+appears only in a failure line.
+-/
+def curlGetWriteOut : String :=
+  "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
+
+/-- Splits a `--write-out` line into curl's JSON report and the header
+values after it. A line without `curlFieldSep` is all report. -/
+def splitWriteOut (line : String) : String × List String :=
+  match line.splitOn curlFieldSep with
+  | report :: headers => (report, headers)
+  | [] => (line, [])
+
+/--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
 
@@ -639,6 +669,53 @@ def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Na
       decompFailed := decompFailed + pending.size
   return (decompressed, decompFailed)
 
+/--
+Returns the per-transfer detail for a failure line, as `key=value` pairs.
+A status and an exit code say that a transfer failed; these say how.
+
+* `bytes` — the payload this transfer moved, over the size that
+  `content-length` promised when that header arrived. `bytes=4096/1421777`
+  locates a truncation, and `bytes=0/1421777` means nothing arrived.
+* `cf_ray` — Cloudflare's request id. The suffix names the Cloudflare data
+  center, and the id finds the request in Cloudflare's logs.
+* `cf_cache_status` — whether the edge cache served the body, or the read
+  reached a backend.
+* `http_version` — the HTTP version of the transfer.
+* `time_total` — how long the attempt lasted, which separates an immediate
+  reset from a slow stall.
+
+`report` is curl's own JSON report. `headers` holds the values of
+`curlGetHeaders`, in order, and is empty on the upload path. `dir` picks
+the counter that holds the payload: a download reads `size_download`, an
+upload `size_upload`.
+
+Each value describes curl's final attempt, because `--retry` hides the
+earlier ones. The function skips an absent or empty value, so a backend
+without `cf-*` headers gives fewer pairs.
+-/
+def transferDiagnostics (dir : TransferDirection) (report : Lean.Json)
+    (headers : List String) : String :=
+  let payloadKey := match dir with
+    | .download => "size_download"
+    | .upload => "size_upload"
+  let nonEmpty (s : String) : Option String := if s.isEmpty then none else some s
+  let header (name : String) : Option String :=
+    ((curlGetHeaders.zip headers).lookup name).bind nonEmpty
+  let field (key : String) : Option String :=
+    (report.getObjVal? key).toOption.bind fun
+      | .str s => nonEmpty s
+      | .null  => none
+      | value  => some value.compress
+  let pair (key : String) (value : Option String) : Option String :=
+    value.map fun value => s!"{key}={value}"
+  let bytes := (field payloadKey).map fun got =>
+    match header "content-length" with
+    | some want => s!"bytes={got}/{want}"
+    | none      => s!"bytes={got}"
+  " ".intercalate <| List.reduceOption
+    [bytes, pair "cf_ray" (header "cf-ray"), pair "cf_cache_status" (header "cf-cache-status"),
+      pair "http_version" (field "http_version"), pair "time_total" (field "time_total")]
+
 def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     (caption : String) (speedVar : String)
     (classify : Option Nat → Nat → TransferVerdict dir) (removeOnError := false)
@@ -672,8 +749,11 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
     let line := line.trimAscii
+    -- Only curl's report decides the verdict. The header values reach only
+    -- the failure line.
+    let (report, headers) := splitWriteOut line.copy
     if !line.isEmpty then
-      match Lean.Json.parse line.copy with
+      match Lean.Json.parse report with
       | .ok result =>
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
@@ -733,6 +813,9 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
+              let diag := transferDiagnostics dir result headers
+              if !diag.isEmpty then
+                msg := s!"{msg} [{diag}]"
               return msg
             let msg? := result.getObjValAs? String "errormsg"
             -- A download is named by its part file, an upload by its URL.
@@ -790,7 +873,7 @@ private def downloadFilesFromContainer
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
-      #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+      #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
     -- of retirement; treat that as a miss so the chain stays quiet for clients
     -- whose chain still lists it.

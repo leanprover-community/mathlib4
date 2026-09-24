@@ -126,7 +126,7 @@ protected theorem map_add₀ {μ ν : Measure α} {f : α → β}
 @[fun_prop]
 protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=
-  (sum_measure h).mono_measure <| restrict_iUnion_le
+  (sum_measure h).mono_measure restrict_iUnion_le
 
 @[simp]
 theorem _root_.aemeasurable_iUnion_iff [Countable ι] {s : ι → Set α} :
@@ -315,7 +315,7 @@ theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
   · intro h
     refine ⟨indicator s (h.mk f), h.measurable_mk.indicator hs, ?_⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (AEMeasurable.mk f h) :=
-      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs).symm)
+      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans (indicator_ae_eq_restrict hs).symm)
     have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (AEMeasurable.mk f h) :=
       (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
@@ -378,7 +378,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
   choose! U hUf hUm hUeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_superset_ae_eq
   set v := ⋃ s ∈ S, U s \ T s
   have hvm : MeasurableSet v := .biUnion hSc fun s hs ↦ (hUm s hs).diff (hTm s hs)
-  have hvμ : μ v = 0 := (measure_biUnion_null_iff hSc).2 fun s hs ↦ ae_le_set.1 <|
+  have hvμ : μ v = 0 := (measure_biUnion_null_iff hSc).2 fun s hs ↦ ae_le_set.1
     ((hUeq s hs).trans (hTeq s hs).symm).le
   refine ⟨v.piecewise (fun _ ↦ default) f, ?_, measure_mono_null (fun x ↦
     not_imp_comm.2 fun hxv ↦ (piecewise_eq_of_notMem _ _ _ hxv).symm) hvμ⟩

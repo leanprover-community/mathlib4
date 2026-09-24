@@ -105,7 +105,7 @@ theorem HasLimit.mk {F : J ⥤ C} (d : LimitCone F) : HasLimit F :=
 @[no_expose, to_dual
 /-- Use the axiom of choice to extract explicit `ColimitCocone F` from `HasColimit F`. -/]
 def getLimitCone (F : J ⥤ C) [HasLimit F] : LimitCone F :=
-  Classical.choice <| HasLimit.exists_limit
+  Classical.choice HasLimit.exists_limit
 
 variable (J C)
 

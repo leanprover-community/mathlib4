@@ -215,8 +215,8 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|
       Complex.isometry_ofReal.antilipschitzWith.tendsto_cobounded (spectrum.isBounded a |>.compl)
     exact this.image Complex.ofReal |>.mono <| by simp
-  case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ <| Set.inter_subset_right
-  case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
+  case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ Set.inter_subset_right
+  case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ Set.inter_subset_right
   all_goals
     refine Set.subset_inter (fun z hz hz' ↦ ?_) (fun _ ↦ by simpa using le_of_lt)
     rw [Set.mem_ofPred_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
@@ -233,7 +233,7 @@ lemma coe_isUnit {a : S} : IsUnit (a : A) ↔ IsUnit a := by
   have ha₁ := ha.star.mul ha
   have ha₂ := ha.mul ha.star
   have spec_eq {x : S} (hx : IsSelfAdjoint x) : spectrum ℂ x = spectrum ℂ (x : A) :=
-    Subalgebra.spectrum_eq_of_isPreconnected_compl S _ <|
+    Subalgebra.spectrum_eq_of_isPreconnected_compl S _
       (hx.map S.subtype).isConnected_spectrum_compl.isPreconnected
   rw [← StarMemClass.coe_star, ← MulMemClass.coe_mul, ← spectrum.zero_notMem_iff ℂ, ← spec_eq,
     spectrum.zero_notMem_iff] at ha₁ ha₂

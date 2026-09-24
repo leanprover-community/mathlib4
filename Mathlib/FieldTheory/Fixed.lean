@@ -194,7 +194,7 @@ theorem monic : (minpoly G F x).Monic := by
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem eval₂ :
-    Polynomial.eval₂ (Subring.subtype <| (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
+    Polynomial.eval₂ (Subring.subtype (FixedPoints.subfield G F).toSubring) x (minpoly G F x) =
       0 := by
   rw [← prodXSubSMul.eval G F x, Polynomial.eval₂_eq_eval_map]
   simp only [minpoly, Polynomial.map_toSubring]

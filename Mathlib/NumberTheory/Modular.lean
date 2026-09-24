@@ -385,7 +385,7 @@ lemma ρ_mem_fd : ρ ∈ 𝒟 := by
   constructor <;> norm_num [ρ, ← pow_two, div_pow]
 
 lemma I_mem_fd : I ∈ 𝒟 := by
-  constructor <;> norm_num
+  constructor <;> simp
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
   rw [abs_mul, abs_two, ← lt_div_iff₀' (zero_lt_two' ℝ)]
@@ -560,7 +560,7 @@ private lemma cases_c_one_d_zero (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg' 
       rw [h, zpow_one] at hg'
       refine .inr <| .inr ⟨hg', eq_of_re_of_norm (by norm_num [hzre, ρ]) ?_⟩
       simp [hz', show 1 + (ρ : ℂ) = -ρ ^ 2 by grind [ρ_sq], norm_ρ]
-    · rw [abs_eq (by norm_num)] at hzre
+    · rw [abs_eq (by simp)] at hzre
       rcases hzre with hzre | hzre <;> [norm_num [hzre] at this; skip]
       rw [h, zpow_neg_one] at hg'
       exact .inr <| .inl ⟨hg', eq_of_re_of_norm (by norm_num [hzre, ρ]) (by rw [hz', norm_ρ])⟩
@@ -739,11 +739,11 @@ lemma stabilizer_I : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) 
   constructor
   · intro hg
     have := cases_of_mem_fd_smul_mem_fd I_mem_fd (hg.symm ▸ I_mem_fd)
-    norm_num [UpperHalfPlane.ext_iff, Complex.ext_iff, ρ] at this
+    simp [UpperHalfPlane.ext_iff, Complex.ext_iff, ρ] at this
     grind
   · suffices S • I = I by simp +contextual [-sl_moeb, or_imp, this]
     rw [modular_S_smul, UpperHalfPlane.ext_iff]
-    norm_num
+    simp
 
 lemma stabilizer_ρ :
     g • ρ = ρ ↔ g ∈ ({1, -1, S * T, -(S * T), T⁻¹ * S, -(T⁻¹ * S)} : Finset SL(2, ℤ)) := by
@@ -757,7 +757,7 @@ lemma stabilizer_ρ :
     have neT : g ≠ T ∧ g ≠ -T ∧ g ≠ T⁻¹ ∧ g ≠ -T⁻¹ := by
       have : T • ρ ≠ ρ := by
         rw [ne_eq, UpperHalfPlane.ext_iff, modular_T_smul, coe_vadd]
-        norm_num
+        simp
       have : T⁻¹ • ρ ≠ ρ := by rwa [ne_eq, inv_smul_eq_iff, eq_comm]
       grind [SL_neg_smul]
     have neTST : g ≠ T * S * T ∧ g ≠ -(T * S * T) := by

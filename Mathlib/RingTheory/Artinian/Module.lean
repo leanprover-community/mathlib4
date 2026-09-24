@@ -157,7 +157,7 @@ open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  have h := ‹IsArtinian R M›; contrapose! h
+  have h := ‹IsArtinian R M›; contrapose h
   rw [IsArtinian, WellFoundedLT]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n

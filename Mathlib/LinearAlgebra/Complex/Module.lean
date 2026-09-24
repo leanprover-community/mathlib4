@@ -471,10 +471,10 @@ lemma imaginaryPart_imaginaryPart {x : A} : ℑ (ℑ x : A) = 0 :=
   (ℑ x).property.imaginaryPart
 
 lemma realPart_idem {x : A} : ℜ (ℜ x : A) = ℜ x :=
-  Subtype.ext <| (ℜ x).property.coe_realPart
+  Subtype.ext (ℜ x).property.coe_realPart
 
 lemma realPart_imaginaryPart {x : A} : ℜ (ℑ x : A) = ℑ x :=
-  Subtype.ext <| (ℑ x).property.coe_realPart
+  Subtype.ext (ℑ x).property.coe_realPart
 
 lemma realPart_surjective : Function.Surjective (realPart (A := A)) :=
   fun x ↦ ⟨(x : A), Subtype.ext x.property.coe_realPart⟩

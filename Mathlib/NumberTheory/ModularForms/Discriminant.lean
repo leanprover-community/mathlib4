@@ -164,7 +164,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     refine this
       (by simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _)
       (fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg) ?_
-    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
+    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by simp : (0 : ℝ) < 1 / 2)] with q hq k
     exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
@@ -185,7 +185,7 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
 lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImInfty] Δ := by
   refine .of_bound 2 ?_
   have hprod := tendsto_atImInfty_tprod_one_sub_eta_q_pow.eventually
-    (Metric.ball_mem_nhds 1 (by norm_num : (0 : ℝ) < 1/2))
+    (Metric.ball_mem_nhds 1 (by simp : (0 : ℝ) < 1/2))
   filter_upwards [hprod] with τ hτ
   rw [discriminant_eq_q_prod, norm_mul, Real.norm_of_nonneg (Real.exp_pos _).le]
   have hq_norm : ‖𝕢 1 τ‖ = Real.exp (-2 * π * τ.im) := by simp [Periodic.qParam, Complex.norm_exp]

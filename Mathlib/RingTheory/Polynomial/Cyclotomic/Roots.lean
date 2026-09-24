@@ -75,7 +75,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
     rw [isRoot_of_unity_iff hnpos _]
     exact ⟨n, n.mem_divisors_self hnpos.ne', hμ⟩
   by_contra hnμ
-  have ho : 0 < orderOf μ := (isOfFinOrder_iff_pow_eq_one.2 <| ⟨n, hnpos, hμn⟩).orderOf_pos
+  have ho : 0 < orderOf μ := (isOfFinOrder_iff_pow_eq_one.2 ⟨n, hnpos, hμn⟩).orderOf_pos
   have := pow_orderOf_eq_one μ
   rw [isRoot_of_unity_iff ho] at this
   obtain ⟨i, hio, hiμ⟩ := this
@@ -199,7 +199,7 @@ theorem cyclotomic.isCoprime_rat {n m : ℕ} (h : n ≠ m) :
   · exact isCoprime_one_left
   rcases m.eq_zero_or_pos with (rfl | hmzero)
   · exact isCoprime_one_right
-  rw [Irreducible.coprime_iff_not_dvd <| cyclotomic.irreducible_rat <| hnzero]
+  rw [Irreducible.coprime_iff_not_dvd <| cyclotomic.irreducible_rat hnzero]
   exact fun hdiv => h <| cyclotomic_injective <|
     eq_of_monic_of_associated (cyclotomic.monic n ℚ) (cyclotomic.monic m ℚ) <|
       Irreducible.associated_of_dvd (cyclotomic.irreducible_rat hnzero)

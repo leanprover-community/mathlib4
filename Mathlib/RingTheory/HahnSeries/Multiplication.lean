@@ -103,7 +103,7 @@ theorem leadingCoeff_one [MulZeroOneClass R] : (1 : R⟦Γ⟧).leadingCoeff = 1 
 @[simp]
 protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) :
     (1 : R⟦Γ⟧).map f = (1 : S⟦Γ⟧) :=
-  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ <| f.map_one
+  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ f.map_one
 
 instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne R⟦Γ⟧ where
   natCast_zero := by simp [← single_zero_natCast]

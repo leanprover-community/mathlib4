@@ -163,7 +163,7 @@ attribute [local instance] inverseObj
 def inverse : AlgCat.{u} R ⥤ Mon (ModuleCat.{u} R) where
   obj A := { X := ↧A, mon := inverseObj A }
   map f :=
-    { hom := ofHom <| f.hom.toLinearMap
+    { hom := ofHom f.hom.toLinearMap
       isMonHom_hom.one_hom := hom_ext <| LinearMap.ext f.hom.commutes
       isMonHom_hom.mul_hom := hom_ext <| TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom }
 

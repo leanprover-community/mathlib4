@@ -482,7 +482,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 16 do
   let ss ← withAppArg delab
-  let fs ← withNaryArg 14 <| delab
+  let fs ← withNaryArg 14 delab
   `(d[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `mvfderiv`. -/
@@ -543,13 +543,7 @@ lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : 
   simp [mul_comm]
 
 @[simp]
-lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffAt[s] x) :
-    d[s] (0 : M → F) x = 0 := by
-  have : d[s] (0 : M → F) x + d[s] (0 : M → F) x = d[s] (0 : M → F) x := by
-    rw [← mvfderivWithin_add (by exact mdifferentiableWithinAt_const)
-      (by exact mdifferentiableWithinAt_const) hs]
-    simp
-  simpa using this
+lemma mvfderivWithin_zero {s : Set M} : d[s] (0 : M → F) x = 0 := mvfderivWithin_const 0
 
 lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
   simp [mvfderiv, mfderiv_const]
@@ -587,11 +581,7 @@ lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g
   simp [mul_comm _ (g x)]
 
 @[simp]
-lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
-  have : d% (0 : M → F) x + d% (0 : M → F) x = d% (0 : M → F) x := by
-    rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
-    simp
-  simpa using this
+lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := mvfderiv_const 0
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
 
 -- TODO: the next two lemmas are more type correct than their `mvfderiv` cousins, but not entirely:

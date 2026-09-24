@@ -270,7 +270,7 @@ theorem measure_inter_add_sdiff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
   calc
     μ (s ∩ t) + μ (s \ t) ≤ μ (s' ∩ t) + μ (s' \ t) := by gcongr
     _ = μ (s' ∩ t ∪ s' \ t) :=
-      (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht) <|
+      (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht)
           (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
     _ = μ s' := congr_arg μ (inter_union_sdiff _ _)
     _ = μ s := hs'

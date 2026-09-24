@@ -97,7 +97,7 @@ See note [partially-applied ext lemmas]. -/
 nonrec theorem curry_injective : Function.Injective (curry : (M ⊗ N →ₗ[A] P) → M →ₗ[A] N →ₗ[R] P) :=
   fun _ _ h =>
   LinearMap.restrictScalars_injective R <|
-    curry_injective <| (congr_arg (LinearMap.restrictScalars R) h :)
+    curry_injective (congr_arg (LinearMap.restrictScalars R) h :)
 
 theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   curry_injective <| LinearMap.ext₂ H
@@ -326,7 +326,7 @@ def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P �
 
 @[simp]
 theorem congr_refl : congr (.refl A M) (.refl R N) = .refl A _ :=
-  LinearEquiv.toLinearMap_injective <| map_id
+  LinearEquiv.toLinearMap_injective map_id
 
 theorem congr_trans (f₁ : M ≃ₗ[A] P) (f₂ : P ≃ₗ[A] P') (g₁ : N ≃ₗ[R] Q) (g₂ : Q ≃ₗ[R] Q') :
     congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=

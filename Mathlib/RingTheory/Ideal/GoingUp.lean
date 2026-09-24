@@ -258,7 +258,7 @@ theorem IsIntegral.isMaximal_of_isMaximal_under (I : Ideal A) [I.IsPrime]
 theorem IsIntegral.mem_minimalPrimes_map_under (I : Ideal A) [I.IsPrime] :
     I ∈ ((I.under R).map (algebraMap R A)).minimalPrimes := by
   refine ⟨⟨inferInstance, map_comap_le⟩, fun r ⟨hr, hpr⟩ hrq ↦ ?_⟩
-  contrapose! hpr
+  contrapose hpr
   exact mt map_le_iff_le_comap.mp (not_le_of_gt (IsIntegral.under_lt_under (hrq.lt_of_not_ge hpr)))
 
 variable [IsDomain A]
@@ -436,7 +436,7 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
 variable (A) in
 theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
     P = ⊥ :=
-  eq_bot_of_under_eq_bot <| ((liesOver_iff _ _).mp h).symm
+  eq_bot_of_under_eq_bot ((liesOver_iff _ _).mp h).symm
 
 variable (A) {P} in
 theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=

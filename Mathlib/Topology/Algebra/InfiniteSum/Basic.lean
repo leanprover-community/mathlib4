@@ -315,7 +315,7 @@ protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpac
 theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [CommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
     (he : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : Multipliable f ↔ Multipliable g :=
-  hes.exists.trans <| exists_congr <| @he
+  hes.exists.trans <| exists_congr @he
 
 variable [ContinuousMul α]
 

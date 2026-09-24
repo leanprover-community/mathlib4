@@ -373,7 +373,7 @@ theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o :=
   rw [← preAleph_omega0, preAleph_le_preAleph]
 
 theorem _root_.Ordinal.card_le_preAleph (o : Ordinal) : o.card ≤ preAleph o :=
-  o.card_preOmega.trans_ge <| card_le_card <| o.le_preOmega_self
+  o.card_preOmega.trans_ge <| card_le_card o.le_preOmega_self
 
 theorem le_preAleph_ord (c : Cardinal) : c ≤ preAleph c.ord := by
   simpa using c.ord.card_le_preAleph
@@ -666,7 +666,7 @@ theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
 theorem isStrongPrelimit_preBeth {o : Ordinal} :
     IsStrongPrelimit (preBeth o) ↔ IsSuccPrelimit o := by
   refine ⟨?_, fun ho x hx ↦ ?_⟩
-  · contrapose!
+  · contrapose
     rw [not_isSuccPrelimit_iff_mem_range_succ, not_isStrongPrelimit_iff]
     rintro ⟨a, rfl⟩
     refine ⟨preBeth a, ?_, ?_⟩
