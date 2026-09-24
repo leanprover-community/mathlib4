@@ -156,8 +156,9 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   return { L, U := W, swaps, pivot := pivotCols }
 
 /-- The carriers a model computes on, the integers or expressions of the ring.
-The most direct method is for a model to name this as a parameter in `Type`, but that
-puts the model in a higher universe level, and the registry can only store `Type 0` elements. -/
+The most direct method is for a model to name the carrier type directly as a field of the extension,
+but that puts the model in a higher universe level, and the registry can only store `Type 0`
+elements. -/
 inductive Carrier
   | int
   | expr
@@ -171,8 +172,8 @@ abbrev Carrier.type : Carrier → Type
 structure Model (V : Type) where
   /-- The arithmetic of the carrier. -/
   ops : RingOps V
-  /-- An entry as a value with an optional denominator (used for the scaling optimisation).
-  `(n, some d)` denotes `n / d` for a nonzero `d`, and `(n, none)` denotes `n`. -/
+  /-- Evaluate an entry to a value with an optional denominator for the row scaling.
+  `(n, some d)` denotes `n / d` with `d` nonzero, and `(n, none)` denotes `n`. -/
   evalEntry : Expr → MetaM (V × Option V)
   /-- A common multiple for eliminating the denominators (`ops.mul` by default). A
   carrier type with a cheap lcm function could supply it as an optimisation to keep the

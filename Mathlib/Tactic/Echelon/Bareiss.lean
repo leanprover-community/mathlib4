@@ -74,7 +74,7 @@ def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(Com
   let fractions ← entries.mapM fun row => row.mapM model.evalEntry
   let (values, scales) := scaleRows model.ops model.commonMultiple fractions
   let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
-  let d ← data.mapM model.mkEntry
-  return { cert := ← mkCertificate rα A entries d, carrier, model, data }
+  let exprData ← data.mapM model.mkEntry
+  return { cert := ← mkCertificate rα A entries exprData, carrier, model, data }
 
 end Mathlib.Tactic.Echelon
