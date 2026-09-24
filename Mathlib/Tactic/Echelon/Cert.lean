@@ -59,12 +59,16 @@ structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
   /-- The row-major entries. -/
   entries : List (List Q($α))
 
+/-- The `MatrixViews` of a matrix given as its list literal `lit` and its entries. -/
+def MatrixViews.ofLit {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m n : Nat)
+    (lit : Q(List (List $α))) (entries : List (List Q($α))) : MatrixViews u m n α :=
+  { matrix := q(ofLists $m $n $lit), lit, entries }
+
 /-- Build the `MatrixViews` of the row-major entries `rows`. -/
 def mkMatrixViews {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m n : Nat)
     (rows : Array (Array Q($α))) : MatrixViews u m n α :=
   let entries := rows.toList.map Array.toList
-  have lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
-  { matrix := q(ofLists $m $n $lit), lit, entries }
+  .ofLit rα m n (mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)) entries
 
 /-- Build the list of pivot columns `[c₀, c₁, …]`, each with its bound. -/
 def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
@@ -122,12 +126,12 @@ def certifyPermEq {u : Level} {m n : Nat} {α : Q(Type u)} (A : Q(Matrix (Fin $m
     q(congrArg (fun f ↦ Matrix.of f) (FinVec.etaExpand_eq (fun i ↦ $A ($σ i))).symm)
     q(($A).submatrix $σ id = $Aσ)
 
-/-- Prove the product `L * Aσ = U` from the rows of the views. -/
+/-- Prove the product `L * Aσ = U` from the expansion `r` of the product of the row lists of
+`L` and `Aσ`, whose literals are `r.A` and `r.B`. -/
 def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+    {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (r : MulEq zα aα mα m m n)
     (L : MatrixViews u m m α) (Aσ U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
     MetaM Q($(L.matrix) * $(Aσ.matrix) = $(U.matrix)) := do
-  let r := proveMul (← synthInstanceQ q(Zero $α)) (← synthInstanceQ q(Add $α))
-    (← synthInstanceQ q(Mul $α)) m m n L.entries Aσ.entries
   have prod : Q(List (List $α)) := r.expr
   have litU : Q(List (List $α)) := U.lit
   let hlit : Q($prod = $litU) ← match certifier? with
@@ -179,10 +183,16 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α)))
     (data : BareissData Expr) (certifier? : Option EntryCertifier) :
     MetaM (DecompositionCert rα A) := do
-  have L := mkMatrixViews rα m m data.L
+  let zα : Q(Zero $α) ← synthInstanceQ q(Zero $α)
+  let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
+  let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
+  let lRows : List (List Q($α)) := data.L.toList.map Array.toList
+  let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
+  -- `proveMul` first, so that the views of `L` and `Aσ` are stated on the literals it built
+  let r := proveMul zα aα mα m m n lRows aRows
+  have L := MatrixViews.ofLit rα m m r.A lRows
+  have Aσ := MatrixViews.ofLit rα m n r.B aRows
   have U := mkMatrixViews rα m n data.U
-  let aEntries := data.rowOrder.map (entries[·]!)
-  have Aσ := mkMatrixViews rα m n aEntries
   let σ ← mkPerm m data.swaps
   let cols : Q(List (Fin $n)) ← mkPivotList n data.pivot
   let pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
@@ -190,7 +200,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   have Aσm := Aσ.matrix
   have Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
-  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq rα L Aσ U certifier?
+  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq rα r L Aσ U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
   let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy rα U cols data.pivot certifier
