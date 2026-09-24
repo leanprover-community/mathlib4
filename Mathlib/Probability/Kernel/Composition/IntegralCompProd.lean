@@ -152,7 +152,7 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
     Integrable (fun x => ∫ y, f (x, y) ∂η (a, x)) (κ a) :=
   Integrable.mono hf.integral_norm_compProd hf.aestronglyMeasurable.integral_kernel_compProd <|
     Eventually.of_forall fun x =>
-      (norm_integral_le_integral_norm _).trans_eq <|
+      (norm_integral_le_integral_norm _).trans_eq
         (norm_of_nonneg <|
             integral_nonneg_of_ae <|
               Eventually.of_forall fun y => (norm_nonneg (f (x, y)) :)).symm

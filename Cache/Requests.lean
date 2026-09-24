@@ -351,25 +351,41 @@ guarantees the per-transfer JSON report fields `monitorCurl` reads. Pass
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- Authentication method used for cache upload operations. -/
-inductive UploadAuth where
-  | azureSas (token : String)
-  | azureBearer (token : String)
+/--
+Separates curl's JSON report from the raw header values after it on the
+same line. JSON allows no raw control character other than whitespace
+(RFC 8259), so the first 0x1F (ASCII unit separator) ends the report.
+-/
+def curlFieldSep : String := "\x1f"
 
-/-- Retrieves upload credentials from the environment. -/
-def getUploadAuth : IO UploadAuth := do
-  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
-    return .azureBearer token
-  if let some token ← getEnvNonEmpty "MATHLIB_CACHE_SAS" then
-    return .azureSas token
-  throw <| IO.userError
-    "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
+/-- The response headers that the get path records, in output order. -/
+def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-length"]
+
+/--
+`--write-out` format for the get path: curl's `%{json}` report, then the
+value of each header in `curlGetHeaders`, each after `curlFieldSep`.
+curl writes a header value unescaped, so the values stay outside the JSON.
+
+`%header{…}` needs curl 7.84. curl 7.83 shipped it as experimental only.
+Below 7.84, `validateCurl` downloads a newer curl on Linux. A curl that
+old on another platform prints `%header{…}` as literal text, and that text
+appears only in a failure line.
+-/
+def curlGetWriteOut : String :=
+  "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
+
+/-- Splits a `--write-out` line into curl's JSON report and the header
+values after it. A line without `curlFieldSep` is all report. -/
+def splitWriteOut (line : String) : String × List String :=
+  match line.splitOn curlFieldSep with
+  | report :: headers => (report, headers)
+  | [] => (line, [])
 
 /--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
 
-The `f/` prefix marks files (commits use `c/`). Whether the rest of the path is
+The `f/` prefix marks files. Whether the rest of the path is
 flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
 container (see `Container.flatPath`), not the repo: the same hash under
 `repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
@@ -383,15 +399,7 @@ case-insensitive in the GitHub owner/repo name.
 -/
 def mkFileURL (container : Option Container) (repo containerURL fileName : String)
     (repoScope : Option String := none) : String :=
-  let repo := normalizeRepo repo
-  let flat := match container with
-    | some c => c.flatPath repo
-    | none => repo == MATHLIBREPO
-  let pre := if flat then ""
-    else match repoScope with
-      | some s => s!"{repo}/{s}/"
-      | none => s!"{repo}/"
-  s!"{containerURL}/f/{pre}{fileName}"
+  s!"{containerURL}/{fileDirPath container repo repoScope}/{fileName}"
 
 /--
 Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
@@ -400,14 +408,33 @@ When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
 initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
 
 /--
+Whether `scope` is a well-formed per-commit scope: a nonempty run of hex
+digits, at most 64 of them (a commit SHA, abbreviated or full). The scope
+lands in URL paths and in file names — the fork namespace `f/{repo}/{scope}/`,
+the marker `m/{repo}/{scope}`, and the marker's local temp file — so anything
+else (a path separator, `..`, an unresolved ref name) is a misconfiguration
+that must fail loudly rather than leak into a path.
+-/
+def isValidScope (scope : String) : Bool :=
+  !scope.isEmpty && scope.length ≤ 64 &&
+    scope.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f') || ('A' ≤ c && c ≤ 'F')
+
+/--
 Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
 env var > `none`. Both sources mean "the user has explicitly opted into a
-SHA-scoped read"; the non-default-scope warning fires for either.
+SHA-scoped read"; the non-default-scope warning fires for either. A scope that
+is not a hex SHA (see `isValidScope`) throws: every consumer embeds the scope
+in a URL path or a file name.
 -/
 def getRepoScope : IO (Option String) := do
-  if let some s ← scopeOverride.get then
-    return some s
-  getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
+  let scope? ← do
+    if let some s ← scopeOverride.get then pure (some s)
+    else getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
+  let some scope := scope? | return none
+  unless isValidScope scope do
+    throw <| IO.userError s!"invalid cache scope '{scope}': a scope is a commit SHA (hex \
+      digits; --scope also accepts any ref `git rev-parse` can resolve from inside a git checkout)"
+  return some scope
 
 def getGitCommitHash : IO String :=
   return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
@@ -642,6 +669,53 @@ def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Na
       decompFailed := decompFailed + pending.size
   return (decompressed, decompFailed)
 
+/--
+Returns the per-transfer detail for a failure line, as `key=value` pairs.
+A status and an exit code say that a transfer failed; these say how.
+
+* `bytes` — the payload this transfer moved, over the size that
+  `content-length` promised when that header arrived. `bytes=4096/1421777`
+  locates a truncation, and `bytes=0/1421777` means nothing arrived.
+* `cf_ray` — Cloudflare's request id. The suffix names the Cloudflare data
+  center, and the id finds the request in Cloudflare's logs.
+* `cf_cache_status` — whether the edge cache served the body, or the read
+  reached a backend.
+* `http_version` — the HTTP version of the transfer.
+* `time_total` — how long the attempt lasted, which separates an immediate
+  reset from a slow stall.
+
+`report` is curl's own JSON report. `headers` holds the values of
+`curlGetHeaders`, in order, and is empty on the upload path. `dir` picks
+the counter that holds the payload: a download reads `size_download`, an
+upload `size_upload`.
+
+Each value describes curl's final attempt, because `--retry` hides the
+earlier ones. The function skips an absent or empty value, so a backend
+without `cf-*` headers gives fewer pairs.
+-/
+def transferDiagnostics (dir : TransferDirection) (report : Lean.Json)
+    (headers : List String) : String :=
+  let payloadKey := match dir with
+    | .download => "size_download"
+    | .upload => "size_upload"
+  let nonEmpty (s : String) : Option String := if s.isEmpty then none else some s
+  let header (name : String) : Option String :=
+    ((curlGetHeaders.zip headers).lookup name).bind nonEmpty
+  let field (key : String) : Option String :=
+    (report.getObjVal? key).toOption.bind fun
+      | .str s => nonEmpty s
+      | .null  => none
+      | value  => some value.compress
+  let pair (key : String) (value : Option String) : Option String :=
+    value.map fun value => s!"{key}={value}"
+  let bytes := (field payloadKey).map fun got =>
+    match header "content-length" with
+    | some want => s!"bytes={got}/{want}"
+    | none      => s!"bytes={got}"
+  " ".intercalate <| List.reduceOption
+    [bytes, pair "cf_ray" (header "cf-ray"), pair "cf_cache_status" (header "cf-cache-status"),
+      pair "http_version" (field "http_version"), pair "time_total" (field "time_total")]
+
 def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     (caption : String) (speedVar : String)
     (classify : Option Nat → Nat → TransferVerdict dir) (removeOnError := false)
@@ -675,8 +749,11 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
     let line := line.trimAscii
+    -- Only curl's report decides the verdict. The header values reach only
+    -- the failure line.
+    let (report, headers) := splitWriteOut line.copy
     if !line.isEmpty then
-      match Lean.Json.parse line.copy with
+      match Lean.Json.parse report with
       | .ok result =>
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
@@ -736,10 +813,14 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
+              let diag := transferDiagnostics dir result headers
+              if !diag.isEmpty then
+                msg := s!"{msg} [{diag}]"
               return msg
             let msg? := result.getObjValAs? String "errormsg"
-            -- A download is named by its part file, an upload by its URL —
-            -- query-stripped: a SAS put carries its token there.
+            -- A download is named by its part file, an upload by its URL.
+            -- The URL is query-stripped, so a credential in the query string
+            -- is not printed.
             let src? : Except String String := match dir with
               | .download => fn?
               | .upload =>
@@ -792,7 +873,7 @@ private def downloadFilesFromContainer
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
-      #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+      #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
     -- of retirement; treat that as a miss so the chain stays quiet for clients
     -- whose chain still lists it.
@@ -1106,122 +1187,6 @@ def getFiles
 
 end Get
 
-section Put
-
-/--
-Resolve the upload base URL.
-
-Precedence:
-1. `MATHLIB_CACHE_PUT_URL` env var, if set. Any value counts here, an empty one
-   included: a misconfigured endpoint fails the upload rather than divert it to
-   the fallback container below. The read variables take the opposite rule,
-   where an empty value means unset.
-2. The Azure URL for the explicitly chosen `container`.
-3. With neither set, fall back to `Container.legacy` (the bare `mathlib4`
-   container) and warn. RBAC still scopes each identity to its own container,
-   so the fallback cannot reach a trust-level container it isn't entitled to;
-   the warning steers workflows toward passing `--container=NAME`.
--/
-def effectiveUploadURL (container : Option Container) :
-    IO (Option Container × String) := do
-  if let some url ← IO.getEnv "MATHLIB_CACHE_PUT_URL" then
-    -- A user-supplied URL carries no container policy, so signal `none` and let
-    -- `mkFileURL` choose the path from the repo alone.
-    return (none, url)
-  match container with
-  | none =>
-    IO.eprintln <|
-      "Warning: cache upload without --container=NAME; defaulting to the\n" ++
-      "         `legacy` (bare `mathlib4`) container. Pass --container=NAME\n" ++
-      "         explicitly to choose a trust-level container."
-    return (some Container.legacy, Container.legacy.azureURL)
-  | some c => return (some c, c.azureURL)
-
-def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
-
-def getAzureDateHeader : IO String := do
-  let out ← IO.Process.output
-    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
-  unless out.exitCode == 0 do
-    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
-  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
-
-/-- Formats the config file for `curl`, containing the list of files to be uploaded.
-The destination base URL is the explicit `uploadURL` argument. `container` is
-threaded through to `mkFileURL` so the per-container URL-shape policy applies;
-it is `none` only when `MATHLIB_CACHE_PUT_URL` is overriding the endpoint. -/
-def mkPutConfigContent (container : Option Container) (repo uploadURL : String)
-    (files : Array FilePath) (auth : UploadAuth) : IO String := do
-  let scope? ← getRepoScope
-  let token := match auth with
-    | .azureSas token => s!"?{token}"
-    | _ => ""
-  let l ← files.toList.mapM fun file : FilePath => do
-    -- The response body goes to the null device: stdout must carry only the
-    -- per-transfer JSON reports that `monitorCurl` parses.
-    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get! scope?}{token}\n\
-      -o {IO.nullDevice}"
-  return "\n".intercalate l
-
-/-- Calls `curl` to send a set of files to the server. The destination container
-is selected by `container`; pass `none` to require `MATHLIB_CACHE_PUT_URL` to
-be set instead (otherwise this errors). -/
-def putFilesAbsolute
-  (repo : String) (container : Option Container)
-  (files : Array FilePath) (tempConfigFilePath : FilePath)
-  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
-  let size := files.size
-  if size > 0 then
-    let (urlContainer?, uploadURL) ← effectiveUploadURL container
-    IO.FS.writeFile tempConfigFilePath
-      (← mkPutConfigContent urlContainer? repo uploadURL files auth)
-    let target := container.map Container.name |>.getD "(env override)"
-    IO.println s!"Attempting to upload {size} file(s) to {repo} cache (container: {target})"
-    let azureDateHeader ← getAzureDateHeader
-    let args := match auth with
-      | .azureSas _ =>
-        if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob"]
-        else
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-      | .azureBearer token =>
-        if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
-            azureDateHeader,
-            "--oauth2-bearer", token]
-        else
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-            azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-    -- A retry after a PUT that landed is safe: a non-overwrite put answers
-    -- it with 409/412, which `classifyUpload` excuses, and an overwrite
-    -- put re-sends the same bytes.
-    let args := args ++ #["-X", "PUT", "--parallel"] ++
-      curlRetryArgs (supportLegacyCurl := false) ++
-      -- `%{json}` prints a JSON report for each finished transfer. The
-      -- leading newline keeps each report on its own line even if something
-      -- else reaches stdout ahead of it.
-      #["--write-out", "\n%{json}\n", "--config", tempConfigFilePath.toString]
-    let (s, _) ← monitorCurl args size "Uploaded" "speed_upload"
-      (classifyUpload · · !overwrite) (removeOnError := false) (decompConfig := none)
-    IO.FS.removeFile tempConfigFilePath
-    -- Surface genuine upload failures. Already-present blobs (409/412 on a
-    -- non-overwrite put) are excused in `monitorCurl`, so this won't trip on a
-    -- re-upload of files the server already has.
-    if s.failed > 0 then
-      IO.eprintln s!"Uploading {s.failed} file(s) failed"
-      IO.Process.exit 1
-  else IO.println "No files to upload"
-
-/-- Calls `curl` to send a set of cached files to the server. -/
-def putFiles
-  (repo : String) (container : Option Container) (fileNames : Array String)
-  (overwrite : Bool) (auth : UploadAuth) : IO Unit := do
-  -- TODO: reimplement using HEAD requests?
-  let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
-  putFilesAbsolute repo container files IO.CURLCFG overwrite auth
-end Put
-
 section Stage
 
 def copyCmd : String := if System.Platform.isWindows then "COPY" else "cp"
@@ -1263,87 +1228,5 @@ def unstageFiles (stagingDir : FilePath) (overwrite : Bool) : IO Unit := do
     IO.println "No files to unstage"
 
 end Stage
-
-section Commit
-
-def isGitStatusClean : IO Bool :=
-  return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
-
-/--
-Sends a commit file to the server, containing the hashes of the respective committed files.
-
-The file name is the current Git hash and the `c/` prefix means that it's a commit file.
-The destination container follows the same rules as `putFiles`.
--/
-def commit (container : Option Container) (hashMap : IO.ModuleHashMap) (overwrite : Bool)
-    (auth : UploadAuth) : IO Unit := do
-  let hash ← getGitCommitHash
-  let path := IO.CACHEDIR / hash
-  IO.FS.createDirAll IO.CACHEDIR
-  IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
-  let azureDateHeader ← getAzureDateHeader
-  -- Commit files are never namespaced by repo (they always live at `/c/<hash>`),
-  -- so we only need the URL from `effectiveUploadURL`, not the URL-shape container.
-  let (_, uploadURL) ← effectiveUploadURL container
-  let args := match auth with
-    | .azureSas token =>
-      let params := if overwrite
-        then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
-        else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-      params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}?{token}"]
-    | .azureBearer token =>
-      let params := if overwrite
-        then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
-          "-H", azureDateHeader,
-          "--oauth2-bearer", token]
-        else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-          azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
-      params ++ #["-T", path.toString, s!"{uploadURL}/c/{hash}"]
-  -- The argument list carries the credential; keep it out of the failure message.
-  discard <| IO.runCurl args (showArgsOnError := false)
-  IO.FS.removeFile path
-
-end Commit
-
-section Collect
-
-inductive QueryType
-  | files | commits | all
-
-def QueryType.prefix : QueryType → String
-  | files   => "&prefix=f/"
-  | commits => "&prefix=c/"
-  | all     => ""
-
-def formatError {α : Type} : IO α :=
-  throw <| IO.userError "Invalid format for curl return"
-
-def QueryType.desc : QueryType → String
-  | files   => "hosted files"
-  | commits => "hosted commits"
-  | all     => "everything"
-
-/--
-Retrieves metadata about hosted files: their names and the timestamps of last modification.
-
-Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
--/
-def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
-  IO.println s!"Downloading info list of {q.desc}"
-  let ret ← IO.runCurl
-    #["-X", "GET", s!"{Container.master.azureURL}?comp=list&restype=container{q.prefix}"]
-  match ret.splitOn "<Name>" with
-  | [] => formatError
-  | [_] => return []
-  | _ :: parts =>
-    parts.mapM fun part => match part.splitOn "</Name>" with
-      | [name, rest] => match rest.splitOn "<Last-Modified>" with
-        | [_, rest] => match rest.splitOn "</Last-Modified>" with
-          | [date, _] => pure (name, date)
-          | _ => formatError
-        | _ => formatError
-      | _ => formatError
-
-end Collect
 
 end Cache.Requests

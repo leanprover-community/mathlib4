@@ -105,8 +105,8 @@ instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift
     zero_smul := zero_smul _ }
 
 instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M) where
-  smul_zero _ := ULift.ext _ _ <| smul_zero _
-  zero_smul _ := ULift.ext _ _ <| zero_smul _ _
+  smul_zero _ := ULift.ext <| smul_zero _
+  zero_smul _ := ULift.ext <| zero_smul _ _
 
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
     MulActionWithZero (ULift R) M :=
@@ -129,7 +129,7 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M
 
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M) :=
   { ULift.smulWithZero' with
-    add_smul := fun _ _ _ => ULift.ext _ _ <| add_smul _ _ _
+    add_smul := fun _ _ _ => ULift.ext <| add_smul _ _ _
     one_smul := one_smul _
     mul_smul := mul_smul
     smul_add := smul_add }
