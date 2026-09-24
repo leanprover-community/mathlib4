@@ -54,7 +54,7 @@ $f(n) = n ^ {1 + O(g(n))}$. This can be expressed using the existential pattern,
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 
-open Filter NNReal
+open Filter
 
 namespace Asymptotics
 
