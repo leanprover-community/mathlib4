@@ -38,7 +38,7 @@ field, for `QuadraticAlgebra K a b` to be a field.
   `QuadraticAlgebra K a b` is a field iff `discr a b` is not a square.
 -/
 
-@[expose] public section
+public section
 
 namespace QuadraticAlgebra
 
@@ -50,7 +50,7 @@ section discr
 discriminant `b ^ 2 + 4 * a` of the polynomial `X ^ 2 - b * X - a`. -/
 def discr [CommSemiring R] (a b : R) : R := b ^ 2 + 4 * a
 
-theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := rfl
+theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := by rfl
 
 /-- `z.im ^ 2` times the discriminant of the algebra equals `trace z ^ 2 - 4 * norm z`. -/
 theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
