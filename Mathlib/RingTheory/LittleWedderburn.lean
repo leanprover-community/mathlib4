@@ -117,7 +117,7 @@ theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ 
   rw [Set.toFinset_card, ConjClasses.card_carrier, ← card_congr
         (show Zxˣ ≃* _ from unitsCentralizerEquiv _ x).toEquiv, card_units, card_D]
   have hZx : Zx ≠ ⊤ := by
-    by_contra! hZx
+    by_contra hZx
     refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
     exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
   let : Field Zx := hD.field hZx.lt_top

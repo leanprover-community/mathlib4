@@ -394,7 +394,7 @@ lemma comp_coprod (f : M →L[R] N) (g₁ : M₁ →L[R] M) (g₂ : M₂ →L[R]
 
 @[simp]
 lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .id R (M × N) :=
-  coe_injective <| LinearMap.coprod_inl_inr
+  coe_injective LinearMap.coprod_inl_inr
 
 @[simp]
 lemma coprod_comp_inl_inr [ContinuousAdd M₁] [ContinuousAdd M₂] (f : M × M₁ →L[R] M₂) :

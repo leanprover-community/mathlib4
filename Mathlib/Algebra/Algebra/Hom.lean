@@ -147,8 +147,10 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h�
   rfl
 
 @[simp, norm_cast]
-theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
 
 -- make the coercion the simp-normal form
 @[simp]
@@ -183,16 +185,18 @@ theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :
 theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
+theorem toRingHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
   coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
 
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := toRingHom_injective
+
 theorem toMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
-  RingHom.toMonoidHom_injective.comp coe_ringHom_injective
+  RingHom.toMonoidHom_injective.comp toRingHom_injective
 
 @[deprecated (since := "2026-09-15")] alias coe_monoidHom_injective := toMonoidHom_injective
 
 theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+ B) :=
-  RingHom.toAddMonoidHom_injective.comp coe_ringHom_injective
+  RingHom.toAddMonoidHom_injective.comp toRingHom_injective
 
 @[deprecated (since := "2026-09-15")] alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
@@ -217,7 +221,7 @@ theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
 theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
-  RingHom.ext <| φ.commutes
+  RingHom.ext φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=

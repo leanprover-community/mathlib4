@@ -116,8 +116,8 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
 lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] :
     IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
-      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeLeftRingHom)
-      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeRight.toRingHom) where
+      (ofHom (S := A ⊗[R] B) Algebra.TensorProduct.includeLeftRingHom)
+      (ofHom (S := A ⊗[R] B) Algebra.TensorProduct.includeRight.toRingHom) where
   w := by
     ext
     simp
@@ -236,7 +236,7 @@ end BinaryCoproduct
 section Terminal
 
 instance (X : CommRingCat.{u}) : Unique (X ⟶ CommRingCat.of.{u} PUnit) :=
-  ⟨⟨ofHom <| ⟨1, rfl, by simp⟩⟩, fun f ↦ by ext⟩
+  ⟨⟨ofHom ⟨1, rfl, by simp⟩⟩, fun f ↦ by ext⟩
 
 /-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) :=
