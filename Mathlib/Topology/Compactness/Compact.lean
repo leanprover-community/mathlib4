@@ -908,7 +908,7 @@ instance : NoncompactSpace ℤ :=
 -- Note: We can't make this into an instance because it loops with `Finite.compactSpace`.
 /-- A compact discrete space is finite. -/
 theorem finite_of_compact_of_discrete [CompactSpace X] [DiscreteTopology X] : Finite X :=
-  Finite.of_finite_univ <| isCompact_univ.finite_of_discrete
+  Finite.of_finite_univ isCompact_univ.finite_of_discrete
 
 lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
     {K : Set X} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
