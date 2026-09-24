@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.DocString
 public meta import Batteries.Util.LibraryNote
+import Mathlib.Tactic.Linter.Header -- Since this file is imported by `Mathlib.Init`.
 
 set_option doc.verso true
 
