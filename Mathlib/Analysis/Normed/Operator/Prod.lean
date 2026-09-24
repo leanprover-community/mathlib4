@@ -17,7 +17,7 @@ Interaction of operator norm with Cartesian products.
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
-open Set Real Metric ContinuousLinearMap
+open Set Real ContinuousLinearMap
 
 section SemiNormed
 

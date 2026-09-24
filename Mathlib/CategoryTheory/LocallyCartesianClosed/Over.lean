@@ -67,7 +67,6 @@ abbrev binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
@@ -82,7 +81,6 @@ def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A computable instance of `CartesianMonoidalCategory` for `Over X` when `C` has
 chosen pullbacks. Contrast this with the noncomputable instance provided by
@@ -335,7 +333,6 @@ theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (t
   rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
 @[simps!]
 def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C :=
@@ -354,7 +351,6 @@ def toOverPullbackIsoToOver {X Y : C} (f : Y ⟶ X) [ChosenPullbacksAlong f] :
 
 attribute [local instance] cartesianMonoidalCategoryOver
 
-set_option backward.isDefEq.respectTransparency.types false in
 omit [CartesianMonoidalCategory C] in
 /-- The functor `pullback f : Over X ⥤ Over Y` is naturally isomorphic to
 `toOver : Over X ⥤ Over (Over.mk f)` post-composed with the

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
+public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
@@ -159,7 +160,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a b : α}
+variable [PartialOrder α] [OrderClosedTopology α] [SecondCountableTopology α] {a : α}
 
 theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
   OrderClosedTopology.isClosed_le'.measurableSet
@@ -183,7 +184,7 @@ section LinearOrder
 variable [LinearOrder α] {a b x : α} {μ : Measure α}
 
 -- we open this scope only here to avoid issues with list being treated as intervals above
-open Interval
+open scoped Interval
 
 @[simp, measurability]
 theorem measurableSet_Iio [ClosedIciTopology α] : MeasurableSet (Iio a) :=
@@ -908,7 +909,7 @@ variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountab
 protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable (fun b ↦ ⨆ i, f i b) := by
   rcases isEmpty_or_nonempty ι with hι | hι
-  · simp [iSup_of_empty']
+  · simp
   have A : MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} :=
     measurableSet_bddAbove_range hf
   have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const
@@ -1008,8 +1009,8 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   rcases isEmpty_or_nonempty (Subtype p) with hp | hp
   · simp [hv.liminf_eq_sSup_iUnion_iInter]
   by_cases H : ∃ (j : Subtype p), s j = ∅
-  · simp_rw [hv.liminf_eq_ite, if_pos H, measurable_const]
-  simp_rw [hv.liminf_eq_ite, if_neg H]
+  · simp_rw [hv.liminf_eq_ite, ite_eq_left H, measurable_const]
+  simp_rw [hv.liminf_eq_ite, ite_eq_right H]
   have : ∀ i, Countable (s i) := fun i ↦ countable_coe_iff.2 (hs i)
   let m : Subtype p → Set δ := fun j ↦ {x | BddBelow (range (fun (i : s j) ↦ f i x))}
   have m_meas : ∀ j, MeasurableSet (m j) :=
@@ -1035,9 +1036,9 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
     ext x
     have A : reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := rfl
     split_ifs with hjx
-    · have : reparam x j = j := by rw [A, if_pos hjx]
+    · have : reparam x j = j := by rw [A, ite_eq_left hjx]
       simp only [hF1, this]
-    · have : reparam x j = g (Nat.find (Z x)) := by rw [A, if_neg hjx]
+    · have : reparam x j = g (Nat.find (Z x)) := by rw [A, ite_eq_right hjx]
       simp only [hF1, this]
   rw [this]
   apply Measurable.piecewise (m_meas j) (F0_meas j)
@@ -1058,12 +1059,30 @@ theorem Measurable.liminf {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
     Measurable fun x => liminf (fun i => f i x) atTop :=
   .liminf' hf atTop_countable_basis fun _ => to_countable _
 
+/-- The `liminf` over `ℕ` of a sequence of ae measurable functions is ae measurable. -/
+@[fun_prop]
+protected theorem AEMeasurable.liminf {f : ℕ → δ → α} {μ : Measure δ}
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    AEMeasurable (fun x ↦ liminf (fun i ↦ f i x) atTop) μ := by
+  refine ⟨fun x => liminf (fun i => (hf i).mk _ x) atTop, ?_, ?_⟩
+  · exact Measurable.liminf (fun i ↦ (hf i).measurable_mk)
+  · filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with x hx using by simp [hx]
+
 /-- `limsup` over `ℕ` is measurable. See `Measurable.limsup'` for a version with a general filter.
 -/
 @[fun_prop]
 theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun x => limsup (fun i => f i x) atTop :=
   .limsup' hf atTop_countable_basis fun _ => to_countable _
+
+/-- The `limsup` over `ℕ` of a sequence of ae measurable functions is ae measurable. -/
+@[fun_prop]
+protected theorem AEMeasurable.limsup {f : ℕ → δ → α} {μ : Measure δ}
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    AEMeasurable (fun x ↦ limsup (fun i ↦ f i x) atTop) μ := by
+  refine ⟨fun x => limsup (fun i => (hf i).mk _ x) atTop, ?_, ?_⟩
+  · exact Measurable.limsup (fun i ↦ (hf i).measurable_mk)
+  · filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with x hx using by simp [hx]
 
 end ConditionallyCompleteLinearOrder
 
@@ -1076,10 +1095,10 @@ gives a way to compute the measure of a set in terms of sets on which a given fu
 fluctuate by more than `t`. -/
 theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα : MeasurableSpace α}
     (μ : Measure α) {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} (hs : MeasurableSet s)
-    {t : ℝ≥0} (ht : 1 < t) :
+    {t : ℝ≥0∞} (ht : 1 < t) (ht' : t ≠ ∞) :
     μ s =
       μ (s ∩ f ⁻¹' {0}) + μ (s ∩ f ⁻¹' {∞}) +
-      ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
+      ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) := by
   have A : μ s = μ (s ∩ f ⁻¹' {0}) + μ (s ∩ f ⁻¹' Ioi 0) := by
     rw [← measure_union]
     · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
@@ -1101,17 +1120,16 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       exact lt_irrefl _ (this.trans_le (le_of_eq hx.2.symm))
     · exact hs.inter (hf measurableSet_Ioo)
   have C : μ (s ∩ f ⁻¹' Ioo 0 ∞) =
-      ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
-    rw [← measure_iUnion,
-      ENNReal.Ioo_zero_top_eq_iUnion_Ico_zpow (ENNReal.one_lt_coe_iff.2 ht) ENNReal.coe_ne_top,
-      preimage_iUnion, inter_iUnion]
+      ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) := by
+    rw [← measure_iUnion, ENNReal.Ioo_zero_top_eq_iUnion_Ico_zpow ht ht', preimage_iUnion,
+      inter_iUnion]
     · intro i j hij
       wlog h : i < j generalizing i j
       · exact (this hij.symm (hij.lt_or_gt.resolve_left h)).symm
       refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
       calc
-        f x < (t : ℝ≥0∞) ^ (i + 1) := hx.2.2
-        _ ≤ (t : ℝ≥0∞) ^ j := ENNReal.zpow_le_of_le (ENNReal.one_le_coe_iff.2 ht.le) h
+        f x < t ^ (i + 1) := hx.2.2
+        _ ≤ t ^ j := ENNReal.zpow_le_of_le ht.le h
         _ ≤ f x := h'x.2.1
     · intro n
       exact hs.inter (hf measurableSet_Ico)

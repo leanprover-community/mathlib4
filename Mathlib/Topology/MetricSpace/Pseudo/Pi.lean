@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Lemmas
+public import Mathlib.Basic.ENNReal.Lemmas
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.EMetricSpace.Pi
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
@@ -16,7 +16,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 This file constructs the infinity distance on finite products of pseudometric spaces.
 -/
 
-@[expose] public section
+public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology

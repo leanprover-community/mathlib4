@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Normed.Module.Complemented
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Implicit function theorem
@@ -155,7 +156,7 @@ at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these de
 complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
 `φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
 def implicitFunction : F → G → E :=
-  Function.curry <| φ.toOpenPartialHomeomorph.symm
+  Function.curry φ.toOpenPartialHomeomorph.symm
 
 theorem implicitFunction_def :
     implicitFunction φ = Function.curry (φ.hasStrictFDerivAt.toOpenPartialHomeomorph _).symm := by
@@ -178,28 +179,19 @@ theorem pt_mem_toOpenPartialHomeomorph_source : φ.pt ∈ φ.toOpenPartialHomeom
 
 theorem map_pt_mem_toOpenPartialHomeomorph_target :
     (φ.leftFun φ.pt, φ.rightFun φ.pt) ∈ φ.toOpenPartialHomeomorph.target :=
-  φ.toOpenPartialHomeomorph.map_source <| φ.pt_mem_toOpenPartialHomeomorph_source
+  φ.toOpenPartialHomeomorph.map_source φ.pt_mem_toOpenPartialHomeomorph_source
 
 theorem prodFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
   φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
 
-@[deprecated (since := "2026-01-27")]
-alias prod_map_implicitFunction := prodFun_implicitFunction
-
 theorem leftFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction p.1 p.2) = p.1 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.fst
 
-@[deprecated (since := "2026-01-27")]
-alias left_map_implicitFunction := leftFun_implicitFunction
-
 theorem rightFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction p.1 p.2) = p.2 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.snd
-
-@[deprecated (since := "2026-01-27")]
-alias right_map_implicitFunction := rightFun_implicitFunction
 
 theorem implicitFunction_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
@@ -265,9 +257,6 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction_hasStrictFDerivAt := hasStrictFDerivAt_implicitFunction
 
 theorem map_implicitFunction_nhdsWithin_preimage (φ : ImplicitFunctionData 𝕜 E F G)
     (s : Set E) :
@@ -473,7 +462,7 @@ def implicitToOpenPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : f'.ra
 
 /-- Implicit function `g` defined by `f (g z y) = z`. -/
 def implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) : F → f'.ker → E :=
-  Function.curry <| (hf.implicitToOpenPartialHomeomorph f f' hf').symm
+  Function.curry (hf.implicitToOpenPartialHomeomorph f f' hf').symm
 
 variable {f f'}
 

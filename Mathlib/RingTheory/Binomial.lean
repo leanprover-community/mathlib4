@@ -67,7 +67,7 @@ Further results in Elliot's paper:
 
 @[expose] public section
 
-open Function Polynomial
+open Polynomial
 
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
 suitable factorials. We define this notion as a mixin for additive commutative monoids with natural

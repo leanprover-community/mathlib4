@@ -30,8 +30,6 @@ proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries
 @[expose] public section
 noncomputable section
 
-open Polynomial
-
 open Finset (antidiagonal mem_antidiagonal)
 
 namespace PowerSeries
@@ -58,7 +56,7 @@ def order (φ : R⟦X⟧) : ℕ∞ :=
 /-- The order of the `0` power series is infinite. -/
 @[simp]
 theorem order_zero : order (0 : R⟦X⟧) = ⊤ :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem order_finite_iff_ne_zero : (order φ < ⊤) ↔ φ ≠ 0 := by
   simp only [order]
@@ -76,14 +74,14 @@ theorem coe_toNat_order {φ : R⟦X⟧} (hf : φ ≠ 0) : φ.order.toNat = φ.or
 then the coefficient indexed by the order is nonzero. -/
 theorem coeff_order (h : φ ≠ 0) : coeff φ.order.toNat φ ≠ 0 := by
   classical
-  simp only [order, h, not_false_iff, dif_neg]
+  simp only [order, h, not_false_iff, dite_eq_right]
   generalize_proofs h
   exact Nat.find_spec h
 
 /-- If the `n`th coefficient of a formal power series is nonzero,
 then the order of the power series is less than or equal to `n`. -/
 theorem order_le (n : ℕ) (h : coeff n φ ≠ 0) : order φ ≤ n := by
-  rw [order, dif_neg]
+  rw [order, dite_eq_right]
   · simpa using ⟨n, le_rfl, h⟩
   · exact exists_coeff_ne_zero_iff_ne_zero.mp ⟨n, h⟩
 
@@ -107,6 +105,12 @@ theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff i φ = 0) :
   · simp
   · simpa [Nat.le_find_iff]
 
+/-- The order of a formal power series is at least `n` if and only if its coefficients below `n`
+vanish. -/
+theorem nat_le_order_iff {φ : R⟦X⟧} {n : ℕ} :
+    ↑n ≤ order φ ↔ ∀ i < n, coeff i φ = 0 :=
+  ⟨fun h i hi ↦ coeff_of_lt_order i <| lt_of_lt_of_le (mod_cast hi) h, nat_le_order φ n⟩
+
 /-- The order of a formal power series is at least `n` if
 the `i`th coefficient is `0` for all `i < n`. -/
 theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coeff i φ = 0) :
@@ -117,13 +121,21 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
     convert! nat_le_order φ n _
     simpa using h
 
+/-- The order of a formal power series is at least `n` if and only if its coefficients below `n`
+vanish. -/
+theorem le_order_iff {φ : R⟦X⟧} {n : ℕ∞} :
+    n ≤ order φ ↔ ∀ i : ℕ, i < n → coeff i φ = 0 := by
+  cases n with
+  | top => simp
+  | coe n => simpa using nat_le_order_iff
+
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
 and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff n φ ≠ 0 ∧ ∀ i, i < n → coeff i φ = 0 := by
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
-  simp [order, dif_neg hφ, Nat.find_eq_iff]
+  simp [order, dite_eq_right hφ, Nat.find_eq_iff]
 
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
 and the `i`th coefficient is `0` for all `i < n`. -/
@@ -151,18 +163,9 @@ theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) �
 
 private theorem order_add_of_order_ne.aux (φ ψ : R⟦X⟧)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
-  suffices order (φ + ψ) = order φ by
-    rw [le_inf_iff, this]
-    exact ⟨le_rfl, le_of_lt H⟩
+  suffices order (φ + ψ) = order φ by grind
   rw [order_eq]
-  constructor
-  · intro i hi
-    rw [← hi] at H
-    rw [(coeff _).map_add, coeff_of_lt_order i H, add_zero]
-    exact (order_eq_nat.1 hi.symm).1
-  · intro i hi
-    rw [(coeff _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
-      zero_add]
+  grind [LinearMap.map_add, coeff_of_lt_order, order_eq_nat]
 
 /-- The order of the sum of two formal power series
 is the minimum of their orders if their orders differ. -/
@@ -211,15 +214,7 @@ alias order_mul_ge := le_order_mul
 
 theorem one_le_order_iff_constCoeff_eq_zero :
     1 ≤ φ.order ↔ φ.constantCoeff = 0 := by
-  constructor
-  · intro h
-    rw [← coeff_zero_eq_constantCoeff]
-    apply coeff_of_lt_order
-    simpa using Order.one_le_iff_pos.mp h
-  · intro h
-    refine le_order _ _ fun d hd ↦ ?_
-    rw [Nat.cast_lt_one] at hd
-    simp [hd, h]
+  simp [le_order_iff]
 
 theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
     φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
@@ -235,18 +230,13 @@ theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
   split_ifs with h
   · rw [h, order_eq_top, map_zero]
-  · rw [order_eq]
-    constructor <;> intro i hi
-    · simp only [Nat.cast_inj] at hi
-      rwa [hi, coeff_monomial_same]
-    · simp only [Nat.cast_lt] at hi
-      rw [coeff_monomial, if_neg]
-      exact ne_of_lt hi
+  · simp only [order_eq, Nat.cast_inj, coeff_monomial]
+    grind
 
 /-- The order of the monomial `a*X^n` is `n` if `a ≠ 0`. -/
 theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monomial n a) = n := by
   classical
-  rw [order_monomial, if_neg h]
+  rw [order_monomial, ite_eq_right h]
 
 /-- If `n` is strictly smaller than the order of `ψ`, then the `n`th coefficient of its product
 with any other power series is `0`. -/
@@ -358,11 +348,14 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 
 /-- The order of an invertible power series is `0`. -/
-theorem order_zero_of_unit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
+theorem order_zero_of_isUnit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
   apply And.left
   rw [← add_eq_zero, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
   exact order_mul_ge _ _
+
+@[deprecated (since := "2026-08-18")]
+alias order_zero_of_unit := order_zero_of_isUnit
 
 /-- The order of the formal power series `X` is `1`. -/
 @[simp]
@@ -469,10 +462,8 @@ variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈
 
 @[simp]
 theorem order_toSubring : (p.toSubring T hp).order = p.order := by
-  refine eq_of_le_of_ge ?_ ?_
-  · refine le_order _ _ fun d hd => by simp [coeff_of_lt_order d hd, ← coeff_toSubring p T hp]
-  · exact le_order _ _ fun d hd => by
-      exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order d hd)
+  apply ENat.eq_of_forall_natCast_le_iff
+  simp only [nat_le_order_iff, ← coeff_toSubring p T hp, ZeroMemClass.coe_eq_zero, implies_true]
 
 end Ring
 
