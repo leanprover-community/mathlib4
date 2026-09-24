@@ -24,6 +24,7 @@ the usual way this is considered.
 * `Complex.exists_nonneg_mul_of_sameRay`: the `*` form of `SameRay.exists_nonneg_right`.
 * `Complex.sameRay_ofReal_mul`, `Complex.normalize_ofReal_mul`: nonnegative real scaling
   preserves `SameRay`, and positive real scaling preserves the phase.
+
 -/
 
 public section
