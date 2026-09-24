@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.GroupWithZero.Hom
-public import Mathlib.Algebra.Order.Hom.GroupNormClass
+public import Mathlib.Algebra.Order.Hom.GroupNorm
 public import Mathlib.Algebra.Ring.Defs
 
 
