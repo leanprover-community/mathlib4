@@ -1,14 +1,14 @@
 # The cache workflows
 
 `lake exe cache get` runs one of three workflows: the public-cache workflow,
-the developer-cache workflow, and the nightly workflow. The command chooses
-the workflow before it reads, from the repository the checkout names and the
-flags, and prints the workflow it runs. Each workflow has its own module under
-`Cache/Workflow/`, its own flags, and its own code path. The workflows share
-the transfers, the repository detection, and the container chain below them.
-`get` is the one command whose behavior depends on the checkout and the
-environment. An upload writes the container `--container` names, and the
-local commands depend on neither.
+the developer-cache workflow, and the nightly workflow. Before it reads, the
+command chooses the workflow from the repository the checkout names and from
+the flags, and prints the workflow it runs. Each workflow has its own module
+under `Cache/Workflow/`, its own flags, and its own code path. The workflows
+share the transfers, the repository detection, and the container chain.
+
+Only `get` chooses a workflow. An upload writes the container that
+`--container` names, and the local commands take no workflow.
 
 The [README](./README.md) says which workflow a typical user gets. This
 document describes the three workflows in full. The trust model behind them is
@@ -25,9 +25,8 @@ in [`SECURITY.md`](./SECURITY.md); the upload commands are in
 | `pr-toolchain-tests` | toolchain experiments                   | toolchain CI                       |
 
 The public cache is the `master` container: the master-built artifacts that
-anyone may consume. The developer cache is the `forks` container, in its own
-bucket, so a work-in-progress writer stays away from the artifacts the public
-consumes.
+anyone may consume. The developer cache is the `forks` container. On R2 it
+has its own bucket, apart from the public cache.
 
 Each workflow names the host it reads each container from, so each workflow
 can change its hosts on its own:
@@ -41,6 +40,8 @@ can change its hosts on its own:
 `https://cache.mathlib.org` is the cache resolver: it serves every container
 and resolves each one to its current storage. `https://r2devcache.mathlib.org`
 is the developer bucket, which the developer workflow reads directly.
+`MATHLIB_CACHE_BASE_URL` and `MATHLIB_CACHE_DEBUG_USE_LEGACY` replace every
+host of this table (see [Environment variables](#environment-variables)).
 
 The containers are logical namespaces in the URL contract
 `/{container}/{key}`. Only the `forks` container has per-commit namespaces:
@@ -64,15 +65,13 @@ A read (`get`, `get!`, `get-`) takes:
 - the public-cache workflow on `leanprover-community/mathlib4`, unless a
   chain-read flag (`--cache-from`, `--scope`, `--unsafe`, `--unsafe-window`)
   or variable (`MATHLIB_CACHE_FROM`, `MATHLIB_CACHE_REPO_SCOPE`) is present,
-  which selects the developer-cache workflow. This list belongs to the
-  decision, not to a workflow: a flag that a workflow adds does not change
-  which workflow a read runs;
+  which selects the developer-cache workflow;
 - the nightly workflow on the nightly-testing repository;
 - the developer-cache workflow on any other repository, that is, a fork.
 
-An upload (`put`, `put!`, `put-staged`) writes the container `--container`
-names, in that container's layout, whatever the checkout. The upload commands
-are internal to mathlib CI; see [`CI.md`](./CI.md).
+The chain-read flags and variables are a fixed list in `Cache/Workflow.lean`
+(`chainReadFlags`, `chainReadVariables`). A flag that a workflow adds does not
+move a read to another workflow.
 
 `query` is a developer-cache command: on a fork it finds the commits CI has
 cached; on the canonical and nightly-testing repositories it answers that
@@ -95,30 +94,30 @@ The workflow of a checkout of `leanprover-community/mathlib4`, of a project
 that depends on Mathlib, and of any reader with `MATHLIB_CACHE_GET_URL` set.
 
 `get` fetches `https://cache.mathlib.org/mathlib4-master/f/{hash}.ltar` for
-each file it needs (or `{url}/f/{hash}.ltar` from the flat endpoint the
-variable names), and nothing else: no container chain, no per-commit scope,
-no marker probe, no security notice. The resolver also serves the artifacts
-of the retired `mathlib4` container behind that namespace, so the tool needs
-no fallback of its own. The cache holds the artifacts CI built from
-`master`, so a checkout at a master commit, or a project pinned to one, finds
-every file.
+each file it needs, or `{url}/f/{hash}.ltar` from the flat endpoint that
+`MATHLIB_CACHE_GET_URL` names. It uses no container chain, no per-commit
+scope, and no marker probe, and it prints no security notice. The resolver also
+serves the artifacts of the retired `mathlib4` container behind that
+namespace, so the tool needs no fallback of its own. The `master` container
+holds the artifacts CI built from `master`, so a checkout at a master commit,
+or a project pinned to one, finds every file.
 
-CI publishes the master builds this workflow reads into the `master`
-container. The workflow has no flags of its own, and a set `MATHLIB_CACHE_FROM`
-or `MATHLIB_CACHE_REPO_SCOPE` fails the read, because the workflow has no
-chain and no per-commit namespace for them to address.
+The workflow has no flags of its own. A set `MATHLIB_CACHE_FROM` or
+`MATHLIB_CACHE_REPO_SCOPE` fails the read, because the workflow has no chain
+and no per-commit namespace for them to address.
 
 ## The developer-cache workflow
 
 The workflow of a fork checkout, and of a read on the canonical repository
 with a chain, a scope, or `--unsafe`.
 
-`get` walks the trust-ordered chain `master`, `forks`: `master` from the public
-cache serves the bulk of any fork's files by hash, and `forks` from the
-developer bucket serves the files the fork's own CI built. The `forks` round reads the fork's namespace for
-the checked-out commit by default, which CI fills when it builds a PR at that
-commit. `--scope=REF` reads another commit's namespace, `--unsafe` finds one
-automatically, and `--cache-from=LIST` replaces the chain.
+`get` walks the trust-ordered chain `master`, `forks`. `master`, read from
+the public cache, serves the bulk of any fork's files by hash. `forks`, read
+from the developer bucket, serves the files the fork's own CI built. By
+default the `forks` round reads the fork's namespace for the checked-out
+commit, which CI fills when it builds a PR at that commit. `--scope=REF` reads
+another commit's namespace, `--unsafe` finds cached commits automatically, and
+`--cache-from=LIST` replaces the chain.
 
 CI uploads a fork build to the `forks` container under the commit's scope,
 with the marker that `query` probes. `query` finds the fork's cached commits.
@@ -153,10 +152,9 @@ lake exe cache get --cache-from=master,forks
 
 ### Finding cached commits with `query`
 
-For branches with per-commit SHA scoping (fork PRs), `lake exe cache query`
-discovers which recent commits on the branch have cached entries. This is
-useful when the branch has diverged from upstream and you want to avoid
-waiting for CI to build everything.
+`lake exe cache query` finds the most recent commit of a fork branch that CI
+has cached. Use it when CI has not built the checked-out commit: the cache of
+an earlier commit of the branch serves most of the files.
 
 ```bash
 # Find the most recent cached commit on the current branch
@@ -170,13 +168,12 @@ lake exe cache query
 #   lake exe cache get --scope=5a3c7e9a...
 ```
 
-The `query` command walks the git log backwards from `HEAD`, stopping at the
-merge base with `master` or a hard cap of 50 commits (whichever comes first),
-and probes each commit for a completed SHA-scoped upload in the `forks`
-container. That signal is written by `cache put` only after a successful
-upload, so its presence is a reliable "this commit was cached" signal. `query`
-prints the SHA to stdout and does not apply it; you copy the result into your
-`cache get --scope=` command if desired.
+`query` walks the first-parent history back from `HEAD` to the merge base
+with `master`, at most 50 commits. Without a local `master`, it walks 50
+commits. For each commit it probes the completeness
+marker in the `forks` container. An upload writes the marker after all of its
+files, so a marker means that the upload of that commit is complete. `query`
+prints the SHA and does not apply it; pass it to `cache get --scope=`.
 
 By default `query` targets the cwd's git remote; `--repo=` overrides it. In a
 project that depends on Mathlib, `query` asks for `--repo=`, because the
@@ -199,25 +196,22 @@ lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
 
 ### Unsafe automatic scope walk
 
-`cache get --unsafe` folds the `query` discovery into the download itself:
-rather than asking you to copy one SHA into `--scope=`, it walks your branch
-history (`HEAD` back to the merge base with `master`) for commits that have a
-cached fork build and reads the `forks` container at their scope. By default
-it uses just the single most recent such commit; `--unsafe-window=N` widens
-this to the `N` most recent, tried newest first with files fetched in one
-round dropped from the next.
+`cache get --unsafe` runs the `query` walk itself and reads the `forks`
+container at the cached commits it finds. By default it reads the most recent
+one. `--unsafe-window=N` reads the `N` most recent, newest first; each round
+requests only the files that the earlier rounds did not serve.
 
 ```bash
 lake exe cache get --unsafe             # use the most recent cached fork commit
 lake exe cache get --unsafe-window=10   # try the 10 most recent (implies --unsafe)
 ```
 
-The trust-ordered container chain is unchanged: `master` is still tried first
-and serves the bulk of every fork's files by hash; only the `forks` round is
-expanded into one round per discovered SHA. If no cached fork commit is found
-in range, `--unsafe` falls back to a plain unscoped read.
+`master` comes first in the chain and serves the bulk of every fork's files
+by hash. Only the `forks` round expands, into one round per commit found. When
+the walk finds no cached fork commit, `--unsafe` reads the `forks` namespace of
+the checked-out commit, as a plain `get` does.
 
-`--unsafe` trusts the artifacts of *every* commit it tries, so it always prints
+`--unsafe` trusts the artifacts of every commit it tries, so it always prints
 the [security notice](#security-notice-non-default-scope). It is mutually
 exclusive with `--scope=`, which pins exactly one commit. The nightly workflow
 rejects it.
@@ -237,33 +231,35 @@ a non-release toolchain, so its root hash differs from master's and its
 artifacts exist only in the nightly containers.
 
 `get` walks the chain `nightly-testing`, `forks`, through the cache resolver.
-`master` is absent
-because the nightly root hash differs, so a master probe misses. `forks` is
-present because a PR from the nightly-testing repository into mathlib4 builds
-with fork trust and uploads there; a scope applies to that round alone.
-`pr-toolchain-tests` is absent, so an upload from an experimental toolchain
-branch stays away from a trusted nightly consumer; CI widens the chain for
-those branches with `MATHLIB_CACHE_FROM`.
+`master` is absent because the nightly root hash differs, so a master probe
+misses. `forks` is present because a PR from the nightly-testing repository
+into mathlib4 builds with fork trust and uploads there; a scope applies to
+that round alone. `pr-toolchain-tests` is absent, so an upload from an
+experimental toolchain branch cannot reach a trusted nightly consumer. CI
+widens the chain for those branches with `MATHLIB_CACHE_FROM`.
 
 CI uploads the repository's builds to `nightly-testing` or
 `pr-toolchain-tests`, unscoped. The workflow accepts `--cache-from` and
-`--scope`, and rejects `--unsafe`. The nightly containers cache by file hash,
-so `query` has nothing to find and says so.
+`--scope`, and rejects `--unsafe`. `query` probes the markers of forks only,
+so on the nightly-testing repository it answers that there is nothing to
+query.
 
 ## Security notice: non-default scope
 
-When a chain read (the developer-cache and nightly workflows) is taken off the
-workflow's default trust boundary, the tool prints a security notice to
-stderr. This happens when:
+A chain read (the developer-cache and nightly workflows) prints a security
+notice to stderr when it leaves the workflow's default trust boundary. The
+notice names the first of these conditions that holds:
 
-1. **`--unsafe` is passed**: you are letting the tool walk history and trust the
-   artifacts of whichever recent fork commits it finds cached.
-2. **`--scope=` names a commit other than HEAD**: you are reading from a
-   specific commit's namespace instead of the one for the commit you have.
-3. **`--cache-from` changes the read chain**: you are telling the tool to
-   read containers beyond the workflow's chain, or in another order.
-4. **`--repo` overrides the detected git remote**: you are reading the cache
-   of a repository other than your checkout's.
+1. `--unsafe` is passed: the tool walks history and trusts the artifacts of
+   whichever recent fork commits it finds cached.
+2. `--scope=` or `MATHLIB_CACHE_REPO_SCOPE` names a commit other than HEAD:
+   the read uses that commit's namespace instead of the one for the commit
+   you have.
+3. `--cache-from` differs from the workflow's chain: the read uses other
+   containers, or another order.
+4. `--repo` differs from the detected git remote, or names a fork when no git
+   remote is detected: the read uses the cache of a repository other than
+   your checkout's.
 
 Example notice:
 
@@ -280,9 +276,9 @@ Reason: --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e (explicit per-commit sc
 =================================================================
 ```
 
-The notice is informational: it prints and the read continues, so it does not
-interfere with CI. `MATHLIB_CACHE_FROM` and a `MATHLIB_CACHE_REPO_SCOPE` equal
-to HEAD, CI's own settings, do not trigger it.
+The notice is informational: it prints and the read continues, so CI runs
+are unaffected. CI's own settings, `MATHLIB_CACHE_FROM` and a
+`MATHLIB_CACHE_REPO_SCOPE` equal to HEAD, trigger no notice.
 
 ## Environment variables
 

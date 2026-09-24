@@ -58,13 +58,13 @@ The `Reason:` line of the notice, or `none` when the notice does not apply:
 the first of these conditions that holds, named so the user can match it to
 their command line.
 
-0. `--unsafe` was passed (`unsafeWindow?`): the read walks several fork
+1. `--unsafe` was passed (`unsafeWindow?`): the read walks several fork
    commits and trusts whoever built each of them
-1. a scope is set (`scope?`) and differs from the checked-out HEAD of `cwd`
+2. a scope is set (`scope?`) and differs from the checked-out HEAD of `cwd`
    (see `scopeIsHead`)
-2. `--cache-from` was passed (`chain.cli?`) and differs from `defaultChain`,
+3. `--cache-from` was passed (`chain.cli?`) and differs from `defaultChain`,
    the workflow's own chain
-3. `--repo` was passed (`repoExplicit?`) and does not match the git remote
+4. `--repo` was passed (`repoExplicit?`) and does not match the git remote
    (`detectedRepo?`), or names a non-canonical repo with no detectable remote
    to compare against
 

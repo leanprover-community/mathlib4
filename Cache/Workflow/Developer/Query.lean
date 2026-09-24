@@ -12,9 +12,9 @@ import Cache.Marker
 The developer workflow's mechanisms over a fork's per-commit markers: the
 `cache query` walk that finds the most recent commit on the current branch
 with a cached CI build, the single-commit probe, and the `--unsafe` walk that
-collects cached commits to read at. All walk git history back to the merge
-base with `master` and probe each commit's marker with one HEAD request; none
-reads or writes artifacts.
+collects cached commits to read at. The walks follow git history back to the
+merge base with `master`. Each probe is one HEAD request on a commit's marker,
+and no probe reads or writes artifacts.
 -/
 
 namespace Cache.Workflow.Developer
@@ -37,8 +37,9 @@ def readURL (c : Container) : IO String :=
   c.readURL (if c == .forks then developerCacheEndpoint else publicCacheEndpoint)
 
 /--
-Walk git log backwards from HEAD, starting from `startRef`, stopping at
-`stopRef` or after `cap` commits (whichever comes first).
+Walk the first-parent git log backwards from `startRef`, stopping at
+`stopRef` (no stop when it is empty) or after `cap` commits, whichever comes
+first.
 
 Returns the list of commit SHAs in reverse chronological order (most recent first).
 -/
@@ -72,12 +73,10 @@ def gitMergeBase (targetRef : String) (cwd : FilePath := ".") : IO (Option Strin
 
 /--
 Whether CI cached commit `sha` of fork `repo`: an anonymous HEAD against the
-marker `forks/m/{repo}/{sha}` (`markerReadURL`) answers 200. The marker is
-uploaded by `put-staged` after a successful upload, so its existence is a
-reliable "this commit was fully cached" signal.
-
-Cheaper than blob-listing: deterministic URL, headers-only response,
-billed as a Read op.
+marker `forks/m/{repo}/{sha}` (`markerReadURL`) answers 200. An upload writes
+the marker after all of its files, so the marker means that the upload of
+that commit is complete. A HEAD request on a known URL costs less than a
+bucket listing.
 -/
 def probeCommit (repo sha : String) : IO Bool := do
   let url := markerReadURL (← readURL .forks) repo sha
@@ -143,9 +142,9 @@ def cacheQuerySingle (repo sha : String) : IO Unit := do
 /--
 Implement the `cache query` subcommand.
 
-Walks git log backwards from HEAD, stopping at the merge base with `master`
-(or a hard cap if the merge base is not reachable), and probes each commit's
-SHA-scoped namespace to find the most recent commit that has cache entries.
+Walks git log backwards from HEAD to the merge base with `master`, at most
+`cap` commits, and probes the marker of each commit to find the most recent
+cached one. When `master` is not reachable, the walk takes `cap` commits.
 
 This is a diagnostic-only command: it prints the SHA to stdout but does not
 auto-apply it. The user manually passes the result to `cache get` if desired.
@@ -180,15 +179,15 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
 /--
 Discover the SHA scopes `cache get --unsafe` should try, most recent first.
 
-Walks git history from HEAD back to the merge base with `master` (or a hard
-`cap` if the merge base is not reachable) and returns up to `window` commit SHAs
+Walks git history from HEAD back to the merge base with `master`, at most
+`cap` commits (`cap` commits when `master` is not reachable), and returns up to `window` commit SHAs
 whose per-SHA marker exists in the `forks` container — i.e. the most recent
 `window` commits on this branch that CI has fully cached for this fork.
 
 Unlike `cacheQuery`, this is consumed automatically by `cache get` rather than
 printed for the user, and it returns several SHAs instead of one. An empty
-result means no cached commit was found in range; the caller falls back to a
-normal (unscoped) read.
+result means no cached commit is in range; the `forks` round then reads at
+the checked-out HEAD.
 -/
 def discoverUnsafeScopes (repo : String) (window : Nat)
     (cap : Nat := 50) (cwd : FilePath := ".") : IO (List String) := do

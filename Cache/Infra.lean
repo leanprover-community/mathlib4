@@ -53,8 +53,8 @@ not a particular storage technology: each host that serves the contract
 resolves it to its own backend. The Azure Blob Storage account
 (`lakecache`) serves the same namespaces as its own containers, which is what
 the legacy switch addresses directly. A CI job at a given trust level may
-write only to its corresponding container, and `cache get` always tries the
-most trusted container first.
+write only to its corresponding container, and a chain read tries the most
+trusted container first.
 -/
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
@@ -140,9 +140,9 @@ end Container
 /--
 Blob path of the directory that holds the cache artifacts, per the container's
 layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
-a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. No
-container is a flat endpoint, such as `MATHLIB_CACHE_GET_URL`. `repo` is
-lowercased via `normalizeRepo`. A file lives at
+a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. A
+`none` container stands for a flat endpoint, such as `MATHLIB_CACHE_GET_URL`,
+and gives `f`. `repo` is lowercased via `normalizeRepo`. A file lives at
 `{fileDirPath container repo scope}/{fileName}`; `mkFileURL` and
 `containerUploadDest` both build on this, so reads and uploads share one path
 contract. Like `markerDirPath` (`Cache/Marker.lean`), the path carries no

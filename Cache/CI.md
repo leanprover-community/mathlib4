@@ -28,9 +28,9 @@ probes.
 
 | Option              | Description                                          |
 |---------------------|------------------------------------------------------|
-| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, or `pr-toolchain-tests`. Required. The container decides the layout under its root: flat (`f/{hash}.ltar`) for `master`, repo-namespaced (`f/{repo}/{hash}.ltar`) for the others, and with a scope the per-commit namespace (`f/{repo}/{sha}/{hash}.ltar`) of `forks`. |
+| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, or `pr-toolchain-tests`. Required. The container decides the layout under its root (see [Upload commands](#upload-commands)). |
 | `--repo=OWNER/REPO` | For a repo-namespaced container: the repository the upload is for. The default is the canonical repository, whose own PR branches build with fork trust; uploads probe no git remote. `master` ignores it. |
-| `--scope=REF`       | The per-commit namespace to upload under, and its completeness marker. Only `forks` has per-commit namespaces; a scope on another container is an error. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. The read-side use of `--scope` is documented in [`WORKFLOWS.md`](./WORKFLOWS.md). |
+| `--scope=REF`       | The per-commit namespace to upload under, and its completeness marker. Only `forks` has per-commit namespaces; a scope on another container is an error. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. [`WORKFLOWS.md`](./WORKFLOWS.md) describes the read-side use. |
 | `--backend=NAME`    | The storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
 | `--staging-dir=DIR` | For `put-staged`: the staging directory to upload. Required. |
 
@@ -44,17 +44,15 @@ the build SHA for the `forks` class. The upload step runs
 `put-staged --container=$MATHLIB_CACHE_PRIMARY --repo=$REPO` against the
 Azure storage account. The R2 leg runs the same command with `--backend=s3`
 and the container's root in its bucket as `MATHLIB_CACHE_PUT_URL`. A class
-moves to another store by exporting `MATHLIB_CACHE_PUT_URL` for its jobs; the
-command line stays. The OIDC token, not the URL, is the write boundary (see
-[`SECURITY.md`](./SECURITY.md)).
+moves to another store when CI exports `MATHLIB_CACHE_PUT_URL` for its jobs;
+the command line is the same. The minted credential, not the URL, is the
+write boundary (see [`SECURITY.md`](./SECURITY.md)).
 
 ## Backends and transfer tools
 
 `--backend` selects the storage backend: `azure` (the default) or `s3`. The
 backend selects the credential variables it reads (see
-[Environment variables](#environment-variables)) and the transfer tool. The
-upload goes under the container's root: the URL `MATHLIB_CACHE_PUT_URL`
-names, or, on the azure backend, the container on the Azure storage account.
+[Environment variables](#environment-variables)) and the transfer tool.
 
 - `azure` uploads with curl: parallel PUTs signed with the OIDC bearer token.
   A non-overwrite put skips objects the destination already holds
@@ -86,6 +84,6 @@ The curl tool's non-overwrite guard relies on the store honoring
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace, for reads and for an upload to `forks` (see `--scope`, which takes precedence). |
 | `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. The trust dispatch sets it for the `pr-toolchain-tests` class only; on the canonical repo a set value selects the developer-cache workflow (see [`WORKFLOWS.md`](./WORKFLOWS.md)). |
-| `MATHLIB_CACHE_BASE_URL` | Read base for every container of every workflow: a host that mirrors the whole `/{container}/{key}` namespace. Default: the host each workflow names. |
+| `MATHLIB_CACHE_BASE_URL` | The read host for every container of every workflow (see [`WORKFLOWS.md`](./WORKFLOWS.md#environment-variables)). CI sets it from the repository variable of the same name. |
 
 An empty value means unset.

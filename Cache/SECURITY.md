@@ -33,19 +33,18 @@ regardless of what the cache binary requests.
 The public cache, the `master` container, holds only master-trust artifacts.
 The developer cache, the `forks` container, has its own bucket
 (`https://r2devcache.mathlib.org`) with its own write credentials. A
-credential for the developer bucket cannot name the public bucket at all, so
-the container isolation for fork-trust writers is backed by a storage
-boundary, not only by per-container grants. The cache resolver,
-`https://cache.mathlib.org`, serves every container for reads.
+credential for the developer bucket cannot name the public bucket, so a
+storage boundary, not only a per-container grant, isolates the fork-trust
+writers. The cache resolver, `https://cache.mathlib.org`, serves every
+container for reads.
 
 Before a read, the tool chooses one of three workflows from the resolved repo
-and the flags. Each workflow has its own code path (`Cache/Workflow.lean`);
-[`WORKFLOWS.md`](./WORKFLOWS.md) describes their behavior. Each workflow names
-the host it reads each container from. An upload writes the container
-`--container` names, in its layout (`stagedUploadDestFrom` in
-`Cache/Upload/Defs.lean`), under the container's root on the Azure account or
-the root `MATHLIB_CACHE_PUT_URL` names. The trust view, with the container
-CI's trust dispatch routes each class's uploads to:
+and the flags (`Cache/Workflow.lean`, described in
+[`WORKFLOWS.md`](./WORKFLOWS.md)). Each workflow names the host it reads each
+container from. An upload writes the container that `--container` names (see
+[`CI.md`](./CI.md)). The table gives the readers of each workflow and the
+containers it reads. The last column is the container that CI's trust
+dispatch routes the uploads of that class to:
 
 | Workflow        | Who                                                   | Read                              | CI uploads                               |
 |-----------------|-------------------------------------------------------|-----------------------------------|------------------------------------------|
@@ -54,14 +53,14 @@ CI's trust dispatch routes each class's uploads to:
 | nightly         | the nightly-testing repository                        | `nightly-testing`, `forks`        | `nightly-testing` / `pr-toolchain-tests`, unscoped |
 
 The public-cache workflow touches no container chain, no per-commit scope,
-and no marker. Only the `forks`
-container has per-commit namespaces, so only its round reads at a scope. The
-nightly chain includes `forks` because PRs from that repo into mathlib4
-upload there; it excludes `pr-toolchain-tests`, so a poisoned upload from an
-experimental toolchain branch cannot reach a trusted nightly consumer.
+and no marker. Only the `forks` container has per-commit namespaces, so only
+its round reads at a scope. The nightly chain includes `forks` because PRs
+from that repo into mathlib4 upload there. It excludes `pr-toolchain-tests`,
+so a poisoned upload from an experimental toolchain branch cannot reach a
+trusted nightly consumer.
 
-Branches that legitimately need to read their own prior low-trust uploads opt
-into a wider chain explicitly.
+Branches that need to read their own earlier low-trust uploads opt into a
+wider chain explicitly.
 
 The resolved repo is the checkout's git remote, or `--repo=`. In a project
 that depends on Mathlib, only a canonical detection counts, so such a project
@@ -132,8 +131,8 @@ A routing policy decides, for each CI job, which container it writes to and
 which lookup chain it reads from. The policy is loaded from the trusted branch,
 not from the PR, so a PR cannot route itself to a higher-trust container.
 
-This routing applies only in CI. User machines fall back to the strict per-repo
-default and must opt into a wider lookup chain explicitly.
+This routing applies only in CI. User machines read the chain of their
+workflow and opt into a wider chain explicitly.
 
 ## Per-commit namespace for fork uploads
 

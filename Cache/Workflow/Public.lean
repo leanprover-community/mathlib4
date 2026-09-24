@@ -34,8 +34,8 @@ def flags : Array Cli.Flag := #[]
 Check the parsed command line `p` and the environment for the workflow: no
 flag of another workflow, and neither `MATHLIB_CACHE_FROM` nor
 `MATHLIB_CACHE_REPO_SCOPE` set. Both variables address container chains and
-per-commit namespaces, which this workflow has none of; a set one is a
-misdirected read or write and fails.
+per-commit namespaces, which this workflow has none of, so a set one fails the
+read.
 -/
 def parseOptions (p : Cli.Parsed) : IO Unit := do
   rejectForeignFlags name flags p

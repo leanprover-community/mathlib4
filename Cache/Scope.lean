@@ -13,9 +13,9 @@ import Cache.Repo
 The scope a fork read or write addresses: the SHA whose per-commit namespace
 in the `forks` container the round reads or the upload fills. It comes from
 `--scope=REF` (`Scope.flag`) or `MATHLIB_CACHE_REPO_SCOPE` (`Scope.parse`).
-The developer-cache and nightly workflows read at it; the developer-cache
-upload writes under it (`Upload`); the flat upload has no per-commit
-namespaces and rejects a set scope.
+The developer-cache and nightly workflows read at it. An upload to `forks`
+writes under it, and an upload to another container rejects a set scope
+(`stagedUploadDestFrom`).
 -/
 
 namespace Cache

@@ -105,7 +105,7 @@ def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
 Split an S3 upload base into the endpoint origin and the bucket path:
 `https://host/bucket[/prefix]` becomes `(https://host, bucket[/prefix])`.
 rclone addresses a destination as `:s3:{bucket}/{key}` against an endpoint.
-`uploadFiles` rejects an s3 URL that does not split.
+`stagedUploadDestFrom` rejects an s3 URL that does not split.
 -/
 def s3EndpointSplit (base : String) : Except String (String × String) :=
   match base.splitOn "://" with

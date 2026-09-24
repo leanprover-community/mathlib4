@@ -12,10 +12,9 @@ import Cache.Upload
 
 The commands of `lake exe cache`, parsed by the `Cli` library: each command
 declares its flags and arguments, and its handler runs it. `get` is the
-command whose behavior depends on the checkout and the environment: it
-declares the flags of every read workflow (`Workflow.flags`), decides the
-workflow (`Cache.Workflow`), and hands it the parsed command line, from which
-the workflow reads its own flags. A `put` decides its destination
+command that chooses a workflow: it declares the flags of every read workflow
+(`Workflow.flags`), decides the workflow (`Cache.Workflow`), and hands it the
+parsed command line, from which the workflow reads its own flags. A `put` decides its destination
 (`Upload.decide`) from the container `--container` names and
 `MATHLIB_CACHE_PUT_URL`; `query` is a developer-cache command; the local
 commands (`pack`, `unpack`, `clean`, `lookup`, and the staging commands)
@@ -38,10 +37,11 @@ def modulesArg : Arg := {
 
 /-- The information appended to the root help. -/
 def furtherInformation : String := "ARGUMENTS
-    get, get!, get-, lookup, put and stage take modules: `get Mathlib.Init` reads
-    the cache of that module and of everything it imports. With bash's glob
-    expansion one can also write `Mathlib/**/Order/*.lean`; write `Mathlib.Data.\\*`
-    to prevent the expansion.
+    get, pack, unpack, clean, lookup, put, stage and their variants take
+    modules: `get Mathlib.Init` reads the cache of that module and of
+    everything it imports. With bash's glob expansion one can also write
+    `Mathlib/**/Order/*.lean`; write `Mathlib.Data.\\*` to prevent the
+    expansion.
 
     Commands that end with `!` do not skip files: use them manually when a
     hot-fix must force a re-download, a re-pack, or an overwrite. Linked files
@@ -56,10 +56,11 @@ WORKFLOWS
         Mathlib, or any get with MATHLIB_CACHE_GET_URL set. get fetches from the
         public cache at https://cache.mathlib.org/mathlib4-master (or from that
         URL) and nothing else. No flags of its own.
-    developer cache: a fork checkout, or any get with --cache-from, --scope or
-        --unsafe (or MATHLIB_CACHE_FROM, MATHLIB_CACHE_REPO_SCOPE set). get walks
-        the trust-ordered container chain: master from the public cache, then
-        the fork's per-commit namespace in forks from the developer cache at
+    developer cache: a fork checkout, or a get on the canonical repository
+        with --cache-from, --scope or --unsafe (or MATHLIB_CACHE_FROM,
+        MATHLIB_CACHE_REPO_SCOPE set). get walks the trust-ordered container
+        chain: master from the public cache, then the fork's per-commit
+        namespace in forks from the developer cache at
         https://r2devcache.mathlib.org. Flags: --cache-from, --scope, --unsafe,
         --unsafe-window.
     nightly: the nightly-testing repository. get walks its own chain,
@@ -155,10 +156,10 @@ def runLookup (p : Parsed) : IO UInt32 := CacheM.run do
   lookup hashMemo.hashMap roots.keys
   return 0
 
-/-- The decision of a `put`: the destination and the scope, from the flags,
-`MATHLIB_CACHE_PUT_URL` (an empty value means unset), and the scope
-(`Upload.decide`). A mismatch fails here, before any packing. The destination
-is printed, as `get` prints its workflow. -/
+/-- The decision of a `put` (`Upload.decide`): the destination and the scope,
+from the flags, `MATHLIB_CACHE_PUT_URL` (an empty value means unset), and
+`MATHLIB_CACHE_REPO_SCOPE`. A mismatch fails here, before any packing. The
+destination is printed, as `get` prints its workflow. -/
 def uploadOf (p : Parsed) : IO Upload := do
   let options : Upload.Options := {
     container? := (p.flag? Upload.containerFlag.longName).map (·.as! Container)

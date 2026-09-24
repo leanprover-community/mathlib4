@@ -54,13 +54,17 @@ A custom cache can rely on the staging commands:
 | `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 
-To operate an external cache, run `stage` to produce the artifact set, upload
-it under an `f/` prefix with any storage client, and point readers at the
-endpoint with `MATHLIB_CACHE_GET_URL`. A reader with that variable set takes
-the [public-cache workflow](./WORKFLOWS.md#the-public-cache-workflow) whatever
-repository its checkout names, and `get` requests `{endpoint}/f/{hash}.ltar`;
-`stage` writes the `.ltar` files flat into the staging directory, so the
-upload adds the `f/` segment.
+To operate an external cache:
+
+1. Run `stage` to produce the artifact set. `stage` writes the `.ltar` files
+   flat into the staging directory.
+2. Upload the contents of the staging directory under an `f/` prefix with any
+   storage client.
+3. Point readers at the endpoint with `MATHLIB_CACHE_GET_URL`. A reader with
+   this variable set takes the
+   [public-cache workflow](./WORKFLOWS.md#the-public-cache-workflow) whatever
+   repository its checkout names, and `get` requests
+   `{endpoint}/f/{hash}.ltar`.
 
 Example:
 
@@ -87,16 +91,16 @@ When arguments are provided, only the specified files and their transitive impor
 ### Flags
 
 Each command declares its flags; `lake exe cache <command> --help` lists them.
-A flag follows the command (`lake exe cache get --repo=OWNER/REPO`); a flag
-before the command is moved after it. A command rejects a flag it does not
-declare, and a workflow rejects the flags of another workflow.
+Flags follow the command: `lake exe cache get --repo=OWNER/REPO`. The tool
+rejects a flag before the command, a flag the command does not declare, and a
+flag of another workflow.
 
 | Flag                | Description                                                                                |
 |---------------------|--------------------------------------------------------------------------------------------|
 | `--repo=OWNER/REPO` | For `get`/`get!`/`get-`/`query`: the repository whose cache to read (e.g., `--repo=leanprover-community/mathlib4`). Selects the workflow. |
 | `--cache-from=LIST` | For `get`/`get!`/`get-` under the developer-cache and nightly workflows: the trust-ordered, comma-separated list of containers to read, replacing the workflow's chain (see [Trust-ordered containers](./WORKFLOWS.md#trust-ordered-containers)). |
-| `--scope=REF`       | For `get`/`get!`/`get-` under the developer-cache and nightly workflows: the commit whose fork cache to read, as any git ref (see [`query`](./WORKFLOWS.md#finding-cached-commits-with-query)). |
-| `--unsafe`          | For `get`/`get!`/`get-` under the developer-cache workflow: read the most recent cached fork commits of the branch, found automatically (see [Unsafe automatic scope walk](./WORKFLOWS.md#unsafe-automatic-scope-walk)). |
+| `--scope=REF`       | For `get`/`get!`/`get-` under the developer-cache and nightly workflows: the commit whose `forks` namespace to read, as any git ref (see [`query`](./WORKFLOWS.md#finding-cached-commits-with-query)). |
+| `--unsafe`          | For `get`/`get!`/`get-` under the developer-cache workflow: find the most recent cached fork commits of the branch and read them (see [Unsafe automatic scope walk](./WORKFLOWS.md#unsafe-automatic-scope-walk)). |
 | `--unsafe-window=N` | The number of cached fork commits `--unsafe` tries (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. Required. |
 
@@ -141,7 +145,7 @@ are internal to mathlib CI, see [`CI.md`](./CI.md).
 
 ## Troubleshooting
 
-The cache endpoints have been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to read both caches from the Azure storage account instead, the behavior before the endpoints were available, for troubleshooting any issues that might arise in the transition:
+The cache endpoints have been available since September 2026. `MATHLIB_CACHE_DEBUG_USE_LEGACY` makes the client read every container from the Azure storage account instead of the cache endpoints. Use it for troubleshooting:
 
 ```bash
 # bash, zsh, Git Bash

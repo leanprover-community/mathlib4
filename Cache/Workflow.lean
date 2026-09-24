@@ -17,7 +17,8 @@ A `get` runs one of three workflows, and decides which before it reads:
   checkout, a project that depends on Mathlib, or a read pointed at an
   external endpoint. One fetch from one URL. No flags of its own.
 * the developer-cache workflow (`Cache.Workflow.Developer`): a fork checkout,
-  or any read that names a container chain, a scope, or `--unsafe`. The
+  or a read on the canonical repository that names a container chain, a
+  scope, or `--unsafe`. The
   trust-ordered chain across the public cache and the developer cache, with
   the fork's per-commit namespace. Owns the chain-read flags, and `query`.
 * the nightly workflow (`Cache.Workflow.Nightly`): the nightly-testing

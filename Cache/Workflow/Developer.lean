@@ -11,10 +11,11 @@ import Cache.Workflow.Developer.Query
 /-!
 # The developer-cache workflow
 
-The workflow of a fork checkout, and of any read that names a chain, a scope,
-or `--unsafe`. A read walks the trust-ordered chain `containers`: `master`
-from the public cache, then the fork's per-commit namespace in `forks` from
-the developer bucket (`readURL` names the hosts). The per-commit scope of the
+The workflow of a fork checkout, and of a read on the canonical repository
+that names a chain, a scope, or `--unsafe`. A read walks the trust-ordered
+chain `containers`: `master` from the public cache, then the fork's
+per-commit namespace in `forks` from the developer bucket (`readURL` names
+the hosts). The per-commit scope of the
 `forks` round, the `--unsafe` walk over cached fork commits and its summary,
 the hint for missing files, and the non-default-scope notice all belong here.
 CI uploads a fork build to `forks` under the commit's scope, with the marker
@@ -128,8 +129,8 @@ def reportUnsafeScopes (result : ReadResult) : IO Unit := do
 /--
 The `--unsafe` walk: the SHA scopes to try, most recent first, discovered by
 `discoverUnsafeScopes` over the history of the checkout at `cwd`, reported on
-stderr. Empty when no cached fork commit is in range; the read then falls back
-to the plain chain.
+stderr. Empty when no cached fork commit is in range; the `forks` round then
+reads at the checked-out HEAD, as a plain read does (`Chain.readRounds`).
 -/
 def unsafeScopes (repo : String) (window : Nat) (cwd : FilePath) : IO (List String) := do
   let scopes ← discoverUnsafeScopes repo window (cwd := cwd)
@@ -189,10 +190,10 @@ def resolveQueryRepo (repoExplicit? : Option String) (isMathlibRoot : Bool) : IO
     | none => pure MATHLIBREPO
 
 /--
-The `query` answer for a canonical repository: `repo` caches by file hash, so
-there is no per-commit build to find. Without a `ref` the answer is a note on
-stdout; with one it is an error, exit 1, in place of a misleading
-`not cached`.
+The `query` answer for a canonical repository: `query` probes the per-commit
+markers of forks only, so it has nothing to query for `repo`. Without a `ref`
+the answer is a note on stdout; with one it is an error, exit 1, in place of a
+misleading `not cached`.
 -/
 def noPerCommitNamespace (repo : String) (ref? : Option String) : IO Unit := do
   match ref? with

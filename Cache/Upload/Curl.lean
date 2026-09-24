@@ -32,9 +32,9 @@ def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
 /-- Formats the curl config file that lists the files to upload: each staged
-file goes to its `StagedUploadDest.fileURL`, on the destination `Upload.dest`
-gives. The response body goes to the null device: stdout must
-carry only the per-transfer JSON reports that `monitorCurl` parses. -/
+file goes to its `StagedUploadDest.fileURL` under `dest`. The response body
+goes to the null device: stdout must carry only the per-transfer JSON reports
+that `monitorCurl` parses. -/
 def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
     s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
