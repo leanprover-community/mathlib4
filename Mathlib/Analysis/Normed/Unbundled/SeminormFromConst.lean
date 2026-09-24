@@ -244,14 +244,17 @@ def normFromConst {k : K} {g : RingSeminorm K} (hg_k : g k ≠ 0)
     ⟨k, by rwa [seminormFromConst_apply_c hg_k hg_pm]⟩)
 
 @[simp]
-theorem seminormFromConstRingNormOfField_toFun {k : K} {g : RingSeminorm K}
+theorem normFromConst_toFun {k : K} {g : RingSeminorm K}
     (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
     ⇑(normFromConst hg_k hg_pm) = seminormFromConst k g :=
   rfl
 
-theorem seminormFromConstRingNormOfField_def {k : K} {g : RingSeminorm K}
+theorem normFromConst_def {k : K} {g : RingSeminorm K}
     (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) (x : K) :
     normFromConst hg_k hg_pm x = seminormFromConst k g x := rfl
+
+@[deprecated (since := "2026-09-24")]
+alias seminormFromConstRingNormOfField_def := normFromConst_def
 
 /-- If `K` is a field, `seminormFromConst` applied to an `AlgebraNorm` is an `AlgebraNorm`. -/
 def algNormFromConst {k : K} {g : AlgebraNorm F K} (hg_k : g k ≠ 0) (hg_pm : IsPowMul g) :
