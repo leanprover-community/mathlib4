@@ -208,6 +208,14 @@ instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, Topolog
     [h : ∀ i, DiscreteTopology (Y i)] : DiscreteTopology (Sigma Y) :=
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
 
+instance {p : X → Prop} [TopologicalSpace X] [IndiscreteTopology X] :
+    IndiscreteTopology (Subtype p) := by
+  refine ⟨top_unique fun s ⟨t, ht, hts⟩ ↦ ?_⟩
+  rw [IndiscreteTopology.isOpen_iff] at ht ⊢
+  rcases ht with rfl | rfl
+  · simp [preimage_empty ▸ hts]
+  · simp [preimage_univ ▸ hts]
+
 instance Prod.indiscreteTopology [TopologicalSpace X] [TopologicalSpace Y]
     [h : IndiscreteTopology X] [hY : IndiscreteTopology Y] : IndiscreteTopology (X × Y) :=
   ⟨inf_eq_top_iff.2 <| by simp [h.eq_top, hY.eq_top]⟩
