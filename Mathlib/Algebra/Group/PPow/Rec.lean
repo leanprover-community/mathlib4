@@ -45,7 +45,7 @@ lemma ppowRec_succ (n : ℕ+) (x : M) : ppowRec (n + 1) x = ppowRec n x * x :=
   PNat.recOn_succ _ _ _
 
 -- helper lemma before Semigroup is defined
-lemma ppowRec_succ'_of_assoc (n : ℕ+) (x : M) (h : ∀ x y z : M, (x * y) * z = x * (y * z)) :
+lemma ppowRec_succ'_of_assoc (n : ℕ+) (x : M) (h : ∀ y z : M, (x * y) * z = x * (y * z)) :
     ppowRec (n + 1) x = x * ppowRec n x := by
   induction n with
   | one => rfl
