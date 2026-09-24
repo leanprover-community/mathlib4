@@ -108,6 +108,7 @@ namespace DPMorphism
 variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
   (hI : DividedPowers I) (hJ : DividedPowers J)
 
+@[macro_inline]
 instance instFunLike : FunLike (DPMorphism hI hJ) A B where
   coe h := h.toRingHom
   coe_injective h h' hh' := by

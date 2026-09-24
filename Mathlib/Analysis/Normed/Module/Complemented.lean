@@ -98,7 +98,7 @@ variable (p q)
 
 /-- If `q` is a closed complement of a closed subspace `p`, then `p × q` is continuously
 isomorphic to `E`. -/
-@[deprecated prodEquivOfIsTopCompl (since := "2026-06-07")]
+@[deprecated prodEquivOfIsTopCompl +typeChanged (since := "2026-06-07")]
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
   haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
@@ -106,7 +106,7 @@ def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
   exact (p.subtypeL.coprod q.subtypeL).continuous
 
 /-- Projection to a closed submodule along a closed complement. -/
-@[deprecated projectionOntoL (since := "2026-06-07")]
+@[deprecated projectionOntoL +typeChanged (since := "2026-06-07")]
 def linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : E →L[𝕜] p :=
   ContinuousLinearMap.fst 𝕜 p q ∘L ↑(prodEquivOfClosedCompl p q h hp hq).symm

@@ -123,7 +123,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
-      Continuous.comp (continuous_apply (A := φ) i) <| continuous_subtype_val
+      Continuous.comp (continuous_apply (A := φ) i) continuous_subtype_val
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by
@@ -163,6 +163,7 @@ instance : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ ≃ₛₗ[σ₁₂] M₂) where
 @[simp] lemma toLinearMap_toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) :
     e.toContinuousLinearMap.toLinearMap = e.toLinearEquiv.toLinearMap := rfl
 
+@[macro_inline]
 instance equivLike :
     EquivLike (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toFun

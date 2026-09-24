@@ -88,7 +88,6 @@ lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
   calc
   0 < v (f.coeff n) * ∏ i ∈ n.support, (c i) ^ (n i) := by
     apply mul_pos _ (by exact Finset.prod_pos fun i a ↦ (fun i ↦ pow_pos (hc i) (n i)) i)
-    specialize h_eq_zero (f.coeff n)
     grind
   _ ≤ _ := le_gaussNorm v c f hbd n
 
@@ -203,7 +202,7 @@ lemma Finset.Nonempty.map_sum_le_sup'_map
       simp only [Finset.sum_cons, Finset.mem_cons, exists_eq_or_imp]
       refine (le_total (g (∑ i ∈ s, f i)) (g (f j))).imp ?_ ?_ <;> intro h
       · exact (na _ _).trans (max_eq_left h).le
-      · exact ⟨_, IH.choose_spec.left, (na _ _).trans <|
+      · exact ⟨_, IH.choose_spec.left, (na _ _).trans
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
 variable [DecidableEq σ] (f g : MvPowerSeries σ R)
