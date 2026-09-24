@@ -933,7 +933,7 @@ lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries�
   simp only [H1π, isoCycles₁, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, boundaries₁, shortComplexH1, cycles₁]
 
 lemma H1π_eq_iff (x y : cycles₁ A) :
@@ -1080,7 +1080,7 @@ lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries�
   simp only [H2π, isoCycles₂, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, boundaries₂, shortComplexH2, cycles₂]
 
 lemma H2π_eq_iff (x y : cycles₂ A) :
