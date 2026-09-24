@@ -54,7 +54,7 @@ theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
 
 @[simp]
-theorem cons_perm_cons_left {a b : α} : a :: l ~ b :: l ↔ a = b :=
+theorem perm_cons_right_iff {a b : α} : a :: l ~ b :: l ↔ a = b :=
   (perm_append_right_iff (l₁ := [a]) (l₂ := [b]) l).trans singleton_perm_singleton
 
 theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
