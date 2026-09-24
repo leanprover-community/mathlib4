@@ -98,8 +98,7 @@ lemma baseChangeFixedPointsRestrict_comp :
 
 @[simp]
 lemma baseChangeFixedPointsRestrict_apply (P : (W'⁄F).Point) :
-    (FixedPoints.addSubgroup (K ≃ₐ[F] K) (W'⁄K).Point).subtype
-      (baseChangeFixedPointsRestrict F K P) = baseChange F K P :=
+    (baseChangeFixedPointsRestrict F K P : (W'⁄K).Point) = baseChange F K P :=
   rfl
 
 lemma baseChangeFixedPointsRestrict_injective :
