@@ -131,7 +131,7 @@ variable {K}
 /-- An induction principle for `Projectivization`. Use as `induction v`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
-  Quotient.ind' <| Subtype.rec <| h
+  Quotient.ind' <| Subtype.rec h
 
 @[simp]
 theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
@@ -243,9 +243,8 @@ theorem linearIndepOn_pair (D D' : ℙ K V) :
   by_cases h : D = D'
   · simpa [h] using D'.rep_nonzero
   rw [← ne_eq, ← linearIndependent_pair_iff_ne, LinearIndependent.pair_symm_iff,
-    ← linearIndepOn_id_range_iff] at h
-  · simpa using h
-  · simpa [injective_pair_iff_ne, injective_pair_iff_ne, ne_eq] using h.injective
+    ← linearIndepOn_id_range_iff h.injective] at h
+  simpa using h
 
 end linearIndependent
 

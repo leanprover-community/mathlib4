@@ -9,8 +9,7 @@ public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Data.Real.Pointwise
+public import Mathlib.Basic.Real.Pointwise
 
 /-!
 # Seminorms
@@ -39,7 +38,7 @@ seminorm, locally convex, LCTVS
 
 @[expose] public section
 
-assert_not_exists balancedCore
+assert_not_exists balancedCore NormedSpace
 
 open NormedField Set Filter
 
@@ -113,6 +112,7 @@ section SMul
 
 variable [SMul 𝕜 E]
 
+@[macro_inline]
 instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -135,7 +135,6 @@ instance instZero : Zero (Seminorm 𝕜 E) :=
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
 instance : IsZeroApply (Seminorm 𝕜 E) E ℝ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_zero := FunLike.coe_zero
 
@@ -156,7 +155,6 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         rw [map_smul_eq_mul, mul_left_comm] }
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : IsSMulApply R (Seminorm 𝕜 E) E ℝ where
-  smul_apply _ _ _ := rfl
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
@@ -173,7 +171,6 @@ instance instAdd : Add (Seminorm 𝕜 E) where
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
 instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-22")] alias coe_add := FunLike.coe_add
 
@@ -215,7 +212,7 @@ instance instSup : Max (Seminorm 𝕜 E) where
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
-        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans <|
+        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans
           (mul_max_of_nonneg _ _ <| norm_nonneg x).symm }
 
 @[simp]
@@ -333,7 +330,7 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
-@[deprecated IsOrderedSMul.smul_le_smul (since := "2026-07-31")]
+@[deprecated IsOrderedSMul.smul_le_smul +typeChanged (since := "2026-07-31")]
 protected theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
@@ -843,7 +840,7 @@ theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ �
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
   refine fun a ha b hb ↦ mul_lt_mul' ha hb (apply_nonneg _ _) ?_
-  exact hr₁.lt_or_gt.resolve_left <| ((norm_nonneg a).trans ha).not_gt
+  exact hr₁.lt_or_gt.resolve_left ((norm_nonneg a).trans ha).not_gt
 
 theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr₂ : r₂ ≠ 0) :
     Metric.ball (0 : 𝕜) r₁ • p.closedBall 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
@@ -1318,83 +1315,3 @@ lemma bddAbove_of_absorbent {ι : Sort*} {p : ι → Seminorm 𝕜 E} {s : Set E
 end NontriviallyNormedField
 
 end Seminorm
-
-/-! ### The norm as a seminorm -/
-
-
-section normSeminorm
-
-variable (𝕜) (E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
-
-/-- The norm of a seminormed group as a seminorm. -/
-def normSeminorm : Seminorm 𝕜 E :=
-  { normAddGroupSeminorm E with smul' := norm_smul }
-
-@[simp]
-theorem coe_normSeminorm : ⇑(normSeminorm 𝕜 E) = norm :=
-  rfl
-
-@[simp]
-theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball := by
-  ext x r y
-  simp only [Seminorm.mem_ball, Metric.mem_ball, coe_normSeminorm, dist_eq_norm]
-
-@[simp]
-theorem closedBall_normSeminorm : (normSeminorm 𝕜 E).closedBall = Metric.closedBall := by
-  ext x r y
-  simp only [Seminorm.mem_closedBall, Metric.mem_closedBall, coe_normSeminorm, dist_eq_norm]
-
-variable {𝕜 E} {x : E}
-
-/-- Balls at the origin are absorbent. -/
-theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) := by
-  rw [← ball_normSeminorm 𝕜]
-  exact (normSeminorm 𝕜 _).absorbent_ball_zero hr
-
-/-- Balls containing the origin are absorbent. -/
-theorem absorbent_ball (hx : ‖x‖ < r) : Absorbent 𝕜 (Metric.ball x r) := by
-  rw [← ball_normSeminorm 𝕜]
-  exact (normSeminorm 𝕜 _).absorbent_ball hx
-
-/-- Balls at the origin are balanced. -/
-theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by
-  rw [← ball_normSeminorm 𝕜]
-  exact (normSeminorm _ _).balanced_ball_zero r
-
-/-- Closed balls at the origin are balanced. -/
-theorem balanced_closedBall_zero : Balanced 𝕜 (Metric.closedBall (0 : E) r) := by
-  rw [← closedBall_normSeminorm 𝕜]
-  exact (normSeminorm _ _).balanced_closedBall_zero r
-
-/-- If there is a scalar `c` with `‖c‖>1`, then any element with nonzero norm can be
-moved by scalar multiplication to any shell of width `‖c‖`. Also recap information on the norm of
-the rescaling element that shows up in applications. -/
-lemma rescale_to_shell_semi_normed_zpow {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E}
-    (hx : ‖x‖ ≠ 0) :
-    ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c ^ n • x‖) ∧
-      (‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
-  (normSeminorm 𝕜 E).rescale_to_shell_zpow hc εpos hx
-
-/-- If there is a scalar `c` with `‖c‖>1`, then any element with nonzero norm can be
-moved by scalar multiplication to any shell of width `‖c‖`. Also recap information on the norm of
-the rescaling element that shows up in applications. -/
-lemma rescale_to_shell_semi_normed {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε)
-    {x : E} (hx : ‖x‖ ≠ 0) :
-    ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
-  (normSeminorm 𝕜 E).rescale_to_shell hc εpos hx
-
-lemma rescale_to_shell_zpow [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
-    {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
-    ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c ^ n • x‖) ∧
-      (‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
-  rescale_to_shell_semi_normed_zpow hc εpos (norm_ne_zero_iff.mpr hx)
-
-/-- If there is a scalar `c` with `‖c‖>1`, then any element can be moved by scalar multiplication to
-any shell of width `‖c‖`. Also recap information on the norm of the rescaling element that shows
-up in applications. -/
-lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
-    {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
-    ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
-  rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
-
-end normSeminorm

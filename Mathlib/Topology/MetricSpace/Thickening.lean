@@ -34,7 +34,9 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
 @[expose] public section
 
 noncomputable section
-open NNReal ENNReal Topology Set Filter Bornology
+open NNReal ENNReal Set Filter Bornology
+
+open scoped Topology
 
 universe u v w
 
@@ -702,7 +704,7 @@ theorem IsCompact.exists_thickening_image_subset
     refine ⟨min ε₁ ε₂, by positivity, V₁ ∪ V₂, union_mem_nhdsSet hV₁ hV₂, ?_⟩
     rw [image_union, thickening_union]
     calc thickening (ε₁ ⊓ ε₂) (f '' V₁) ∪ thickening (ε₁ ⊓ ε₂) (f '' V₂)
-      _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> norm_num
+      _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> simp
       _ ⊆ U ∪ U := by gcongr
       _ = U := union_self _
   · intro x hx

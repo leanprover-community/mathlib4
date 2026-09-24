@@ -24,7 +24,9 @@ polynomial, limit, exponential
 
 public section
 
-open Filter Topology Real
+open Filter Real
+
+open scoped Topology
 
 namespace Polynomial
 

@@ -213,6 +213,39 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_closure_subset {B : Set (Set 
     ∃ t ∈ B, x ∈ t ∧ closure t ⊆ s := by
   simpa only [exists_prop, and_assoc] using hB.nhds_hasBasis.nhds_closure.mem_iff.mp h
 
+/-- In a regular space with a topological basis `B`, any open set `U` can be written as the union
+of the sets in `B` whose closures are contained in `U`. -/
+theorem TopologicalSpace.IsTopologicalBasis.open_eq_iUnion_of_closure_subset {B : Set (Set X)}
+    (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
+    U = ⋃ v ∈ B, ⋃ (_ : closure v ⊆ U), v := by
+  ext x
+  simp [mem_iUnion, exists_prop, ← hU.mem_nhds_iff, hB.nhds_basis_closure x |>.mem_iff, and_comm]
+
+/-- In a regular space with a topological basis `B`, any open set `U` can be written as the union
+of the sets in `B` whose closures are contained in `U`. -/
+theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_of_closure_subset {B : Set (Set X)}
+    (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
+    U = ⋃₀ {v | v ∈ B ∧ closure v ⊆ U} := by
+  convert hB.open_eq_iUnion_of_closure_subset hU
+  ext; simp; grind
+
+/-- In a regular space with a topological basis `B`, any open set `U` can be written as the union
+of the closures of the sets in `B` whose closures are contained in `U`. -/
+theorem TopologicalSpace.IsTopologicalBasis.open_eq_iUnion_closure
+    {B : Set (Set X)} (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
+    U = ⋃ v ∈ B, ⋃ (_ : closure v ⊆ U), closure v :=
+  subset_antisymm
+    (hB.open_eq_iUnion_of_closure_subset hU |>.subset.trans (by grw [← subset_closure]))
+    (by simp)
+
+/-- In a regular space with a topological basis `B`, any open set `U` can be written as the union
+of the closures of the sets in `B` whose closures are contained in `U`. -/
+theorem TopologicalSpace.IsTopologicalBasis.open_eq_sUnion_closure
+    {B : Set (Set X)} (hB : IsTopologicalBasis B) {U : Set X} (hU : IsOpen U) :
+    U = ⋃₀ {v | ∃ u ∈ B, closure u ⊆ U ∧ v = closure u} := by
+  convert hB.open_eq_iUnion_closure hU
+  ext; simp; grind
+
 protected theorem Topology.IsInducing.regularSpace [TopologicalSpace Y] {f : Y → X}
     (hf : IsInducing f) : RegularSpace Y :=
   .of_hasBasis
@@ -345,7 +378,7 @@ lemma IsCompact.closure_eq_nhdsKer [RegularSpace X] {s : Set X} (hs : IsCompact 
   · rw [nhdsKer, ← hs.lift'_closure_nhdsSet]
     simp +contextual [Filter.lift', Filter.lift, closure_mono, subset_of_mem_nhdsSet]
   · intro y hy
-    by_contra! hy'
+    by_contra hy'
     rw [← _root_.disjoint_nhdsSet_nhds, Filter.disjoint_iff] at hy'
     obtain ⟨t, hts, t', ht'y, H⟩ := hy'
     exact Set.disjoint_iff.mp H ⟨hy t hts, mem_of_mem_nhds ht'y⟩

@@ -211,7 +211,7 @@ set_option backward.privateInPublic true in
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : ℝ :=
-  @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+  @RCLike.re 𝕜 _ (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 
 private theorem hasEigenvalue_unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
@@ -433,7 +433,7 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
   rw [← nnnorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnnorm hT'.isSelfAdjoint,
-    spectralRadius, ← not_iff_not, ENNReal.iSup_eq_zero]
+    spectralRadius_eq_of_unital, ← not_iff_not, ENNReal.iSup_eq_zero]
   push Not
   apply exists_congr
   simp +contextual [hT.hasEigenvalue_iff_mem_spectrum]

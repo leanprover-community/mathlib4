@@ -31,7 +31,9 @@ universe u
 
 namespace SSet
 
-open CategoryTheory Simplicial Limits HomotopicalAlgebra
+open CategoryTheory Limits HomotopicalAlgebra
+
+open scoped Simplicial
 
 open modelCategoryQuillen in
 /-- A simplicial set `S` is a Kan complex if it is fibrant, which means that

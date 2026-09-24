@@ -40,7 +40,7 @@ variable (v : Valuation R Γ) [hv : v.IsRankOneDiscrete]
 /-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`.
 TODO: rename this into lowerCamelCase. -/
 @[simps!]
-noncomputable def valueGroup₀_equiv_withZeroMulInt : ValueGroup₀ (.ofClass v) ≃*o ℤᵐ⁰ where
+noncomputable def valueGroup₀_equiv_withZeroMulInt : v.ValueGroup₀ ≃*o ℤᵐ⁰ where
   __ := MulEquiv.withZero (intEquivOfZPowersEqTop _
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)).symm
   map_le_map_iff' {x y} := by
@@ -66,8 +66,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
 /-- A discrete valuation has rank one. -/
 @[instance_reducible]
 noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
-  hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp
-      (.ofClass (valueGroup₀_equiv_withZeroMulInt v))
+  hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp (valueGroup₀_equiv_withZeroMulInt v)
   strictMono' := (toNNReal_strictMono he).comp (valueGroup₀_equiv_withZeroMulInt_strictMono v)
   exists_val_nontrivial := IsNontrivial.exists_val_nontrivial
 
@@ -82,7 +81,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
   simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,
     valueGroup₀_equiv_withZeroMulInt_apply]
   split_ifs with h0 <;>
-  simp only [MonoidWithZeroHom.coe_ofClass] at h0
+  simp only [coe_toMonoidWithZeroHom] at h0
   · simp [h0]
   · rw [WithZero.map'_coe, ← coe_unzero h0, WithZero.coe_inj,
     ← (MulEquiv.injective (intEquivOfZPowersEqTop _
