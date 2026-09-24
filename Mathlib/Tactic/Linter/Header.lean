@@ -331,6 +331,53 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
     else
       importsSoFar := importsSoFar.insert imp.toImport
 
+section HeaderParser
+
+/-! We extend the import parser to also parse `set_option` commands that need to go before
+the module doc-string. We only use the parser for determining whether a given string matches
+and ignore the other bits of the state. -/
+
+open ParseImports
+
+/-- Allow zero or more repetitions of the parser before the parser errors.
+
+Backtracks to the start of parse at any failure.
+-/
+@[specialize] partial def many (p : Parser) : Parser := fun input s =>
+  let newS := p input s
+  if newS.error? matches some ..
+  then
+    s
+  else
+    many p input newS
+
+/-- Allow any of the given parsers, committing to the first that succeeded. -/
+def anyOf (ps : List Parser) : Parser := fun input s => Id.run do
+  for p in ps do
+    let newS := p input s
+    if newS.error? matches some .. then
+      continue
+    else
+      return newS
+  return {s with error? := some "no alternative matches"}
+
+/-- Accepts either the keyword "false" or the keyword "true". -/
+def bool : Parser := keywordCore "false" skip skip >> keywordCore "true" skip skip
+
+/-- Parser for all the module header code allowed before the module docs. -/
+partial def allowedHeaderParser : Parser :=
+  ParseImports.main >>
+  -- We allow specific `set_option` commands for controlling the module docs.
+  many (keyword "set_option" >> anyOf [
+    keyword "doc.verso",
+    keyword "doc.verso.module",
+    keyword "doc.verso.suggestions"
+  ] >> bool)
+  -- TODO: set_option also allows natLit and strLit here in addition to bool.
+  -- Currently this is not needed but would be good for future-proofing.
+
+end HeaderParser
+
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.style.header (← getLinterOptions) do
@@ -339,7 +386,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   let map ← getFileMap
   -- This is essentially the same as calling `parseImports'`, but we need access to `s.pos`.
-  let s := ParseImports.main map.source (ParseImports.whitespace map.source {})
+  let s := allowedHeaderParser map.source (ParseImports.whitespace map.source {})
   unless (← read).cmdPos == s.pos do
     return
   let mainModule ← getMainModule
@@ -354,7 +401,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   then return
   unless stx.isOfKind ``Parser.Command.moduleDoc do
     Linter.logLint linter.style.header stx
-      m!"The module doc-string for a file should be the first command after the imports.\n\
+      m!"The module doc-string for a file should be the first command after the imports\n\
+        and any necessary `set_option` commands.\n\
         Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\
         {.hint' m!"Type `m(odule docstring) + [tab]` to insert a template via snippet."}"
   let inLibraryRoot? ← inLibraryRootMutex.atomically do
