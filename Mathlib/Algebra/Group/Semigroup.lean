@@ -154,7 +154,7 @@ class PPow (M : Type*) where
   /-- Raising to the power of a positive natural number. -/
   protected ppow : ℕ+ → M → M
 
-@[default_instance high, to_additive toSMul]
+@[default_instance 100, to_additive toSMul]
 instance PPow.toPow {M : Type*} [PPow M] : Pow M ℕ+ :=
   ⟨fun x n ↦ PPow.ppow n x⟩
 
