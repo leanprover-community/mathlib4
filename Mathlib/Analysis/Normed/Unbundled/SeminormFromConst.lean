@@ -25,9 +25,9 @@ power-multiplicative seminorm for which `c` is multiplicative.
 * `seminormFromConst_isNonarchimedean` : the function `seminormFromConst c f`
   is nonarchimedean when `f` is nonarchimedean.
 * `seminormFromConst_isPowMul` : the function `seminormFromConst c f`
-  is power-multiplicative.
-* `seminormFromConst_const_mul` : for every `x : R`, `seminormFromConst c f (c * x)`
-  equals the product `seminormFromConst c f c * seminormFromConst c f x`.
+  is power-multiplicative when `f` is power multiplicative.
+* `seminormFromConst_const_mul` : if `f` is power multiplicative, then
+  `seminormFromConst c f (c * x) = seminormFromConst c f c * seminormFromConst c f x`.
 
 ## References
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
