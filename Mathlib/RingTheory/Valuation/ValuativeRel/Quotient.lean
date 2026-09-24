@@ -52,25 +52,21 @@ lemma onQuotSupp_isRankOneDiscrete [hv : IsRankOneDiscrete v] : v.onQuotSupp.IsR
     refine ⟨γ, ?_, hg1⟩
     rw [hγ]
     ext g
-    simp only [mem_valueGroup_iff_exists_mk_of_comm, MonoidWithZeroHom.coe_ofClass]
+    simp only [mem_valueGroup_iff_exists_mk_of_comm, coe_toMonoidWithZeroHom, ne_eq]
     refine ⟨fun ⟨x, y, hx0, hy0, h⟩ ↦ by
         use Ideal.Quotient.mk _ x, Ideal.Quotient.mk _ y
-        simp only [h, onQuotSupp_mk, ne_eq, hy0, not_false_eq_true, exists_true_left, hx0]
+        simp only [h, onQuotSupp_mk, hy0, not_false_eq_true, exists_true_left, hx0]
         ext
-        rw [valueGroup.mk_eq_div (ofClass v) hx0 hy0,
-          valueGroup.mk_eq_div (ofClass v.onQuotSupp) (by aesop) (by aesop)]
+        rw [valueGroup.mk_eq_div _ hx0 hy0,
+          valueGroup.mk_eq_div _ (by aesop) (by aesop)]
         simp [onQuotSupp_mk],
       fun ⟨x, y, hx0, hy0, h⟩ ↦ ?_⟩
-    obtain ⟨r, hr⟩ :=  Ideal.Quotient.mk_surjective x
-    obtain ⟨s, hs⟩ :=  Ideal.Quotient.mk_surjective y
+    obtain ⟨r, hr⟩ := Ideal.Quotient.mk_surjective x
+    obtain ⟨s, hs⟩ := Ideal.Quotient.mk_surjective y
     refine ⟨r, s, by simpa only [← hr, ne_eq, onQuotSupp_mk] using hx0,
       by simpa only [← hs, ne_eq, onQuotSupp_mk] using hy0, ?_⟩
     ext
-    have hr0 : v r ≠ 0 := by aesop
-    have hs0 : v s ≠ 0 := by aesop
-    simp [h, valueGroup.mk_eq_div (ofClass v) hr0 hs0,
-      valueGroup.mk_eq_div (ofClass v.onQuotSupp),
-      ← hr, ← hs, onQuotSupp_mk]
+    simp [h, valueGroup.mk_eq_div, ← hr, ← hs, onQuotSupp_mk]
 
 variable (v w) in
 lemma onQuotSupp_isEquiv [w.Compatible] : (onQuotSupp v).IsEquiv (onQuotSupp w) := by
@@ -115,25 +111,22 @@ lemma onQuotSuppExtend_isRankOneDiscrete [hv : IsRankOneDiscrete v] :
     refine ⟨γ, ?_, hg1⟩
     rw [hγ]
     ext g
-    simp only [mem_valueGroup_iff_exists_mk_of_comm, MonoidWithZeroHom.coe_ofClass]
+    simp only [mem_valueGroup_iff_exists_mk_of_comm, coe_toMonoidWithZeroHom, ne_eq]
     refine ⟨fun ⟨x, y, hx0, hy0, h⟩ ↦
         ⟨algebraMap _ L x, algebraMap _ L y, by simp [hx0], by simp [hy0], ?_⟩,
       fun ⟨x, y, hx0, hy0, h⟩ ↦ ?_⟩
     · rw [h]
       ext
-      rw [valueGroup.mk_eq_div (ofClass (onQuotSuppExtend R v L)) (by simp [hx0]) (by simp [hy0])]
-      simp [valueGroup.mk_eq_div (ofClass v.onQuotSupp) hx0 hy0]
+      simp [valueGroup.mk_eq_div _]
     obtain ⟨nx, dx, hdx0, hx⟩ := IsFractionRing.div_surjective (R ⧸ vr.supp) x
     obtain ⟨ny, dy, hdy0, hy⟩ := IsFractionRing.div_surjective (R ⧸ vr.supp) y
-    simp only [mem_nonZeroDivisors_iff_ne_zero, ne_eq] at hdx0 hdy0
-    simp only [← hx, map_div₀, onQuotSuppExtend_algebraMap', ne_eq,
-      div_eq_zero_iff, not_or, ← hy] at hx0 hy0
+    simp only [← hx, map_div₀, onQuotSuppExtend_algebraMap',  div_eq_zero_iff, not_or, ← hy]
+      at hx0 hy0
     refine ⟨nx * dy, dx * ny,by simp [hx0, hy0], by simp [hx0, hy0], ?_⟩
     ext
-    rw [valueGroup.mk_eq_div (ofClass v.onQuotSupp) (by aesop) (by aesop), h,
-      valueGroup.mk_eq_div ((ofClass (onQuotSuppExtend R v L))) (by aesop) (by aesop),
-      ← hx, ← hy]
-    simp only [map_div₀, MonoidWithZeroHom.coe_ofClass, onQuotSuppExtend_algebraMap', map_mul]
+    rw [valueGroup.mk_eq_div _ (by aesop) (by aesop), h,
+      valueGroup.mk_eq_div _ (by aesop) (by aesop), ← hx, ← hy]
+    simp only [map_div₀, coe_toMonoidWithZeroHom, onQuotSuppExtend_algebraMap', map_mul]
     field_simp -- This is slow
 
 variable (v w) in
