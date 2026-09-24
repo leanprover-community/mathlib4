@@ -175,9 +175,9 @@ structure Model (V : Type) where
   /-- Evaluate an entry to a value with an optional denominator for the row scaling.
   `(n, some d)` denotes `n / d` with `d` nonzero, and `(n, none)` denotes `n`. -/
   evalEntry : Expr → MetaM (V × Option V)
-  /-- A common multiple for eliminating the denominators (`ops.mul` by default). A
-  carrier type with a cheap lcm function could supply it as an optimisation to keep the
-  scaled entries small. -/
+  /-- A nonzero common multiple for eliminating the denominators (`ops.mul` by default). A
+  carrier type with a cheap lcm could supply it as an optimisation to keep the scaled entries
+  small. -/
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Expr
