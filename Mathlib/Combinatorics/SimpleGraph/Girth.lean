@@ -170,7 +170,7 @@ theorem natCast_girth_eq_egirth_iff : G.girth = G.egirth ↔ ¬G.IsAcyclic :=
 
 theorem girth_eq_iff {n : ℕ} : G.girth = n ↔ G.egirth = n ∨ (n = 0 ∧ G.IsAcyclic) := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp [girth_eq_toNat_egirth, (three_pos.trans_le <| G.three_le_egirth).ne']
+  · simp [girth_eq_toNat_egirth, (three_pos.trans_le G.three_le_egirth).ne']
   · simp [girth_eq_toNat_egirth, ENat.toNat_eq_iff, hn]
 
 theorem girth_eq_iff_of_ne_zero {n : ℕ} (hn : n ≠ 0) : G.girth = n ↔ G.egirth = n :=
@@ -200,7 +200,7 @@ lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
 
 lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic := by
-  simp [girth_eq_toNat_egirth, (three_pos.trans_le <| G.three_le_egirth).ne']
+  simp [girth_eq_toNat_egirth, (three_pos.trans_le G.three_le_egirth).ne']
 
 protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
 
