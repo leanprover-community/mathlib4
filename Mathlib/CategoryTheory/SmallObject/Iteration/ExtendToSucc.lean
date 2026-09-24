@@ -157,6 +157,13 @@ lemma extendToSuccObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi
   dsimp [extendToSucc, extendToSuccObjIso]
   rw [extendToSucc.map_eq _ _ _ _ _ _ hi₂, assoc, assoc, Iso.inv_hom_id, comp_id]
 
+@[reassoc]
+lemma extendToSuccObjIso_inv_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
+    (extendToSuccObjIso hj F τ i₁ (hi.trans hi₂)).inv ≫ (extendToSucc hj F τ).map (homOfLE hi) =
+    F.map (homOfLE hi) ≫ (extendToSuccObjIso hj F τ i₂ hi₂).inv := by
+  rw [Eq.comm, Iso.comp_inv_eq, Category.assoc, extendToSuccObjIso_hom_naturality]
+  simp
+
 /-- The isomorphism expressing that `extendToSucc hj F τ` extends `F`. -/
 @[simps!]
 def extendToSuccRestrictionLEIso :
