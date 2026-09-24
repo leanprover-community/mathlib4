@@ -758,7 +758,7 @@ def findAuxDecls (decl : ConstantInfo) (pre : Name) : CoreM (Array Name) := do
       l
 
 /-- Return the `relevant_arg` option based on the computed `relevantArg`
-and the given `cfg.relevantArg?`.
+and optionally the given `relevant_arg` (`given?`).
 
 For terms, `relevantArg` can always be inferred from the type, so we trust `relevantArg`.
 For types, `.noArg` is replaced with `.arg 0`.
@@ -1409,7 +1409,7 @@ def addTranslationFor (t : TranslateData) (ref : Syntax) (src : Name) (tgt : Ter
   let (type, inferredRelevantArg?) ← applyReplacementForall t dontTranslate cinfo.type
   let relevantArg ← getRelevantArg t inferredRelevantArg? relevantArg? ref src
   let name ← mkAuxDeclName (t.attrName.appendBefore "_")
-  -- The new body should be exposed whenever `src` is not a theorem
+  -- The new body should be exposed whenever `src` is not a theorem, to allow unfolding it.
   withExporting (isExporting := !isPrivateName src && !isTheorem) do
     let value ← forallBoundedTelescope type (numNiceForall type) fun xs type ↦ do
       mkLambdaFVars xs <| ← instantiateMVars <| ←
