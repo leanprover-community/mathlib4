@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Complex.Basic
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Basic.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Monoid.Submonoid
@@ -471,10 +471,10 @@ lemma imaginaryPart_imaginaryPart {x : A} : ℑ (ℑ x : A) = 0 :=
   (ℑ x).property.imaginaryPart
 
 lemma realPart_idem {x : A} : ℜ (ℜ x : A) = ℜ x :=
-  Subtype.ext <| (ℜ x).property.coe_realPart
+  Subtype.ext (ℜ x).property.coe_realPart
 
 lemma realPart_imaginaryPart {x : A} : ℜ (ℑ x : A) = ℑ x :=
-  Subtype.ext <| (ℑ x).property.coe_realPart
+  Subtype.ext (ℑ x).property.coe_realPart
 
 lemma realPart_surjective : Function.Surjective (realPart (A := A)) :=
   fun x ↦ ⟨(x : A), Subtype.ext x.property.coe_realPart⟩

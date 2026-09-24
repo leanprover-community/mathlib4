@@ -114,7 +114,7 @@ open scoped Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
-class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
+class ContDiffMapSupportedInClass (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     extends FunLike B E F where
@@ -125,14 +125,14 @@ open ContDiffMapSupportedInClass
 
 namespace ContDiffMapSupportedInClass
 
-instance (B : Type*) (E F : outParam <| Type*)
+instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
-instance (B : Type*) (E F : outParam <| Type*)
+instance (B : Type*) (E F : outParam Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
@@ -197,7 +197,6 @@ instance : Zero 𝓓^{n}_{K}(E, F) where
   zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
 
 instance : IsZeroApply 𝓓^{n}_{K}(E, F) E F where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -207,7 +206,6 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
 instance : IsAddApply 𝓓^{n}_{K}(E, F) E F where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
@@ -217,7 +215,6 @@ instance : Neg 𝓓^{n}_{K}(E, F) where
     exact f.zero_on_compl.comp_left
 
 instance : IsNegApply 𝓓^{n}_{K}(E, F) E F where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -227,7 +224,6 @@ instance instSub : Sub 𝓓^{n}_{K}(E, F) where
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
 instance : IsSubApply 𝓓^{n}_{K}(E, F) E F where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
@@ -239,7 +235,6 @@ instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [Continu
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     IsSMulApply R 𝓓^{n}_{K}(E, F) E F where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 
@@ -534,7 +529,7 @@ protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
 instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) :=
-  topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
 
 instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
@@ -648,7 +643,7 @@ protected noncomputable def supSeminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E
 
 protected theorem withSeminorms :
     WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
-  let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
+  let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Unit) :=
     SeminormFamily.sigma fun i _ ↦
       (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
   have : WithSeminorms p :=
@@ -1042,14 +1037,13 @@ section bilin
 
 open ContDiffMapSupportedIn
 
-variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
+variable {𝕜} {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
 
 open ContinuousLinearMap Finset
 
-variable {𝕜}
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_{K}(E, F₁),
 where `B` is a continuous `𝕜`-linear map and `g` is a C^n function.
 

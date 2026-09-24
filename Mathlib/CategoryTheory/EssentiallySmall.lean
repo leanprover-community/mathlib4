@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Basic.UnivLE
 public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.Logic.UnivLE
 public import Mathlib.Logic.Small.Basic
 
 /-!
@@ -262,7 +262,7 @@ section FullSubcategory
 
 instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : ObjectProperty C) :
     LocallySmall.{w} P.FullSubcategory :=
-  locallySmall_of_faithful <| P.ι
+  locallySmall_of_faithful P.ι
 
 instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [LocallySmall.{w} C] :
     EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=

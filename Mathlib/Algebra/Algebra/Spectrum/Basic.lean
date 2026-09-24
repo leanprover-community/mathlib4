@@ -216,7 +216,7 @@ theorem inv_mem_resolventSet {r : Rˣ} {a : Aˣ} (h : (r : R) ∈ resolventSet R
   exact (hcomm.isUnit_mul_iff.mp (h₁.symm ▸ h)).2
 
 theorem inv_mem_iff {r : Rˣ} {a : Aˣ} : (r : R) ∈ σ (a : A) ↔ (↑r⁻¹ : R) ∈ σ (↑a⁻¹ : A) :=
-  not_iff_not.2 <| ⟨inv_mem_resolventSet, inv_mem_resolventSet⟩
+  not_iff_not.2 ⟨inv_mem_resolventSet, inv_mem_resolventSet⟩
 
 theorem zero_mem_resolventSet_of_unit (a : Aˣ) : 0 ∈ resolventSet R (a : A) := by
   simpa only [mem_resolventSet_iff, ← notMem_iff, zero_notMem_iff] using a.isUnit
@@ -362,12 +362,8 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 /-- Without the assumption `Nontrivial A`, then `0 : A` would be invertible. -/
 @[simp]
 theorem zero_eq [Nontrivial A] : σ (0 : A) = {0} := by
-  refine Set.Subset.antisymm ?_ (by simp [Algebra.algebraMap_eq_smul_one, mem_iff])
-  rw [spectrum, Set.compl_subset_comm]
-  intro k hk
-  rw [Set.mem_compl_singleton_iff] at hk
-  have : IsUnit (Units.mk0 k hk • (1 : A)) := IsUnit.smul (Units.mk0 k hk) isUnit_one
-  simpa [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one]
+  ext
+  simp [spectrum, mem_resolventSet_iff]
 
 @[simp]
 theorem scalar_eq [Nontrivial A] (k : 𝕜) : σ (↑ₐ k) = {k} := by
@@ -447,8 +443,8 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
     [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
-    simpa only [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
-      AlgHom.spectrum_apply_subset (AlgEquivClass.toAlgEquiv f : A ≃ₐ[R] B).symm (f a)
+    simpa only [AlgEquiv.coe_toAlgHom, AlgEquiv.ofClass_symm_apply_apply] using
+      AlgHom.spectrum_apply_subset (AlgEquiv.ofClass f : A ≃ₐ[R] B).symm (f a)
 
 section ConjugateUnits
 

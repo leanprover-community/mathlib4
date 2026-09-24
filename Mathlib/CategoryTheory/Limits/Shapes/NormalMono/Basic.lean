@@ -187,7 +187,7 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
   g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
   isColimit := isColimitOfReflects F <|
-    IsColimit.ofCoconeEquiv (Cocone.precomposeEquivalence (compNatIso F)) <|
+    IsColimit.ofCoconeEquiv (Cocone.precomposeEquivalence (compNatIso F))
       (IsColimit.ofIsoColimit
         (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
           (Cofork.ext (Iso.refl _) (by simp [compNatIso, Cofork.π])))
@@ -226,7 +226,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by
     letI hn := regularOfIsPushoutSndOfRegular gn.regularEpi comm t
-    have q := (@zero_comp _ _ _ gn.W _ _ f).symm
+    have q : 0 = (0 : gn.W ⟶ P) ≫ f := zero_comp.symm
     convert! hn.isColimit
 
 /-- The first leg of a pushout cocone is a normal epimorphism if the left component is too.
