@@ -41,7 +41,7 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Build the literal `⟨i, _⟩ : Fin n` with its bound decided. -/
 def mkFinLit (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
-  have iQ : Q(Nat) := mkNatLit i
+  have iQ : Q(Nat) := mkNatLitQ i
   let hi : Q($iQ < $n) ← mkDecideProofQ q($iQ < $n)
   return q((⟨$iQ, $hi⟩ : Fin $n))
 
@@ -91,7 +91,7 @@ def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(C
   -- one cell per row: the nonzero diagonal entry, then the `Eq.refl` of the zeros after it
   let chain : Expr ← L.entries.zipIdx.foldrM (init := q(True.intro)) fun (row, k) rest => do
     have entry : Q($α) := row[k]!
-    have c : Q(Nat) := mkNatLit (m - (k + 1))
+    have c : Q(Nat) := mkNatLitQ (m - (k + 1))
     mkAppM ``And.intro #[← certifier q($entry ≠ 0),
       ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $c (0 : $α))), rest]]
   have h : Q(IsLowerTriangularDiagList 0 $m $rows) := chain
@@ -108,10 +108,10 @@ def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing 
   -- one cell per pivot row, the nonzero pivot entry and the `Eq.refl` of the zeros before it, on
   -- the `Eq.refl` of the zero rows beyond the pivots
   have tail : Q(List (List $α)) := consDrop U.lit pivots.size
-  let zeroRows : Expr := q(Eq.refl $tail)
+  let zeroRows := q(Eq.refl $tail)
   let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (k, i) rest => do
     have entry : Q($α) := (U.entries[i]!)[k]!
-    have kQ : Q(Nat) := mkNatLit k
+    have kQ : Q(Nat) := mkNatLitQ k
     mkAppM ``And.intro #[← certifier q($entry ≠ 0),
       ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $kQ (0 : $α))), rest]]
   have h : Q(IsPivotedList $cols $rows) := chain

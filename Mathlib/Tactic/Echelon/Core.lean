@@ -102,7 +102,7 @@ def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
 
 /-- An entry certifier proves a proposition about a single entry, throwing on a proposition
 it cannot prove. -/
-@[expose] def EntryCertifier := Expr → MetaM Expr
+abbrev EntryCertifier := Expr → MetaM Expr
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
