@@ -8,19 +8,316 @@ import Cache.Hashing
 import Cache.Infra
 import Lake.Load.Manifest
 
-/-!
-# Cache transfers
-
-The shared read mechanism under every workflow (`Cache.Workflow`): the URL
-contract of a file (`mkFileURL`), the `curl` transfer and its classification,
-the decompression pipeline, and the download rounds (`downloadFiles`,
-`getFiles`). It also holds the staging commands. Which rounds a read takes is
-the workflow's decision, not this module's.
--/
-
 namespace Cache.Requests
 
 open System (FilePath)
+
+/--
+Resolved repository identity for cache lookups.
+-/
+structure RepoInfo where
+  repo : String
+  deriving Repr, BEq
+
+/--
+Helper function to extract repository name from a git remote URL
+-/
+def extractRepoFromUrl (url : String) : Option String := do
+  let url := url.dropSuffix ".git"
+  let pos ← url.revFind? (· == '/')
+  let pos ← (url.sliceTo pos).revFind? (fun c => c == '/' || c == ':')
+  return url.sliceFrom (String.Slice.Pos.ofSliceTo pos).next! |>.copy
+
+/-- Spot check if a URL is valid for a git remote -/
+def isRemoteURL (url : String) : Bool :=
+  "https://".isPrefixOf url || "http://".isPrefixOf url || "git@github.com:".isPrefixOf url
+
+/--
+Helper function to get repository from a remote name
+-/
+def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO (Option String) := do
+  -- If the remote is already a valid URL, attempt to extract the repo from it. This happens with `gh pr checkout`
+  if isRemoteURL remoteName then
+    repoFromURL remoteName
+  else
+  -- If not, we use `git remote get-url` to find the URL of the remote. This assumes the remote has a
+  -- standard name like `origin` or `upstream` or it errors out.
+  let out ← IO.Process.output
+    {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
+  -- If `git remote get-url` fails then return none.
+  let output := out.stdout.trimAscii
+  unless out.exitCode == 0 do
+    IO.println s!"\
+      Warning: failed to run Git to determine Mathlib's repository from {remoteName} remote\n\
+      {errorContext}\n\
+      Continuing to fetch the cache from {MATHLIBREPO}."
+    return none
+  -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
+  repoFromURL output.copy
+where repoFromURL (url : String) : IO (Option String) := do
+    if let some repo := extractRepoFromUrl url then
+      return some repo
+    else
+      IO.println s!"\
+        Warning: Failed to extract repository from remote URL: {url}.\n\
+        {errorContext}\n\
+        Continuing to fetch the cache from {MATHLIBREPO}."
+      return none
+
+/--
+Finds the remote name that points to `leanprover-community/mathlib4` repository.
+Returns the remote name and prints warnings if the setup doesn't follow conventions.
+-/
+def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
+  let remotesInfo ← IO.Process.output
+    {cmd := "git", args := #["remote", "-v"], cwd := mathlibDepPath}
+
+  unless remotesInfo.exitCode == 0 do
+    throw <| IO.userError s!"\
+      Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
+      Ensure Git is installed.\n\
+      Stdout:\n{remotesInfo.stdout.trimAscii}\nStderr:\n{remotesInfo.stderr.trimAscii}\n"
+
+  let remoteLines := remotesInfo.stdout.splitToList (· == '\n')
+  let mut mathlibRemote : Option String := none
+  let mut originPointsToMathlib : Bool := false
+
+  for line in remoteLines do
+    let parts := line.trimAscii.copy.splitToList (· == '\t')
+    if parts.length >= 2 then
+      let remoteName := parts[0]!
+      let remoteUrl := parts[1]!.takeWhile (· != ' ') |>.copy -- Remove (fetch) or (push) suffix
+
+      -- Check if this remote points to leanprover-community/mathlib4
+      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
+
+      if isMathlibRepo then
+        if remoteName == "origin" then
+          originPointsToMathlib := true
+        mathlibRemote := some remoteName
+
+  match mathlibRemote with
+  | none =>
+    throw <| IO.userError "Could not find a remote pointing to leanprover-community/mathlib4"
+  | some remoteName =>
+    if remoteName != "upstream" then
+      let mut warning := s!"Some Mathlib ecosystem tools assume that the git remote for `leanprover-community/mathlib4` is named `upstream`. You have named it `{remoteName}` instead. We recommend changing the name to `upstream`."
+      if originPointsToMathlib then
+        warning := warning ++ " Moreover, `origin` should point to your own fork of the mathlib4 repository."
+      warning := warning ++ " You can set this up with `git remote add upstream https://github.com/leanprover-community/mathlib4.git`."
+      IO.println s!"Warning: {warning}"
+    return remoteName
+
+/--
+Extracts PR number from a git ref like "refs/remotes/upstream/pr/1234"
+-/
+def extractPRNumber (ref : String) : Option Nat := do
+  let parts := ref.splitToList (· == '/')
+  if parts.length >= 2 && parts[parts.length - 2]! == "pr" then
+    let prStr := parts[parts.length - 1]!
+    prStr.toNat?
+  else
+    none
+
+/-- Check if we're in a detached HEAD state at a nightly-testing tag -/
+def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
+  -- Get the current commit hash and check if it's a nightly-testing tag
+  let currentCommit ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+  if currentCommit.exitCode == 0 then
+    let commitHash := currentCommit.stdout.trimAscii.copy
+    let tagInfo ← IO.Process.output
+      {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
+    if tagInfo.exitCode == 0 then
+      let parts := tagInfo.stdout.trimAscii.copy.splitOn " "
+      -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash undefined" if no tag
+      if parts.length >= 2 && parts[1]!.startsWith "tags/" then
+        let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
+        return tagName.startsWith "nightly-testing-"
+      else
+        return false
+    else
+      return false
+  else
+    return false
+
+/--
+Inner implementation: may throw if git is unavailable or the directory has no
+git checkout. Callers should use `getRemoteRepo` instead.
+-/
+private def getRemoteRepoImpl (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+
+  -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
+  -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
+  -- branches. These should be covered if we ever change how the cache is uploaded from forks
+  -- to obviate the need for a PR.
+  let currentBranch ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
+
+  if currentBranch.exitCode == 0 then
+    let branchName := currentBranch.stdout.trimAscii.dropPrefix "heads/"
+    IO.println s!"Current branch: {branchName}"
+
+    -- Check if we're in a detached HEAD state at a nightly-testing tag
+    let isDetachedAtNightlyTesting ← if branchName == "HEAD".toSlice then
+      isDetachedAtNightlyTesting mathlibDepPath
+    else
+      pure false
+
+    -- Check if we're on a branch that should use nightly-testing remote
+    let shouldUseNightlyTesting := branchName == "nightly-testing".toSlice ||
+                                  branchName.startsWith "lean-pr-testing-" ||
+                                  branchName.startsWith "batteries-pr-testing-" ||
+                                  branchName.startsWith "bump/" ||
+                                  isDetachedAtNightlyTesting
+
+    if shouldUseNightlyTesting then
+      let repo := "leanprover-community/mathlib4-nightly-testing"
+      IO.println s!"Using cache from nightly-testing remote: {repo}"
+      return some {repo := repo}
+
+    -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
+    -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
+    --                       branchName.startsWith "nightly-testing"
+
+    -- TODO: this code is currently broken in two ways: 1. you need to write `%(refname)` in quotes and
+    -- 2. it is looking in the wrong place when in detached HEAD state.
+    -- We comment it out for now, but we should fix it later.
+    -- Check if the current commit coincides with any PR ref
+    -- if !isSpecialBranch then
+    --   let mathlibRemoteName ← findMathlibRemote mathlibDepPath
+    --   let currentCommit ← IO.Process.output
+    --     {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+    --
+    --   if currentCommit.exitCode == 0 then
+    --     let commit := currentCommit.stdout.trim
+    --     -- Get all PR refs that contain this commit
+    --     let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
+    --     let refsInfo ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+    --     -- The code below is for debugging purposes currently
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=%(refname)` returned:
+    --     {refsInfo.stdout.trim} with exit code {refsInfo.exitCode} and stderr: {refsInfo.stderr.trim}."
+    --     let refsInfo' ← IO.Process.output
+    --       {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=\"%(refname)\""], cwd := mathlibDepPath}
+    --     IO.println s!"`git for-each-ref --contains {commit} {prRefPattern} --format=\"%(refname)\"` returned:
+    --     {refsInfo'.stdout.trim} with exit code {refsInfo'.exitCode} and stderr: {refsInfo'.stderr.trim}."
+    --
+    --     if refsInfo.exitCode == 0 && !refsInfo.stdout.trim.isEmpty then
+    --       let prRefs := refsInfo.stdout.trim.split (· == '\n')
+    --       -- Extract PR numbers from refs like "refs/remotes/upstream/pr/1234"
+    --       for prRef in prRefs do
+    --         if let some prNumber := extractPRNumber prRef then
+    --           -- Get PR details using gh
+    --           let prInfo ← IO.Process.output
+    --             {cmd := "gh", args := #["pr", "view", toString prNumber, "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
+    --           if prInfo.exitCode == 0 then
+    --             if let .ok json := Lean.Json.parse prInfo.stdout.trim then
+    --               if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
+    --                 if let .ok login := owner.getObjValAs? String "login" then
+    --                   if let .ok repoName := json.getObjValAs? String "headRefName" then
+    --                     if let .ok prNum := json.getObjValAs? Nat "number" then
+    --                       let repo := s!"{login}/mathlib4"
+    --                       IO.println s!"Using cache from PR #{prNum} source: {login}/{repoName} (commit {commit.take 8} found in PR ref)"
+    --                       let useFirst := if login != "leanprover-community" then true else false
+    --                       return {repo := repo, useFirst := useFirst}
+
+  -- Fall back to using the remote that the current branch is tracking
+  let trackingRemote ← IO.Process.output
+    {cmd := "git", args := #["config", "--get", s!"branch.{currentBranch.stdout.trimAscii}.remote"], cwd := mathlibDepPath}
+
+  let remoteName := if trackingRemote.exitCode == 0 then
+    trackingRemote.stdout.trimAscii.copy
+  else
+    -- If no tracking remote is configured, fall back to origin
+    "origin"
+
+  let repo? ← getRepoFromRemote mathlibDepPath remoteName
+    s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
+  match repo? with
+  | some repo =>
+    IO.println s!"Using cache from {remoteName}: {repo?}"
+    return some {repo := repo}
+  | none =>
+    IO.println s!"Using cache from {MATHLIBREPO}."
+    return none
+
+/--
+Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
+If the current commit coincides with a PR ref, it will determine the source fork
+of that PR rather than just using the origin remote.
+
+Returns `none` if git is unavailable, the path is not inside a git checkout, or
+the remote cannot be resolved. This is the expected outcome when `cache get` is
+invoked on a dependency that was fetched as an archive rather than a git clone;
+callers fall back to `MATHLIBREPO` and the master container.
+-/
+def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
+  try
+    return (← getRemoteRepoImpl mathlibDepPath)
+  catch _ =>
+    return none
+
+/--
+The repo a read in a project that depends on Mathlib resolves to, given what
+the dependency checkout's git remote reports.
+
+Only a canonical detection is honored: a project whose mathlib dependency is
+the nightly-testing repo (or is pinned to a `nightly-testing-*` tag, which
+the probe also reports as that repo) reads the nightly cache, because its
+artifacts exist nowhere else. Everything else — a fork remote, or no
+detection at all — resolves to `MATHLIBREPO`, so a dependency checkout's
+remote can never steer a downstream read into a fork's artifacts. An explicit
+`--repo=` is the opt-in for that; `resolveRepo` applies it before this
+function is consulted.
+-/
+def resolveDownstreamRepo (detected? : Option String) : String :=
+  match detected? with
+  | some repo => if isCanonicalRepo repo then repo else MATHLIBREPO
+  | none => MATHLIBREPO
+
+/--
+Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
+
+Returns `(detectedRepo?, resolvedRepo)`:
+* `detectedRepo?` is what the git remote reports (`none` if it can't be
+  determined); the warning path compares it against an explicit `--repo=` to
+  tell whether the user is overriding the checkout's repo.
+* `resolvedRepo` is what the read path uses. An explicit `--repo=` wins. On a
+  mathlib checkout (`isMathlibRoot`, canonical or fork) the detection is next,
+  then `MATHLIBREPO`. In a project that depends on Mathlib the detection goes
+  through `resolveDownstreamRepo`: only a canonical repo is honored, so a fork
+  remote on the dependency checkout cannot take the read off the public cache.
+
+`getRemoteRepo` shells out to git and prints branch/remote diagnostics;
+resolving here lets the read path and the warning share a single probe keyed
+on `mathlibDepPath`.
+-/
+def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) (isMathlibRoot : Bool) :
+    IO (Option String × String) := do
+  let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
+  if let some repo := repo? then
+    return (detected?, repo)
+  if isMathlibRoot then
+    return (detected?, detected?.getD MATHLIBREPO)
+  let resolved := resolveDownstreamRepo detected?
+  -- The probe above prints "Using cache from ...: {detected}"; correct the
+  -- record when the downstream resolution discards that detection.
+  if detected?.isSome && detected? != some resolved then
+    IO.println s!"Dependency checkout points at {detected?.get!}; a project \
+      using Mathlib reads the {resolved} cache (pass --repo to override)."
+  return (detected?, resolved)
+
+/--
+Resolve a git ref (HEAD, branch name, tag, short SHA, full SHA) to a full
+commit SHA via `git rev-parse`. Errors propagate if the ref is unknown.
+-/
+def resolveGitRef (ref : String) (cwd : FilePath := ".") : IO String := do
+  let out ← IO.Process.output {cmd := "git", args := #["rev-parse", ref], cwd := cwd}
+  unless out.exitCode == 0 do
+    throw <| IO.userError
+      s!"git rev-parse {ref} failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
+  pure out.stdout.trimAscii.toString
 
 /--
 `curl` flags that let a cache read follow a redirect, so a read base may answer

@@ -97,7 +97,7 @@ ENVIRONMENT VARIABLES
 /-- The roots the module arguments of `p` name, `Mathlib` when there are none,
 and the hash memo over them. -/
 def hashMemoFor (p : Parsed) : CacheM (Std.HashMap Lean.Name FilePath × HashMemo) := do
-  let mut roots ← parseModuleSpecs (p.variableArgsAs! String).toList
+  let mut roots ← parseArgs (p.variableArgsAs! String).toList
   if roots.isEmpty then
     -- TODO: could change this to the default-target of a downstream project
     let mod := `Mathlib

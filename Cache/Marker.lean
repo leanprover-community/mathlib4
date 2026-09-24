@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Infra
+import Cache.Requests
 
 /-!
 # Per-SHA cache markers
@@ -38,9 +38,9 @@ def markerPath (repo sha : String) : String :=
   s!"{markerDirPath repo}/{sha}"
 
 /--
-Read-side URL for the per-SHA marker blob under the read URL of its container
-(`containerURL`): probes follow the reader's host, unlike marker writes, which
-follow the resolved upload destination (`StagedUploadDest.markerURL`).
+Read-side URL for the per-SHA marker blob: probes follow the read URL of the
+container (`containerURL`), unlike marker writes, which follow the resolved
+upload destination (`StagedUploadDest.markerURL`).
 -/
 def markerReadURL (containerURL repo sha : String) : String :=
   s!"{containerURL}/{markerPath repo sha}"

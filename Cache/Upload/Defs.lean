@@ -17,12 +17,12 @@ The backend-neutral layer over the backend modules:
   in `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`: credentials,
   destination, transfer tool, and the transfer;
 * the one destination resolution every upload addresses
-  (`stagedUploadDestFrom`): the `--container` write, under the container's
-  Azure base or the root `MATHLIB_CACHE_PUT_URL` names. The destination contract
+  (`stagedUploadDestFrom`): the `--container` write, under the container's Azure
+  base or the root `MATHLIB_CACHE_PUT_URL` names. The destination contract
   itself (`StagedUploadDest`) lives in `Cache/Upload/Dest.lean`.
 
-`Cache/Upload.lean` decides the upload and runs the complete `put`,
-dispatching to the selected backend. The marker path contract and write mechanics live in
+`Cache/Upload.lean` runs the complete `put`, dispatching to the selected
+backend. The marker path contract and write mechanics live in
 `Cache/Marker.lean`. The read side (`Cache/Requests.lean`) shares the path
 contract through `fileDirPath` and `markerDirPath` (`Cache/Infra.lean`), so
 every upload addresses the URLs the readers probe.
@@ -34,8 +34,8 @@ open System (FilePath)
 
 /-- The storage backend an upload targets, selected with `--backend=NAME`.
 Each backend implements the complete upload in its own module: credential
-resolution, transfer tool, and the transfer. `uploadFiles` dispatches on this
-type. -/
+resolution, destination, transfer tool, and the transfer. `uploadFiles`
+dispatches on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`); the default. -/
   | azure

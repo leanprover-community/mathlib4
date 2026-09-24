@@ -649,14 +649,15 @@ where
     pure leanModulesInFolder
 
 /--
-The modules the command-line arguments `specs` name, each a module name or a
-file path (see `leanModulesFromSpec`). An argument that names nothing is an
-error, exit 1.
+Parse command line arguments.
+`args` excludes the command (`get`, `clean`, etc.).
+
+The remaining arguments are parsed as either module name or file path, see `leanModulesFromSpec`.
 -/
-def parseModuleSpecs (specs : List String) : CacheM <| Std.HashMap Name FilePath := do
-  specs.foldlM (init := ∅) fun acc (spec : String) => do
+def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
+  args.foldlM (init := ∅) fun acc (arg : String) => do
     let sp := (← read).srcSearchPath
-    match (← leanModulesFromSpec sp spec) with
+    match (← leanModulesFromSpec sp arg) with
     | .ok mods =>
       pure <| acc.insertMany mods
     | .error msg =>

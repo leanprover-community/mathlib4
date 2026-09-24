@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Requests
 import Cache.Upload.Dest
 
 /-!
@@ -33,17 +32,17 @@ def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
 /-- Formats the curl config file that lists the files to upload: each staged
-file goes to its `StagedUploadDest.fileURL` under `dest`. The response body
-goes to the null device: stdout must carry only the per-transfer JSON reports
-that `monitorCurl` parses. -/
+file goes to its `StagedUploadDest.fileURL`, and `Upload.decide` resolves
+the destination once. The response body goes to the null device: stdout must
+carry only the per-transfer JSON reports that `monitorCurl` parses. -/
 def mkPutConfigContent (dest : StagedUploadDest) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
     s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
       -o {IO.nullDevice}"
   "\n".intercalate l
 
-/-- Calls `curl` to send a set of files to the destination (see `Upload.dest`),
-signed per request with `signArgs`. Exits with
+/-- Calls `curl` to send a set of files to the already-resolved destination
+(see `Upload.decide`), signed per request with `signArgs`. Exits with
 code 1 when any file fails to upload. -/
 def putFilesViaCurl
     (dest : StagedUploadDest) (files : Array FilePath) (tempConfigFilePath : FilePath)

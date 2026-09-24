@@ -54,13 +54,13 @@ dispatch routes the uploads of that class to:
 
 The public-cache workflow touches no container chain, no per-commit scope,
 and no marker. Only the `forks` container has per-commit namespaces, so only
-its round reads at a scope. The nightly chain includes `forks` because PRs
-from that repo into mathlib4 upload there. It excludes `pr-toolchain-tests`,
-so a poisoned upload from an experimental toolchain branch cannot reach a
-trusted nightly consumer.
+its round reads at a scope. The nightly chain includes `forks`
+because PRs from that repo into mathlib4 upload there; it excludes
+`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
+branch cannot reach a trusted nightly consumer.
 
-Branches that need to read their own earlier low-trust uploads opt into a
-wider chain explicitly.
+Branches that legitimately need to read their own prior low-trust uploads opt
+into a wider chain explicitly.
 
 The resolved repo is the checkout's git remote, or `--repo=`. In a project
 that depends on Mathlib, only a canonical detection counts, so such a project
@@ -170,8 +170,7 @@ The trust model does not attempt to defend against:
   `https://r2devcache.mathlib.org`, or a host named by
   `MATHLIB_CACHE_GET_URL` or `MATHLIB_CACHE_BASE_URL`.
 - **Substituted write endpoint** — the cache does not verify the host it uploads
-  to: whichever host `MATHLIB_CACHE_PUT_URL` names receives the upload, and on
-  the azure backend the bearer token with it.
+  to: whichever host `MATHLIB_CACHE_PUT_URL` names receives the upload, and on the azure backend the bearer token with it.
   The trusted branch's workflow defines the upload job's environment, and a
   token captured this way stays bounded by Layer 1.
 - **Sandbox escape via kernel vulnerability** — invalidates Layer 3.
@@ -187,7 +186,7 @@ The trust model does not attempt to defend against:
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
 | Container model, layouts, read base rule       | [`Cache/Infra.lean`](Infra.lean) (`Container`, `fileDirPath`, `readBase`) |
-| Repo resolution                                | [`Cache/Repo.lean`](Repo.lean) (`resolveRepo`, `resolveDownstreamRepo`) |
+| Repo resolution                                | [`Cache/Requests.lean`](Requests.lean) (`resolveRepo`, `resolveDownstreamRepo`) |
 | The command line: commands and their flags     | [`Cache/Commands.lean`](Commands.lean), [`Cache/Cli.lean`](Cli.lean) (`CommonFlag`) |
 | The environment a command reads                | [`Cache/Env.lean`](Env.lean) (`Settings`) |
 | Read options (chain, scope, flat endpoint)     | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`ChainOptions`), [`Cache/Scope.lean`](Scope.lean) (`Scope`), [`Cache/Cli.lean`](Cli.lean) (`Scope.parse`), [`Cache/Workflow/Defs.lean`](Workflow/Defs.lean) (`ReadContext`) |

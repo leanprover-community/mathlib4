@@ -39,7 +39,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `clean`         | Delete non-linked files                                             |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
-| `query`         | Find the most recent commit of the branch that CI has cached (developer-cache workflow) |
+| `query`         | Find the most recent commit with cached entries on the current branch |
 
 
 ### Operating an external cache
@@ -55,17 +55,14 @@ A custom cache can rely on the staging commands:
 | `unstage`   | Copy `*.ltar` files from `--staging-dir` into the local cache        |
 | `unstage!`  | Same, overwriting files that already exist in the local cache        |
 
-To operate an external cache:
-
-1. Run `stage` to produce the artifact set. `stage` writes the `.ltar` files
-   flat into the staging directory.
-2. Upload the contents of the staging directory under an `f/` prefix with any
-   storage client.
-3. Point readers at the endpoint with `MATHLIB_CACHE_GET_URL`. A reader with
-   this variable set takes the
-   [public-cache workflow](./WORKFLOWS.md#the-public-cache-workflow) whatever
-   repository its checkout names, and `get` requests
-   `{endpoint}/f/{hash}.ltar`.
+To operate an external cache, run `stage` to produce the artifact set, upload
+it under an `f/` prefix with any storage client, and point readers at the
+endpoint with `MATHLIB_CACHE_GET_URL`. `get` requests
+`{endpoint}/f/{hash}.ltar`; `stage` writes the `.ltar` files flat into the
+staging directory, so the upload adds the `f/` segment. A reader with
+`MATHLIB_CACHE_GET_URL` set takes the
+[public-cache workflow](./WORKFLOWS.md#the-public-cache-workflow) whatever
+repository its checkout names.
 
 Example:
 
@@ -89,24 +86,21 @@ The `get`, `get!`, `get-`, and `lookup` commands accept:
 
 When arguments are provided, only the specified files and their transitive imports are downloaded.
 
-### Flags
+### Options
 
-Each command declares its flags; `lake exe cache <command> --help` lists them.
-Flags follow the command: `lake exe cache get --repo=OWNER/REPO`. The tool
-rejects a flag before the command, a flag the command does not declare, and a
-flag of another workflow.
+Options follow the command: `lake exe cache get --repo=OWNER/REPO`.
+`lake exe cache <command> --help` lists the options of each command.
 
-| Flag                | Description                                                                                |
+| Option              | Description                                                                                |
 |---------------------|--------------------------------------------------------------------------------------------|
-| `--repo=OWNER/REPO` | For `get`/`get!`/`get-`/`query`: the repository whose cache to read (e.g., `--repo=leanprover-community/mathlib4`). Selects the workflow. |
-| `--cache-from=LIST` | For `get`/`get!`/`get-` under the developer-cache and nightly workflows: the trust-ordered, comma-separated list of containers to read, replacing the workflow's chain (see [Trust-ordered containers](./WORKFLOWS.md#trust-ordered-containers)). |
-| `--scope=REF`       | For `get`/`get!`/`get-` under the developer-cache and nightly workflows: the commit whose `forks` namespace to read, as any git ref (see [`query`](./WORKFLOWS.md#finding-cached-commits-with-query)). |
-| `--unsafe`          | For `get`/`get!`/`get-` under the developer-cache workflow: find the most recent cached fork commits of the branch and read them (see [Unsafe automatic scope walk](./WORKFLOWS.md#unsafe-automatic-scope-walk)). |
-| `--unsafe-window=N` | The number of cached fork commits `--unsafe` tries (default `1`). Implies `--unsafe`. |
-| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. Required. |
+| `--repo=OWNER/REPO` | Override the repository to fetch cache from (e.g., `--repo=leanprover-community/mathlib4`). It selects the [workflow](#workflows). |
+| `--cache-from=LIST` | For `get`/`get!`/`get-`: trust-ordered, comma-separated list of containers to read from. Overrides the workflow's chain (see [Trust-ordered containers](./WORKFLOWS.md#trust-ordered-containers)). |
+| `--scope=REF`       | For `get`/`get!`/`get-`: read from the SHA-scoped namespace for the given git ref (anything `git rev-parse` accepts: `HEAD`, branch, tag, SHA). Use the SHA reported by `cache query`. Triggers the non-default-scope security notice. |
+| `--unsafe`          | For `get`/`get!`/`get-`: instead of pinning one `--scope`, automatically walk this branch's history and read the `forks` container at the most recent cached fork commit (newest first if `--unsafe-window` allows more than one), until the cache is satisfied (see [Unsafe automatic scope walk](./WORKFLOWS.md#unsafe-automatic-scope-walk)). Mutually exclusive with `--scope`; always triggers the security notice. |
+| `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
+| `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
-The public-cache workflow has no flags of its own; the others are listed per
-workflow in [`WORKFLOWS.md`](./WORKFLOWS.md#which-workflow-runs).
+Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
 
 ## Workflows
 
@@ -131,22 +125,13 @@ prints a security notice when you do.
 
 The nightly workflow serves the nightly-testing repository.
 
-## Environment Variables
+## Public cache endpoint
 
-| Variable                         | Description                        | Default                                         |
-|----------------------------------|------------------------------------|-------------------------------------------------|
-| `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
-| `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
-| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
+`cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
 
-An empty value means unset. The variables of the chain read
-(`MATHLIB_CACHE_FROM`, `MATHLIB_CACHE_REPO_SCOPE`) are listed in
-[`WORKFLOWS.md`](./WORKFLOWS.md#environment-variables); the upload variables
-are internal to mathlib CI, see [`CI.md`](./CI.md).
+### Troubleshooting
 
-## Troubleshooting
-
-The cache endpoints have been available since September 2026. `MATHLIB_CACHE_DEBUG_USE_LEGACY` makes the client read every container from the Azure storage account instead of the cache endpoints. Use it for troubleshooting:
+The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
 
 ```bash
 # bash, zsh, Git Bash
@@ -162,6 +147,18 @@ lake exe cache get
 
 The variable is intended as a troubleshooting fallback and it might be retired at any time.
 
+## Environment Variables
+
+| Variable                         | Description                        | Default                                         |
+|----------------------------------|------------------------------------|-------------------------------------------------|
+| `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
+| `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
+| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
+
+An empty value means unset. The variables of the chain read
+(`MATHLIB_CACHE_FROM`, `MATHLIB_CACHE_REPO_SCOPE`) are listed in
+[`WORKFLOWS.md`](./WORKFLOWS.md#environment-variables). The upload variables
+are internal to mathlib CI; see [`CI.md`](./CI.md).
 
 ## How It Works
 
@@ -212,8 +209,8 @@ The cache covers these packages:
 
 ## Tests
 
-The cache tool's pure logic (container URL construction, the workflow
-decision, the command line) is covered by a standalone test exe:
+The cache tool's pure logic (container URL construction, the workflow decision,
+CLI parsing) is covered by a standalone test exe:
 
 ```bash
 lake exe cache-test

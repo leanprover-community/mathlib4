@@ -42,10 +42,10 @@ structure Read where
 `true` iff `scope` equals the checked-out HEAD of `cwd`.
 
 A HEAD scope only serves artifacts built from the commit already checked out,
-and an unscoped chain read reads it anyway: the forks round defaults to the
-HEAD namespace (see `Cache.Workflow.Chain.rounds`). An explicit HEAD scope
-(CI's `MATHLIB_CACHE_REPO_SCOPE`, set to the build SHA on every fork build)
-pins the default behavior and warrants no warning.
+and it is what an unscoped chain read reads anyway — the forks round defaults
+to the HEAD namespace (see `Cache.Workflow.Chain.rounds`). So an explicit HEAD scope
+(e.g. CI's `MATHLIB_CACHE_REPO_SCOPE`, set to the build SHA on every fork
+build) just pins the default behavior and warrants no warning.
 
 `false` when HEAD cannot be determined.
 -/
@@ -101,9 +101,15 @@ def reason? (r : Read) : IO (Option String) := do
   | none, _ => pure ()
   return none
 
-/-- Print the notice to stderr: what the user is trusting, for which
-repository, and the reason. -/
-def printWarning (repo : String) (triggerReason : String) : IO Unit := do
+/--
+Print a prominent security warning to stderr when reading at a non-default scope.
+
+The warning includes:
+- A clear statement that the user is trusting artifacts at a non-default scope
+- The scope details (container, repo, SHA as applicable)
+- Why the warning is being issued (which condition triggered it)
+-/
+def printNonDefaultScopeWarning (repo : String) (triggerReason : String) : IO Unit := do
   let lines : List String := [
     "=================================================================",
     "SECURITY: reading cache at a non-default scope",
@@ -120,11 +126,12 @@ def printWarning (repo : String) (triggerReason : String) : IO Unit := do
     IO.eprintln line
 
 /--
-Print the notice when it applies, before a chain read for `repo`. The notice
-is informational: it prints and returns, so CI runs are unaffected.
+Print the non-default-scope warning when it applies, before a chain read for
+`repo`. The warning is informational only — it never prompts, so it stays safe
+to run in CI.
 -/
 def emit (r : Read) (repo : String) : IO Unit := do
   if let some reason ← reason? r then
-    printWarning repo reason
+    printNonDefaultScopeWarning repo reason
 
 end Cache.Workflow.Notice

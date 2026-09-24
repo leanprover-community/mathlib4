@@ -9,14 +9,11 @@ import Cache.Env
 /-!
 # Cache backend infrastructure
 
-The multi-container model: the trust-classified containers, their layouts,
-and the read base rule, together with the GitHub repo names the cache tool
-dispatches on.
+The multi-container model — trust-classified Azure containers — together with
+the GitHub repo names the cache tool dispatches on.
 
 This lives apart from `Cache.Requests` so the container model stands on its
-own, independent of the HTTP/curl machinery that consumes it. Which
-containers a read tries, and from which host, is the workflow's decision
-(`Cache.Workflow`).
+own, independent of the HTTP/curl machinery that consumes it.
 -/
 
 namespace Cache.Requests
@@ -46,15 +43,11 @@ uploads and downloads always meet at the same path.
 def normalizeRepo (repo : String) : String := repo.toLower
 
 /--
-Trust-classified storage containers for the Mathlib cache.
+Trust-classified Azure storage containers for the Mathlib cache.
 
-A container is a logical namespace in the URL contract `/{container}/{key}`,
-not a particular storage technology: each host that serves the contract
-resolves it to its own backend. The Azure Blob Storage account
-(`lakecache`) serves the same namespaces as its own containers, which is what
-the legacy switch addresses directly. A CI job at a given trust level may
-write only to its corresponding container, and a chain read tries the most
-trusted container first.
+Each variant maps to one Azure Blob Storage container on the `lakecache` storage
+account. A CI job at a given trust level may write only to its corresponding
+container, and `cache get` always tries the most trusted container first.
 -/
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
@@ -83,11 +76,14 @@ def name : Container → String
 def all : List Container :=
   [.master, .forks, .nightlyTesting, .prToolchainTests]
 
-/-- Parse a short name back into a `Container`: the inverse of `name` over
-`all`, so the three stay in agreement by construction. Matching is
-case-insensitive. -/
+/-- Parse a short name back into a `Container`. Matching is case-insensitive. -/
 def parse? (s : String) : Option Container :=
-  all.find? (·.name == s.toLower)
+  match s.toLower with
+  | "master"             => some .master
+  | "forks"              => some .forks
+  | "nightly-testing"    => some .nightlyTesting
+  | "pr-toolchain-tests" => some .prToolchainTests
+  | _                    => none
 
 /--
 The container's segment in the URL contract: read URLs are
@@ -129,7 +125,7 @@ def flatPath : Container → Bool
 Whether the container holds per-commit namespaces, `/f/{repo}/{sha}/...`,
 which a scope addresses. Only `forks` does: each fork PR build uploads under
 its head commit, so one commit's artifacts never serve another commit on the
-same fork (see `SECURITY.md`). A read of the other containers is unscoped.
+same fork (see `SECURITY.md`).
 -/
 def perCommit : Container → Bool
   | .forks => true
@@ -157,28 +153,31 @@ def fileDirPath (container : Option Container) (repo : String)
     | none => s!"f/{repo}"
 
 /--
-The public Mathlib cache endpoint, the cache resolver. It serves the
-`/{container}/{key}` namespace of every container and caches artifacts at its
-edge, so reads cost the project less and land nearer the reader.
+The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
+namespace as the storage account and caches artifacts at its edge, so reads
+cost the project less and land nearer the reader.
 -/
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-The read base of a workflow whose own host is `endpoint`:
-`MATHLIB_CACHE_BASE_URL` (`baseEnv?`) when set, else the Azure storage account
-when `useLegacy` (`MATHLIB_CACHE_DEBUG_USE_LEGACY`, a troubleshooting
-fallback) is set, else `endpoint`. `normalizeBaseURL` reads the
-variable, so it arrives trimmed, free of trailing slashes, and unset when
-empty.
+Base URL for cache reads of a workflow whose own host is `endpoint`:
+`MATHLIB_CACHE_BASE_URL` (`baseEnv?`) if set, otherwise the Azure storage
+account when `useLegacy` is set, otherwise `endpoint`. `normalizeBaseURL`
+reads the value, so it arrives trimmed, free of trailing slashes, and unset
+when empty.
 
-A read URL is `{base}/{pathSegment}/{key}`, the one namespace shape every host
-serves, so a host that mirrors the whole namespace is a valid base for every
-container, and the Azure account holds every container. This override differs
-from `MATHLIB_CACHE_GET_URL`. That variable serves external consumers: it
-names one flat endpoint and bypasses the container lookup chain.
-`MATHLIB_CACHE_BASE_URL` serves mathlib's own consumers, that is, CI and
-contributors to the repository. It keeps the lookup chain and rebases each
-container read under the given host.
+`useLegacy` comes from `MATHLIB_CACHE_DEBUG_USE_LEGACY`. The variable is a
+troubleshooting fallback for the transition to the public endpoint, enabled in
+September 2026, and it should be retired together with direct reads from the
+storage account.
+
+A read URL is `{base}/{pathSegment}/{key}`, the namespace the Azure
+account serves. Any host that mirrors that namespace is therefore a valid base.
+This override differs from `MATHLIB_CACHE_GET_URL`. That variable serves
+external consumers: it names one flat endpoint and bypasses the container
+lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
+CI and contributors to the mathlib4 repository. It keeps the lookup chain and
+rebases each container read under the given host.
 
 Only reads follow this base. Uploads and marker writes go under the
 container's root, the Azure account or `MATHLIB_CACHE_PUT_URL`

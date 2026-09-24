@@ -43,8 +43,7 @@ is the developer bucket, which the developer workflow reads directly.
 `MATHLIB_CACHE_BASE_URL` and `MATHLIB_CACHE_DEBUG_USE_LEGACY` replace every
 host of this table (see [Environment variables](#environment-variables)).
 
-The containers are logical namespaces in the URL contract
-`/{container}/{key}`. Only the `forks` container has per-commit namespaces:
+Only the `forks` container has per-commit namespaces:
 a fork upload lands under the commit it was built from, and a read of `forks`
 addresses one commit's namespace.
 
@@ -124,7 +123,11 @@ with the marker that `query` probes. `query` finds the fork's cached commits.
 
 ### Trust-ordered containers
 
-The developer-cache and nightly workflows resolve a file by trying their
+The cache is split across multiple containers, logical namespaces in the URL
+contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
+`master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
+
+The developer-cache and nightly workflows resolve a file by trying a default
 chain of containers in order:
 
 | Workflow        | Container order tried        |
@@ -136,11 +139,10 @@ Each container is read from the host its workflow names (see the table
 above). Only the `forks` round reads at a scope; the other containers are read
 unscoped. The public-cache workflow has no chain.
 
-`--cache-from=LIST` replaces the chain with a trust-ordered, comma-separated
-list of containers. Container names: `master`, `forks`, `nightly-testing`,
-`pr-toolchain-tests`. On the canonical repository the flag selects
-the developer-cache workflow. A chain that differs from the workflow's own
-prints the [security notice](#security-notice-non-default-scope).
+Override the read chain with `--cache-from=LIST`. On the canonical repository
+the flag selects the developer-cache workflow. A chain that differs from the
+workflow's own prints the
+[security warning](#security-warning-non-default-scope).
 
 ```bash
 # Read only from the master container
@@ -150,17 +152,18 @@ lake exe cache get --cache-from=master
 lake exe cache get --cache-from=master,forks
 ```
 
-### Finding cached commits with `query`
+### Finding Cached Commits with `query`
 
-`lake exe cache query` finds the most recent commit of a fork branch that CI
-has cached. Use it when CI has not built the checked-out commit: the cache of
-an earlier commit of the branch serves most of the files.
+For branches with per-commit SHA scoping (e.g., fork PRs), you can use
+`lake exe cache query` to discover which recent commits on your branch have
+cached entries. This is useful when your current branch has diverged from
+upstream and you want to avoid waiting for CI to build everything.
 
 ```bash
 # Find the most recent cached commit on the current branch
 lake exe cache query
 
-# Example output (on a fork checkout; the canonical repositories have no
+# Example output (on a fork checkout; the canonical repos have no
 # per-commit namespace and `query` says so instead):
 # Most recent cached commit on this branch for fork alice/mathlib4: 5a3c7e9a...
 #
@@ -168,22 +171,19 @@ lake exe cache query
 #   lake exe cache get --scope=5a3c7e9a...
 ```
 
-`query` walks the first-parent history back from `HEAD` to the merge base
-with `master`, at most 50 commits. Without a local `master`, it walks 50
-commits. For each commit it probes the completeness
-marker in the `forks` container. An upload writes the marker after all of its
-files, so a marker means that the upload of that commit is complete. `query`
-prints the SHA and does not apply it; pass it to `cache get --scope=`.
-
-By default `query` targets the cwd's git remote; `--repo=` overrides it. In a
-project that depends on Mathlib, `query` asks for `--repo=`, because the
-project's own commits name no mathlib fork.
+The `query` command walks your git log backwards from `HEAD`, stopping at the
+merge base with `master` or a hard cap of 50 commits (whichever comes first),
+and probes each commit for a completed SHA-scoped upload in the `forks`
+container. That signal is written by `cache put` only after a successful
+upload, so its presence is a reliable "this commit was cached" signal. `query`
+prints the SHA to stdout (and does not auto-apply it) — you manually copy the
+result into your `cache get` command if desired.
 
 ### Boolean probe on a single commit
 
 `lake exe cache query <REF>` checks a specific commit and exits with 0 (cached)
-or 1 (not cached). The ref can be `HEAD`, a branch name, a tag, or a SHA,
-anything `git rev-parse` accepts.
+or 1 (not cached). The ref can be `HEAD`, a branch name, a tag, or a SHA — anything
+`git rev-parse` accepts.
 
 ```bash
 # Is the current checkout's HEAD cached?
@@ -194,27 +194,35 @@ lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
 # prints "cached: 5a3c7e9a..." (exit 0) or "not cached: 5a3c7e9a..." (exit 1)
 ```
 
+By default `query` (both modes) targets the cwd's git remote — pass `--repo=`
+to override. In a project that depends on Mathlib, `query` asks for `--repo=`,
+because the project's own commits name no mathlib fork.
+
 ### Unsafe automatic scope walk
 
-`cache get --unsafe` runs the `query` walk itself and reads the `forks`
-container at the cached commits it finds. By default it reads the most recent
-one. `--unsafe-window=N` reads the `N` most recent, newest first; each round
-requests only the files that the earlier rounds did not serve.
+`cache get --unsafe` folds the `query` discovery into the download itself: rather
+than asking you to copy one SHA into `--scope=`, it walks your branch history
+(`HEAD` back to the merge base with `master`) for commits that have a cached fork
+build and reads the `forks` container at their scope. By
+default it uses just the single most recent such commit; `--unsafe-window=N`
+widens this to the `N` most recent, tried newest first with files fetched in one
+round dropped from the next.
 
 ```bash
 lake exe cache get --unsafe             # use the most recent cached fork commit
 lake exe cache get --unsafe-window=10   # try the 10 most recent (implies --unsafe)
 ```
 
-`master` comes first in the chain and serves the bulk of every fork's files
-by hash. Only the `forks` round expands, into one round per commit found. When
-the walk finds no cached fork commit, `--unsafe` reads the `forks` namespace of
-the checked-out commit, as a plain `get` does.
+The trust-ordered container chain is unchanged: `master` is still tried first and
+serves the bulk of every fork's files by hash; only the `forks` round is expanded
+into one round per discovered SHA. If no cached fork commit is found in range,
+`--unsafe` falls back to a plain read, which reads the `forks` namespace of the
+checked-out commit.
 
-`--unsafe` trusts the artifacts of every commit it tries, so it always prints
-the [security notice](#security-notice-non-default-scope). It is mutually
-exclusive with `--scope=`, which pins exactly one commit. The nightly workflow
-rejects it.
+`--unsafe` trusts the artifacts of *every* commit it tries, so it always prints
+the [non-default-scope security notice](#security-warning-non-default-scope). It
+is mutually exclusive with `--scope=` (which pins exactly one commit). The
+nightly workflow rejects it.
 
 ### Missing files
 
@@ -244,24 +252,23 @@ CI uploads the repository's builds to `nightly-testing` or
 so on the nightly-testing repository it answers that there is nothing to
 query.
 
-## Security notice: non-default scope
+## Security Warning: Non-Default Scope
 
-A chain read (the developer-cache and nightly workflows) prints a security
-notice to stderr when it leaves the workflow's default trust boundary. The
-notice names the first of these conditions that holds:
+When a chain read (the developer-cache and nightly workflows) reads cache
+artifacts at a non-default scope, the cache tool prints a security warning to
+stderr. This happens when:
 
-1. `--unsafe` is passed: the tool walks history and trusts the artifacts of
-   whichever recent fork commits it finds cached.
-2. `--scope=` or `MATHLIB_CACHE_REPO_SCOPE` names a commit other than HEAD:
-   the read uses that commit's namespace instead of the one for the commit
-   you have.
-3. `--cache-from` differs from the workflow's chain: the read uses other
-   containers, or another order.
-4. `--repo` differs from the detected git remote, or names a fork when no git
-   remote is detected: the read uses the cache of a repository other than
-   your checkout's.
+1. **`--unsafe` is passed** — you are letting the tool walk history and trust the
+   artifacts of whichever recent fork commit(s) it finds cached.
+2. **`--scope=` is passed** — you are reading from a specific commit's
+   namespace instead of the workflow's default trust chain.
+3. **`--cache-from` widens the read chain** — you are explicitly telling the tool
+   to trust containers beyond the workflow's chain.
+4. **`--repo` overrides the detected git remote** — you are reading cache for a
+   different repository than your cwd's git remote, or naming a fork when no git
+   remote is detected.
 
-Example notice:
+Example warning:
 
 ```
 =================================================================
@@ -276,9 +283,9 @@ Reason: --scope=5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e (explicit per-commit sc
 =================================================================
 ```
 
-The notice is informational: it prints and the read continues, so CI runs
-are unaffected. CI's own settings, `MATHLIB_CACHE_FROM` and a
-`MATHLIB_CACHE_REPO_SCOPE` equal to HEAD, trigger no notice.
+This warning is always printed — it cannot be suppressed with `--quiet`. The
+warning is purely informational; it does not prompt for confirmation (so it
+doesn't interfere with CI).
 
 ## Environment variables
 

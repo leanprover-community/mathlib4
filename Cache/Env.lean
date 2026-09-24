@@ -5,15 +5,14 @@ Authors: Marcelo Lynch
 -/
 
 /-!
-# The cache tool's environment
+# Cache environment variable parsing
 
-The variables that decide what a command does, read once per command
-(`Settings.read`), and the rules that parse their values: an empty or
+Helpers for reading the cache tool's environment variables: an empty or
 whitespace-only value means unset, a base URL also loses its trailing slashes,
-and a boolean flag accepts `1`/`true` and `0`/`false`. The layers above take a
-`Settings` value and read no decision variable themselves. The credentials,
-the transfer-tool knobs, and the local cache directory are read where they are
-used (`Cache.Upload`, `Cache.IO`).
+and a boolean flag accepts `1`/`true` and `0`/`false`.
+
+`Settings` holds the variables that decide what a command does, read once per
+command (`Settings.read`).
 -/
 
 namespace Cache

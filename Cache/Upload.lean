@@ -8,18 +8,14 @@ import Cache.Upload.Defs
 import Cache.Scope
 
 /-!
-# The upload
+# The upload operation
 
-An upload writes a staged set of `.ltar` files into one container, which
-`--container` names, and `put` decides the destination before it transfers
-anything, as `get` decides its workflow (`Upload.decide`). The container
-decides the layout under its root (`stagedUploadDestFrom`): flat for
-`master`, repo-namespaced for the others, and with a per-commit scope the
-fork's namespace in `forks`, followed by the marker `cache query` probes. The
-root is the container on the Azure storage account, or the URL
-`MATHLIB_CACHE_PUT_URL` names. `uploadFiles` runs the transfer on the
-selected backend (`azurePutStaged` in `Cache/Upload/Azure.lean`,
-`s3PutStaged` in `Cache/Upload/S3.lean`).
+`Upload.decide` and `uploadFiles` implement the complete `put` from the command
+inputs. The routing is the backend: the shared arbitration resolves the
+destination (`stagedUploadDestFrom`, through `Upload.decide`), and the selected
+backend resolves its credentials and transfer tool and runs the transfer
+(`azurePutStaged` in `Cache/Upload/Azure.lean`, `s3PutStaged` in
+`Cache/Upload/S3.lean`).
 
 The whole upload path is internal to mathlib CI: the commands, the backends,
 and their credential and destination variables follow the CI storage layout.
@@ -68,12 +64,13 @@ def decide (o : Options) : Except String Upload := do
 end Upload
 
 /--
-The complete `put` operation: resolve the backend's credentials, then upload
-the `.ltar` files `getFileNames` produces under `srcDir` to `u.dest` on the
-selected backend. The resolutions run before `getFileNames`, so a
-misconfiguration fails before `put`'s expensive packing pass. A scoped upload
-writes the per-SHA marker after the files: it lets `cache query` discover
-cached commits with a cheap HEAD probe.
+The complete `put` operation, for the decided upload `u`: resolve the
+backend's credentials, then upload the `.ltar` files `getFileNames` produces
+under `srcDir` to `u.dest` on the selected backend. The resolutions run before
+`getFileNames`, so a misconfiguration fails before `put`'s expensive packing
+pass. The per-SHA marker is written when the upload has a scope, from
+`--scope` or `MATHLIB_CACHE_REPO_SCOPE`: it lets `cache query` discover cached
+commits with a cheap HEAD probe.
 -/
 def uploadFiles [Monad m] [MonadLiftT IO m] (u : Upload) (backend : UploadBackend)
     (srcDir : FilePath) (getFileNames : m (Array String)) (overwrite : Bool) : m Unit := do

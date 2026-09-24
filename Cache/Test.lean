@@ -12,14 +12,8 @@ import Cache.Lean
 
 These tests cover the pure logic of the cache system, including:
 - Container model (trust levels, URL shapes, Azure integration)
-- The public/developer cache split: the read hosts of each workflow
-  (`Public.url`, `Developer.readURL`, `Nightly.readURL`), the read options
-  (`Scope`, `ChainOptions`), the workflow decision (`Workflow.forRead`), and
-  the upload (`Upload`)
-- The container-chain read the developer and nightly workflows share
-  (`Chain.resolve`, `Chain.withURLs`, `Chain.rounds`) and the public-cache
-  workflow's one URL (`Public.url`)
-- The trust-ordered chains of the developer and nightly workflows
+- The read workflows: the decision (`Workflow.forRead`), the read hosts, and
+  the trust-ordered chains; the upload decision (`Upload.decide`)
 - URL construction (`mkFileURL`) with support for per-SHA scoping
 - CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
 - `--unsafe` download-round expansion (`Chain.rounds`) and the
@@ -40,8 +34,8 @@ leantar run on a nonexistent archive; none makes a network request.
 ## Invariants these tests defend
 
 1. Trust boundary per container: each container has a dedicated writer (OIDC +
-   Azure RBAC) and reads follow the workflow's trust-ordered chain, so a PR
-   cannot upload to a higher-trust container.
+   Azure RBAC) and reads follow a per-workflow trust-ordered list, so a PR cannot
+   upload to a higher-trust container.
 2. Per-SHA namespace for fork uploads: fork uploads land at `/f/{repo}/{sha}/{hash}`,
    so one commit's artifacts never serve another commit on the same fork.
 3. Flat layout for single-writer containers: `master` reads and writes flat at
@@ -115,7 +109,7 @@ private def withSuppressedOutput (action : IO α) : IO α := do
 
 section ContainerModel
 
-/-- The short name is the string used on the CLI (in `--cache-from=LIST`) and to
+/-- The short name is the string used on the CLI (`--container=NAME`) and to
 derive the Azure container name. These names are part of the public CLI
 contract, so they are pinned here: a rename must be a deliberate edit to this
 test, not an accident. -/
@@ -136,9 +130,9 @@ def test_Container_parse : IO Unit := do
   assertTrue "pr-toolchain-tests parses"
     (Container.parse? "pr-toolchain-tests" == some .prToolchainTests)
   assertTrue "the retired legacy name is rejected" (Container.parse? "legacy" == none)
-  -- Matching is case-insensitive, so `--cache-from=Master` canonicalizes too.
+  -- Matching is case-insensitive, so `--container=Master` canonicalizes too.
   assertTrue "case-insensitive"       (Container.parse? "Master" == some .master)
-  -- An unknown name returns `none` so `--cache-from=bogus` errors out rather than
+  -- An unknown name returns `none` so `--container=bogus` errors out rather than
   -- defaulting to some container the user didn't ask for.
   assertTrue "unknown rejected"       (Container.parse? "bogus" == none)
   assertTrue "empty rejected"         (Container.parse? "" == none)
@@ -543,6 +537,29 @@ end ExtractRepoFromUrl
 
 section ExtractPRNumber
 
+/-- Extracts a PR number from a git ref. The contract is "second-to-last
+segment must be `pr`, last must be a Nat". -/
+def test_extractPRNumber : IO Unit := do
+  IO.println "extractPRNumber:"
+  -- The shape git produces for fetched PR refs.
+  assertTrue "standard PR ref format"
+    (extractPRNumber "refs/remotes/upstream/pr/1234" == some 1234)
+  -- Branch refs are not PR refs; must not match.
+  assertTrue "master branch returns none"
+    (extractPRNumber "refs/heads/master" == none)
+  -- Minimal `pr/N` is also accepted — the parser only inspects the trailing two segments.
+  assertTrue "simple pr number"
+    (extractPRNumber "pr/42" == some 42)
+  -- The tail must be a valid Nat; non-numeric tails are rejected (no partial parsing).
+  assertTrue "non-numeric tail returns none"
+    (extractPRNumber "refs/remotes/upstream/pr/foo" == none)
+  -- `0` is a valid Nat; pin down that it isn't special-cased.
+  assertTrue "zero PR number"
+    (extractPRNumber "refs/remotes/upstream/pr/0" == some 0)
+  -- A numeric tail without the `pr/` parent must not be mistaken for a PR ref.
+  assertTrue "missing pr segment returns none"
+    (extractPRNumber "refs/remotes/upstream/42" == none)
+
 end ExtractPRNumber
 
 section HashFromFileName
@@ -673,28 +690,29 @@ end RoundTrip
 
 section Marker
 
-/-- URL shape for the per-SHA marker a scoped upload to `forks` writes
-(`StagedUploadDest.markerURL`, on `containerUploadDest`) and `cache query` probes with
-a HEAD request. The marker lives at `/m/{repo}/{sha}` under the URL; a 200
-HEAD response signals that all artifacts for the commit were uploaded. -/
+/-- URL shape for the per-SHA marker blob `cache put` writes
+(`StagedUploadDest.markerURL`, on the destination `stagedUploadDestFrom`
+resolves) and `cache query` probes with a HEAD request. The marker lives at
+`/m/{repo}/{sha}` under the base; a 200 HEAD response signals that all
+artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "StagedUploadDest.markerURL:"
-  let markerURL (url : String) : String :=
-    (containerUploadDest url .forks "alice/mathlib4" (some "abc123")).markerURL "abc123"
-  assertEq "forks marker URL under the Azure forks container"
+  let dest (backend : UploadBackend) (container? : Option Container)
+      (putURL? : Option String) : String :=
+    ((stagedUploadDestFrom backend putURL? container? "alice/mathlib4"
+      none).toOption.map (·.markerURL "abc123")).getD "(unresolved)"
+  assertEq "forks marker URL under the Azure base"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
-    (markerURL Container.forks.azureURL)
-  assertEq "the marker write meets the marker probe on the Azure account"
-    s!"{Container.forks.azureURL}/{markerPath "alice/mathlib4" "abc123"}"
-    (markerURL Container.forks.azureURL)
+    (dest .azure (some .forks) none)
   -- The marker lives under `/m/`, its own namespace, and is keyed by repo.
   assertEq "marker is under /m/, keyed by repo"
     "m/leanprover-community/mathlib4/deadbeef"
     (markerPath MATHLIBREPO "deadbeef")
-  -- The marker follows the URL with the artifacts it marks.
-  assertEq "marker URL follows the upload URL"
+  -- `MATHLIB_CACHE_PUT_URL` moves the marker with the artifacts it marks: one
+  -- container root feeds both (see `stagedUploadDestFrom`).
+  assertEq "marker URL follows the container root the put URL names"
     "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
-    (markerURL "https://bucket.example.org/mirror/mathlib4-forks")
+    (dest .s3 (some .forks) (some "https://bucket.example.org/mirror/mathlib4-forks"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
@@ -763,7 +781,7 @@ workflow's default trust boundary:
    non-canonical repo with no detectable remote to compare against;
 4. `--unsafe` is set.
 
-The behavior the tests pin most carefully: a plain `cache get` with no options
+The behavior the tests pin most carefully: a plain `cache get` with no flags
 never warns, even on a fork checkout whose remote isn't the canonical repo.
 `detectedRepo?` is passed in (resolved once by `resolveRepo`), so the cases are
 deterministic without needing a real checkout. -/
@@ -774,7 +792,7 @@ def test_Notice_applies : IO Unit := do
   let applies (r : Notice.Read) (detected? : Option String := none) : IO Bool :=
     return (← withSuppressedOutput (Notice.reason? { r with detectedRepo? := detected? })).isSome
 
-  assertTrue "plain get with no options does not warn" (!(← applies base))
+  assertTrue "plain get with no flags does not warn" (!(← applies base))
   assertTrue "a set scope warns" (← applies { base with scope? := some ⟨"abc123", .flag⟩ })
   assertTrue "a scope from the environment warns too"
     (← applies { base with scope? := some ⟨"abc123", .env⟩ })
@@ -875,16 +893,16 @@ def test_Notice_reason : IO Unit := do
 /-- `findMostRecentSHAWithCache` returns the first candidate SHA whose per-SHA
 marker exists in the `forks` container, used by `cache query` to find the most
 recent cached build on the branch. The non-empty cases hit the network (a marker
-HEAD probe per SHA) and are left to CI. An empty list returns `none` without
-a probe. -/
+HEAD probe per SHA) and aren't unit-tested; here we pin that an empty list
+returns `none` with no probe. -/
 def test_findMostRecentSHAWithCache : IO Unit := do
   IO.println "findMostRecentSHAWithCache:"
   let result ← withSuppressedOutput (Developer.findMostRecentSHAWithCache "" [] MATHLIBREPO)
   assertTrue "empty SHA list returns none without probing" (result == none)
 
 /-- `findRecentSHAsWithCache` collects up to `limit` marked SHAs. The non-empty
-cases hit the network (a marker HEAD probe per SHA) and are left to CI. An
-empty candidate list returns `[]` for any limit, without a probe. -/
+cases hit the network (a marker HEAD probe per SHA); here we pin that an empty
+candidate list returns `[]` for any limit, with no probe. -/
 def test_findRecentSHAsWithCache : IO Unit := do
   IO.println "findRecentSHAsWithCache:"
   let result ← withSuppressedOutput (Developer.findRecentSHAsWithCache "" [] MATHLIBREPO 5)
@@ -896,10 +914,10 @@ end NonDefaultScope
 
 section GitFallback
 
-/-- `getRemoteRepo` and `resolveRepo` return `none` instead of throwing,
-whatever git's availability or the state of the target path. This matters
-for `cache get` invoked inside a Lake dependency update, where the Mathlib
-dependency may be a plain archive without a `.git` directory.
+/-- `getRemoteRepo` and `resolveRepo` must never throw, regardless of git's
+availability or the state of the target path. This matters for `cache get`
+invoked inside a Lake dependency update, where the Mathlib dependency may be a
+plain archive without a `.git` directory.
 
 Two distinct failure modes are tested:
 
@@ -908,11 +926,11 @@ Two distinct failure modes are tested:
   catch the exception and return `none`.
 
 * **Non-git directory** — git runs successfully but the path is not a repo, so
-  every git command exits non-zero. The exit-code checks handle this path, and
-  `getRemoteRepo` returns `none`.
+  every git command exits non-zero. The existing exit-code checks already handle
+  this path; the test pins that `none` is returned here too.
 
-In both cases `resolveRepo` falls back to `MATHLIBREPO`, which selects the
-public-cache workflow, the read a dependency build takes. -/
+In both cases `resolveRepo` must fall back to `MATHLIBREPO`, which selects the
+public-cache workflow — exactly what a dependency build should read from. -/
 def test_getRemoteRepo_gitFallback : IO Unit := do
   IO.println "getRemoteRepo git fallback:"
   -- Case 1: nonexistent cwd causes IO.Process.output to throw.
@@ -922,7 +940,7 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
   assertTrue "getRemoteRepo returns none when git throws (nonexistent cwd)" (r1 == none)
 
   -- Case 2: existing directory that is not a git repo (git returns exit 128).
-  -- This exercises the exit-code checks.
+  -- This exercises the exit-code fallback path that predates the try...catch.
   let r2 ← withSuppressedOutput (getRemoteRepo "/tmp")
   assertTrue "getRemoteRepo returns none in a non-git directory" (r2 == none)
 
@@ -1814,6 +1832,7 @@ def runAll : IO Unit := do
   test_mkFileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
+  test_extractPRNumber
   test_hashFromFileName
   test_tempFileNames
   test_isRemoteURL
@@ -1843,6 +1862,7 @@ def runAll : IO Unit := do
   test_s3RegionFrom
   test_isValidScope
   test_fileDirPath
+  test_stagedUploadDestFrom
   test_s3CurlArgs
   test_s3UploadToolFrom
   test_s3EndpointSplit

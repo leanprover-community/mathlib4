@@ -50,12 +50,6 @@ public endpoint, both under the read base rule (`Container.readURL`). -/
 def readURL (s : Settings) (c : Container) : String :=
   c.readURL s (if c == .forks then developerCacheEndpoint else publicCacheEndpoint)
 
-/--
-The default number of marked fork commits `cache get --unsafe` tries as
-scopes: 1, the latest cached SHA. `--unsafe-window=N` overrides it.
--/
-def defaultUnsafeWindow : Nat := 1
-
 /-- `--unsafe`: the automatic walk over cached fork commits. -/
 def unsafeFlag : Cli.Flag := .paramless
   (longName := "unsafe")
@@ -68,7 +62,7 @@ def unsafeFlag : Cli.Flag := .paramless
 def unsafeWindowFlag : Cli.Flag := {
   longName := "unsafe-window"
   description := s!"The number of cached fork commits --unsafe tries (default \
-    {defaultUnsafeWindow}). Implies --unsafe."
+    {defaultUnsafeSHAWindow}). Implies --unsafe."
   type := Nat }
 
 /-- The flags of the workflow. -/
@@ -101,7 +95,7 @@ def parseOptions (p : Cli.Parsed) (s : Settings := {}) (cwd : FilePath := ".") :
       let n := f.as! Nat
       if n == 0 then fail "--unsafe-window must be a positive integer"
       pure (some n)
-    | none => pure (if p.hasFlag unsafeFlag.longName then some defaultUnsafeWindow else none)
+    | none => pure (if p.hasFlag unsafeFlag.longName then some defaultUnsafeSHAWindow else none)
   if unsafeWindow?.isSome && p.hasFlag Scope.flag.longName then
     fail "--unsafe and --scope are mutually exclusive: --unsafe walks several commit \
       scopes automatically, while --scope pins exactly one."
@@ -179,11 +173,12 @@ def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM 
   warnMissing result missingHints
 
 /--
-Resolve the repo `cache query` asks about.
+Resolve the repo to use for a `cache query` invocation.
 
 Precedence: the explicit `--repo=` flag (if passed) > the cwd's git remote
-> `MATHLIBREPO`. The git remote is the default because the typical user asks
-what is cached for their own commits, not for canonical mathlib's.
+> `MATHLIBREPO`. Defaulting to the git remote is intentional for `query` —
+the typical user is asking "what's cached for *my* commits", not for
+canonical mathlib's commits.
 
 In a project that depends on Mathlib (`isMathlibRoot` is false), the cwd is
 that project's own checkout, whose remote and commits name no mathlib fork;
@@ -200,7 +195,7 @@ def resolveQueryRepo (repoExplicit? : Option String) (isMathlibRoot : Bool) : IO
         project's own commits name none. Run it from a mathlib checkout, or pass \
         --repo=OWNER/REPO to name the fork to query."
     match ← getRemoteRepo "." with
-    | some repo => pure repo
+    | some info => pure info.repo
     | none => pure MATHLIBREPO
 
 /--

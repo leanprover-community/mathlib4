@@ -5,7 +5,7 @@ Authors: Marcelo Lynch
 -/
 
 import Cli
-import Cache.Repo
+import Cache.Requests
 import Cache.Scope
 import Cache.Upload.Defs
 
