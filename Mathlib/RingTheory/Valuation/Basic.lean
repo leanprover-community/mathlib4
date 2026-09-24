@@ -1358,7 +1358,7 @@ def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ
 /-- The `Valuation` associated to a `AddValuation`.
 -/
 def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
-  AddValuation.toValuation.trans <| congr <|
+  AddValuation.toValuation.trans <| congr
     { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
       invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
       map_mul' := fun _x _y ↦ rfl

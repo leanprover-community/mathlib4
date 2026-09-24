@@ -171,7 +171,7 @@ theorem comap_generateFrom {f : α → β} {s : Set (Set β)} :
     (generateFrom s).comap f = generateFrom (preimage f '' s) :=
   le_antisymm
     (comap_le_iff_le_map.2 <|
-      generateFrom_le fun _t hts => GenerateMeasurable.basic _ <| mem_image_of_mem _ <| hts)
+      generateFrom_le fun _t hts => GenerateMeasurable.basic _ <| mem_image_of_mem _ hts)
     (generateFrom_le fun _t ⟨u, hu, Eq⟩ => Eq ▸ ⟨u, GenerateMeasurable.basic _ hu, rfl⟩)
 
 end MeasurableSpace

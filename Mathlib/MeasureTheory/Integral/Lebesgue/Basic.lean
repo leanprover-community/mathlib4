@@ -67,7 +67,7 @@ notation3"∫⁻ "(...)" in "s", "r:60:(scoped f => lintegral (Measure.restrict 
 theorem SimpleFunc.lintegral_eq_lintegral {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) :
     ∫⁻ a, f a ∂μ = f.lintegral μ := by
   rw [MeasureTheory.lintegral]
-  exact le_antisymm (iSup₂_le fun g hg => lintegral_mono hg <| le_rfl)
+  exact le_antisymm (iSup₂_le fun g hg => lintegral_mono hg le_rfl)
     (le_iSup₂_of_le f le_rfl le_rfl)
 
 @[gcongr, mono]
@@ -273,7 +273,7 @@ lemma setLIntegral_le_iSup_mul (f : α → ℝ≥0∞) {s : Set α} (hs : Measur
   _ = (⨆ x ∈ s, f x) * μ s := by simp
 
 theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ :=
-  le_antisymm (lintegral_mono_ae <| h.le) (lintegral_mono_ae <| h.symm.le)
+  le_antisymm (lintegral_mono_ae h.le) (lintegral_mono_ae h.symm.le)
 
 theorem lintegral_congr {f g : α → ℝ≥0∞} (h : ∀ a, f a = g a) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
   simp only [h]
@@ -548,7 +548,7 @@ theorem setLIntegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : �
 
 @[to_fun lintegral_indicator_fun_one_le]
 theorem lintegral_indicator_one_le (s : Set α) : ∫⁻ a, s.indicator 1 a ∂μ ≤ μ s :=
-  (lintegral_indicator_const_le _ _).trans <| (one_mul _).le
+  (lintegral_indicator_const_le _ _).trans (one_mul _).le
 
 @[to_fun (attr := simp) lintegral_indicator_fun_one₀]
 theorem lintegral_indicator_one₀ {s : Set α} (hs : NullMeasurableSet s μ) :

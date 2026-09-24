@@ -204,7 +204,7 @@ theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
 theorem starProjection_orthogonal_val (u : E) :
     Kᗮ.starProjection u = u - K.starProjection u :=
   eq_starProjection_of_mem_orthogonal' (sub_starProjection_mem_orthogonal _)
-    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) <| (sub_add_cancel _ _).symm
+    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) (sub_add_cancel _ _).symm
 
 theorem orthogonalProjectionOnto_orthogonal (u : E) :
     Kᗮ.orthogonalProjectionOnto u =
