@@ -355,13 +355,6 @@ abbrev CayleyGraph : Type _ := SchreierCosetGraph ι (⊥ : Subgroup M)
 abbrev CayleyGraph.labelling : CayleyGraph ι ⥤q SingleObj S :=
   SchreierCosetGraph.labelling ι (⊥ : Subgroup M)
 
-/-- In a Cayley graph, the targets of edges from a vertex `g` are exactly the vertices
-of the form `ι s • g` for generators `s : S`. -/
-lemma cayleyGraph_star_eq (g : CayleyGraph ι) :
-    {h : CayleyGraph ι | Nonempty (g ⟶ h)} = {h | ∃ s : S, ι s • g = h} := by
-  ext h
-  exact nonempty_subtype
-
 /-- The set of neighbors (targets of edges) from a vertex in a Cayley graph is the orbit of
 that vertex under the generators `ι s`. -/
 lemma cayleyGraph_neighborSet_eq (g : CayleyGraph ι) :
