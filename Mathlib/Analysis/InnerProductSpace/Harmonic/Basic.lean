@@ -179,10 +179,10 @@ theorem HarmonicOnNhd.const_smul (h : HarmonicOnNhd f s) :
 /--
 Translations preserve harmonicity at a point.
 -/
-theorem HarmonicAt.comp_add_iff {k : E} :
+theorem harmonicAt_comp_add_iff {k : E} :
     HarmonicAt (fun y ↦ f (y + k)) x ↔ HarmonicAt f (x + k) := by
-  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨ContDiffAt_comp_add_iff.mp h₁, ?_⟩,
-    fun ⟨h₁, h₂⟩ ↦ ⟨ContDiffAt_comp_add_iff.mpr h₁, ?_⟩⟩
+  refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_iff.mp h₁, ?_⟩,
+    fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_iff.mpr h₁, ?_⟩⟩
   · have h₂' : (fun y ↦ Δ (fun z ↦ f (z + k)) y) =ᶠ[𝓝 x] (fun y ↦ Δ f (y + k)) := by
       filter_upwards with y
       exact laplacian_comp_add
@@ -195,14 +195,14 @@ theorem HarmonicAt.comp_add_iff {k : E} :
     exact h ▸ h₂.comp_tendsto (hcont.tendsto x)
 
 /--
-Translations preserve harmonicity on a neighborhood.
+Translations preserve harmonicity on a set.
 -/
-theorem HarmonicOnNhd.comp_add_iff {k : E} :
+theorem harmonicOnNhd_comp_add_iff {k : E} :
     HarmonicOnNhd (fun y ↦ f (y + k)) s ↔ HarmonicOnNhd f {t | t - k ∈ s} := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · specialize h (x - k) hx
-    rwa [HarmonicAt.comp_add_iff, sub_add_cancel] at h
-  · exact HarmonicAt.comp_add_iff.mpr (h (x + k) (by simpa))
+    rwa [harmonicAt_comp_add_iff, sub_add_cancel] at h
+  · exact harmonicAt_comp_add_iff.mpr (h (x + k) (by simpa))
 
 /-!
 ## Compatibility with Linear Maps
