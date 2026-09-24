@@ -606,7 +606,7 @@ alias lt_power_cof := lt_power_cof_ord
 theorem lt_cof_ord_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : 1 < b) : a < (b ^ a).ord.cof := by
   apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a hb.ne_bot)
   rw [← power_mul, mul_eq_self ha]
-  exact lt_power_cof_ord (ha.trans <| (cantor' _ hb).le)
+  exact lt_power_cof_ord (ha.trans (cantor' _ hb).le)
 
 @[deprecated (since := "2026-03-30")]
 alias lt_cof_power := lt_cof_ord_power

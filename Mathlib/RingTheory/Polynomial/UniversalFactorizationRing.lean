@@ -145,7 +145,7 @@ def universalFactorizationMap (hn : n = m + k) :
 lemma universalFactorizationMap_freeMonic :
     (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
       (freeMonic R m).map (algebraMap _ _) *
-        (freeMonic R k).map (toRingHom <| Algebra.TensorProduct.includeRight) := by
+        (freeMonic R k).map (toRingHom Algebra.TensorProduct.includeRight) := by
   change (mapEquivMonic _ _ _ (universalFactorizationMap R n m k hn)).1 = _
   simp [universalFactorizationMap]
   rfl
