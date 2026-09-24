@@ -274,33 +274,32 @@ set_option backward.isDefEq.respectTransparency false in
 complex `linearHomComplex R K L` in degree `m`. -/
 @[simps, implicit_reducible]
 noncomputable def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m + 1 = p) :
-    ((linearHomComplex R K L).sc' n m p).LeftHomologyData := by
-  exact {
-    K := ModuleCat.of R (Cocycle K L m)
-    H := ModuleCat.of R (CohomologyClass K L m)
-    i := ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L m)
-    π := ModuleCat.ofHom (CohomologyClass.mkLinearMap R K L m)
-    wi := by cat_disch
-    hi := Cocycle.isKernel' R K L _ _ hp
-    wπ := by
-      dsimp
-      ext x
-      dsimp
-      rw [CohomologyClass.mk_eq_zero_iff]
-      refine ⟨n, hm, x, ?_⟩
-      rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
-    hπ :=
-      isColimitOfReflects (forget₂ _ AddCommGrpCat) (by
-        refine (CokernelCofork.isColimitMapCoconeEquiv ..).2
-          ((IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
-            (leftHomologyData' K L n m p hm hp).hπ')
-        · refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ (by simp)
-          ext (x : Cochain K L n)
-          dsimp
-          ext : 1
-          rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp x,
-            dsimp% leftHomologyData'_f'_apply_coe K L n m p hm hp x]
-        · exact Cofork.ext (Iso.refl _)) }
+    ((linearHomComplex R K L).sc' n m p).LeftHomologyData where
+  K := ModuleCat.of R (Cocycle K L m)
+  H := ModuleCat.of R (CohomologyClass K L m)
+  i := ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L m)
+  π := ModuleCat.ofHom (CohomologyClass.mkLinearMap R K L m)
+  wi := by cat_disch
+  hi := Cocycle.isKernel' R K L _ _ hp
+  wπ := by
+    dsimp
+    ext x
+    dsimp
+    rw [CohomologyClass.mk_eq_zero_iff]
+    refine ⟨n, hm, x, ?_⟩
+    rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
+  hπ :=
+    isColimitOfReflects (forget₂ _ AddCommGrpCat) (by
+      refine (CokernelCofork.isColimitMapCoconeEquiv ..).2
+        ((IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1
+          (leftHomologyData' K L n m p hm hp).hπ')
+      · refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ (by simp)
+        ext (x : Cochain K L n)
+        dsimp
+        ext : 1
+        rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp x,
+          dsimp% leftHomologyData'_f'_apply_coe K L n m p hm hp x]
+      · exact Cofork.ext (Iso.refl _))
 
 /-- `CohomologyClass K L m` identifies to the cohomology of the
 complex `linearHomComplex R K L` in degree `m`. -/
