@@ -100,8 +100,9 @@ that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- An entry certifier proves a proposition about a single entry, throwing on a proposition
-it cannot prove. -/
+/-- An entry certifier proves the scalar obligations of a certificate, an equation between a sum
+of products of entries and a recorded entry, or the nonzero-ness of an entry. It throws on a
+proposition it cannot prove. -/
 abbrev EntryCertifier := Expr → MetaM Expr
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
@@ -185,8 +186,8 @@ structure Model (V : Type) where
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Expr
-  /-- The entry certifier, or `none` to close the conditions by kernel evaluation (`decide` on the
-  entries, `Eq.refl` on the product). -/
+  /-- The entry certifier, or `none` to leave the conditions to the kernel (`decide` on the entry
+  conditions, definitional unfolding of the product against the recorded entries). -/
   entryCertifier? : Option EntryCertifier := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/

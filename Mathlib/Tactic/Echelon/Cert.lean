@@ -156,9 +156,9 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing 
   return mkExpectedPropHint pf
     q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
 
-/-- The certificates of a decomposition with the terms they are stated on. Every intermediate
-certificate is kept, beyond the part `Echelon.Decomposition` exposes, so downstream tactics need
-not rebuild them. -/
+/-- The certificates of a decomposition with the terms they are stated on. It keeps the echelon
+form `U` and the product equation stated on it, which `Echelon.Decomposition` transports away, so
+a downstream tactic can read `U` without rebuilding the certificate. -/
 structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
   /-- The transformation matrix. -/
