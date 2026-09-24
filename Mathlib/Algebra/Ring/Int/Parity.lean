@@ -32,6 +32,8 @@ lemma odd_iff : Odd n ↔ n % 2 = 1 where
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
 
+lemma not_two_dvd_iff_odd : ¬ 2 ∣ n ↔ Odd n := by grind
+
 @[simp] lemma not_odd_zero : ¬Odd (0 : ℤ) := by grind
 
 @[simp, grind =] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by grind
