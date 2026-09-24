@@ -48,8 +48,8 @@ theorem birkhoffAverage_ae_eq_of_ae_eq (R : Type*) [DivisionSemiring R] [Module 
 end MeasureTheory.QuasiMeasurePreserving
 
 @[deprecated (since := "2026-09-23")]
-alias MeasureTheory.Measure.QuasiMeasurePreserving.birkhoffSum_ae_eq_of_ae_eq :=
+protected alias MeasureTheory.Measure.QuasiMeasurePreserving.birkhoffSum_ae_eq_of_ae_eq :=
   MeasureTheory.QuasiMeasurePreserving.birkhoffSum_ae_eq_of_ae_eq
 @[deprecated (since := "2026-09-23")]
-alias MeasureTheory.Measure.QuasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq :=
+protected alias MeasureTheory.Measure.QuasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq :=
   MeasureTheory.QuasiMeasurePreserving.birkhoffAverage_ae_eq_of_ae_eq
