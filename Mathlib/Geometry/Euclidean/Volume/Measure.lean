@@ -8,6 +8,8 @@ module
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+
+import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
@@ -44,7 +46,7 @@ TODO: show the scaling factor equals to the ratio between the volume of `d`-dime
 Hausdorff measure, measure, metric measure, volume, area
 -/
 
-open MeasureTheory Measure Module
+open MeasureTheory Measure Module AffineSubspace
 
 public section
 
@@ -217,10 +219,23 @@ open EuclideanGeometry
 ### `μHE[d]` is preserved through subspace inclusion
 -/
 
-omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
-theorem AffineSubspace.euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
+namespace AffineSubspace
+omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+
+theorem euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
     (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
   isometry_subtype_coe.euclideanHausdorffMeasure_image _
+
+theorem euclideanHausdorffMeasure_preimage_coe (d : ℕ) {s : AffineSubspace ℝ P} {t : Set P} :
+    μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] (t ∩ s) := by
+  rw [isometry_subtype_coe.euclideanHausdorffMeasure_preimage, Subtype.range_coe]
+
+theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSubspace ℝ P}
+    {t : Set P} (ht : t ⊆ s) :
+    μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] t := by
+  rw [euclideanHausdorffMeasure_preimage_coe, Set.inter_eq_left.mpr ht]
+
+end AffineSubspace
 
 /-!
 ### `μHE[d]` is translation invariant
@@ -254,7 +269,7 @@ side is not with L²-norm, this is not an isometry.
 -/
 noncomputable def Submodule.measurableEquivProd (s : Submodule ℝ V) (p : P) : P ≃ᵐ s × sᗮ :=
   (IsometryEquiv.vaddConst p).toHomeomorph.toMeasurableEquiv.symm.trans <|
-  s.orthogonalDecomposition.toHomeomorph.toMeasurableEquiv.trans <|
+  s.orthogonalDecomposition.toHomeomorph.toMeasurableEquiv.trans
   (MeasurableEquiv.toLp 2 _).symm
 
 @[simp]
@@ -344,3 +359,29 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
   have hx (x : ℝ) : x • v +ᵥ p = g x := by rfl
   simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx,
     hm, lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']
+
+omit [FiniteDimensional ℝ V] in
+/-- An alternative version of `EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral` that allows
+the ambient space to have a dimension larger than the measure dimension. It still requires the set
+to be contained in a subspace of the measure dimension. -/
+theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral_of_subset (p : P) {v : V}
+    (hv : v ≠ 0) {t : Set P} (ht : MeasurableSet t) {s : AffineSubspace ℝ P} (hvs : v ∈ s.direction)
+    (hts : t ⊆ s) [FiniteDimensional ℝ s.direction] :
+    μHE[finrank ℝ s.direction] t =
+      ‖v‖ₑ * ∫⁻ (x : ℝ), μHE[finrank ℝ s.direction - 1] (t ∩ mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) := by
+  have : Nonempty s := (s.nonempty_iff_ne_bot.mpr fun h ↦ hv (by simpa [h] using hvs)).to_subtype
+  let v' : s.direction := ⟨v, hvs⟩
+  rw [← s.euclideanHausdorffMeasure_preimage_coe_of_subset _ hts,
+    euclideanHausdorffMeasure_eq_lintegral (orthogonalProjection s p)
+      (show v' ≠ 0 by simpa [v'] using hv) (ht.preimage measurable_subtype_coe)]
+  congrm ‖v'‖ₑ * ∫⁻ (x : ℝ), ?_
+  suffices mk' (x • v' +ᵥ orthogonalProjection s p) (ℝ ∙ v')ᗮ =
+      comap s.subtype (mk' (x • v +ᵥ p) (ℝ ∙ v)ᗮ) from by
+    simp [this, ← Set.preimage_inter,
+      s.euclideanHausdorffMeasure_preimage_coe_of_subset _ (Set.inter_subset_left.trans hts)]
+  rw [comap_subtype_mk' s _
+    (Submodule.orthogonal_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hvs))]
+  congr 1
+  · exact (orthogonalProjection_vadd s (x • v') p).symm
+  · ext w
+    simp [Submodule.mem_orthogonal_singleton_iff_inner_right, v']

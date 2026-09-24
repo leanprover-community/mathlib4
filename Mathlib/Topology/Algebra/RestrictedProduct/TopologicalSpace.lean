@@ -184,7 +184,7 @@ variable {S : Set ι}
 theorem topologicalSpace_eq_of_principal :
     topologicalSpace R A (𝓟 S) =
       .induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance :=
-  le_antisymm (continuous_iff_le_induced.mp continuous_coe) <|
+  le_antisymm (continuous_iff_le_induced.mp continuous_coe)
     (le_iSup₂_of_le S le_rfl <| by rw [inclusion_eq_id R A (𝓟 S), @coinduced_id])
 
 theorem topologicalSpace_eq_of_top :

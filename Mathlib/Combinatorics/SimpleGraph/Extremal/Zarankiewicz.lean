@@ -145,7 +145,7 @@ theorem two_mul_extremalNumber_le_zarankiewicz_symm
   apply Finset.le_sup_of_le (b := G.bipartiteDoubleCover)
   · simp_rw [mem_filter, mem_univ, true_and]
     refine ⟨bipartiteDoubleCover_le, ?_⟩
-    contrapose! h
+    contrapose h
     refine completeBipartiteGraph_isContained_bipartiteDoubleCover.mp <|
       h.trans' ⟨Iso.toCopy ?_⟩
     exact completeBipartiteGraphCongr

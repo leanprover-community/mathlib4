@@ -266,10 +266,8 @@ theorem coe_sum_linearMap {ι : Type*} (t : Finset ι) (f : ι → Derivation R 
   _root_.map_sum coeAddMonoidHom f t
 
 instance : IsZeroApply (Derivation R A M) A M where
-  zero_apply := by simp
 
 instance : IsAddApply (Derivation R A M) A M where
-  add_apply := by simp
 
 end Scalar
 
