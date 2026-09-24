@@ -83,7 +83,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
 
-@[deprecated factorizationEquiv_symm_apply_coe (since := "2026-03-18")]
+@[deprecated factorizationEquiv_symm_apply_coe +typeChanged (since := "2026-03-18")]
 theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
     (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod (· ^ ·) :=
   factorizationEquiv_symm_apply_coe ⟨f, hf⟩
