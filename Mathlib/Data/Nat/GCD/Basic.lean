@@ -225,7 +225,7 @@ theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0
     m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 :=
   (Nat.mul_eq_zero.mp hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
     let eq := hn ▸ h.symm
-    ⟨m.coprime_zero_left.mp <| eq, hn⟩
+    ⟨m.coprime_zero_left.mp eq, hn⟩
 
 theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
   simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]
