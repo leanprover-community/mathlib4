@@ -57,7 +57,6 @@ theorem isLittleO_iff_nnnorm :
   · filter_upwards [H (c := NNReal.mk ε hε.le) (by simpa [← NNReal.coe_ne_zero] using hε.ne')]
       with x h using by simpa
 
-
 /-! ### Conversions -/
 
 theorem IsBigOWith.isBigO (h : IsBigOWith c l f g) : f =O[l] g := by rw [IsBigO_def]; exact ⟨c, h⟩
