@@ -404,13 +404,6 @@ lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty �
     CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
   ⟨fun _ ↦ ⟨.fst_of_prod (β := β), .snd_of_prod (α := α)⟩, fun ⟨_, _⟩ ↦ .prod⟩
 
-@[to_additive]
-instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
-  complete hf :=
-    MulOpposite.op_surjective.exists.mpr <|
-      let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
-      ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
-
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
   ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
@@ -699,7 +692,7 @@ protected theorem Filter.totallyBounded_iff_filter {g : Filter α} :
     have hb : Antitone fun t : Finset α ↦ g ⊓ 𝓟 (d.preimage t)ᶜ :=
       fun s t (h : s ⊆ t) => by beta_reduce; gcongr
     have : Filter.NeBot f :=
-      (Filter.iInf_neBot_iff_of_directed' <| hb.directed_ge).mpr fun t =>
+      (Filter.iInf_neBot_iff_of_directed' hb.directed_ge).mpr fun t =>
         Filter.notMem_iff_inf_principal_compl.mp <| hd_cover t t.finite_toSet
     have : f ≤ g := iInf_le_of_le ∅ (by simp)
     refine ⟨f, ‹_›, ‹_›, fun c hcf hc => ?_⟩
