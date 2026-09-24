@@ -22,10 +22,9 @@ cached commits (`Cache.Workflow.Developer.Query`); `query` is a command of
 this workflow, and answers for the canonical repositories that they have no
 per-commit namespace.
 
-The workflow owns the chain-read flags `--cache-from`, `--scope`, `--unsafe`
-and `--unsafe-window` (`flags`) and the variables `MATHLIB_CACHE_FROM` and
-`MATHLIB_CACHE_REPO_SCOPE` (`envVariables`); `parseOptions` reads them into
-`Options`.
+The workflow owns the flags `--cache-from`, `--scope`, `--unsafe` and
+`--unsafe-window` (`flags`) and the variables `MATHLIB_CACHE_FROM` and
+`MATHLIB_CACHE_REPO_SCOPE`; `parseOptions` reads them into `Options`.
 -/
 
 namespace Cache.Workflow.Developer
@@ -35,9 +34,6 @@ open System (FilePath)
 
 /-- The workflow's name in messages. -/
 def name : String := "developer cache"
-
-/-- The environment variables of the workflow. -/
-def envVariables : List String := ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"]
 
 /--
 The default number of marked fork commits `cache get --unsafe` tries as

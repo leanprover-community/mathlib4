@@ -1059,6 +1059,12 @@ def test_commandLine : IO Unit := do
   assertTrue "flags may precede the command"
     (Commands.normalizeArgs ["--repo=a/b", "get", "Archive"] == ["get", "--repo=a/b", "Archive"])
   assertTrue "flags alone stay in place" (Commands.normalizeArgs ["--help"] == ["--help"])
+  -- The chain-read triggers are the decision's own list, pinned here: a flag
+  -- a workflow adds does not move a canonical read to another workflow.
+  assertTrue "the chain-read flags are --cache-from, --scope, --unsafe, --unsafe-window"
+    (Workflow.chainReadFlags.map (·.longName) == ["cache-from", "scope", "unsafe", "unsafe-window"])
+  assertTrue "the chain-read variables are MATHLIB_CACHE_FROM and MATHLIB_CACHE_REPO_SCOPE"
+    (Workflow.chainReadVariables == ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"])
   -- The chain-read flags select the developer workflow on the canonical repo,
   -- and each workflow takes its own flags and no other's.
   match Commands.cache.process ["get", "--cache-from=forks,master", "--unsafe-window=2"] with

@@ -21,21 +21,24 @@ A `get` runs one of three workflows, and decides which before it reads:
   trust-ordered chain across the public cache and the developer cache, with
   the fork's per-commit namespace. Owns the chain-read flags, and `query`.
 * the nightly workflow (`Cache.Workflow.Nightly`): the nightly-testing
-  repository. Its own chain in the developer cache. Owns the chain and scope
-  flags.
+  repository. Its own chain, read through the public endpoint. Owns the
+  chain and scope flags.
 
 Each workflow declares its flags, and a `get` command declares their union
 (`flags`), so the `Cli` parser rejects a flag no workflow accepts before
 anything runs. The decision (`forRead`) takes the resolved repository, the
-flat endpoint, and whether a chain-read flag or variable is present
-(`chainReadRequested`). The chosen workflow then reads its own flags from the
-parsed command line and rejects those of another workflow. The three workflow
-modules share the mechanisms below them (the transfers, the container chain,
-the notice, the markers); their code paths meet only in this module.
+flat endpoint, and whether a chain read was requested
+(`chainReadRequested`). The triggers of a chain read are the decision's own
+list (`chainReadFlags`, `chainReadVariables`), so a workflow's flags can
+change without moving a read to another workflow. The chosen workflow then
+reads its own flags from the parsed command line and rejects those of
+another workflow. Each workflow owns its chain and the hosts it reads. The
+three workflow modules share the mechanisms below them (the transfers, the
+container chain, the notice, the markers); their code paths meet only in this
+module.
 
-The workflows are a matter of reads. An upload is flat or, with
-`--dev-cache`, the developer cache's (`Upload`), and the local commands touch
-no workflow.
+The workflows are a matter of reads. An upload writes the container
+`--container` names (`Upload`), and the local commands touch no workflow.
 -/
 
 namespace Cache
@@ -70,20 +73,29 @@ def unionFlags (groups : List (Array Cli.Flag)) : Array Cli.Flag :=
 /-- The flags of a read under any workflow. -/
 def flags : Array Cli.Flag := unionFlags [Public.flags, Developer.flags, Nightly.flags]
 
-/-- Whether the parsed command line `p` carries a flag of the developer
-workflow. -/
-def chainReadFlagged (p : Cli.Parsed) : Bool :=
-  Developer.flags.any fun f => p.hasFlag f.longName
-
 /--
-Whether the invocation asks for a container-chain read: a flag of the
-developer workflow's reads is present (`chainReadFlagged`), or one of its
-variables is set. On the canonical repo this is what selects the developer
-workflow over the public one (`forRead`).
+The flags that ask for a container-chain read: `--cache-from`, `--scope`,
+`--unsafe`, and `--unsafe-window`. On the canonical repo each one selects the
+developer workflow (`forRead`). The list is the decision's own, apart from the
+flags any workflow declares, so a flag a workflow adds does not change which
+workflow a read runs.
 -/
+def chainReadFlags : List Cli.Flag :=
+  [ChainOptions.flag, Scope.flag, Developer.unsafeFlag, Developer.unsafeWindowFlag]
+
+/-- The variables that ask for a container-chain read: the chain
+`MATHLIB_CACHE_FROM` and the scope `MATHLIB_CACHE_REPO_SCOPE`. -/
+def chainReadVariables : List String := ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"]
+
+/-- Whether the parsed command line `p` carries a flag of `chainReadFlags`. -/
+def chainReadFlagged (p : Cli.Parsed) : Bool :=
+  chainReadFlags.any fun f => p.hasFlag f.longName
+
+/-- Whether the invocation asks for a container-chain read: a flag of
+`chainReadFlags` is present, or a variable of `chainReadVariables` is set. -/
 def chainReadRequested (p : Cli.Parsed) : IO Bool := do
   if chainReadFlagged p then return true
-  Developer.envVariables.anyM fun v => return (← getEnvNonEmpty v).isSome
+  chainReadVariables.anyM fun v => return (← getEnvNonEmpty v).isSome
 
 /--
 The workflow a repo alone selects: the nightly-testing repository is
