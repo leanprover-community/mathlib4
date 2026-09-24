@@ -1235,22 +1235,20 @@ variable {G} {u v : V} {s : Set V} {p : G.Walk u v} {c : G.Walk u u}
 
 @[simp]
 lemma isTrail_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsTrail ↔ p.IsTrail := by
-  rw [isTrail_def, isTrail_def, edges_induce, List.nodup_map_iff ?_, List.nodup_attach]
-  intro _ _ h
+  rw [isTrail_def, isTrail_def, edges_induce, List.nodup_map_iff fun _ _ h ↦ ?_, List.nodup_attach]
   simpa [Subtype.val_inj] using Sym2.attachWith_inj h
 
 @[simp]
 lemma isPath_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsPath ↔ p.IsPath := by
-  rw [isPath_def, isPath_def, support_induce, List.nodup_attachWith]
+  simp [isPath_def]
 
 @[simp]
 lemma isCircuit_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCircuit ↔ c.IsCircuit := by
-  simp_rw [isCircuit_def, ne_eq, eq_nil_iff_nil, isTrail_induce, nil_induce]
+  simp [isCircuit_def]
 
 @[simp]
 lemma isCycle_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCycle ↔ c.IsCycle := by
-  simp_rw [isCycle_def, ne_eq, eq_nil_iff_nil, isTrail_induce, nil_induce, support_induce,
-    List.tail_attachWith, List.nodup_attachWith]
+  simp [isCycle_def]
 
 end Walk
 
