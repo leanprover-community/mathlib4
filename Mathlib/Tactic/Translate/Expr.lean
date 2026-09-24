@@ -154,16 +154,16 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
       throwError "{e} is not a function of arity at least {n}"
     mkLambdaFVars xs (mkAppN e xs)
 
-/-- Monad used by `applyReplacementFun`.
+/-- Monad used for expression translation.
 - The reader stores the free variables on which nothing should be translated.
 - The state stores the free variables on which something has been translated.
 - The cache caches the results on subexpressions. -/
-public abbrev ReplacementM :=
+abbrev ReplacementM :=
   ReaderT (Array FVarId) <| MonadCacheT ExprStructEq Expr StateRefT (Std.HashSet FVarId) MetaM
 
 /-- Run a `ReplacementM` computation, returning the result and the value of `relevant_arg` that
 corresponds to this translation. -/
-public def ReplacementM.run {α} (dontTranslate allFVars : Array FVarId) (x : ReplacementM α) :
+def ReplacementM.run {α} (dontTranslate allFVars : Array FVarId) (x : ReplacementM α) :
     MetaM (α × RelevantArg) := do
   let (a, relevantFVars) ← x dontTranslate |>.run |>.run {}
   return (a, (allFVars.findIdx? relevantFVars.contains).elim .noArg .arg)
