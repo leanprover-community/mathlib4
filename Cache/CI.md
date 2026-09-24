@@ -28,7 +28,7 @@ probes.
 
 | Option              | Description                                          |
 |---------------------|------------------------------------------------------|
-| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, or `pr-toolchain-tests`. Required. The container decides the layout under its root: flat (`f/{hash}.ltar`) for `master`, repo-namespaced (`f/{repo}/{hash}.ltar`) for the others, and with a scope the per-commit namespace (`f/{repo}/{sha}/{hash}.ltar`) of `forks`. `legacy` is read-only. |
+| `--container=NAME`  | The target container: `master`, `forks`, `nightly-testing`, or `pr-toolchain-tests`. Required. The container decides the layout under its root: flat (`f/{hash}.ltar`) for `master`, repo-namespaced (`f/{repo}/{hash}.ltar`) for the others, and with a scope the per-commit namespace (`f/{repo}/{sha}/{hash}.ltar`) of `forks`. |
 | `--repo=OWNER/REPO` | For a repo-namespaced container: the repository the upload is for. The default is the canonical repository, whose own PR branches build with fork trust; uploads probe no git remote. `master` ignores it. |
 | `--scope=REF`       | The per-commit namespace to upload under, and its completeness marker. Only `forks` has per-commit namespaces; a scope on another container is an error. Takes precedence over `MATHLIB_CACHE_REPO_SCOPE`. The read-side use of `--scope` is documented in [`WORKFLOWS.md`](./WORKFLOWS.md). |
 | `--backend=NAME`    | The storage backend, `azure` (the default) or `s3` (see [Backends and transfer tools](#backends-and-transfer-tools)). |
@@ -85,8 +85,7 @@ The curl tool's non-overwrite guard relies on the store honoring
 | `MATHLIB_CACHE_PUT_URL` | The root of the `--container` write: the URL that holds the container's `f/` and `m/` trees. The azure backend defaults to the container on the Azure storage account; `--backend=s3` requires it, with the bucket named by path (`https://host/bucket[/prefix]`). |
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`, which otherwise prefers rclone. The azure backend always uploads with curl. |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace, for reads and for an upload to `forks` (see `--scope`, which takes precedence). |
-| `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. CI sets it to widen reads per job; on the canonical repo a set value selects the developer-cache workflow (see [`WORKFLOWS.md`](./WORKFLOWS.md)). |
-| `MATHLIB_CACHE_BASE_URL` | Read base for both caches: a host that mirrors the whole `/{container}/{key}` namespace. Default: each cache's own endpoint. |
-| `MATHLIB_CACHE_DEVELOPER_BASE_URL` | Read base for the developer cache's containers only; wins over `MATHLIB_CACHE_BASE_URL` for them. |
+| `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. The trust dispatch sets it for the `pr-toolchain-tests` class only; on the canonical repo a set value selects the developer-cache workflow (see [`WORKFLOWS.md`](./WORKFLOWS.md)). |
+| `MATHLIB_CACHE_BASE_URL` | Read base for every container of every workflow: a host that mirrors the whole `/{container}/{key}` namespace. Default: the host each workflow names. |
 
 An empty value means unset.

@@ -19,34 +19,33 @@ or below.
 The model spans four storage containers, each written by a distinct class of
 CI job and assigned a trust level:
 
-| Container             | Who may write                                          | Trust  | Service  |
-|-----------------------|--------------------------------------------------------|--------|----------|
-| `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   | public    |
-| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium | developer |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium | developer |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    | developer |
+| Container             | Who may write                                          | Trust  |
+|-----------------------|--------------------------------------------------------|--------|
+| `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
+| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
+| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
+| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
 regardless of what the cache binary requests.
 
-The containers are split across two services. The public cache (`master`,
-plus the read-only `legacy` container) holds only master-trust artifacts; the
-developer cache holds every work-in-progress container. The split is
-physical: separate storage, separate read endpoints
-(`https://cache.mathlib.org` and `https://devcache.mathlib.org`), and
-separate write credentials. A credential for the developer cache's storage
-cannot name the public storage at all, so the container isolation for
-fork-trust writers is backed by a storage boundary, not only by
-per-container grants.
+The public cache, the `master` container, holds only master-trust artifacts.
+The developer cache, the `forks` container, has its own bucket
+(`https://r2devcache.mathlib.org`) with its own write credentials. A
+credential for the developer bucket cannot name the public bucket at all, so
+the container isolation for fork-trust writers is backed by a storage
+boundary, not only by per-container grants. The cache resolver,
+`https://cache.mathlib.org`, serves every container for reads.
 
 Before a read, the tool chooses one of three workflows from the resolved repo
 and the flags. Each workflow has its own code path (`Cache/Workflow.lean`);
-[`WORKFLOWS.md`](./WORKFLOWS.md) describes their behavior. An upload is flat
-or, with `--dev-cache`, the fork's per-commit namespace (`Upload` in
-`Cache/Upload.lean`), under the URL the job names with `MATHLIB_CACHE_PUT_URL`
-or through the well-known container `--container` names. The trust view, with
-the container CI's trust dispatch routes each class's uploads to:
+[`WORKFLOWS.md`](./WORKFLOWS.md) describes their behavior. Each workflow names
+the host it reads each container from. An upload writes the container
+`--container` names, in its layout (`stagedUploadDestFrom` in
+`Cache/Upload/Defs.lean`), under the container's root on the Azure account or
+the root `MATHLIB_CACHE_PUT_URL` names. The trust view, with the container
+CI's trust dispatch routes each class's uploads to:
 
 | Workflow        | Who                                                   | Read                              | CI uploads                               |
 |-----------------|-------------------------------------------------------|-----------------------------------|------------------------------------------|
@@ -55,8 +54,7 @@ the container CI's trust dispatch routes each class's uploads to:
 | nightly         | the nightly-testing repository                        | `nightly-testing`, `forks`        | `nightly-testing` / `pr-toolchain-tests`, unscoped |
 
 The public-cache workflow touches no container chain, no per-commit scope,
-and no marker. The two chain columns show trust classes; both chains also
-end with the read-only `legacy` container, omitted here. Only the `forks`
+and no marker. Only the `forks`
 container has per-commit namespaces, so only its round reads at a scope. The
 nightly chain includes `forks` because PRs from that repo into mathlib4
 upload there; it excludes `pr-toolchain-tests`, so a poisoned upload from an
@@ -170,9 +168,8 @@ The trust model does not attempt to defend against:
 - **Substituted read endpoint** — the cache does not verify downloaded bytes, so
   whichever host answers a read carries the storage tenant's trust. Those are
   the default read hosts `https://cache.mathlib.org` and
-  `https://devcache.mathlib.org`, or a host named by
-  `MATHLIB_CACHE_GET_URL`, `MATHLIB_CACHE_BASE_URL`, or
-  `MATHLIB_CACHE_DEVELOPER_BASE_URL`.
+  `https://r2devcache.mathlib.org`, or a host named by
+  `MATHLIB_CACHE_GET_URL` or `MATHLIB_CACHE_BASE_URL`.
 - **Substituted write endpoint** — the cache does not verify the host it uploads
   to: whichever host `MATHLIB_CACHE_PUT_URL` names receives the upload, and on
   the azure backend the bearer token with it.
@@ -190,13 +187,13 @@ The trust model does not attempt to defend against:
 
 | Concern                                        | File(s)                                                          |
 |------------------------------------------------|------------------------------------------------------------------|
-| Container model, service split, URL shape      | [`Cache/Infra.lean`](Infra.lean) (`Container.service`)          |
+| Container model, layouts, read base rule       | [`Cache/Infra.lean`](Infra.lean) (`Container`, `fileDirPath`, `readBase`) |
 | Repo resolution                                | [`Cache/Repo.lean`](Repo.lean) (`resolveRepo`, `resolveDownstreamRepo`) |
 | The command line: commands and their flags     | [`Cache/Commands.lean`](Commands.lean), [`Cache/Cli.lean`](Cli.lean) (`CommonFlag`) |
 | Read options (chain, scope, flat endpoint)     | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`ChainOptions`), [`Cache/Scope.lean`](Scope.lean) (`Scope`), [`Cache/Workflow/Defs.lean`](Workflow/Defs.lean) (`ReadContext`) |
 | Workflow decision and dispatch (reads)         | [`Cache/Workflow.lean`](Workflow.lean) (`Workflow.forRead`) |
 | Upload destination: the container write        | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`stagedUploadDestFrom`) |
-| The three workflows                            | [`Cache/Workflow/Public.lean`](Workflow/Public.lean), [`Cache/Workflow/Developer.lean`](Workflow/Developer.lean), [`Cache/Workflow/Nightly.lean`](Workflow/Nightly.lean) |
+| The three workflows and their read hosts       | [`Cache/Workflow/Public.lean`](Workflow/Public.lean) (`url`), [`Cache/Workflow/Developer.lean`](Workflow/Developer.lean), [`Cache/Workflow/Developer/Query.lean`](Workflow/Developer/Query.lean) (`readURL`), [`Cache/Workflow/Nightly.lean`](Workflow/Nightly.lean) (`readURL`) |
 | Container-chain read (developer, nightly)      | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`Chain.resolve`, `Chain.rounds`) |
 | Non-default-scope notice                       | [`Cache/Workflow/Notice.lean`](Workflow/Notice.lean) (`Notice.reason?`) |
 | Fork per-commit probes, `query`, `--unsafe` walk | [`Cache/Workflow/Developer/Query.lean`](Workflow/Developer/Query.lean) |

@@ -13,9 +13,9 @@ import Cache.Workflow.Notice
 The workflow of the nightly-testing repository, `NIGHTLY_TESTING_REPO`: its
 checkouts, its CI, and a project whose Mathlib dependency is pinned to it.
 That repository builds under a non-release toolchain, so its root hash differs
-from master's and its artifacts exist only in the developer cache's
-`nightly-testing` and `pr-toolchain-tests` containers, which its CI fills. A
-read walks the chain `containers`. The nightly containers cache by file hash,
+from master's and its artifacts exist only in the `nightly-testing` and
+`pr-toolchain-tests` containers, which its CI fills. A read walks the chain
+`containers` through the cache resolver (`readURL`). The nightly containers cache by file hash,
 so `query` has nothing to find, and `--unsafe` is not an option of this
 workflow.
 

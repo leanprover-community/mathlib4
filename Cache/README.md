@@ -113,7 +113,8 @@ three in full.
 **If you have Mathlib as a dependency**, or work on a checkout of
 `leanprover-community/mathlib4` itself, `lake exe cache get` runs the
 public-cache workflow. It fetches each file once from the public cache at
-`https://cache.mathlib.org/mathlib4` and nothing else. No flag is needed.
+`https://cache.mathlib.org/mathlib4-master` and nothing else. No flag is
+needed.
 
 **If you are a mathlib developer working on a fork**, `lake exe cache get`
 runs the developer-cache workflow. It reads mathlib's `master` cache first,

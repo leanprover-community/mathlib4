@@ -7,8 +7,8 @@ flags, and prints the workflow it runs. Each workflow has its own module under
 `Cache/Workflow/`, its own flags, and its own code path. The workflows share
 the transfers, the repository detection, and the container chain below them.
 `get` is the one command whose behavior depends on the checkout and the
-environment; an upload is chosen by its `--dev-cache` flag, and the local
-commands depend on neither.
+environment. An upload writes the container `--container` names, and the
+local commands depend on neither.
 
 The [README](./README.md) says which workflow a typical user gets. This
 document describes the three workflows in full. The trust model behind them is
@@ -17,18 +17,30 @@ in [`SECURITY.md`](./SECURITY.md); the upload commands are in
 
 ## The public cache and the developer cache
 
-The cache is two services, each with its own storage and read endpoint:
+| Container            | Holds                                   | Written by                         |
+|----------------------|-----------------------------------------|------------------------------------|
+| `master`             | the master-built artifacts              | master-trust CI only               |
+| `forks`              | fork PR builds, per commit              | fork PR CI                         |
+| `nightly-testing`    | the nightly-testing repository's builds | nightly CI                         |
+| `pr-toolchain-tests` | toolchain experiments                   | toolchain CI                       |
 
-| Service   | Containers                                       | Read endpoint                  | Written by                           |
-|-----------|--------------------------------------------------|--------------------------------|--------------------------------------|
-| public    | `master`, `legacy`                               | `https://cache.mathlib.org`    | master-trust CI only                 |
-| developer | `forks`, `nightly-testing`, `pr-toolchain-tests` | `https://devcache.mathlib.org` | fork PR CI, nightly CI, toolchain CI |
+The public cache is the `master` container: the master-built artifacts that
+anyone may consume. The developer cache is the `forks` container, in its own
+bucket, so a work-in-progress writer stays away from the artifacts the public
+consumes.
 
-The public cache holds the master-built artifacts that anyone may consume.
-The developer cache holds the work-in-progress artifacts: fork PR builds, the
-nightly-testing repository, and toolchain experiments. The storage split keeps
-a work-in-progress writer away from the artifacts the public consumes; the
-endpoint split lets each side be re-pointed, cached, and retired on its own.
+Each workflow names the host it reads each container from, so each workflow
+can change its hosts on its own:
+
+| Workflow        | Container and host                                                      |
+|-----------------|-------------------------------------------------------------------------|
+| public cache    | `master` on `https://cache.mathlib.org`                                 |
+| developer cache | `master` on `https://cache.mathlib.org`, `forks` on `https://r2devcache.mathlib.org` |
+| nightly         | `nightly-testing` and `forks` on `https://cache.mathlib.org`            |
+
+`https://cache.mathlib.org` is the cache resolver: it serves every container
+and resolves each one to its current storage. `https://r2devcache.mathlib.org`
+is the developer bucket, which the developer workflow reads directly.
 
 The containers are logical namespaces in the URL contract
 `/{container}/{key}`. Only the `forks` container has per-commit namespaces:
@@ -50,23 +62,17 @@ A read (`get`, `get!`, `get-`) takes:
 - the public-cache workflow when `MATHLIB_CACHE_GET_URL` is set, whatever the
   repository;
 - the public-cache workflow on `leanprover-community/mathlib4`, unless a
-  developer-cache flag (`--cache-from`, `--scope`, `--unsafe`,
-  `--unsafe-window`) or variable (`MATHLIB_CACHE_FROM`,
-  `MATHLIB_CACHE_REPO_SCOPE`) is present, which selects the developer-cache
-  workflow;
+  chain-read flag (`--cache-from`, `--scope`, `--unsafe`, `--unsafe-window`)
+  or variable (`MATHLIB_CACHE_FROM`, `MATHLIB_CACHE_REPO_SCOPE`) is present,
+  which selects the developer-cache workflow. This list belongs to the
+  decision, not to a workflow: a flag that a workflow adds does not change
+  which workflow a read runs;
 - the nightly workflow on the nightly-testing repository;
 - the developer-cache workflow on any other repository, that is, a fork.
 
-An upload (`put`, `put!`, `put-staged`) has two forms, chosen by the flag
-`--dev-cache` rather than by the checkout. The flat upload writes
-`{url}/f/{hash}.ltar` under `MATHLIB_CACHE_PUT_URL`, the layout of `master`.
-The developer-cache upload writes the repo-namespaced layout of the developer
-cache's containers, `{url}/f/{repo}/`, for `--repo`, and with a scope
-(`--scope`, `MATHLIB_CACHE_REPO_SCOPE`) the fork's per-commit namespace
-`{url}/f/{repo}/{sha}/` and its marker. `--container=NAME` stands for both:
-that container's Azure base as the URL, and its form; the variable overrides
-the URL. The upload commands are internal to mathlib CI; see
-[`CI.md`](./CI.md).
+An upload (`put`, `put!`, `put-staged`) writes the container `--container`
+names, in that container's layout, whatever the checkout. The upload commands
+are internal to mathlib CI; see [`CI.md`](./CI.md).
 
 `query` is a developer-cache command: on a fork it finds the commits CI has
 cached; on the canonical and nightly-testing repositories it answers that
@@ -88,13 +94,14 @@ the flags of a command.
 The workflow of a checkout of `leanprover-community/mathlib4`, of a project
 that depends on Mathlib, and of any reader with `MATHLIB_CACHE_GET_URL` set.
 
-`get` fetches `https://cache.mathlib.org/mathlib4/f/{hash}.ltar` for each file
-it needs (or `{url}/f/{hash}.ltar` from the flat endpoint the variable names),
-and nothing else: no container chain, no per-commit scope, no marker probe,
-no security notice. The public endpoint serves the `legacy` artifacts behind
-that namespace, so the tool needs no fallback of its own. The cache holds the
-artifacts CI built from `master`, so a checkout at a master commit, or a
-project pinned to one, finds every file.
+`get` fetches `https://cache.mathlib.org/mathlib4-master/f/{hash}.ltar` for
+each file it needs (or `{url}/f/{hash}.ltar` from the flat endpoint the
+variable names), and nothing else: no container chain, no per-commit scope,
+no marker probe, no security notice. The resolver also serves the artifacts
+of the retired `mathlib4` container behind that namespace, so the tool needs
+no fallback of its own. The cache holds the artifacts CI built from
+`master`, so a checkout at a master commit, or a project pinned to one, finds
+every file.
 
 CI publishes the master builds this workflow reads into the `master`
 container. The workflow has no flags of its own, and a set `MATHLIB_CACHE_FROM`
@@ -106,10 +113,9 @@ chain and no per-commit namespace for them to address.
 The workflow of a fork checkout, and of a read on the canonical repository
 with a chain, a scope, or `--unsafe`.
 
-`get` walks the trust-ordered chain `master`, `forks`, `legacy`: `master` from
-the public cache serves the bulk of any fork's files by hash, `forks` from the
-developer cache serves the files the fork's own CI built, and `legacy` keeps
-older artifacts reachable. The `forks` round reads the fork's namespace for
+`get` walks the trust-ordered chain `master`, `forks`: `master` from the public
+cache serves the bulk of any fork's files by hash, and `forks` from the
+developer bucket serves the files the fork's own CI built. The `forks` round reads the fork's namespace for
 the checked-out commit by default, which CI fills when it builds a PR at that
 commit. `--scope=REF` reads another commit's namespace, `--unsafe` finds one
 automatically, and `--cache-from=LIST` replaces the chain.
@@ -122,19 +128,18 @@ with the marker that `query` probes. `query` finds the fork's cached commits.
 The developer-cache and nightly workflows resolve a file by trying their
 chain of containers in order:
 
-| Workflow        | Container order tried                |
-|-----------------|--------------------------------------|
-| developer cache | `master`, `forks`, `legacy`          |
-| nightly         | `nightly-testing`, `forks`, `legacy` |
+| Workflow        | Container order tried        |
+|-----------------|------------------------------|
+| developer cache | `master`, `forks`            |
+| nightly         | `nightly-testing`, `forks`   |
 
-Each container is read from its service's endpoint, so the developer chain
-reads `master` and `legacy` from the public cache and `forks` from the
-developer cache. Only the `forks` round reads at a scope; the other containers
-are read unscoped. The public-cache workflow has no chain.
+Each container is read from the host its workflow names (see the table
+above). Only the `forks` round reads at a scope; the other containers are read
+unscoped. The public-cache workflow has no chain.
 
 `--cache-from=LIST` replaces the chain with a trust-ordered, comma-separated
 list of containers. Container names: `master`, `forks`, `nightly-testing`,
-`pr-toolchain-tests`, `legacy`. On the canonical repository the flag selects
+`pr-toolchain-tests`. On the canonical repository the flag selects
 the developer-cache workflow. A chain that differs from the workflow's own
 prints the [security notice](#security-notice-non-default-scope).
 
@@ -217,23 +222,22 @@ the [security notice](#security-notice-non-default-scope). It is mutually
 exclusive with `--scope=`, which pins exactly one commit. The nightly workflow
 rejects it.
 
-### Heads-up note from `cache get`
+### Missing files
 
-When you run `cache get` on a fork checkout and HEAD has not been built and
-cached at fork-trust level, the tool prints a stderr note pointing you at
-`cache query`, and warns that picking a different commit means trusting its
-artifacts. The note costs one HTTP HEAD per `cache get` invocation. It fires
-only on a plain `cache get`: no `--scope=`, no `--cache-from`, and a HEAD that
-is not already part of `master`, whose artifacts the `master` round serves.
+When some files are in no container of the chain, `cache get` prints a
+warning to stderr. In the developer-cache workflow the warning also points at
+`cache query`, which finds an earlier cached commit of the branch, and says
+that reading it trusts the artifacts built at that commit.
 
 ## The nightly workflow
 
 The workflow of the nightly-testing repository: its checkouts, its CI, and a
 project whose Mathlib dependency is pinned to it. That repository builds under
 a non-release toolchain, so its root hash differs from master's and its
-artifacts exist only in the developer cache.
+artifacts exist only in the nightly containers.
 
-`get` walks the chain `nightly-testing`, `forks`, `legacy`. `master` is absent
+`get` walks the chain `nightly-testing`, `forks`, through the cache resolver.
+`master` is absent
 because the nightly root hash differs, so a master probe misses. `forks` is
 present because a PR from the nightly-testing repository into mathlib4 builds
 with fork trust and uploads there; a scope applies to that round alone.
@@ -287,6 +291,7 @@ to HEAD, CI's own settings, do not trigger it.
 | `MATHLIB_CACHE_GET_URL`    | Selects the public-cache workflow and replaces its URL (see [Operating an external cache](README.md#operating-an-external-cache)). |
 | `MATHLIB_CACHE_FROM`       | The chain of a chain read, as `--cache-from`, which takes precedence. On the canonical repository a set value selects the developer-cache workflow. Set by CI (see [`CI.md`](./CI.md)). |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit scope, as `--scope`, which takes precedence. On the canonical repository a set value selects the developer-cache workflow. Set by CI. |
-| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | Reads both caches from the Azure storage account (see [Troubleshooting](README.md#troubleshooting)). |
+| `MATHLIB_CACHE_BASE_URL`   | Replaces the host of every container of every workflow: a host that mirrors the whole `/{container}/{key}` namespace. |
+| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | Reads every container from the Azure storage account (see [Troubleshooting](README.md#troubleshooting)). |
 
 An empty value means unset.
