@@ -480,8 +480,8 @@ variable (R) in
 /-- A map between convex spaces is affine if it preserves convex combinations.
 
  Note that this generalises the notion of affine maps between affine spaces.
- See `AffineMap.isAffineMap` for one direction.
-  TODO: Prove the other direction. -/
+ See `AffineMap.isAffineMap` for one direction. -/
+ -- TODO: Prove the other direction.
 @[fun_prop]
 structure IsAffineMap (f : X → Y) : Prop where
   map_sConvexComb (s : StdSimplex R X) : f s.sConvexComb = (s.map f).sConvexComb
