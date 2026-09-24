@@ -121,7 +121,7 @@ theorem neg_bot : -(⊥ : Submodule R M) = ⊥ :=
 
 @[simp]
 theorem neg_top : -(⊤ : Submodule R M) = ⊤ :=
-  SetLike.coe_injective <| Set.neg_univ
+  SetLike.coe_injective Set.neg_univ
 
 @[simp]
 theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
@@ -320,7 +320,7 @@ protected def pointwiseSetSMul : SMul (Set S) (Submodule R M) where
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMul
 
-variable (sR : Set R) (s : Set S) (N : Submodule R M)
+variable (s : Set S) (N : Submodule R M)
 
 lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔

@@ -105,7 +105,7 @@ variable {k G} (A : Rep.{w} k G)
 /-- `Tor` can be computed using a projective resolution. -/
 abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
     ((Rep.Tor k G n).obj A).obj B ≅ (P.complex.coinvariantsTensorObj A).homology n :=
-  P.isoLeftDerivedObj _ n
+  P.isoLeftDerivedObj ((coinvariantsTensor k G).obj A) n
 
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
@@ -155,7 +155,7 @@ $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
 noncomputable abbrev inhomogeneousChains :
     ChainComplex (ModuleCat k) ℕ :=
-  ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
+  ChainComplex.of (fun n => ↧((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
     classical
     rw [inhomogeneousChains.d_eq, inhomogeneousChains.d_eq]

@@ -26,7 +26,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 section Inv
 

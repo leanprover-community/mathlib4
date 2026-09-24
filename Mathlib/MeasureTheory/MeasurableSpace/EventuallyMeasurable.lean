@@ -66,7 +66,7 @@ theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
 
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
-  ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
+  ⟨univ, MeasurableSet.univ, eventuallyEqSet_univ.mpr hs⟩
 
 /-- A set which is `EventuallyEq` to an `EventuallyMeasurableSet`
 is an `EventuallyMeasurableSet`. -/

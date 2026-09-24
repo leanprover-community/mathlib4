@@ -54,6 +54,17 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
     {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
   dite_eq_right hf
 
+lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
+    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
+    f.IsInvertible :=
+  ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
+
+lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
+    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
+    f.inverse = g := by
+  rw [← ContinuousLinearEquiv.toContinuousLinearMap_equivOfInverse' f g hf hg, inverse_equiv]
+  simp
+
 @[simp]
 theorem isInvertible_zero_iff :
     IsInvertible (0 : M →L[R] M₂) ↔ Subsingleton M ∧ Subsingleton M₂ := by
@@ -63,21 +74,11 @@ theorem isInvertible_zero_iff :
       simp [he, ← ContinuousLinearEquiv.coe_coe]
     exact ⟨A, e.toEquiv.symm.subsingleton⟩
   · rintro ⟨hM, hM₂⟩
-    let e : M ≃L[R] M₂ :=
-    { toFun := 0
-      invFun := 0
-      left_inv x := Subsingleton.elim _ _
-      right_inv x := Subsingleton.elim _ _
-      map_add' x y := Subsingleton.elim _ _
-      map_smul' c x := Subsingleton.elim _ _ }
-    refine ⟨e, ?_⟩
-    ext x
-    exact Subsingleton.elim _ _
+    refine .of_inverse (g := 0) ?_ ?_ <;> exact Subsingleton.elim _ _
 
 @[simp] theorem inverse_zero : inverse (0 : M →L[R] M₂) = 0 := by
   by_cases h : IsInvertible (0 : M →L[R] M₂)
   · rcases isInvertible_zero_iff.1 h with ⟨hM, hM₂⟩
-    ext x
     exact Subsingleton.elim _ _
   · exact inverse_of_not_isInvertible h
 
@@ -86,18 +87,6 @@ lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
   rcases hg with ⟨N, rfl⟩
   rcases hf with ⟨M, rfl⟩
   exact ⟨M.trans N, rfl⟩
-
-lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
-    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
-    f.IsInvertible :=
-  ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
-
-lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
-    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
-    f.inverse = g := by
-  have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
-  rw [this, inverse_equiv]
-  rfl
 
 lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf : f.IsInvertible) :
     f.inverse y = x ↔ y = f x := by
@@ -241,11 +230,18 @@ protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsIn
   obtain ⟨_, _⟩ : Subsingleton M₂ ∧ Subsingleton M := by simpa [inverse, H] using hf
   simp_all [Subsingleton.elim f 0]
 
+end IsInvertible
+
 @[simp]
-theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
+theorem isInvertible_inverse_iff {f : M →L[R] M₂} :
     f.inverse.IsInvertible ↔ f.IsInvertible :=
   ⟨.of_isInvertible_inverse, .inverse⟩
 
-end IsInvertible
+theorem isInvertible_iff_isHomeomorph {f : M →L[R] M₂} :
+    f.IsInvertible ↔ IsHomeomorph f :=
+  ⟨fun ⟨e, he⟩ ↦ he ▸ e.isHomeomorph,
+    fun hf ↦ ⟨.ofIsHomeomorph (.ofBijective f.toLinearMap hf.bijective) hf, rfl⟩⟩
+
+alias ⟨IsInvertible.isHomeomorph, IsInvertible.of_isHomeomorph⟩ := isInvertible_iff_isHomeomorph
 
 end ContinuousLinearMap

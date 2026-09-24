@@ -69,7 +69,7 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
     [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
-  rw [IsIntegral, ← ((AlgHomClass.toAlgHom f).restrictScalars R).comp_algebraMap]
+  rw [IsIntegral, ← ((AlgHom.ofClass f).restrictScalars R).comp_algebraMap]
   exact .map hb (RingHomClass.toRingHom f)
 
 section
@@ -105,7 +105,7 @@ theorem IsIntegral.fg_adjoin_singleton [Algebra R B] {x : B} (hx : IsIntegral R 
     (Algebra.adjoin R {x}).toSubmodule.FG := by
   classical
   rcases hx with ⟨f, hfm, hfx⟩
-  use (Finset.range <| f.natDegree).image (x ^ ·)
+  use (Finset.range f.natDegree).image (x ^ ·)
   exact span_range_natDegree_eq_adjoin hfm (by rwa [aeval_def])
 
 variable (f : R →+* B)
@@ -121,8 +121,6 @@ theorem RingHom.isIntegralElem_one : f.IsIntegralElem 1 :=
 
 theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
   (algebraMap R B).isIntegralElem_one
-
-variable (f : R →+* S)
 
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
     IsIntegral R x :=
