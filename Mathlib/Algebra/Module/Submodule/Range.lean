@@ -61,7 +61,7 @@ theorem coe_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) 
   rfl
 
 theorem range_toAddSubmonoid [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
-    (range f).toAddSubmonoid = f.toAddMonoidHom.mrange :=
+    (range f).toAddSubmonoid = (f : M →+ M₂).mrange :=
   rfl
 
 @[simp]

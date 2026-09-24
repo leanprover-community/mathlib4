@@ -395,7 +395,7 @@ instance [NonUnitalSemiring R] [StarRing R] [PartialOrder R] [StarOrderedRing R]
     StarOrderedRing Rᵐᵒᵖ where
   le_iff x y := by
     rw [← unop_le_unop, StarOrderedRing.le_iff, op_surjective.exists,
-      ← (AddSubmonoid.closure _).comap_map_eq_of_injective (f := opAddEquiv (α := R).toAddMonoidHom)
+      ← (AddSubmonoid.closure _).comap_map_eq_of_injective (f := (opAddEquiv (α := R) : R →+ Rᵐᵒᵖ))
       opAddEquiv.injective]
     congr! with p
     · simp [AddMonoidHom.map_mclosure, ← range_comp', Function.comp_def,

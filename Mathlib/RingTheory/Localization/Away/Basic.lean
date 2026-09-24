@@ -266,14 +266,14 @@ variable {Aₚ} {Bₚ}
 lemma mapₐ_injective_of_injective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
     (hf : Function.Injective f) : Function.Injective (mapₐ Aₚ Bₚ f a) :=
   have : IsLocalization (Submonoid.map (f : A →* B) (Submonoid.powers a)) Bₚ := by
-    simp only [Submonoid.map_powers, MonoidHom.coe_ofClass]
+    simp only [Submonoid.map_powers]
     infer_instance
   IsLocalization.map_injective_of_injective _ _ _ hf
 
 lemma mapₐ_surjective_of_surjective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
     (hf : Function.Surjective f) : Function.Surjective (mapₐ Aₚ Bₚ f a) :=
   have : IsLocalization (Submonoid.map (f : A →* B) (Submonoid.powers a)) Bₚ := by
-    simp only [Submonoid.map_powers, MonoidHom.coe_ofClass]
+    simp only [Submonoid.map_powers]
     infer_instance
   IsLocalization.map_surjective_of_surjective _ _ _ hf
 
