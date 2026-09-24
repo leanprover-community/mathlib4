@@ -267,6 +267,11 @@ theorem map_ne_zero_iff_ne_one : f x ≠ 0 ↔ x ≠ 1 :=
 
 end GroupNormClass
 
+@[simp]
+theorem map_abs_eq_self [AddGroup α] [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β]
+    [AddGroupSeminormClass F α β] (f : F) (x : α) : |f x| = f x :=
+  abs_of_nonneg (apply_nonneg _ _)
+
 @[to_additive]
 theorem map_pos_of_ne_one [Group α] [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β]
     [GroupNormClass F α β] (f : F)

@@ -22,7 +22,7 @@ assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClas
 
 open Filter
 
-open scoped Topology
+open scoped Topology NNReal
 
 namespace Asymptotics
 
@@ -33,6 +33,30 @@ variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddC
   [NormedAddCommGroup E''] [SeminormedAddGroup E''']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {f'' : α → E''} {l l' : Filter α}
+
+/-! ### NNNorm -/
+
+/-- `IsBigO` in terms of the non-negative norm. -/
+theorem isBigO_iff_nnnorm :
+    f' =O[l] g' ↔ ∃ c : ℝ≥0, ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
+  simp only [IsBigO_def, IsBigOWith]
+  constructor <;> intro ⟨c, H⟩
+  · use c.toNNReal
+    filter_upwards [H] with x h
+    grw [← norm_toNNReal, ← norm_toNNReal, h, Real.toNNReal_le_iff_le_coe, NNReal.coe_mul]
+    gcongr <;> simp
+  · use c
+    simpa
+
+/-- `IsLittleO` in terms of the non-negative norm. -/
+theorem isLittleO_iff_nnnorm :
+    f' =o[l] g' ↔ ∀ ⦃c : ℝ≥0⦄, c ≠ 0 → ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
+  simp only [IsLittleO_def, IsBigOWith]
+  constructor <;> intro H ε hε
+  · filter_upwards [H (c := ε) (by positivity)] with x h using by simpa
+  · filter_upwards [H (c := NNReal.mk ε hε.le) (by simpa [← NNReal.coe_ne_zero] using hε.ne')]
+      with x h using by simpa
+
 
 /-! ### Conversions -/
 
