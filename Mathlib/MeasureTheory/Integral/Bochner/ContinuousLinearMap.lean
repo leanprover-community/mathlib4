@@ -198,7 +198,7 @@ theorem starRingEnd_div_mul_eq_norm (z : 𝕜) : starRingEnd 𝕜 (z / ‖z‖) 
 theorem enorm_integral_mul_starRingEnd_comm {f g : X → 𝕜} :
     ‖∫ x, f x * starRingEnd 𝕜 (g x) ∂μ‖ₑ = ‖∫ x, g x * starRingEnd 𝕜 (f x) ∂μ‖ₑ := by
   rw [← RCLike.enorm_conj, ← integral_conj]
-  simp_rw [map_mul, RCLike.conj_conj, mul_comm]
+  simp [mul_comm]
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
