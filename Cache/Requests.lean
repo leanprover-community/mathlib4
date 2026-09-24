@@ -777,7 +777,7 @@ def getFiles
     else
       -- Either no background decompression ran, or non-parallel mode needs final sweep
       IO.unpackCache hashMap forceUnpack
-  else
+  else if result.missing == 0 then
     IO.println "Downloaded all files successfully!"
   return result
 
