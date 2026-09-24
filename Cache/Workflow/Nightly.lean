@@ -46,12 +46,13 @@ structure Options where
   scope? : Option Scope := none
   deriving Inhabited
 
-/-- Parse the workflow's options from the parsed command line `p`, with
-`--scope` refs resolved in `cwd`. Rejects a flag of another workflow,
-`--unsafe` included. -/
-def parseOptions (p : Cli.Parsed) (cwd : FilePath := ".") : IO Options := do
-  rejectForeignFlags name flags p
-  return { chain := ← ChainOptions.parse p, scope? := ← Scope.parse p cwd }
+/-- Parse the workflow's options from the parsed command line `p` and the
+settings `s`, with `--scope` refs resolved in `cwd`. Fails on a flag of
+another workflow, `--unsafe` included. -/
+def parseOptions (p : Cli.Parsed) (s : Settings := {}) (cwd : FilePath := ".") :
+    IO Options := do
+  checkForeignFlags name flags p
+  return { chain := ← ChainOptions.parse p s, scope? := ← Scope.parse p s cwd }
 
 /--
 The nightly chain, most trusted first: `nightly-testing` for the repository's
@@ -64,10 +65,10 @@ consumer; CI widens the chain for those branches through `MATHLIB_CACHE_FROM`.
 -/
 def containers : List Container := [.nightlyTesting, .forks]
 
-/-- The read URL of each container in a nightly read: the public endpoint,
-which resolves the nightly containers to their storage, under the read base
-rule (`Container.readURL`). -/
-def readURL (c : Container) : IO String := c.readURL publicCacheEndpoint
+/-- The read URL of each container in a nightly read under the settings `s`:
+the public endpoint, which resolves the nightly containers to their storage,
+under the read base rule (`Container.readURL`). -/
+def readURL (s : Settings) (c : Container) : String := c.readURL s publicCacheEndpoint
 
 /--
 The read: the notice when the read is taken off the default trust boundary,
@@ -79,7 +80,8 @@ def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM 
     repoExplicit? := ctx.repoExplicit?, detectedRepo? := ctx.detectedRepo?,
     chain := options.chain, defaultChain := containers, scope? := options.scope?,
     cwd := ctx.mathlibCwd } ctx.repo
-  let rounds ← Chain.readRounds containers readURL options.chain options.scope? ctx.mathlibCwd
+  let rounds ← Chain.readRounds containers (readURL ctx.settings) options.chain options.scope?
+    ctx.mathlibCwd
   let result ← getFiles rounds ctx.repo req.hashMap req.forceDownload req.forceDownload
     req.parallel req.decompress
   warnMissing result

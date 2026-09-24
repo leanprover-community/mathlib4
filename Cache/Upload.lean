@@ -43,16 +43,6 @@ structure Upload where
 
 namespace Upload
 
-/-- `--container=NAME`: the container the upload writes. -/
-def containerFlag : Cli.Flag := {
-  longName := "container"
-  description := s!"The container the upload writes, one of \
-    {", ".intercalate (Container.all.map Container.name)}. It decides the layout: flat for \
-    master, repo-namespaced for the others, and with --scope the per-commit namespace of \
-    forks. The files go under the container on the Azure storage account, or under the root \
-    MATHLIB_CACHE_PUT_URL names."
-  type := Container }
-
 /-- The inputs of a `put`'s decision: the flags and the environment. -/
 structure Options where
   /-- `--container=NAME`. -/

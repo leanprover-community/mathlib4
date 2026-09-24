@@ -27,16 +27,21 @@ A `get` runs one of three workflows, and decides which before it reads:
 
 Each workflow declares its flags, and a `get` command declares their union
 (`flags`), so the `Cli` parser rejects a flag no workflow accepts before
-anything runs. The decision (`forRead`) takes the resolved repository, the
-flat endpoint, and whether a chain read was requested
-(`chainReadRequested`). The triggers of a chain read are the decision's own
-list (`chainReadFlags`, `chainReadVariables`), so a workflow's flags can
-change without moving a read to another workflow. The chosen workflow then
-reads its own flags from the parsed command line and rejects those of
-another workflow. Each workflow owns its chain and the hosts it reads. The
-three workflow modules share the mechanisms below them (the transfers, the
-container chain, the notice, the markers); their code paths meet only in this
-module.
+anything runs. A read then runs in three steps:
+
+1. decide (`forRead`): the workflow, from the resolved repository, the flat
+   endpoint, and whether a chain read was requested (`chainReadRequested`).
+   The triggers of a chain read are the decision's own list
+   (`chainReadFlags`, `chainReadVariables`), so a workflow's flags can change
+   without moving a read to another workflow;
+2. plan (`plan`): the chosen workflow parses and checks its own flags and
+   settings and rejects those of another workflow. The command plans before
+   it hashes, so an invalid option fails fast;
+3. read (`Plan.read`): the workflow's read, on the hashed files.
+
+Each workflow owns its chain and the hosts it reads. The three workflow
+modules share the mechanisms below them (the transfers, the container chain,
+the notice, the markers); their code paths meet only in this module.
 
 The workflows are a matter of reads. An upload writes the container
 `--container` names (`Upload`), and the local commands touch no workflow.
@@ -84,19 +89,20 @@ workflow a read runs.
 def chainReadFlags : List Cli.Flag :=
   [ChainOptions.flag, Scope.flag, Developer.unsafeFlag, Developer.unsafeWindowFlag]
 
-/-- The variables that ask for a container-chain read: the chain
-`MATHLIB_CACHE_FROM` and the scope `MATHLIB_CACHE_REPO_SCOPE`. -/
-def chainReadVariables : List String := ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"]
+/-- The variables that ask for a container-chain read, with their values in
+the settings `s`: the chain `MATHLIB_CACHE_FROM` and the scope
+`MATHLIB_CACHE_REPO_SCOPE`. -/
+def chainReadVariables (s : Settings) : List (String × Option String) :=
+  [("MATHLIB_CACHE_FROM", s.cacheFrom?), ("MATHLIB_CACHE_REPO_SCOPE", s.repoScope?)]
 
 /-- Whether the parsed command line `p` carries a flag of `chainReadFlags`. -/
 def chainReadFlagged (p : Cli.Parsed) : Bool :=
   chainReadFlags.any fun f => p.hasFlag f.longName
 
-/-- Whether the invocation asks for a container-chain read: a flag of
+/-- Whether the read asks for a container-chain read: a flag of
 `chainReadFlags` is present, or a variable of `chainReadVariables` is set. -/
-def chainReadRequested (p : Cli.Parsed) : IO Bool := do
-  if chainReadFlagged p then return true
-  chainReadVariables.anyM fun v => return (← getEnvNonEmpty v).isSome
+def chainReadRequested (p : Cli.Parsed) (s : Settings) : Bool :=
+  chainReadFlagged p || (chainReadVariables s).any (·.2.isSome)
 
 /--
 The workflow a repo alone selects: the nightly-testing repository is
@@ -124,19 +130,31 @@ def forRead (repo : String) (getURL? : Option String) (chainRead : Bool) : Workf
     | .publicCache => if chainRead then .developer else .publicCache
     | w => w
 
-/-- Run the workflow: parse its options from the parsed command line `p`,
-then read. -/
-def get (w : Workflow) (p : Cli.Parsed) (ctx : ReadContext) (req : ReadRequest) :
-    IO.CacheM Unit := do
-  IO.println s!"Cache workflow: {w.name}"
+/-- A read with its options parsed and checked: the chosen workflow and what
+it reads with. -/
+inductive Plan where
+  /-- The public cache: the one URL it reads. -/
+  | publicCache (url : String)
+  /-- The developer cache and its options. -/
+  | developer (options : Developer.Options)
+  /-- The nightly chain and its options. -/
+  | nightly (options : Nightly.Options)
+
+/-- The plan of the workflow `w`: its options from the parsed command line `p`
+and the settings of `ctx`, with `--scope` refs resolved in the mathlib
+checkout. Throws on an invalid option. -/
+def plan (w : Workflow) (p : Cli.Parsed) (ctx : ReadContext) : IO Plan := do
   match w with
-  | .publicCache =>
-    Public.parseOptions p
-    Public.get ctx req
-  | .developer =>
-    Developer.get (← Developer.parseOptions p ctx.mathlibCwd) ctx req
-  | .nightly =>
-    Nightly.get (← Nightly.parseOptions p ctx.mathlibCwd) ctx req
+  | .publicCache => return .publicCache (← Public.plan p ctx.settings)
+  | .developer => return .developer (← Developer.parseOptions p ctx.settings ctx.mathlibCwd)
+  | .nightly => return .nightly (← Nightly.parseOptions p ctx.settings ctx.mathlibCwd)
+
+/-- Run the planned read. -/
+def Plan.read (plan : Plan) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM Unit := do
+  match plan with
+  | .publicCache url => Public.get url req
+  | .developer options => Developer.get options ctx req
+  | .nightly options => Nightly.get options ctx req
 
 end Workflow
 

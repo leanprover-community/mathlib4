@@ -47,14 +47,14 @@ def flag : Cli.Flag := {
 def chain? (o : ChainOptions) : Option (List Container) := o.cli? <|> o.env?
 
 /--
-The chain options of the parsed command line `p`: `--cache-from=LIST`
-(`flag`) and `MATHLIB_CACHE_FROM`. An unknown container name in the variable
-is ignored with a warning, so a stale CI setting degrades to the workflow's
-chain. An empty variable means unset.
+The chain options of the parsed command line `p` and the settings `s`:
+`--cache-from=LIST` (`flag`) and `MATHLIB_CACHE_FROM`. An unknown container
+name in the variable is ignored with a warning, so a stale CI setting degrades
+to the workflow's chain.
 -/
-def parse (p : Cli.Parsed) : IO ChainOptions := do
+def parse (p : Cli.Parsed) (s : Settings) : IO ChainOptions := do
   let cli? := (p.flag? flag.longName).map (·.as! (List Container))
-  let env? ← match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
+  let env? ← match s.cacheFrom? with
     | none => pure none
     | some s => match parseCacheFromList s with
       | some cs => pure (some cs)
@@ -76,9 +76,9 @@ def resolve (default : List Container) (options : ChainOptions) : List Container
 
 /-- Pair each container in a chain with its read URL, which the workflow
 decides (`readURL`). The result keeps the chain's trust order. -/
-def withURLs (chain : List Container) (readURL : Container → IO String) :
-    IO (List (Container × String)) :=
-  chain.mapM fun c => do return (c, ← readURL c)
+def withURLs (chain : List Container) (readURL : Container → String) :
+    List (Container × String) :=
+  chain.map fun c => (c, readURL c)
 
 /--
 Expand a chain, paired with URLs, into the download rounds to run.
@@ -109,10 +109,10 @@ and, absent one, the HEAD of the mathlib checkout at `mathlibCwd` for the
 per-commit rounds. `unsafeScopes` is the `--unsafe` walk's result, empty
 otherwise.
 -/
-def readRounds (default : List Container) (readURL : Container → IO String)
+def readRounds (default : List Container) (readURL : Container → String)
     (options : ChainOptions) (scope? : Option Scope) (mathlibCwd : FilePath)
     (unsafeScopes : List String := []) : IO (List DownloadRound) := do
-  let chain ← withURLs (resolve default options) readURL
+  let chain := withURLs (resolve default options) readURL
   -- With no explicit scope, the per-commit round defaults to HEAD. This adds
   -- no trust over an unscoped forks read: the namespace can only hold
   -- artifacts built from the commit the reader already has.

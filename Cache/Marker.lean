@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Requests
+import Cache.Infra
 
 /-!
 # Per-SHA cache markers

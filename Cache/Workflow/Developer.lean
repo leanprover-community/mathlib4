@@ -38,6 +38,19 @@ open System (FilePath)
 def name : String := "developer cache"
 
 /--
+The developer cache's read host: the bucket that holds the `forks` container,
+read directly rather than through the cache resolver. The workflow reads its
+other containers through the public endpoint (`publicCacheEndpoint`).
+-/
+def developerCacheEndpoint : String := "https://r2devcache.mathlib.org"
+
+/-- The read URL of each container in a developer read under the settings
+`s`: `forks` on the developer cache's host, every other container on the
+public endpoint, both under the read base rule (`Container.readURL`). -/
+def readURL (s : Settings) (c : Container) : String :=
+  c.readURL s (if c == .forks then developerCacheEndpoint else publicCacheEndpoint)
+
+/--
 The default number of marked fork commits `cache get --unsafe` tries as
 scopes: 1, the latest cached SHA. `--unsafe-window=N` overrides it.
 -/
@@ -72,28 +85,27 @@ structure Options where
   deriving Inhabited
 
 /--
-Parse the workflow's options from the parsed command line `p`, with `--scope`
-refs resolved in `cwd`. Rejects a flag of another workflow. `--unsafe` and
-`--scope` are mutually exclusive: `--unsafe` walks several commit scopes,
-`--scope` pins one. `--unsafe-window=N` implies `--unsafe` and needs a
-positive `N`; the parser has already rejected a non-numeric one.
+Parse the workflow's options from the parsed command line `p` and the
+settings `s`, with `--scope` refs resolved in `cwd`. Fails on a flag of
+another workflow. `--unsafe` and `--scope` are mutually exclusive: `--unsafe`
+walks several commit scopes, `--scope` pins one. `--unsafe-window=N` implies
+`--unsafe` and needs a positive `N`; the parser has already rejected a
+non-numeric one.
 -/
-def parseOptions (p : Cli.Parsed) (cwd : FilePath := ".") : IO Options := do
-  rejectForeignFlags name flags p
-  let chain ← ChainOptions.parse p
+def parseOptions (p : Cli.Parsed) (s : Settings := {}) (cwd : FilePath := ".") :
+    IO Options := do
+  checkForeignFlags name flags p
+  let chain ← ChainOptions.parse p s
   let unsafeWindow? ← match p.flag? unsafeWindowFlag.longName with
     | some f =>
       let n := f.as! Nat
-      if n == 0 then
-        IO.eprintln "--unsafe-window must be a positive integer"
-        IO.Process.exit 1
+      if n == 0 then fail "--unsafe-window must be a positive integer"
       pure (some n)
     | none => pure (if p.hasFlag unsafeFlag.longName then some defaultUnsafeWindow else none)
   if unsafeWindow?.isSome && p.hasFlag Scope.flag.longName then
-    IO.eprintln "--unsafe and --scope are mutually exclusive: --unsafe walks several commit \
+    fail "--unsafe and --scope are mutually exclusive: --unsafe walks several commit \
       scopes automatically, while --scope pins exactly one."
-    IO.Process.exit 1
-  return { chain, scope? := ← Scope.parse p cwd, unsafeWindow? }
+  return { chain, scope? := ← Scope.parse p s cwd, unsafeWindow? }
 
 /--
 The developer chain, most trusted first: `master` for the shared upstream
@@ -128,12 +140,14 @@ def reportUnsafeScopes (result : ReadResult) : IO Unit := do
 
 /--
 The `--unsafe` walk: the SHA scopes to try, most recent first, discovered by
-`discoverUnsafeScopes` over the history of the checkout at `cwd`, reported on
+`discoverUnsafeScopes` against the markers under `forksURL` over the history
+of the checkout at `cwd`, reported on
 stderr. Empty when no cached fork commit is in range; the `forks` round then
 reads at the checked-out HEAD, as a plain read does (`Chain.readRounds`).
 -/
-def unsafeScopes (repo : String) (window : Nat) (cwd : FilePath) : IO (List String) := do
-  let scopes ← discoverUnsafeScopes repo window (cwd := cwd)
+def unsafeScopes (forksURL repo : String) (window : Nat) (cwd : FilePath) :
+    IO (List String) := do
+  let scopes ← discoverUnsafeScopes forksURL repo window (cwd := cwd)
   if scopes.isEmpty then
     IO.eprintln s!"--unsafe: no cached fork commits found in range for {repo}; \
       reading the default cache only."
@@ -153,8 +167,9 @@ def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM 
     repoExplicit? := ctx.repoExplicit?, detectedRepo? := ctx.detectedRepo?,
     chain := options.chain, defaultChain := containers, scope? := options.scope?,
     unsafeWindow? := options.unsafeWindow?, cwd := ctx.mathlibCwd } ctx.repo
+  let readURL := readURL ctx.settings
   let scopes ← match options.unsafeWindow? with
-    | some window => unsafeScopes ctx.repo window ctx.mathlibCwd
+    | some window => unsafeScopes (readURL .forks) ctx.repo window ctx.mathlibCwd
     | none => pure []
   let rounds ← Chain.readRounds containers readURL options.chain options.scope? ctx.mathlibCwd
     scopes
@@ -173,7 +188,7 @@ what is cached for their own commits, not for canonical mathlib's.
 In a project that depends on Mathlib (`isMathlibRoot` is false), the cwd is
 that project's own checkout, whose remote and commits name no mathlib fork;
 probing its markers would answer "not cached" for a namespace nothing writes.
-`query` there requires an explicit `--repo=` and errors out with that guidance
+`query` there requires an explicit `--repo=` and fails with that guidance
 otherwise.
 -/
 def resolveQueryRepo (repoExplicit? : Option String) (isMathlibRoot : Bool) : IO String := do
@@ -181,10 +196,9 @@ def resolveQueryRepo (repoExplicit? : Option String) (isMathlibRoot : Bool) : IO
   | some r => pure r
   | none =>
     unless isMathlibRoot do
-      IO.eprintln "`cache query` locates a mathlib fork's per-commit cache, and this \
+      fail "`cache query` locates a mathlib fork's per-commit cache, and this \
         project's own commits name none. Run it from a mathlib checkout, or pass \
         --repo=OWNER/REPO to name the fork to query."
-      IO.Process.exit 1
     match ← getRemoteRepo "." with
     | some repo => pure repo
     | none => pure MATHLIBREPO
@@ -192,29 +206,29 @@ def resolveQueryRepo (repoExplicit? : Option String) (isMathlibRoot : Bool) : IO
 /--
 The `query` answer for a canonical repository: `query` probes the per-commit
 markers of forks only, so it has nothing to query for `repo`. Without a `ref`
-the answer is a note on stdout; with one it is an error, exit 1, in place of a
-misleading `not cached`.
+the answer is a note on stdout, exit status 0; with one it is an error, exit
+status 1, in place of a misleading `not cached`.
 -/
-def noPerCommitNamespace (repo : String) (ref? : Option String) : IO Unit := do
+def noPerCommitNamespace (repo : String) (ref? : Option String) : IO UInt32 := do
   match ref? with
   | none =>
     IO.println s!"`cache query` locates a fork PR's per-commit cache. {repo} reads \
       its own cache container directly, so there is nothing to query for it."
+    return 0
   | some _ =>
     IO.eprintln s!"{repo} caches by file hash, not per commit, so there is no per-commit \
       build to query."
-    (← IO.getStderr).flush
-    IO.Process.exit 1
+    return 1
 
-/-- `cache query [REF]` for `repo`: without a ref, the most recent cached
-commit of the fork on this branch; with one, whether that commit is cached
-(exit 0) or not (exit 1). A canonical repository has no per-commit namespace
-(`noPerCommitNamespace`). -/
-def query (repo : String) (ref? : Option String) : IO Unit := do
+/-- `cache query [REF]` for `repo` under the settings `s`, and its exit
+status: without a ref, the most recent cached commit of the fork on this
+branch; with one, whether that commit is cached (0) or not (1). A canonical
+repository has no per-commit namespace (`noPerCommitNamespace`). -/
+def query (s : Settings) (repo : String) (ref? : Option String) : IO UInt32 := do
   if isCanonicalRepo repo then
     noPerCommitNamespace repo ref?
   else match ref? with
-    | none => cacheQuery repo (cap := 50)
-    | some ref => cacheQuerySingle repo (← resolveGitRef ref)
+    | none => cacheQuery (readURL s .forks) repo (cap := 50); return 0
+    | some ref => cacheQuerySingle (readURL s .forks) repo (← resolveGitRef ref)
 
 end Cache.Workflow.Developer

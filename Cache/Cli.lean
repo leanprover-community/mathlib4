@@ -5,6 +5,8 @@ Authors: Marcelo Lynch
 -/
 
 import Cli
+import Cache.Repo
+import Cache.Scope
 import Cache.Upload.Defs
 
 /-!
@@ -13,9 +15,10 @@ import Cache.Upload.Defs
 The `cache` command line is parsed by the `Cli` library. This module holds
 what several commands share: the value types a flag can carry
 (`Cli.ParseableType` instances for the tool's own types, so the parser
-validates a container or a backend name itself) and the flags no workflow
-owns (`CommonFlag`). The command tree is `Cache.Commands`; each read workflow
-declares its own flags (`Cache.Workflow`).
+validates a container or a backend name itself), the flags no workflow owns
+(`CommonFlag`), and the scope flag the reads and the uploads share
+(`Scope.flag`, `Scope.parse`). The command tree is `Cache.Commands`; each read
+workflow declares its own flags (`Cache.Workflow`).
 -/
 
 namespace Cache
@@ -44,7 +47,7 @@ instance : Cli.ParseableType FilePath where
   parse? s := if s.isEmpty then none else some s
 
 /-! The flags several commands share and no workflow owns: `--repo` for
-`get`, `put`, and `query`; `--backend` and `--staging-dir` for
+`get`, `put`, and `query`; `--container`, `--backend` and `--staging-dir` for
 the upload and staging commands. Each flag comes with its typed reader from a
 parsed command line. -/
 namespace CommonFlag
@@ -59,6 +62,20 @@ def repo : Cli.Flag := {
 
 /-- The `--repo` of the parsed command line `p`, if given. -/
 def repoOf (p : Cli.Parsed) : Option String := (p.flag? repo.longName).map (·.as! String)
+
+/-- `--container=NAME`: the container an upload writes. -/
+def container : Cli.Flag := {
+  longName := "container"
+  description := s!"The container the upload writes, one of \
+    {", ".intercalate (Container.all.map Container.name)}. It decides the layout: flat for \
+    master, repo-namespaced for the others, and with --scope the per-commit namespace of \
+    forks. The files go under the container on the Azure storage account, or under the root \
+    MATHLIB_CACHE_PUT_URL names."
+  type := Container }
+
+/-- The `--container` of the parsed command line `p`, if given. -/
+def containerOf (p : Cli.Parsed) : Option Container :=
+  (p.flag? container.longName).map (·.as! Container)
 
 /-- `--backend=NAME`: the storage backend of a write. -/
 def backend : Cli.Flag := {
@@ -87,5 +104,38 @@ def names : List String :=
   "help" :: [repo, backend, stagingDir].map (·.longName)
 
 end CommonFlag
+
+namespace Scope
+
+/-- `--scope=REF`: the per-commit namespace of a read or a write. -/
+def flag : Cli.Flag := {
+  longName := "scope"
+  description := "The per-commit namespace, as any git ref `git rev-parse` accepts (HEAD, a \
+    branch, a tag, a SHA). A read takes the fork's namespace for that commit instead of the \
+    checked-out HEAD; use the SHA `cache query` reports. An upload fills that namespace. \
+    Reading another commit's scope trusts the artifacts built at that commit, and get prints \
+    a security notice."
+  type := String }
+
+/-- The scope of the settings, `MATHLIB_CACHE_REPO_SCOPE`, if set. -/
+def ofSettings (s : Settings) : IO (Option Scope) :=
+  s.repoScope?.mapM (Scope.ofString · .env)
+
+/--
+The scope of the parsed command line `p`: `--scope=REF` (`flag`), else
+`MATHLIB_CACHE_REPO_SCOPE` (`ofSettings`), else none. `--scope` accepts any
+git ref `git rev-parse` resolves in `cwd` (HEAD, branch, tag, SHA) and falls
+through to the literal value when git cannot (a bare SHA outside a git
+checkout). Throws on a value that is not a SHA (`Scope.ofString`).
+-/
+def parse (p : Cli.Parsed) (s : Settings) (cwd : FilePath := ".") : IO (Option Scope) := do
+  match p.flag? flag.longName with
+  | some f =>
+    let ref := f.as! String
+    let sha ← try resolveGitRef ref cwd catch _ => pure ref
+    some <$> Scope.ofString sha .flag
+  | none => ofSettings s
+
+end Scope
 
 end Cache

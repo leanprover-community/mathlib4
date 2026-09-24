@@ -5,6 +5,7 @@ Authors: Marcelo Lynch
 -/
 
 import Cache.Marker
+import Cache.Requests
 
 /-!
 # The fork per-commit probes
@@ -13,8 +14,9 @@ The developer workflow's mechanisms over a fork's per-commit markers: the
 `cache query` walk that finds the most recent commit on the current branch
 with a cached CI build, the single-commit probe, and the `--unsafe` walk that
 collects cached commits to read at. The walks follow git history back to the
-merge base with `master`. Each probe is one HEAD request on a commit's marker,
-and no probe reads or writes artifacts.
+merge base with `master`. Each probe is one HEAD request on a commit's marker
+under `forksURL`, the read URL of the `forks` container that the workflow
+gives (`Developer.readURL`), and no probe reads or writes artifacts.
 -/
 
 namespace Cache.Workflow.Developer
@@ -22,19 +24,6 @@ namespace Cache.Workflow.Developer
 open Cache.Requests
 
 open System (FilePath)
-
-/--
-The developer cache's read host: the bucket that holds the `forks` container,
-read directly rather than through the cache resolver. The workflow reads its
-other containers through the public endpoint (`publicCacheEndpoint`).
--/
-def developerCacheEndpoint : String := "https://r2devcache.mathlib.org"
-
-/-- The read URL of each container in a developer read: `forks` on the
-developer cache's host, every other container on the public endpoint, both
-under the read base rule (`Container.readURL`). -/
-def readURL (c : Container) : IO String :=
-  c.readURL (if c == .forks then developerCacheEndpoint else publicCacheEndpoint)
 
 /--
 Walk the first-parent git log backwards from `startRef`, stopping at
@@ -73,13 +62,13 @@ def gitMergeBase (targetRef : String) (cwd : FilePath := ".") : IO (Option Strin
 
 /--
 Whether CI cached commit `sha` of fork `repo`: an anonymous HEAD against the
-marker `forks/m/{repo}/{sha}` (`markerReadURL`) answers 200. An upload writes
+marker `{forksURL}/m/{repo}/{sha}` (`markerReadURL`) answers 200. An upload writes
 the marker after all of its files, so the marker means that the upload of
 that commit is complete. A HEAD request on a known URL costs less than a
 bucket listing.
 -/
-def probeCommit (repo sha : String) : IO Bool := do
-  let url := markerReadURL (← readURL .forks) repo sha
+def probeCommit (forksURL repo sha : String) : IO Bool := do
+  let url := markerReadURL forksURL repo sha
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
   let out ← IO.Process.output
@@ -105,12 +94,12 @@ found, so at most `limit` probes succeed (and at most `shas.length` are made).
 `forks` is the only SHA-scoped container; master/nightly-testing/pr-toolchain-tests
 are not scoped, so probing them here would be meaningless.
 -/
-def findRecentSHAsWithCache (shas : List String) (repo : String) (limit : Nat) :
-    IO (List String) := do
+def findRecentSHAsWithCache (forksURL : String) (shas : List String) (repo : String)
+    (limit : Nat) : IO (List String) := do
   let mut found : Array String := #[]
   for sha in shas do
     if found.size ≥ limit then break
-    if ← probeCommit repo sha then
+    if ← probeCommit forksURL repo sha then
       found := found.push sha
   pure found.toList
 
@@ -119,25 +108,24 @@ Given a list of SHAs, find the most recent one that has cached entries in the
 forks container under the SHA-scoped namespace. Returns the first SHA the probe
 accepts, or none if none are found.
 -/
-def findMostRecentSHAWithCache (shas : List String) (repo : String) :
+def findMostRecentSHAWithCache (forksURL : String) (shas : List String) (repo : String) :
     IO (Option String) :=
-  return (← findRecentSHAsWithCache shas repo 1).head?
+  return (← findRecentSHAsWithCache forksURL shas repo 1).head?
 
 /--
-Boolean probe for a single commit: prints `cached` or `not cached` and exits
-with status 0 / 1 respectively. Intended for scripting.
+Boolean probe for a single commit: prints `cached` or `not cached` and returns
+the exit status 0 or 1. Intended for scripting.
 
 Probes the `forks` per-SHA marker, the only SHA-scoped container; `repo` is a
 fork.
 -/
-def cacheQuerySingle (repo sha : String) : IO Unit := do
-  let cached ← probeCommit repo sha
-  if cached then
+def cacheQuerySingle (forksURL repo sha : String) : IO UInt32 := do
+  if ← probeCommit forksURL repo sha then
     IO.println s!"cached: {sha}"
+    return 0
   else
     IO.println s!"not cached: {sha}"
-    (← IO.getStdout).flush
-    IO.Process.exit 1
+    return 1
 
 /--
 Implement the `cache query` subcommand.
@@ -150,7 +138,8 @@ This is a diagnostic-only command: it prints the SHA to stdout but does not
 auto-apply it. The user manually passes the result to `cache get` if desired.
 `repo` is a fork.
 -/
-def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Unit := do
+def cacheQuery (forksURL repo : String) (cap : Nat := 50) (cwd : FilePath := ".") :
+    IO Unit := do
   -- Determine merge base with master. If not reachable, use cap-only walk.
   let mergeBase? ← gitMergeBase "master" cwd
   let stopRef := mergeBase?.getD ""
@@ -162,7 +151,7 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     return
 
   -- Probe each SHA in order (most recent first).
-  let found? ← findMostRecentSHAWithCache shas repo
+  let found? ← findMostRecentSHAWithCache forksURL shas repo
   match found? with
   | some sha =>
     IO.println s!"Most recent cached commit on this branch for fork {repo}: {sha}"
@@ -189,11 +178,11 @@ printed for the user, and it returns several SHAs instead of one. An empty
 result means no cached commit is in range; the `forks` round then reads at
 the checked-out HEAD.
 -/
-def discoverUnsafeScopes (repo : String) (window : Nat)
+def discoverUnsafeScopes (forksURL repo : String) (window : Nat)
     (cap : Nat := 50) (cwd : FilePath := ".") : IO (List String) := do
   let mergeBase? ← gitMergeBase "master" cwd
   let stopRef := mergeBase?.getD ""
   let shas ← gitLogWalk "HEAD" stopRef cap cwd
-  findRecentSHAsWithCache shas repo window
+  findRecentSHAsWithCache forksURL shas repo window
 
 end Cache.Workflow.Developer

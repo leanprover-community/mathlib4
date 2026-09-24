@@ -189,10 +189,11 @@ The trust model does not attempt to defend against:
 | Container model, layouts, read base rule       | [`Cache/Infra.lean`](Infra.lean) (`Container`, `fileDirPath`, `readBase`) |
 | Repo resolution                                | [`Cache/Repo.lean`](Repo.lean) (`resolveRepo`, `resolveDownstreamRepo`) |
 | The command line: commands and their flags     | [`Cache/Commands.lean`](Commands.lean), [`Cache/Cli.lean`](Cli.lean) (`CommonFlag`) |
-| Read options (chain, scope, flat endpoint)     | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`ChainOptions`), [`Cache/Scope.lean`](Scope.lean) (`Scope`), [`Cache/Workflow/Defs.lean`](Workflow/Defs.lean) (`ReadContext`) |
-| Workflow decision and dispatch (reads)         | [`Cache/Workflow.lean`](Workflow.lean) (`Workflow.forRead`) |
+| The environment a command reads                | [`Cache/Env.lean`](Env.lean) (`Settings`) |
+| Read options (chain, scope, flat endpoint)     | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`ChainOptions`), [`Cache/Scope.lean`](Scope.lean) (`Scope`), [`Cache/Cli.lean`](Cli.lean) (`Scope.parse`), [`Cache/Workflow/Defs.lean`](Workflow/Defs.lean) (`ReadContext`) |
+| Workflow decision and dispatch (reads)         | [`Cache/Workflow.lean`](Workflow.lean) (`Workflow.forRead`, `Workflow.plan`) |
 | Upload destination: the container write        | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`stagedUploadDestFrom`) |
-| The three workflows and their read hosts       | [`Cache/Workflow/Public.lean`](Workflow/Public.lean) (`url`), [`Cache/Workflow/Developer.lean`](Workflow/Developer.lean), [`Cache/Workflow/Developer/Query.lean`](Workflow/Developer/Query.lean) (`readURL`), [`Cache/Workflow/Nightly.lean`](Workflow/Nightly.lean) (`readURL`) |
+| The three workflows and their read hosts       | [`Cache/Workflow/Public.lean`](Workflow/Public.lean) (`url`), [`Cache/Workflow/Developer.lean`](Workflow/Developer.lean) (`readURL`), [`Cache/Workflow/Nightly.lean`](Workflow/Nightly.lean) (`readURL`) |
 | Container-chain read (developer, nightly)      | [`Cache/Workflow/Chain.lean`](Workflow/Chain.lean) (`Chain.resolve`, `Chain.rounds`) |
 | Non-default-scope notice                       | [`Cache/Workflow/Notice.lean`](Workflow/Notice.lean) (`Notice.reason?`) |
 | Fork per-commit probes, `query`, `--unsafe` walk | [`Cache/Workflow/Developer/Query.lean`](Workflow/Developer/Query.lean) |

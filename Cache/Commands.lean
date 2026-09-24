@@ -13,12 +13,15 @@ import Cache.Upload
 The commands of `lake exe cache`, parsed by the `Cli` library: each command
 declares its flags and arguments, and its handler runs it. `get` is the
 command that chooses a workflow: it declares the flags of every read workflow
-(`Workflow.flags`), decides the workflow (`Cache.Workflow`), and hands it the
-parsed command line, from which the workflow reads its own flags. A `put` decides its destination
-(`Upload.decide`) from the container `--container` names and
-`MATHLIB_CACHE_PUT_URL`; `query` is a developer-cache command; the local
-commands (`pack`, `unpack`, `clean`, `lookup`, and the staging commands)
-depend on none of this. `main` is the entry point.
+(`Workflow.flags`), resolves the repository, decides the workflow, and plans
+the read before it hashes, so an invalid option fails fast (`Cache.Workflow`).
+A `put` decides its destination (`Upload.decide`) from the container
+`--container` names and `MATHLIB_CACHE_PUT_URL`; `query` is a developer-cache
+command; the local commands (`pack`, `unpack`, `clean`, `lookup`, and the
+staging commands) depend on none of this. `main` is the entry point.
+
+This is the one layer that reads the decision variables (`Settings.read`,
+once per command) and turns an error into an exit status (`reportErrors`).
 -/
 
 namespace Cache.Commands
@@ -107,24 +110,25 @@ def pack (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool) :
   packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
 
 /-- `get`, `get!` (`force`) and `get-` (no `decompress`): resolve the repo
-once, decide the workflow, and hand it the read. -/
+once, decide the workflow, plan the read, then hash and read. -/
 def runGet (force decompress : Bool) (p : Parsed) : IO UInt32 := CacheM.run do
+  let settings ← Settings.read
   let repoExplicit? := CommonFlag.repoOf p
-  let getURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL")
-  let (roots, hashMemo) ← hashMemoFor p
-  let hashMap ← if p.variableArgs.isEmpty then pure hashMemo.hashMap
-    else hashMemo.filterByRootModules roots.keys
-  let parallel ← validateCurl
   let mathlibDepPath := (← read).mathlibDepPath
   let isMathlibRoot ← IO.isMathlibRoot
   let (detectedRepo?, repo) ← resolveRepo repoExplicit? mathlibDepPath isMathlibRoot
-  let workflow := Workflow.forRead repo getURL? (← Workflow.chainReadRequested p)
-  workflow.get p
-    { repoExplicit?, repo, detectedRepo?, getURL?,
-      -- The workflows' git probes run in the mathlib checkout: the dependency
-      -- checkout when Mathlib is a dependency.
-      mathlibCwd := if isMathlibRoot then "." else mathlibDepPath }
-    { hashMap, forceDownload := force, decompress, parallel }
+  let ctx : ReadContext := {
+    repoExplicit?, repo, detectedRepo?, settings,
+    -- The workflows' git probes run in the mathlib checkout: the dependency
+    -- checkout when Mathlib is a dependency.
+    mathlibCwd := if isMathlibRoot then "." else mathlibDepPath }
+  let workflow := Workflow.forRead repo settings.getURL? (Workflow.chainReadRequested p settings)
+  IO.println s!"Cache workflow: {workflow.name}"
+  let plan ← workflow.plan p ctx
+  let (roots, hashMemo) ← hashMemoFor p
+  let hashMap ← if p.variableArgs.isEmpty then pure hashMemo.hashMap
+    else hashMemo.filterByRootModules roots.keys
+  plan.read ctx { hashMap, forceDownload := force, decompress, parallel := ← validateCurl }
   return 0
 
 /-- `pack` and `pack!` (`overwrite`). -/
@@ -157,23 +161,20 @@ def runLookup (p : Parsed) : IO UInt32 := CacheM.run do
   return 0
 
 /-- The decision of a `put` (`Upload.decide`): the destination and the scope,
-from the flags, `MATHLIB_CACHE_PUT_URL` (an empty value means unset), and
-`MATHLIB_CACHE_REPO_SCOPE`. A mismatch fails here, before any packing. The
-destination is printed, as `get` prints its workflow. -/
+from the flags, `MATHLIB_CACHE_PUT_URL`, and `MATHLIB_CACHE_REPO_SCOPE`. A
+mismatch fails here, before any packing. The destination is printed, as `get`
+prints its workflow. -/
 def uploadOf (p : Parsed) : IO Upload := do
+  let settings ← Settings.read
   let options : Upload.Options := {
-    container? := (p.flag? Upload.containerFlag.longName).map (·.as! Container)
+    container? := CommonFlag.containerOf p
     repo? := CommonFlag.repoOf p
-    scope? := ← Scope.parse p
-    putURL? := ← IO.getEnv "MATHLIB_CACHE_PUT_URL"
+    scope? := ← Scope.parse p settings
+    putURL? := settings.putURL?
     backend := CommonFlag.backendOf p }
-  match Upload.decide options with
-  | .ok upload =>
-    IO.println s!"Cache upload: {upload.dest.label} at {upload.dest.base}"
-    pure upload
-  | .error msg =>
-    IO.eprintln msg
-    IO.Process.exit 1
+  let upload ← IO.ofExcept <| (Upload.decide options).mapError IO.userError
+  IO.println s!"Cache upload: {upload.dest.label} at {upload.dest.base}"
+  return upload
 
 /-- `put` and `put!` (`overwrite`): `pack`, then upload. The hash memo scopes
 the file list to what this checkout's build links, so nothing else in the
@@ -222,35 +223,42 @@ def runQuery (p : Parsed) : IO UInt32 := do
     IO.eprintln "Usage: cache query [REF]"
     return 1
   let repo ← Developer.resolveQueryRepo (CommonFlag.repoOf p) (← IO.isMathlibRoot)
-  Developer.query repo refs[0]?
-  return 0
+  Developer.query (← Settings.read) repo refs[0]?
+
+/-- Run the handler `run` on `p`, and report an error it throws on stderr
+with exit status 1. -/
+def reportErrors (run : Parsed → IO UInt32) (p : Parsed) : IO UInt32 := do
+  try run p catch e =>
+    (← IO.getStdout).flush
+    IO.eprintln e
+    return 1
 
 /-- A `get` command: the flags of every workflow, and modules. -/
 def getCmd (name description : String) (force decompress : Bool) : Cmd :=
   .mk name none description
     (flags := #[CommonFlag.repo] ++ Workflow.flags)
     (variableArg? := some modulesArg)
-    (run := runGet force decompress)
+    (run := reportErrors (runGet force decompress))
 
 /-- The flags of an upload: the container, the fork it is for, the backend,
 and the per-commit scope. -/
 def uploadFlags : Array Cli.Flag :=
-  #[Upload.containerFlag, CommonFlag.repo, CommonFlag.backend, Scope.flag]
+  #[CommonFlag.container, CommonFlag.repo, CommonFlag.backend, Scope.flag]
 
 /-- A `put` command: the upload flags, and modules. -/
 def putCmd (name description : String) (overwrite : Bool) : Cmd :=
   .mk name none description
     (flags := uploadFlags)
     (variableArg? := some modulesArg)
-    (run := runPut overwrite)
+    (run := reportErrors (runPut overwrite))
 
 /-- A command with modules and no flags. -/
 def modulesCmd (name description : String) (run : Parsed → IO UInt32) : Cmd :=
-  .mk name none description (variableArg? := some modulesArg) (run := run)
+  .mk name none description (variableArg? := some modulesArg) (run := reportErrors run)
 
 /-- A command with neither flags nor arguments. -/
 def plainCmd (name description : String) (run : Parsed → IO UInt32) : Cmd :=
-  .mk name none description (run := run)
+  .mk name none description (run := reportErrors run)
 
 /-- A command that requires `--staging-dir`. -/
 def stagingCmd (name description : String) (flags : Array Cli.Flag) (modules : Bool)
@@ -258,7 +266,7 @@ def stagingCmd (name description : String) (flags : Array Cli.Flag) (modules : B
   .mk name none description
     (flags := #[CommonFlag.stagingDir] ++ flags)
     (variableArg? := if modules then some modulesArg else none)
-    (run := run)
+    (run := reportErrors run)
     (extension? := some (Cli.require! #[CommonFlag.stagingDir.longName]))
 
 /-- The `cache` command and its subcommands. Without a subcommand it prints
@@ -290,7 +298,7 @@ def cache : Cmd :=
           (HEAD, a SHA): exit 0 if that commit is cached, 1 if not."
         (flags := #[CommonFlag.repo])
         (variableArg? := some { name := "ref", description := "A git ref.", type := String })
-        (run := runQuery),
+        (run := reportErrors runQuery),
       putCmd "put" "pack, then upload the files this build links (mathlib CI)."
         (overwrite := false),
       putCmd "put!" "pack, then upload the files this build links, overwriting (mathlib CI)."
@@ -307,11 +315,9 @@ def cache : Cmd :=
           overwriting."
         (flags := #[]) (modules := false) (runUnstage true)])
 
-/-- The entry point: the legacy switch, then the command tree. A first
-argument that names no command is reported as such. -/
+/-- The entry point: the command tree. A first argument that names no command
+is reported as such. -/
 def main (args : List String) : IO UInt32 := do
-  -- Resolve the legacy switch once, before anything builds a read URL.
-  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
   if let some cmd := args.head? then
     if !cmd.startsWith "-" && !cache.hasSubCmd cmd then
       cache.printError s!"Unknown command `{cmd}`."

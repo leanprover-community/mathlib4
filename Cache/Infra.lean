@@ -164,20 +164,10 @@ edge, so reads cost the project less and land nearer the reader.
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Whether reads address the Azure storage account instead of the cache
-endpoints. `main` sets this from `MATHLIB_CACHE_DEBUG_USE_LEGACY`
-at startup.
-
-The variable is a troubleshooting fallback for the transition to the public
-endpoint, enabled in September 2026, and it should be retired together with
-direct reads from the storage account.
--/
-initialize useLegacy : IO.Ref Bool ← IO.mkRef false
-
-/--
 The read base of a workflow whose own host is `endpoint`:
 `MATHLIB_CACHE_BASE_URL` (`baseEnv?`) when set, else the Azure storage account
-when `useLegacy` is set, else `endpoint`. `normalizeBaseURL` reads the
+when `useLegacy` (`MATHLIB_CACHE_DEBUG_USE_LEGACY`, a troubleshooting
+fallback) is set, else `endpoint`. `normalizeBaseURL` reads the
 variable, so it arrives trimmed, free of trailing slashes, and unset when
 empty.
 
@@ -197,14 +187,14 @@ container's root, the Azure account or `MATHLIB_CACHE_PUT_URL`
 def readBaseFrom (endpoint : String) (baseEnv? : Option String) (useLegacy : Bool) : String :=
   (normalizeBaseURL baseEnv?).getD (if useLegacy then azureAccountURL else endpoint)
 
-/-- `readBaseFrom` on the environment. -/
-def readBase (endpoint : String) : IO String := do
-  return readBaseFrom endpoint (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
+/-- `readBaseFrom` under the settings `s`. -/
+def readBase (s : Settings) (endpoint : String) : String :=
+  readBaseFrom endpoint s.baseURL? s.useLegacy
 
 /-- The read URL of container `c` for a workflow whose own host is
-`endpoint`: `{readBase endpoint}/{pathSegment}`. -/
-def Container.readURL (c : Container) (endpoint : String) : IO String := do
-  return s!"{← readBase endpoint}/{c.pathSegment}"
+`endpoint`, under the settings `s`: `{readBase s endpoint}/{pathSegment}`. -/
+def Container.readURL (c : Container) (s : Settings) (endpoint : String) : String :=
+  s!"{readBase s endpoint}/{c.pathSegment}"
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.

@@ -185,8 +185,7 @@ def test_envValueNormalization : IO Unit := do
 /-- The read base rule every workflow applies to its own host:
 `MATHLIB_CACHE_BASE_URL` over `MATHLIB_CACHE_DEBUG_USE_LEGACY` (the Azure
 account) over the workflow's endpoint. `readBaseFrom` is pure, so this test
-covers every branch; the environment-reading wrapper (`readBase`) adds no
-logic of its own. -/
+covers every branch; `readBase` applies it to the fields of `Settings`. -/
 def test_readBaseFrom : IO Unit := do
   IO.println "readBaseFrom:"
   let endpoint := "https://host.example.org"
@@ -381,36 +380,31 @@ chains pair each container with its URL in trust order. This test covers
 under the chain options. -/
 def test_readURLs : IO Unit := do
   IO.println "Public.url / readURL / Chain.withURLs / Chain.resolve:"
-  let publicBase ← readBase publicCacheEndpoint
-  let developerBase ← readBase Developer.developerCacheEndpoint
-  assertEq "the public cache URL is the master container on the public base"
-    s!"{publicBase}/mathlib4-master" (← Public.url none)
+  let default : Settings := {}
+  assertEq "the public cache is the master container on cache.mathlib.org"
+    "https://cache.mathlib.org/mathlib4-master" (Public.url default)
   assertEq "MATHLIB_CACHE_GET_URL replaces the public cache URL"
     "https://cache.example.org/my-prefix"
-    (← Public.url (some "https://cache.example.org/my-prefix"))
-  assertTrue "developer chain: forks on the developer cache's host, the rest on the public one"
-    ((← Chain.withURLs Developer.containers Developer.readURL) ==
-      [(.master, s!"{publicBase}/mathlib4-master"),
-       (.forks, s!"{developerBase}/mathlib4-forks")])
+    (Public.url { getURL? := some "https://cache.example.org/my-prefix" })
+  assertTrue "developer chain: forks on the developer bucket, the rest on the public endpoint"
+    (Chain.withURLs Developer.containers (Developer.readURL default) ==
+      [(.master, "https://cache.mathlib.org/mathlib4-master"),
+       (.forks, "https://r2devcache.mathlib.org/mathlib4-forks")])
   assertTrue "nightly chain: every container on the public endpoint"
-    ((← Chain.withURLs Nightly.containers Nightly.readURL) ==
-      [(.nightlyTesting, s!"{publicBase}/mathlib4-nightly-testing"),
-       (.forks, s!"{publicBase}/mathlib4-forks")])
-  -- `MATHLIB_CACHE_BASE_URL` overrides the host in both legacy-switch
-  -- positions, so the pinned hosts are checked only when it is unset.
-  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
-    let ambient ← useLegacy.get
-    useLegacy.set false
-    assertEq "the public cache is on cache.mathlib.org"
-      "https://cache.mathlib.org/mathlib4-master" (← Public.url none)
-    assertEq "the developer workflow reads forks from the developer bucket"
-      "https://r2devcache.mathlib.org/mathlib4-forks" (← Developer.readURL .forks)
-    useLegacy.set true
-    assertEq "legacy: the public cache is the master container on the Azure account"
-      Container.master.azureURL (← Public.url none)
-    assertEq "legacy: forks is on the Azure account too"
-      Container.forks.azureURL (← Developer.readURL .forks)
-    useLegacy.set ambient
+    (Chain.withURLs Nightly.containers (Nightly.readURL default) ==
+      [(.nightlyTesting, "https://cache.mathlib.org/mathlib4-nightly-testing"),
+       (.forks, "https://cache.mathlib.org/mathlib4-forks")])
+  let legacy : Settings := { useLegacy := true }
+  assertEq "legacy: the public cache is the master container on the Azure account"
+    Container.master.azureURL (Public.url legacy)
+  assertEq "legacy: forks is on the Azure account too"
+    Container.forks.azureURL (Developer.readURL legacy .forks)
+  let mirror : Settings := { baseURL? := some "https://mirror.example.org", useLegacy := true }
+  assertEq "MATHLIB_CACHE_BASE_URL replaces every host, over the legacy switch"
+    "https://mirror.example.org/mathlib4-forks" (Developer.readURL mirror .forks)
+  assertEq "MATHLIB_CACHE_GET_URL wins over MATHLIB_CACHE_BASE_URL"
+    "https://cache.example.org"
+    (Public.url { mirror with getURL? := some "https://cache.example.org" })
   -- `Chain.resolve`: the workflow's chain, or the options' chain in its order;
   -- `--cache-from` wins over `MATHLIB_CACHE_FROM`.
   assertTrue "no chain option → the workflow's default chain"
@@ -745,12 +739,13 @@ def test_Scope : IO Unit := do
   match Commands.cache.process ["get", s!"--scope={zeros}"] with
   | .ok (_, p) =>
     assertTrue "--scope with an unresolvable SHA is taken literally, from the flag"
-      ((← withSuppressedOutput (Scope.parse p)) == some ⟨zeros, .flag⟩)
+      ((← withSuppressedOutput (Scope.parse p {})) == some ⟨zeros, .flag⟩)
   | .error (_, msg) => assertTrue s!"get --scope parses ({msg})" false
   match Commands.cache.process ["get"] with
   | .ok (_, p) =>
-    assertTrue "no --scope → the environment's scope"
-      ((← withSuppressedOutput (Scope.parse p)) == (← Scope.ofEnv))
+    assertTrue "no --scope → MATHLIB_CACHE_REPO_SCOPE"
+      ((← Scope.parse p { repoScope? := some "abc123" }) == some ⟨"abc123", .env⟩)
+    assertTrue "no --scope and no variable → no scope" ((← Scope.parse p {}) == none)
   | .error (_, msg) => assertTrue s!"get parses ({msg})" false
 
 end ScopeResolution
@@ -884,7 +879,7 @@ HEAD probe per SHA) and are left to CI. An empty list returns `none` without
 a probe. -/
 def test_findMostRecentSHAWithCache : IO Unit := do
   IO.println "findMostRecentSHAWithCache:"
-  let result ← withSuppressedOutput (Developer.findMostRecentSHAWithCache [] MATHLIBREPO)
+  let result ← withSuppressedOutput (Developer.findMostRecentSHAWithCache "" [] MATHLIBREPO)
   assertTrue "empty SHA list returns none without probing" (result == none)
 
 /-- `findRecentSHAsWithCache` collects up to `limit` marked SHAs. The non-empty
@@ -892,9 +887,9 @@ cases hit the network (a marker HEAD probe per SHA) and are left to CI. An
 empty candidate list returns `[]` for any limit, without a probe. -/
 def test_findRecentSHAsWithCache : IO Unit := do
   IO.println "findRecentSHAsWithCache:"
-  let result ← withSuppressedOutput (Developer.findRecentSHAsWithCache [] MATHLIBREPO 5)
+  let result ← withSuppressedOutput (Developer.findRecentSHAsWithCache "" [] MATHLIBREPO 5)
   assertTrue "empty SHA list returns [] without probing" (result == [])
-  let result ← withSuppressedOutput (Developer.findRecentSHAsWithCache [] MATHLIBREPO 0)
+  let result ← withSuppressedOutput (Developer.findRecentSHAsWithCache "" [] MATHLIBREPO 0)
   assertTrue "limit 0 returns [] without probing" (result == [])
 
 end NonDefaultScope
@@ -999,7 +994,8 @@ def test_commandLine : IO Unit := do
     (Workflow.chainReadFlags.map (·.longName) ==
       ["cache-from", "scope", "unsafe", "unsafe-window"])
   assertTrue "the chain-read variables are MATHLIB_CACHE_FROM and MATHLIB_CACHE_REPO_SCOPE"
-    (Workflow.chainReadVariables == ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"])
+    ((Workflow.chainReadVariables {}).map (·.1) ==
+      ["MATHLIB_CACHE_FROM", "MATHLIB_CACHE_REPO_SCOPE"])
   -- The chain-read flags select the developer workflow on the canonical repo,
   -- and each workflow takes its own flags and no other's.
   match Commands.cache.process ["get", "--cache-from=forks,master", "--unsafe-window=2"] with
@@ -1018,6 +1014,37 @@ def test_commandLine : IO Unit := do
     assertTrue "both flags are foreign to the public-cache workflow"
       (foreignTo Public.flags == ["cache-from", "unsafe-window"])
   | .error (_, msg) => assertTrue s!"the chain-read line parses ({msg})" false
+  -- The workflows fail on an invalid option before anything is hashed (`plan`),
+  -- with a message, not an exit, so each failure is checked here.
+  let fails (act : IO Unit) : IO Bool := do
+    try act; pure false catch _ => pure true
+  let parsed (args : List String) : Cli.Parsed :=
+    match Commands.cache.process args with
+    | .ok (_, p) => p
+    | .error _ => default
+  let plain := parsed ["get"]
+  assertTrue "a chain-read variable requests a chain read"
+    (Workflow.chainReadRequested plain { cacheFrom? := some "master" } &&
+     Workflow.chainReadRequested plain { repoScope? := some "abc" } &&
+     !Workflow.chainReadRequested plain {})
+  assertTrue "the public cache fails on a set MATHLIB_CACHE_FROM"
+    (← fails (discard <| Public.plan plain { cacheFrom? := some "master" }))
+  assertTrue "the public cache fails on a set MATHLIB_CACHE_REPO_SCOPE"
+    (← fails (discard <| Public.plan plain { repoScope? := some "abc" }))
+  assertTrue "the public cache plans its URL"
+    ((← Public.plan plain {}) == "https://cache.mathlib.org/mathlib4-master")
+  assertTrue "the public cache fails on a flag of another workflow"
+    (← fails (discard <| Public.plan (parsed ["get", "--unsafe"]) {}))
+  assertTrue "the nightly workflow fails on --unsafe"
+    (← fails (discard <| Nightly.parseOptions (parsed ["get", "--unsafe"])))
+  assertTrue "--unsafe-window=0 fails"
+    (← fails (discard <| Developer.parseOptions (parsed ["get", "--unsafe-window=0"])))
+  assertTrue "--unsafe with --scope fails"
+    (← fails (discard <| Developer.parseOptions (parsed ["get", "--unsafe", "--scope=abc"])))
+  let fromSettings ← withSuppressedOutput
+    (Developer.parseOptions plain { cacheFrom? := some "forks" })
+  assertTrue "the developer workflow reads MATHLIB_CACHE_FROM from the settings"
+    (fromSettings.chain.env? == some [.forks])
   match Commands.cache.process ["get", "--repo=alice/mathlib4", "Mathlib.Init"] with
   | .ok (_, p) =>
     assertTrue "--repo alone requests no chain read" (!Workflow.chainReadFlagged p)
@@ -1029,7 +1056,7 @@ def test_commandLine : IO Unit := do
   | .ok (_, p) =>
     assertTrue "the backend, the staging directory, and the container read typed"
       (CommonFlag.backendOf p == .s3 && CommonFlag.stagingDirOf p == some "/tmp/x" &&
-        (p.flag? Upload.containerFlag.longName).map (·.as! Container) == some .forks)
+        CommonFlag.containerOf p == some .forks)
   | .error (_, msg) => assertTrue s!"the write line parses ({msg})" false
 
 /-- A boolean environment variable is on for `1` and `true`, off for `0` and
@@ -1833,9 +1860,6 @@ end Cache.Test
 
 open Cache Cache.Test Cache.Requests in
 def main : IO UInt32 := do
-  -- Resolve the legacy switch the way the tool's `main` does, so the read-base
-  -- assertions see the setting the environment names.
-  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
   runAll
   let n ← failures.get
   if n == 0 then
