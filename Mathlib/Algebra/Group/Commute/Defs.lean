@@ -123,7 +123,6 @@ theorem ppow_right (h : Commute a b) (n : ℕ+) : Commute a (b ^ n) :=
 theorem ppow_left (h : Commute a b) (n : ℕ+) : Commute (a ^ n) b :=
   (h.symm.ppow_right n).symm
 
--- todo: should nat ppower be called `nsmul` here?
 @[to_additive]
 theorem ppow_ppow (h : Commute a b) (m n : ℕ+) : Commute (a ^ m) (b ^ n) := by
   simp [h]
