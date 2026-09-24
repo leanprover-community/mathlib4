@@ -12,10 +12,10 @@ public import Mathlib.Analysis.Normed.Module.Normalize
 # Triangle equality for finite sums
 
 The triangle inequality `‖∑ i ∈ s, v i‖ ≤ ∑ i ∈ s, ‖v i‖` is an equality exactly when the
-summands pairwise lie on a common closed ray (`SameRay`). This extends `sameRay_iff_norm_add`, the two-vector
-statement in a strictly convex space, to finite families. Equivalently, the nonzero summands all
-have the same `NormedSpace.normalize`, i.e. every summand is a nonnegative real multiple of a
-single vector.
+summands pairwise lie on a common closed ray (`SameRay`). This extends `sameRay_iff_norm_add`, the
+two-vector statement in a strictly convex space, to finite families. Equivalently, the nonzero
+summands all have the same `NormedSpace.normalize`, i.e. every summand is a nonnegative real
+multiple of a single vector.
 
 ## Main statements
 
