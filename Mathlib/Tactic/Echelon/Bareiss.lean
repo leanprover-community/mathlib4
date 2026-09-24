@@ -30,7 +30,7 @@ namespace Mathlib.Tactic.Echelon
 /-- Check whether `decide` reduces the nonzero-ness of a numeral of `α` to a verdict, the shape
 of the entry conditions the certificate closes by `decide`. ℝ has a classical `DecidableEq`
 instance, so instance synthesis alone does not settle this. -/
-def checkDecideEq {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) : MetaM Bool := do
+def checkDecideEq {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM Bool := do
   let two : Q($α) ← mkIntNumeral α 2
   -- `Decidable` of the single disequality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
@@ -48,16 +48,16 @@ def normNumCertifier : EntryCertifier := fun p => do
 /-- The applicability check of the Bareiss method, which requires a commutative domain. -/
 def checkBareissApplicable {u : Level} (α : Q(Type u)) :
     MetaM (Except MessageData Q(CommRing $α)) := do
-  let .some _cr ← trySynthInstanceQ q(CommRing $α)
+  let .some rα ← trySynthInstanceQ q(CommRing $α)
     | return .error m!"expected the element type to be a commutative ring"
   let .some _ ← trySynthInstanceQ q(IsDomain $α)
     | return .error m!"expected the element type to be a domain"
-  return .ok _cr
+  return .ok rα
 
 /-- Select the first registered computation model for the element type `α`, or the default
 rational model. The rational model serves many rings, so its entry certifier is probed here
 (`none` where `decide` settles equality, `norm_num` otherwise). -/
-def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
+def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     MetaM ((c : Carrier) × Model c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
     if let some model ← ext.model? α then
@@ -66,20 +66,20 @@ def modelFor {u : Level} (α : Q(Type u)) (_cr : Q(CommRing $α)) :
   trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
     model for{indentExpr α}"
   let certifier? ← do
-    if ← checkDecideEq α _cr then pure none
+    if ← checkDecideEq α rα then pure none
     else
       trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
         using the `norm_num` entry certifier{indentExpr α}"
       pure (some normNumCertifier)
-  let ⟨carrier, model⟩ ← ratModel α _cr
+  let ⟨carrier, model⟩ ← ratModel α rα
   return ⟨carrier, { model with entryCertifier? := certifier? }⟩
 
 /-- The result of producer evaluation and certificate construction, together with the carrier
 model. -/
-structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
+structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
   /-- The certificate, as constructed by the certifier. -/
-  cert : DecompositionCert _cr A
+  cert : DecompositionCert rα A
   /-- The carrier of the computation model. -/
   carrier : Carrier
   /-- The computation model that produced the decomposition. -/
@@ -89,15 +89,15 @@ structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRi
 
 /-- Produce the decomposition of the matrix literal `A` and elaborate its certificate with the
 terms and proofs it is assembled from. -/
-def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) :
-    MetaM (BareissResult _cr A) := do
-  let ⟨carrier, model⟩ ← modelFor α _cr
+    MetaM (BareissResult rα A) := do
+  let ⟨carrier, model⟩ ← modelFor α rα
   let fractions ← entries.mapM fun row => row.mapM model.evalEntry
   let (values, scales) := scaleRows model.ops model.commonMultiple fractions
   let data := restoreScaling model.ops scales (← bareissDecomp model.ops values)
-  let d ← data.mapM model.mkEntry
-  let cert ← certifyDecomposition _cr A entries d model.entryCertifier?
+  let exprData ← data.mapM model.mkEntry
+  let cert ← certifyDecomposition rα A entries exprData model.entryCertifier?
   return { cert, carrier, model, data }
 
 end Mathlib.Tactic.Echelon

@@ -59,9 +59,12 @@ structure RingOps (V : Type) where
   /-- The pivot zero test. -/
   isZero : V → Bool
 
-/-- The arithmetic of `V` on its literals. `decode` reads a literal into a value and `encode`
-writes a value as a literal. A literal `decode` rejects is read as 0. The literals
-reaching them are the ones `encode` wrote. -/
+/-- The arithmetic of `V` on its literals with a `decode`-`encode` roundtrip per operation.
+This is less efficient than performing the elimination directly on `V`, but is a workaround for
+a restriction in the registry (see `Carrier`). Certificate construction is the bottleneck so
+this does not lead to much overall performance degradation.
+A literal `decode` rejects is read as 0 (should never happen for the literals provided by
+`encode`). -/
 def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → Option V) (encode : V → Expr) :
     RingOps Expr :=
   let read (e : Expr) : V := (decode e).getD ops.zero
@@ -89,13 +92,11 @@ structure BareissData (V : Type) where
 /-- Map over the entries of the transform. -/
 def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
     MetaM (BareissData W) :=
-  return { L := ← d.L.mapM fun row => row.mapM f
-           U := ← d.U.mapM fun row => row.mapM f
-           swaps := d.swaps
-           pivot := d.pivot }
+  return { L := ← d.L.mapM (·.mapM f), U := ← d.U.mapM (·.mapM f),
+           swaps := d.swaps, pivot := d.pivot }
 
-/-- The row arrangement `σ` of the swaps. The entry at position `i` is the original index of
-the row the swaps move to position `i`. -/
+/-- The row arrangement of the swaps: the entry at position `i` is the original row index
+that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
@@ -103,7 +104,12 @@ def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
 it cannot prove. -/
 @[expose] def EntryCertifier := Expr → MetaM Expr
 
-/-- Core algorithm of fraction-free Gaussian elimination. -/
+/-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
+by the model.
+
+A single sweep accumulates the transform `L` alongside the working matrix `W`, maintaining
+`L * (A.submatrix σ id) = W` for the row arrangement `σ` so far. The divisions are exact
+by Sylvester's identity, although the data-only computation does not prove that. -/
 def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     MetaM (BareissData V) := do
   let rows := A.size
@@ -154,8 +160,9 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   return { L, U := W, swaps, pivot := pivotCols }
 
 /-- The carriers a model computes on, the integers or expressions of the ring.
-The most direct method is for a model to name this as a parameter in `Type`, but that
-puts the model in a higher universe level, and the registry can only store `Type 0` elements. -/
+The most direct method is for a model to name the carrier type directly as a field of the extension,
+but that puts the model in a higher universe level, and the registry can only store `Type 0`
+elements. -/
 inductive Carrier
   | int
   | expr
@@ -169,8 +176,8 @@ abbrev Carrier.type : Carrier → Type
 structure Model (V : Type) where
   /-- The arithmetic of the carrier. -/
   ops : RingOps V
-  /-- An entry as a value with an optional denominator (used for the scaling optimisation).
-  `(n, some d)` denotes `n / d` for a nonzero `d`, and `(n, none)` denotes `n`. -/
+  /-- Evaluate an entry to a value with an optional denominator for the row scaling.
+  `(n, some d)` denotes `n / d` with `d` nonzero, and `(n, none)` denotes `n`. -/
   evalEntry : Expr → MetaM (V × Option V)
   /-- A common multiple for eliminating the denominators (`ops.mul` by default). A
   carrier type with a cheap lcm function could supply it as an optimisation to keep the

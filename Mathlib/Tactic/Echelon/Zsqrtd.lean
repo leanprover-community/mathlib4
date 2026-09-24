@@ -13,7 +13,9 @@ public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 /-!
 # The `ℤ√d` model for the Bareiss elimination
 
-The computable model of the quadratic extensions `ℤ√d`.
+The computable model of the quadratic extensions `ℤ√d`: the elimination runs on `ℤ√d`
+values with the ring's own arithmetic, with exact division by conjugation. Entries are
+`⟨a, b⟩` literals, `√d`, or numerals.
 -/
 
 public meta section
@@ -23,9 +25,9 @@ open Lean Meta Qq
 namespace Mathlib.Tactic.Echelon
 
 /-- Evaluate an entry or component of the `ℤ√d` model to an integer, via `norm_num`. -/
-def evalInt (e : Expr) : MetaM ℤ := do
+def evalInt (e : Expr) : MetaM Int := do
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
-  let r ← try some <$> Mathlib.Meta.NormNum.derive eQ catch _ => pure none
+  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
   if let some v := r.bind (·.toRat) then
     if v.den == 1 then
       return v.num
@@ -43,13 +45,13 @@ def evalZsqrtdEntry (d : ℤ) (e : Expr) : MetaM (ℤ√d) := do
 def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
   zero := 0
   one := 1
-  mul := Mul.mul
-  sub := Sub.sub
-  divExact x y :=
+  mul := (· * ·)
+  sub := (· - ·)
+  divExact := fun x y =>
     let z := x * star y
     let n := y.norm
     ⟨z.re / n, z.im / n⟩
-  isZero x := x == 0
+  isZero := (· == 0)
 
 /-- The integer of a raw literal `Int.ofNat n` or `Int.negOfNat n`. -/
 def intOfRawLit? (e : Expr) : Option ℤ :=
@@ -67,7 +69,7 @@ def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
 /-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components. `d` is the value of
 the integer literal `dQ`. -/
 def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
-  q(⟨$(Mathlib.Meta.NormNum.mkRawIntLit v.re), $(Mathlib.Meta.NormNum.mkRawIntLit v.im)⟩)
+  q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
 
 /-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
 with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
@@ -76,12 +78,14 @@ def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
   ⟨.expr, {
     ops
     evalEntry := fun e => return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
+    -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
+    -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
     mkEntry := fun e => do
       let some v := zsqrtdOfRawLit? d e
         | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
       return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }⟩
 
-/-- The registration of the `ℤ√d` model for `Zsqrtd d` with an integer literal `d`.
+/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`.
 Equality in `ℤ√d` is settled by `decide`, so the model has no entry certifier. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   model? R := do
