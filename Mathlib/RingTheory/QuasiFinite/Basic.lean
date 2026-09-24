@@ -270,13 +270,13 @@ omit [Algebra S T] in
 lemma of_forall_exists_mul_mem_range [QuasiFinite R S] (f : S →ₐ[R] T)
     (H : ∀ x : T, ∃ s : S, IsUnit (f s) ∧ x * f s ∈ f.range) :
     QuasiFinite R T := by
-  let φ : Localization ((IsUnit.submonoid T).comap (f : R →* S)) →ₐ[R] T :=
-    IsLocalization.liftAlgHom (M := (IsUnit.submonoid T).comap (f : R →* S))
+  let φ : Localization ((IsUnit.submonoid T).comap (f : S →* T)) →ₐ[R] T :=
+    IsLocalization.liftAlgHom (M := (IsUnit.submonoid T).comap (f : S →* T))
       (f := f) (by simp [IsUnit.mem_submonoid_iff])
   suffices Function.Surjective φ from .of_surjective_algHom φ this
   intro x
   obtain ⟨s, hs, t, ht⟩ := H x
-  refine ⟨IsLocalization.mk' (M := (IsUnit.submonoid T).comap (f : R →* S)) _ t
+  refine ⟨IsLocalization.mk' (M := (IsUnit.submonoid T).comap (f : S →* T)) _ t
     ⟨s, hs⟩, ?_⟩
   simpa [φ, IsLocalization.lift_mk', Units.mul_inv_eq_iff_eq_mul, IsUnit.coe_liftRight]
 

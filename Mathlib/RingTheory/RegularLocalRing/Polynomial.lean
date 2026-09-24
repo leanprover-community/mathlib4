@@ -79,7 +79,7 @@ instance Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegular
   apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
   let q := p.comap C
   let S := (Localization.AtPrime q)[X]
-  let pc := Submonoid.map Polynomial.(C (R := R) : R →* R[X]) q.primeCompl
+  let pc := Submonoid.map (Polynomial.C (R := R) : R →* R[X]) q.primeCompl
   let : Algebra R[X] S := algebra R (Localization.AtPrime q)
   have : IsLocalization pc S := Polynomial.isLocalization _ _
   let pS := p.map (algebraMap R[X] S)

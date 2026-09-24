@@ -145,6 +145,9 @@ theorem coe_toMonoidWithZeroHom (v : Valuation R Γ₀) : ⇑(v : R →*₀ Γ�
 @[deprecated (since := "2026-09-15")]
 alias toMonoidWithZeroHom_coe_eq_coe := coe_toMonoidWithZeroHom
 
+@[simp]
+theorem toMonoidHom_toMonoidWithZeroHom (v : Valuation R Γ₀) : ((v : R →*₀ Γ₀) : R →* Γ₀) = v := rfl
+
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   DFunLike.ext _ _ h

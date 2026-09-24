@@ -225,7 +225,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
       rw [← hb] at z0 ⊢
       simp only [MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe,
-        Valuation.toMonoidWithZeroHom_coe_eq_coe, OneHom.coe_mk, ← v.restrict_le_iff]
+        Valuation.coe_toMonoidWithZeroHom, OneHom.coe_mk, ← v.restrict_le_iff]
       refine Valued.isOpen_closedBall _ ?_
       rw [ne_eq, ← map_zero v.restrict, v.restrict_inj, map_zero]
       exact z0.ne'
@@ -260,7 +260,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     use j, hj
     -- and this `c` is either less than or greater than (or equal to) the threshold element
     simp only [MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe,
-      Valuation.toMonoidWithZeroHom_coe_eq_coe, OneHom.coe_mk] at hc
+      Valuation.coe_toMonoidWithZeroHom, OneHom.coe_mk] at hc
     split_ifs at hj' with hcj
     · simp only [Set.mem_ofPred_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]
