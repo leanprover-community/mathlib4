@@ -114,7 +114,7 @@ if their compositions with `AddQuotientGroup.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/]
 theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
-  MonoidHom.ext fun x => QuotientGroup.induction_on x <| (DFunLike.congr_fun h :)
+  MonoidHom.ext fun x => QuotientGroup.induction_on x (DFunLike.congr_fun h :)
 
 @[to_additive (attr := simp)]
 theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
@@ -401,13 +401,13 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
     left_inv := fun x => by
       rw [map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H))
         (he ▸ (G'.map_equiv_eq_comap_symm e).le)]
-      simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
-        MulEquiv.coe_monoidHom_refl, map_id_apply]
+      simp only [← MulEquiv.toMonoidHom_trans, MulEquiv.self_trans_symm,
+        MulEquiv.toMonoidHom_refl, map_id_apply]
     right_inv := fun x => by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)
         (he ▸ G'.le_comap_map (e : G →* H))]
-      simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
-        MulEquiv.coe_monoidHom_refl, map_id_apply] }
+      simp only [← MulEquiv.toMonoidHom_trans, MulEquiv.symm_trans_self,
+        MulEquiv.toMonoidHom_refl, map_id_apply] }
 
 @[simp]
 theorem congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he (mk x) = e x :=

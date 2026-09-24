@@ -46,7 +46,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   have hf : Function.Surjective f := by
     rw [← MonoidHom.range_eq_top, eq_top_iff, ← hS2, closure_le]
     exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
-  replace hf := card_dvd_of_surjective f hf
+  replace hf := card_dvd_of_surjective hf
   rw [Nat.card_pi] at hf
   refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => ?_)
   rw [Nat.card_zpowers]
@@ -164,9 +164,9 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
 @[to_additive /-- **Schreier's Lemma**: A finite index additive subgroup of a finitely generated
   additive group is finitely generated. -/]
 instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := by
-  obtain ⟨S, hS⟩ := hG.1
+  obtain ⟨S, hS⟩ := Group.exists_of_isMulFG G
   obtain ⟨T, -, hT⟩ := exists_finset_card_le_mul H hS
-  exact ⟨⟨T, hT⟩⟩
+  exact Group.isMulFG_iff.mpr ⟨T, hT⟩
 
 theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
     Group.rank H ≤ H.index * Group.rank G := by
