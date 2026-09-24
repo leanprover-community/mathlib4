@@ -175,7 +175,7 @@ abbrev ppowRecAuto {M : Type*} [Mul M] (_h : ∀ a b c : M, a * b * c = a * (b *
   ppowRec k m
 
 /-- A semigroup is a type with an associative `(*)`. -/
-class Semigroup (G : Type*) extends Mul G, PPow G where
+class Semigroup (G : Type*) extends PPow G, Mul G where
   ppow := ppowRecAuto mul_assoc
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
@@ -187,7 +187,7 @@ class Semigroup (G : Type*) extends Mul G, PPow G where
     first | intros; rfl | exact @ppowRec_succ _ ⟨_⟩
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
-class AddSemigroup (G : Type*) extends Add G, PSMul G where
+class AddSemigroup (G : Type*) extends PSMul G, Add G where
   psmul := psmulRecAuto add_assoc
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
