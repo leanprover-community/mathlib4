@@ -15,8 +15,8 @@ The workflow of a fork checkout, and of any read that names a chain, a scope,
 or `--unsafe`. A read walks the trust-ordered chain `containers`: `master`
 from the public cache, then the fork's per-commit namespace in `forks` from
 the developer cache. The per-commit scope of the `forks` round, the
-`--unsafe` walk over cached fork commits, the uncached-HEAD hint, and the
-non-default-scope notice all belong here. CI uploads a fork build to `forks`
+`--unsafe` walk over cached fork commits and its summary, the hint for
+missing files, and the non-default-scope notice all belong here. CI uploads a fork build to `forks`
 under the commit's scope, with the marker `query` probes to find a fork's
 cached commits (`Cache.Workflow.Developer.Query`); `query` is a command of
 this workflow, and answers for the canonical repositories that they have no
@@ -102,58 +102,27 @@ so `master` is read flat whatever the repo is, and `forks` at
 -/
 def containers : List Container := [.master, .forks]
 
-/--
-If the user is on a commit that hasn't been cached for this fork (no marker
-present at `forks/m/{repo}/{HEAD-sha}`), print an informational note
-explaining the SHA-scoped behavior and pointing at `cache query`.
+/-- The workflow's hint for files no round served: CI may have cached another
+commit of the branch, which `cache query` finds. -/
+def missingHints : List String := [
+  "  * If CI built an earlier commit of this branch, `lake exe cache query`",
+  "    finds it, and `lake exe cache get --scope=<sha>` reads it. That trusts",
+  "    the artifacts built at that commit, and `cache get` prints a security",
+  "    notice."]
 
-Fires only on a plain `cache get`:
-- no scope set: the user picked a scope, and the non-default-scope warning
-  covers it
-- no chain override: the user took responsibility for the chain
-- the repo is a fork: the canonical repos do not build into the per-commit
-  `forks` namespace this note checks
-- HEAD is not an ancestor of `master`. On a fork checkout at `master` (or an
-  undiverged branch) the fork's SHA-scoped marker is absent by construction,
-  and `master`, first in the chain, serves every file by hash. There is nothing
-  fork-specific to build, so the note would be a false positive.
-
-One HEAD probe per invocation. The message goes to stderr, apart from
-`cache get`'s stdout output. The HEAD is that of the mathlib checkout at
-`ctx.mathlibCwd`.
--/
-def informIfHeadNotBuilt (options : Options) (ctx : ReadContext) : IO Unit := do
-  if options.scope?.isSome then return
-  if options.chain.chain?.isSome then return
-  if isCanonicalRepo ctx.repo then return
-  -- HEAD already on (an ancestor of) master: master CI builds these commits and
-  -- the master container (first in the fork lookup chain) serves their artifacts
-  -- by hash, so there is nothing fork-specific to build. The forks marker is
-  -- structurally absent here, which would otherwise trigger a misleading note.
-  if (← headIsAncestorOfMaster ctx.mathlibCwd) then return
-  let sha ← try getGitCommitHash ctx.mathlibCwd catch _ => return
-  let hasMarker ← probeCommit ctx.repo sha
-  if hasMarker then return
-  let lines : List String := [
-    "",
-    s!"NOTE: no cache found for HEAD ({sha}) on fork {ctx.repo}.",
-    "This commit hasn't been built by CI for this fork yet. You'll still",
-    "get cache hits for files that match mathlib's master cache; only",
-    "files unique to this PR will need to be rebuilt.",
-    "",
-    "To use a prior CI run from this fork, find a cached commit:",
-    "    lake exe cache query",
-    "",
-    "then re-run with:",
-    "    lake exe cache get --scope=<that-sha>",
-    "",
-    "Important: using another commit's scope means trusting the artifacts",
-    "produced at that commit. `cache get` will print a security notice",
-    "when you do.",
-    "",
-  ]
-  for line in lines do
-    IO.eprintln line
+/-- The `--unsafe` summary: which fork commits supplied files, so the user
+knows whose artifacts they ended up trusting. -/
+def reportUnsafeScopes (result : ReadResult) : IO Unit := do
+  let byScope := result.served.filterMap fun (round, n) => round.scope?.map (·, n)
+  if byScope.isEmpty then
+    IO.eprintln "--unsafe: no fork scopes were needed; \
+      all files were served by higher-trust containers."
+  else
+    IO.eprintln s!"--unsafe: cache served from {byScope.length} fork commit scope(s):"
+    for (sha, n) in byScope do
+      IO.eprintln s!"  {sha} → {n} file(s)"
+    if result.missing > 0 then
+      IO.eprintln s!"  {result.missing} file(s) still missing after all scopes."
 
 /--
 The `--unsafe` walk: the SHA scopes to try, most recent first, discovered by
@@ -174,8 +143,8 @@ def unsafeScopes (repo : String) (window : Nat) (cwd : FilePath) : IO (List Stri
 
 /--
 The read. Prints the non-default-scope notice when the read is taken off the
-default trust boundary, runs the `--unsafe` walk or the uncached-HEAD hint,
-then downloads the chain rounds (`Chain.readRounds containers`).
+default trust boundary, runs the `--unsafe` walk, downloads the chain rounds
+(`Chain.readRounds containers`), then reports what the read did.
 -/
 def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM Unit := do
   Notice.emit {
@@ -184,13 +153,13 @@ def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM 
     unsafeWindow? := options.unsafeWindow?, cwd := ctx.mathlibCwd } ctx.repo
   let scopes ← match options.unsafeWindow? with
     | some window => unsafeScopes ctx.repo window ctx.mathlibCwd
-    | none =>
-      informIfHeadNotBuilt options ctx
-      pure []
+    | none => pure []
   let rounds ← Chain.readRounds containers readURL options.chain options.scope? ctx.mathlibCwd
     scopes
-  getFiles rounds ctx.repo req.hashMap req.forceDownload req.forceDownload req.parallel
-    req.decompress (reportScopes := !scopes.isEmpty)
+  let result ← getFiles rounds ctx.repo req.hashMap req.forceDownload req.forceDownload
+    req.parallel req.decompress
+  if !scopes.isEmpty then reportUnsafeScopes result
+  warnMissing result missingHints
 
 /--
 Resolve the repo `cache query` asks about.

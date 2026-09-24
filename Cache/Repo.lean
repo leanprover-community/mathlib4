@@ -187,8 +187,8 @@ Returns `(detectedRepo?, resolvedRepo)`:
   remote on the dependency checkout cannot take the read off the public cache.
 
 `getRemoteRepo` shells out to git and prints branch/remote diagnostics;
-resolving here lets the read path, the warning, and the HEAD hint share a
-single probe keyed on `mathlibDepPath`.
+resolving here lets the read path and the notice share a single probe keyed
+on `mathlibDepPath`.
 -/
 def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) (isMathlibRoot : Bool) :
     IO (Option String × String) := do

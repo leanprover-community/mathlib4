@@ -14,7 +14,8 @@ The inputs a `get` resolves before it chooses a workflow, in the shape the
 workflow modules take them: the transfer itself (`ReadRequest`) and the
 repository and flat endpoint of the read (`ReadContext`). Each workflow
 parses its own flags from the parsed command line; the helper a workflow uses
-to reject what is not its own (`rejectForeignFlags`) lives here too.
+to reject what is not its own (`rejectForeignFlags`) and the missing-files
+warning they share (`warnMissing`) live here too.
 -/
 
 namespace Cache.Workflow
@@ -67,5 +68,23 @@ def rejectForeignFlags (workflow : String) (own : Array Cli.Flag) (p : Cli.Parse
     let names := ", ".intercalate (foreign.toList.map fun f => s!"--{f.flag.longName}")
     IO.eprintln s!"{names}: not an option of the {workflow} workflow."
     IO.Process.exit 1
+
+/--
+Print the warning for the files no round served (`ReadResult.missing`), with
+the workflow's own `hints` after the ones every read shares.
+-/
+def warnMissing (result : ReadResult) (hints : List String := []) : IO Unit := do
+  if result.missing == 0 then return
+  let lines := [
+    s!"Warning: {result.missing} file(s) were not found in the cache.",
+    "This usually means that your local checkout of mathlib4 has diverged from upstream.",
+    "",
+    "  * If you push your commits to a PR to the mathlib4 repository",
+    "    (use a draft PR if it is not ready for review),",
+    "    then CI will build the oleans and they will be available later.",
+    "  * If you have already opened a PR, this may mean",
+    "    the CI build has failed part-way through building."] ++ hints
+  for line in lines do
+    IO.eprintln line
 
 end Cache.Workflow

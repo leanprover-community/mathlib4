@@ -936,33 +936,6 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
   assertTrue "the fallback reads the public cache (no fork container for dependency builds)"
     (Workflow.forRead resolved none false == .publicCache)
 
-/-- `headIsAncestorOfMaster` gates the uncached-fork-HEAD note: when HEAD is
-already part of master's history, `master` (first in the fork lookup chain)
-serves every file by hash, so the note would be a false positive and is
-suppressed.
-
-Like `getRemoteRepo`, this helper must never throw — it runs on the read path,
-including inside dependency builds where the checkout may not be a git repo (or
-may lack a local `master`). Both failure modes degrade to `false` (= "not an
-ancestor", so the caller keeps its default behavior):
-
-* **Nonexistent path** — `IO.Process.output` throws before git starts; the
-  `try...catch` must intercept it.
-* **Non-git directory** — git runs but exits non-zero; the `exitCode == 0`
-  check returns `false`.
-
-The positive topology cases (HEAD on master ⇒ `true`; diverged branch ⇒ `false`)
-exercise real git history and are covered by the CI integration tests, matching
-how the other git-walking helpers are tested. -/
-def test_headIsAncestorOfMaster_gitFallback : IO Unit := do
-  IO.println "Developer.headIsAncestorOfMaster git fallback:"
-  let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
-  let r1 ← withSuppressedOutput (Developer.headIsAncestorOfMaster fakePath)
-  assertTrue "Developer.headIsAncestorOfMaster returns false when git throws (nonexistent cwd)"
-    (r1 == false)
-  let r2 ← withSuppressedOutput (Developer.headIsAncestorOfMaster "/tmp")
-  assertTrue "Developer.headIsAncestorOfMaster returns false in a non-git directory" (r2 == false)
-
 end GitFallback
 
 section CommandLine
@@ -1823,7 +1796,6 @@ def runAll : IO Unit := do
   test_findMostRecentSHAWithCache
   test_findRecentSHAsWithCache
   test_getRemoteRepo_gitFallback
-  test_headIsAncestorOfMaster_gitFallback
   test_parseEnvFlag
   test_commandLine
   test_curlFollowRedirectArgs

@@ -109,6 +109,14 @@ structure DownloadRound where
   scope? : Option String := none
   deriving BEq, Repr, Inhabited
 
+/-- What a read did: each round that ran, in order, with the number of files
+it served, and the number of files no round served. The workflow reports it
+in its own words. -/
+structure ReadResult where
+  served : List (DownloadRound × Nat) := []
+  missing : Nat := 0
+  deriving Repr, Inhabited
+
 /-- The full SHA of `HEAD` in `cwd` (`git rev-parse HEAD`); throws when git fails. -/
 def getGitCommitHash (cwd : FilePath := ".") : IO String := do
   let out ← IO.Process.output {cmd := "git", args := #["rev-parse", "HEAD"], cwd}
@@ -563,28 +571,26 @@ private def downloadFilesFromContainer
     return ({ failed, decomp := decompState }, served)
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Return the number of files which failed to download.
-If `decompress` is true, decompresses files as they're downloaded (pipelined).
+Return the number of files which failed to download, and what the read did
+(`ReadResult`). If `decompress` is true, decompresses files as they're
+downloaded (pipelined).
 
 `rounds` are the download rounds the workflow resolved, in order (see
 `DownloadRound`). After each round, files that were successfully fetched are
-filtered out so the next round only retries genuine misses.
-
-With `reportScopes` (set by `cache get --unsafe`) the summary reports which
-scoped rounds supplied files. -/
+filtered out so the next round only retries genuine misses. -/
 def downloadFiles
     (rounds : List DownloadRound) (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
+    (forceDownload : Bool) (parallel : Bool)
     (decompress : Bool := false) (forceUnpack : Bool := false)
-    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
-    (reportScopes : Bool := false) : IO Nat := do
+    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".") :
+    IO (Nat × ReadResult) := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
-  if hashMap.isEmpty then IO.println "No files to download"; return 0
+  if hashMap.isEmpty then IO.println "No files to download"; return (0, {})
   IO.FS.createDirAll IO.CACHEDIR
 
   if rounds.isEmpty then
     IO.eprintln "No cache URLs configured for download"
-    return hashMap.size
+    return (hashMap.size, { missing := hashMap.size })
 
   -- Set up decompression config if enabled: one config shared by all container
   -- rounds, with the pipeline state carried between them via `decompState`.
@@ -602,20 +608,19 @@ def downloadFiles
   -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
   let mut decompState : DecompState := {}
   -- Hard transfer failures (not 404 misses) drive the exit code; misses are
-  -- normal and instead surface as the "not found" hint keyed on `remaining`.
+  -- normal and reach the workflow as `ReadResult.missing`.
   -- Accumulated across rounds: a failure in an early container counts even
   -- when a later round serves the file.
   let mut downloadFailed := 0
-  -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
-  -- attributed by the drop in `remaining` across that round.
-  let mut scopeServed : Array (String × Nat) := #[]
+  -- The files each round served, attributed by the drop in `remaining`.
+  let mut served : Array (DownloadRound × Nat) := #[]
   for round in rounds do
     if remaining.isEmpty then break
     let scopeNote := match round.scope? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
       {round.url}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromContainer round.container? repo round.url remaining
+    let (s, fetched) ← downloadFilesFromContainer round.container? repo round.url remaining
       parallel decompConfig round.scope? decompState
     -- Carry the decompression pipeline into the next round and the drain
     -- below: files left behind here are never decompressed. Drop the files
@@ -623,33 +628,8 @@ def downloadFiles
     -- regardless of what is already on disk.
     decompState := s.decomp
     downloadFailed := downloadFailed + s.failed
-    remaining := remaining.filter fun _ hash => !served.contains hash
-    if reportScopes then
-      if let some sha := round.scope? then
-        scopeServed := scopeServed.push (sha, before - remaining.size)
-
-  -- `--unsafe`: report which fork commits actually contributed files, so the
-  -- user knows whose artifacts they ended up trusting.
-  if reportScopes then
-    if scopeServed.isEmpty then
-      IO.eprintln "--unsafe: no fork scopes were needed; \
-        all files were served by higher-trust containers."
-    else
-      IO.eprintln s!"--unsafe: cache served from {scopeServed.size} fork commit scope(s):"
-      for (sha, n) in scopeServed do
-        IO.eprintln s!"  {sha} → {n} file(s)"
-      if remaining.size > 0 then
-        IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
-
-  if warnOnMissing && !remaining.isEmpty then
-    IO.eprintln "Warning: some files were not found in the cache."
-    IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-    IO.eprintln ""
-    IO.eprintln "  * If you push your commits to a PR to the mathlib4 repository"
-    IO.eprintln "    (use a draft PR if it is not ready for review),"
-    IO.eprintln "    then CI will build the oleans and they will be available later."
-    IO.eprintln "  * If you have already opened a PR, this may mean"
-    IO.eprintln "    the CI build has failed part-way through building."
+    remaining := remaining.filter fun _ hash => !fetched.contains hash
+    served := served.push (round, before - remaining.size)
 
   -- Drain the decompression pipeline accumulated across all rounds.
   if let some config := decompConfig then
@@ -661,7 +641,7 @@ def downloadFiles
 
   if downloadFailed > 0 then
     IO.println s!"{downloadFailed} download(s) failed"
-  return downloadFailed
+  return (downloadFailed, { served := served.toList, missing := remaining.size })
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -737,7 +717,8 @@ def checkForManifestMismatch : IO.CacheM Unit := do
         precedence, then run `lake update`."
     IO.Process.exit 1
 
-/-- Downloads missing files, and unpacks files.
+/-- Downloads missing files, and unpacks files. Returns what the read did,
+which the workflow reports.
 
 `rounds` are the download rounds the workflow resolved (see `Cache.Workflow`);
 `repo` is the resolved repo they read for. This function is the shared read
@@ -745,9 +726,8 @@ mechanism under every workflow: the toolchain and manifest checks of a project
 that depends on Mathlib, the download rounds, and the decompression. -/
 def getFiles
     (rounds : List DownloadRound) (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
-    (reportScopes : Bool := false)
-    : IO.CacheM Unit := do
+    (forceDownload forceUnpack parallel decompress : Bool) :
+    IO.CacheM ReadResult := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
@@ -771,10 +751,8 @@ def getFiles
     else pure none
   else pure none
 
-  let failed ← downloadFiles rounds repo hashMap forceDownload parallel
-    (warnOnMissing := true)
-    (decompress := decompress) (forceUnpack := forceUnpack)
-    isMathlibRoot mathlibDepPath (reportScopes := reportScopes)
+  let (failed, result) ← downloadFiles rounds repo hashMap forceDownload parallel
+    (decompress := decompress) (forceUnpack := forceUnpack) isMathlibRoot mathlibDepPath
   if failed > 0 then
     IO.println s!"Downloading {failed} files failed"
     IO.Process.exit 1
@@ -801,6 +779,7 @@ def getFiles
       IO.unpackCache hashMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
+  return result
 
 end Get
 

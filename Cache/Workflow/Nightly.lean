@@ -80,7 +80,8 @@ def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM 
     chain := options.chain, defaultChain := containers, scope? := options.scope?,
     cwd := ctx.mathlibCwd } ctx.repo
   let rounds ← Chain.readRounds containers readURL options.chain options.scope? ctx.mathlibCwd
-  getFiles rounds ctx.repo req.hashMap req.forceDownload req.forceDownload req.parallel
-    req.decompress
+  let result ← getFiles rounds ctx.repo req.hashMap req.forceDownload req.forceDownload
+    req.parallel req.decompress
+  warnMissing result
 
 end Cache.Workflow.Nightly

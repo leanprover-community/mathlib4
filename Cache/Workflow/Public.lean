@@ -65,7 +65,8 @@ def url (getURL? : Option String) : IO String := do
 
 /-- The read: one flat round at `url`. -/
 def get (ctx : ReadContext) (req : ReadRequest) : IO.CacheM Unit := do
-  getFiles [{ container? := none, url := ← url ctx.getURL? }] MATHLIBREPO req.hashMap
-    req.forceDownload req.forceDownload req.parallel req.decompress
+  let result ← getFiles [{ container? := none, url := ← url ctx.getURL? }] MATHLIBREPO
+    req.hashMap req.forceDownload req.forceDownload req.parallel req.decompress
+  warnMissing result
 
 end Cache.Workflow.Public
