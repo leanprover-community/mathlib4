@@ -176,7 +176,7 @@ theorem rank_le_card_width [CommSemiring R] [StrongRankCondition R] (A : Matrix 
 
 theorem rank_le_width [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ n :=
-  A.rank_le_card_width.trans <| (Fintype.card_fin n).le
+  A.rank_le_card_width.trans (Fintype.card_fin n).le
 
 theorem rank_mul_le_left [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
     (B : Matrix n o R) : (A * B).rank ≤ A.rank := by

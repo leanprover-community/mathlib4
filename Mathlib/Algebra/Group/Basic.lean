@@ -198,6 +198,14 @@ lemma mul_left_iterate_apply (a b : M) : (a * ·)^[n] b = a ^ n * b := by simp
 lemma mul_right_iterate_apply (a b : M) : (· * a)^[n] b = b * a ^ n := by simp
 
 @[to_additive]
+lemma mul_left_iterate_apply_self (a : M) (n : ℕ) : (a * ·)^[n] a = a ^ (n + 1) := by
+  rw [pow_succ, mul_left_iterate_apply]
+
+@[to_additive]
+lemma mul_right_iterate_apply_self (a : M) (n : ℕ) : (· * a)^[n] a = a ^ (n + 1) := by
+  rw [pow_succ', mul_right_iterate_apply]
+
+@[to_additive]
 lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
 
 @[to_additive]

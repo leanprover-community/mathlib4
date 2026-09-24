@@ -122,7 +122,7 @@ protected theorem eq {a b c d : α} : s(a, b) = s(c, d) ↔ Rel α (a, b) (c, d)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=
-  Quot.ind <| Prod.rec <| h
+  Quot.ind <| Prod.rec h
 
 @[elab_as_elim]
 protected theorem inductionOn {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x y, f s(x, y)) : f i :=
@@ -328,7 +328,7 @@ instance : SetLike (Sym2 α) α where
     simp only [mem_iff'] at hx hy hx' hy'
     aesop
 
-instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α) α
+instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α)
 
 @[simp]
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
@@ -747,7 +747,7 @@ def fromRelOrderIso : { r : α → α → Prop // Std.Symm r } ≃o Set (Sym2 α
   map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-@[deprecated fromRelOrderIso (since := "2026-03-11")]
+@[deprecated fromRelOrderIso +typeChanged (since := "2026-03-11")]
 def fromRelOrderEmbedding : { r : α → α → Prop // Std.Symm r } ↪o Set (Sym2 α) :=
   fromRelOrderIso α |>.toOrderEmbedding
 
@@ -844,7 +844,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]
-          first | done | constructor }
+          first | done | apply List.Perm.swap }
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -854,7 +854,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
       (by
         rintro _ _ ⟨_⟩
-        · constructor; apply List.Perm.refl
+        · apply List.Perm.cons; apply List.Perm.refl
         apply List.Perm.swap'
         rfl)
   invFun :=
@@ -1010,7 +1010,7 @@ variable {s : Set α}
 /--
 For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
 -/
-def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) inferInstance
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
 
@@ -1038,7 +1038,7 @@ lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.
   simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, uncurry, Sym2.map_mk]
 
 lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
-  preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
+  preimage_injective.mpr Sym2.mk_surjective Set.prod_inter_prod.symm
 
 lemma sym2_iInter {ι : Type*} (f : ι → Set α) : (⋂ i, f i).sym2 = ⋂ i, (f i).sym2 := by
   ext ⟨x, y⟩; simp [forall_and]

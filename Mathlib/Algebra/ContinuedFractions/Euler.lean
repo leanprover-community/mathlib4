@@ -182,7 +182,7 @@ theorem partDen_euler_succ : (euler h ρ).partDens.get? (n + 1) = (ρ.get? (n + 
 private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
   Decidable.em ((euler h ρ).TerminatedAt 0) |>.elim
     (fun terminatedAt_zero =>
-      (dens_stable_of_terminated zero_le_one <| terminatedAt_zero) ▸ zeroth_den_eq_one)
+      (dens_stable_of_terminated zero_le_one terminatedAt_zero) ▸ zeroth_den_eq_one)
     (fun not_terminatedAt_zero =>
       first_den_eq <| exists_euler_s_of_not_terminatedAt_zero
         (terminatedAt_euler (K := K) |>.eq ▸ not_terminatedAt_zero) |>.choose_spec)
@@ -212,7 +212,7 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
   have det := determinant (g := euler h ρ) (n := n)
   simp only [isEuler_euler, IsEuler.dens_eq_one, mul_one, one_mul] at det
   rw [← neg_sub, det, Finset.prod_range_succ', Finset.prod_range_succ']
-  simp only [partNum_euler_succ, partNum_euler_zero, mul_neg, neg_neg]
+  simp only [partNumsStream', partNum_euler_succ, partNum_euler_zero, mul_neg, neg_neg]
   congr; ext n'
   rcases ρ.get? (n' + 1) with _ | _ <;> simp
 

@@ -513,7 +513,7 @@ open MonoidHom
 theorem map_inl (s : Submonoid M) : s.map (inl M N) = s.prod ⊥ :=
   ext fun p =>
     ⟨fun ⟨_, hx, hp⟩ => hp ▸ ⟨hx, Set.mem_singleton 1⟩, fun ⟨hps, hp1⟩ =>
-      ⟨p.1, hps, Prod.ext rfl <| (Set.eq_of_mem_singleton hp1).symm⟩⟩
+      ⟨p.1, hps, Prod.ext rfl (Set.eq_of_mem_singleton hp1).symm⟩⟩
 
 @[to_additive]
 theorem map_inr (s : Submonoid N) : s.map (inr M N) = prod ⊥ s :=
@@ -871,12 +871,20 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
   map_mul' x y := Subtype.ext (f.map_mul x y)
 
 @[to_additive]
-lemma submonoidComap_surjective_of_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
+lemma submonoidComap_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
     Surjective (f.submonoidComap N') := fun y ↦ by
   obtain ⟨x, hx⟩ := hf y
   use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
   apply Subtype.val_injective
   simp [hx]
+
+@[to_additive (attr := deprecated (since := "2026-09-09"))]
+alias submonoidComap_surjective_of_surjective := submonoidComap_surjective
+
+@[to_additive]
+lemma submonoidComap_injective (f : M →* N) (N' : Submonoid N) (hf : Injective f) :
+    Injective (f.submonoidComap N') :=
+  fun _ _ h ↦ Subtype.ext (hf (congrArg Subtype.val h))
 
 /-- The `MonoidHom` from a `Submonoid` to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
@@ -885,7 +893,7 @@ See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
   See `AddEquiv.AddSubmonoidMap` for a variant for `AddEquiv`s. -/]
 def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
   toFun x := ⟨f x, ⟨x, x.2, rfl⟩⟩
-  map_one' := Subtype.ext <| f.map_one
+  map_one' := Subtype.ext f.map_one
   map_mul' x y := Subtype.ext <| f.map_mul x y
 
 @[to_additive]
@@ -969,7 +977,7 @@ theorem subtype_comp_inclusion {S T : Submonoid M} (h : S ≤ T) :
 
 @[to_additive (attr := simp)]
 theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
-  SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
+  SetLike.coe_injective <| (coe_mrange _).trans Subtype.range_coe
 
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=

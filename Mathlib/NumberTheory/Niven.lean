@@ -35,8 +35,8 @@ theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = 
   refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
   rintro ⟨q, rfl⟩
   rw [ratCast_iff] at h₁
-  peel IsIntegrallyClosed.algebraMap_eq_of_integral h₁ with h
-  simp [← h]
+  gconvert IsIntegrallyClosed.algebraMap_eq_of_integral h₁
+  simp [← this]
 
 end IsIntegral
 
@@ -180,6 +180,6 @@ theorem niven_fract_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) 
 theorem irrational_cos_rat_mul_pi {r : ℚ} (hr : 3 < r.den) :
     Irrational (cos (r * π)) := by
   rw [← Rat.den_intFract] at hr
-  by_contra! hnz
+  by_contra hnz
   rcases niven_fract_angle_div_pi_eq (exists_rat_of_not_irrational hnz) with (hr' | hr' | hr' | hr')
   all_goals (try rw [Set.mem_singleton_iff] at hr'); rw [hr'] at hr; norm_num at hr

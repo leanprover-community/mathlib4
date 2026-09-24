@@ -44,12 +44,16 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
   rcases eq_or_ne p ∞ with rfl | hp
   · obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε) (by fun_prop)
       (by intro; positivity)
-    refine ⟨g, h₁.mono hg₃, hg₁, eLpNormEssSup_le_of_ae_bound (.of_forall fun x ↦ ?_)⟩
+    refine ⟨g, h₁.mono hg₃, hg₁, ?_⟩
+    rw [eLpNorm_exponent_top (h₂.sub hg₁.continuous).aestronglyMeasurable]
+    refine eLpNormEssSup_le_of_ae_bound (.of_forall fun x ↦ ?_)
     simpa [← dist_eq_norm_sub'] using (hg₂ x).le
   by_cases hf : f =ᵐ[μ] 0
   -- We will need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
-    simpa [HasCompactSupport.zero, eLpNorm_congr_ae hf] using! contDiff_const
+    refine ⟨HasCompactSupport.zero, contDiff_const, ?_⟩
+    rw [eLpNorm_congr_ae (by simpa using hf)]
+    simp
   have hs₁ : μ (tsupport f) ≠ ⊤ := h₁.measure_lt_top.ne
   have hs₂ : 0 < (μ <| tsupport f).toReal := by
     -- Since `f` is not the zero function `tsupport f` has positive measure
@@ -63,7 +67,8 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
       Real.rpow_zero, mul_one]
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε') (by fun_prop)
     (by intro; positivity)
-  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd μ hp h₁.measurableSet hε'.le ?_
+  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd μ hp
+    h₁.measurableSet.nullMeasurableSet hε'.le (h₂.sub hg₁.continuous).aestronglyMeasurable ?_
     (subset_tsupport f) (hg₃.trans (subset_tsupport f))).trans hε₂⟩
   intro x
   rw [dist_comm]
@@ -87,12 +92,12 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
   have hε₂ : 0 < ε / 2 := by positivity
   have hε₂' : 0 < ENNReal.ofReal (ε / 2) := by positivity
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le hp hε₂'.ne'
-  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ hε₂ hg₃
+  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ :=
+    hg₁.exist_eLpNorm_sub_le_of_continuous (p := p) μ hε₂ hg₃
   refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
-  grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
-    (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂,
-    eLpNorm_sub_comm, hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
+  grw [this, eLpNorm_sub_le hp₂, hg₂, eLpNorm_sub_comm (f := g') (g := g) (p := p) (μ := μ),
+    hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
 
 theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞} (hp : p ≠ ⊤)
     [hp₂ : Fact (1 ≤ p)] :
