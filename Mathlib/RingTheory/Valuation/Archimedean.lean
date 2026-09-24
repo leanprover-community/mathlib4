@@ -21,7 +21,7 @@ variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
   [CommRing O] [Algebra O F] {v : Valuation F Γ₀}
 
 instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*₀ Γ₀) :
-    LinearOrderedCommGroupWithZero v.toMonoidHom.mrange where
+    LinearOrderedCommGroupWithZero (v : F →* Γ₀).mrange where
   bot := ⟨⊥, by simp [bot_eq_zero]⟩
   bot_le a := by simp [bot_eq_zero, ← Subtype.coe_le_coe]
   isBot_zero a := by simp [← Subtype.coe_le_coe]
@@ -32,8 +32,8 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
     gcongr
 
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
-    LinearOrderedCommGroupWithZero v.toMonoidHom.mrange :=
-  inferInstanceAs (LinearOrderedCommGroupWithZero v.toMonoidHom.mrange)
+    LinearOrderedCommGroupWithZero v.mrange :=
+  inferInstanceAs (LinearOrderedCommGroupWithZero ((v : F →*₀ Γ₀) : F →* Γ₀).mrange)
 
 namespace Valuation.Integers
 

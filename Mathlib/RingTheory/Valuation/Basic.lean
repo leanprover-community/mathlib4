@@ -1389,21 +1389,22 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
   rfl
 
 /- TODO: Once `MonoidHom.mrange` is refactored from taking a `MonoidHomClass` argument to a
-`MonoidHom` (see the discussion at https://leanprover.zulipchat.com/#narrow/channel/
+`MonoidHom` and coercion unified to `.toMonoidHom`
+(see the discussion at https://leanprover.zulipchat.com/#narrow/channel/
 287929-mathlib4/topic/Mathlib.27s.20morphism.20hierarchy), this instance can be removed. -/
-instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHomClass.toMonoidHom v).mrange :=
-  inferInstanceAs (CommMonoidWithZero v.toMonoidHom.mrange)
+instance (v : Valuation R Γ₀) : CommMonoidWithZero v.mrange :=
+  inferInstanceAs <| CommMonoidWithZero ((v : R →*₀ Γ₀) : R →* Γ₀).mrange
 
 @[simp]
 lemma val_mrange_zero (v : Valuation R Γ₀) :
-    ((0 : MonoidHom.mrange v) : Γ₀) = 0 :=
+    ((0 : v.mrange) : Γ₀) = 0 :=
   rfl
 
 /- TODO: Once `MonoidHom.mrange` is refactored from taking a `MonoidHomClass` argument to a
 `MonoidHom` (see the discussion at https://leanprover.zulipchat.com/#narrow/channel/
 287929-mathlib4/topic/Mathlib.27s.20morphism.20hierarchy), this instance can be removed. -/
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
-    CommGroupWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (v : K →*₀ Γ₀)))
+    CommGroupWithZero v.mrange :=
+  inferInstanceAs (CommGroupWithZero (((v : K →*₀ Γ₀) : K →* Γ₀).mrange))
 
 end Valuation

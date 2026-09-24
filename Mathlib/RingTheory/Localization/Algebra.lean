@@ -116,17 +116,13 @@ lemma mapₐ_coe (f : A →ₐ[R] B) :
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :
     Function.Injective (mapₐ M Rₚ Aₚ Bₚ f) :=
-  have : IsLocalization (Submonoid.map (MonoidHomClass.toMonoidHom f.toRingHom)
-    (algebraMapSubmonoid A M)) Bₚ := by
-    simp only [AlgHom.toRingHom_eq_coe, AlgHom.toRingHom_toMonoidHom]
+  have : IsLocalization (Submonoid.map (f : A →* B) (algebraMapSubmonoid A M)) Bₚ := by
     infer_instance
   IsLocalization.map_injective_of_injective _ _ _ hf
 
 lemma mapₐ_surjective_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f) :
     Function.Surjective (mapₐ M Rₚ Aₚ Bₚ f) :=
-  have : IsLocalization (Submonoid.map (MonoidHomClass.toMonoidHom f.toRingHom)
-    (algebraMapSubmonoid A M)) Bₚ := by
-    simp only [AlgHom.toRingHom_eq_coe, AlgHom.toRingHom_toMonoidHom]
+  have : IsLocalization (Submonoid.map (f : A →* B) (algebraMapSubmonoid A M)) Bₚ := by
     infer_instance
   IsLocalization.map_surjective_of_surjective _ _ _ hf
 
@@ -197,7 +193,7 @@ attribute [local instance] Polynomial.algebra in
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
 lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
-    [IsLocalization S A] : IsLocalization (S.map C.toMonoidHom) A[X] :=
+    [IsLocalization S A] : IsLocalization (S.map (C (R := R) : R →* R[X])) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
     .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
 

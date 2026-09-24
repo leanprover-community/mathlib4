@@ -40,9 +40,9 @@ set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 private theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
-  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C.toMonoidHom M) p
-  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, C_eq_algebraMap, algebraMap_eq,
-    algebraMap_smul] at h
+  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ :=
+    exists_integer_multiple (Submonoid.map (C (R := R) : R →* R[X]) M) p
+  simp only [MonoidHom.coe_ofClass, C_eq_algebraMap, algebraMap_eq, algebraMap_smul] at h
   obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts h
   exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
 
@@ -165,7 +165,7 @@ theorem is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval 
             (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
           Rₘ →+* _).IsIntegralElem
       (algebraMap S Sₘ x) :=
-  haveI : IsLocalization (Submonoid.map (MonoidHomClass.toMonoidHom (algebraMap R S)) M) Sₘ :=
+  haveI : IsLocalization (Submonoid.map (algebraMap R S : R →* S) M) Sₘ :=
     inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
   (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
 

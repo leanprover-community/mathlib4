@@ -157,8 +157,8 @@ lemma Splits.taylor {p : R[X]} (hp : p.Splits) (r : R) : (p.taylor r).Splits := 
 theorem splits_iff_exists_multiset' {f : R[X]} :
     Splits f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X + C ·)).prod := by
   refine ⟨fun hf ↦ ?_, ?_⟩
-  · let S : Submonoid R[X] := C.toMonoidHom.mrange
-    have hS : S = {C a | a : R} := C.toMonoidHom.coe_mrange
+  · let S : Submonoid R[X] := (C (R := R) : R →* R[X]).mrange
+    have hS : S = {C a | a : R} := (C (R := R) : R →* R[X]).coe_mrange
     rw [Splits, Submonoid.closure_union, ← hS, Submonoid.closure_eq, Submonoid.mem_sup] at hf
     obtain ⟨-, ⟨a, rfl⟩, g, hg, rfl⟩ := hf
     obtain ⟨mg, hmg, rfl⟩ := Submonoid.exists_multiset_of_mem_closure hg
