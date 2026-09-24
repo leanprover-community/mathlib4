@@ -72,7 +72,7 @@ instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective _ _ h := ext (SetLike.coe_injective h)
 
-instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
+instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G)
 
 instance : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _
@@ -206,7 +206,8 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
                 ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
           refine Exists.imp (fun k hk => ?_) (hc1 S.2 ⟨g, hg⟩)
-          rwa [Subtype.ext_iff, coe_pow] at hk ⊢, fun M hM _ hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
+          rw [Subtype.ext_iff, coe_pow] at hk ⊢
+          assumption, fun M hM _ hg => ⟨M, ⟨⟨M, hM⟩, rfl⟩, hg⟩⟩)
       P hP)
     fun {Q} h => ⟨⟨Q, h.2.prop, h.2.eq_of_ge⟩, h.1⟩
 

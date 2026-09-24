@@ -366,13 +366,12 @@ theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
     IsCompactElement (span R S : Submodule R M) :=
   Finite.coe_toFinset h ▸ finset_span_isCompactElement h.toFinset
 
-instance : IsCompactlyGenerated (Submodule R M) :=
-  ⟨fun s =>
-    ⟨(fun x => span R {x}) '' s,
-      ⟨fun t ht => by
-        rcases (Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
-        apply singleton_span_isCompactElement, by
-        rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]⟩⟩⟩
+instance : IsCompactlyGenerated (Submodule R M) where
+  exists_isLUB s := by
+    refine ⟨(span R {·}) '' s, ?_, ?_⟩
+    · rintro _ ⟨x, _, rfl⟩
+      apply singleton_span_isCompactElement
+    · rw [isLUB_iff_sSup_eq, sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]
 
 variable {M' : Type*} [AddCommMonoid M'] [Module R M'] (q₁ q₁' : Submodule R M')
 
@@ -612,7 +611,7 @@ lemma comap_covBy_of_surjective {f : M →ₛₗ[τ₁₂] M₂} (hf : Surjectiv
   rwa [← comap_lt_comap_iff_of_surjective hf, comap_map_eq, sup_eq_left.mpr]
   refine (LinearMap.ker_le_comap (f : M →ₛₗ[τ₁₂] M₂)).trans h₁.le
 
-@[deprecated map_eq_range_iff (since := "2026-07-01")]
+@[deprecated map_eq_range_iff +typeChanged (since := "2026-07-01")]
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ Codisjoint S f.ker := by
   simp [map_eq_range_iff]
