@@ -385,6 +385,7 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
 lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
@@ -411,7 +412,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
-      ∧ u ⊆ {y | ‖d% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
+      ∧ u ⊆ {y | ‖mfderiv% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
     have := Filter.inter_mem (Filter.inter_mem hs hC) (extChartAt_source_mem_nhds (I := I) x)
     rcases exists_mem_nhds_isClosed_subset this with ⟨u, u_mem, u_closed, hu⟩
     simp only [subset_inter_iff] at hu
