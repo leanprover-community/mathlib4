@@ -123,8 +123,8 @@ theorem le_imp_le'' : a ≤ b → a ≤ b := id
 
 -- We can even overwrite it with the empty `reorder`:
 /--
-warning: `to_dual self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_dual self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_dual` to translate expressions involving `le_imp_le'''`,
 use `to_dual_do_translate` instead
 
@@ -148,8 +148,8 @@ theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 
 -- Test that we do not translate numerals like we do in `@[to_additive]`
 /--
-warning: `to_dual self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_dual self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_dual` to translate expressions involving `one_le_one`,
 use `to_dual_do_translate` instead
 
@@ -472,3 +472,24 @@ fun {α} [PartialOrder α] x1 x2 => Eq.refl (x1 ≤ x2)
 -/
 #guard_msgs in
 #print MyLE_le
+
+class SomeClass (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+structure SomeStructure (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+-- `SomeClass` is translated to itself with `(relevant_arg := 0)`, while `SomeStructure` is not.
+attribute [to_dual self] SomeClass.x SomeStructure.x
+
+run_meta
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``SomeClass | failure
+  guard <| findTranslation? (← getEnv) data ``SomeStructure |>.isNone
+
+run_meta
+  -- `GE.ge` gets `(relevant_arg := α)` because `α` appears in `LE`
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``GE.ge | failure
+  -- `WithBot` gets `(relevant_arg := α)` because `WithBot` is a type
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``WithBot | failure

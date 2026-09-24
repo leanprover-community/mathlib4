@@ -125,7 +125,7 @@ theorem linearIndepOn_biUnion_of_directed {η} {s : Set η} {t : η → Set ι}
     (hs : DirectedOn (t ⁻¹'o (· ⊆ ·)) s) (h : ∀ a ∈ s, LinearIndepOn R v (t a)) :
     LinearIndepOn R v (⋃ a ∈ s, t a) := by
   rw [biUnion_eq_iUnion]
-  exact linearIndepOn_iUnion_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
+  exact linearIndepOn_iUnion_of_directed (directed_comp.2 hs.directed_val) (by simpa using h)
 
 end Indexed
 

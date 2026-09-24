@@ -292,7 +292,7 @@ lemma mk_surjective {X : C} (S : Subobject X) :
 -- (`h` will just display as `_`, because it is in `Prop`).
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
 def ofLE {B : C} (X Y : Subobject B) (h : X ≤ Y) : (X : C) ⟶ (Y : C) :=
-  underlying.map <| h.hom
+  underlying.map h.hom
 
 @[reassoc (attr := simp)]
 theorem ofLE_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLE X Y h ≫ Y.arrow = X.arrow :=

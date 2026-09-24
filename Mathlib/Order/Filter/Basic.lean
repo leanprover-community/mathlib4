@@ -177,7 +177,7 @@ lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
     U ∈ generate s := GenerateSets.basic h
 
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
-  Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
+  Iff.intro (fun h _ hu => h <| GenerateSets.basic hu) fun h _ hu =>
     hu.recOn (fun h' => h h') univ_mem (fun _ hxy ↦ by gcongr) fun _ _ hx hy =>
       inter_mem hx hy
 
@@ -203,7 +203,7 @@ def giGenerate (α : Type*) :
     @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets where
   gc _ _ := le_generate_iff
   le_l_u _ _ h := GenerateSets.basic h
-  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 <| le_rfl)
+  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 le_rfl)
   choice_eq _ _ := mkOfClosure_sets
 
 theorem mem_inf_iff {f g : Filter α} {s : Set α} : s ∈ f ⊓ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, s = t₁ ∩ t₂ :=

@@ -309,7 +309,7 @@ theorem primrec_recOn' {α σ}
     nat_casesOn snd (option_some_iff.2 (hl.comp (fst.comp <| fst.comp fst))) <| .mk <|
     nat_casesOn snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst))) <| .mk <|
     this.comp <|
-      ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
+      ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp fst).pair <|
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
@@ -420,7 +420,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
     nat_casesOn snd (option_some_iff.2 (hl.comp (fst.comp <| fst.comp fst))) <| .mk <|
     nat_casesOn snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst))) <| .mk <|
     this.comp <|
-      ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
+      ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp fst).pair <|
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp

@@ -339,7 +339,7 @@ def tr : Λ' → Stmt'
       goto fun s =>
         cond (natEnd (s.getD default)) (Λ'.ret k) <|
           Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
-  | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
+  | Λ'.ret Cont'.halt => (load fun _ => none) halt
 
 @[simp]
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
