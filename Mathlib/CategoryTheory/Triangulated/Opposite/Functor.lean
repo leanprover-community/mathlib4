@@ -58,12 +58,13 @@ noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommS
   have eq : adj.op = PullbackShift.adjunction
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
       (OppositeShift.adjunction ℤ adj) := by
-    ext
+    ext x
     dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
       NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans,
       OppositeShift.adjunction, OppositeShift.natTrans, NatTrans.OppositeShift.natIsoId,
       NatTrans.OppositeShift.natIsoComp, OppositeShift.functor]
-    simp only [Category.comp_id, Category.id_comp]
+    rw [unop_id]
+    simp
   rw [eq]
   exact inferInstanceAs (Adjunction.CommShift (PullbackShift.adjunction
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
@@ -117,6 +118,7 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
         (((F.op).commShiftIso n).inv.app X).unop⟦n⟧' ≫
         ((opShiftFunctorEquivalence D n).unitIso.hom.app (op _)).unop := by
   dsimp [opShiftFunctorEquivalence]
+  simp only [comp_id]
   simp only [map_comp, unop_comp, Quiver.Hom.unop_op, assoc,
     map_shiftFunctorCompIsoId_hom_app, commShiftIso_hom_naturality_assoc,
     op_commShiftIso_inv_app _ _ _ _ (add_neg_cancel n)]
@@ -148,6 +150,7 @@ lemma map_opShiftFunctorEquivalence_counitIso_hom_app_unop (X : Cᵒᵖ) (n : �
           ((F.op.commShiftIso n).hom.app (op (X.unop⟦n⟧))).unop := by
   apply Quiver.Hom.op_inj
   dsimp [opShiftFunctorEquivalence]
+  simp only [id_comp, comp_id]
   rw [assoc, F.op_commShiftIso_hom_app_assoc _ _ _ (add_neg_cancel n), map_comp,
     map_shiftFunctorCompIsoId_inv_app_assoc, op_comp, op_comp_assoc, op_comp_assoc,
     NatTrans.naturality_assoc, op_map, Iso.inv_hom_id_app_assoc, Quiver.Hom.unop_op]

@@ -60,7 +60,7 @@ theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s
 theorem differentiableOn_dslope {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s ∈ 𝓝 c) :
     DifferentiableOn ℂ (dslope f c) s ↔ DifferentiableOn ℂ f s :=
   ⟨fun h => h.of_dslope, fun h =>
-    (differentiableOn_compl_singleton_and_continuousAt_iff hc).mp <|
+    (differentiableOn_compl_singleton_and_continuousAt_iff hc).mp
       ⟨Iff.mpr (differentiableOn_dslope_of_notMem fun h => h.2 rfl) (h.mono sdiff_subset),
         continuousAt_dslope_same.2 <| h.differentiableAt hc⟩⟩
 
