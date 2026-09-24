@@ -536,17 +536,15 @@ then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
 @[simps! -isSimp apply_coe_val apply_coe_inv_val]
 noncomputable
-def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
-    [FunLike F R S] [MonoidHomClass F R S]
-    {n : ℕ} [NeZero n] {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
+def _root_.rootsOfUnityEquivOfPrimitiveRoots {S} [CommRing S] [IsDomain S] {n : ℕ} [NeZero n]
+    {f : R →* S} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
     (rootsOfUnity n R) ≃* rootsOfUnity n S :=
   (Subgroup.equivMapOfInjective _ (Units.map f) (Units.map_injective hf)).trans
     (MulEquiv.subgroupCongr <|
       ((mem_primitiveRoots <| NeZero.pos n).mp hζ.choose_spec).map_rootsOfUnity hf)
 
-lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
-    {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S] {n : ℕ} [NeZero n]
-    {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
+lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply {S} [CommRing S] [IsDomain S] {n : ℕ}
+    [NeZero n] {f : R →* S} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
     f ((rootsOfUnityEquivOfPrimitiveRoots hf hζ).symm η : Rˣ) = (η : Sˣ) := by
   obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η
   rw [MulEquiv.symm_apply_apply, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe]

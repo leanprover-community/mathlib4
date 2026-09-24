@@ -141,7 +141,7 @@ section CommMonoid
 variable [CommMonoid R] [CommMonoid S] [FunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
-def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
+def restrictRootsOfUnity (σ : R →* S) (n : ℕ) :
     rootsOfUnity n R →* rootsOfUnity n S :=
   { toFun := fun ξ ↦ ⟨Units.map σ (ξ : Rˣ), by
       rw [mem_rootsOfUnity, ← map_pow, Units.ext_iff, Units.coe_map, ξ.prop]
@@ -152,7 +152,7 @@ def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
 
 @[simp]
 theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
-    (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
+    (restrictRootsOfUnity (σ : R →* S) k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
 
 /-- Restrict a monoid isomorphism to the nth roots of unity. -/
@@ -264,7 +264,7 @@ variable {k R}
 theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ : F)
     (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
-  obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
+  obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity (σ : R →* R) k)
   rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg
       (m.emod_nonneg (Int.natCast_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_natCast, rootsOfUnity.coe_pow]

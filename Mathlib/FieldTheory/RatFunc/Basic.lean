@@ -317,15 +317,14 @@ open scoped Classical in
 to a `R⟮X⟯ →* S⟮X⟯`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
+def map (φ : R[X] →* S[X]) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     R⟮X⟯ →* S⟮X⟯ where
   toFun f :=
     RatFunc.liftOn f
       (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
       fun {p q p' q'} hq hq' h => by
-        rw [← MonoidHom.coe_ofClass]
-        simp only [Submonoid.mem_comap.mp (hφ hq), Submonoid.mem_comap.mp (hφ hq'),
-          dite_eq_left, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
+        simp only [Submonoid.mem_comap.mp (hφ hq), reduceDIte, Submonoid.mem_comap.mp (hφ hq'),
+          ofFractionRing.injEq, Localization.mk_eq_mk_iff]
         refine Localization.r_of_eq ?_
         simpa [map_mul] using congr_arg φ h
   map_one' := by
@@ -353,7 +352,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
     MonoidHom.coe_ofClass φ ▸ Submonoid.mem_comap.mp (hφ d.2)]
 
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
-    (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
+    (hf : Function.Injective φ) : Function.Injective (map (φ : R[X] →* S[X]) hφ) := by
   rintro ⟨x⟩ ⟨y⟩ h
   induction x using Localization.induction_on
   induction y using Localization.induction_on
@@ -555,7 +554,7 @@ theorem algebraMap_apply {R : Type*} [CommSemiring R] [Algebra R K[X]] (x : R) :
 theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) (hq : q ≠ 0) :
-    map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
+    map (φ : K[X] →* R[X]) hφ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
   have hq' : φ q ≠ 0 := nonZeroDivisors.ne_zero (hφ (mem_nonZeroDivisors_iff_ne_zero.mpr hq))
   simp only [← mk_eq_div, mk_eq_localization_mk _ hq, map_apply_ofFractionRing_mk,
@@ -565,7 +564,7 @@ theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
 theorem map_apply_div {R F : Type*} [CommRing R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidWithZeroHomClass F K[X] R[X]]
     (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (p q : K[X]) :
-    map φ hφ (algebraMap _ _ p / algebraMap _ _ q) =
+    map (φ : K[X] →* R[X]) hφ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (φ p) / algebraMap _ _ (φ q) := by
   rcases eq_or_ne q 0 with (rfl | hq)
   · have : (0 : K⟮X⟯) = algebraMap K[X] _ 0 / algebraMap K[X] _ 1 := by simp
@@ -1101,7 +1100,7 @@ theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClas
 theorem map_apply {R F : Type*} [CommRing R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]] (φ : F)
     (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) (f : K⟮X⟯) :
-    map φ hφ f = algebraMap _ _ (φ f.num) / algebraMap _ _ (φ f.denom) := by
+    map (φ : K[X] →* R[X]) hφ f = algebraMap _ _ (φ f.num) / algebraMap _ _ (φ f.denom) := by
   rw [← num_div_denom f, map_apply_div_ne_zero, num_div_denom f]
   exact denom_ne_zero _
 
