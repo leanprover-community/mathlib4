@@ -210,9 +210,7 @@ def parseCacheFromList (s : String) : Option (List Container) := do
 
 /--
 Trust-ordered containers to try when downloading for a given GitHub repo, most
-trusted first. Each repo reads from its own trust-level container. The public
-endpoint serves the artifacts of the retired `mathlib4` container behind the
-`master` namespace, so the chains need no fallback of their own.
+trusted first. Each repo reads from its own trust-level container.
 
 Fork chains lead with `master`. The layout is fixed per container
 (`Container.flatPath`), so the `master` container is read flat at `/f/{hash}`

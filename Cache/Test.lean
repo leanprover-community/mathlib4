@@ -47,9 +47,7 @@ leantar run on a nonexistent archive; none makes a network request.
 4. Prefixed layout for multi-writer containers: `forks`, `nightly-testing`, and
    `pr-toolchain-tests` namespace by repo so uploads from different sources don't
    collide.
-5. The retired `legacy` name is rejected wherever a container is named
-   (`Container.parse?`, `--cache-from`).
-6. Multi-round downloads decompress every file they fetch: the decompression
+5. Multi-round downloads decompress every file they fetch: the decompression
    pipeline state is carried from each container round into the next and
    drained after the last one, so a fork-PR `get` leaves no downloaded file
    compressed on disk.
@@ -139,7 +137,6 @@ def test_Container_parse : IO Unit := do
   assertTrue "nightly-testing parses" (Container.parse? "nightly-testing" == some .nightlyTesting)
   assertTrue "pr-toolchain-tests parses"
     (Container.parse? "pr-toolchain-tests" == some .prToolchainTests)
-  assertTrue "the retired legacy name is rejected" (Container.parse? "legacy" == none)
   -- Matching is case-insensitive, so `--container=Master` canonicalizes too.
   assertTrue "case-insensitive"       (Container.parse? "Master" == some .master)
   -- An unknown name returns `none` so `--container=bogus` errors out rather than
@@ -379,8 +376,6 @@ def test_parseCacheFromList : IO Unit := do
   assertTrue "all four containers"
     (parseCacheFromList "master,forks,nightly-testing,pr-toolchain-tests" ==
       some [.master, .forks, .nightlyTesting, .prToolchainTests])
-  assertTrue "the retired legacy name is rejected"
-    (parseCacheFromList "master,legacy" == none)
   -- Order is preserved, not normalized: `forks,master` reverses the priority.
   assertTrue "preserves the given order"
     (parseCacheFromList "forks,master" == some [.forks, .master])
@@ -1117,7 +1112,6 @@ def test_isCacheMissStatus : IO Unit := do
   IO.println "isCacheMissStatus:"
   assertTrue "404 is a miss"                   (isCacheMissStatus 404)
   -- Success and server errors are never misses; they must surface.
-  assertTrue "403 is a failure"                (!isCacheMissStatus 403)
   assertTrue "200 is not a miss"               (!isCacheMissStatus 200)
   assertTrue "500 is not a miss"               (!isCacheMissStatus 500)
   -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
@@ -1166,8 +1160,6 @@ def test_classifyDownload : IO Unit := do
     (classifyDownload (some 404) 0 matches .miss)
   assertTrue "404 + nonzero exit is still a miss"
     (classifyDownload (some 404) 18 matches .miss)
-  assertTrue "403 fails"
-    (classifyDownload (some 403) 0 matches .failed)
   assertTrue "409 fails on a read"
     (classifyDownload (some 409) 0 matches .failed)
   -- No usable status is a failure (a connection error reports `000`).

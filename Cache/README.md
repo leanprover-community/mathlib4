@@ -110,9 +110,6 @@ order, depending on the repo:
 | any fork (PRs)                                  | `master`, `forks`           |
 | downstream with mathlib as a dependency         | `master`                    |
 
-The public endpoint serves the artifacts of the retired `mathlib4` container
-behind the `master` namespace, so the chains need no fallback of their own.
-
 Override the read chain with `--cache-from=LIST`:
 
 ```bash
