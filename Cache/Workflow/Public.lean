@@ -50,17 +50,18 @@ def parseOptions (p : Cli.Parsed) : IO Unit := do
 
 /--
 The URL a public-cache read fetches from: `getURL?` (`MATHLIB_CACHE_GET_URL`,
-a third party's own endpoint), else the public cache's flat namespace under
-the public read base (`publicCacheURL`), `https://cache.mathlib.org/mathlib4`
-by default. A file is read flat at `{url}/f/{hash}.ltar`.
+a third party's own endpoint), else the `master` container on the public
+endpoint, under the read base rule (`Container.readURL`),
+`https://cache.mathlib.org/mathlib4-master` by default. A file is read flat at
+`{url}/f/{hash}.ltar`.
 
-The public endpoint serves the master-built artifacts and the older `legacy`
-artifacts behind that namespace, so the workflow needs no fallback of its own.
+The public endpoint serves the older `legacy` artifacts behind the `master`
+namespace, so the workflow needs no fallback of its own.
 -/
 def url (getURL? : Option String) : IO String := do
   match getURL? with
   | some u => return u
-  | none => return publicCacheURL (← getBaseURL .published)
+  | none => Container.master.readURL publicCacheEndpoint
 
 /-- The read: one flat round at `url`. -/
 def get (ctx : ReadContext) (req : ReadRequest) : IO.CacheM Unit := do

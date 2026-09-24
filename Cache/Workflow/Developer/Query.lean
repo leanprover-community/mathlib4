@@ -24,6 +24,19 @@ open Cache.Requests
 open System (FilePath)
 
 /--
+The developer cache's read host: the bucket that holds the `forks` container,
+read directly rather than through the cache resolver. The workflow reads its
+other containers through the public endpoint (`publicCacheEndpoint`).
+-/
+def developerCacheEndpoint : String := "https://r2devcache.mathlib.org"
+
+/-- The read URL of each container in a developer read: `forks` on the
+developer cache's host, every other container on the public endpoint, both
+under the read base rule (`Container.readURL`). -/
+def readURL (c : Container) : IO String :=
+  c.readURL (if c == .forks then developerCacheEndpoint else publicCacheEndpoint)
+
+/--
 Walk git log backwards from HEAD, starting from `startRef`, stopping at
 `stopRef` or after `cap` commits (whichever comes first).
 
@@ -77,19 +90,16 @@ def headIsAncestorOfMaster (cwd : FilePath := ".") : IO Bool := do
     pure false
 
 /--
-Probe a single container for the per-SHA marker blob.
-
-Issues an anonymous HEAD against `{container}/m/{repo}/{sha}` and returns
-`true` iff the response is 200. The marker is uploaded by `put-staged`
-after a successful upload, so its existence is a reliable "this commit
-was fully cached" signal.
+Whether CI cached commit `sha` of fork `repo`: an anonymous HEAD against the
+marker `forks/m/{repo}/{sha}` (`markerReadURL`) answers 200. The marker is
+uploaded by `put-staged` after a successful upload, so its existence is a
+reliable "this commit was fully cached" signal.
 
 Cheaper than blob-listing: deterministic URL, headers-only response,
 billed as a Read op.
 -/
-def probeContainerForSHA (container : Container) (repo sha : String) :
-    IO Bool := do
-  let url ← markerReadURL container repo sha
+def probeCommit (repo sha : String) : IO Bool := do
+  let url := markerReadURL (← readURL .forks) repo sha
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
   let out ← IO.Process.output
@@ -107,11 +117,6 @@ def probeContainerForSHA (container : Container) (repo sha : String) :
   else
     pure (out.stdout.trimAscii.toString == "200")
 
-/-- Default number of marked fork commits `cache get --unsafe` will try as SHA
-scopes: 1, namely just the latest cached SHA. Overridden by
-`--unsafe-window=N`. -/
-def defaultUnsafeSHAWindow : Nat := 1
-
 /--
 Walk a list of SHAs (most recent first) and collect up to `limit` of them whose
 per-SHA marker exists in the `forks` container. Stops early once `limit` are
@@ -122,11 +127,10 @@ are not scoped, so probing them here would be meaningless.
 -/
 def findRecentSHAsWithCache (shas : List String) (repo : String) (limit : Nat) :
     IO (List String) := do
-  let container := Container.forks
   let mut found : Array String := #[]
   for sha in shas do
     if found.size ≥ limit then break
-    if ← probeContainerForSHA container repo sha then
+    if ← probeCommit repo sha then
       found := found.push sha
   pure found.toList
 
@@ -147,7 +151,7 @@ Probes the `forks` per-SHA marker, the only SHA-scoped container; `repo` is a
 fork.
 -/
 def cacheQuerySingle (repo sha : String) : IO Unit := do
-  let cached ← probeContainerForSHA Container.forks repo sha
+  let cached ← probeCommit repo sha
   if cached then
     IO.println s!"cached: {sha}"
   else
@@ -205,7 +209,7 @@ printed for the user, and it returns several SHAs instead of one. An empty
 result means no cached commit was found in range; the caller falls back to a
 normal (unscoped) read.
 -/
-def discoverUnsafeScopes (repo : String) (window : Nat := defaultUnsafeSHAWindow)
+def discoverUnsafeScopes (repo : String) (window : Nat)
     (cap : Nat := 50) (cwd : FilePath := ".") : IO (List String) := do
   let mergeBase? ← gitMergeBase "master" cwd
   let stopRef := mergeBase?.getD ""

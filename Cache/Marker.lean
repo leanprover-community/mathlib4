@@ -38,12 +38,12 @@ def markerPath (repo sha : String) : String :=
   s!"{markerDirPath repo}/{sha}"
 
 /--
-Read-side URL for the per-SHA marker blob: probes follow the read base
-(`Container.getURL`), unlike marker writes, which follow the resolved
-upload destination (`StagedUploadDest.markerURL`).
+Read-side URL for the per-SHA marker blob under the read URL of its container
+(`containerURL`): probes follow the reader's host, unlike marker writes, which
+follow the resolved upload destination (`StagedUploadDest.markerURL`).
 -/
-def markerReadURL (container : Container) (repo sha : String) : IO String := do
-  return s!"{← container.getURL}/{markerPath repo sha}"
+def markerReadURL (containerURL repo sha : String) : String :=
+  s!"{containerURL}/{markerPath repo sha}"
 
 /--
 Write the marker file for `sha` and hand it to `transfer`, which moves it to

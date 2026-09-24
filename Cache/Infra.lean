@@ -9,13 +9,14 @@ import Cache.Env
 /-!
 # Cache backend infrastructure
 
-The multi-container model: the trust-classified containers, their split
-between the public cache and the developer cache, and the read bases,
-together with the GitHub repo names the cache tool dispatches on.
+The multi-container model: the trust-classified containers, their layouts,
+and the read base rule, together with the GitHub repo names the cache tool
+dispatches on.
 
 This lives apart from `Cache.Requests` so the container model stands on its
 own, independent of the HTTP/curl machinery that consumes it. Which
-containers a read tries is the workflow's decision (`Cache.Workflow`).
+containers a read tries, and from which host, is the workflow's decision
+(`Cache.Workflow`).
 -/
 
 namespace Cache.Requests
@@ -48,8 +49,8 @@ def normalizeRepo (repo : String) : String := repo.toLower
 Trust-classified storage containers for the Mathlib cache.
 
 A container is a logical namespace in the URL contract `/{container}/{key}`,
-not a particular storage technology: each variant is served by whatever
-backend its service's endpoint resolves to. The Azure Blob Storage account
+not a particular storage technology: each host that serves the contract
+resolves it to its own backend. The Azure Blob Storage account
 (`lakecache`) serves the same namespaces as its own containers, which is what
 the legacy switch addresses directly. A CI job at a given trust level may
 write only to its corresponding container, and `cache get` always tries the
@@ -74,23 +75,6 @@ inductive Container where
 
 /-- Base URL of the `lakecache` Azure Blob Storage account. -/
 def azureAccountURL : String := "https://lakecache.blob.core.windows.net"
-
-/--
-The two artifact services the cache is split across. Each service has its own
-storage, read endpoint, and write credentials, so work-in-progress artifacts
-and the artifacts the public consumes live on separate infrastructure.
-
-* `published`: the public cache, the master-built artifacts that anyone, a
-  mathlib checkout or a downstream project, may consume. Written only by
-  master-trust CI. `public` is a reserved word, hence the name.
-* `developer`: the developer cache, the work-in-progress artifacts from fork
-  PR builds, the nightly-testing repo, and toolchain experiments. Only the
-  developer and nightly workflows read it (see `Cache.Workflow`).
--/
-inductive Service where
-  | published
-  | developer
-  deriving DecidableEq, Repr, BEq, Inhabited
 
 namespace Container
 
@@ -164,19 +148,6 @@ def perCommit : Container → Bool
   | .forks => true
   | _ => false
 
-/--
-The service a container belongs to.
-
-`master` and `legacy` hold only master-built artifacts, so they are the public
-cache. The other three collect the work-in-progress uploads of fork PRs,
-nightly-testing branches, and toolchain experiments, and form the developer
-cache. The mapping decides which read endpoint serves a container and which
-storage its writers authenticate against.
--/
-def service : Container → Service
-  | .master | .legacy => .published
-  | .forks | .nightlyTesting | .prToolchainTests => .developer
-
 end Container
 
 /--
@@ -201,37 +172,11 @@ def fileDirPath (container : Option Container) (repo : String)
     | none => s!"f/{repo}"
 
 /--
-The public Mathlib cache endpoint. It serves the master-built artifacts under
-the same `/{container}/{key}` namespace as the storage account and caches them
-at its edge, so reads cost the project less and land nearer the reader.
+The public Mathlib cache endpoint, the cache resolver. It serves the
+`/{container}/{key}` namespace of every container and caches artifacts at its
+edge, so reads cost the project less and land nearer the reader.
 -/
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
-
-/--
-The developer cache endpoint: the read endpoint for the developer cache's
-containers (`forks`, `nightly-testing`, `pr-toolchain-tests`). It serves the
-same `/{container}/{key}` namespace shape as `publicCacheEndpoint`, backed by
-the storage that holds the work-in-progress artifacts.
-
-Only the developer and nightly workflows read here (see `Cache.Workflow`).
--/
-def developerCacheEndpoint : String := "https://devcache.mathlib.org"
-
-/-- The endpoint a service's reads default to. -/
-def Service.endpoint : Service → String
-  | .published => publicCacheEndpoint
-  | .developer => developerCacheEndpoint
-
-/--
-The URL of the public cache's flat namespace under `base`: `{base}/mathlib4`,
-where the public endpoint (and any mirror `MATHLIB_CACHE_BASE_URL` names)
-serves the master-built artifacts, the URL the external-cache recipe also
-names. The Azure storage account is the exception: its `mathlib4` container is
-the frozen pre-cutover legacy, and its master-built artifacts are in
-`mathlib4-master`.
--/
-def publicCacheURL (base : String) : String :=
-  if base == azureAccountURL then s!"{base}/mathlib4-master" else s!"{base}/mathlib4"
 
 /--
 Whether reads address the Azure storage account instead of the cache
@@ -245,55 +190,36 @@ direct reads from the storage account.
 initialize useLegacy : IO.Ref Bool ← IO.mkRef false
 
 /--
-Default base URL for cache reads from `service`: the service's endpoint, or
-`azureAccountURL` when `useLegacy` is set. The Azure account holds every
-container, so the legacy switch sends both services to the one host.
--/
-def defaultGetBaseURL (service : Service) (useLegacy : Bool) : String :=
-  if useLegacy then azureAccountURL else service.endpoint
+The read base of a workflow whose own host is `endpoint`:
+`MATHLIB_CACHE_BASE_URL` (`baseEnv?`) when set, else the Azure storage account
+when `useLegacy` is set, else `endpoint`. `normalizeBaseURL` reads the
+variable, so it arrives trimmed, free of trailing slashes, and unset when
+empty.
 
-/--
-Base URL for cache reads from `service`.
+A read URL is `{base}/{pathSegment}/{key}`, the one namespace shape every host
+serves, so a host that mirrors the whole namespace is a valid base for every
+container, and the Azure account holds every container. This override differs
+from `MATHLIB_CACHE_GET_URL`. That variable serves external consumers: it
+names one flat endpoint and bypasses the container lookup chain.
+`MATHLIB_CACHE_BASE_URL` serves mathlib's own consumers, that is, CI and
+contributors to the repository. It keeps the lookup chain and rebases each
+container read under the given host.
 
-Precedence:
-1. `MATHLIB_CACHE_DEVELOPER_BASE_URL` (`developerEnv?`), for the developer cache
-   only: the read host for the developer cache's containers alone.
-2. `MATHLIB_CACHE_BASE_URL` (`baseEnv?`), for both services: a host that
-   mirrors the whole `/{container}/{key}` namespace. Setting only this variable
-   keeps every read on one host.
-3. `defaultGetBaseURL service useLegacy`.
-
-`normalizeBaseURL` reads both values, so they arrive trimmed, free of trailing
-slashes, and unset when empty.
-
-A read URL is `{base}/{pathSegment}/{key}`, the one namespace shape every
-backend serves. Any host that mirrors that namespace for the service's
-containers is therefore a valid base. These overrides differ from
-`MATHLIB_CACHE_GET_URL`. That variable serves external consumers: it names one
-flat endpoint and bypasses the container lookup chain. The base URLs serve
-mathlib's own consumers, that is, CI and contributors to the repository.
-They keep the lookup chain and rebase each container read under the given host.
-
-Only reads follow these bases. Uploads and marker writes go under the
+Only reads follow this base. Uploads and marker writes go under the
 container's root, the Azure account or `MATHLIB_CACHE_PUT_URL`
 (`stagedUploadDestFrom`).
 -/
-def getBaseURLFrom (service : Service) (baseEnv? developerEnv? : Option String)
-    (useLegacy : Bool) : String :=
-  let developer? := if service == .developer then normalizeBaseURL developerEnv? else none
-  (developer? <|> normalizeBaseURL baseEnv?).getD (defaultGetBaseURL service useLegacy)
+def readBaseFrom (endpoint : String) (baseEnv? : Option String) (useLegacy : Bool) : String :=
+  (normalizeBaseURL baseEnv?).getD (if useLegacy then azureAccountURL else endpoint)
 
-/--
-Base URL for cache reads from `service`, resolved from the environment.
-Written on top of the pure function above, which is separate to be testable.
--/
-def getBaseURL (service : Service) : IO String := do
-  return getBaseURLFrom service (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
-    (← IO.getEnv "MATHLIB_CACHE_DEVELOPER_BASE_URL") (← useLegacy.get)
+/-- `readBaseFrom` on the environment. -/
+def readBase (endpoint : String) : IO String := do
+  return readBaseFrom endpoint (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
 
-/-- Read URL for a container: `{getBaseURL c.service}/{pathSegment}`. -/
-def Container.getURL (c : Container) : IO String := do
-  return s!"{← getBaseURL c.service}/{c.pathSegment}"
+/-- The read URL of container `c` for a workflow whose own host is
+`endpoint`: `{readBase endpoint}/{pathSegment}`. -/
+def Container.readURL (c : Container) (endpoint : String) : IO String := do
+  return s!"{← readBase endpoint}/{c.pathSegment}"
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.

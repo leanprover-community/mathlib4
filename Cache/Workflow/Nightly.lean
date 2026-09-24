@@ -64,6 +64,11 @@ consumer; CI widens the chain for those branches through `MATHLIB_CACHE_FROM`.
 -/
 def containers : List Container := [.nightlyTesting, .forks, .legacy]
 
+/-- The read URL of each container in a nightly read: the public endpoint,
+which resolves the nightly containers to their storage, under the read base
+rule (`Container.readURL`). -/
+def readURL (c : Container) : IO String := c.readURL publicCacheEndpoint
+
 /--
 The read: the notice when the read is taken off the default trust boundary,
 then the chain rounds (`Chain.readRounds containers`). A scope applies to the
@@ -74,7 +79,7 @@ def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM 
     repoExplicit? := ctx.repoExplicit?, detectedRepo? := ctx.detectedRepo?,
     chain := options.chain, defaultChain := containers, scope? := options.scope?,
     cwd := ctx.mathlibCwd } ctx.repo
-  let rounds ← Chain.readRounds containers options.chain options.scope? ctx.mathlibCwd
+  let rounds ← Chain.readRounds containers readURL options.chain options.scope? ctx.mathlibCwd
   getFiles rounds ctx.repo req.hashMap req.forceDownload req.forceDownload req.parallel
     req.decompress
 

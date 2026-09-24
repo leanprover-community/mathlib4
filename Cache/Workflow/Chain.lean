@@ -10,7 +10,7 @@ import Cache.Workflow.Defs
 # The container-chain read
 
 The read mechanism the developer and nightly workflows share: a trust-ordered
-chain of containers, each read from its service's endpoint, with the
+chain of containers, each read from the URL the workflow gives it, with the
 per-commit scope on the rounds of the containers that have per-commit
 namespaces (`Container.perCommit`). The workflow supplies its default chain
 (`Cache.Workflow.Developer.containers`, `Cache.Workflow.Nightly.containers`);
@@ -74,11 +74,11 @@ namespace Chain
 def resolve (default : List Container) (options : ChainOptions) : List Container :=
   options.chain?.getD default
 
-/-- Pair each container in a chain with its read URL, `{base}/{pathSegment}`
-under its service's base (`Container.getURL`). The result keeps the chain's
-trust order. -/
-def withURLs (chain : List Container) : IO (List (Container × String)) :=
-  chain.mapM fun c => do return (c, ← c.getURL)
+/-- Pair each container in a chain with its read URL, which the workflow
+decides (`readURL`). The result keeps the chain's trust order. -/
+def withURLs (chain : List Container) (readURL : Container → IO String) :
+    IO (List (Container × String)) :=
+  chain.mapM fun c => do return (c, ← readURL c)
 
 /--
 Expand a chain, paired with URLs, into the download rounds to run.
@@ -109,9 +109,10 @@ and, absent one, the HEAD of the mathlib checkout at `mathlibCwd` for the
 per-commit rounds. `unsafeScopes` is the `--unsafe` walk's result, empty
 otherwise.
 -/
-def readRounds (default : List Container) (options : ChainOptions) (scope? : Option Scope)
-    (mathlibCwd : FilePath) (unsafeScopes : List String := []) : IO (List DownloadRound) := do
-  let chain ← withURLs (resolve default options)
+def readRounds (default : List Container) (readURL : Container → IO String)
+    (options : ChainOptions) (scope? : Option Scope) (mathlibCwd : FilePath)
+    (unsafeScopes : List String := []) : IO (List DownloadRound) := do
+  let chain ← withURLs (resolve default options) readURL
   -- With no explicit scope, the per-commit round defaults to HEAD. This adds
   -- no trust over an unscoped forks read: the namespace can only hold
   -- artifacts built from the commit the reader already has.

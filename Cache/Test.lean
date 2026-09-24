@@ -188,102 +188,34 @@ def test_envValueNormalization : IO Unit := do
     (shown (normalizeBaseURL (some "https://cache.example.org///")))
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
-/-- Each service resolves its own read base. The precedence is
-`MATHLIB_CACHE_DEVELOPER_BASE_URL` (developer cache only) over
-`MATHLIB_CACHE_BASE_URL` (both services) over the service's endpoint, and
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` sends both services' defaults to the Azure
-account. `getBaseURLFrom` is pure, so this test covers every branch; the
-environment-reading wrapper (`getBaseURL`) adds no logic of its own. -/
-def test_getBaseURLFrom : IO Unit := do
-  IO.println "getBaseURLFrom:"
-  assertEq "no override → the public endpoint for the public service"
-    "https://cache.mathlib.org" (getBaseURLFrom .published none none false)
-  assertEq "no override → the developer cache endpoint for the developer cache"
-    "https://devcache.mathlib.org" (getBaseURLFrom .developer none none false)
-  assertEq "legacy → the storage account for the public service"
-    "https://lakecache.blob.core.windows.net" (getBaseURLFrom .published none none true)
-  assertEq "legacy → the storage account for the developer cache too"
-    "https://lakecache.blob.core.windows.net" (getBaseURLFrom .developer none none true)
+/-- The read base rule every workflow applies to its own host:
+`MATHLIB_CACHE_BASE_URL` over `MATHLIB_CACHE_DEBUG_USE_LEGACY` (the Azure
+account) over the workflow's endpoint. `readBaseFrom` is pure, so this test
+covers every branch; the environment-reading wrapper (`readBase`) adds no
+logic of its own. -/
+def test_readBaseFrom : IO Unit := do
+  IO.println "readBaseFrom:"
+  let endpoint := "https://host.example.org"
+  assertEq "no override → the workflow's endpoint" endpoint (readBaseFrom endpoint none false)
+  assertEq "legacy → the storage account"
+    "https://lakecache.blob.core.windows.net" (readBaseFrom endpoint none true)
   -- The legacy base is the host the container URLs (`azureURL`) are built on.
   assertEq "the legacy base matches the container URLs"
-    azureAccountURL (getBaseURLFrom .published none none true)
-  assertEq "base override → the given base for the public service"
-    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org") none false)
-  assertEq "base override alone covers the developer cache too"
-    "https://cache.example.org" (getBaseURLFrom .developer (some "https://cache.example.org") none false)
-  assertEq "developer-cache override wins for the developer cache"
-    "https://int.example.org" (getBaseURLFrom .developer
-      (some "https://cache.example.org") (some "https://int.example.org") false)
-  assertEq "developer-cache override does not touch the public service"
-    "https://cache.example.org" (getBaseURLFrom .published
-      (some "https://cache.example.org") (some "https://int.example.org") false)
-  assertEq "developer-cache override alone keeps the public default"
-    publicCacheEndpoint (getBaseURLFrom .published none (some "https://int.example.org") false)
+    azureAccountURL (readBaseFrom endpoint none true)
+  assertEq "base override → the given base"
+    "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org") false)
   assertEq "override wins over legacy"
-    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org") none true)
-  assertEq "developer-cache override wins over legacy"
-    "https://int.example.org" (getBaseURLFrom .developer none (some "https://int.example.org") true)
+    "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org") true)
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
-  assertEq "empty value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom .published (some "") none false)
-  assertEq "empty developer-cache value counts as unset"
-    developerCacheEndpoint (getBaseURLFrom .developer none (some "") false)
-  assertEq "whitespace-only value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom .published (some " \n") none false)
+  assertEq "empty value counts as unset" endpoint (readBaseFrom endpoint (some "") false)
+  assertEq "whitespace-only value counts as unset" endpoint (readBaseFrom endpoint (some " \n") false)
   assertEq "override is trimmed"
-    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org\n") none false)
+    "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org\n") false)
   -- A base written with a trailing slash must not double the separator in
   -- `{base}/{container}/{key}`.
   assertEq "trailing slash is stripped"
-    "https://cache.example.org" (getBaseURLFrom .published (some "https://cache.example.org/") none false)
-
-/-- The container → service mapping is the boundary between the public cache
-and the developer cache: it decides which endpoint serves a container's reads
-and which storage its writers target. A container joining or leaving the
-developer cache must be a deliberate edit to this test. -/
-def test_Container_service : IO Unit := do
-  IO.println "Container.service:"
-  assertTrue "master is public" (Container.master.service == .published)
-  assertTrue "legacy is public" (Container.legacy.service == .published)
-  assertTrue "forks is developer-cache" (Container.forks.service == .developer)
-  assertTrue "nightly-testing is developer-cache" (Container.nightlyTesting.service == .developer)
-  assertTrue "pr-toolchain-tests is developer-cache" (Container.prToolchainTests.service == .developer)
-  assertEq "public service endpoint"
-    "https://cache.mathlib.org" Service.published.endpoint
-  assertEq "developer cache endpoint"
-    "https://devcache.mathlib.org" Service.developer.endpoint
-
-/-- Read URLs follow `getBaseURL` for the container's service: the same
-`/{container}` namespace as `azureURL`, under whichever base the environment
-selects for that service. Without a base-URL override, both positions of the
-legacy switch are pinned: each service's endpoint by default, `azureURL` under
-legacy. -/
-def test_Container_getURL : IO Unit := do
-  IO.println "Container.getURL:"
-  let publicBase ← getBaseURL .published
-  let developerBase ← getBaseURL .developer
-  assertEq "master read URL" s!"{publicBase}/mathlib4-master" (← Container.master.getURL)
-  assertEq "forks read URL" s!"{developerBase}/mathlib4-forks" (← Container.forks.getURL)
-  assertEq "legacy read URL" s!"{publicBase}/mathlib4" (← Container.legacy.getURL)
-  -- A base-URL override answers for both switch positions, so the pinned
-  -- assertions run only without one.
-  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone &&
-      (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_DEVELOPER_BASE_URL")).isNone then
-    let ambient ← useLegacy.get
-    useLegacy.set false
-    assertEq "default read URL is on the public endpoint"
-      s!"{publicCacheEndpoint}/mathlib4-master" (← Container.master.getURL)
-    assertEq "default forks read URL is on the developer cache endpoint"
-      s!"{developerCacheEndpoint}/mathlib4-forks" (← Container.forks.getURL)
-    assertEq "default nightly-testing read URL is on the developer cache endpoint"
-      s!"{developerCacheEndpoint}/mathlib4-nightly-testing" (← Container.nightlyTesting.getURL)
-    useLegacy.set true
-    assertEq "legacy read URL matches azureURL"
-      Container.master.azureURL (← Container.master.getURL)
-    assertEq "legacy forks read URL matches azureURL"
-      Container.forks.azureURL (← Container.forks.getURL)
-    useLegacy.set ambient
+    "https://cache.example.org" (readBaseFrom endpoint (some "https://cache.example.org/") false)
 
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
 repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
@@ -465,38 +397,47 @@ def test_resolveRepo_downstream : IO Unit := do
   finally
     IO.FS.removeDirAll dir
 
-/-- The public-cache workflow reads one URL, and the chain-reading workflows
-pair their chains with read URLs in trust order, each container under its own
-service's read base. This test covers `Public.url`, `Chain.withURLs` on both
-chains, and `Chain.resolve` under the chain options. -/
+/-- Each workflow owns the hosts it reads: the public-cache workflow reads the
+`master` container on the public endpoint, the developer workflow reads
+`forks` on the developer cache's host and its other containers on the public
+endpoint, and the nightly workflow reads through the public endpoint. The
+chains pair each container with its URL in trust order. This test covers
+`Public.url`, the workflows' `readURL`, `Chain.withURLs`, and `Chain.resolve`
+under the chain options. -/
 def test_readURLs : IO Unit := do
-  IO.println "Public.url / Chain.withURLs / Chain.resolve:"
-  let publicBase ← getBaseURL .published
-  let developerBase ← getBaseURL .developer
-  -- The public-cache workflow: the public namespace on the public base, or
-  -- the flat endpoint the options name. On an endpoint the namespace is
-  -- `mathlib4`; on the Azure account that container is the frozen legacy
-  -- one, so the namespace is `mathlib4-master`.
-  assertEq "the public cache URL is the public namespace on the public base"
-    (publicCacheURL publicBase) (← Public.url none)
-  assertEq "an endpoint serves the public cache at /mathlib4"
-    "https://cache.mathlib.org/mathlib4" (publicCacheURL "https://cache.mathlib.org")
-  assertEq "the Azure account serves the public cache at /mathlib4-master"
-    s!"{azureAccountURL}/mathlib4-master" (publicCacheURL azureAccountURL)
+  IO.println "Public.url / readURL / Chain.withURLs / Chain.resolve:"
+  let publicBase ← readBase publicCacheEndpoint
+  let developerBase ← readBase Developer.developerCacheEndpoint
+  assertEq "the public cache URL is the master container on the public base"
+    s!"{publicBase}/mathlib4-master" (← Public.url none)
   assertEq "MATHLIB_CACHE_GET_URL replaces the public cache URL"
     "https://cache.example.org/my-prefix"
     (← Public.url (some "https://cache.example.org/my-prefix"))
-  -- The developer chain crosses to the developer base for its forks round.
-  assertTrue "developer chain pairs each container with its service's read URL"
-    ((← Chain.withURLs Developer.containers) ==
+  assertTrue "developer chain: forks on the developer cache's host, the rest on the public one"
+    ((← Chain.withURLs Developer.containers Developer.readURL) ==
       [(.master, s!"{publicBase}/mathlib4-master"),
        (.forks, s!"{developerBase}/mathlib4-forks"),
        (.legacy, s!"{publicBase}/mathlib4")])
-  assertTrue "nightly chain reads its containers from the developer base"
-    ((← Chain.withURLs Nightly.containers) ==
-      [(.nightlyTesting, s!"{developerBase}/mathlib4-nightly-testing"),
-       (.forks, s!"{developerBase}/mathlib4-forks"),
+  assertTrue "nightly chain: every container on the public endpoint"
+    ((← Chain.withURLs Nightly.containers Nightly.readURL) ==
+      [(.nightlyTesting, s!"{publicBase}/mathlib4-nightly-testing"),
+       (.forks, s!"{publicBase}/mathlib4-forks"),
        (.legacy, s!"{publicBase}/mathlib4")])
+  -- A base-URL override answers for both switch positions, so the pinned
+  -- assertions run only without one.
+  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
+    let ambient ← useLegacy.get
+    useLegacy.set false
+    assertEq "the public cache is on cache.mathlib.org"
+      "https://cache.mathlib.org/mathlib4-master" (← Public.url none)
+    assertEq "the developer workflow reads forks from the developer bucket"
+      "https://r2devcache.mathlib.org/mathlib4-forks" (← Developer.readURL .forks)
+    useLegacy.set true
+    assertEq "legacy: the public cache is the master container on the Azure account"
+      Container.master.azureURL (← Public.url none)
+    assertEq "legacy: forks is on the Azure account too"
+      Container.forks.azureURL (← Developer.readURL .forks)
+    useLegacy.set ambient
   -- `Chain.resolve`: the workflow's chain, or the options' chain in its order;
   -- `--cache-from` wins over `MATHLIB_CACHE_FROM`.
   assertTrue "no chain option → the workflow's default chain"
@@ -802,32 +743,20 @@ def test_markerURL : IO Unit := do
     "m/alice/mathlib4/abc123"
     (markerPath "Alice/Mathlib4" "abc123")
 
-/-- Marker probes read through the container's read base; marker writes follow
-the upload URL (`StagedUploadDest.markerURL`). Without a
-base-URL override, both positions of the legacy switch are pinned: probes
-address the container's service endpoint by default, and under legacy they
-match the Azure write URL. -/
+/-- Marker probes read under the container's read URL; marker writes follow
+the upload destination (`StagedUploadDest.markerURL`). Both meet at
+`{container root}/m/{repo}/{sha}`. -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
-  let base ← getBaseURL .developer
-  assertEq "probe URL follows the developer read base"
-    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
-    (← markerReadURL .forks "alice/mathlib4" "abc123")
+  let url := "https://host.example.org/mathlib4-forks"
+  assertEq "probe URL is under the container's read URL"
+    s!"{url}/m/alice/mathlib4/abc123" (markerReadURL url "alice/mathlib4" "abc123")
   assertEq "probe repo is lowercased in the path"
-    s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
-    (← markerReadURL .forks "Alice/Mathlib4" "abc123")
-  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone &&
-      (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_DEVELOPER_BASE_URL")).isNone then
-    let ambient ← useLegacy.get
-    useLegacy.set false
-    assertEq "default probe URL is on the developer cache endpoint"
-      s!"{developerCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
-      (← markerReadURL .forks "alice/mathlib4" "abc123")
-    useLegacy.set true
-    assertEq "legacy probe URL matches the Azure write URL"
-      s!"{Container.forks.azureURL}/{markerPath "alice/mathlib4" "abc123"}"
-      (← markerReadURL .forks "alice/mathlib4" "abc123")
-    useLegacy.set ambient
+    s!"{url}/m/alice/mathlib4/abc123" (markerReadURL url "Alice/Mathlib4" "abc123")
+  assertEq "the probe on the Azure account meets the Azure marker write"
+    ((containerUploadDest Container.forks.azureURL .forks "alice/mathlib4"
+      (some "abc123")).markerURL "abc123")
+    (markerReadURL Container.forks.azureURL "alice/mathlib4" "abc123")
 
 end Marker
 
@@ -1916,10 +1845,8 @@ def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_Container_azureURL
-  test_Container_getURL
   test_envValueNormalization
-  test_getBaseURLFrom
-  test_Container_service
+  test_readBaseFrom
   test_Container_flatPath
   test_workflowContainers
   test_Workflow_decision

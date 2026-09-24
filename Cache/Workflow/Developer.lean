@@ -136,7 +136,7 @@ def informIfHeadNotBuilt (options : Options) (ctx : ReadContext) : IO Unit := do
   -- structurally absent here, which would otherwise trigger a misleading note.
   if (← headIsAncestorOfMaster ctx.mathlibCwd) then return
   let sha ← try getGitCommitHash ctx.mathlibCwd catch _ => return
-  let hasMarker ← probeContainerForSHA Container.forks ctx.repo sha
+  let hasMarker ← probeCommit ctx.repo sha
   if hasMarker then return
   let lines : List String := [
     "",
@@ -191,7 +191,8 @@ def get (options : Options) (ctx : ReadContext) (req : ReadRequest) : IO.CacheM 
     | none =>
       informIfHeadNotBuilt options ctx
       pure []
-  let rounds ← Chain.readRounds containers options.chain options.scope? ctx.mathlibCwd scopes
+  let rounds ← Chain.readRounds containers readURL options.chain options.scope? ctx.mathlibCwd
+    scopes
   getFiles rounds ctx.repo req.hashMap req.forceDownload req.forceDownload req.parallel
     req.decompress (reportScopes := !scopes.isEmpty)
 
