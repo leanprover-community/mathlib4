@@ -126,17 +126,17 @@ theorem IsLocalExtrOn.inter (hf : IsLocalExtrOn f s a) (t) : IsLocalExtrOn f (s 
   hf.mono inter_subset_left
 
 theorem IsMinOn.isLocalMinOn (hf : IsMinOn f s a) : IsLocalMinOn f s a :=
-  hf.filter_mono <| inf_le_right
+  hf.filter_mono inf_le_right
 
 @[deprecated (since := "2026-07-17")] alias IsMinOn.localize := IsMinOn.isLocalMinOn
 
 theorem IsMaxOn.isLocalMaxOn (hf : IsMaxOn f s a) : IsLocalMaxOn f s a :=
-  hf.filter_mono <| inf_le_right
+  hf.filter_mono inf_le_right
 
 @[deprecated (since := "2026-07-17")] alias IsMaxOn.localize := IsMaxOn.isLocalMaxOn
 
 theorem IsExtrOn.isLocalExtrOn (hf : IsExtrOn f s a) : IsLocalExtrOn f s a :=
-  hf.filter_mono <| inf_le_right
+  hf.filter_mono inf_le_right
 
 @[deprecated (since := "2026-07-17")] alias IsExtrOn.localize := IsExtrOn.isLocalExtrOn
 

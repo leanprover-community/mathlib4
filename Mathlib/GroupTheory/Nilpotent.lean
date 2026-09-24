@@ -5,10 +5,12 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
 module
 
-public import Mathlib.GroupTheory.Solvable
-public import Mathlib.GroupTheory.Sylow
 public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.GroupTheory.Commutator.Finite
+public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.QuotientGroup.Simple
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 
@@ -1231,6 +1233,42 @@ theorem IsNilpotent.commute_of_orderOf_coprime [IsNilpotent G] {x y : G}
   simp
 
 end Group
+
+namespace Subgroup
+
+/-- In a nilpotent group, the maximal subgroups are exactly the subgroups of prime index. -/
+@[to_additive]
+theorem isCoatom_iff_index_prime [Group.IsNilpotent G] (H : Subgroup G) :
+    IsCoatom H ↔ H.index.Prime := by
+  refine ⟨fun h ↦ ?_, isCoatom_of_index_prime⟩
+  have : H.Normal := Group.normalizerCondition_of_isNilpotent.normal_of_coatom H h
+  have : IsSimpleGroup (G ⧸ H) := Group.isSimpleGroup_of_isCoatom h
+  rwa [index_eq_card, ← Group.is_simple_iff_prime_card]
+
+end Subgroup
+
+namespace IsPGroup
+
+variable {p : ℕ} [hp : Fact p.Prime]
+
+/-- In a nilpotent p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
+theorem isCoatom_iff_index_eq_prime [Group.IsNilpotent G] (hG : IsPGroup p G) {H : Subgroup G} :
+    IsCoatom H ↔ H.index = p := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Subgroup.isCoatom_of_index_prime (h ▸ hp.out)⟩
+  have hHp := H.isCoatom_iff_index_prime.mp h
+  have : H.FiniteIndex := ⟨hHp.ne_zero⟩
+  obtain ⟨k, hk⟩ := IsPGroup.index hG H
+  exact Nat.prime_eq_prime_of_dvd_pow hHp hp.out hk.dvd
+
+/-- A nilpotent p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
+theorem not_isCyclic_iff_exists_ne_index_eq_prime [Group.IsNilpotent G]
+    [IsCoatomic (Subgroup G)] (hG : IsPGroup p G) :
+    ¬ IsCyclic G ↔ ∃ H₁ H₂ : Subgroup G, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by
+  refine ⟨fun hnc ↦ ?_, fun ⟨H₁, H₂, hne, h₁, h₂⟩ _ ↦ hne ?_⟩
+  · grind [isCyclic_of_isCoatom_subsingleton, isCoatom_iff_index_eq_prime]
+  · rw [IsCyclic.subgroup_eq_iff_index_eq, h₁, h₂]
+
+end IsPGroup
 
 end WithGroup
 

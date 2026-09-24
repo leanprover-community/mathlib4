@@ -485,7 +485,7 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 
 /-- The ring homomorphism from a given commutative ring in the diagram to the colimit commutative
 ring. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom <|
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom
   { toFun := coconeFun F j
     map_one' := by apply Quot.sound; apply Relation.one
     map_mul' := by intros; apply Quot.sound; apply Relation.mul
