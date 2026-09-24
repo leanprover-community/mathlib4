@@ -174,7 +174,7 @@ def guessName (g : GuessNameData) : String → String :=
   String.mapTokens '\'' <|
   fun s =>
     fixAbbreviation g <|
-    applyNameDict g <|
+    applyNameDict g
     s.splitCase
 
 /-- Environment extension used for guessing the translation of a name. -/
