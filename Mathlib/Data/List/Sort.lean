@@ -196,6 +196,46 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
+theorem orderedInsert_eq_cons_of_forall_rel {x : α} {l : List α} (h : ∀ y ∈ l, x ≼ y) :
+    l.orderedInsert r x = x :: l :=
+  match l with
+  | [] => orderedInsert_nil r x
+  | _ :: _ => orderedInsert_cons_of_le r _ <| h _ mem_cons_self
+
+theorem orderedInsert_sublist_orderedInsert_iff [IsTrans α r] [Std.Refl r]
+    {l₁ l₂ : List α} (h₂ : Pairwise r l₂) (x : α) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ :=
+  ⟨fun h => by classical simpa [erase_orderedInsert] using h.erase x,
+    fun h => h.orderedInsert_sublist x h₂⟩
+
+theorem orderedInsert_sublist_orderedInsert_iff_of_notMem [IsTrans α r]
+    {l₁ l₂ : List α} (h₂ : Pairwise r l₂) {x : α} (hx₁ : x ∉ l₁) (hx₂ : x ∉ l₂) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ := by
+  refine ⟨fun h => ?_, fun h => h.orderedInsert_sublist x h₂⟩
+  classical
+  have := h.erase x
+  rwa [erase_orderedInsert_of_notMem hx₁, erase_orderedInsert_of_notMem hx₂] at this
+
+theorem erase_sublist_iff_sublist_orderedInsert_of_notMem
+    [DecidableEq α] [IsTrans α r] [Std.Antisymm r]
+    {l₁ l₂ : List α} (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) {x : α} (hx₂ : x ∉ l₂) :
+    l₁.erase x <+ l₂ ↔ l₁ <+ l₂.orderedInsert r x := by
+  by_cases hx₁ : x ∈ l₁; swap
+  · rw [erase_of_not_mem hx₁]
+    constructor
+    · intro h
+      exact h.trans <| sublist_orderedInsert x l₂
+    · intro h
+      have := h.erase x
+      rwa [erase_of_not_mem hx₁, erase_orderedInsert_of_notMem hx₂] at this
+  constructor
+  · intro h
+    have := h.orderedInsert_sublist x h₂
+    rwa [orderedInsert_erase _ _ hx₁ h₁] at this
+  · intro h
+    have := h.erase x
+    rwa [erase_orderedInsert_of_notMem hx₂] at this
+
 section TotalAndTransitive
 
 variable [Std.Total r] [IsTrans α r]
