@@ -250,8 +250,7 @@ theorem quadraticChar_sum_comp_eq_zero_of_odd (hF : ¬IsSquare (-1 : F)) {f : F 
       _ = ∑ x : F, quadraticChar F (f (-x)) :=
           (Fintype.sum_equiv (Equiv.neg F) _ _ fun _ => rfl).symm
       _ = ∑ x : F, quadraticChar F (-1) * quadraticChar F (f x) :=
-          Finset.sum_congr rfl fun x _ => by
-            rw [hf x, show -f x = (-1) * f x by ring, map_mul]
+          congr(∑ x, $(by rw [hf x, ← map_mul, neg_one_mul]))
       _ = quadraticChar F (-1) * ∑ x : F, quadraticChar F (f x) := (Finset.mul_sum ..).symm
   rw [quadraticChar_neg_one_iff_not_isSquare.mpr hF] at h
   linarith
