@@ -284,7 +284,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
       push Not at h_base
       calc
         z * y > x * y := by gcongr
-        _ ≥ x * (x + 1) := by apply mul_le_mul <;> lia
+        _ ≥ x * (x + 1) := by gcongr; lia
         _ > x * x + 1 := by
           rw [mul_add]
           lia

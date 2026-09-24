@@ -43,7 +43,7 @@ attribute [gcongr high] Nat.pow_le_pow_right
 We intentionally try `assumption` first (as this works faster if it does).
 In a further downstream file, `positivity` will also be registered as a discharger.
 From that point, `positivity` will be tried before `grind` is: that is intentional. -/
-macro_rules | `(tactic| gcongr_discharger) => `(tactic| first | assumption | grind)
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| first | assumption | grind (splits := 0))
 
 /-!
 We register `gcongr` with the `hint` tactic.
