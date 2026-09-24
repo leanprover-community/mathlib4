@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp, Eric Wieser, Jeremy Avigad, Johan Commelin
 -/
 module
 
+public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Invertible
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
@@ -446,3 +447,54 @@ end Det
 end CommRing
 
 end Matrix
+
+namespace LinearMap
+
+variable {R : Type*} [CommRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M]
+
+/-- The rank-one determinant formula: for a linear functional `φ : M →ₗ[R] R` and a
+center `c : M`, the determinant of `1 - (x ↦ φ x • c)` is `1 - φ c`. This is the
+rank-one specialization of the Weinstein–Aronszajn identity above, lifted to
+endomorphisms of a finite free module, and the finite-dimensional seed of the
+Fredholm determinant. -/
+theorem det_one_sub_smulRight [Nontrivial R] [Module.Free R M] [Module.Finite R M]
+    (φ : M →ₗ[R] R) (c : M) :
+    LinearMap.det ((1 : M →ₗ[R] M) - φ.smulRight c) = 1 - φ c := by
+  classical
+  let b := Module.finBasis R M
+  have hM : LinearMap.toMatrix b b (φ.smulRight c)
+      = Matrix.replicateCol Unit (fun i => b.repr c i)
+        * Matrix.replicateRow Unit (fun j => φ (b j)) := by
+    ext i j
+    simp [LinearMap.toMatrix_apply, LinearMap.smulRight_apply,
+      map_smul, Matrix.mul_apply, Matrix.replicateCol_apply, Matrix.replicateRow_apply,
+      Finset.univ_unique]
+    ring
+  have hsub : LinearMap.toMatrix b b ((1 : M →ₗ[R] M) - φ.smulRight c)
+      = 1 - Matrix.replicateCol Unit (fun i => b.repr c i)
+        * Matrix.replicateRow Unit (fun j => φ (b j)) := by
+    ext i j
+    by_cases hji : j = i
+    · subst hji
+      simp [LinearMap.toMatrix_apply, LinearMap.smulRight_apply,
+        map_smul, Matrix.mul_apply, Matrix.replicateCol_apply, Matrix.replicateRow_apply,
+        Finset.univ_unique, Matrix.one_apply_eq]
+      ring
+    · have hij : i ≠ j := fun h => hji h.symm
+      simp [LinearMap.toMatrix_apply, LinearMap.smulRight_apply,
+        map_smul, Matrix.mul_apply, Matrix.replicateCol_apply, Matrix.replicateRow_apply,
+        Finset.univ_unique, Matrix.one_apply_ne hij,
+        Finsupp.single_eq_of_ne hij]
+      ring
+  have hc : φ c = ∑ j, φ (b j) * b.repr c j := by
+    have hsum := b.sum_repr c
+    calc φ c = φ (∑ i, b.repr c i • b i) := by congr 1; rw [hsum]
+      _ = ∑ i, φ (b.repr c i • b i) := map_sum φ _ _
+      _ = ∑ i, b.repr c i • φ (b i) := by simp [map_smul]
+      _ = ∑ j, φ (b j) * b.repr c j := by
+          exact Finset.sum_congr rfl fun j _ => mul_comm _ _
+  rw [← det_toMatrix b, hsub, Matrix.det_one_sub_mul_comm, Matrix.det_unique]
+  simp [hc, dotProduct]
+
+end LinearMap
