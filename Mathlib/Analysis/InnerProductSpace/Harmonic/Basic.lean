@@ -183,11 +183,11 @@ theorem harmonicAt_comp_add_iff {k : E} :
     HarmonicAt (fun y ↦ f (y + k)) x ↔ HarmonicAt f (x + k) := by
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_iff.mp h₁, ?_⟩,
     fun ⟨h₁, h₂⟩ ↦ ⟨contDiffAt_comp_add_iff.mpr h₁, ?_⟩⟩
-  · have h₂' : (fun y ↦ Δ (fun z ↦ f (z + k)) y) =ᶠ[𝓝 x] (fun y ↦ Δ f (y + k)) := by
+  · have h : (fun y ↦ Δ (fun z ↦ f (z + k)) y) =ᶠ[𝓝 x] (fun y ↦ Δ f (y + k)) := by
       filter_upwards with y
       exact laplacian_comp_add
     rw [← map_add_right_nhds k x, Filter.eventuallyEq_map, Pi.zero_comp]
-    exact h₂'.symm.trans h₂
+    exact h.symm.trans h₂
   · have hcont : Continuous (fun y ↦ y + k) := by fun_prop
     have h : Δ (fun y ↦ f (y + k)) = fun y ↦ Δ f (y + k) := by
       funext y
