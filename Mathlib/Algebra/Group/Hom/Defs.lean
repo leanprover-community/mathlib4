@@ -693,8 +693,9 @@ protected theorem MulHom.map_ppow {M N : Type*} [Semigroup M] [Semigroup N] (f :
   · simp
   · simp [ppow_succ, *]
 
--- not marked as `simp` because in a monoid we probably prefer powers with type `ℕ`
-@[to_additive (reorder := x n)]
+/-- See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid, grind =) (reorder := x n)
+  /-- See note [hom simp lemma priority] -/]
 lemma map_ppow {F M N : Type _} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F M N]
     (f : F) (x : M) (n : ℕ+) : f (x ^ n) = f x ^ n :=
   MulHom.map_ppow (MulHomClass.toMulHom f) _ _
