@@ -54,7 +54,10 @@ def scopeIsHead (scope : Scope) (cwd : FilePath := ".") : IO Bool := do
   return head == scope.sha
 
 /--
-Whether the notice applies. `true` if any of these hold:
+The `Reason:` line of the notice, or `none` when the notice does not apply:
+the first of these conditions that holds, named so the user can match it to
+their command line.
+
 0. `--unsafe` was passed (`unsafeWindow?`): the read walks several fork
    commits and trusts whoever built each of them
 1. a scope is set (`scope?`) and differs from the checked-out HEAD of `cwd`
@@ -68,65 +71,35 @@ Whether the notice applies. `true` if any of these hold:
 `detectedRepo?` is the repo reported by the git remote (from `resolveRepo`,
 probed once per command); it is `none` if it could not be determined.
 -/
-def applies (r : Read) : IO Bool := do
-  -- Condition 0: `--unsafe` (with its SHA window) — the most permissive read.
-  if r.unsafeWindow?.isSome then return true
-
-  -- Condition 1: a scope other than HEAD. A HEAD scope is exempt:
-  -- trust-equivalent to no scope (see `scopeIsHead`).
+def reason? (r : Read) : IO (Option String) := do
+  if let some window := r.unsafeWindow? then
+    return some s!"--unsafe (automatic walk over up to {window} fork commit(s); \
+      trusting whoever built them)"
+  -- A HEAD scope is exempt: trust-equivalent to no scope (see `scopeIsHead`).
   if let some scope := r.scope? then
-    unless (← scopeIsHead scope r.cwd) do return true
-
-  -- Condition 2: --cache-from differs from the workflow's chain.
+    unless (← scopeIsHead scope r.cwd) do
+      return some <| match scope.source with
+        | .flag => s!"--scope={scope.sha} (explicit per-commit scope)"
+        | .env => s!"MATHLIB_CACHE_REPO_SCOPE={scope.sha} (explicit per-commit scope)"
   if let some cliChain := r.chain.cli? then
-    unless cliChain == r.defaultChain do return true
-
-  -- Condition 3: --repo was explicitly passed AND does not match the git remote.
-  -- Only fires when the user explicitly overrode --repo; defaulting to MATHLIBREPO
-  -- from a fork checkout is normal and does not warn.
+    unless cliChain == r.defaultChain do
+      let chainStr := ", ".intercalate (cliChain.map Container.name)
+      return some s!"--cache-from={chainStr} (explicit container override)"
+  -- Only an explicit `--repo` counts: defaulting to `MATHLIBREPO` from a fork
+  -- checkout is normal and does not warn.
   match r.repoExplicit?, r.detectedRepo? with
   | some explicitRepo, some detected =>
-    unless explicitRepo == detected do return true
+    unless explicitRepo == detected do
+      return some s!"--repo={explicitRepo} (overrides detected git remote: {detected})"
   | some explicitRepo, none =>
     -- No remote to compare against (a dependency fetched as an archive, or a
     -- git failure). A non-canonical --repo then reads that fork's container on
     -- nothing but the flag, so the choice still warrants the notice.
-    unless isCanonicalRepo explicitRepo do return true
-  | none, _ => pure ()
-
-  return false
-
-/--
-The `Reason:` line of the notice: the first condition of `applies` that holds,
-in the same order, named so the user can match it to their command line.
--/
-def reason (r : Read) : IO String := do
-  if let some window := r.unsafeWindow? then
-    return s!"--unsafe (automatic walk over up to {window} fork commit(s); \
-      trusting whoever built them)"
-
-  if let some scope := r.scope? then
-    unless (← scopeIsHead scope r.cwd) do
-      match scope.source with
-      | .flag => return s!"--scope={scope.sha} (explicit per-commit scope)"
-      | .env => return s!"MATHLIB_CACHE_REPO_SCOPE={scope.sha} (explicit per-commit scope)"
-
-  if let some cliChain := r.chain.cli? then
-    if cliChain != r.defaultChain then
-      let chainStr := ", ".intercalate (cliChain.map Container.name)
-      return s!"--cache-from={chainStr} (explicit container override)"
-
-  match r.repoExplicit?, r.detectedRepo? with
-  | some explicitRepo, some detected =>
-    if explicitRepo != detected then
-      return s!"--repo={explicitRepo} (overrides detected git remote: {detected})"
-  | some explicitRepo, none =>
-    if !isCanonicalRepo explicitRepo then
-      return s!"--repo={explicitRepo} (no git remote to compare against; \
+    unless isCanonicalRepo explicitRepo do
+      return some s!"--repo={explicitRepo} (no git remote to compare against; \
         reads that fork's cache)"
   | none, _ => pure ()
-
-  return "unknown reason"
+  return none
 
 /-- Print the notice to stderr: what the user is trusting, for which
 repository, and the reason. -/
@@ -151,7 +124,7 @@ Print the notice when it applies, before a chain read for `repo`. The notice
 is informational: it prints and returns, so CI runs are unaffected.
 -/
 def emit (r : Read) (repo : String) : IO Unit := do
-  if (← applies r) then
-    printWarning repo (← reason r)
+  if let some reason ← reason? r then
+    printWarning repo reason
 
 end Cache.Workflow.Notice

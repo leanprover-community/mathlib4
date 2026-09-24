@@ -754,7 +754,7 @@ end ScopeResolution
 
 section NonDefaultScope
 
-/-- `Notice.applies` decides whether a chain read prints the non-default-scope
+/-- `Notice.reason?` decides whether a chain read prints the non-default-scope
 security warning. It warns when any of these takes the reader off the
 workflow's default trust boundary:
 
@@ -770,11 +770,11 @@ never warns, even on a fork checkout whose remote isn't the canonical repo.
 `detectedRepo?` is passed in (resolved once by `resolveRepo`), so the cases are
 deterministic without needing a real checkout. -/
 def test_Notice_applies : IO Unit := do
-  IO.println "Notice.applies:"
+  IO.println "Notice.reason? (whether it applies):"
   let chain := Developer.containers
   let base : Notice.Read := { defaultChain := chain }
   let applies (r : Notice.Read) (detected? : Option String := none) : IO Bool :=
-    withSuppressedOutput (Notice.applies { r with detectedRepo? := detected? })
+    return (← withSuppressedOutput (Notice.reason? { r with detectedRepo? := detected? })).isSome
 
   assertTrue "plain get with no options does not warn" (!(← applies base))
   assertTrue "a set scope warns" (← applies { base with scope? := some ⟨"abc123", .flag⟩ })
@@ -819,21 +819,22 @@ def test_Notice_applies : IO Unit := do
   assertTrue "--unsafe warns regardless of other inputs"
     (← applies { base with unsafeWindow? := some 5 })
 
-/-- `Notice.reason` produces the `Reason:` line in the warning, naming the
+/-- `Notice.reason?` produces the `Reason:` line in the warning, naming the
 specific option that triggered it so the user can match it to their command
 line. When several apply at once it reports the most specific first —
 `--unsafe`, then the scope (named by its source), then `--cache-from`, then
 `--repo` — and that order is pinned here. -/
 def test_Notice_reason : IO Unit := do
-  IO.println "Notice.reason:"
+  IO.println "Notice.reason? (the reason line):"
   let chain := Developer.containers
   let base : Notice.Read := { defaultChain := chain }
   let reason (r : Notice.Read) (detected? : Option String := none) : IO String :=
-    withSuppressedOutput (Notice.reason { r with detectedRepo? := detected? })
+    return (← withSuppressedOutput (Notice.reason? { r with detectedRepo? := detected? })).getD
+      "(no notice)"
   let withScope : Notice.Read := { base with scope? := some ⟨"abc123", .flag⟩ }
 
   -- A placeholder rather than a crash if nothing matches.
-  assertEq "no trigger yields a placeholder reason" "unknown reason" (← reason base)
+  assertEq "no trigger yields no notice" "(no notice)" (← reason base)
   assertEq "a flag scope names the flag and SHA"
     "--scope=abc123 (explicit per-commit scope)" (← reason withScope)
   assertEq "an environment scope names the variable"
@@ -862,8 +863,8 @@ def test_Notice_reason : IO Unit := do
     "--repo=bob/mathlib4 (no git remote to compare against; reads that fork's cache)"
     (← reason { base with repoExplicit? := some "bob/mathlib4" })
   -- --cache-from equal to the chain is not a trigger, so no reason applies.
-  assertEq "cache-from equal to the chain yields the placeholder"
-    "unknown reason" (← reason { base with chain := { cli? := some chain } })
+  assertEq "cache-from equal to the chain yields no notice"
+    "(no notice)" (← reason { base with chain := { cli? := some chain } })
   -- `--unsafe` outranks every other trigger and names its window.
   let everything : Notice.Read := { withScope with
     repoExplicit? := some "bob/mathlib4", chain := { cli? := some [.forks] },
