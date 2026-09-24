@@ -806,7 +806,7 @@ theorem spectralAlgNorm_mul (x y : L) :
   · have hx' : spectralAlgNorm K L x ≠ 0 :=
       ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x))
     set f : AlgebraNorm K L := algNormFromConst hx' spectralAlgNorm_isPowMul with hf
-    have hf_pow : IsPowMul f := seminormFromConst_isPowMul hx' isPowMul_spectralNorm
+    have hf_pow : IsPowMul f := seminormFromConst_isPowMul isPowMul_spectralNorm
     rw [← spectralNorm_unique hf_pow, hf]
     exact seminormFromConst_const_mul hx' isPowMul_spectralNorm _
 
