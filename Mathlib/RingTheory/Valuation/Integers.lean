@@ -209,7 +209,7 @@ lemma coe_span_singleton_eq_setOfPred_le_v_algebraMap (hv : Integers v O) (x : O
 alias coe_span_singleton_eq_setOf_le_v_algebraMap := coe_span_singleton_eq_setOfPred_le_v_algebraMap
 
 lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
-    [Subsingleton (v.mrange)ˣ] :
+    [Subsingleton v.mrangeˣ] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
   rcases eq_or_ne x 0 with rfl | hx

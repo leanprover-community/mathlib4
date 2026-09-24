@@ -198,7 +198,7 @@ lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
 
 lemma mker_ordFrac_eq_isUnitSubmonoid :
     (ordFrac R (K := K) : K →* WithZero (Multiplicative ℤ)).mker =
-    (IsUnit.submonoid R).map (algebraMap R K : R →* K) := by
+      (IsUnit.submonoid R).map (algebraMap R K : R →* K) := by
   simpa [ordFrac_eq_inverse_comp_valuation, ← MonoidHom.comap_mker, MonoidWithZeroHom.mker_inverse]
     using IsDiscreteValuationRing.mker_valuation_eq_isUnitSubmonoid
 
