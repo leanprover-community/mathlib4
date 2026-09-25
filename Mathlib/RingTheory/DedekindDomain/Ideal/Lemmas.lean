@@ -985,12 +985,6 @@ end ChineseRemainder
 
 namespace Ideal
 
-/-- Every ideal has multiplicity `0` in `⊤`, the unit ideal. -/
-@[simp]
-theorem multiplicity_top_right {S : Type*} [CommSemiring S] (I : Ideal S) :
-    multiplicity I ⊤ = 0 := by
-  rw [← one_eq_top, multiplicity_one_right]
-
 variable {R} in
 theorem emultiplicity_span_eq_emultiplicity {a b : R} :
     emultiplicity (span {a}) (span ({b} : Set R)) = emultiplicity a b := by
