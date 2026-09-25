@@ -961,7 +961,7 @@ noncomputable def IsPushout.isColimitOfIsColimitOfIsPushout
     (hl' : ∀ j, c₁.ι.app j ≫ l' = l.app j ≫ c₃.ι.app j := by cat_disch)
     (hr' : ∀ j, c₂.ι.app j ≫ r' = r.app j ≫ c₄.ι.app j := by cat_disch)
     (hb' : ∀ j, c₃.ι.app j ≫ b' = b.app j ≫ c₄.ι.app j := by cat_disch) :
-    IsColimit c₄ := by
+    IsColimit c₄ :=
   let desc (s : Cocone F₄) : c₄.pt ⟶ s.pt :=
     sq'.desc (hc₂.desc (Cocone.mk _ (r ≫ s.ι)))
       (hc₃.desc (Cocone.mk _ (b ≫ s.ι)))
@@ -969,8 +969,7 @@ noncomputable def IsPushout.isColimitOfIsColimitOfIsPushout
           simp [reassoc_of% ht', reassoc_of% hl', reassoc_of% dsimp% congr($(sq.w).app j)]))
   have fac (s : Cocone F₄) (j : J) : c₄.ι.app j ≫ desc s = s.ι.app j :=
     (sq.app j).hom_ext (by simp [desc, ← reassoc_of% hr']) (by simp [desc, ← reassoc_of% hb'])
-  exact {
-    desc := desc
+  { desc := desc
     fac := fac
     uniq s m hm :=
       sq'.hom_ext
