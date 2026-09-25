@@ -7,10 +7,7 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Topology.ContinuousMap.Algebra
-<<<<<<< HEAD
-=======
 public import Mathlib.CategoryTheory.Category.Init
->>>>>>> master
 public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
 /-!
