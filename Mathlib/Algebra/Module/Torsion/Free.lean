@@ -212,10 +212,6 @@ lemma CharZero.of_isAddTorsionFree [Nontrivial M] [IsAddTorsionFree M] : CharZer
 
 end Semiring
 
-/-- A nontrivial ring without additive torsion has characteristic zero. -/
-instance [Ring R] [Nontrivial R] [IsAddTorsionFree R] : CharZero R :=
-  .of_isAddTorsionFree R R
-
 section NonAssocRing
 variable [NonAssocRing R]
 
