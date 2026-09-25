@@ -176,21 +176,10 @@ lemma lieBracket_apply_fun [IsRCLikeNormedField 𝕜]
     {f : E → F} {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {V' W' : E →L[𝕜] E}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hf' : HasFDerivAt f' f'' x)
     (hV : HasFDerivAt V V' x) (hW : HasFDerivAt W W' x) :
-    (fderiv 𝕜 (fun y ↦ f' y (W y)) x) (V x) - (fderiv 𝕜 (fun y ↦ f' y (V y)) x) (W x)
-      = f' x (lieBracket 𝕜 V W x) := by
-  have h1 : HasFDerivAt (fun y ↦ f' y (W y)) ((f' x).comp W' + f''.flip (W x)) x :=
-    hf'.clm_apply hW
-  have h2 : HasFDerivAt (fun y ↦ f' y (V y)) ((f' x).comp V' + f''.flip (V x)) x :=
-    hf'.clm_apply hV
-  have hsymm : f'' (V x) (W x) = f'' (W x) (V x) :=
-    second_derivative_symmetric hf hf' (V x) (W x)
-  rw [h1.fderiv, h2.fderiv, lieBracket_eq]
-  dsimp only
-  rw [hV.fderiv, hW.fderiv]
-  simp only [add_apply, ContinuousLinearMap.comp_apply,
-    ContinuousLinearMap.flip_apply, map_sub]
-  rw [hsymm]
-  abel
+    (fderiv 𝕜 (fun y ↦ f' y (W y)) x) (V x) - (fderiv 𝕜 (fun y ↦ f' y (V y)) x) (W x) =
+      f' x (lieBracket 𝕜 V W x) := by
+  rw [(hf'.clm_apply hW).fderiv, (hf'.clm_apply hV).fderiv]
+  simp [lieBracket_eq, hV.fderiv, hW.fderiv, second_derivative_symmetric hf hf']
 
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
