@@ -85,9 +85,15 @@ protected lemma zero (μ : Measure α) : 0 ≪ μ := fun _ _ ↦ by simp
 @[trans]
 protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
 
-@[gcongr, mono]
+@[mono]
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
+
+@[gcongr, mono]
+protected theorem map_of_aemeasurable (h : μ ≪ ν) {f : α → β} (hf : AEMeasurable f ν) :
+    μ.map f ≪ ν.map f := by
+  rw [map_congr (h hf.ae_eq_mk), map_congr hf.ae_eq_mk]
+  exact h.map hf.measurable_mk
 
 protected theorem smul_left [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
     c • μ ≪ ν := fun s hνs => by

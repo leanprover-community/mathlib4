@@ -99,7 +99,7 @@ theorem EqOn.comp_left₂ {α β δ γ} {op : α → β → δ} {a₁ a₂ : γ 
 @[simp]
 theorem eqOn_range {ι : Sort*} {f : ι → α} {g₁ g₂ : α → β} :
     EqOn g₁ g₂ (range f) ↔ g₁ ∘ f = g₂ ∘ f :=
-  forall_mem_range.trans <| funext_iff.symm
+  forall_mem_range.trans funext_iff.symm
 
 alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
 
