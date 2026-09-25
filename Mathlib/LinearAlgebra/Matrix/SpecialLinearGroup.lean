@@ -259,6 +259,37 @@ lemma coe_mapEquiv (e : R ≃+* S) (A : SpecialLinearGroup n R) :
     (mapEquiv e A : Matrix n n S) = (e : R →+* S).mapMatrix A :=
   rfl
 
+section Reindex
+
+variable (R) {m o : Type u} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+
+/-- The `MulEquiv` induced by the equivalence over the index -/
+@[simps!]
+def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
+  toFun A := ⟨reindexRingEquiv R e A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
+  invFun A :=
+    ⟨reindexRingEquiv R e.symm A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
+  left_inv A := by ext; simp
+  right_inv A := by ext; simp
+  map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv R e) (A : Matrix m m R) B)
+
+@[simp]
+lemma coe_reindex (e : m ≃ n) (A : SpecialLinearGroup m R) :
+    (reindexMulEquiv R e A : Matrix n n R) = reindexMulEquiv R e A :=
+  rfl
+
+@[simp]
+theorem symm_reindexMulEquiv (e : m ≃ n) :
+    (reindexMulEquiv R e).symm = reindexMulEquiv R e.symm :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_trans_reindexRingEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
+  rfl
+
+end Reindex
+
 section Pi
 
 variable {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]
