@@ -102,7 +102,7 @@ lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏
 
 @[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
-  rw [h]; exact fold_congr rfl rfl rfl
+  rw [h]; exact fold_congr
 
 @[to_additive]
 theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc

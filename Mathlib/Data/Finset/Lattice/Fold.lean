@@ -87,7 +87,7 @@ theorem sup_sup : s.sup (f ⊔ g) = s.sup f ⊔ s.sup g := by
 theorem sup_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
     s₁.sup f = s₂.sup g := by
   subst hs
-  exact Finset.fold_congr rfl rfl rfl hfg
+  exact Finset.fold_congr hfg
 
 @[to_dual (attr := simp)]
 theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β]
