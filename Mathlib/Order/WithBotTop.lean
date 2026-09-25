@@ -5,7 +5,7 @@ Authors: Joël Riou, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Order.OrdContinuous
+public import Mathlib.Order.WithBot
 
 /-!
 # Adding both `⊥` and `⊤` to a type
@@ -74,12 +74,6 @@ theorem coe_strictMono [Preorder ι] : StrictMono (WithBotTop.coe : ι → _) :=
 lemma coe_monotone [Preorder ι] :
     Monotone (WithBotTop.coe : ι → _) :=
   fun _ _ _ ↦ by simpa
-
-lemma leftOrdContinuous_coe [Preorder ι] : LeftOrdContinuous (WithBotTop.coe : ι → _) :=
-  WithBot.leftOrdContinuous_coe.comp WithTop.leftOrdContinuous_coe
-
-lemma rightOrdContinuous_coe [Preorder ι] : RightOrdContinuous (WithBotTop.coe : ι → _) :=
-  WithBot.rightOrdContinuous_coe.comp WithTop.rightOrdContinuous_coe
 
 end WithBotTop
 
