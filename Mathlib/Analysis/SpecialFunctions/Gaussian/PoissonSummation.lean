@@ -59,8 +59,8 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
   constructor
   · refine ((cexp_neg_quadratic_isLittleO_rpow_atTop ha (-b) s).comp_tendsto
       Filter.tendsto_neg_atBot_atTop).congr' (Eventually.of_forall fun x ↦ by simp) ?_
-    · refine (eventually_lt_atBot 0).mp (Eventually.of_forall fun x hx ↦ ?_)
-      simp only [Function.comp_apply, abs_of_neg hx]
+    refine (eventually_lt_atBot 0).mp (Eventually.of_forall fun x hx ↦ ?_)
+    simp [abs_of_neg hx]
   · refine (cexp_neg_quadratic_isLittleO_rpow_atTop ha b s).congr' EventuallyEq.rfl ?_
     refine (eventually_gt_atTop 0).mp (Eventually.of_forall fun x hx ↦ ?_)
     simp_rw [abs_of_pos hx]
