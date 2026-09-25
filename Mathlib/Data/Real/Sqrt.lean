@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 import Mathlib.Analysis.Real.Sqrt
 

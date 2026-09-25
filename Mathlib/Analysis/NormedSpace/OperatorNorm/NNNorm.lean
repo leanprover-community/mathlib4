@@ -1,8 +1,5 @@
-module
+module -- shake: keep-all
 
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Data.EReal.Inv
+public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 deprecated_module (since := "2026-03-23")

@@ -1,6 +1,5 @@
-module
+module -- shake: keep-all
 
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Data.Rat.Floor
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 deprecated_module (since := "2026-05-29")

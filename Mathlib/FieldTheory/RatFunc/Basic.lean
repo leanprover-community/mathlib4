@@ -234,10 +234,8 @@ def toFractionRingRingEquiv : K⟮X⟯ ≃+* FractionRing K[X] where
 
 end Field
 
-section TacticInterlude
-
 /-- Solve equations for `K⟮X⟯` by working in `FractionRing K[X]`. -/
-macro "frac_tac" : tactic => `(tactic|
+local macro "frac_tac" : tactic => `(tactic|
   · repeat (rintro (⟨⟩ : _⟮X⟯))
     try simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
       ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
@@ -247,7 +245,7 @@ macro "frac_tac" : tactic => `(tactic|
       add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
 /-- Solve equations for `K⟮X⟯` by applying `RatFunc.induction_on`. -/
-macro "smul_tac" : tactic => `(tactic|
+local macro "smul_tac" : tactic => `(tactic|
     repeat
       (first
         | rintro (⟨⟩ : _⟮X⟯)
@@ -259,8 +257,6 @@ macro "smul_tac" : tactic => `(tactic|
       Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
-
-end TacticInterlude
 
 section CommRing
 

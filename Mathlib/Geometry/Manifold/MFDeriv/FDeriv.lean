@@ -31,7 +31,6 @@ section MFDerivFDeriv
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
     UniqueMDiffAt[s] x ↔ UniqueDiffWithinAt 𝕜 s x := by
   simp only [UniqueMDiffWithinAt, mfld_simps]
-  exact Iff.rfl
 
 alias ⟨UniqueMDiffWithinAt.uniqueDiffWithinAt, UniqueDiffWithinAt.uniqueMDiffWithinAt⟩ :=
   uniqueMDiffWithinAt_iff_uniqueDiffWithinAt

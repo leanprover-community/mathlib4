@@ -1,6 +1,5 @@
-module
+module -- shake: keep-all
 
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Order.Star.Real
 
 deprecated_module (since := "2026-05-29")

@@ -3,13 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-module
+module -- shake: keep-all
 
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.EReal.Inv
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
+public import Mathlib.CategoryTheory.Sites.CartesianClosed
+public import Mathlib.CategoryTheory.Sites.LeftExact
+public import Mathlib.Condensed.Basic
 /-!
 
 # Condensed sets form a Cartesian closed category

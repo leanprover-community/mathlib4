@@ -1,9 +1,5 @@
-module
+module -- shake: keep-all
 
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.Matrix.Bilinear
 
 deprecated_module (since := "2026-06-05")

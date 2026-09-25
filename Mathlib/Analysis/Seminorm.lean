@@ -1,9 +1,5 @@
-module
+module -- shake: keep-all
 
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.EReal.Operations
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 
 deprecated_module (since := "2026-08-13")

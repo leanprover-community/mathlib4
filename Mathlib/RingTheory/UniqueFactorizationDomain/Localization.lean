@@ -1,8 +1,5 @@
-module
+module -- shake: keep-all
 
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 
 deprecated_module (since := "2026-07-12")

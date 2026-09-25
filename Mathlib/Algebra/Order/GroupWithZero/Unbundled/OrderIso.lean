@@ -1,7 +1,5 @@
-module
+module -- shake: keep-all
 
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 
 deprecated_module (since := "2026-06-09")
