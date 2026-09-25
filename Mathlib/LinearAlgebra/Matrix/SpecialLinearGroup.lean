@@ -264,7 +264,7 @@ section Reindex
 variable (R) {m o : Type u} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
 /-- The `MulEquiv` induced by the equivalence over the index -/
-@[simps!]
+@[simps! apply symm_apply]
 def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
   toFun A := ⟨reindexRingEquiv R e A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
   invFun A :=
