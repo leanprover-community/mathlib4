@@ -992,12 +992,6 @@ theorem multiplicity_top_right {S : Type*} [CommSemiring S] (I : Ideal S) :
   rw [← one_eq_top, multiplicity_one_right]
 
 variable {R} in
-/-- In a Dedekind domain, the multiplicity of a proper ideal in a nonzero ideal is finite. -/
-theorem finiteMultiplicity [IsDedekindDomain R] {I J : Ideal R} (hI : I ≠ ⊤) (hJ : J ≠ ⊥) :
-    FiniteMultiplicity I J :=
-  FiniteMultiplicity.of_not_isUnit (by rwa [Ideal.isUnit_iff]) hJ
-
-variable {R} in
 theorem emultiplicity_span_eq_emultiplicity {a b : R} :
     emultiplicity (span {a}) (span ({b} : Set R)) = emultiplicity a b := by
   rw [emultiplicity_eq_emultiplicity_iff]

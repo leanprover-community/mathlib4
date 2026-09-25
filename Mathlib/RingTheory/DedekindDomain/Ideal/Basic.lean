@@ -428,6 +428,11 @@ instance : WfDvdMonoid (Ideal A) := by
   eta_expand; simp_rw [Ideal.dvdNotUnit_iff_lt]
   infer_instance
 
+/-- In a Dedekind domain, the multiplicity of a proper ideal in a nonzero ideal is finite. -/
+theorem Ideal.finiteMultiplicity {I J : Ideal A} (hI : I ≠ ⊤) (hJ : J ≠ ⊥) :
+    FiniteMultiplicity I J :=
+  FiniteMultiplicity.of_not_isUnit (by rwa [Ideal.isUnit_iff]) hJ
+
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
       intro P
