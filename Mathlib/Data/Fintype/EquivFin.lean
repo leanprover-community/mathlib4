@@ -535,7 +535,6 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   rintro m n h
   let := Classical.decEq α
   wlog hmlen : m ≤ n generalizing m n
-  · exact (this h.symm <| le_of_not_ge hmlen).symm
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
   refine (Classical.choose_spec (exists_notMem_finset

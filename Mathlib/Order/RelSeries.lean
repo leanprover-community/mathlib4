@@ -1046,7 +1046,6 @@ lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
   by_contra! h
   obtain ⟨i, j, hn, he⟩ := Fintype.exists_ne_map_eq_of_card_lt s (by rw [Fintype.card_fin]; lia)
   wlog hl : i < j generalizing i j
-  · exact this j i hn.symm he.symm (by lia)
   exact absurd he (s.strictMono hl).ne
 
 instance [DecidableLT α] : Fintype (LTSeries α) where
