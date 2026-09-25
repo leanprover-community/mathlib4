@@ -126,7 +126,7 @@ lake exe cache get --cache-from=master,forks
 
 ### Troubleshooting
 
-If the public cache endpoint misbehaves, set `MATHLIB_CACHE_DEBUG_USE_LEGACY` to read the `master` container from the Azure storage account directly. The other containers read through the public endpoint either way:
+The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
 
 ```bash
 # bash, zsh, Git Bash
