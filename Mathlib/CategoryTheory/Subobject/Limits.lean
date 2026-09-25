@@ -378,7 +378,7 @@ theorem imageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) [HasImage f
     imageSubobject (h ≫ f) ≤ imageSubobject f :=
   Subobject.mk_le_mk_of_comm (image.preComp h f) (by simp)
 
-theorem imageSubobject_strongEpi_comp [HasStrongEpiMonoFactorisations C] {X Y X' : C}
+theorem imageSubobject_comp_of_strongEpi [HasStrongEpiMonoFactorisations C] {X Y X' : C}
     (e : X' ⟶ X) (f : X ⟶ Y) [StrongEpi e] [Mono f] :
     imageSubobject (e ≫ f) = imageSubobject f :=
   mk_eq_mk_of_comm (image.ι (e ≫ f)) (image.ι f)
@@ -390,7 +390,7 @@ lemma _root_.CategoryTheory.Subobject.sup_eq_imageSubobject [HasImages C] [HasBi
     X ⊔ Y = imageSubobject (coprod.desc X.arrow Y.arrow) :=
   eq_mk_of_comm (image.ι (coprod.desc X.arrow Y.arrow)) (supIsoImage X Y) (ofLEMk_comp _)
 
-lemma _root_.CategoryTheory.Subobject.mk_mono_eq_imageSubobject [HasStrongEpiMonoFactorisations C]
+lemma _root_.CategoryTheory.Subobject.mk_eq_imageSubobject_of_mono [HasStrongEpiMonoFactorisations C]
     {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f := by cat_disch)
     [StrongEpi e] [Mono m] :
     mk m = imageSubobject f :=
