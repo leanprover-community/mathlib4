@@ -65,6 +65,7 @@ class Heart where
 
 /-- Unless a better candidate category is available, the full subcategory
 of objects satisfying `t.heart` can be chosen as the heart of a t-structure `t`. -/
+@[implicit_reducible]
 def hasHeartFullSubcategory : t.Heart t.heart.FullSubcategory where
   ι := t.heart.ι
   essImage_eq_heart := by

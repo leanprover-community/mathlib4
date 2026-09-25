@@ -155,6 +155,7 @@ theorem coe_restrict_apply {s : Set α} (h : IsInvariant ϕ s) (t : τ) (x : s) 
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Convert a flow to an additive monoid action. -/
+@[implicit_reducible]
 def toAddAction : AddAction τ α where
   vadd      := ϕ
   add_vadd  := ϕ.map_add'

@@ -227,6 +227,7 @@ instance [DecidableLT α] {a : Thunk α} {b : Thunk β}
 /-- Given an estimator for a pair, we can extract an estimator for the first factor. -/
 -- This isn't an instance as at the sole use case we need to provide
 -- the instance arguments by hand anyway.
+@[implicit_reducible]
 def Estimator.fstInst [DecidableLT α] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
     (a : Thunk α) (b : Thunk β) (i : Estimator (a.prod b) ε) :
     Estimator a (Estimator.fst (a.prod b) ε) where

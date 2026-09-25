@@ -54,7 +54,6 @@ end FreeAlgebra
 
 open Cardinal
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
     (s : Set S) : Module.rank R (adjoin R s) ≤ max #s ℵ₀ := by
   rw [adjoin_eq_range_freeAlgebra_lift]

@@ -878,6 +878,8 @@ lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.
     rw [← Finset.prod_coe_sort, this]
     exact (h s).meas_iInter fun i ↦ hs i i.2
 
+alias ⟨iIndepFun.restrict, _⟩ := iIndepFun_iff_finset
+
 end iIndepFun
 
 section Mul

@@ -116,9 +116,10 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
       forget₂ FinBoolAlg FinBddDistLat ⋙ FinBddDistLat.dual :=
   rfl
 
+attribute [local instance] FintypeCat.fintype in
 /-- The powerset functor. `Set` as a functor. -/
 @[simps]
-def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
+noncomputable def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   obj X := op <| .of (Set X)
   map {X Y} f :=
     Quiver.Hom.op <| InducedCategory.homMk <|

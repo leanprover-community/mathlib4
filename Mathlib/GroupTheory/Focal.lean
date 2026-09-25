@@ -110,8 +110,7 @@ lemma focalSubgroupOf.mk'_conj_eq {h : G} (hh : h ∈ H) (g : G)
 
 theorem focalSubgroupOf_eq_closure :
     focalSubgroupOf H = closure { g : H | ∃ x ∈ H, ∃ u : G, g = ⁅x, u⁆ } := by
-  rw [← (map_injective H.subtype_injective).eq_iff, map_focalSubgroupOf,
-    MonoidHom.map_closure, focalSubgroup_def]
+  rw [← map_subtype_inj, map_focalSubgroupOf, MonoidHom.map_closure, focalSubgroup_def]
   congr
   simp
   grind

@@ -118,7 +118,6 @@ section Nontrivial
 
 variable [Nontrivial A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a (nontrivial) complex Banach algebra, every element has nonempty spectrum. -/
 protected theorem nonempty (a : A) : (spectrum ℂ a).Nonempty := by
   /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent a`

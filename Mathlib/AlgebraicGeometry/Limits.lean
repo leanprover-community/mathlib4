@@ -596,7 +596,7 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec.{u} := by
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec.{u} :=
-  preservesFiniteCoproductsOfPreservesBinaryAndInitial _ _
+  PreservesFiniteCoproducts.of_preserves_binary_and_initial _ _
 
 /-- The canonical map `∐ Spec Rᵢ ⟶ Spec (Π Rᵢ)`.
 This is an isomorphism when the product is finite. -/
@@ -713,7 +713,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa using f.isOpenEmbedding.injective
   · simpa using g.isOpenEmbedding.injective
 
-set_option backward.isDefEq.respectTransparency false in
 instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
     {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
   obtain (a | (a | a)) := t
@@ -723,7 +722,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa
 
 -- Test that instances on locally directed colimits fire correctly.
-set_option backward.isDefEq.respectTransparency false in
 example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
   inferInstance

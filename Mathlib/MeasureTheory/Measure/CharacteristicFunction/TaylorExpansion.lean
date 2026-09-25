@@ -108,7 +108,6 @@ theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : MemLp id n μ) :
   rw [iteratedDeriv, iteratedFDeriv_charFun hint]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : MemLp id n μ) :
     iteratedDeriv n (charFun μ) 0 = I ^ n * ∫ x, x ^ n ∂μ := by
   simp [iteratedDeriv_charFun hint]

@@ -45,7 +45,7 @@ def isLimitMapConeBinaryFanEquiv :
     IsLimit (G.mapCone (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
   (IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm.trans
     (IsLimit.equivIsoLimit
-      (Cones.ext (Iso.refl _)
+      (Cone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving products expressed in terms of binary fans. -/
@@ -139,7 +139,7 @@ def isColimitMapCoconeBinaryCofanEquiv :
     ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoPair _).symm _).symm.trans
     (IsColimit.equivIsoColimit
-      (Cocones.ext (Iso.refl _)
+      (Cocone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving coproducts expressed in terms of binary cofans. -/

@@ -168,6 +168,7 @@ local notation "⟪" x ", " y "⟫" => inner A x y
 open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
+@[implicit_reducible]
 noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
   norm x := √‖⟪x, x⟫_A‖
 

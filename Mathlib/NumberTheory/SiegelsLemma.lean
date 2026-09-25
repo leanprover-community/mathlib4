@@ -21,13 +21,13 @@ coefficients.
 ## Main results
 
 - `exists_ne_zero_int_vec_norm_le`: Given a non-zero `m × n` matrix `A` with `m < n` the linear
-system it determines has a non-zero integer solution `t` with
-`‖t‖ ≤ ((n * ‖A‖) ^ ((m : ℝ) / (n - m)))`
+  system it determines has a non-zero integer solution `t` with
+  `‖t‖ ≤ ((n * ‖A‖) ^ ((m : ℝ) / (n - m)))`
 
 ## Notation
 
 - `‖_‖ ` : Matrix.seminormedAddCommGroup is the sup norm, the maximum of the absolute values of
-the entries of the matrix
+  the entries of the matrix
 
 ## References
 

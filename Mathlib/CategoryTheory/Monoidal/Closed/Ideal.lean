@@ -154,9 +154,9 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
               (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) |>.symm
-        · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.fst, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
-        · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
+        · simp only [BinaryFan.snd, Cone.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
@@ -199,6 +199,7 @@ takes in an explicit choice of lift of the essential image of `i` to `D`, in the
 `l : i.EssImageSubcategory ⥤ D` and natural isomorphism `φ : l ⋙ i ≅ i.essImage.ι`. When
 `l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
 to the respective exponential objects in `C`. -/
+@[implicit_reducible]
 def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
     MonoidalClosed D where
   closed := fun B =>
@@ -224,6 +225,7 @@ Unlike `cartesianClosedOfReflective'` this construction lifts exponential object
 exponential objects in `D` by applying the reflector to them, even though they already lie in the
 essential image of `i`; if you need better control over definitional equality, use
 `cartesianClosedOfReflective'` instead. -/
+@[implicit_reducible]
 def cartesianClosedOfReflective : MonoidalClosed D :=
   cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
     (NatIso.ofComponents (fun X ↦

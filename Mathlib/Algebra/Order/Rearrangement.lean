@@ -70,12 +70,9 @@ variable [PosSMulMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g :
 theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g (σ i) ≤ ∑ i ∈ s, f i • g i := by
   classical
-  revert hσ σ hfg
-  apply Finset.induction_on_max_value (fun i ↦ toLex (g i, f i))
-    (p := fun t ↦ ∀ {σ : Perm ι}, MonovaryOn f g t → {x | σ x ≠ x} ⊆ t →
-      ∑ i ∈ t, f i • g (σ i) ≤ ∑ i ∈ t, f i • g i) s
-  · simp only [le_rfl, Finset.sum_empty, imp_true_iff]
-  intro a s has hamax hind σ hfg hσ
+  induction s using induction_on_max_value fun i ↦ toLex (g i, f i) generalizing σ with
+  | empty => simp only [le_rfl, Finset.sum_empty]
+  | insert a s has hamax hind => ?_
   set τ : Perm ι := σ.trans (swap a (σ a)) with hτ
   have hτs : {x | τ x ≠ x} ⊆ s := by
     intro x hx

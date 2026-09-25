@@ -122,7 +122,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
   /-- The additive submonoid with every element negated. -/]
 protected def inv : Inv (Submonoid G) where
   inv S :=
@@ -141,7 +141,7 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
   Iff.rfl
 
 /-- Inversion is involutive on submonoids. -/
-@[to_additive (attr := instance_reducible) /-- Inversion is involutive on additive submonoids. -/]
+@[to_additive (attr := implicit_reducible) /-- Inversion is involutive on additive submonoids. -/]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
   SetLike.coe_injective.involutiveInv _ fun _ => rfl
 

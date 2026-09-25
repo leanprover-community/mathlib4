@@ -145,6 +145,7 @@ theorem conjTranspose_replicateRow [Star α] (v : m → α) :
   ext
   rfl
 
+/-- `v ᵥ* M` is the vector whose entries are those of `replicateRow ι v * M`. -/
 theorem replicateRow_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
     (v : m → α) : replicateRow ι (v ᵥ* M) = replicateRow ι v * M := by
   ext
@@ -155,6 +156,7 @@ theorem replicateCol_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matr
   ext
   rfl
 
+/-- `M *ᵥ v` is the vector whose entries are those of `M * replicateCol ι v`. -/
 theorem replicateCol_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α)
     (v : n → α) : replicateCol ι (M *ᵥ v) = M * replicateCol ι v := by
   ext

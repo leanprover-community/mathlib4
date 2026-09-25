@@ -92,13 +92,13 @@ theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b�
 theorem Ico_eq_Ico_iff (h : a < b ∨ c < d) : Ico a b = Ico c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩
   have : c ≤ a ∧ b ≤ d := (Ico_subset_Ico_iff (show a < b by grind [Set.nonempty_Ico])).1 h.subset
-  have : a ≤ c ∧ d ≤ b := (Ico_subset_Ico_iff (show c < d by grind [Set.nonempty_Ico])).1 h.superset
+  have : a ≤ c ∧ d ≤ b := (Ico_subset_Ico_iff (show c < d by grind)).1 h.superset
   grind
 
 theorem Ioc_eq_Ioc_iff (hab : a < b ∨ c < d) : Ioc a b = Ioc c d ↔ a = c ∧ b = d := by
   refine ⟨fun h ↦ ?_, by grind⟩
   have : b ≤ d ∧ c ≤ a := (Ioc_subset_Ioc_iff (show a < b by grind [Set.nonempty_Ioc])).1 h.subset
-  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff (show c < d by grind [Set.nonempty_Ioc])).1 h.superset
+  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff (show c < d by grind)).1 h.superset
   grind
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
@@ -563,6 +563,10 @@ theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
   grind
 
 theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  grind
+
+@[simp]
+theorem Ioi_diff_Ioc : Ioi a \ Ioc a b = Ioi (max a b) := by
   grind
 
 theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by

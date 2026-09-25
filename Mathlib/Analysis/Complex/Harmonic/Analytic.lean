@@ -25,7 +25,6 @@ open Complex InnerProductSpace Metric Set Topology
 variable
   {f : ℂ → ℝ} {x : ℂ}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex differentiable at `x`.
 -/
@@ -56,7 +55,6 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
       add_eq_zero_iff_eq_neg] at h₂f
     simp [h₂f]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex analytic at `x`.
 -/

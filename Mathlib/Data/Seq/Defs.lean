@@ -33,7 +33,7 @@ functions defined in this file.
 
 There are also a number of operations and predicates on sequences mirroring those on lists:
 `Seq.map`, `Seq.zip`, `Seq.zipWith`, `Seq.unzip`, `Seq.fold`, `Seq.update`, `Seq.drop`,
-`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.Pairwire`,
+`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.Pairwise`,
 as well as a cases principle `Seq.recOn` which allows one to reason about
 sequences by cases (`nil` and `cons`).
 

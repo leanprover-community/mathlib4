@@ -153,6 +153,7 @@ instance (h : ShiftMkCore C A) : (Discrete.functor h.F).Monoidal :=
         simp [h.add_zero_inv_app] }
 
 /-- Constructs a `HasShift C A` instance from `ShiftMkCore`. -/
+@[implicit_reducible]
 def hasShiftMk (h : ShiftMkCore C A) : HasShift C A where
   shift := Discrete.functor h.F
 
@@ -756,6 +757,7 @@ set_option backward.isDefEq.respectTransparency false in
 open hasShift in
 /-- Given a family of endomorphisms of `C` which are intertwined by a fully faithful `F : C ⥤ D`
 with shift functors on `D`, we can promote that family to shift functors on `C`. -/
+@[implicit_reducible]
 def hasShift :
     HasShift C A :=
   hasShiftMk C A

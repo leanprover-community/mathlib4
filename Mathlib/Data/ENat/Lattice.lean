@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Bhavik Mehta
 -/
 module
 
@@ -251,5 +251,55 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i 
     iSup_le fun i ↦ ?_
   rw [← ENat.sub_sub_cancel ha (h _)]
   exact tsub_le_tsub_left (iInf_le (a - f ·) i) _
+
+lemma iInf_add : iInf f + a = ⨅ i, f i + a :=
+  le_antisymm (le_iInf fun _ ↦ add_le_add (iInf_le _ _) le_rfl) <|
+    (tsub_le_iff_right.1 <| le_iInf fun _ ↦ tsub_le_iff_right.2 <| iInf_le _ _)
+
+theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
+  refine eq_of_forall_ge_iff fun c => ?_
+  rw [tsub_le_iff_right, add_comm, iInf_add]
+  simp [tsub_le_iff_right, add_comm]
+
+theorem sInf_add {s : Set ℕ∞} : sInf s + a = ⨅ b ∈ s, b + a := by simp [sInf_eq_iInf, iInf_add]
+
+theorem add_iInf {a : ℕ∞} : a + iInf f = ⨅ b, a + f b := by
+  rw [add_comm, iInf_add]; simp [add_comm]
+
+theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
+  suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
+    le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
+  calc
+    ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
+      le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
+    _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
+
+lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → ℕ∞}
+    (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
+  iInf_add_iInf fun i j ↦ (exists_le_le i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
+
+lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℕ∞) :
+    a + ⨅ (i) (j), f i j = ⨅ (i) (j), a + f i j := by
+  simp [add_iInf]
+
+lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℕ∞) :
+    (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
+  simp only [add_comm, add_iInf₂]
+
+lemma add_sInf {s : Set ℕ∞} : a + sInf s = ⨅ b ∈ s, a + b := by
+  rw [sInf_eq_iInf, add_iInf₂]
+
+variable {κ : Sort*}
+
+lemma le_iInf_add_iInf {g : κ → ℕ∞} (h : ∀ i j, a ≤ f i + g j) :
+    a ≤ iInf f + iInf g := by
+  simp_rw [iInf_add, add_iInf]; exact le_iInf₂ h
+
+lemma le_iInf₂_add_iInf₂ {q₁ : ι → Sort*} {q₂ : κ → Sort*}
+    {f : (i : ι) → q₁ i → ℕ∞} {g : (k : κ) → q₂ k → ℕ∞}
+    (h : ∀ i pi k qk, a ≤ f i pi + g k qk) :
+    a ≤ (⨅ (i) (qi), f i qi) + ⨅ (k) (qk), g k qk := by
+  simp_rw [iInf₂_add, add_iInf₂]
+  exact le_iInf₂ fun i hi => le_iInf₂ (h i hi)
 
 end ENat

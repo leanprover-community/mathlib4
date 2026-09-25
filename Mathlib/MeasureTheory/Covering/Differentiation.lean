@@ -646,7 +646,7 @@ theorem withDensity_limRatioMeas_eq : μ.withDensity (v.limRatioMeas hρ) = ρ :
         ((t : ℝ≥0∞) ^ 2 * ρ s : ℝ≥0∞)) (𝓝[>] 1) (𝓝 ((1 : ℝ≥0∞) ^ 2 * ρ s)) := by
       refine ENNReal.Tendsto.mul ?_ ?_ tendsto_const_nhds ?_
       · exact ENNReal.Tendsto.pow (ENNReal.tendsto_coe.2 nhdsWithin_le_nhds)
-      · simp only [one_pow, true_or, Ne, not_false_iff, one_ne_zero]
+      · simp
       · simp only [one_pow, Ne, or_true, ENNReal.one_ne_top, not_false_iff]
     simp only [one_pow, one_mul] at this
     refine ge_of_tendsto this ?_

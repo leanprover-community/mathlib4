@@ -132,7 +132,7 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   by_cases h1 : 3 ∣ a * b * c
   swap
   · exact fermatLastTheoremThree_case_1 h1 hF
-  rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
+  rw [prime_three.dvd_mul, prime_three.dvd_mul] at h1
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
   rcases h1 with (h3a | h3b) | h3c
   · refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 ha h3a ?_ H hF

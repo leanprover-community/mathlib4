@@ -24,6 +24,7 @@ concurrency:
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 

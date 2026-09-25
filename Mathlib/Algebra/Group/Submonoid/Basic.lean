@@ -215,9 +215,6 @@ example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x �
   | one => exact one
   | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
--- TODO: find a nice way to fix the linter
--- simp_all is called on four goals, with only one remaining goal
-set_option linter.flexible false in
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by
@@ -229,8 +226,7 @@ lemma closure_eq_one_union (s : Set M) :
     | mul x hx y hy hx hy =>
       push _ ∈ _ at hx hy
       obtain ⟨(rfl | hx), (rfl | hy)⟩ := And.intro hx hy
-      all_goals simp_all
-      exact Or.inr <| mul_mem hx hy
+      all_goals simp_all [mul_mem]
   · rintro x (hx | hx)
     · exact (show x = 1 by simpa using hx) ▸ one_mem (closure s)
     · exact Subsemigroup.closure_le.mpr subset_closure hx

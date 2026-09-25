@@ -46,6 +46,7 @@ class VeroffAlgebra (α : Type*) extends Inhabited α where
 variable {α : Type*}
 
 /-- Derive a Veroff algebra from a Boolean algebra. -/
+@[implicit_reducible]
 def BooleanAlgebra.veroffAlgebra [BooleanAlgebra α] : VeroffAlgebra α where
   default := ⊥
   f a b := (a ⊓ b)ᶜ
@@ -206,6 +207,7 @@ class SingleShefferAlgebra (α : Type*) extends Inhabited α where
 variable {α : Type*}
 
 /-- Derive a `SingleShefferAlgebra` from a Boolean algebra. -/
+@[implicit_reducible]
 def BooleanAlgebra.singleShefferAlgebra [BooleanAlgebra α] : SingleShefferAlgebra α where
   default := ⊥
   f a b := (a ⊓ b)ᶜ

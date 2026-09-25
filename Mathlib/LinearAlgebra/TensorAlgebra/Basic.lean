@@ -176,7 +176,6 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.injective w
 
-set_option backward.isDefEq.respectTransparency false in
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.

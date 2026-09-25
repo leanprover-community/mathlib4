@@ -193,6 +193,9 @@ def objEquiv : C ≃ W.Localization where
     rintro ⟨⟨X⟩⟩
     rfl
 
+instance : W.Q.EssSurj where
+  mem_essImage Y := ⟨(objEquiv W).symm Y, ⟨Iso.refl _⟩⟩
+
 set_option backward.isDefEq.respectTransparency false in
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
@@ -369,7 +372,6 @@ def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D w
     ext
     simp only [WhiskeringLeftEquivalence.unitIso_hom, eqToHom_app, eqToHom_refl,
       WhiskeringLeftEquivalence.counitIso_hom, eqToHom_map, eqToHom_trans]
-    rfl
 
 end Construction
 

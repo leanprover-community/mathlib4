@@ -132,8 +132,7 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
       convert C.2
       ext x
-      simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
-        decide_eq_false_iff_not, not_not]
+      simp
     · refine IsClopen.isOpen ?_
       convert C.2
       ext x

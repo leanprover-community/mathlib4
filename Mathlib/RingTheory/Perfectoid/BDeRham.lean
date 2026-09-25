@@ -36,7 +36,7 @@ take a perfectoid field as the input.
 ## Reference
 
 * [Fontaine, *Sur Certains Types de Représentations p-Adiques du Groupe de Galois d'un Corps Local;
-Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
+  Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
 * [Fontaine, *Le corps des périodes p-adiques*][fontaine1994corps]
 * [Scholze, *p-adic Hodge theory for rigid-analytic varieties*][scholze2013adic]
 

@@ -1187,13 +1187,13 @@ theorem UniformContinuousOn.comp_tendstoUniformly_eventually
   let F' : ι → α → β := fun i x => if i ∈ s' then F i x else f x
   have hF : F =ᶠ[p] F' := by
     rw [eventuallyEq_iff_exists_mem]
-    refine ⟨s', hs', fun y hy => by aesop⟩
+    refine ⟨s', hs', fun y hy => by grind⟩
   have h' : TendstoUniformly F' f p := by
     rwa [tendstoUniformly_congr hF] at h
   apply (tendstoUniformly_congr _).mpr
-    (UniformContinuousOn.comp_tendstoUniformly (by aesop) hf hg h')
+    (UniformContinuousOn.comp_tendstoUniformly (by grind) hf hg h')
   rw [eventuallyEq_iff_exists_mem]
-  refine ⟨s', hs', fun i hi => by aesop⟩
+  refine ⟨s', hs', fun i hi => by grind⟩
 
 theorem UniformContinuousOn.comp_tendstoUniformlyOn_eventually {t : Set α}
     (hF : ∀ᶠ i in p, ∀ x ∈ t, F i x ∈ s) (hf : ∀ x ∈ t, f x ∈ s)

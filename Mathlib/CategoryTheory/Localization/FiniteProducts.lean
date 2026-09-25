@@ -84,7 +84,7 @@ lemma adj_counit_app (F : Discrete J ⥤ C) :
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
     IsLimit (L.mapCone (limit.cone F)) :=
   IsLimit.ofIsoLimit (isLimitConeOfAdj (adj L W J) (F ⋙ L))
-    (Cones.ext ((compLimitFunctorIso L W J).app F) (by simp [adj_counit_app, constLimAdj]))
+    (Cone.ext ((compLimitFunctorIso L W J).app F) (by simp [adj_counit_app, constLimAdj]))
 
 end HasProductsOfShapeAux
 

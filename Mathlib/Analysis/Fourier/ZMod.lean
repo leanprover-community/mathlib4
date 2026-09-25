@@ -137,7 +137,7 @@ lemma dft_eq_fourier {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [Com
     (Φ : ZMod N → E) (k : ZMod N) :
     𝓕 Φ k = Fourier.fourierIntegral toCircle Measure.count Φ k := by
   simp only [dft_apply, stdAddChar_apply, Fourier.fourierIntegral_def, Circle.smul_def,
-    integral_countable' <| .of_finite .., count_real_singleton, one_smul, tsum_fintype]
+    integral_countable <| .of_finite .., count_real_singleton, one_smul, tsum_fintype]
 
 end defs
 

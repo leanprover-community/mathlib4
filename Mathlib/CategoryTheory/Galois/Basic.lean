@@ -329,7 +329,7 @@ epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
   apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
-  simpa using DFunLike.congr_fun (F.congr_map huv) _
+  simpa using ConcreteCategory.congr_hom (F.congr_map huv) _
 
 /-- An epimorphism induces a surjective map on fibers. -/
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
@@ -355,6 +355,7 @@ section CardFiber
 
 open ConcreteCategory
 
+attribute [local instance] FintypeCat.fintype in
 /-- A mono between objects with equally sized fibers is an iso. -/
 lemma isIso_of_mono_of_eq_card_fiber {X Y : C} (f : X ⟶ Y) [Mono f]
     (h : Nat.card (F.obj X) = Nat.card (F.obj Y)) : IsIso f := by

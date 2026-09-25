@@ -222,7 +222,6 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
     e, ← Algebra.smul_def, mul_comm, mul_smul]
   exact isIntegral_trans _ (int_s.smul _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars [Algebra.IsAlgebraic R S]
     {a : A} (h : IsAlgebraic S a) : IsAlgebraic R a := by
   have ⟨p, hp, eval0⟩ := h
@@ -379,7 +378,6 @@ theorem Subalgebra.algebraicClosure_eq_integralClosure {K} [Field K] [Algebra K 
     algebraicClosure K S = integralClosure K S :=
   SetLike.ext fun _ ↦ isAlgebraic_iff_isIntegral
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsDomain R] : Algebra.IsAlgebraic R (Subalgebra.algebraicClosure R S) :=
   (Subalgebra.isAlgebraic_iff _).mp fun _ ↦ id
 
@@ -410,7 +408,6 @@ theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivis
   rw [mul_right_comm, eq, ← Algebra.smul_def] at this
   exact this.of_smul (mem_nonZeroDivisors_of_ne_zero hr)
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra in
 omit [Algebra R A] [IsScalarTower R S A] in
 theorem IsAlgebraic.adjoin_of_forall_isAlgebraic [NoZeroDivisors S] {s t : Set S}
@@ -457,11 +454,9 @@ end
 variable [NoZeroDivisors S] {a : S} (ha : Transcendental R a)
 include ha
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma integralClosure : Transcendental (integralClosure R S) a :=
   ha.extendScalars_of_isIntegral _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma subalgebraAlgebraicClosure [IsDomain R] :
     Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars _
 

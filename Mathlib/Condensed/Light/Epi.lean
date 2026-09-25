@@ -126,7 +126,7 @@ instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms
       apply limit.hom_ext
       intro ⟨n⟩
       simp only [lim_obj, lim_map, limMap, IsLimit.map, limit.isLimit_lift, limit.lift_π,
-        Cones.postcompose_obj_pt, limit.cone_x, Cones.postcompose_obj_π, NatTrans.comp_app,
+        Cone.postcompose_obj_pt, limit.cone_x, Cone.postcompose_obj_π, NatTrans.comp_app,
         Functor.const_obj_obj, limit.cone_π, Pi.isoLimit, Limits.Pi.map, Category.assoc,
         limit.conePointUniqueUpToIso_hom_comp, Pi.cone_pt, Pi.cone_π, Discrete.natTrans_app,
         Discrete.functor_obj_eq_as]

@@ -154,7 +154,6 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
@@ -658,7 +657,6 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
     [NonUnitalIsometricContinuousFunctionalCalculus R A p]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 open UniformOnFun in
 open scoped NonUnitalContinuousFunctionalCalculus in

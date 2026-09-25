@@ -37,6 +37,10 @@ theorem invOf_lt_zero [Invertible a] : ⅟a < 0 ↔ a < 0 := by simp only [← n
 theorem invOf_le_one [Invertible a] (h : 1 ≤ a) : ⅟a ≤ 1 :=
   mul_invOf_self a ▸ le_mul_of_one_le_left (invOf_nonneg.2 <| zero_le_one.trans h) h
 
+@[simp]
+theorem invOf_lt_one [Invertible a] (h : 1 < a) : ⅟a < 1 :=
+  mul_invOf_self a ▸ lt_mul_of_one_lt_left (invOf_pos.2 <| one_pos.trans h) h
+
 theorem pos_invOf_of_invertible_cast [Nontrivial R] (n : ℕ)
     [Invertible (n : R)] : 0 < ⅟(n : R) :=
   invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (R := R) n

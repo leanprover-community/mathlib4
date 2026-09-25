@@ -76,7 +76,7 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
-    throwError "cannot run {proc} at {ldecl.userName}, it is an implementation detail"
+    throwError "Cannot run {proc} at {ldecl.userName}, it is an implementation detail"
   let tgt ← instantiateMVars (← fvarId.getType)
   let eraseFVarId (ctx : Simp.Context) :=
     ctx.setSimpTheorems <| ctx.simpTheorems.eraseTheorem (.fvar fvarId)

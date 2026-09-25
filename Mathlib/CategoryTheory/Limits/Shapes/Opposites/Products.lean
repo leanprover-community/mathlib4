@@ -109,7 +109,7 @@ noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit 
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
     (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
-    (Cones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
+    (Cone.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
   simp [e, Cofan.inj]
 
 /--
@@ -218,7 +218,7 @@ noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op :
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).2
     (IsColimit.whiskerEquivalence hf.op (Discrete.opposite α).symm))
-    (Cocones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
+    (Cocone.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
   simp [e, Fan.proj]
 
 /--

@@ -439,7 +439,6 @@ section MellinIoc
 ## Mellin transforms of functions on `Ioc 0 1`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Mellin transform of the indicator function of `Ioc 0 1`. -/
 theorem hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
     HasMellin (indicator (Ioc 0 1) (fun _ => 1 : ℝ → ℂ)) s (1 / s) := by

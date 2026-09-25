@@ -205,6 +205,7 @@ variable (L M)
 
 /-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
 This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
+@[implicit_reducible]
 def orderStructure [LE M] : Language.order.Structure M where
   RelMap | .le => (fun x => x 0 ≤ x 1)
 
@@ -352,6 +353,7 @@ section structure_to_order
 variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
+@[implicit_reducible]
 def leOfStructure : LE M where
   le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
@@ -372,6 +374,7 @@ def decidableLEOfStructure
     DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
+@[implicit_reducible]
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
   __ := L.leOfStructure M
   le_refl := Relations.realize_reflexive.1 ((Theory.model_iff _).1 h _
@@ -380,13 +383,14 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
     (by simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, or_true]))
 
 /-- Any model of a theory of partial orders is a partial order. -/
+@[implicit_reducible]
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
   le_antisymm := (Relations.realize_antisymmetric.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any model of a theory of linear orders is a linear order. -/
+@[implicit_reducible]
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
@@ -459,7 +463,6 @@ section Fraisse
 
 variable (M)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dlo_isExtensionPair
     (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.linearOrderTheory]
     (N : Type w') [Language.order.Structure N] [N ⊨ Language.order.dlo] [Nonempty N] :
@@ -498,7 +501,6 @@ instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [N
   obtain ⟨f, _⟩ := embedding_from_cg cg_of_countable default (dlo_isExtensionPair ℚ M)
   exact Infinite.of_injective f f.injective
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Nonempty M] :
     Language.order.age M = {M : CategoryTheory.Bundled.{w'} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by

@@ -838,6 +838,33 @@ lemma eq_toNNRealLinear_toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ�
 
 end toRealPositiveLinear
 
+section pullback
+
+variable [R1Space α] [Group α] [TopologicalSpace β] [R1Space β] [Group β] [ContinuousMul β]
+  [NormedAddCommGroup γ] {φ : α →* β} (hφ : Topology.IsClosedEmbedding φ)
+
+open scoped Pointwise in
+/-- Pull back a continuous compactly supported function `f` on `β` along a closed embedding
+`φ : α →* β` to the continuous compactly supported function `a ↦ f (b * φ a)` on `A`. -/
+@[to_additive /-- Pull back a continuous compactly supported function `f` on `β` along a closed
+embedding `φ : α →+ β` to the continuous compactly supported function `a ↦ f (b + φ a)` on `A`. -/]
+noncomputable def pullback_monoidHom (f : CompactlySupportedContinuousMap β γ) (b : β) :
+    CompactlySupportedContinuousMap α γ where
+  toFun a := f (b * φ a)
+  hasCompactSupport' := by
+    obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
+    refine exists_compact_iff_hasCompactSupport.mp ⟨φ ⁻¹' (b⁻¹ • K),
+      hφ.isCompact_preimage (hK.smul b⁻¹), fun x hx ↦ hf _ ?_⟩
+    simpa [Set.mem_smul_set_iff_inv_smul_mem] using hx
+  continuous_toFun := by fun_prop
+
+@[to_additive]
+theorem pullback_monoidHom_def (f : CompactlySupportedContinuousMap β γ) (b : β) (a : α) :
+    pullback_monoidHom hφ f b a = f (b * φ a) :=
+  rfl
+
+end pullback
+
 end CompactlySupportedContinuousMap
 
 end NonnegativePart

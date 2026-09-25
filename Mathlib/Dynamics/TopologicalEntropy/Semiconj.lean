@@ -184,20 +184,20 @@ lemma coverEntropyInf_restrict_subset [UniformSpace X] {T : X → X} {F G : Set 
   rw [← coverEntropyInf_image_of_comap _ hG.val_restrict_apply (val ⁻¹' F), image_preimage_coe G F,
     inter_eq_right.2 hF]
 
-/-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy S F`. This
+/-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy T F`. This
 theorem justifies our definition of `coverEntropy T F`. -/
 theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : MapsTo T F F) :
     coverEntropy (h.restrict T F F) univ = coverEntropy T F := by
   rw [← coverEntropy_restrict_subset Subset.rfl h, coe_preimage_self F]
 
-/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous. -/
+/-- The entropy of `φ '' F` is at most the entropy of `F` if `φ` is uniformly continuous. -/
 theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [coverEntropy_image_of_comap _ h F]
   exact coverEntropy_antitone S F (uniformContinuous_iff.1 h')
 
-/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous. This
+/-- The entropy of `φ '' F` is at most the entropy of `F` if `φ` is uniformly continuous. This
   version uses a `liminf`. -/
 theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :

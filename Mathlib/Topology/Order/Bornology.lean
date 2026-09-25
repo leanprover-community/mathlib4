@@ -30,6 +30,7 @@ variable [Lattice α] [Nonempty α]
 
 /-- Order-bornology on a nonempty lattice. The bounded sets are the sets that are bounded both above
 and below. -/
+@[implicit_reducible]
 def orderBornology : Bornology α := .ofBounded
   {s | BddBelow s ∧ BddAbove s}
   (by simp)
@@ -37,7 +38,6 @@ def orderBornology : Bornology α := .ofBounded
   (fun _ hs _ ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
   (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma orderBornology_isBounded : orderBornology.IsBounded s ↔ BddBelow s ∧ BddAbove s := by
   simp [IsBounded, IsCobounded, -isCobounded_compl_iff]
 

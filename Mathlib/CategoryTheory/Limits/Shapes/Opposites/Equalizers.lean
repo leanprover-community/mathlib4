@@ -103,7 +103,7 @@ namespace Cofork
 
 /-- The obvious map `Cofork f g → Fork f.unop g.unop` -/
 def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :=
-   Cocone.unop ((Cocones.precompose (opParallelPairIso f.unop g.unop).hom).obj
+   Cocone.unop ((Cocone.precompose (opParallelPairIso f.unop g.unop).hom).obj
       (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
 
 lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
@@ -119,7 +119,7 @@ theorem unop_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
 
 /-- The obvious map `Cofork f g → Fork f.op g.op` -/
 def op {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.op g.op :=
-  (Cones.postcompose (parallelPairOpIso f g).symm.hom).obj
+  (Cone.postcompose (parallelPairOpIso f g).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.functor (Cocone.op c))
 
 lemma op_π_app_one {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
@@ -139,7 +139,7 @@ namespace Fork
 
 /-- The obvious map `Fork f g → Cofork f.unop g.unop` -/
 def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.unop g.unop :=
-  Cone.unop ((Cones.postcompose (opParallelPairIso f.unop g.unop).symm.hom).obj
+  Cone.unop ((Cone.postcompose (opParallelPairIso f.unop g.unop).symm.hom).obj
     (Cone.whisker walkingParallelPairOpEquiv.inverse c))
 
 lemma unop_ι_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
@@ -156,7 +156,7 @@ theorem unop_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
 /-- The obvious map `Fork f g → Cofork f.op g.op` -/
 @[simps!]
 def op {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.op g.op :=
-  (Cocones.precompose (parallelPairOpIso f g).hom).obj
+  (Cocone.precompose (parallelPairOpIso f g).hom).obj
     (Cocone.whisker walkingParallelPairOpEquiv.functor (Cone.op c))
 
 lemma op_ι_app_one {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :

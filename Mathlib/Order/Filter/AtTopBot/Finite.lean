@@ -65,14 +65,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
     push_neg at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
   use n, hnN
-  rintro (l : ℕ) (hl : l < n)
-  have hlk : u l ≤ u k := by
-    rcases (le_total l N : l ≤ N ∨ N ≤ l) with H | H
-    · exact hku l H
-    · exact hn_min l hl H
-  calc
-    u l ≤ u k := hlk
-    _ < u n := hnk
+  grind
 
 -- see Note [nolint_ge]
 /-- If `u` is a sequence which is unbounded below,

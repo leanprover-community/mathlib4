@@ -39,12 +39,10 @@ instance : Algebra v.valuationSubring L := inferInstance
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
   (FaithfulSMul.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isIntegral_of_mem_ringOfIntegers {x : L} (hx : x ∈ integralClosure v.valuationSubring L) :
     IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) :=
   integralClosure.isIntegral ⟨x, hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isIntegral_of_mem_ringOfIntegers' {x : integralClosure v.valuationSubring L} :
     IsIntegral v.valuationSubring (x : integralClosure v.valuationSubring L) := by
   apply isIntegral_of_mem_ringOfIntegers
@@ -69,7 +67,6 @@ instance algebra :
       map_mul' := fun x y =>
         Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A ring equivalence between the integral closure of the valuation subring of `K` in `L`
   and a ring `R` satisfying `isIntegralClosure R v.valuationSubring L`. -/
 protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra v.valuationSubring R]
@@ -78,7 +75,6 @@ protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra v.valuationS
   (IsIntegralClosure.equiv v.valuationSubring R L
     (integralClosure v.valuationSubring L)).symm.toRingEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure_algebraMap_injective :
     Injective (algebraMap v.valuationSubring (integralClosure v.valuationSubring L)) :=
   FaithfulSMul.algebraMap_injective ..

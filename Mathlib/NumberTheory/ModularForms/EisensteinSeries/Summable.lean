@@ -237,7 +237,7 @@ lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
   lift k to ℕ using by lia
   grind [(linear_inv_isBigO_right c z).abs_right.pow k,
-    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
+    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow]
 
 /-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :

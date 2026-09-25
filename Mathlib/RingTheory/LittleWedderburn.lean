@@ -55,6 +55,7 @@ open Module Polynomial
 
 variable {D}
 
+@[implicit_reducible]
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
@@ -140,7 +141,6 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
 
 end InductionHyp
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D

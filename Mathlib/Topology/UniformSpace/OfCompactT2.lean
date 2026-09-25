@@ -40,6 +40,7 @@ variable {γ : Type*}
 
 
 /-- The unique uniform structure inducing a given compact topological structure. -/
+@[implicit_reducible]
 def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
   symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm

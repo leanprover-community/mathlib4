@@ -20,14 +20,18 @@ jobs:
   check:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      id-token: write
     steps:
       - name: Generate app token
         id: app-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
         with:
           app-id: ${{ secrets.MATHLIB_DEPENDENT_ISSUES_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_DEPENDENT_ISSUES_PRIVATE_KEY }}
-      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-dependent-issues-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_LABEL_BOTS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
       - uses: z0al/dependent-issues@75d554cd9494b6e1766bc9d08a81c26444ad5c5a
         env:
           # (Required) The token to use to make API calls to GitHub.

@@ -260,7 +260,6 @@ lemma ComplexShape.quotient_isLocalization :
 lemma ComplexShape.QFactorsThroughHomotopy_of_exists_prev [CategoryWithHomology C] :
     c.QFactorsThroughHomotopy C where
   areEqualizedByLocalization {K L f g} h := by
-    have : DecidableRel c.Rel := by classical infer_instance
     exact h.map_eq_of_inverts_homotopyEquivalences hc _
       (MorphismProperty.IsInvertedBy.of_le _ _ _
         (Localization.inverts _ (HomologicalComplex.quasiIso C _))

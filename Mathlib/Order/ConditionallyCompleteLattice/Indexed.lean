@@ -242,13 +242,7 @@ theorem ciSup_subtype [Nonempty ι] {p : ι → Prop} [Nonempty (Subtype p)] {f 
     refine le_ciSup (f := (fun i : ι ↦ ⨆ (h : p i), f ⟨i, h⟩)) ?_ i
     simp_rw [ciSup_eq_ite]
     refine (hf.union (bddAbove_singleton (a := sSup ∅))).mono ?_
-    intro
-    simp only [Set.mem_range, Set.union_singleton, Set.mem_insert_iff, Subtype.exists,
-      forall_exists_index]
-    intro b hb
-    split_ifs at hb
-    · exact Or.inr ⟨_, _, hb⟩
-    · simp_all
+    grind
   · refine ciSup_le fun i ↦ ?_
     simp_rw [ciSup_eq_ite]
     split_ifs

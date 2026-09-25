@@ -702,6 +702,17 @@ variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
 variable {v : ι → M} {i : ι}
 
+theorem LinearIndependent.neg (hv : LinearIndependent R v) : LinearIndependent R (-v) := by
+  intro f g h
+  simp only [Finsupp.linearCombination_apply, Pi.neg_apply, smul_neg, Finsupp.sum_neg, neg_inj] at h
+  ext m
+  exact DFunLike.congr_fun (hv h) m
+
+@[simp] theorem linearIndependent_neg_iff :
+    LinearIndependent R (-v) ↔ LinearIndependent R v := by
+  refine ⟨fun h ↦ ?_, LinearIndependent.neg⟩
+  simpa using h.neg
+
 theorem linearIndependent_iff_ker :
     LinearIndependent R v ↔ LinearMap.ker (Finsupp.linearCombination R v) = ⊥ :=
   LinearMap.ker_eq_bot.symm
@@ -737,6 +748,14 @@ theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) 
     LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
   simp [linearIndependent_iff_injective_finsuppLinearCombination,
     ← Finsupp.linearCombination_comp_addSingleEquiv i c h₀]
+
+theorem not_linearIndependent_iff_linearCombination :
+    ¬LinearIndependent R v ↔ ∃ l, (Finsupp.linearCombination R v) l = 0 ∧ l ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
+
+theorem not_linearIndependent_iff_finsupp :
+    ¬LinearIndependent R v ↔ ∃ (f : ι →₀ R), ∑ x ∈ f.support, f x • v x = 0 ∧ f ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot', Finsupp.linearCombination, Finsupp.sum]
 
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔

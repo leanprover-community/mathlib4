@@ -186,7 +186,6 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
 -/

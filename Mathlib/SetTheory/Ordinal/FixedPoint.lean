@@ -455,7 +455,7 @@ theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a *
   refine ⟨?_, fun a h => ?_⟩
   · rw [bot_eq_zero, deriv_zero_right, add_zero]
     exact nfp_add_zero a
-  · rw [deriv_succ, h, add_succ]
+  · rw [succ_eq_add_one, deriv_add_one, h, ← add_assoc]
     exact nfp_eq_self (add_eq_right_iff_mul_omega0_le.2 (le_self_add.trans (le_succ _)))
 
 /-! ### Fixed points of multiplication -/

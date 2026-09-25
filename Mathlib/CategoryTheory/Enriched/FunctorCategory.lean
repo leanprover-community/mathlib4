@@ -233,6 +233,7 @@ variable (J C)
 
 /-- If `C` is a `V`-enriched ordinary category, and `C` has suitable limits,
 then `J ⥤ C` is also a `V`-enriched ordinary category. -/
+@[implicit_reducible]
 noncomputable def enrichedOrdinaryCategory [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom V F₁ F₂] :
     EnrichedOrdinaryCategory V (J ⥤ C) where
   Hom F₁ F₂ := enrichedHom V F₁ F₂

@@ -289,7 +289,6 @@ theorem quasiIso_forget₂_εToSingle₀ :
   rw [← εToSingle₀_comp_eq k G] at h
   exact quasiIso_of_comp_right (hφφ' := h)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso (εToSingle₀ k G) := by
   rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
   apply quasiIso_forget₂_εToSingle₀
@@ -301,13 +300,11 @@ open HomologicalComplex.Hom standardComplex
 
 variable [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := standardComplex k G
   π := εToSingle₀ k G
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `standardComplex k G`. -/
@@ -377,7 +374,6 @@ def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
 
 end barComplex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chain complex `barComplex k G` as a projective resolution of `k` as a trivial
 `k`-linear `G`-representation. -/
 @[simps complex]
@@ -386,7 +382,6 @@ def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 bar resolution of `k`. -/

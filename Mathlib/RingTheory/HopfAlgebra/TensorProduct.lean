@@ -44,7 +44,6 @@ variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semir
     [Algebra R S] [HopfAlgebra R A] [HopfAlgebra S B] [Algebra R B]
     [IsScalarTower R S B]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance : HopfAlgebra S (B ⊗[R] A) where
   antipode := AlgebraTensorModule.map (HopfAlgebra.antipode S) (HopfAlgebra.antipode R)

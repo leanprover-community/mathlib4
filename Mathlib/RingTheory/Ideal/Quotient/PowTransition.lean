@@ -13,17 +13,20 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
+
 In this file we define the canonical quotient linear map from
 `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` and canonical quotient ring map from
 `R ⧸ I ^ m` to `R ⧸ I ^ n`. These definitions will be used in theorems
 related to `IsAdicComplete` to find a lift element from compatible sequences in the quotients.
 We also include results about the relation between quotients of submodules and quotients of
 ideals here.
+
 ## Main definitions
 - `Submodule.factorPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
-the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
+  the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 - `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
-to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
+  to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
+
 ## Main results
 -/
 

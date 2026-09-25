@@ -10,6 +10,7 @@ public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
+
 Every nonzero ideal `I` of a Dedekind domain `R` can be factored as a product `∏_v v^{n_v}` over the
 maximal ideals of `R`, where the exponents `n_v` are natural numbers.
 
@@ -31,7 +32,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
 - `FractionalIdeal.finprod_heightOneSpectrum_factorization` : If `I` is a nonzero fractional ideal,
   `a ∈ R`, and `J` is an ideal of `R` such that `I = a⁻¹J`, then `I` is equal to the product
   `∏_v v^(val_v(J) - val_v(a))`.
-  - `FractionalIdeal.finprod_heightOneSpectrum_factorization'` : If `I` is a nonzero fractional
+- `FractionalIdeal.finprod_heightOneSpectrum_factorization'` : If `I` is a nonzero fractional
   ideal, then `I` is equal to the product `∏_v v^(val_v(I))`.
 - `FractionalIdeal.finprod_heightOneSpectrum_factorization_principal` : For a nonzero `k = r/s ∈ K`,
   the fractional ideal `(k)` is equal to the product `∏_v v^(val_v(r) - val_v(s))`.
@@ -211,6 +212,21 @@ theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
   rw [← hJv]
   apply Ideal.finprod_count
     ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
+
+/-- The ideal `I` equals the inf `⨅_v v^(val_v(I))`. -/
+theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
+    ⨅ i : HeightOneSpectrum R, i.maxPowDividing I = I := by
+  nth_rw 2 [← Ideal.finprod_heightOneSpectrum_factorization h0]
+  classical
+  rw [finprod_def, dif_pos (Ideal.hasFiniteMulSupport h0), Ideal.prod_eq_iInf_of_pairwise_isCoprime]
+  · ext x
+    constructor
+    · aesop
+    · simp only [Finite.mem_toFinset, mem_mulSupport, one_eq_top, ne_eq, Submodule.mem_iInf]
+      intro h i
+      by_cases i.maxPowDividing I = ⊤ <;> simp_all
+  · intro x hx y hy hxy
+    apply IsDedekindDomain.HeightOneSpectrum.isCoprime_pow_of_ne _ _ hxy
 
 variable (K)
 
@@ -641,7 +657,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
     refine Ideal.mul_mono_right ?_ (ha q hq.1)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := p') (by simpa [hp's] using Ne.symm hq.2))
   apply ha' _ hp's
-  have := IsDedekindDomain.inf_prime_pow_eq_prod s (fun i ↦ i.asIdeal) (fun _ ↦ 1)
+  have := IsDedekindDomain.inf_pow_eq_prod_of_prime s (fun i ↦ i.asIdeal) (fun _ ↦ 1)
     (fun i _ ↦ i.prime) (fun i _ j _ e ↦ mt HeightOneSpectrum.ext e)
   simp only [pow_one] at this
   have inst : Nonempty {x // x ∈ s} := ⟨_, hp's⟩

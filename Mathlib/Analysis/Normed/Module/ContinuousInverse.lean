@@ -65,7 +65,7 @@ This concept is used to give an equivalent definition of immersions and submersi
 
 * Suppose `E` and `F` are Banach and `f : E → F` is Fredholm.
   If `f` is surjective, it has a continuous right inverse.
-  If `f` is injective, it has a continuout left inverse.
+  If `f` is injective, it has a continuous left inverse.
 
 -/
 
@@ -245,7 +245,7 @@ variable {R E F : Type*} [NontriviallyNormedField R]
   [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
   [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
 
-/-- A continuous linear map between Banach spaces has a continuous left inverse if it isjective,
+/-- A continuous linear map between Banach spaces has a continuous left inverse if it is injective,
 has closed range and its range has a closed complement. -/
 lemma of_injective_of_isClosed_range_of_closedComplement_range {f : E →L[R] F}
     (hf : Injective f) (hf' : IsClosed (range f)) (hf'' : Submodule.ClosedComplemented f.range) :

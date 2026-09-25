@@ -36,6 +36,7 @@ An API needs to be built around that concept, which would include:
 - a point P where the diagonals of a cyclic polygon cross exists (and is unique) with weak/strict
   betweenness depending on weak/strict cyclicity,
 - four points on a sphere with such a point P are cyclic in the appropriate order,
+
 and so on.
 -/
 

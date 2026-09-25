@@ -82,7 +82,6 @@ private lemma auxHom_mk (p : MvPolynomial Unit R) :
     auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private noncomputable
 def auxInv : S →+* (MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 } :=

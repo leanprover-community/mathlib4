@@ -363,4 +363,10 @@ theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInject
 
 end Equivalence
 
+lemma Retract.injective {X Y : C} (h : Retract X Y) [i : Injective Y] : Injective X := by
+  refine Injective.mk (fun {A B} f e _ ↦ ?_)
+  rcases i.factors (f ≫ h.i) e with ⟨g, hg⟩
+  use g ≫ h.r
+  simp [Category.assoc', hg]
+
 end CategoryTheory

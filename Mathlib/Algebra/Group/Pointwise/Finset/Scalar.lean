@@ -63,7 +63,7 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
 
 /-- The pointwise product of two finsets `s` and `t`: `s • t = {x • y | x ∈ s, y ∈ t}`. -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
 /-- The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`. -/]
 protected def smul : SMul (Finset α) (Finset β) := ⟨image₂ (· • ·)⟩
 
@@ -153,7 +153,7 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
 
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
   /-- The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`. -/]
 protected def smulFinset : SMul α (Finset β) where smul a := image <| (a • ·)
 

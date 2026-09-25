@@ -238,4 +238,30 @@ lemma default_apply (x : A) : (default : 𝒜 →ₐᵍ[R] ℬ) x = 0 :=
 
 end
 
+section restrictScalars
+
+/-- Restrict the base ring to a "smaller" ring. -/
+@[coe, simps!] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+    [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
+    (f : 𝒜 →ₐᵍ[R] ℬ) : (𝒜 · |>.restrictScalars R₀) →ₐᵍ[R₀] (ℬ · |>.restrictScalars R₀) :=
+  { f.toAlgHom.restrictScalars R₀, f with }
+
+variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+    [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
+    (f : 𝒜 →ₐᵍ[R] ℬ)
+
+@[simp] lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
+
+@[simp] lemma restrictScalars_coe_algHom :
+    (f : A →ₐ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
+
+@[simp] lemma restrictScalars_coe_linearMap :
+    (f : A →ₗ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
+
+lemma restrictScalars_injective :
+    Function.Injective (restrictScalars R₀ : (𝒜 →ₐᵍ[R] ℬ) → _) :=
+  fun _ _ h ↦ coe_fn_injective congr($h)
+
+end restrictScalars
+
 end GradedAlgHom

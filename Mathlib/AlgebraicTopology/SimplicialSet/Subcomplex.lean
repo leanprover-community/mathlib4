@@ -15,13 +15,6 @@ Given a simplicial set `X`, this file defines the type `X.Subcomplex`
 of subcomplexes of `X` as an abbreviation for `Subfunctor X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
 
-## Implementation note
-
-`SSet.{u}` is defined as `Cᵒᵖ ⥤ Type u`, but it is not an abbreviation.
-This is the reason why `Subfunctor.ι` is redefined here as `Subcomplex.ι`
-so that this morphism appears as a morphism in `SSet` instead of a morphism
-in the category of presheaves.
-
 -/
 
 @[expose] public section
@@ -32,7 +25,6 @@ open CategoryTheory Simplicial Limits
 
 namespace SSet
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
 -- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
@@ -93,7 +85,7 @@ lemma homOfLE_refl : homOfLE (by rfl : S₁ ≤ S₁) = 𝟙 _ := rfl
 lemma homOfLE_app_val (Δ : SimplexCategoryᵒᵖ) (x : S₁.obj Δ) :
     ((homOfLE h).app Δ x).val = x.val := rfl
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma homOfLE_ι : homOfLE h ≫ S₂.ι = S₁.ι := rfl
 
 instance mono_homOfLE : Mono (homOfLE h) := mono_of_mono_fac (homOfLE_ι h)
@@ -177,7 +169,7 @@ abbrev range : Y.Subcomplex := Subfunctor.range f
 /-- The morphism `X ⟶ Subcomplex.range f` induced by `f : X ⟶ Y`. -/
 abbrev toRange : X ⟶ Subcomplex.range f := Subfunctor.toRange f
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma toRange_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 
 @[simp]
@@ -193,7 +185,6 @@ instance [Mono f] : Mono (toRange f) :=
 instance [Mono f] : IsIso (toRange f) :=
   isIso_of_mono_of_epi _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,

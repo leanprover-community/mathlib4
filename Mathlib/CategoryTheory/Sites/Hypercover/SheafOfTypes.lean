@@ -69,6 +69,25 @@ lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPu
 
 end PreZeroHypercover
 
+lemma Precoverage.ZeroHypercover.Hom.isSheafFor_iff [Limits.HasPullbacks C] {K : Precoverage C}
+    [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ Type*} {𝒰 𝒱 : K.ZeroHypercover S} (f : 𝒰.Hom K 𝒱)
+    (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
+    (H₂ : ∀ {X : C} (f : X ⟶ S),
+      Presieve.IsSeparatedFor F (.ofArrows (𝒰.pullback₂ f).X (𝒰.pullback₂ f).f)) :
+    Presieve.IsSheafFor F (.ofArrows 𝒱.X 𝒱.f) := by
+  rw [Presieve.isSheafFor_iff_generate]
+  apply Presieve.isSheafFor_subsieve_aux (S := .generate (.ofArrows 𝒰.X 𝒰.f))
+  · rw [← Sieve.generate_le_iff, Sieve.generate_sieve, Sieve.generate_le_iff,
+      Presieve.ofArrows_le_iff]
+    intro i
+    rw [← f.w₀]
+    exact ⟨_, f.h₀ i, 𝒱.f _, ⟨_⟩, rfl⟩
+  · rwa [← Presieve.isSheafFor_iff_generate]
+  · intro Y f hf
+    rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate,
+      ← Presieve.ofArrows_pullback]
+    apply H₂
+
 namespace PreOneHypercover
 
 variable {X : C} {E : PreOneHypercover.{w} X} {F : Cᵒᵖ ⥤ Type*}

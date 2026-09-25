@@ -132,7 +132,8 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
   · ext x
     obtain ⟨x, rfl⟩ := hπ x
     suffices (π ≫ g) x = (g' ≫ F.map (c'.ι.app none) ≫ c.ι.app _) x by
-      simpa [RingHom.liftOfRightInverse_comp_apply, -NatTrans.naturality] using this
+      simpa only [CommRingCat.hom_comp, CommRingCat.hom_ofHom,
+        RingHom.liftOfRightInverse_comp_apply, coe_comp, Function.comp_apply] using this
     rw [c.w, hg']
     rfl
 

@@ -68,7 +68,7 @@ def trans {i j : 𝒰.I₀} (hij : i ⟶ j) :
 noncomputable
 def transitionCocone {i j : 𝒰.I₀} (hij : i ⟶ j) :
     Cocone (D ⋙ Over.pullback P ⊤ (𝒰.f i) ⋙ Over.map _ (d.prop_trans hij)) :=
-  (Cocones.precompose (d.trans hij)).obj (d.cocone j)
+  (Cocone.precompose (d.trans hij)).obj (d.cocone j)
 
 /-- (Implementation) Transition map for construction of
 `AlgebraicGeometry.Scheme.Cover.ColimitGluingData.functor`. -/

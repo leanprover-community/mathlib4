@@ -180,18 +180,12 @@ end Mul
 
 /-! ### Powers -/
 
-
--- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
-instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [AddLeftMono α]
-    [AddRightMono α] : SMul ℕ (NonemptyInterval α) :=
-  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
-
 section Pow
 
 variable [Monoid α] [Preorder α]
 
-@[to_additive existing]
-instance NonemptyInterval.hasPow [MulLeftMono α] [MulRightMono α] :
+@[to_additive]
+instance NonemptyInterval.instPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 

@@ -28,6 +28,7 @@ variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
 a limit in `Comma L R`, the forgetful functor creates this limit. -/
+@[implicit_reducible]
 noncomputable def forgetCreatesLimitOfClosed
     [(P.commaObj L R).IsClosedUnderLimitsOfShape J]
     [HasLimit (D ⋙ forget L R P ⊤ ⊤)] :
@@ -39,6 +40,7 @@ noncomputable def forgetCreatesLimitOfClosed
 
 /-- If `Comma L R` has limits of shape `J` and `Comma L R` is closed under limits of shape
 `J`, then `forget L R P ⊤ ⊤` creates limits of shape `J`. -/
+@[implicit_reducible]
 noncomputable def forgetCreatesLimitsOfShapeOfClosed [HasLimitsOfShape J (Comma L R)]
     [ObjectProperty.IsClosedUnderLimitsOfShape (P.commaObj L R) J] :
     CreatesLimitsOfShape J (forget L R P ⊤ ⊤) where
@@ -58,6 +60,7 @@ instance hasLimitsOfShape_of_closedUnderLimitsOfShape [HasLimitsOfShape J (Comma
 
 /-- If `P` is closed under colimits of shape `J` in `Comma L R`, then when `D` has
 a colimit in `Comma L R`, the forgetful functor creates this colimit. -/
+@[implicit_reducible]
 noncomputable def forgetCreatesColimitOfClosed
     [(P.commaObj L R).IsClosedUnderColimitsOfShape J]
     [HasColimit (D ⋙ forget L R P ⊤ ⊤)] :
@@ -69,6 +72,7 @@ noncomputable def forgetCreatesColimitOfClosed
 variable (J) in
 /-- If `Comma L R` has colimits of shape `J` and `Comma L R` is closed under colimits of shape
 `J`, then `forget L R P ⊤ ⊤` creates colimits of shape `J`. -/
+@[implicit_reducible]
 noncomputable def forgetCreatesColimitsOfShapeOfClosed [HasColimitsOfShape J (Comma L R)]
     [(P.commaObj L R).IsClosedUnderColimitsOfShape J] :
     CreatesColimitsOfShape J (forget L R P ⊤ ⊤) where
@@ -206,6 +210,9 @@ variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]
 
 noncomputable instance : CreatesFiniteLimits (Over.forget P ⊤ X) :=
   createsFiniteLimitsOfCreatesTerminalAndPullbacks _
+
+instance [HasFiniteWidePullbacks T] : HasFiniteLimits (P.Over ⊤ X) :=
+  hasFiniteLimits_of_hasLimitsLimits_of_createsFiniteLimits (Over.forget P ⊤ X)
 
 instance : PreservesFiniteLimits (Over.forget P ⊤ X) :=
   preservesFiniteLimits_of_preservesTerminal_and_pullbacks (Over.forget P ⊤ X)

@@ -18,10 +18,10 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 ## Main definitions
 
 * We define the Dedekind eta function as the infinite product
-`η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper half-plane.
-The product is taken over all non-negative integers `n`. We then show it is non-vanishing and
-differentiable on the upper half-plane. Lastly, we compute its logarithmic derivative and show that
-it is a multiple of the Eisenstein series `E2`.
+  `η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper
+  half-plane. The product is taken over all non-negative integers `n`. We then show it is
+  non-vanishing and differentiable on the upper half-plane. Lastly, we compute its logarithmic
+  derivative and show that it is a multiple of the Eisenstein series `E2`.
 
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2

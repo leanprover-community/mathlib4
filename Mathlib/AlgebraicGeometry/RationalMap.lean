@@ -62,7 +62,7 @@ lemma ext_iff (f g : X.PartialMap Y) :
     f = g ↔ ∃ e : f.domain = g.domain, f.hom = (X.isoOfEq e).hom ≫ g.hom := by
   constructor
   · rintro rfl
-    simp only [exists_true_left, Scheme.isoOfEq_rfl, Iso.refl_hom, Category.id_comp]
+    simp
   · obtain ⟨U, hU, f⟩ := f
     obtain ⟨V, hV, g⟩ := g
     rintro ⟨rfl : U = V, e⟩

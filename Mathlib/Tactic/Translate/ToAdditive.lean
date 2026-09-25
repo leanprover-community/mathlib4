@@ -90,6 +90,10 @@ In the above example, the `simp` is added to all 3 lemmas. All other options to 
 (like the generated name or `(reorder := ...)`) are not passed down,
 and can be given manually to each individual `to_additive` call.
 
+The `(rename := ...)` syntax can be used for specifying the argument names of the generated
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma mul_foo (x y z : α) ...` to `lemma add_foo (a z y : α) ...`.
+
 ## Implementation notes
 
 The transport process generally works by taking all the names of
@@ -345,6 +349,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("addSingle", "Single"),
   ("addSupport", "Support"),
   ("addTSupport", "TSupport"),
+  ("addPointed", "Pointed"),
+  ("addSpanning", "Spanning"),
   ("addIndicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in

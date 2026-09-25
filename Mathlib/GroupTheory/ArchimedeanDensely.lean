@@ -135,9 +135,9 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
       rcases max_cases y y⁻¹ with H | H <;>
       simp [hy', H.left]
     refine ⟨⟨⟨
-      fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
+      fun a ↦ ⟨y' ^ (mem_closure_singleton.mp
         (by simpa [hxc] using a.prop)).choose, ?_⟩,
-      fun a ↦ ⟨x' ^ ((mem_closure_singleton).mp
+      fun a ↦ ⟨x' ^ (mem_closure_singleton.mp
         (by simpa [hyc] using a.prop)).choose, ?_⟩,
         ?_, ?_⟩, ?_⟩, ?_⟩
     · rw [hyc, mem_closure_singleton]

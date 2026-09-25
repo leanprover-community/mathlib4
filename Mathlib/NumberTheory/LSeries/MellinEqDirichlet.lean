@@ -113,7 +113,6 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
     · have := hp i
       rw [norm_of_nonneg (by positivity)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Tailored version for even Jacobi theta functions. -/
 lemma hasSum_mellin_pi_mul_sq {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → ℂ} {s : ℂ} (hs : 0 < s.re)
     (hF : ∀ t ∈ Ioi 0, HasSum (fun i ↦ if r i = 0 then 0 else a i * rexp (-π * r i ^ 2 * t)) (F t))

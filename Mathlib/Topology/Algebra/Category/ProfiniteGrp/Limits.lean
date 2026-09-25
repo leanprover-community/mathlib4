@@ -162,6 +162,6 @@ def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
 /-- The canonical cone over `diagram P` is a limit cone. -/
 noncomputable def isLimitCone (P : ProfiniteGrp.{u}) : Limits.IsLimit P.cone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) <| .symm <|
-    Limits.Cones.ext (isoLimittoFiniteQuotientFunctor _) fun _ => rfl
+    Limits.Cone.ext (isoLimittoFiniteQuotientFunctor _) fun _ => rfl
 
 end ProfiniteGrp

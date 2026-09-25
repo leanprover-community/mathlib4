@@ -73,7 +73,6 @@ theorem of_module_finite [NumberField K] [Algebra K L] [Module.Finite K L] : Num
     letI := charZero_of_injective_algebraMap (algebraMap K L).injective
     Module.Finite.trans K L
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} {L} in
 instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
     (E : IntermediateField K L) : NumberField E :=
@@ -116,7 +115,6 @@ instance : CommRing (𝓞 K) :=
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 

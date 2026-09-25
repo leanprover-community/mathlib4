@@ -325,7 +325,6 @@ theorem integral_gaussian_Ioi (b : ℝ) :
     · simp
     · exact (div_pos pi_pos hb).le
 
-set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/

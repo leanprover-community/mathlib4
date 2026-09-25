@@ -94,7 +94,6 @@ abbrev HomologicalComplex.coinvariantsTensorObj {α : Type*} [AddRightCancelSemi
 
 namespace Rep
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left-derived functors given by deriving the second argument of `A, B ↦ (A ⊗[k] B)_G`. -/
 @[simps]
 def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
@@ -103,13 +102,11 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
 
 variable {k G} (A : Rep k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Tor` can be computed using a projective resolution. -/
 abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
     ((Rep.Tor k G n).obj A).obj B ≅ (P.complex.coinvariantsTensorObj A).homology n :=
   P.isoLeftDerivedObj _ n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
     IsZero (((Tor k G (n + 1)).obj X).obj Y) :=

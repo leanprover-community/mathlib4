@@ -331,7 +331,7 @@ variable {D : Type*} [Category.{v'} D] (F : C ⥤ D) (J : GrothendieckTopology C
   (K : GrothendieckTopology D)
 
 lemma subcanonical_of_full_of_faithful [F.Full] [F.Faithful]
-    [Functor.IsContinuous.{max v v'} F J K] [K.Subcanonical] :
+    [Functor.IsContinuous F J K] [K.Subcanonical] :
     J.Subcanonical := by
   refine .of_isSheaf_yoneda_obj _ fun Y ↦ ?_
   suffices h : Presieve.IsSheaf J (CategoryTheory.uliftYoneda.{v'}.obj Y) by

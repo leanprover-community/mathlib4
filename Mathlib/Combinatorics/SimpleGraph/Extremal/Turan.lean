@@ -165,6 +165,7 @@ theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
 induced by `equivalence_not_adj`. -/
+@[implicit_reducible]
 def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=

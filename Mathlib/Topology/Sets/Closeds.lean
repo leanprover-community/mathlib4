@@ -183,6 +183,7 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
   iInf_def _
 
 /-- Closed sets in a topological space form a coframe. -/
+@[implicit_reducible]
 def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
   iInf_sup_le_sup_sInf a s :=
     (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le

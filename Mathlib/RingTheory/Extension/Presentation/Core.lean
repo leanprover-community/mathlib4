@@ -94,7 +94,6 @@ lemma HasCoeffs.of_isScalarTower {R₁ : Type*} [CommRing R₁] [Algebra R₀ R�
   refine ⟨subset_trans (P.coeffs_subset_range R₀) ?_⟩
   simp [IsScalarTower.algebraMap_eq R₀ R₁ R, RingHom.coe_comp, Set.range_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (s : Set R) : P.HasCoeffs (Algebra.adjoin R₀ s) := HasCoeffs.of_isScalarTower R₀
 
 lemma HasCoeffs.coeffs_relation_mem_range (x : σ) :

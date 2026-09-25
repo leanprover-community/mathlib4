@@ -507,7 +507,7 @@ theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
     (algebraMap R (QuadraticAlgebra R a b) r) ∣ z ↔ r ∣ z.re ∧ r ∣ z.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp [dvd_mul_right, ← C_eq_algebraMap]
+    simp
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     simp [QuadraticAlgebra.ext_iff, hr, hi, ← C_eq_algebraMap]

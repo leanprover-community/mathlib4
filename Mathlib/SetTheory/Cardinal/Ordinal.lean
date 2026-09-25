@@ -87,7 +87,8 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
   refine limitRecOn b ?_ ?_ ?_
   · simpa using one_lt_omega0.le.trans ha
   · intro b IH
-    rw [opow_succ, card_mul, card_succ, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
+    simp_rw [Order.succ_eq_add_one]
+    rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
     · grw [IH]
       rw [← max_assoc, max_self]
       grw [← le_self_add]
@@ -111,7 +112,7 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
 theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
     (a ^ b).card ≤ max a.card b.card := by
   obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
-  · apply (card_le_card <| opow_le_opow_left b (nat_lt_omega0 n).le).trans
+  · apply (card_le_card <| opow_le_opow_left b (natCast_lt_omega0 n).le).trans
     apply (card_opow_le_of_omega0_le_left le_rfl _).trans
     simp [hb]
   · exact card_opow_le_of_omega0_le_left ha b

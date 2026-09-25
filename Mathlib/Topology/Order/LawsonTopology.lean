@@ -64,6 +64,7 @@ section Preorder
 /--
 The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
+@[implicit_reducible]
 def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α univ
 
 variable (α) [Preorder α] [TopologicalSpace α]

@@ -128,7 +128,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- Let m be the smallest element of the nonempty set S.
   let m : ℕ := WellFounded.min Nat.lt_wfRel.wf S S_nonempty
   have m_mem : m ∈ S := WellFounded.min_mem Nat.lt_wfRel.wf S S_nonempty
-  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S S_nonempty hk
+  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S hk
   -- It suffices to show that there is point (a,b) with b ∈ S and b < m.
   rsuffices ⟨p', p'_mem, p'_small⟩ : ∃ p' : ℕ × ℕ, p'.2 ∈ S ∧ p'.2 < m
   · solve_by_elim
@@ -149,7 +149,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [H_quad] at h_quad
   -- We find the other root of the equation, and Vieta's formulas.
   rcases vieta_formula_quadratic h_quad with ⟨c, h_root, hV₁, hV₂⟩
-  -- Now we rewrite Vietas formulas a bit, and apply the descent step.
+  -- Now we rewrite Vieta's formulas a bit, and apply the descent step.
   replace hV₁ : c = B mx - my := eq_sub_of_add_eq' hV₁
   rw [mul_comm] at hV₂
   have Hc := H_desc hmx mx_lt_my h_base hHm c h_root hV₁ hV₂
