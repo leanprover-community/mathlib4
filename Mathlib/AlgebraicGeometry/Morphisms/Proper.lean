@@ -178,7 +178,7 @@ theorem _root_.isField_of_isIntegral_of_isField_of_isReduced_of_connectedSpace
 
 /-- If `X` is an integral scheme that is universally closed over `Spec K`,
 then `Γ(X, ⊤)` is a field. -/
-theorem isField_of_universallyClosed (f : X ⟶ (Spec <| .of K))
+theorem isField_of_universallyClosed (f : X ⟶ Spec ↧K)
     [IsReduced X] [ConnectedSpace X] [UniversallyClosed f] : IsField Γ(X, ⊤) := by
   let F := (Scheme.ΓSpecIso _).inv ≫ f.appTop
   have : F.hom.IsIntegral := by
