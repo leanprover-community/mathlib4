@@ -275,12 +275,8 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
   set si := s ∩ (⋃ j ≠ i, v j)ᶜ with hsi
   simp only [ne_eq, compl_iUnion] at hsi
   have hsic : IsCompact si := by
-    apply IsCompact.of_isClosed_subset hs _ Set.inter_subset_left
-    have : IsOpen (⋃ j ≠ i, v j) := by
-      apply isOpen_biUnion
-      intro j _
-      exact v.isOpen j
-    exact IsClosed.inter (IsCompact.isClosed hs) (IsOpen.isClosed_compl this)
+    apply hs.of_isClosed_subset _ Set.inter_subset_left
+    exact hs.isClosed.inter (isOpen_biUnion (fun j _ ↦ v.isOpen j)).isClosed_compl
   have : si ⊆ v i := by
     intro x hx
     have (j) (hj : j ≠ i) : x ∉ v j := by
