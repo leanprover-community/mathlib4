@@ -113,7 +113,7 @@ instance instUniformContinuousConstSMul {M : Type*}
 theorem isUniformInducing_postcomp
     {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G] [Module 𝕜 G]
     (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
-    IsUniformInducing (g.compContinuousMultilinearMap :
+    IsUniformInducing (FComp.comp g :
       ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜 E G) := by
   rw [← isUniformInducing_toUniformOnFun.of_comp_iff]
   exact (UniformOnFun.postcomp_isUniformInducing hg).comp isUniformInducing_toUniformOnFun
@@ -131,7 +131,7 @@ theorem completeSpace (h : IsCoherentWith {s : Set (Π i, E i) | IsVonNBounded �
       SeparationQuotient.isUniformInducing_mk).completeSpace_congr]
     · exact this inferInstance
     · intro f
-      use (SeparationQuotient.outCLM _ _).compContinuousMultilinearMap f
+      use (SeparationQuotient.outCLM 𝕜 F) ∘ᶠ f
       simp [DFunLike.ext_iff]
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
@@ -365,7 +365,7 @@ def compContinuousMultilinearMapL :
       ContinuousMultilinearMap 𝕜 E F →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
     { toFun g :=
         letI aux₁ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] ContinuousMultilinearMap 𝕜 E G :=
-          { toFun := g.compContinuousMultilinearMap
+          { toFun := FComp.comp g
             map_add' _ _ := by ext; simp
             map_smul' _ _ := by ext; simp }
         { toLinearMap := aux₁
@@ -393,12 +393,12 @@ def compContinuousMultilinearMapL :
 
 @[simp]
 theorem compContinuousMultilinearMapL_apply (g : F →L[𝕜] G) (f : ContinuousMultilinearMap 𝕜 E F) :
-    compContinuousMultilinearMapL 𝕜 E F G g f = g.compContinuousMultilinearMap f :=
+    compContinuousMultilinearMapL 𝕜 E F G g f = g ∘ᶠ f :=
   rfl
 
 @[fun_prop]
 theorem _root_.ContinuousLinearMap.continuous_postcomp_continuousMultilinearMap (g : F →L[𝕜] G) :
-    Continuous (g.compContinuousMultilinearMap (M₁ := E)) :=
+    Continuous (FComp.comp g (β := ContinuousMultilinearMap 𝕜 E F)) :=
   map_continuous (compContinuousMultilinearMapL 𝕜 E F G g)
 
 end ContinuousLinearMap
@@ -463,7 +463,7 @@ theorem continuousMultilinearMapCongrRight_symm (g : F ≃L[𝕜] G) :
 @[simp]
 theorem continuousMultilinearMapCongrRight_apply (g : F ≃L[𝕜] G)
     (f : ContinuousMultilinearMap 𝕜 E F) :
-    g.continuousMultilinearMapCongrRight E f = (g : F →L[𝕜] G).compContinuousMultilinearMap f :=
+    g.continuousMultilinearMapCongrRight E f = (g : F →L[𝕜] G) ∘ᶠ f :=
   rfl
 
 end ContinuousLinearEquiv
