@@ -80,23 +80,26 @@ to the simple case defined here. See
 [this zulip thread](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
 -/
 @[simps! apply]
-def domCoprod (a : N [^ι₁]→ₗ[R] N₁) (b : N [^ι₂]→ₗ[R] N₂) : N [^ι₁ ⊕ ι₂]→ₗ[R] (N₁ ⊗[R] N₂) :=
+def domCoprod (a : (fun _ : ι₁ ↦ N) →ₗₘ[R] N₁) (b : (fun _ : ι₂ ↦ N) →ₗₘ[R] N₂) :
+    (fun _ : ι₁ ⊕ ι₂ ↦ N) →ₗₘ[R] (N₁ ⊗[R] N₂) :=
   domCoprodDep a b
 
 /-- A more bundled version of `MultilinearMap.domCoprod` that maps
 `((ι₁ → N) → N₁) ⊗ ((ι₂ → N) → N₂)` to `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂`. -/
-def domCoprod' : (N [^ι₁]→ₗ[R] N₁) ⊗[R] (N [^ι₂]→ₗ[R] N₂) →ₗ[R] N [^ι₁ ⊕ ι₂]→ₗ[R] (N₁ ⊗[R] N₂) :=
+def domCoprod' :
+    ((fun _ : ι₁ ↦ N) →ₗₘ[R] N₁) ⊗[R] ((fun _ : ι₂ ↦ N) →ₗₘ[R] N₂) →ₗ[R]
+      (fun _ : ι₁ ⊕ ι₂ ↦ N) →ₗₘ[R] (N₁ ⊗[R] N₂) :=
   domCoprodDep' (R := R) (N := fun (_ : ι₁ ⊕ ι₂) ↦ N)
 
 @[simp]
-theorem domCoprod'_apply (a : N [^ι₁]→ₗ[R] N₁) (b : N [^ι₂]→ₗ[R] N₂) :
+theorem domCoprod'_apply (a : (fun _ : ι₁ ↦ N) →ₗₘ[R] N₁) (b : (fun _ : ι₂ ↦ N) →ₗₘ[R] N₂) :
     domCoprod' (a ⊗ₜ[R] b) = domCoprod a b :=
   rfl
 
 /-- When passed an `Equiv.sumCongr`, `MultilinearMap.domDomCongr` distributes over
 `MultilinearMap.domCoprod`. -/
-theorem domCoprod_domDomCongr_sumCongr
-    (a : N [^ι₁]→ₗ[R] N₁) (b : N [^ι₂]→ₗ[R] N₂) (σa : ι₁ ≃ ι₃) (σb : ι₂ ≃ ι₄) :
+theorem domCoprod_domDomCongr_sumCongr (a : (fun _ : ι₁ ↦ N) →ₗₘ[R] N₁)
+    (b : (fun _ : ι₂ ↦ N) →ₗₘ[R] N₂) (σa : ι₁ ≃ ι₃) (σb : ι₂ ≃ ι₄) :
     (a.domCoprod b).domDomCongr (σa.sumCongr σb) =
       (a.domDomCongr σa).domCoprod (b.domDomCongr σb) :=
   rfl

@@ -104,9 +104,6 @@ structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁)
 /-- `M →ₗₘ[R] N` is the type of `R`-multilinear maps from `M` to `N`. -/
 notation3:25 M " →ₗₘ[" R "] " N:100 => MultilinearMap R M N
 
-/-- `M [^ι]→ₗ[R] N` is the type of `R`-multilinear maps from `M^ι` to `N`. -/
-notation3:26 M " [^" ι "]→ₗ[" R "] " N:100 => MultilinearMap R (fun _ : ι => M) N
-
 /-- `M [×n]→ₗ[R] N` is the type of `R`-multilinear maps from `M^n` to `N`. -/
 notation3:25 M " [×" n "]→ₗ[" R "] " N:100 => MultilinearMap R (fun _ : Fin n => M) N
 
@@ -275,7 +272,7 @@ variable (R M₂ M₃)
 
 /-- Equivalence between linear maps `M₂ →ₗ[R] M₃` and one-multilinear maps. -/
 @[simps]
-def ofSubsingleton [Subsingleton ι] (i : ι) : (M₂ →ₗ[R] M₃) ≃ M₂ [^ι]→ₗ[R] M₃ where
+def ofSubsingleton [Subsingleton ι] (i : ι) : (M₂ →ₗ[R] M₃) ≃ ((fun _ : ι ↦  M₂) →ₗₘ[R] M₃) where
   toFun f :=
     { toFun := fun x ↦ f (x i)
       map_update_add' := by intros; simp [update_eq_const_of_subsingleton]
@@ -683,7 +680,7 @@ variable {ι₁ ι₂ ι₃ : Type*}
 The naming is derived from `Finsupp.domCongr`, noting that here the permutation applies to the
 domain of the domain. -/
 @[simps apply]
-def domDomCongr (σ : ι₁ ≃ ι₂) (m : M₂ [^ι₁]→ₗ[R] M₃) : M₂ [^ι₂]→ₗ[R] M₃ where
+def domDomCongr (σ : ι₁ ≃ ι₂) (m : (fun _ : ι₁ ↦ M₂) →ₗₘ[R] M₃) : (fun _ : ι₂ ↦ M₂) →ₗₘ[R] M₃ where
   toFun v := m fun i => v (σ i)
   map_update_add' v i a b := by
     let := σ.injective.decidableEq
@@ -694,11 +691,12 @@ def domDomCongr (σ : ι₁ ≃ ι₂) (m : M₂ [^ι₁]→ₗ[R] M₃) : M₂ 
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_update_smul]
 
-theorem domDomCongr_trans (σ₁ : ι₁ ≃ ι₂) (σ₂ : ι₂ ≃ ι₃) (m : M₂ [^ι₁]→ₗ[R] M₃) :
+theorem domDomCongr_trans (σ₁ : ι₁ ≃ ι₂) (σ₂ : ι₂ ≃ ι₃) (m : (fun _ : ι₁ ↦ M₂) →ₗₘ[R] M₃) :
     m.domDomCongr (σ₁.trans σ₂) = (m.domDomCongr σ₁).domDomCongr σ₂ :=
   rfl
 
-theorem domDomCongr_mul (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁) (m : M₂ [^ι₁]→ₗ[R] M₃) :
+theorem domDomCongr_mul
+    (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁) (m : (fun _ : ι₁ ↦ M₂) →ₗₘ[R] M₃) :
     m.domDomCongr (σ₂ * σ₁) = (m.domDomCongr σ₁).domDomCongr σ₂ :=
   rfl
 
@@ -706,7 +704,8 @@ theorem domDomCongr_mul (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁) (m
 
 This is declared separately because it does not work with dot notation. -/
 @[simps apply symm_apply]
-def domDomCongrEquiv (σ : ι₁ ≃ ι₂) : M₂ [^ι₁]→ₗ[R] M₃ ≃+ M₂ [^ι₂]→ₗ[R] M₃ where
+def domDomCongrEquiv (σ : ι₁ ≃ ι₂) :
+    (fun _ : ι₁ ↦ M₂) →ₗₘ[R] M₃ ≃+ ((fun _ : ι₂ ↦ M₂) →ₗₘ[R] M₃) where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
   left_inv m := by
@@ -722,9 +721,9 @@ def domDomCongrEquiv (σ : ι₁ ≃ ι₂) : M₂ [^ι₁]→ₗ[R] M₃ ≃+ M
 /-- The results of applying `domDomCongr` to two maps are equal if
 and only if those maps are. -/
 @[simp]
-theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : M₂ [^ι₁]→ₗ[R] M₃) :
+theorem domDomCongr_eq_iff (σ : ι₁ ≃ ι₂) (f g : (fun _ : ι₁ ↦ M₂) →ₗₘ[R] M₃) :
     f.domDomCongr σ = g.domDomCongr σ ↔ f = g :=
-  (domDomCongrEquiv σ : _ ≃+ M₂ [^ι₂]→ₗ[R] M₃).apply_eq_iff_eq
+  (domDomCongrEquiv σ : _ ≃+ ((fun _ : ι₂ ↦ M₂) →ₗₘ[R] M₃)).apply_eq_iff_eq
 
 end
 
@@ -875,7 +874,8 @@ theorem compMultilinearMap_codRestrict (g : M₂ →ₗ[R] M₃) (f : M₁ →�
 variable {ι₁ ι₂ : Type*}
 
 @[simp]
-theorem compMultilinearMap_domDomCongr (σ : ι₁ ≃ ι₂) (g : M₂ →ₗ[R] M₃) (f : M' [^ι₁]→ₗ[R] M₂) :
+theorem compMultilinearMap_domDomCongr
+    (σ : ι₁ ≃ ι₂) (g : M₂ →ₗ[R] M₃) (f : (fun _ : ι₁ ↦ M') →ₗₘ[R] M₂) :
     (g.compMultilinearMap f).domDomCongr σ = g.compMultilinearMap (f.domDomCongr σ) := by
   ext
   simp [MultilinearMap.domDomCongr]
@@ -936,7 +936,7 @@ section OfSubsingleton
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
 and one-multilinear maps `M₂ [ι]→ₗ[R] M₃`. -/
 @[simps +simpRhs]
-def ofSubsingletonₗ [Subsingleton ι] (i : ι) : (M₂ →ₗ[R] M₃) ≃ₗ[S] M₂ [^ι]→ₗ[R] M₃ :=
+def ofSubsingletonₗ [Subsingleton ι] (i : ι) : (M₂ →ₗ[R] M₃) ≃ₗ[S] (fun _ : ι ↦ M₂) →ₗₘ[R] M₃ :=
   { ofSubsingleton R M₂ M₃ i with
     map_add' := fun _ _ ↦ rfl
     map_smul' := fun _ _ ↦ rfl }
@@ -996,8 +996,9 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[S] M₁ →ₗₘ[R] M�
 
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
 @[simps apply symm_apply]
-def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) : M₂ [^ι₁]→ₗ[R] M₃ ≃ₗ[S] M₂ [^ι₂]→ₗ[R] M₃ :=
-  { (domDomCongrEquiv σ : M₂ [^ι₁]→ₗ[R] M₃ ≃+ M₂ [^ι₂]→ₗ[R] M₃) with
+def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
+    (fun _ : ι₁ ↦ M₂) →ₗₘ[R] M₃ ≃ₗ[S] (fun _ : ι₂ ↦ M₂) →ₗₘ[R] M₃ :=
+  { (domDomCongrEquiv σ : (fun _ : ι₁ ↦ M₂) →ₗₘ[R] M₃ ≃+ ((fun _ : ι₂ ↦ M₂) →ₗₘ[R] M₃)) with
     map_smul' := fun c f => by
       ext
       simp [MultilinearMap.domDomCongr] }
@@ -1171,7 +1172,8 @@ theorem map_update_smul_left [DecidableEq ι] [Fintype ι]
 
 This is the multilinear version of `LinearMap.ext_ring`. -/
 @[ext]
-theorem ext_ring [Finite ι] ⦃f g : R [^ι]→ₗ[R] M₂⦄ (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g := by
+theorem ext_ring [Finite ι] ⦃f g : (fun _ : ι ↦ R) →ₗₘ[R] M₂⦄ (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) :
+    f = g := by
   ext x
   obtain ⟨_⟩ := nonempty_fintype ι
   have hf := f.map_smul_univ x (fun _ ↦ 1)
@@ -1188,7 +1190,7 @@ to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebraFin` for a version that works with a non-commutative
 algebra `A` but requires `ι = Fin n`. -/
-protected def mkPiAlgebra : A [^ι]→ₗ[R] A where
+protected def mkPiAlgebra : (fun _ : ι ↦ A) →ₗₘ[R] A where
   toFun m := ∏ i, m i
   map_update_add' m i x y := by simp [Finset.prod_update_of_mem, add_mul]
   map_update_smul' m i c x := by simp [Finset.prod_update_of_mem]
@@ -1246,7 +1248,7 @@ variable (R ι)
 /-- The canonical multilinear map on `R^ι` when `ι` is finite, associating to `m` the product of
 all the `m i` (multiplied by a fixed reference element `z` in the target module). See also
 `mkPiAlgebra` for a more general version. -/
-protected def mkPiRing [Fintype ι] (z : M₂) : R [^ι]→ₗ[R] M₂ :=
+protected def mkPiRing [Fintype ι] (z : M₂) : (fun _ : ι ↦ R) →ₗₘ[R] M₂ :=
   (MultilinearMap.mkPiAlgebra R ι R).smulRight z
 
 variable {R ι}
@@ -1256,7 +1258,7 @@ theorem mkPiRing_apply [Fintype ι] (z : M₂) (m : ι → R) :
     (MultilinearMap.mkPiRing R ι z : (ι → R) → M₂) m = (∏ i, m i) • z :=
   rfl
 
-theorem mkPiRing_apply_one_eq_self [Fintype ι] (f : R [^ι]→ₗ[R] M₂) :
+theorem mkPiRing_apply_one_eq_self [Fintype ι] (f : (fun _ : ι ↦ R) →ₗₘ[R] M₂) :
     MultilinearMap.mkPiRing R ι (f fun _ => 1) = f := by
   ext
   simp
@@ -1393,7 +1395,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
 /-- When `ι` is finite, multilinear maps on `R^ι` with values in `M₂` are in bijection with `M₂`,
 as such a multilinear map is completely determined by its value on the constant vector made of ones.
 We register this bijection as a linear equivalence in `MultilinearMap.piRingEquiv`. -/
-protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] R [^ι]→ₗ[R] M₂ where
+protected def piRingEquiv [Fintype ι] : M₂ ≃ₗ[R] (fun _ : ι ↦ R) →ₗₘ[R] M₂ where
   toFun z := MultilinearMap.mkPiRing R ι z
   invFun f := f fun _ => 1
   map_add' z z' := by

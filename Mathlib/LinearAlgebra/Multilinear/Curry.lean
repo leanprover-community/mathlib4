@@ -252,7 +252,7 @@ theorem currySum_apply (f : N →ₗₘ[R] M₂)
 
 @[simp]
 theorem currySum_apply' {N : Type*} [AddCommMonoid N] [Module R N]
-    (f : N [^ι ⊕ ι']→ₗ[R] M₂) (u : ι → N) (v : ι' → N) :
+    (f : (fun _ : ι ⊕ ι' ↦ N) →ₗₘ[R] M₂) (u : ι → N) (v : ι' → N) :
     currySum f u v = f (Sum.elim u v) := rfl
 
 @[simp]
