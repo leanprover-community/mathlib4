@@ -105,7 +105,7 @@ variable {D : Type*} [Category* D] {K : GrothendieckTopology D}
 lemma Presieve.IsSheaf.comp_of_W_map_of_adjunction
     [LocallySmall.{w} C] {F : C ⥤ D} {H : (Cᵒᵖ ⥤ Type w) ⥤ (Dᵒᵖ ⥤ Type w)}
     (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
-    (h : ∀ ⦃X : C⦄ ⦃S : Sieve X⦄, S ∈ J X → K.W (H.map <| (Sieve.shrinkFunctor.{w} S).ι))
+    (h : ∀ ⦃X : C⦄ ⦃S : Sieve X⦄, S ∈ J X → K.W (H.map (Sieve.shrinkFunctor.{w} S).ι))
     (G : Dᵒᵖ ⥤ Type w) (hG : Presieve.IsSheaf K G) :
     Presieve.IsSheaf J (F.op ⋙ G) := by
   intro X S hS

@@ -16,7 +16,7 @@ field extensions, K is another extension of F, and `f` is an embedding of L/F in
 that the minimal polynomials of a set of generators of E/L splits in K (via `f`), then `f`
 extends to an embedding of E/F into K/F.
 
-## Reference
+## References
 
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly
@@ -182,16 +182,16 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     fun c hext hc ↦ (isEmpty_or_nonempty c).elim
       (fun _ ↦ ⟨⊥, this, fun ϕ hϕ ↦ isEmptyElim (⟨ϕ, hϕ⟩ : c)⟩)
       fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
-  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
+  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp ((equivOfEq this).trans topEquiv).symm⟩
   by_contra!
-  obtain ⟨α, -, hα⟩ := SetLike.exists_of_lt this.lt_top
+  obtain ⟨α, -, hα⟩ := IsConcreteLE.exists_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra
   let Λ := ϕ.carrier⟮α⟯ →ₐ[ϕ.carrier] K
   have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦ ((alg.tower_top ϕ.carrier).isIntegral).1 _
   let L (σ : Λ) : Lifts F E K := ⟨ϕ.carrier⟮α⟯.restrictScalars F, σ.restrictScalars F⟩
   have hL (σ : Λ) : ϕ < L σ := lt_iff.mpr
     ⟨by simpa only [L, restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
-      AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
+      AlgHom.toRingHom_injective σ.comp_algebraMap⟩
   have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
   simp_rw [Set.mem_ofPred, IsExtendible] at ϕ_max; push Not at ϕ_max
   choose S hS using fun σ : Λ ↦ ϕ_max (hL σ)
