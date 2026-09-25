@@ -36,8 +36,8 @@ a multilinear map from the modules `N (.inl i₁)` to `N₁` and
 a multilinear map from the modules `N (.inr i₁)` to `N₂`, this
 is the induced multilinear map from all the modules `N i` to `N₁ ⊗ N₂`. -/
 @[simps apply]
-def domCoprodDep (a : (fun i₁ ↦ N (.inl i₁)) →ₘₗ[R] N₁) (b : (fun i₂ ↦ N (.inr i₂)) →ₘₗ[R] N₂) :
-    N →ₘₗ[R] (N₁ ⊗[R] N₂) where
+def domCoprodDep (a : (fun i₁ ↦ N (.inl i₁)) →ₗₘ[R] N₁) (b : (fun i₂ ↦ N (.inr i₂)) →ₗₘ[R] N₂) :
+    N →ₗₘ[R] (N₁ ⊗[R] N₂) where
   toFun v := a (fun i₁ ↦ v (.inl i₁)) ⊗ₜ b (fun i₂ ↦ v (.inr i₂))
   map_update_add' := by
     rintro _ _ (_ | _) _ _
@@ -51,14 +51,14 @@ def domCoprodDep (a : (fun i₁ ↦ N (.inl i₁)) →ₘₗ[R] N₁) (b : (fun 
 /-- A more bundled version of `MultilinearMap.domCoprodDep`, as a linear map
 from the tensor product of spaces of multilinear maps. -/
 def domCoprodDep' :
-    ((fun i₁ ↦ N (.inl i₁)) →ₘₗ[R] N₁) ⊗[R] ((fun i₂ ↦ N (.inr i₂)) →ₘₗ[R] N₂) →ₗ[R]
-        N →ₘₗ[R] (N₁ ⊗[R] N₂) :=
+    ((fun i₁ ↦ N (.inl i₁)) →ₗₘ[R] N₁) ⊗[R] ((fun i₂ ↦ N (.inr i₂)) →ₗₘ[R] N₂) →ₗ[R]
+        N →ₗₘ[R] (N₁ ⊗[R] N₂) :=
   TensorProduct.lift (LinearMap.mk₂ R domCoprodDep
     (by aesop) (by aesop) (by aesop) (by aesop))
 
 @[simp]
-theorem domCoprodDep'_apply (a : (fun i₁ ↦ N (.inl i₁)) →ₘₗ[R] N₁)
-    (b : (fun i₂ ↦ N (.inr i₂)) →ₘₗ[R] N₂) :
+theorem domCoprodDep'_apply (a : (fun i₁ ↦ N (.inl i₁)) →ₗₘ[R] N₁)
+    (b : (fun i₂ ↦ N (.inr i₂)) →ₗₘ[R] N₂) :
     domCoprodDep' (a ⊗ₜ b) = domCoprodDep a b := by
   rfl
 
