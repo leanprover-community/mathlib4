@@ -683,8 +683,8 @@ theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
 
 section Nonempty
 
-lemma pi_image_eq_of_subset {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, (C i).Nonempty)
-    {s₁ s₂ : Set ι} (hst : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
+lemma pi_image_pi_of_subset {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, (C i).Nonempty)
+    (hs : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
   ext
   choose C_mem _ using hC
   classical
