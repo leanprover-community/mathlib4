@@ -326,16 +326,18 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
       · constructor <;> finiteness
       · fun_prop
 
-theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (hp0_lt : 0 < p)
-    (hpq : p < q) (hpqr : 1 / p = 1 / q + 1 / r) (μ : Measure α) {f g : α → ℝ≥0∞}
+theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ}
+    (hpqr : Real.HolderTriple q r p) (μ : Measure α) {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     (∫⁻ a, (f * g) a ^ p ∂μ) ^ (1 / p) ≤
       (∫⁻ a, f a ^ q ∂μ) ^ (1 / q) * (∫⁻ a, g a ^ r ∂μ) ^ (1 / r) := by
+  have hp0_lt : 0 < p := hpqr.pos'
+  have hpq : p < q := hpqr.lt
   have hp0_ne : p ≠ 0 := (ne_of_lt hp0_lt).symm
   have hp0 : 0 ≤ p := le_of_lt hp0_lt
   have hq0_lt : 0 < q := lt_of_le_of_lt hp0 hpq
   have hq0_ne : q ≠ 0 := (ne_of_lt hq0_lt).symm
-  have h_one_div_r : 1 / r = 1 / p - 1 / q := by rw [hpqr]; simp
+  have h_one_div_r : 1 / r = 1 / p - 1 / q := by simp [← hpqr.inv_add_inv_eq_inv]
   let p2 := q / p
   let q2 := p2.conjExponent
   have hp2q2 : p2.HolderConjugate q2 :=

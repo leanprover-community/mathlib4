@@ -391,9 +391,10 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (b : E → F → G) 
 theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm {p q r : ℝ}
     (b : ε → ε' → ε'') (c : ℝ≥0∞) {f : α → ε} {g : α → ε'}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ) (hro_lt : 0 < r) (hrp : r < p)
-    (hpqr : 1 / r = 1 / p + 1 / q) :
+    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ)
+    (hpqr : Real.HolderTriple p q r) :
     eLpNorm' (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm' f p μ * eLpNorm' g q μ := by
+  have hro_lt : 0 < r := hpqr.pos'
   calc
     eLpNorm' (fun x => b (f x) (g x)) r μ
       ≤ eLpNorm' (fun x ↦ c * ‖f x‖ₑ * ‖g x‖ₑ) r μ := by
@@ -407,15 +408,14 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm {p q r : ℝ}
       rw [eLpNorm'_const_mul_ennreal hro_lt (by exact (hf.enorm.mul hg.enorm).aestronglyMeasurable)]
       gcongr
       simpa only [eLpNorm', enorm_mul, enorm_norm] using!
-        ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hro_lt hrp hpqr μ hf.enorm hg.enorm
+        ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hpqr μ hf.enorm hg.enorm
 
 theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (b : E → F → G) (c : ℝ≥0)
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hro_lt : 0 < r) (hrp : r < p)
-    (hpqr : 1 / r = 1 / p + 1 / q) :
+    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊)
+    (hpqr : Real.HolderTriple p q r) :
     eLpNorm' (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm' f p μ * eLpNorm' g q μ :=
-  eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm b c hf hg (ae_enorm_bilin_le_of_ae_nnnorm_le h)
-  hro_lt hrp hpqr
+  eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm b c hf hg (ae_enorm_bilin_le_of_ae_nnnorm_le h) hpqr
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
@@ -430,31 +430,25 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm {p q r : ℝ≥0∞} (b : ε →
   have hbf : AEStronglyMeasurable (fun x => b (f x) (g x)) μ := hb hf hg
   rcases eq_zero_or_pos r with rfl | hr
   · simp [hbf]
-  have hpqr := hpqr.one_div_eq
+  have hpqr1 := hpqr.one_div_eq
   obtain (rfl | rfl | hp) := ENNReal.trichotomy p
   · simp_all
-  · have : r = q := by simpa using hpqr
+  · have : r = q := by simpa using hpqr1
     rw [← this]
     apply eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos r b c hb h hr
   obtain (rfl | rfl | hq) := ENNReal.trichotomy q
   · simp_all
-  · have : r = p := by simpa using hpqr
+  · have : r = p := by simpa using hpqr1
     rw [← this]
     apply eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_enorm_of_pos r b c hb h hr
   obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
   obtain ⟨hq₁, hq₂⟩ := ENNReal.toReal_pos_iff.mp hq
-  have hpqr' : 1 / r.toReal = 1 / p.toReal + 1 / q.toReal := by
-    have := congr(ENNReal.toReal $(hpqr))
-    rw [ENNReal.toReal_add (by simpa using hp₁.ne') (by simpa using hq₁.ne')] at this
-    simpa
-  have hr : 0 < r.toReal := one_div_pos.mp <| by rw [hpqr']; positivity
-  obtain ⟨hr₁, hr₂⟩ := ENNReal.toReal_pos_iff.mp hr
-  have hrp : r.toReal < p.toReal := lt_of_one_div_lt_one_div hp <|
-    hpqr' ▸ lt_add_of_pos_right _ (by positivity)
+  have hpqr' : Real.HolderTriple p.toReal q.toReal r.toReal := hpqr.toReal _ hp hq
+  obtain ⟨hr₁, hr₂⟩ := ENNReal.toReal_pos_iff.mp hpqr'.pos'
   rw [eLpNorm_eq_eLpNorm' hr₁.ne' hr₂.ne hbf,
     eLpNorm_eq_eLpNorm' hp₁.ne' hp₂.ne hf,
     eLpNorm_eq_eLpNorm' hq₁.ne' hq₂.ne hg]
-  exact eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm b c hf hg h hr hrp hpqr'
+  exact eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm b c hf hg h hpqr'
 
 theorem eLpNorm_le_eLpNorm_mul_eLpNorm {p q r : ℝ≥0∞} (b : E → F → G) (c : ℝ≥0)
     (hb : Continuous b.uncurry)
@@ -557,10 +551,10 @@ theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (hf : AEStrongl
     continuous_smul hf (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _)
 
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurable f μ)
-    {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hp0_lt : 0 < p) (hpq : p < q)
-    (hpqr : 1 / p = 1 / q + 1 / r) : eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ := by
+    {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ)
+    (hpqr : Real.HolderTriple q r p) : eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ := by
   simpa using! eLpNorm'_le_eLpNorm'_mul_eLpNorm' (· • ·) 1 hφ hf
-    (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) hp0_lt hpq hpqr
+    (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) hpqr
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of a scalar product `φ • f`. -/
 theorem eLpNorm_smul_le_mul_eLpNorm_of_pos {p q r : ℝ≥0∞} (hr : 0 < r) [hpqr : HolderTriple p q r] :
