@@ -9,7 +9,6 @@ public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Morrey's inequality
@@ -108,10 +107,7 @@ def rieszKernelConst (a r : ℝ) : ℝ≥0 :=
     r.toNNReal ^ (finrank ℝ E - a)
 
 omit [BorelSpace E] in
-/-- For `a ≤ n`, the constant `rieszKernelConst μ a r` read in `ℝ≥0∞` is
-`ENNReal.ofReal (n / (n - a)) * μ (ball 0 1) * ENNReal.ofReal r ^ (n - a)`: the `Real.toNNReal`
-truncations of the definition become `ENNReal.ofReal`, and the unit ball keeps its measure. -/
-theorem coe_rieszKernelConst {a : ℝ} (ha : a ≤ finrank ℝ E) (r : ℝ) :
+private theorem coe_rieszKernelConst {a : ℝ} (ha : a ≤ finrank ℝ E) (r : ℝ) :
     (rieszKernelConst μ a r : ℝ≥0∞) = ENNReal.ofReal (finrank ℝ E / (finrank ℝ E - a)) *
       μ (ball (0 : E) 1) * ENNReal.ofReal r ^ ((finrank ℝ E : ℝ) - a) := by
   rw [rieszKernelConst, ENNReal.coe_mul, ENNReal.coe_mul,
@@ -130,7 +126,7 @@ private theorem lintegral_Ioo_ofReal_rpow {r s : ℝ} (hr : 0 < r) (hs : -1 < s)
 
 The quantitative companion of `setLIntegral_ball_rpow_neg_lt_top`: when `a < n` the integral of
 `y ↦ ‖y - x‖ ^ (-a)` over `ball x r` is exactly `rieszKernelConst μ a r`, that is
-`n / (n - a) * μ (ball 0 1) * r ^ (n - a)` (see `coe_rieszKernelConst` for that form). -/
+`n / (n - a) * μ (ball 0 1) * r ^ (n - a)`. -/
 theorem setLIntegral_ball_rpow_neg [Nontrivial E] (x : E) {r a : ℝ} (hr : 0 < r)
     (han : a < finrank ℝ E) : (∫⁻ y in ball x r, ‖y - x‖ₑ ^ (-a) ∂μ) = rieszKernelConst μ a r := by
   -- polar coordinates: on each ray the integrand becomes `ρ ^ (n - a - 1)`
@@ -180,9 +176,7 @@ def rieszPotentialConst (r : ℝ) : ℝ≥0 :=
   (r ^ finrank ℝ E / (finrank ℝ E : ℝ)).toNNReal
 
 omit [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] in
-/-- The constant `rieszPotentialConst E r` read in `ℝ≥0∞` is `ENNReal.ofReal (r ^ n / n)`: the
-`Real.toNNReal` truncation of the definition becomes `ENNReal.ofReal`. -/
-theorem coe_rieszPotentialConst (r : ℝ) :
+private theorem coe_rieszPotentialConst (r : ℝ) :
     (rieszPotentialConst E r : ℝ≥0∞) = ENNReal.ofReal (r ^ finrank ℝ E / finrank ℝ E) := rfl
 
 omit [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] in
@@ -271,10 +265,7 @@ def morreyConst (p : ℝ≥0) : ℝ≥0 :=
     (μ (ball (0 : E) 1)).toNNReal⁻¹
 
 omit [BorelSpace E] in
-/-- For `1 ≤ p`, the constant `morreyConst E μ p` read in `ℝ≥0∞`: the `Real.toNNReal`
-truncations of the definition become `ENNReal.ofReal`, the unit ball keeps its measure, and the
-power `1 / q` is distributed over the two factors of `rieszKernelConst μ ((n - 1) * q) 1`. -/
-theorem coe_morreyConst {p : ℝ≥0} (hp : 1 ≤ p) :
+private theorem coe_morreyConst {p : ℝ≥0} (hp : 1 ≤ p) :
     (morreyConst E μ p : ℝ≥0∞) = ENNReal.ofReal ((2 : ℝ) ^ (finrank ℝ E + 1) / finrank ℝ E) *
       (ENNReal.ofReal (finrank ℝ E / (finrank ℝ E - (finrank ℝ E - 1) * (1 - 1 / (p : ℝ))⁻¹)) ^
         (1 / (1 - 1 / (p : ℝ))⁻¹) * μ (ball (0 : E) 1) ^ (1 / (1 - 1 / (p : ℝ))⁻¹)) *
@@ -421,9 +412,7 @@ private theorem one_sub_finrank_div_nonneg {p : ℝ≥0} (hp : (finrank ℝ E : 
   sub_nonneg.2 (div_le_one_of_le₀ (mod_cast hp) p.coe_nonneg)
 
 omit [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ] in
-/-- For `n ≤ p`, the constant `morreyEssSupConst E μ s p` read in `ℝ≥0∞`, with the diameter
-entering through `ENNReal.ofReal`. -/
-theorem coe_morreyEssSupConst {s : Set E} {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) ≤ p) :
+private theorem coe_morreyEssSupConst {s : Set E} {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) ≤ p) :
     (morreyEssSupConst E μ s p : ℝ≥0∞) = morreyConst E μ p * ENNReal.ofReal (diam s) ^
       (1 - (finrank ℝ E : ℝ) / p) := by
   rw [morreyEssSupConst, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _
