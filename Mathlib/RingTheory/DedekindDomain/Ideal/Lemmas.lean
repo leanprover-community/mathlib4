@@ -991,11 +991,6 @@ theorem multiplicity_top_right {S : Type*} [CommSemiring S] (I : Ideal S) :
     multiplicity I ⊤ = 0 := by
   rw [← one_eq_top, multiplicity_one_right]
 
-/-- A proper ideal has multiplicity `0` in `⊤`, the unit ideal. -/
-theorem emultiplicity_of_top_right {S : Type*} [CommSemiring S] {I : Ideal S} (hI : I ≠ ⊤) :
-    emultiplicity I ⊤ = 0 := by
-  rw [← one_eq_top, emultiplicity_of_one_right (by rwa [Ideal.isUnit_iff])]
-
 variable {R} in
 /-- In a Dedekind domain, the multiplicity of a proper ideal in a nonzero ideal is finite. -/
 theorem finiteMultiplicity [IsDedekindDomain R] {I J : Ideal R} (hI : I ≠ ⊤) (hJ : J ≠ ⊥) :
