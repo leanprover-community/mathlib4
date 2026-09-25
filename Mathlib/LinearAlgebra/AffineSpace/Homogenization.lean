@@ -89,10 +89,14 @@ instance instModule {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalar
 variable
   {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
   {T : Type*} [Semiring T] [Module T R] [Module T V] [IsScalarTower T R V]
-  [SMul S T] [IsScalarTower S T R] [IsScalarTower S T V]
 
-instance : IsScalarTower S T (Homogenization R P) :=
+instance [SMul S T] [IsScalarTower S T R] [IsScalarTower S T V] :
+    IsScalarTower S T (Homogenization R P) :=
   inferInstanceAs (IsScalarTower S T (V × R))
+
+instance [SMulCommClass S T R] [SMulCommClass S T V] :
+    SMulCommClass S T (Homogenization R P) :=
+  inferInstanceAs (SMulCommClass S T (V × R))
 
 end SMul
 
@@ -162,14 +166,19 @@ theorem span_range_ofPoint : Submodule.span R (Set.range (ofPoint (R := R) (P :=
   refine Submodule.add_mem _ (Submodule.sub_mem _ ?_ ?_) (Submodule.smul_mem _ _ ?_) <;>
     exact Submodule.mem_span_of_mem <| Set.mem_range_self _
 
-theorem hom_ext {f g : Homogenization R P →ₗ[R] W}
-    (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
+section
+
+variable {F : Type*} [FunLike F (Homogenization R P) W] [LinearMapClass F R _ _]
+
+theorem hom_ext {f g : F} (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := by
+  apply LinearMap.toLinearMap_injective
   rwa [← LinearMap.eqLocus_eq_top, eq_top_iff, ← span_range_ofPoint, Submodule.span_le,
     Set.range_subset_iff]
 
-theorem hom_ext_iff {f g : Homogenization R P →ₗ[R] W} :
-    f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
+theorem hom_ext_iff {f g : F} : f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
   ⟨by rintro rfl _; rfl, hom_ext⟩
+
+end
 
 /-- Auxiliary definition used for defining `Homogenization.lift`. -/
 private def liftAux (f : P →ᵃ[R] W) : Homogenization R P →ₗ[R] W :=

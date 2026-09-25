@@ -58,6 +58,9 @@ def factorization (n : ℕ) : ℕ →₀ ℕ where
 theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p = padicValNat p n := by
   simpa [factorization] using absurd pp
 
+theorem factorization_le_padicValNat {n p : ℕ} : n.factorization p ≤ padicValNat p n := by
+  grind [Nat.factorization]
+
 /-- We can write both `n.factorization p` and `n.factors.count p` to represent the power
 of `p` in the factorization of `n`: we declare the former to be the simp-normal form. -/
 @[simp]
