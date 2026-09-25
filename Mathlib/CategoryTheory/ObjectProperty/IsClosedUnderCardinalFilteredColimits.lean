@@ -83,7 +83,6 @@ lemma isClosedUnderIsomorphisms : P.IsClosedUnderIsomorphisms where
         isColimit.uniq s m hm := by simp [← hm .unit]
         prop_diag_obj _ := hX }
     p.prop
-    exact p.prop
 
 end IsClosedUnderCardinalFilteredColimits
 
