@@ -639,22 +639,10 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
 
 /-! #### Initial segments of a path -/
 
-theorem truncateOfLE_range_subset_preimage {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
-    (h : t₀ ≤ t₁) {U : Set X} (hU : Set.Icc t₀ t₁ ⊆ γ.extend ⁻¹' U) :
-    Set.range (γ.truncateOfLE h) ⊆ U := by
-  rintro _ ⟨s, rfl⟩
-  dsimp [truncateOfLE, truncate]
-  apply hU
-  constructor
-  · exact le_min (le_max_right _ _) h
-  · exact min_le_right _ _
-
-/-- The family of initial segments of `γ : Path a b`: at parameter `t : I`, the path
-`s ↦ γ.extend (min s t)` from `a` to `γ t` (`initialSegmentFamily_apply`). At `t = 0` this is
-the constant path at `a` (`initialSegmentFamily_zero`); at `t = 1` it is `γ` itself, up to a
-trivial right-endpoint cast (`initialSegmentFamily_one`). The property consumers actually need
-is joint continuity in `(t, s)`, recorded as `continuous_initialSegmentFamily_uncurry` and used
-to build the rung homotopy in `joinedIn_preimage_of_append`. -/
+/-- The initial segment `γ|_[0, t]` of `γ`, as a path from `a` to `γ t`; it is
+`s ↦ γ.extend (min s t)`. This is jointly continuous in `(t, s)`
+(`continuous_initialSegmentFamily_uncurry`), so it gives a path from `Path.refl a` to `γ` in
+path space. -/
 noncomputable def initialSegmentFamily {a b : X} (γ : Path a b) (t : I) :
     Path a (γ t) :=
   (γ.truncate 0 t).cast (by rw [min_eq_left t.2.1, γ.extend_zero]) (γ.extend_apply t.2).symm
@@ -725,9 +713,8 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
 
 /-! ### Partitioning paths using Lebesgue numbers -/
 
-/-- Generic Lebesgue partition lemma for paths: Given an open cover of a path's range,
-there exists a finite partition of [0,1] such that each segment lies entirely in one set
-from the cover. -/
+/-- If the range of a path is covered by open sets, then there is a partition
+`0 = t₀ ≤ ⋯ ≤ tₙ = 1` such that each segment `γ [tᵢ, tᵢ₊₁]` lies in one set of the cover. -/
 theorem exists_partition_in_cover
     {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
     {x y : X} (γ : Path x y) (hU_cover : ∀ s : unitInterval, ∃ i, γ s ∈ U i) :
@@ -745,9 +732,9 @@ theorem exists_partition_in_cover
   obtain ⟨j, hj⟩ := ht_cover i
   exact ⟨j, fun s hs ↦ hj hs⟩
 
-/-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
-has a neighborhood with property P, then there exists a partition such that each segment lies
-in an open set with property P. This follows immediately from the cover version. -/
+/-- If every point on a path has an open neighborhood satisfying `P`, then there is a partition
+`0 = t₀ ≤ ⋯ ≤ tₙ = 1` such that each segment `γ [tᵢ, tᵢ₊₁]` lies in an open set satisfying
+`P`. -/
 theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
     (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),

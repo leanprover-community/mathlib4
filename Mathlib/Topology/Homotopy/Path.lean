@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Connected.PathConnected
-public import Mathlib.Topology.Constructions
 public import Mathlib.Analysis.Convex.Basic
 
 /-!
