@@ -1070,14 +1070,14 @@ into the `lean-toolchain` file at the root directory of your project"
 def packageEntrySrcDesc (entry : Lake.PackageEntry) : String :=
   match entry.src with
   | .git _ rev _ _ => (rev.take 12).toString
-  | .path dir => s!"path:{dir}"
+  | .path dir _ => s!"path:{dir}"
 
 /-- Check whether two manifest package entries refer to the same source. -/
 def packageEntrySrcMatch (a b : Lake.PackageEntry) : Bool :=
   match a.src, b.src with
   | .git urlA revA _ subDirA, .git urlB revB _ subDirB =>
     urlA == urlB && revA == revB && subDirA == subDirB
-  | .path dirA, .path dirB => dirA == dirB
+  | .path dirA _, .path dirB _ => dirA == dirB
   | _, _ => false
 
 /-- Check if the project's `lake-manifest.json` pins shared dependencies at different versions
