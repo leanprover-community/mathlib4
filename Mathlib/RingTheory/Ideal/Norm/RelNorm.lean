@@ -453,7 +453,7 @@ section absNorm
 variable [Module.Free ℤ R] [Module.Free ℤ S] [Module.Finite ℤ S]
 
 open UniqueFactorizationMonoid in
-theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
+theorem absNorm_relNorm (I : Ideal S) :
     haveI : Infinite R := Module.Free.infinite ℤ R
     haveI : Infinite S := Module.Free.infinite ℤ S
     absNorm (relNorm R I) = absNorm I := by
@@ -474,6 +474,8 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
     let P := under R Q
     let p := absNorm (under ℤ P)
     have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
+    have : IsAddTorsionFree R := .of_isTorsionFree ℤ _
+    have : CharZero R := CharZero.of_isAddTorsionFree R R
     rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, ← pow_inertiaDeg p, ← pow_inertiaDeg p,
       ← pow_mul, ← inertiaDeg_tower]
 
