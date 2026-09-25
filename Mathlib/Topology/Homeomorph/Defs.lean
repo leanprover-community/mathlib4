@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Topology.Maps.OpenQuotient
+public import Mathlib.Tactic.FunPropSimp
 
 /-!
 # Homeomorphisms
@@ -43,11 +44,9 @@ variable {X Y Z : Type*}
 structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSpace Y]
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun := by
-    first | fun_prop | eta_expand; dsimp; fun_prop | skip
+  continuous_toFun : Continuous toFun := by fun_prop_simp
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun := by
-    first | fun_prop | eta_expand; dsimp; fun_prop | skip
+  continuous_invFun : Continuous invFun := by fun_prop_simp
 
 @[inherit_doc]
 infixl:25 " ≃ₜ " => Homeomorph
