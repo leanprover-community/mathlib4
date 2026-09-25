@@ -227,7 +227,7 @@ def main (args : List String) : IO Unit := do
         return (← getFilesWithExtension stagingDir "ltar").map (·.fileName.get!))
     return
   | "put-staged" :: _ =>
-    IO.eprintln "Usage: cache put-staged --staging-dir=DIR [--container=NAME] \
+    IO.eprintln "Usage: cache put-staged --staging-dir=DIR --container=NAME \
       [--repo=OWNER/REPO] [--scope=REF] [--backend=NAME]"
     Process.exit 1
   | _ => pure ()

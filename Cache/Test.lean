@@ -624,8 +624,8 @@ artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "StagedUploadDest.markerURL:"
   let dest (backend : UploadBackend) (container? : Option Container)
-      (putBase? : Option String) : String :=
-    ((stagedUploadDestFrom backend none putBase? container? "alice/mathlib4"
+      (putURL? : Option String) : String :=
+    ((stagedUploadDestFrom backend putURL? container? "alice/mathlib4"
       none).toOption.map (·.markerURL "abc123")).getD "(unresolved)"
   assertEq "forks marker URL under the Azure base"
     "https://lakecache.blob.core.windows.net/mathlib4-forks/m/alice/mathlib4/abc123"
@@ -634,11 +634,11 @@ def test_markerURL : IO Unit := do
   assertEq "marker is under /m/, keyed by repo"
     "m/leanprover-community/mathlib4/deadbeef"
     (markerPath MATHLIBREPO "deadbeef")
-  -- A put base rebases the marker with the artifacts it marks: the same
-  -- `{base}/{container}` resolution feeds both (see `stagedUploadDestFrom`).
-  assertEq "marker URL follows a rebased upload destination"
+  -- `MATHLIB_CACHE_PUT_URL` moves the marker with the artifacts it marks: one
+  -- container root feeds both (see `stagedUploadDestFrom`).
+  assertEq "marker URL follows the container root the put URL names"
     "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
-    (dest .s3 (some .forks) (some "https://bucket.example.org/mirror"))
+    (dest .s3 (some .forks) (some "https://bucket.example.org/mirror/mathlib4-forks"))
   -- The repo segment is lowercased, so an upload and a probe for the same fork
   -- meet at one path regardless of how the owner name was capitalized.
   assertEq "marker repo is lowercased in the path"
@@ -1348,133 +1348,94 @@ def test_fileDirPath : IO Unit := do
   assertEq "the repo is lowercased"
     "f/alice/mathlib4" (fileDirPath (some .forks) "Alice/Mathlib4" none)
 
-/-- `stagedUploadDestFrom` resolves the destination contract per backend:
-each backend writes the container layout under the base
-MATHLIB_CACHE_PUT_BASE_URL names. The azure backend defaults to the Azure
-account; the s3 backend has no default. MATHLIB_CACHE_PUT_URL overrides both
-with one flat endpoint. The prefixes carry no trailing slashes and build on
-the same `fileDirPath` policy as every other upload path. -/
+/-- `stagedUploadDestFrom` resolves the destination of the `--container`
+write: the container's layout under its root, which is the Azure account by
+default and the URL MATHLIB_CACHE_PUT_URL names otherwise. The s3 backend has
+no default root. The prefixes carry no trailing slashes and build on the same
+`fileDirPath` policy as the reads. -/
 def test_stagedUploadDestFrom : IO Unit := do
   IO.println "stagedUploadDestFrom:"
-  let putBase := "https://s3.example.org/bucket-prefix"
+  let forksRoot := "https://s3.example.org/devbucket/mathlib4-forks"
+  let masterRoot := "https://s3.example.org/bucket/mathlib4"
   let expectForksScoped : StagedUploadDest :=
-    { base := putBase
+    { base := forksRoot
       label := "forks"
-      filesPrefix := "mathlib4-forks/f/alice/mathlib4/sha1"
-      markerPrefix := "mathlib4-forks/m/alice/mathlib4" }
-  assertTrue "s3: put base + forks + scope"
-    ((stagedUploadDestFrom .s3 none (some putBase) (some .forks)
+      filesPrefix := "f/alice/mathlib4/sha1"
+      markerPrefix := "m/alice/mathlib4" }
+  assertTrue "s3: put URL + forks + scope"
+    ((stagedUploadDestFrom .s3 (some forksRoot) (some .forks)
         "Alice/Mathlib4" (some "sha1")).toOption == some expectForksScoped)
   let expectMasterFlat : StagedUploadDest :=
-    { base := putBase
+    { base := masterRoot
       label := "master"
-      filesPrefix := "mathlib4-master/f"
-      markerPrefix := "mathlib4-master/m/leanprover-community/mathlib4" }
-  assertTrue "s3: put base + master is flat"
-    ((stagedUploadDestFrom .s3 none (some putBase) (some .master)
-        MATHLIBREPO none).toOption == some expectMasterFlat)
-  let expectFlatUrl : StagedUploadDest :=
-    { base := "https://my.example.org"
-      label := "(env override)"
       filesPrefix := "f"
       markerPrefix := "m/leanprover-community/mathlib4" }
-  assertTrue "PUT_URL is flat with the container policy off"
-    ((stagedUploadDestFrom .azure (some "https://my.example.org") none none
-        MATHLIBREPO none).toOption == some expectFlatUrl)
-  assertTrue "PUT_URL applies on the s3 backend too"
-    ((stagedUploadDestFrom .s3 (some "https://my.example.org/bucket") none none
-        MATHLIBREPO none).toOption ==
-      some { expectFlatUrl with base := "https://my.example.org/bucket" })
-  -- A base without a bucket path fails at resolution.
-  assertTrue "s3: a put base without a bucket path errors"
-    (stagedUploadDestFrom .s3 none (some "https://s3.example.org") (some .forks)
-      "alice/mathlib4" none matches .error _)
-  assertTrue "s3: a PUT_URL without a bucket path errors"
-    (stagedUploadDestFrom .s3 (some "https://my.example.org") none none MATHLIBREPO none
-      matches .error _)
+  assertTrue "s3: put URL + master is flat"
+    ((stagedUploadDestFrom .s3 (some masterRoot) (some .master)
+        MATHLIBREPO none).toOption == some expectMasterFlat)
+  assertTrue "master is flat whatever --repo says"
+    ((stagedUploadDestFrom .s3 (some masterRoot) (some .master)
+        "alice/mathlib4" none).toOption.map (·.filesPrefix) == some "f")
   let expectAzureForks : StagedUploadDest :=
-    { base := azureAccountURL
+    { base := Container.forks.azureURL
       label := "forks"
-      filesPrefix := "mathlib4-forks/f/alice/mathlib4/sha1"
-      markerPrefix := "mathlib4-forks/m/alice/mathlib4" }
-  assertTrue "azure: the Azure account for the container"
-    ((stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
+      filesPrefix := "f/alice/mathlib4/sha1"
+      markerPrefix := "m/alice/mathlib4" }
+  assertTrue "azure: the container on the Azure account"
+    ((stagedUploadDestFrom .azure none (some .forks) "alice/mathlib4"
         (some "sha1")).toOption == some expectAzureForks)
-  -- The label says where the bytes go: a `legacy` write must name that
-  -- container in the progress message, not an override.
-  let expectLegacy : StagedUploadDest :=
-    { base := azureAccountURL
-      label := "legacy"
-      filesPrefix := "mathlib4/f/alice/mathlib4"
-      markerPrefix := "mathlib4/m/alice/mathlib4" }
-  assertTrue "azure: an explicit legacy container"
-    ((stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none).toOption ==
-      some expectLegacy)
-  -- Each backend rejects a destination that contradicts it, instead of
-  -- resolving one the operator did not select.
-  assertTrue "azure: no container errors"
-    (stagedUploadDestFrom .azure none none none "alice/mathlib4" none
-      matches .error _)
-  assertTrue "s3: a put base without a container errors"
-    (stagedUploadDestFrom .s3 none (some "https://s3.example.org/x") none MATHLIBREPO none
-      matches .error _)
-  assertTrue "s3: no put base errors"
-    (stagedUploadDestFrom .s3 none none (some .forks) "alice/mathlib4" none
-      matches .error _)
-  assertTrue "azure: a put base rebases the container write"
-    ((stagedUploadDestFrom .azure none (some putBase) (some .forks)
+  assertTrue "azure: the put URL replaces the container's Azure root"
+    ((stagedUploadDestFrom .azure (some forksRoot) (some .forks)
         "Alice/Mathlib4" (some "sha1")).toOption == some expectForksScoped)
-  -- PUT_URL keeps the opposite empty rule from every read variable: any set
-  -- value counts, an empty one included, so a misconfigured endpoint fails
-  -- the upload rather than divert it to the backend's destination.
-  assertTrue "an empty PUT_URL still counts"
-    ((stagedUploadDestFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.base) ==
-      some "")
-  assertTrue "azure: an empty put base means unset"
-    ((stagedUploadDestFrom .azure none (some "") (some .forks) "alice/mathlib4" none).toOption.map
-      (·.base) == some azureAccountURL)
-  assertTrue "s3: an empty put base means unset, so it errors"
-    (stagedUploadDestFrom .s3 none (some "") (some .forks) "alice/mathlib4" none
+  assertTrue "nightly-testing is repo-namespaced and unscoped"
+    ((stagedUploadDestFrom .azure none (some .nightlyTesting) NIGHTLY_TESTING_REPO
+        none).toOption.map (·.filesPrefix) ==
+      some "f/leanprover-community/mathlib4-nightly-testing")
+  -- Every upload names its container, and the container decides what the
+  -- upload may carry.
+  assertTrue "no container errors"
+    (stagedUploadDestFrom .azure (some "https://my.example.org") none MATHLIBREPO none
       matches .error _)
-  assertTrue "s3: a put base loses its trailing slashes"
-    ((stagedUploadDestFrom .s3 none (some "https://s3.example.org/bucket-prefix//") (some .forks)
-      "alice/mathlib4" none).toOption.map (·.base) == some "https://s3.example.org/bucket-prefix")
+  assertTrue "legacy is read-only"
+    (stagedUploadDestFrom .azure none (some .legacy) MATHLIBREPO none matches .error _)
+  assertTrue "a scope on master errors"
+    (stagedUploadDestFrom .azure none (some .master) MATHLIBREPO (some "sha1")
+      matches .error _)
+  assertTrue "a scope on nightly-testing errors"
+    (stagedUploadDestFrom .azure none (some .nightlyTesting) NIGHTLY_TESTING_REPO
+      (some "sha1") matches .error _)
+  assertTrue "s3: no put URL errors"
+    (stagedUploadDestFrom .s3 none (some .forks) "alice/mathlib4" none matches .error _)
+  assertTrue "s3: an empty put URL means unset, so it errors"
+    (stagedUploadDestFrom .s3 (some "") (some .forks) "alice/mathlib4" none
+      matches .error _)
+  assertTrue "azure: an empty put URL means unset"
+    ((stagedUploadDestFrom .azure (some "") (some .forks) "alice/mathlib4" none).toOption.map
+      (·.base) == some Container.forks.azureURL)
+  assertTrue "s3: a put URL without a bucket path errors"
+    (stagedUploadDestFrom .s3 (some "https://s3.example.org") (some .forks)
+      "alice/mathlib4" none matches .error _)
+  assertTrue "a put URL loses its trailing slashes"
+    ((stagedUploadDestFrom .s3 (some s!"{forksRoot}//") (some .forks)
+      "alice/mathlib4" none).toOption.map (·.base) == some forksRoot)
   -- The resolved destination follows the read-side URL policy: `fileURL` is
-  -- exactly `mkFileURL` against the same base.
-  if let .ok d := stagedUploadDestFrom .s3 none (some putBase)
+  -- exactly `mkFileURL` against the same container root.
+  if let .ok d := stagedUploadDestFrom .s3 (some forksRoot)
       (some .forks) "Alice/Mathlib4" (some "sha1") then
     assertEq "files prefix matches the curl URL shape"
-      (mkFileURL (some .forks) "Alice/Mathlib4"
-        s!"{putBase}/mathlib4-forks" "x.ltar" (some "sha1"))
+      (mkFileURL (some .forks) "Alice/Mathlib4" forksRoot "x.ltar" (some "sha1"))
       (d.fileURL "x.ltar")
     assertEq "marker prefix matches the marker path"
-      s!"{d.base}/mathlib4-forks/{markerPath "Alice/Mathlib4" "sha1"}"
+      s!"{forksRoot}/{markerPath "Alice/Mathlib4" "sha1"}"
       (d.markerURL "sha1")
   else
-    assertTrue "put-base destination resolves" false
-  -- The same cross-pin for the flat PUT_URL case.
-  if let .ok d := stagedUploadDestFrom .azure (some "https://my.example.org") none none
-      "alice/mathlib4" (some "abc1") then
-    assertEq "flat-URL files prefix matches the curl URL shape"
-      (mkFileURL none "alice/mathlib4" "https://my.example.org" "x.ltar" (some "abc1"))
-      (d.fileURL "x.ltar")
-  else
-    assertTrue "flat-URL destination resolves" false
-  -- And for the Azure account and the legacy container rows, so all four
-  -- resolution rows are pinned against `mkFileURL`'s shape.
-  if let .ok d := stagedUploadDestFrom .azure none none (some .forks) "alice/mathlib4"
-      (some "abc1") then
+    assertTrue "put-URL destination resolves" false
+  if let .ok d := stagedUploadDestFrom .azure none (some .master) MATHLIBREPO none then
     assertEq "Azure-account prefix matches the curl URL shape"
-      (mkFileURL (some .forks) "alice/mathlib4" Container.forks.azureURL "x.ltar" (some "abc1"))
+      (mkFileURL (some .master) MATHLIBREPO Container.master.azureURL "x.ltar" none)
       (d.fileURL "x.ltar")
   else
     assertTrue "Azure-account destination resolves" false
-  if let .ok d := stagedUploadDestFrom .azure none none (some .legacy) "alice/mathlib4" none then
-    assertEq "legacy-container prefix matches the curl URL shape"
-      (mkFileURL (some .legacy) "alice/mathlib4" Container.legacy.azureURL "x.ltar" none)
-      (d.fileURL "x.ltar")
-  else
-    assertTrue "legacy-container destination resolves" false
 
 /-- The curl arguments an s3 upload signs each request with (`s3CurlArgs`),
 and the `If-None-Match: *` guard the curl tool adds to a non-overwrite put on
@@ -1536,25 +1497,25 @@ put; and both remotes are the same `{prefix}/{name}` shape every other tool
 addresses. -/
 def test_rcloneArgs : IO Unit := do
   IO.println "rcloneArgs:"
-  if let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
+  if let .ok dest := stagedUploadDestFrom .s3 (some "https://acct.example/devbucket/mathlib4-forks")
       (some .forks) "alice/mathlib4" (some "abc1") then
-    let files := rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+    let files := rcloneFilesArgs "devbucket/mathlib4-forks" dest "staging" "tmp/files-from.txt"
       (overwrite := false)
     assertEq "files copy remote matches the destination contract"
-      s!":s3:devbucket/{dest.filesPrefix}" files[2]!
+      s!":s3:devbucket/mathlib4-forks/{dest.filesPrefix}" files[2]!
     assertTrue "files copy is a copy" (files[0]! == "copy")
     assertTrue "files copy is restricted to the caller's file list"
       ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
     assertTrue "a non-overwrite copy skips existing objects"
       (files.contains "--ignore-existing")
     assertTrue "an overwrite copy replaces existing objects"
-      (!(rcloneFilesArgs "devbucket" dest "staging" "tmp/files-from.txt"
+      (!(rcloneFilesArgs "devbucket/mathlib4-forks" dest "staging" "tmp/files-from.txt"
         (overwrite := true)).contains "--ignore-existing")
     assertTrue "files copy skips the bucket-creation probe"
       (files.contains "--s3-no-check-bucket")
-    let marker := rcloneMarkerArgs "devbucket" dest "tmp/abc1" "abc1"
+    let marker := rcloneMarkerArgs "devbucket/mathlib4-forks" dest "tmp/abc1" "abc1"
     assertEq "marker remote matches the marker path contract"
-      s!":s3:devbucket/{Container.forks.pathSegment}/{markerPath "alice/mathlib4" "abc1"}"
+      s!":s3:devbucket/mathlib4-forks/{markerPath "alice/mathlib4" "abc1"}"
       marker[2]!
     assertTrue "marker copy is a copyto" (marker[0]! == "copyto")
     assertTrue "marker copy overwrites freely"
@@ -1612,18 +1573,18 @@ def test_putStagedViaRclone : IO Unit := do
       "if [ \"$1\" = copyto ]; then exit 3; fi\n" ++
       "exit 0\n"
     discard <| IO.runCmd "chmod" #["+x", fake.toString]
-    let .ok dest := stagedUploadDestFrom .s3 none (some "https://acct.example/devbucket")
+    let .ok dest := stagedUploadDestFrom .s3 (some "https://acct.example/devbucket/mathlib4-forks")
         (some .forks) "alice/mathlib4" (some "abc1")
       | assertTrue "rclone destination resolves" false
     withSuppressedOutput <| putStagedViaRclone dest
       (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other" "auto")
-      "devbucket" (some "abc1") staging
+      "devbucket/mathlib4-forks" (some "abc1") staging
       #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
     let copyArgs ← IO.FS.readFile (dir / "args-copy")
     assertTrue "files copy targets the staging dir"
       ((copyArgs.splitOn "\n").any (· == staging.toString))
     assertTrue "files copy addresses the resolved remote"
-      ((copyArgs.splitOn "\n").any (· == s!":s3:devbucket/{dest.filesPrefix}"))
+      ((copyArgs.splitOn "\n").any (· == s!":s3:devbucket/mathlib4-forks/{dest.filesPrefix}"))
     assertEq "the files-from list holds exactly the caller's file names"
       "aa.ltar\n" (← IO.FS.readFile (dir / "files-from-copy"))
     let copyEnv ← IO.FS.readFile (dir / "env-copy")
@@ -1644,7 +1605,7 @@ def test_putStagedViaRclone : IO Unit := do
       ((markerArgs.splitOn "\n").any (·.endsWith "/abc1"))
     assertTrue "the marker addresses the marker path"
       ((markerArgs.splitOn "\n").any
-        (· == s!":s3:devbucket/{dest.markerPrefix}/abc1"))
+        (· == s!":s3:devbucket/mathlib4-forks/{dest.markerPrefix}/abc1"))
   finally
     IO.FS.removeDirAll dir
 
