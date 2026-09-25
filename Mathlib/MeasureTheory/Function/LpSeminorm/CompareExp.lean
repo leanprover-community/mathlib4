@@ -42,13 +42,13 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   repeat' rw [eLpNorm'_eq_lintegral_enorm]
   rw [h_rw]
   let r := p * q / (q - p)
-  have hpqr : 1 / p = 1 / q + 1 / r := by simp [field]
+  have hpqr : Real.HolderTriple q r p := ⟨by field, hq0_lt, by positivity⟩
   calc
     (∫⁻ a : α, (‖f a‖ₑ * g a) ^ p ∂μ) ^ (1 / p) ≤
         (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
-      ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hp0_lt hpq hpqr μ hf.enorm aemeasurable_const
+      ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hpqr μ hf.enorm aemeasurable_const
     _ = (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
-      rw [hpqr]; simp [r, g]
+      simp [← hpqr.inv_add_inv_eq_inv, g]
 
 theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
     eLpNorm' f q μ ≤ eLpNormEssSup f μ * μ Set.univ ^ (1 / q) := by
