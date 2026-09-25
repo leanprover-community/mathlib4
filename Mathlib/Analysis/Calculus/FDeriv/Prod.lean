@@ -26,27 +26,22 @@ open Filter Asymptotics ContinuousLinearMap Set
 
 noncomputable section
 
-section
-
+section Prod
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+
+/-! ### Derivative of the Cartesian product of two functions -/
+
+section ProdMk
 variable {f f₀ f₁ g : E → F}
 variable {f' f₁' : E →L[𝕜] F}
 variable (e : E →L[𝕜] F)
 variable {x : E}
 variable {s : Set E}
 variable {L : Filter (E × E)}
-
-section CartesianProduct
-
-/-! ### Derivative of the Cartesian product of two functions -/
-
-
-section Prod
-
 variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 
 theorem HasFDerivAtFilter.prodMk (hf₁ : HasFDerivAtFilter f₁ f₁' L)
@@ -69,16 +64,6 @@ nonrec theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s 
 nonrec theorem HasFDerivAt.prodMk (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
   hf₁.prodMk hf₂
-
-@[fun_prop]
-theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
-    HasFDerivAt (fun e : E => (e, f₀)) (inl 𝕜 E F) e₀ :=
-  (hasFDerivAt_id e₀).prodMk (hasFDerivAt_const f₀ e₀)
-
-@[fun_prop]
-theorem hasFDerivAt_prodMk_right (e₀ : E) (f₀ : F) :
-    HasFDerivAt (fun f : F => (e₀, f)) (inr 𝕜 E F) f₀ :=
-  (hasFDerivAt_const e₀ f₀).prodMk (hasFDerivAt_id f₀)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.prodMk (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
@@ -111,11 +96,21 @@ theorem DifferentiableWithinAt.fderivWithin_prodMk (hf₁ : DifferentiableWithin
       (fderivWithin 𝕜 f₁ s x).prod (fderivWithin 𝕜 f₂ s x) :=
   (hf₁.hasFDerivWithinAt.prodMk hf₂.hasFDerivWithinAt).fderivWithin hxs
 
-end Prod
+end ProdMk
+
+@[fun_prop]
+theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
+    HasFDerivAt (fun e : E => (e, f₀)) (inl 𝕜 E F) e₀ :=
+  (hasFDerivAt_id e₀).prodMk (hasFDerivAt_const f₀ e₀)
+
+@[fun_prop]
+theorem hasFDerivAt_prodMk_right (e₀ : E) (f₀ : F) :
+    HasFDerivAt (fun f : F => (e₀, f)) (inr 𝕜 E F) f₀ :=
+  (hasFDerivAt_const e₀ f₀).prodMk (hasFDerivAt_id f₀)
 
 section Fst
 
-variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
+variable {s : Set E} {x : E} {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F} {L : Filter (E × E)}
 
 theorem hasFDerivAtFilter_fst {L : Filter ((E × F) × (E × F))} :
     HasFDerivAtFilter Prod.fst (fst 𝕜 E F) L :=
@@ -125,14 +120,14 @@ theorem hasFDerivAtFilter_fst {L : Filter ((E × F) × (E × F))} :
 theorem hasStrictFDerivAt_fst : HasStrictFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
   hasFDerivAtFilter_fst
 
+protected theorem HasFDerivAtFilter.fst (h : HasFDerivAtFilter f₂ f₂' L) :
+    HasFDerivAtFilter (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') L :=
+  hasFDerivAtFilter_fst.comp h tendsto_map
+
 @[fun_prop]
 protected theorem HasStrictFDerivAt.fst (h : HasStrictFDerivAt f₂ f₂' x) :
     HasStrictFDerivAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
   hasStrictFDerivAt_fst.comp x h
-
-protected theorem HasFDerivAtFilter.fst (h : HasFDerivAtFilter f₂ f₂' L) :
-    HasFDerivAtFilter (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') L :=
-  hasFDerivAtFilter_fst.comp h tendsto_map
 
 @[fun_prop]
 theorem hasFDerivAt_fst : HasFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
@@ -208,7 +203,7 @@ end Fst
 
 section Snd
 
-variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
+variable {s : Set E} {x : E} {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F} {L : Filter (E × E)}
 
 theorem hasFDerivAtFilter_snd {L : Filter ((E × F) × (E × F))} :
     HasFDerivAtFilter (@Prod.snd E F) (snd 𝕜 E F) L :=
@@ -285,13 +280,13 @@ protected theorem DifferentiableOn.snd (h : DifferentiableOn 𝕜 f₂ s) :
 theorem fderiv_snd : fderiv 𝕜 Prod.snd p = snd 𝕜 E F :=
   hasFDerivAt_snd.fderiv
 
-theorem fderiv.snd (h : DifferentiableAt 𝕜 f₂ x) :
-    fderiv 𝕜 (fun x => (f₂ x).2) x = (snd 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
-  h.hasFDerivAt.snd.fderiv
-
 theorem fderivWithin_snd {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
     fderivWithin 𝕜 Prod.snd s p = snd 𝕜 E F :=
   hasFDerivWithinAt_snd.fderivWithin hs
+
+theorem fderiv.snd (h : DifferentiableAt 𝕜 f₂ x) :
+    fderiv 𝕜 (fun x => (f₂ x).2) x = (snd 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
+  h.hasFDerivAt.snd.fderiv
 
 theorem fderivWithin.snd (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableWithinAt 𝕜 f₂ s x) :
     fderivWithin 𝕜 (fun x => (f₂ x).2) s x = (snd 𝕜 F G).comp (fderivWithin 𝕜 f₂ s x) :=
@@ -301,7 +296,7 @@ end Snd
 
 section prodMap
 
-variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} (p : E × G)
+variable {f : E → F} {f' : E →L[𝕜] F} {f₂ : G → G'} {f₂' : G →L[𝕜] G'} (p : E × G)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
@@ -327,6 +322,7 @@ protected theorem DifferentiableAt.prodMap (hf : DifferentiableAt 𝕜 f p.1)
   (hf.comp p differentiableAt_fst).prodMk (hf₂.comp p differentiableAt_snd)
 
 end prodMap
+end Prod
 
 section Pi
 
@@ -345,9 +341,11 @@ theorem:
 -/
 
 
-variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
-  [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
-  {Φ' : E →L[𝕜] ∀ i, F' i}
+variable {ι 𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
+  {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
+  {Φ' : E →L[𝕜] ∀ i, F' i} {L : Filter (E × E)} {s : Set E} {x : E}
 
 @[simp]
 theorem hasFDerivAtFilter_pi' :
@@ -501,9 +499,11 @@ as `Matrix.vecCons` is defeq to `Fin.cons`.
 -/
 section PiFin
 
-variable {n : Nat} {F' : Fin n.succ → Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {n : ℕ} {F' : Fin n.succ → Type*}
 variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
-variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
+variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)} {s : Set E} {x : E}
 
 theorem hasFDerivAtFilter_finCons
     {φ' : E →L[𝕜] Π i, F' i} {l : Filter (E × E)} :
@@ -655,7 +655,3 @@ theorem Differentiable.finCons
 -- TODO: write the `Fin.cons` versions of `fderivWithin_pi` and `fderiv_pi`
 
 end PiFin
-
-end CartesianProduct
-
-end
