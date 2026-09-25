@@ -40,7 +40,7 @@ relative subgroup `(pCore p H).subgroupOf H`, not for `pCore p H` itself.
   description as the intersection of the Sylow `p`-subgroups of `H`.
 * `Subgroup.isPGroup_pCore`: the ambient subgroup `pCore p H` is a `p`-group, with no
   finiteness hypothesis.
-* `Subgroup.pCore_subgroupOf_normal` (instance), `Subgroup.pCore_subgroupOf_characteristic`
+* `Subgroup.pCore_subgroupOf_normal` (instance), `Subgroup.characteristic_subgroupOf_pCore`
   (instance): inside `H`, the `p`-core is normal and characteristic.
 * `Subgroup.le_pCore`, `Subgroup.le_pCore_of_le`: a normal `p`-subgroup of `H` (embedded into
   `G`) is contained in the `p`-core — the universal property.
@@ -132,7 +132,7 @@ theorem le_pCore {N : Subgroup H} [N.Normal] (h : IsPGroup p N) :
 
 /-- Computed inside `H`, the `p`-core is the supremum of all normal
 `p`-subgroups of `H`. -/
-theorem pCore_subgroupOf :
+theorem subgroupOf_pCore :
     (pCore p H).subgroupOf H =
       ⨆ N : {N : Subgroup H // N.Normal ∧ IsPGroup p N}, (N : Subgroup H) :=
   le_antisymm
@@ -144,7 +144,7 @@ theorem pCore_subgroupOf :
 theorem pCore_eq_iSup :
     pCore p H =
       ⨆ N : {N : Subgroup H // N.Normal ∧ IsPGroup p N}, (N : Subgroup H).map H.subtype := by
-  rw [← map_subgroupOf_eq_of_le (pCore_le (H := H)), pCore_subgroupOf, Subgroup.map_iSup]
+  rw [← map_subgroupOf_eq_of_le (pCore_le (H := H)), subgroupOf_pCore, Subgroup.map_iSup]
 
 /-- The `p`-core of the trivial subgroup is trivial. -/
 @[simp]
@@ -153,13 +153,13 @@ theorem pCore_bot : pCore p (⊥ : Subgroup G) = ⊥ :=
 
 /-- The `p`-core is characteristic in `H`: any automorphism of `H` permutes
 the family of normal `p`-subgroups, so it fixes their supremum. -/
-instance pCore_subgroupOf_characteristic : ((pCore p H).subgroupOf H).Characteristic :=
+instance characteristic_subgroupOf_pCore : ((pCore p H).subgroupOf H).Characteristic :=
   characteristic_iff_comap_le.mpr fun ϕ =>
     le_pCore_subgroupOf (isPGroup_pCore_subgroupOf.comap_of_injective ϕ.toMonoidHom ϕ.injective)
 
 /-- The universal property, inside `H`: a normal subgroup `N` of `H` is contained in the
 `p`-core iff it is a `p`-group. -/
-theorem le_pCore_subgroupOf_iff {N : Subgroup H} [hN : N.Normal] :
+theorem le_subgroupOf_pCore_iff {N : Subgroup H} [hN : N.Normal] :
     N ≤ (pCore p H).subgroupOf H ↔ IsPGroup p N :=
   ⟨fun h => isPGroup_pCore_subgroupOf.to_le h, le_pCore_subgroupOf⟩
 
@@ -167,7 +167,7 @@ theorem le_pCore_subgroupOf_iff {N : Subgroup H} [hN : N.Normal] :
 is characterised by being a `p`-group. -/
 theorem map_subtype_le_pCore_iff {N : Subgroup H} [N.Normal] :
     N.map H.subtype ≤ pCore p H ↔ IsPGroup p N := by
-  rw [map_le_iff_le_comap]; exact le_pCore_subgroupOf_iff
+  rw [map_le_iff_le_comap]; exact le_subgroupOf_pCore_iff
 
 /-- Membership in the `p`-core, computed inside `H`, is membership in every Sylow
 `p`-subgroup. -/
