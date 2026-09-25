@@ -6,7 +6,6 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
-public import Mathlib.Order.WithBotTop
 public import Mathlib.Order.OrdContinuous
 
 /-!
