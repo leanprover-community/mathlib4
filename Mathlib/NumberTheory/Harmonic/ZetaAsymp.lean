@@ -492,6 +492,9 @@ private theorem completedRiemannZeta_conj_of_re_pos {s : ℂ} (hs : 0 < s.re) :
     exact (div_mul_cancel₀ _ (Gammaℝ_ne_zero_of_re_pos hz)).symm
   rw [key hcs, key hs, map_mul, riemannZeta_conj, Complex.Gammaℝ_conj]
 
+-- TODO: prove the analogous conjugation symmetry for `completedHurwitzZetaEven`,
+-- `completedHurwitzZetaOdd` and `DirichletCharacter.completedLFunction`, and deduce this
+-- lemma as a special case.
 /-- **Conjugation symmetry of the completed zeta function**: `Λ (conj s) = conj (Λ s)`.
 
 For `0 < re s` this is `riemannZeta_conj` together with `Gammaℝ_conj`; the remaining

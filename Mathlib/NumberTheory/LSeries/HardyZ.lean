@@ -19,20 +19,6 @@ $$ Z(t) = \frac{\Lambda(1/2 + it)}{|\Gamma_{\mathbb{R}}(1/2 + it)|}. $$
 The numerator is real, by `completedRiemannZeta_conj` together with the functional equation
 `completedRiemannZeta_one_sub`, and the denominator is a positive real, so `Z` is real-valued.
 
-This definition avoids the Riemann–Siegel theta function `ϑ`. The textbook definition
-`Z t = exp (I * ϑ t) * ζ (1/2 + I * t)` requires a continuous branch of `log Γ` along the
-critical line, which Mathlib does not currently have.
-
-The two agree. Writing `Γ_ℝ(1/2 + it) = π ^ (-1/4) * π ^ (-it/2) * Γ(1/4 + it/2)`, the factor
-`π ^ (-1/4)` is a positive real and `|π ^ (-it/2)| = 1`, so dividing `Λ` by `|Γ_ℝ|` leaves
-
-$$ Z(t) = \pi^{-it/2} \frac{\Gamma(1/4 + it/2)}{|\Gamma(1/4 + it/2)|} \zeta(1/2 + it)
-        = e^{i \vartheta(t)} \zeta(1/2 + it), $$
-
-with `ϑ(t) = arg Γ(1/4 + it/2) - (t/2) * log π`, which is exactly the Riemann–Siegel theta
-function. Dividing by a modulus and multiplying by `exp (I * ϑ)` are the same normalisation;
-the first simply does not name a branch. Once `ϑ` is available this can be recorded as a lemma.
-
 ### Main results
 
 * `hardyZ`: the definition, as a function `ℝ → ℝ`.
@@ -41,6 +27,11 @@ the first simply does not name a branch. Once `ϑ` is available this can be reco
 * `hardyZ_eq_zero_iff`: `Z t = 0 ↔ ζ (1/2 + i t) = 0`, the reason the definition exists.
 * `continuous_hardyZ`: `Z` is continuous, so the intermediate value theorem applies to it and
   sign changes of `Z` locate zeros of `ζ` on the critical line.
+
+### TODO
+
+* Add the relation to the Riemann–Siegel theta function, see
+  <https://en.wikipedia.org/wiki/Riemann%E2%80%93Siegel_theta_function>.
 
 ### References
 
