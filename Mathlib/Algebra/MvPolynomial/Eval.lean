@@ -542,10 +542,13 @@ theorem mapAlgHom_id [Algebra R S₁] :
   AlgHom.ext map_id
 
 @[simp]
-theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+theorem toRingHom_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
+
+@[deprecated toRingHom_mapAlgHom (since := "2026-05-05")]
+  alias mapAlgHom_coe_ringHom := toRingHom_mapAlgHom
 
 lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     (mapAlgHom f).range.toSubmodule = coeffsIn σ f.range.toSubmodule := by
@@ -727,14 +730,14 @@ def eval₂AlgHom : MvPolynomial σ R →ₐ[R] S₁ :=
   { eval₂Hom (algebraMap R S₁) g with
     commutes' r := by simp }
 
-@[deprecated aeval_def (since := "2026-07-22")]
+@[deprecated aeval_def +typeChanged (since := "2026-07-22")]
 theorem eval₂AlgHom_apply (P : MvPolynomial σ R) :
     eval₂AlgHom R g P = eval₂Hom (algebraMap R S₁) g P := rfl
 
-@[simp, deprecated aeval_eq_eval₂Hom (since := "2026-07-22")]
+@[simp, deprecated aeval_eq_eval₂Hom +typeChanged (since := "2026-07-22")]
 theorem coe_eval₂AlgHom : ⇑(eval₂AlgHom R g) = eval₂ (algebraMap R S₁) g := rfl
 
-@[simp, deprecated aeval_X (since := "2026-07-22")]
+@[simp, deprecated aeval_X +typeChanged (since := "2026-07-22")]
 theorem eval₂AlgHom_X (i : σ) :
     eval₂AlgHom R g (X i : MvPolynomial σ R) = g i := eval₂_X (algebraMap R S₁) g i
 
@@ -785,7 +788,7 @@ theorem aevalTower_toAlgHom (x : R) :
 @[simp]
 theorem aevalTower_comp_toAlgHom :
     (aevalTower g y).comp (IsScalarTower.toAlgHom S R (MvPolynomial σ R)) = g :=
-  AlgHom.coe_ringHom_injective <| aevalTower_comp_algebraMap _ _
+  AlgHom.toRingHom_injective <| aevalTower_comp_algebraMap _ _
 
 @[simp]
 theorem aevalTower_id :

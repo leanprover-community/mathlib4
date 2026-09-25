@@ -121,12 +121,12 @@ theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit
   rw [isSuccLimit_iff, not_and_or, not_not]
 
 set_option linter.existingAttributeWarning false in
-@[to_dual, deprecated IsSuccLimit.mk (since := "2026-04-19")]
+@[to_dual, deprecated IsSuccLimit.mk +typeChanged (since := "2026-04-19")]
 theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬ IsMin a) :
     IsSuccLimit a :=
   ⟨ha, h⟩
 
-attribute [deprecated IsPredLimit.mk (since := "2026-04-19")]
+attribute [deprecated IsPredLimit.mk +typeChanged (since := "2026-04-19")]
 IsPredPrelimit.isPredLimit_of_not_isMax
 
 @[to_dual]
@@ -307,19 +307,19 @@ protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
   h.isSuccPrelimit.isMax
 
 set_option linter.existingAttributeWarning false in
-@[to_dual, deprecated IsSuccPrelimit.isMax (since := "2026-03-31")]
+@[to_dual, deprecated IsSuccPrelimit.isMax +typeChanged (since := "2026-03-31")]
 theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelimit (succ a) :=
   mt IsSuccPrelimit.isMax ha
 
-attribute [deprecated IsPredPrelimit.isMin (since := "2026-03-31")]
+attribute [deprecated IsPredPrelimit.isMin +typeChanged (since := "2026-03-31")]
 not_isPredPrelimit_pred_of_not_isMin
 
 set_option linter.existingAttributeWarning false in
-@[to_dual, deprecated IsSuccLimit.isMax (since := "2026-03-31")]
+@[to_dual, deprecated IsSuccLimit.isMax +typeChanged (since := "2026-03-31")]
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
   mt IsSuccLimit.isMax ha
 
-attribute [deprecated IsPredLimit.isMin (since := "2026-03-31")]
+attribute [deprecated IsPredLimit.isMin +typeChanged (since := "2026-03-31")]
 not_isPredLimit_pred_of_not_isMin
 
 section NoMaxOrder
@@ -403,7 +403,7 @@ theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
 
 @[to_dual]
 theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (succ : α → α) ∨ IsSuccPrelimit a :=
-  or_iff_not_imp_right.2 <| mem_range_succ_of_not_isSuccPrelimit
+  or_iff_not_imp_right.2 mem_range_succ_of_not_isSuccPrelimit
 
 @[to_dual]
 theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
@@ -481,7 +481,7 @@ alias isPredPrelimit_iff := isPredPrelimit_iff_isMax
 
 @[to_dual (attr := simp)]
 theorem not_isSuccLimit_of_isSuccArchimedean : ¬ IsSuccLimit a :=
-  fun h ↦ h.not_isMin <| h.isSuccPrelimit.isMin
+  fun h ↦ h.not_isMin h.isSuccPrelimit.isMin
 
 @[deprecated (since := "2026-04-19")]
 alias not_isSuccLimit := not_isSuccLimit_of_isSuccArchimedean

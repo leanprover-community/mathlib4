@@ -83,7 +83,7 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm 
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]
-theorem length_sort : (sort s r).length = card s := Quot.inductionOn s <| length_mergeSort
+theorem length_sort : (sort s r).length = card s := Quot.inductionOn s length_mergeSort
 
 end
 

@@ -56,7 +56,7 @@ protected alias ⟨_, IsHamiltonian.mapLe⟩ := isHamiltonian_mapLe
 
 /-- Hamiltonian paths are paths. -/
 lemma IsHamiltonian.isPath (hp : p.IsHamiltonian) : p.IsPath :=
-  IsPath.mk' <| List.nodup_iff_count_le_one.2 <| (le_of_eq <| hp ·)
+  IsPath.mk' <| List.nodup_iff_count_le_one.2 (le_of_eq <| hp ·)
 
 /-- A path whose support contains every vertex is Hamiltonian. -/
 lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support) :
@@ -359,7 +359,7 @@ lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
   exact p.adj_snd hp.not_nil
 
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
-  of_card_eq_one <| Fintype.card_unique
+  of_card_eq_one Fintype.card_unique
 
 theorem Walk.IsHamiltonian.isHamiltonian_of_nil (hp : p.IsHamiltonian) (hnil : p.Nil) :
     G.IsHamiltonian := by
