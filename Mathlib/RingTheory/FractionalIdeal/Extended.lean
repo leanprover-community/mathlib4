@@ -249,7 +249,8 @@ an extension of domains `A ⊆ B`.
 -/
 abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom' L <|
-    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (algebraMap A B : A →*₀ B)
+      (FaithfulSMul.algebraMap_injective _ _)
 
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ := extendedHom
 

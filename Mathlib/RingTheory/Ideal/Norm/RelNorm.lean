@@ -116,7 +116,7 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
   let L := FractionRing S
   let g : Sₘ →+* L := IsLocalization.map _ (M := Algebra.algebraMapSubmonoid S M) (T := S⁰)
       (RingHom.id S) (Submonoid.map_le_of_le_comap _ <| hM.trans
-      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (algebraMap R S : R →*₀ S)
         (FaithfulSMul.algebraMap_injective _ _)))
   algebraize [f, g, (algebraMap K L).comp f]
   have : IsScalarTower R Rₘ K := IsScalarTower.of_algebraMap_eq'

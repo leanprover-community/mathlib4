@@ -463,7 +463,8 @@ lemma liftRingHom_ofFractionRing_algebraMap
   simp
 
 theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function.Injective φ)
-    (hφ' : R[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
+    (hφ' : R[X]⁰ ≤ L⁰.comap φ :=
+      nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (φ : R[X] →*₀ L) hφ) :
     Function.Injective (liftRingHom φ hφ') :=
   liftMonoidWithZeroHom_injective _ hφ
 
@@ -647,7 +648,8 @@ theorem liftAlgHom_apply_ofFractionRing_mk (n : K[X]) (d : K[X]⁰) :
   liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
 
 theorem liftAlgHom_injective (φ : K[X] →ₐ[S] L) (hφ : Function.Injective φ)
-    (hφ' : K[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
+    (hφ' : K[X]⁰ ≤ L⁰.comap φ :=
+      nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (φ : K[X] →*₀ L) hφ) :
     Function.Injective (liftAlgHom φ hφ') :=
   liftMonoidWithZeroHom_injective _ hφ
 
