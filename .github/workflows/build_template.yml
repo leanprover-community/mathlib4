@@ -516,9 +516,9 @@ jobs:
       #   run: |
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
-      # Decide what `lint mathlib` covers. On pull requests, linters whose verdict on a declaration
-      # depends only on that declaration run on just the modules the PR changes; `simpNF`, whose
-      # verdict can change when any module adds a simp lemma, still runs on everything. The merge
+      # Decide what `lint mathlib` covers. On pull requests, local linters (`Linter.isLocal`: only a
+      # declaration's own module can make them report it) run on just the modules the PR changes;
+      # the others, such as `simpNF`, still run on everything. The merge
       # queue (bors `staging`/`trying`), `master`, the nightly-testing repository, and any branch
       # without an open PR lint everything, as do PRs labelled `full-lint` and PRs that change
       # linters, pins or the nolints file. This step only reads the PR's file list and file
@@ -545,24 +545,36 @@ jobs:
           if [ -z "$EVENT_PR" ]; then
             case "$REF_NAME" in master|staging|trying) full "$REF_NAME" ;; esac
             [ "$EVENT_NAME" = push ] || full "not a push or pull request"
+            # Branch names are data: compare them inside jq via $ENV, never splice them into the program.
+            # shellcheck disable=SC2016 # the jq program is single-quoted on purpose
             EVENT_PR=$(gh api "repos/$REPO/commits/$HEAD_SHA/pulls" \
-              --jq "[.[] | select(.state == \"open\" and .head.ref == \"$REF_NAME\")][0].number // empty")
+              --jq '[.[] | select(.state == "open" and .head.ref == $ENV.REF_NAME
+                and .head.repo.full_name == $ENV.REPO and .head.sha == $ENV.HEAD_SHA)][0].number // empty')
             [ -n "$EVENT_PR" ] || full "no open pull request for $REF_NAME"
           fi
-          labels=$(gh api "repos/$REPO/issues/$EVENT_PR/labels" --jq '.[].name')
+          # The file list below describes the PR's current head; if that moved since this run's
+          # checkout (a force-push while queued, or a rerun of an old run), lint everything.
+          pr_head=$(gh api "repos/$REPO/pulls/$EVENT_PR" --jq .head.sha)
+          [ "$pr_head" = "$HEAD_SHA" ] || full "#$EVENT_PR's head moved to $pr_head since this run's checkout"
+          labels=$(gh api --paginate "repos/$REPO/issues/$EVENT_PR/labels?per_page=100" --jq '.[].name')
           if grep -qx 'full-lint' <<<"$labels"; then full "#$EVENT_PR is labelled full-lint"; fi
-          grep -q -- '--only-modules=' pr-branch/.lake/packages/batteries/scripts/runLinter.lean \
-            || full "this branch's Batteries predates runLinter --only-modules"
+          if ! grep -q -- '--only-modules=' pr-branch/.lake/packages/batteries/scripts/runLinter.lean \
+              || ! grep -q 'isLocal' pr-branch/.lake/packages/batteries/Batteries/Tactic/Lint/Basic.lean; then
+            full "this branch's Batteries predates local linters and runLinter --only-modules"
+          fi
           files=$(gh api --paginate "repos/$REPO/pulls/$EVENT_PR/files?per_page=100" \
-            --jq '.[] | [.status, .filename] | @tsv')
+            --jq '.[] | [.status, .filename, (.previous_filename // "")] | @tsv')
           count=$(grep -c . <<<"$files" || true)
           [ "$count" -lt 1000 ] || full "#$EVENT_PR changes $count files"
           modules=()
-          while IFS=$'\t' read -r status file; do
-            case "$file" in
-              lakefile.lean|lake-manifest.json|lean-toolchain|scripts/nolints.json)
-                full "#$EVENT_PR changes $file" ;;
-            esac
+          while IFS=$'\t' read -r status file previous; do
+            # Both paths of a rename count: renaming a trigger file away must still trigger.
+            for path in "$file" "$previous"; do
+              case "$path" in
+                lakefile.lean|lake-manifest.json|lean-toolchain|scripts/nolints.json|Mathlib/Tactic/Linter/*)
+                  full "#$EVENT_PR changes $path" ;;
+              esac
+            done
             [ "$status" = removed ] && continue
             if [[ "$file" == *.lean ]] && [ -f "pr-branch/$file" ] \
                 && grep -q 'env_linter' "pr-branch/$file"; then
@@ -575,7 +587,7 @@ jobs:
           done <<<"$files"
           : > "$list"
           if [ "${#modules[@]}" -gt 0 ]; then printf '%s\n' "${modules[@]}" > "$list"; fi
-          echo "Linting the ${#modules[@]} Mathlib modules #$EVENT_PR changes; simpNF lints everything:"
+          echo "Local linters lint the ${#modules[@]} Mathlib modules #$EVENT_PR changes; the others lint everything:"
           cat "$list"
           echo "scope=modified" >> "$GITHUB_OUTPUT"
 
@@ -592,7 +604,7 @@ jobs:
           # Written by the `decide lint scope` step when only the PR's modules need the local linters.
           scope_args=()
           if [ -f .lake/lint-modules.txt ]; then
-            scope_args=(--only-modules=.lake/lint-modules.txt --everywhere=simpNF)
+            scope_args=(--only-modules=.lake/lint-modules.txt)
           fi
           for attempt in 1 2; do
             if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace "${scope_args[@]}" 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
