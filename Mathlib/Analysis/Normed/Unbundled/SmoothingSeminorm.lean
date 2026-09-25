@@ -357,28 +357,28 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
     limsup (fun n : ℕ => μ x ^ ((s (ψ n) : ℝ) * (1 / (ψ n : ℝ)))) atTop ≤ 1 := by
   simp only [limsup, limsSup]
   rw [csInf_le_iff (μ_bddBelow μ s ψ) (μ_nonempty μ hs_le ψ)]
-  · intro c hc_bd
-    simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_ofPred_eq,
-      forall_exists_index] at hc_bd
-    by_cases hμx : μ x < 1
-    · apply hc_bd (1 : ℝ) 0
-      intro b _
-      exact rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
-          (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))
-    · have hμ_lim : Tendsto (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop (𝓝 1) := by
-        nth_rw 1 [← rpow_zero (μ x)]
-        convert!
-          Tendsto.rpow tendsto_const_nhds hψ_lim
-            (Or.inl (ne_of_gt (lt_of_lt_of_le zero_lt_one (not_lt.mp hμx))))
-        · simp only [rpow_zero, mul_one_div, Function.comp_apply]
-        · rw [rpow_zero]
-      rw [tendsto_atTop_nhds] at hμ_lim
-      apply le_of_forall_pos_le_add
-      intro ε hε
-      have h1 : (1 : ℝ) ∈ Set.Ioo 0 (1 + ε) := by
-        simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, hε, and_self]
-      obtain ⟨k, hk⟩ := hμ_lim (Set.Ioo (0 : ℝ) (1 + ε)) h1 isOpen_Ioo
-      exact hc_bd (1 + ε) k fun b hb => le_of_lt (Set.mem_Ioo.mp (hk b hb)).2
+  intro c hc_bd
+  simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_ofPred_eq,
+    forall_exists_index] at hc_bd
+  by_cases hμx : μ x < 1
+  · apply hc_bd (1 : ℝ) 0
+    intro b _
+    exact rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
+        (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))
+  · have hμ_lim : Tendsto (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop (𝓝 1) := by
+      nth_rw 1 [← rpow_zero (μ x)]
+      convert!
+        Tendsto.rpow tendsto_const_nhds hψ_lim
+          (Or.inl (ne_of_gt (lt_of_lt_of_le zero_lt_one (not_lt.mp hμx))))
+      · simp only [rpow_zero, mul_one_div, Function.comp_apply]
+      · rw [rpow_zero]
+    rw [tendsto_atTop_nhds] at hμ_lim
+    apply le_of_forall_pos_le_add
+    intro ε hε
+    have h1 : (1 : ℝ) ∈ Set.Ioo 0 (1 + ε) := by
+      simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, hε, and_self]
+    obtain ⟨k, hk⟩ := hμ_lim (Set.Ioo (0 : ℝ) (1 + ε)) h1 isOpen_Ioo
+    exact hc_bd (1 + ε) k fun b hb => le_of_lt (Set.mem_Ioo.mp (hk b hb)).2
 
 private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R}
     {a : ℝ} (a_in : a ∈ Set.Icc (0 : ℝ) 1) {ψ : ℕ → ℕ} (hψ_mono : StrictMono ψ)
