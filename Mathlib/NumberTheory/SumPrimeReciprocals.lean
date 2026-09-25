@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.PSeries
 public import Mathlib.NumberTheory.SmoothNumbers
 

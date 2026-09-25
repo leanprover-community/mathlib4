@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public import Batteries.Util.LibraryNote
 
 /-!

@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Ring.Nat
 
 /-!
 # e-transforms

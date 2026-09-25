@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The “almost everywhere” filter of co-null sets.

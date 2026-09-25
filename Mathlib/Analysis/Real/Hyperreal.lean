@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Ring.StandardPart
 public import Mathlib.Order.Filter.FilterProduct
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.EReal.Inv
+import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!

@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.WSeq.Basic
-public import Mathlib.Logic.Relation
 
 /-!
 # Relations between and equivalence of weak sequences

@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Convex.Slope
+import Mathlib.Analysis.Convex.Slope
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!

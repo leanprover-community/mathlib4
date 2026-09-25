@@ -5,9 +5,8 @@ Authors: Thomas Browning, Nailin Guan
 -/
 module
 
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Algebra.Equicontinuity
-public import Mathlib.Topology.Algebra.Group.Compact
+import Mathlib.Topology.Algebra.Equicontinuity
+import Mathlib.Topology.Algebra.Group.Compact
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.UniformSpace.Ascoli
 

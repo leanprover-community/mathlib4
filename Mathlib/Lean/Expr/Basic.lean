@@ -11,7 +11,7 @@ module
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Meta.AppBuilder
 public import Lean.Meta.Match.MatcherInfo
-public import Lean.Meta.Transform
+import Lean.Meta.Transform
 
 /-!
 # Additional operations on Expr and related types

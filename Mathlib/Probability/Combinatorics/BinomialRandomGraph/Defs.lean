@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Sym.Card
+import Mathlib.Data.Sym.Card
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.Probability.Distributions.SetBernoulli
 

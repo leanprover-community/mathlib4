@@ -5,7 +5,7 @@ Authors: Alena Gusakov, Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Diam
 

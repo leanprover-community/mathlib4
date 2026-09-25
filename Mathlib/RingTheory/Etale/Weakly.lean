@@ -5,8 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Flat
-public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Smooth.Flat
 
 /-!

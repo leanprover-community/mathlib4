@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Dynamics.Ergodic.AddCircle
-public import Mathlib.MeasureTheory.Covering.LiminfLimsup
+import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem

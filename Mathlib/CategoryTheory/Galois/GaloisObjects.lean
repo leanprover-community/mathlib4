@@ -6,8 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Galois.Basic
-public import Mathlib.CategoryTheory.Limits.FintypeCat
-public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
 public import Mathlib.GroupTheory.GroupAction.Basic
 

@@ -8,10 +8,10 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
-public import Mathlib.Algebra.Module.LocalizedModule.Away
+import Mathlib.Algebra.Module.LocalizedModule.Away
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
-public import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 
 /-!

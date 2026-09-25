@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Data.Nat.Choose.Sum
 
 /-!

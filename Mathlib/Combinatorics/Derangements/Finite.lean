@@ -5,10 +5,10 @@ Authors: Henry Swanson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Combinatorics.Derangements.Basic
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Tactic.Ring
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Tactic.Ring
 
 /-!
 # Derangements on fintypes

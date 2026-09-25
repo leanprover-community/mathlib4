@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-public import Mathlib.Data.Finset.Density
+import Mathlib.Data.Finset.Density
 
 /-!
 # Doubling and difference constants

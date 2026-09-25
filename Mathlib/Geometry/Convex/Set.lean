@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 
-public import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!

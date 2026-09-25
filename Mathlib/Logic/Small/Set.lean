@@ -5,7 +5,7 @@ Authors: Markus Himmel, Timothy Carlin-Burns
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Bounded
+import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Logic.Small.Basic
 

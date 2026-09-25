@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Limits and colimits in the category of (co)algebras

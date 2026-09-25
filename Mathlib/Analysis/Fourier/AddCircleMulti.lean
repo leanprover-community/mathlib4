@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.MeasureTheory.Integral.Pi
+import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
 # Multivariate Fourier series

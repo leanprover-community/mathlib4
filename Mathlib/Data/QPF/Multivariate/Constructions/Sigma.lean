@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-public import Mathlib.RingTheory.ZMod
+import Mathlib.RingTheory.ZMod
 
 /-!
 

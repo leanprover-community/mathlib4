@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.LocallyFinite
-public import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compact sets and compact spaces and locally finite functions

@@ -6,9 +6,7 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Normed.Module.RCLike.Basic
-public import Mathlib.Order.Filter.Curry
-public import Mathlib.Tactic.ModuleNF
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!
 # Swapping limits and derivatives via uniform convergence

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Order.Filter.Bases.Finite
+import Mathlib.Order.Filter.Bases.Finite
 public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!

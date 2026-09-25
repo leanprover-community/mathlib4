@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Group.Pointwise
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!

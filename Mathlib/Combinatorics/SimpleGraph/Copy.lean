@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!

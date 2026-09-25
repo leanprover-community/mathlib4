@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Hom.Set
+import Mathlib.Order.Hom.Set
 public import Mathlib.Order.Minimal
 
 /-!

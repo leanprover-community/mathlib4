@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Thomas Murrills
 module
 
 public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SetLike
 
 /-!
 ## `norm_num` plugin for scientific notation.

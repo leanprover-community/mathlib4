@@ -7,8 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-public import Mathlib.AlgebraicGeometry.Properties
-public import Mathlib.RingTheory.RingHom.FinitePresentation
+import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
 /-!

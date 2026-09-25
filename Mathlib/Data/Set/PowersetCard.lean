@@ -5,8 +5,7 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
+import Mathlib.Data.ENat.Lattice
 public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Combinations

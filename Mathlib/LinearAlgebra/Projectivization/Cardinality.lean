@@ -5,9 +5,8 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Fintype
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Basic.Finite.Sum
+import Mathlib.Algebra.GroupWithZero.Units.Fintype
+import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 

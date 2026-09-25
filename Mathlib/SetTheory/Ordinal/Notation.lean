@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Ordering.Lemmas
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.SetTheory.Ordinal.Principal
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum
 
 /-!
 # Ordinal notation

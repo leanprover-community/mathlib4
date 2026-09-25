@@ -6,7 +6,7 @@ Authors: Chris Birkbeck, David Loeffler
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Archimedean
-public import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Interval.Finset.Defs
 
 /-!

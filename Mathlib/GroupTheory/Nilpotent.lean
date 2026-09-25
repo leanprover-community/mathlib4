@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Order
-public import Mathlib.GroupTheory.Commutator.Finite
+import Mathlib.GroupTheory.Commutator.Finite
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Solvable

@@ -5,7 +5,7 @@ Authors: Jonas van der Schaaf, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.RegularEpi
+import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.Condensed.Light.Epi
 
 /-!

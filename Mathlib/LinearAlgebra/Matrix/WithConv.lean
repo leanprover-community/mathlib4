@@ -6,8 +6,6 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.Star.LinearMap
-public import Mathlib.Algebra.Star.StarAlgHom
-public import Mathlib.Algebra.WithConv
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 

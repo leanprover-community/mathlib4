@@ -5,12 +5,12 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
+import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
-public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
+import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
 /-!
 # The adjunction between the nerve and the homotopy category functor

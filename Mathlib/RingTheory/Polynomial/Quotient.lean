@@ -5,13 +5,12 @@ Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Field.Equiv
-public import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Ideal
-public import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Quotients of polynomial rings

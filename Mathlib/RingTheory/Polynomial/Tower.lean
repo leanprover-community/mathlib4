@@ -5,7 +5,6 @@ Authors: Kenny Lau, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!

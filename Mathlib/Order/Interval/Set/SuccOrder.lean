@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.LatticeIntervals
+import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.SuccPred.Basic
 
 /-!

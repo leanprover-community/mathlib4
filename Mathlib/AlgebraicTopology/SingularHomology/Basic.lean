@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.AlternatingConst
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 /-!
 # Singular homology

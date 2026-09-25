@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
-public import Mathlib.SetTheory.Cardinal.NatCard
+import Mathlib.SetTheory.Cardinal.NatCard
 
 import Mathlib.Tactic.ENatToNat
 

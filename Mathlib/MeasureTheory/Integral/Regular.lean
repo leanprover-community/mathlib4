@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Integrals of continuous functions with respect to regular measures

@@ -6,7 +6,6 @@ Amelia Livingston, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.Units.Defs

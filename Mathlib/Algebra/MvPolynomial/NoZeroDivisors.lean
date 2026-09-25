@@ -5,8 +5,6 @@ Authors: Antoine Chambert-Loir, Bolton Bailey
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Variables
-public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 public import Mathlib.Algebra.MvPolynomial.Division
 

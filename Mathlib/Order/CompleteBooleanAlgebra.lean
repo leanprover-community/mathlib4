@@ -5,10 +5,7 @@ Authors: Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Equiv.Set
-public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.CompleteLattice.Lemmas
-public import Mathlib.Order.Directed
 public import Mathlib.Order.GaloisConnection.Basic
 
 /-!

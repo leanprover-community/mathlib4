@@ -5,7 +5,7 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Lattice
+import Mathlib.CategoryTheory.Limits.Lattice
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Hom.CompleteLattice

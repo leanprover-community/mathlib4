@@ -6,8 +6,8 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # Covolume of ℤ-lattices

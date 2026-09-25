@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
-public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-!
 # The homology sequence

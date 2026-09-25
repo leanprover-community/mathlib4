@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Basic.Rel
-public import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Uniform separation

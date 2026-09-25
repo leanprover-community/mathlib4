@@ -6,7 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.Tactic.NormNum
 
 /-!

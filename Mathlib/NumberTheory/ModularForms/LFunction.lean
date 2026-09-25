@@ -8,7 +8,7 @@ module
 public import Mathlib.NumberTheory.ModularForms.Bounds
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-public import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.PSeries
 
 /-!
 # The `L`-function of a modular form

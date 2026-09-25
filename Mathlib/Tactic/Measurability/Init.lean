@@ -5,7 +5,7 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public import Aesop
 
 /-!

@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 

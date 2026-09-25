@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.Index
 public import Mathlib.LinearAlgebra.FreeModule.PID
 

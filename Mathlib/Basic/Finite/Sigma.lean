@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Logic.Equiv.Sigma
 

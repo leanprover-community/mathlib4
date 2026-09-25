@@ -6,9 +6,8 @@ Authors: Matias Heikkilä
 module
 
 public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Topology.UnitInterval
 public import Mathlib.Topology.Compactification.StoneCech
-public import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.Order.Lattice
 public import Mathlib.Analysis.Real.Cardinality
 
 import Mathlib.Topology.Algebra.Indicator

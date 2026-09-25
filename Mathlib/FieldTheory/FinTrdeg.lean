@@ -6,8 +6,7 @@ Authors: Aaron Liu
 module
 
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Extensions with Finite Transcendence Degree

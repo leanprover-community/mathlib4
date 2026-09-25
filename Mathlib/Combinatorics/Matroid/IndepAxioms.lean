@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Basic
 public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Matroid Independence and Basis axioms

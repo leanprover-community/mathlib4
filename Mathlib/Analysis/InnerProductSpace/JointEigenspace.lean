@@ -5,8 +5,8 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.LinearAlgebra.Eigenspace.Pi
+import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.LinearAlgebra.Eigenspace.Pi
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
 

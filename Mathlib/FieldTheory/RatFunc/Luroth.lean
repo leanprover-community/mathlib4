@@ -5,9 +5,9 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.FieldTheory.RatFunc.IntermediateField
-public import Mathlib.FieldTheory.Relrank
+import Mathlib.FieldTheory.Relrank
 
 /-!
 # Lüroth's theorem

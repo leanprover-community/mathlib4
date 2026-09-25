@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Final
+import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!

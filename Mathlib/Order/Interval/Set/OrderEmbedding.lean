@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Interval.Set.UnorderedInterval
-public import Mathlib.Order.Hom.Basic
 
 /-!
 # Preimages of intervals under order embeddings

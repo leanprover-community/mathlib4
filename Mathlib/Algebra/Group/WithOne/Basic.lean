@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.WithOne.Defs
 

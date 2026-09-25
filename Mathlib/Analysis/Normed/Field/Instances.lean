@@ -6,8 +6,8 @@ Authors: Michael Stoll, Patrick Massot, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Order.Filter.IsBounded
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Topology.Algebra.UniformField
 
 /-!

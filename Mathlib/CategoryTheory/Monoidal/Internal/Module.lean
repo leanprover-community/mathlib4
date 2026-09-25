@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
-public import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # `Mon (ModuleCat R) ≌ AlgCat R`

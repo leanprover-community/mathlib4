@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.Homological.Resolution
-public import Mathlib.Tactic.CategoryTheory.Slice
-public import Mathlib.CategoryTheory.Abelian.LeftDerived
 
 /-!
 # The group homology of a `k`-linear `G`-representation

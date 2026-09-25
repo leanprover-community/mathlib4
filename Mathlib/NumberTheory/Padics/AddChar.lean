@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.Padics.MahlerBasis
-public import Mathlib.Topology.Algebra.Monoid.AddChar
+import Mathlib.Topology.Algebra.Monoid.AddChar
 public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!

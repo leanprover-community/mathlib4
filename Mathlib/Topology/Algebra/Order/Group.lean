@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Order.LeftRightNhds
 

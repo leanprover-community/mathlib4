@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Module.Ray
-public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # (Local) maximums in a normed space

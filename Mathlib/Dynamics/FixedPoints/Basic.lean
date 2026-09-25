@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Function
 public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!

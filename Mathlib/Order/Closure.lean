@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Order.Hom.Basic
 
 /-!
 # Closure operators between preorders

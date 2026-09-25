@@ -6,7 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Probability.Martingale.BorelCantelli
-public import Mathlib.Probability.ConditionalExpectation
+import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.Independence.Basic
 
 /-!

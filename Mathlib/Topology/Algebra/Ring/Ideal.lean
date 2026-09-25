@@ -6,7 +6,7 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!

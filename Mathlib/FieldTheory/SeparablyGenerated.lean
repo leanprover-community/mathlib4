@@ -5,7 +5,7 @@ Authors: Andrew Yang, Christian Merten, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.CharP.IntermediateField
+import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 public import Mathlib.Algebra.Order.Ring.Finset

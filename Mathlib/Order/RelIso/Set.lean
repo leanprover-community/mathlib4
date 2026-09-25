@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.Directed
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Logic.Embedding.Set
-public import Mathlib.Logic.Equiv.Set
+import Mathlib.Logic.Equiv.Set
 
 /-!
 # Interactions between relation homomorphisms and sets

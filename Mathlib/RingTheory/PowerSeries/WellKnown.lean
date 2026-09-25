@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!

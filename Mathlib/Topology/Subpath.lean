@@ -5,7 +5,7 @@ Authors: Sebastian Kumar
 -/
 module
 
-public import Batteries.Data.Fin.Fold
+import Batteries.Data.Fin.Fold
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 /-!

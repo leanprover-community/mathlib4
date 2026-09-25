@@ -7,7 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.Ideal.GoingDown
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
+import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
 
 /-!
 

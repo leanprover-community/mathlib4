@@ -11,12 +11,12 @@ import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 import Mathlib.Analysis.Complex.BranchLogRoot
-public import Mathlib.Algebra.Order.Algebra
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Analysis.Complex.Order
-public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Complex.Order
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.EReal.Inv
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Riemann mapping theorem

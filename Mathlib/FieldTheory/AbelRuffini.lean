@@ -5,7 +5,6 @@ Authors: Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.FieldTheory.AlgebraicClosure
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 
 /-!

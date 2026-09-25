@@ -6,7 +6,7 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
-public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 
 /-!
 # Glaisher's theorem

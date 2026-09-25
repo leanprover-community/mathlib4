@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.NumberTheory.Padics.PadicNumbers
-public import Mathlib.RingTheory.Valuation.RankOne
+import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 /-!

@@ -6,7 +6,6 @@ Authors: Praneeth Kolichala, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Homotopy.Equiv
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
 /-!

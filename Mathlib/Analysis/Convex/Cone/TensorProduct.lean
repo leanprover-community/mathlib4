@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
-public import Mathlib.Topology.Algebra.Module.TopDualPairing
+import Mathlib.Topology.Algebra.Module.TopDualPairing
 
 /-!
 # Tensor Products of Pointed Cones

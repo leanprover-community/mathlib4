@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Tactic.FunProp
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds

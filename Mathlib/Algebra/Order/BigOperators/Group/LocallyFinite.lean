@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Disjointed
-public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Big operators indexed by intervals

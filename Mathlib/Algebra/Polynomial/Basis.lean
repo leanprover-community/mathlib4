@@ -6,7 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 

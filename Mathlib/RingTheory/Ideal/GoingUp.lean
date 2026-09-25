@@ -5,7 +5,6 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Integral
 

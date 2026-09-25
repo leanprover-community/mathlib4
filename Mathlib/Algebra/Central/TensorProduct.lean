@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 

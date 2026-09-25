@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
 public import Mathlib.CategoryTheory.Sites.EpiMono
-public import Mathlib.CategoryTheory.Sites.Subcanonical
+import Mathlib.CategoryTheory.Sites.Subcanonical
 /-!
 
 # Limits of epimorphisms in coherent topoi

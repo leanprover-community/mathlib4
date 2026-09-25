@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.List.Cycle
 public import Mathlib.Data.PNat.Notation
 public import Mathlib.Dynamics.FixedPoints.Basic

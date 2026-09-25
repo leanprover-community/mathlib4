@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Sigma.Basic
-public import Batteries.Tactic.Lint.TypeClass
+import Batteries.Tactic.Lint.TypeClass
 public import Mathlib.Util.CompileInductive
 
 /-!

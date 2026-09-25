@@ -6,7 +6,6 @@ Authors: Aaron Anderson, Scott Carnahan
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Finset.MulAntidiagonal
 public import Mathlib.Data.Finset.SMulAntidiagonal

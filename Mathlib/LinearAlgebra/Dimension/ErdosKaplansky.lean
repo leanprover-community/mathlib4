@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Field.Opposite
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.SetTheory.Cardinal.Subfield
 

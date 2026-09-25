@@ -6,7 +6,6 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.ExtendDoc
 
 

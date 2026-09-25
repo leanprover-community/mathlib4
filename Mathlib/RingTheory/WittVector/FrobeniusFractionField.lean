@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.WithTop
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 

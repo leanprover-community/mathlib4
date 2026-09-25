@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Jensen's inequality and maximum principle for convex functions

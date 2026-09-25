@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 

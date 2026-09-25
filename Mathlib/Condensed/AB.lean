@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Limits
 /-!

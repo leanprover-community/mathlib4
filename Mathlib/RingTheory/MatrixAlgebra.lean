@@ -5,9 +5,6 @@ Authors: Kim Morrison, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Star.StarAlgHom
-public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Data.Matrix.Composition
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.RingTheory.TensorProduct.Maps
 

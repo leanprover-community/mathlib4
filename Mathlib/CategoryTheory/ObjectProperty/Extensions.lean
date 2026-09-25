@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
 /-!
 # Properties of objects that are closed under extensions

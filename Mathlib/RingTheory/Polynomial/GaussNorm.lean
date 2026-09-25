@@ -5,7 +5,7 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!

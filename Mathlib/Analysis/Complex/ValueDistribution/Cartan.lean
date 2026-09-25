@@ -6,7 +6,7 @@ Authors: Matteo Cipollina, Stefan Kebekus
 
 module
 
-public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
+import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 
 /-!

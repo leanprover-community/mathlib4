@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Emily Riehl
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
-public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!

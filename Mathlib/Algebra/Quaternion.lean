@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 import Mathlib.Algebra.Module.Torsion.Prod
 

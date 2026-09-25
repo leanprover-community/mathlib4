@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!

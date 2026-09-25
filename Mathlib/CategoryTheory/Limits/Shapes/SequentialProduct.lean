@@ -8,9 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
-public import Mathlib.CategoryTheory.Limits.Shapes.PiProd
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.PiProd
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # ℕ-indexed products as sequential limits

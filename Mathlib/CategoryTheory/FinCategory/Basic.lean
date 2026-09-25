@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Category.ULift
 
 /-!

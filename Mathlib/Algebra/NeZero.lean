@@ -5,7 +5,7 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Basic.Logic.Basic
+import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Tactic.Basify.Attr
 

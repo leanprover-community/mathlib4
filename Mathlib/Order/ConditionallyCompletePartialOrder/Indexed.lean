@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
-public import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Indexed sup / inf in conditionally complete lattices

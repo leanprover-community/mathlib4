@@ -5,7 +5,6 @@ Authors: Hanting Zhang
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-! # Pointwise instances on `AffineSubspace`s

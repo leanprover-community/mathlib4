@@ -5,11 +5,9 @@ Authors: Ralf Stephan
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.RingTheory.PowerSeries.Derivative
+import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.RingTheory.PowerSeries.Exp
-public import Mathlib.RingTheory.PowerSeries.Substitution
-public import Mathlib.RingTheory.PowerSeries.WellKnown
+import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Logarithmic Power Series

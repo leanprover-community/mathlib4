@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Nat.Cast.Order.Basic
 

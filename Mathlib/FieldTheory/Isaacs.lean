@@ -6,7 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.GroupTheory.CosetCover
+import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Algebraic extensions are determined by their sets of minimal polynomials up to isomorphism

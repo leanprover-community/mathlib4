@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
-public import Mathlib.Analysis.Calculus.ParametricIntegral
+import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Convolution
 
 /-!

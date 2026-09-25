@@ -5,9 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.EraseLead
-public import Mathlib.Data.List.Range
 
 /-!
 # A list of coefficients of a polynomial

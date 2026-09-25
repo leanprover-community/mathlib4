@@ -8,8 +8,8 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-public import Mathlib.RingTheory.RootsOfUnity.Minpoly
-public import Mathlib.Topology.Algebra.Group.Units
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
+import Mathlib.Topology.Algebra.Group.Units
 
 /-!
 

@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Notation.Indicator

@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-public import Mathlib.Topology.Clopen
+import Mathlib.Topology.Clopen
 
 /-!
 # Ultrametric spaces

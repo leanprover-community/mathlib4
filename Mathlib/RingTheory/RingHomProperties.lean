@@ -6,11 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms

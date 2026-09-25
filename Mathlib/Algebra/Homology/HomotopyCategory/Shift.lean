@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Shift.Quotient
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The shift on cochain complexes and on the homotopy category

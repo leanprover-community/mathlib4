@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.List.Sublists
+import Mathlib.Data.List.Sublists
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!

@@ -6,7 +6,6 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 module
 
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`

@@ -6,7 +6,7 @@ Authors: Ian Jauslin, Alex Kontorovich, Oliver Nash
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.Analysis.Complex.Convex
+import Mathlib.Analysis.Complex.Convex
 
 /-!
 # Primitives of Holomorphic Functions

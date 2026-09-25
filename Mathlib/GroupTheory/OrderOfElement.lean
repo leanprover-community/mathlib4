@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Int.ModEq

@@ -5,11 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
-public import Mathlib.Tactic.Field
-public import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.Tactic.Field
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Transvections

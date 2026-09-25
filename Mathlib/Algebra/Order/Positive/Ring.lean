@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic structures on the set of positive numbers

@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!

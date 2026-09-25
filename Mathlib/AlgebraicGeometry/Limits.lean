@@ -5,12 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.AlgebraicGeometry.Pullbacks
-public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
-public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
-public import Mathlib.Tactic.SuppressCompilation
 public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects -- shake: keep
 -- This import adds an instance which, despite failing to trigger,
 -- is necessary for some typeclass syntheses in this file to succeed.

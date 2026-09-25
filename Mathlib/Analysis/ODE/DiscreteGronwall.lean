@@ -5,13 +5,13 @@ Authors: Dennj Osele
 -/
 module
 
-public import Mathlib.Algebra.Order.Algebra
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Analysis.Complex.Order
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Tactic.Positivity
+import Mathlib.Data.EReal.Inv
+import Mathlib.Tactic.Positivity
 
 /-!
 # Discrete Grönwall inequality

@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.Subtype

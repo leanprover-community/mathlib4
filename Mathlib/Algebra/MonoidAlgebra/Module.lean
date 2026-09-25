@@ -6,12 +6,10 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Lift
 public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 import Mathlib.LinearAlgebra.Span.Basic
 

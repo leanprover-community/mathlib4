@@ -8,10 +8,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Algebra.Order.IsBotOne
-public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.MinMax
-public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.GRewrite
 
 /-!

@@ -5,9 +5,7 @@ Authors: Claus Clausen, Patrick Massot
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-! # Exponential distributions over ℝ
 

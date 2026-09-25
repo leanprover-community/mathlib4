@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.LinearAlgebra.Complex.Module
+import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!

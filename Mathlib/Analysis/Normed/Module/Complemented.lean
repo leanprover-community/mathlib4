@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.Complement
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Complemented subspaces of Banach spaces

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
-public import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Krull topology

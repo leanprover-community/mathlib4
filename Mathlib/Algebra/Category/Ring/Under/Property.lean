@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Properties of `P.Under ⊤ R` for `R : CommRingCat`

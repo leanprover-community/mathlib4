@@ -5,11 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Complex.ExponentialBounds
+import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Combinatorics.Additive.AP.Three.Defs
-public import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Behrend's bound on Roth numbers

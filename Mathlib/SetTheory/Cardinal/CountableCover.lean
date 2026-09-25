@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.Map
 
 /-!

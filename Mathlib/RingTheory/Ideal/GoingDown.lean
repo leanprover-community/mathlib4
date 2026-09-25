@@ -5,9 +5,8 @@ Authors: Christian Merten, Yi Song, Sihan Su
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
-public import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!

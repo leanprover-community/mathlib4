@@ -6,9 +6,8 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.DiscreteQuotient
-public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+import Mathlib.Topology.DiscreteQuotient
+import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!

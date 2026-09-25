@@ -5,12 +5,11 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Fin.VecNotation
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.SetTheory.Cardinal.Order
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Solvable Groups

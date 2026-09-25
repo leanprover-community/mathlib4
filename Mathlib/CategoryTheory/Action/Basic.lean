@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.PUnit
-public import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Conj
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.SingleObj
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.

@@ -6,7 +6,7 @@ Authors: Xavier Généreux, Patrick Massot
 module
 
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.EReal.Inv
+import Mathlib.Data.EReal.Inv
 
 /-!
 # A collection of specific limit computations for `RCLike`

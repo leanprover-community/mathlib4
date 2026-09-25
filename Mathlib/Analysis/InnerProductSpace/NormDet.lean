@@ -5,7 +5,6 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.InnerProductSpace.SingularValues
 public import Mathlib.Geometry.Euclidean.Volume.Measure

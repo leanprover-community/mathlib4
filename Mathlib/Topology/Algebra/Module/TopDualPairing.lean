@@ -5,7 +5,7 @@ Authors: Bjørn Solheim
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap

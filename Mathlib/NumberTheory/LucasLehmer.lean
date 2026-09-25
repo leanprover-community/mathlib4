@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 module
 
 public import Mathlib.NumberTheory.Fermat
-public import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.Fintype
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes

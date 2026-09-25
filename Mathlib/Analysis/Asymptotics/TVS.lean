@@ -6,12 +6,9 @@ Authors: Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Analysis.Convex.EGauge
-public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Asymptotics.Defs
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 import Mathlib.Tactic.Peel
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Asymptotics in a Topological Vector Space
