@@ -4,8 +4,9 @@ set -euxo pipefail
 lake build runLinter
 # `--trace` makes runLinter report each linter's summed task time and heartbeats;
 # per_linter.py turns those lines into `lint/linter/<name>//...` measurements.
+# `tee` stays outside measure.py, so it is not part of the measured process tree.
 TRACE_LOG="$(mktemp)"
+trap 'rm -f "$TRACE_LOG"' EXIT
 LEAN_ABORT_ON_PANIC=1 "$BENCH_DIR/measure.py" -t lint -d -a -o "$OUTPUT_FILE" -F -- \
-  bash -c 'set -o pipefail; lake exe runLinter --trace Mathlib | tee "$0"' "$TRACE_LOG"
+  lake exe runLinter --trace Mathlib | tee "$TRACE_LOG"
 "$BENCH_DIR/lint/per_linter.py" "$TRACE_LOG" >> "$OUTPUT_FILE"
-rm -f "$TRACE_LOG"
