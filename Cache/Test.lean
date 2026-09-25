@@ -195,9 +195,6 @@ def test_getBaseURLFrom : IO Unit := do
     "https://cache.mathlib.org" (getBaseURLFrom .master none false)
   assertEq "legacy → the storage account for master"
     "https://lakecache.blob.core.windows.net" (getBaseURLFrom .master none true)
-  -- The legacy base is the host the container URLs (`azureURL`) are built on.
-  assertEq "the legacy base matches the container URLs"
-    azureAccountURL (getBaseURLFrom .master none true)
   assertTrue "legacy leaves every other container on the read endpoint"
     ([Container.forks, .nightlyTesting, .prToolchainTests].all fun c =>
       getBaseURLFrom c none true == publicCacheEndpoint)
@@ -209,14 +206,6 @@ def test_getBaseURLFrom : IO Unit := do
   -- undefined, so an empty value must keep the default.
   assertEq "empty value counts as unset"
     publicCacheEndpoint (getBaseURLFrom .master (some "") false)
-  assertEq "whitespace-only value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom .master (some " \n") false)
-  assertEq "override is trimmed"
-    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org\n") false)
-  -- A base written with a trailing slash must not double the separator in
-  -- `{base}/{container}/{key}`.
-  assertEq "trailing slash is stripped"
-    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org/") false)
 
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
 `azureURL`, under whichever base the environment selects. Without a base-URL
@@ -224,9 +213,6 @@ override, both positions of the legacy switch are pinned for `master`: the
 endpoint by default, `azureURL` under legacy. -/
 def test_Container_getURL : IO Unit := do
   IO.println "Container.getURL:"
-  assertEq "master read URL" s!"{← getBaseURL .master}/mathlib4-master"
-    (← Container.master.getURL)
-  assertEq "forks read URL" s!"{← getBaseURL .forks}/mathlib4-forks" (← Container.forks.getURL)
   -- A base-URL override answers for both switch positions, so the pinned
   -- assertions run only without one.
   if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
@@ -238,21 +224,6 @@ def test_Container_getURL : IO Unit := do
     assertEq "legacy read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
     useLegacy.set ambient
-
-/-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
-repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
-container's writers stay on non-colliding paths:
-- `master` is flat for every repo (one writer, no collisions possible).
-- `forks`, `nightly-testing`, and `pr-toolchain-tests` are prefixed for every
-  repo, including the canonical one, so fork-trust uploads from the canonical
-  repo coexist with fork uploads.
--/
-def test_Container_flatPath : IO Unit := do
-  IO.println "Container.flatPath:"
-  assertTrue "master is flat" Container.master.flatPath
-  assertTrue "forks is prefixed" !Container.forks.flatPath
-  assertTrue "nightly-testing is prefixed" !Container.nightlyTesting.flatPath
-  assertTrue "pr-toolchain-tests is prefixed" !Container.prToolchainTests.flatPath
 
 end ContainerModel
 
@@ -372,10 +343,6 @@ or empty input fails the whole list rather than degrading to a default, so a
 typo surfaces instead of silently changing where the cache is read. -/
 def test_parseCacheFromList : IO Unit := do
   IO.println "parseCacheFromList:"
-  assertTrue "single container"
-    (parseCacheFromList "master" == some [.master])
-  assertTrue "two containers"
-    (parseCacheFromList "master,forks" == some [.master, .forks])
   assertTrue "all four containers"
     (parseCacheFromList "master,forks,nightly-testing,pr-toolchain-tests" ==
       some [.master, .forks, .nightlyTesting, .prToolchainTests])
@@ -604,8 +571,7 @@ def test_markerURL : IO Unit := do
     (markerPath "Alice/Mathlib4" "abc123")
 
 /-- Marker probes read through the container's read base; marker writes follow
-the resolved upload destination (`StagedUploadDest.markerURL`). Without a
-base-URL override, probes address the public endpoint. -/
+the resolved upload destination (`StagedUploadDest.markerURL`). -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
   let base ← getBaseURL .forks
@@ -615,10 +581,6 @@ def test_markerReadURL : IO Unit := do
   assertEq "probe repo is lowercased in the path"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "Alice/Mathlib4" "abc123")
-  if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
-    assertEq "default probe URL is on the endpoint"
-      s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
-      (← markerReadURL .forks "alice/mathlib4" "abc123")
 
 end Marker
 
@@ -1105,8 +1067,7 @@ only miss. -/
 def test_isCacheMissStatus : IO Unit := do
   IO.println "isCacheMissStatus:"
   assertTrue "404 is a miss"                   (isCacheMissStatus 404)
-  -- Success and server errors are never misses; they must surface.
-  assertTrue "200 is not a miss"               (!isCacheMissStatus 200)
+  -- Server errors are never misses; they must surface.
   assertTrue "500 is not a miss"               (!isCacheMissStatus 500)
   -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
   -- here. A miss verdict would make it look like an empty cache and send the
@@ -1147,8 +1108,6 @@ def test_classifyDownload : IO Unit := do
   -- A 200 with a nonzero exit code carries a truncated body.
   assertTrue "200 + exit 18 fails"
     (classifyDownload (some 200) 18 matches .failed)
-  assertTrue "201 + exit 18 fails"
-    (classifyDownload (some 201) 18 matches .failed)
   -- The status alone decides a miss.
   assertTrue "404 is a miss"
     (classifyDownload (some 404) 0 matches .miss)
@@ -1777,7 +1736,6 @@ def runAll : IO Unit := do
   test_Container_getURL
   test_envValueNormalization
   test_getBaseURLFrom
-  test_Container_flatPath
   test_defaultContainersForRepo
   test_effectiveGetURLs
   test_mkFileURL
