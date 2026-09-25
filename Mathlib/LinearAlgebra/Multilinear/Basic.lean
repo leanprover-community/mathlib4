@@ -104,9 +104,6 @@ structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁)
 /-- `M →ₗₘ[R] N` is the type of `R`-multilinear maps from `M` to `N`. -/
 notation3:25 M " →ₗₘ[" R "] " N:100 => MultilinearMap R M N
 
-/-- `M [×n]→ₗ[R] N` is the type of `R`-multilinear maps from `M^n` to `N`. -/
-notation3:25 M " [×" n "]→ₗ[" R "] " N:100 => MultilinearMap R (fun _ : Fin n => M) N
-
 namespace MultilinearMap
 
 section Semiring
@@ -301,8 +298,8 @@ of these variables, one gets a new multilinear map on `Fin k` by varying these v
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
 proof that the cardinality of `s` is `k`. The implicit identification between `Fin k` and `s` that
 we use is the canonical (increasing) bijection. -/
-def restr {k n : ℕ} (f : M' [×n]→ₗ[R] M₂) (s : Finset (Fin n))
-    (hk : #s = k) (z : M') : M' [×k]→ₗ[R] M₂ where
+def restr {k n : ℕ} (f : (fun _ : Fin n ↦ M') →ₗₘ[R] M₂) (s : Finset (Fin n))
+    (hk : #s = k) (z : M') : (fun _ : Fin k ↦ M') →ₗₘ[R] M₂ where
   toFun v := f fun j => if h : j ∈ s then v ((s.orderIsoOfFin hk).symm ⟨j, h⟩) else z
   map_update_add' := by
     simp [dite_comp_equiv_update (s.orderIsoOfFin hk).symm]
@@ -1213,7 +1210,7 @@ to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
 for `A^ι` with any finite type `ι`. -/
-protected def mkPiAlgebraFin : A [×n]→ₗ[R] A :=
+protected def mkPiAlgebraFin : (fun _ : Fin n ↦ A) →ₗₘ[R] A :=
   MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
     (fun m i x y ↦ by
       simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul,

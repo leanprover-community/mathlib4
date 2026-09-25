@@ -309,8 +309,8 @@ theorem coe_mkContinuous (f : E →ₗₘ[𝕜] G) (C : ℝ) (H : ∀ m, ‖f m�
 /-- Given a multilinear map in `n` variables, if one restricts it to `k` variables putting `z` on
 the other coordinates, then the resulting restricted function satisfies an inequality
 `‖f.restr v‖ ≤ C * ‖z‖^(n-k) * Π ‖v i‖` if the original function satisfies `‖f v‖ ≤ C * Π ‖v i‖`. -/
-theorem restr_norm_le {k n : ℕ} (f : G [×n]→ₗ[𝕜] G') (s : Finset (Fin n)) (hk : #s = k) (z : G)
-    {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (v : Fin k → G) :
+theorem restr_norm_le {k n : ℕ} (f : (fun _ : Fin n ↦ G) →ₗₘ[𝕜] G') (s : Finset (Fin n))
+    (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (v : Fin k → G) :
     ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
   convert! H _ using 2

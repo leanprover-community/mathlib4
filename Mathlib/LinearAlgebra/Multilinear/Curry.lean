@@ -337,7 +337,8 @@ variable (R M₂ M')
 multilinear maps on `fun i : Fin k => M'` taking values in the space of multilinear maps
 on `fun i : Fin l => M'`. -/
 def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l) :
-    M' [×n]→ₗ[R] M₂ ≃ₗ[R] M' [×k]→ₗ[R] (M' [×l]→ₗ[R] M₂) :=
+    (fun _ : Fin n ↦ M') →ₗₘ[R] M₂ ≃ₗ[R]
+      (fun _ : Fin k ↦ M') →ₗₘ[R] ((fun _ : Fin l ↦ M') →ₗₘ[R] M₂) :=
   (domDomCongrLinearEquiv R R M' M₂ (finSumEquivOfFinset hk hl).symm).trans
     currySumEquiv
 
@@ -345,21 +346,21 @@ variable {R M₂ M'}
 
 @[simp]
 theorem curryFinFinset_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
-    (f : M' [×n]→ₗ[R] M₂) (mk : Fin k → M') (ml : Fin l → M') :
+    (f : (fun _ : Fin n ↦ M') →ₗₘ[R] M₂) (mk : Fin k → M') (ml : Fin l → M') :
     curryFinFinset R M₂ M' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
   rfl
 
 @[simp]
-theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : M' [×k]→ₗ[R] (M' [×l]→ₗ[R] M₂)) (m : Fin n → M') :
+theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
+    (f : (fun _ : Fin k ↦ M') →ₗₘ[R] ((fun _ : Fin l ↦ M') →ₗₘ[R] M₂)) (m : Fin n → M') :
     (curryFinFinset R M₂ M' hk hl).symm f m =
       f (fun i => m <| finSumEquivOfFinset hk hl (Sum.inl i)) fun i =>
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 
 theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : M' [×k]→ₗ[R] (M' [×l]→ₗ[R] M₂)) (x y : M') :
+    (hl : #sᶜ = l) (f : (fun _ : Fin k ↦ M') →ₗₘ[R] ((fun _ : Fin l ↦ M') →ₗₘ[R] M₂)) (x y : M') :
     (curryFinFinset R M₂ M' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
       f (fun _ => x) fun _ => y := by
   rw [curryFinFinset_symm_apply]; congr
@@ -372,12 +373,12 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
 
 @[simp]
 theorem curryFinFinset_symm_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : M' [×k]→ₗ[R] (M' [×l]→ₗ[R] M₂)) (x : M') :
+    (hl : #sᶜ = l) (f : (fun _ : Fin k ↦ M') →ₗₘ[R] ((fun _ : Fin l ↦ M') →ₗₘ[R] M₂)) (x : M') :
     ((curryFinFinset R M₂ M' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
   rfl
 
 theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : M' [×n]→ₗ[R] M₂) (x y : M') :
+    (hl : #sᶜ = l) (f : (fun _ : Fin n ↦ M') →ₗₘ[R] M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
   rw [← curryFinFinset_symm_apply_piecewise_const hk hl, LinearEquiv.symm_apply_apply]
