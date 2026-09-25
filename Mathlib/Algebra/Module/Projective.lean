@@ -5,9 +5,10 @@ Authors: Kevin Buzzard, Antoine Labelle
 -/
 module
 
-public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.Basic.UnivLE
+public import Mathlib.LinearAlgebra.PiTensorProduct.Generators
+public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 
@@ -178,7 +179,7 @@ theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
   let e₁ : R ≃+* S := RingHomInvPair.toRingEquiv σ σ'
   obtain ⟨f, hf⟩ := ‹Projective R M›
   let g : N →ₗ[S] N →₀ S :=
-  { toFun := fun x ↦ (equivCongrLeft e₂ (f (e₂.symm x))).mapRange e₁ e₁.map_zero
+  { toFun := fun x ↦ (Finsupp.equivCongrLeft e₂ (f (e₂.symm x))).mapRange e₁ e₁.map_zero
     map_add' := fun x y ↦ by ext; simp
     map_smul' := fun r v ↦ by ext i; simp [e₁, e₂.symm.map_smulₛₗ] }
   refine ⟨⟨g, fun x ↦ ?_⟩⟩
@@ -303,5 +304,38 @@ instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R 
   directSum_iff.mpr ‹_›
 
 end DirectSum
+
+section TensorConstructions
+
+open TensorProduct
+
+variable {R ι : Type*} {M : ι → Type*} [Finite ι] [CommSemiring R]
+variable [Π i, AddCommMonoid (M i)] [Π i, Module R (M i)] [Π i, Module.Projective R (M i)]
+
+instance Projective.PiTensorProduct : Module.Projective R (⨂[R] i, M i) := by
+  obtain ⟨n, hι⟩ : ∃ (n : ℕ), Nat.card ι = n := ⟨_, rfl⟩
+  induction n generalizing ι with
+  | zero =>
+    have : IsEmpty ι := Finite.card_eq_zero_iff.mp hι
+    exact Module.Projective.of_equiv' (PiTensorProduct.isEmptyEquiv _).symm
+  | succ n hn =>
+    classical
+    have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
+    have i₀ : ι := Classical.arbitrary _
+    have hi₀ : Nat.card ({i₀}ᶜ : Set ι) = n := by
+      let := Fintype.ofFinite ι
+      rw [← Fintype.card_eq_nat_card, Fintype.card_compl_set, Fintype.card_eq_nat_card, hι,
+        Fintype.card_unique, add_tsub_cancel_right]
+    have : Projective R (⨂[R] (i : ({i₀}ᶜ : Set ι)), M i) := by
+      exact hn hi₀
+    exact Module.Projective.of_equiv'
+      (PiTensorProduct.equivPiTensorComplSingletonTensor R M i₀).symm
+
+variable {M : Type*} [AddCommMonoid M] [Module R M] [Module.Projective R M]
+
+instance Projective.TensorAlgebra : Module.Projective R (TensorAlgebra R M) :=
+  Module.Projective.of_equiv' TensorAlgebra.equivDirectSum.toLinearEquiv.symm
+
+end TensorConstructions
 
 end Module
