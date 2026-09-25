@@ -91,9 +91,9 @@ Valid arguments are:
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
 * MATHLIB_CACHE_DEBUG_USE_LEGACY
-                          Set to 1 or true to read the master container from
-                          the Azure storage account instead of
-                          https://cache.mathlib.org. For troubleshooting only.
+                          Set to 1 or true to read from the Azure storage
+                          account instead of https://cache.mathlib.org.
+                          For troubleshooting only.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
