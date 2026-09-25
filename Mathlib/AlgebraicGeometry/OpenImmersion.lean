@@ -328,7 +328,7 @@ instance isOpenImmersion_SpecMap_localizationAway {R : CommRingCat.{u}} (f : R) 
 
 instance {R} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
-  isOpenImmersion_SpecMap_localizationAway (R := .of R) f
+  isOpenImmersion_SpecMap_localizationAway (R := ↧R) f
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -346,7 +346,7 @@ lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing
   rw [← e, CommRingCat.ofHom_comp, Spec.map_comp]
   have H : IsIso (CommRingCat.ofHom (IsLocalization.algEquiv
     (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
-    exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
+    exact inferInstanceAs (IsIso (IsLocalization.algEquiv
       (Submonoid.powers f) S (Localization.Away f)).toRingEquiv.toCommRingCatIso.inv)
   simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
   infer_instance
@@ -360,9 +360,9 @@ theorem exists_affine_mem_range_and_range_subset
     show ((e.hom ≫ e.inv).base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
-  let f : Spec (.of <| Localization.Away r) ⟶ X :=
+  let f : Spec ↧(Localization.Away r) ⟶ X :=
     Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))) ≫ ⟨e.inv ≫ X.ofRestrict _⟩
-  refine ⟨.of (Localization.Away r), f, inferInstance, ?_⟩
+  refine ⟨↧(Localization.Away r), f, inferInstance, ?_⟩
   rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
   erw [PrimeSpectrum.localization_away_comap_range (Localization.Away r) r]
   exact ⟨⟨_, hr, congr(($(e.hom_inv_id).base ⟨x, hxV⟩).1)⟩, Set.image_subset_iff.mpr hr'⟩
@@ -420,7 +420,7 @@ end PresheafedSpace.IsOpenImmersion
 
 section Restrict
 
-variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ TopCat.of X} (h : IsOpenEmbedding f)
+variable {U : TopCat.{u}} (X : Scheme.{u}) {f : U ⟶ ↧X} (h : IsOpenEmbedding f)
 
 /-- The restriction of a Scheme along an open embedding. -/
 @[simps! -isSimp carrier, simps! presheaf_obj]
@@ -771,7 +771,7 @@ noncomputable
 def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :
     Γ(X, f ⁻¹ᵁ U) ≅ Γ(Y, f.opensRange ⊓ U) :=
   (f.appIso (f ⁻¹ᵁ U)).symm ≪≫
-    Y.presheaf.mapIso (eqToIso <| (f.image_preimage_eq_opensRange_inf U).symm).op
+    Y.presheaf.mapIso (eqToIso (f.image_preimage_eq_opensRange_inf U).symm).op
 
 @[simp]
 lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :

@@ -97,6 +97,7 @@ abbrev Iso.toCopy (f : H ≃g G) : Copy H G := f.toEmbedding.toCopy
 
 namespace Copy
 
+@[macro_inline]
 instance : FunLike (Copy H G) W V where
   coe f := DFunLike.coe f.toHom
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
@@ -341,8 +342,7 @@ lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [Decid
 theorem Copy.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
   cases isEmpty_or_nonempty W
-  · have := Function.isEmpty f
-    simp
+  · simp [Function.isEmpty f |>.subsingleton]
   refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
   obtain ⟨v, rfl⟩ := hf w
   grw [← f.degree_le, ← minDegree_le_degree]
@@ -431,10 +431,7 @@ protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isI
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
-    G'.coe ⊴ G :=
-  ⟨{ toFun := (↑)
-     inj' := Subtype.coe_injective
-     map_rel_iff' := hG'.adj.symm }⟩
+    G'.coe ⊴ G := Embedding.ofIsInduced _ hG' |>.isIndContained
 
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
@@ -571,7 +568,7 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
     G.copyCount H = 1 := by
   cases nonempty_fintype W
   exact (copyCount_le_labelledCopyCount.trans_eq <| labelledCopyCount_of_isEmpty ..).antisymm <|
-    copyCount_pos.2 <| .of_isEmpty
+    copyCount_pos.2 .of_isEmpty
 
 end CopyCount
 
@@ -630,7 +627,7 @@ lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := b
     @forall_comm _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
     not_exists, not_nonempty_iff, Nonempty.forall, Free]
   exact forall_congr' fun G' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
-    (Subgraph.edgeSet_subset _ <| (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
+    (Subgraph.edgeSet_subset _ (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
 
 protected lemma Free.killCopies_eq_left (hHG : H.Free G) : G.killCopies H = G := by
   obtain rfl | hH := eq_or_ne H ⊥
