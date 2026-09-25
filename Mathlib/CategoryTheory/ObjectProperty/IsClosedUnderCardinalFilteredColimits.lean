@@ -74,15 +74,15 @@ instance [HasCardinalFilteredColimits C κ] :
 
 include κ in
 lemma isClosedUnderIsomorphisms : P.IsClosedUnderIsomorphisms where
-  of_iso {X Y} e hX := by
+  of_iso {X Y} e hX :=
     have := isCardinalClosedUnderColimitsOfShape P κ PUnit
-    have p : P.ColimitOfShape (PUnit.{w + 1}) Y :=
+    have p : P.ColimitOfShape PUnit.{w + 1} Y :=
       { diag := (Functor.const _).obj X
         ι.app _ := e.hom
-        isColimit :=
-          { desc s := e.inv ≫ s.ι.app .unit
-            uniq s m hm := by simp [← dsimp% hm .unit] }
+        isColimit.desc s := e.inv ≫ s.ι.app .unit
+        isColimit.uniq s m hm := by simp [← hm .unit]
         prop_diag_obj _ := hX }
+    p.prop
     exact p.prop
 
 end IsClosedUnderCardinalFilteredColimits
