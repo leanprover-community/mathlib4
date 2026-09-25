@@ -42,21 +42,6 @@ theorem enorm_indicator_le_enorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖�
   rw [enorm_indicator_eq_indicator_enorm]
   apply indicator_enorm_le_enorm_self
 
-
-lemma Set.indicator_iUnion_of_disjoint (s : δ → Set α) (hs : Pairwise (Disjoint on s)) (f : α → ε) (i : α) : (⋃ d, s d).indicator f i = 1 --∑' (d : α), (s d).indicator f i := by
-  simp only [Set.indicator, Set.mem_iUnion]
-  by_cases h₀ : ∃ d, i ∈ s d <;> simp only [Set.mem_iUnion, h₀, ↓reduceIte]
-  · obtain ⟨j, hj⟩ := h₀
-    rw [ENNReal.tsum_eq_add_tsum_ite j]
-    simp only [hj, ↓reduceIte]
-    nth_rw 1 [← add_zero (f i)] ; congr
-    apply (ENNReal.tsum_eq_zero.mpr ?_).symm
-    simp only [ite_eq_left_iff, ite_eq_right_iff]
-    exact fun k hk hb ↦ False.elim <| Disjoint.notMem_of_mem_left (hs (id (Ne.symm hk))) hj hb
-  · refine (ENNReal.tsum_eq_zero.mpr (fun j ↦ ?_)).symm
-    push_neg at h₀
-    simp [h₀ j]
-
 end ESeminormedAddMonoid
 
 section SeminormedAddGroup

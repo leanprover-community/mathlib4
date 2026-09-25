@@ -195,14 +195,14 @@ def inter (S : Set (Set α)) : Set (Set α) :=
 lemma inter.mem_iff (s : Set α) :
     s ∈ inter S ↔ ∃ L : Set (Set α), L.Countable ∧ s = ⋂₀ L ∧ ↑L ⊆ S := by
   refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
-  · simp only [mem_setOf_eq] at hL
+  · simp only [mem_ofPred_eq] at hL
     use L
     simp [hL]
   · obtain ⟨L, hL⟩ := h
     use L
     simp [hL.1, hL.2]
 
-/- If `IsCompactSystem S`, the set of countable intersections of sets in `S` is also a compact
+/-- If `IsCompactSystem S`, the set of countable intersections of sets in `S` is also a compact
 system. -/
 theorem inter.isCompactSystem (S : Set (Set α)) (hS : IsCompactSystem S) :
     IsCompactSystem (inter S) := by
@@ -217,7 +217,7 @@ theorem inter.isCompactSystem (S : Set (Set α)) (hS : IsCompactSystem S) :
       simp [hE₁]
     have hE₄ : (⋃ i, E i) ⊆ S := by
       simp [hE₁]
-    haveI : Nonempty (⋃ i, E i) := by
+    have : Nonempty (⋃ i, E i) := by
       contrapose! hD₂
       rw [Set.eq_empty_of_isEmpty (⋃ i, E i)]
       simp only [sInter_empty]
@@ -237,7 +237,7 @@ theorem inter.isCompactSystem (S : Set (Set α)) (hS : IsCompactSystem S) :
     apply le_trans (b := D (g i)) _ ((hE₁ (g i)).2.1 ▸ sInter_subset_of_mem (hg i))
     apply biInter_subset_of_mem
     change g i ≤ (Finset.range (n + 1)).sup g
-    exact le_sup (mem_range_succ_iff.mpr hi)
+    exact Finset.le_sup (Finset.mem_range_succ_iff.mpr hi)
   · simp only [not_nonempty_iff] at h
     exact of_IsEmpty (inter S)
 
