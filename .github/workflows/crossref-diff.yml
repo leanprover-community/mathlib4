@@ -22,7 +22,7 @@ concurrency:
 permissions:
   contents: read
   actions: read           # for cross-workflow artifact downloads
-  pull-requests: write    # for the `#### Crossref summary` comment
+  pull-requests: write    # for the `#### Crossref diff` comment
 
 env:
   COMMENT_HEADER: '#### Crossref diff'

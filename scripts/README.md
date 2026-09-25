@@ -247,7 +247,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   successful master build and publishes the result to the
   [`crossref-exports`](https://github.com/leanprover-community/crossref-exports) repository
   (committing only when the entries actually change).
-- [`crossrefDiff.yml`](../.github/workflows/crossrefDiff.yml)
+- [`crossref-diff.yml`](../.github/workflows/crossref-diff.yml)
   Post-build workflow that diffs a PR build's `crossrefs.json` against the master build at the
   PR's merge base, then comments on the PR with the cross-references it adds, each linked to its
   database entry. The table is rendered by mathlib-ci's `pr_summary/crossrefsDiff.py`.
