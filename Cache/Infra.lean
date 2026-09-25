@@ -152,9 +152,10 @@ cost the project less and land nearer the reader.
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Whether reads address the Azure storage account instead of
-`publicCacheEndpoint`. `main` sets this from `MATHLIB_CACHE_DEBUG_USE_LEGACY`
-at startup.
+Whether reads of the `master` container address the Azure storage account
+instead of `publicCacheEndpoint`. `main` sets this from
+`MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup. Every other container reads from
+`publicCacheEndpoint` either way.
 
 The variable is a troubleshooting fallback for the transition to the public
 endpoint, enabled in September 2026, and it should be retired together with
@@ -163,15 +164,15 @@ direct reads from the storage account.
 initialize useLegacy : IO.Ref Bool ← IO.mkRef false
 
 /--
-Default base URL for cache reads: `publicCacheEndpoint`, or `azureAccountURL`
-when `useLegacy` is set.
+Default base URL for reads of container `c`: `publicCacheEndpoint`, or
+`azureAccountURL` for the `master` container when `useLegacy` is set.
 -/
-def defaultGetBaseURL (useLegacy : Bool) : String :=
-  if useLegacy then azureAccountURL else publicCacheEndpoint
+def defaultGetBaseURL (c : Container) (useLegacy : Bool) : String :=
+  if useLegacy && c == .master then azureAccountURL else publicCacheEndpoint
 
 /--
-Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
-`defaultGetBaseURL useLegacy`. `normalizeBaseURL` reads the value, so it
+Base URL for reads of container `c`: `MATHLIB_CACHE_BASE_URL` if set,
+otherwise `defaultGetBaseURL c useLegacy`. `normalizeBaseURL` reads the value, so it
 arrives trimmed, free of trailing slashes, and unset when empty.
 
 A read URL is `{base}/{pathSegment}/{key}`, the namespace the Azure
@@ -185,19 +186,19 @@ rebases each container read under the given host.
 Only reads follow this base. Uploads and marker writes resolve their own
 destination per the selected backend (`stagedUploadDest`).
 -/
-def getBaseURLFrom (envValue? : Option String) (useLegacy : Bool) : String :=
-  (normalizeBaseURL envValue?).getD (defaultGetBaseURL useLegacy)
+def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool) : String :=
+  (normalizeBaseURL envValue?).getD (defaultGetBaseURL c useLegacy)
 
 /--
-Base URL for cache reads, resolved from the environment.
+Base URL for reads of container `c`, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
-def getBaseURL : IO String := do
-  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
+def getBaseURL (c : Container) : IO String := do
+  return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
 
-/-- Read URL for a container: `{getBaseURL}/{pathSegment}`. -/
+/-- Read URL for a container: `{getBaseURL c}/{pathSegment}`. -/
 def Container.getURL (c : Container) : IO String := do
-  return s!"{← getBaseURL}/{c.pathSegment}"
+  return s!"{← getBaseURL c}/{c.pathSegment}"
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.

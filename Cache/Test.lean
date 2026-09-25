@@ -184,46 +184,50 @@ def test_envValueNormalization : IO Unit := do
     (shown (normalizeBaseURL (some "https://cache.example.org///")))
   assertEq "a slash-only value reads as unset" "<unset>" (shown (normalizeBaseURL (some "/")))
 
-/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set.
-Without it, reads address `publicCacheEndpoint`, and address the Azure account when
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` selects the legacy read host. `getBaseURLFrom` is
-pure, so this test covers every branch; the environment-reading wrapper
-(`getBaseURL`) adds no logic of its own. -/
+/-- The read base follows `MATHLIB_CACHE_BASE_URL` when the variable is set. Without
+it, reads address `publicCacheEndpoint`, and reads of the `master` container
+address the Azure account when `MATHLIB_CACHE_DEBUG_USE_LEGACY` selects the
+legacy read host. `getBaseURLFrom` is pure, so this test covers every branch;
+the environment-reading wrapper (`getBaseURL`) adds no logic of its own. -/
 def test_getBaseURLFrom : IO Unit := do
   IO.println "getBaseURLFrom:"
   assertEq "no override → the read endpoint"
-    "https://cache.mathlib.org" (getBaseURLFrom none false)
-  assertEq "legacy → the storage account"
-    "https://lakecache.blob.core.windows.net" (getBaseURLFrom none true)
+    "https://cache.mathlib.org" (getBaseURLFrom .master none false)
+  assertEq "legacy → the storage account for master"
+    "https://lakecache.blob.core.windows.net" (getBaseURLFrom .master none true)
   -- The legacy base is the host the container URLs (`azureURL`) are built on.
   assertEq "the legacy base matches the container URLs"
-    azureAccountURL (getBaseURLFrom none true)
+    azureAccountURL (getBaseURLFrom .master none true)
+  assertTrue "legacy leaves every other container on the read endpoint"
+    ([Container.forks, .nightlyTesting, .prToolchainTests].all fun c =>
+      getBaseURLFrom c none true == publicCacheEndpoint)
   assertEq "override → the given base"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") false)
+    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org") false)
   assertEq "override wins over legacy"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org") true)
+    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org") true)
   -- A GitHub Actions `${{ vars.… }}` lookup yields "" while the variable is
   -- undefined, so an empty value must keep the default.
   assertEq "empty value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom (some "") false)
+    publicCacheEndpoint (getBaseURLFrom .master (some "") false)
   assertEq "whitespace-only value counts as unset"
-    publicCacheEndpoint (getBaseURLFrom (some " \n") false)
+    publicCacheEndpoint (getBaseURLFrom .master (some " \n") false)
   assertEq "override is trimmed"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org\n") false)
+    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org\n") false)
   -- A base written with a trailing slash must not double the separator in
   -- `{base}/{container}/{key}`.
   assertEq "trailing slash is stripped"
-    "https://cache.example.org" (getBaseURLFrom (some "https://cache.example.org/") false)
+    "https://cache.example.org" (getBaseURLFrom .master (some "https://cache.example.org/") false)
 
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
 `azureURL`, under whichever base the environment selects. Without a base-URL
 override, both positions of the legacy switch are pinned: the endpoint by
-default, `azureURL` under legacy. -/
+default, and under legacy `azureURL` for `master` and the endpoint for the
+other containers. -/
 def test_Container_getURL : IO Unit := do
   IO.println "Container.getURL:"
-  let base ← getBaseURL
-  assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
-  assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
+  assertEq "master read URL" s!"{← getBaseURL .master}/mathlib4-master"
+    (← Container.master.getURL)
+  assertEq "forks read URL" s!"{← getBaseURL .forks}/mathlib4-forks" (← Container.forks.getURL)
   -- A base-URL override answers for both switch positions, so the pinned
   -- assertions run only without one.
   if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
@@ -234,6 +238,8 @@ def test_Container_getURL : IO Unit := do
     useLegacy.set true
     assertEq "legacy read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
+    assertEq "legacy leaves forks on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-forks" (← Container.forks.getURL)
     useLegacy.set ambient
 
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
@@ -286,14 +292,14 @@ def test_effectiveGetURLs : IO Unit := do
       (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
     IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
     return
-  let base ← getBaseURL
+  let base ← getBaseURL .master
   assertTrue "default chain pairs each container with its read URL"
     ((← effectiveGetURLs MATHLIBREPO) ==
       [(some .master, s!"{base}/mathlib4-master")])
   cacheFromOverride.set (some [.forks, .master])
   assertTrue "--cache-from override keeps its order"
     ((← effectiveGetURLs MATHLIBREPO) ==
-      [(some .forks, s!"{base}/mathlib4-forks"),
+      [(some .forks, s!"{← getBaseURL .forks}/mathlib4-forks"),
        (some .master, s!"{base}/mathlib4-master")])
   cacheFromOverride.set none
 
@@ -602,12 +608,11 @@ def test_markerURL : IO Unit := do
 
 /-- Marker probes read through the container's read base; marker writes follow
 the resolved upload destination (`StagedUploadDest.markerURL`). Without a
-base-URL override, both positions of the legacy switch are pinned: probes
-address the container's service endpoint by default, and under legacy they
-match the Azure write URL. -/
+base-URL override, both positions of the legacy switch are pinned: probes of
+`forks` address the endpoint either way. -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
-  let base ← getBaseURL
+  let base ← getBaseURL .forks
   assertEq "probe URL follows the read base"
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "alice/mathlib4" "abc123")
@@ -621,8 +626,8 @@ def test_markerReadURL : IO Unit := do
       s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
       (← markerReadURL .forks "alice/mathlib4" "abc123")
     useLegacy.set true
-    assertEq "legacy probe URL matches the Azure write URL"
-      s!"{Container.forks.azureURL}/{markerPath "alice/mathlib4" "abc123"}"
+    assertEq "legacy leaves the forks probe on the endpoint"
+      s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
       (← markerReadURL .forks "alice/mathlib4" "abc123")
     useLegacy.set ambient
 
