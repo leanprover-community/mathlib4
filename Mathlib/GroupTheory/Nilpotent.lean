@@ -1184,14 +1184,6 @@ instance [IsSimpleGroup G] [IsNilpotent G] : IsMulCommutative G :=
     (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
       (Group.IsNilpotent.center_ne_bot G)
 
-/-- A simple nilpotent group is cyclic. -/
-@[to_additive /-- A simple nilpotent additive group is cyclic. -/]
-instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
-  letI : CommGroup G := Group.commGroupOfCenterEqTop <|
-    (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
-      (Group.IsNilpotent.center_ne_bot G)
-  inferInstance
-
 namespace Group
 
 @[to_additive AddGroup.nilpotencyClass_le_one_of_isSimple_of_isNilpotent]
