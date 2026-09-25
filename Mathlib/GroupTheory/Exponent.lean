@@ -627,7 +627,7 @@ variable [Monoid G]
 @[to_additive]
 lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
     orderOf x = 2 ↔ x ≠ 1 :=
-  ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
+  ⟨by rintro hx rfl; simp at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
 
 @[to_additive]
 theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣ 2) (a b : G) :
@@ -697,3 +697,12 @@ lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
 end Group
 
 end ExponentTwo
+
+theorem ringChar_eq_addMonoidExponent (R : Type*) [NonAssocSemiring R] :
+    ringChar R = AddMonoid.exponent R := by
+  apply dvd_antisymm
+  · apply ringChar.dvd
+    rw [← nsmul_one, AddMonoid.exponent_nsmul_eq_zero]
+  · rw [AddMonoid.exponent_dvd_iff_forall_nsmul_eq_zero]
+    intro g
+    rw [nsmul_eq_mul, ringChar.Nat.cast_ringChar, zero_mul]

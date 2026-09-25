@@ -185,6 +185,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
+@[macro_inline]
 instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -449,7 +450,7 @@ end RestrictScalars
 
 theorem toAddMonoidHom_injective :
     Function.Injective (toAddMonoidHom : (M →ₛₗ[σ] M₃) → M →+ M₃) := fun fₗ gₗ h ↦
-  ext <| (DFunLike.congr_fun h : ∀ x, fₗ.toAddMonoidHom x = gₗ.toAddMonoidHom x)
+  ext (DFunLike.congr_fun h : ∀ x, fₗ.toAddMonoidHom x = gₗ.toAddMonoidHom x)
 
 /-- If two `σ`-linear maps from `R` are equal on `1`, then they are equal. -/
 @[ext high]

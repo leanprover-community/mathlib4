@@ -59,7 +59,7 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) :
     Tendsto f (𝓝[s] x) (𝓝[t] f x) :=
-  tendsto_inf.2 ⟨h, tendsto_principal.2 <| mem_inf_of_right <| mem_principal.2 <| ht⟩
+  tendsto_inf.2 ⟨h, tendsto_principal.2 <| mem_inf_of_right <| mem_principal.2 ht⟩
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin_image (h : ContinuousWithinAt f s x) :
     Tendsto f (𝓝[s] x) (𝓝[f '' s] f x) :=

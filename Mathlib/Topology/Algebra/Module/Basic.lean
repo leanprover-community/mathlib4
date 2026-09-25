@@ -234,7 +234,7 @@ theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
       Set.univ.pi fun i ↦ closure (s i) := by
   rw [← closure_pi_set]
   refine (closure_mono ?_).antisymm <| closure_minimal ?_ isClosed_closure
-  · exact SetLike.coe_mono <| iSup_map_single_le
+  · exact SetLike.coe_mono iSup_map_single_le
   · simp only [Set.subset_def, mem_closure_iff]
     intro x hx U hU hxU
     rcases isOpen_pi_iff.mp hU x hxU with ⟨t, V, hV, hVU⟩
