@@ -239,7 +239,6 @@ instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) L R where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
 

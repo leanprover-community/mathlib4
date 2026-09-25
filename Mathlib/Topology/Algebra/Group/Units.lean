@@ -100,7 +100,7 @@ variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
 
 @[to_additive]
 instance [ContinuousMul α] : IsTopologicalGroup αˣ where
-  continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
+  continuous_inv := Units.continuous_iff.2 ⟨continuous_coe_inv, continuous_val⟩
 
 @[to_additive]
 theorem isClosedEmbedding_embedProduct [T1Space α] [ContinuousMul α] :
