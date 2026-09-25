@@ -77,29 +77,40 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinLit m a) $(← mkFinLit m b)).trans $acc)
   return acc
 
+/-- The suffix of the list literal `l` after its first `k` cells (`l` itself once no cell is left,
+as `List.drop`). -/
+def dropListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) : Nat → Q(List $α)
+  | 0 => l
+  | k + 1 => match_expr l with
+    | List.cons _ _ tl => dropListLitQ (α := α) tl k
+    | _ => l
+
 /-- The proof of `IsLowerTriangularDiagList k c rows` on the literal `rows` of the entry rows
-`entries`, one cell per row (`kQ` and `cQ` are the literals of `k` and `c`). -/
+`entries`, one `IsLowerTriangularDiagList.cons` per row (`kQ` and `cQ` are the literals of `k`
+and `c`). -/
 def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α))
     (certifier : EntryCertifier) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
     List (List Q($α)) → MetaM Q(IsLowerTriangularDiagList $kQ $cQ $rows)
   | [] => do
-    have h : Q(IsLowerTriangularDiagList $kQ $cQ $rows) := (q(trivial) : Expr)
-    return h
+    have : $cQ =Q 0 := ⟨⟩
+    return q(IsLowerTriangularDiagList.nil)
   | row :: entries => do
-    let_expr List.cons _ _ tl := rows |
+    let_expr List.cons _ rowLit tl := rows |
       throwError "certifyLowerTriangularDiagList: {rows} is not a cons cell"
+    have rowLit : Q(List $α) := rowLit
     have tl : Q(List (List $α)) := tl
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
     have c₁Q : Q(Nat) := mkNatLitQ (c - 1)
     let rest ← certifyLowerTriangularDiagList rα certifier (k + 1) (c - 1) k₁Q c₁Q tl entries
     have entry : Q($α) := row[k]!
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
-    have zeros : Q(List $α) := q(List.replicate $c₁Q (0 : $α))
-    let cell : Q($entry ≠ 0 ∧ $zeros = $zeros ∧ IsLowerTriangularDiagList $k₁Q $c₁Q $tl) :=
-      q(⟨$hd, Eq.refl $zeros, $rest⟩)
-    -- The cons arm of the definition on the literals, once the kernel evaluates the `drop`.
-    have h : Q(IsLowerTriangularDiagList $kQ $cQ $rows) := (cell : Expr)
-    return h
+    -- The kernel evaluates the `drop` and the `replicate` once, here.
+    have hdrop : Q(List.drop $kQ $rowLit = $entry :: List.replicate $c₁Q (0 : $α)) :=
+      (q(Eq.refl (List.drop $kQ $rowLit)) : Expr)
+    have : $rows =Q $rowLit :: $tl := ⟨⟩
+    have : $cQ =Q $c₁Q + 1 := ⟨⟩
+    have : $k₁Q =Q $kQ + 1 := ⟨⟩
+    return q(IsLowerTriangularDiagList.cons $hdrop $hd $rest)
 
 /-- Prove `L.IsLowerTriangular` and `∀ i, L.diag i ≠ 0` from the rows of `L`, with `certifier`
 proving the diagonal entries nonzero. -/
@@ -110,31 +121,38 @@ def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(C
   return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
     mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
 
-/-- The proof of `IsPivotedList cols rows` on the literals, one cell per pivot. The literals are
-peeled along with the pivots so that the base case holds the suffix of `rows` itself, which the
-kernel matches by pointer. -/
+/-- The proof of `IsPivotedList cols rows` on the literals, one `IsPivotedList.cons` per pivot. The
+literals are peeled along with the pivots so that the base case holds the suffix of `rows` itself,
+which the kernel matches by pointer. -/
 def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (certifier : EntryCertifier) (cols : Q(List (Fin $n))) (rows : Q(List (List $α))) :
     List Nat → List (List Q($α)) → MetaM Q(IsPivotedList $cols $rows)
   | [], _ => do
-    have h : Q(IsPivotedList $cols $rows) := (q(Eq.refl $rows) : Expr)
-    return h
+    -- The kernel evaluates the `map` over the zero rows once, here.
+    have hz : Q($rows = ($rows).map fun _ ↦ List.replicate $n (0 : $α)) :=
+      (q(Eq.refl $rows) : Expr)
+    have : $cols =Q ([] : List (Fin $n)) := ⟨⟩
+    return q(IsPivotedList.nil $hz)
   | k :: ks, row :: entries => do
-    let_expr List.cons _ _ ks' := cols |
+    let_expr List.cons _ kF ks' := cols |
       throwError "certifyPivotedList: {cols} is not a cons cell"
-    let_expr List.cons _ _ tl := rows |
+    let_expr List.cons _ rowLit tl := rows |
       throwError "certifyPivotedList: {rows} is not a cons cell"
+    have kF : Q(Fin $n) := kF
     have ks' : Q(List (Fin $n)) := ks'
+    have rowLit : Q(List $α) := rowLit
     have tl : Q(List (List $α)) := tl
     let rest ← certifyPivotedList rα certifier ks' tl ks entries
     have entry : Q($α) := row[k]!
-    have kQ : Q(Nat) := mkNatLitQ k
+    have suffix : Q(List $α) := dropListLitQ rowLit (k + 1)
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
-    have zs : Q(List $α) := q(List.replicate $kQ (0 : $α))
-    let cell : Q($entry ≠ 0 ∧ $zs = $zs ∧ IsPivotedList $ks' $tl) := q(⟨$hd, Eq.refl $zs, $rest⟩)
-    -- The cons arm of the definition on the literals, once the kernel evaluates the split.
-    have h : Q(IsPivotedList $cols $rows) := (cell : Expr)
-    return h
+    -- The kernel evaluates the split and the `replicate` once, here.
+    have hsplit :
+        Q(splitRevAt $rowLit $kF [] = (List.replicate ($kF : ℕ) 0, $entry :: $suffix)) :=
+      (q(Eq.refl (splitRevAt $rowLit $kF [])) : Expr)
+    have : $cols =Q $kF :: $ks' := ⟨⟩
+    have : $rows =Q $rowLit :: $tl := ⟨⟩
+    return q(IsPivotedList.cons $hsplit $hd $rest)
   | _ :: _, [] => throwError "certifyPivotedList: more pivots than rows"
 
 /-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/

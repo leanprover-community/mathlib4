@@ -22,6 +22,10 @@ The pivot cert checks each row is 0 up to its pivot column, where `splitRevAt` b
 (reversed) prefix and the pivot entry in one `O(n)` traversal. The lower-triangularity check
 requires each row to be 0 beyond the diagonal, so it skips building the prefix by `drop`. One
 predicate serving both (using `splitRevAt`) would build a prefix for the check that discards it.
+
+The `nil` and `cons` lemmas of each predicate are helpers for the certificate construction to be
+typed without making the kernel unfold the definitions at every row, which would have been required
+as the constructed conjunction chain is only defeq to the predicate instead of syntactically equal.
 -/
 
 @[expose] public section
@@ -47,6 +51,16 @@ def IsLowerTriangularDiagList [Zero α] : (k c : ℕ) → (rows : List (List α)
     match row.drop k with
     | [] => False
     | d :: zs => d ≠ 0 ∧ zs = List.replicate c 0 ∧ IsLowerTriangularDiagList (k + 1) c rows
+
+theorem IsLowerTriangularDiagList.nil [Zero α] {k : ℕ} {rows : List (List α)} :
+    IsLowerTriangularDiagList k 0 rows := trivial
+
+theorem IsLowerTriangularDiagList.cons [Zero α] {k c : ℕ} {row : List α} {rows : List (List α)}
+    {d : α} (hdrop : row.drop k = d :: List.replicate c 0) (hd : d ≠ 0)
+    (h : IsLowerTriangularDiagList (k + 1) c rows) :
+    IsLowerTriangularDiagList k (c + 1) (row :: rows) := by
+  simp only [IsLowerTriangularDiagList, hdrop]
+  exact ⟨hd, trivial, h⟩
 
 theorem getD_of_isLowerTriangularDiagList [Zero α] {k c i : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiagList k c rows) (hi : i < c) :
@@ -108,6 +122,16 @@ def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) 
     match splitRevAt row k [] with
     | (_, []) => False
     | (zs, d :: _) => d ≠ 0 ∧ zs = List.replicate k 0 ∧ IsPivotedList ks rows
+
+theorem IsPivotedList.nil [Zero α] {rows : List (List α)}
+    (h : rows = rows.map fun _ ↦ List.replicate n 0) : IsPivotedList ([] : List (Fin n)) rows := h
+
+theorem IsPivotedList.cons [Zero α] {k : Fin n} {ks : List (Fin n)} {row : List α}
+    {rows : List (List α)} {d : α} {rest : List α}
+    (hsplit : splitRevAt row k [] = (List.replicate k 0, d :: rest)) (hd : d ≠ 0)
+    (h : IsPivotedList ks rows) : IsPivotedList (k :: ks) (row :: rows) := by
+  simp only [IsPivotedList, hsplit]
+  exact ⟨hd, trivial, h⟩
 
 /-- The pivot function of the list of pivot columns. `WithTop (Fin n)` is `Option (Fin n)`, so
 the lookup `cols[i]?` is the value. -/
