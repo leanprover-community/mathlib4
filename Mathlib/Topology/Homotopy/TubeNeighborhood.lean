@@ -38,8 +38,9 @@ and paste.
   homotopic after appending to the first a path in the last vertex set.
 * `Path.IsInTube.homotopic`: two paths with the same endpoints in a common tube are homotopic.
 
-These results are used to show that in a semilocally simply connected space, path-homotopy
-classes are open, as a step towards the construction of universal covers.
+The application to semilocally simply connected spaces (path-homotopy classes are open, so
+`Path.Homotopic.Quotient` is discrete) is in
+`Mathlib/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean`.
 -/
 
 noncomputable section

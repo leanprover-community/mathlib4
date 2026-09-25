@@ -7,12 +7,16 @@ module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Topology.Homotopy.TubeNeighborhood
 
 /-!
 # Semilocally simply connected spaces
 
 A topological space is semilocally simply connected if every point `x` has a neighborhood in
-which every loop based at `x` is nullhomotopic in the whole space.
+which every loop based at `x` is nullhomotopic in the whole space. On locally path-connected
+spaces this is equivalent to requiring all loops in a sufficiently small neighborhood to be
+nullhomotopic, regardless of their basepoint; see
+`SemilocallySimplyConnectedAt.exists_isPathHomotopyTrivial_neighborhood`.
 
 ## Main definitions
 
@@ -28,6 +32,12 @@ which every loop based at `x` is nullhomotopic in the whole space.
   map on fundamental groups.
 * `semilocallySimplyConnectedAt_iff_paths`: characterization in terms of paths with common
   endpoints being homotopic.
+* `SemilocallySimplyConnectedAt.exists_isPathHomotopyTrivial_neighborhood`: in a locally
+  path-connected space, the neighborhood can be taken open, path-connected and
+  path-homotopy-trivial.
+* `Path.isOpen_setOf_homotopic` and `Path.Homotopic.Quotient.discreteTopology`: in a semilocally
+  simply connected, locally path-connected space, path-homotopy classes are open in the
+  compact-open topology, so the quotient of paths by homotopy is discrete.
 
 ## References
 
@@ -100,6 +110,23 @@ public theorem semilocallySimplyConnectedAt_iff_paths {x : X} :
   exact exists_congr fun U ↦ and_congr_right fun _ ↦ and_congr_right fun _ ↦
     (Path.Homotopic.paths_from_homotopic_iff_loops_nullhomotopic U x).symm
 
+/-- In a locally path-connected space, a point that is semilocally simply connected has an open,
+path-connected neighborhood in which all loops, at every basepoint, are nullhomotopic in the
+ambient space. -/
+public theorem SemilocallySimplyConnectedAt.exists_isPathHomotopyTrivial_neighborhood
+    [LocallyPathConnectedSpace X] {x : X} (h : SemilocallySimplyConnectedAt x) :
+    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U := by
+  obtain ⟨U, hU_open, hxU, hU_loops⟩ := semilocallySimplyConnectedAt_iff.mp h
+  refine ⟨pathComponentIn U x, hU_open.pathComponentIn x, mem_pathComponentIn_self hxU,
+    isPathConnected_pathComponentIn hxU, ?_⟩
+  apply (Path.Homotopic.paths_homotopic_iff_loops_nullhomotopic (pathComponentIn U x)).mpr
+  intro u δ hδ
+  -- Conjugate the loop `δ` at `u` back to `x` along a path `α` in the path component.
+  obtain ⟨α, hα⟩ : JoinedIn U x u := hδ ⟨0, δ.source⟩
+  refine Path.Homotopic.of_conj_nullhomotopic (hU_loops ((α.trans δ).trans α.symm) ?_)
+  simp only [Path.trans_range, Path.symm_range, union_subset_iff]
+  exact ⟨⟨range_subset_iff.mpr hα, hδ.trans pathComponentIn_subset⟩, range_subset_iff.mpr hα⟩
+
 /-! ### SemilocallySimplyConnectedOn -/
 
 variable {s t : Set X} {x : X}
@@ -166,5 +193,47 @@ public theorem semilocallySimplyConnectedSpace_iff_paths :
         ∀ {u : X} (γ γ' : Path x u), range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
   ⟨fun ⟨h⟩ x ↦ semilocallySimplyConnectedAt_iff_paths.mp (h x),
     fun h ↦ ⟨fun x ↦ semilocallySimplyConnectedAt_iff_paths.mpr (h x)⟩⟩
+
+/-- In a semilocally simply connected, locally path-connected space, every point has an open,
+path-connected, path-homotopy-trivial neighborhood. -/
+public theorem SemilocallySimplyConnectedSpace.exists_isPathHomotopyTrivial_neighborhood
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X] (x : X) :
+    ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U :=
+  SemilocallySimplyConnectedAt.exists_isPathHomotopyTrivial_neighborhood
+    (.of_semilocallySimplyConnectedSpace x)
+
+/-! ### Discreteness of path-homotopy quotients -/
+
+/-- In a semilocally simply connected, locally path-connected space, every path lies in a tube. -/
+public theorem Path.exists_isInTube_of_semilocallySimplyConnectedSpace
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X] {x y : X} (γ : Path x y) :
+    ∃ (n : ℕ) (part : unitInterval.Partition n) (T : Path.Tube X n), Path.IsInTube γ part T :=
+  γ.exists_isInTube fun z _ ↦ by
+    obtain ⟨U, hU, hz, -, hU_triv⟩ :=
+      SemilocallySimplyConnectedSpace.exists_isPathHomotopyTrivial_neighborhood z
+    exact ⟨U, hU, hz, hU_triv⟩
+
+/-- In a semilocally simply connected, locally path-connected space, the set of paths homotopic
+to a given path is open in the compact-open topology. -/
+public theorem Path.isOpen_setOf_homotopic [SemilocallySimplyConnectedSpace X]
+    [LocallyPathConnectedSpace X] {x y : X} (p : Path x y) :
+    IsOpen {p' : Path x y | p'.Homotopic p} := by
+  refine isOpen_iff_forall_mem_open.mpr fun q hq ↦ ?_
+  obtain ⟨n, part, T, hq_tube⟩ := q.exists_isInTube_of_semilocallySimplyConnectedSpace
+  exact ⟨{q' | Path.IsInTube q' part T}, fun q' hq' ↦ (hq'.homotopic hq_tube).trans hq,
+    T.isOpen_setOf_isInTube_path part x y, hq_tube⟩
+
+/-- In a semilocally simply connected, locally path-connected space, the quotient of paths by
+homotopy is discrete. -/
+public instance (priority := 100) Path.Homotopic.Quotient.discreteTopology
+    [SemilocallySimplyConnectedSpace X] [LocallyPathConnectedSpace X] {x y : X} :
+    DiscreteTopology (Path.Homotopic.Quotient x y) := by
+  rw [discreteTopology_iff_isOpen_singleton]
+  intro a
+  induction a using Quotient.inductionOn with
+  | h p =>
+    apply (Path.Homotopic.Quotient.isQuotientMap_mk x y).isOpen_preimage.mp
+    convert isOpen_setOf_homotopic p using 1
+    exact Set.ext fun _ ↦ Path.Homotopic.Quotient.eq
 
 end

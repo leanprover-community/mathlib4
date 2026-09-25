@@ -1530,6 +1530,7 @@ public import Mathlib.AlgebraicTopology.DoldKan.Projections
 public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 public import Mathlib.AlgebraicTopology.EilenbergSteenrod
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.BasedPath
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
