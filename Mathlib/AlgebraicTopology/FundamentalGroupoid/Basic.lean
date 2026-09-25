@@ -259,18 +259,16 @@ theorem trans_refl (γ : Homotopic.Quotient x₀ x₁) :
 theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Homotopic.Quotient x₁ x₂)
     (hx : x₀' = x₀) (hy : x₁ = x₀) :
     trans ((refl x₀).cast hx hy) p = p.cast (hx.trans hy.symm) rfl := by
-  induction p using Quotient.ind with | mk p =>
-  simp only [← mk_trans, ← mk_refl, ← mk_cast, eq]
-  exact Homotopic.refl_cast_trans p hx hy
+  subst hx hy
+  simp
 
 /-- `trans_refl`, with the constant class cast to a possibly different basepoint. -/
 @[simp]
 theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Homotopic.Quotient x₀ x₁)
     (hx : x₁ = x₂) (hy : x₁' = x₂) :
     trans p ((refl x₂).cast hx hy) = p.cast rfl (hy.trans hx.symm) := by
-  induction p using Quotient.ind with | mk p =>
-  simp only [← mk_trans, ← mk_refl, ← mk_cast, eq]
-  exact Homotopic.trans_refl_cast p hx hy
+  subst hx hy
+  simp
 
 @[simp, grind =]
 theorem trans_symm (γ : Homotopic.Quotient x₀ x₁) :
@@ -318,10 +316,12 @@ end Quotient
 /-- A loop whose conjugate by a path is nullhomotopic is itself nullhomotopic. -/
 theorem of_conj_nullhomotopic {x₀ x₁ : X} {α : Path x₀ x₁} {δ : Path x₁ x₁}
     (h : ((α.trans δ).trans α.symm).Homotopic (Path.refl x₀)) :
-    δ.Homotopic (Path.refl x₁) :=
-  Quotient.eq.mp <| Quotient.mk_refl x₁ ▸ Quotient.of_conj_eq_refl (α := Quotient.mk α) (by
-    simpa only [← Quotient.mk_trans, ← Quotient.mk_symm, ← Quotient.mk_refl] using
-      Quotient.eq.mpr h)
+    δ.Homotopic (Path.refl x₁) := by
+  apply Quotient.eq.mp
+  rw [Quotient.mk_refl]
+  apply Quotient.of_conj_eq_refl (α := Quotient.mk α)
+  simpa only [← Quotient.mk_trans, ← Quotient.mk_symm, ← Quotient.mk_refl] using
+    Quotient.eq.mpr h
 
 end Homotopic
 

@@ -244,11 +244,11 @@ theorem mk_subpath_trans_mk_subpath (γ : Path a b) (s t u : I) :
 
 namespace Quotient
 
-theorem subpath_self (γ : Path a b) (t : I) :
+theorem mk_subpath_self (γ : Path a b) (t : I) :
     mk (γ.subpath t t) = refl (γ t) := by
   rw [Path.subpath_self, mk_refl]
 
-theorem subpath_zero_one (γ : Path a b) :
+theorem mk_subpath_zero_one (γ : Path a b) :
     mk (γ.subpath 0 1) = (mk γ).cast γ.source γ.target := by
   rw [Path.subpath_zero_one, mk_cast]
 

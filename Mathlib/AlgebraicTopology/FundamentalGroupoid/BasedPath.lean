@@ -16,13 +16,15 @@ For a topological space `X` and a basepoint `x₀ : X`, this file introduces the
 `C(I, X)` with the compact-open topology. This is the space whose quotient by endpoint-preserving
 homotopy is the universal cover of `X` at `x₀`.
 
-The main results concern the path components of `endpoint ⁻¹' U` for an open set `U ⊆ X`: these
-are the sheets of the universal cover over `U`.
+Unlike the sigma type `Σ y, Path x₀ y` with its disjoint-union topology, this topology allows
+endpoints to move continuously.
+
+The main results concern the path components of `endpoint ⁻¹' U`. For sufficiently small open
+sets `U`, their images in the universal cover are the sheets over `U`.
 
 ## Main definitions
 
 * `BasedPath x₀`: the space of based paths out of `x₀`.
-* `BasedPath.endpoint`, `BasedPath.toPath`, `BasedPath.ofPath`, `BasedPath.append`: basic API.
 * `BasedPath.deformTerminal`: modify a based path near its endpoint by a short path, without
   moving far in the compact-open topology.
 * `BasedPath.initialSegmentFamily`: the family `t ↦ γ|_[0, t]` of initial segments.
@@ -73,7 +75,7 @@ public instance : ContinuousEval (BasedPath x₀) I X :=
 /-- A map into `BasedPath x₀` is continuous iff its uncurried form is. -/
 public theorem continuous_iff {Y : Type*} [TopologicalSpace Y] {f : Y → BasedPath x₀} :
     Continuous f ↔ Continuous fun p : Y × I ↦ f p.1 p.2 :=
-  ⟨fun hf ↦ continuous_eval.comp ((continuous_subtype_val.comp hf).prodMap continuous_id),
+  ⟨fun hf ↦ continuous_eval.comp (hf.prodMap continuous_id),
     fun h ↦ Continuous.subtype_mk (ContinuousMap.continuous_of_continuous_uncurry _ h) _⟩
 
 @[simp] public theorem source (γ : BasedPath x₀) : γ 0 = x₀ := γ.2
@@ -87,7 +89,7 @@ public theorem continuous_iff {Y : Type*} [TopologicalSpace Y] {f : Y → BasedP
   source' := γ.2
   target' := rfl
 
-/-- Not a simp lemma, since it would conflict with `endpoint_refl` and friends. -/
+-- Keep `endpoint` folded so that lemmas such as `endpoint_refl` can apply.
 public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ 1 := rfl
 
 @[fun_prop] public theorem continuous_endpoint : Continuous (endpoint (x₀ := x₀)) :=
@@ -104,15 +106,15 @@ public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ 1 := rfl
 
 @[simp] public theorem ofPath_apply {y : X} (γ : Path x₀ y) (t : I) : ofPath γ t = γ t := rfl
 
-@[simp] public theorem ofPath_toPath {y : X} (γ : Path x₀ y) :
+@[simp] public theorem toPath_ofPath {y : X} (γ : Path x₀ y) :
     (ofPath γ).toPath = γ.cast rfl γ.target := by
   ext t
   rfl
 
-public theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ) = y :=
+@[simp] public theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ) = y :=
   γ.target
 
-@[simp] public theorem ofPath_toPath_self (γ : BasedPath x₀) : ofPath γ.toPath = γ := rfl
+@[simp] public theorem ofPath_toPath (γ : BasedPath x₀) : ofPath γ.toPath = γ := rfl
 
 @[simp] public theorem ofPath_cast {y y' : X} (γ : Path x₀ y) (h : y' = y) :
     ofPath (γ.cast rfl h) = ofPath γ := rfl
@@ -135,7 +137,7 @@ public theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ)
     (δ : Path (endpoint γ) y) : BasedPath x₀ :=
   ofPath (γ.toPath.trans δ)
 
-public theorem endpoint_append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) :
+@[simp] public theorem endpoint_append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) :
     endpoint (append γ δ) = y :=
   endpoint_ofPath _
 
@@ -147,8 +149,8 @@ variable {v : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) v) {a b : ℝ}
 
 /-- Replace the end of a based path `γ` by a path `δ` out of its endpoint: the result agrees with
 `γ` on `[0, a]`, traverses `γ|_[a, 1]` on `[a, b]`, and traverses `δ` on `[b, 1]`. When `a` is
-close to `1` and `δ` is short, this is close to `γ` in the compact-open topology; this is the key
-to `isOpenMap_endpoint`. -/
+close to `1` and the range of `δ` lies in a small neighborhood of the endpoint, this stays in
+a prescribed compact-open neighborhood of `γ`. -/
 @[expose] public noncomputable def deformTerminal (ha : 0 ≤ a) (hab : a < b) (hb : b < 1) :
     BasedPath x₀ :=
   let f : ℝ → X := fun t ↦
@@ -270,11 +272,11 @@ public theorem isOpenMap_endpoint [LocallyPathConnectedSpace X] (x₀ : X) :
 
 @[simp] public theorem initialSegmentFamily_one (γ : BasedPath x₀) :
     γ.initialSegmentFamily 1 = γ := by
-  rw [initialSegmentFamily, Path.initialSegmentFamily_one, ofPath_cast, ofPath_toPath_self]
+  rw [initialSegmentFamily, Path.initialSegmentFamily_one, ofPath_cast, ofPath_toPath]
 
 @[fun_prop] public theorem continuous_initialSegmentFamily (γ : BasedPath x₀) :
     Continuous γ.initialSegmentFamily :=
-  continuous_iff.mpr (by simpa only using! γ.toPath.continuous_initialSegmentFamily_uncurry)
+  continuous_iff.mpr γ.toPath.continuous_initialSegmentFamily_uncurry
 
 /-- Appending the initial segments of a path `δ` to a based path is continuous in the
 parameter. -/
@@ -282,10 +284,9 @@ parameter. -/
     (γ : BasedPath x₀) (δ : Path (endpoint γ) z) :
     Continuous fun t : I ↦ γ.append (δ.initialSegmentFamily t) := by
   refine continuous_iff.mpr ?_
-  simpa using!
-    Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
-      (Path.continuous_uncurry_iff.mpr continuous_const) δ.initialSegmentFamily
-      δ.continuous_initialSegmentFamily_uncurry
+  exact Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
+    (Path.continuous_uncurry_iff.mpr continuous_const) δ.initialSegmentFamily
+    δ.continuous_initialSegmentFamily_uncurry
 
 /-! ### Path components of `endpoint ⁻¹' U` -/
 
@@ -306,8 +307,12 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
   -- Slide `γ` to `append γ (Path.refl _)`, then grow the appended path along `δ`.
   refine (joinedIn_preimage_of_homotopic hγ (Path.Homotopic.trans_refl γ.toPath)).symm.trans ?_
   refine ⟨⟨⟨fun t ↦ append γ (δ.initialSegmentFamily t), by fun_prop⟩, ?_, ?_⟩, fun t ↦ ?_⟩
-  · simpa using! congrArg (append γ) (Path.initialSegmentFamily_zero δ)
-  · simpa using! congrArg (append γ) (Path.initialSegmentFamily_one δ)
+  · change append γ (δ.initialSegmentFamily 0) = _
+    rw [Path.initialSegmentFamily_zero]
+    rfl
+  · change append γ (δ.initialSegmentFamily 1) = _
+    rw [Path.initialSegmentFamily_one]
+    rfl
   · change endpoint (append γ (δ.initialSegmentFamily t)) ∈ U
     rw [endpoint_append]
     exact hδ (mem_range_self _)
@@ -321,20 +326,20 @@ public theorem exists_open_nhds_pathComponent_preimage
     ∃ N : Set (BasedPath x₀), IsOpen N ∧ α ∈ N ∧
       ∀ β ∈ N, JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) α β := by
   classical
-  obtain ⟨n, part, T, hα_tube⟩ := α.toPath.exists_pathInTube_of_semilocallySimplyConnectedSpace
+  obtain ⟨n, part, T, hα_tube⟩ := α.toPath.exists_isInTube_of_semilocallySimplyConnectedSpace
   -- Shrink the last vertex set of the tube to a path-connected neighborhood of `endpoint α`
   -- inside `U`.
   have hα_last : α (part.t (Fin.last n)) ∈ T.V (Fin.last n) ∩ U := by
     refine ⟨hα_tube.mem_V _, ?_⟩
     rw [part.t_last]
     exact hα
-  set W := pathComponentIn (T.V (Fin.last n) ∩ U) (α (part.t (Fin.last n))) with hW
+  set W := pathComponentIn (T.V (Fin.last n) ∩ U) (α (part.t (Fin.last n)))
   have hV' : ∀ j, Function.update T.V (Fin.last n) W j ⊆ T.V j := fun j ↦ by
     rw [Function.update_apply]
     split_ifs with h
     · exact h ▸ pathComponentIn_subset.trans inter_subset_left
     · exact subset_rfl
-  let T' : TubeData X n :=
+  let T' : Path.Tube X n :=
     { T with
       V := Function.update T.V (Fin.last n) W
       isOpen_V := fun j ↦ by
@@ -349,15 +354,15 @@ public theorem exists_open_nhds_pathComponent_preimage
         · exact T.isPathConnected_V j
       V_castSucc_subset := fun i ↦ (hV' _).trans (T.V_castSucc_subset i)
       V_succ_subset := fun i ↦ (hV' _).trans (T.V_succ_subset i) }
-  have hα_tube' : PathInTube α.toPath part T' :=
+  have hα_tube' : Path.IsInTube α.toPath part T' :=
     ⟨hα_tube.mapsTo, fun j ↦ by
       change α (part.t j) ∈ Function.update T.V (Fin.last n) W j
       rw [Function.update_apply]
       split_ifs with h
       · exact h ▸ mem_pathComponentIn_self hα_last
       · exact hα_tube.mem_V j⟩
-  refine ⟨{β | PathInTube β.toPath part T'},
-    (T'.isOpen_setOf_pathInTube part).preimage continuous_subtype_val, hα_tube', fun β hβ ↦ ?_⟩
+  refine ⟨{β | Path.IsInTube β.toPath part T'},
+    (T'.isOpen_setOf_isInTube part).preimage continuous_subtype_val, hα_tube', fun β hβ ↦ ?_⟩
   obtain ⟨ρ, hρ, h⟩ := hα_tube'.exists_trans_homotopic hβ
   have hρU : range ρ ⊆ U := by
     refine hρ.trans ?_

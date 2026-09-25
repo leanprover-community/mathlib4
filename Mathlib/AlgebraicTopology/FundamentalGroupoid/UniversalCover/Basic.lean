@@ -13,7 +13,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.BasedPath
 For a topological space `X` with basepoint `x₀`, this file defines the universal cover
 `UniversalCover x₀` as the quotient of the based-path space `BasedPath x₀` by endpoint-preserving
 homotopy, and constructs the sheets of the projection `UniversalCover x₀ → X` over a good
-neighborhood `U`.
+neighborhood `U`: an open, path-connected, path-homotopy-trivial set.
 
 ## Main definitions
 
@@ -28,18 +28,22 @@ neighborhood `U`.
 * `UniversalCover.toPath_homotopic_of_ofBasedPath_eq` and
   `UniversalCover.ofBasedPath_eq_of_homotopic_toPath`: two based paths have the same image in the
   universal cover iff they are homotopic rel endpoints.
-* `UniversalCover.isOpen_sheet`, `UniversalCover.sheet_surjOn`,
-  `UniversalCover.sheet_pairwise_disjoint`, `UniversalCover.sheet_exhaustive`,
-  `UniversalCover.sheet_proj_injOn`: the sheets over a good neighborhood `U` are open, disjoint,
+* `UniversalCover.isOpen_sheet`, `UniversalCover.surjOn_proj_sheet`,
+  `UniversalCover.pairwise_disjoint_sheet`, `UniversalCover.preimage_subset_iUnion_sheet`,
+  `UniversalCover.injOn_proj_sheet`: the sheets over a good neighborhood `U` are open, disjoint,
   cover `proj ⁻¹' U`, and each maps bijectively onto `U`.
 
 ## Implementation notes
 
-Textbook treatments (e.g. Hatcher, Section 1.3) topologize the universal cover directly, by
+Textbook treatments (e.g. [hatcher02], Section 1.3) topologize the universal cover directly, by
 declaring a basic open set for each pair `(q, U)` of a homotopy class `q` and a good
 neighborhood `U`. We instead take the quotient topology from the compact-open topology on
 `BasedPath x₀`. This makes the comparison with the path-space topology automatic, at the cost
 of having to prove openness of sheets (`BasedPath.isOpen_pathComponent_preimage`).
+
+## References
+
+* [Allen Hatcher, *Algebraic Topology*][hatcher02], Section 1.3.
 -/
 
 public section
@@ -133,13 +137,13 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
 
 /-- The projection `UniversalCover x₀ → X` is open when `X` is locally path-connected. -/
 theorem isOpenMap_proj [LocallyPathConnectedSpace X] (x₀ : X) :
-    IsOpenMap (proj (x₀ := x₀)) := by
-  intro s hs
-  have himage : BasedPath.endpoint '' (ofBasedPath x₀ ⁻¹' s) = proj (x₀ := x₀) '' s := by
-    rw [show BasedPath.endpoint (x₀ := x₀) = proj ∘ ofBasedPath x₀ from rfl, Set.image_comp,
-      Set.image_preimage_eq s (surjective_ofBasedPath x₀)]
-  rw [← himage]
-  exact BasedPath.isOpenMap_endpoint x₀ _ ((isQuotientMap_ofBasedPath x₀).isOpen_preimage.2 hs)
+    IsOpenMap (proj (x₀ := x₀)) :=
+  IsOpenMap.of_comp (continuous_ofBasedPath x₀) (surjective_ofBasedPath x₀)
+    (BasedPath.isOpenMap_endpoint x₀)
+
+theorem surjective_proj [PathConnectedSpace X] :
+    Function.Surjective (proj : UniversalCover x₀ → X) := fun x ↦
+  ⟨mk x (Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)), rfl⟩
 
 /-! ### Sheets over a good neighborhood
 
@@ -148,19 +152,19 @@ For `x ∈ U`, the sheets of `proj ⁻¹' U` are indexed by the homotopy classes
 `BasedPath.ofPath p` in `endpoint ⁻¹' U`. -/
 
 /-- The path component of `BasedPath.ofPath p` in `endpoint ⁻¹' U`. -/
-def basedPathComponent (U : Set X) {y : X} (p : Path x₀ y) : Set (BasedPath x₀) :=
+@[expose] def basedPathComponent (U : Set X) {y : X} (p : Path x₀ y) : Set (BasedPath x₀) :=
   pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
 
 /-- The sheet over `U` indexed by `q : Path.Homotopic.Quotient x₀ x`, as a set of based paths.
 This is well defined by `BasedPath.pathComponent_preimage_saturated`. -/
-def basedPathSheet (U : Set X) (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
+@[expose] def basedPathSheet (U : Set X) (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
     Set (BasedPath x₀) :=
   Quotient.liftOn q (fun p : Path x₀ x ↦ basedPathComponent U p)
     fun _ _ h ↦ BasedPath.pathComponent_preimage_saturated hxU h
 
 theorem basedPathSheet_mk (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
     basedPathSheet U hxU (Path.Homotopic.Quotient.mk p) = basedPathComponent U p :=
-  (rfl)
+  rfl
 
 theorem basedPathSheet_subset_endpoint_preimage (U : Set X) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
@@ -211,7 +215,7 @@ theorem mem_sheet_self {U : Set X} (hxU : x ∈ U) (p : Path x₀ x) :
     rfl⟩
 
 /-- Each sheet over a path-connected `U` projects onto `U`. -/
-theorem sheet_surjOn {U : Set X} (hU : IsPathConnected U) (hxU : x ∈ U)
+theorem surjOn_proj_sheet {U : Set X} (hU : IsPathConnected U) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
     (sheet U hxU q).SurjOn (proj (x₀ := x₀)) U := by
   intro v hv
@@ -228,7 +232,7 @@ theorem sheet_surjOn {U : Set X} (hU : IsPathConnected U) (hxU : x ∈ U)
     exact BasedPath.endpoint_append _ _
 
 /-- Sheets over a path-homotopy-trivial `U` are pairwise disjoint. -/
-theorem sheet_pairwise_disjoint {U : Set X} (hU : IsPathHomotopyTrivial U) (hxU : x ∈ U) :
+theorem pairwise_disjoint_sheet {U : Set X} (hU : IsPathHomotopyTrivial U) (hxU : x ∈ U) :
     Pairwise (Disjoint on sheet (x₀ := x₀) U hxU) := by
   intro q₁ q₂ hne
   refine Set.disjoint_left.mpr ?_
@@ -238,8 +242,6 @@ theorem sheet_pairwise_disjoint {U : Set X} (hU : IsPathHomotopyTrivial U) (hxU 
   | h p₁ =>
     induction q₂ using Quotient.inductionOn with
     | h p₂ =>
-      have hp₁ : BasedPath.endpoint (BasedPath.ofPath p₁) ∈ U :=
-        (BasedPath.endpoint_ofPath p₁).symm ▸ hxU
       have h_end : BasedPath.endpoint (BasedPath.ofPath p₁) =
           BasedPath.endpoint (BasedPath.ofPath p₂) := by
         rw [BasedPath.endpoint_ofPath, BasedPath.endpoint_ofPath]
@@ -252,7 +254,7 @@ theorem sheet_pairwise_disjoint {U : Set X} (hU : IsPathHomotopyTrivial U) (hxU 
       exact eq_of_heq ((UniversalCover.mk.injEq _ _ _ _).mp h_eq).2
 
 /-- Over a path-connected `U`, the sheets cover `proj ⁻¹' U`. -/
-theorem sheet_exhaustive {U : Set X} (hU : IsPathConnected U) (hxU : x ∈ U) :
+theorem preimage_subset_iUnion_sheet {U : Set X} (hU : IsPathConnected U) (hxU : x ∈ U) :
     proj (x₀ := x₀) ⁻¹' U ⊆ ⋃ q : Path.Homotopic.Quotient x₀ x, sheet U hxU q := by
   intro e he
   obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ e
@@ -263,12 +265,11 @@ theorem sheet_exhaustive {U : Set X} (hU : IsPathConnected U) (hxU : x ∈ U) :
     α, (BasedPath.joinedIn_preimage_of_append α he η hη).symm, rfl⟩
 
 /-- Over a path-homotopy-trivial `U`, the projection is injective on each sheet. -/
-theorem sheet_proj_injOn {U : Set X} (hU : IsPathHomotopyTrivial U) (hxU : x ∈ U)
+theorem injOn_proj_sheet {U : Set X} (hU : IsPathHomotopyTrivial U) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
     (sheet U hxU q).InjOn (proj (x₀ := x₀)) := by
   rintro _ ⟨α₁, hα₁, rfl⟩ _ ⟨α₂, hα₂, rfl⟩ h_proj
   rw [proj_ofBasedPath, proj_ofBasedPath] at h_proj
-  have hα₁_end : BasedPath.endpoint α₁ ∈ U := basedPathSheet_subset_endpoint_preimage U hxU q hα₁
   induction q using Quotient.inductionOn with
   | h p =>
     exact ofBasedPath_eq_of_homotopic_toPath h_proj

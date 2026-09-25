@@ -649,11 +649,9 @@ noncomputable def initialSegmentFamily {a b : X} (γ : Path a b) (t : I) :
 
 theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b) :
     Continuous ↿(initialSegmentFamily γ) := by
-  have htrunc : Continuous (fun ts : I × I ↦ γ.truncate 0 ts.1 ts.2 : I × I → X) := by
-    let key : I × I → ℝ × ℝ × I := fun ts ↦ (0, ts.1, ts.2)
-    have hkey : Continuous key := by fun_prop
-    simpa [key] using! γ.truncate_continuous_family.comp hkey
-  simpa [initialSegmentFamily] using! htrunc
+  change Continuous (fun ts : I × I ↦ γ.truncate 0 ts.1 ts.2)
+  exact γ.truncate_continuous_family.comp (continuous_const.prodMk
+    (continuous_subtype_val.fst'.prodMk continuous_snd))
 
 @[simp] theorem initialSegmentFamily_apply {a b : X} (γ : Path a b) (t s : I) :
     initialSegmentFamily γ t s = γ.extend (min (s : ℝ) t) := by
@@ -718,35 +716,28 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
 theorem exists_partition_in_cover
     {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
     {x y : X} (γ : Path x y) (hU_cover : ∀ s : unitInterval, ∃ i, γ s ∈ U i) :
-    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
-      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
-      (∀ i : Fin n, ∃ j : ι, MapsTo γ (Icc (t i.castSucc) (t i.succ)) (U j)) := by
-  -- Pull back the cover along `γ`; the result is an open cover of `unitInterval`.
+    ∃ (n : ℕ) (part : unitInterval.Partition n),
+      ∀ i : Fin n, ∃ j : ι, MapsTo γ (Icc (part.t i.castSucc) (part.t i.succ)) (U j) := by
   obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
     exists_monotone_partition_unitInterval
       (fun i ↦ (hU_open i).preimage γ.continuous)
-      (fun s _ ↦ by
-        obtain ⟨i, hi⟩ := hU_cover s
-        exact Set.mem_iUnion.2 ⟨i, hi⟩)
-  refine ⟨n, t, ht_mono, ht0, htn, fun i ↦ ?_⟩
-  obtain ⟨j, hj⟩ := ht_cover i
-  exact ⟨j, fun s hs ↦ hj hs⟩
+      (fun s _ ↦ mem_iUnion.mpr (hU_cover s))
+  exact ⟨n, ⟨t, ht_mono, ht0, htn⟩, ht_cover⟩
 
 /-- If every point on a path has an open neighborhood satisfying `P`, then there is a partition
 `0 = t₀ ≤ ⋯ ≤ tₙ = 1` such that each segment `γ [tᵢ, tᵢ₊₁]` lies in an open set satisfying
 `P`. -/
 theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
     (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
-    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
-      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
-      (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
-        MapsTo γ (Icc (t i.castSucc) (t i.succ)) U) := by
+    ∃ (n : ℕ) (part : unitInterval.Partition n),
+      ∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
+        MapsTo γ (Icc (part.t i.castSucc) (part.t i.succ)) U := by
   choose U hU_open hU_mem hU_P using h
-  obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
+  obtain ⟨n, part, h_segments⟩ :=
     exists_partition_in_cover (fun z : Set.range γ ↦ U z.val z.property)
       (fun z ↦ hU_open z.val z.property) γ fun s ↦
         ⟨⟨γ s, ⟨s, rfl⟩⟩, hU_mem (γ s) ⟨s, rfl⟩⟩
-  refine ⟨n, t, h_mono, h_start, h_end, fun i ↦ ?_⟩
+  refine ⟨n, part, fun i ↦ ?_⟩
   obtain ⟨⟨z, hz⟩, h_seg⟩ := h_segments i
   exact ⟨U z hz, hU_open z hz, hU_P z hz, h_seg⟩
 

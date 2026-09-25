@@ -14,8 +14,9 @@ public import Mathlib.Topology.Covering.Quotient
 
 The fundamental group `FundamentalGroup X x₀` acts on `UniversalCover x₀` by deck
 transformations: `g` acts on the homotopy class of a path from `x₀` by prepending a loop
-representing `g⁻¹`. The action is free, continuous, transitive on fibers and properly
-discontinuous, so `proj` is a quotient covering map.
+representing `g⁻¹`. The action is free, continuous and transitive on fibers. If `X` is
+path-connected, locally path-connected and semilocally simply connected, then `proj` is a
+quotient covering map for this action.
 
 ## Main statements
 
@@ -93,12 +94,11 @@ instance : ContinuousConstSMul (FundamentalGroup X x₀) (UniversalCover x₀) w
     refine (continuous_ofBasedPath x₀).comp (BasedPath.continuous_iff.mpr ?_)
     have h_eval : Continuous fun p : BasedPath x₀ × I ↦ p.1 p.2 :=
       BasedPath.continuous_iff.mp continuous_id
-    simpa using!
-      Path.trans_continuous_family (a := fun _ : BasedPath x₀ ↦ x₀)
-        (b := fun _ : BasedPath x₀ ↦ x₀)
-        (c := fun β : BasedPath x₀ ↦ BasedPath.endpoint β)
-        (fun _ ↦ γ) (Path.continuous_uncurry_iff.mpr continuous_const)
-        (fun β ↦ β.toPath) h_eval
+    exact Path.trans_continuous_family (a := fun _ : BasedPath x₀ ↦ x₀)
+      (b := fun _ : BasedPath x₀ ↦ x₀)
+      (c := fun β : BasedPath x₀ ↦ BasedPath.endpoint β)
+      (fun _ ↦ γ) (Path.continuous_uncurry_iff.mpr continuous_const)
+      (fun β ↦ β.toPath) h_eval
 
 /-- The action of the fundamental group on the universal cover is free. -/
 instance : IsCancelSMul (FundamentalGroup X x₀) (UniversalCover x₀) where
@@ -124,10 +124,6 @@ theorem proj_eq_iff_mem_orbit {p₁ p₂ : UniversalCover x₀} :
   · rintro ⟨g, hg⟩
     rw [← hg, proj_smul]
 
-theorem proj_surjective [PathConnectedSpace X] :
-    Function.Surjective (proj : UniversalCover x₀ → X) := fun x ↦
-  ⟨mk x (Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)), rfl⟩
-
 /-- The action is properly discontinuous: every point of the universal cover has a neighborhood
 whose non-identity translates are disjoint from it. -/
 theorem exists_nhds_smul_disjoint [LocallyPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
@@ -142,14 +138,14 @@ theorem exists_nhds_smul_disjoint [LocallyPathConnectedSpace X] [SemilocallySimp
   refine ⟨sheet V hxV q, (isOpen_sheet V hV_open hxV q).mem_nhds hmem, fun g hg ↦ ?_⟩
   obtain ⟨_, ⟨y, hy, rfl⟩, hgy⟩ := hg
   -- `proj` is injective on the sheet, so `g • y = y`, and the action is free.
-  exact IsCancelSMul.eq_one_of_smul (sheet_proj_injOn hV_triv hxV q hgy hy (proj_smul g y))
+  exact IsCancelSMul.eq_one_of_smul (injOn_proj_sheet hV_triv hxV q hgy hy (proj_smul g y))
 
 /-- The projection from the universal cover is a quotient covering map for the action of the
 fundamental group. -/
 theorem isQuotientCoveringMap
     [LocallyPathConnectedSpace X] [PathConnectedSpace X] [SemilocallySimplyConnectedSpace X] :
     IsQuotientCoveringMap (proj : UniversalCover x₀ → X) (FundamentalGroup X x₀) where
-  __ := (isCoveringMap x₀).isOpenMap.isQuotientMap (continuous_proj x₀) proj_surjective
+  __ := (isCoveringMap x₀).isOpenMap.isQuotientMap (continuous_proj x₀) surjective_proj
   apply_eq_iff_mem_orbit := proj_eq_iff_mem_orbit
   disjoint := exists_nhds_smul_disjoint
 

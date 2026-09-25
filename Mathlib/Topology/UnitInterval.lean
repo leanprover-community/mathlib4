@@ -246,6 +246,28 @@ lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
   rw [preimage_subtype_val_Ioi]
   exact Ioc_top.symm
 
+/-- A partition `0 = t₀ ≤ ⋯ ≤ tₙ = 1` of the unit interval into `n` segments. -/
+structure Partition (n : ℕ) where
+  /-- The partition points. -/
+  t : Fin (n + 1) → I
+  mono : Monotone t
+  t_zero : t 0 = 0
+  t_last : t (Fin.last n) = 1
+
+namespace Partition
+
+attribute [simp] t_zero t_last
+
+/-- There is no partition into zero segments, since `t 0` would be both `0` and `1`. -/
+instance : IsEmpty (Partition 0) :=
+  ⟨fun p ↦ zero_ne_one (p.t_zero.symm.trans p.t_last)⟩
+
+theorem t_castSucc_le_succ {n : ℕ} (part : Partition n) (i : Fin n) :
+    part.t i.castSucc ≤ part.t i.succ :=
+  part.mono i.castSucc_lt_succ.le
+
+end Partition
+
 end unitInterval
 
 section partition

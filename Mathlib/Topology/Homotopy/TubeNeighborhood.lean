@@ -15,27 +15,28 @@ public import Mathlib.Topology.UnitInterval
 
 A *tube* in the space of paths in `X` is determined by a partition `0 = t₀ ≤ ⋯ ≤ tₙ = 1` of the
 unit interval, open sets `Uᵢ` for the segments `[tᵢ, tᵢ₊₁]`, and open path-connected sets `Vⱼ` for
-the vertices `tⱼ`, with `Vⱼ ⊆ Uⱼ₋₁ ∩ Uⱼ`. A path lies in the tube if it maps each segment into
-`Uᵢ` and each vertex into `Vⱼ`. Tubes are open in the compact-open topology. When each `Uᵢ` is
-*path-homotopy-trivial* (any two paths in `Uᵢ` with the same endpoints are homotopic in `X`), any
-two paths in a common tube are homotopic: connect corresponding vertices by "rungs" in `Vⱼ`, use
-triviality of `Uᵢ` to homotope across each rectangle, and paste.
+the vertices `tⱼ`, each contained in the adjacent segment sets. A path lies in the tube if it
+maps each segment into `Uᵢ` and each vertex into `Vⱼ`. Tubes are open in the compact-open
+topology. When each `Uᵢ` is *path-homotopy-trivial* (any two paths in `Uᵢ` with the same
+endpoints are homotopic in `X`), two paths with the same endpoints in a common tube are homotopic:
+connect corresponding vertices by paths in `Vⱼ`, use homotopy triviality of `Uᵢ` on each rectangle,
+and paste.
 
 ## Main definitions
 
 * `IsPathHomotopyTrivial U`: any two paths in `U` with the same endpoints are homotopic in `X`.
-* `IntervalPartition n`: a monotone sequence `0 = t₀ ≤ ⋯ ≤ tₙ = 1` in the unit interval.
-* `TubeData X n`: the segment sets `Uᵢ` and vertex sets `Vⱼ` of a tube, with their properties.
-* `PathInTube f part T`: the predicate that `f : I → X` lies in the tube.
+* `unitInterval.Partition n`: a monotone sequence `0 = t₀ ≤ ⋯ ≤ tₙ = 1` in the unit interval.
+* `Path.Tube X n`: the segment sets `Uᵢ` and vertex sets `Vⱼ` of a tube, with their properties.
+* `Path.IsInTube f part T`: the predicate that `f : I → X` lies in the tube.
 
 ## Main statements
 
-* `Path.exists_pathInTube`: if every point has an open, path-connected, path-homotopy-trivial
-  neighborhood, then every path lies in some tube.
-* `TubeData.isOpen_setOf_pathInTube`: tubes are open in the compact-open topology.
-* `PathInTube.exists_trans_homotopic`: two paths with the same source in a common tube become
+* `Path.exists_isInTube`: in a locally path-connected space, a path lies in a tube if each
+  point on it has an open, path-homotopy-trivial neighborhood.
+* `Path.Tube.isOpen_setOf_isInTube`: tubes are open in the compact-open topology.
+* `Path.IsInTube.exists_trans_homotopic`: two paths with the same source in a common tube become
   homotopic after appending to the first a path in the last vertex set.
-* `PathInTube.homotopic`: two paths with the same endpoints in a common tube are homotopic.
+* `Path.IsInTube.homotopic`: two paths with the same endpoints in a common tube are homotopic.
 
 The application to semilocally simply connected spaces (path-homotopy classes are open, so
 `Path.Homotopic.Quotient` is discrete) is in
@@ -59,32 +60,10 @@ public theorem IsPathHomotopyTrivial.nullhomotopic {U : Set X} (hU : IsPathHomot
     {x : X} (γ : Path x x) (hγ : range γ ⊆ U) : γ.Homotopic (Path.refl x) :=
   hU γ _ hγ (by simpa using hγ γ.source_mem_range)
 
-/-- A partition `0 = t₀ ≤ ⋯ ≤ tₙ = 1` of the unit interval into `n` segments. -/
-public structure IntervalPartition (n : ℕ) where
-  /-- The partition points. -/
-  t : Fin (n + 1) → I
-  mono : Monotone t
-  t_zero : t 0 = 0
-  t_last : t (Fin.last n) = 1
-
-namespace IntervalPartition
-
-attribute [simp] t_zero t_last
-
-/-- There is no partition into zero segments, since `t 0` would be both `0` and `1`. -/
-public instance : IsEmpty (IntervalPartition 0) :=
-  ⟨fun p ↦ zero_ne_one (p.t_zero.symm.trans p.t_last)⟩
-
-public theorem t_castSucc_le {n : ℕ} (part : IntervalPartition n) (i : Fin n) :
-    (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
-  part.mono i.castSucc_lt_succ.le
-
-end IntervalPartition
-
 /-- The data of a tube with `n` segments: open path-homotopy-trivial sets `U i` for the segments,
 and open path-connected sets `V j` for the vertices, with `V j` contained in the `U i` of the
 adjacent segments. -/
-public structure TubeData (X : Type*) [TopologicalSpace X] (n : ℕ) where
+public structure Path.Tube (X : Type*) [TopologicalSpace X] (n : ℕ) where
   /-- The segment sets. -/
   U : Fin n → Set X
   /-- The vertex sets. -/
@@ -98,40 +77,42 @@ public structure TubeData (X : Type*) [TopologicalSpace X] (n : ℕ) where
 
 /-- `f : I → X` lies in the tube determined by `part` and `T` if it maps each segment
 `[tᵢ, tᵢ₊₁]` into `U i` and each vertex `tⱼ` into `V j`. -/
-public structure PathInTube {n : ℕ} (f : I → X) (part : IntervalPartition n) (T : TubeData X n) :
-    Prop where
+public structure Path.IsInTube {n : ℕ} (f : I → X) (part : unitInterval.Partition n)
+    (T : Path.Tube X n) : Prop where
   mapsTo : ∀ i : Fin n, MapsTo f (Icc (part.t i.castSucc) (part.t i.succ)) (T.U i)
   mem_V : ∀ j, f (part.t j) ∈ T.V j
 
-variable {n : ℕ} {part : IntervalPartition n} {T : TubeData X n}
+variable {n : ℕ} {part : unitInterval.Partition n} {T : Path.Tube X n}
 
-public theorem pathInTube_iff {f : I → X} :
-    PathInTube f part T ↔
+public theorem Path.isInTube_iff {f : I → X} :
+    Path.IsInTube f part T ↔
       (∀ i : Fin n, MapsTo f (Icc (part.t i.castSucc) (part.t i.succ)) (T.U i)) ∧
         ∀ j, f (part.t j) ∈ T.V j :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
-public theorem PathInTube.range_subpath_subset {x y : X} {γ : Path x y}
-    (hγ : PathInTube γ part T) (i : Fin n) :
+public theorem Path.IsInTube.range_subpath_subset {x y : X} {γ : Path x y}
+    (hγ : Path.IsInTube γ part T) (i : Fin n) :
     range (γ.subpath (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i := by
   rintro _ ⟨t, rfl⟩
   exact hγ.mapsTo i
-    ⟨Icc.le_convexComb (part.t_castSucc_le i) t, Icc.convexComb_le (part.t_castSucc_le i) t⟩
+    ⟨Icc.le_convexComb (part.t_castSucc_le_succ i) t,
+      Icc.convexComb_le (part.t_castSucc_le_succ i) t⟩
 
 /-! ### Openness of tubes -/
 
 /-- A tube is open in the compact-open topology on `C(I, X)`. -/
-public theorem TubeData.isOpen_setOf_pathInTube (part : IntervalPartition n) (T : TubeData X n) :
-    IsOpen {f : C(I, X) | PathInTube f part T} := by
-  simp only [pathInTube_iff, ofPred_and, ofPred_forall]
+public theorem Path.Tube.isOpen_setOf_isInTube (part : unitInterval.Partition n)
+    (T : Path.Tube X n) :
+    IsOpen {f : C(I, X) | Path.IsInTube f part T} := by
+  simp only [Path.isInTube_iff, ofPred_and, ofPred_forall]
   refine (isOpen_iInter_of_finite fun i ↦ ?_).inter (isOpen_iInter_of_finite fun j ↦ ?_)
   · exact ContinuousMap.isOpen_setOfPred_mapsTo isCompact_Icc (T.isOpen_U i)
   · exact (T.isOpen_V j).preimage (continuous_eval_const _)
 
 /-- A tube is open in the path space `Path x y`. -/
-public theorem TubeData.isOpen_setOf_pathInTube_path (part : IntervalPartition n)
-    (T : TubeData X n) (x y : X) : IsOpen {γ : Path x y | PathInTube γ part T} :=
-  (T.isOpen_setOf_pathInTube part).preimage continuous_induced_dom
+public theorem Path.Tube.isOpen_setOf_isInTube_path (part : unitInterval.Partition n)
+    (T : Path.Tube X n) (x y : X) : IsOpen {γ : Path x y | Path.IsInTube γ part T} :=
+  (T.isOpen_setOf_isInTube part).preimage continuous_induced_dom
 
 /-! ### Existence of tubes -/
 
@@ -158,40 +139,40 @@ private theorem exists_vertex_family [LocallyPathConnectedSpace X] {f : I → X}
   · exact iInter_subset_of_subset i (iInter_subset _ (Or.inl rfl))
   · exact iInter_subset_of_subset i (iInter_subset _ (Or.inr rfl))
 
-/-- If every point has an open, path-connected, path-homotopy-trivial neighborhood, then every
-path lies in some tube. -/
-public theorem Path.exists_pathInTube [LocallyPathConnectedSpace X] {x y : X} (γ : Path x y)
-    (h : ∀ z : X, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ IsPathConnected U ∧ IsPathHomotopyTrivial U) :
-    ∃ (n : ℕ) (part : IntervalPartition n) (T : TubeData X n), PathInTube γ part T := by
-  obtain ⟨n, t, h_mono, h_zero, h_last, h_seg⟩ := γ.exists_partition_with_property
-    (fun U ↦ IsPathConnected U ∧ IsPathHomotopyTrivial U) fun z _ ↦ h z
+/-- If every point on a path has an open, path-homotopy-trivial neighborhood, then the path
+lies in a tube. -/
+public theorem Path.exists_isInTube [LocallyPathConnectedSpace X] {x y : X} (γ : Path x y)
+    (h : ∀ z ∈ range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ IsPathHomotopyTrivial U) :
+    ∃ (n : ℕ) (part : unitInterval.Partition n) (T : Path.Tube X n), Path.IsInTube γ part T := by
+  obtain ⟨n, part, h_seg⟩ := γ.exists_partition_with_property
+    IsPathHomotopyTrivial h
   choose U hU_open hU hU_mapsTo using h_seg
   obtain ⟨V, hV_open, hV_pathConn, hγV, hV_castSucc, hV_succ⟩ :=
-    exists_vertex_family h_mono hU_open hU_mapsTo
-  exact ⟨n, ⟨t, h_mono, h_zero, h_last⟩,
-    ⟨U, V, hU_open, fun i ↦ (hU i).2, hV_open, hV_pathConn, hV_castSucc, hV_succ⟩,
+    exists_vertex_family part.mono hU_open hU_mapsTo
+  exact ⟨n, part,
+    ⟨U, V, hU_open, hU, hV_open, hV_pathConn, hV_castSucc, hV_succ⟩,
     hU_mapsTo, hγV⟩
 
 /-! ### Paths in a common tube are homotopic -/
 
-/-- The class of `p.subpath` over the endpoints of a partition is the class of `p`. Stated with
-casts to avoid rewriting `part.t 0 = 0` and `part.t (Fin.last n) = 1` inside dependent types. -/
+/-- The class of `p.subpath` over the endpoints of a partition is the class of `p`. Casts keep the
+endpoints fixed when rewriting the partition endpoints. -/
 private theorem Path.Homotopic.Quotient.cast_mk_subpath_t_zero_t_last {x y : X} (p : Path x y)
-    (part : IntervalPartition n) (h₁ : x = p (part.t 0)) (h₂ : y = p (part.t (Fin.last n))) :
+    (part : unitInterval.Partition n) (h₁ : x = p (part.t 0)) (h₂ : y = p (part.t (Fin.last n))) :
     (Path.Homotopic.Quotient.mk (p.subpath (part.t 0) (part.t (Fin.last n)))).cast h₁ h₂ =
       Path.Homotopic.Quotient.mk p := by
   revert h₁ h₂
   rw [part.t_zero, part.t_last]
   intro h₁ h₂
-  rw [Path.Homotopic.Quotient.subpath_zero_one]
+  rw [Path.Homotopic.Quotient.mk_subpath_zero_one]
   simp
 
-/-- The pasting lemma. Let `γ : Path x y` and `γ' : Path x y'`, and let `α j` be "rung" paths
+/-- The pasting lemma. Let `γ : Path x y` and `γ' : Path x' y'`, and let `α j` be "rung" paths
 from `γ (t j)` to `γ' (t j)` at the vertices of a partition. If on each segment
 `γ|[tᵢ, tᵢ₊₁] · αᵢ₊₁` is homotopic to `αᵢ · γ'|[tᵢ, tᵢ₊₁]`, then `γ · αₙ` is homotopic to
 `α₀ · γ'`. -/
-public theorem Path.paste_segment_homotopies {x y y' : X}
-    (γ : Path x y) (γ' : Path x y') (part : IntervalPartition n)
+public theorem Path.Homotopic.trans_of_subpath_trans {x y x' y' : X}
+    (γ : Path x y) (γ' : Path x' y') (part : unitInterval.Partition n)
     (α : (j : Fin (n + 1)) → Path (γ (part.t j)) (γ' (part.t j)))
     (h_rect : ∀ i : Fin n,
       ((γ.subpath (part.t i.castSucc) (part.t i.succ)).trans (α i.succ)).Homotopic
@@ -206,13 +187,13 @@ public theorem Path.paste_segment_homotopies {x y y' : X}
   have h_zero : (γ_aux 0).Homotopic (((α 0).cast (by simp) (by simp)).trans γ') := by
     apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
-    rw [subpath_self, cast_mk_subpath_t_zero_t_last γ' part]
+    rw [mk_subpath_self, cast_mk_subpath_t_zero_t_last γ' part]
     simp
   have h_last : (γ_aux (Fin.last n)).Homotopic
       (γ.trans ((α (Fin.last n)).cast (by simp) (by simp))) := by
     apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
-    rw [subpath_self, cast_mk_subpath_t_zero_t_last γ part]
+    rw [mk_subpath_self, cast_mk_subpath_t_zero_t_last γ part]
     simp
   have h_rect' : ∀ (i : Fin n) {w : X} (q : Path.Homotopic.Quotient (γ' (part.t i.succ)) w),
       (Path.Homotopic.Quotient.mk (γ.subpath (part.t i.castSucc) (part.t i.succ))).trans
@@ -221,17 +202,15 @@ public theorem Path.paste_segment_homotopies {x y y' : X}
           ((Path.Homotopic.Quotient.mk (γ'.subpath (part.t i.castSucc) (part.t i.succ))).trans
             q) := by
     intro i w q
-    induction q using Path.Homotopic.Quotient.ind with | mk q =>
-    simp only [← mk_trans, eq]
-    exact ((Path.Homotopic.trans_assoc _ _ _).symm.trans
-      ((h_rect i).hcomp (.refl q))).trans (Path.Homotopic.trans_assoc _ _ _)
+    rw [← Path.Homotopic.Quotient.trans_assoc, ← Path.Homotopic.Quotient.trans_assoc]
+    rw [← mk_trans, ← mk_trans, Path.Homotopic.Quotient.eq.mpr (h_rect i)]
   have h_step : ∀ i : Fin n, (γ_aux i.succ).Homotopic (γ_aux i.castSucc) := by
     intro i
     apply Path.Homotopic.Quotient.exact
     simp only [γ_aux, mk_trans, mk_cast]
     rw [← Path.Homotopic.mk_subpath_trans_mk_subpath γ (part.t 0) (part.t i.castSucc),
       ← Path.Homotopic.mk_subpath_trans_mk_subpath γ' (part.t i.castSucc) (part.t i.succ)]
-    simp only [trans_assoc]
+    simp only [Path.Homotopic.Quotient.trans_assoc]
     rw [h_rect']
   have h_chain : ∀ j : Fin (n + 1), (γ_aux j).Homotopic (γ_aux 0) := by
     intro j
@@ -241,16 +220,16 @@ public theorem Path.paste_segment_homotopies {x y y' : X}
   exact h_last.symm.trans ((h_chain (Fin.last n)).trans h_zero)
 
 /-- Rung paths at the vertices, connecting two functions in a common tube. -/
-private theorem PathInTube.exists_rungs {x y x' y' : X} {γ : Path x y} {γ' : Path x' y'}
-    (hγ : PathInTube γ part T) (hγ' : PathInTube γ' part T) :
+private theorem Path.IsInTube.exists_rungs {x y x' y' : X} {γ : Path x y} {γ' : Path x' y'}
+    (hγ : Path.IsInTube γ part T) (hγ' : Path.IsInTube γ' part T) :
     ∃ α : (j : Fin (n + 1)) → Path (γ (part.t j)) (γ' (part.t j)), ∀ j, range (α j) ⊆ T.V j := by
   choose α hα using fun j ↦ (T.isPathConnected_V j).exists_path (hγ.mem_V j) (hγ'.mem_V j)
   exact ⟨α, hα⟩
 
 /-- Two paths with the same source in a common tube are homotopic after appending to the first
 a path in the last vertex set of the tube. -/
-public theorem PathInTube.exists_trans_homotopic {x y y' : X} {γ : Path x y} {γ' : Path x y'}
-    (hγ : PathInTube γ part T) (hγ' : PathInTube γ' part T) :
+public theorem Path.IsInTube.exists_trans_homotopic {x y y' : X} {γ : Path x y} {γ' : Path x y'}
+    (hγ : Path.IsInTube γ part T) (hγ' : Path.IsInTube γ' part T) :
     ∃ ρ : Path y y', range ρ ⊆ T.V (Fin.last n) ∧ (γ.trans ρ).Homotopic γ' := by
   cases n with
   | zero => exact isEmptyElim part
@@ -270,12 +249,12 @@ public theorem PathInTube.exists_trans_homotopic {x y y' : X} {γ : Path x y} {�
     (T.isPathHomotopyTrivial_U 0).nullhomotopic _
       (by simpa using (hα 0).trans (T.V_castSucc_subset 0))
   exact ⟨(α (Fin.last _)).cast (by simp) (by simp), by simpa using hα _,
-    (Path.paste_segment_homotopies γ γ' part α h_rect).trans
+    (Path.Homotopic.trans_of_subpath_trans γ γ' part α h_rect).trans
       (Path.Homotopic.trans_left_of_nullhomotopic h_α₀)⟩
 
 /-- Two paths with the same endpoints in a common tube are homotopic. -/
-public theorem PathInTube.homotopic {x y : X} {γ γ' : Path x y}
-    (hγ : PathInTube γ part T) (hγ' : PathInTube γ' part T) : γ.Homotopic γ' := by
+public theorem Path.IsInTube.homotopic {x y : X} {γ γ' : Path x y}
+    (hγ : Path.IsInTube γ part T) (hγ' : Path.IsInTube γ' part T) : γ.Homotopic γ' := by
   cases n with
   | zero => exact isEmptyElim part
   | succ n =>
