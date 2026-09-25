@@ -980,6 +980,8 @@ def linearHomComplex : CochainComplex (ModuleCat R) ℤ where
   d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]
 
 variable (R K L) in
+/-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`
+in the category of `R`-modules when the category is `R`-linear. -/
 @[no_expose]
 noncomputable def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
     IsLimit (KernelFork.ofι (f := (linearHomComplex R K L).d n m)
