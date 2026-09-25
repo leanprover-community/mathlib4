@@ -43,6 +43,8 @@ section ScottContinuous
 variable [Preorder α] [Preorder β] [Preorder γ] {D D₁ D₂ : Set (Set α)}
   {f : α → β}
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 
@@ -67,7 +69,7 @@ lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f
 protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuousOn D f) : Monotone f := by
   refine fun a b hab =>
-    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
+    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
@@ -109,20 +111,20 @@ lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {
     ScottContinuousOn D fun x => (f x, g x) := fun d hd₁ hd₂ hd₃ a hda => by
   rw [IsLUB, IsLeast, upperBounds]
   constructor
-  · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+  · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_ofPred_eq,
       Prod.mk_le_mk]
     intro b hb
     exact ⟨hf.monotone D hD (hda.1 hb), hg.monotone D hD (hda.1 hb)⟩
   · intro ⟨p₁, p₂⟩ hp
-    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_ofPred_eq,
       Prod.mk_le_mk] at hp
     constructor
     · rw [isLUB_le_iff (hf hd₁ hd₂ hd₃ hda), upperBounds]
-      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
+      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_ofPred_eq]
       intro _ hb
       exact (hp _ hb).1
     · rw [isLUB_le_iff (hg hd₁ hd₂ hd₃ hda), upperBounds]
-      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq]
+      simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_ofPred_eq]
       intro _ hb
       exact (hp _ hb).2
 
@@ -194,10 +196,10 @@ variable [SemilatticeSup β]
 @[fun_prop]
 lemma ScottContinuous.sup₂ :
     ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
-  simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
+  simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_ofPred_eq, Prod.mk_le_mk] at hdp
   simp only [IsLUB, IsLeast, upperBounds, mem_image, Prod.exists, forall_exists_index, and_imp]
   have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2
-  simp only [lowerBounds, mem_setOf_eq, Prod.forall, Prod.mk_le_mk] at e1
+  simp only [lowerBounds, mem_ofPred_eq, Prod.forall, Prod.mk_le_mk] at e1
   refine ⟨fun a b₁ b₂ hbd hba => ?_,fun b hb => ?_⟩
   · rw [← hba]
     exact sup_le_sup (hdp.1 _ _ hbd).1 (hdp.1 _ _ hbd).2

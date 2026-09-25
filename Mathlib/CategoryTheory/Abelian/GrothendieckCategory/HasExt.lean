@@ -27,7 +27,7 @@ we have `Ext X Y n : Type w`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

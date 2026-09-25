@@ -21,7 +21,7 @@ decomposes as `q + ∑ i j, rᵢⱼ / gᵢ ^ (j + 1)`.
 
 Since polynomials do not have a division, the main theorem
 `mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse` is stated in an `R[X]`-algebra `K`
-containing inverses `giᵢ` for each polynomial `gᵢ` occuring in the denominator.
+containing inverses `giᵢ` for each polynomial `gᵢ` occurring in the denominator.
 
 
 These results were formalised by the Xena Project, at the suggestion
@@ -31,15 +31,15 @@ of Patrick Massot.
 ## Main results
 
 * `mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse`: Partial fraction decomposition for
-  polynomials over a commutative ring `R`, the denomiator is a product of powers of
+  polynomials over a commutative ring `R`, the denominator is a product of powers of
   monic pairwise coprime polynomials. Division is done in an `R[X]`-algebra `K`
-  containing inverses `gi i` for each `g i` occuring in the denomiator.
+  containing inverses `gi i` for each `g i` occurring in the denominator.
 * `eq_quo_mul_prod_pow_add_sum_rem_mul_prod_pow`: Partial fraction decomposition for
-  polynomials over a commutative ring `R`, the denomiator is a product of powers of
+  polynomials over a commutative ring `R`, the denominator is a product of powers of
   monic pairwise coprime polynomials. The denominators are multiplied out on both sides
   and formally cancelled.
 * `eq_quo_mul_prod_add_sum_rem_mul_prod`: Partial fraction decomposition for
-  polynomials over a commutative ring `R`, the denomiator is a product of monic
+  polynomials over a commutative ring `R`, the denominator is a product of monic
   pairwise coprime polynomials. The denominators are multiplied out on both sides
   and formally cancelled.
 * `div_prod_eq_quo_add_sum_rem_div`: Partial fraction decomposition for polynomials over an
@@ -439,9 +439,6 @@ theorem div_prod_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]
   simp_rw [Algebra.cast, div_eq_mul_inv]
   exact hf
 
-@[deprecated (since := "2026-02-08")]
-alias _root_.div_eq_quo_add_sum_rem_div := div_prod_eq_quo_add_sum_rem_div
-
 /-- Let `R` be an integral domain and `f : R[X]`. Let `s` be a finite index set.
 Then a fraction of the form `f / ∏ i ∈ s, g i` evaluated in a field `K` containing `R[X]`
 can be rewritten as `q + ∑ i ∈ s, r i / g i` in at most one way, where
@@ -487,9 +484,6 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   obtain ⟨q, r, hr, hf⟩ := div_prod_eq_quo_add_sum_rem_div K f hg hcoprime
   refine ⟨q, r true, r false, hr true (Finset.mem_univ true), hr false (Finset.mem_univ false), ?_⟩
   simpa [g, add_assoc] using hf
-
-@[deprecated (since := "2026-02-08")]
-alias _root_.div_eq_quo_add_rem_div_add_rem_div := div_eq_quo_add_rem_div_add_rem_div
 
 /-- Let `R` be an integral domain and `f, g₁, g₂ : R[X]`. Let `g₁` and `g₂` be monic and coprime.
 Then the representation of `f / (g₁ * g₂)` as `q + r₁ / g₁ + r₂ / g₂` for `q r₁ r₂ : R[X]` and

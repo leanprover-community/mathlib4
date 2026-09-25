@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 module
 
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Order.Antichain
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
@@ -61,7 +60,7 @@ alias ⟨_, sized.union⟩ := sized_union
 @[simp]
 theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀ i, (f i).Sized r := by
   simp_rw [Set.Sized, Set.mem_iUnion, forall_exists_index]
-  exact forall_swap
+  exact forall_comm
 
 -- `simp` normal form is `sized_iUnion`.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
@@ -92,7 +91,7 @@ namespace Finset
 
 section Sized
 
-variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
+variable [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 
 theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
   forall_congr' fun A => by rw [mem_powersetCard_univ, mem_coe]
@@ -145,11 +144,11 @@ variable [Fintype α] (𝒜)
 @[simp]
 theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.slice = 𝒜 :=
   Subset.antisymm (biUnion_subset.2 fun _r _ => slice_subset) fun s hs =>
-    mem_biUnion.2 ⟨#s, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
+    mem_biUnion.2 ⟨#s, mem_Iic.2 s.card_le_univ, mem_slice.2 ⟨hs, rfl⟩⟩
 
 @[simp]
 theorem sum_card_slice : ∑ r ∈ Iic (Fintype.card α), #(𝒜 # r) = #𝒜 := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)
 

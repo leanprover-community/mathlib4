@@ -6,7 +6,7 @@ Authors: Weijie Jiang
 module
 
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 
 /-!
 # Catalan Power Series
@@ -44,13 +44,12 @@ lemma catalanSeries_constantCoeff : constantCoeff catalanSeries = 1 := by
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   simp only [catalanSeries_coeff, catalan_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem catalanSeries_sq_mul_X_add_one : catalanSeries ^ 2 * X + 1 = catalanSeries := by
   ext n
   cases n with
   | zero => simp
   | succ n =>
-    simp_rw [add_comm, map_add, coeff_one, if_neg n.succ_ne_zero, zero_add, coeff_succ_mul_X, sq,
-      coeff_mul, catalanSeries_coeff, catalan_succ']
+    simp_rw [add_comm, map_add, coeff_one, ite_eq_right n.succ_ne_zero, zero_add, coeff_succ_mul_X,
+      sq, coeff_mul, catalanSeries_coeff, catalan_succ']
 
 end PowerSeries

@@ -71,14 +71,6 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 
 attribute [local instance] OreLocalization.oreEqv
 
-@[deprecated zero_mul (since := "2025-08-20")]
-protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 :=
-  OreLocalization.zero_smul x
-
-@[deprecated mul_zero (since := "2025-08-20")]
-protected theorem mul_zero (x : R[S⁻¹]) : x * 0 = 0 :=
-  OreLocalization.smul_zero x
-
 protected theorem left_distrib (x y z : R[S⁻¹]) : x * (y + z) = x * y + x * z :=
   OreLocalization.smul_add _ _ _
 
@@ -86,8 +78,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
   OreLocalization.add_smul _ _ _
 
 instance : Semiring R[S⁻¹] where
-  __ := inferInstanceAs (MonoidWithZero (R[S⁻¹]))
-  __ := inferInstanceAs (AddCommMonoid (R[S⁻¹]))
+  __ := (inferInstance : MonoidWithZero (R[S⁻¹]))
+  __ := (inferInstance : AddCommMonoid (R[S⁻¹]))
   left_distrib := OreLocalization.left_distrib
   right_distrib := right_distrib
 
@@ -107,7 +99,7 @@ instance {R₀} [Semiring R₀] [Module R₀ X] [Module R₀ R]
 lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
-  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
+  let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
   exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
@@ -118,7 +110,7 @@ abbrev numeratorRingHom : R →+* R[S⁻¹] where
   map_add' _ _ := add_oreDiv.symm
 
 instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
-  __ := inferInstanceAs (Module R₀ R[S⁻¹])
+  __ := (inferInstance : Module R₀ R[S⁻¹])
   algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
     induction x using OreLocalization.ind with | _ r₁ s₁
@@ -151,7 +143,7 @@ def universalHom : R[S⁻¹] →+* T :=
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
-      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
+      simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_ofClass,
         Submonoid.smul_def]
       simp only [mul_inv_rev, map_mul, map_add, map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
@@ -174,7 +166,8 @@ theorem universalHom_commutes {r : R} : universalHom f fS hf (numeratorHom r) = 
 
 theorem universalHom_unique (φ : R[S⁻¹] →+* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalHom f fS hf :=
-  RingHom.coe_monoidHom_injective <| universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
+  RingHom.toMonoidHom_injective <|
+    universalMulHom_unique (RingHom.toMonoidHom f) fS hf (↑φ) huniv
 
 end UMP
 
@@ -186,14 +179,14 @@ variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommGroup X] [Module R X]
 
 instance : Ring R[S⁻¹] where
-  __ := inferInstanceAs (Semiring R[S⁻¹])
-  __ := inferInstanceAs (AddGroup R[S⁻¹])
+  __ := (inferInstance : Semiring R[S⁻¹])
+  __ := (inferInstance : AddGroup R[S⁻¹])
 
 @[simp]
 lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
-  letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
+  let inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
   exact congr($(AddCommGroup.uniqueIntModule.2 inst).smul n x)
 
 open nonZeroDivisors
@@ -230,8 +223,8 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] {S : Submonoid R} [OreSet S]
 
 instance : CommSemiring R[S⁻¹] where
-  __ := inferInstanceAs (Semiring R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : Semiring R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommSemiring
 
@@ -240,8 +233,8 @@ section CommRing
 variable {R : Type*} [CommRing R] {S : Submonoid R} [OreSet S]
 
 instance : CommRing R[S⁻¹] where
-  __ := inferInstanceAs (Ring R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : Ring R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommRing
 
@@ -253,8 +246,8 @@ variable {R : Type*} [CommRing R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰
 
 noncomputable
 instance : Field R[R⁰⁻¹] where
-  __ := inferInstanceAs (DivisionRing R[R⁰⁻¹])
-  __ := inferInstanceAs (CommMonoid R[R⁰⁻¹])
+  __ := (inferInstance : DivisionRing R[R⁰⁻¹])
+  __ := (inferInstance : CommMonoid R[R⁰⁻¹])
 
 end Field
 

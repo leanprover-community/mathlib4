@@ -16,7 +16,7 @@ This file defines instances for group and monoid with zero and related structure
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 The ring of integers is integrally closed inside the original ring.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -77,8 +77,6 @@ theorem isIntegrallyClosed : IsIntegrallyClosed O := by
   have : IsFractionRing O K := hv.isFractionRing
   exact
     (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
-
-@[deprecated (since := "2025-09-04")] alias integrallyClosed := isIntegrallyClosed
 
 instance isIntegrallyClosed_integers (v : Valuation K Γ₀) :
     IsIntegrallyClosed v.integer :=

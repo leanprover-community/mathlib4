@@ -14,7 +14,7 @@ public import Mathlib.Data.Multiset.OrderedMonoid
 In this file we define the _Dershowitz-Manna ordering_ on multisets. Specifically, for two multisets
 `M` and `N` in a partial order `(S, <)`, `M` is smaller than `N` in the Dershowitz-Manna ordering if
 `M` can be obtained from `N` by replacing one or more elements in `N` by some finite number of
-elements from `S`, each of which is smaller (in the underling ordering over `S`) than one of the
+elements from `S`, each of which is smaller (in the underlying ordering over `S`) than one of the
 replaced elements from `N`. We prove that, given a well-founded partial order on the underlying set,
 the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
@@ -22,7 +22,7 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 - `Multiset.IsDershowitzMannaLT` : the standard definition of the `Dershowitz-Manna ordering`.
 - `Multiset.wellFounded_isDershowitzMannaLT` : the main theorem about the
-`Dershowitz-Manna ordering` being well-founded.
+  `Dershowitz-Manna ordering` being well-founded.
 
 ## References
 
@@ -144,7 +144,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
   obtain rfl | hZ := eq_or_ne Z 0
   · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
   let Y' : Multiset α := Y.filter (· < z)
-  refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_) <|
+  refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_)
     ⟨X + Z, Y', z, add_right_comm .., by simp [hN, add_comm (_ + _)], by simp [Y']⟩
   · rw [add_add_tsub_cancel (filter_le ..), hM]
   · simp only [sub_filter_eq_filter_not, mem_filter, Y'] at hy

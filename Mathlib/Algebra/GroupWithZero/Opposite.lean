@@ -13,7 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.NeZero
 # Opposites of groups with zero
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
@@ -47,7 +47,7 @@ instance instGroupWithZero [GroupWithZero α] : GroupWithZero αᵐᵒᵖ where
 instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors αᵐᵒᵖ where
   eq_zero_or_eq_zero_of_mul_eq_zero (H : op (_ * _) = op (0 : α)) :=
       Or.casesOn (eq_zero_or_eq_zero_of_mul_eq_zero <| op_injective H)
-        (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
+        (fun hy => Or.inr <| unop_injective hy) fun hx => Or.inl <| unop_injective hx
 
 instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsRightCancelMulZero αᵐᵒᵖ where
   mul_right_cancel_of_ne_zero h _ _ eq := unop_injective <|

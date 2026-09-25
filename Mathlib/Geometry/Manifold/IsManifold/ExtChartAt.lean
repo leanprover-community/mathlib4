@@ -40,6 +40,15 @@ in general, but we can still register them as `PartialEquiv`s.
 * `FiniteDimensional.of_locallyCompact_manifold`: a locally compact manifold must be modelled
   on a finite-dimensional space
 
+## Implementation notes
+
+This file uses the name `writtenInExtend` (in analogy to `writtenInExtChart`) to refer to a
+composition `ψ.extend J ∘ f ∘ φ.extend I` of `f : M → N` with charts `ψ` and `φ` extended by the
+appropriate models with corners. This is not a definition, so technically deviating from the naming
+convention.
+
+TODO: this file uses more made-up names; document these as well
+
 -/
 
 @[expose] public section
@@ -84,6 +93,9 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
 
 theorem extend_target' : (f.extend I).target = I '' f.target := by
   rw [extend, PartialEquiv.trans_target'', I.source_eq, univ_inter, I.toPartialEquiv_coe]
+
+theorem extend_target_eq_image_source : (f.extend I).target = (f.extend I) '' f.source := by
+  rw [f.extend_target', ← f.image_source_eq_target, ← image_comp, f.extend_coe]
 
 lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
   rw [extend_target, I.range_eq_univ, inter_univ]
@@ -172,9 +184,12 @@ theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
   (nhdsWithin_mono _ (extend_target_subset_range _)).antisymm <|
     nhdsWithin_le_of_mem (extend_target_mem_nhdsWithin _ hy)
 
-theorem extend_target_eventuallyEq {y : M} (hy : y ∈ f.source) :
+theorem extend_target_eventuallyEqSet {y : M} (hy : y ∈ f.source) :
     (f.extend I).target =ᶠ[𝓝 (f.extend I y)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extend_target_eq _ hy)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extend_target_eq _ hy)
+
+@[deprecated (since := "2026-08-14")]
+alias extend_target_eventuallyEq := extend_target_eventuallyEqSet
 
 theorem continuousAt_extend_symm' {x : E} (h : x ∈ (f.extend I).target) :
     ContinuousAt (f.extend I).symm x :=
@@ -242,7 +257,6 @@ theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M}
   filter_upwards [hg, mem_map.1 (this hu)] with z hz hzu
   simpa only [(· ∘ ·), extend_left_inv _ hz, mem_preimage] using hzu
 
--- there is no definition `writtenInExtend` but we already use some made-up names in this file
 theorem continuousWithinAt_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g : M → M'}
     {y : M} (hy : y ∈ f.source) (hgy : g y ∈ f'.source) (hmaps : MapsTo g s f'.source) :
     ContinuousWithinAt (f'.extend I' ∘ g ∘ (f.extend I).symm)
@@ -256,8 +270,6 @@ theorem continuousWithinAt_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'
   rw [comp_apply, extend_left_inv _ hz.2]
   exact hmaps hz.1
 
--- there is no definition `writtenInExtend` but we already use some made-up names in this file
-
 /-- If `s ⊆ f.source` and `g x ∈ f'.source` whenever `x ∈ s`, then `g` is continuous on `s` if and
 only if `g` written in charts `f.extend I` and `f'.extend I'` is continuous on `f.extend I '' s`. -/
 theorem continuousOn_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g : M → M'}
@@ -266,7 +278,7 @@ theorem continuousOn_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g :
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (continuousWithinAt_congr_set ?_).trans
     (continuousWithinAt_writtenInExtend_iff _ (hs hx) (hmaps hx) hmaps)
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet, ← map_extend_nhdsWithin_eq_image_of_subset,
     ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
 
@@ -294,24 +306,15 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
-@[deprecated "Removed without replacement" (since := "2025-08-27")]
-theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
-      ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
-  rw [f.extend_target, inter_assoc, inter_comm (range I)]
-  conv =>
-    congr
-    · skip
-    rw [← univ_inter (_ ∩ range I)]
-  refine (eventuallyEq_univ.mpr ?_).symm.inter EventuallyEq.rfl
-  refine I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds ?_)
-  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
-
-theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
+theorem extend_symm_preimage_inter_range_eventuallyEqSet {s : Set M} {x : M} (hs : s ⊆ f.source)
     (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ hx,
+    (f.extend I).symm ⁻¹' s ∩ range I =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet, ← map_extend_nhdsWithin _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ hx hs]
+
+@[deprecated (since := "2026-08-14")]
+alias extend_symm_preimage_inter_range_eventuallyEq :=
+  extend_symm_preimage_inter_range_eventuallyEqSet
 
 lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
     (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
@@ -412,7 +415,7 @@ lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
     · exact (φ.left_inv hx ▸ ((hφ _ hx).differentiableWithinAt hn) :)
     · exact (hφ' _ (φ.map_source hx)).differentiableWithinAt hn
-    · exact φ.symm_mapsTo
+    · exact φ.mapsTo_symm
     · exact I.uniqueDiffOn_extendCoordChange_source _ (φ.map_source hx)
   · rw [← fderivWithin_comp, fderivWithin_congr' φ.leftInvOn.eqOn hx, fderivWithin_id]
     · exact I.uniqueDiffOn_extendCoordChange_source _ hx
@@ -422,30 +425,6 @@ lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
     · exact I.uniqueDiffOn_extendCoordChange_source _ hx
 
 end ModelWithCorners
-
-namespace OpenPartialHomeomorph
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source := ModelWithCorners.extendCoordChange_source
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source_mem_nhdsWithin :=
-  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source_mem_nhdsWithin' :=
-  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin'
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffOn_extend_coord_change := ModelWithCorners.contDiffOn_extendCoordChange
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffWithinAt_extend_coord_change := ModelWithCorners.contDiffWithinAt_extendCoordChange
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffWithinAt_extend_coord_change' := ModelWithCorners.contDiffWithinAt_extendCoordChange'
-
-end OpenPartialHomeomorph
 
 open OpenPartialHomeomorph
 
@@ -573,7 +552,7 @@ theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
     (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
-  convert extChartAt_target_mem_nhdsWithin x
+  convert! extChartAt_target_mem_nhdsWithin x
   simp only [I.range_eq_univ, nhdsWithin_univ]
 
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
@@ -605,19 +584,29 @@ theorem nhdsWithin_extChartAt_target_eq (x : M) :
 
 /-- Around the image of a point in the source, `(extChartAt I x).target` and `range I`
 coincide locally. -/
-theorem extChartAt_target_eventuallyEq' {x y : M} (hy : y ∈ (extChartAt I x).source) :
+theorem extChartAt_target_eventuallyEqSet' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x y)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq' hy)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extChartAt_target_eq' hy)
+
+@[deprecated (since := "2026-08-14")]
+alias extChartAt_target_eventuallyEq' := extChartAt_target_eventuallyEqSet'
 
 /-- Around a point in the target, `(extChartAt I x).target` and `range I` coincide locally. -/
-theorem extChartAt_target_eventuallyEq_of_mem {x : M} {z : E} (hz : z ∈ (extChartAt I x).target) :
+theorem extChartAt_target_eventuallyEqSet_of_mem {x : M} {z : E}
+    (hz : z ∈ (extChartAt I x).target) :
     (extChartAt I x).target =ᶠ[𝓝 z] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq_of_mem hz)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extChartAt_target_eq_of_mem hz)
+
+@[deprecated (since := "2026-08-14")]
+alias extChartAt_target_eventuallyEq_of_mem := extChartAt_target_eventuallyEqSet_of_mem
 
 /-- Around the image of the base point, `(extChartAt I x).target` and `range I` coincide locally. -/
-theorem extChartAt_target_eventuallyEq {x : M} :
+theorem extChartAt_target_eventuallyEqSet {x : M} :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x x)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq x)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extChartAt_target_eq x)
+
+@[deprecated (since := "2026-08-14")]
+alias extChartAt_target_eventuallyEq := extChartAt_target_eventuallyEqSet
 
 theorem continuousAt_extChartAt_symm'' {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     ContinuousAt (extChartAt I x).symm y :=
@@ -649,7 +638,7 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
     mem_closure_iff_nhds.1 B _ A
   refine ⟨z, ⟨tz, ?_⟩⟩
   have h''z : z ∈ (extChartAt I x).target := by simpa [interior_subset hz] using h'z
-  exact (extChartAt_target_eventuallyEq_of_mem h''z).symm.mem_interior hz
+  exact (extChartAt_target_eventuallyEqSet_of_mem h''z).symm.mem_interior hz
 
 variable (I) in
 theorem interior_extChartAt_target_nonempty (x : M) :
@@ -771,13 +760,17 @@ theorem ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range
     ← map_extChartAt_nhdsWithin, nhdsWithin_inter_of_mem']
   exact hc (extChartAt_source_mem_nhds _)
 
-theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
+theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEqSet
     {f : M → M'} {x : M} (hc : ContinuousWithinAt f s x) :
-    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x x)]
+    (extChartAt I x).symm ⁻¹' s ∩ range I =ᶠ[𝓝 (extChartAt I x x)]
       ((extChartAt I x).target ∩
         (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) : Set E) := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq]
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet]
   exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
+
+@[deprecated (since := "2026-08-14")]
+alias ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq :=
+  ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEqSet
 
 /-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 
@@ -806,7 +799,8 @@ def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
-    writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
+    writtenInExtChartAt I I x (chartAt H x) y = y := by
+  simp_all [mfld_simps]
 
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
@@ -835,14 +829,11 @@ variable {G G' F F' N N' : Type*}
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
   [ChartedSpace G N] [ChartedSpace G' N']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma writtenInExtChartAt_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
     (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
       Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
   ext p <;>
   simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
-
-@[deprecated (since := "2026-02-18")] alias writtenInExtChart_prod := writtenInExtChartAt_prod
 
 end
 
@@ -864,7 +855,6 @@ theorem ext_chart_model_space_apply {x y : E} : extChartAt 𝓘(𝕜, E) x y = y
 
 variable {𝕜}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
@@ -878,14 +868,14 @@ theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
 theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'; writtenInExtChartAt I I x (chartAt H' x) y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
     (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
     (letI := ChartedSpace.comp H H' M'
      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
-  letI := ChartedSpace.comp H H' M'
+  let := ChartedSpace.comp H H' M'
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
@@ -937,3 +927,7 @@ theorem FiniteDimensional.of_locallyCompact_manifold
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
 
 end Topology
+
+instance {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} [FiniteDimensional 𝕜 E] :
+    FiniteDimensional 𝕜 (TangentSpace I x) :=
+  inferInstanceAs (FiniteDimensional 𝕜 E)

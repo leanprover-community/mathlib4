@@ -27,6 +27,7 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ Type w)
 
 namespace Subfunctor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `Subfunctor F ≌ MonoOver F`. -/
 @[simps]
 noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where
@@ -73,12 +74,6 @@ noncomputable def orderIsoSubobject : Subfunctor F ≃o Subobject F where
     · intro h
       exact leOfHom (((equivalenceMonoOver F).trans
         (ThinSkeleton.equivalence _).symm).functor.map (homOfLE h))
-
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.equivalenceMonoOver := equivalenceMonoOver
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_subobjectMk_ι := range_subobjectMk_ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.subobjectMk_range_arrow :=
-  subobjectMk_range_arrow
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.orderIsoSubobject := orderIsoSubobject
 
 end Subfunctor
 

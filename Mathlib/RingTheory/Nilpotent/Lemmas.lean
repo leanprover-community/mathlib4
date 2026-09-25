@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.Radical.Basic
 
 /-!
 # Nilpotent elements
@@ -35,14 +36,14 @@ theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [
 theorem isRadical_iff_span_singleton [CommSemiring R] :
     IsRadical y ↔ (Ideal.span ({y} : Set R)).IsRadical := by
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
-  exact forall_swap.trans (forall_congr' fun r => exists_imp.symm)
+  exact forall_comm.trans (forall_congr' fun r => exists_imp.symm)
 
-theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] {x : R} :
+theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] :
     IsNilpotent x ↔ 0 ∈ Submonoid.powers x := Iff.rfl
 
 section CommSemiring
 
-variable [CommSemiring R] {x y : R}
+variable [CommSemiring R]
 
 /-- The nilradical of a commutative semiring is the ideal of nilpotent elements. -/
 def nilradical (R : Type*) [CommSemiring R] : Ideal R :=
@@ -66,8 +67,21 @@ theorem nilradical_le_prime (J : Ideal R) [H : J.IsPrime] : nilradical R ≤ J :
 theorem nilradical_eq_zero (R : Type*) [CommSemiring R] [IsReduced R] : nilradical R = 0 :=
   Ideal.ext fun _ => isNilpotent_iff_eq_zero
 
-theorem nilradical_eq_bot_iff {R : Type*} [CommSemiring R] : nilradical R = ⊥ ↔ IsReduced R := by
-  simp_rw [eq_bot_iff, SetLike.le_def, Submodule.mem_bot, mem_nilradical, isReduced_iff]
+theorem nilradical_eq_bot_iff : nilradical R = ⊥ ↔ IsReduced R := by
+  simp_rw [eq_bot_iff, IsConcreteLE.le_iff, Submodule.mem_bot, mem_nilradical, isReduced_iff]
+
+open UniqueFactorizationMonoid in
+lemma Ideal.radical_span_singleton_eq_span_radical [UniqueFactorizationMonoid R]
+    [NormalizationMonoid R] (h : x ≠ 0) :
+    (span {x}).radical = span {UniqueFactorizationMonoid.radical x} := by
+  apply le_antisymm
+  · rw [Ideal.IsRadical.radical_le_iff]
+    · rw [Ideal.span_singleton_le_span_singleton]
+      exact radical_dvd_self
+    · rw [← isRadical_iff_span_singleton]
+      exact isRadical_radical
+  · simp_rw [span_singleton_le_iff_mem, mem_radical_iff, mem_span_singleton]
+    exact exists_dvd_radical_self_pow h
 
 end CommSemiring
 
@@ -113,6 +127,7 @@ section
 
 variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
     {hp : MapsTo f p p} {hq : MapsTo f q q} (h : p ≤ q) (hf : IsNilpotent (f.restrict hq)) :
     IsNilpotent (f.restrict hp) := by
@@ -125,6 +140,7 @@ lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
   ext
   exact (congr_arg Subtype.val hn :)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent.restrict
     {f : M →ₗ[R] M} {p : Submodule R M} (hf : MapsTo f p p) (hnil : IsNilpotent f) :
     IsNilpotent (f.restrict hf) := by

@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 # Meta properties of essentially of finite type ring homomorphisms
 -/
 
-@[expose] public section
+public section
 
 namespace RingHom.EssFiniteType
 
@@ -56,6 +56,6 @@ lemma residueFieldMap {f : R →+* S} [IsLocalRing R] [IsLocalRing S] [IsLocalHo
     (IsLocalRing.ResidueField.map f).EssFiniteType := by
   refine .of_comp (IsLocalRing.residue R) ?_
   rw [IsLocalRing.ResidueField.map_comp_residue]
-  exact .comp hf (FiniteType.of_surjective _ <| IsLocalRing.residue_surjective).essFiniteType
+  exact .comp hf (FiniteType.of_surjective _ IsLocalRing.residue_surjective).essFiniteType
 
 end RingHom.EssFiniteType

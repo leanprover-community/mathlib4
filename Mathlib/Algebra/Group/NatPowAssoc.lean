@@ -33,11 +33,11 @@ We also produce the following instances:
 
 ## TODO
 
-* to_additive?
+* `to_additive`?
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered
 

@@ -25,7 +25,7 @@ syntax swapRule := ident " ↔"? ppSpace ident
 /--
 `swap_var swap_rule₁, swap_rule₂, ⋯` applies `swap_rule₁` then `swap_rule₂` then `⋯`.
 
-A *swap_rule* is of the form `x y` or `x ↔ y`, and "applying it" means swapping the variable name
+A `swap_rule` is of the form `x y` or `x ↔ y`, and "applying it" means swapping the variable name
 `x` by `y` and vice-versa on all hypotheses and the goal.
 
 ```lean
@@ -41,7 +41,7 @@ elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
   let lctx ← swapRules.getElems.foldlM (init := mdecl.lctx) fun lctx swapRule ↦ do
     withLCtx lctx localInstances do
       let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := swapRule
-        | unreachable!
+        | Elab.throwUnsupportedSyntax
       let n₁ := n₁.getId
       let n₂ := n₂.getId
       let fvarId₁ := (← getLocalDeclFromUserName n₁).fvarId

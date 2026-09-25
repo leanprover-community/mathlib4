@@ -21,7 +21,7 @@ then `Sheaf J A` is a Grothendieck abelian category.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ u u₁ u₂
 

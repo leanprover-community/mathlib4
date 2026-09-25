@@ -44,11 +44,10 @@ version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
   Iff.trans
     (by
-      rw [leftRel_apply, sub_eq_add_neg, neg_add, neg_neg]
+      rw [quotientRel, leftRel_apply, sub_eq_add_neg, neg_add, neg_neg]
       rfl)
     neg_mem_iff
 
@@ -98,28 +97,6 @@ theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
 @[simp]
 theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
 
-instance addCommGroup : AddCommGroup (M ⧸ p) :=
-  QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
-
-@[simp]
-theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=
-  rfl
-
-@[simp]
-theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
-  rfl
-
-@[simp]
-theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
-  rfl
-
-variable {p} in
-@[simp]
-theorem mk_out (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
-  Quotient.out_eq m
-
-protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
-
 section SMul
 
 variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule R M)
@@ -150,6 +127,34 @@ instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower 
   op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
 
 end SMul
+
+instance addMonoid : AddMonoid (M ⧸ p) :=
+  inferInstanceAs <| AddMonoid (M ⧸ p.toAddSubgroup)
+
+instance addCommMonoid : AddCommMonoid (M ⧸ p) :=
+  inferInstanceAs <| AddCommMonoid (M ⧸ p.toAddSubgroup)
+
+instance addCommGroup : AddCommGroup (M ⧸ p) :=
+  inferInstanceAs <| AddCommGroup (M ⧸ p.toAddSubgroup)
+
+@[simp]
+theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=
+  rfl
+
+@[simp]
+theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
+  rfl
+
+@[simp]
+theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
+  rfl
+
+variable {p} in
+@[simp]
+theorem mk_out (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
+  Quotient.out_eq m
+
+protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
 
 section Module
 
@@ -241,7 +246,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 See note [partially-applied ext lemmas]. -/
 @[ext high] -- Increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
-  LinearMap.ext fun x => Submodule.Quotient.induction_on _ x <| (LinearMap.congr_fun h :)
+  LinearMap.ext fun x => Submodule.Quotient.induction_on _ x (LinearMap.congr_fun h :)
 
 /-- Quotienting by equal submodules gives linearly equivalent quotients. -/
 def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=

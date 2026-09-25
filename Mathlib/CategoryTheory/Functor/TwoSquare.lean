@@ -38,7 +38,7 @@ universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
@@ -74,6 +74,9 @@ def op (α : TwoSquare T L R B) : TwoSquare L.op T.op B.op R.op := NatTrans.op �
 lemma natTrans_op (α : TwoSquare T L R B) :
     α.op.natTrans = NatTrans.op α.natTrans := rfl
 
+instance (α : TwoSquare T L R B) [IsIso α.natTrans] : IsIso α.op.natTrans :=
+  inferInstanceAs (IsIso (NatTrans.op α.natTrans))
+
 @[ext]
 lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.natTrans.app X) :
     w = w' :=
@@ -82,7 +85,7 @@ lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.
 /-- The horizontal identity 2-square. -/
 @[simps!]
 def hId (L : C₁ ⥤ C₃) : TwoSquare (𝟭 _) L L (𝟭 _) :=
-  𝟙 _
+  (Functor.leftUnitor L).hom ≫ (Functor.rightUnitor L).inv
 
 /-- Notation for the horizontal identity 2-square. -/
 scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
@@ -90,7 +93,7 @@ scoped notation "𝟙ₕ" => hId  -- type as \b1\_h
 /-- The vertical identity 2-square. -/
 @[simps!]
 def vId (T : C₁ ⥤ C₂) : TwoSquare T (𝟭 _) (𝟭 _) T :=
-  𝟙 _
+  (Functor.rightUnitor T).hom ≫ (Functor.leftUnitor T).inv
 
 /-- Notation for the vertical identity 2-square. -/
 scoped notation "𝟙ᵥ" => vId  -- type as \b1\_v
@@ -146,7 +149,7 @@ section Interchange
 
 variable {C₉ : Type u₉} [Category.{v₉} C₉] {R₃ : C₆ ⥤ C₉} {B₃ : C₈ ⥤ C₉}
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- When composing 2-squares which form a diagram of grid, composing horizontally first yields the
 same result as composing vertically first. -/
 lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')

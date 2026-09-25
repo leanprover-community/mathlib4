@@ -36,11 +36,11 @@ def stoneCechObj (X : Type u) : Stonean :=
 /-- The equivalence of homsets to establish the adjunction between the Stone-Cech compactification
 functor and the forgetful functor. -/
 noncomputable def stoneCechEquivalence (X : Type u) (Y : Stonean.{u}) :
-    (stoneCechObj X ⟶ Y) ≃ (X ⟶ ToType Y) := by
+    (stoneCechObj X ⟶ Y) ≃ (X ⟶ Y) := by
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   refine fullyFaithfulToCompHaus.homEquiv.trans ?_
-  exact (_root_.stoneCechEquivalence (TopCat.of X) (toCompHaus.obj Y)).trans
+  exact (_root_.stoneCechEquivalence ↧X (toCompHaus.obj Y)).trans
     (TopCat.adj₁.homEquiv _ _)
 
 end Stonean

@@ -64,7 +64,7 @@ def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂" => Finset.shadow
 
-open FinsetFamily
+open scoped FinsetFamily
 
 /-- The shadow of the empty set is empty. -/
 @[simp]
@@ -83,7 +83,7 @@ theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
   simp [shadow]
 
 /-- The shadow is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
 
@@ -175,7 +175,7 @@ lemma exists_subset_of_mem_shadow (hs : t ∈ ∂ 𝒜) : ∃ s ∈ 𝒜, t ⊆ 
 
 end Shadow
 
-open FinsetFamily
+open scoped FinsetFamily
 
 section UpShadow
 
@@ -195,7 +195,7 @@ theorem upShadow_empty : ∂⁺ (∅ : Finset (Finset α)) = ∅ :=
   rfl
 
 /-- The upper shadow is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (Finset α)) :=
   fun _ _ => sup_mono
 

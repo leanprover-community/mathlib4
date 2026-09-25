@@ -164,9 +164,9 @@ theorem asq_pos : 0 < a * a :=
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem dz_val : ↑(d a1) = az a * az a - 1 :=
+theorem dz_val : ↑(d a1) = az a * az a - 1 := by
   have : 1 ≤ a * a := asq_pos a1
-  by rw [Pell.d, Int.ofNat_sub this]; rfl
+  rw [Pell.d, Int.ofNat_sub this]; rfl
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -188,13 +188,9 @@ def pellZd (n : ℕ) : ℤ√(d a1) :=
 theorem re_pellZd (n : ℕ) : (pellZd a1 n).re = xn a1 n :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias pellZd_re := re_pellZd
-
 @[simp]
 theorem im_pellZd (n : ℕ) : (pellZd a1 n).im = yn a1 n :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias pellZd_im := im_pellZd
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -460,7 +456,7 @@ theorem ysq_dvd_yy (n) : yn a1 n * yn a1 n ∣ yn a1 (n * yn a1 n) :=
 
 theorem dvd_of_ysq_dvd {n t} (h : yn a1 n * yn a1 n ∣ yn a1 t) : yn a1 n ∣ t :=
   have nt : n ∣ t := (y_dvd_iff a1 n t).1 <| dvd_of_mul_left_dvd h
-  n.eq_zero_or_pos.elim (fun n0 => by rwa [n0] at nt ⊢) fun n0l : 0 < n => by
+  n.eq_zero_or_pos.elim (fun n0 => by simp_all) fun n0l : 0 < n => by
     let ⟨k, ke⟩ := nt
     have : yn a1 n ∣ k * xn a1 n ^ (k - 1) :=
       Nat.dvd_of_mul_dvd_mul_right (strictMono_y a1 n0l) <|
@@ -470,16 +466,9 @@ theorem dvd_of_ysq_dvd {n t} (h : yn a1 n * yn a1 n ∣ yn a1 t) : yn a1 n ∣ t
     rw [ke]
     exact dvd_mul_of_dvd_right (((xy_coprime _ _).pow_left _).symm.dvd_of_dvd_mul_right this) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pellZd_succ_succ (n) :
     pellZd a1 (n + 2) + pellZd a1 n = (2 * a : ℕ) * pellZd a1 (n + 1) := by
-  have : (1 : ℤ√(d a1)) + ⟨a, 1⟩ * ⟨a, 1⟩ = ⟨a, 1⟩ * (2 * a) := by
-    rw [Zsqrtd.natCast_val]
-    change (⟨_, _⟩ : ℤ√(d a1)) = ⟨_, _⟩
-    rw [dz_val]
-    dsimp [az]
-    ext <;> dsimp <;> ring_nf
-  simpa [mul_add, mul_comm, mul_left_comm, add_comm] using congr_arg (· * pellZd a1 n) this
+  ext <;> simp [dz_val, az] <;> ring_nf
 
 theorem xy_succ_succ (n) :
     xn a1 (n + 2) + xn a1 n =
@@ -749,7 +738,7 @@ theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
       (jj.add_right _).trans <| by
         rw [ji]
         exact dvd_rfl.modEq_zero_nat)
-    (eq_of_xn_modEq' a1 ipos hin jl.le <|
+    (eq_of_xn_modEq' a1 ipos hin jl.le
       (h.symm.trans <| by
           rw [← Nat.mod_add_div j (4 * n)]
           exact this j' _).symm)

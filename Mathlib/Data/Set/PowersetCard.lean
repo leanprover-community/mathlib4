@@ -6,8 +6,8 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Combinations
 
@@ -40,11 +40,11 @@ open Finset Set Function
 @[simp]
 theorem mem_iff {s : Finset α} :
     s ∈ powersetCard α n ↔ s.card = n := by
-  rw [powersetCard, Set.mem_setOf_eq]
+  rw [powersetCard, Set.mem_ofPred_eq]
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 
-instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n) α
+instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n)
 
 @[simp]
 theorem coe_coe {s : powersetCard α n} :
@@ -59,6 +59,14 @@ theorem card_eq (s : Set.powersetCard α n) : (s : Finset α).card = n := s.prop
 theorem ncard_eq (s : Set.powersetCard α n) : (s : Set α).ncard = n := by
   rw [← coe_coe, Set.ncard_coe_finset, s.prop]
 
+theorem nonempty_iff [Fintype α] :
+    Nonempty (Set.powersetCard α n) ↔ n ≤ Fintype.card α := by
+  refine ⟨fun ⟨⟨s, hs⟩⟩ ↦ ?_, fun h ↦ ?_⟩
+  · obtain rfl : s.card = n := by simpa using hs
+    exact card_le_univ s
+  · obtain ⟨s, -, rfl⟩ := Finset.exists_subset_card_eq (s := (Finset.univ : Finset α)) (by simpa)
+    exact ⟨s, by simp⟩
+
 theorem coe_nonempty_iff {s : Set.powersetCard α n} :
     (s : Set α).Nonempty ↔ 1 ≤ n := by
   rw [← Set.powersetCard.coe_coe, Finset.coe_nonempty, ← one_le_card, s.prop]
@@ -70,17 +78,16 @@ theorem coe_nontrivial_iff {s : Set.powersetCard α n} :
 theorem eq_iff_subset {s t : Set.powersetCard α n} : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
   rw [Finset.subset_iff_eq_of_card_le (t.prop.trans_le s.prop.ge), Subtype.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
     rwa [← (Set.encard_add_encard_compl {b}).trans (Set.encard_univ α), Set.encard_singleton,
-      add_comm, ENat.lt_add_one_iff' (ENat.coe_ne_top n)] at hα
+      add_comm, ENat.lt_add_one_iff' (ENat.natCast_ne_top n)] at hα
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
   have : Set.Finite s := Set.finite_of_encard_eq_coe hs
   exact ⟨⟨Set.Finite.toFinset this, by
-    rwa [mem_iff, ← ENat.coe_inj, ← this.encard_eq_coe_toFinset_card]⟩,
+    rwa [mem_iff, ← ENat.natCast_inj, ← this.encard_eq_coe_toFinset_card]⟩,
       by simpa using has, by simpa using has'⟩
 
 theorem exists_mem_notMem_iff_ne (s t : Set.powersetCard α n) : s ≠ t ↔ ∃ a ∈ s, a ∉ t := by
@@ -184,6 +191,11 @@ theorem mem_compl {s : powersetCard α n} {a : α} :
 
 theorem compl_symm : (compl hm).symm = compl ((n.add_comm m).trans hm) := rfl
 
+variable (hm) in
+lemma disjoint_iff_eq_compl {s : powersetCard α m} {t : powersetCard α n} :
+    Disjoint s.val t.val ↔ s = powersetCard.compl hm t := by
+  rw [powersetCard.eq_iff_subset, powersetCard.coe_compl, Finset.subset_compl_iff_disjoint_right]
+
 end compl
 
 section disjUnion
@@ -241,7 +253,6 @@ instance instInfinite [NeZero n] [Infinite α] : Infinite (powersetCard α n) :=
 
 protected theorem card :
     Nat.card (powersetCard α n) = (Nat.card α).choose n := by
-  classical
   cases fintypeOrInfinite α
   · simp [coe_finset]
   · rcases n with _ | n
@@ -251,7 +262,6 @@ protected theorem card :
 
 variable {α n}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `0 < n < ENat.card α`, then `powersetCard α n` is nontrivial. -/
 theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
     Nontrivial (powersetCard α n) := by
@@ -270,7 +280,6 @@ theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
   · have : NeZero n := NeZero.of_pos h1
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `Set.powersetCard.nontrivial` that uses `Nat.card`. -/
 theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
     Nontrivial (powersetCard α n) := by

@@ -111,7 +111,7 @@ theorem fderivWithin_const_smul_of_invertible (c : R) [Invertible c]
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact (h.hasFDerivWithinAt.const_smul c).fderivWithin hs
   · have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
-      contrapose! h
+      contrapose h
       exact (differentiableWithinAt_smul_iff c).mp h
     simp [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this]
@@ -133,7 +133,7 @@ lemma differentiableAt_smul_iff (c : R) [Invertible c] :
 `c` must be invertible, i.e. if `R` is a field. -/
 theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
-  simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible c uniqueDiffWithinAt_univ]
+  simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible]
 
 end ConstSMul
 
@@ -152,11 +152,20 @@ lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
   obtain (rfl | ha) := eq_or_ne c 0
   · simp
   · have : Invertible c := invertibleOfNonzero ha
-    ext x
-    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
+    simp [fderivWithin_const_smul_of_invertible c hs]
 
-@[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
-  fderivWithin_const_smul_field
+lemma fderivWithin_const_smul_field' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} (c : R) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact fderivWithin_const_smul_field c hsx
+  · simp [fderivWithin_zero_of_not_uniqueDiffWithinAt hsx]
+
+omit [DivisionSemiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] in
+/-- Special case of `fderivWithin_neg` for functions `𝕜 → F`, i.e. when the domain `E` is the scalar
+field `𝕜` itself. In this case no `UniqueDiffWithinAt 𝕜 s x` hypothesis is needed. -/
+lemma fderivWithin_neg' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} :
+    fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x := by
+  simpa only [neg_smul, one_smul] using fderivWithin_const_smul_field' (f := f) (-1 : 𝕜)
 
 /-- Special case of `fderiv_const_smul_of_invertible` over a division semiring: any constant is
 allowed.
@@ -166,9 +175,7 @@ typeclass. -/
 lemma fderiv_const_smul_field (c : R) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
   simp_rw [← fderivWithin_univ]
   ext x
-  simp [fderivWithin_const_smul_field c uniqueDiffWithinAt_univ]
-
-@[deprecated (since := "2026-01-11")] alias fderiv_const_smul_of_field := fderiv_const_smul_field
+  simp [fderivWithin_const_smul_field]
 
 end ConstSMulDivisionRing
 
@@ -180,7 +187,7 @@ section Add
 theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' L)
     (hg : HasFDerivAtFilter g g' L) : HasFDerivAtFilter (f + g) (f' + g') L :=
   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun _ => by
-    grind [Pi.add_apply, add_apply]
+    grind [Pi.add_apply]
 
 @[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
@@ -390,23 +397,23 @@ variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[�
 theorem HasStrictFDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
   simp only [hasStrictFDerivAt_iff_isLittleO] at *
-  convert IsLittleO.sum h
-  simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
+  convert! IsLittleO.sum h
+  simp [Finset.sum_sub_distrib]
 
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
     HasStrictFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x := by
-  convert HasStrictFDerivAt.fun_sum h; simp
+  convert! HasStrictFDerivAt.fun_sum h; simp
 
 theorem HasFDerivAtFilter.fun_sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) L := by
   simp only [hasFDerivAtFilter_iff_isLittleO] at *
-  convert IsLittleO.sum h
-  simp [ContinuousLinearMap.sum_apply]
+  convert! IsLittleO.sum h
+  simp
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (∑ i ∈ u, A i) (∑ i ∈ u, A' i) L := by
-  convert HasFDerivAtFilter.fun_sum h; simp
+  convert! HasFDerivAtFilter.fun_sum h; simp
 
 @[fun_prop]
 theorem HasFDerivWithinAt.fun_sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
@@ -568,20 +575,22 @@ theorem differentiable_neg_iff : Differentiable 𝕜 (-f) ↔ Differentiable �
 
 theorem fderivWithin_fun_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x := by
-  classical
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact h.hasFDerivWithinAt.neg.fderivWithin hxs
   · rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
 
+/-- Version of `fderivWithin_fun_neg` where the function is written `-f` instead of `fun y ↦ -f y`.
+For the special case `E = 𝕜` without a `UniqueDiffWithinAt 𝕜 s x` hypothesis, see
+`fderivWithin_neg'`. -/
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x :=
   fderivWithin_fun_neg hxs
 
 @[simp]
 theorem fderiv_fun_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_fun_neg uniqueDiffWithinAt_univ]
+  simp [← fderivWithin_univ, fderivWithin_fun_neg]
 
 /-- Version of `fderiv_neg` where the function is written `-f` instead of `fun y ↦ - f y`. -/
 theorem fderiv_neg : fderiv 𝕜 (-f) x = -fderiv 𝕜 f x :=
@@ -783,7 +792,7 @@ theorem fderiv_sub_const (c : F) : fderiv 𝕜 (fun y => f y - c) x = fderiv �
 
 theorem HasFDerivAtFilter.const_sub (hf : HasFDerivAtFilter f f' L) (c : F) :
     HasFDerivAtFilter (fun x => c - f x) (-f') L := by
-  simpa only [sub_eq_add_neg] using hf.neg.const_add c
+  simpa only [sub_eq_add_neg] using! hf.neg.const_add c
 
 @[fun_prop]
 theorem HasStrictFDerivAt.const_sub (hf : HasStrictFDerivAt f f' x) (c : F) :
@@ -828,7 +837,7 @@ theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
   simp only [sub_eq_add_neg, fderivWithin_const_add, fderivWithin_fun_neg, hxs]
 
 theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_const_sub uniqueDiffWithinAt_univ]
+  simp [← fderivWithin_univ, fderivWithin_const_sub]
 
 end Sub
 

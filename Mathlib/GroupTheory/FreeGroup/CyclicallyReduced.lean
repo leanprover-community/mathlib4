@@ -11,6 +11,8 @@ public import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.Tactic.Group
 
 /-!
+# Cyclically reduced words in free groups
+
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.
 We show that free groups are (strongly) torsion-free in the sense of `IsMulTorsionFree`, i.e.,
 taking powers by every non-zero element `n : ℕ` is injective.
@@ -239,7 +241,7 @@ instance : IsMulTorsionFree (FreeGroup α) where
     have hm : reduceCyclically x.toWord = reduceCyclically y.toWord := by
       simp only [replicate_succ, flatten_cons, append_assoc] at heq'
       exact (List.append_inj heq' <| mul_left_cancel₀ hn <| by grind).1
-    have := congr_arg mk <| (conj_conjugator_reduceCyclically x.toWord).symm
+    have := congr_arg mk (conj_conjugator_reduceCyclically x.toWord).symm
     rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
 
 end IsMulTorsionFree

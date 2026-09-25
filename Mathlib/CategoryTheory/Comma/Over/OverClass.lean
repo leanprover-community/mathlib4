@@ -155,8 +155,7 @@ instance (f : X ⟶ Y) [IsIso f] [HomIsOver f S] : IsIso (asOverHom S f) :=
 attribute [local simp] Iso.inv_comp_eq in
 instance {e : X ≅ Y} [HomIsOver e.hom S] : HomIsOver e.inv S where
 
--- FIXME: False positive from the linter
-set_option linter.style.whitespace false in
+set_option linter.style.whitespace false in -- linter false positive
 attribute [local simp ←] Iso.eq_inv_comp in
 instance {e : X ≅ Y} [HomIsOver e.inv S] : HomIsOver e.hom S where
 
@@ -174,6 +173,7 @@ instance {f : X ⟶ Y} [IsIso f] [HomIsOver f S] : HomIsOver (inv f) S where
 
 end OverClass
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Reinterpret an isomorphism over an object `S` into an isomorphism in the category over `S`. -/
 @[simps]
 def Iso.asOver (e : X ≅ Y) [HomIsOver e.hom S] : OverClass.asOver X S ≅ OverClass.asOver Y S where

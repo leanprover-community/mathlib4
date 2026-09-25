@@ -76,8 +76,7 @@ lemma uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 #min_imports in uses_norm_num
 
 /--
-info: public import Mathlib.Tactic.Lemma
-public import Mathlib.Data.Nat.Notation
+info: public import Mathlib.Data.Nat.Notation
 ---
 info: theorem hi.extracted_1_1 (n : ℕ) : n = n := sorry
 -/
@@ -87,6 +86,7 @@ lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
 section Variables
 
+set_option linter.defProp false in
 /-- info: public import Mathlib.Data.Nat.Notation -/
 #guard_msgs in
 #min_imports in
@@ -99,6 +99,7 @@ variable {K : Type*} [Field K]
 
 namespace Namespace
 
+set_option linter.defProp false in
 -- The dependency on `Semiring` is only found in the `variable` declaration.
 -- We find it by looking up the declaration by name and checking the term,
 -- which used to get confused if running in a namespace.

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Weights.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
@@ -77,6 +78,22 @@ lemma h_def [DecidableEq ι] (i : b.support) :
 lemma h_eq_diagonal [DecidableEq ι] (i : b.support) :
     h i = .diagonal (Sum.elim 0 (P.pairingIn ℤ · i)) := by
   ext (j | j) (k | k) <;> simp [h, Matrix.diagonal_apply]
+
+variable (b) in
+lemma linearIndependent_h [Finite ι] [CharZero R] [IsDomain R] [P.IsRootSystem] :
+    LinearIndependent R (h (b := b)) := by
+  classical
+  have : Matrix.diagLinearMap (b.support ⊕ ι) R R ∘ h =
+      Sum.elimZeroLeft ∘ fun i : b.support ↦ algebraMap ℤ R ∘ (P.pairingIn ℤ · i) := by
+    ext; rw [comp_apply, h_def]; aesop
+  apply LinearIndependent.of_comp (Matrix.diagLinearMap _ _ _)
+  rw [this, LinearMap.linearIndependent_iff_of_injOn _ Sum.elim_injective'.injOn,
+    linearIndependent_algebraMap_comp_iff]
+  suffices LinearIndependent ℤ (fun i j : b.support ↦ P.pairingIn ℤ j i) from
+    this.of_linearIndependent_subset b.support
+  apply b.cartanMatrix.transpose.linearIndependent_rows_of_det_ne_zero
+  rw [Matrix.det_transpose, ← Matrix.nondegenerate_iff_det_ne_zero]
+  exact b.cartanMatrix_nondegenerate
 
 lemma span_range_h_le_range_diagonal [DecidableEq ι] :
     span R (range h) ≤ LinearMap.range (Matrix.diagonalLinearMap (b.support ⊕ ι) R R) := by
@@ -148,6 +165,8 @@ def ω :
   letI := P.indexNeg
   .fromBlocks 1 0 0 <| .of fun i j ↦ if i = -j then 1 else 0
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- Geck's construction of the Lie algebra associated to a root system with distinguished base.
 
 Note that it is convenient to include `range h` in the Lie span, to make it elementary that it
@@ -157,7 +176,6 @@ def lieAlgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range h ∪ range e ∪ range f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction.
 
 See also `RootPairing.GeckConstruction.cartanSubalgebra'`. -/
@@ -242,7 +260,7 @@ lemma ω_mul_h [Fintype ι] (i : b.support) :
 
 lemma ω_mul_e [Fintype ι] (i : b.support) :
     ω b * e i = f i * ω b := by
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k) (l | l)
   · simp [ω, e, f]
@@ -265,7 +283,6 @@ lemma ω_mul_f [Fintype ι] (i : b.support) :
 
 lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
     ⁅e i, f j⁆ * ω b = -ω b * ⁅e j, f i⁆ := by
-  classical
   calc ⁅e i, f j⁆ * ω b = e i * f j * ω b - f j * e i * ω b := by rw [Ring.lie_def, sub_mul]
                       _ = e i * (f j * ω b) - f j * (e i * ω b) := by rw [mul_assoc, mul_assoc]
                       _ = e i * (ω b * e j) - f j * (ω b * f i) := by rw [← ω_mul_e, ← ω_mul_f]
@@ -312,16 +329,15 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
   refine ⟨fun ⟨⟨x, hx⟩, hx'⟩ ⟨⟨y, hy⟩, hy'⟩ ↦ ?_⟩
   let x' : cartanSubalgebra b := ⟨x, hx'⟩
   let y' : cartanSubalgebra b := ⟨y, hy'⟩
-  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-  simp
+  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+  simp [trivial_lie_zero]
 
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩
   obtain ⟨d, rfl⟩ : ∃ d : b.support ⊕ ι → R, Matrix.diagonal d = x :=
-    span_range_h_le_range_diagonal <| by simpa using hx
+    span_range_h_le_range_diagonal <| by simpa using! hx
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cartanSubalgebra_le_lieAlgebra :
     cartanSubalgebra b ≤ lieAlgebra b := by
   rw [cartanSubalgebra, lieAlgebra, ← LieSubalgebra.toSubmodule_le_toSubmodule, Submodule.span_le]
@@ -334,7 +350,7 @@ lemma e_lie_u (i j : b.support) :
 
 lemma e_lie_v_ne {i j : ι} {k : b.support} (h : P.root j = P.root k + P.root i) :
     ⁅e k, v b i⁆ = (P.chainBotCoeff k i + 1 : R) • v b j := by
-  letI := P.indexNeg
+  let := P.indexNeg
   ext (l | l)
   · replace h : i ≠ -k := by rintro rfl; exact P.ne_zero j <| by simpa using h
     simp [e, h, -indexNeg_neg]
@@ -409,7 +425,6 @@ def ωConjLieSubmodule :
     x ∈ ωConjLieSubmodule N ↔ (ω b) *ᵥ x ∈ N :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ωConjLieSubmodule_eq_top_iff : ωConjLieSubmodule N = ⊤ ↔ N = ⊤ := by
   rw [← LieSubmodule.toSubmodule_eq_top]
   let e : Submodule R (b.support ⊕ ι → R) ≃o Submodule R (b.support ⊕ ι → R) :=

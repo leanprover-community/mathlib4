@@ -115,7 +115,7 @@ theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) 
   ⟨BlankRel.refl, @BlankRel.symm _ _, @BlankRel.trans _ _⟩
 
 /-- Construct a setoid instance for `BlankRel`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def BlankRel.setoid (Γ) [Inhabited Γ] : Setoid (List Γ) :=
   ⟨_, BlankRel.equivalence _⟩
 
@@ -226,14 +226,16 @@ theorem ListBlank.nth_mk {Γ} [Inhabited Γ] (l : List Γ) (n : ℕ) :
 
 @[simp]
 theorem ListBlank.nth_zero {Γ} [Inhabited Γ] (l : ListBlank Γ) : l.nth 0 = l.head := by
-  conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l.tail fun l ↦ rfl
+  rw [← ListBlank.cons_head_tail l]
+  induction l.tail using Quotient.inductionOn'
+  rfl
 
 @[simp]
 theorem ListBlank.nth_succ {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) :
     l.nth (n + 1) = l.tail.nth n := by
-  conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l.tail fun l ↦ rfl
+  rw [← ListBlank.cons_head_tail l]
+  induction l.tail using Quotient.inductionOn'
+  rfl
 
 @[ext]
 theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
@@ -262,11 +264,11 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
     (L.modifyNth f n).nth i = if i = n then f (L.nth i) else L.nth i := by
   induction n generalizing i L with
   | zero =>
-    cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
-      ListBlank.nth_succ, if_false, ListBlank.tail_cons, reduceCtorEq]
+    cases i <;> simp only [ListBlank.nth_zero, ite_true, ListBlank.head_cons, ListBlank.modifyNth,
+      ListBlank.nth_succ, ite_false, ListBlank.tail_cons, reduceCtorEq]
   | succ n IH =>
     cases i
-    · rw [if_neg (Nat.succ_ne_zero _).symm]
+    · rw [ite_eq_right (Nat.succ_ne_zero _).symm]
       simp only [ListBlank.nth_zero, ListBlank.head_cons, ListBlank.modifyNth]
     · simp only [IH, ListBlank.modifyNth, ListBlank.nth_succ, ListBlank.tail_cons, Nat.succ.injEq]
 
@@ -313,14 +315,16 @@ theorem ListBlank.map_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap
 @[simp]
 theorem ListBlank.head_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).head = f l.head := by
-  conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l fun a ↦ rfl
+  rw [← ListBlank.cons_head_tail l]
+  induction l using Quotient.inductionOn'
+  rfl
 
 @[simp]
 theorem ListBlank.tail_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) : (l.map f).tail = l.tail.map f := by
-  conv => lhs; rw [← ListBlank.cons_head_tail l]
-  exact Quotient.inductionOn' l fun a ↦ rfl
+  rw [← ListBlank.cons_head_tail l]
+  induction l using Quotient.inductionOn'
+  rfl
 
 @[simp]
 theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')

@@ -5,7 +5,7 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.Filtration
 
@@ -45,7 +45,7 @@ variable {N : Type w} [AddCommGroup N] [Module R N]
 
 variable {f : M →ₗ[R] N}
 
-/- In each step, a preimage is constructed from the preimage of the previous step by
+/-- In each step, a preimage is constructed from the preimage of the previous step by
 subtracting this delta. -/
 private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : AdicCauchySequence I N)
     {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
@@ -56,7 +56,7 @@ private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : Adi
     exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
   ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 
-/- Inductively construct preimage of Cauchy sequence. -/
+/-- Inductively construct preimage of Cauchy sequence. -/
 private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauchySequence I N) :
     (n : ℕ) → f ⁻¹' {x n}
   | .zero => ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
@@ -67,7 +67,6 @@ private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauc
       let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
       ⟨yₙ - d, by simpa [p]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 /-- Adic completion preserves surjectivity -/
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map I f) := fun y ↦ by
@@ -120,7 +119,7 @@ variable {k : ℕ}
   (hkn : ∀ n ≥ k, I ^ n • ⊤ ⊓ LinearMap.range f = I ^ (n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f))
   (x : AdicCauchySequence I N) (hker : ∀ (n : ℕ), g (x n) ∈ (I ^ n • ⊤ : Submodule R P))
 
-/- In each step, a preimage is constructed from the preimage of the previous step by
+/-- In each step, a preimage is constructed from the preimage of the previous step by
 adding this delta. -/
 private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
     (hdmem : d ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N)) {y yₙ : M}
@@ -180,7 +179,6 @@ where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 include hf hfg hg in
 /-- `AdicCompletion` over a Noetherian ring is exact on finitely generated modules. -/
 theorem map_exact : Function.Exact (map I f) (map I g) := by

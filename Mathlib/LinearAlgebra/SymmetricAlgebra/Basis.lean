@@ -71,7 +71,7 @@ theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (b : Basis I R M) :
 @[simps! repr_apply]
 noncomputable def _root_.Module.Basis.symmetricAlgebra (b : Basis κ R M) :
     Basis (κ →₀ ℕ) R (SymmetricAlgebra R M) :=
-  (MvPolynomial.basisMonomials κ R).map <| (SymmetricAlgebra.equivMvPolynomial b).symm.toLinearEquiv
+  (MvPolynomial.basisMonomials κ R).map (SymmetricAlgebra.equivMvPolynomial b).symm.toLinearEquiv
 
 /-- `SymmetricAlgebra R M` is free when `M` is. -/
 instance instModuleFree [Module.Free R M] : Module.Free R (SymmetricAlgebra R M) :=
@@ -96,7 +96,6 @@ instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (SymmetricAlgebr
 
 attribute [pp_with_univ] Cardinal.lift
 
-set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 lemma rank_eq [Nontrivial M] [Module.Free R M] :
     Module.rank R (SymmetricAlgebra R M) = Cardinal.lift.{uR} (max (Module.rank R M) ℵ₀) := by

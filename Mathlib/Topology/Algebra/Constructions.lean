@@ -49,8 +49,6 @@ theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
 @[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
-  continuous_toFun := continuous_op
-  continuous_invFun := continuous_unop
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space
@@ -123,7 +121,6 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
   simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
 Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph` instead. -/
 @[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
@@ -180,5 +177,19 @@ lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenM
   refine ⟨fun ⟨a, b, h, ha, hb⟩ ↦ ⟨⟨a, b, hf_inj ?_, hf_inj ?_⟩, ?_⟩,
     fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩
   all_goals simp_all
+
+@[to_additive]
+lemma _root_.Topology.IsInducing.units_map {f : M →* N} (hf : IsInducing f) :
+    IsInducing (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isInducing.comp <| hf.comp opHomeomorph.symm.isInducing)
+    |>.comp isInducing_embedProduct
+
+@[to_additive]
+lemma _root_.Topology.IsEmbedding.units_map {f : M →* N} (hf : IsEmbedding f) :
+    IsEmbedding (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isEmbedding.comp <| hf.comp opHomeomorph.symm.isEmbedding)
+    |>.comp isEmbedding_embedProduct
 
 end Units

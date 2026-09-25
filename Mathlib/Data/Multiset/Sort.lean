@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.Multiset.Range
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
 public meta import Mathlib.Data.Multiset.Defs
 
 /-!
@@ -47,8 +47,6 @@ theorem coe_sort : sort l r = mergeSort l (r · ·) :=
 theorem pairwise_sort : (sort s r).Pairwise r :=
   Quot.inductionOn s (pairwise_mergeSort' _)
 
-@[deprecated (since := "2025-10-11")] alias sort_sorted := pairwise_sort
-
 @[simp]
 theorem sort_eq : ↑(sort s r) = s :=
   Quot.inductionOn s fun _ => Quot.sound <| mergeSort_perm _ _
@@ -85,7 +83,7 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm 
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]
-theorem length_sort : (sort s r).length = card s := Quot.inductionOn s <| length_mergeSort
+theorem length_sort : (sort s r).length = card s := Quot.inductionOn s length_mergeSort
 
 end
 

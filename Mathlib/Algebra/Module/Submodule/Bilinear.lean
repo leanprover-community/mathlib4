@@ -30,12 +30,11 @@ Generalize this file to semilinear maps.
 
 @[expose] public section
 
-
 universe uι u v
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 

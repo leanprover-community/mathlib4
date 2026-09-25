@@ -16,10 +16,7 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u v w
 
@@ -32,7 +29,7 @@ section product
 
 /-- The product cone induced by the concrete product. -/
 def productCone : Fan Z :=
-  Fan.mk (ModuleCat.of R (∀ i : ι, Z i)) fun i =>
+  Fan.mk ↧(∀ i : ι, Z i) fun i =>
     ofHom (LinearMap.proj i : (∀ i : ι, Z i) →ₗ[R] Z i)
 
 /-- The concrete product cone is limiting. -/
@@ -50,7 +47,7 @@ variable [HasProduct Z]
 /-- The categorical product of a family of objects in `ModuleCat`
 agrees with the usual module-theoretical product.
 -/
-noncomputable def piIsoPi : ∏ᶜ Z ≅ ModuleCat.of R (∀ i, Z i) :=
+noncomputable def piIsoPi : ∏ᶜ Z ≅ ↧(∀ i, Z i) :=
   limit.isoLimitCone ⟨_, productConeIsLimit Z⟩
 
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
@@ -72,10 +69,9 @@ open DirectSum
 
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coproduct cone induced by the concrete coproduct. -/
 def coproductCocone : Cofan Z :=
-  Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
+  Cofan.mk ↧(⨁ i : ι, Z i) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The concrete coproduct cone is colimiting. -/
@@ -85,32 +81,29 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     rintro s ⟨i⟩
     ext (x : Z i)
     simpa only [Discrete.functor_obj_eq_as, coproductCocone, Cofan.mk_pt, Functor.const_obj_obj,
-      Cofan.mk_ι_app, hom_comp, LinearMap.coe_comp, Function.comp_apply] using
+      Cofan.mk_ι_app, hom_comp, LinearMap.coe_comp, Function.comp_apply] using!
       DirectSum.toModule_lof (ι := ι) R (M := fun i ↦ Z i) i x
   uniq := by
     rintro s f h
     ext : 1
     refine DirectSum.linearMap_ext _ fun i ↦ ?_
     ext x
-    simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
+    simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using!
       congr($(h ⟨i⟩) x)
 
 variable [HasCoproduct Z]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The categorical coproduct of a family of objects in `ModuleCat`
 agrees with direct sum.
 -/
-noncomputable def coprodIsoDirectSum : ∐ Z ≅ ModuleCat.of R (⨁ i, Z i) :=
+noncomputable def coprodIsoDirectSum : ∐ Z ≅ ↧(⨁ i, Z i) :=
   colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, elementwise]
 theorem ι_coprodIsoDirectSum_hom (i : ι) :
     Sigma.ι Z i ≫ (coprodIsoDirectSum Z).hom = ofHom (DirectSum.lof R ι (fun i ↦ Z i) i) :=
   colimit.isoColimitCocone_ι_hom _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, elementwise]
 theorem lof_coprodIsoDirectSum_inv (i : ι) :
     ofHom (DirectSum.lof R ι (fun i ↦ Z i) i) ≫ (coprodIsoDirectSum Z).inv = Sigma.ι Z i :=

@@ -33,7 +33,7 @@ the action defined in this file.
 lie algebra, ideal operation
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w w₁ w₂
@@ -279,7 +279,7 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
   congr
   ext
   simp_all only [Subtype.exists, LieSubmodule.mem_inf, LieHom.mem_idealRange_iff, exists_prop,
-    Set.mem_setOf_eq, LieHom.coe_toLinearMap, mem_comap,
+    Set.mem_ofPred_eq, LieHom.coe_toLinearMap, mem_comap,
     exists_exists_and_exists_and_eq_and, LieHom.map_lie]
   grind
 

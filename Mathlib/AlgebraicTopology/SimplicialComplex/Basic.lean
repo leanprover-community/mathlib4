@@ -5,8 +5,12 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.Order.UpperLower.Relative
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Abstract Simplicial complexes
@@ -55,7 +59,7 @@ namespace PreAbstractSimplicialComplex
 
 instance : SetLike (PreAbstractSimplicialComplex ι) (Finset ι) where
   coe K := K.faces
-  coe_injective' K _ _ := by
+  coe_injective K _ _ := by
     cases K
     congr
 
@@ -78,7 +82,7 @@ instance : LT (PreAbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
 instance : IsConcreteLE (PreAbstractSimplicialComplex ι) (Finset ι) where
-  coe_subset_coe' := .rfl
+  le_iff := .rfl
 
 instance : PartialOrder (PreAbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => PreAbstractSimplicialComplex.ext)
@@ -179,7 +183,7 @@ variable {ι}
 
 instance : SetLike (AbstractSimplicialComplex ι) (Finset ι) where
   coe K := K.faces
-  coe_injective' _ _ _ := by
+  coe_injective _ _ _ := by
     ext
     grind
 
@@ -202,7 +206,7 @@ instance : LT (AbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
 instance : IsConcreteLE (AbstractSimplicialComplex ι) (Finset ι) where
-  coe_subset_coe' := .rfl
+  le_iff := .rfl
 
 instance : PartialOrder (AbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => AbstractSimplicialComplex.ext)
@@ -242,7 +246,7 @@ instance : InfSet (AbstractSimplicialComplex ι) where
         grind [IsRelLowerSet.mem_of_le, PreAbstractSimplicialComplex.isRelLowerSet_faces,
           mem_iInter]
       singleton_mem v := by
-        grind [Set.mem_iInter, Finset.singleton_nonempty, singleton_mem]  }
+        grind [Set.mem_iInter, Finset.singleton_nonempty, singleton_mem] }
 
 instance : Top (AbstractSimplicialComplex ι) where
   top :=

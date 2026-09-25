@@ -30,7 +30,7 @@ assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
-variable {a b c p q : ℚ}
+variable {a b c q : ℚ}
 
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
   simpa using divInt_nonneg ha (Int.natCast_nonneg _)
@@ -38,7 +38,7 @@ variable {a b c p q : ℚ}
 theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) : 0 ≤ Rat.ofScientific m s e := by
   rw [Rat.ofScientific]
   cases s
-  · rw [if_neg (by decide)]
+  · rw [ite_eq_right (by decide)]
     exact num_nonneg.mp <| Int.natCast_nonneg _
   · grind [normalize_eq_mkRat, Rat.mkRat_nonneg]
 
@@ -123,7 +123,8 @@ instance : AddLeftMono ℚ where
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
 
-theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
+@[deprecated "use `div_lt_div_iff₀`" (since := "2026-03-20")] theorem div_lt_div_iff_mul_lt_mul
+    {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
   simp only [lt_iff_le_not_ge]
   apply and_congr
@@ -133,8 +134,6 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
 theorem num_le_denom_iff {q : ℚ} : q.num ≤ q.den ↔ q ≤ 1 := by simp [Rat.le_iff]
 
 theorem num_lt_denom_iff {q : ℚ} : q.num < q.den ↔ q < 1 := by simp [Rat.lt_iff]
-
-@[deprecated (since := "2026-02-24")] alias lt_one_iff_num_lt_denom := Rat.num_lt_denom_iff
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   grind [abs_of_nonpos, neg_def, Rat.num_nonneg, abs_of_nonneg, num_divInt_den]

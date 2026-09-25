@@ -37,7 +37,7 @@ variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapTriangle : Triangle C ⥤ Triangle D where
   obj T := Triangle.mk (F.map T.mor₁) (F.map T.mor₂)
     (F.map T.mor₃ ≫ (F.commShiftIso (1 : ℤ)).hom.app T.obj₁)
@@ -59,25 +59,25 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₂ h
     · exact congr_arg TriangleMorphism.hom₃ h
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
     ⟨{hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃
       comm₁ := F.map_injective
-        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using f.comm₁)
+        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using! f.comm₁)
       comm₂ := F.map_injective
-        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using f.comm₂)
+        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using! f.comm₂)
       comm₃ := F.map_injective (by
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
-          map_preimage, Triangle.mk_mor₃] using f.comm₃) }, by cat_disch⟩
+          map_preimage, Triangle.mk_mor₃] using! f.comm₃) }, by cat_disch⟩
 
 section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
@@ -89,8 +89,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
       simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
-      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
-        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by cat_disch)
+      simp)) (by cat_disch)
 
 attribute [simps!] mapTriangleCommShiftIso
 
@@ -98,8 +97,9 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 -- Split out from the following instance for faster elaboration.
-set_option backward.privateInPublic true in
 private theorem mapTriangleCommShiftIso_add
     [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (n m : ℤ) :
@@ -108,13 +108,12 @@ private theorem mapTriangleCommShiftIso_add
         (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
   ext <;> simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   commShiftIso := F.mapTriangleCommShiftIso
-  commShiftIso_add _ _ := mapTriangleCommShiftIso_add ..
+  commShiftIso_add _ _ := private mapTriangleCommShiftIso_add ..
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
@@ -126,10 +125,11 @@ def mapTriangleRotateIso :
       ((F.commShiftIso (1 : ℤ)).symm.app _)
       (by simp) (by simp) (by simp)) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
-noncomputable def mapTriangleInvRotateIso [F.Additive] :
+noncomputable def mapTriangleInvRotateIso :
     F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
@@ -148,7 +148,6 @@ def mapTriangleIdIso : (𝟭 C).mapTriangle ≅ 𝟭 _ :=
 def mapTriangleCompIso : (F ⋙ G).mapTriangle ≅ F.mapTriangle ⋙ G.mapTriangle :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two isomorphic functors `F₁` and `F₂` induce isomorphic functors
 `F₁.mapTriangle` and `F₂.mapTriangle` if the isomorphism `F₁ ≅ F₂` is compatible
 with the shifts. -/
@@ -182,6 +181,7 @@ namespace IsTriangulated
 
 open ZeroObject
 
+set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
   map_zero X Y := by
     have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
@@ -193,7 +193,7 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
       infer_instance
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
@@ -310,7 +310,6 @@ variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   (h : Octahedron comm h₁₂ h₂₃ h₁₃)
   (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of an octahedron by a triangulated functor. -/
 @[simps]
 def map : Octahedron (by dsimp; rw [← F.map_comp, comm])
@@ -350,7 +349,6 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsTriangulated.of_fully_faithful_triangulated_functor
     (F : C ⥤ D) [F.CommShift ℤ]
     [F.IsTriangulated] [F.Full] [F.Faithful] [IsTriangulated D] :

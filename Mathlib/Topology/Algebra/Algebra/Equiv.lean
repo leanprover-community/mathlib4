@@ -75,8 +75,10 @@ def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
   __ := e.toAlgHom
   cont := e.continuous_toFun
 
-instance coe : Coe (A ≃A[R] B) (A →A[R] B) := ⟨toContinuousAlgHom⟩
+instance : CoeOut (A ≃A[R] B) (A →A[R] B) where coe := toContinuousAlgHom
+instance : CoeOut (A ≃A[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
+@[macro_inline]
 instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
@@ -231,11 +233,11 @@ theorem symm_apply_apply (e : A ≃A[R] B) (a : A) : e.symm (e a) = a :=
   e.1.left_inv a
 
 @[simp]
-theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' (e '' S) = S :=
+theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' e '' S = S :=
   e.toEquiv.symm_image_image S
 
 @[simp]
-theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' (e.symm '' S) = S :=
+theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' e.symm '' S = S :=
   e.symm.symm_image_image S
 
 @[simp]
@@ -294,11 +296,11 @@ theorem coe_symm_comp_coe (e : A ≃A[R] B) :
 
 @[simp]
 theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id := by
-  exact funext <| e.symm_apply_apply
+  exact funext e.symm_apply_apply
 
 @[simp]
 theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=
-  funext <| e.apply_symm_apply
+  funext e.apply_symm_apply
 
 @[simp]
 theorem symm_symm (e : A ≃A[R] B) : e.symm.symm = e := rfl
@@ -324,11 +326,11 @@ theorem image_symm_eq_preimage (e : A ≃A[R] B) (S : Set B) : e.symm '' S = e �
   rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
-theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' (e ⁻¹' S) = S :=
+theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' e ⁻¹' S = S :=
   e.toEquiv.symm_preimage_preimage S
 
 @[simp]
-theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' (e.symm ⁻¹' S) = S :=
+theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' e.symm ⁻¹' S = S :=
   e.symm.symm_preimage_preimage S
 
 theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂] [Ring E₁]

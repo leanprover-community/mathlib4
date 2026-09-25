@@ -109,7 +109,7 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     refine ((tendsto_polynomial_inv_mul_zero (p * X)).mono_left inf_le_left).congr fun x ↦ ?_
     simp [slope_def_field, div_eq_mul_inv, mul_right_comm]
   · have := ((p.hasDerivAt x⁻¹).mul (hasDerivAt_neg _).exp).comp x (hasDerivAt_inv hx.ne')
-    convert this.congr_of_eventuallyEq _ using 1
+    convert! this.congr_of_eventuallyEq _ using 1
     · simp [expNegInvGlue, hx.not_ge]
       ring
     · filter_upwards [lt_mem_nhds hx] with y hy
@@ -131,7 +131,7 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
   | succ m ihm =>
     rw [show ((m + 1 : ℕ) : WithTop ℕ∞) = m + 1 from rfl]
     refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, by simp, ?_⟩
-    convert ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
+    convert! ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
 /-- The function `expNegInvGlue` is smooth. -/
@@ -159,7 +159,7 @@ theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
     fun hx => add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
 
 theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
-  (div_eq_one_iff_eq <| (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
+  (div_eq_one_iff_eq (pos_denom x).ne').2 <| by rw [zero_of_nonpos (sub_nonpos.2 h), add_zero]
 
 @[simp]
 nonrec theorem zero_iff_nonpos : smoothTransition x = 0 ↔ x ≤ 0 := by

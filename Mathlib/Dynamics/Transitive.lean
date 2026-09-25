@@ -20,7 +20,7 @@ and prove basic facts about topologically transitive actions.
 group action, topologically transitive
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Pointwise

@@ -43,18 +43,18 @@ presheaf `U ↦ C(U, T)`. For universe reasons, we implement it by hand.
 @[simps]
 def continuousMapPresheaf (T : Type v) [TopologicalSpace T] : Scheme.{u}ᵒᵖ ⥤ Type (max v u) where
   obj U := C(U.unop, T)
-  map {U V} f g := g.comp f.unop.base.hom
+  map {U V} f := ↾fun g ↦ ContinuousMap.comp g f.unop.base.hom
 
 /-- `continuousMapPresheaf` is isomorphic to the composition of the forgetful
 functor to `TopCat` and the yoneda embedding. -/
 def continuousMapPresheafIsoUlift :
     continuousMapPresheaf T ≅
-      Scheme.forgetToTop.op ⋙ TopCat.uliftFunctor.op ⋙ yoneda.obj (.of <| ULift T) :=
+      Scheme.forgetToTop.op ⋙ TopCat.uliftFunctor.op ⋙ yoneda.obj ↧(ULift T) :=
   NatIso.ofComponents fun U ↦ equivEquivIso <|
     (ContinuousMap.uliftEquiv U.1 T).symm.trans
     (TopCat.Hom.equivContinuousMap
       (TopCat.uliftFunctor.obj <| Scheme.forgetToTop.obj U.1)
-      (TopCat.uliftFunctor.obj (TopCat.of T))).symm
+      (TopCat.uliftFunctor.obj ↧T)).symm
 
 lemma isSheaf_zariskiTopology_continuousMapPresheaf :
     Presheaf.IsSheaf Scheme.zariskiTopology (continuousMapPresheaf T) := by
@@ -101,13 +101,13 @@ group. -/
 def continuousMapPresheafAb (A : Type v) [TopologicalSpace A] [AddCommGroup A]
     [IsTopologicalAddGroup A] :
     Scheme.{u}ᵒᵖ ⥤ Ab.{max v u} where
-  obj U := AddCommGrpCat.of C(U.unop, A)
+  obj U := ↧C(U.unop, A)
   map {U V} f := AddCommGrpCat.ofHom (ContinuousMap.compAddMonoidHom' f.unop.base.hom)
 
 variable (A : Type v) [TopologicalSpace A] [AddCommGroup A] [IsTopologicalAddGroup A]
 
 /-- `continuousMapPresheafAb` viewed as a type valued sheaf is isomorphic to
-`continuousMapPresheaf. -/
+`continuousMapPresheaf`. -/
 def continuousMapPresheafAbForgetIso :
     continuousMapPresheafAb A ⋙ CategoryTheory.forget Ab ≅ continuousMapPresheaf A :=
   Iso.refl _

@@ -3,6 +3,7 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 import Mathlib.FieldTheory.Galois.Notation
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Field.ULift
@@ -58,10 +59,9 @@ abbrev Copy := L
 
 set_option pp.explicit true in
 /--
-info:
-@AlgEquiv K L L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹)))
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
+info: @AlgEquiv K L L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+  (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹)))
+  (@CommSemiring.toSemiring L (@Semifield.toCommSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
 -/
 #guard_msgs in
 #check Gal(L/K)

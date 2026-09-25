@@ -24,6 +24,11 @@ In this file we define a notion of finiteness that is common in commutative alge
 - `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
   all of these express that some object is finitely generated *as module* over some base ring.
 
+## TODO
+
+Redefine `Submodule.FG` to be in terms of `Module.FG` (rather than the other way around) to match
+finite generation in the group theory folder.
+
 -/
 
 @[expose] public section
@@ -48,16 +53,14 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
   have := h.exists_finset_coe
   tauto
 
-theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure]⟩,
-    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
+theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG := by
+  simp_rw [fg_def, ← toAddSubmonoid_inj, span_nat_eq_addSubmonoidClosure,
+    AddSubmonoid.isAddFG_iff_finite]
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
-    P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure]⟩,
-    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
-
-@[deprecated (since := "2025-08-20")] alias fg_iff_add_subgroup_fg := fg_iff_addSubgroup_fg
+    P.FG ↔ P.toAddSubgroup.FG := by
+  simp_rw [fg_def, ← toAddSubgroup_inj, span_int_eq_addSubgroupClosure,
+    AddSubgroup.isAddFG_iff_finite]
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by
@@ -77,7 +80,7 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
   · intro hN
     obtain ⟨n, f, h⟩ := fg_iff_exists_fin_generating_family.mp hN
     refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
-    convert h
+    convert! h
     ext
     simp
   · rintro ⟨G, _, g, hg⟩
@@ -101,7 +104,7 @@ end Submodule
 
 namespace Ideal
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} [Semiring R]
 
 /-- An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.
 
@@ -113,7 +116,7 @@ end Ideal
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+variable (R A M : Type*)
 
 /-- A module over a semiring is `Module.Finite` if it is finitely generated as a module. -/
 protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
@@ -124,7 +127,7 @@ attribute [inherit_doc Module.Finite] Module.Finite.fg_top
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- See also `Module.Finite.iff_fg` for a version when `M` is itself a submodule. -/
 theorem finite_def {R M} [Semiring R] [AddCommMonoid M] [Module R M] :
@@ -165,7 +168,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+variable {A B : Type*} [CommRing A] [CommRing B]
 
 /-- A ring morphism `A →+* B` is `RingHom.Finite` if `B` is finitely generated as `A`-module. -/
 @[algebraize Module.Finite, stacks 0563]
@@ -182,9 +185,9 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type*} [CommRing R]
-variable [CommRing A] [CommRing B] [CommRing C]
-variable [Algebra R A] [Algebra R B] [Algebra R C]
+variable {R A B : Type*} [CommRing R]
+variable [CommRing A] [CommRing B]
+variable [Algebra R A] [Algebra R B]
 
 /-- An algebra morphism `A →ₐ[R] B` is finite if it is finite as ring morphism.
 In other words, if `B` is finitely generated as `A`-module. -/

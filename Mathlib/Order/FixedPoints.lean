@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.Hom.Order
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Algebra.Group.End
 
 /-!
 # Fixed point construction on complete lattices
@@ -35,7 +35,7 @@ fixed point, complete lattice, monotone function
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u} {β : Type v}
 
 open Function (fixedPoints IsFixedPt)
 
@@ -245,6 +245,7 @@ instance : SemilatticeSup (fixedPoints f) where
   sup_le _ _ _ hxz hyz := f.nextFixed_le _ <| sup_le hxz hyz
 
 instance : SemilatticeInf (fixedPoints f) where
+  __ : PartialOrder (fixedPoints f) := inferInstance
   inf x y := f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y)
   __ := OrderDual.instSemilatticeInf (fixedPoints f.dual)
 

@@ -68,6 +68,4 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 
-@[deprecated (since := "2025-10-06")] alias mk_multiset_of_countable := mk_eq_aleph0
-
 end Cardinal

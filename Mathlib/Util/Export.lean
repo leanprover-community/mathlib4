@@ -10,7 +10,9 @@ public meta import Lean.CoreM
 public meta import Lean.Util.FoldConsts
 
 /-!
-A rudimentary export format, adapted from
+# A rudimentary export format
+
+Adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for Lean 4 kernel primitives.
 -/
@@ -24,7 +26,8 @@ namespace Lean
 
 namespace Export
 
-/- References -/
+/-! References -/
+
 private opaque MethodsRefPointed : NonemptyType.{0}
 
 private def MethodsRef : Type := MethodsRefPointed.type
@@ -47,7 +50,7 @@ deriving Inhabited
 
 structure State where
   names : Alloc Name := ⟨(∅ : Std.HashMap Name Nat).insert Name.anonymous 0, 1⟩
-  levels : Alloc Level := ⟨(∅ : Std.HashMap Level Nat).insert levelZero 0, 1⟩
+  levels : Alloc Level := ⟨(∅ : Std.HashMap Level Nat).insert .zero 0, 1⟩
   exprs : Alloc Expr
   defs : Std.HashSet Name
   stk : Array (Bool × Entry)

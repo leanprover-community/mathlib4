@@ -76,8 +76,7 @@ definition is the zero ring.
 -/
 def BDeRhamPlus : Type u :=
   AdicCompletion (RingHom.ker (fontaineThetaInvertP R p)) (Localization.Away (p : 𝕎 R♭))
-
-instance : CommRing (BDeRhamPlus R p) := AdicCompletion.instCommRing _
+deriving CommRing
 
 /--
 The de Rham period ring $\mathbb{B}_{dR}$ for general perfectoid ring.

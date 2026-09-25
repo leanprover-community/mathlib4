@@ -278,7 +278,7 @@ See also the stronger version `Submodule.smithNormalForm`.
 -/
 theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R M)
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
-  haveI := Classical.decEq M
+  have := Classical.decEq M
   cases nonempty_fintype ι
   induction N using inductionOnRank b with | ih N ih =>
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
@@ -305,7 +305,7 @@ theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
   obtain ⟨n, b'⟩ := Submodule.basisOfPid b ⊥
   let e : Fin n ≃ Fin 0 := b'.indexEquiv (Basis.empty _ : Basis (Fin 0) R (⊥ : Submodule R M))
   obtain rfl : n = 0 := by simpa using Fintype.card_eq.mpr ⟨e⟩
-  exact Sigma.eq rfl (Basis.eq_of_apply_eq <| finZeroElim)
+  exact Sigma.eq rfl (Basis.eq_of_apply_eq finZeroElim)
 
 /-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
@@ -335,7 +335,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
         ∀ i ∉ I, ∃ a : R, a ≠ 0 ∧ a • s i ∈ span R (s '' I)⟩ :=
       this.choose_spec
-    let N := span R (range <| (s ∘ (fun x => x) : I → M))
+    let N := span R (range (s ∘ (fun x => x) : I → M))
     -- same as `span R (s '' I)` but more convenient
     let _sI : I → N := fun i ↦ ⟨s i.1, subset_span (mem_range_self i)⟩
     -- `s` restricted to `I` is a basis of `N`
@@ -347,12 +347,12 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       · use 1, zero_ne_one.symm
         rw [one_smul]
         exact subset_span (mem_range_self (⟨i, hi⟩ : I))
-      · simpa [image_eq_range s I] using hI i hi
+      · simpa [image_eq_range s I] using! hI i hi
     choose a ha ha' using exists_a
     let A := ∏ i, a i
     have hA : A ≠ 0 := by
       rw [Finset.prod_ne_zero_iff]
-      simpa using ha
+      simpa using! ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
     have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA

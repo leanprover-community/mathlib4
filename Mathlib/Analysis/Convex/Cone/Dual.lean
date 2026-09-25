@@ -95,10 +95,10 @@ lemma dual_insert (x : M) (s : Set M) : dual p (insert x s) = dual p {x} ⊓ dua
   rw [insert_eq, dual_union]
 
 lemma dual_iUnion {ι : Sort*} (f : ι → Set M) : dual p (⋃ i, f i) = ⨅ i, dual p (f i) := by
-  ext; simp [forall_swap (α := M)]
+  ext; simp [forall_comm (α := M)]
 
 lemma dual_sUnion (S : Set (Set M)) : dual p (⋃₀ S) = sInf (dual p '' S) := by
-  ext; simp [forall_swap (α := M)]
+  ext; simp [forall_comm (α := M)]
 
 /-- Any set is a subset of its double dual cone. -/
 lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
@@ -113,7 +113,6 @@ variable {E F : Type*}
   [Module ℝ F]
   {K : Set E} {x₀ : E}
 
-open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
 theorem hyperplane_separation (C : ProperCone ℝ E) (hKconv : Convex ℝ K) (hKcomp : IsCompact K)
@@ -128,7 +127,6 @@ theorem hyperplane_separation (C : ProperCone ℝ E) (hKconv : Convex ℝ K) (hK
   simpa [hx₀.ne] using hv ((v * (f x)⁻¹) • x)
     (C.smul_mem hx <| le_of_lt <| mul_pos_of_neg_of_neg hv₀ <| inv_neg''.2 hx₀)
 
-open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
 theorem hyperplane_separation_point (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :

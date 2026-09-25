@@ -21,12 +21,12 @@ def AList (key val : Type) := List (key × val)
 ```
 
 Then we can use `f : key → IO key'` and `g : val → IO val'` to manipulate the `AList`'s key
-and value respectively with `Bitraverse f g : AList key val → IO (AList key' val')`.
+and value respectively with `bitraverse f g : AList key val → IO (AList key' val')`.
 
 ## Main definitions
 
-* `Bitraversable`: Bare typeclass to hold the `Bitraverse` function.
-* `LawfulBitraversable`: Typeclass for the laws of the `Bitraverse` function. Similar to
+* `Bitraversable`: Bare typeclass to hold the `bitraverse` function.
+* `LawfulBitraversable`: Typeclass for the laws of the `bitraverse` function. Similar to
   `LawfulTraversable`.
 
 ## References

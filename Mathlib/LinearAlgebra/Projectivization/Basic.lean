@@ -39,7 +39,7 @@ We have three ways to construct terms of `ℙ K V`:
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
   (MulAction.orbitRel Kˣ V).comap (↑)
 
@@ -131,7 +131,7 @@ variable {K}
 /-- An induction principle for `Projectivization`. Use as `induction v`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
-  Quotient.ind' <| Subtype.rec <| h
+  Quotient.ind' <| Subtype.rec h
 
 @[simp]
 theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
@@ -227,5 +227,25 @@ theorem map_comp {F U : Type*} [DivisionRing F] [AddCommGroup U] [Module F U] {�
   rfl
 
 end Map
+
+section linearIndependent
+
+theorem linearIndependent_pair_iff_ne {D D' : ℙ K V} :
+  LinearIndependent K ![D.rep, D'.rep] ↔ D ≠ D' := by
+    rw [LinearIndependent.pair_iff' (rep_nonzero _)]
+    refine ⟨fun h hD ↦ h 1 (by simp [hD]), fun h a hD ↦ h ?_⟩
+    rw [eq_comm, ← mk_rep D, ← mk_rep D', mk_eq_mk_iff]
+    suffices a ≠ 0 by refine ⟨(Ne.isUnit this).unit, by simp [← hD]⟩
+    exact fun ha ↦ D'.rep_nonzero (by simp [← hD, ha])
+
+theorem linearIndepOn_pair (D D' : ℙ K V) :
+    LinearIndepOn K id {D.rep, D'.rep} := by
+  by_cases h : D = D'
+  · simpa [h] using D'.rep_nonzero
+  rw [← ne_eq, ← linearIndependent_pair_iff_ne, LinearIndependent.pair_symm_iff,
+    ← linearIndepOn_id_range_iff h.injective] at h
+  simpa using h
+
+end linearIndependent
 
 end Projectivization

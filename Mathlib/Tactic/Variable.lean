@@ -140,8 +140,8 @@ partial def getSubproblem
         let fvarIds' := (← mvarId.getDecl).lctx.getFVarIds.filter
                           (fun fvar => !(fvarIds.contains fvar))
         -- 2. Abstract the instance problem with respect to these fvars
-        let goal ← mvarId.withContext do instantiateMVars <|
-                    (← mkForallFVars (usedOnly := true) (fvarIds'.map .fvar) (← mvarId.getType))
+        let goal ← mvarId.withContext do instantiateMVars (
+                    ← mkForallFVars (usedOnly := true) (fvarIds'.map .fvar) (← mvarId.getType))
         -- Note: pretty printing is not guaranteed to round-trip, but it's what we can do.
         let ty' ← PrettyPrinter.delab goal
         let binder' ← withRef binder `(bracketedBinderF| [$ty'])
@@ -191,7 +191,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
         trace[«variable?»] m!"elaborated binder types array = {types}"
         Term.synthesizeSyntheticMVarsNoPostponing -- checkpoint for withAutoBoundImplicit
         Term.withoutAutoBoundImplicit do
-        let (binders, toOmit) := ← do
+        let (binders, toOmit) ← (do
           match binder with
           | `(bracketedBinderF|[$[$ident? :]? $ty]) =>
             -- Check if it's an alias
@@ -213,7 +213,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
               return (binders, toOmit.push true)
             else
               return (binders, toOmit.push false)
-          | _ => return (binders, toOmit.push false)
+          | _ => return (binders, toOmit.push false))
         completeBinders' maxSteps gas checkRedundant binders toOmit (i + 1)
   else
     if h : gas = 0 ∧ i < binders.size then
@@ -240,7 +240,7 @@ def cleanBinders (binders : TSyntaxArray ``bracketedBinder) :
     TSyntaxArray ``bracketedBinder := Id.run do
   let mut binders' := #[]
   for binder in binders do
-    binders' := binders'.push <| ⟨binder.raw.unsetTrailing⟩
+    binders' := binders'.push ⟨binder.raw.unsetTrailing⟩
   return binders'
 
 @[command_elab «variable?», inherit_doc «variable?»]

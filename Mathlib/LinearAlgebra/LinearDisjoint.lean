@@ -120,7 +120,7 @@ The following is the second equivalent characterization of linear disjointness:
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
   are commutative, then the rank of `M` is at most one.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "`of_commute`" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
@@ -491,7 +491,7 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
   let n : Fin 2 → N := (inclusion inf_le_right) ∘ ![a, b]
   have hn : LinearIndependent R n := h.map' _ (ker_inclusion _ _ _)
   -- need this instance otherwise it only has semigroup structure
-  letI : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
+  let : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
   let m : Fin 2 →₀ M := .single 0 ⟨b.1, b.2.1⟩ - .single 1 ⟨a.1, a.2.1⟩
   have hm : mulRightMap M n m = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_right_of_flat hn, mem_bot] at hm
@@ -507,7 +507,7 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
   let m : Fin 2 → M := (inclusion inf_le_left) ∘ ![a, b]
   have hm : LinearIndependent R m := h.map' _ (ker_inclusion _ _ _)
   -- need this instance otherwise it only has semigroup structure
-  letI : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
+  let : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
   let n : Fin 2 →₀ N := .single 0 ⟨b.1, b.2.2⟩ - .single 1 ⟨a.1, a.2.2⟩
   have hn : mulLeftMap N m n = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
   rw [← LinearMap.mem_ker, H.linearIndependent_left_of_flat hm, mem_bot] at hn
@@ -542,7 +542,7 @@ theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat
     · simp [hab] at hij
     · simp [hab.symm] at hij
     · rfl
-  convert this
+  convert! this
   ext i
   fin_cases i <;> simp
 

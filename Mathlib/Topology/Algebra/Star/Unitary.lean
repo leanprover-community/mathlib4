@@ -16,7 +16,7 @@ public import Mathlib.Topology.Algebra.Monoid
 * In a topological star monoid `R` which is T1, `unitary R` is closed as a subset of `R`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Monoid R] [StarMul R] [TopologicalSpace R]
 

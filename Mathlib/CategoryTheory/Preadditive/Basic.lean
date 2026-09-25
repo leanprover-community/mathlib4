@@ -49,7 +49,7 @@ additive, preadditive, Hom group, Ab-category, Ab-enriched
 @[expose] public section
 
 
-universe v u
+universe w v u
 
 open CategoryTheory.Limits
 
@@ -123,9 +123,8 @@ instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory 
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
-instance (X : C) : AddCommGroup (End X) := by
-  dsimp [End]
-  infer_instance
+instance (X : C) : AddCommGroup (End X) :=
+  inferInstanceAs <| AddCommGroup (X ⟶ X)
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
@@ -204,6 +203,13 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 
+variable (C) in
+lemma hasZeroObject_of_hasCoproduct [HasCoproduct (PEmpty.elim : PEmpty.{w + 1} → C)] :
+    HasZeroObject C :=
+  ⟨∐ (PEmpty.elim : PEmpty.{w + 1} → C), by
+    rw [IsZero.iff_id_eq_zero]
+    cat_disch⟩
+
 /-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
@@ -236,7 +242,6 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
     (w : kernel.ι f = 0) : Mono f :=
   mono_of_cancel_zero f fun g h => by rw [← kernel.lift_ι f g h, w, Limits.comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
     (h : IsZero c.pt) : Mono f := mono_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
@@ -267,7 +272,6 @@ theorem epi_of_cokernel_zero {X Y : C} {f : X ⟶ Y} [HasColimit (parallelPair f
     (w : cokernel.π f = 0) : Epi f :=
   epi_of_cancel_zero f fun g h => by rw [← cokernel.π_desc f g h, w, Limits.zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
     (h : IsZero c.pt) : Epi f := epi_of_cancel_zero _ (fun g hg => by
   obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
@@ -319,7 +323,6 @@ section
 
 variable {X Y : C} {f : X ⟶ Y} {g : X ⟶ Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Map a kernel cone on the difference of two morphisms to the equalizer fork. -/
 @[simps! pt]
 def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
@@ -329,7 +332,6 @@ def forkOfKernelFork (c : KernelFork (f - g)) : Fork f g :=
 theorem forkOfKernelFork_ι (c : KernelFork (f - g)) : (forkOfKernelFork c).ι = c.ι :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Map any equalizer fork to a cone on the difference of the two morphisms. -/
 def kernelForkOfFork (c : Fork f g) : KernelFork (f - g) :=
   Fork.ofι c.ι <| by rw [comp_sub, comp_zero, sub_eq_zero, c.condition]

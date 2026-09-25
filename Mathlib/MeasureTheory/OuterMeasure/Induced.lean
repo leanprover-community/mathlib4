@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
@@ -116,7 +116,8 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     funext i
     apply extend_eq _ (h i)
   · obtain ⟨i, hi⟩ := h
-    exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
+    grw [← ENNReal.le_tsum i, extend_eq_top _ hi]
+    exact le_top
 
 end Subadditive
 
@@ -175,7 +176,8 @@ theorem inducedOuterMeasure_union_of_false_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → ¬P u) :
     inducedOuterMeasure m P0 m0 (s ∪ t) =
       inducedOuterMeasure m P0 m0 s + inducedOuterMeasure m P0 m0 t :=
-  ofFunction_union_of_top_of_nonempty_inter fun u hsu htu => @iInf_of_empty _ _ _ ⟨h u hsu htu⟩ _
+  ofFunction_union_of_top_of_nonempty_inter
+    fun u hsu htu => @iInf_of_empty _ _ _ _ _ ⟨h u hsu htu⟩ _
 
 include PU msU m_mono
 
@@ -201,6 +203,13 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
     refine le_iInf ?_
     intro h2f
     exact iInf_le_of_le _ (iInf_le_of_le h2f <| iInf_le _ hf)
+
+omit msU m_mono in
+theorem inducedOuterMeasure_zero (Pu : P univ) :
+    inducedOuterMeasure (fun _ _ => 0) P0 (by simp) = 0 := by
+  ext s
+  rw [inducedOuterMeasure_eq_iInf PU (fun _ _ => by simp) (fun _ _ => by simp)]
+  exact le_antisymm (iInf₂_le_of_le univ Pu (by simp)) zero_le
 
 theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f ⁻¹' s) ↔ P s)
     (mm : ∀ (s : Set α) (hs : P s), m (f ⁻¹' s) ((Pm _).mpr hs) = m s hs) {A : Set α} :
@@ -272,7 +281,7 @@ theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ 
   have :=
     extend_union MeasurableSet.empty m0 MeasurableSet.iUnion mU disjoint_sdiff_self_right h₁
       (h₂.diff h₁)
-  rw [union_diff_cancel hs] at this
+  rw [union_sdiff_cancel hs] at this
   rw [← extend_eq m]
   exact le_iff_exists_add.2 ⟨_, this⟩
 
@@ -322,7 +331,7 @@ theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, Measurab
     m₁.trim = m₂.trim := by
   simp +contextual only [trim, H]
 
-@[mono]
+@[gcongr, mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>
   iInf₂_mono fun _f _hs => ENNReal.tsum_le_tsum fun _b => iInf_mono fun _hf => H _
 
@@ -358,11 +367,9 @@ theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
   top_unique <| le_trim _
 
 @[simp]
-theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=
-  ext fun s =>
-    le_antisymm
-      ((measure_mono (subset_univ s)).trans_eq <| trim_eq _ MeasurableSet.univ)
-      (zero_le _)
+theorem trim_zero : (0 : OuterMeasure α).trim = 0 := by
+  ext s
+  exact nonpos_iff_eq_zero.1 <| (measure_mono (subset_univ s)).trans_eq <| trim_eq _ .univ
 
 theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim) ≤ (sum m).trim :=
   fun s => by
@@ -432,7 +439,7 @@ theorem trim_add (m₁ m₂ : OuterMeasure α) : (m₁ + m₂).trim = m₁.trim 
 /-- `trim` respects scalar multiplication. -/
 theorem trim_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
     (m : OuterMeasure α) : (c • m).trim = c • m.trim :=
-  ext <| trim_op (smul_apply c m)
+  ext <| trim_op (smul_apply m c)
 
 /-- `trim` sends the supremum of two outer measures to the supremum of the trimmed measures. -/
 theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.trim ⊔ m₂.trim :=

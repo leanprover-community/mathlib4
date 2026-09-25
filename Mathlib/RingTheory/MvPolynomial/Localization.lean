@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
@@ -37,7 +36,6 @@ variable [IsLocalization M S]
 
 attribute [local instance] algebraMvPolynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.
