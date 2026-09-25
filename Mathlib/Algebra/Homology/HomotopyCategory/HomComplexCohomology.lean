@@ -188,14 +188,15 @@ section
 variable [Linear R C]
 
 instance : SMul R (CohomologyClass K L n) where
-  smul r := CohomologyClass.descAddMonoidHom
-    ((CohomologyClass.mkAddMonoidHom K L n).comp (AddMonoidHom.smul r)) (fun z hz' ↦ by
-      simp only [AddMonoidHom.coe_smul', AddMonoidHom.mem_ker, AddMonoidHom.coe_comp,
-        Function.comp_apply, DistribSMul.toAddMonoidHom_apply, CohomologyClass.mkAddMonoidHom_apply,
-        CohomologyClass.mk_eq_zero_iff]
-      rw [mem_coboundaries_iff _ (n - 1) (by simp)] at hz' ⊢
-      obtain ⟨α, hα⟩ := hz'
-      exact ⟨r • α, by simp [hα]⟩)
+  smul r :=
+    CohomologyClass.descAddMonoidHom
+      ((CohomologyClass.mkAddMonoidHom K L n).comp (AddMonoidHom.smul r)) (fun z hz' ↦ by
+        simp only [AddMonoidHom.coe_smul', AddMonoidHom.mem_ker, AddMonoidHom.coe_comp,
+          Function.comp_apply, DistribSMul.toAddMonoidHom_apply,
+          CohomologyClass.mkAddMonoidHom_apply, CohomologyClass.mk_eq_zero_iff]
+        rw [mem_coboundaries_iff _ (n - 1) (by simp)] at hz' ⊢
+        obtain ⟨α, hα⟩ := hz'
+        exact ⟨r • α, by simp [hα]⟩)
 
 variable {R} in
 lemma mk_smul (r : R) (x : Cocycle K L n) : mk (r • x) = r • mk x := rfl
