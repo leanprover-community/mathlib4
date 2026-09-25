@@ -408,8 +408,8 @@ lemma angle_eq_iff_oangle_eq_neg_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ :
 corresponding unoriented angles are equal. -/
 theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆)
     (hp₁ : p₁ ≠ p₂) (hp₃ : p₃ ≠ p₂) (hp₄ : p₄ ≠ p₅) (hp₆ : p₆ ≠ p₅) :
-    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
-  rw [angle_eq_abs_oangle_toReal h1.symm h2.symm, angle_eq_abs_oangle_toReal h3.symm h4.symm, h]
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ :=
+  (angle_eq_iff_oangle_eq_of_sign_eq hp₁ hp₃ hp₄ hp₆ (by rw [h])).2 h
 
 /-- If two oriented angles are equal, and the first triple is not collinear, then the
 corresponding unoriented angles are equal. -/
