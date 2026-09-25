@@ -8272,6 +8272,7 @@ public import Mathlib.Topology.Instances.ZMod
 public import Mathlib.Topology.Instances.ZMultiples
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.IsClosedRestrict
+public import Mathlib.Topology.IsCozeroSet
 public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Topology.KrullDimension
