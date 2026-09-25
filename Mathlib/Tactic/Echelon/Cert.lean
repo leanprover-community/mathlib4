@@ -45,11 +45,6 @@ def mkFinLit (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
   let hi : Q($iQ < $n) ← mkDecideProofQ q($iQ < $n)
   return q((⟨$iQ, $hi⟩ : Fin $n))
 
-/-- The suffix of the list literal `l` after its first `k` cells. -/
-def consDrop (l : Expr) : Nat → Expr
-  | 0 => l
-  | k + 1 => consDrop l.appArg! k
-
 /-- Three views of one matrix literal. -/
 structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
   /-- The matrix, the `ofLists` term on `lit`. -/
@@ -82,41 +77,73 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinLit m a) $(← mkFinLit m b)).trans $acc)
   return acc
 
+/-- The proof of `IsLowerTriangularDiagList k c rows` on the literal `rows` of the entry rows
+`entries`, one cell per row (`kQ` and `cQ` are the literals of `k` and `c`). -/
+def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α))
+    (certifier : EntryCertifier) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
+    List (List Q($α)) → MetaM Q(IsLowerTriangularDiagList $kQ $cQ $rows)
+  | [] => do
+    have h : Q(IsLowerTriangularDiagList $kQ $cQ $rows) := (q(trivial) : Expr)
+    return h
+  | row :: entries => do
+    let_expr List.cons _ _ tl := rows |
+      throwError "certifyLowerTriangularDiagList: {rows} is not a cons cell"
+    have tl : Q(List (List $α)) := tl
+    have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
+    have c₁Q : Q(Nat) := mkNatLitQ (c - 1)
+    let rest ← certifyLowerTriangularDiagList rα certifier (k + 1) (c - 1) k₁Q c₁Q tl entries
+    have entry : Q($α) := row[k]!
+    let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
+    have zeros : Q(List $α) := q(List.replicate $c₁Q (0 : $α))
+    let cell : Q($entry ≠ 0 ∧ $zeros = $zeros ∧ IsLowerTriangularDiagList $k₁Q $c₁Q $tl) :=
+      q(⟨$hd, Eq.refl $zeros, $rest⟩)
+    -- The cons arm of the definition on the literals, once the kernel evaluates the `drop`.
+    have h : Q(IsLowerTriangularDiagList $kQ $cQ $rows) := (cell : Expr)
+    return h
+
 /-- Prove `L.IsLowerTriangular` and `∀ i, L.diag i ≠ 0` from the rows of `L`, with `certifier`
 proving the diagonal entries nonzero. -/
 def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (L : MatrixViews u m m α) (certifier : EntryCertifier) :
     MetaM (Q(($(L.matrix)).IsLowerTriangular) × Q(∀ i, ($(L.matrix)).diag i ≠ 0)) := do
-  have rows : Q(List (List $α)) := L.lit
-  -- one cell per row: the nonzero diagonal entry, then the `Eq.refl` of the zeros after it.
-  -- The certifier's proofs are untyped and the chain's proposition is the definition's
-  -- unfolding, which Qq cannot see, so the cells are assembled by `mkAppM`.
-  let chain : Expr ← L.entries.zipIdx.foldrM (init := q(True.intro)) fun (row, k) rest => do
-    have entry : Q($α) := row[k]!
-    have c : Q(Nat) := mkNatLitQ (m - (k + 1))
-    mkAppM ``And.intro #[← certifier q($entry ≠ 0),
-      ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $c (0 : $α))), rest]]
-  have h : Q(IsLowerTriangularDiagList 0 $m $rows) := chain
+  let h ← certifyLowerTriangularDiagList rα certifier 0 m q(0) q($m) L.lit L.entries
   return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
     mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
+
+/-- The proof of `IsPivotedList cols rows` on the literals, one cell per pivot. The literals are
+peeled along with the pivots so that the base case holds the suffix of `rows` itself, which the
+kernel matches by pointer. -/
+def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+    (certifier : EntryCertifier) (cols : Q(List (Fin $n))) (rows : Q(List (List $α))) :
+    List Nat → List (List Q($α)) → MetaM Q(IsPivotedList $cols $rows)
+  | [], _ => do
+    have h : Q(IsPivotedList $cols $rows) := (q(Eq.refl $rows) : Expr)
+    return h
+  | k :: ks, row :: entries => do
+    let_expr List.cons _ _ ks' := cols |
+      throwError "certifyPivotedList: {cols} is not a cons cell"
+    let_expr List.cons _ _ tl := rows |
+      throwError "certifyPivotedList: {rows} is not a cons cell"
+    have ks' : Q(List (Fin $n)) := ks'
+    have tl : Q(List (List $α)) := tl
+    let rest ← certifyPivotedList rα certifier ks' tl ks entries
+    have entry : Q($α) := row[k]!
+    have kQ : Q(Nat) := mkNatLitQ k
+    let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
+    have zs : Q(List $α) := q(List.replicate $kQ (0 : $α))
+    let cell : Q($entry ≠ 0 ∧ $zs = $zs ∧ IsPivotedList $ks' $tl) := q(⟨$hd, Eq.refl $zs, $rest⟩)
+    -- The cons arm of the definition on the literals, once the kernel evaluates the split.
+    have h : Q(IsPivotedList $cols $rows) := (cell : Expr)
+    return h
+  | _ :: _, [] => throwError "certifyPivotedList: more pivots than rows"
 
 /-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/
 def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (U : MatrixViews u m n α) (cols : Q(List (Fin $n))) (pivots : Array Nat)
     (certifier : EntryCertifier) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) := do
-  have rows : Q(List (List $α)) := U.lit
   let hsorted ← mkDecideProofQ q(($cols).SortedLT)
-  -- one cell per pivot row, the nonzero pivot entry and the `Eq.refl` of the zeros before it, on
-  -- the `Eq.refl` of the zero rows beyond the pivots
-  have tail : Q(List (List $α)) := consDrop U.lit pivots.size
-  let zeroRows := q(Eq.refl $tail)
-  let chain : Expr ← pivots.toList.zipIdx.foldrM (init := zeroRows) fun (k, i) rest => do
-    have entry : Q($α) := (U.entries[i]!)[k]!
-    have kQ : Q(Nat) := mkNatLitQ k
-    mkAppM ``And.intro #[← certifier q($entry ≠ 0),
-      ← mkAppM ``And.intro #[q(Eq.refl (List.replicate $kQ (0 : $α))), rest]]
-  have h : Q(IsPivotedList $cols $rows) := chain
+  let h ← certifyPivotedList rα certifier cols U.lit pivots.toList U.entries
   return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hsorted $h)
     q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i)
 
