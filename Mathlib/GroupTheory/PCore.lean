@@ -36,11 +36,11 @@ relative subgroup `(pCore p H).subgroupOf H`, not for `pCore p H` itself.
 ## Main results
 
 * `Subgroup.pCore_le`: `pCore p H ≤ H`.
-* `Subgroup.pCore_subgroupOf_eq_iInf_sylow`, `Subgroup.pCore_eq_iInf_sylow`: the defining
+* `Subgroup.subgroupOf_pCore_eq_iInf_sylow`, `Subgroup.pCore_eq_iInf_sylow`: the defining
   description as the intersection of the Sylow `p`-subgroups of `H`.
 * `Subgroup.isPGroup_pCore`: the ambient subgroup `pCore p H` is a `p`-group, with no
   finiteness hypothesis.
-* `Subgroup.pCore_subgroupOf_normal` (instance), `Subgroup.characteristic_subgroupOf_pCore`
+* `Subgroup.normal_subgroupOf_pCore` (instance), `Subgroup.characteristic_subgroupOf_pCore`
   (instance): inside `H`, the `p`-core is normal and characteristic.
 * `Subgroup.le_pCore`, `Subgroup.le_pCore_of_le`: a normal `p`-subgroup of `H` (embedded into
   `G`) is contained in the `p`-core — the universal property.
@@ -88,47 +88,47 @@ theorem pCore_le : pCore p H ≤ H := by
   grw [pCore_eq_iInf_sylow, map_subtype_le]
 
 /-- Computed inside `H`, the `p`-core is the intersection of the Sylow `p`-subgroups of `H`. -/
-theorem pCore_subgroupOf_eq_iInf_sylow :
+theorem subgroupOf_pCore_eq_iInf_sylow :
     (pCore p H).subgroupOf H = ⨅ P : Sylow p H, (P : Subgroup H) := by
   simp [pCore_eq_iInf_sylow]
 
 /-- The `p`-core, computed inside `H`, is a `p`-group. -/
-theorem isPGroup_pCore_subgroupOf : IsPGroup p ((pCore p H).subgroupOf H) := by
-  rw [pCore_subgroupOf_eq_iInf_sylow]
+theorem isPGroup_subgroupOf_pCore : IsPGroup p ((pCore p H).subgroupOf H) := by
+  rw [subgroupOf_pCore_eq_iInf_sylow]
   exact Sylow.isPGroup_iInf
 
 /-- The `p`-core is itself a `p`-group, being isomorphic to the `p`-core computed
 inside `H`. -/
 theorem isPGroup_pCore : IsPGroup p (pCore p H) :=
-  isPGroup_pCore_subgroupOf.of_equiv (subgroupOfEquivOfLe pCore_le)
+  isPGroup_subgroupOf_pCore.of_equiv (subgroupOfEquivOfLe pCore_le)
 
 /-- The `p`-core is normal in `H`. -/
-instance pCore_subgroupOf_normal : ((pCore p H).subgroupOf H).Normal := by
-  rw [pCore_subgroupOf_eq_iInf_sylow]
+instance normal_subgroupOf_pCore : ((pCore p H).subgroupOf H).Normal := by
+  rw [subgroupOf_pCore_eq_iInf_sylow]
   exact Sylow.normal_iInf
 
 /-- The `p`-core, computed inside `H`, is contained in every Sylow `p`-subgroup. -/
-theorem pCore_subgroupOf_le_sylow (P : Sylow p H) : (pCore p H).subgroupOf H ≤ P := by
-  rw [pCore_subgroupOf_eq_iInf_sylow]
+theorem subgroupOf_pCore_le_sylow (P : Sylow p H) : (pCore p H).subgroupOf H ≤ P := by
+  rw [subgroupOf_pCore_eq_iInf_sylow]
   exact iInf_le _ P
 
 /-- The `p`-core is contained in every Sylow `p`-subgroup (embedded into `G`). -/
 theorem pCore_le_sylow (P : Sylow p H) : pCore p H ≤ (P : Subgroup H).map H.subtype := by
   rw [← map_subgroupOf_eq_of_le (pCore_le (H := H))]
-  exact map_mono (pCore_subgroupOf_le_sylow P)
+  exact map_mono (subgroupOf_pCore_le_sylow P)
 
 /-- A normal `p`-subgroup `N` of `H` is contained in the `p`-core, computed
 inside `H`: it is contained in every Sylow `p`-subgroup. -/
-theorem le_pCore_subgroupOf {N : Subgroup H} [N.Normal] (h : IsPGroup p N) :
+theorem le_subgroupOf_pCore {N : Subgroup H} [N.Normal] (h : IsPGroup p N) :
     N ≤ (pCore p H).subgroupOf H := by
-  rw [pCore_subgroupOf_eq_iInf_sylow]
+  rw [subgroupOf_pCore_eq_iInf_sylow]
   exact le_iInf fun P => h.le_sylow_of_normal P
 
 /-- The universal property: a normal `p`-subgroup of `H`, embedded into `G`,
 is contained in the `p`-core. -/
 theorem le_pCore {N : Subgroup H} [N.Normal] (h : IsPGroup p N) :
     N.map H.subtype ≤ pCore p H :=
-  map_le_iff_le_comap.mpr (le_pCore_subgroupOf h)
+  map_le_iff_le_comap.mpr (le_subgroupOf_pCore h)
 
 /-- Computed inside `H`, the `p`-core is the supremum of all normal
 `p`-subgroups of `H`. -/
@@ -137,8 +137,8 @@ theorem subgroupOf_pCore :
       ⨆ N : {N : Subgroup H // N.Normal ∧ IsPGroup p N}, (N : Subgroup H) :=
   le_antisymm
     (le_iSup (fun N : {N : Subgroup H // N.Normal ∧ IsPGroup p N} => (N : Subgroup H))
-      ⟨(pCore p H).subgroupOf H, pCore_subgroupOf_normal, isPGroup_pCore_subgroupOf⟩)
-    (iSup_le fun N => have := N.2.1; le_pCore_subgroupOf N.2.2)
+      ⟨(pCore p H).subgroupOf H, normal_subgroupOf_pCore, isPGroup_subgroupOf_pCore⟩)
+    (iSup_le fun N => have := N.2.1; le_subgroupOf_pCore N.2.2)
 
 /-- The `p`-core as a supremum of the normal `p`-subgroups of `H`, embedded into `G`. -/
 theorem pCore_eq_iSup :
@@ -155,13 +155,13 @@ theorem pCore_bot : pCore p (⊥ : Subgroup G) = ⊥ :=
 the family of normal `p`-subgroups, so it fixes their supremum. -/
 instance characteristic_subgroupOf_pCore : ((pCore p H).subgroupOf H).Characteristic :=
   characteristic_iff_comap_le.mpr fun ϕ =>
-    le_pCore_subgroupOf (isPGroup_pCore_subgroupOf.comap_of_injective ϕ.toMonoidHom ϕ.injective)
+    le_subgroupOf_pCore (isPGroup_subgroupOf_pCore.comap_of_injective ϕ.toMonoidHom ϕ.injective)
 
 /-- The universal property, inside `H`: a normal subgroup `N` of `H` is contained in the
 `p`-core iff it is a `p`-group. -/
 theorem le_subgroupOf_pCore_iff {N : Subgroup H} [hN : N.Normal] :
     N ≤ (pCore p H).subgroupOf H ↔ IsPGroup p N :=
-  ⟨fun h => isPGroup_pCore_subgroupOf.to_le h, le_pCore_subgroupOf⟩
+  ⟨fun h => isPGroup_subgroupOf_pCore.to_le h, le_subgroupOf_pCore⟩
 
 /-- For a normal subgroup `N` of `H`, containment of its image in the `p`-core
 is characterised by being a `p`-group. -/
@@ -171,22 +171,22 @@ theorem map_subtype_le_pCore_iff {N : Subgroup H} [N.Normal] :
 
 /-- Membership in the `p`-core, computed inside `H`, is membership in every Sylow
 `p`-subgroup. -/
-theorem mem_pCore_subgroupOf_iff_forall_sylow {x : H} :
+theorem mem_subgroupOf_pCore_iff_forall_sylow {x : H} :
     x ∈ (pCore p H).subgroupOf H ↔ ∀ P : Sylow p H, x ∈ (P : Subgroup H) := by
-  rw [pCore_subgroupOf_eq_iInf_sylow, Subgroup.mem_iInf]
+  rw [subgroupOf_pCore_eq_iInf_sylow, Subgroup.mem_iInf]
 
 /-- Characterisation of membership in the `p`-core: an element of `H` lies in
 `pCore p H` iff it lies in some normal `p`-subgroup of `H`. -/
-theorem mem_pCore_subgroupOf_iff {x : H} :
+theorem mem_subgroupOf_pCore_iff {x : H} :
     x ∈ (pCore p H).subgroupOf H ↔ ∃ N : Subgroup H, N.Normal ∧ IsPGroup p N ∧ x ∈ N :=
-  ⟨fun hx => ⟨(pCore p H).subgroupOf H, pCore_subgroupOf_normal, isPGroup_pCore_subgroupOf, hx⟩,
-    fun ⟨_, _, hP, hxN⟩ => le_pCore_subgroupOf hP hxN⟩
+  ⟨fun hx => ⟨(pCore p H).subgroupOf H, normal_subgroupOf_pCore, isPGroup_subgroupOf_pCore, hx⟩,
+    fun ⟨_, _, hP, hxN⟩ => le_subgroupOf_pCore hP hxN⟩
 
 /-- Characterisation of membership in the `p`-core as an ambient subgroup: `x : G` lies in
 `pCore p H` iff it lies in (the image of) some normal `p`-subgroup of `H`. -/
 theorem mem_pCore_iff {x : G} :
     x ∈ pCore p H ↔ ∃ N : Subgroup H, N.Normal ∧ IsPGroup p N ∧ x ∈ N.map H.subtype :=
-  ⟨fun hx => ⟨(pCore p H).subgroupOf H, pCore_subgroupOf_normal, isPGroup_pCore_subgroupOf,
+  ⟨fun hx => ⟨(pCore p H).subgroupOf H, normal_subgroupOf_pCore, isPGroup_subgroupOf_pCore,
       by rwa [map_subgroupOf_eq_of_le pCore_le]⟩,
     fun ⟨_, _, hP, hxN⟩ => le_pCore hP hxN⟩
 
@@ -197,7 +197,7 @@ theorem pCore_eq_bot_iff :
   · have hle := le_pCore hP
     rwa [h, le_bot_iff, map_eq_bot_iff_of_injective _ H.subtype_injective] at hle
   · rw [← map_subgroupOf_eq_of_le (pCore_le (H := H)),
-      h _ pCore_subgroupOf_normal isPGroup_pCore_subgroupOf, Subgroup.map_bot]
+      h _ normal_subgroupOf_pCore isPGroup_subgroupOf_pCore, Subgroup.map_bot]
 
 /-- `(⊤ : Subgroup H)` embeds onto `H`. -/
 private theorem top_map_subtype : (⊤ : Subgroup H).map H.subtype = H := by
@@ -229,16 +229,16 @@ theorem pCore_one : pCore 1 H = ⊥ := by
   exact congrArg Subtype.val hk
 
 /-- The `p`-core of `H`, computed inside `H`, coincides with a normal Sylow `p`-subgroup. -/
-theorem pCore_subgroupOf_eq_sylow_of_normal (P : Sylow p H) [(P : Subgroup H).Normal] :
+theorem subgroupOf_pCore_eq_sylow_of_normal (P : Sylow p H) [(P : Subgroup H).Normal] :
     (pCore p H).subgroupOf H = (P : Subgroup H) :=
-  le_antisymm (pCore_subgroupOf_le_sylow P) (le_pCore_subgroupOf P.2)
+  le_antisymm (subgroupOf_pCore_le_sylow P) (le_subgroupOf_pCore P.2)
 
 /-- A Sylow `p`-subgroup of `H` equals the `p`-core (inside `H`) iff it is normal. -/
-theorem pCore_subgroupOf_eq_sylow_iff_normal (P : Sylow p H) :
+theorem subgroupOf_pCore_eq_sylow_iff_normal (P : Sylow p H) :
     (pCore p H).subgroupOf H = (P : Subgroup H) ↔ (P : Subgroup H).Normal := by
-  refine ⟨fun h => h ▸ pCore_subgroupOf_normal, fun h => ?_⟩
+  refine ⟨fun h => h ▸ normal_subgroupOf_pCore, fun h => ?_⟩
   have := h
-  exact pCore_subgroupOf_eq_sylow_of_normal P
+  exact subgroupOf_pCore_eq_sylow_of_normal P
 
 /-- The universal property, stated for an ambient-group subgroup: a `p`-subgroup `N ≤ H`
 that is normal in `H` is contained in the `p`-core. -/
@@ -293,7 +293,7 @@ theorem map_pCore_eq_pCore (f : G →* G') (hker : IsPGroup p (f.subgroupMap H).
   refine map_mono ?_
   conv_lhs => rw [← Subgroup.map_comap_eq_self_of_surjective (f.subgroupMap_surjective H)
     ((pCore p (H.map f)).subgroupOf (H.map f))]
-  exact map_mono <| le_pCore_subgroupOf (isPGroup_pCore_subgroupOf.comap_of_ker_isPGroup _ hker)
+  exact map_mono <| le_subgroupOf_pCore (isPGroup_subgroupOf_pCore.comap_of_ker_isPGroup _ hker)
 
 /-- If `f` has `p`-group kernel, then `f` maps the `p`-core of `H` exactly onto the `p`-core of
 `H.map f`. This is the convenient form of `map_pCore_eq_pCore`. -/
@@ -315,7 +315,7 @@ theorem comap_pCore_le_pCore (f : G →* G') (H' : Subgroup G') (hker : IsPGroup
     (pCore p H').comap f ≤ pCore p (H'.comap f) := by
   have : (((pCore p H').comap f).subgroupOf (H'.comap f)).Normal := by
     rw [← subgroupOf_comap_subgroupComap]
-    exact pCore_subgroupOf_normal.comap _
+    exact normal_subgroupOf_pCore.comap _
   exact le_pCore_of_le (comap_mono pCore_le) (isPGroup_pCore.comap_of_ker_isPGroup f hker)
 
 /-- If `H' ≤ f.range` and `f` has `p`-group kernel, the preimage of the `p`-core of `H'` is exactly
