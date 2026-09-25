@@ -259,72 +259,65 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
     return none
 
 /--
+The repo a read in a project that depends on Mathlib resolves to, given what
+the dependency checkout's git remote reports.
+
+Only a canonical detection is honored: a project whose mathlib dependency is
+the nightly-testing repo (or is pinned to a `nightly-testing-*` tag, which
+the probe also reports as that repo) reads the nightly cache, because its
+artifacts exist nowhere else. Everything else — a fork remote, or no
+detection at all — resolves to `MATHLIBREPO`, so a dependency checkout's
+remote can never steer a downstream read into a fork's artifacts. An explicit
+`--repo=` is the opt-in for that; `resolveRepo` applies it before this
+function is consulted.
+-/
+def resolveDownstreamRepo (detected? : Option String) : String :=
+  match detected? with
+  | some repo => if isCanonicalRepo repo then repo else MATHLIBREPO
+  | none => MATHLIBREPO
+
+/--
 Resolve the GitHub repo for cache reads from a single `getRemoteRepo` probe.
 
 Returns `(detectedRepo?, resolvedRepo)`:
 * `detectedRepo?` is what the git remote reports (`none` if it can't be
   determined); the warning path compares it against an explicit `--repo=` to
   tell whether the user is overriding the checkout's repo.
-* `resolvedRepo` applies the override precedence `--repo=` > git remote >
-  `MATHLIBREPO`, and is what the read path uses.
+* `resolvedRepo` is what the read path uses. An explicit `--repo=` wins. On a
+  mathlib checkout (`isMathlibRoot`, canonical or fork) the detection is next,
+  then `MATHLIBREPO`. In a project that depends on Mathlib the detection goes
+  through `resolveDownstreamRepo`: only a canonical repo is honored, so a fork
+  remote on the dependency checkout cannot take the read off the public cache.
 
 `getRemoteRepo` shells out to git and prints branch/remote diagnostics;
-resolving here lets the read path, the warning, and the HEAD hint share a
-single probe keyed on `mathlibDepPath`.
+resolving here lets the read path and the warning share a single probe keyed
+on `mathlibDepPath`.
 -/
-def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
+def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) (isMathlibRoot : Bool) :
     IO (Option String × String) := do
   let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
-  return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
+  if let some repo := repo? then
+    return (detected?, repo)
+  if isMathlibRoot then
+    return (detected?, detected?.getD MATHLIBREPO)
+  let resolved := resolveDownstreamRepo detected?
+  -- The probe above prints "Using cache from ...: {detected}"; correct the
+  -- record when the downstream resolution discards that detection.
+  if detected?.isSome && detected? != some resolved then
+    IO.println s!"Dependency checkout points at {detected?.get!}; a project \
+      using Mathlib reads the {resolved} cache (pass --repo to override)."
+  return (detected?, resolved)
 
 /--
-Process-wide override for the container fallback list, set by the `--cache-from`
-CLI flag. When `none`, downloads use `defaultContainersForRepo`; when `some cs`,
-all repos use `cs` instead.
+Resolve a git ref (HEAD, branch name, tag, short SHA, full SHA) to a full
+commit SHA via `git rev-parse`. Errors propagate if the ref is unknown.
 -/
-initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
-
-/-- Pair each container in a lookup chain with its read URL. The result keeps
-the chain's trust order. -/
-private def chainWithGetURLs (containers : List Container) :
-    IO (List (Option Container × String)) :=
-  containers.mapM fun c => do return (some c, ← c.getURL)
-
-/--
-Compute the trust-ordered list of container base URLs to try when downloading
-files for a given GitHub repo.
-
-Precedence (most specific wins):
-1. `MATHLIB_CACHE_GET_URL` env var: a single anonymous URL that bypasses the
-   container logic entirely.
-2. `--cache-from` CLI override (via `cacheFromOverride`).
-3. `MATHLIB_CACHE_FROM` env var (same comma-separated shape as `--cache-from`):
-   how CI widens the lookup chain to match its write target without touching
-   each `cache get` call. The (repo, branch) → chain mapping lives in CI config,
-   not here.
-4. `defaultContainersForRepo repo`: the repo-level fallback when nothing
-   overrides it.
-
-An empty value means unset for both variables here, as it does for
-`MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
--/
-def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
-  if let some url := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL") then
-    return [(none, url)]
-  if let some cliOverride ← cacheFromOverride.get then
-    return ← chainWithGetURLs cliOverride
-  let envOverride? ← do
-    match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
-    | none => pure none
-    | some s =>
-      match parseCacheFromList s with
-      | some cs => pure (some cs)
-      | none =>
-        IO.eprintln s!"Warning: ignoring MATHLIB_CACHE_FROM={s} \
-          (unrecognized container name). Known containers: \
-          {", ".intercalate (Container.all.map Container.name)}."
-        pure none
-  chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
+def resolveGitRef (ref : String) (cwd : FilePath := ".") : IO String := do
+  let out ← IO.Process.output {cmd := "git", args := #["rev-parse", ref], cwd := cwd}
+  unless out.exitCode == 0 do
+    throw <| IO.userError
+      s!"git rev-parse {ref} failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
+  pure out.stdout.trimAscii.toString
 
 /--
 `curl` flags that let a cache read follow a redirect, so a read base may answer
@@ -390,9 +383,8 @@ flat (`/f/<fileName>`) or repo-namespaced (`/f/<repo>/<fileName>`) follows the
 container (see `Container.flatPath`), not the repo: the same hash under
 `repo = MATHLIBREPO` lands flat in `master` and prefixed in `forks`.
 
-`container` is `none` for the user-supplied `MATHLIB_CACHE_GET_URL` /
-`MATHLIB_CACHE_PUT_URL` URLs, where no container policy applies; the path then
-follows the repo directly — flat for `MATHLIBREPO`, prefixed otherwise.
+`container` is `none` for the flat endpoint `MATHLIB_CACHE_GET_URL` names:
+the path is flat whatever the repo.
 
 `repo` is lowercased via `normalizeRepo` so the repo-namespaced path is
 case-insensitive in the GitHub owner/repo name.
@@ -402,49 +394,40 @@ def mkFileURL (container : Option Container) (repo containerURL fileName : Strin
   s!"{containerURL}/{fileDirPath container repo repoScope}/{fileName}"
 
 /--
-Process-wide override for the per-SHA scope, set by the `--scope=` CLI flag.
-When set, it wins over `MATHLIB_CACHE_REPO_SCOPE`.
+One download round: the files still missing are requested from `url`, at the
+path `mkFileURL container? repo url file scope?`. `container?` is `none` for a
+flat endpoint (`MATHLIB_CACHE_GET_URL`, or the public cache read as one URL),
+and `scope?` is the per-commit namespace the round reads at. The workflows
+(`Cache.Workflow`) build the rounds; `downloadFiles` runs them in order.
 -/
-initialize scopeOverride : IO.Ref (Option String) ← IO.mkRef none
+structure DownloadRound where
+  container? : Option Container
+  url : String
+  scope? : Option String := none
+  deriving BEq, Repr, Inhabited
 
-/--
-Whether `scope` is a well-formed per-commit scope: a nonempty run of hex
-digits, at most 64 of them (a commit SHA, abbreviated or full). The scope
-lands in URL paths and in file names — the fork namespace `f/{repo}/{scope}/`,
-the marker `m/{repo}/{scope}`, and the marker's local temp file — so anything
-else (a path separator, `..`, an unresolved ref name) is a misconfiguration
-that must fail loudly rather than leak into a path.
--/
-def isValidScope (scope : String) : Bool :=
-  !scope.isEmpty && scope.length ≤ 64 &&
-    scope.all fun c => c.isDigit || ('a' ≤ c && c ≤ 'f') || ('A' ≤ c && c ≤ 'F')
+/-- What a read did: each round that ran, in order, with the number of files
+it served, and the number of files no round served. The workflow reports it
+in its own words. -/
+structure ReadResult where
+  served : List (DownloadRound × Nat) := []
+  missing : Nat := 0
+  deriving Repr, Inhabited
 
-/--
-Resolved repo-scope SHA. Precedence: `--scope=` flag > `MATHLIB_CACHE_REPO_SCOPE`
-env var > `none`. Both sources mean "the user has explicitly opted into a
-SHA-scoped read"; the non-default-scope warning fires for either. A scope that
-is not a hex SHA (see `isValidScope`) throws: every consumer embeds the scope
-in a URL path or a file name.
--/
-def getRepoScope : IO (Option String) := do
-  let scope? ← do
-    if let some s ← scopeOverride.get then pure (some s)
-    else getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
-  let some scope := scope? | return none
-  unless isValidScope scope do
-    throw <| IO.userError s!"invalid cache scope '{scope}': a scope is a commit SHA (hex \
-      digits; --scope also accepts any ref `git rev-parse` can resolve from inside a git checkout)"
-  return some scope
-
-def getGitCommitHash : IO String :=
-  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
+/-- The full SHA of `HEAD` in `cwd` (`git rev-parse HEAD`); throws when git fails. -/
+def getGitCommitHash (cwd : FilePath := ".") : IO String := do
+  let out ← IO.Process.output {cmd := "git", args := #["rev-parse", "HEAD"], cwd}
+  unless out.exitCode == 0 do
+    throw <| IO.userError
+      s!"git rev-parse HEAD failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
+  return out.stdout.trimAsciiEnd.copy
 
 section Get
 
 /-- Formats the config file for `curl`, containing the list of files to be downloaded
 from a single container's base URL. `scope?` is the per-round SHA scope (see
-`mkFileURL`); it is the resolved `getRepoScope` for a normal read and an
-individual walked SHA for an `--unsafe` forks round. -/
+`mkFileURL`); it is the round's scope, the resolved `--scope` for a normal
+read and an individual walked SHA for an `--unsafe` forks round. -/
 def mkGetConfigContent (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap) (scope? : Option String) : IO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
@@ -467,18 +450,12 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
       -o {(IO.CACHEDIR / (fileName ++ IO.PARTSUFFIX)).toString.quote}\n"
 
 /--
-Whether an HTTP status returned for a single-file read should be treated as a
-cache miss (fall through to the next container in the chain) rather than a
-transfer failure worth reporting.
-
-`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
-set, which callers do for the `legacy` container: when its public read access is
-revoked ahead of retirement it answers reads with `403`, and old clients whose
-chain still lists `legacy` should fall through quietly instead of printing a
-per-file transfer failure. Any other status is a real failure.
+Whether an HTTP status returned for a single-file read is a cache miss (fall
+through to the next container in the chain) rather than a transfer failure
+worth reporting: `404` is the only miss.
 -/
-def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
-  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+def isCacheMissStatus (httpCode : Nat) : Bool :=
+  httpCode == 404
 
 /--
 Whether an HTTP status is the one Azure returns for a blob that already exists,
@@ -521,13 +498,12 @@ Classify one finished download; the parallel and serial paths share this
 table. A transfer delivers only when the status is 200/201 and curl exited
 cleanly: a nonzero exit code after a 200 means the body is truncated. The
 status alone decides a miss. `httpCode?` is `none` when there is no status
-to parse; `treatForbiddenAsMiss` is the `legacy` 403 policy.
+to parse.
 -/
-def classifyDownload (httpCode? : Option Nat) (exitCode : Nat)
-    (treatForbiddenAsMiss : Bool) : TransferVerdict .download :=
+def classifyDownload (httpCode? : Option Nat) (exitCode : Nat) : TransferVerdict .download :=
   match httpCode? with
   | some 200 | some 201 => if exitCode == 0 then .delivered else .failed
-  | some code => if isCacheMissStatus code treatForbiddenAsMiss then .miss else .failed
+  | some code => if isCacheMissStatus code then .miss else .failed
   | none => .failed
 
 /--
@@ -544,12 +520,9 @@ def classifyUpload (httpCode? : Option Nat) (exitCode : Nat)
   | none => .failed
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
-(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`).
-`treatForbiddenAsMiss` mirrors the parallel path: a `legacy` `403` (public read
-access revoked ahead of retirement) is a miss, not a failure. -/
+(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`). -/
 def downloadFile (container : Option Container) (repo containerURL : String)
-    (hash : UInt64) (scope? : Option String) (treatForbiddenAsMiss : Bool := false) :
-    IO (TransferVerdict .download) := do
+    (hash : UInt64) (scope? : Option String) : IO (TransferVerdict .download) := do
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
@@ -563,7 +536,6 @@ def downloadFile (container : Option Container) (repo containerURL : String)
         #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- Anything short of a delivery leaves at most an error body in the part file.
   let verdict := classifyDownload out.stdout.trimAscii.toNat? out.exitCode.toNat
-    treatForbiddenAsMiss
   if verdict matches .delivered then
     IO.FS.rename partPath path
   else if ← partPath.pathExists then
@@ -874,23 +846,17 @@ private def downloadFilesFromContainer
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
       #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
-    -- `legacy` answers reads with 403 once its public access is revoked ahead
-    -- of retirement; treat that as a miss so the chain stays quiet for clients
-    -- whose chain still lists it.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
-      (classifyDownload · · treatForbiddenAsMiss) (removeOnError := true)
+      classifyDownload (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
-    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
-        downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
+        downloadFile container repo containerURL hash scope?) :: acc
     -- Served hashes carry the remaining files to the next container; hard
-    -- failures (anything but a 404/legacy-403 miss, including a task that threw)
+    -- failures (anything but a 404 miss, including a task that threw)
     -- feed `TransferState.failed`, so they drive the exit code exactly as the
     -- parallel path threads its own `failed` count.
     let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))
@@ -901,62 +867,27 @@ private def downloadFilesFromContainer
         | _ => (served, failed + 1)
     return ({ failed, decomp := decompState }, served)
 
-/-- Expand the trust-ordered container list into the concrete download rounds to
-run, each carrying the SHA scope to read at. A round is
-`(container?, url, scope?)`.
-
-Without `--unsafe` (`unsafeScopes` empty) every round uses the single resolved
-`scope?`: one round per container, all at the same scope. When no explicit
-scope is given, `headScope?` (the checked-out HEAD, resolved by the caller)
-applies to the `forks` round only: fork uploads live under the per-commit
-namespace, so this is what lets a plain `cache get` retrieve what CI built for
-exactly the commit the reader has checked out. The other containers' layouts
-are not SHA-scoped, so `headScope?` must not leak into their rounds.
-
-With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
-SHA-scoped container, whose markers the walk probed — is expanded into one round
-per discovered SHA, most recent first. Every other container reads unscoped
-(`master` is flat and serves the bulk of files by hash; `legacy` has no walked
-markers), so the base `scope?` is intentionally dropped here. -/
-def expandDownloadRounds (containerURLs : List (Option Container × String))
-    (scope? : Option String) (unsafeScopes : List String)
-    (headScope? : Option String := none) :
-    List (Option Container × String × Option String) :=
-  if unsafeScopes.isEmpty then
-    containerURLs.map fun (c, url) =>
-      if c == some Container.forks then (c, url, scope? <|> headScope?)
-      else (c, url, scope?)
-  else
-    containerURLs.flatMap fun (c, url) =>
-      if c == some Container.forks then
-        unsafeScopes.map fun sha => (c, url, some sha)
-      else
-        [(c, url, none)]
-
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Return the number of files which failed to download.
-If `decompress` is true, decompresses files as they're downloaded (pipelined).
+Return the number of files which failed to download, and what the read did
+(`ReadResult`). If `decompress` is true, decompresses files as they're
+downloaded (pipelined).
 
-For each repo, the tool tries the trust-ordered container list returned by
-`effectiveGetURLs`. After each container round, files that were successfully
-fetched are filtered out so the next container only retries genuine misses.
-
-`unsafeScopes` is the list of SHA scopes discovered by `cache get --unsafe`
-(empty for a normal read); see `expandDownloadRounds`. -/
+`rounds` are the download rounds the workflow resolved, in order (see
+`DownloadRound`). After each round, files that were successfully fetched are
+filtered out so the next round only retries genuine misses. -/
 def downloadFiles
-    (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
+    (rounds : List DownloadRound) (repo : String) (hashMap : IO.ModuleHashMap)
+    (forceDownload : Bool) (parallel : Bool)
     (decompress : Bool := false) (forceUnpack : Bool := false)
-    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
-    (unsafeScopes : List String := []) : IO Nat := do
+    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".") :
+    IO (Nat × ReadResult) := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
-  if hashMap.isEmpty then IO.println "No files to download"; return 0
+  if hashMap.isEmpty then IO.println "No files to download"; return (0, {})
   IO.FS.createDirAll IO.CACHEDIR
 
-  let containerURLs ← effectiveGetURLs repo
-  if containerURLs.isEmpty then
-    IO.eprintln "No container URLs configured for download"
-    return hashMap.size
+  if rounds.isEmpty then
+    IO.eprintln "No cache URLs configured for download"
+    return (hashMap.size, { missing := hashMap.size })
 
   -- Set up decompression config if enabled: one config shared by all container
   -- rounds, with the pipeline state carried between them via `decompState`.
@@ -967,71 +898,35 @@ def downloadFiles
   else
     pure none
 
-  -- Walk container URLs in trust order. After each round, drop files that
-  -- succeeded so the next round only retries genuine misses. With `--unsafe`
-  -- the `forks` container is expanded into one round per discovered SHA scope.
-  let scope? ← getRepoScope
-  -- With no explicit scope, the forks round defaults to HEAD: `cache get` on a
-  -- checked-out commit retrieves what CI built for exactly that commit, fork
-  -- included. This adds no trust over an unscoped forks read — the namespace
-  -- can only hold artifacts built from the commit the reader already has.
-  let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
-      try pure (some (← getGitCommitHash)) catch _ => pure none
-    else pure none
-  let rounds := expandDownloadRounds containerURLs scope? unsafeScopes headScope?
-  let unsafeMode := !unsafeScopes.isEmpty
+  -- Walk the rounds in trust order. After each round, drop files that
+  -- succeeded so the next round only retries genuine misses.
   let mut remaining := hashMap
   -- Decompression pipeline state, carried from each round into the next (see
   -- `DecompState`); `finalizeDecomp` below drains what the last round leaves.
   let mut decompState : DecompState := {}
   -- Hard transfer failures (not 404 misses) drive the exit code; misses are
-  -- normal and instead surface as the "not found" hint keyed on `remaining`.
+  -- normal and reach the workflow as `ReadResult.missing`.
   -- Accumulated across rounds: a failure in an early container counts even
   -- when a later round serves the file.
   let mut downloadFailed := 0
-  -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
-  -- attributed by the drop in `remaining` across that round.
-  let mut scopeServed : Array (String × Nat) := #[]
-  for (container?, url, roundScope?) in rounds do
+  -- The files each round served, attributed by the drop in `remaining`.
+  let mut served : Array (DownloadRound × Nat) := #[]
+  for round in rounds do
     if remaining.isEmpty then break
-    let scopeNote := match roundScope? with | some s => s!" (scope {s})" | none => ""
-    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at {url}{scopeNote}"
+    let scopeNote := match round.scope? with | some s => s!" (scope {s})" | none => ""
+    IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
+      {round.url}{scopeNote}"
     let before := remaining.size
-    let (s, served) ← downloadFilesFromContainer container? repo url remaining parallel
-      decompConfig roundScope? decompState
+    let (s, fetched) ← downloadFilesFromContainer round.container? repo round.url remaining
+      parallel decompConfig round.scope? decompState
     -- Carry the decompression pipeline into the next round and the drain
     -- below: files left behind here are never decompressed. Drop the files
     -- this round served so the next container only retries genuine misses,
     -- regardless of what is already on disk.
     decompState := s.decomp
     downloadFailed := downloadFailed + s.failed
-    remaining := remaining.filter fun _ hash => !served.contains hash
-    if unsafeMode then
-      if let some sha := roundScope? then
-        scopeServed := scopeServed.push (sha, before - remaining.size)
-
-  -- `--unsafe`: report which fork commits actually contributed files, so the
-  -- user knows whose artifacts they ended up trusting.
-  if unsafeMode then
-    if scopeServed.isEmpty then
-      IO.eprintln "--unsafe: no fork scopes were needed; \
-        all files were served by higher-trust containers."
-    else
-      IO.eprintln s!"--unsafe: cache served from {scopeServed.size} fork commit scope(s):"
-      for (sha, n) in scopeServed do
-        IO.eprintln s!"  {sha} → {n} file(s)"
-      if remaining.size > 0 then
-        IO.eprintln s!"  {remaining.size} file(s) still missing after all scopes."
-
-  if warnOnMissing && !remaining.isEmpty then
-    IO.eprintln "Warning: some files were not found in the cache."
-    IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-    IO.eprintln ""
-    IO.eprintln "  * If you push your commits to a PR to the mathlib4 repository"
-    IO.eprintln "    (use a draft PR if it is not ready for review),"
-    IO.eprintln "    then CI will build the oleans and they will be available later."
-    IO.eprintln "  * If you have already opened a PR, this may mean"
-    IO.eprintln "    the CI build has failed part-way through building."
+    remaining := remaining.filter fun _ hash => !fetched.contains hash
+    served := served.push (round, before - remaining.size)
 
   -- Drain the decompression pipeline accumulated across all rounds.
   if let some config := decompConfig then
@@ -1043,7 +938,7 @@ def downloadFiles
 
   if downloadFailed > 0 then
     IO.println s!"{downloadFailed} download(s) failed"
-  return downloadFailed
+  return (downloadFailed, { served := served.toList, missing := remaining.size })
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -1119,18 +1014,17 @@ def checkForManifestMismatch : IO.CacheM Unit := do
         precedence, then run `lake update`."
     IO.Process.exit 1
 
-/-- Downloads missing files, and unpacks files.
+/-- Downloads missing files, and unpacks files. Returns what the read did,
+which the workflow reports.
 
-`repo` is the already-resolved GitHub repo (see `resolveRepo`); its
-trust-ordered container list from `defaultContainersForRepo` is the single
-source of truth for what gets tried — there's no separate outer-loop
-iteration. Master's cache reaches fork builds via `master` being in the fork
-chain (the highest-trust source, holding the bulk of any fork's deps). -/
+`rounds` are the download rounds the workflow resolved (see `Cache.Workflow`);
+`repo` is the resolved repo they read for. This function is the shared read
+mechanism under every workflow: the toolchain and manifest checks of a project
+that depends on Mathlib, the download rounds, and the decompression. -/
 def getFiles
-    (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
-    (unsafeScopes : List String := [])
-    : IO.CacheM Unit := do
+    (rounds : List DownloadRound) (repo : String) (hashMap : IO.ModuleHashMap)
+    (forceDownload forceUnpack parallel decompress : Bool) :
+    IO.CacheM ReadResult := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
@@ -1154,10 +1048,8 @@ def getFiles
     else pure none
   else pure none
 
-  let failed ← downloadFiles repo hashMap forceDownload parallel
-    (warnOnMissing := true)
-    (decompress := decompress) (forceUnpack := forceUnpack)
-    isMathlibRoot mathlibDepPath (unsafeScopes := unsafeScopes)
+  let (failed, result) ← downloadFiles rounds repo hashMap forceDownload parallel
+    (decompress := decompress) (forceUnpack := forceUnpack) isMathlibRoot mathlibDepPath
   if failed > 0 then
     IO.println s!"Downloading {failed} files failed"
     IO.Process.exit 1
@@ -1182,8 +1074,9 @@ def getFiles
     else
       -- Either no background decompression ran, or non-parallel mode needs final sweep
       IO.unpackCache hashMap forceUnpack
-  else
+  else if result.missing == 0 then
     IO.println "Downloaded all files successfully!"
+  return result
 
 end Get
 

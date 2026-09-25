@@ -10,6 +10,9 @@ Authors: Marcelo Lynch
 Helpers for reading the cache tool's environment variables: an empty or
 whitespace-only value means unset, a base URL also loses its trailing slashes,
 and a boolean flag accepts `1`/`true` and `0`/`false`.
+
+`Settings` holds the variables that decide what a command does, read once per
+command (`Settings.read`).
 -/
 
 namespace Cache
@@ -56,5 +59,33 @@ def parseEnvFlag (name : String) (value? : Option String) (ifUnset : Bool) : IO 
 and parsed by `parseEnvFlag`. -/
 def getEnvFlag (name : String) (ifUnset : Bool) : IO Bool := do
   parseEnvFlag name (← IO.getEnv name) ifUnset
+
+/-- The environment variables that decide what a command does. -/
+structure Settings where
+  /-- `MATHLIB_CACHE_GET_URL`: a flat endpoint that serves every file at
+  `{url}/f/{hash}.ltar`, for third parties who serve their own cache. -/
+  getURL? : Option String := none
+  /-- `MATHLIB_CACHE_BASE_URL`: the host of every container read. -/
+  baseURL? : Option String := none
+  /-- `MATHLIB_CACHE_DEBUG_USE_LEGACY`: read every container from the Azure
+  storage account. -/
+  useLegacy : Bool := false
+  /-- `MATHLIB_CACHE_FROM`: the chain of a chain read, unparsed. -/
+  cacheFrom? : Option String := none
+  /-- `MATHLIB_CACHE_REPO_SCOPE`: the per-commit scope, unvalidated. -/
+  repoScope? : Option String := none
+  /-- `MATHLIB_CACHE_PUT_URL`: the root of an upload. -/
+  putURL? : Option String := none
+  deriving Repr, BEq, Inhabited
+
+/-- The settings of the process environment. -/
+def Settings.read : IO Settings := do
+  return {
+    getURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL")
+    baseURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
+    useLegacy := ← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false)
+    cacheFrom? := ← getEnvNonEmpty "MATHLIB_CACHE_FROM"
+    repoScope? := ← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE"
+    putURL? := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_PUT_URL") }
 
 end Cache
