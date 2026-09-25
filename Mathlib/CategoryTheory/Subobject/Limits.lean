@@ -390,9 +390,9 @@ lemma _root_.CategoryTheory.Subobject.sup_eq_imageSubobject [HasImages C] [HasBi
     X ⊔ Y = imageSubobject (coprod.desc X.arrow Y.arrow) :=
   eq_mk_of_comm (image.ι (coprod.desc X.arrow Y.arrow)) (supIsoImage X Y) (ofLEMk_comp _)
 
-lemma _root_.CategoryTheory.Subobject.mk_eq_imageSubobject_of_mono [HasStrongEpiMonoFactorisations C]
-    {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f := by cat_disch)
-    [StrongEpi e] [Mono m] :
+lemma _root_.CategoryTheory.Subobject.mk_eq_imageSubobject_of_mono
+    [HasStrongEpiMonoFactorisations C] {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y)
+    (comm : e ≫ m = f := by cat_disch) [StrongEpi e] [Mono m] :
     mk m = imageSubobject f :=
   mk_eq_mk_of_comm m (image.ι f) (image.isoStrongEpiMono e m comm)
     (image.isoStrongEpiMono_hom_comp_ι e m comm)
