@@ -189,6 +189,10 @@ theorem isHamiltonian_transfer {H : SimpleGraph α} (h) :
 
 alias ⟨_, IsHamiltonian.transfer⟩ := isHamiltonian_transfer
 
+theorem isHamiltonian_dropLast_iff {p : G.Walk a a} :
+    p.dropLast.IsHamiltonian ↔ p.tail.IsHamiltonian := by
+  simp_rw [IsHamiltonian, p.support_tail_perm_support_dropLast.count_eq]
+
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
@@ -197,9 +201,6 @@ variable {p : G.Walk a a}
 
 lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
   hp.toIsCycle
-
-theorem isHamiltonian_dropLast_iff : p.dropLast.IsHamiltonian ↔ p.tail.IsHamiltonian := by
-  simp_rw [IsHamiltonian, p.support_tail_perm_support_dropLast.count_eq]
 
 theorem IsHamiltonianCycle.isHamiltonian_dropLast (hp : p.IsHamiltonianCycle) :
     p.dropLast.IsHamiltonian :=
