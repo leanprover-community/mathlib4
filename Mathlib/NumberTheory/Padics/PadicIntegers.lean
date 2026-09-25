@@ -93,7 +93,7 @@ def _root_.Padic.lift (x : ℚ_[p]) (hx : ‖x‖ ≤ 1) : ℤ_[p] := ⟨x, hx�
 @[simp]
 theorem coe_lift {x : ℚ_[p]} (hx : ‖x‖ ≤ 1) : lift x hx = x := rfl
 
-instance : CanLift ℚ_[p] ℤ_[p] (↑) (‖·‖ ≤ 1):=
+instance _root_.Padic.instCanLift : CanLift ℚ_[p] ℤ_[p] (↑) (‖·‖ ≤ 1):=
   ⟨fun x hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
 
 variable (p)
@@ -107,8 +107,7 @@ instance instCommRing : CommRing ℤ_[p] := inferInstanceAs <| CommRing (subring
 
 instance : Inhabited ℤ_[p] := ⟨0⟩
 
-@[simp]
-theorem mk_zero {h} : (⟨0, h⟩ : ℤ_[p]) = (0 : ℤ_[p]) := rfl
+@[deprecated (since := "2026-09-25")] alias mk_zero := coe_lift
 
 @[simp, norm_cast]
 theorem coe_add (z1 z2 : ℤ_[p]) : ((z1 + z2 : ℤ_[p]) : ℚ_[p]) = z1 + z2 := rfl
@@ -227,8 +226,8 @@ theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.2
 
 theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := Padic.nonarchimedean _ _
 
-theorem norm_add_eq_max_of_ne {q r : ℤ_[p]} : ‖q‖ ≠ ‖r‖ → ‖q + r‖ = max ‖q‖ ‖r‖ :=
-  Padic.add_eq_max_of_ne
+theorem norm_add_eq_max_of_ne {q r : ℤ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ :=
+  Padic.add_eq_max_of_ne h
 
 theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   by_contra fun hne =>
@@ -239,12 +238,16 @@ theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z1
     not_lt_of_ge (by rw [norm_add_eq_max_of_ne hne]; apply le_max_left) h
 
 @[simp]
-theorem padic_norm_eq_of_padicInt (z : ℤ_[p]) : ‖(z : ℚ_[p])‖ = ‖z‖ := by simp [norm_def]
+theorem norm_coe (z : ℤ_[p]) : ‖(z : ℚ_[p])‖ = ‖z‖ := by simp [norm_def]
+
+@[deprecated (since := "2026-09-25")] alias padic_norm_e_of_padicInt := norm_coe
 
 theorem norm_intCast_eq_padic_norm (z : ℤ) : ‖(z : ℤ_[p])‖ = ‖(z : ℚ_[p])‖ := by simp [norm_def]
 
 @[simp]
-theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ ⟨q, hq⟩ = ‖q‖ := rfl
+theorem norm_lift {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : ‖lift q hq‖ = ‖q‖ := rfl
+
+@[deprecated (since := "2026-09-25")] alias norm_eq_padic_norm := norm_lift
 
 @[simp]
 theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := Padic.norm_p
@@ -329,7 +332,7 @@ lemma valuation_coe_nonneg : 0 ≤ (x : ℚ_[p]).valuation := by
   obtain rfl | hx := eq_or_ne x 0
   · simp
   have := norm_le_one x
-  rwa [← padic_norm_eq_of_padicInt, Padic.norm_eq_zpow_neg_valuation <| coe_ne_zero.2 hx,
+  rwa [← norm_coe, Padic.norm_eq_zpow_neg_valuation <| coe_ne_zero.2 hx,
     zpow_le_one_iff_right₀, neg_nonpos] at this
   exact mod_cast hp.out.one_lt
 
@@ -369,7 +372,7 @@ section Units
 
 theorem mul_inv {z : ℤ_[p]} (h : ‖z‖ = 1) : z * z.inv = 1 := by
   have hz : z ≠ 0 := fun h' => zero_ne_one' ℚ_[p] (by simp [h'] at h)
-  rw [← padic_norm_eq_of_padicInt] at h
+  rw [← norm_coe] at h
   rw [ne_eq, ← coe_inj] at hz
   ext
   simp [PadicInt.inv, h, coe_mul, mul_inv_cancel₀ hz]
@@ -447,7 +450,7 @@ theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : �
       _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one
       _ = 1 := mul_one 1
   have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by
-    simp only [← norm_int_lt_one_iff_dvd, ← padic_norm_eq_of_padicInt]
+    simp only [← norm_int_lt_one_iff_dvd, ← norm_coe]
     exact ⟨key, norm_denom_lt⟩
   apply hp_prime.1.not_dvd_one
   rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.natCast_dvd, ← Int.natCast_dvd_natCast]
