@@ -178,6 +178,7 @@ theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r
   isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
 
 /-- Invertibility in the exterior algebra is the same as invertibility of the base ring. -/
+@[simps! -isSimp]
 def invertibleAlgebraMapEquiv (r : R) :
     Invertible (algebraMap R (ExteriorAlgebra R M) r) ≃ Invertible r :=
   invertibleEquivOfLeftInverse _ _ _ (algebraMap_leftInverse M)

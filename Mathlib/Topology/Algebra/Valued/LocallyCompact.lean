@@ -209,8 +209,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     · exact Set.finite_empty
     · simp [hz1]
   have z0' : 0 < (z : (Valued.v : Valuation K Γ₀).mrange) := by simp
-  have z0 : 0 < ((z : (Valued.v (R := K)).mrange) : Γ₀) :=
-    Subtype.coe_lt_coe.mpr z0'
+  have z0 : 0 < ((z : (Valued.v (R := K)).mrange) : Γ₀) := Subtype.coe_lt_coe.mpr z0'
   have a0 : 0 < v a := by simpa [← ha] using z0
   -- Construct our cover, which has an inner closed ball, and spheres for each element
   -- outside of the closed ball. These are all open sets by the nonarchimedean property.

@@ -261,8 +261,8 @@ theorem MulEquivClass.map_nonZeroDivisors
   simp [Submonoid.map_equiv_eq_comap_symm, mem_nonZeroDivisors_iff, ← h.symm.forall_congr_right,
     ← _root_.map_mul]
 
-theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M₀'] [MonoidWithZeroHomClass F M₀ M₀']
-    (f : F) (hf : Injective f) {S : Submonoid M₀} (hS : S ≤ M₀⁰) : S.map f ≤ M₀'⁰ := by
+theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M₀'] (f : M₀ →*₀ M₀')
+    (hf : Injective f) {S : Submonoid M₀} (hS : S ≤ M₀⁰) : S.map f ≤ M₀'⁰ := by
   cases subsingleton_or_nontrivial M₀
   · simp [Subsingleton.elim S ⊥]
   · refine le_nonZeroDivisors_of_noZeroDivisors ?_
@@ -270,7 +270,7 @@ theorem map_le_nonZeroDivisors_of_injective [NoZeroDivisors M₀'] [MonoidWithZe
     exact zero_notMem_nonZeroDivisors <| hS <| map_eq_zero_iff f hf |>.mp hx0 ▸ hx
 
 theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M₀']
-    [MonoidWithZeroHomClass F M₀ M₀'] (f : F) (hf : Injective f) : M₀⁰ ≤ M₀'⁰.comap f :=
+    (f : M₀ →*₀ M₀') (hf : Injective f) : M₀⁰ ≤ M₀'⁰.comap f :=
   Submonoid.le_comap_of_map_le _ (map_le_nonZeroDivisors_of_injective _ hf le_rfl)
 
 /-- If an element maps to a non-zero-divisor via injective homomorphism,
@@ -280,8 +280,8 @@ theorem mem_nonZeroDivisors_of_injective [MonoidWithZeroHomClass F M₀ M₀'] {
   ⟨fun y hy ↦ hf <| map_zero f ▸ hx.1 (f y) (map_mul f x y ▸ map_zero f ▸ congrArg f hy),
     fun y hy ↦ hf <| map_zero f ▸ hx.2 (f y) (map_mul f y x ▸ map_zero f ▸ congrArg f hy)⟩
 
-theorem comap_nonZeroDivisors_le_of_injective [MonoidWithZeroHomClass F M₀ M₀'] {f : F}
-    (hf : Injective f) : M₀'⁰.comap f ≤ M₀⁰ :=
+theorem comap_nonZeroDivisors_le_of_injective {f : M₀ →*₀ M₀'} (hf : Injective f) :
+    M₀'⁰.comap f ≤ M₀⁰ :=
   fun _ ha ↦ mem_nonZeroDivisors_of_injective hf (Submonoid.mem_comap.mp ha)
 
 end MonoidWithZero

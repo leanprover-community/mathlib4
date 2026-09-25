@@ -759,8 +759,7 @@ lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
   map_units x := by
     obtain ⟨_, x, hx, rfl⟩ := x
     have := IsLocalizedModule.map_units (f.restrictScalars R) ⟨x, hx⟩
-    simp only [End.isUnit_iff, MonoidHom.coe_ofClass, ← IsScalarTower.algebraMap_apply] at this ⊢
-    exact this
+    simpa [End.isUnit_iff, algebraMap_end_eq_smul_id] using this
   surj y := by
     obtain ⟨⟨x, t⟩, e⟩ := IsLocalizedModule.surj S (f.restrictScalars R) y
     exact ⟨⟨x, ⟨_, t, t.2, rfl⟩⟩, by simpa [Submonoid.smul_def] using e⟩

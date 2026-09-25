@@ -378,7 +378,7 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     (f : R →+* R') (hf : Function.Surjective f) (g : S →+* S') (hg : Function.Surjective g)
     (H : g.comp (algebraMap R S) = (algebraMap _ _).comp f)
     (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) :
-    IsLocalization (M.map (f : R →* R')) S' where
+      IsLocalization (M.map (f : R →* R')) S' where
   map_units := by
     rintro ⟨_, y, hy, rfl⟩
     simpa only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, ← RingHom.comp_apply, ← H]

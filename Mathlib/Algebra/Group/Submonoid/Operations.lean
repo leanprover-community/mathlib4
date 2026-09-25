@@ -210,7 +210,13 @@ def map (f : M →* N) (S : Submonoid M) :
 theorem coe_map (f : M →* N) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 
+@[to_additive (attr := deprecated "This lemma becomes a tautology, since
+`Submonoid.map` now takes `MonoidHom` as input." +typeChanged (since := "2026-09-25"))]
+alias map_coe_toMonoidHom := rfl
 
+@[to_additive (attr := deprecated "This lemma is no longer needed, since
+`Submonoid.map` takes `MonoidHom` as input." +typeChanged (since := "2026-09-25"))]
+alias map_coe_toMulEquiv := MulEquiv.toMonoidHom_eq_coe
 
 @[to_additive (attr := simp)]
 theorem mem_map {f : M →* N} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
@@ -235,7 +241,7 @@ theorem mem_map_iff_mem (hf : Function.Injective f) {S : Submonoid M} {x : M} :
   hf.mem_set_image
 
 @[to_additive]
-theorem map_le_iff_le_comap {f : M →* N} {S : Submonoid M} {T : Submonoid N} :
+theorem map_le_iff_le_comap {S : Submonoid M} {T : Submonoid N} :
     S.map f ≤ T ↔ S ≤ T.comap f :=
   image_subset_iff
 

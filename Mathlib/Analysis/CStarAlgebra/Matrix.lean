@@ -152,7 +152,7 @@ structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddComm
 @[instance_reducible]
 def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
   @NormedAddCommGroup.induced (Matrix m n 𝕜) (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m) _
-  ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup
+    ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup
     (toEuclideanLin (𝕜 := 𝕜) (n := n) (m := m).trans toContinuousLinearMap).toAddMonoidHom
     (toEuclideanLin (𝕜 := 𝕜) (n := n) (m := m).trans toContinuousLinearMap).injective
 

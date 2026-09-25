@@ -70,7 +70,7 @@ theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S']
     [IsScalarTower R S S'] [IsLocalization (M.map (algebraMap R S : R →* S)) S']
     (x : S) (s : Finset S') (hx : algebraMap S S' x ∈ Algebra.adjoin R (s : Set S')) :
     ∃ m : M, m • x ∈ Algebra.adjoin R (IsLocalization.finsetIntegerMultiple
-    (M.map (algebraMap R S : R →* S)) s : Set S) := by
+      (M.map (algebraMap R S : R →* S)) s : Set S) := by
   obtain ⟨⟨_, a, ha, rfl⟩, e⟩ :=
     IsLocalization.exists_smul_mem_of_mem_adjoin
       (M.map (algebraMap R S : R →* S)) x s (Algebra.adjoin R _)

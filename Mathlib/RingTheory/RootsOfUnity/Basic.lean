@@ -151,8 +151,8 @@ def restrictRootsOfUnity (σ : R →* S) (n : ℕ) :
       ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
 
 @[simp]
-theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
-    (restrictRootsOfUnity (σ : R →* S) k ζ : Sˣ) = σ (ζ : Rˣ) :=
+theorem restrictRootsOfUnity_coe_apply (σ : R →* S) (ζ : rootsOfUnity k R) :
+    (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
 
 /-- Restrict a monoid isomorphism to the nth roots of unity. -/
@@ -261,8 +261,7 @@ theorem card_rootsOfUnity : Nat.card (rootsOfUnity k R) ≤ k := by
 
 variable {k R}
 
-theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ : F)
-    (ζ : rootsOfUnity k R) :
+theorem map_rootsOfUnity_eq_pow_self (σ : R →* R) (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity (σ : R →* R) k)
   rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg

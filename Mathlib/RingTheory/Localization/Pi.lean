@@ -54,7 +54,7 @@ variable (S' : Type*) [CommSemiring S'] [Algebra (Π i, R i) S'] (M : Submonoid 
 
 theorem iff_map_piEvalRingHom [Finite ι] :
     IsLocalization M S' ↔ IsLocalization (.pi .univ fun i ↦
-    M.map (Pi.evalRingHom R i : ((i : ι) → R i) →* R i)) S' :=
+      M.map (Pi.evalRingHom R i : ((i : ι) → R i) →* R i)) S' :=
   iff_of_le_of_exists_dvd M _ (fun m hm i _ ↦ ⟨m, hm, rfl⟩) fun n hn ↦ by
     choose m mem eq using hn
     have := Fintype.ofFinite ι
