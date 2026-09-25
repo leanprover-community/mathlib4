@@ -56,7 +56,7 @@ instance : HopfAlgebraStruct R (A ⧸ I) where
 lemma antipode_mk (a : A) :
     antipode R (Ideal.Quotient.mk I a) = Ideal.Quotient.mk I (antipode R a) := rfl
 
-@[deprecated antipode_mk (since := "2026-09-19")]
+@[deprecated antipode_mk +typeChanged (since := "2026-09-19")]
 lemma antipode_comp_mkₐ :
     antipode R ∘ₗ (Ideal.Quotient.mkₐ R I).toLinearMap =
       (Ideal.Quotient.mkₐ R I).toLinearMap ∘ₗ antipode R := by ext; simp
