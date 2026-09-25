@@ -78,7 +78,7 @@ def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
 model. -/
 structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
-  /-- The certificate, as constructed by the certifier. -/
+  /-- The certificate of the decomposition. -/
   cert : DecompositionCert rα A
   /-- The carrier of the computation model. -/
   carrier : Carrier

@@ -80,9 +80,7 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
 
 variable {n : ℕ}
 
-/-- `l` split at `k`, with the prefix reversed, in one traversal. Core defines this function as
-the `go` of `List.splitRevAt` without exporting it, and `List.splitAt` reverses its accumulator in
-a second traversal. -/
+/-- `l` split at `k`, with the prefix reversed, in one traversal. -/
 def splitRevAt : List α → ℕ → List α → List α × List α
   | x :: xs, k + 1, acc => splitRevAt xs k (x :: acc)
   | xs, _, acc => (acc, xs)

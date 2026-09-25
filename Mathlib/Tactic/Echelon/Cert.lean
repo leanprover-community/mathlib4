@@ -88,7 +88,9 @@ def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(C
     (L : MatrixViews u m m α) (certifier : EntryCertifier) :
     MetaM (Q(($(L.matrix)).IsLowerTriangular) × Q(∀ i, ($(L.matrix)).diag i ≠ 0)) := do
   have rows : Q(List (List $α)) := L.lit
-  -- one cell per row: the nonzero diagonal entry, then the `Eq.refl` of the zeros after it
+  -- one cell per row: the nonzero diagonal entry, then the `Eq.refl` of the zeros after it.
+  -- The certifier's proofs are untyped and the chain's proposition is the definition's
+  -- unfolding, which Qq cannot see, so the cells are assembled by `mkAppM`.
   let chain : Expr ← L.entries.zipIdx.foldrM (init := q(True.intro)) fun (row, k) rest => do
     have entry : Q($α) := row[k]!
     have c : Q(Nat) := mkNatLitQ (m - (k + 1))
