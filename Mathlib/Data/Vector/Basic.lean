@@ -116,25 +116,6 @@ theorem toList_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector 
     (v.pmap f hp).toList = v.toList.pmap f hp := by cases v; rfl
 
 @[simp]
-theorem head_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
-    (hp : ∀ x ∈ v.toList, p x) :
-    (v.pmap f hp).head = f v.head (hp _ <| by
-      rw [← cons_head_tail v]
-      simp) := by
-  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
-  simp_rw [h, pmap_cons, head_cons]
-
-@[simp]
-theorem tail_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
-    (hp : ∀ x ∈ v.toList, p x) :
-    (v.pmap f hp).tail = v.tail.pmap f (fun x hx ↦ hp _ <| by
-      rw [← cons_head_tail v]
-      simp_rw [Nat.succ_eq_add_one, Nat.add_one_sub_one, toList_cons v.head, List.mem_cons]
-      exact .inr hx) := by
-  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
-  simp_rw [h, pmap_cons, tail_cons, Nat.add_one_sub_one]
-
-@[simp]
 theorem getElem_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α n)
     (hp : ∀ x ∈ v.toList, p x) {i : ℕ} (hi : i < n) :
     (v.pmap f hp)[i] = f v[i] (hp _ (by simp [getElem_def, List.getElem_mem])) := by
