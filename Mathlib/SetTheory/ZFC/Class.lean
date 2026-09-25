@@ -31,9 +31,9 @@ universe u
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
-@[pp_with_univ]
+@[pp_with_univ, use_set_notation_for_order]
 def Class :=
-  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
+  Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
@@ -101,7 +101,7 @@ theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A x :=
 theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
   Set.eq_univ_of_forall
 
-theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
+instance mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
     have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x := by
       refine fun a => ZFSet.inductionOn a fun x IH => ⟨_, ?_⟩
@@ -110,9 +110,6 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
     refine fun A => ⟨A, ?_⟩
     rintro B ⟨x, rfl, _⟩
     exact H x⟩
-
-instance : IsWellFounded Class (· ∈ ·) :=
-  ⟨mem_wf⟩
 
 instance : WellFoundedRelation Class :=
   ⟨_, mem_wf⟩
@@ -317,6 +314,7 @@ end Class
 
 namespace ZFSet
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}}
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=

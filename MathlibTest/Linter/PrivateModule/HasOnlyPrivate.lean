@@ -17,7 +17,7 @@ open Mathlib.Linter Parser in
 /--
 warning: The current module only contains private declarations.
 
-Consider adding `@[expose] public section` at the beginning of the module, or selectively marking declarations as `public`.
+Consider adding `public section` at the beginning of the module, or selectively marking declarations as `public`. Mark a `def` with `@[expose]` if downstream code needs it to be definitionally equal to its body (e.g. for `unfold`). Alternatively, add `@[expose] public section` to mark every definition as exposed.
 
 Note: This linter can be disabled with `set_option linter.privateModule false`
 -/

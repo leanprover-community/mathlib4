@@ -50,9 +50,11 @@ section get
 
 variable {x : α ⊕ β}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
   cases x <;> simp
 
@@ -271,7 +273,7 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
     Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
-  (map_injective.and map_surjective).trans <| and_and_and_comm
+  (map_injective.and map_surjective).trans and_and_and_comm
 
 end Sum
 

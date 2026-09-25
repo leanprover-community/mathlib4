@@ -215,12 +215,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       · exact hcontdiff.continuousOn_fderivWithin hunique (by decide)
     rwa [integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le] at this
     · exact zero_le_one
-    · exact s'
-    · exact hs'c
     · fun_prop
     · fun_prop
-    · exact hf'
-    · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']
       apply integrableOn_zero
   simp [integral_congr_ae hf'g']
@@ -395,7 +391,7 @@ variable [CompleteSpace E] {f : 𝕜 → E} {s : Set 𝕜}
 then it admits a primitive. -/
 theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s) :
     ∃ g : 𝕜 → E, ∀ a ∈ s, HasDerivWithinAt g (f a) s a := by
-  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
   · intro a ha
     exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt

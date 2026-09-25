@@ -72,7 +72,7 @@ lemma equivShrink_inv [Inv α] (x : α) : equivShrink α x⁻¹ = (equivShrink �
 namespace Shrink
 
 /-- Shrink `α` to a smaller universe preserves multiplication. -/
-@[to_additive /-- Shrink `α` to a smaller universe preserves addition. -/]
+@[to_additive (attr := simps!) /-- Shrink `α` to a smaller universe preserves addition. -/]
 def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
 
 @[to_additive]

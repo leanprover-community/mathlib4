@@ -69,7 +69,6 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
       (Algebra.TensorProduct.includeLeft (S := R) '' S) =
     (Algebra.TensorProduct.map (Subalgebra.centralizer R (S : Set A)).val
       (AlgHom.id R B)).range := by
-  classical
   ext w
   constructor
   · intro hw
@@ -92,8 +91,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
   · rintro ⟨w, rfl⟩
     rw [Subalgebra.mem_centralizer_iff]
     rintro _ ⟨x, hx, rfl⟩
-    induction w using TensorProduct.induction_on with
-    | zero => simp
+    induction w using TensorProduct.inductionOn with
     | tmul b c =>
       simp [Subalgebra.mem_centralizer_iff _ |>.1 b.2 x hx]
     | add y z hy hz => rw [map_add, mul_add, hy, hz, add_mul]

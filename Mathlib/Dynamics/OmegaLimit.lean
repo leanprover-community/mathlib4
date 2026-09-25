@@ -6,6 +6,7 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # ω-limits
@@ -34,7 +35,9 @@ endowed with an order.
 @[expose] public section
 
 
-open Set Function Filter Topology
+open Set Function Filter
+
+open scoped Topology
 
 /-!
 ### Definition and notation
@@ -159,9 +162,9 @@ theorem omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s�
     contrapose!
     simp only [← subset_empty_iff]
     rintro ⟨⟨n₁, hn₁, h₁⟩, ⟨n₂, hn₂, h₂⟩⟩
-    refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, h₁.mono fun t ↦ ?_, h₂.mono fun t ↦ ?_⟩
-    exacts [Subset.trans <| inter_subset_inter_right _ <| preimage_mono inter_subset_left,
-      Subset.trans <| inter_subset_inter_right _ <| preimage_mono inter_subset_right]
+    refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, ?_, ?_⟩
+    · gconvert h₁; exact inter_subset_left
+    · gconvert h₂; exact inter_subset_right
   · rintro (hy | hy)
     exacts [omegaLimit_mono_right _ _ subset_union_left hy,
       omegaLimit_mono_right _ _ subset_union_right hy]
@@ -291,9 +294,7 @@ theorem nonempty_omegaLimit_of_isCompact_absorbing [NeBot f] {c : Set β} (hc₁
     exact hn.mono subset_closure
   · intro
     apply hc₁.of_isClosed_subset isClosed_closure
-    calc
-      _ ⊆ closure (image2 ϕ v s) := closure_mono (image2_subset inter_subset_right Subset.rfl)
-      _ ⊆ c := hv₂
+    grw [inter_subset_right, hv₂]
   · exact fun _ ↦ isClosed_closure
 
 theorem nonempty_omegaLimit [CompactSpace β] [NeBot f] (hs : s.Nonempty) : (ω f ϕ s).Nonempty :=

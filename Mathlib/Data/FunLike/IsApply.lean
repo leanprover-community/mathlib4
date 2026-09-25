@@ -6,9 +6,10 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Algebra.Group.Monoid
+public import Mathlib.Data.Int.Notation
 
 /-! # Typeclasses for `FunLike` and algebraic operations
 In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`
@@ -33,13 +34,12 @@ The following `Is*Apply` typeclasses are available:
 * `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`, respectively
 
 For every type that declares a `FunLike` instance and an `Add` instance, there should be generally
-an `IsAddApply` instance with the proof usually being `rfl`.
+an `IsAddApply` instance with the proof usually being solved automatically using `rfl`.
 So for instance for the continuous linear maps equipped with the uniform convergence topology,
 we have the instance
 ```
 instance instIsAddApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
-  add_apply _ _ _ := rfl
 ```
 
 
@@ -74,18 +74,18 @@ section Zero
 
 /-- `IsZeroApply F α β` states for all `x : α`, `(0 : F) x = 0`. -/
 class IsZeroApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Zero β] [Zero F] where
-  zero_apply (x : α) : (0 : F) x = 0
+  zero_apply (x : α) : (0 : F) x = 0 := by intros; rfl
 
 /-- `IsOneApply F α β` states for all `x : α`, `(1 : F) x = 1`. -/
 @[to_additive]
 class IsOneApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [One β] [One F] where
-  one_apply (x : α) : (1 : F) x = 1
+  one_apply (x : α) : (1 : F) x = 1 := by intros; rfl
 
 @[to_additive (attr := simp, grind =)] alias one_apply := IsOneApply.one_apply
 
 /-- `IsOneApplyEqSelf F α α` states for all `x : α`, `(1 : F) x = x`. -/
 class IsOneApplyEqSelf (F : Type*) (α : outParam Type*) [FunLike F α α] [One F] where
-  one_apply_eq_self (x : α) : (1 : F) x = x
+  one_apply_eq_self (x : α) : (1 : F) x = x := by intros; rfl
 
 @[simp, grind =]
 alias one_apply_eq_self := IsOneApplyEqSelf.one_apply_eq_self
@@ -96,18 +96,18 @@ section Add
 
 /-- `IsAddApply F α β` states for all `f g : F` and `x : α`, `(f + g) x = f x + g x`. -/
 class IsAddApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Add β] [Add F] where
-  add_apply (f g : F) (x : α) : (f + g) x = f x + g x
+  add_apply (f g : F) (x : α) : (f + g) x = f x + g x := by intros; rfl
 
 /-- `IsMulApply F α β` states for all `f g : F` and `x : α`, `(f * g) x = f x * g x`. -/
 @[to_additive]
 class IsMulApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Mul β] [Mul F] where
-  mul_apply (f g : F) (x : α) : (f * g) x = f x * g x
+  mul_apply (f g : F) (x : α) : (f * g) x = f x * g x := by intros; rfl
 
 @[to_additive (attr := simp, grind =)] alias mul_apply := IsMulApply.mul_apply
 
 /-- `IsMulApplyEqComp F α α` states for all `x : α`, `(f * g) x = f (g x)`. -/
 class IsMulApplyEqComp (F : Type*) (α : outParam Type*) [FunLike F α α] [Mul F] where
-  mul_apply_eq_comp (f g : F) (x : α) : (f * g) x = f (g x)
+  mul_apply_eq_comp (f g : F) (x : α) : (f * g) x = f (g x) := by intros; rfl
 
 @[simp, grind =]
 alias mul_apply_eq_comp := IsMulApplyEqComp.mul_apply_eq_comp
@@ -126,12 +126,12 @@ section Sub
 
 /-- `IsSubApply F α β` states for all `f g : F` and `x : α`, `(f - g) x = f x - g x`. -/
 class IsSubApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Sub β] [Sub F] where
-  sub_apply (f g : F) (x : α) : (f - g) x = f x - g x
+  sub_apply (f g : F) (x : α) : (f - g) x = f x - g x := by intros; rfl
 
 /-- `IsDivApply F α β` states for all `f g : F` and `x : α`, `(f / g) x = f x / g x`. -/
 @[to_additive]
 class IsDivApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Div β] [Div F] where
-  div_apply (f g : F) (x : α) : (f / g) x = f x / g x
+  div_apply (f g : F) (x : α) : (f / g) x = f x / g x := by intros; rfl
 
 @[to_additive (attr := simp, grind =)] alias div_apply := IsDivApply.div_apply
 
@@ -141,12 +141,12 @@ section Neg
 
 /-- `IsNegApply F α β` states for all `f : F` and `x : α`, `(-f) x = -f x`. -/
 class IsNegApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Neg β] [Neg F] where
-  neg_apply (f : F) (x : α) : (-f) x = -f x
+  neg_apply (f : F) (x : α) : (-f) x = -f x := by intros; rfl
 
 /-- `IsInvApply F α β` states for all `f : F` and `x : α`, `f⁻¹ x = (f x)⁻¹`. -/
 @[to_additive]
 class IsInvApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Inv β] [Inv F] where
-  inv_apply (f : F) (x : α) : f⁻¹ x = (f x)⁻¹
+  inv_apply (f : F) (x : α) : f⁻¹ x = (f x)⁻¹ := by intros; rfl
 
 @[to_additive (attr := simp, grind =)] alias inv_apply := IsInvApply.inv_apply
 
@@ -156,25 +156,20 @@ section SMul
 
 /-- `IsVAddApply M F α β` states for all `f : F`, `n : M` and `x : α`, `(n +ᵥ f) x = n +ᵥ f x`. -/
 class IsVAddApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [VAdd M β] [VAdd M F] where
-  vadd_apply (f : F) (n : M) (x : α) : (n +ᵥ f) x = n +ᵥ f x
+  vadd_apply (f : F) (n : M) (x : α) : (n +ᵥ f) x = n +ᵥ f x := by intros; rfl
 
 /-- `IsSMulApply M F α β` states for all `f : F`, `n : M` and `x : α`, `(n • f) x = n • f x`. -/
 @[to_additive]
 class IsSMulApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [SMul M β] [SMul M F] where
-  smul_apply (f : F) (r : M) (x : α) : (r • f) x = r • f x
-
-@[to_additive (attr := simp, grind =)] alias smul_apply := IsSMulApply.smul_apply
+  smul_apply (f : F) (r : M) (x : α) : (r • f) x = r • f x := by intros; rfl
 
 /-- `IsPowApply M F α β` states for all `f : F`, `n : M` and `x : α`, `(f ^ n) x = (f x) ^ n`. -/
 @[to_additive IsSMulApply]
 class IsPowApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [Pow β M] [Pow F M] where
-  pow_apply (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n
+  pow_apply (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n := by intros; rfl
 
--- Note that `smul_apply` is defined already, so we create an alias using `to_additive`,
--- but we do not declare it a `simp` lemma
-@[to_additive existing smul_apply] alias pow_apply := IsPowApply.pow_apply
-
-attribute [simp, grind =] pow_apply
+@[to_additive (attr := simp, grind =, to_additive) smul_apply]
+alias pow_apply := IsPowApply.pow_apply
 
 end SMul
 
@@ -182,14 +177,14 @@ section Cast
 
 /-- `IsNatCastApply F α` states for all `n : ℕ` and `x : α`, `(n : F) x = n • x`. -/
 class IsNatCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [NatCast F] [SMul Nat α] where
-  natCast_apply (n : Nat) (x : α) : (n : F) x = n • x
+  natCast_apply (n : Nat) (x : α) : (n : F) x = n • x := by intros; rfl
 
 @[simp, grind =]
 alias natCast_apply := IsNatCastApply.natCast_apply
 
 /-- `IsIntCastApply F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n • x`. -/
 class IsIntCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [IntCast F] [SMul Int α] where
-  intCast_apply (n : Int) (x : α) : (n : F) x = n • x
+  intCast_apply (n : Int) (x : α) : (n : F) x = n • x := by intros; rfl
 
 @[simp, grind =]
 alias intCast_apply := IsIntCastApply.intCast_apply
@@ -200,11 +195,11 @@ end Def
 
 namespace FunLike
 
-variable {M M' F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
+variable {M F F' α β : Type*} [FunLike F α β] [FunLike F' α α]
 
 section Coercion
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one [One F] [One β] [IsOneApply F α β] : ↑(1 : F) = (1 : α → β) := by ext; simp
 
 @[to_additive (attr := simp)]
@@ -213,66 +208,67 @@ theorem coe_one_iff [One F] [One β] [IsOneApply F α β] (f : F) : (f : α → 
   · intro h
     simp [DFunLike.ext_iff, h]
   · intro h
-    simp [funext_iff, h]
+    simp [h]
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul [Mul F] [Mul β] [IsMulApply F α β] (f g : F) : ↑(f * g) = (f : α → β) * g := by
   ext; simp
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div [Div F] [Div β] [IsDivApply F α β] (f g : F) : ↑(f / g) = (f : α → β) / g := by
   ext; simp
 
-@[to_additive (attr := norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv F] [Inv β] [IsInvApply F α β] (f : F) : ↑(f⁻¹) = (f : α → β)⁻¹ := by
   ext; simp
 
-@[to_additive (attr := norm_cast)]
-theorem coe_smul [SMul M F] [SMul M β] [IsSMulApply M F α β] (n : M) (f : F) :
-    ↑(n • f) = n • (f : α → β) := by
-  ext; simp
-
-@[to_additive coe_smul']
+@[to_additive (attr := simp, norm_cast, to_additive) (reorder := f n) coe_smul]
 theorem coe_pow [Pow F M] [Pow β M] [IsPowApply M F α β] (f : F) (n : M) :
     ↑(f ^ n) = (f : α → β) ^ n := by
   ext; simp
 
-attribute [norm_cast] coe_pow
+@[deprecated (since := "2026-07-23")] alias coe_smul' := coe_smul
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_one_eq_id [One F'] [IsOneApplyEqSelf F' α] : ↑(1 : F') = id := by
   ext; simp
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F' α] (f : F') : (f : α → α) = id ↔ f = 1 := by
   constructor
   · intro h
     simp [DFunLike.ext_iff, h]
   · intro h
-    simp [funext_iff, h]
+    simp [h]
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F' α] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
 
-@[norm_cast]
+@[simp, norm_cast]
 lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F' α] [IsOneApplyEqSelf F' α]
     (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
 
+-- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
-theorem coe_natCast [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F'] [IsSMulApply Nat F' α α]
-    [IsNatCastApply F' α] [IsOneApplyEqSelf F' α] (n : Nat) :
+theorem natCast_eq_nsmul_one [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F']
+    [IsSMulApply Nat F' α α] [IsNatCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℕ) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
 
+@[deprecated (since := "2026-07-24")] alias coe_natCast := natCast_eq_nsmul_one
+
+-- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
-theorem coe_intCast [IntCast F'] [One F'] [SMul Int α] [SMul Int F'] [IsSMulApply Int F' α α]
-    [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : Int) :
+theorem intCast_eq_zsmul_one [IntCast F'] [One F'] [SMul Int α] [SMul Int F']
+    [IsSMulApply Int F' α α] [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℤ) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
+
+@[deprecated (since := "2026-07-24")] alias coe_intCast := intCast_eq_zsmul_one
 
 end Coercion
 

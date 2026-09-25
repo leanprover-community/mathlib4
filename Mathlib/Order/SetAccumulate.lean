@@ -30,8 +30,6 @@ namespace Set
 def accumulate [LE α] (s : α → Set β) (x : α) : Set β :=
   ⋃ y ≤ x, s y
 
-@[deprecated (since := "2025-12-14")] alias Accumulate := accumulate
-
 theorem accumulate_def [LE α] {x : α} : accumulate s x = ⋃ y ≤ x, s y :=
   rfl
 

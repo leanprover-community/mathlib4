@@ -73,7 +73,7 @@ theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ
   ext
   simp only [TensorProduct.AlgebraTensorModule.curry_apply,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-    Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
+    Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_ofClass, map_mul]
   rfl
 
 theorem coe_mulMap_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ[R] T) :
@@ -119,7 +119,6 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
   rintro _ ⟨x, rfl⟩
   induction x with
-  | zero => rw [map_zero]; exact zero_mem _
   | tmul a b => exact mul_mem_mul a.2 b.2
   | add a b ha hb => rw [map_add]; exact add_mem ha hb
 
@@ -163,7 +162,7 @@ there is the natural isomorphism of `R`-modules between
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def lTensorOne : (⊥ : Subalgebra R S) ⊗[R] N ≃ₗ[R] N :=
-  LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
+  LinearEquiv.ofLinearMap N.lTensorOne' (TensorProduct.mk R (⊥ : Subalgebra R S) N 1)
     (by ext; simp) <| TensorProduct.ext' fun r n ↦ by
   change 1 ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2
@@ -215,7 +214,7 @@ there is the natural isomorphism of `R`-modules between
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def rTensorOne : M ⊗[R] (⊥ : Subalgebra R S) ≃ₗ[R] M :=
-  LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
+  LinearEquiv.ofLinearMap M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
     TensorProduct.mk R (⊥ : Subalgebra R S) M 1) (by ext; simp) <| TensorProduct.ext' fun n r ↦ by
   change rTensorOne' M _ ⊗ₜ[R] 1 = n ⊗ₜ[R] r
   obtain ⟨x, h⟩ := Algebra.mem_bot.1 r.2

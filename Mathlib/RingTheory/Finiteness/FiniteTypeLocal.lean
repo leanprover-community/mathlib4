@@ -29,8 +29,8 @@ section Algebra
 open scoped Pointwise TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid R)
-variable (R' S' : Type*) [CommRing R'] [CommRing S']
-variable [Algebra R R'] [Algebra S S']
+variable (S' : Type*) [CommRing S']
+variable [Algebra S S']
 
 variable {S'} in
 open scoped Classical in
@@ -138,7 +138,7 @@ lemma Algebra.FiniteType.of_span_eq_top_source (s : Set R) (hs : Ideal.span (s :
   obtain ⟨s, h₁, hs⟩ := (Ideal.span_eq_top_iff_finite s).mp hs
   replace h (i : s) := h i.val (h₁ i.property)
   classical
-  letI := fun r : s => (Localization.awayMap (algebraMap R S) r).toAlgebra
+  let := fun r : s => (Localization.awayMap (algebraMap R S) r).toAlgebra
   set f := algebraMap R S
   constructor
   replace H := fun r => (h r).1
