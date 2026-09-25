@@ -409,7 +409,7 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
       have : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
       refine ⟨fun H ↦ Or.elim H this fun H ↦ H.1, fun H ↦ ?_⟩
       simp only [ne_eq, H, not_false_eq_true, true_and, or_not]
-    rwa [Finset.filter_congr (s := Finset.range (succ N)) fun n _ ↦ hn' n]
+    rwa [Finset.filter_congr (s := Finset.range (succ N)) rfl fun n _ ↦ hn' n]
   rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
   simp only [Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 

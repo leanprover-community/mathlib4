@@ -187,7 +187,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
       congr_arg card
         (by
           rw [sdiff_eq_filter]
-          apply filter_congr
+          apply filter_congr rfl
           simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
             hp.coprime_iff_not_dvd]
           intro a ha

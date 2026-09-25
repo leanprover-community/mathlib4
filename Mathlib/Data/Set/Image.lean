@@ -214,7 +214,8 @@ theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) 
   aesop
 
 /-- A common special case of `image_congr` -/
-theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) : f '' s = g '' s := by
+theorem image_congr' {f g : α → β} {s t : Set α} (hs : s = t) (h : ∀ x : α, f x = g x) :
+    f '' s = g '' t := by
   grind
 
 @[gcongr]

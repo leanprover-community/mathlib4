@@ -195,7 +195,7 @@ theorem image₂_inter_subset_right [DecidableEq β] :
 theorem image₂_congr (h : ∀ a ∈ s, ∀ b ∈ t, f a b = f' a b) : image₂ f s t = image₂ f' s t :=
   coe_injective <| by
     push_cast
-    exact image2_congr h
+    exact image2_congr rfl rfl h
 
 /-- A common special case of `image₂_congr` -/
 theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image₂ f' s t :=

@@ -334,7 +334,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     #(G.interedges s t) + #(Gᶜ.interedges s t) = #s * #t := by
   rw [← card_product, interedges_def, interedges_def]
   have : {e ∈ s ×ˢ t | Gᶜ.Adj e.1 e.2} = {e ∈ s ×ˢ t | ¬G.Adj e.1 e.2} := by
-    refine filter_congr fun x hx ↦ ?_
+    refine filter_congr rfl fun x hx ↦ ?_
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
   rw [this, ← card_union_of_disjoint, filter_union_filter_not_eq]

@@ -86,7 +86,7 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
     Finset.card_attach, Multiset.filter_map, Multiset.card_map, Finset.card, Function.comp_apply,
     Finset.card_val]
   congr 1
-  apply Multiset.filter_congr
+  apply Multiset.filter_congr rfl
   tauto
 
 @[simp]

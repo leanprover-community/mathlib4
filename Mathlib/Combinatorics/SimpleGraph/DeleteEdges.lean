@@ -191,7 +191,7 @@ graph `G` that do not contain `x`. -/
 theorem edgeFinset_deleteIncidenceSet_eq_filter (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset.filter (x ∉ ·) := by
   rw [edgeFinset_deleteIncidenceSet_eq_sdiff, sdiff_eq_filter]
-  apply filter_congr
+  apply filter_congr rfl
   intro _ h
   rw [incidenceFinset, Set.mem_toFinset, incidenceSet,
     Set.mem_ofPred_eq, not_and, Classical.imp_iff_right_iff]

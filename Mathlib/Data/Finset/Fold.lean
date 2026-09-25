@@ -68,9 +68,15 @@ theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
     (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
-@[congr]
-theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) : s.fold op b f = s.fold op b g := by
+theorem fold_congr {g : α → β} (H : ∀ x ∈ s, f x = g x) :
+    s.fold op b f = s.fold op b g := by
   rw [fold, fold, map_congr rfl H]
+
+@[congr]
+theorem fold_congr' {op' : β → β → β} [Std.Commutative op'] [Std.Associative op'] {g : α → β}
+    {b' : β} {t : Finset α} (hop : op = op') (hb : b = b') (h : s = t) (H : ∀ x ∈ s, f x = g x) :
+    s.fold op b f = t.fold op' b' g := by
+  subst hop h hb; rw [fold_congr H]
 
 theorem fold_op_distrib {f g : α → β} {b₁ b₂ : β} :
     (s.fold op (b₁ * b₂) fun x => f x * g x) = s.fold op b₁ f * s.fold op b₂ g := by
