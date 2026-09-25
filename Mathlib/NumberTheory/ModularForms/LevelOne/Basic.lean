@@ -7,7 +7,7 @@ module
 
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
-import Mathlib.NumberTheory.Modular
+public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
 # Level one modular forms

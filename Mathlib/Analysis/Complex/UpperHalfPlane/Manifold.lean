@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Geometry.Manifold.Algebra.Structures
-import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.LinearAlgebra.Complex.Determinant
 import Mathlib.RingTheory.Complex
