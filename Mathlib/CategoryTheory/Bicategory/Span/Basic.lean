@@ -262,7 +262,6 @@ lemma compPullbackCone_fst :
 lemma compPullbackCone_snd :
   (compPullbackCone S₁ S₂).snd = πᵣ S₁ S₂ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback cone that defines the apex for the composition of spans is a limit
 cone. -/
 @[no_expose] noncomputable def isLimitCompPullbackCone :
@@ -290,14 +289,12 @@ noncomputable def compLiftApex {c : C} (fₗ : c ⟶ S₁.apex) (fᵣ : c ⟶ S�
     c ⟶ (S₁ ≫ S₂).apex :=
   Limits.PullbackCone.IsLimit.lift (isLimitCompPullbackCone S₁ S₂) fₗ fᵣ hₘ
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), grind =]
 lemma compLiftApex_πₗ {c : C} (fₗ : c ⟶ S₁.apex) (fᵣ : c ⟶ S₂.apex)
     (hₘ : fₗ ≫ S₁.r = fᵣ ≫ S₂.l := by cat_disch) :
     compLiftApex fₗ fᵣ hₘ ≫ πₗ S₁ S₂ = fₗ := by
   simp [← compPullbackCone_fst, compLiftApex]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), grind =]
 lemma compLiftApex_πᵣ {c : C} (fₗ : c ⟶ S₁.apex) (fᵣ : c ⟶ S₂.apex)
     (hₘ : fₗ ≫ S₁.r = fᵣ ≫ S₂.l := by cat_disch) :

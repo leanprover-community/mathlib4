@@ -64,7 +64,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
   let F := fun (a : α) (n : ℕ) => (G a)^[n] (g a, f a)
   have hF : Primrec fun a => (F a (encode (f a))).1 :=
     (fst.comp <|
-      nat_iterate (encode_iff.2 hf) (pair hg hf) <|
+      nat_iterate (encode_iff.2 hf) (pair hg hf)
       hG)
   suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
     refine hF.of_eq fun a => ?_
@@ -253,7 +253,7 @@ theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
 variable {p : α → Prop} [DecidablePred p]
 
 theorem list_length : Primrec (@List.length α) :=
-  (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
+  (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ (succ.comp <| snd.comp snd).to₂).of_eq
     fun l => by dsimp; induction l <;> simp [*]
 
 /-- Filtering a list for elements that satisfy a decidable predicate is primitive recursive. -/

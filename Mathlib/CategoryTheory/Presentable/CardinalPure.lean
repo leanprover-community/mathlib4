@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Presentable.Comma
 
 /-!
 # Pure subobjects
@@ -17,6 +17,8 @@ split monomorphisms and is stable under `κ`-filtered colimits.
 When `C` is a `κ`-accessible category, we show that `κ`-pure
 morphisms are monomorphisms, and that a `κ`-accessible functor
 `F : C ⥤ D` preserves `κ`-pure morphisms.
+We show that in a locally `κ`-presentable category, `κ`-pure morphisms
+are `κ`-filtered colimits of split monomorphisms.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -86,7 +88,6 @@ lemma IsCardinalPure.of_postcomp
 instance : (isCardinalPure C κ).HasOfPostcompProperty (⊤ : MorphismProperty C) where
   of_postcomp f g _ _ := IsCardinalPure.of_postcomp κ f g
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsCardinalAccessibleCategory.mono_iff [IsCardinalAccessibleCategory C κ]
     {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ ∀ (T : C) [IsCardinalPresentable T κ] (g₁ g₂ : T ⟶ X),
@@ -95,7 +96,6 @@ lemma IsCardinalAccessibleCategory.mono_iff [IsCardinalAccessibleCategory C κ]
     fun hf ↦ ⟨fun {Z} g₁ g₂ h ↦ ((isCardinalPresentable C κ).ι.denseAt Z).hom_ext
       (by cat_disch)⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a `κ`-accessible category, `κ`-pure morphisms are monomorphisms.
 (This is proposition 2.29 in [Adamek_Rosicky_1994].) -/
 lemma IsCardinalPure.mono [IsCardinalAccessibleCategory C κ]
@@ -126,7 +126,6 @@ lemma isCardinalPure_le_monomorphisms [IsCardinalAccessibleCategory C κ] :
     isCardinalPure C κ ≤ .monomorphisms C :=
   fun _ _ f _ ↦ IsCardinalPure.mono κ f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `κ`-pure morphisms are stable under `κ`-filtered colimits.
 (This is proposition 2.30 (i) in [Adamek_Rosicky_1994].) -/
 instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
@@ -140,6 +139,64 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   have := hf j'
   obtain ⟨ρ, _⟩ := IsCardinalPure.exists_of_commSq κ sq'
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
+
+attribute [local instance] IsFiltered.isConnected in
+/-- In a `κ`-accessible category with pushouts (e.g. a locally `κ`-presentable category),
+a `κ`-pure morphism is a `κ`-filtered colimit of split monomorphisms.
+(This is proposition 2.30 (ii) in [Adamek_Rosicky_1994].) -/
+lemma exists_colimitsOfShape_splitMonomorphisms_of_isCardinalPure
+    [IsCardinalAccessibleCategory C κ] [HasPushouts C] {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :
+    ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ),
+      (MorphismProperty.splitMonomorphisms C).colimitsOfShape J f := by
+  /- We express the arrow `Arrow.mk f` as a `κ`-filtered colimit of `κ`-presentable arrows:
+  the source and target of these morphisms are `κ`-presentable objects in `C`. -/
+  obtain ⟨J, _, _, ⟨p⟩⟩ :=
+     (isCardinalFilteredGenerator_isCardinalPresentable _ κ).exists_colimitsOfShape (Arrow.mk f)
+  have := isFiltered_of_isCardinalFiltered J κ
+  have := (Arrow.leftFunc (C := C)).preservesColimitsOfShape_of_isCardinalAccessible κ J
+  have := (Arrow.rightFunc (C := C)).preservesColimitsOfShape_of_isCardinalAccessible κ J
+  have := p.prop_diag_obj
+  have sq (j : J) : CommSq (p.diag.obj j).hom (p.ι.app j).left (p.ι.app j).right f := { }
+  /- Using the fact that `f` is `κ`-pure, we obtain morphisms
+  `l j : (p.diag.obj j).right ⟶ X` such that `(p.diag.obj j).hom ≫ l j = (p.ι.app j).left`. -/
+  choose l hl using dsimp% fun j ↦ IsCardinalPure.exists_of_commSq κ (sq j)
+  /- We consider the following pushout diagram in the category of functors `J ⥤ C`.
+```
+                               t
+        p.diag ⋙ leftFunc      ⟶ p.diag ⋙ rightFunc
+           |                       |
+          u|                       |inr
+           v                  inl  v
+       (Functor.const _).obj X ⟶ pushout t u
+```
+  The morphisms `l j` allow to show that the bottom maps
+  `X ⟶ (pushout t u).obj j` are split monomorphisms, and the colimit
+  of `pushout t u` identifies to `Y`, so that the morphism `f` is
+  a colimit of split monomorphisms. -/
+  let t : p.diag ⋙ Arrow.leftFunc ⟶ p.diag ⋙ Arrow.rightFunc :=
+    Functor.whiskerLeft _ Arrow.leftToRight
+  let u : p.diag ⋙ Arrow.leftFunc ⟶ (Functor.const _).obj X :=
+    { app j := (p.ι.app j).left
+      naturality _ _ g := by
+        dsimp
+        simpa only [Category.comp_id] using! congr(Arrow.Hom.left $(p.w g)) }
+  let v : p.diag ⋙ Arrow.rightFunc ⟶ (Functor.const _).obj Y :=
+    { app j := (p.ι.app j).right
+      naturality _ _ g := by
+        dsimp
+        simpa only [Category.comp_id] using! congr(Arrow.Hom.right $(p.w g)) }
+  let c₄ : Cocone (pushout t u) :=
+    { pt := Y
+      ι := pushout.desc v ((Functor.const _).map f) }
+  refine ⟨J, inferInstance, inferInstance,
+    .mk' _ _ _ c₄ (isColimitConstCocone J X) ?_ (pushout.inr t u) (fun j ↦ ?_) f (by cat_disch)⟩
+  · exact (IsPushout.of_hasPushout t u).isColimitOfIsColimitOfIsPushout _ _ _ c₄
+      (isColimitOfPreserves Arrow.leftFunc p.isColimit)
+      (isColimitOfPreserves Arrow.rightFunc p.isColimit)
+      (isColimitConstCocone J X)
+      (IsPushout.of_id_snd (f := f))
+  · exact ⟨⟨{ retraction :=
+      ((IsPushout.of_hasPushout t u).app j).desc (l j) (𝟙 _) (by cat_disch) }⟩⟩
 
 /-- If `F : C ⥤ D` is a `κ`-accessible functor (with `C` a `κ`-accessible category),
 then `F` maps `κ`-pure morphisms to `κ`-morphisms.

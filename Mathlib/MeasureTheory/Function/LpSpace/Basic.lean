@@ -430,7 +430,7 @@ variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
   rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_congr_ae (AEEqFun.coeFn_smul _ _)]
-  exact eLpNorm_const_smul_le.trans_lt <| (by finiteness)
+  exact eLpNorm_const_smul_le.trans_lt (by finiteness)
 
 variable (𝕜 E p μ)
 

@@ -765,7 +765,7 @@ private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Se
     (hs : IsProperLinearSet s) : IsSemilinearSet sᶜ := by
   convert!
     hs.isSemilinearSet_setOfFractNe.union <|
-      hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using 1
+      hs.isSemilinearSet_setOfFloorNeg.union hs.isSemilinearSet_setOfFloorPos using 1
   ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
     IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_ofPred_eq]
