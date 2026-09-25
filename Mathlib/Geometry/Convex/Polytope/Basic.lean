@@ -48,7 +48,7 @@ variable [ConvexSpace R X]
 variable (R) in
 /-- A set is a *polytope* if it is the convex hull of finitely many points. This is the
 V-definition of a convex polytope. -/
-def IsPolytope (s : Set X) : Prop := ∃ t : Finset X, s = convexHull R t
+def IsPolytope (P : Set X) : Prop := ∃ t : Finset X, convexHull R t = P
 
 end Semiring
 
@@ -62,7 +62,12 @@ variable [ConvexSpace R X]
 variable {P P₁ P₂ : Set X}
 
 theorem exists_finset_convexHull (hP : IsPolytope R P) :
-    ∃ t : Finset X, P = convexHull R t := hP
+    ∃ t : Finset X, convexHull R t = P := hP
+
+theorem exists_finite_convexHull (hP : IsPolytope R P) :
+    ∃ t : Set X, Set.Finite t ∧ convexHull R t = P := by
+  let ⟨t, h⟩ := hP
+  exact ⟨t, by simp [h]⟩
 
 lemma isConvexSet (hP : IsPolytope R P) : IsConvexSet R P := by
   obtain ⟨_, rfl⟩ := hP
@@ -81,8 +86,12 @@ lemma of_subsingleton (hP : P.Subsingleton) : IsPolytope R P := by
   obtain rfl | ⟨x, rfl⟩ := hP.eq_empty_or_singleton <;> simp
 
 variable (R) in
+lemma convexHull_of_finset (v : Finset X) :
+    IsPolytope R (convexHull R (v : Set X)) := ⟨v, by simp⟩
+
+variable (R) in
 lemma convexHull_of_finite {v : Set X} (hv : v.Finite) :
-    IsPolytope R (convexHull R v) := by use hv.toFinset; simp
+    IsPolytope R (convexHull R v) := ⟨hv.toFinset, by simp⟩
 
 lemma convexHull_union (h₁ : IsPolytope R P₁) (h₂ : IsPolytope R P₂) :
     IsPolytope R (convexHull R (P₁ ∪ P₂)) := by classical
@@ -106,7 +115,7 @@ protected lemma image (hf : IsAffineMap R f) (hP : IsPolytope R P) :
     IsPolytope R (f '' P) := by classical
   obtain ⟨v, rfl⟩ := hP
   use v.image f
-  simpa using hf.image_convexHull v
+  simpa [Eq.comm] using hf.image_convexHull v
 
 end Semiring
 
