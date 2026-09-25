@@ -21,7 +21,7 @@ set of minimal polynomials, then `E` and `K` are isomorphic as `F`-algebras. As 
 `IsAlgClosure.of_exists_root`: if `E/F` is algebraic and every monic irreducible polynomial
 in `F[X]` has a root in `E`, then `E` is an algebraic closure of `F`.
 
-## Reference
+## References
 
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly

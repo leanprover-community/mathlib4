@@ -66,6 +66,8 @@ ring expressions constructed (`V := Expr`). -/
 structure BareissData (V : Type) where
   /-- The lower-triangular transform. -/
   L : Array (Array V)
+  /-- The echelon form, the final working matrix `L * A_σ` of the elimination. -/
+  U : Array (Array V)
   /-- The row swaps, in order. Stores the swaps instead of row re-indexing, since in
   common cases swaps are infrequent and therefore produce a smaller term to be checked
   by the kernel. The row permutation `σ` is later constructed by their product. -/
@@ -77,7 +79,13 @@ structure BareissData (V : Type) where
 /-- Map over the entries of the transform. -/
 def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
     MetaM (BareissData W) :=
-  return { L := ← d.L.mapM (·.mapM f), swaps := d.swaps, pivot := d.pivot }
+  return { L := ← d.L.mapM (·.mapM f), U := ← d.U.mapM (·.mapM f),
+           swaps := d.swaps, pivot := d.pivot }
+
+/-- The row arrangement of the swaps: the entry at position `i` is the original row index
+that the swaps move to position `i`, that is, `σ i`. -/
+def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
+  d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
 /-- A producer: run the elimination on the entries of a matrix literal, returning
 the decomposition constructed. -/
@@ -136,7 +144,7 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
         L := L.set! i (eliminate pivot coef prevPivot (L.getD i #[]) lRow)
       prevPivot := pivot
       r := r + 1
-  return { L, swaps, pivot := pivotCols }
+  return { L, U := W, swaps, pivot := pivotCols }
 
 /-- Assemble a producer from a computation model's parts.
 `ops` describes the ring operation structure;

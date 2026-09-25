@@ -8,6 +8,7 @@ module
 public import Mathlib.Tactic.TautoSet
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Separation.Basic
+public import Mathlib.Topology.LocallyClosed
 
 /-!
 # Discrete subsets of topological spaces
@@ -170,6 +171,13 @@ lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
   let := hs.1
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
+
+lemma IsDiscrete.isLocallyClosed [T1Space X] (hs : IsDiscrete s) :
+    IsLocallyClosed s := by
+  rw [isLocallyClosed_iff_isLocallyClosedAt]
+  intro x hx
+  refine isClosed_singleton.isLocallyClosed.isLocallyClosedAt (mem_singleton x) |>.congr ?_
+  simp [← nhdsWithin_eq_iff_eventuallyEqSet, hs.nhdsWithin x hx]
 
 section cofinite_cocompact
 
@@ -577,14 +585,14 @@ theorem IsDiscrete.biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X
   .biUnion I.finite_toSet hs hsc
 
 /-- The union of finitely many discrete closed subsets is discrete. -/
-@[deprecated IsDiscrete.union (since := "2026-05-13")]
+@[deprecated IsDiscrete.union +typeChanged (since := "2026-05-13")]
 theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
     (hs' : IsClosed S) (ht' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
   rw [← isDiscrete_iff_discreteTopology] at *
   exact hs.union ht hs' ht'
 
 /-- The union of finitely many discrete closed subsets is discrete. -/
-@[deprecated IsDiscrete.biUnion_finset (since := "2026-05-13")]
+@[deprecated IsDiscrete.biUnion_finset +typeChanged (since := "2026-05-13")]
 theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X}
     (hs : ∀ i ∈ I, DiscreteTopology (s i)) (hs' : ∀ i ∈ I, IsClosed (s i)) :
     DiscreteTopology (⋃ i ∈ I, s i) := by
@@ -592,7 +600,7 @@ theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι →
   exact .biUnion_finset hs hs'
 
 /-- The union of finitely many discrete closed subsets is discrete. -/
-@[deprecated IsDiscrete.iUnion (since := "2026-05-13")]
+@[deprecated IsDiscrete.iUnion +typeChanged (since := "2026-05-13")]
 theorem discreteTopology_iUnion_finite {ι : Type*} [Finite ι] {s : ι → Set X}
     (hs : ∀ i, DiscreteTopology (s i)) (hs' : ∀ i, IsClosed (s i)) :
     DiscreteTopology (⋃ i, s i) := by

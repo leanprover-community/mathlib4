@@ -33,14 +33,14 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
 
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (.ofClass v : F →*₀ Γ₀)))
+  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (v : F →*₀ Γ₀)))
 
 namespace Valuation.Integers
 
 open scoped Function in
 lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
     WfDvdMonoid O ↔ WellFounded ((· > ·) on (v ∘ algebraMap O F)) := by
-  refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
+  refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ h.mono ?_⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
 open scoped Function WithZero in

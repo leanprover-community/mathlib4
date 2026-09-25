@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rel
+public import Mathlib.Basic.Rel
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Basic results on uniform spaces
@@ -334,7 +334,7 @@ instance : InfSet (UniformSpace α) :=
         symm := le_iInf₂ fun u hu =>
           le_trans (map_mono <| iInf_le_of_le _ <| iInf_le _ hu) u.symm
         comp := le_iInf₂ fun u hu =>
-          le_trans (lift'_mono (iInf_le_of_le _ <| iInf_le _ hu) <| le_rfl) u.comp }⟩
+          le_trans (lift'_mono (iInf_le_of_le _ <| iInf_le _ hu) le_rfl) u.comp }⟩
 
 protected theorem UniformSpace.sInf_le {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : t ∈ tt) : sInf tt ≤ t :=
@@ -727,6 +727,16 @@ theorem uniformContinuous_unop [UniformSpace α] : UniformContinuous (unop : α�
 theorem uniformContinuous_op [UniformSpace α] : UniformContinuous (op : α → αᵐᵒᵖ) :=
   uniformContinuous_comap' uniformContinuous_id
 
+@[to_additive (attr := fun_prop)]
+theorem isUniformEmbedding_unop [UniformSpace α] : IsUniformEmbedding (unop : αᵐᵒᵖ → α) where
+  injective := unop_injective
+  comap_uniformity := uniformity_mulOpposite.symm
+
+@[to_additive (attr := fun_prop)]
+theorem isUniformEmbedding_op [UniformSpace α] : IsUniformEmbedding (op : α → αᵐᵒᵖ) where
+  injective := op_injective
+  comap_uniformity := comap_uniformity_mulOpposite
+
 end MulOpposite
 
 section Prod
@@ -958,8 +968,6 @@ section Sum
 variable [UniformSpace α] [UniformSpace β]
 
 open Sum
-
--- Obsolete auxiliary definitions and lemmas
 
 /-- Uniformity on a disjoint union. Entourages of the diagonal in the union are obtained
 by taking independently an entourage of the diagonal in the first part, and an entourage of

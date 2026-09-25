@@ -126,7 +126,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   · have hlim : Tendsto (fun n : ℕ ↦ (n : ℝ) ^ (-(s.re - r))) atTop (𝓝 0) :=
       (tendsto_rpow_neg_atTop (by rwa [sub_pos])).comp tendsto_natCast_atTop_atTop
     refine (IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow (-s.re) _ _ ?_ hO ?_).trans_tendsto hlim
-    · exact isBigO_norm_left.mp <| (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.natCast_atTop
+    · exact isBigO_norm_left.mp (norm_ofReal_cpow_eventually_eq_atTop _).isBigO.natCast_atTop
     · linarith
   · refine .mul_atTop_rpow_of_isBigO_rpow (-(s + 1).re) r _ ?_ ?_ (by rw [← neg_re, neg_add'])
     · simpa [-neg_add_rev, neg_add'] using! isBigO_deriv_ofReal_cpow_const_atTop _
@@ -219,7 +219,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
     ∀ᶠ t : ℝ in atTop, ‖(∑ k ∈ Icc 1 ⌊t⌋₊, f k) - l * t‖ < ε * t := by
   have h_lim' : Tendsto (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k : ℂ) / t) atTop (𝓝 l) := by
     refine (mul_one l ▸ ofReal_one ▸ ((hlim.comp tendsto_nat_floor_atTop).mul <|
-      tendsto_ofReal_iff.mpr <| tendsto_nat_floor_div_atTop)).congr' ?_
+      tendsto_ofReal_iff.mpr tendsto_nat_floor_div_atTop)).congr' ?_
     filter_upwards [eventually_ge_atTop 1] with t ht
     simp [div_mul_div_cancel₀ (show (⌊t⌋₊ : ℂ) ≠ 0 by simpa)]
   filter_upwards [eventually_gt_atTop 0, Metric.tendsto_nhds.mp h_lim' ε hε] with t ht₁ ht₂
@@ -245,7 +245,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
     _ ≤ ε * ((s - 1) * ∫ (t : ℝ) in Set.Ioi 1, t ^ (-s)) := by
       rw [integral_const_mul, ← mul_assoc, ← mul_assoc, mul_comm ε]
       refine mul_le_mul_of_nonneg_left (setIntegral_mono_set ?_ ?_
-        (Set.Ioi_subset_Ioi hT₁).eventuallyLE) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
+        (Set.Ioi_subset_Ioi hT₁).eventuallySubset) (mul_nonneg (sub_pos_of_lt hs).le hε.le)
       · exact integrableOn_Ioi_rpow_of_lt (neg_lt_neg_iff.mpr hs) zero_lt_one
       · exact (ae_restrict_iff' measurableSet_Ioi).mpr <| univ_mem' fun t ht ↦
         Real.rpow_nonneg (zero_le_one.trans ht.le) _

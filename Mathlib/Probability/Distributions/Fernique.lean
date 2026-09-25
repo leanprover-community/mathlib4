@@ -292,7 +292,7 @@ lemma logRatio_mono {c d : ℝ≥0∞} (hc : (2 : ℝ≥0∞)⁻¹ < c) (hd : d 
   gcongr
   · refine div_pos ?_ ?_
     · rw [ENNReal.toReal_pos_iff]
-      exact ⟨lt_trans (by norm_num) hc, h.trans_lt (by finiteness)⟩
+      exact ⟨lt_trans (by simp) hc, h.trans_lt (by finiteness)⟩
     · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt]
       exact ⟨h.trans_lt hd, by finiteness⟩
   · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hd, true_and]
@@ -469,7 +469,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   gcongr
   · refine div_pos ?_ ?_
     all_goals rw [ENNReal.toReal_pos_iff]
-    · exact ⟨lt_trans (by norm_num) hc'_gt, by finiteness⟩
+    · exact ⟨lt_trans (by simp) hc'_gt, by finiteness⟩
     · simp only [tsub_pos_iff_lt, hc'_lt, true_and]
       finiteness
   · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt]
@@ -607,7 +607,8 @@ theorem exists_integrable_exp_sq_of_map_rotation_eq_self [IsFiniteMeasure μ]
     calc (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4)))
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹)
         • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := by
-      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
+      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul,
+        (ContinuousLinearMap.rotation (-(π / 4))).continuous.aemeasurable]
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹) • (μ.prod μ) := by rw [h_rot]
     _ = μ'.prod μ' := by
       simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
