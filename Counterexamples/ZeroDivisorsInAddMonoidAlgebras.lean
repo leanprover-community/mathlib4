@@ -69,7 +69,6 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:
@@ -154,7 +153,7 @@ instance : One F :=
   ⟨F.one⟩
 
 /-- A tactic to prove trivial goals by enumeration. -/
-macro "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
+local macro "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
 
 /-- `val` maps `0 1 : F` to their counterparts in `ℕ`.
 We use it to lift the linear order on `ℕ`. -/

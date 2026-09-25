@@ -36,7 +36,7 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 assert_not_exists TrivialStar
 
 open LinearMap (ker range)
-open Topology Filter Pointwise
+open Topology Filter
 open scoped Ring
 
 universe u v w u'
@@ -104,10 +104,6 @@ instance (priority := 100) [EquivLike F M M₂]
 
 end ContinuousSemilinearEquivClass
 
-namespace ContinuousLinearMap
-
-end ContinuousLinearMap
-
 namespace ContinuousLinearEquiv
 
 section AddCommMonoid
@@ -136,6 +132,7 @@ instance : Coe (M₁ ≃SL[σ₁₂] M₂) (M₁ ≃ₛₗ[σ₁₂] M₂) where
 @[simp] lemma toLinearMap_toContinuousLinearMap (e : M₁ ≃SL[σ₁₂] M₂) :
     e.toContinuousLinearMap.toLinearMap = e.toLinearEquiv.toLinearMap := rfl
 
+@[macro_inline]
 instance equivLike :
     EquivLike (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toFun
@@ -497,6 +494,8 @@ theorem equivOfInverse_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ 
   rfl
 
 @[deprecated symm_ofContinuousLinearMap (since := "2026-07-01")]
+
+@[simp]
 theorem symm_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse f₁ f₂ h₁ h₂).symm = equivOfInverse f₂ f₁ h₂ h₁ :=
   rfl
@@ -536,14 +535,34 @@ abbrev equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ�
   .ofContinuousLinearMap' f₁ f₂ h₁ h₂
 
 @[deprecated coe_ofContinuousLinearMap' (since := "2026-07-01")]
+@[simp]
+theorem toContinuousLinearMap_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse f₁ f₂ h₁ h₂ : M₁ →SL[σ₁₂] M₂) = f₁ :=
+  rfl
+
+/-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
+inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`.
+*ToDo*: Improve the naming to make it match `LinearEquiv.ofLinearMap` -/
+def equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
+    (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
+  equivOfInverse f₁ f₂
+    (fun x ↦ by simpa using congr($(h₂) x)) (fun x ↦ by simpa using congr($(h₁) x))
+
+@[simp]
 theorem equivOfInverse'_apply (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂ x) :
     equivOfInverse' f₁ f₂ h₁ h₂ x = f₁ x :=
   rfl
 
 /-- The inverse of `equivOfInverse'` is obtained by swapping the order of its parameters. -/
 @[deprecated symm_ofContinuousLinearMap' (since := "2026-07-01")]
+@[simp]
 theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
     (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
+  rfl
+
+@[simp]
+theorem toContinuousLinearMap_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂) :
+    (equivOfInverse' f₁ f₂ h₁ h₂ : M₁ →SL[σ₁₂] M₂) = f₁ :=
   rfl
 
 theorem eq_comp_toContinuousLinearMap_symm (e₁₂ : M₁ ≃SL[σ₁₂] M₂) [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
@@ -880,8 +899,11 @@ theorem isHomeomorph (f : M ≃SL[σ] M₁) : IsHomeomorph f := ⟨f.continuous,
 variable {f : M ≃ₛₗ[σ] M₁} (hf : IsHomeomorph f)
 
 @[simp]
-lemma toLinearquiv_ofIsHomeomorph : (ofIsHomeomorph f hf).toLinearEquiv = f := by
+lemma toLinearEquiv_ofIsHomeomorph : (ofIsHomeomorph f hf).toLinearEquiv = f := by
   dsimp only [ofIsHomeomorph]
+
+@[deprecated (since := "2026-08-12")]
+alias toLinearquiv_ofIsHomeomorph := toLinearEquiv_ofIsHomeomorph
 
 @[simp]
 lemma coe_ofIsHomeomorph : (ofIsHomeomorph f hf : M → M₁) = f := by dsimp [ofIsHomeomorph]
@@ -892,5 +914,30 @@ theorem _root_.LinearEquiv.isHomeomorph_iff (e : M ≃ₛₗ[σ] M₁) :
     IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := e.toEquiv.isHomeomorph_iff
 
 end IsHomeomorph
+
+@[simp]
+lemma toLinearEquiv_inv (f : V ≃L[R] V) :
+    (f⁻¹).toLinearEquiv = f.toLinearEquiv⁻¹ := rfl
+
+@[simp]
+lemma toLinearEquiv_mul (f g : V ≃L[R] V) :
+    (f * g).toLinearEquiv = f.toLinearEquiv * g.toLinearEquiv := rfl
+
+/-- `ContinuousLinearEquiv.toLinearEquiv` as a multiplicative monoid homomorphism `MonoidHom`. -/
+@[simps]
+def toLinearEquivMonoidHom : (V ≃L[R] V) →* (V ≃ₗ[R] V) where
+  toFun := ContinuousLinearEquiv.toLinearEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+@[simp]
+lemma toLinearEquiv_pow (f : V ≃L[R] V) (n : ℕ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_pow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
+
+@[simp]
+lemma toLinearEquiv_zpow (f : V ≃L[R] V) (n : ℤ) :
+    (f ^ n).toLinearEquiv = f.toLinearEquiv ^ n :=
+  map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
 
 end ContinuousLinearEquiv

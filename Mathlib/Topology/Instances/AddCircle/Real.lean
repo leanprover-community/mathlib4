@@ -20,7 +20,7 @@ Results specific to the additive circle over `ℝ`.
 
 noncomputable section
 
-open AddCommGroup Set Function AddSubgroup TopologicalSpace Topology
+open AddCommGroup Set Function AddSubgroup
 
 namespace AddCircle
 

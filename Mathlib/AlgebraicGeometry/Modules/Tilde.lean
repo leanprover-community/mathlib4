@@ -9,8 +9,10 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Module.LocalizedModule.Away
+public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.Data.Fintype.Order
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 
 /-!
 
@@ -47,7 +49,7 @@ def modulesSpecToSheaf :
 
 /-- The global section functor for `𝒪_{Spec R}` modules -/
 noncomputable
-def moduleSpecΓFunctor : (Spec (.of R)).Modules ⥤ ModuleCat R :=
+def moduleSpecΓFunctor : (Spec R).Modules ⥤ ModuleCat R :=
   modulesSpecToSheaf ⋙ TopCat.Sheaf.forget _ _ ⋙ (evaluation _ _).obj (.op ⊤)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -170,7 +172,6 @@ def modulesSpecToSheafIso :
 def toOpen (U : (Spec R).Opens) : M ⟶ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op U) :=
   ModuleCat.ofHom (StructureSheaf.toOpenₗ R M U) ≫ ((modulesSpecToSheafIso M).app _).inv
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
     toOpen M U ≫ (modulesSpecToSheaf.obj (tilde M)).presheaf.map i.op = toOpen M V :=
@@ -192,7 +193,6 @@ noncomputable def toStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R M ⟶ ModuleCat.of R ((tilde M).presheaf.stalk x) :=
   ModuleCat.ofHom (StructureSheaf.toStalkₗ ..)
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (x : PrimeSpectrum.Top R) :
     IsLocalizedModule x.asIdeal.primeCompl (toStalk M x).hom :=
   inferInstanceAs (IsLocalizedModule x.asIdeal.primeCompl (StructureSheaf.toStalkₗ ..))
@@ -204,13 +204,11 @@ protected noncomputable def map {M N : ModuleCat R} (f : M ⟶ N) : tilde M ⟶ 
     { app U := ModuleCat.ofHom (StructureSheaf.comapₗ f.hom _ _ .rfl) } ≫
     (modulesSpecToSheafIso N).inv⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 protected lemma map_id {M : ModuleCat R} : tilde.map (𝟙 M) = 𝟙 _ := by
   ext p x
   exact Subtype.ext (funext fun y ↦ DFunLike.congr_fun (LocalizedModule.map_id _) _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp, reassoc]
 protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
     tilde.map (f ≫ g) = tilde.map f ≫ tilde.map g := by
@@ -221,7 +219,6 @@ protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N)
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
     (U : TopologicalSpace.Opens (PrimeSpectrum R)) :
@@ -233,7 +230,7 @@ lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
 
 variable (R) in
 /-- Tilde as a functor -/
-@[simps] protected noncomputable def functor : ModuleCat R ⥤ (Spec (.of R)).Modules where
+@[simps] protected noncomputable def functor : ModuleCat R ⥤ (Spec R).Modules where
   obj := tilde
   map := tilde.map
 
@@ -256,7 +253,7 @@ end tilde
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
-noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
+noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec R).Modules) :
     tilde ((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)) ⟶ M :=
   SpecModulesToSheafFullyFaithful.preimage
     ⟨TopCat.Sheaf.restrictHomEquivHom _ _ isBasis_basic_opens
@@ -291,7 +288,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
+lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec R).Modules) (U) :
     tilde.toOpen ((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)) U ≫
       (modulesSpecToSheaf.map M.fromTildeΓ).1.app (.op U) =
     (modulesSpecToSheaf.obj M).1.map (homOfLE le_top).op := by
@@ -370,7 +367,6 @@ def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
     rw [toOpen_fromTildeΓ_app]
     exact (modulesSpecToSheaf.obj M).obj.map_id _
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : IsIso (tilde.adjunction (R := R)).unit := by
   dsimp [tilde.adjunction]; infer_instance
 
@@ -393,21 +389,17 @@ variable {M N : ModuleCat R} (f g : M ⟶ N)
 @[simp] lemma tilde.map_zero : tilde.map (0 : M ⟶ N) = 0 :=
   (tilde.functor R).map_zero _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tilde.map_add : tilde.map (f + g) = tilde.map f + tilde.map g :=
   (tilde.functor R).map_add
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tilde.map_sub : tilde.map (f - g) = tilde.map f - tilde.map g :=
   (tilde.functor R).map_sub
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tilde.map_neg : tilde.map (-f) = - tilde.map f :=
   (tilde.functor R).map_neg
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isIso_fromTildeΓ_iff {M : (Spec R).Modules} :
     IsIso M.fromTildeΓ ↔ (tilde.functor R).essImage M :=
   tilde.adjunction.isIso_counit_app_iff_mem_essImage
@@ -428,7 +420,7 @@ noncomputable
 def tildeFinsupp (ι : Type u) : tilde (ModuleCat.of R (ι →₀ R)) ≅ SheafOfModules.free.{u} ι :=
   letI H : IsColimit <| (tilde.functor R).mapCocone (ModuleCat.finsuppCocone R R ι) :=
     isColimitOfPreserves (tilde.functor R) (ModuleCat.finsuppCoconeIsColimit R R ι)
-  letI iso : (Discrete.functor fun (_ : ι) ↦ ModuleCat.of R R) ⋙ tilde.functor R ≅
+  letI iso : (Discrete.functor fun (_ : ι) ↦ ↧R) ⋙ tilde.functor R ≅
          Discrete.functor fun _ ↦ SheafOfModules.unit.{u} _ :=
       Discrete.natIso (fun _ ↦ tildeSelf)
   IsColimit.coconePointUniqueUpToIso
@@ -627,7 +619,7 @@ lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X
       ∀ i, Nonempty (M.restrict (𝒰.f i)).Presentation := by
   obtain ⟨ι, U, pres, hU, hU'⟩ := M.exists_isOpenCover_presentation
   refine ⟨Scheme.AffineOpenCover.ofIsOpenCover _ hU hU', fun i ↦ ⟨?_⟩⟩
-  exact SheafOfModules.Presentation.ofIsIso.{u, u, u} ((restrictFunctorComp _ _).app M).inv <|
+  exact SheafOfModules.Presentation.ofIsIso.{u, u, u} ((restrictFunctorComp _ _).app M).inv
     (presentationRestrict (hU' i).isoSpec.inv (pres i))
 
 namespace QuasicoherentTilde
@@ -756,7 +748,7 @@ private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Open
           ← homOfLE_comp (basicOpen_mul_le_right _ _) (hgle i), op_comp, M.presheaf.map_comp_apply,
           M.map_smul_Spec, ha, M.map_smul_Spec, pow_add, mul_smul, smul_comm, ht i]
     · intro i j
-      have : Function.Injective (M.presheaf.map (eqToHom <| (basicOpen_mul (g i) (g j))).op) :=
+      have : Function.Injective (M.presheaf.map (eqToHom (basicOpen_mul (g i) (g j))).op) :=
         ConcreteCategory.injective_of_mono_of_preservesPullback _
       apply this
       dsimp [Opens.infLELeft, Opens.infLERight]
@@ -807,10 +799,10 @@ private lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
     (h : Aux (M.restrict <|
         Spec.map <| CommRingCat.ofHom <| algebraMap R <| Localization.Away g) ⊤) :
       Aux M (basicOpen g) := by
-  let a : R ⟶ CommRingCat.of (Localization.Away g) :=
+  let a : R ⟶ ↧(Localization.Away g) :=
     CommRingCat.ofHom <| algebraMap R _
-  set ψ : Spec (.of <| Localization.Away g) ⟶ Spec (.of R) := Spec.map a
-  set M' : (Spec (.of <| Localization.Away g)).Modules := M.restrict ψ
+  set ψ : Spec ↧(Localization.Away g) ⟶ Spec ↧R := Spec.map a
+  set M' : (Spec ↧(Localization.Away g)).Modules := M.restrict ψ
   have heq (f : R) (hf : basicOpen f ≤ basicOpen g) :
       basicOpen f = ψ ''ᵁ basicOpen (a f) := by
     rw [← SpecMap_preimage_basicOpen, Scheme.Hom.image_preimage_eq_opensRange_inf]
@@ -877,7 +869,7 @@ theorem isQuasicoherent_iff_isIso_fromTildeΓ (M : (Spec R).Modules) :
     M.IsQuasicoherent ↔ IsIso M.fromTildeΓ := by
   refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
   exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso
-    (asIso <| M.fromTildeΓ) inferInstance
+    (asIso M.fromTildeΓ) inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -888,7 +880,7 @@ lemma essImage_tilde : (tilde.functor R).essImage =
     exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso e
       (by dsimp; infer_instance)
   · intro M (h : M.IsQuasicoherent)
-    exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso <| M.fromTildeΓ⟩⟩
+    exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso M.fromTildeΓ⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -914,12 +906,3 @@ def tildeEquiv :
 end IsQuasicoherent
 
 end AlgebraicGeometry
-
-namespace ModuleCat
-
-@[deprecated (since := "2026-02-11")] noncomputable alias tilde := AlgebraicGeometry.tilde
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toOpen := tilde.toOpen
-@[deprecated (since := "2026-02-11")] alias Tilde.toOpen_res := tilde.toOpen_res
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toStalk := tilde.toStalk
-
-end ModuleCat

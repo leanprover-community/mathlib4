@@ -5,11 +5,9 @@ Authors: Bhavik Mehta, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Connected limits
@@ -50,13 +48,13 @@ section
 variable (J)
 
 /-- The obvious cone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCone : Cone ((Functor.const J).obj X) where
   pt := X
   π := 𝟙 _
 
 /-- The obvious cocone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCocone : Cocone ((Functor.const J).obj X) where
   pt := X
   ι := 𝟙 _

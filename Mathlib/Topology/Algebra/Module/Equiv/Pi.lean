@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Tjeerd Jan Heeringa. All rights reserved.
+Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tjeerd Jan Heeringa
+Authors: Kevin Buzzard
 -/
 module
 
@@ -10,28 +10,25 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
-# Continuous linear equivalences
-
-## Notation
-Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
-by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
+# Continuous linear equivalences on (dependent) product types
 
 ## Main Definitions
-* `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.
 * `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
 * `piUnique`: `Equiv.piUnique` as a continuous linear equivalence.
-* `sumPiEquivProdPi`: `Equiv.sumPiEquivProdPi` as a continuous linear equivalence.
+* `piCongrLeft`: `Equiv.piCongrLeft` as a continuous linear equivalence.
+* `piCongrRight`: `Equiv.piCongrRight` as a continuous linear equivalence.
 * `Fin.consEquivL`: `Fin.consEquiv` as a continuous linear equivalence.
 * `ContinuousLinearMap.finCons`: `Fin.cons` in the codomain of continuous linear maps.
 
-## Main Results
 -/
 
 @[expose] public section
 
+variable (R : Type*) [Semiring R]
+
 namespace ContinuousLinearMap
 
-variable (R : Type*) [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
   {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂] {ι : Type*} (φ : ι → Type*)
   [∀ i, TopologicalSpace (φ i)] [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
 
@@ -43,7 +40,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
-      Continuous.comp (continuous_apply (A := φ) i) <| continuous_subtype_val
+      Continuous.comp (continuous_apply (A := φ) i) continuous_subtype_val
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by
@@ -54,8 +51,6 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
-
-variable (R : Type*) [Semiring R]
 
 section Pi
 

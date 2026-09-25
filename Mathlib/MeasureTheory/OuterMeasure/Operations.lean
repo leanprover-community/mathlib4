@@ -30,7 +30,7 @@ outer measure
 
 noncomputable section
 
-open Set Function Filter
+open Set Function
 open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
@@ -47,7 +47,6 @@ instance instZero : Zero (OuterMeasure α) :=
       iUnion_nat _ _ := zero_le }⟩
 
 instance : IsZeroApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_zero := FunLike.coe_zero
 
@@ -66,7 +65,6 @@ instance instAdd : Add (OuterMeasure α) :=
           _ = _ := ENNReal.tsum_add.symm }⟩
 
 instance : IsAddApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_add := FunLike.coe_add
 
@@ -89,7 +87,6 @@ instance instSMul : SMul R (OuterMeasure α) :=
         exact mul_right_mono (measure_iUnion_le _) }⟩
 
 instance : IsSMulApply R (OuterMeasure α) (Set α) ℝ≥0∞ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_smul := FunLike.coe_smul
 
@@ -238,9 +235,8 @@ def dirac (a : α) : OuterMeasure α where
   empty := by simp
   mono {_ _} h := by grw [h]
   iUnion_nat s _ := calc
-    indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
-      indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _
-    _ ≤ ∑' n, indicator (s n) 1 a := iSup_le fun _ ↦ ENNReal.le_tsum _
+    indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a := indicator_iUnion_apply rfl _ _ _
+    _ ≤ ∑' n, indicator (s n) 1 a := iSup_le ENNReal.le_tsum
 
 @[simp]
 theorem dirac_apply (a : α) (s : Set α) : dirac a s = indicator s (fun _ => 1) a :=

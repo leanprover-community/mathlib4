@@ -30,7 +30,6 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
-set_option backward.isDefEq.respectTransparency.types false in
 omit [IsNoetherianRing R] [Module.Finite R M] in
 lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
     ∃ p : LTSeries (support R M), q.length ≤ p.length ∧ p.last.1.1.IsMaximal := by
@@ -55,7 +54,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
   by_cases hp0 : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
-        Submodule.Quotient.nontrivial_iff.mpr <|
+        Submodule.Quotient.nontrivial_iff.mpr
           (Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator h).symm
     rw [hp0, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
     exact WithBot.coe_le_coe.mpr zero_le
@@ -147,20 +146,6 @@ lemma _root_.ringKrullDim_le_ringKrullDim_quotSMulTop_succ {x : R} (hx : x ∈ m
     ringKrullDim R ≤ ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
   rw [← Module.supportDim_self_eq_ringKrullDim, ← Module.supportDim_quotient_eq_ringKrullDim]
   exact supportDim_le_supportDim_quotSMulTop_succ hx
-
-@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_card (since := "2026-01-12")]
-lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
-    (hS : (S : Set R) ⊆ maximalIdeal R) :
-    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (SetLike.coe S)) + S.card := by
-  apply ringKrullDim_le_ringKrullDim_quotient_add_card
-  rwa [IsLocalRing.ringJacobson_eq_maximalIdeal]
-
-@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (since := "2026-01-12")]
-lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤) :
-    ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
-  apply ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank
-  rw [IsLocalRing.ringJacobson_eq_maximalIdeal]
-  exact le_maximalIdeal h
 
 @[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}

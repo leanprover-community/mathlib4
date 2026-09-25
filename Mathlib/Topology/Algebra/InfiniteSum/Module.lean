@@ -12,9 +12,9 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 @[expose] public section
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
-open Filter Finset Function
+open Function
 
 section ConstSMul
 

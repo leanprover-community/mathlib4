@@ -338,6 +338,45 @@ noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
     ((toSheafify α φ).app X).hom x = φ.app X x := rfl
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+```
+DFunLike (↑(M₀.obj X) →ₗ[↑(R₀.obj X)]
+    ↑((ModuleCat.restrictScalars (RingCat.Hom.hom (α.app X))).obj ((sheafify α φ).val.obj X)))
+  ↑(M₀.obj X) _
+```
+It is needed to elaborate the `DFunLike.coe` in the statement below.
+
+The failure happens while applying `@LinearMap.instFunLike`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type is
+```
+Module ↑(R₀.obj X) ↑((ModuleCat.restrictScalars (RingCat.Hom.hom (α.app X))).obj
+((sheafify α φ).val.obj X))
+```
+The assigned value
+```
+(((restrictScalars α).obj (sheafify α φ).val).obj X).isModule
+```
+has type `Module ↑(R₀.obj X) ↑(((restrictScalars α).obj (sheafify α φ).val).obj X)`, which is the
+same module written once through `PresheafOfModules.restrictScalars` and once through
+`ModuleCat.restrictScalars`. Lean falls back to synthesize an instance of the correct type, which
+succeeds, but the candidate is again not defeq to the assigned value. Both comparisons bottom out at
+```
+((restrictScalars α).obj (sheafify α φ).val).1 =?=
+(ModuleCat.restrictScalars (RingCat.Hom.hom (α.app X))).1
+```
+The second one runs at `.implicit`, where `PresheafOfModules.restrictScalars` does not unfold
+either.
+
+Potential fix: Mark `PresheafOfModules.restrictScalars` and `PresheafOfModules.restrictScalarsObj`
+implicit-reducible; then both backward compatibility options can go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `@[simp]`-normal form of `toSheafify_app_apply`. -/
 @[simp]

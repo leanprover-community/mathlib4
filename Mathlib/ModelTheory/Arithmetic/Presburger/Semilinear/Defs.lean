@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
-public import Mathlib.Algebra.Order.Group.Nat
 
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
@@ -79,9 +78,8 @@ theorem IsLinearSet.closure_of_finite (hs : s.Finite) :
   ⟨0, s, hs, by simp⟩
 
 theorem isLinearSet_iff_exists_fg_eq_vadd :
-    IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) :=
-  isLinearSet_iff.trans (exists_congr fun a =>
-    ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩, fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩)
+    IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) := by
+  simp [isLinearSet_iff, AddSubmonoid.isAddFG_iff]
 
 theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) : IsLinearSet (P : Set M) := by
   rw [isLinearSet_iff_exists_fg_eq_vadd]
@@ -207,7 +205,6 @@ theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F M N] [AddEquivClass F
     simp [image_image]
   · exact h.image f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Semilinear sets are closed under projection (from `ι ⊕ κ → M` to `ι → M` by taking `Sum.inl` on
 the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s) :

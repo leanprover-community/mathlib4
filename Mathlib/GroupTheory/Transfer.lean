@@ -132,8 +132,8 @@ lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
     sub_eq_neg_add, cast_sub_one, add_sub_cancel]
   by_cases hk : k = 0
-  · rw [if_pos hk, if_pos hk, zpow_natCast]
-  · rw [if_neg hk, if_neg hk]
+  · rw [ite_eq_left hk, ite_eq_left hk, zpow_natCast]
+  · rw [ite_eq_right hk, ite_eq_right hk]
 
 end Subgroup
 
@@ -175,9 +175,9 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
       simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
         transferTransversal_apply'']
       rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
-      · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
+      · simp only [ite_eq_left, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
       · intro k hk
-        simp only [if_neg hk, inv_mul_cancel]
+        simp only [ite_eq_right hk, inv_mul_cancel]
         exact map_one ϕ
 
 open scoped IsMulCommutative in

@@ -1,18 +1,14 @@
 /-
-Copyright (c) 2026 Tjeerd Jan Heeringa. All rights reserved.
+Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tjeerd Jan Heeringa
+Authors: Yury Kudryashov
 -/
 module
 
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
-# Continuous linear equivalences
-
-## Notation
-Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
-by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
+# Continuous linear equivalences involving submodules
 
 ## Main Definitions
 * `ofEq`: `LinearEquiv.ofEq` as a continuous linear equivalence.
@@ -21,16 +17,16 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `ofSubmodule'`: `ofSubmodule` but with `comap` on the left instead of `map` on the right.
 * `Submodule.topContEquiv`: `Submodule.topEquiv` as a continuous linear equivalence.
 
-## Main Results
 -/
 
 @[expose] public section
 
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+
 namespace ContinuousLinearEquiv
 
-variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [TopologicalSpace M]
-  [AddCommMonoid M₂] [TopologicalSpace M₂]
-  {module_M : Module R M} {module_M₂ : Module R₂ M₂} {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+variable {R₂ M₂ : Type*} [Semiring R₂] [AddCommMonoid M₂] [TopologicalSpace M₂] [Module R₂ M₂]
+  {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
   {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 
 /-- Continuous linear equivalence between two equal submodules:
@@ -115,6 +111,5 @@ end ContinuousLinearEquiv
 
 /-- The top submodule is continuous linearly equivalent to the module.
 This is the continuous version of `Submodule.topEquiv`. -/
-abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
+abbrev _root_.Submodule.topContEquiv : (⊤ : Submodule R M) ≃L[R] M where
   __ := Submodule.topEquiv
