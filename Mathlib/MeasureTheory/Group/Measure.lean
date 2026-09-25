@@ -742,7 +742,7 @@ end IsTopologicalGroup
 
 section CommSemigroup
 
-variable [CommSemigroup G]
+variable [Semigroup G] [IsMulCommutative G]
 
 /-- In an abelian group every left invariant measure is also right-invariant.
   We don't declare the converse as an instance, since that would loop type-class inference, and
@@ -753,7 +753,7 @@ declare the converse as an instance, since that would loop type-class inference,
 `IsAddLeftInvariant` as the default hypothesis in abelian groups. -/]
 instance (priority := 100) IsMulLeftInvariant.isMulRightInvariant {μ : Measure G}
     [IsMulLeftInvariant μ] : IsMulRightInvariant μ :=
-  ⟨fun g => by simp_rw [mul_comm, map_mul_left_eq_self]⟩
+  ⟨fun g => by simp_rw [mul_comm', map_mul_left_eq_self]⟩
 
 end CommSemigroup
 
