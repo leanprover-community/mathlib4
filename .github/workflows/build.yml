@@ -38,9 +38,9 @@ jobs:
       pr_branch_ref: ${{ github.sha }}
       # Trust-level dispatch for the cache writer app:
       #   - mathlib4/master                                                 → MASTER writer
-      #   - mathlib4-nightly-testing/(nightly-testing* | bump-to-* | */*) → NIGHTLY_TESTING writer
-      #     (team trust; must match `cache-trust-dispatch` and the deployment branch
-      #     policy of the `cache-upload-nightly-testing` environment)
+      #   - mathlib4-nightly-testing/(nightly-testing* | bump-to-* | */*)   → NIGHTLY_TESTING writer
+      #     These patterns must match `cache-trust-dispatch` and the deployment branch
+      #     policy of the `cache-upload-nightly-testing` environment.
       #   - mathlib4-nightly-testing/(anything else, e.g. batteries-pr-testing-*)
       #                                                                     → PR_TOOLCHAIN_TESTS writer
       #   - everything else (dev branches on mathlib4, etc.)                → NON_MASTER (forks) writer
@@ -60,9 +60,10 @@ jobs:
         }}
       # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
       # mapping above so the minted token's `:environment:` subject matches the writer app's
-      # federated credential. On mathlib4-nightly-testing, team-trust branches use the
-      # `cache-upload-nightly-testing` environment, whose deployment branch policy admits only
-      # the team-trust branch patterns. The least-trusted branches keep branch/ref-scoped trust.
+      # federated credential. On mathlib4-nightly-testing, the NIGHTLY_TESTING branches use the
+      # `cache-upload-nightly-testing` environment. Its deployment branch policy must admit only
+      # these branch patterns. The other branches set no environment, so their credential is
+      # scoped to the branch ref.
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'

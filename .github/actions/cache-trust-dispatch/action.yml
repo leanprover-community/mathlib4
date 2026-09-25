@@ -143,19 +143,18 @@ runs:
                 # Least-trusted: these builds run code from outside the
                 # nightly-testing team. `batteries-pr-testing-*` builds against a
                 # Batteries PR from any fork, and `trying` builds unreviewed PRs.
-                # Widen reads to recover this branch's own previously-uploaded
-                # artifacts; trusted-nightly stays preferred where hash spaces
-                # happen to align.
+                # The chain reads the branch's own earlier uploads first, then
+                # `nightly-testing`.
                 PRIMARY="pr-toolchain-tests"
                 READ_CHAIN="pr-toolchain-tests,nightly-testing,legacy"
                 ;;
               nightly-testing*|staging|bump-to-*|*/*)
-                # Team trust: every other branch that the repo's writers push,
-                # including downstream-lean4 exports to `nightly-testing`. The
-                # patterns must match the deployment branch policy of the
-                # `cache-upload-nightly-testing` environment. They use the default
-                # [nightly-testing, forks, legacy], which excludes
-                # `pr-toolchain-tests`.
+                # Team trust: branches that the repo's writers push, and the
+                # downstream-lean4 exports to `nightly-testing`. These patterns
+                # must match `build.yml`, `bors.yml` and the deployment branch
+                # policy of the `cache-upload-nightly-testing` environment. These
+                # branches read the default chain [nightly-testing, forks, legacy],
+                # which excludes `pr-toolchain-tests`.
                 PRIMARY="nightly-testing"
                 ;;
               *)

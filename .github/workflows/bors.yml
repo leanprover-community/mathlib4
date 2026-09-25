@@ -57,8 +57,8 @@ jobs:
       # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
       # mapping above so the minted token's `:environment:` subject matches the writer app's
       # federated credential. On mathlib4-nightly-testing, `staging` uses the
-      # `cache-upload-nightly-testing` environment (team trust); `trying` keeps branch/ref-scoped
-      # least trust.
+      # `cache-upload-nightly-testing` environment. `trying` sets no environment, so its
+      # credential is scoped to the branch ref.
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'

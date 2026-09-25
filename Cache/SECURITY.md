@@ -24,16 +24,19 @@ CI job and assigned a trust level:
 | `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
 | `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
 | `nightly-testing`     | nightly-testing's team branches (see below)            | medium |
-| `pr-toolchain-tests`  | nightly-testing builds of code from outside the team   | low    |
+| `pr-toolchain-tests`  | nightly-testing's other branches (see below)           | low    |
 
-The `nightly-testing` container has team trust: anyone who can push to the
-nightly-testing repo can write to it, and so can downstream-lean4, which pushes
-its adaptations to the `nightly-testing` branch. Its changes are not reviewed.
-The team branches are `nightly-testing*`, `staging`, `bump-to-*` and any branch
-name that contains `/` (for example `bump/v4.X.0` or `name/topic`). The
+The `nightly-testing` container has team trust. Anyone with push access to the
+nightly-testing repo can push a team branch, and CI uploads its build.
+downstream-lean4 also pushes its adaptations to the `nightly-testing` branch.
+Nobody reviews the commits on these branches. The team branches are
+`nightly-testing*`, `staging`, `bump-to-*` and any branch name that contains `/`,
+for example `bump/v4.X.0` or `name/topic`. The deployment branch policy of the
 `cache-upload-nightly-testing` environment admits only these branches.
-`pr-toolchain-tests` receives `batteries-pr-testing-*` (built against a Batteries
-PR from any fork), `trying`, and all other branch names.
+
+`pr-toolchain-tests` receives all other branches. These include
+`batteries-pr-testing-*`, which builds against a Batteries PR from any fork, and
+`trying`.
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
