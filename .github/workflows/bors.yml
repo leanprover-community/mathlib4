@@ -56,9 +56,9 @@ jobs:
         }}
       # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
       # mapping above so the minted token's `:environment:` subject matches the writer app's
-      # federated credential. mathlib4-nightly-testing intentionally uses branch/ref-scoped
-      # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
-      # container, so branch scoping is sufficient there.
+      # federated credential. On mathlib4-nightly-testing, `staging` uses the
+      # `cache-upload-nightly-testing` environment (team trust); `trying` keeps branch/ref-scoped
+      # least trust.
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'
@@ -66,6 +66,9 @@ jobs:
                && 'cache-upload-master'
           || (github.repository == 'leanprover-community/mathlib4')
                && 'cache-upload-forks'
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
+               && github.ref_name == 'staging')
+               && 'cache-upload-nightly-testing'
           || ''
         }}
       # bors runs should build the tools from their commit-under-test: after all, we are trying to

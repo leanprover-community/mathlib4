@@ -23,8 +23,17 @@ CI job and assigned a trust level:
 |-----------------------|--------------------------------------------------------|--------|
 | `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
 | `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
+| `nightly-testing`     | nightly-testing's team branches (see below)            | medium |
+| `pr-toolchain-tests`  | nightly-testing builds of code from outside the team   | low    |
+
+The `nightly-testing` container has team trust: anyone who can push to the
+nightly-testing repo can write to it, and so can downstream-lean4, which pushes
+its adaptations to the `nightly-testing` branch. Its changes are not reviewed.
+The team branches are `nightly-testing*`, `staging`, `bump-to-*` and any branch
+name that contains `/` (for example `bump/v4.X.0` or `name/topic`). The
+`cache-upload-nightly-testing` environment admits only these branches.
+`pr-toolchain-tests` receives `batteries-pr-testing-*` (built against a Batteries
+PR from any fork), `trying`, and all other branch names.
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
@@ -42,8 +51,8 @@ containers a consumer reads from:
 The table shows trust classes; every chain also ends with the
 read-only `legacy` container, omitted here. The nightly chain includes `forks`
 because PRs from that repo into mathlib4 upload there; it excludes
-`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
-branch cannot reach a trusted nightly consumer.
+`pr-toolchain-tests`, so a poisoned upload from a least-trusted branch cannot
+reach a nightly consumer.
 
 Branches that legitimately need to read their own prior low-trust uploads opt
 into a wider chain explicitly.
