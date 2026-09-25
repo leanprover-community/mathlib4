@@ -356,7 +356,7 @@ lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {R
     [Module.IsTorsionFree R S] : Module.IsTorsionFree Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
-      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (algebraMap R S : R →*₀ S)
         (FaithfulSMul.algebraMap_injective _ _))
   have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
@@ -407,7 +407,7 @@ instance (I : Ideal R) :
 open Algebra in
 instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :
     IsDomain (Localization (algebraMapSubmonoid S P.primeCompl)) :=
-  isDomain_localization (map_le_nonZeroDivisors_of_injective _
+  isDomain_localization (map_le_nonZeroDivisors_of_injective (algebraMap R S : R →*₀ S)
     (FaithfulSMul.algebraMap_injective R S) P.primeCompl_le_nonZeroDivisors)
 
 end CommRing

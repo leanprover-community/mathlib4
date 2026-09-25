@@ -420,9 +420,7 @@ such that `z = f x * (f y)⁻¹`. -/
 noncomputable def map {A B K L : Type*} [CommRing A] [CommRing B] [IsDomain B] [CommRing K]
     [Algebra A K] [IsFractionRing A K] [CommRing L] [Algebra B L] [IsFractionRing B L] {j : A →+* B}
     (hj : Injective j) : K →+* L :=
-  IsLocalization.map L j
-    (show nonZeroDivisors A ≤ (nonZeroDivisors B).comap j from
-      nonZeroDivisors_le_comap_nonZeroDivisors_of_injective j hj)
+  IsLocalization.map L j (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (j : A →*₀ B) hj)
 
 section ringEquivOfRingEquiv
 
