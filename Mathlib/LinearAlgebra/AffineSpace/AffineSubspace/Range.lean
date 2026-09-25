@@ -54,22 +54,31 @@ theorem coe_range : f.range = Set.range f := rfl
 theorem mem_range (x : P₂) : x ∈ f.range ↔ ∃ (y : P₁), f y = x :=
   Iff.rfl
 
-theorem range_eq_map_top : f.range = .map f ⊤ := by ext; simp
+@[simp]
+theorem map_top : map f ⊤ = f.range := by ext; simp
 
 theorem mem_range_self (x : P₁) : f x ∈ f.range := by simp
 
 @[simp]
 theorem range_id : (id R P₁).range = ⊤ := by ext; simp
 
-theorem range_direction_eq_linear_range : f.range.direction = f.linear.range := by
-  rw [range_eq_map_top, map_direction, direction_top, Submodule.map_top]
+theorem direction_range_eq_range_linear : f.range.direction = f.linear.range := by
+  rw [← map_top, map_direction, direction_top, Submodule.map_top]
 
 /-- Restrict the codomain of an affine map `f` to `f.range`. -/
 def rangeRestrict : P₁ →ᵃ[R] f.range where
   toFun p := ⟨f p, p, rfl⟩
   linear := f.linear.codRestrict f.range.direction
-    (f.range_direction_eq_linear_range ▸ f.linear.mem_range_self)
-  map_vadd' _ _ := by ext; simp [map_vadd]
+    (f.direction_range_eq_range_linear ▸ f.linear.mem_range_self)
+  map_vadd' _ _ := by ext; simp
+
+@[simp]
+theorem coe_rangeRestrict_apply (x : P₁) : f.rangeRestrict x = f x :=
+  rfl
+
+@[simp]
+theorem coe_rangeRestrict_linear_apply (x : V₁) : f.rangeRestrict.linear x = f.linear x :=
+  rfl
 
 theorem surjective_rangeRestrict : Function.Surjective ⇑f.rangeRestrict :=
   fun ⟨_, y, rfl⟩ => ⟨y, rfl⟩
