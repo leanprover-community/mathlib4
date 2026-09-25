@@ -192,7 +192,6 @@ lemma lieBracket_apply_fun [IsRCLikeNormedField 𝕜]
   rw [hsymm]
   abel
 
-
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (V + V₁) W s x =
