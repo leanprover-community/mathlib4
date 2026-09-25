@@ -637,18 +637,15 @@ variable {J : Ideal A} (hIJ : IsSubDPIdeal hI (J ⊓ I))
 noncomputable def dpow (J : Ideal A) : ℕ → A ⧸ J → A ⧸ J :=
   DividedPowers.Quotient.OfSurjective.dpow hI (Ideal.Quotient.mk J)
 
-set_option backward.privateInPublic true in
 private theorem isSubDPIdeal_aux (hIJ : IsSubDPIdeal hI (J ⊓ I)) :
     IsSubDPIdeal hI (RingHom.ker (Ideal.Quotient.mk J) ⊓ I) := by
   simpa [Ideal.mk_ker] using hIJ
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- When `I ⊓ J` is a sub-dp-ideal of `I`, this is the divided power structure on the ideal
 `I(A⧸J)` of the quotient. -/
 noncomputable def dividedPowers : DividedPowers (I.map (Ideal.Quotient.mk J)) :=
   DividedPowers.Quotient.OfSurjective.dividedPowers
-    hI Ideal.Quotient.mk_surjective (refl _) (isSubDPIdeal_aux hI hIJ)
+    hI Ideal.Quotient.mk_surjective (refl _) (private isSubDPIdeal_aux hI hIJ)
 
 /-- Divided powers on the quotient are compatible with quotient map -/
 theorem dpow_apply {n : ℕ} {a : A} (ha : a ∈ I) :

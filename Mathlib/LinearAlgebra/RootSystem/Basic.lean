@@ -49,7 +49,6 @@ variable (p : M →ₗ[R] N →ₗ[R] R) (root : ι ↪ M) (coroot : ι ↪ N) (
     (range root) (range root))
 include h
 
-set_option backward.privateInPublic true in
 private theorem exist_eq_reflection_of_mapsTo :
     ∃ k, root k = (preReflection (root i) (p.flip (coroot i))) (root j) :=
   h i (mem_range_self j)
@@ -57,7 +56,6 @@ private theorem exist_eq_reflection_of_mapsTo :
 variable (hp : ∀ i, p (root i) (coroot i) = 2)
 include hp
 
-set_option backward.privateInPublic true in
 private theorem choose_choose_eq_of_mapsTo :
     (exist_eq_reflection_of_mapsTo p root coroot i
       (exist_eq_reflection_of_mapsTo p root coroot i j h).choose h).choose = j := by
@@ -66,16 +64,14 @@ private theorem choose_choose_eq_of_mapsTo :
     (exist_eq_reflection_of_mapsTo p root coroot i j h).choose_spec]
   apply involutive_preReflection (x := root i) (hp i)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The bijection on the indexing set induced by reflection. -/
 @[simps]
 protected def equiv_of_mapsTo :
     ι ≃ ι where
-  toFun j := (exist_eq_reflection_of_mapsTo p root coroot i j h).choose
-  invFun j := (exist_eq_reflection_of_mapsTo p root coroot i j h).choose
-  left_inv j := choose_choose_eq_of_mapsTo p root coroot i j h hp
-  right_inv j := choose_choose_eq_of_mapsTo p root coroot i j h hp
+  toFun j := (private exist_eq_reflection_of_mapsTo p root coroot i j h :).choose
+  invFun j := (private exist_eq_reflection_of_mapsTo p root coroot i j h :).choose
+  left_inv j := private choose_choose_eq_of_mapsTo p root coroot i j h hp
+  right_inv j := private choose_choose_eq_of_mapsTo p root coroot i j h hp
 
 end reflectionPerm
 

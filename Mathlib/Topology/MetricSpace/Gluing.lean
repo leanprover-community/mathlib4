@@ -279,7 +279,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
     · rw [eq_of_dist_eq_zero h]
   toUniformSpace := Sum.instUniformSpace
-  uniformity_dist := private uniformity_dist_of_mem_uniformity _ _ Sum.mem_uniformity
+  uniformity_dist := uniformity_dist_of_mem_uniformity _ _ (private Sum.mem_uniformity)
 
 attribute [local instance] metricSpaceSum
 
