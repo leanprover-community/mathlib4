@@ -1180,10 +1180,9 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
 /-- A simple nilpotent group is commutative. -/
 @[to_additive /-- A simple nilpotent additive group is commutative. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : IsMulCommutative G :=
-  ⟨⟨fun a b ↦ (Subgroup.mem_center_iff.mp
-    ((Subgroup.eq_top_iff' _).mp
-      ((IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
-        (Group.IsNilpotent.center_ne_bot G)) a) b).symm⟩⟩
+  Subgroup.center_eq_top_iff.mp <|
+    (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
+      (Group.IsNilpotent.center_ne_bot G)
 
 /-- A simple nilpotent group is cyclic. -/
 @[to_additive /-- A simple nilpotent additive group is cyclic. -/]
