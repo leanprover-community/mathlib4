@@ -47,7 +47,11 @@ jobs:
     - name: Run autolabel
       working-directory: pr-branch
       run: |
-        "${GITHUB_WORKSPACE}/tools/.lake/build/bin/autolabel" --pr "${{ github.event.pull_request.number }}" --curl "${{ secrets.GITHUB_TOKEN }}"
+        "${GITHUB_WORKSPACE}/tools/.lake/build/bin/autolabel" \
+        --title "${{ env.PR_TITLE }}" \
+        --pr "${{ env.PR_NUMBER }}" \
+        --curl "${{ env.GH_TOKEN }}" \
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_TITLE: ${{ github.event.pull_request.title }}

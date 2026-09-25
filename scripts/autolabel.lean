@@ -28,6 +28,9 @@ needs to be updated here if necessary:
 files have been modified and then finds all labels which should be added based on these changes.
 These are printed for testing purposes.
 
+`lake exe autolabel --title="feat(Algebra): yada yada"` will extract the comma-separated
+list of paths from the provided PR title, and use these to filter the modified files.
+
 See `lake exe autolabel --help` for all arguments available.
 
 The script can add up to `MAX_LABELS` labels (defined below).
@@ -53,6 +56,7 @@ Additionally, the script does a few consistency checks:
 open Lean System
 
 namespace AutoLabel
+open AutoLabel
 
 /-- Maximal number of labels which can be added. If more are applicable, nothing will be added. -/
 def MAX_LABELS := 1
@@ -389,6 +393,22 @@ inductive GithubInteraction where
 /-- use `curl` with an access token -/
 | curl (pr : Nat) (token : String)
 
+/-- returns `true` if every component of `p₁` appears in order in `p₂`. This
+function is case-insensitive -/
+def System.FilePath.orderedContainedIn (p₁ p₂ : FilePath) : Bool :=
+  go p₁.components p₂.components
+where go : List String → List String → Bool
+  | [], _ => true
+  | _ :: _, [] => false
+  | p₁@(head₁ :: tail₁), head₂ :: tail₂ =>
+    if head₁.toLower == head₂.toLower then go tail₁ tail₂ else go p₁ tail₂
+
+#guard ("C.lean" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ("B" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ("A" / "C.lean" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ("A" / "B" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+#guard ! ("B" / "A" : FilePath).orderedContainedIn ("A" / "B" / "C.lean")
+
 open IO in
 def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
   let force := args.hasFlag "force"
@@ -406,7 +426,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     for dir in data.dirs do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| githubAnnotation "error" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is included by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
@@ -414,7 +434,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     for dir in data.exclusions do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| githubAnnotation "error" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is excluded by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
@@ -428,7 +448,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     -- print github annotation warning
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
-    println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
+    println <| githubAnnotation "warning" "scripts/autolabel.lean"
       s!"Incomplete `{ ``AutoLabel.mathlibLabelData }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
@@ -438,18 +458,27 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
-  let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
+  let mut modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
+  if let some title := (args.flag? "title").map (·.as! String) then
+    let paths : Array FilePath := title.splitOn ":" |>.getD 0 ""
+      |>.splitOn "(" |>.getD 1 ""
+      |>.splitOn ")" |>.getD 0 ""
+      |>.splitOn "," |>.toArray.map (⟨·.trimAscii.toString⟩)
+    let filtered := modifiedFiles.filter fun f => paths.any (·.orderedContainedIn f)
+    if ! filtered.isEmpty then
+      modifiedFiles := filtered
+      println <| githubAnnotation "notice" "" "" "used title to filter modified files"
 
   -- find labels covering the modified files
   let newLabels := dropDependentLabels <| getMatchingLabels modifiedFiles
-  println s!"::notice::Applicable labels: {newLabels}"
+  println <| githubAnnotation "notice" "" "" s!"Applicable labels: {newLabels}"
 
   match newLabels with
   | #[] =>
-    println s!"::warning::no labels to add"
+    println <| githubAnnotation "warning" "" "" "no labels to add"
   | newLabels =>
     if newLabels.size > MAX_LABELS then
-      println s!"::notice::not adding more than {MAX_LABELS} labels: {newLabels}"
+      println <| githubAnnotation "notice" "" "" s!"not adding more than {MAX_LABELS} labels: {newLabels}"
       return 0
     match tool with
     | .gh prNr =>
@@ -463,10 +492,10 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
         let _ ← IO.Process.run {
           cmd := "gh",
           args := #["pr", "edit", s!"{prNr}", "--add-label", ",".intercalate <| newLabels.toList.map (·.toString)] }
-        println s!"::notice::added label: {newLabels}"
+        println <| githubAnnotation "notice" "" "" s!"added label: {newLabels}"
       | t_labels_already_present  =>
-        println s!"::notice::did not add labels '{newLabels}', since {t_labels_already_present} \
-                  were already present"
+        println <| githubAnnotation "notice" "" ""
+          s!"did not add labels '{newLabels}', since {t_labels_already_present} were already present"
     | .curl prNr token =>
       -- TODO: take existing labels on the PR into account
       let _ ← IO.Process.run {
@@ -479,9 +508,9 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
           "--url", s!"https://api.github.com/repos/leanprover-community/mathlib4/issues/{prNr}/labels",
           "--data", "{\"labels\":[\"" ++ s!"{"\",\"".intercalate <| newLabels.toList.map (·.toString)}" ++ "\"]}"
           ]}
-      println s!"::notice::added label: {newLabels}"
+      println <| githubAnnotation "notice" "" "" s!"added label: {newLabels}"
     | .none =>
-      println s!"::notice::github interaction disabled, not adding labels."
+      println <| githubAnnotation "notice" "" "" "github interaction disabled, not adding labels."
   return 0
 
 end AutoLabel
@@ -500,6 +529,9 @@ def autolabel : Cli.Cmd := `[Cli|
     "curl" : String; "apply label(s) using `curl`. \
                       Usage: `lake exe autolabel --pr 20156 --curl <ACCESS_TOKEN>`. \
                       (currently, this implies `--force`)"
+    "title": String; "use the provided PR title, following the mathlib convention, \
+                      to filter the modified files. Usage: \
+                      `lake exe autolabel --title \"xxx(Folder/Or/File,Another/One): yada yada\"`"
     "force";         "apply labels even if there are already labels on the PR."
 ]
 
