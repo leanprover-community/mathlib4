@@ -108,6 +108,9 @@ abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
 
 namespace KSheaf
 
+/-- If `P`is a KSheaf, its the evidence that for any `K`a compact subset of `X`,
+ `P.obj.coconeOfCompacts K`is a colimit cocone
+-/
 noncomputable def isColimit (P : KSheaf A X) (K : Compacts X) :
     IsColimit (P.obj.coconeOfCompacts K) :=
   (P.property.nonempty_isColimit_coconeOfCompacts K).some
