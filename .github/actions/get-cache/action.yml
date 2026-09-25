@@ -33,11 +33,11 @@ runs:
         # filter, combined with `event=push`, can return stale results that omit every
         # recent run.
         runs="repos/leanprover-community/mathlib4/actions/workflows/build.yml/runs?branch=master&event=push"
-        first_success='[.workflow_runs[] | select(.conclusion == "success")][0].id // empty'
+        first_success_query='[.workflow_runs[] | select(.conclusion == "success")][0].id // empty'
 
         # Each helper prints a matching successful master-push run-id, or empty.
-        run_at()     { gh api "${runs}&head_sha=$1" --jq "${first_success}" 2>/dev/null || true; }
-        latest_run() { gh api "${runs}&per_page=20" --jq "${first_success}" 2>/dev/null || true; }
+        run_at()     { gh api "${runs}&head_sha=$1" --jq "${first_success_query}" 2>/dev/null || true; }
+        latest_run() { gh api "${runs}&per_page=20" --jq "${first_success_query}" 2>/dev/null || true; }
         # newest run created at-or-before date $1, but not older than cutoff $2
         newest_before() {
           gh api "${runs}&per_page=100" 2>/dev/null | jq -r --arg d "$1" --arg c "$2" \
