@@ -44,9 +44,10 @@ namespace Matrix
 
 variable {R : Type*} [CommRing R] {m n : ℕ}
 
-/-- **The Cauchy–Binet formula.** For `A : Matrix (Fin m) (Fin n) R`, `B : Matrix (Fin n) (Fin m) R`
-with `m ≤ n`, the determinant of `A * B` equals the sum, over `m`-element subsets `S` of `Fin n`,
-of the product of the two `m × m` minors of `A` and `B` obtained by restricting to the columns
+/-- **The Cauchy–Binet formula.** For `A : Matrix (Fin m) (Fin n) R` and
+`B : Matrix (Fin n) (Fin m) R` with `m ≤ n`, the determinant of `A * B` equals the sum, over
+`m`-element subsets `S` of `Fin n`, of the product of the two `m × m` minors of `A` and `B`
+obtained by restricting to the columns
 (respectively rows) indexed by `S`. -/
 theorem det_mul_eq_sum_det_submatrix (_hmn : m ≤ n) (A : Matrix (Fin m) (Fin n) R)
     (B : Matrix (Fin n) (Fin m) R) :
@@ -55,8 +56,8 @@ theorem det_mul_eq_sum_det_submatrix (_hmn : m ≤ n) (A : Matrix (Fin m) (Fin n
         (A.submatrix id (fun i : Fin m => (S.orderIsoOfFin hS i : Fin n))).det *
           (B.submatrix (fun i : Fin m => (S.orderIsoOfFin hS i : Fin n)) id).det
       else 0 := by
-  have hstep1 : (A * B).det =
-      ∑ r : Fin m → Fin n, (∏ i : Fin m, A i (r i)) * (Matrix.of (fun i : Fin m => B (r i))).det := by
+  have hstep1 : (A * B).det = ∑ r : Fin m → Fin n,
+      (∏ i : Fin m, A i (r i)) * (Matrix.of (fun i : Fin m => B (r i))).det := by
     have hrow : ∀ i : Fin m, (A * B) i = ∑ k : Fin n, A i k • (B k) := by
       intro i
       funext j
@@ -66,7 +67,8 @@ theorem det_mul_eq_sum_det_submatrix (_hmn : m ≤ n) (A : Matrix (Fin m) (Fin n
           congr 1; funext i; exact hrow i
       _ = ∑ r : Fin m → Fin n, Matrix.detRowAlternating (fun i => A i (r i) • B (r i)) :=
           MultilinearMap.map_sum _ _
-      _ = ∑ r : Fin m → Fin n, (∏ i : Fin m, A i (r i)) * (Matrix.of (fun i : Fin m => B (r i))).det := by
+      _ = ∑ r : Fin m → Fin n,
+            (∏ i : Fin m, A i (r i)) * (Matrix.of (fun i : Fin m => B (r i))).det := by
           apply Finset.sum_congr rfl
           intro r _
           have := Matrix.detRowAlternating.map_smul_univ (fun i : Fin m => A i (r i))
@@ -74,13 +76,15 @@ theorem det_mul_eq_sum_det_submatrix (_hmn : m ≤ n) (A : Matrix (Fin m) (Fin n
           rw [smul_eq_mul] at this
           rw [this]
           rfl
-  set F : (Fin m → Fin n) → R := fun r => (∏ i : Fin m, A i (r i)) * (Matrix.of (fun i : Fin m => B (r i))).det with hF
+  set F : (Fin m → Fin n) → R :=
+    fun r => (∏ i : Fin m, A i (r i)) * (Matrix.of (fun i : Fin m => B (r i))).det with hF
   have hstep2 : ∀ r : Fin m → Fin n, ¬ Function.Injective r → F r = 0 := by
     intro r hr
     obtain ⟨p, q, hpq, hne⟩ := Function.not_injective_iff.mp hr
     simp only [hF]
-    have heqrow : (Matrix.of (fun k : Fin m => B (r k))) p = (Matrix.of (fun k : Fin m => B (r k))) q := by
-      show B (r p) = B (r q)
+    have heqrow :
+        (Matrix.of (fun k : Fin m => B (r k))) p = (Matrix.of (fun k : Fin m => B (r k))) q := by
+      change B (r p) = B (r q)
       rw [hpq]
     rw [Matrix.det_zero_of_row_eq hne heqrow]
     ring
@@ -181,9 +185,10 @@ theorem det_mul_eq_sum_det_submatrix (_hmn : m ≤ n) (A : Matrix (Fin m) (Fin n
       intro τ
       have heq : (Matrix.of (fun i : Fin m => B ((coeσ ∘ τ) i))) = Bs.submatrix τ id := by
         ext i j
-        simp [Bs, Matrix.submatrix_apply, Function.comp_apply]
+        simp [Bs, Matrix.submatrix_apply]
       rw [heq, Matrix.det_permute]
-    have hAsum : As.det = ∑ τ : Equiv.Perm (Fin m), Equiv.Perm.sign τ * ∏ i : Fin m, A i ((coeσ ∘ τ) i) := by
+    have hAsum : As.det =
+        ∑ τ : Equiv.Perm (Fin m), Equiv.Perm.sign τ * ∏ i : Fin m, A i ((coeσ ∘ τ) i) := by
       rw [← Matrix.det_transpose As, Matrix.det_apply']
       apply Finset.sum_congr rfl
       intro τ _
@@ -195,7 +200,8 @@ theorem det_mul_eq_sum_det_submatrix (_hmn : m ≤ n) (A : Matrix (Fin m) (Fin n
           intro τ _
           simp only [hF]
           rw [hBdet τ]
-      _ = Bs.det * ∑ τ : Equiv.Perm (Fin m), Equiv.Perm.sign τ * ∏ i : Fin m, A i ((coeσ ∘ τ) i) := by
+      _ = Bs.det *
+            ∑ τ : Equiv.Perm (Fin m), Equiv.Perm.sign τ * ∏ i : Fin m, A i ((coeσ ∘ τ) i) := by
           rw [Finset.mul_sum]
           apply Finset.sum_congr rfl
           intro τ _
