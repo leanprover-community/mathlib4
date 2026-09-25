@@ -14,6 +14,14 @@ public import Mathlib.Tactic.Matrix.OfLists
 
 The conditions of `Echelon.Decomposition` on a matrix given as a list of rows, each a sweep along
 the rows, with a bridge lemma to the condition on `ofLists`.
+
+## Implementation notes
+
+The two conditions are kept as separate predicates for optimised checks.
+The pivot cert checks each row is 0 up to its pivot column, where `splitRevAt` builds the
+(reversed) prefix and the pivot entry in one `O(n)` traversal. The lower-triangularity check
+requires each row to be 0 beyond the diagonal, so it skips building the prefix by `drop`. One
+predicate serving both (using `splitRevAt`) would build a prefix for the check that discards it.
 -/
 
 @[expose] public section
