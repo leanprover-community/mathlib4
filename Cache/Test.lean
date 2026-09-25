@@ -16,7 +16,7 @@ import Cache.Lean
 # Unit tests for the cache CLI
 
 These tests cover the pure logic of the cache system, including:
-- Container model (trust levels, URL shapes, Azure integration)
+- Container model (trust levels, URL shapes)
 - Trust-ordered fallback chains per repo
 - URL construction (`Location`) with support for per-SHA scoping
 - CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
@@ -37,9 +37,9 @@ leantar run on a nonexistent archive; none makes a network request.
 
 ## Invariants these tests defend
 
-1. Trust boundary per container: each container has a dedicated writer (OIDC +
-   Azure RBAC) and reads follow a per-repo trust-ordered list, so a PR cannot
-   upload to a higher-trust container.
+1. Trust boundary per container: each container has a dedicated writer (an
+   OIDC-scoped credential per container) and reads follow a per-repo
+   trust-ordered list, so a PR cannot upload to a higher-trust container.
 2. Per-SHA namespace for fork uploads: fork uploads land at `/f/{repo}/{sha}/{hash}`,
    so one commit's artifacts never serve another commit on the same fork.
 3. Flat layout for single-writer containers: `master` reads and writes flat at
@@ -118,7 +118,7 @@ private def withSuppressedOutput (action : IO α) : IO α := do
 section ContainerModel
 
 /-- The short name is the string used on the CLI (`--container=NAME`) and to
-derive the Azure container name. These names are part of the public CLI
+derive the container's path segment. These names are part of the public CLI
 contract, so they are pinned here: a rename must be a deliberate edit to this
 test, not an accident. -/
 def test_Container_name : IO Unit := do
@@ -292,28 +292,29 @@ fork uploads in their own namespace. Flat paths ignore the scope.
 -/
 def test_fileURL : IO Unit := do
   IO.println "Location.fileURL:"
+  let url (c : Container) := c.urlUnder "https://cache.example.org"
   assertEq "master is flat for the canonical repo"
-    "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
-    (fileURLOf (some .master) MATHLIBREPO Container.master.azureURL "abc.ltar")
+    "https://cache.example.org/mathlib4-master/f/abc.ltar"
+    (fileURLOf (some .master) MATHLIBREPO (url .master) "abc.ltar")
   assertEq "master is flat for a fork repo too"
-    "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
-    (fileURLOf (some .master) "alice/mathlib4" Container.master.azureURL "abc.ltar")
+    "https://cache.example.org/mathlib4-master/f/abc.ltar"
+    (fileURLOf (some .master) "alice/mathlib4" (url .master) "abc.ltar")
   -- `forks` prefixes by repo even for the canonical repo, so its fork-trust
   -- uploads don't collide with fork uploads in the same container.
   assertEq "forks prefixes by repo for the canonical repo"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/leanprover-community/mathlib4/abc.ltar"
-    (fileURLOf (some .forks) MATHLIBREPO Container.forks.azureURL "abc.ltar")
+    "https://cache.example.org/mathlib4-forks/f/leanprover-community/mathlib4/abc.ltar"
+    (fileURLOf (some .forks) MATHLIBREPO (url .forks) "abc.ltar")
   assertEq "forks prefixes by repo for a fork repo"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/alice/mathlib4/abc.ltar"
-    (fileURLOf (some .forks) "alice/mathlib4" Container.forks.azureURL "abc.ltar")
+    "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
+    (fileURLOf (some .forks) "alice/mathlib4" (url .forks) "abc.ltar")
   assertEq "nightly-testing prefixes by repo"
-    "https://lakecache.blob.core.windows.net/mathlib4-nightly-testing/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
+    "https://cache.example.org/mathlib4-nightly-testing/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
     (fileURLOf (some .nightlyTesting) NIGHTLY_TESTING_REPO
-      Container.nightlyTesting.azureURL "abc.ltar")
+      (url .nightlyTesting) "abc.ltar")
   assertEq "pr-toolchain-tests prefixes by repo"
-    "https://lakecache.blob.core.windows.net/mathlib4-pr-toolchain-tests/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
+    "https://cache.example.org/mathlib4-pr-toolchain-tests/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
     (fileURLOf (some .prToolchainTests) NIGHTLY_TESTING_REPO
-      Container.prToolchainTests.azureURL "abc.ltar")
+      (url .prToolchainTests) "abc.ltar")
   -- No container (user-supplied URL): the shape follows the repo — flat for the
   -- canonical repo, prefixed otherwise.
   assertEq "user URL is flat for the canonical repo"
@@ -324,20 +325,20 @@ def test_fileURL : IO Unit := do
     (fileURLOf none "alice/mathlib4" "https://custom.example/cache" "abc.ltar")
   -- A scope adds a `{sha}` path segment on prefixed paths.
   assertEq "scope adds a SHA segment on a fork path"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/alice/mathlib4/abc123def/H.ltar"
-    (fileURLOf (some .forks) "alice/mathlib4" Container.forks.azureURL "H.ltar" (some "abc123def"))
+    "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc123def/H.ltar"
+    (fileURLOf (some .forks) "alice/mathlib4" (url .forks) "H.ltar" (some "abc123def"))
   assertEq "scope adds a SHA segment on the canonical repo's forks path"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/leanprover-community/mathlib4/abc123def/H.ltar"
-    (fileURLOf (some .forks) MATHLIBREPO Container.forks.azureURL "H.ltar" (some "abc123def"))
+    "https://cache.example.org/mathlib4-forks/f/leanprover-community/mathlib4/abc123def/H.ltar"
+    (fileURLOf (some .forks) MATHLIBREPO (url .forks) "H.ltar" (some "abc123def"))
   -- A scope is ignored on flat paths.
   assertEq "scope is ignored on a flat master path"
-    "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
-    (fileURLOf (some .master) MATHLIBREPO Container.master.azureURL "abc.ltar" (some "abc123def"))
+    "https://cache.example.org/mathlib4-master/f/abc.ltar"
+    (fileURLOf (some .master) MATHLIBREPO (url .master) "abc.ltar" (some "abc123def"))
   -- The repo segment is lowercased, so a mixed-case GitHub owner resolves to the
   -- same path whether it reaches the cache from CI or a local remote URL.
   assertEq "fork repo is lowercased in the path"
-    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/alice/mathlib4/abc.ltar"
-    (fileURLOf (some .forks) "Alice/Mathlib4" Container.forks.azureURL "abc.ltar")
+    "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
+    (fileURLOf (some .forks) "Alice/Mathlib4" (url .forks) "abc.ltar")
 
 end FileURL
 
@@ -1088,7 +1089,7 @@ section AlreadyPresentStatus
 that already exists; both mean "present", not a failure. -/
 def test_isAlreadyPresentStatus : IO Unit := do
   IO.println "isAlreadyPresentStatus:"
-  -- 409/412 are the codes Azure returns for a blob that already exists.
+  -- 409/412 are the codes a store returns for an object that already exists.
   assertTrue "409 is already-present" (isAlreadyPresentStatus 409)
   assertTrue "412 is already-present" (isAlreadyPresentStatus 412)
   -- Successes, misses, and server errors are not.

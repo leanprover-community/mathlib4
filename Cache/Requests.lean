@@ -452,11 +452,11 @@ def isCacheMissStatus (httpCode : Nat) : Bool :=
   httpCode == 404
 
 /--
-Whether an HTTP status is the one Azure returns for a blob that already exists,
-which a non-overwrite `put` (`If-None-Match: *`) hits when it declines to
-overwrite. Azure reports it as 409 (the `BlobAlreadyExists` error, what it
-returns in practice) or 412 (the conditional-header spec's code for an unmet
-`If-None-Match`), so we accept both. Whether that's benign is the caller's call:
+Whether an HTTP status is the one a store returns for an object that already
+exists, which a non-overwrite `put` (`If-None-Match: *`) hits when it declines
+to overwrite: 409 (what the stores return in practice) or 412 (the
+conditional-header spec's code for an unmet `If-None-Match`), so we accept
+both. Whether that's benign is the caller's call:
 the upload path skips it, reads don't.
 -/
 def isAlreadyPresentStatus (httpCode : Nat) : Bool :=

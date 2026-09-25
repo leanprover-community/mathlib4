@@ -22,8 +22,8 @@ open System (FilePath)
 /--
 The per-request curl arguments for one upload PUT: the backend's signing
 arguments plus the non-overwrite guard. A non-overwrite put adds
-`If-None-Match: *`, which Azure and S3-compatible backends answer with
-409/412 for a blob that already exists (`classifyUpload` excuses those).
+`If-None-Match: *`, which every backend answers with 409/412 for an object
+that already exists (`classifyUpload` excuses those).
 
 Every backend passes its secrets in the argument list, so callers should print curl
 failures without the argument list (`showArgsOnError := false`).
