@@ -559,40 +559,15 @@ variable {G}
 @[to_additive]
 theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} [N.Normal] :
     IsMulCommutative (G ⧸ N) ↔ _root_.commutator G ≤ N := by
-  refine ⟨fun hcomm ↦ ?_, fun hGN ↦ ⟨⟨fun x' y' ↦ ?_⟩⟩⟩
-  · rw [commutator_eq_normalClosure, ← Subgroup.normalClosure_subset_iff]
-    rintro x ⟨p, q, rfl⟩
-    rw [SetLike.mem_coe, ← QuotientGroup.eq_one_iff, commutatorElement_def]
-    simp only [QuotientGroup.mk_mul, QuotientGroup.mk_inv]
-    rw [← commutatorElement_def, commutatorElement_eq_one_iff_mul_comm, mul_comm']
-  · obtain ⟨x, rfl⟩ := QuotientGroup.mk'_surjective N x'
-    obtain ⟨y, rfl⟩ := QuotientGroup.mk'_surjective N y'
-    rw [← commutatorElement_eq_one_iff_mul_comm, ← map_commutatorElement, QuotientGroup.mk'_apply,
-      QuotientGroup.eq_one_iff]
-    apply hGN
-    rw [commutator_eq_closure]
-    exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
-
-open IsMulCommutative in
-instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
-  Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr le_rfl
+  rw [← commutator_eq_bot_iff, _root_.commutator_def, ← QuotientGroup.range_mk',
+    ← map_commutator_eq, map_eq_bot_iff, QuotientGroup.ker_mk']
 
 /-- If `N` is a normal subgroup of `G` and `H` a commutative subgroup such that `H ⊔ N = ⊤`,
   then `N` contains `commutator G`. -/
 @[to_additive /-- If `N` is a normal additive subgroup of `G` and `H` a commutative additive
 subgroup such that `H ⊔ N = ⊤`, then `N` contains `addCommutator G`. -/]
 theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top {N : Subgroup G} [N.Normal]
-    {H : Subgroup G} (hHN : N ⊔ H = ⊤) (hH : IsMulCommutative H) : _root_.commutator G ≤ N := by
-  -- It is enough to prove that Q = G ⧸ N is commutative
-  apply quotient_commutative_iff_commutator_le.mp
-  -- Q is a quotient of H
-  let φ : H →ₙ* G ⧸ N := MonoidHom.comp (QuotientGroup.mk' N) (Subgroup.subtype H)
-  -- It is enough to prove that φ is surjective
-  apply Function.Surjective.isMulCommutative (f := φ) _ hH
-  -- We have to prove that `MonoidHom.range φ = ⊤`
-  have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
-    rw [Subgroup.map_top, MonoidHom.range_eq_top]
-    exact QuotientGroup.mk'_surjective N
-  rw [MulHom.coe_coe, ← MonoidHom.range_eq_top, MonoidHom.range_eq_map, ← Subgroup.map_map, ← this,
-    Subgroup.map_eq_map_iff, QuotientGroup.ker_mk', sup_comm, ← hHN, Subgroup.map_top]
-  simp
+    {H : Subgroup G} (hHN : N ⊔ H = ⊤) [IsMulCommutative H] : _root_.commutator G ≤ N := by
+  rw [← QuotientGroup.ker_mk' N, ← map_eq_bot_iff, _root_.commutator_def, ← hHN, map_commutator,
+    commutator_self_eq_bot_iff, map_sup, QuotientGroup.map_mk'_self, bot_sup_eq]
+  infer_instance
