@@ -86,7 +86,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
     rw [this, prod_top]
   | a, ⊤, _ => show a.prod ≤ (⊤ : FactorSet α).prod by simp
   | WithTop.some _, WithTop.some _, h =>
-    prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 <| h
+    prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 h
 
 theorem FactorSet.prod_eq_zero_iff [IsCancelMulZero α] [Nontrivial α] (p : FactorSet α) :
     p.prod = 0 ↔ p = ⊤ := by
@@ -206,7 +206,7 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
     map_subtype_coe_factors', ← rel_associated_iff_map_eq_map]
   exact
     factors_unique irreducible_of_factor irreducible_of_factor
-      ((factors_prod ha).trans <| h.trans <| (factors_prod hb).symm)
+      ((factors_prod ha).trans <| h.trans (factors_prod hb).symm)
 
 /-- This returns the multiset of irreducible factors of an associate as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/
@@ -327,9 +327,9 @@ noncomputable instance : Lattice (Associates α) :=
     inf := (· ⊓ ·)
     sup_le := fun _ _ c hac hbc =>
       factors_prod c ▸ prod_mono (sup_le (factors_mono hac) (factors_mono hbc))
-    le_sup_left := fun a _ => le_trans (le_of_eq (factors_prod a).symm) <| prod_mono <| le_sup_left
+    le_sup_left := fun a _ => le_trans (le_of_eq (factors_prod a).symm) <| prod_mono le_sup_left
     le_sup_right := fun _ b =>
-      le_trans (le_of_eq (factors_prod b).symm) <| prod_mono <| le_sup_right
+      le_trans (le_of_eq (factors_prod b).symm) <| prod_mono le_sup_right
     le_inf := fun a _ _ hac hbc =>
       factors_prod a ▸ prod_mono (le_inf (factors_mono hac) (factors_mono hbc))
     inf_le_left := fun a _ => le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))

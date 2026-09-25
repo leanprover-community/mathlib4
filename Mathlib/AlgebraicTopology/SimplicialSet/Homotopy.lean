@@ -25,7 +25,9 @@ a family of maps `X _⦋n⦌ → Y _⦋n + 1⦌` for all `n : ℕ` and `i : Fin 
 
 @[expose] public section
 
-open CategoryTheory SimplicialObject MonoidalCategory Simplicial Opposite
+open CategoryTheory SimplicialObject MonoidalCategory Opposite
+
+open scoped Simplicial
 
 universe u
 
@@ -68,7 +70,7 @@ morphisms of simplicial objects between `f` and `g`. -/
 noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     SimplicialObject.Homotopy f g where
   h i := ↾fun x ↦
-    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex.nonDegenerateEquiv₁ i).1
+    (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex₁.nonDegenerateEquiv i).1
   h_zero_comp_δ_zero n := by
     ext x
     simp only [TypeCat.Fun.toFun_apply, types_comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,

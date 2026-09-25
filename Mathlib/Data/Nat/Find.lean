@@ -26,7 +26,6 @@ section Find
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, ¬p k
 
-set_option backward.privateInPublic true in
 private theorem wf_lbp (H : ∃ n, p n) : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
@@ -43,8 +42,6 @@ private theorem wf_lbp (H : ∃ n, p n) : WellFounded (@lbp p) :=
 
 variable [DecidablePred p] (H : ∃ n, p n)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
