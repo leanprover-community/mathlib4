@@ -103,12 +103,12 @@ contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
 `cache get` resolves a file by trying a default chain of containers in
 order, depending on the repo:
 
-| GitHub repo                                     | Container order tried       |
-|-------------------------------------------------|-----------------------------|
-| `leanprover-community/mathlib4`                 | `master`, `legacy`          |
-| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
-| any fork (PRs)                                  | `master`, `forks`, `legacy` |
-| downstream with mathlib as a dependency         | `master`, `legacy`          |
+| GitHub repo                                     | Container order tried                |
+|-------------------------------------------------|--------------------------------------|
+| `leanprover-community/mathlib4`                 | `master`, `legacy`                   |
+| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `forks`, `legacy` |
+| any fork (PRs)                                  | `master`, `forks`, `legacy`          |
+| downstream with mathlib as a dependency         | `master`, `legacy`                   |
 
 Override the read chain with `--cache-from=LIST`:
 

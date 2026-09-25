@@ -23,8 +23,20 @@ CI job and assigned a trust level:
 |-----------------------|--------------------------------------------------------|--------|
 | `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
 | `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
+| `nightly-testing`     | nightly-testing's team branches (see below)            | medium |
+| `pr-toolchain-tests`  | nightly-testing's other branches (see below)           | low    |
+
+The `nightly-testing` container has team trust. Anyone with push access to the
+nightly-testing repo can push a team branch, and CI uploads its build.
+downstream-lean4 also pushes its adaptations to the `nightly-testing` branch.
+Nobody reviews the commits on these branches. The team branches are
+`nightly-testing*`, `staging`, `bump-to-*` and any branch name that contains `/`,
+for example `bump/v4.X.0` or `name/topic`. The deployment branch policy of the
+`cache-upload-nightly-testing` environment admits only these branches.
+
+`pr-toolchain-tests` receives all other branches. These include
+`batteries-pr-testing-*`, which builds against a Batteries PR from any fork, and
+`trying`.
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
@@ -42,8 +54,8 @@ containers a consumer reads from:
 The table shows trust classes; every chain also ends with the
 read-only `legacy` container, omitted here. The nightly chain includes `forks`
 because PRs from that repo into mathlib4 upload there; it excludes
-`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
-branch cannot reach a trusted nightly consumer.
+`pr-toolchain-tests`, so a poisoned upload from a least-trusted branch cannot
+reach a nightly consumer.
 
 Branches that legitimately need to read their own prior low-trust uploads opt
 into a wider chain explicitly.

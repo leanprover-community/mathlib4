@@ -38,9 +38,11 @@ jobs:
       pr_branch_ref: ${{ github.sha }}
       # Trust-level dispatch for the cache writer app:
       #   - mathlib4/master                                                 → MASTER writer
-      #   - mathlib4-nightly-testing/(nightly-testing | nightly-testing-green | bump/*)
-      #                                                                     → NIGHTLY_TESTING writer
-      #   - mathlib4-nightly-testing/(anything else)                        → PR_TOOLCHAIN_TESTS writer
+      #   - mathlib4-nightly-testing/(nightly-testing* | bump-to-* | */*)   → NIGHTLY_TESTING writer
+      #     These patterns must match `cache-trust-dispatch` and the deployment branch
+      #     policy of the `cache-upload-nightly-testing` environment.
+      #   - mathlib4-nightly-testing/(anything else, e.g. batteries-pr-testing-*)
+      #                                                                     → PR_TOOLCHAIN_TESTS writer
       #   - everything else (dev branches on mathlib4, etc.)                → NON_MASTER (forks) writer
       cache_application_id: >-
         ${{
@@ -48,9 +50,9 @@ jobs:
                && github.ref_name == 'master')
                && vars.CACHE_MASTER_WRITER_AZURE_APP_ID
           || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
-               && (github.ref_name == 'nightly-testing'
-                   || github.ref_name == 'nightly-testing-green'
-                   || startsWith(github.ref_name, 'bump/')))
+               && (startsWith(github.ref_name, 'nightly-testing')
+                   || startsWith(github.ref_name, 'bump-to-')
+                   || contains(github.ref_name, '/')))
                && vars.CACHE_NIGHTLY_TESTING_WRITER_AZURE_APP_ID
           || (github.repository == 'leanprover-community/mathlib4-nightly-testing')
                && vars.CACHE_PR_TOOLCHAIN_TESTS_WRITER_AZURE_APP_ID
@@ -58,9 +60,10 @@ jobs:
         }}
       # OIDC environment binding for the upload_cache job. MUST track the cache_application_id
       # mapping above so the minted token's `:environment:` subject matches the writer app's
-      # federated credential. mathlib4-nightly-testing intentionally uses branch/ref-scoped
-      # trust instead of an environment: each nightly writer app is RBAC-isolated to its own
-      # container, so branch scoping is sufficient there.
+      # federated credential. On mathlib4-nightly-testing, the NIGHTLY_TESTING branches use the
+      # `cache-upload-nightly-testing` environment. Its deployment branch policy must admit only
+      # these branch patterns. The other branches set no environment, so their credential is
+      # scoped to the branch ref.
       cache_environment: >-
         ${{
              (github.repository == 'leanprover-community/mathlib4'
@@ -68,6 +71,11 @@ jobs:
                && 'cache-upload-master'
           || (github.repository == 'leanprover-community/mathlib4')
                && 'cache-upload-forks'
+          || (github.repository == 'leanprover-community/mathlib4-nightly-testing'
+               && (startsWith(github.ref_name, 'nightly-testing')
+                   || startsWith(github.ref_name, 'bump-to-')
+                   || contains(github.ref_name, '/')))
+               && 'cache-upload-nightly-testing'
           || ''
         }}
       # the single producer: the master `push` build
