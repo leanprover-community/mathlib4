@@ -369,6 +369,10 @@ theorem map_id (γ : Path x y) : γ.map continuous_id = γ := by
   rfl
 
 @[simp]
+theorem map_refl {f : X → Y} (hf : Continuous f) (x : X) :
+    (Path.refl x).map hf = Path.refl (f x) := rfl
+
+@[simp]
 theorem map_map (γ : Path x y) {Z : Type*} [TopologicalSpace Z]
     {f : X → Y} (hf : Continuous f) {g : Y → Z} (hg : Continuous g) :
     (γ.map hf).map hg = γ.map (hg.comp hf) := by
@@ -383,6 +387,17 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   target' := by simp [hy]
 
 @[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
+
+@[simp] theorem cast_cast {x y x' y' x'' y'' : X}
+    (γ : Path x y) (hx : x' = x) (hy : y' = y) (hx' : x'' = x') (hy' : y'' = y') :
+    (γ.cast hx hy).cast hx' hy' = γ.cast (hx'.trans hx) (hy'.trans hy) := by
+  subst_vars
+  rfl
+
+@[simp] theorem cast_refl {x y : X} (h : y = x) :
+    (Path.refl x).cast h h = Path.refl y := by
+  subst_vars
+  rfl
 
 @[simp]
 theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
@@ -401,6 +416,11 @@ theorem extend_cast {x' y'} (γ : Path x y) (hx : x' = x) (hy : y' = y) :
 
 @[simp]
 theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
+  rfl
+
+@[simp]
+theorem range_cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :
+    range (γ.cast hx hy) = range γ :=
   rfl
 
 lemma bijective_cast {x' y' : X} (hx : x' = x) (hy : y' = y) : Bijective (Path.cast · hx hy) := by
@@ -602,6 +622,36 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
   have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2
   rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
 
+/-! #### Initial segments of a path -/
+
+/-- The initial segment `γ|_[0, t]` of `γ`, as a path from `a` to `γ t`; it is
+`s ↦ γ.extend (min s t)`. This is jointly continuous in `(t, s)`
+(`continuous_initialSegmentFamily_uncurry`), so it gives a path from `Path.refl a` to `γ` in
+path space. -/
+noncomputable def initialSegmentFamily {a b : X} (γ : Path a b) (t : I) :
+    Path a (γ t) :=
+  (γ.truncate 0 t).cast (by rw [min_eq_left t.2.1, γ.extend_zero]) (γ.extend_apply t.2).symm
+
+theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b) :
+    Continuous ↿(initialSegmentFamily γ) := by
+  change Continuous (fun ts : I × I ↦ γ.truncate 0 ts.1 ts.2)
+  exact γ.truncate_continuous_family.comp (continuous_const.prodMk
+    (continuous_subtype_val.fst'.prodMk continuous_snd))
+
+@[simp] theorem initialSegmentFamily_apply {a b : X} (γ : Path a b) (t s : I) :
+    initialSegmentFamily γ t s = γ.extend (min (s : ℝ) t) := by
+  simp [initialSegmentFamily, Path.truncate, max_eq_left s.2.1]
+
+theorem initialSegmentFamily_zero {a b : X} (γ : Path a b) :
+    initialSegmentFamily γ 0 = (Path.refl a).cast rfl (by simp) := by
+  ext s
+  simp [initialSegmentFamily_apply, γ.extend_zero, Path.refl_apply, min_eq_right s.2.1]
+
+theorem initialSegmentFamily_one {a b : X} (γ : Path a b) :
+    initialSegmentFamily γ 1 = γ.cast rfl (by simp) := by
+  ext s
+  simp [initialSegmentFamily_apply, min_eq_left s.2.2, γ.extend_apply s.2]
+
 /-! #### Reparametrising a path -/
 
 
@@ -643,5 +693,37 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
     (refl x).reparam f hfcont hf₀ hf₁ = refl x := by
   ext
   simp
+
+/-! ### Partitioning paths using Lebesgue numbers -/
+
+/-- If the range of a path is covered by open sets, then there is a partition
+`0 = t₀ ≤ ⋯ ≤ tₙ = 1` such that each segment `γ [tᵢ, tᵢ₊₁]` lies in one set of the cover. -/
+theorem exists_partition_in_cover
+    {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
+    {x y : X} (γ : Path x y) (hU_cover : ∀ s : unitInterval, ∃ i, γ s ∈ U i) :
+    ∃ (n : ℕ) (part : unitInterval.Partition n),
+      ∀ i : Fin n, ∃ j : ι, MapsTo γ (Icc (part.t i.castSucc) (part.t i.succ)) (U j) := by
+  obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
+    exists_monotone_partition_unitInterval
+      (fun i ↦ (hU_open i).preimage γ.continuous)
+      (fun s _ ↦ mem_iUnion.mpr (hU_cover s))
+  exact ⟨n, ⟨t, ht_mono, ht0, htn⟩, ht_cover⟩
+
+/-- If every point on a path has an open neighborhood satisfying `P`, then there is a partition
+`0 = t₀ ≤ ⋯ ≤ tₙ = 1` such that each segment `γ [tᵢ, tᵢ₊₁]` lies in an open set satisfying
+`P`. -/
+theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
+    (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
+    ∃ (n : ℕ) (part : unitInterval.Partition n),
+      ∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
+        MapsTo γ (Icc (part.t i.castSucc) (part.t i.succ)) U := by
+  choose U hU_open hU_mem hU_P using h
+  obtain ⟨n, part, h_segments⟩ :=
+    exists_partition_in_cover (fun z : Set.range γ ↦ U z.val z.property)
+      (fun z ↦ hU_open z.val z.property) γ fun s ↦
+        ⟨⟨γ s, ⟨s, rfl⟩⟩, hU_mem (γ s) ⟨s, rfl⟩⟩
+  refine ⟨n, part, fun i ↦ ?_⟩
+  obtain ⟨⟨z, hz⟩, h_seg⟩ := h_segments i
+  exact ⟨U z hz, hU_open z hz, hU_P z hz, h_seg⟩
 
 end Path

@@ -246,6 +246,28 @@ lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
   rw [preimage_subtype_val_Ioi]
   exact Ioc_top.symm
 
+/-- A partition `0 = t₀ ≤ ⋯ ≤ tₙ = 1` of the unit interval into `n` segments. -/
+structure Partition (n : ℕ) where
+  /-- The partition points. -/
+  t : Fin (n + 1) → I
+  mono : Monotone t
+  t_zero : t 0 = 0
+  t_last : t (Fin.last n) = 1
+
+namespace Partition
+
+attribute [simp] t_zero t_last
+
+/-- There is no partition into zero segments, since `t 0` would be both `0` and `1`. -/
+instance : IsEmpty (Partition 0) :=
+  ⟨fun p ↦ zero_ne_one (p.t_zero.symm.trans p.t_last)⟩
+
+theorem t_castSucc_le_succ {n : ℕ} (part : Partition n) (i : Fin n) :
+    part.t i.castSucc ≤ part.t i.succ :=
+  part.mono i.castSucc_lt_succ.le
+
+end Partition
+
 end unitInterval
 
 section partition
@@ -497,6 +519,32 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
   obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
   exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
     abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
+
+/-- Any open cover of `[a, b]` is refined by a monotone partition `a = t₀ ≤ ⋯ ≤ tₙ = b`,
+each of whose segments lies in a member of the cover. -/
+lemma exists_monotone_partition_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → Icc a b),
+      Monotone t ∧ t 0 = a ∧ t (Fin.last n) = b ∧
+      ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
+  obtain ⟨t, ht0, ht_mono, ⟨N, hN⟩, ht_cover⟩ :=
+    exists_monotone_Icc_subset_open_cover_Icc h hc₁ hc₂
+  refine ⟨N, fun k ↦ t k, fun _ _ hij ↦ ht_mono hij, ?_, ?_, fun i ↦ ?_⟩
+  · simpa using ht0
+  · simpa using hN N le_rfl
+  · obtain ⟨j, hj⟩ := ht_cover i
+    exact ⟨j, by simpa [Fin.val_succ, Fin.val_castSucc] using hj⟩
+
+/-- Any open cover of the unit interval is refined by a monotone partition
+`0 = t₀ ≤ ⋯ ≤ tₙ = 1`, each of whose segments lies in a member of the cover. -/
+lemma exists_monotone_partition_unitInterval {ι} {c : ι → Set I}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → I),
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
+  obtain ⟨N, t, ht_mono, ht0, htN, ht_cover⟩ :=
+    exists_monotone_partition_Icc zero_le_one hc₁ hc₂
+  exact ⟨N, t, ht_mono, Subtype.ext ht0, Subtype.ext htN, ht_cover⟩
 
 end partition
 
