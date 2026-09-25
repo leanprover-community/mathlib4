@@ -77,7 +77,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
-  multichoose x k := ((ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p])).lift <| by
+  multichoose x k := (ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]) |>.lift <| by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
     exact x.norm_ascPochhammer_le k
   factorial_nsmul_multichoose x k := by
