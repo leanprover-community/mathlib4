@@ -81,18 +81,16 @@ def pCore (p : ℕ) (H : Subgroup G) : Subgroup G :=
 embedded into `G`. -/
 theorem pCore_eq_iInf_sylow :
     pCore p H = (⨅ P : Sylow p H, (P : Subgroup H)).map H.subtype := by
-  rw [pCore]
+  rfl
 
 /-- The `p`-core of `H` is contained in `H`. -/
 theorem pCore_le : pCore p H ≤ H := by
-  rw [pCore_eq_iInf_sylow]
-  exact map_subtype_le _
+  grw [pCore_eq_iInf_sylow, map_subtype_le]
 
 /-- Computed inside `H`, the `p`-core is the intersection of the Sylow `p`-subgroups of `H`. -/
 theorem pCore_subgroupOf_eq_iInf_sylow :
     (pCore p H).subgroupOf H = ⨅ P : Sylow p H, (P : Subgroup H) := by
-  rw [pCore_eq_iInf_sylow]
-  exact comap_map_eq_self_of_injective H.subtype_injective _
+  simp [pCore_eq_iInf_sylow]
 
 /-- The `p`-core, computed inside `H`, is a `p`-group. -/
 theorem isPGroup_pCore_subgroupOf : IsPGroup p ((pCore p H).subgroupOf H) := by
