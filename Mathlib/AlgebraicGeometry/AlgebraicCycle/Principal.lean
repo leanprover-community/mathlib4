@@ -69,6 +69,7 @@ theorem isWeilDivisor_divisor [IsIntegral X] [IsLocallyNoetherian X] {f : X.func
   contrapose hz
   simp_all
 
+@[simp]
 theorem divisor_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Opens} [Nonempty U]
     {g : Γ(X, U)} (hg : IsUnit g) : (divisor (X.germToFunctionField U g)).filter U = 0 := by
   ext z
@@ -76,6 +77,7 @@ theorem divisor_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.
   · simp [hz, ord_of_isUnit hg hz]
   · simp [hz]
 
+@[simp]
 lemma divisor_eq_zero_of_isUnit_top
     [IsIntegral X] [IsLocallyNoetherian X] {g : Γ(X, ⊤)} (hg : IsUnit g) :
     divisor (X.germToFunctionField ⊤ g) = 0 := by

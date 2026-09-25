@@ -421,21 +421,6 @@ instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
 lemma le_def [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
     D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
 
-/--
-If `D₁` is supported within `t` and `D₂` is nonnegative outside of `t`, then `D₁ ≤ D₂` can be
-checked on `t` alone.
--/
-lemma le_iff_of_support_subset [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {t : Set X}
-    (hD₁ : D₁.support ⊆ t) (hD₂ : ∀ z ∈ tᶜ, 0 ≤ D₂ z) :
-    D₁ ≤ D₂ ↔ ∀ z ∈ t, D₁ z ≤ D₂ z := by
-  refine forall_congr' fun z => ⟨by tauto, fun m ↦ ?_⟩
-  by_cases o : z ∈ t
-  · exact m o
-  simp only [support_subset_iff, ne_eq] at hD₁
-  by_cases hz : D₁ z = 0
-  · simp_all
-  exact m <| hD₁ z hz
-
 lemma single_nonneg [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 ≤ single x y ↔ 0 ≤ y := by
   simp only [le_def, coe_single]
