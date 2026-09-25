@@ -62,7 +62,7 @@ protected def con : Con G where
   toSetoid := leftRel N
   mul' := fun {a b c d} hab hcd => by
     rw [leftRel_eq] at hab hcd ⊢
-    dsimp only
+    beta_reduce
     calc
       c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) ∈ N := N.mul_mem (nN.conj_mem _ hab _) hcd
       _ = (a * c)⁻¹ * (b * d) := by

@@ -725,7 +725,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     simp_rw [← coe_nnnorm, ← _root_.coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul,
       NNReal.hasSum_coe] at hRHS hLHS
     refine hasSum_mono hLHS hRHS fun i => ?_
-    dsimp only
+    beta_reduce
     rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
     gcongr
     apply nnnorm_smul_le

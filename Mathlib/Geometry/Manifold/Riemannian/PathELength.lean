@@ -298,7 +298,7 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
     · apply Monotone.monotoneOn
       apply Real.smoothTransition.monotone.comp
       intro t u htu
-      dsimp only
+      beta_reduce
       gcongr
     · simp only [η]
       apply (ContDiff.contDiffOn _).differentiableOn one_ne_zero

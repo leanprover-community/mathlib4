@@ -169,7 +169,7 @@ theorem pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
 theorem pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) (he : 2 ≤ e) :
     I ^ e < I := by
   convert! I.pow_right_strictAnti hI0 hI1 he
-  dsimp only
+  beta_reduce
   rw [pow_one]
 
 theorem exists_mem_pow_notMem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :

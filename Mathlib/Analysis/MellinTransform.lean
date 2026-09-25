@@ -136,7 +136,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
   have : EqOn (fun t : ℝ => (t : ℂ) ^ (s - 1) • f (a * t))
       (fun t : ℝ => (a : ℂ) ^ (1 - s) • (fun u : ℝ => (u : ℂ) ^ (s - 1) • f u) (a * t))
         (Ioi 0) := fun t ht ↦ by
-    dsimp only
+    beta_reduce
     rw [ofReal_mul, mul_cpow_ofReal_nonneg ha.le (le_of_lt ht), ← mul_smul,
       (by ring : 1 - s = -(s - 1)), cpow_neg, inv_mul_cancel_left₀]
     rw [Ne, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
@@ -294,7 +294,7 @@ theorem isBigO_rpow_top_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E}
     ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).isBigO.smul hf).congr'
       (Eventually.of_forall fun t => by rfl)
       ((eventually_gt_atTop 0).mp (Eventually.of_forall fun t ht => ?_))
-  simp only
+  beta_reduce
   rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_cancel_left]
 
 /-- If `f` is `O(x ^ (-a))` as `x → 0`, then `log • f` is `O(x ^ (-b))` for every `a < b`. -/

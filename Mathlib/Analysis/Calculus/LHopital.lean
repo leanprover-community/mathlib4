@@ -394,7 +394,7 @@ theorem lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
     apply (hs.sdiff_singleton_eventually_mem_nhds a).mono
     intros
   · rwa [derivWithin_of_mem_nhds ‹_›]
-  · simp only
+  · beta_reduce
     iterate 2 rw [derivWithin_of_mem_nhds ‹_›]
 
 /-- **L'Hôpital's rule** for approaching a real from the right, `deriv` version -/

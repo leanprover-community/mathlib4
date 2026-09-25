@@ -165,7 +165,7 @@ lemma lipschitzOnWith_cfc_fun (a : A) :
       {f | ContinuousOn (toFun {spectrum R a} f) (spectrum R a)} := by
   by_cases ha : p a
   · intro f hf g hg
-    simp only
+    beta_reduce
     rw [cfc_apply .., cfc_apply .., isometry_cfcHom (R := R) a ha |>.edist_eq]
     simp only [ENNReal.coe_one, one_mul]
     rw [edist_continuousRestrict_of_singleton hf hg]
@@ -703,7 +703,7 @@ lemma lipschitzOnWith_cfcₙ_fun (a : A) :
       {f | ContinuousOn (toFun {quasispectrum R a} f) (quasispectrum R a) ∧ f 0 = 0} := by
   by_cases ha : p a
   · rintro f ⟨hf, hf0⟩ g ⟨hg, hg0⟩
-    simp only
+    beta_reduce
     rw [cfcₙ_apply .., cfcₙ_apply .., isometry_cfcₙHom (R := R) a ha |>.edist_eq]
     simp only [ENNReal.coe_one, one_mul]
     rw [← ContinuousMapZero.isometry_toContinuousMap.edist_eq,
