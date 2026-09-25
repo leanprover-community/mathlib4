@@ -85,8 +85,6 @@ end Rand
 
 namespace Random
 
-open Rand
-
 variable [Monad m]
 
 /-- Generate a random value of type `α`. -/
@@ -168,6 +166,6 @@ def runRand (cmd : RandT m α) : m α := do
 
 /-- Execute `RandT m α` using the global `stdGenRef` as RNG and the given `seed`. -/
 def runRandWith (seed : Nat) (cmd : RandT m α) : m α := do
-  pure <| (← cmd.run (ULift.up <| mkStdGen seed)).1
+  pure (← cmd.run (ULift.up <| mkStdGen seed)).1
 
 end IO

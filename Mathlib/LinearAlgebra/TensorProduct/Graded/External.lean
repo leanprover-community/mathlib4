@@ -103,7 +103,7 @@ This sends $a ⊗ b$ to $(-1)^{\deg a' \deg b} (b ⊗ a)$. -/
 def gradedComm :
     (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) ≃ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
   refine TensorProduct.directSum R R 𝒜 ℬ ≪≫ₗ ?_ ≪≫ₗ (TensorProduct.directSum R R ℬ 𝒜).symm
-  exact LinearEquiv.ofLinear (gradedCommAux _ _ _) (gradedCommAux _ _ _)
+  exact LinearEquiv.ofLinearMap (gradedCommAux _ _ _) (gradedCommAux _ _ _)
     (gradedCommAux_comp_gradedCommAux _ _ _) (gradedCommAux_comp_gradedCommAux _ _ _)
 
 /-- The braiding is symmetric. -/
@@ -115,7 +115,7 @@ theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
       (-1 : ℤˣ) ^ (j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
   rw [gradedComm]
-  dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
+  dsimp only [LinearEquiv.trans_apply, LinearEquiv.coe_ofLinearMap]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 specialized `map_smul` to `LinearEquiv.map_smul` to avoid timeouts.
     ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, TensorProduct.directSum_symm_lof_tmul,
@@ -237,7 +237,6 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
   simpa only [RingHom.map_one, one_smul] using! gradedMul_algebraMap 𝒜 ℬ x 1
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ
@@ -257,7 +256,6 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   abel
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedComm R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y)
       = gradedMul R ℬ 𝒜 (gradedComm R 𝒜 ℬ x) (gradedComm R 𝒜 ℬ y) := by

@@ -410,7 +410,7 @@ theorem proj_some_index (x : α) : hs.proj (hs.some (hs.index x)) = hs.proj x :=
 /-- The obvious equivalence between the quotient associated to an indexed partition and
 the indexing type. -/
 def equivQuotient : ι ≃ hs.Quotient :=
-  (Setoid.quotientKerEquivOfRightInverse hs.index hs.some <| hs.index_some).symm
+  (Setoid.quotientKerEquivOfRightInverse hs.index hs.some hs.index_some).symm
 
 @[simp]
 theorem equivQuotient_index_apply (x : α) : hs.equivQuotient (hs.index x) = hs.proj x :=
@@ -442,7 +442,7 @@ theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
   Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
 
-theorem class_of {x : α} : setOf (hs.setoid x) = s (hs.index x) :=
+theorem class_of {x : α} : Set.ofPred (hs.setoid x) = s (hs.index x) :=
   Set.ext fun _y => eq_comm.trans hs.mem_iff_index_eq.symm
 
 theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=

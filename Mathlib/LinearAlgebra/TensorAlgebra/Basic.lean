@@ -64,7 +64,17 @@ end TensorAlgebra
 /-- The tensor algebra of the module `M` over the commutative semiring `R`.
 -/
 def TensorAlgebra := TensorAlgebra.ringCon R M |>.Quotient
-deriving Inhabited, Semiring
+deriving Inhabited
+
+namespace TensorAlgebra
+
+-- This instance exists to avoid an nsmul diamond.
+instance {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+    [Algebra R A] [Module A M] :
+    SMul R (TensorAlgebra A M) :=
+  inferInstanceAs <| SMul R (RingCon.Quotient _)
+
+deriving instance Semiring for TensorAlgebra
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
@@ -79,18 +89,14 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
 example : (Semiring.toNatAlgebra : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
-    [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] :
+    [Algebra R A] [Algebra S A] [Module A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
   inferInstanceAs <| SMulCommClass R S (RingCon.Quotient _)
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
-    [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
+    [SMul R S] [Algebra R A] [Algebra S A] [Module A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
   inferInstanceAs <| IsScalarTower R S (RingCon.Quotient _)
-
-namespace TensorAlgebra
 
 instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   inferInstanceAs <| Ring (RingCon.Quotient _)
@@ -112,7 +118,7 @@ irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
       exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.add
     map_smul' := fun r x => by
       rw [← RingCon.coe_smul]
-      exact Quotient.sound <| RingConGen.Rel.of _ _ <| Rel.smul}
+      exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.smul}
 
 theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
     RingCon.mkₐ R (ringCon R M) (FreeAlgebra.ι R m) = ι R m := by

@@ -102,18 +102,18 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
 
 lemma ω₁_div_two_notMem_lattice : L.ω₁ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
-    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 1 / 2) (β := 0)).not.mpr (by norm_num)
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 1 / 2) (β := 0)).not.mpr (by simp)
 
 lemma ω₂_div_two_notMem_lattice : L.ω₂ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
-    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1 / 2)).not.mpr (by norm_num)
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1 / 2)).not.mpr (by simp)
 
 -- helper lemma to connect to the ZLattice API
 lemma lattice_eq_span_range_basis :
     L.lattice = Submodule.span ℤ (Set.range L.basis) := by
   have : Finset.univ (α := Fin 2) = {0, 1} := rfl
   rw [lattice, ← Set.image_univ, ← Finset.coe_univ, this]
-  simp [Set.image_insert_eq]
+  simp
 
 instance : DiscreteTopology L.lattice := L.lattice_eq_span_range_basis ▸ inferInstance
 
@@ -122,7 +122,7 @@ instance : IsZLattice ℝ L.lattice := by
   infer_instance
 
 lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
-  @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
+  @AddSubgroup.isClosed_of_discreteTopology _ _ _ _ _ L.lattice.toAddSubgroup
     (inferInstanceAs (DiscreteTopology L.lattice))
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
@@ -239,7 +239,7 @@ lemma hasSum_weierstrassPExcept (l₀ : ℂ) (z : ℂ) :
       (℘[L - l₀] z) :=
   (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSum
 
-/- `weierstrassPExcept l₀` is differentiable on non-lattice points and `l₀`. -/
+/-- `weierstrassPExcept l₀` is differentiable on non-lattice points and `l₀`. -/
 lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
     DifferentiableOn ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSumLocallyUniformlyOn.differentiableOn
@@ -293,7 +293,7 @@ lemma weierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
 lemma hasSumLocallyUniformly_weierstrassP :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2) ℘[L] := by
   convert! L.hasSumLocallyUniformly_weierstrassPExcept (L.ω₁ / 2) using 3 with l
-  · rw [if_neg]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
+  · rw [ite_eq_right]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
 lemma hasSum_weierstrassP (z : ℂ) :
@@ -346,7 +346,7 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
-  · simpa using! show 0 ≤ ‖↑l‖ ^ 3 by positivity
+  · simp
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
   have : l ≠ 0 := by rintro rfl; simp_all; linarith
   simp only [Complex.norm_div, norm_neg, Complex.norm_ofNat, norm_pow]
@@ -544,7 +544,7 @@ lemma derivWeierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
 lemma hasSumLocallyUniformly_derivWeierstrassP :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ - 2 / (z - l) ^ 3) ℘'[L] := by
   convert! L.hasSumLocallyUniformly_derivWeierstrassPExcept (L.ω₁ / 2) using 3 with l z
-  · rw [if_neg, neg_div]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
+  · rw [ite_eq_right, neg_div]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
 lemma hasSum_derivWeierstrassP (z : ℂ) :
@@ -701,7 +701,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     · simp
     calc
       _ = ‖(p.1 + 2 : ℂ)‖ * ‖p.2 - x‖ ^ (-3 - p.1 : ℤ) * ‖z - x‖ ^ (p.1 + 1) := by
-        norm_num; ring_nf; simp
+        simp; ring_nf; simp
       _ = ‖(p.1 + 2 : ℂ)‖ * ((‖↑p.2 - x‖ / ‖z - x‖) ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
         simp [hpx, zpow_sub₀, div_pow]; field
       _ ≤ (p.1 + 2) * (κ ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
@@ -932,8 +932,8 @@ lemma order_weierstrassP (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
     · filter_upwards [self_mem_nhdsWithin] with z (hz : _ ≠ _)
       have : (z - l₀) ^ 2 ≠ 0 := by simpa [sub_eq_zero]
       simp [← L.ite_eq_one_sub_sq_mul_weierstrassP l₀ h,
-        if_neg hz, inv_mul_cancel_left₀ this, zpow_ofNat]
-  · norm_num
+        ite_eq_right hz, inv_mul_cancel_left₀ this, zpow_ofNat]
+  · simp
 
 end Analytic
 
@@ -971,7 +971,7 @@ private lemma meromorphic_relation : Meromorphic L.relation := by
   refine fun z ↦ (this _).congr ?_
   filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds
     (L.compl_lattice_sdiff_singleton_mem_nhds _)] with w hw hw'
-  rw [relation, if_neg (by simp_all)]
+  rw [relation, ite_eq_right (by simp_all)]
 
 private lemma relation_mul_id_pow_six_eventuallyEq :
     (L.relation * id ^ 6) =ᶠ[nhds 0] fun z ↦
@@ -1069,7 +1069,7 @@ private lemma relation_eq_zero : L.relation = 0 := by
   have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt
   exact (this.apply_eq_apply_of_bounded (IsZLattice.isCompact_range_of_periodic L.lattice _
     this.continuous fun z w hw ↦ by lift w to L.lattice using hw; simp).isBounded x 0).trans
-    (if_pos (by simp))
+    (ite_eq_left (by simp))
 
 /-- `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃` -/
 lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :

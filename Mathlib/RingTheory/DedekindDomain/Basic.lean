@@ -63,6 +63,11 @@ theorem Ideal.IsPrime.isMaximal {R : Type*} [CommRing R] [DimensionLEOne R]
     {p : Ideal R} (h : p.IsPrime) (hp : p ≠ ⊥) : p.IsMaximal :=
   DimensionLEOne.maximalOfPrime hp h
 
+theorem Ideal.mem_minimalPrimes_of_ne_bot {R : Type*} [CommRing R] [Ring.DimensionLEOne R]
+    {p q : Ideal R} [q.IsPrime] (hp : p ≠ ⊥) (hpq : p ≤ q) : q ∈ p.minimalPrimes :=
+  ⟨⟨‹_›, hpq⟩, fun r ⟨hr1, hr2⟩ h ↦
+    ((hr1.isMaximal (ne_bot_of_le_ne_bot hp hr2)).eq_of_le Ideal.IsPrime.ne_top' h).ge⟩
+
 namespace Ring.DimensionLEOne
 
 instance principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
@@ -74,8 +79,8 @@ theorem of_isIntegral (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
     [Algebra R B] [Algebra.IsIntegral R B] [DimensionLEOne R] :
     DimensionLEOne B where
   maximalOfPrime := fun {p} ne_bot _ =>
-    IsIntegral.isMaximal_of_isMaximal_comap p
-      (Ideal.IsPrime.isMaximal inferInstance (IsIntegral.comap_ne_bot R ne_bot))
+    IsIntegral.isMaximal_of_isMaximal_under p
+      (Ideal.IsPrime.isMaximal inferInstance (IsIntegral.under_ne_bot R ne_bot))
 
 @[deprecated (since := "2026-05-08")] alias isIntegralClosure := of_isIntegral
 
@@ -139,9 +144,8 @@ This is exactly `IsDedekindRing` plus the `IsDomain` hypothesis.
 The integral closure condition is independent of the choice of field of fractions:
 use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map`.
 
-This is the default implementation, but there are equivalent definitions,
-`IsDedekindDomainDvr` and `IsDedekindDomainInv`.
--/
+See also `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` and
+`isDedekindDomain_iff_mul_inv_cancel`. -/
 class IsDedekindDomain : Prop
   extends IsDomain A, IsDedekindRing A
 

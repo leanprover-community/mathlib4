@@ -600,7 +600,7 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
   let N' := (s ×ˢ s).attach.sup fun a ↦ N'
     ⟨_, (Finset.mem_product.mp a.2).1⟩ ⟨_, (Finset.mem_product.mp a.2).2⟩
   have eq2 a b : (a * b) ^ N' * (r a * b ^ N) = (a * b) ^ N' * (r b * a ^ N) := by
-    dsimp only [N']; rw [← Nat.sub_add_cancel (Finset.le_sup <| (Finset.mem_attach _ ⟨⟨a, b⟩,
+    dsimp only [N']; rw [← Nat.sub_add_cancel (Finset.le_sup (Finset.mem_attach _ ⟨⟨a, b⟩,
       Finset.mk_mem_product a.2 b.2⟩)), pow_add, mul_assoc, hN', ← mul_assoc]
   let N := N' + N
   let r a := a ^ N' * r a
@@ -610,7 +610,7 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
     rw [pow_add, mul_mul_mul_comm, ← mul_pow, eq2,
       mul_comm a.1, mul_pow, mul_mul_mul_comm, ← pow_add]
   have ⟨c, eq1⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp <|
-    (Ideal.eq_top_iff_one _).mp <| (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
+    (Ideal.eq_top_iff_one _).mp (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
   refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
     ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
@@ -622,8 +622,6 @@ theorem Away.isDomain [IsDomain R] {x : R} (hx : x ≠ 0) : IsDomain (Localizati
 end Localization
 
 end CommSemiring
-
-open Localization
 
 variable {R : Type*} [CommSemiring R]
 
@@ -639,7 +637,7 @@ noncomputable def selfZPow (m : ℤ) : B :=
   if _ : 0 ≤ m then algebraMap _ _ x ^ m.natAbs else mk' _ (1 : R) (Submonoid.pow x m.natAbs)
 
 theorem selfZPow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZPow x B n = algebraMap R B x ^ n.natAbs :=
-  dif_pos hn
+  dite_eq_left hn
 
 @[simp]
 theorem selfZPow_natCast (d : ℕ) : selfZPow x B d = algebraMap R B x ^ d :=
@@ -651,7 +649,7 @@ theorem selfZPow_zero : selfZPow x B 0 = 1 := by
 
 theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  dif_neg hn.not_ge
+  dite_eq_right hn.not_ge
 
 theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by

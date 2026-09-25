@@ -73,7 +73,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
 theorem exists_associated_mem_of_dvd_prod [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
     {p : M₀} (hp : Prime p)
     {s : Multiset M₀} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
-  Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
+  Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_isUnit]) fun a s ih hs hps => by
     rw [Multiset.prod_cons] at hps
     rcases hp.dvd_or_dvd hps with h | h
     · have hap := hs a (Multiset.mem_cons.2 (Or.inl rfl))
@@ -95,9 +95,9 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
     simp only [Multiset.prod_zero] at hprod
     left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>
-    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
+    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_ofPred] at hm
     simp only [Multiset.prod_cons] at hprod
-    simp only [Set.mem_setOf_eq] at hind
+    simp only [Set.mem_ofPred_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y * k) ?_ hs ?_

@@ -27,22 +27,38 @@ public meta section
 `loc`.
 * If `loc` is a list of locations, runs at each specified hypothesis (and finally the goal if `⊢` is
   included), and fails if any of the tactic applications fail.
-* If `loc` is `*`, runs at the nondependent `Prop` hypotheses (those produced by
-  `Lean.MVarId.getNondepPropHyps`) and then at the target.
+* If `loc` is `*`, runs at the target and at the nondependent `Prop` hypotheses in reversed order
+  (those produced by `Lean.MVarId.getNondepPropHyps`), calling `failed` if no location succeeds.
 
-This is a variant of `Lean.Elab.Tactic.withLocation`. -/
+The implementation adapts `Lean.Elab.Tactic.withLocation` with a restricted wildcard. -/
 def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId → TacticM Unit)
     (atTarget : TacticM Unit) (failed : MVarId → TacticM Unit) : TacticM Unit := do
   match loc with
-  | Location.targets hyps target => do
-    (← getFVarIds hyps).forM atLocal
-    if target then atTarget
-  | Location.wildcard => do
-    let mut worked := false
-    for hyp in ← (← getMainGoal).getNondepPropHyps do
-      worked := worked || (← tryTactic <| atLocal hyp)
-    unless worked || (← tryTactic atTarget) do
-      failed (← getMainGoal)
+  | .targets .. => withLocation loc atLocal atTarget failed
+  | .wildcard => do
+    let hyps ← withMainContext do (← getMainGoal).getNondepPropHyps
+    withLocation loc
+      (fun fvarId => do
+        -- throwing causes the `fvarId` to be skipped in `withLocation`
+        unless hyps.contains fvarId do throwError "not a nondependent Prop hypothesis"
+        atLocal fvarId)
+      atTarget failed
+
+/-- Collect the values from running the `atLocal` and `atTarget` methods on each of the locations
+selected by the given `loc`.
+* If `loc` is a list of locations, collects the results of running at each specified hypothesis (and
+  finally the goal if `⊢` is included), and fails if any of the applications fail.
+* If `loc` is `*`, collects the results of running at the target and at the nondependent `Prop`
+  hypotheses (those produced by `Lean.MVarId.getNondepPropHyps`). Locations where the application
+  fails are skipped, so the result can be empty. -/
+def Lean.Elab.Tactic.mapNondepPropLocation {α : Type} (loc : Location)
+    (atLocal : FVarId → TacticM α) (atTarget : TacticM α) : TacticM (Array α) := do
+  let results ← IO.mkRef (#[] : Array α)
+  withNondepPropLocation loc
+    (fun fvarId => do results.modify (·.push (← atLocal fvarId)))
+    (do results.modify (·.push (← atTarget)))
+    (fun _ => pure ())
+  results.get
 
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic

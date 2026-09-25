@@ -341,7 +341,7 @@ theorem isClosed_property [TopologicalSpace β] {e : α → β} {p : β → Prop
       univ = closure (range e) := he.closure_range.symm
       _ ⊆ closure { b | p b } := closure_mono <| range_subset_iff.mpr h
       _ = _ := hp.closure_eq
-  simpa only [univ_subset_iff, eq_univ_iff_forall, mem_setOf]
+  simpa only [univ_subset_iff, eq_univ_iff_forall, mem_ofPred]
 
 theorem isClosed_property2 [TopologicalSpace β] {e : α → β} {p : β → β → Prop} (he : DenseRange e)
     (hp : IsClosed { q : β × β | p q.1 q.2 }) (h : ∀ a₁ a₂, p (e a₁) (e a₂)) : ∀ b₁ b₂, p b₁ b₂ :=

@@ -993,7 +993,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- with `t < b` admits another point in `s` slightly to its right
     -- (this is a sort of real induction).
     refine s_closed.Icc_subset_of_forall_exists_gt
-      (by simp only [integral_same, mem_setOf_eq, sub_self, le_rfl]) fun t ht v t_lt_v => ?_
+      (by simp only [integral_same, mem_ofPred_eq, sub_self, le_rfl]) fun t ht v t_lt_v => ?_
     obtain ⟨y, g'_lt_y', y_lt_G'⟩ : ∃ y : ℝ, (g' t : EReal) < y ∧ (y : EReal) < G' t :=
       EReal.lt_iff_exists_real_btwn.1 ((EReal.coe_le_coe_iff.2 (hφg t ht.2)).trans_lt (f_lt_G' t))
     -- bound from below the increase of `∫ x in a..u, G' x` on the right of `t`, using the lower

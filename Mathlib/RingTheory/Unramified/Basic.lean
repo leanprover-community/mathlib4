@@ -220,7 +220,7 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   have e' :=
     FormallyUnramified.lift_unique I ⟨2, hI⟩ (f₁.comp <| IsScalarTower.toAlgHom R A B)
       (f₂.comp <| IsScalarTower.toAlgHom R A B) (by rw [← AlgHom.comp_assoc, e, AlgHom.comp_assoc])
-  let := (f₁.restrictDomain A).toAlgebra
+  let := (f₁.domRestrict A).toAlgebra
   let F₁ : B →ₐ[A] C := { f₁ with commutes' := fun r => rfl }
   let F₂ : B →ₐ[A] C := { f₂ with commutes' := AlgHom.congr_fun e'.symm }
   ext1 x
@@ -301,7 +301,7 @@ include M
 theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ := by
   rw [iff_comp_injective]
   intro Q _ _ I _ f₁ f₂ _
-  apply AlgHom.coe_ringHom_injective
+  apply AlgHom.toRingHom_injective
   refine IsLocalization.ringHom_ext M ?_
   ext
   simp
@@ -340,7 +340,7 @@ lemma exists_algEquiv_prod (R S : Type u) [CommRing R] [CommRing S]
   let e₁ := AlgEquiv.prodQuotientOfIsIdempotentElem (R := S) he he.one_sub (by simp) (by simp [he])
   let e₂ : (S ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[S] S :=
     ((Ideal.span {e}).quotientEquivAlgOfEq S hsp.symm).trans <|
-      Ideal.quotientKerAlgEquivOfSurjective <|
+      Ideal.quotientKerAlgEquivOfSurjective
         (⟨· ⊗ₜ 1, by simp [Algebra.TensorProduct.lmul'']⟩)
   exact ⟨(S ⊗[R] S) ⧸ Ideal.span {1 - e}, inferInstance, inferInstance,
     ⟨e₁.trans (.prodCongr e₂ .refl)⟩⟩

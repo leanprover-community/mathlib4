@@ -18,11 +18,13 @@ intervals to the right or to the left of `a`. We give now these characterization
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 section LinearOrder
 
@@ -63,13 +65,13 @@ theorem TFAE_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
 
 theorem mem_nhdsGT_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioc a u', Ioo a u ⊆ s :=
-  (TFAE_mem_nhdsGT hu' s).out 0 3
+  (TFAE_mem_nhdsGT hu' s).out 1 4
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsGT_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
-  (TFAE_mem_nhdsGT hu' s).out 0 4
+  (TFAE_mem_nhdsGT hu' s).out 1 5
 
 theorem nhdsGT_basis_of_exists_gt {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
   let ⟨_, h⟩ := h
@@ -106,22 +108,28 @@ theorem mem_nhdsGT_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : Set α} :
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
-theorem countable_setOf_isolated_right [SecondCountableTopology α] :
+theorem countable_setOfPred_isolated_right [SecondCountableTopology α] :
     { x : α | 𝓝[>] x = ⊥ }.Countable := by
-  simp only [nhdsGT_eq_bot_iff, setOf_or]
-  exact (subsingleton_isTop α).countable.union countable_setOf_covBy_right
+  simp only [nhdsGT_eq_bot_iff, ofPred_or]
+  exact (subsingleton_isTop α).countable.union countable_setOfPred_covBy_right
+
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_isolated_right := countable_setOfPred_isolated_right
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
-theorem countable_setOf_isolated_left [SecondCountableTopology α] :
+theorem countable_setOfPred_isolated_left [SecondCountableTopology α] :
     { x : α | 𝓝[<] x = ⊥ }.Countable :=
-  countable_setOf_isolated_right (α := αᵒᵈ)
+  countable_setOfPred_isolated_right (α := αᵒᵈ)
+
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_isolated_left := countable_setOfPred_isolated_left
 
 /-- The set of points in a set which are isolated on the right in this set is countable when the
 space is second-countable. -/
-theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
+theorem countable_setOfPred_isolated_right_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ }.Countable := by
-  /- This does not follow from `countable_setOf_isolated_right`, which gives the result when `s`
+  /- This does not follow from `countable_setOfPred_isolated_right`, which gives the result when `s`
   is the whole space, as one cannot use it inside the subspace since it doesn't have the order
   topology. Instead, we follow the main steps of its proof. -/
   let t := { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ ∧ ¬ IsTop x}
@@ -135,7 +143,7 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
     simp [H, (subsingleton_isTop α).countable]
   have (x) (hx : x ∈ t) : ∃ y > x, s ∩ Ioo x y = ∅ := by
     simp only [← empty_mem_iff_bot, mem_nhdsWithin_iff_exists_mem_nhds_inter,
-      subset_empty_iff, IsTop, not_forall, not_le, mem_setOf_eq, t] at hx
+      subset_empty_iff, IsTop, not_forall, not_le, mem_ofPred_eq, t] at hx
     rcases hx.2.1 with ⟨u, hu, h'u⟩
     obtain ⟨y, hxy, hy⟩ : ∃ y, x < y ∧ Ico x y ⊆ u := exists_Ico_subset_of_mem_nhds hu hx.2.2
     refine ⟨y, hxy, ?_⟩
@@ -157,11 +165,17 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
   rw [disjoint_iff_forall_ne]
   exact fun u hu v hv ↦ ((hu.2.trans_le this).trans hv.1).ne
 
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_isolated_right_within := countable_setOfPred_isolated_right_within
+
 /-- The set of points in a set which are isolated on the left in this set is countable when the
 space is second-countable. -/
-theorem countable_setOf_isolated_left_within [SecondCountableTopology α] {s : Set α} :
+theorem countable_setOfPred_isolated_left_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ }.Countable :=
-  countable_setOf_isolated_right_within (α := αᵒᵈ)
+  countable_setOfPred_isolated_right_within (α := αᵒᵈ)
+
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_within
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
@@ -193,13 +207,13 @@ theorem TFAE_mem_nhdsLT {a b : α} (h : a < b) (s : Set α) :
 
 theorem mem_nhdsLT_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
-  (TFAE_mem_nhdsLT hl' s).out 0 3
+  (TFAE_mem_nhdsLT hl' s).out 1 4
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsLT_iff_exists_Ioo_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ioo l a ⊆ s :=
-  (TFAE_mem_nhdsLT hl' s).out 0 4
+  (TFAE_mem_nhdsLT hl' s).out 1 5
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`. -/
@@ -267,13 +281,13 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
 
 theorem mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 3 (by simp) (by simp)
+  (TFAE_mem_nhdsGE hu' s).out 1 4 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsGE_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  (TFAE_mem_nhdsGE hu' s).out 0 4 (by simp) (by simp)
+  (TFAE_mem_nhdsGE hu' s).out 1 5 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u`. -/
@@ -316,13 +330,13 @@ theorem TFAE_mem_nhdsLE {a b : α} (h : a < b) (s : Set α) :
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 3 (by simp) (by simp)
+  (TFAE_mem_nhdsLE hl' s).out 1 4 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsLE_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
-  (TFAE_mem_nhdsLE hl' s).out 0 4 (by simp) (by simp)
+  (TFAE_mem_nhdsLE hl' s).out 1 5 (by simp) (by simp)
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`. -/
@@ -357,7 +371,7 @@ variable {l : Filter β} {f g : β → α}
 
 @[to_additive]
 theorem nhds_eq_iInf_mabs_div (a : α) : 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r } := by
-  simp only [nhds_eq_order, mabs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
+  simp only [nhds_eq_order, mabs_lt, ofPred_and, ← inf_principal, iInf_inf_eq]
   refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
   · refine (Equiv.divLeft a).iInf_congr fun x => ?_; simp [Ioi]
   · refine (Equiv.divRight a).iInf_congr fun x => ?_; simp [Iio]

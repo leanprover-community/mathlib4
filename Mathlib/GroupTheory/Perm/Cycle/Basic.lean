@@ -425,7 +425,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
 theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCycle f) {x : α}
     (hx : f x ≠ x) (hffx : f (f x) ≠ x) : IsCycle (swap x (f x) * f) := by
   refine ⟨f x, ?_, fun y hy ↦ ?_⟩
-  · simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, hx]
+  · simp [swap_apply_def, mul_apply, ite_eq_right hffx, f.injective.eq_iff, hx]
   obtain ⟨i, rfl⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
   exact isCycle_swap_mul_aux₂ (i - 1) hy (by simp [← mul_apply, -coe_mul, ← zpow_add_one])
 
@@ -652,7 +652,7 @@ end Conjugation
 
 section IsCycleOn
 
-variable {f g : Perm α} {s t : Set α} {a b x y : α}
+variable {f g : Perm α} {s : Set α} {a b x y : α}
 
 /-- A permutation is a cycle on `s` when any two points of `s` are related by repeated application
 of the permutation. Note that this means the identity is a cycle of subsingleton sets. -/
@@ -831,7 +831,7 @@ variable [DecidableEq α] {l : List α}
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
-  rw [Set.mem_setOf, ← List.idxOf_lt_length_iff] at ha hb
+  rw [Set.mem_ofPred, ← List.idxOf_lt_length_iff] at ha hb
   rw [← List.getElem_idxOf ha, ← List.getElem_idxOf hb]
   refine ⟨l.idxOf b - l.idxOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,

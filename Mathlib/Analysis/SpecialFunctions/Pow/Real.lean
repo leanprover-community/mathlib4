@@ -20,7 +20,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open Real ComplexConjugate Finset Set
+open Real Finset Set
 
 /-
 ## Definitions
@@ -49,7 +49,7 @@ theorem rpow_def_of_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) :
       (Complex.ofReal_mul _ _).symm, Complex.exp_ofReal_re, Complex.ofReal_eq_zero]
 
 theorem rpow_def_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : x ^ y = exp (log x * y) := by
-  rw [rpow_def_of_nonneg (le_of_lt hx), if_neg (ne_of_gt hx)]
+  rw [rpow_def_of_nonneg (le_of_lt hx), ite_eq_right (ne_of_gt hx)]
 
 theorem exp_mul (x y : ℝ) : exp (x * y) = exp x ^ y := by rw [rpow_def_of_pos (exp_pos _), log_exp]
 
@@ -93,7 +93,7 @@ lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 := by
 open Real
 
 theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * y) * cos (y * π) := by
-  rw [rpow_def, Complex.cpow_def, if_neg]
+  rw [rpow_def, Complex.cpow_def, ite_eq_right]
   · have : Complex.log x * y = ↑(log (-x) * y) + ↑(y * π) * Complex.I := by
       simp only [Complex.log, Complex.norm_real, norm_eq_abs, abs_of_neg hx, log_neg_eq_log,
         Complex.arg_ofReal_of_neg hx, Complex.ofReal_mul]
@@ -106,11 +106,12 @@ theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * 
   · rw [Complex.ofReal_eq_zero]
     exact ne_of_lt hx
 
--- simp is called on three goals at once (leaving one), with different simp sets
-set_option linter.flexible false in
 theorem rpow_def_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) * cos (y * π) := by
-  split_ifs with h <;> simp [rpow_def, *]; exact rpow_def_of_neg (lt_of_le_of_ne hx h) _
+  split_ifs with h
+  · simp_all [rpow_def]
+  · simp_all
+  · exact rpow_def_of_neg (hx.lt_of_ne h) _
 
 @[bound]
 theorem rpow_pos_of_pos {x : ℝ} (hx : 0 < x) (y : ℝ) : 0 < x ^ y := by
@@ -370,7 +371,7 @@ end Complex
 /-! ### Positivity extension -/
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
@@ -473,12 +474,13 @@ theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
   rw [rpow_neg_eq_inv_rpow, rpow_one]
 
--- TODO: fix non-terminal simp (acting on three goals, with different simp sets, leaving two)
-set_option linter.flexible false in
 theorem mul_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) : (x * y) ^ z = x ^ z * y ^ z := by
-  iterate 2 rw [Real.rpow_def_of_nonneg]; split_ifs with h_ifs <;> simp_all
-  · rw [log_mul ‹_› ‹_›, add_mul, exp_add, rpow_def_of_pos (hy.lt_of_ne' ‹_›)]
-  all_goals positivity
+  iterate 2 rw [rpow_def_of_nonneg (by positivity)]; split_ifs with nz
+  on_goal 4 =>
+    rw [← Ne, mul_ne_zero_iff] at nz
+    rw [log_mul nz.1 nz.2, add_mul, exp_add, rpow_def_of_pos (hx.lt_of_ne' nz.1),
+      rpow_def_of_pos (hy.lt_of_ne' nz.2)]
+  all_goals simp_all
 
 theorem inv_rpow (hx : 0 ≤ x) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   rw [← rpow_neg_eq_inv_rpow, rpow_neg hx]
@@ -892,6 +894,10 @@ with positive exponent. -/
 lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
   log_le_rpow_div n.cast_nonneg hε
 
+/-- `log x` is bounded below by minus a multiple of every power of `x` with negative exponent. -/
+lemma neg_rpow_div_le_log {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : -x ^ (-ε) / ε ≤ log x := by
+  simpa [rpow_neg_eq_inv_rpow, neg_div] using neg_le_neg (log_le_rpow_div (inv_nonneg.mpr hx) hε)
+
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
     StrictMono (b ^ · : ℝ → ℝ) := by
   simp_rw [Real.rpow_def_of_pos (zero_lt_one.trans hb)]
@@ -939,7 +945,7 @@ lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
   refine (Real.rpow_le_rpow_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
     by rw [neg_re]; linarith only [hs]).trans ?_
   rw [one_div, ← Real.rpow_neg_one]
-  exact Real.rpow_le_rpow_of_exponent_le one_le_two <| (neg_lt_neg hs).le
+  exact Real.rpow_le_rpow_of_exponent_le one_le_two (neg_lt_neg hs).le
 
 lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.re) :
     1 - (p : ℂ) ^ (-s) ≠ 0 := by
@@ -977,7 +983,7 @@ end Complex
 
 namespace Real
 
-variable {z x y : ℝ}
+variable {x : ℝ}
 
 section Sqrt
 

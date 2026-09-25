@@ -6,7 +6,8 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Topology.MetricSpace.Polish
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
 # Inner regularity of finite measures

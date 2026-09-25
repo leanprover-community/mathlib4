@@ -103,7 +103,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
       rw [singleton_one ℚ K]
       exact mem_top
     obtain ⟨y, rfl⟩ := mem_bot.1 this
-    replace h := (isIntegral_algebraMap_iff (algebraMap ℚ K).injective).1 h
+    replace h := isIntegral_algebraMap_iff.1 h
     obtain ⟨z, hz⟩ := IsIntegrallyClosed.isIntegral_iff.1 h
     rw [← hz, ← IsScalarTower.algebraMap_apply]
     exact Subalgebra.algebraMap_mem _ _
@@ -137,7 +137,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
-    simp only [Set.singleton_subset_iff, Set.mem_setOf_eq]
+    simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
     exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {p ^ k} ℤ _).isIntegral _)
@@ -389,7 +389,7 @@ The norm, relative to `ℤ`, of `ζ - 1` in a `2`-th cyclotomic extension of `�
 theorem norm_toInteger_sub_one_of_eq_two [IsCyclotomicExtension {2} ℚ K]
     (hζ : IsPrimitiveRoot ζ 2) :
     norm ℤ (hζ.toInteger - 1) = -2 := by
-  rw [show 2 = (2 ^ (0 + 1)) by norm_num] at hζ
+  rw [show 2 = (2 ^ (0 + 1)) by simp] at hζ
   simpa using hζ.norm_toInteger_pow_sub_one_of_two
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p`-th cyclotomic extension of `ℚ` is `p` if
@@ -659,7 +659,6 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 
 variable (n) [hn : NeZero n]
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra IntermediateField Nat in
 /--
 Computes the absolute discriminant of the `n`-th cyclotomic field.
@@ -765,7 +764,6 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
 
 variable {n K}
 
-set_option backward.isDefEq.respectTransparency false in
 open IntermediateField Algebra in
 theorem adjoin_singleton_eq_top [hK : IsCyclotomicExtension {n} ℚ K]
     {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
@@ -822,7 +820,7 @@ theorem cyclotomicRing_isIntegralClosure :
   refine ⟨IsFractionRing.injective _ _, fun {x} => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
-    simp only [Set.singleton_subset_iff, Set.mem_setOf_eq]
+    simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
     exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {n} ℤ _).isIntegral _)
@@ -929,15 +927,15 @@ theorem IsCyclotomicExtension.Rat.torsionOrder_eq [NeZero n] [NumberField K]
     rwa [Set.union_comm, ← IsCyclotomicExtension.iff_union_of_dvd] at this
     exact ⟨n.lcm (torsionOrder K), by simp, NeZero.ne _, Nat.dvd_lcm_left _ _⟩
   -- We deduce the identity `φ(n) = φ(lcm (n, torsionOrder K))`.
-  have h_main := (IsCyclotomicExtension.Rat.finrank n K).symm.trans <|
+  have h_main := (IsCyclotomicExtension.Rat.finrank n K).symm.trans
     (IsCyclotomicExtension.Rat.finrank (n.lcm (torsionOrder K)) K)
   obtain hn | hn := Nat.even_or_odd n
-  · rw [if_pos hn]
+  · rw [ite_eq_left hn]
     apply dvd_antisymm
     · have := hn.eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) h_main
       rwa [eq_comm, Nat.lcm_eq_left_iff_dvd] at this
     · exact dvd_torsionOrder_of_isPrimitiveRoot hζ
-  · rw [if_neg (Nat.not_even_iff_odd.mpr hn)]
+  · rw [ite_eq_right (Nat.not_even_iff_odd.mpr hn)]
     have := (Nat.eq_or_eq_of_totient_eq_totient (Nat.dvd_lcm_left _ _) h_main).resolve_left ?_
     · rw [this, eq_comm, Nat.lcm_eq_right_iff_dvd]
       exact dvd_torsionOrder_of_isPrimitiveRoot hζ

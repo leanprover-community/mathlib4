@@ -18,7 +18,9 @@ theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
 
 public section
 
-open Bornology Filter Asymptotics Set Topology
+open Bornology Filter Asymptotics Set
+
+open scoped Topology
 
 section NormedField
 
@@ -112,7 +114,7 @@ theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filte
   rw [isEquivalent_iff_exists_eq_mul]
   have hφr : Tendsto ((fun x ↦ x ^ r) ∘ φ) l (𝓝 1) := by
     rw [← Real.one_rpow r]
-    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
+    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; simp)) hφ
   use (· ^ r) ∘ φ, hφr
   conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
   filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
@@ -124,7 +126,7 @@ theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → 
   have hg := g_tendsto.eventually_ne_atTop 0
   have hf := hfg.symm.tendsto_atTop g_tendsto |>.eventually_ne_atTop 0
   rw [isEquivalent_iff_tendsto_one hg] at hfg
-  have := hfg.log (by norm_num) |>.congr' <| by
+  have := hfg.log (by simp) |>.congr' <| by
     filter_upwards [hf, hg] with n hf hg using Real.log_div hf hg
   exact IsLittleO.isEquivalent <| calc
     (fun n ↦ Real.log (f n) - Real.log (g n)) =o[l] fun _ ↦ (1 : ℝ) := by simpa
@@ -138,7 +140,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
     (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
   have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
   have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n => by
-    rwa [Real.norm_eq_abs, abs_sum_of_nonneg']
+    rw [Real.norm_eq_abs, abs_sum_of_nonneg]; exact fun _ _ ↦ hg _
   apply isLittleO_iff.2 fun ε εpos => _
   intro ε εpos
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b : ℕ, N ≤ b → ‖f b‖ ≤ ε / 2 * g b := by
@@ -212,12 +214,11 @@ section boundedRange
 /-!
 ## Bounded Range versus `IsBigO` Asymptotics
 
-For a continuous function `f` into a seminormed space, defined on an unbounded linear order whose
-order topology has compact intervals, having bounded range is equivalent to being `O(1)` along both
-`atTop` and `atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a
-single `O(1)` bound along `atTop` already suffices
-(`Continuous.isBounded_range_iff_isBigO_atTop_of_even`), since `Function.Even` transports an `atTop`
-bound to an `atBot` bound (`Function.Even.isBigO_atTop_iff_isBigO_atBot`).
+For a continuous function `f` into a seminormed space, having bounded range is equivalent to being
+`O(1)` along the cocompact filter (`Continuous.isBounded_range_iff_isBigO`). On an unbounded linear
+order whose order topology has compact intervals, this means being `O(1)` along both `atTop` and
+`atBot` (`Continuous.isBounded_range_iff_isBigO_atTop_atBot`). For an even function a single `O(1)`
+bound along `atTop` already suffices (`Continuous.isBounded_range_iff_isBigO_atTop_of_even`).
 -/
 
 variable

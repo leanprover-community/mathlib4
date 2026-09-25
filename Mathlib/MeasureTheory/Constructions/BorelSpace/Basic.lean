@@ -182,7 +182,7 @@ instance (priority := 100) OrderDual.borelSpace {α : Type*} [TopologicalSpace �
 /-- In a `BorelSpace` all open sets are measurable. -/
 instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] : OpensMeasurableSpace α :=
-  ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
+  ⟨ge_of_eq BorelSpace.measurable_eq⟩
 
 instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [hα : BorelSpace α] (p : α → Prop) : BorelSpace (Subtype p) :=
@@ -251,7 +251,7 @@ theorem IsGδ.measurableSet (h : IsGδ s) : MeasurableSet s := by
 
 theorem measurableSet_of_continuousAt {β} [PseudoEMetricSpace β] (f : α → β) :
     MeasurableSet { x | ContinuousAt f x } :=
-  (IsGδ.setOf_continuousAt f).measurableSet
+  (IsGδ.setOfPred_continuousAt f).measurableSet
 
 theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
   h.isOpen_compl.measurableSet.of_compl
@@ -379,7 +379,7 @@ instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*}
     rw [borel, MeasurableSpace.pi, ciSup_unique]
     refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
     simp +instances only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
-      Set.mem_setOf_eq] at hs
+      Set.mem_ofPred_eq] at hs
     obtain ⟨t, ht, rfl⟩ := hs
     exact ⟨t, ht.measurableSet, rfl⟩
 
@@ -453,7 +453,7 @@ variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
 
 theorem interior_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     interior s =ᵐ[μ] s :=
-  interior_subset.eventuallyLE.antisymm <| subset_closure.eventuallyLE.trans (ae_le_set.2 h)
+  interior_subset.eventuallySubset.antisymm <| subset_closure.eventuallySubset.trans (ae_le_set.2 h)
 
 theorem measure_interior_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (interior s) = μ s :=
@@ -465,7 +465,8 @@ theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : �
 
 theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     closure s =ᵐ[μ] s :=
-  ((ae_le_set.2 h).trans interior_subset.eventuallyLE).antisymm <| subset_closure.eventuallyLE
+  ((ae_le_set.2 h).trans interior_subset.eventuallySubset).antisymm
+    subset_closure.eventuallySubset
 
 theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (closure s) = μ s :=
@@ -490,7 +491,7 @@ instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
 is measurable. -/
 @[fun_prop]
 theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f :=
-  hf.borel_measurable.mono OpensMeasurableSpace.borel_le (le_of_eq <| BorelSpace.measurable_eq)
+  hf.borel_measurable.mono OpensMeasurableSpace.borel_le (le_of_eq BorelSpace.measurable_eq)
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is ae-measurable. -/
@@ -503,7 +504,7 @@ theorem ContinuousOn.measurable_of_countable_compl [MeasurableSingletonClass α]
     {f : α → γ} {s : Set α} (hf : ContinuousOn f s) (hs : (sᶜ).Countable) : Measurable f := by
   apply measurable_of_measurable_on_compl_countable _ hs
   rw [compl_compl]
-  exact (continuousOn_iff_continuous_restrict.1 hf).measurable
+  exact (continuousOn_iff_continuous_domRestrict.1 hf).measurable
 
 /-- If a function is continuous outside of a countable set, then it is measurable. -/
 theorem measurable_of_countable_not_continuousAt [MeasurableSingletonClass α]
@@ -585,7 +586,7 @@ theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
     (hf : ContinuousOn f {a}ᶜ) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a
-    (continuousOn_iff_continuous_restrict.1 hf).measurable
+    (continuousOn_iff_continuous_domRestrict.1 hf).measurable
 
 theorem Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)
@@ -634,7 +635,7 @@ theorem pi_le_borel_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace 
   have : ‹∀ i, MeasurableSpace (X i)› = fun i => borel (X i) :=
     funext fun i => BorelSpace.measurable_eq
   rw [this]
-  exact iSup_le fun i => comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
+  exact iSup_le fun i => comap_le_iff_le_map.2 (continuous_apply i).borel_measurable
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]

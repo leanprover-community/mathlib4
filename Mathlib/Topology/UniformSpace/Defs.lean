@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rel.Cover
+public import Mathlib.Basic.Rel.Cover
 public import Mathlib.Topology.Order
 
 /-!
@@ -82,12 +82,12 @@ operations on filters, without directly manipulating entourages.
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`.
 This file also uses a lot the notation `○` for composition of relations, seen as terms with
-type `SetRel X X`. This notation (defined in the file `Mathlib/Data/Rel.lean`) is
+type `SetRel X X`. This notation (defined in the file `Mathlib/Basic/Rel.lean`) is
 localized in `SetRel`.
 
 ## Implementation notes
 
-We use the theory of relations as sets developed in `Mathlib/Data/Rel.lean`.
+We use the theory of relations as sets developed in `Mathlib/Basic/Rel.lean`.
 The relevant definition is `SetRel X X := Set (X × X)`, which is the type of elements of
 the uniformity filter `𝓤 X : Filter (X × X)`.
 
@@ -108,7 +108,9 @@ But it makes a more systematic use of the filter library.
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v ua ub uc ud
 
@@ -116,7 +118,7 @@ universe u v ua ub uc ud
 ### Relations, seen as `SetRel α α`
 -/
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
+variable {α : Type ua} {β : Type ub} {γ : Type uc} {ι : Sort*}
 
 open scoped SetRel
 
@@ -500,7 +502,7 @@ theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by
   rw [uniformity_eq_symm, mem_nhds_uniformity_iff_right]
-  simp only [mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
+  simp only [mem_map, preimage_ofPred_eq, Prod.snd_swap, Prod.fst_swap]
 
 theorem nhdsWithin_eq_comap_uniformity_of_mem {x : α} {T : Set α} (hx : x ∈ T) (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (T ×ˢ S)).comap (Prod.mk x) := by

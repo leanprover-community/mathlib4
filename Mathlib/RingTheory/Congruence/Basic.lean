@@ -74,7 +74,7 @@ instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower 
 
 instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
-  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
+  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' (mul_smul_comm _ _ _).symm
 
 instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
@@ -347,12 +347,6 @@ theorem comap_ringConGen_ringEquiv {R R'} [NonAssocSemiring R] [NonAssocSemiring
     simp [Function.onFun, RingEquiv.coe_toNonUnitalRingHom']
   · rw [← comap_nonUnitalRingHomComp]
     simp
-
--- This one probably needs the RingCon version of `Setoid.comap_surjective`
-proof_wanted comap_ringConGen_equiv
-    {F} [FunLike F R' R] [MulHomClass F R' R] [AddHomClass F R' R] [EquivLike F R' R]
-    (r : R → R → Prop) (f : F) :
-    (ringConGen r).comap f = ringConGen (r on f)
 
 end Lattice
 

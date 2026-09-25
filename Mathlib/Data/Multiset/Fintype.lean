@@ -87,7 +87,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
     (by
       rintro ⟨x, i⟩
       simp_rw [Finset.mem_disjiUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
-        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_setOf_eq]
+        Function.Embedding.coeFn_mk, Prod.mk_inj, Set.mem_ofPred_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (by lia))
 
@@ -110,6 +110,11 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
 
 @[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
+
+@[to_additive]
+theorem prod_map_eq_prod_toEnumFinset {M : Type*} [CommMonoid M] (m : Multiset α) (f : α → M) :
+    (m.map f).prod = ∏ i ∈ m.toEnumFinset, f i.1 := by
+  grind [m.map_toEnumFinset_fst, map_map, Finset.prod_map_val]
 
 @[simp] lemma image_toEnumFinset_fst (m : Multiset α) :
     m.toEnumFinset.image Prod.fst = m.toFinset := by

@@ -129,7 +129,7 @@ lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
     legendreSym (mersenne p) 3 = -1 := by
-  rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)
+  rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by simp)
     (mersenne_mod_four (by lia)),
     legendreSym.mod]
   rw_mod_cast [mersenne_mod_three odd hp]
@@ -514,13 +514,10 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
   exact mod_cast h
 
--- TODO: fix non-terminal simp (acting on two goals with different simp sets)
-set_option linter.flexible false in
 set_option backward.isDefEq.respectTransparency false in
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
-  ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, -pow_pos]
-  apply Nat.minFac_dvd
+  ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, Nat.minFac_dvd, -pow_pos]
 
 theorem ω_pow_eq_neg_one (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     (ω : X (q (p' + 2))) ^ 2 ^ (p' + 1) = -1 := by
@@ -606,7 +603,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime)
   have := X.ω_pow_trace (q := mersenne (p' + 2)) (by simp)
     (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by lia))
     (legendreSym_mersenne_two w) (by simp [pow_add])
-  rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by norm_num, mul_div_cancel_right₀ _ (by norm_num)]
+  rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by simp, mul_div_cancel_right₀ _ (by simp)]
     at this
   simp [this]
 
@@ -642,7 +639,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
     grind [sModNat, sMod, Int.emod_eq_add_self_emod]
 
 /-- Tail-recursive version of `sModNat`. -/
-meta def sModNatTR (q k : ℕ) : ℕ :=
+@[expose] meta def sModNatTR (q k : ℕ) : ℕ :=
   go k (4 % q)
 where
   /-- Helper function for `sMod''`. -/

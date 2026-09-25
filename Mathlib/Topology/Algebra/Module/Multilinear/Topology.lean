@@ -137,9 +137,9 @@ theorem completeSpace (h : IsCoherentWith {s : Set (Π i, E i) | IsVonNBounded �
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
     (uniformContinuous_eval (sUnion_isVonNBounded_eq_univ) _).continuous
   rw [completeSpace_iff_isComplete_range isUniformInducing_toUniformOnFun, range_toUniformOnFun]
-  simp only [setOf_and, setOf_forall]
+  simp only [ofPred_and, ofPred_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
-  · exact UniformOnFun.isClosed_setOf_continuous h
+  · exact UniformOnFun.isClosed_setOfPred_continuous h
   · exact isClosed_iInter fun m ↦ isClosed_iInter fun i ↦
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq H (H.add H)
   · exact isClosed_iInter fun m ↦ isClosed_iInter fun i ↦
@@ -384,7 +384,7 @@ def compContinuousMultilinearMapL :
     cont := by
       apply continuous_of_tendsto_nhds_zero aux
       rw [ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff <|
-        ContinuousLinearMap.hasBasis_nhds_zero_of_basis <|
+        ContinuousLinearMap.hasBasis_nhds_zero_of_basis
         ContinuousMultilinearMap.hasBasis_nhds_zero]
       rintro ⟨U, V, W⟩ ⟨hU, hV, hW⟩
       refine ⟨(.image2 (fun f v ↦ f v) U V, W), ⟨?_, hW⟩, ?_⟩

@@ -193,7 +193,7 @@ def mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) : Set γ :=
 
 lemma mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∈ mutuallySingularSetSlice κ η a ↔ 1 ≤ rnDerivAux κ (κ + η) a x := by
-  rw [mutuallySingularSetSlice, mem_setOf]
+  rw [mutuallySingularSetSlice, mem_ofPred]
 
 lemma notMem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
@@ -220,7 +220,7 @@ lemma measure_mutuallySingularSetSlice (κ η : Kernel α γ) [IsFiniteKernel κ
   · fun_prop
   · fun_prop
   refine ae_of_all _ (fun x hx ↦ ?_)
-  simp only [mem_setOf_eq] at hx
+  simp only [mem_ofPred_eq] at hx
   simp [hx]
 
 /-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `η`. -/
@@ -247,12 +247,12 @@ lemma rnDeriv_eq_top_iff (κ η : Kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ (a, x) ∈ mutuallySingularSet κ η := by
   simp only [rnDeriv, ENNReal.div_eq_top, ne_eq, ENNReal.ofReal_eq_zero, not_le,
     tsub_le_iff_right, zero_add, ENNReal.ofReal_ne_top, not_false_eq_true, and_true, or_false,
-    mutuallySingularSet, mem_setOf_eq, and_iff_right_iff_imp]
+    mutuallySingularSet, mem_ofPred_eq, and_iff_right_iff_imp]
   exact fun h ↦ zero_lt_one.trans_le h
 
 lemma rnDeriv_eq_top_iff' (κ η : Kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ x ∈ mutuallySingularSetSlice κ η a := by
-  rw [rnDeriv_eq_top_iff, mutuallySingularSet, mutuallySingularSetSlice, mem_setOf, mem_setOf]
+  rw [rnDeriv_eq_top_iff, mutuallySingularSet, mutuallySingularSetSlice, mem_ofPred, mem_ofPred]
 
 /-- Singular part of the kernel `κ` with respect to the kernel `η`. -/
 noncomputable
@@ -285,7 +285,7 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFin
   · exact measurable_singularPart_fun_right κ η a
   · exact measurable_singularPart_fun κ η
   refine ae_of_all _ (fun x hx ↦ ?_)
-  simp only [mem_compl_iff, mutuallySingularSetSlice, mem_setOf, not_le] at hx
+  simp only [mem_compl_iff, mutuallySingularSetSlice, mem_ofPred, not_le] at hx
   simp_rw [rnDeriv]
   rw [← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
     mul_inv_cancel₀, one_mul, tsub_self, Pi.zero_apply]

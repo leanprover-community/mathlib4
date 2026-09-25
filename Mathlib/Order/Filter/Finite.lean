@@ -24,7 +24,7 @@ universe u v w x y
 
 namespace Filter
 
-variable {α : Type u} {f g : Filter α} {s t : Set α}
+variable {α : Type u} {f : Filter α} {s : Set α}
 
 @[simp]
 theorem biInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
@@ -53,7 +53,7 @@ end Filter
 
 namespace Filter
 
-variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
+variable {α : Type u} {β : Type v} {ι : Sort x}
 
 section Lattice
 
@@ -83,7 +83,6 @@ theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι}
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
     (U ∈ ⨅ i, s i) ↔
       ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ (i : I), V i ∈ s i) ∧ U = ⋂ i, V i := by
@@ -116,8 +115,8 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   · dsimp only
     split_ifs
     exacts [hV ⟨i,_⟩, univ_mem]
-  · exact dif_neg hi
-  · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
+  · exact dite_eq_right hi
+  · simp only [iInter_dite, biInter_eq_iInter, dite_eq_left (Subtype.coe_prop _), Subtype.coe_eta,
       iInter_univ, inter_univ, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter α} {s}
@@ -133,7 +132,6 @@ theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Fil
   rintro ⟨t, ht, rfl⟩
   exact iInter_mem.2 fun i => mem_iInf_of_mem i (ht i)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {t : Set α} :
     t ∈ ⨅ (i : ι) (_ : p i), 𝓟 (s i) ↔
       ∃ I : Set ι, I.Finite ∧ (∀ i ∈ I, p i) ∧ ⋂ i ∈ I, s i ⊆ t := by
@@ -142,7 +140,7 @@ theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {
     rintro ⟨I, hIf, V, hV₁, hV₂, rfl⟩
     choose! t ht₁ ht₂ using hV₁
     refine ⟨I ∩ {i | p i}, hIf.inter_of_left _, fun i ↦ And.right, ?_⟩
-    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_setOf_eq]
+    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_ofPred_eq]
     gcongr with i hpi
     exact ht₁ i hpi
   · rintro ⟨I, hIf, hpI, hst⟩
@@ -248,12 +246,12 @@ end Lattice
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using iInter_mem
+  simpa only [Filter.Eventually, ofPred_forall] using iInter_mem
 
 @[simp]
 theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
+  simpa only [Filter.Eventually, ofPred_forall] using biInter_mem hI
 
 protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 
@@ -296,68 +294,101 @@ variable {l : Filter α} {f g : α → β}
 
 variable {l : Filter α}
 
-protected lemma EventuallyLE.iUnion [Finite ι] {s t : ι → Set α}
+protected lemma EventuallySubset.iUnion [Finite ι] {s t : ι → Set α}
     (h : ∀ i, s i ≤ᶠ[l] t i) : (⋃ i, s i) ≤ᶠ[l] ⋃ i, t i :=
   (eventually_all.2 h).mono fun _x hx hx' ↦
     let ⟨i, hi⟩ := mem_iUnion.1 hx'; mem_iUnion.2 ⟨i, hx i hi⟩
 
-protected lemma EventuallyEq.iUnion [Finite ι] {s t : ι → Set α}
+protected lemma EventuallyEqSet.iUnion [Finite ι] {s t : ι → Set α}
     (h : ∀ i, s i =ᶠ[l] t i) : (⋃ i, s i) =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.iUnion fun i ↦ (h i).le).antisymm <| .iUnion fun i ↦ (h i).symm.le
+  (EventuallySubset.iUnion fun i ↦ (h i).subset).antisymm <| .iUnion fun i ↦ (h i).symm.subset
 
-protected lemma EventuallyLE.iInter [Finite ι] {s t : ι → Set α}
+protected lemma EventuallySubset.iInter [Finite ι] {s t : ι → Set α}
     (h : ∀ i, s i ≤ᶠ[l] t i) : (⋂ i, s i) ≤ᶠ[l] ⋂ i, t i :=
   (eventually_all.2 h).mono fun _x hx hx' ↦ mem_iInter.2 fun i ↦ hx i (mem_iInter.1 hx' i)
 
-protected lemma EventuallyEq.iInter [Finite ι] {s t : ι → Set α}
+protected lemma EventuallyEqSet.iInter [Finite ι] {s t : ι → Set α}
     (h : ∀ i, s i =ᶠ[l] t i) : (⋂ i, s i) =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.iInter fun i ↦ (h i).le).antisymm <| .iInter fun i ↦ (h i).symm.le
+  (EventuallySubset.iInter fun i ↦ (h i).subset).antisymm <| .iInter fun i ↦ (h i).symm.subset
 
-lemma _root_.Set.Finite.eventuallyLE_iUnion {ι : Type*} {s : Set ι} (hs : s.Finite)
+lemma _root_.Set.Finite.eventuallySubset_iUnion {ι : Type*} {s : Set ι} (hs : s.Finite)
     {f g : ι → Set α} (hle : ∀ i ∈ s, f i ≤ᶠ[l] g i) : (⋃ i ∈ s, f i) ≤ᶠ[l] (⋃ i ∈ s, g i) := by
   have := hs.to_subtype
   rw [biUnion_eq_iUnion, biUnion_eq_iUnion]
   exact .iUnion fun i ↦ hle i.1 i.2
 
-alias EventuallyLE.biUnion := Set.Finite.eventuallyLE_iUnion
+alias EventuallySubset.biUnion := Set.Finite.eventuallySubset_iUnion
 
-lemma _root_.Set.Finite.eventuallyEq_iUnion {ι : Type*} {s : Set ι} (hs : s.Finite)
+@[deprecated (since := "2026-08-14")]
+alias _root_.Set.Finite.eventuallyLE_iUnion := Set.Finite.eventuallySubset_iUnion
+
+lemma _root_.Set.Finite.eventuallyEqSet_iUnion {ι : Type*} {s : Set ι} (hs : s.Finite)
     {f g : ι → Set α} (heq : ∀ i ∈ s, f i =ᶠ[l] g i) : (⋃ i ∈ s, f i) =ᶠ[l] (⋃ i ∈ s, g i) :=
-  (EventuallyLE.biUnion hs fun i hi ↦ (heq i hi).le).antisymm <|
-    .biUnion hs fun i hi ↦ (heq i hi).symm.le
+  (EventuallySubset.biUnion hs fun i hi ↦ (heq i hi).subset).antisymm <|
+    .biUnion hs fun i hi ↦ (heq i hi).symm.subset
 
-alias EventuallyEq.biUnion := Set.Finite.eventuallyEq_iUnion
+alias EventuallyEqSet.biUnion := Set.Finite.eventuallyEqSet_iUnion
 
-lemma _root_.Set.Finite.eventuallyLE_iInter {ι : Type*} {s : Set ι} (hs : s.Finite)
+@[deprecated (since := "2026-08-14")]
+alias _root_.Set.Finite.eventuallyEq_iUnion := Set.Finite.eventuallyEqSet_iUnion
+
+lemma _root_.Set.Finite.eventuallySubset_iInter {ι : Type*} {s : Set ι} (hs : s.Finite)
     {f g : ι → Set α} (hle : ∀ i ∈ s, f i ≤ᶠ[l] g i) : (⋂ i ∈ s, f i) ≤ᶠ[l] (⋂ i ∈ s, g i) := by
   have := hs.to_subtype
   rw [biInter_eq_iInter, biInter_eq_iInter]
   exact .iInter fun i ↦ hle i.1 i.2
 
-alias EventuallyLE.biInter := Set.Finite.eventuallyLE_iInter
+alias EventuallySubset.biInter := Set.Finite.eventuallySubset_iInter
 
-lemma _root_.Set.Finite.eventuallyEq_iInter {ι : Type*} {s : Set ι} (hs : s.Finite)
+@[deprecated (since := "2026-08-14")]
+alias _root_.Set.Finite.eventuallyLE_iInter := Set.Finite.eventuallySubset_iInter
+
+lemma _root_.Set.Finite.eventuallyEqSet_iInter {ι : Type*} {s : Set ι} (hs : s.Finite)
     {f g : ι → Set α} (heq : ∀ i ∈ s, f i =ᶠ[l] g i) : (⋂ i ∈ s, f i) =ᶠ[l] (⋂ i ∈ s, g i) :=
-  (EventuallyLE.biInter hs fun i hi ↦ (heq i hi).le).antisymm <|
-    .biInter hs fun i hi ↦ (heq i hi).symm.le
+  (EventuallySubset.biInter hs fun i hi ↦ (heq i hi).subset).antisymm <|
+    .biInter hs fun i hi ↦ (heq i hi).symm.subset
 
-alias EventuallyEq.biInter := Set.Finite.eventuallyEq_iInter
+alias EventuallyEqSet.biInter := Set.Finite.eventuallyEqSet_iInter
 
-lemma _root_.Finset.eventuallyLE_iUnion {ι : Type*} (s : Finset ι) {f g : ι → Set α}
+@[deprecated (since := "2026-08-14")]
+alias _root_.Set.Finite.eventuallyEq_iInter := Set.Finite.eventuallyEqSet_iInter
+
+lemma _root_.Finset.eventuallySubset_iUnion {ι : Type*} (s : Finset ι) {f g : ι → Set α}
     (hle : ∀ i ∈ s, f i ≤ᶠ[l] g i) : (⋃ i ∈ s, f i) ≤ᶠ[l] (⋃ i ∈ s, g i) :=
   .biUnion s.finite_toSet hle
 
-lemma _root_.Finset.eventuallyEq_iUnion {ι : Type*} (s : Finset ι) {f g : ι → Set α}
+@[deprecated (since := "2026-08-14")]
+alias _root_.Finset.eventuallyLE_iUnion := Finset.eventuallySubset_iUnion
+
+lemma _root_.Finset.eventuallyEqSet_iUnion {ι : Type*} (s : Finset ι) {f g : ι → Set α}
     (heq : ∀ i ∈ s, f i =ᶠ[l] g i) : (⋃ i ∈ s, f i) =ᶠ[l] (⋃ i ∈ s, g i) :=
   .biUnion s.finite_toSet heq
 
-lemma _root_.Finset.eventuallyLE_iInter {ι : Type*} (s : Finset ι) {f g : ι → Set α}
+@[deprecated (since := "2026-08-14")]
+alias _root_.Finset.eventuallyEq_iUnion := Finset.eventuallyEqSet_iUnion
+
+lemma _root_.Finset.eventuallySubset_iInter {ι : Type*} (s : Finset ι) {f g : ι → Set α}
     (hle : ∀ i ∈ s, f i ≤ᶠ[l] g i) : (⋂ i ∈ s, f i) ≤ᶠ[l] (⋂ i ∈ s, g i) :=
   .biInter s.finite_toSet hle
 
-lemma _root_.Finset.eventuallyEq_iInter {ι : Type*} (s : Finset ι) {f g : ι → Set α}
+@[deprecated (since := "2026-08-14")]
+alias _root_.Finset.eventuallyLE_iInter := Finset.eventuallySubset_iInter
+
+lemma _root_.Finset.eventuallyEqSet_iInter {ι : Type*} (s : Finset ι) {f g : ι → Set α}
     (heq : ∀ i ∈ s, f i =ᶠ[l] g i) : (⋂ i ∈ s, f i) =ᶠ[l] (⋂ i ∈ s, g i) :=
   .biInter s.finite_toSet heq
+
+@[deprecated (since := "2026-08-14")]
+alias _root_.Finset.eventuallyEq_iInter := Finset.eventuallyEqSet_iInter
+
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.iUnion := EventuallySubset.iUnion
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.iUnion := EventuallyEqSet.iUnion
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.iInter := EventuallySubset.iInter
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.iInter := EventuallyEqSet.iInter
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.biUnion := EventuallySubset.biUnion
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.biUnion := EventuallyEqSet.biUnion
+@[deprecated (since := "2026-08-14")] alias EventuallyLE.biInter := EventuallySubset.biInter
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.biInter := EventuallyEqSet.biInter
 
 end EventuallyEq
 

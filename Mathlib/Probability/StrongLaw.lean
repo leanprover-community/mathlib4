@@ -219,7 +219,6 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     (hKN : K ≤ N) :
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
   let ρ : Measure ℝ := Measure.map X ℙ
-  have : IsProbabilityMeasure ρ := Measure.isProbabilityMeasure_map hint.aemeasurable
   have A : ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
     calc
       ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ =
@@ -301,7 +300,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
         obtain ⟨N, hN⟩ : ∃ N : ℕ, X ω ≤ N := exists_nat_ge (X ω)
         exact Set.mem_iUnion.2 ⟨N, hω, hN⟩
       · simp +contextual only [Set.mem_Ioc, Set.mem_Ioi,
-          Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
+          Set.iUnion_subset_iff, Set.ofPred_subset_ofPred, imp_true_iff]
     rw [this]
     apply tendsto_measure_iUnion_atTop
     intro m n hmn x hx
@@ -849,7 +848,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
   have : IsProbabilityMeasure μ := MemLp.isProbabilityMeasure_of_indepFun
     (X 0) (X 1) (zero_lt_one.trans_le hp).ne' hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) μ := fun i =>
-    (hident i).aestronglyMeasurable_iff.2 hℒp.1
+    (hident i).aestronglyMeasurable_iff.2 hℒp.aestronglyMeasurable
   have hint : Integrable (X 0) μ := hℒp.integrable hp
   have havg (n : ℕ) :
       AEStronglyMeasurable (fun ω => (n : ℝ)⁻¹ • (∑ i ∈ range n, X i ω)) μ :=

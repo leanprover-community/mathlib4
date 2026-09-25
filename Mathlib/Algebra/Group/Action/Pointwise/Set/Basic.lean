@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Pointwise actions on sets
@@ -57,7 +58,7 @@ lemma smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i
   exact smul_set_pi c I s
 
 section Mul
-variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} [Mul α] {s t u : Set α} {a b : α}
 
 @[to_additive] lemma smul_set_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image2_right
 
@@ -184,13 +185,65 @@ protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β)
 
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 
-section Group
+section SMul
+variable [SMul α β] {s t : Set β} {a : α}
 
-variable [Group α] [MulAction α β] {s t A B : Set β} {a b : α} {x : β}
+/-- If `a` is regular on `β`, it is regular on `Set β`. -/
+theorem _root_.IsSMulRegular.set (h : IsSMulRegular β a) : IsSMulRegular (Set β) a :=
+  Set.image_injective.mpr h
+
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_set_subset_smul_set_iff (h : IsSMulRegular β a) :
+    a • s ⊆ a • t ↔ s ⊆ t := image_subset_image_iff h
+
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_set_inter (h : IsSMulRegular β a) :
+    a • (s ∩ t) = a • s ∩ a • t := image_inter h
+
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_set_sdiff (h : IsSMulRegular β a) :
+    a • (s \ t) = a • s \ a • t := image_sdiff h _ _
+
+open scoped symmDiff in
+@[to_additive]
+theorem _root_.IsSMulRegular.smul_set_symmDiff (h : IsSMulRegular β a) :
+    a • s ∆ t = (a • s) ∆ (a • t) := image_symmDiff h _ _
+
+end SMul
+
+section IsLeftCancelSMul
+variable [SMul α β] [IsLeftCancelSMul α β] {s t : Set β} {a : α} {x : β}
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_set_iff : a • x ∈ a • s ↔ x ∈ s :=
-  (MulAction.injective _).mem_set_image
+  Function.Injective.mem_set_image (IsSMulRegular.all a)
+
+@[to_additive (attr := simp)]
+theorem smul_set_subset_smul_set_iff : a • s ⊆ a • t ↔ s ⊆ t :=
+  IsSMulRegular.smul_set_subset_smul_set_iff (.all a)
+
+@[to_additive]
+theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
+  IsSMulRegular.smul_set_inter (.all a)
+
+@[to_additive]
+theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
+  IsSMulRegular.smul_set_sdiff (.all a)
+
+open scoped symmDiff in
+@[to_additive]
+theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
+  IsSMulRegular.smul_set_symmDiff (.all a)
+
+@[to_additive]
+instance : IsLeftCancelSMul α (Set β) where
+  left_cancel' a := Set.image_injective.mpr (IsSMulRegular.all a)
+
+end IsLeftCancelSMul
+
+section Group
+
+variable [Group α] [MulAction α β] {s t A B : Set β} {a b : α} {x : β}
 
 @[to_additive]
 theorem mem_smul_set_iff_inv_smul_mem : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
@@ -212,10 +265,6 @@ theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a�
 theorem preimage_smul_inv (a : α) (t : Set β) : (fun x ↦ a⁻¹ • x) ⁻¹' t = a • t :=
   preimage_smul (toUnits a)⁻¹ t
 
-@[to_additive (attr := simp)]
-theorem smul_set_subset_smul_set_iff : a • A ⊆ a • B ↔ A ⊆ B :=
-  image_subset_image_iff <| MulAction.injective _
-
 @[to_additive]
 theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹ • B := by
   refine image_subset_iff.trans ?_
@@ -228,22 +277,9 @@ theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
   exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]
-theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
-  image_inter <| MulAction.injective a
-
-@[to_additive]
 theorem smul_set_iInter {ι : Sort*}
     (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
   image_iInter (MulAction.bijective a) t
-
-@[to_additive]
-theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
-  image_sdiff (MulAction.injective a) _ _
-
-open scoped symmDiff in
-@[to_additive]
-theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
-  image_symmDiff (MulAction.injective a) _ _
 
 @[to_additive (attr := simp)]
 theorem smul_set_univ : a • (univ : Set β) = univ :=
@@ -293,8 +329,14 @@ theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
   (Function.Surjective.iSup_congr _ inv_surjective) fun _ ↦ rfl
 
 @[to_additive]
-theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
-  simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
+theorem iUnion_smul_eq_ofPred_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
+  simp_rw [← iUnion_ofPred, ← iUnion_inv_smul, ← preimage_smul, preimage]
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_smul_eq_setOf_exists := iUnion_smul_eq_ofPred_exists
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_vadd_eq_setOf_exists := iUnion_vadd_eq_ofPred_exists
 
 @[to_additive (attr := simp)]
 lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by

@@ -64,7 +64,7 @@ theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafi
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv ↦ ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
       simp [inter_subset_right],
-    eq_univ_of_univ_subset <| subset_sUnion_of_mem <| ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
+    eq_univ_of_univ_subset <| subset_sUnion_of_mem ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
     rfl⟩
 
 /-- The basic open sets for the topology on ultrafilters are open. -/
@@ -85,7 +85,7 @@ theorem ultrafilter_converges_iff {u : Ultrafilter (Ultrafilter α)} {x : Ultraf
   rw [eq_comm, ← Ultrafilter.coe_le_coe]
   change ↑u ≤ 𝓝 x ↔ ∀ s ∈ x, { v : Ultrafilter α | s ∈ v } ∈ u
   simp only [TopologicalSpace.nhds_generateFrom, le_iInf_iff, ultrafilterBasis, le_principal_iff,
-    mem_setOf_eq]
+    mem_ofPred_eq]
   constructor
   · intro h a ha
     exact h _ ⟨ha, a, rfl⟩
@@ -118,7 +118,7 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
   ext s
   change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
-  simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
+  simp_rw [mem_map, preimage_ofPred_eq, mem_pure, ofPred_mem_eq]
 
 theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]

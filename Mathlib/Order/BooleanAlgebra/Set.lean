@@ -29,8 +29,6 @@ set, sets, subset, subsets, complement
 
 assert_not_exists RelIso
 
-open Function
-
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
@@ -93,8 +91,10 @@ theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
 theorem mem_compl {s : Set α} {x : α} (h : x ∉ s) : x ∈ sᶜ :=
   h
 
-theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
+theorem compl_ofPred {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias compl_setOf := compl_ofPred
 
 theorem notMem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
@@ -186,9 +186,9 @@ lemma disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t := disjoint_
 
 alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
 alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
-@[deprecated LE.le.disjoint_compl_left (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_left +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
-@[deprecated LE.le.disjoint_compl_right (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_right +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 
 @[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := exists_ne x
