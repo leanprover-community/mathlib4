@@ -92,9 +92,6 @@ lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x
   simp [map_ne_zero_iff, germToFunctionField_injective, IsUnit.ne_zero hf,
     ord_eq_iff hx, ordHom_of_isUnit hf hx hx']
 
-/--
-The order of vanishing of a global unit is zero.
--/
 @[simp]
 lemma ord_of_isUnit_top {g : Γ(X, ⊤)} (hg : IsUnit g) (z : X) :
     ord (X.germToFunctionField ⊤ g) z = 0 := ord_of_isUnit hg trivial
