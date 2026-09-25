@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.UniformFilterBasis
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 
