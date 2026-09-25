@@ -195,11 +195,11 @@ instance of_injective {X : TopCat.{u}}
     (I : TopCat.Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
   epi {U V} i := by
     obtain ⟨h, hh⟩ := Injective.factors
-      ((CategoryTheory.Sheaf.freeYonedaHomEquiv (F := I)).symm (𝟙 (I.obj.obj V)))
-      (CategoryTheory.Sheaf.freeYonedaMap (Opens.grothendieckTopology X) i.unop (I.obj.obj V))
-    apply epi_of_epi_fac (f := CategoryTheory.Sheaf.freeYonedaHomEquiv h) (h := 𝟙 _)
-    rw [← Quiver.Hom.op_unop i, ← CategoryTheory.Sheaf.freeYonedaHomEquiv_naturality, hh]
-    exact Equiv.apply_symm_apply _ _
+      ((Sheaf.freeYonedaHomEquiv (F := I)).symm (𝟙 (I.obj.obj V)))
+      (Sheaf.freeYonedaMap (Opens.grothendieckTopology X) i.unop (I.obj.obj V))
+    apply epi_of_epi_fac (f := Sheaf.freeYonedaHomEquiv h) (h := 𝟙 _)
+    rw [← Quiver.Hom.op_unop i, ← Sheaf.freeYonedaHomEquiv_naturality, hh,
+      Equiv.apply_symm_apply]
 
 /-- Flasque sheaves have no higher cohomology. -/
 instance subsingleton_H {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) [NeZero n] :
