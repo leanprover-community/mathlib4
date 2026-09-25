@@ -70,12 +70,13 @@ def deindentString (currIndent : Nat) (docString : String) : String :=
   docString.replace indent " "
 
 /--
-Replace every non-whitespace character of `s` by `c`, preserving the byte length of `s`.
-`c` should be an ASCII character.
+Replace every non-whitespace character of `s` by `replacement`, preserving the byte length of `s`.
+`replacement` should be an ASCII character.
+Whitespace is kept so that line breaks, and hence line and column numbers, are unchanged.
 -/
-def blankOut (c : Char) (s : String) : String :=
-  s.foldl (init := "") fun acc ch =>
-    if ch.isWhitespace then acc.push ch else acc.pushn c ch.utf8Size
+def blankOut (replacement : Char) (s : String) : String :=
+  s.foldl (init := "") fun acc original =>
+    if original.isWhitespace then acc.push original else acc.pushn replacement original.utf8Size
 
 open Command Parser in
 /--
@@ -149,13 +150,16 @@ Log the Verso parse errors `errs` found in the text of the doc-string `docStx` (
 `moduleDoc` node), at their positions in the file.
 
 The positions in `errs` are relative to the text of the doc-string, which starts at the second
-child of `docStx`.
+child of `docStx`. If that child has no position, the errors are logged at offset 0,
+the default position for errors without associated syntax.
 -/
 def logVersoErrors (docStx : Syntax) (errs : Array (String.Pos.Raw × SyntaxStack × Error)) :
     CommandElabM Unit := do
-  let some start := docStx[1].getPos? | return
+  let start? := docStx[1].getPos?
   for (pos, _, err) in errs do
-    let pos := pos.offsetBy start
+    let pos := match start? with
+      | some start => pos.offsetBy start
+      | none => 0
     Linter.logLint linter.style.docStringVerso (.ofRange ⟨pos, pos⟩) m!"{err}"
 
 namespace Style
