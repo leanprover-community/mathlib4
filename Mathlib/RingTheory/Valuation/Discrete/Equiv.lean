@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Valuation.ValuativeRel.Quotient
 
 ## Main Definitions and Results
 
-* `Valuation. isEquiv_iff_isUniformizer`: two discrete valuations are equivalent if and only if
+* `Valuation.isEquiv_iff_isUniformizer`: two discrete valuations are equivalent if and only if
   they have the same uniformizers.
 * `Valuation.isEquiv_iff_of_withZeroMulInt `: two `ℤᵐ⁰`-valued valuations `v`
   and `w` are equivalent if and only if there exist positive integers `n` and `d` such that
