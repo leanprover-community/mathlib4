@@ -227,8 +227,13 @@ section Reindex
 variable (R) {m o : Type u} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
 /-- The `MulEquiv` induced by an `Equiv` over the index -/
-@[simps! apply symm_apply]
+@[simps! apply]
 def reindexMulEquiv (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
+
+@[simp]
+theorem symm_reindexMulEquiv (e : m ≃ n) :
+    (reindexMulEquiv R e).symm = reindexMulEquiv R e.symm :=
+  rfl
 
 @[simp]
 theorem symm_reindexMulEquiv (e : m ≃ n) :
