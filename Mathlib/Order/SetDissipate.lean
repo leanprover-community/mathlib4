@@ -6,7 +6,7 @@ Authors: Peter Pfaffelhuber
 
 module
 
-public import Mathlib.Order.SetAccumulate
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Dissipate
@@ -73,8 +73,6 @@ lemma dissipate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : dissip
 @[simp]
 lemma dissipate_zero_nat (s : ℕ → Set β) : dissipate s 0 = s 0 := by
   simp [dissipate_def]
-
-open Nat
 
 @[simp]
 theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :

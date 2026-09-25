@@ -32,7 +32,7 @@ theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLoc
   grind
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
-    [h : Nonempty (GCDMonoid R)] : IsIntegrallyClosed R :=
+    [h : IsGCDMonoid R] : IsIntegrallyClosed R :=
   (isIntegrallyClosed_iff (FractionRing R)).mpr fun {X} ⟨p, hp₁, hp₂⟩ => by
     cases h
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X
@@ -48,6 +48,6 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     rw [map_mul]
     have coe_map_inv :=
       Units.coe_map_inv ((algebraMap R (FractionRing R) : R →* FractionRing R)) this.unit
-    simp only [MonoidHom.coe_coe] at coe_map_inv
+    simp only [MonoidHom.coe_ofClass] at coe_map_inv
     rw [← coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
     exact he

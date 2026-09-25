@@ -5,11 +5,9 @@ Authors: Bhavik Mehta, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Connected limits
@@ -50,19 +48,20 @@ section
 variable (J)
 
 /-- The obvious cone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCone : Cone ((Functor.const J).obj X) where
   pt := X
   π := 𝟙 _
 
 /-- The obvious cocone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCocone : Cocone ((Functor.const J).obj X) where
   pt := X
   ι := 𝟙 _
 
 variable [IsConnected J]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the limit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
@@ -75,6 +74,7 @@ def isLimitConstCone : IsLimit (constCone J X) where
       (fun _ _ f ↦ by simpa using s.w f) _ _
   uniq s m hm := by simpa using hm (Classical.arbitrary _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the colimit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
@@ -175,9 +175,6 @@ instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutSh
     cases j
     · exact hp
     · rwa [← t (WidePushoutShape.Hom.init _)]
-
-instance parallelPairInhabited : Inhabited WalkingParallelPair :=
-  ⟨WalkingParallelPair.one⟩
 
 instance parallel_pair_connected : IsConnected WalkingParallelPair := by
   apply IsConnected.of_induct

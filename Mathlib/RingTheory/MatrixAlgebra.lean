@@ -35,7 +35,7 @@ variable [IsScalarTower R S M]
 variable [Fintype l] [Fintype m] [Fintype n] [Fintype p]
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
 
-open Kronecker
+open scoped Kronecker
 
 variable (l m n p R S A M N)
 
@@ -44,7 +44,7 @@ attribute [local ext] ext_linearMap
 /-- `Matrix.kroneckerTMul` as a linear equivalence, when the two arguments are tensored. -/
 def kroneckerTMulLinearEquiv :
     Matrix l m M ⊗[R] Matrix n p N ≃ₗ[S] Matrix (l × n) (m × p) (M ⊗[R] N) :=
-  .ofLinear
+  .ofLinearMap
     (AlgebraTensorModule.lift <| kroneckerTMulBilinear R S)
     (Matrix.liftLinear R fun ii jj =>
       AlgebraTensorModule.map (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
@@ -185,7 +185,6 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom n R A) (invFun n R A M) = M 
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun n R A (toFunAlgHom n R A M) = M := by
   induction M with
-  | zero => simp
   | tmul a m => simp
   | add x y hx hy =>
     rw [map_add]
@@ -209,8 +208,6 @@ variable [Fintype n] [DecidableEq n]
 -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
   AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom n R A, MatrixEquivTensor.equiv n R A with }
-
-open MatrixEquivTensor
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :
@@ -264,7 +261,7 @@ variable (m n A B) in
 def kroneckerTMulStarAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃⋆ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B) :=
   .ofAlgEquiv (kroneckerTMulAlgEquiv m n R S A B)
-  fun x ↦ x.induction_on (by simp)
+  fun x ↦ x.inductionOn
     (by simp [star_eq_conjTranspose, conjTranspose_kroneckerTMul])
     (by simp_all)
 
@@ -303,7 +300,7 @@ variable (m n) in
 def kroneckerStarAlgEquiv [StarRing R] :
     (Matrix m m R ⊗[R] Matrix n n R) ≃⋆ₐ[R] Matrix (m × n) (m × n) R :=
   .ofAlgEquiv (kroneckerAlgEquiv m n R)
-  fun x ↦ x.induction_on (by simp)
+  fun x ↦ x.inductionOn
     (by simp [star_eq_conjTranspose, conjTranspose_kronecker])
     (by simp_all)
 

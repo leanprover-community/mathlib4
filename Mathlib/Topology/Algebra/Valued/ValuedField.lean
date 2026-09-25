@@ -5,10 +5,11 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
 /-!
 # Valued fields and their completions
@@ -43,48 +44,11 @@ variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWit
 
 section ValuationTopologicalDivisionRing
 
-section InversionEstimate
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-variable (v : Valuation K Γ₀)
+section Valued
 
--- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (i.e. the next instance)
--- and the fact that a valued field is completable
--- [BouAC, VI.5.1 Lemme 1]
-theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
-    (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
-  have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
-  have hyp1' : v (x - y) * (v y * v y)⁻¹ < γ := mul_inv_lt_of_lt_mul₀ hyp1
-  have hyp2 : v (x - y) < v y := lt_of_lt_of_le h (min_le_right _ _)
-  have key : v x = v y := Valuation.map_eq_of_sub_lt v hyp2
-  have x_ne : x ≠ 0 := by
-    intro h
-    apply y_ne
-    rw [h, v.map_zero] at key
-    exact v.zero_iff.1 key.symm
-  have decomp : x⁻¹ - y⁻¹ = x⁻¹ * (y - x) * y⁻¹ := by
-    rw [mul_sub_left_distrib, sub_mul, mul_assoc, show y * y⁻¹ = 1 from mul_inv_cancel₀ y_ne,
-      show x⁻¹ * x = 1 from inv_mul_cancel₀ x_ne, mul_one, one_mul]
-  calc
-    v (x⁻¹ - y⁻¹) = v (x⁻¹ * (y - x) * y⁻¹) := by rw [decomp]
-    _ = v x⁻¹ * (v <| y - x) * v y⁻¹ := by repeat' rw [Valuation.map_mul]
-    _ = (v x)⁻¹ * (v <| y - x) * (v y)⁻¹ := by rw [map_inv₀, map_inv₀]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := by rw [mul_assoc, mul_comm, key, mul_assoc, mul_inv_rev]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := rfl
-    _ = (v <| x - y) * (v y * v y)⁻¹ := by rw [Valuation.map_sub_swap]
-    _ < γ := hyp1'
-
-theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
-    (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
-  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
-  let γ : Γ₀ˣ := .mk0 (v s / v r) (by simp [hs, hr])
-  calc
-    v (x⁻¹ - y⁻¹) * v r < γ * v r := by gcongr; exact Valuation.inversion_estimate v y_ne h
-    _ = v s := div_mul_cancel₀ _ (by simpa)
-
-end InversionEstimate
-
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Valued
+open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
 [BouAC, VI.5.1 middle of Proposition 1] -/
@@ -98,7 +62,7 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
       use min (γ * (γ' * γ')) γ'
       intro y y_in
       apply hs
-      simp only [mem_setOf_eq, Units.min_val, Units.val_mul] at y_in
+      simp only [mem_ofPred_eq, Units.min_val, Units.val_mul] at y_in
       exact Valuation.inversion_estimate _ x_ne y_in }
 
 /-- A valued division ring is separated. -/
@@ -111,7 +75,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   set γ' := Units.mk0 ((ValueGroup₀.restrict₀ _) x) (v.restrict.ne_zero_iff.mpr x_ne) with hdef
   exact ⟨γ', fun y hy => by
     simp only [Valuation.restrict_lt_iff_lt_embedding, hdef, sub_zero, Units.val_mk0,
-      mem_setOf_eq, embedding_restrict₀] at hy
+      mem_ofPred_eq, embedding_restrict₀] at hy
     simpa using hy⟩
 
 section
@@ -121,7 +85,7 @@ open WithZeroTopology
 open Valued
 
 theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
-    Continuous (v.restrict : K → (ValueGroup₀ (.ofClass hv.v))) := by
+    Continuous (v.restrict : K → hv.v.ValueGroup₀) := by
   rw [continuous_iff_continuousAt]
   intro x
   rcases eq_or_ne x 0 with (rfl | h)
@@ -129,7 +93,7 @@ theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
     intro γ hγ
     rw [Filter.Eventually, Valued.mem_nhds_zero]
     use Units.mk0 γ hγ; rfl
-  · have v_ne : (v.restrict x : ValueGroup₀ (.ofClass hv.v)) ≠ 0 :=
+  · have v_ne : (v.restrict x : hv.v.ValueGroup₀) ≠ 0 :=
       (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
     simp_rw [v.restrict_inj]
@@ -144,14 +108,16 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     intro γ hγ
     rw [Filter.Eventually, Valued.mem_nhds_zero]
     obtain ⟨x, hx⟩ := hsurj γ
-    use Units.mk0 (restrict₀ (.ofClass hv.v) x) (by simp [restrict₀_apply, hx, hγ])
-    simp only [Units.val_mk0, setOf_subset_setOf, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
+    use Units.mk0 (restrict₀ (hv.v : K →*₀ Γ₀) x) (by simp [restrict₀_apply, hx, hγ])
+    simp only [Units.val_mk0, ofPred_subset_ofPred, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero h0]
     exact Valued.locally_const (by simpa using h0)
 
 end
+
+end Valued
 
 end ValuationTopologicalDivisionRing
 
@@ -170,7 +136,7 @@ instance (priority := 100) completable : CompletableTopField K :=
   { ValuedRing.separated with
     nice := by
       rintro F hF h0
-      have : ∃ γ₀ : (MonoidWithZeroHom.ValueGroup₀ (.ofClass hv.v))ˣ, ∃ M ∈ F,
+      have : ∃ γ₀ : hv.v.ValueGroup₀ˣ, ∃ M ∈ F,
           ∀ x ∈ M, (γ₀.1) ≤ v.restrict x := by
         rcases Filter.inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
         rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
@@ -208,11 +174,11 @@ instance (priority := 100) completable : CompletableTopField K :=
 
 open MonoidWithZeroHom WithZeroTopology
 
-lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → (ValueGroup₀ (.ofClass hv.v))) := by
+lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → hv.v.ValueGroup₀) := by
   refine IsClosedMap.of_nonempty ?_
   intro U hU hU'
   simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, subset_compl_comm,
-    compl_setOf, not_lt] at hU
+    compl_ofPred, not_lt] at hU
   simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
   refine (em _).imp_right fun h ↦ ?_
   obtain ⟨γ, h⟩ := hU _ h
@@ -222,7 +188,7 @@ lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → (ValueGroup₀ (.o
   simp
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
-noncomputable def extension : hat K → ValueGroup₀ (.ofClass hv.v) :=
+noncomputable def extension : hat K → hv.v.ValueGroup₀ :=
   Completion.isDenseInducing_coe.extend v.restrict
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
@@ -238,7 +204,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
         exact zero_ne_one.symm
       convert! Valued.locally_const this
       ext x
-      rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_setOf_eq]
+      rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_ofPred_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
       rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
@@ -340,8 +306,8 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
 lemma extensionValuation_toFun (x : hat K) : Valued.extensionValuation x =
     ValueGroup₀.embedding (Valued.extension x) := rfl
 
-lemma extensionValuation_coe_apply {x : hat K} :
-    (MonoidWithZeroHom.ofClass extensionValuation) x = embedding (extension x) := rfl
+@[deprecated (since := "2026-09-15")]
+alias extensionValuation_coe_apply := extensionValuation_toFun
 
 @[simp]
 lemma extensionValuation_apply_coe (x : K) :
@@ -360,9 +326,9 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
   · refine Completion.denseRange_coe.induction_on x ?_
       (fun a ↦ by simp [extensionValuation_apply_coe a])
     · simp only [extensionValuation_toFun]
-      have hr (r : K) : ValueGroup₀.embedding (restrict₀ (.ofClass hv.v) r) = v r := by
+      have hr (r : K) : ValueGroup₀.embedding (restrict₀ hv.v r) = v r := by
         simp [embedding_restrict₀]
-      have h (a b : ValueGroup₀ (.ofClass hv.v)) :
+      have h (a b : hv.v.ValueGroup₀) :
           ValueGroup₀.embedding a = ValueGroup₀.embedding b ↔ a = b := by
         rw [embedding_strictMono.injective.eq_iff]
       simp_rw [← hr, ← Valuation.restrict_def, h]
@@ -384,10 +350,10 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   have heq : γ₀ = embedding γ₀' := rfl
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
-    · simp only [(Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
+    · simp only [(Valuation.zero_iff _).mp h, mem_ofPred_eq, Valuation.map_zero, Units.zero_lt,
         iff_true]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
+      exact ⟨0, by simp only [mem_ofPred_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
     · exact this h
   intro h
   have h' : γ₀' ≠ 0 := by simpa only [heq, map_ne_zero] using h
@@ -418,36 +384,36 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
   all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
 
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
-that of the extension to its completion. TODO: Split out the definiton of `(restrict₀_surjective
-(.ofClass hv.v) x).choose` and prove a spec lemma of it. Remove tactic `set` in the proof. -/
+that of the extension to its completion. TODO: Split out the definition of `(restrict₀_surjective
+(hv.v : K →*₀ Γ₀) x).choose` and prove a spec lemma of it. Remove tactic `set` in the proof. -/
 noncomputable def valueGroup₀_hom_extensionValuation :
-    ValueGroup₀ (.ofClass hv.v) →*₀ ValueGroup₀ (.ofClass hv.extensionValuation) where
-  toFun x := hv.extensionValuation.restrict (restrict₀_surjective (.ofClass hv.v) x).choose
+    hv.v.ValueGroup₀ →*₀ hv.extensionValuation.ValueGroup₀ where
+  toFun x := hv.extensionValuation.restrict (restrict₀_surjective (hv.v : K →*₀ Γ₀) x).choose
   map_zero' := by simp [Valuation.restrict_def]
   map_one' := by
     apply_fun embedding using embedding_injective
-    simpa using (restrict₀_surjective (.ofClass hv.v) 1).choose_spec
+    simpa using (restrict₀_surjective (hv.v : K →*₀ Γ₀) 1).choose_spec
   map_mul' a b := by
-    set x := (restrict₀_surjective (.ofClass hv.v) a).choose with hx_def
-    have hx := (restrict₀_surjective (.ofClass hv.v) a).choose_spec
-    set y := (restrict₀_surjective (.ofClass hv.v) b).choose with hy_def
-    have hy := (restrict₀_surjective (.ofClass hv.v) b).choose_spec
-    set xy := (restrict₀_surjective (.ofClass hv.v) (a * b)).choose with hxy_def
-    have hxy := (restrict₀_surjective (.ofClass hv.v) (a * b)).choose_spec
+    set x := (restrict₀_surjective (hv.v : K →*₀ Γ₀) a).choose with hx_def
+    have hx := (restrict₀_surjective (hv.v : K →*₀ Γ₀) a).choose_spec
+    set y := (restrict₀_surjective (hv.v : K →*₀ Γ₀) b).choose with hy_def
+    have hy := (restrict₀_surjective (hv.v : K →*₀ Γ₀) b).choose_spec
+    set xy := (restrict₀_surjective (hv.v : K →*₀ Γ₀) (a * b)).choose with hxy_def
+    have hxy := (restrict₀_surjective (hv.v : K →*₀ Γ₀) (a * b)).choose_spec
     rw [← hx_def] at hx
     rw [← hy_def] at hy
     rw [← hxy_def] at hxy
     apply_fun embedding at hxy
     apply_fun embedding at hx
     apply_fun embedding at hy
-    simp only [embedding_restrict₀, coe_ofClass, map_mul] at hxy hx hy
-    simp only [Valuation.restrict_def, restrict₀_apply, coe_ofClass, extensionValuation_apply_coe,
-      map_eq_zero, mul_dite, mul_zero, dite_mul, zero_mul]
+    simp only [embedding_restrict₀, Valuation.coe_toMonoidWithZeroHom, map_mul] at hxy hx hy
+    simp only [Valuation.restrict_def, restrict₀_apply, Valuation.coe_toMonoidWithZeroHom,
+      extensionValuation_apply_coe, map_eq_zero, mul_dite, mul_zero, dite_mul, zero_mul]
     by_cases hx0 : x = 0
     · simpa [← hx, hx0] using hxy
     · by_cases hy0 : y = 0
       · simpa [← hy, hy0] using hxy
-      · rw [dif_neg, dif_neg, dif_neg]
+      · rw [dite_eq_right, dite_eq_right, dite_eq_right]
         · simp only [← WithZero.coe_mul, MulMemClass.mk_mul_mk, WithZero.coe_inj, Subtype.mk.injEq]
           rw [← Units.mk0_mul]
           · ext
@@ -460,52 +426,22 @@ noncomputable def valueGroup₀_hom_extensionValuation :
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
   that of the extension to its completion. -/
 noncomputable def valueGroup₀_equiv_extensionValuation :
-    ValueGroup₀ (.ofClass hv.v) ≃* ValueGroup₀ (.ofClass hv.extensionValuation) := by
+    hv.v.ValueGroup₀ ≃* hv.extensionValuation.ValueGroup₀ := by
   refine MulEquiv.ofBijective (valueGroup₀_hom_extensionValuation (hv := hv)) ⟨?_, ?_⟩
   · intro a b hab
-    set x := (restrict₀_surjective (.ofClass hv.v) a).choose with hx_def
-    have hx := (restrict₀_surjective (.ofClass hv.v) a).choose_spec
-    set y := (restrict₀_surjective (.ofClass hv.v) b).choose with hy_def
-    have hy := (restrict₀_surjective (.ofClass hv.v) b).choose_spec
+    set x := (restrict₀_surjective (hv.v : K →*₀ Γ₀) a).choose with hx_def
+    have hx := (restrict₀_surjective (hv.v : K →*₀ Γ₀) a).choose_spec
+    set y := (restrict₀_surjective (hv.v : K →*₀ Γ₀) b).choose with hy_def
+    have hy := (restrict₀_surjective (hv.v : K →*₀ Γ₀) b).choose_spec
     apply_fun embedding using embedding_injective
     apply_fun embedding at hx
     apply_fun embedding at hy
-    simp only [← hx_def, embedding_restrict₀, coe_ofClass, ← hy_def] at hx hy
-    simp only [valueGroup₀_hom_extensionValuation, coe_mk, ZeroHom.coe_mk] at hab
-    have : hv.extensionValuation.restrict (algebraMap K _ x) =
-       hv.extensionValuation.restrict (algebraMap _ _ y) := hab
-    simp only [Valuation.restrict_def, restrict₀_apply, extensionValuation_coe_apply, map_eq_zero,
-      extension_eq_zero_iff] at this
-    by_cases ha0 : a = 0
-    · have h0 : extension ((algebraMap K (hat K)) x) = 0 := by
-        simpa [ha0, extension_eq_zero_iff, map_eq_zero] using hx
-      simp [h0, reduceDIte, extension_eq_zero_iff, map_eq_zero,
-        left_eq_dite_iff, WithZero.zero_ne_coe, imp_false, not_not] at this
-      simp [ha0, ← hy, this]
-    · apply_fun embedding at ha0 using embedding_injective (f := (.ofClass hv.v))
-      have h0 : extension ((algebraMap K (hat K)) x) ≠ 0 := by
-        simp only [ne_eq, extension_eq_zero_iff, map_eq_zero]
-        intro h
-        simp [h, ← hx] at ha0
-      have h0' : extension ((algebraMap K (hat K)) y) ≠ 0 := by
-        have hb0 : b ≠ 0 := by
-          apply_fun embedding at hab using embedding_injective (f := (.ofClass hv.v))
-          simp only [← hx_def, Valuation.embedding_restrict, extensionValuation_apply_coe,
-            ← hy_def] at hab
-          simpa [← hx, hab, hy] using ha0
-        apply_fun embedding at hb0 using embedding_injective (f := (.ofClass hv.v))
-        simp only [ne_eq, extension_eq_zero_iff, map_eq_zero]
-        intro h
-        simp [h, ← hy] at hb0
-      simp only [map_eq_zero, h0, reduceDIte, h0', WithZero.coe_inj, Subtype.mk.injEq,
-        Units.mk0_inj, embedding_inj] at this
-      simp only [Completion.algebraMap_def, Algebra.algebraMap_self, RingHom.id_apply,
-        extension_extends, Valuation.restrict_inj] at this
-      rwa [← hx, ← hy]
+    simp [embedding_restrict₀, Valuation.coe_toMonoidWithZeroHom] at hx hy
+    simpa [valueGroup₀_hom_extensionValuation, Valuation.restrict_inj, ← hx, ← hy] using hab
   · intro x
-    obtain ⟨k', hk'⟩ := restrict₀_surjective (.ofClass hv.extensionValuation) x
+    obtain ⟨k', hk'⟩ := restrict₀_surjective (hv.extensionValuation : hat K →*₀ Γ₀) x
     use extension k'
-    have := (restrict₀_surjective (.ofClass hv.v) (extension k')).choose_spec
+    have := (restrict₀_surjective (hv.v : K →*₀ Γ₀) (extension k')).choose_spec
     apply_fun embedding at this
     simpa [← embedding_inj, valueGroup₀_hom_extensionValuation, Valuation.restrict_def, ← hk',
       ← extensionValuation_toFun] using this
@@ -514,39 +450,40 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation
   is_topological_valuation s := by
     suffices HasBasis (𝓝 (0 : hat K)) (fun _ ↦ True)
-        fun γ : (ValueGroup₀ (.ofClass hv.v))ˣ ↦ { x | extensionValuation x <
-          (Units.map (ValueGroup₀.embedding (f := (.ofClass hv.v))) γ).1 } by
+        fun γ : hv.v.ValueGroup₀ˣ ↦ { x | extensionValuation x <
+          (Units.map (ValueGroup₀.embedding (f := (hv.v : K →*₀ Γ₀))) γ).1 } by
       rw [this.mem_iff]
-      simp only [extensionValuation_toFun, Units.coe_map, MonoidHom.coe_coe, true_and]
-      have (x : hat K) (γ : (ValueGroup₀ (.ofClass hv.v))ˣ) : extensionValuation.restrict x <
+      simp only [extensionValuation_toFun, Units.coe_map, MonoidHom.coe_ofClass, true_and]
+      have (x : hat K) (γ : hv.v.ValueGroup₀ˣ) : extensionValuation.restrict x <
           ((Units.map valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
           embedding (extension x) < embedding γ.1 := by
-        simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe]
+        simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_ofClass]
         rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
         by_cases hx0 : x = 0
         · simp only [hx0]
-          rw [dif_pos (map_zero _)]
+          rw [dite_eq_left (map_zero _)]
           · simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
               MulEquiv.ofBijective_apply, coe_mk, ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
+            rw [Valuation.restrict_def, restrict₀_apply, dite_eq_right]
             · have hext : hv.extension 0 = 0 := by rw [extension_eq_zero_iff]
               simp [hext]
             · simp [← v.restrict.zero_iff, v.restrict_def,
-                (restrict₀_surjective (.ofClass hv.v) _).choose_spec]
-        · rw [dif_neg (by simp [hx0])]
-          · set y := (restrict₀_surjective (.ofClass hv.v) γ).choose with hy_def
-            have hy := (restrict₀_surjective (.ofClass hv.v) γ).choose_spec
+                (restrict₀_surjective (hv.v : K →*₀ Γ₀) _).choose_spec]
+        · rw [dite_eq_right (by simp [hx0])]
+          · set y := (restrict₀_surjective (hv.v : K →*₀ Γ₀) γ).choose with hy_def
+            have hy := (restrict₀_surjective (hv.v : K →*₀ Γ₀) γ).choose_spec
             apply_fun embedding at hy
-            simp only [← hy_def, embedding_restrict₀, coe_ofClass] at hy
-            simp only [coe_ofClass, extensionValuation_toFun, valueGroup₀_equiv_extensionValuation,
-              valueGroup₀_hom_extensionValuation, MulEquiv.ofBijective_apply, coe_mk,
-              ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dif_neg]
-            · simp only [coe_ofClass, extensionValuation_toFun, extension_extends,
-              Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
-              ← Units.val_lt_val, Units.val_mk0]
-              convert embedding_strictMono (f := (.ofClass hv.v)).lt_iff_lt
-            · simp only [coe_ofClass, extensionValuation_apply_coe, map_eq_zero, ← ne_eq]
+            simp only [← hy_def, embedding_restrict₀, Valuation.coe_toMonoidWithZeroHom] at hy
+            simp only [Valuation.coe_toMonoidWithZeroHom, extensionValuation_toFun,
+              valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
+              MulEquiv.ofBijective_apply, coe_mk, ZeroHom.coe_mk]
+            rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dite_eq_right]
+            · simp only [Valuation.coe_toMonoidWithZeroHom, extensionValuation_toFun,
+              extension_extends, Valuation.embedding_restrict, WithZero.coe_lt_coe,
+              Subtype.mk_lt_mk, ← Units.val_lt_val, Units.val_mk0]
+              convert embedding_strictMono (f := (hv.v : K →*₀ Γ₀)).lt_iff_lt
+            · simp only [Valuation.coe_toMonoidWithZeroHom, extensionValuation_apply_coe,
+              map_eq_zero, ← ne_eq]
               apply_fun v
               simp [hy]
       refine ⟨fun ⟨γ, h⟩ ↦ ?_, fun ⟨γ, h⟩ ↦ ?_⟩
@@ -575,7 +512,7 @@ lemma valuedCompletion_surjective_iff :
         rcases eq_or_ne γ 0 with rfl | hγ
         · simp at H
         · obtain ⟨r, hr⟩ := h γ
-          have hr' : restrict₀ (.ofClass (valuedCompletion (K := K)).v) r ≠ 0 := by
+          have hr' : restrict₀ ((valuedCompletion (K := K)).v : hat K →*₀ Γ₀) r ≠ 0 := by
             rw [ne_eq, ← embedding_inj, embedding_restrict₀ r]
             simpa [hr]
           convert! isClosed_univ.sdiff (isOpen_sphere (hat K) hr') using 1
@@ -583,11 +520,6 @@ lemma valuedCompletion_surjective_iff :
           simp [← hr, ← v.restrict_def, v.restrict_inj]
     · exact ⟨_, by simpa using ha⟩
   · exact ⟨a, by simp [ha]⟩
-
-instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
-    [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
-  rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
-  exact (FaithfulSMul.algebraMap_injective K (hat K)).comp (FaithfulSMul.algebraMap_injective R K)
 
 end Valued
 

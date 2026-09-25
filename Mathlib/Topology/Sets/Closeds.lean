@@ -45,7 +45,7 @@ instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Closeds α) := fast_instance% .ofSetLike (Closeds α) α
+instance : PartialOrder (Closeds α) := fast_instance% .ofSetLike (Closeds α)
 
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
@@ -182,21 +182,13 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
     (⨅ i, ⟨s i, h i⟩ : Closeds α) = ⟨⋂ i, s i, isClosed_iInter h⟩ :=
   iInf_def _
 
-/-- Closed sets in a topological space form a coframe. -/
-@[implicit_reducible]
-def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
+instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms {
   iInf_sup_le_sup_sInf a s :=
-    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
-
-instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms coframeMinimalAxioms
+    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
 
 @[simps]
 instance [T1Space α] : Singleton α (Closeds α) where
   singleton x := ⟨{x}, isClosed_singleton⟩
-
-/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : Closeds α := {x}
 
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :
@@ -322,7 +314,7 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α) α
+instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α)
 
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
@@ -410,7 +402,7 @@ instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α) α
+instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α)
 
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
@@ -435,10 +427,6 @@ theorem coe_mk (s : Set α) (h : IsIrreducible s) (h' : IsClosed s) : (mk s h h'
 @[simps]
 instance [T1Space α] : Singleton α (IrreducibleCloseds α) where
   singleton x := ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
-
-/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
-@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
-abbrev singleton [T1Space α] (x : α) : IrreducibleCloseds α := {x}
 
 @[simp]
 theorem mk_singleton [T1Space α] {x : α} :

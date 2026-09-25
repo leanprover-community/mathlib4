@@ -62,14 +62,14 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup (Wrapped α) :=
   fast_instance% Function.Injective.commSemigroup _ val_injective (fun _ _ => rfl)
 
 /--
-info: @[implicit_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
+info: @[instance_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
 fun {α} [inst : Semigroup α] => @Semigroup.mk (Wrapped α) (@instMulWrapped α (@Semigroup.toMul α inst)) ⋯
 -/
 #guard_msgs in
 set_option pp.explicit true in
 #print instSemigroup
 /--
-info: @[implicit_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
+info: @[instance_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
   [CommSemigroup α] → CommSemigroup (Wrapped α) :=
 fun {α} [inst : CommSemigroup α] =>
   @CommSemigroup.mk (Wrapped α) (@instSemigroup α (@CommSemigroup.toSemigroup α inst)) ⋯
@@ -82,7 +82,7 @@ set_option pp.explicit true in
 /-!
 Non-defeq error
 -/
-instance : Mul Nat := ⟨(· * · )⟩
+instance : Mul Nat := ⟨(· * ·)⟩
 
 /--
 warning: An instance of `Mul Nat` already exists.
@@ -122,7 +122,7 @@ abbrev dec1 : Decidable It := isTrue sorry
 #guard_msgs in
 def dec2 : Decidable It := isTrue sorry
 
-/-- info: @Dec.mk It (@isTrue It _check._proof_1) : Dec It -/
+/-- info: @Dec.mk It (@Decidable.intro It true _check._proof_1) : Dec It -/
 #guard_msgs (info, drop warning) in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec1 : Dec It }
@@ -131,8 +131,6 @@ set_option pp.explicit true in
 error: Provided instance does not reduce to a constructor application
   dec2
 Reduces to an application of testing.dec2.
-
-This instance is not a structure and not canonical. Use a separate 'instance' command to define it.
 
 Use `set_option trace.Elab.fast_instance true` to analyze the error.
 
@@ -143,6 +141,133 @@ info: @Dec.mk It dec2 : Dec It
 #guard_msgs in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec2 : Dec It }
+
+/-! The provided instance does not reduce to a constructor application but it is defeq to what
+`inferInstance` would synthesize, so we allow it. -/
+/--
+info: let this := dec2;
+@Dec.mk It this : Dec It
+-/
+#guard_msgs in
+set_option pp.explicit true in
+#check let := dec2; fast_instance% { dec := dec2 : Dec It }
+
+class DecEq (α : Type*) where
+  [decEq : DecidableEq α]
+
+def UnitAlias : Type :=
+  Unit
+
+/-! The root is an instance family. -/
+example : DecidableEq UnitAlias :=
+  fast_instance% fun _ _ ↦ isTrue rfl
+
+/-! The root is an instance family, and the instances do not reduce to a constructor application. -/
+/--
+error: Provided instance does not reduce to a constructor application
+  sorry
+Reduces to an application of sorryAx.
+
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
+
+Trace of fields visited: []
+-/
+#guard_msgs in
+example : DecidableEq UnitAlias :=
+  fast_instance% fun _ _ ↦ sorry
+
+/-! The root is an instance family, and the instances do not reduce to a constructor application,
+but are equal defeq to what `inferInstance` would synthesize, so we allow it with a warning. -/
+/--
+warning: An instance of `Decidable (a = b)` already exists.
+Please use `inferInstance` instead of `fast_instance%`
+
+Note: This linter can be disabled with `set_option linter.fast_instance_existing false`
+-/
+#guard_msgs in
+example : DecidableEq UnitAlias :=
+  let (a b : UnitAlias) : Decidable (a = b) := isTrue rfl
+  fast_instance% fun _ _ ↦ inferInstance
+
+/-! A nested instance field contains an instance family. -/
+example : DecEq UnitAlias :=
+  fast_instance% { decEq := fun _ _ ↦ isTrue rfl }
+
+/-! A nested instance field contains an instance family, and the instances do not reduce to a
+constructor application. -/
+/--
+error: Provided instance does not reduce to a constructor application
+  sorry
+Reduces to an application of sorryAx.
+
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
+
+Trace of fields visited: [testing.DecEq.decEq]
+-/
+#guard_msgs in
+example : DecEq α :=
+  fast_instance% { decEq := fun a b ↦ sorry }
+
+/- A nested instance field contains an instance family, and the instances do not reduce to a
+constructor application, it is defeq to what `inferInstance` would synthesize so we allow it. -/
+#guard_msgs (drop warning) in
+example : DecEq α :=
+  let : DecidableEq α := fun a b ↦ sorry
+  fast_instance% { decEq := this : DecEq α }
+
+/-! The root is not a class. -/
+/--
+error: Can only be used for classes, but type is
+  Unit
+
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
+
+Trace of fields visited: []
+-/
+#guard_msgs in
+example : Unit := fast_instance% ()
+
+class UnitClass where
+  [unit : Unit]
+
+/-! A nested instance field is not a class. -/
+/--
+error: Can only be used for classes, but type is
+  Unit
+
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
+
+Trace of fields visited: [testing.UnitClass.unit]
+-/
+#guard_msgs in
+example : UnitClass := fast_instance% { unit := () }
+
+/-! The root is a family but not of classes. -/
+/--
+error: Can only be used for classes, but type is
+  Unit
+
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
+
+Trace of fields visited: []
+-/
+#guard_msgs in
+example : Unit → Unit := fast_instance% fun _ ↦ ()
+
+class Func where
+  [func : Unit → Unit]
+
+/-! A nested instance field is a family but not of classes. -/
+/--
+error: Can only be used for classes, but type is
+  Unit
+
+Use `set_option trace.Elab.fast_instance true` to analyze the error.
+
+Trace of fields visited: [testing.Func.func]
+-/
+#guard_msgs in
+example : Func := fast_instance% { func := fun _ ↦ () }
 
 /-!
 Checking that proof fields whose types already match at instances transparency
