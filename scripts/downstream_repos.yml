@@ -237,3 +237,6 @@
     build: make.yml
     release-tag: create-release.yml
     update: upgrade.yml
+- github: https://github.com/wcook04/plectis-erdos
+  default_branch: main
+  name: "Plectis: eight Erdős problem programmes"
