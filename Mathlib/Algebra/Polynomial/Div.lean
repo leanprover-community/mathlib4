@@ -133,7 +133,7 @@ def divByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).1 else 0
 
-/-- `modByMonic`, denoted as `p  %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
+/-- `modByMonic`, denoted as `p %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
 def modByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).2 else p
