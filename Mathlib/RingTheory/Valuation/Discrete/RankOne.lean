@@ -132,3 +132,46 @@ noncomputable def absoluteValue {K : Type*} [DivisionRing K] {v : Valuation K Γ
   v.absoluteValue
 
 end Valuation.IsRankOneDiscrete
+
+open WithZero MonoidWithZeroHom ValueGroup₀ in
+lemma Valuation.nonempty_valueGroup₀_orderMonoidIso_withZeroMulInt_iff {Γ R : Type*}
+    [LinearOrderedCommGroupWithZero Γ] [Ring R] (v : Valuation R Γ) :
+    Nonempty (ValueGroup₀ (v : R →*₀ Γ) ≃*o ℤᵐ⁰) ↔ IsRankOneDiscrete v := by
+  refine ⟨fun ⟨f⟩ ↦ ?_, fun hv ↦ ⟨(hv.valueGroup₀_equiv_withZeroMulInt v).toMulEquiv,
+      (hv.valueGroup₀_equiv_withZeroMulInt_strictMono v).le_iff_le⟩⟩
+  have hf : IsUnit (f.symm (WithZero.exp (-1))) := by simp
+  refine ⟨Units.map embedding.toMonoidHom hf.unit, ?_, ?_⟩
+  · ext γ
+    refine ⟨fun ⟨k, hk⟩ ↦ ?_, fun h ↦ ?_⟩
+    · wlog hk0 : 0 ≤ k
+      · rw [← Subgroup.inv_mem_iff]
+        exact this _ ⟨f⟩ f hf γ⁻¹ ⟨-k, (by simp [← hk])⟩ (-k) (by simp [← hk]) (by linarith)
+      have h0 : f.symm (WithZero.exp (-1)) ≠ 0 := by simp
+      obtain ⟨r, s, hr0, hs0, hrs⟩ :=
+        Or.resolve_left (zero_or_exists_mk (v : R →*₀ Γ) (f.symm (WithZero.exp (-1)))) h0
+      rw [mem_valueGroup_iff_of_comm]
+      refine ⟨r ^ k.natAbs, ?_,  s ^ k.natAbs, ?_⟩
+      · simp only [coe_toMonoidWithZeroHom, ne_eq] at hr0
+        simp [hr0]
+      · simp only [coe_toMonoidWithZeroHom, ne_eq] at hr0 hs0
+        simp only [← hk, Units.val_zpow_eq_zpow_val, Units.coe_map, IsUnit.unit_spec,
+          ← Int.reduceNeg, hrs, map_pow, ← zpow_natCast, Nat.cast_natAbs,
+          abs_eq_self.mpr hk0, Int.cast_eq, MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, toZeroHom_coe,
+          OneHom.coe_mk, ← mul_zpow]
+        rw [← embedding_restrict₀ r, ← embedding_restrict₀ s, valueGroup.mk, ← map_mul]
+        simp [restrict₀, hr0, hs0,← WithZero.coe_mul]
+    · obtain ⟨a, ha, b, hb, hab⟩ := (mem_valueGroup_iff_of_comm' (v : R →*₀ Γ)).mp h
+      set g := f ((restrict₀ (v : R →*₀ Γ) b)⁻¹ * (restrict₀ (v : R →*₀ Γ) a))
+      simp only [coe_toMonoidWithZeroHom, ne_eq] at ha hb hab
+      have hg : g ≠ 0 := by simp [g, ha, hb]
+      use log g
+      ext
+      simp only [Int.reduceNeg, Units.val_zpow_eq_zpow_val, Units.coe_map, IsUnit.unit_spec,
+        MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, toZeroHom_coe, OneHom.coe_mk, ← map_zpow₀,
+        ← exp_zsmul, Int.zsmul_eq_mul, mul_neg, mul_one]
+      rw [← mul_right_inj' ha, hab, neg_eq_neg_one_mul, ← smul_eq_mul (-1), exp_zsmul, exp_log hg]
+      simp [ha, g]
+  · simp only [ ← Units.val_lt_val, Units.coe_map,IsUnit.unit_spec, MonoidHom.coe_mk,
+      ZeroHom.toFun_eq_coe, toZeroHom_coe, OneHom.coe_mk, Units.val_one]
+    rw [← map_one (embedding (f := (v : R →*₀ Γ))), embedding_strictMono.lt_iff_lt]
+    exact (OrderMonoidIso.symm_apply_lt f).mpr (by simp [← WithZero.exp_zero])
