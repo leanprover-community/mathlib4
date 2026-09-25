@@ -75,7 +75,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     norm_cast
   · rw [smul_smul]
     congr 1
-    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left' hqn]
+    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left₀ hqn]
     ring
 
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
