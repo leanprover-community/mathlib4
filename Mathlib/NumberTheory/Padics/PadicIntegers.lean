@@ -93,6 +93,9 @@ def _root_.Padic.lift (x : ℚ_[p]) (hx : ‖x‖ ≤ 1) : ℤ_[p] := ⟨x, hx�
 @[simp]
 theorem coe_lift {x : ℚ_[p]} (hx : ‖x‖ ≤ 1) : lift x hx = x := rfl
 
+@[simp]
+theorem coe_eta {x : ℤ_[p]} (hx : ‖(x : ℚ_[p])‖ ≤ 1) : lift x hx = x := rfl
+
 instance _root_.Padic.instCanLift : CanLift ℚ_[p] ℤ_[p] (↑) (‖·‖ ≤ 1):=
   ⟨fun x hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
 

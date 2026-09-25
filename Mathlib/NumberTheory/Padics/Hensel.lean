@@ -219,11 +219,13 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   have : F.derivative.aeval z * -z1 = -F.aeval z := by
     calc
       F.derivative.aeval z * -z1 =
-          F.derivative.aeval z * -⟨↑(F.aeval z) / ↑(F.derivative.aeval z), h1⟩ := by rw [hzeq]
-      _ = -(F.derivative.aeval z * ⟨↑(F.aeval z) / ↑(F.derivative.aeval z), h1⟩) := mul_neg _ _
-      _ = -⟨F.derivative.aeval z * (F.aeval z / (F.derivative.aeval z : ℤ_[p]) : ℚ_[p]), this⟩ :=
-        (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul])
-      _ = -F.aeval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
+          F.derivative.aeval z * -((F.aeval z) / (F.derivative.aeval z) : ℚ_[p]).lift h1 := by
+        rw [hzeq]
+      _ = -(F.derivative.aeval z * ((F.aeval z) / (F.derivative.aeval z) : ℚ_[p]).lift h1) :=
+        mul_neg _ _
+      _ = -(F.derivative.aeval z * (F.aeval z / (F.derivative.aeval z) : ℚ_[p])).lift this :=
+        PadicInt.ext <| by simp
+      _ = -F.aeval z := by simp [mul_div_cancel₀ _ hdzne']
   exact ⟨q, by simpa [sub_eq_add_neg, neg_mul_eq_mul_neg, this, hz'] using hq⟩
 
 omit hnorm in
