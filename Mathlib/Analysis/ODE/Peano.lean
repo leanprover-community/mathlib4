@@ -22,7 +22,8 @@ We work on a cylinder `Icc tmin tmax ×ˢ closedBall x₀ r`, where `f` is conti
 `L * max (tmax - t₀) (t₀ - tmin) ≤ r`. These assumptions, collected in `IsPeanoODE`, give a solution
 on the whole interval `Icc tmin tmax` which stays in `closedBall x₀ r`.
 
-This file constructs the Tonelli approximations and proves their range and Lipschitz bounds.
+This file constructs Tonelli approximations, proves their bounds, and applies Arzelà–Ascoli to
+extract a convergent subsequence in the space of bounded continuous functions.
 The remaining steps are outlined below.
 
 ## Main definitions
