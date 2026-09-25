@@ -46,6 +46,8 @@ instance (X : Type v₁) : (tensorLeft X).IsLeftAdjoint :=
 instance : MonoidalClosed (Type v₁) := MonoidalClosed.mk
   fun X => Closed.mk _ (Types.tensorProductAdjunction X)
 
+/-- The category of functors from a small category to types is monoidal closed.
+Use the instance in `Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes` instead. -/
 @[deprecated "Use the instance in `Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes` instead"
   (since := "2026-09-25"),
 instance_reducible]
