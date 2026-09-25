@@ -176,8 +176,7 @@ instance polynomialModule : Module R[X] (PolynomialModule R M) :=
 
 lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     f • m = aeval ((coeffLinearEquiv R R).symm.comp <|
-    (Finsupp.lmapDomain M R Nat.succ).comp (coeffLinearEquiv R R).toLinearMap) f m := by
-  rfl
+    (Finsupp.lmapDomain M R Nat.succ).comp (coeffLinearEquiv R R).toLinearMap) f m := rfl
 
 instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by

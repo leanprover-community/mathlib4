@@ -144,7 +144,7 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
 But in cases that we are already mixing the declarations for dependent tuples and non-dependent
 tuples, we can simplify to the non-dependent tuples. -/
 @[simp]
-lemma Fin.cons_vecEmpty {α : Type*} (x : α) : Fin.cons x ![] = ![x] := by rfl
+lemma Fin.cons_vecEmpty {α : Type*} (x : α) : Fin.cons x ![] = ![x] := rfl
 
 /-- Simplify `Fin.snoc` to `vecCons` in this case. -/
 @[simp]
@@ -159,7 +159,7 @@ tuples, we can simplify to the non-dependent tuples.
 This allows us to simplify `Fin.cons 5 ![1, 3, 7]` to `![5, 1, 3, 7]`. -/
 @[simp]
 lemma Fin.cons_vecCons {α : Type*} (x y : α) (p : Fin n → α) :
-  Fin.cons x (vecCons y p) = vecCons x (vecCons y p) := by rfl
+  Fin.cons x (vecCons y p) = vecCons x (vecCons y p) := rfl
 
 /-- We push `Fin.snoc` inside `vecCons`. This allows us to simplify e.g.
 `Fin.snoc ![1, 3, 7] 5` to `![1, 3, 7, 5]`. -/

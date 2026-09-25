@@ -558,7 +558,7 @@ def truncLTLinearMap [DecidableLT Γ] (c : Γ) : V⟦Γ⟧ →ₗ[R] V⟦Γ⟧ w
 variable (R) in
 @[simp]
 theorem coe_truncLTLinearMap [DecidableLT Γ] (c : Γ) :
-    (truncLTLinearMap R c : V⟦Γ⟧ → V⟦Γ⟧) = truncLT c := by rfl
+    (truncLTLinearMap R c : V⟦Γ⟧ → V⟦Γ⟧) = truncLT c := rfl
 
 end Module
 

@@ -152,8 +152,7 @@ theorem coe_mks {f : A → B} (h₀ h₁ h₂ h₃ h₄ h₅) :
 
 @[simp, norm_cast]
 theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
-    ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
-  rfl
+    ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := rfl
 
 @[simp, norm_cast]
 theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
@@ -180,8 +179,7 @@ theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 
 theorem toAlgHom_toLinearMap (f : A →ₐc[R] B) :
-    ((f : A →ₐ[R] B) : A →ₗ[R] B) = f := by
-  rfl
+    ((f : A →ₐ[R] B) : A →ₗ[R] B) = f := rfl
 
 variable (φ : A →ₐc[R] B)
 

@@ -136,8 +136,7 @@ lemma toTriangle_points (p : Polygon P 3) (h : p.HasNondegenerateVertices R) :
 /-- Converting a 3-polygon to a triangle and back yields the original polygon. -/
 @[simp]
 lemma toTriangle_toPolygon (poly : Polygon P 3) (h : poly.HasNondegenerateVertices R) :
-    (poly.toTriangle R h).toPolygon = poly := by
-  rfl
+    (poly.toTriangle R h).toPolygon = poly := rfl
 
 end Polygon
 
@@ -159,7 +158,6 @@ theorem toPolygon_hasNondegenerateVertices (t : Affine.Triangle R P) :
 /-- Converting a triangle to a polygon and back yields the original triangle. -/
 @[simp]
 lemma toPolygon_toTriangle (t : Affine.Triangle R P) :
-    t.toPolygon.toTriangle R (toPolygon_hasNondegenerateVertices t) = t := by
-  rfl
+    t.toPolygon.toTriangle R (toPolygon_hasNondegenerateVertices t) = t := rfl
 
 end Affine.Triangle

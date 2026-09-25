@@ -50,13 +50,11 @@ instance : MulAction G (ℙ K V) where
     rw [map_comp, Function.comp_apply]
 
 lemma generalLinearGroup_smul_def (g : LinearMap.GeneralLinearGroup K V) (x : ℙ K V) :
-    g • x = x.map g.toLinearEquiv.toLinearMap g.toLinearEquiv.injective := by
-  rfl
+    g • x = x.map g.toLinearEquiv.toLinearMap g.toLinearEquiv.injective := rfl
 
 lemma matrixSpecialLinearGroup_smul_def {ι F : Type*} [Fintype ι] [DecidableEq ι] [Field F]
     (g : Matrix.SpecialLinearGroup ι F) (x : ℙ F (ι → F)) :
-    g • x = g.toLin'_equiv • x := by
-  rfl
+    g • x = g.toLin'_equiv • x := rfl
 
 @[simp]
 lemma smul_mk (g : G) {v : V} (hv : v ≠ 0) :

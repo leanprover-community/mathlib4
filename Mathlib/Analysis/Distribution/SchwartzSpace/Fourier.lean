@@ -120,8 +120,7 @@ lemma fourierInv_coe (f : 𝓢(V, E)) : 𝓕⁻ f = 𝓕⁻ (f : V → E) := by
   exact (fourierInv_eq_fourier_neg f x).symm
 
 lemma fourierInv_apply_eq (f : 𝓢(V, E)) :
-    𝓕⁻ f = (compCLMOfContinuousLinearEquiv ℂ (LinearIsometryEquiv.neg ℝ (E := V))) (𝓕 f) := by
-  rfl
+    𝓕⁻ f = (compCLMOfContinuousLinearEquiv ℂ (LinearIsometryEquiv.neg ℝ (E := V))) (𝓕 f) := rfl
 
 variable [CompleteSpace E]
 

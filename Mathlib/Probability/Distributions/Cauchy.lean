@@ -53,7 +53,7 @@ lemma cauchyPDFReal_scale_zero (x₀ : ℝ) : cauchyPDFReal x₀ 0 = 0 := by
 alias _root_Probability.CauchyPDFReal_scale_zero := cauchyPDFReal_scale_zero
 
 lemma cauchyPDFReal_def (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) :
-    cauchyPDFReal x₀ γ x = π⁻¹ * γ * ((x - x₀) ^ 2 + γ ^ 2)⁻¹ := by rfl
+    cauchyPDFReal x₀ γ x = π⁻¹ * γ * ((x - x₀) ^ 2 + γ ^ 2)⁻¹ := rfl
 
 @[deprecated (since := "2026-03-06")]
 alias _root_Probability.CauchyPDFReal_def := cauchyPDFReal_def
@@ -85,7 +85,7 @@ lemma cauchyPDF_scale_zero (x₀ : ℝ) : cauchyPDF x₀ 0 = 0 := by
 alias _root_Probability.CauchyPDF_scale_zero := cauchyPDF_scale_zero
 
 lemma cauchyPDF_def (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) :
-  cauchyPDF x₀ γ x = ENNReal.ofReal (cauchyPDFReal x₀ γ x) := by rfl
+  cauchyPDF x₀ γ x = ENNReal.ofReal (cauchyPDFReal x₀ γ x) := rfl
 
 @[deprecated (since := "2026-03-06")]
 alias _root_Probability.CauchyPDF_def := cauchyPDF_def

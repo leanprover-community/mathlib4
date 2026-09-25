@@ -528,8 +528,7 @@ def kerLiftₐ : (ker f.toRingHom).Quotient →ₐ[R] P :=
   Maybe `kerLiftₐ` should use the latter. -/
 /-- The diagram described by the universal property for quotients of rings, when
 the ring congruence relation is the kernel of the homomorphism, commutes. -/
-theorem kerLiftₐ_mk (x : M) : kerLiftₐ f x = f x := by
-  rfl
+theorem kerLiftₐ_mk (x : M) : kerLiftₐ f x = f x := rfl
 
 /-- A ring homomorphism `f` induces an injective homomorphism on the quotient by `f`'s kernel. -/
 theorem kerLiftₐ_injective (f : M →ₐ[R] P) :
@@ -581,8 +580,7 @@ theorem quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
 
 @[simp]
 theorem coe_quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
-    (quotientKerEquivRangeₐ f x : P) = f x := by
-  rfl
+    (quotientKerEquivRangeₐ f x : P) = f x := rfl
 
 theorem quotientKerEquivRangeₐ_comp_mkₐ (φ : M →ₐ[R] N) :
     ((quotientKerEquivRangeₐ φ).toAlgHom.comp ((ker (φ : M →+* N)).mkₐ R)) = φ.rangeRestrict :=
@@ -613,7 +611,7 @@ variable (R)
 def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
     (RingCon.ker (factorₐ R h : c.Quotient →+* d.Quotient)).Quotient ≃ₐ[R] d.Quotient :=
   { quotientQuotientEquivQuotient c d h with
-    commutes' _ := by rfl }
+    commutes' _ := rfl }
 
 @[simp]
 theorem quotientQuotientEquivQuotientₐ_mk_mk {c d : RingCon M} (h : c ≤ d) (x : M) :

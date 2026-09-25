@@ -82,8 +82,7 @@ def toTemperedDistribution : 𝓢'(E, ℂ) :=
 set_option backward.privateInPublic true in
 @[simp]
 theorem toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
-    μ.toTemperedDistribution g = ∫ (x : E), g x ∂μ := by
-  rfl
+    μ.toTemperedDistribution g = ∫ (x : E), g x ∂μ := rfl
 
 end MeasureTheory.Measure
 
@@ -250,8 +249,7 @@ def smulLeftCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
 
 @[simp]
 theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, ℂ)) :
-    smulLeftCLM F g f f' = f (SchwartzMap.smulLeftCLM ℂ g f') := by
-  rfl
+    smulLeftCLM F g f f' = f (SchwartzMap.smulLeftCLM ℂ g f') := rfl
 
 @[simp]
 theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦ c) f = c • f := by

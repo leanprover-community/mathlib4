@@ -76,8 +76,7 @@ forming the "linear combination" it specifies: scalar-multiply each `R` term to 
 def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩ : R × M) ↦ r • x)).sum
 
 @[simp] theorem eval_cons [AddMonoid M] [SMul R M] (p : R × M) (l : NF R M) :
-    (p ::ᵣ l).eval = p.1 • p.2 + l.eval := by
-  rfl
+    (p ::ᵣ l).eval = p.1 • p.2 + l.eval := rfl
 
 theorem eval_nil [Add M] [Zero M] [SMul R M] : NF.eval ([] : NF R M) = 0 := by
   simp [eval]

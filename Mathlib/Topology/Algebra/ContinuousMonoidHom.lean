@@ -241,8 +241,7 @@ instance : CommMonoid (A →ₜ* E) where
   mul_one f := ext fun x => mul_one (f x)
 
 @[to_additive (attr := simp)]
-theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
-  rfl
+theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := rfl
 
 @[to_additive (attr := simp)]
 theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by

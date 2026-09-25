@@ -152,7 +152,7 @@ variable (M) in
 lemma comap_id : comap (𝟙 M) ⊤ = ⊤ := rfl
 
 @[simp]
-lemma comap_comp (p' : M' ⟶ M'') : S''.comap (p ≫ p') = (S''.comap p').comap p := by rfl
+lemma comap_comp (p' : M' ⟶ M'') : S''.comap (p ≫ p') = (S''.comap p').comap p := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

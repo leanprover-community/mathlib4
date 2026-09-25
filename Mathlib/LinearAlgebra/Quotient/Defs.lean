@@ -192,7 +192,7 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) := fast_instance%
-  Function.Surjective.module _ { toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl }
+  Function.Surjective.module _ { toFun := mk, map_zero' := rfl, map_add' := fun _ _ => by rfl }
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=
