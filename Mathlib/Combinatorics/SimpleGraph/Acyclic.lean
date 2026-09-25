@@ -492,6 +492,48 @@ lemma isTree_iff_connected_and_card [Finite V] :
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
 
+/-- A finite acyclic graph (forest) with exactly `card V - 1` edges is a tree; in particular,
+it is connected. Together with `isTree_iff_connected_and_card`, this shows that for a finite
+acyclic graph, having `card V - 1` edges is *equivalent* to being connected. -/
+theorem IsAcyclic.isTree_of_card_edgeSet [Finite V] (hG : G.IsAcyclic)
+    (hcard : Nat.card G.edgeSet + 1 = Nat.card V) : G.IsTree := by
+  have := Fintype.ofFinite V
+  classical
+  have hVne : Nonempty V := by
+    have h1 : Nat.card V = Fintype.card V := Nat.card_eq_fintype_card
+    rw [h1] at hcard
+    exact Fintype.card_pos_iff.mp (Nat.pos_of_ne_zero (by omega))
+  have := hVne
+  refine ⟨⟨?_⟩, hG⟩
+  have hne : (Finset.univ.filter (fun H : SimpleGraph V => H.IsAcyclic)).Nonempty :=
+    ⟨⊥, by simp⟩
+  obtain ⟨F, hF_mem, hF_max⟩ :=
+    Finset.exists_max_image (Finset.univ.filter (fun H : SimpleGraph V => H.IsAcyclic))
+      (fun H => Nat.card H.edgeSet) hne
+  have hF_acyc : F.IsAcyclic := (Finset.mem_filter.mp hF_mem).2
+  have key : ∀ H : SimpleGraph V, H.IsAcyclic → Nat.card H.edgeSet = Nat.card F.edgeSet →
+      H.Preconnected := by
+    intro H hH_acyc hH_eq u v
+    by_contra hnr
+    have hacyc' : (H ⊔ edge u v).IsAcyclic := hH_acyc.sup_edge_of_not_reachable hnr
+    have hmem' : H ⊔ edge u v ∈ Finset.univ.filter (fun H : SimpleGraph V => H.IsAcyclic) := by
+      simp [hacyc']
+    have hle := hF_max (H ⊔ edge u v) hmem'
+    have huv : u ≠ v := fun h => hnr (h ▸ Reachable.refl _)
+    have hlt : Nat.card H.edgeSet < Nat.card (H ⊔ edge u v).edgeSet := by
+      have hsub : H.edgeSet ⊂ (H ⊔ edge u v).edgeSet := by
+        rw [Set.ssubset_iff_of_subset (edgeSet_mono le_sup_left)]
+        exact ⟨s(u, v), by simp [huv], fun hmem => absurd (Adj.reachable hmem) hnr⟩
+      exact Set.ncard_lt_ncard hsub (Set.toFinite _)
+    omega
+  have hF_conn : F.Connected := ⟨key F hF_acyc rfl⟩
+  have hF_tree : F.IsTree := ⟨hF_conn, hF_acyc⟩
+  have hF_card : Nat.card F.edgeSet + 1 = Nat.card V :=
+    (isTree_iff_connected_and_card.mp hF_tree).2
+  have hG_mem : G ∈ Finset.univ.filter (fun H : SimpleGraph V => H.IsAcyclic) := by simp [hG]
+  have hG_le_max : Nat.card G.edgeSet ≤ Nat.card F.edgeSet := hF_max G hG_mem
+  exact key G hG (by omega)
+
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
     [DecidableRel G.Adj] : G.minDegree = 1 := by
