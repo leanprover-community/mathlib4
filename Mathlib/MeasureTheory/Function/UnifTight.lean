@@ -252,7 +252,6 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f 
   · exact unifTight_const hp' hg
   · exact unifTight_of_tendsto_Lp_zero hp' (fun n => (hf n).sub hg) hfg
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
 /- Next we deal with the forward direction. -/
 
 @[deprecated "Lemma formerly used in `tendsto_Lp_of_tendsto_ae`." (since := "2026-09-15")]
