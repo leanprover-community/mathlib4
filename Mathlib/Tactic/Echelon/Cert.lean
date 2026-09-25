@@ -40,10 +40,18 @@ open Lean Meta Qq Mathlib.Tactic.Matrix
 namespace Mathlib.Tactic.Echelon
 
 /-- Build the literal `⟨i, _⟩ : Fin n` with its bound decided. -/
-def mkFinLit (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
+def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
   have iQ : Q(Nat) := mkNatLitQ i
   let hi : Q($iQ < $n) ← mkDecideProofQ q($iQ < $n)
   return q((⟨$iQ, $hi⟩ : Fin $n))
+
+/-- `List.drop k` on the list literal `l`. -/
+def dropListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) (k : Nat) : Q(List $α) :=
+  match k with
+  | 0 => l
+  | k + 1 => match_expr l with
+    | List.cons _ _ tl => dropListLitQ (α := α) tl k
+    | _ => l
 
 /-- Three views of one matrix literal. -/
 structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
@@ -67,23 +75,15 @@ def mkMatrixViews {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m n : Na
 
 /-- Build the list of pivot columns `[c₀, c₁, …]`, each with its bound. -/
 def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
-  let cols ← pivots.toList.mapM (mkFinLit n)
+  let cols ← pivots.toList.mapM (mkFinLitQ n)
   return mkListLitQ (u := .zero) (α := q(Fin $n)) cols
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m)) := do
   let mut acc : Q(Equiv.Perm (Fin $m)) := q(Equiv.refl (Fin $m))
   for (a, b) in swaps do
-    acc := q((Equiv.swap $(← mkFinLit m a) $(← mkFinLit m b)).trans $acc)
+    acc := q((Equiv.swap $(← mkFinLitQ m a) $(← mkFinLitQ m b)).trans $acc)
   return acc
-
-/-- `List.drop k` on the list literal `l`. -/
-def dropListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) (k : Nat) : Q(List $α) :=
-  match k with
-  | 0 => l
-  | k + 1 => match_expr l with
-    | List.cons _ _ tl => dropListLitQ (α := α) tl k
-    | _ => l
 
 /-- The proof of `IsLowerTriangularDiagList k c rows` on the literal `rows` by rolling
 `IsLowerTriangularDiagList.cons` per row (`kQ` and `cQ` are the literals of `k` and `c`). -/
@@ -95,21 +95,21 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (rα : Q(CommRin
     have : $cQ =Q 0 := ⟨⟩
     return q(IsLowerTriangularDiagList.nil)
   | c + 1 => do
-    let_expr List.cons _ rowLit tl := rows |
+    let_expr List.cons _ row rowsTl := rows |
       throwError "certifyLowerTriangularDiagList: {rows} is not a cons cell"
-    have rowLit : Q(List $α) := rowLit
-    have tl : Q(List (List $α)) := tl
-    let_expr List.cons _ entry _ := dropListLitQ rowLit k |
-      throwError "certifyLowerTriangularDiagList: {rowLit} has no entry at {k}"
+    have row : Q(List $α) := row
+    have rowsTl : Q(List (List $α)) := rowsTl
+    let_expr List.cons _ entry _ := dropListLitQ row k |
+      throwError "certifyLowerTriangularDiagList: {row} has no entry at {k}"
     have entry : Q($α) := entry
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
     have c₁Q : Q(Nat) := mkNatLitQ c
-    let rest ← certifyLowerTriangularDiagList rα certifier (k + 1) c k₁Q c₁Q tl
+    let rest ← certifyLowerTriangularDiagList rα certifier (k + 1) c k₁Q c₁Q rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     -- The kernel evaluates the `drop` and the `replicate` once, here.
-    have hdrop : Q(List.drop $kQ $rowLit = $entry :: List.replicate $c₁Q (0 : $α)) :=
-      (q(Eq.refl (List.drop $kQ $rowLit)) : Expr)
-    have : $rows =Q $rowLit :: $tl := ⟨⟩
+    have hdrop : Q(List.drop $kQ $row = $entry :: List.replicate $c₁Q (0 : $α)) :=
+      (q(Eq.refl (List.drop $kQ $row)) : Expr)
+    have : $rows =Q $row :: $rowsTl := ⟨⟩
     have : $cQ =Q $c₁Q + 1 := ⟨⟩
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
     return q(IsLowerTriangularDiagList.cons $hdrop $hd $rest)
@@ -137,31 +137,31 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (rα : Q(CommRing 
     have : $cols =Q ([] : List (Fin $n)) := ⟨⟩
     return q(IsPivotedList.nil $hz)
   | k :: ks => do
-    let_expr List.cons _ kF ks' := cols |
+    let_expr List.cons _ col colsTl := cols |
       throwError "certifyPivotedList: {cols} is not a cons cell"
-    let_expr List.cons _ rowLit tl := rows |
+    let_expr List.cons _ row rowsTl := rows |
       throwError "certifyPivotedList: {rows} is not a cons cell"
-    have kF : Q(Fin $n) := kF
-    have ks' : Q(List (Fin $n)) := ks'
-    have rowLit : Q(List $α) := rowLit
-    have tl : Q(List (List $α)) := tl
-    let_expr List.cons _ entry suffix := dropListLitQ rowLit k |
-      throwError "certifyPivotedList: {rowLit} has no entry at {k}"
+    have col : Q(Fin $n) := col
+    have colsTl : Q(List (Fin $n)) := colsTl
+    have row : Q(List $α) := row
+    have rowsTl : Q(List (List $α)) := rowsTl
+    let_expr List.cons _ entry suffix := dropListLitQ row k |
+      throwError "certifyPivotedList: {row} has no entry at {k}"
     have entry : Q($α) := entry
     have suffix : Q(List $α) := suffix
-    let rest ← certifyPivotedList rα certifier ks ks' tl
+    let rest ← certifyPivotedList rα certifier ks colsTl rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     -- The kernel evaluates the split and the `replicate` once, here.
     have hsplit :
-        Q(splitRevAt $rowLit $kF [] = (List.replicate ($kF : ℕ) 0, $entry :: $suffix)) :=
-      (q(Eq.refl (splitRevAt $rowLit $kF [])) : Expr)
-    have : $cols =Q $kF :: $ks' := ⟨⟩
-    have : $rows =Q $rowLit :: $tl := ⟨⟩
+        Q(splitRevAt $row $col [] = (List.replicate ($col : Nat) 0, $entry :: $suffix)) :=
+      (q(Eq.refl (splitRevAt $row $col [])) : Expr)
+    have : $cols =Q $col :: $colsTl := ⟨⟩
+    have : $rows =Q $row :: $rowsTl := ⟨⟩
     return q(IsPivotedList.cons $hsplit $hd $rest)
 
 /-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/
 def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
-    (U : MatrixViews u m n α) (cols : Q(List (Fin $n))) (pivots : Array Nat)
+    (U : MatrixViews u m n α) (pivots : Array Nat) (cols : Q(List (Fin $n)))
     (certifier : EntryCertifier) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) := do
   let hsorted ← mkDecideProofQ q(($cols).SortedLT)
@@ -264,7 +264,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq rα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
-  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy rα U cols data.pivot certifier
+  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy rα U data.pivot cols certifier
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag rα L certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag

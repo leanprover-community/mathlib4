@@ -64,7 +64,8 @@ theorem IsLowerTriangularDiagList.cons [Zero α] {k c : ℕ} {row : List α} {ro
 
 theorem getD_of_isLowerTriangularDiagList [Zero α] {k c i : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiagList k c rows) (hi : i < c) :
-    (rows.getD i []).getD (k + i) 0 ≠ 0 ∧ ∀ j, k + i < j → (rows.getD i []).getD j 0 = 0 := by
+    (rows.getD i []).getD (k + i) 0 ≠ 0 ∧
+      ∀ j, k + i < j → (rows.getD i []).getD j 0 = 0 := by
   induction c generalizing k i rows with
   | zero => simp at hi
   | succ c ih =>
