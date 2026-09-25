@@ -127,7 +127,6 @@ instance : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨0⟩
 
 instance : IsZeroApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias zero_apply := zero_apply
 
@@ -145,7 +144,6 @@ instance : SMul R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun c f => { c • f.toMultilinearMap with cont := f.cont.const_smul c }⟩
 
 instance : IsSMulApply R' (ContinuousMultilinearMap A M₁ M₂) (∀ i, M₁ i) M₂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -183,7 +181,6 @@ instance : Add (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f f' => ⟨f.toMultilinearMap + f'.toMultilinearMap, f.cont.add f'.cont⟩⟩
 
 instance : IsAddApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -480,7 +477,6 @@ instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
 instance : IsNegApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -488,7 +484,6 @@ instance : Sub (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f g => { f.toMultilinearMap - g.toMultilinearMap with cont := f.cont.sub g.cont }⟩
 
 instance : IsSubApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 

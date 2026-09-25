@@ -550,7 +550,7 @@ theorem _root_.aestronglyMeasurable_indicator_iff [Zero β] {s : Set α} (hs : M
   · intro h
     refine ⟨indicator s (h.mk f), h.stronglyMeasurable_mk.indicator hs, ?_⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (h.mk f) :=
-      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs).symm)
+      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans (indicator_ae_eq_restrict hs).symm)
     have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (h.mk f) :=
       (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
@@ -811,7 +811,7 @@ theorem add_measure [PseudoMetrizableSpace β] {ν : Measure α} {f : α → β}
 protected theorem iUnion [PseudoMetrizableSpace β] {s : ι → Set α}
     (h : ∀ i, AEStronglyMeasurable f (μ.restrict (s i))) :
     AEStronglyMeasurable f (μ.restrict (⋃ i, s i)) :=
-  (sum_measure h).mono_measure <| restrict_iUnion_le
+  (sum_measure h).mono_measure restrict_iUnion_le
 
 @[simp]
 theorem _root_.aestronglyMeasurable_iUnion_iff [PseudoMetrizableSpace β] {s : ι → Set α} :

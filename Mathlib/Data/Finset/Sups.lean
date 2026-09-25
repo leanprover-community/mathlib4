@@ -335,6 +335,12 @@ theorem infs_right_comm : s ⊼ t ⊼ u = s ⊼ u ⊼ t :=
 theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image₂_image₂_image₂_comm inf_inf_inf_comm
 
+@[simp]
+theorem infs_eq_inter {s t : Finset α}
+    (hs : IsLowerSet (s : Set α)) (ht : IsLowerSet (t : Set α)) :
+    s ⊼ t = s ∩ t := by
+  simp [← coe_inj, Set.infs_eq_inter hs ht]
+
 end Infs
 
 open scoped FinsetFamily
@@ -370,19 +376,31 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact union_subset_union hv hw
 
-@[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
+omit [DecidableEq α] in
+@[simp]
+theorem isLowerSet_preimage_coe_powerset (s : Set α) :
+    IsLowerSet (((↑) : Finset α → Set α) ⁻¹' 𝒫 s) :=
+  s.isLowerSet_powerset.preimage fun _ _ h ↦ coe_subset.2 h
+
+omit [DecidableEq α] in
+theorem isLowerSet_coe_powerset (s : Finset α) :
+    IsLowerSet (s.powerset : Set (Finset α)) := by simp
+
+@[simp] lemma powerset_inter_eq_inter (s t : Finset α) :
+    (s ∩ t).powerset = s.powerset ∩ t.powerset := by
   ext u
-  simp only [mem_infs, mem_powerset, inf_eq_inter]
-  refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
-  · rwa [← inter_inter_distrib_right, inter_eq_right]
-  · rintro ⟨v, hv, w, hw, rfl⟩
-    exact inter_subset_inter hv hw
+  simp [mem_powerset, subset_inter_iff]
+
+@[deprecated powerset_inter_eq_inter +typeChanged (since := "2026-09-11")]
+lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
+  simp
 
 @[simp] lemma powerset_sups_powerset_self (s : Finset α) :
     s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_union]
 
-@[simp] lemma powerset_infs_powerset_self (s : Finset α) :
-    s.powerset ⊼ s.powerset = s.powerset := by simp [← powerset_inter]
+@[deprecated "`simp` can prove this, using `Finset.infs_eq_inter`." (since := "2026-09-22")]
+lemma powerset_infs_powerset_self (s : Finset α) :
+    s.powerset ⊼ s.powerset = s.powerset := by simp
 
 lemma union_mem_sups : s ∈ 𝒜 → t ∈ ℬ → s ∪ t ∈ 𝒜 ⊻ ℬ := sup_mem_sups
 lemma inter_mem_infs : s ∈ 𝒜 → t ∈ ℬ → s ∩ t ∈ 𝒜 ⊼ ℬ := inf_mem_infs
