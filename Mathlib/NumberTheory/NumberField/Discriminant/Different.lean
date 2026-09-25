@@ -210,4 +210,18 @@ lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp 
     ((Ideal.liesOver_span_iff hP.ne_top hp).mpr h),
     fun H P _ h ↦ H P _ (h.1.le (Ideal.mem_span_singleton_self _))⟩
 
+/-- A prime divides the discriminant exactly when some prime above it is ramified. -/
+lemma dvd_discr_iff_exists_two_le_ramificationIdx [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
+    (hp : Prime p) :
+    p ∣ discr K ↔
+      ∃ P : Ideal 𝒪, P.IsMaximal ∧ P.LiesOver (Ideal.span {p}) ∧ 2 ≤ P.ramificationIdx ℤ := by
+  have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
+  have := IsIntegralClosure.finite ℤ ℚ K 𝒪
+  have := CharZero.of_module (R := 𝒪) K
+  rw [← not_iff_not, not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
+  simp only [not_exists, not_and, not_le, Order.lt_two_iff]
+  exact forall₃_congr fun P _ _ ↦ by
+    grind [Ideal.ramificationIdx_eq_one_iff, Ideal.ramificationIdx_pos]
+
 end NumberField

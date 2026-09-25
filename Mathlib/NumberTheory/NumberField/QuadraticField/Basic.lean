@@ -29,7 +29,7 @@ zero which is a quadratic extension of `ℚ` in the sense of `Algebra.IsQuadrati
 
 public section
 
-open NumberField Int
+open NumberField Int Polynomial
 
 open scoped QuadraticAlgebra
 
@@ -129,5 +129,53 @@ theorem nonempty_algEquiv_iff_discr_eq :
     ((h ▸ e₁).trans e₂.symm).toRingEquiv).equivRatAlgEquiv _ _⟩
 
 end discr
+
+section integralGen
+
+variable (K)
+
+/-- A chosen isomorphism between the quadratic algebra of discriminant `discr K` and `𝓞 K`. -/
+noncomputable def quadraticAlgebraAlgEquiv :
+    QuadraticAlgebra ℤ (discr K / 4) (discr K % 4) ≃ₐ[ℤ] 𝓞 K :=
+  (nonempty_algEquiv_ringOfIntegers K).some.symm
+
+instance : IsDedekindDomain (QuadraticAlgebra ℤ (discr K / 4) (discr K % 4)) :=
+  .of_ringEquiv (quadraticAlgebraAlgEquiv K).toRingEquiv
+
+/-- A generator of `𝓞 K` over `ℤ`, see `adjoin_integralGen_eq_top`. -/
+noncomputable def integralGen : 𝓞 K := quadraticAlgebraAlgEquiv K ω
+
+/-- A quadratic field is monogenic: `𝓞 K = ℤ[integralGen K]`. -/
+theorem adjoin_integralGen_eq_top : Algebra.adjoin ℤ {integralGen K} = ⊤ := by
+  rw [integralGen, ← AlgEquiv.coe_toAlgHom, ← AlgHom.map_adjoin_singleton,
+    QuadraticAlgebra.adjoin_omega_eq_top, Algebra.map_top,
+    (AlgHom.range_eq_top _).mpr (AlgEquiv.surjective _)]
+
+/-- The minimal polynomial of `integralGen K` is `X ^ 2 - (discr K % 4) * X - (discr K / 4)`. -/
+theorem minpoly_integralGen :
+    minpoly ℤ (integralGen K) =
+      X ^ 2 - C (discr K % 4) * X - C (discr K / 4) := by
+  rw [integralGen, minpoly.algEquiv_eq, QuadraticAlgebra.minpoly_omega]
+
+/-- The minimal polynomial of `integralGen K` is monic. -/
+theorem monic_minpoly_integralGen : (minpoly ℤ (integralGen K)).Monic := by
+  rw [minpoly_integralGen]
+  monicity!
+
+/-- The minimal polynomial of `integralGen K` has degree `2`. -/
+theorem natDegree_minpoly_integralGen : (minpoly ℤ (integralGen K)).natDegree = 2 := by
+  rw [minpoly_integralGen]
+  compute_degree!
+
+/-- Modulo a prime `p`, the discriminant of the minimal polynomial of `integralGen K` is the
+discriminant of `K`. -/
+theorem discrim_minpoly_integralGen (p : ℕ) [Fact p.Prime] :
+    discrim (1 : ZMod p) (-(discr K % 4 : ℤ)) (-(discr K / 4 : ℤ)) = (discr K : ZMod p) := by
+  rw [Polynomial.discrim_eq_discr _ _ _ one_ne_zero, map_one, one_mul, Polynomial.C_mul',
+    neg_smul, ← sub_eq_add_neg, map_neg, ← sub_eq_add_neg,
+    QuadraticAlgebra.polynomial_discr_eq_discr, QuadraticAlgebra.Int.discr_intCast _,
+    (isFundamentalDiscr_discr K).discr_ediv_four_emod_four]
+
+end integralGen
 
 end NumberField.QuadraticField

@@ -70,3 +70,22 @@ theorem Algebra.discr_quadraticAlgebra :
     Algebra.trace_quadraticAlgebra_apply, basis_apply_zero, basis_apply_one, one_mul, mul_one,
     omega_mul_omega_eq_mk, QuadraticAlgebra.trace_def, re_one, im_one, re_omega, im_omega]
   ring
+
+/-- `ω` is not a scalar. -/
+theorem QuadraticAlgebra.omega_notMem_range_algebraMap {R : Type*} [CommRing R] [Nontrivial R]
+    {a b : R} :
+    (ω : QuadraticAlgebra R a b) ∉ Set.range (algebraMap R (QuadraticAlgebra R a b)) :=
+  fun ⟨r, hr⟩ ↦ by simpa using congr_arg im hr
+
+open Polynomial in
+/-- The minimal polynomial of `ω` is `X ^ 2 - b * X - a`. -/
+theorem QuadraticAlgebra.minpoly_omega {R : Type*} [CommRing R] [IsDomain R] [IsIntegrallyClosed R]
+    {a b : R} [IsDomain (QuadraticAlgebra R a b)] :
+    minpoly R (ω : QuadraticAlgebra R a b) = X ^ 2 - C b * X - C a := by
+  refine (minpoly.IsIntegrallyClosed.unique_of_degree_le_degree_minpoly (by monicity!) ?_ ?_).symm
+  · simp [aeval_sub, map_pow, aeval_X, map_mul, omega_pow_two_eq_add,
+      Algebra.algebraMap_eq_smul_one]
+  · compute_degree
+    rw [Polynomial.degree_eq_natDegree (minpoly.ne_zero (Algebra.IsIntegral.isIntegral ω)),
+      Nat.ofNat_le_cast, minpoly.two_le_natDegree_iff (Algebra.IsIntegral.isIntegral ω)]
+    exact QuadraticAlgebra.omega_notMem_range_algebraMap

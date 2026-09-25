@@ -79,10 +79,11 @@ theorem algebraMap_im_eq (x : QuadraticAlgebra ℤ a b) :
 instance : FaithfulSMul (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) :=
   (faithfulSMul_iff_algebraMap_injective _ _).mpr <| baseChange_injective ℚ _ _
 
-/-- The discriminant commutes with the coercion `ℤ → ℚ`. -/
-theorem discr_intCast :
-    discr (a : ℚ) (b : ℚ) = discr a b := by
-  simpa using discr_algebraMap (S := ℚ) a b
+/-- The discriminant commutes with the coercion `ℤ → R`. -/
+@[simp, norm_cast]
+theorem discr_intCast (R : Type*) [CommRing R] :
+    discr (a : R) (b : R) = discr a b := by
+  simpa using discr_algebraMap (S := R) a b
 
 open scoped nonZeroDivisors
 
