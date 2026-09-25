@@ -54,6 +54,12 @@ jobs:
   build:
     name: Build
     runs-on: ${{ inputs.runs_on }}
+    # This job runs untrusted code (the PR build and its dependencies), so it
+    # does not inherit the caller's `id-token: write`: only `upload_cache` may mint
+    # an OIDC token. `actions: read` is for artifact downloads from other runs.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
@@ -405,6 +411,12 @@ jobs:
     # match: `test` only on a clean build, `lint` on success-or-failure.
     if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
     runs-on: ${{ inputs.runs_on }}
+    # This job runs untrusted code (the PR build and its dependencies), so it
+    # does not inherit the caller's `id-token: write`: only `upload_cache` may mint
+    # an OIDC token. `actions: read` is for artifact downloads from other runs.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       lint-outcome: ${{ steps.lint.outcome }}
       test-outcome: ${{ steps.test.outcome }}
