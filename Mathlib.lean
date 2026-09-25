@@ -6622,6 +6622,7 @@ public import Mathlib.RepresentationTheory.FinGroupCharZero
 public import Mathlib.RepresentationTheory.FiniteIndex
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
+public import Mathlib.RepresentationTheory.Homological.ContCohomology.Inflation
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.LowDegree
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Sha
 public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
