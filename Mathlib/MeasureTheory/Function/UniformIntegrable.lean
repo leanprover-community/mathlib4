@@ -362,8 +362,8 @@ section
 variable {f : α → β}
 
 /-- Auxiliary lemma for `MeasureTheory.MemLp.eLpNorm_indicator_le`. -/
-private theorem MemLp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ) {ε : ℝ≥0∞}
-    (hε : 0 < ε) :
+private theorem MemLp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ)
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ δ > 0, ∀ s, NullMeasurableSet s μ → μ s ≤ δ → eLpNorm (s.indicator f) p μ ≤ 2 * ε := by
   obtain ⟨M, hMpos, hM⟩ := hf.eLpNorm_indicator_norm_ge_pos_le hε
   obtain ⟨δ, hδpos, hδ⟩ := by
