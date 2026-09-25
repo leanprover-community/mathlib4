@@ -177,6 +177,10 @@ lemma stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (x : U) :
 
 end Scheme.Opens
 
+lemma _root_.TopologicalSpace.IsOpenCover.preimage {s : Type*} {X Y : Scheme.{u}} {U : s → Y.Opens}
+    (hU : IsOpenCover U) (f : X ⟶ Y) : IsOpenCover fun i ↦ f ⁻¹ᵁ U i :=
+  .mk (f.iSup_preimage_eq_top hU)
+
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! I₀ X f]
 def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
@@ -825,6 +829,10 @@ lemma le_resLE_preimage_iff {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma resLE_app_top : (f.resLE U V e).app ⊤ =
     U.topIso.hom ≫ f.appLE U V e ≫ V.topIso.inv := by simp [Scheme.Hom.resLE]
+
+lemma resLE_appTop_apply (s : Γ(U, ⊤)) :
+    (f.resLE U V e).appTop s = V.topIso.inv (f.appLE U V e (U.topIso.hom s)) := by
+  rw [Scheme.Hom.appTop, resLE_app_top, ConcreteCategory.comp_apply, ConcreteCategory.comp_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
