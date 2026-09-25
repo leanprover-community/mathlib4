@@ -222,6 +222,26 @@ def mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
 @[simp] lemma toMonoidHom_mapEquiv (f : R ≃+* S) :
     (mapEquiv (n := n) f : GL n R →* GL n S) = map (f : R →+* S) := rfl
 
+section Reindex
+
+variable (R) {m o : Type u} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+
+/-- The `MulEquiv` induced by an `Equiv` over the index -/
+@[simps!]
+def reindexMulEquiv (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
+
+@[simp]
+theorem symm_reindexMulEquiv (e : m ≃ n) :
+    (reindexMulEquiv R e).symm = reindexMulEquiv R e.symm :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_trans_reindexRingEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
+  rfl
+
+end Reindex
+
 section Pi
 
 variable {ι : Type*} (R : ι → Type*)
