@@ -23,7 +23,7 @@ We work on a cylinder `Icc tmin tmax ×ˢ closedBall x₀ r`, where `f` is conti
 on the whole interval `Icc tmin tmax` which stays in `closedBall x₀ r`.
 
 This file constructs and bounds Tonelli approximations, extracts a uniformly convergent subsequence,
-and proves pointwise convergence after composition with the delayed inputs.
+and passes to the limit to obtain a solution of the integral equation on `Icc t₀ tmax`.
 The remaining steps are outlined below.
 
 ## Main definitions
