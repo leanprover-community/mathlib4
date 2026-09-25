@@ -44,7 +44,7 @@ protected lemma IsSeparated.singleton : IsSeparated R {x} := pairwise_singleton 
 
 alias _root_.Set.Subsingleton.relIsSeparated := IsSeparated.of_subsingleton
 
-nonrec lemma IsSeparated.mono_left (hUV : R ⊆ S) (hs : IsSeparated S s) : IsSeparated R s :=
+lemma IsSeparated.mono_left (hUV : R ⊆ S) (hs : IsSeparated S s) : IsSeparated R s :=
   hs.mono' fun _x _y hxy h ↦ hxy <| hUV h
 
 lemma IsSeparated.mono_right (hst : s ⊆ t) (ht : IsSeparated R t) : IsSeparated R s := ht.mono hst

@@ -128,12 +128,12 @@ nonrec theorem ContinuousAt.enatSub
     ContinuousAt (fun x ↦ f x - g x) x :=
   hf.enatSub hg h
 
-nonrec theorem ContinuousOn.enatSub
+theorem ContinuousOn.enatSub
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h : ∀ x ∈ s, f x ≠ ⊤ ∨ g x ≠ ⊤) :
     ContinuousOn (fun x ↦ f x - g x) s := fun x hx ↦
   (hf x hx).enatSub (hg x hx) (h x hx)
 
-nonrec theorem Continuous.enatSub
+theorem Continuous.enatSub
     (hf : Continuous f) (hg : Continuous g) (h : ∀ x, f x ≠ ⊤ ∨ g x ≠ ⊤) :
     Continuous (fun x ↦ f x - g x) :=
   continuous_iff_continuousAt.2 fun x ↦ hf.continuousAt.enatSub hg.continuousAt (h x)

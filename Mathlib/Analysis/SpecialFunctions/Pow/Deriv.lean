@@ -180,7 +180,7 @@ open Complex
 
 variable {f g : ℂ → ℂ} {s : Set ℂ} {f' g' x c : ℂ}
 
-nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
+theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
   simpa using (hf.hasStrictFDerivAt.cpow hg h0).hasStrictDerivAt

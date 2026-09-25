@@ -65,7 +65,7 @@ namespace Metric
 
 -- instantiate pseudometric space as a topology
 
-nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
+theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   isUniformInducing_iff'.trans <| Iff.rfl.and <|
