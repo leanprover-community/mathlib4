@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
@@ -42,17 +43,11 @@ Two lemmas of independent interest are proved on the way:
 
 ## Proof outline
 
-The classical route, in three steps. The analytic tool underlying the first two is the
-generalized polar coordinate change of
-`Mathlib/MeasureTheory/Constructions/HaarToSphere.lean`, which represents an additive Haar
-measure on an `n`-dimensional normed space as the product of the sphere measure
-`MeasureTheory.Measure.toSphere` and Lebesgue measure on `(0, ∞)` taken with density
-`r ^ (n - 1)` (`MeasureTheory.Measure.measurePreserving_homeomorphUnitSphereProd`).
-
-Its general `lintegral` form, `MeasureTheory.lintegral_addHaar_eq_lintegral_toSphere_lintegral_Ioi`,
-and the version localised to a ball,
-`MeasureTheory.setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo`, are the two tools used
-below.
+The classical route, in three steps. The analytic tool underlying the first two is polar
+coordinates on a ball, `MeasureTheory.setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo`
+from `Mathlib/MeasureTheory/Constructions/HaarToSphere.lean`: an additive Haar measure on an
+`n`-dimensional normed space is the product of the sphere measure
+`MeasureTheory.Measure.toSphere` and Lebesgue measure on `(0, ∞)` with density `r ^ (n - 1)`.
 
 1. `MeasureTheory.setLIntegral_ball_rpow_neg`: in polar coordinates the Riesz kernel
    `y ↦ ‖y - x‖ ^ (-a)` becomes `ρ ^ (n - 1 - a)`, so its integral over `ball x r` is
@@ -65,20 +60,19 @@ below.
    ball `B = ball x r`, averaging the fundamental theorem of calculus along the rays out of
    `x` gives
    `∫⁻ y in B, ‖u y - u x‖ₑ ∂μ ≤ r ^ n / n * ∫⁻ y in B, ‖fderiv ℝ u y‖ₑ / ‖y - x‖ₑ ^ (n-1) ∂μ`.
-   The right-hand side is a Riesz potential of the derivative. The integrand here is not
-   radial, so this step uses the polar decomposition itself rather than its radial corollary:
-   in polar coordinates the density `ρ ^ (n - 1)` cancels the Riesz kernel exactly, and what
-   is left on each ray is the fundamental theorem of calculus.
+   The right-hand side is a Riesz potential of the derivative: in polar coordinates the
+   density `ρ ^ (n - 1)` cancels the Riesz kernel exactly, and what is left on each ray is the
+   fundamental theorem of calculus.
 
 3. Hölder's inequality against that kernel, with the exponents `p` and `q`, turns step 2 into
    `∫⁻ y in B, ‖u y - u x‖ₑ ∂μ ≤ r ^ n / n * ‖fderiv ℝ u‖_{Lᵖ} * (kernel integral) ^ (1 / q)`,
    and the kernel integral is the constant of step 1. Averaging that over the two balls of
-   radius `d = ‖x - z‖ ` around `x` and around `z`, and comparing with the average over
-   `ball ((x + z) / 2) (d / 2)`, which is contained in both and has measure at least
+   radius `d = ‖x - z‖` around `x` and around `z`, and comparing with the average over
+   `ball (midpoint ℝ x z) (d / 2)`, which is contained in both and has measure at least
    `2 ^ (-n)` times theirs, gives the Hölder estimate. Finally, for a function supported in a
-   bounded set `s`, walking out of `s` along a ray from `x` produces a point `z` at distance
-   `Metric.diam s` at which `u` vanishes, and that turns the Hölder estimate into the bound
-   on the essential supremum.
+   bounded set `s`, a boundary point `z` of the (open, bounded) support of `u` lies within
+   `diam s` of any point `x` of the support and `u` vanishes there, and that turns the Hölder
+   estimate into the bound on the essential supremum.
 
 ## References
 
@@ -99,278 +93,291 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-
 section RieszKernel
 
-/-- The value of the integral in `lintegral_ball_rpow_neg_lt_top`, as a constant depending
-only on `E`, `μ` and the exponents. Keeping it named, rather than existential, is what lets
-the constants in the main statements below be written down explicitly. -/
-def rieszKernelConst (a : ℝ) (r : ℝ) : ℝ≥0 :=
-  ((finrank ℝ E : ℝ) / (finrank ℝ E - a)).toNNReal *
-    (μ (ball (0 : E) 1)).toNNReal * r.toNNReal ^ (finrank ℝ E - a)
+/-- The constant `n / (n - a) * μ (ball 0 1) * r ^ (n - a)`, for `n = finrank ℝ E`. When
+`0 < r` and `a < n` it is the exact value of the integral of the Riesz kernel
+`y ↦ ‖y - x‖ ^ (-a)` over `ball x r`: see `setLIntegral_ball_rpow_neg`. Outside that range the
+factors are truncated by `Real.toNNReal` and the value has no meaning.
+
+It depends only on `E`, `μ`, `a` and `r`, and is homogeneous of degree one in `μ`. Keeping it
+named, rather than existential, is what lets the constants in the main statements below, such
+as `morreyConst`, be written down explicitly. -/
+def rieszKernelConst (a r : ℝ) : ℝ≥0 :=
+  ((finrank ℝ E : ℝ) / (finrank ℝ E - a)).toNNReal * (μ (ball (0 : E) 1)).toNNReal *
+    r.toNNReal ^ (finrank ℝ E - a)
+
+omit [BorelSpace E] in
+/-- For `a ≤ n`, the constant `rieszKernelConst μ a r` read in `ℝ≥0∞` is
+`ENNReal.ofReal (n / (n - a)) * μ (ball 0 1) * ENNReal.ofReal r ^ (n - a)`: the `Real.toNNReal`
+truncations of the definition become `ENNReal.ofReal`, and the unit ball keeps its measure. -/
+theorem coe_rieszKernelConst {a : ℝ} (ha : a ≤ finrank ℝ E) (r : ℝ) :
+    (rieszKernelConst μ a r : ℝ≥0∞) = ENNReal.ofReal (finrank ℝ E / (finrank ℝ E - a)) *
+      μ (ball (0 : E) 1) * ENNReal.ofReal r ^ ((finrank ℝ E : ℝ) - a) := by
+  rw [rieszKernelConst, ENNReal.coe_mul, ENNReal.coe_mul,
+    ENNReal.coe_toNNReal measure_ball_lt_top.ne, ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 ha)]
+  simp only [ENNReal.ofNNReal_toNNReal]
+
+/-- The radial integral `∫⁻ ρ in (0, r), ρ ^ s = r ^ (s + 1) / (s + 1)`, for `-1 < s`. -/
+private theorem lintegral_Ioo_ofReal_rpow {r s : ℝ} (hr : 0 < r) (hs : -1 < s) :
+    ∫⁻ ρ in Ioo 0 r, ENNReal.ofReal (ρ ^ s) = ENNReal.ofReal (r ^ (s + 1) / (s + 1)) := by
+  rw [← ofReal_integral_eq_lintegral_ofReal ((intervalIntegral.integrableOn_Ioo_rpow_iff hr).2 hs)
+      (ae_restrict_of_forall_mem measurableSet_Ioo fun ρ hρ ↦ Real.rpow_nonneg hρ.1.le _),
+    ← integral_Ioc_eq_integral_Ioo, ← intervalIntegral.integral_of_le hr.le,
+    integral_rpow (.inl hs), Real.zero_rpow (by linarith), sub_zero]
 
 /-- **The value of the Riesz kernel integral on a ball.**
 
-The quantitative companion of `lintegral_ball_rpow_neg_lt_top`: when `a < n` the integral of
+The quantitative companion of `setLIntegral_ball_rpow_neg_lt_top`: when `a < n` the integral of
 `y ↦ ‖y - x‖ ^ (-a)` over `ball x r` is exactly `rieszKernelConst μ a r`, that is
-`n / (n - a) * μ (ball 0 1) * r ^ (n - a)`.
-
-In polar coordinates the integrand becomes `ρ ^ (n - 1 - a)`, whose integral over `(0, r)` is
-`r ^ (n - a) / (n - a)`, and the sphere contributes the factor
-`μ.toSphere univ = n * μ (ball 0 1)`. -/
+`n / (n - a) * μ (ball 0 1) * r ^ (n - a)` (see `coe_rieszKernelConst` for that form). -/
 theorem setLIntegral_ball_rpow_neg [Nontrivial E] (x : E) {r a : ℝ} (hr : 0 < r)
-    (han : a < finrank ℝ E) :
-    (∫⁻ y in ball x r, ‖y - x‖ₑ ^ (-a) ∂μ) = rieszKernelConst μ a r := by
-  have hn : 1 ≤ finrank ℝ E := Module.finrank_pos
-  have hna : (0 : ℝ) < (finrank ℝ E : ℝ) - a := by linarith
-  have hofReal : ∀ t : ℝ, ((t.toNNReal : ℝ≥0) : ℝ≥0∞) = ENNReal.ofReal t := fun _ ↦ rfl
-  have hcast : ((finrank ℝ E - 1 : ℕ) : ℝ) = (finrank ℝ E : ℝ) - 1 := by
-    rw [Nat.cast_sub hn, Nat.cast_one]
-  have hm : Measurable fun y : E ↦ ‖y - x‖ₑ ^ (-a) :=
-    (((continuous_id.sub continuous_const).enorm).measurable).pow_const _
-  -- the radial integral
-  have hrad : (∫⁻ ρ in Ioo (0 : ℝ) r, ENNReal.ofReal (ρ ^ ((finrank ℝ E : ℝ) - 1 - a)))
-      = ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a) / ((finrank ℝ E : ℝ) - a)) := by
-    have hint : IntegrableOn (fun ρ : ℝ ↦ ρ ^ ((finrank ℝ E : ℝ) - 1 - a)) (Ioo 0 r) volume :=
-      (intervalIntegral.integrableOn_Ioo_rpow_iff hr).2 (by linarith)
-    have hnn : 0 ≤ᵐ[volume.restrict (Ioo (0 : ℝ) r)]
-        fun ρ : ℝ ↦ ρ ^ ((finrank ℝ E : ℝ) - 1 - a) :=
-      ae_restrict_of_forall_mem measurableSet_Ioo fun ρ hρ ↦ Real.rpow_nonneg hρ.1.le _
-    have he : (finrank ℝ E : ℝ) - 1 - a + 1 = (finrank ℝ E : ℝ) - a := by ring
-    rw [← ofReal_integral_eq_lintegral_ofReal hint hnn, ← integral_Ioc_eq_integral_Ioo,
-      ← intervalIntegral.integral_of_le hr.le,
-      integral_rpow (Or.inl (by linarith : (-1 : ℝ) < (finrank ℝ E : ℝ) - 1 - a)), he,
-      Real.zero_rpow hna.ne', sub_zero]
-  -- polar coordinates
-  rw [setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo μ x r hm]
-  have hinner : ∀ ω : sphere (0 : E) 1,
-      (∫⁻ ρ in Ioo (0 : ℝ) r, ENNReal.ofReal (ρ ^ (finrank ℝ E - 1)) *
-          ‖x + ρ • (ω : E) - x‖ₑ ^ (-a))
-        = ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a) / ((finrank ℝ E : ℝ) - a)) := by
-    intro ω
-    have hω : ‖(ω : E)‖ = 1 := mem_sphere_zero_iff_norm.1 ω.2
-    rw [← hrad]
+    (han : a < finrank ℝ E) : (∫⁻ y in ball x r, ‖y - x‖ₑ ^ (-a) ∂μ) = rieszKernelConst μ a r := by
+  -- polar coordinates: on each ray the integrand becomes `ρ ^ (n - a - 1)`
+  rw [setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo μ x r (by fun_prop)]
+  have hinner (ω : sphere (0 : E) 1) : ∫⁻ ρ in Ioo 0 r,
+      ENNReal.ofReal (ρ ^ (finrank ℝ E - 1)) * ‖x + ρ • (ω : E) - x‖ₑ ^ (-a) =
+        ∫⁻ ρ in Ioo 0 r, ENNReal.ofReal (ρ ^ ((finrank ℝ E : ℝ) - a - 1)) := by
     refine setLIntegral_congr_fun measurableSet_Ioo fun ρ hρ ↦ ?_
-    have hρ0 : (0 : ℝ) < ρ := hρ.1
-    have h1 : x + ρ • (ω : E) - x = ρ • (ω : E) := by abel
-    have h2 : ‖ρ • (ω : E)‖ₑ = ENNReal.ofReal ρ := by
-      rw [← ofReal_norm, norm_smul, hω, mul_one, Real.norm_eq_abs, abs_of_pos hρ0]
-    have he2 : ((finrank ℝ E : ℝ) - 1) + -a = (finrank ℝ E : ℝ) - 1 - a := by ring
-    rw [h1, h2, ENNReal.ofReal_rpow_of_pos hρ0, ← ENNReal.ofReal_mul (pow_nonneg hρ0.le _),
-      ← Real.rpow_natCast ρ (finrank ℝ E - 1), ← Real.rpow_add hρ0, hcast, he2]
-  rw [lintegral_congr hinner, lintegral_const, Measure.toSphere_apply_univ]
+    rw [add_sub_cancel_left, ← ofReal_norm, norm_smul, norm_eq_of_mem_sphere, mul_one,
+      Real.norm_of_nonneg hρ.1.le, ENNReal.ofReal_rpow_of_pos hρ.1,
+      ← ENNReal.ofReal_mul (pow_nonneg hρ.1.le _), ← Real.rpow_natCast, ← Real.rpow_add hρ.1,
+      Nat.cast_pred finrank_pos, ← sub_eq_add_neg, sub_right_comm]
+  -- the radial integral; the sphere contributes `μ.toSphere univ = n * μ (ball 0 1)`
+  rw [lintegral_congr hinner, lintegral_Ioo_ofReal_rpow hr (by linarith), sub_add_cancel,
+    lintegral_const, toSphere_apply_univ, coe_rieszKernelConst μ han.le,
+    ENNReal.ofReal_rpow_of_pos hr, ← ENNReal.ofReal_natCast]
   -- identify the constant
-  have hb : ((μ (ball (0 : E) 1)).toNNReal : ℝ≥0∞) = μ (ball (0 : E) 1) :=
-    ENNReal.coe_toNNReal measure_ball_lt_top.ne
-  have key : ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a) / ((finrank ℝ E : ℝ) - a)) *
-        ENNReal.ofReal (finrank ℝ E : ℝ)
-      = ENNReal.ofReal ((finrank ℝ E : ℝ) / ((finrank ℝ E : ℝ) - a)) *
-        ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a)) := by
-    rw [← ENNReal.ofReal_mul (by positivity), ← ENNReal.ofReal_mul (by positivity)]
-    congr 1
-    field_simp
-  rw [rieszKernelConst, ENNReal.coe_mul, ENNReal.coe_mul, hb,
-    ENNReal.coe_rpow_of_nonneg _ hna.le]
-  simp only [hofReal]
-  rw [ENNReal.ofReal_rpow_of_pos hr, ← ENNReal.ofReal_natCast (finrank ℝ E)]
-  calc ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a) / ((finrank ℝ E : ℝ) - a)) *
-        (ENNReal.ofReal (finrank ℝ E : ℝ) * μ (ball (0 : E) 1))
-      = (ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a) / ((finrank ℝ E : ℝ) - a)) *
-          ENNReal.ofReal (finrank ℝ E : ℝ)) * μ (ball (0 : E) 1) := by ring
-    _ = (ENNReal.ofReal ((finrank ℝ E : ℝ) / ((finrank ℝ E : ℝ) - a)) *
-          ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a))) * μ (ball (0 : E) 1) := by rw [key]
-    _ = ENNReal.ofReal ((finrank ℝ E : ℝ) / ((finrank ℝ E : ℝ) - a)) * μ (ball (0 : E) 1) *
-          ENNReal.ofReal (r ^ ((finrank ℝ E : ℝ) - a)) := by ring
+  rw [← mul_assoc, ← ENNReal.ofReal_mul' (by positivity), mul_right_comm,
+    ← ENNReal.ofReal_mul' (by positivity)]
+  congr 2
+  ring
 
-/-- **Integrability of the Riesz kernel on a ball.**
+/-- **Integrability of the Riesz kernel on a ball.** For `a < n`, the integral of
+`y ↦ ‖y - x‖ₑ ^ (-a)` over `ball x r` is finite.
 
-The kernel `y ↦ ‖y - x‖ ^ (-a)` is integrable on `ball x r` exactly when `a < n`. In Morrey's
-inequality it is applied with `a = (n - 1) * q`, where `q` is the conjugate exponent of `p`;
-the condition `a < n` is then equivalent to `n < p`, so this lemma is where the supercritical
-hypothesis is consumed.
-
-This is the qualitative form of `setLIntegral_ball_rpow_neg`, which computes the integral. -/
-theorem lintegral_ball_rpow_neg_lt_top [Nontrivial E] (x : E) {r a : ℝ} (hr : 0 < r)
-    (han : a < finrank ℝ E) :
-    (∫⁻ y in ball x r, ‖y - x‖ₑ ^ (-a) ∂μ) < ⊤ := by
-  rw [setLIntegral_ball_rpow_neg μ x hr han]
-  exact ENNReal.coe_lt_top
+This is the qualitative form of `setLIntegral_ball_rpow_neg`, which computes the integral; use that
+lemma when the value matters, and `.ne` of this one for the `≠ ∞` side conditions of `ℝ≥0∞`
+arithmetic. Only the direction `a < n` is stated: for `n ≤ a` the integral is infinite. Compare
+`integrableOn_ball_of_norm_le_rpow`, the Bochner-integrability form centred at `0`. -/
+theorem setLIntegral_ball_rpow_neg_lt_top [Nontrivial E] (x : E) {r a : ℝ} (hr : 0 < r)
+    (han : a < finrank ℝ E) : ∫⁻ y in ball x r, ‖y - x‖ₑ ^ (-a) ∂μ < ∞ :=
+  (setLIntegral_ball_rpow_neg μ x hr han).trans_lt ENNReal.coe_lt_top
 
 end RieszKernel
 
 section Potential
 
 variable (E) in
-/-- The constant `r ^ n / n` in the Riesz potential estimate
-`lintegral_ball_enorm_sub_le_lintegral_riesz`. It is the value of `∫_0^r ρ ^ (n - 1) dρ`,
-which is what integrating the fundamental theorem of calculus along the rays out of the
-centre of the ball produces.
+/-- The constant `r ^ n / n`, for `n = finrank ℝ E`, in the Riesz potential estimate
+`lintegral_ball_enorm_sub_le_lintegral_riesz`. For `0 < r` it is `∫_0^r ρ ^ (n - 1) dρ`, the
+radial integral of the polar-coordinates density on `ball x r`. For `r < 0` the value is the
+`Real.toNNReal` truncation of `r ^ n / n` and has no meaning.
 
-Unlike `rieszKernelConst` it does not involve `μ`, and it cannot: both sides of that estimate
-are homogeneous of degree one in `μ`, so the constant relating them must be homogeneous of
-degree zero. -/
+Unlike `rieszKernelConst` it does not depend on `μ`: both sides of that estimate are
+homogeneous of degree one in `μ`. -/
 def rieszPotentialConst (r : ℝ) : ℝ≥0 :=
   (r ^ finrank ℝ E / (finrank ℝ E : ℝ)).toNNReal
 
 omit [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] in
-/-- Along a ray with unit direction `ω`, the increment of a continuously differentiable
-function is bounded by the integral of the enorm of its derivative. This is the fundamental
-theorem of calculus in the form needed for Morrey's inequality.
+/-- The constant `rieszPotentialConst E r` read in `ℝ≥0∞` is `ENNReal.ofReal (r ^ n / n)`: the
+`Real.toNNReal` truncation of the definition becomes `ENNReal.ofReal`. -/
+theorem coe_rieszPotentialConst (r : ℝ) :
+    (rieszPotentialConst E r : ℝ≥0∞) = ENNReal.ofReal (r ^ finrank ℝ E / finrank ℝ E) := rfl
 
-The target space is not assumed complete, so the Bochner integral behind the fundamental
-theorem of calculus is taken in `UniformSpace.Completion F`, into which `F` embeds
-isometrically. -/
-theorem enorm_sub_le_lintegral_Ioc_enorm_fderiv
-    {u : E → F} (hu : ContDiff ℝ 1 u) (x : E) {ω : E} (hω : ‖ω‖ = 1) {ρ : ℝ} (hρ : 0 ≤ ρ) :
+omit [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] in
+/-- **Fundamental theorem of calculus along a ray.** For a `C¹` function `u` and a unit
+vector `ω`, the increment `‖u (x + ρ • ω) - u x‖ₑ` is at most the integral over `(0, ρ]` of
+the operator enorm of `fderiv ℝ u` along the ray from `x` in the direction `ω`.
+
+This is the several-variable counterpart of `enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc`.
+The target space `F` need not be complete. -/
+theorem enorm_sub_le_lintegral_Ioc_enorm_fderiv {u : E → F} (hu : ContDiff ℝ 1 u) (x : E) {ω : E}
+    (hω : ‖ω‖ = 1) {ρ : ℝ} (hρ : 0 ≤ ρ) :
     ‖u (x + ρ • ω) - u x‖ₑ ≤ ∫⁻ t in Ioc (0 : ℝ) ρ, ‖fderiv ℝ u (x + t • ω)‖ₑ := by
+  -- the fundamental theorem of calculus for `u` restricted to the ray
+  have h := enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc
+    (f := fun s : ℝ ↦ u (x + s • ω)) (hu.comp (by fun_prop)).contDiffOn hρ
+  simp only [zero_smul, add_zero] at h
+  rw [restrict_Ioc_eq_restrict_Icc]
+  refine h.trans <| lintegral_mono fun t ↦ ?_
   -- the derivative of `u` along the ray through `x` in the direction `ω`
-  have hd : ∀ t : ℝ, HasDerivAt (fun s : ℝ ↦ u (x + s • ω)) (fderiv ℝ u (x + t • ω) ω) t := by
-    intro t
-    have h1 : HasDerivAt (fun s : ℝ ↦ x + s • ω) ω t := by
+  have hd : HasDerivAt (fun s : ℝ ↦ u (x + s • ω)) (fderiv ℝ u (x + t • ω) ω) t :=
+    (hu.differentiable one_ne_zero _).hasFDerivAt.comp_hasDerivAt t <| by
       simpa using ((hasDerivAt_id t).smul_const ω).const_add x
-    exact HasFDerivAt.comp_hasDerivAt t
-      ((hu.differentiable one_ne_zero) (x + t • ω)).hasFDerivAt h1
-  set I : F →L[ℝ] UniformSpace.Completion F := UniformSpace.Completion.toComplL with hI
-  have hIe : ∀ y : F, ‖I y‖ₑ = ‖y‖ₑ := by
-    intro y
-    rw [hI, UniformSpace.Completion.coe_toComplL, UniformSpace.Completion.enorm_coe]
-  have hdI : ∀ t : ℝ, HasDerivAt (fun s : ℝ ↦ I (u (x + s • ω)))
-      (I (fderiv ℝ u (x + t • ω) ω)) t := fun t =>
-    HasFDerivAt.comp_hasDerivAt t I.hasFDerivAt (hd t)
-  have hcontI : Continuous fun t : ℝ ↦ I (fderiv ℝ u (x + t • ω) ω) := by
-    have h0 : Continuous fun t : ℝ ↦ fderiv ℝ u (x + t • ω) :=
-      (hu.continuous_fderiv one_ne_zero).comp (by fun_prop)
-    exact I.continuous.comp (h0.clm_apply continuous_const)
-  have hFTC : I (u (x + ρ • ω)) - I (u x)
-      = ∫ t in (0 : ℝ)..ρ, I (fderiv ℝ u (x + t • ω) ω) := by
-    have h := intervalIntegral.integral_eq_sub_of_hasDerivAt
-      (f := fun s : ℝ ↦ I (u (x + s • ω)))
-      (f' := fun t : ℝ ↦ I (fderiv ℝ u (x + t • ω) ω)) (fun t _ ↦ hdI t)
-      (hcontI.intervalIntegrable 0 ρ)
-    rw [h]
-    simp
-  calc ‖u (x + ρ • ω) - u x‖ₑ = ‖I (u (x + ρ • ω)) - I (u x)‖ₑ := by
-        rw [← map_sub I, hIe]
-    _ = ‖∫ t in Ioc (0 : ℝ) ρ, I (fderiv ℝ u (x + t • ω) ω)‖ₑ := by
-        rw [hFTC, intervalIntegral.integral_of_le hρ]
-    _ ≤ ∫⁻ t in Ioc (0 : ℝ) ρ, ‖I (fderiv ℝ u (x + t • ω) ω)‖ₑ :=
-        enorm_integral_le_lintegral_enorm _
-    _ ≤ ∫⁻ t in Ioc (0 : ℝ) ρ, ‖fderiv ℝ u (x + t • ω)‖ₑ := by
-      refine lintegral_mono fun t ↦ ?_
-      rw [hIe]
-      refine (ContinuousLinearMap.le_opENorm _ _).trans_eq ?_
-      rw [← ofReal_norm ω, hω, ENNReal.ofReal_one, mul_one]
+  rw [hd.deriv]
+  simpa [← ofReal_norm, hω] using (fderiv ℝ u (x + t • ω)).le_opENorm ω
 
 /-- **The Riesz potential estimate.**
 
 For `u` of class `C¹`, the mean oscillation of `u` on a ball is controlled by the Riesz
 potential of its derivative:
-`∫⁻ y in ball x r, ‖u y - u x‖ₑ ∂μ ≤ (r ^ n / n) * (Riesz potential of the derivative)`.
+`∫⁻ y in ball x r, ‖u y - u x‖ₑ ∂μ ≤ (r ^ n / n) * (Riesz potential of the derivative)`,
+with the constant `rieszPotentialConst E r = r ^ n / n`.
 
-The proof reads both sides in polar coordinates about `x`, using
-`setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo`. On the right the radial density
-`ρ ^ (n - 1)` cancels the Riesz kernel exactly, leaving
-`∫_0^r ‖fderiv ℝ u (x + t ω)‖ dt` on each ray; on the left the fundamental theorem of
-calculus (`enorm_sub_le_lintegral_Ioc_enorm_fderiv`) bounds the integrand on each ray by that
-same quantity, and integrating the density `ρ ^ (n - 1)` over `(0, r)` produces the factor
-`rieszPotentialConst E r = r ^ n / n`. -/
-theorem lintegral_ball_enorm_sub_le_lintegral_riesz [Nontrivial E]
-    {u : E → F} (hu : ContDiff ℝ 1 u) (x : E) {r : ℝ} (hr : 0 < r) :
-    (∫⁻ y in ball x r, ‖u y - u x‖ₑ ∂μ) ≤
-      rieszPotentialConst E r *
-        ∫⁻ y in ball x r, ‖fderiv ℝ u y‖ₑ / ‖y - x‖ₑ ^ ((finrank ℝ E : ℝ) - 1) ∂μ := by
-  have hn : 1 ≤ finrank ℝ E := Module.finrank_pos
-  have hn0 : finrank ℝ E ≠ 0 := Nat.one_le_iff_ne_zero.1 hn
-  have hofReal : ∀ t : ℝ, ((t.toNNReal : ℝ≥0) : ℝ≥0∞) = ENNReal.ofReal t := fun _ ↦ rfl
-  have hcast : ((finrank ℝ E : ℝ) - 1) = ((finrank ℝ E - 1 : ℕ) : ℝ) := by
-    rw [Nat.cast_sub hn, Nat.cast_one]
-  -- measurability of the two integrands
-  have hLm : Measurable fun y : E ↦ ‖u y - u x‖ₑ :=
-    ((hu.continuous.sub continuous_const).enorm).measurable
-  have hDu : Measurable fun y : E ↦ ‖fderiv ℝ u y‖ₑ :=
-    ((hu.continuous_fderiv one_ne_zero).enorm).measurable
-  have hRm : Measurable fun y : E =>
-      ‖fderiv ℝ u y‖ₑ / ‖y - x‖ₑ ^ ((finrank ℝ E : ℝ) - 1) := by
-    simp only [div_eq_mul_inv]
-    exact hDu.mul ((((continuous_id.sub continuous_const).enorm).measurable).pow_const _).inv
+The right-hand side is finite once `fderiv ℝ u` is in `Lᵖ` for some `p > n`, by Hölder's
+inequality against `setLIntegral_ball_rpow_neg`; this is how Morrey's inequality uses it. The
+target space `F` need not be complete. -/
+theorem lintegral_ball_enorm_sub_le_lintegral_riesz [Nontrivial E] {u : E → F} (hu : ContDiff ℝ 1 u)
+    (x : E) {r : ℝ} (hr : 0 < r) : (∫⁻ y in ball x r, ‖u y - u x‖ₑ ∂μ) ≤ rieszPotentialConst E r *
+      ∫⁻ y in ball x r, ‖fderiv ℝ u y‖ₑ / ‖y - x‖ₑ ^ ((finrank ℝ E : ℝ) - 1) ∂μ := by
+  have hn : ((finrank ℝ E - 1 : ℕ) : ℝ) = finrank ℝ E - 1 := Nat.cast_pred finrank_pos
   -- the radial density integrates to `r ^ n / n`
-  have hpow : (∫⁻ ρ in Ioo (0 : ℝ) r, ENNReal.ofReal (ρ ^ (finrank ℝ E - 1)))
-      = (rieszPotentialConst E r : ℝ≥0∞) := by
-    have hc : Continuous fun ρ : ℝ ↦ ρ ^ (finrank ℝ E - 1) := by fun_prop
-    have hint : IntegrableOn (fun ρ : ℝ ↦ ρ ^ (finrank ℝ E - 1)) (Ioo 0 r) volume :=
-      (hc.integrableOn_Icc (a := 0) (b := r)).mono_set Ioo_subset_Icc_self
-    have hnn : 0 ≤ᵐ[volume.restrict (Ioo (0 : ℝ) r)] fun ρ : ℝ ↦ ρ ^ (finrank ℝ E - 1) :=
-      ae_restrict_of_forall_mem measurableSet_Ioo fun ρ hρ ↦ pow_nonneg hρ.1.le _
-    have hval : (∫ ρ in Ioo (0 : ℝ) r, ρ ^ (finrank ℝ E - 1))
-        = r ^ finrank ℝ E / (finrank ℝ E : ℝ) := by
-      rw [← integral_Ioc_eq_integral_Ioo, ← intervalIntegral.integral_of_le hr.le, integral_pow,
-        Nat.sub_add_cancel hn, zero_pow hn0, sub_zero, Nat.cast_sub hn]
-      norm_num
-    rw [← ofReal_integral_eq_lintegral_ofReal hint hnn, hval, rieszPotentialConst, hofReal]
-  -- polar form of the right-hand side: the radial density cancels the Riesz kernel
-  have hRHS : (∫⁻ y in ball x r, ‖fderiv ℝ u y‖ₑ / ‖y - x‖ₑ ^ ((finrank ℝ E : ℝ) - 1) ∂μ)
-      = ∫⁻ ω : sphere (0 : E) 1,
-          (∫⁻ ρ in Ioo (0 : ℝ) r, ‖fderiv ℝ u (x + ρ • (ω : E))‖ₑ) ∂μ.toSphere := by
-    rw [setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo μ x r hRm]
-    refine lintegral_congr fun ω ↦ ?_
-    refine setLIntegral_congr_fun measurableSet_Ioo fun ρ hρ ↦ ?_
-    have hρ0 : (0 : ℝ) < ρ := hρ.1
-    have hω : ‖(ω : E)‖ = 1 := mem_sphere_zero_iff_norm.1 ω.2
-    have h1 : x + ρ • (ω : E) - x = ρ • (ω : E) := by abel
-    have h2 : ‖ρ • (ω : E)‖ₑ = ENNReal.ofReal ρ := by
-      rw [← ofReal_norm, norm_smul, hω, mul_one, Real.norm_eq_abs, abs_of_pos hρ0]
-    have h4 : (ENNReal.ofReal ρ) ^ ((finrank ℝ E : ℝ) - 1)
-        = ENNReal.ofReal (ρ ^ (finrank ℝ E - 1)) := by
-      rw [ENNReal.ofReal_rpow_of_pos hρ0, hcast, Real.rpow_natCast]
-    rw [h1, h2, h4]
-    exact ENNReal.mul_div_cancel (ENNReal.ofReal_pos.2 (pow_pos hρ0 _)).ne'
-      ENNReal.ofReal_ne_top
-  -- compare the two ray integrals
-  rw [setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo μ x r hLm, hRHS,
+  have hpow : ∫⁻ ρ in Ioo 0 r, ENNReal.ofReal (ρ ^ (finrank ℝ E - 1)) =
+      rieszPotentialConst E r := by
+    simp_rw [← Real.rpow_natCast]
+    rw [lintegral_Ioo_ofReal_rpow hr (neg_one_lt_zero.trans_le (Nat.cast_nonneg _)), hn,
+      sub_add_cancel, Real.rpow_natCast, coe_rieszPotentialConst]
+  -- polar coordinates about `x` on both sides
+  have := hu.continuous
+  rw [setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo μ x r
+      (by fun_prop : Continuous _).measurable,
+    setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo μ x r
+      ((hu.continuous_fderiv one_ne_zero).enorm.measurable.fun_div (by fun_prop)),
     ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   refine lintegral_mono fun ω ↦ ?_
-  have hω : ‖(ω : E)‖ = 1 := mem_sphere_zero_iff_norm.1 ω.2
-  have hstep : ∀ ρ ∈ Ioo (0 : ℝ) r,
-      ‖u (x + ρ • (ω : E)) - u x‖ₑ
-        ≤ ∫⁻ t in Ioo (0 : ℝ) r, ‖fderiv ℝ u (x + t • (ω : E))‖ₑ := fun ρ hρ =>
-    (enorm_sub_le_lintegral_Ioc_enorm_fderiv hu x hω hρ.1.le).trans
-      (lintegral_mono_set fun t ht ↦ ⟨ht.1, lt_of_le_of_lt ht.2 hρ.2⟩)
-  calc (∫⁻ ρ in Ioo (0 : ℝ) r,
-          ENNReal.ofReal (ρ ^ (finrank ℝ E - 1)) * ‖u (x + ρ • (ω : E)) - u x‖ₑ)
-      ≤ ∫⁻ _ρ in Ioo (0 : ℝ) r, ENNReal.ofReal (_ρ ^ (finrank ℝ E - 1)) *
-          ∫⁻ t in Ioo (0 : ℝ) r, ‖fderiv ℝ u (x + t • (ω : E))‖ₑ :=
-        setLIntegral_mono' measurableSet_Ioo fun ρ hρ ↦ mul_le_mul_right (hstep ρ hρ) _
-    _ = (∫⁻ ρ in Ioo (0 : ℝ) r, ENNReal.ofReal (ρ ^ (finrank ℝ E - 1))) *
-          ∫⁻ t in Ioo (0 : ℝ) r, ‖fderiv ℝ u (x + t • (ω : E))‖ₑ :=
-        lintegral_mul_const'' _ (by fun_prop)
-    _ = _ := by rw [hpow]
+  -- compare the two ray integrals, by the fundamental theorem of calculus along each ray
+  calc _ ≤ ∫⁻ ρ in Ioo 0 r, ENNReal.ofReal (ρ ^ (finrank ℝ E - 1)) *
+          ∫⁻ t in Ioo 0 r, ‖fderiv ℝ u (x + t • (ω : E))‖ₑ :=
+        setLIntegral_mono' measurableSet_Ioo fun ρ hρ ↦ mul_le_mul_right
+          ((enorm_sub_le_lintegral_Ioc_enorm_fderiv hu x (norm_eq_of_mem_sphere ω) hρ.1.le).trans
+            (lintegral_mono_set (Ioc_subset_Ioo_right hρ.2))) _
+    _ = _ := by
+      rw [lintegral_mul_const'' _ (by fun_prop), hpow]
+      congr 1
+      -- polar form of the right-hand side: the radial density cancels the Riesz kernel
+      refine (setLIntegral_congr_fun measurableSet_Ioo fun ρ hρ ↦ ?_).symm
+      rw [add_sub_cancel_left, enorm_smul, Real.enorm_of_nonneg hρ.1.le, ← ofReal_norm (ω : E),
+        norm_eq_of_mem_sphere, ENNReal.ofReal_one, mul_one, ENNReal.ofReal_rpow_of_pos hρ.1, ← hn,
+        Real.rpow_natCast, ENNReal.mul_div_cancel (by simp [hρ.1]) ENNReal.ofReal_ne_top]
 
 end Potential
 
 section Morrey
 
 variable (E) in
-/-- The constant in the Hölder estimate of Morrey's inequality. It depends only on `E`, `μ`
-and `p`.
+/-- The constant `2 ^ (n + 1) / n * rieszKernelConst μ ((n - 1) * q) 1 ^ (1 / q) / μ (ball 0 1)`,
+for `n = finrank ℝ E` and `q` the conjugate exponent of `p`, in the Hölder estimate of Morrey's
+inequality, `enorm_sub_le_morreyConst_mul_rpow_mul_eLpNorm_fderiv`. Outside the range `n < p`
+of that estimate the value has no meaning.
 
-Its three factors are the three steps of the proof: `2 ^ (n + 1) / n` collects the constant
-`r ^ n / n` of the Riesz potential estimate and the two-fold comparison of the averages over
-`ball x ‖x - z‖` and `ball z ‖x - z‖` with the average over their intersection, which
-contains a ball of half the radius; `rieszKernelConst μ ((n - 1) * q) 1 ^ (1 / q)` is the
-kernel factor coming out of Hölder's inequality, for `q` the conjugate exponent of `p`; and
-`(μ (ball 0 1)).toNNReal⁻¹` normalises the averages. Note the resulting homogeneity in `μ`:
-the constant is homogeneous of degree `1 / q - 1 = -1 / p`, which is what makes the estimate
-itself invariant under rescaling `μ`, since `eLpNorm · p` is homogeneous of degree `1 / p`.
-
-This is exactly the constant the proof produces: the identity
-`2 * rieszPotentialConst E d * rieszKernelConst μ ((n - 1) * q) d ^ (1 / q)
-  = morreyConst E μ p * d ^ (1 - n / p) * μ (ball ((x + z) / 2) (d / 2))`,
-for `d = ‖x - z‖`, is where it is pinned down. -/
+It depends only on `E`, `μ` and `p`, and is homogeneous of degree `1 / q - 1 = -1 / p` in `μ`,
+which is what makes the estimate invariant under rescaling `μ`, since `eLpNorm · p μ` is
+homogeneous of degree `1 / p`. -/
 def morreyConst (p : ℝ≥0) : ℝ≥0 :=
   let n : ℝ := finrank ℝ E
-  let q : ℝ := (1 - 1 / p)⁻¹          -- the conjugate exponent of `p`
-  ((2 : ℝ) ^ (finrank ℝ E + 1) / n).toNNReal *
-    rieszKernelConst μ ((n - 1) * q) 1 ^ (1 / q) * (μ (ball (0 : E) 1)).toNNReal⁻¹
+  let q : ℝ := (1 - 1 / p)⁻¹  -- the conjugate exponent of `p`
+  ((2 : ℝ) ^ (finrank ℝ E + 1) / n).toNNReal * rieszKernelConst μ ((n - 1) * q) 1 ^ (1 / q) *
+    (μ (ball (0 : E) 1)).toNNReal⁻¹
+
+omit [BorelSpace E] in
+/-- For `1 ≤ p`, the constant `morreyConst E μ p` read in `ℝ≥0∞`: the `Real.toNNReal`
+truncations of the definition become `ENNReal.ofReal`, the unit ball keeps its measure, and the
+power `1 / q` is distributed over the two factors of `rieszKernelConst μ ((n - 1) * q) 1`. -/
+theorem coe_morreyConst {p : ℝ≥0} (hp : 1 ≤ p) :
+    (morreyConst E μ p : ℝ≥0∞) = ENNReal.ofReal ((2 : ℝ) ^ (finrank ℝ E + 1) / finrank ℝ E) *
+      (ENNReal.ofReal (finrank ℝ E / (finrank ℝ E - (finrank ℝ E - 1) * (1 - 1 / (p : ℝ))⁻¹)) ^
+        (1 / (1 - 1 / (p : ℝ))⁻¹) * μ (ball (0 : E) 1) ^ (1 / (1 - 1 / (p : ℝ))⁻¹)) *
+      (μ (ball (0 : E) 1))⁻¹ := by
+  have hq : 0 ≤ 1 / (1 - 1 / (p : ℝ))⁻¹ := by
+    simpa using inv_le_one_of_one_le₀ (mod_cast hp : (1 : ℝ) ≤ p)
+  simp only [morreyConst, rieszKernelConst, Real.toNNReal_one, NNReal.one_rpow, mul_one,
+    ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ hq, ENNReal.mul_rpow_of_nonneg _ _ hq,
+    ENNReal.coe_inv (ENNReal.toNNReal_ne_zero.2 ⟨(measure_ball_pos μ 0 one_pos).ne',
+      measure_ball_lt_top.ne⟩), ENNReal.coe_toNNReal measure_ball_lt_top.ne,
+    ENNReal.ofNNReal_toNNReal]
+
+private theorem sub_one_mul_conj_lt_of_lt {n p q : ℝ} (hpq : p.HolderConjugate q) (hnp : n < p) :
+    (n - 1) * q < n := by nlinarith [hpq.sub_one_mul_conj, hpq.symm.lt]
+
+omit [MeasurableSpace E] [BorelSpace E] in
+private theorem holderConjugate_of_finrank_lt [Nontrivial E] {p : ℝ≥0}
+    (hp : (finrank ℝ E : ℝ≥0) < p) : (p : ℝ).HolderConjugate (1 - 1 / (p : ℝ))⁻¹ :=
+  Real.holderConjugate_iff.2 ⟨mod_cast (Nat.one_le_cast.2 finrank_pos).trans_lt hp, by simp⟩
+
+private theorem lintegral_ball_enorm_sub_le_eLpNorm_fderiv [Nontrivial E] {u : E → F}
+    (hu : ContDiff ℝ 1 u) {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) < p) {q : ℝ}
+    (hpq : (p : ℝ).HolderConjugate q) (c : E) {r : ℝ} (hr : 0 < r) :
+    ∫⁻ y in ball c r, ‖u y - u c‖ₑ ∂μ ≤ rieszPotentialConst E r * (eLpNorm (fderiv ℝ u) p μ *
+      (rieszKernelConst μ ((finrank ℝ E - 1) * q) r : ℝ≥0∞) ^ (1 / q)) := by
+  -- the mean oscillation on the ball is controlled by the Riesz potential of the derivative, and
+  -- Hölder's inequality against the Riesz kernel turns that into the `Lᵖ` norm of the derivative:
+  -- `q` is the conjugate exponent of `p`, `(n - 1) * q` the exponent of the Riesz kernel, and the
+  -- kernel is integrable exactly because `n < p`
+  refine (lintegral_ball_enorm_sub_le_lintegral_riesz μ hu c hr).trans (mul_le_mul_right ?_ _)
+  have hDu := hu.continuous_fderiv one_ne_zero
+  have := secondCountableTopologyEither_of_left E (E →L[ℝ] F)
+  rw [← setLIntegral_ball_rpow_neg μ c hr (sub_one_mul_conj_lt_of_lt hpq (mod_cast hp))]
+  calc _ = ∫⁻ y in ball c r, ‖fderiv ℝ u y‖ₑ * ‖y - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1)) ∂μ := by
+        simp_rw [ENNReal.rpow_neg, div_eq_mul_inv]
+    _ ≤ (∫⁻ y in ball c r, ‖fderiv ℝ u y‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) *
+          (∫⁻ y in ball c r, (‖y - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1))) ^ q ∂μ) ^ (1 / q) :=
+        ENNReal.lintegral_mul_le_Lp_mul_Lq _ hpq (f := fun y ↦ ‖fderiv ℝ u y‖ₑ)
+          (g := fun y : E ↦ ‖y - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1))) hDu.enorm.aemeasurable
+          (by fun_prop)
+    -- the `Lᵖ` norm of the derivative as a Lebesgue integral
+    _ ≤ _ := by
+        rw [← eLpNorm_nnreal_eq_lintegral (mod_cast hpq.ne_zero) hDu.aestronglyMeasurable]
+        simp_rw [← ENNReal.rpow_mul, neg_mul]
+        gcongr
+        exact restrict_le_self
+
+omit [FiniteDimensional ℝ E] [IsAddHaarMeasure μ] [NormedSpace ℝ F] in
+private theorem enorm_sub_mul_measure_ball_midpoint_le {u : E → F} (hu : Continuous u) (x z : E) :
+    ‖u x - u z‖ₑ * μ (ball (midpoint ℝ x z) (‖x - z‖ / 2)) ≤
+      (∫⁻ y in ball x ‖x - z‖, ‖u y - u x‖ₑ ∂μ) + ∫⁻ y in ball z ‖x - z‖, ‖u y - u z‖ₑ ∂μ := by
+  -- the triangle inequality, averaged over the middle ball
+  rw [← setLIntegral_const]
+  calc _ ≤ ∫⁻ y in ball (midpoint ℝ x z) (‖x - z‖ / 2), ‖u y - u x‖ₑ + ‖u y - u z‖ₑ ∂μ :=
+        lintegral_mono fun y ↦ by
+          simpa only [edist_eq_enorm_sub] using edist_triangle_left (u x) (u z) (u y)
+    _ = (∫⁻ y in ball (midpoint ℝ x z) (‖x - z‖ / 2), ‖u y - u x‖ₑ ∂μ) +
+          ∫⁻ y in ball (midpoint ℝ x z) (‖x - z‖ / 2), ‖u y - u z‖ₑ ∂μ :=
+        lintegral_add_left (hu.sub continuous_const).enorm.measurable _
+    -- the ball about the midpoint, contained in both balls of radius `‖x - z‖`
+    _ ≤ _ := by
+        gcongr <;> refine ball_subset_ball' ?_ <;>
+          simp only [dist_midpoint_left (𝕜 := ℝ), dist_midpoint_right (𝕜 := ℝ), Real.norm_ofNat,
+            dist_eq_norm] <;> linarith
+
+private theorem coe_morreyConst_mul_rpow_mul_measure_ball [Nontrivial E] {p : ℝ≥0}
+    (hp : (finrank ℝ E : ℝ≥0) < p) (m : E) {d : ℝ} (hd : 0 ≤ d) : (morreyConst E μ p : ℝ≥0∞) *
+      ENNReal.ofReal d ^ (1 - (finrank ℝ E : ℝ) / p) * μ (ball m (d / 2)) =
+        2 * rieszPotentialConst E d *
+          (rieszKernelConst μ ((finrank ℝ E - 1) * (1 - 1 / (p : ℝ))⁻¹) d : ℝ≥0∞) ^
+            (1 / (1 - 1 / (p : ℝ))⁻¹) := by
+  -- the three factors of `morreyConst` are `2 ^ (n + 1) / n` (the constant `r ^ n / n` of the
+  -- Riesz potential estimate and the two-fold comparison of the averages over `ball x d` and
+  -- `ball z d` with the average over `ball (midpoint ℝ x z) (d / 2)`),
+  -- `rieszKernelConst μ ((n - 1) * q) 1 ^ (1 / q)` (the kernel factor from Hölder's inequality),
+  -- and `(μ (ball 0 1))⁻¹` (normalising the averages)
+  -- numerical preliminaries
+  have hpq := holderConjugate_of_finrank_lt hp
+  have hp1 : 1 < p := mod_cast hpq.lt
+  have hq : 0 ≤ 1 / (1 - 1 / (p : ℝ))⁻¹ := hpq.symm.one_div_nonneg
+  have hexp : ((finrank ℝ E : ℝ) - (finrank ℝ E - 1) * (1 - 1 / (p : ℝ))⁻¹) *
+      (1 / (1 - 1 / (p : ℝ))⁻¹) = 1 - finrank ℝ E / p := by
+    have := hpq.sub_one_ne_zero
+    field_simp
+    ring
+  have hscal : 2 * ENNReal.ofReal (d ^ finrank ℝ E / finrank ℝ E) =
+      ENNReal.ofReal (2 ^ (finrank ℝ E + 1) / finrank ℝ E) *
+        ENNReal.ofReal ((d / 2) ^ finrank ℝ E) := by
+    rw [← ENNReal.ofReal_ofNat 2, ← ENNReal.ofReal_mul (by norm_num),
+      ← ENNReal.ofReal_mul (by positivity)]
+    congr 1
+    rw [div_pow, pow_succ]
+    field_simp
+  -- the shape of the two constants
+  rw [coe_morreyConst μ hp1.le, μ.addHaar_ball _ (div_nonneg hd zero_le_two),
+    coe_rieszKernelConst μ (sub_one_mul_conj_lt_of_lt hpq (mod_cast hp)).le,
+    ENNReal.mul_rpow_of_nonneg _ _ hq, ENNReal.mul_rpow_of_nonneg _ _ hq, ← ENNReal.rpow_mul, hexp,
+    coe_rieszPotentialConst, hscal]
+  -- the six factors are now common to the two sides, once `μ (ball 0 1)` cancels
+  simp only [mul_assoc]
+  rw [mul_comm (ENNReal.ofReal _) (μ (ball (0 : E) 1)), mul_left_comm _ (μ (ball (0 : E) 1)),
+    ENNReal.inv_mul_cancel_left (measure_ball_pos μ 0 one_pos).ne' measure_ball_lt_top.ne]
+  ring
 
 /-- **Morrey's inequality, Hölder form.**
 
@@ -381,291 +388,84 @@ of exponent `1 - n / p`, with seminorm bounded by the `Lᵖ` norm of its derivat
 This is the supercritical counterpart of `MeasureTheory.eLpNorm_le_eLpNorm_fderiv`, whose
 hypothesis is `p < finrank ℝ E`.
 
-The proof compares the averages of `u` over `ball x d` and `ball z d`, where `d = ‖x - z‖`,
-with the average over `ball ((x + z) / 2) (d / 2)`, which is contained in both. On each of the
-two balls the mean oscillation is controlled by `lintegral_ball_enorm_sub_le_lintegral_riesz`,
-and Hölder's inequality against the Riesz kernel — whose integral is evaluated by
-`setLIntegral_ball_rpow_neg`, the finiteness of which is exactly `finrank ℝ E < p` — turns
-that into the `Lᵖ` norm of the derivative.
-
 No support hypothesis is needed for this estimate. -/
-theorem enorm_sub_le_morreyConst_mul_rpow_mul_eLpNorm_fderiv [Nontrivial E]
-    {u : E → F} (hu : ContDiff ℝ 1 u) {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) < p) (x z : E) :
-    ‖u x - u z‖ₑ ≤
-      morreyConst E μ p * ‖x - z‖ₑ ^ (1 - (finrank ℝ E : ℝ) / p) *
-        eLpNorm (fderiv ℝ u) p μ := by
+theorem enorm_sub_le_morreyConst_mul_rpow_mul_eLpNorm_fderiv [Nontrivial E] {u : E → F}
+    (hu : ContDiff ℝ 1 u) {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) < p) (x z : E) : ‖u x - u z‖ₑ ≤
+      morreyConst E μ p * ‖x - z‖ₑ ^ (1 - (finrank ℝ E : ℝ) / p) * eLpNorm (fderiv ℝ u) p μ := by
   rcases eq_or_ne x z with rfl | hxz
   · simp
-  -- numerical preliminaries
-  have hn : 1 ≤ finrank ℝ E := Module.finrank_pos
-  have hN1 : (1 : ℝ) ≤ (finrank ℝ E : ℝ) := by exact_mod_cast hn
-  have hNP : (finrank ℝ E : ℝ) < (p : ℝ) := by exact_mod_cast hp
-  have hP1 : (1 : ℝ) < (p : ℝ) := lt_of_le_of_lt hN1 hNP
-  have hP0 : (0 : ℝ) < (p : ℝ) := lt_trans one_pos hP1
-  have hPne : (p : ℝ) ≠ 0 := hP0.ne'
-  have hP1' : (0 : ℝ) < (p : ℝ) - 1 := by linarith
-  have hP1ne : (p : ℝ) - 1 ≠ 0 := hP1'.ne'
-  have hp0 : (0 : ℝ≥0) < p := by exact_mod_cast hP0
-  have hd : (0 : ℝ) < ‖x - z‖ := norm_pos_iff.2 (sub_ne_zero.2 hxz)
-  have hofReal : ∀ t : ℝ, ((t.toNNReal : ℝ≥0) : ℝ≥0∞) = ENNReal.ofReal t := fun _ ↦ rfl
-  have hb0 : μ (ball (0 : E) 1) ≠ 0 := (measure_ball_pos μ 0 one_pos).ne'
-  have hbt : μ (ball (0 : E) 1) ≠ ⊤ := measure_ball_lt_top.ne
-  have hb : ((μ (ball (0 : E) 1)).toNNReal : ℝ≥0∞) = μ (ball (0 : E) 1) := ENNReal.coe_toNNReal hbt
-  have hbb : (μ (ball (0 : E) 1))⁻¹ * μ (ball (0 : E) 1) = 1 := ENNReal.inv_mul_cancel hb0 hbt
-  -- the conjugate exponent `q` of `p`
-  have hq : ((1 : ℝ) - 1 / (p : ℝ))⁻¹ = (p : ℝ) / ((p : ℝ) - 1) := by
-    rw [show (1 : ℝ) - 1 / (p : ℝ) = ((p : ℝ) - 1) / (p : ℝ) by field_simp, inv_div]
-  have hq0 : (0 : ℝ) < ((1 : ℝ) - 1 / (p : ℝ))⁻¹ := by rw [hq]; exact div_pos hP0 hP1'
-  have hqinv0 : (0 : ℝ) ≤ ((1 : ℝ) / ((1 : ℝ) - 1 / (p : ℝ))⁻¹) :=
-    le_of_lt (by rw [one_div]; exact inv_pos.2 hq0)
-  have hpq : Real.HolderConjugate (p : ℝ) ((1 : ℝ) - 1 / (p : ℝ))⁻¹ := by
-    refine ⟨?_, hP0, hq0⟩
-    rw [inv_inv, one_div, inv_one]
-    ring
-  have hNaval : (finrank ℝ E : ℝ) - ((finrank ℝ E : ℝ) - 1) * ((1 : ℝ) - 1 / (p : ℝ))⁻¹
-      = ((p : ℝ) - (finrank ℝ E : ℝ)) / ((p : ℝ) - 1) := by
-    rw [hq]
-    field_simp
-    ring
-  have hNa : (0 : ℝ) <
-      (finrank ℝ E : ℝ) - ((finrank ℝ E : ℝ) - 1) * ((1 : ℝ) - 1 / (p : ℝ))⁻¹ := by
-    rw [hNaval]
-    exact div_pos (by linarith) hP1'
-  have haN : ((finrank ℝ E : ℝ) - 1) * ((1 : ℝ) - 1 / (p : ℝ))⁻¹ < (finrank ℝ E : ℝ) := by
-    linarith
-  have hexp : ((finrank ℝ E : ℝ) - ((finrank ℝ E : ℝ) - 1) * ((1 : ℝ) - 1 / (p : ℝ))⁻¹) *
-      ((1 : ℝ) / ((1 : ℝ) - 1 / (p : ℝ))⁻¹) = 1 - (finrank ℝ E : ℝ) / (p : ℝ) := by
-    rw [hNaval, one_div, inv_inv]
-    field_simp
-  -- abbreviations: `q` is the conjugate exponent of `p`, `a` the exponent of the Riesz kernel
-  set q : ℝ := ((1 : ℝ) - 1 / (p : ℝ))⁻¹ with hqdef
-  set a : ℝ := ((finrank ℝ E : ℝ) - 1) * q with hadef
-  -- the shape of the two constants
-  have hKform : ∀ t : ℝ, ((rieszKernelConst μ a t : ℝ≥0) : ℝ≥0∞)
-      = ENNReal.ofReal ((finrank ℝ E : ℝ) / ((finrank ℝ E : ℝ) - a)) * μ (ball (0 : E) 1) *
-        (ENNReal.ofReal t) ^ ((finrank ℝ E : ℝ) - a) := by
-    intro t
-    rw [rieszKernelConst, ENNReal.coe_mul, ENNReal.coe_mul, hb,
-      ENNReal.coe_rpow_of_nonneg _ hNa.le]
-    simp only [hofReal]
-  have hbn0 : (μ (ball (0 : E) 1)).toNNReal ≠ 0 := by
-    simp [ENNReal.toNNReal_eq_zero_iff, hb0, hbt]
-  have hmc : ((morreyConst E μ p : ℝ≥0) : ℝ≥0∞)
-      = ENNReal.ofReal ((2 : ℝ) ^ (finrank ℝ E + 1) / (finrank ℝ E : ℝ)) *
-        (ENNReal.ofReal ((finrank ℝ E : ℝ) / ((finrank ℝ E : ℝ) - a)) ^ ((1 : ℝ) / q) *
-          μ (ball (0 : E) 1) ^ ((1 : ℝ) / q)) * (μ (ball (0 : E) 1))⁻¹ := by
-    simp only [morreyConst]
-    rw [← hqdef, ← hadef, ENNReal.coe_mul, ENNReal.coe_mul,
-      ENNReal.coe_rpow_of_nonneg _ hqinv0, ENNReal.coe_inv hbn0, hb, hKform 1,
-      ENNReal.ofReal_one, ENNReal.one_rpow, mul_one, ENNReal.mul_rpow_of_nonneg _ _ hqinv0]
-    simp only [hofReal]
-  -- the `Lᵖ` norm of the derivative as a Lebesgue integral
-  have hDu : Measurable fun y : E ↦ ‖fderiv ℝ u y‖ₑ :=
-    ((hu.continuous_fderiv one_ne_zero).enorm).measurable
-  have heL : eLpNorm (fderiv ℝ u) p μ
-      = (∫⁻ y, ‖fderiv ℝ u y‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) := by
-    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (ENNReal.coe_ne_zero.2 hp0.ne')
-      ENNReal.coe_ne_top (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable,
-      ENNReal.coe_toReal]
-  -- the mean oscillation on a ball of radius `‖x - z‖`, by Hölder against the Riesz kernel
-  have hosc : ∀ c : E, (∫⁻ y in ball c ‖x - z‖, ‖u y - u c‖ₑ ∂μ)
-      ≤ ((rieszPotentialConst E ‖x - z‖ : ℝ≥0) : ℝ≥0∞) *
-        (eLpNorm (fderiv ℝ u) p μ *
-          ((rieszKernelConst μ a ‖x - z‖ : ℝ≥0) : ℝ≥0∞) ^ ((1 : ℝ) / q)) := by
-    intro c
-    refine (lintegral_ball_enorm_sub_le_lintegral_riesz μ hu c hd).trans (mul_le_mul_right ?_ _)
-    have hg : Measurable fun y : E ↦ ‖y - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1)) :=
-      (((continuous_id.sub continuous_const).enorm).measurable).pow_const _
-    have hker : (∫⁻ y in ball c ‖x - z‖, (‖y - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1))) ^ q ∂μ)
-        = ((rieszKernelConst μ a ‖x - z‖ : ℝ≥0) : ℝ≥0∞) := by
-      rw [← setLIntegral_ball_rpow_neg μ c hd haN]
-      refine setLIntegral_congr_fun measurableSet_ball fun y _ ↦ ?_
-      rw [← ENNReal.rpow_mul]
-      congr 1
-      rw [hadef]
-      ring
-    calc (∫⁻ y in ball c ‖x - z‖, ‖fderiv ℝ u y‖ₑ / ‖y - c‖ₑ ^ ((finrank ℝ E : ℝ) - 1) ∂μ)
-        = ∫⁻ y in ball c ‖x - z‖, ((fun w : E ↦ ‖fderiv ℝ u w‖ₑ) *
-            fun w : E ↦ ‖w - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1))) y ∂μ := by
-          refine lintegral_congr fun y ↦ ?_
-          simp only [Pi.mul_apply]
-          rw [ENNReal.rpow_neg, div_eq_mul_inv]
-      _ ≤ (∫⁻ y in ball c ‖x - z‖, ‖fderiv ℝ u y‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) *
-            (∫⁻ y in ball c ‖x - z‖, (‖y - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1))) ^ q ∂μ) ^
-              ((1 : ℝ) / q) :=
-          ENNReal.lintegral_mul_le_Lp_mul_Lq _ hpq hDu.aemeasurable hg.aemeasurable
-      _ ≤ eLpNorm (fderiv ℝ u) p μ *
-            (∫⁻ y in ball c ‖x - z‖, (‖y - c‖ₑ ^ (-((finrank ℝ E : ℝ) - 1))) ^ q ∂μ) ^
-              ((1 : ℝ) / q) := by
-          refine mul_le_mul_left ?_ _
-          rw [heL]
-          exact ENNReal.rpow_le_rpow (setLIntegral_le_lintegral _ _) (by positivity)
-      _ = eLpNorm (fderiv ℝ u) p μ *
-            ((rieszKernelConst μ a ‖x - z‖ : ℝ≥0) : ℝ≥0∞) ^ ((1 : ℝ) / q) := by rw [hker]
-  -- the ball about the midpoint, contained in both balls of radius `‖x - z‖`
-  have hmx : ‖(2 : ℝ)⁻¹ • (x + z) - x‖ = ‖x - z‖ / 2 := by
-    have h : (2 : ℝ)⁻¹ • (x + z) - x = (2 : ℝ)⁻¹ • (z - x) := by module
-    rw [h, norm_smul, Real.norm_eq_abs, abs_of_pos (by norm_num : (0 : ℝ) < (2 : ℝ)⁻¹),
-      norm_sub_rev z x]
-    ring
-  have hmz : ‖(2 : ℝ)⁻¹ • (x + z) - z‖ = ‖x - z‖ / 2 := by
-    have h : (2 : ℝ)⁻¹ • (x + z) - z = (2 : ℝ)⁻¹ • (x - z) := by module
-    rw [h, norm_smul, Real.norm_eq_abs, abs_of_pos (by norm_num : (0 : ℝ) < (2 : ℝ)⁻¹)]
-    ring
-  have hVx : ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2) ⊆ ball x ‖x - z‖ := by
-    intro y hy
-    have h1 : dist y ((2 : ℝ)⁻¹ • (x + z)) < ‖x - z‖ / 2 := hy
-    have h2 : dist ((2 : ℝ)⁻¹ • (x + z)) x = ‖x - z‖ / 2 := by rw [dist_eq_norm, hmx]
-    have h3 := dist_triangle y ((2 : ℝ)⁻¹ • (x + z)) x
-    simp only [mem_ball]
-    linarith
-  have hVz : ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2) ⊆ ball z ‖x - z‖ := by
-    intro y hy
-    have h1 : dist y ((2 : ℝ)⁻¹ • (x + z)) < ‖x - z‖ / 2 := hy
-    have h2 : dist ((2 : ℝ)⁻¹ • (x + z)) z = ‖x - z‖ / 2 := by rw [dist_eq_norm, hmz]
-    have h3 := dist_triangle y ((2 : ℝ)⁻¹ • (x + z)) z
-    simp only [mem_ball]
-    linarith
-  have hV0 : μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2)) ≠ 0 :=
-    (measure_ball_pos μ _ (by positivity)).ne'
-  have hVt : μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2)) ≠ ⊤ := measure_ball_lt_top.ne
+  have hpq := holderConjugate_of_finrank_lt hp
+  have hd : 0 < ‖x - z‖ := norm_pos_iff.2 (sub_ne_zero.2 hxz)
+  -- the triangle inequality, averaged over the middle ball, and the mean oscillation on a ball of
+  -- radius `‖x - z‖`, by Hölder against the Riesz kernel
+  refine (ENNReal.mul_le_mul_iff_left (measure_ball_pos μ _ (half_pos hd)).ne'
+    measure_ball_lt_top.ne).1 <| (enorm_sub_mul_measure_ball_midpoint_le μ hu.continuous x z).trans
+    ((add_le_add (lintegral_ball_enorm_sub_le_eLpNorm_fderiv μ hu hp hpq x hd)
+      (lintegral_ball_enorm_sub_le_eLpNorm_fderiv μ hu hp hpq z hd)).trans_eq ?_)
   -- the constant identity: this is where the value of `morreyConst` is pinned down
-  have hconst : 2 * ((rieszPotentialConst E ‖x - z‖ : ℝ≥0) : ℝ≥0∞) *
-        ((rieszKernelConst μ a ‖x - z‖ : ℝ≥0) : ℝ≥0∞) ^ ((1 : ℝ) / q)
-      = ((morreyConst E μ p : ℝ≥0) : ℝ≥0∞) *
-        (ENNReal.ofReal ‖x - z‖) ^ (1 - (finrank ℝ E : ℝ) / (p : ℝ)) *
-        μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2)) := by
-    have hscal : (2 : ℝ≥0∞) * ENNReal.ofReal (‖x - z‖ ^ finrank ℝ E / (finrank ℝ E : ℝ))
-        = ENNReal.ofReal ((2 : ℝ) ^ (finrank ℝ E + 1) / (finrank ℝ E : ℝ)) *
-          ENNReal.ofReal ((‖x - z‖ / 2) ^ finrank ℝ E) := by
-      rw [show (2 : ℝ≥0∞) = ENNReal.ofReal 2 by simp, ← ENNReal.ofReal_mul (by norm_num),
-        ← ENNReal.ofReal_mul (by positivity)]
-      congr 1
-      have hNne : (finrank ℝ E : ℝ) ≠ 0 := by linarith
-      have h2n : ((2 : ℝ) ^ finrank ℝ E) ≠ 0 := by positivity
-      rw [div_pow, pow_succ]
-      field_simp
-    rw [hKform ‖x - z‖, hmc, μ.addHaar_ball _ (by positivity : (0 : ℝ) ≤ ‖x - z‖ / 2),
-      rieszPotentialConst]
-    simp only [hofReal]
-    rw [ENNReal.mul_rpow_of_nonneg _ _ hqinv0, ENNReal.mul_rpow_of_nonneg _ _ hqinv0,
-      ← ENNReal.rpow_mul, hexp]
-    -- abbreviate the six factors that are now common to the two sides
-    set A : ℝ≥0∞ := ENNReal.ofReal ((finrank ℝ E : ℝ) / ((finrank ℝ E : ℝ) - a)) ^
-      ((1 : ℝ) / q) with hA
-    set B : ℝ≥0∞ := μ (ball (0 : E) 1) ^ ((1 : ℝ) / q) with hB
-    set D : ℝ≥0∞ := ENNReal.ofReal ‖x - z‖ ^ (1 - (finrank ℝ E : ℝ) / (p : ℝ)) with hD
-    set C : ℝ≥0∞ := ENNReal.ofReal (‖x - z‖ ^ finrank ℝ E / (finrank ℝ E : ℝ)) with hC
-    set G : ℝ≥0∞ := ENNReal.ofReal ((2 : ℝ) ^ (finrank ℝ E + 1) / (finrank ℝ E : ℝ)) with hG
-    set H : ℝ≥0∞ := ENNReal.ofReal ((‖x - z‖ / 2) ^ finrank ℝ E) with hH
-    calc 2 * C * (A * B * D)
-        = (2 * C) * (A * B * D) := by ring
-      _ = (G * H) * (A * B * D) := by rw [hscal]
-      _ = (G * H) * (A * B * D) * 1 := by rw [mul_one]
-      _ = (G * H) * (A * B * D) * ((μ (ball (0 : E) 1))⁻¹ * μ (ball (0 : E) 1)) := by rw [hbb]
-      _ = G * (A * B) * (μ (ball (0 : E) 1))⁻¹ * D * (H * μ (ball (0 : E) 1)) := by ring
-  -- the triangle inequality, averaged over the middle ball
-  have hLmx : Measurable fun y : E ↦ ‖u y - u x‖ₑ :=
-    ((hu.continuous.sub continuous_const).enorm).measurable
-  have htri : ∀ y : E, ‖u x - u z‖ₑ ≤ ‖u y - u x‖ₑ + ‖u y - u z‖ₑ := by
-    intro y
-    have he : u x - u z = -(u y - u x) + (u y - u z) := by abel
-    rw [he]
-    exact (enorm_add_le _ _).trans_eq (by rw [enorm_neg])
-  have hkey : ‖u x - u z‖ₑ * μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2))
-      ≤ (((morreyConst E μ p : ℝ≥0) : ℝ≥0∞) * ‖x - z‖ₑ ^ (1 - (finrank ℝ E : ℝ) / (p : ℝ)) *
-          eLpNorm (fderiv ℝ u) p μ) * μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2)) := by
-    calc ‖u x - u z‖ₑ * μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2))
-        = ∫⁻ _y in ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2), ‖u x - u z‖ₑ ∂μ :=
-          (setLIntegral_const _ _).symm
-      _ ≤ ∫⁻ y in ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2),
-            (‖u y - u x‖ₑ + ‖u y - u z‖ₑ) ∂μ := lintegral_mono htri
-      _ = (∫⁻ y in ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2), ‖u y - u x‖ₑ ∂μ)
-            + ∫⁻ y in ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2), ‖u y - u z‖ₑ ∂μ :=
-          lintegral_add_left hLmx _
-      _ ≤ (∫⁻ y in ball x ‖x - z‖, ‖u y - u x‖ₑ ∂μ)
-            + ∫⁻ y in ball z ‖x - z‖, ‖u y - u z‖ₑ ∂μ :=
-          add_le_add (lintegral_mono_set hVx) (lintegral_mono_set hVz)
-      _ ≤ ((rieszPotentialConst E ‖x - z‖ : ℝ≥0) : ℝ≥0∞) * (eLpNorm (fderiv ℝ u) p μ *
-              ((rieszKernelConst μ a ‖x - z‖ : ℝ≥0) : ℝ≥0∞) ^ ((1 : ℝ) / q))
-            + ((rieszPotentialConst E ‖x - z‖ : ℝ≥0) : ℝ≥0∞) * (eLpNorm (fderiv ℝ u) p μ *
-              ((rieszKernelConst μ a ‖x - z‖ : ℝ≥0) : ℝ≥0∞) ^ ((1 : ℝ) / q)) :=
-          add_le_add (hosc x) (hosc z)
-      _ = (2 * ((rieszPotentialConst E ‖x - z‖ : ℝ≥0) : ℝ≥0∞) *
-            ((rieszKernelConst μ a ‖x - z‖ : ℝ≥0) : ℝ≥0∞) ^ ((1 : ℝ) / q)) *
-            eLpNorm (fderiv ℝ u) p μ := by ring
-      _ = (((morreyConst E μ p : ℝ≥0) : ℝ≥0∞) *
-            (ENNReal.ofReal ‖x - z‖) ^ (1 - (finrank ℝ E : ℝ) / (p : ℝ)) *
-            μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2))) * eLpNorm (fderiv ℝ u) p μ := by
-          rw [hconst]
-      _ = (((morreyConst E μ p : ℝ≥0) : ℝ≥0∞) * ‖x - z‖ₑ ^ (1 - (finrank ℝ E : ℝ) / (p : ℝ)) *
-            eLpNorm (fderiv ℝ u) p μ) * μ (ball ((2 : ℝ)⁻¹ • (x + z)) (‖x - z‖ / 2)) := by
-          rw [ofReal_norm (x - z)]
-          ring
-  have hfin := (ENNReal.le_div_iff_mul_le (Or.inl hV0) (Or.inl hVt)).2 hkey
-  rwa [ENNReal.mul_div_cancel_right hV0 hVt] at hfin
+  rw [← ofReal_norm (x - z), mul_right_comm _ (eLpNorm _ _ _),
+    coe_morreyConst_mul_rpow_mul_measure_ball μ hp _ hd.le]
+  ring
 
 variable (E) in
-/-- The constant in the essential-supremum form of Morrey's inequality. Besides `E`, `μ` and
-`p` it depends on the support `s`, through its diameter — exactly as the constant of
+/-- The constant `morreyConst E μ p * diam s ^ (1 - n / p)`, for `n = finrank ℝ E`, in the
+essential-supremum form of Morrey's inequality, `eLpNorm_top_le_eLpNorm_fderiv`. Besides `E`, `μ`
+and `p` it depends on the support `s`, through its diameter, just as the constant of
 `eLpNorm_le_eLpNorm_fderiv_of_le` depends on `s` through its measure. -/
 def morreyEssSupConst (s : Set E) (p : ℝ≥0) : ℝ≥0 :=
-  morreyConst E μ p * (Metric.diam s).toNNReal ^ (1 - (finrank ℝ E : ℝ) / p)
+  morreyConst E μ p * (diam s).toNNReal ^ (1 - (finrank ℝ E : ℝ) / p)
+
+omit [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] in
+private theorem one_sub_finrank_div_nonneg {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) ≤ p) :
+    0 ≤ 1 - (finrank ℝ E : ℝ) / p :=
+  sub_nonneg.2 (div_le_one_of_le₀ (mod_cast hp) p.coe_nonneg)
+
+omit [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ] in
+/-- For `n ≤ p`, the constant `morreyEssSupConst E μ s p` read in `ℝ≥0∞`, with the diameter
+entering through `ENNReal.ofReal`. -/
+theorem coe_morreyEssSupConst {s : Set E} {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) ≤ p) :
+    (morreyEssSupConst E μ s p : ℝ≥0∞) = morreyConst E μ p * ENNReal.ofReal (diam s) ^
+      (1 - (finrank ℝ E : ℝ) / p) := by
+  rw [morreyEssSupConst, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _
+    (one_sub_finrank_div_nonneg hp), ENNReal.ofNNReal_toNNReal]
+
+omit [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] [NormedSpace ℝ F] in
+/-- A continuous function supported in a bounded set `s` of a nontrivial real normed space
+vanishes somewhere within `diam s` of each point of its support: at a boundary point of the
+support, which is open, nonempty and not the whole space. -/
+private theorem exists_eq_zero_dist_le_diam [Nontrivial E] {u : E → F} {s : Set E}
+    (hu : Continuous u) (h2u : u.support ⊆ s) (hs : Bornology.IsBounded s) {x : E} (hx : u x ≠ 0) :
+    ∃ z, u z = 0 ∧ dist x z ≤ diam s := by
+  obtain ⟨z, hzc, hzs⟩ : (closure u.support \ u.support).Nonempty :=
+    hu.isOpen_support.frontier_eq ▸ nonempty_frontier_iff.2
+      ⟨⟨x, hx⟩, fun h ↦ NormedSpace.unbounded_univ ℝ E (h ▸ hs.subset h2u)⟩
+  exact ⟨z, notMem_support.1 hzs, diam_closure s ▸ dist_le_diam_of_mem hs.closure
+    (subset_closure (h2u hx)) (closure_mono h2u hzc)⟩
 
 /-- **Morrey's inequality.**
 
-A continuously differentiable function supported in a bounded set, on a space of dimension
-`n < p`, is essentially bounded by a constant times the `Lᵖ` norm of its derivative.
+A continuously differentiable function supported in a bounded set `s`, on a space of
+dimension `n < p`, is essentially bounded by the `Lᵖ` norm of its derivative times the
+constant `morreyEssSupConst E μ s p = morreyConst E μ p * diam s ^ (1 - n / p)`.
 
 This is the statement that supplies the Sobolev embedding `W^{1,p} ↪ L^∞` for `p > n`. -/
-theorem eLpNorm_top_le_eLpNorm_fderiv [Nontrivial E]
-    {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)
-    {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) < p) (hs : Bornology.IsBounded s) :
+theorem eLpNorm_top_le_eLpNorm_fderiv [Nontrivial E] {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u)
+    (h2u : u.support ⊆ s) {p : ℝ≥0} (hp : (finrank ℝ E : ℝ≥0) < p) (hs : Bornology.IsBounded s) :
     eLpNorm u ⊤ μ ≤ morreyEssSupConst E μ s p * eLpNorm (fderiv ℝ u) p μ := by
-  have hnp : (finrank ℝ E : ℝ) < (p : ℝ) := by exact_mod_cast hp
-  have hp0 : (0 : ℝ) < (p : ℝ) := lt_of_le_of_lt (Nat.cast_nonneg _) hnp
-  have hexp : (0 : ℝ) ≤ 1 - (finrank ℝ E : ℝ) / (p : ℝ) :=
-    sub_nonneg.2 ((div_le_one hp0).2 hnp.le)
-  have hd0 : (0 : ℝ) ≤ Metric.diam s := Metric.diam_nonneg
-  have hofReal : ∀ t : ℝ, ((t.toNNReal : ℝ≥0) : ℝ≥0∞) = ENNReal.ofReal t := fun _ ↦ rfl
-  -- A unit vector, along which we walk out of `s`.
-  obtain ⟨v, hv1⟩ : ∃ v : E, ‖v‖ = 1 := by
-    obtain ⟨w, hw⟩ := exists_ne (0 : E)
-    exact ⟨‖w‖⁻¹ • w, by
-      rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel₀ (norm_ne_zero_iff.2 hw)]⟩
+  have := secondCountableTopologyEither_of_left E F
   rw [eLpNorm_exponent_top hu.continuous.aestronglyMeasurable]
   refine eLpNormEssSup_le_of_ae_enorm_bound (.of_forall fun x ↦ ?_)
-  rcases eq_or_ne (u x) 0 with hux | hux
+  by_cases hux : u x = 0
   · simp [hux]
-  have hxs : x ∈ s := h2u (Function.mem_support.mpr hux)
-  have hnormsub : ∀ θ : ℝ, 0 ≤ θ → ‖x - (x + θ • v)‖ = θ := by
-    intro θ hθ
-    have hxx : x - (x + θ • v) = -(θ • v) := by abel
-    rw [hxx, norm_neg, norm_smul, hv1, mul_one, Real.norm_eq_abs, abs_of_nonneg hθ]
-  -- Beyond distance `diam s` from `x` the function vanishes.
-  have hzero : ∀ θ : ℝ, Metric.diam s < θ → u (x + θ • v) = 0 := by
-    intro θ hθ
-    by_contra hne
-    have hmem : x + θ • v ∈ s := h2u (Function.mem_support.mpr hne)
-    have hle : dist x (x + θ • v) ≤ Metric.diam s := Metric.dist_le_diam_of_mem hs hxs hmem
-    rw [dist_eq_norm, hnormsub θ (hd0.trans hθ.le)] at hle
-    exact absurd hle (not_le.2 hθ)
-  -- By continuity it already vanishes at distance exactly `diam s`.
-  have huz : u (x + Metric.diam s • v) = 0 := by
-    have hgc : Continuous fun θ : ℝ ↦ u (x + θ • v) := by fun_prop
-    have hcl : IsClosed {θ : ℝ | u (x + θ • v) = 0} := isClosed_eq hgc continuous_const
-    have hsub : Ioi (Metric.diam s) ⊆ {θ : ℝ | u (x + θ • v) = 0} := fun θ hθ ↦ hzero θ hθ
-    have hcls := hcl.closure_subset_iff.2 hsub
-    rw [closure_Ioi] at hcls
-    exact hcls self_mem_Ici
-  have key := enorm_sub_le_morreyConst_mul_rpow_mul_eLpNorm_fderiv μ hu hp x
-    (x + Metric.diam s • v)
-  rw [huz, sub_zero] at key
-  refine key.trans (le_of_eq ?_)
-  have hnorm : ‖x - (x + Metric.diam s • v)‖ₑ = ENNReal.ofReal (Metric.diam s) := by
-    rw [← ofReal_norm, hnormsub _ hd0]
-  rw [hnorm, morreyEssSupConst, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ hexp,
-    hofReal]
+  -- Compare `x` with a point `z` where `u` vanishes, within `diam s` of `x`.
+  obtain ⟨z, huz, hxz⟩ := exists_eq_zero_dist_le_diam hu.continuous h2u hs hux
+  calc ‖u x‖ₑ = ‖u x - u z‖ₑ := by rw [huz, sub_zero]
+    _ ≤ _ := enorm_sub_le_morreyConst_mul_rpow_mul_eLpNorm_fderiv μ hu hp x z
+    _ ≤ _ := by
+      rw [coe_morreyEssSupConst μ hp.le, ← edist_eq_enorm_sub]
+      gcongr
+      · exact one_sub_finrank_div_nonneg hp.le
+      · exact (edist_le_ofReal diam_nonneg).2 hxz
 
 end Morrey
 
