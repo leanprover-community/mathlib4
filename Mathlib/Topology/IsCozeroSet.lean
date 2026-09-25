@@ -29,12 +29,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {u : Set X}
 /-- A set is a cozero set if it is the support of some continuous function to `ℝ`. -/
 def IsCozeroSet (u : Set X) : Prop := ∃ f : C(X, ℝ), support f = u
 
--- TODO: move
-@[simp]
-lemma Function.support_abs {α β : Type*} [AddGroup α] [LinearOrder α] [AddLeftMono α]
-    [AddRightMono α] {f : β → α} : support |f| = support f := by
-  ext; simp
-
 /-- The function that a cozero set is the support of can be chosen to be nonnegative. -/
 lemma IsCozeroSet.exists_nonneg (hu : IsCozeroSet u) :
     ∃ f ≥ (0 : C(X, ℝ)), support f = u := by
@@ -106,29 +100,11 @@ lemma isCozeroSet_iInter {ι : Type*} [Finite ι] {u : ι → Set X} (hu : ∀ i
   have := Fintype.ofFinite
   simpa using isCozeroSet_biInter (s := Finset.univ) hu
 
--- TODO: move
-lemma Function.support_add_of_nonneg {α β : Type*} [AddZeroClass β] [PartialOrder β] [AddLeftMono β]
-    [AddLeftStrictMono β] {f g : α → β} (hf : 0 ≤ f) (hg : 0 ≤ g) :
-    support (f + g) = support f ∪ support g := by
-  refine le_antisymm (support_add _ _) ?_
-  rintro x (hx | hx)
-  · exact (add_pos_of_pos_of_nonneg ((hf x).lt_of_ne' hx) (hg x)).ne'
-  · exact (add_pos_of_nonneg_of_pos (hf x) ((hg x).lt_of_ne' hx)).ne'
-
 lemma IsCozeroSet.union (hu : IsCozeroSet u) {v : Set X} (hv : IsCozeroSet v) :
     IsCozeroSet (u ∪ v) := by
   obtain ⟨f, hf, rfl⟩ := hu.exists_nonneg
   obtain ⟨g, hg, rfl⟩ := hv.exists_nonneg
   exact ⟨f + g, support_add_of_nonneg hf hg⟩
-
--- TODO: move
-lemma finsum_eq_zero_iff {α M : Type*} [AddCommMonoid M] [PartialOrder M]
-    [IsOrderedCancelAddMonoid M] {f : α → M} (hf : ∀ i, 0 ≤ f i) (hf' : HasFiniteSupport f) :
-    ∑ᶠ i, f i = 0 ↔ ∀ i, f i = 0:= by
-  refine ⟨fun h ↦ ?_, finsum_eq_zero_of_forall_eq_zero⟩
-  contrapose! h
-  obtain ⟨i, hi⟩ := h
-  exact (finsum_pos hf ⟨i, (hf i).lt_of_ne' hi⟩ hf').ne'
 
 /-- Unions of locally finite families of cozero sets are cozero sets. -/
 lemma isCozeroSet_iUnion {ι : Type*} {u : ι → Set X}
@@ -140,7 +116,6 @@ lemma isCozeroSet_iUnion {ι : Type*} {u : ι → Set X}
   refine finsum_eq_zero_iff (fun i ↦ hf i x) ?_
   simpa [HasFiniteSupport, support, ← hf'] using hu'.point_finite x
 
---TODO: move
 lemma continuous_sSup_fiber {f : X → Y} (hf : IsProperMap f) (hf' : IsOpenMap f)
     {α : Type*} [CompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
     {g : X → α} (hg : Continuous g) : Continuous fun y ↦ ⨆ x ∈ f ⁻¹' {y}, g x := by
@@ -166,13 +141,11 @@ lemma continuous_sSup_fiber {f : X → Y} (hf : IsProperMap f) (hf' : IsOpenMap 
           rw [mem_preimage, mem_Iio, ← iSup_subtype'', hx'.iSup_eq hx]
           grind
 
---TODO: move
 lemma continuous_sInf_fiber {f : X → Y} (hf : IsProperMap f) (hf' : IsOpenMap f)
     {α : Type*} [CompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
     {g : X → α} (hg : Continuous g) : Continuous fun y ↦ ⨅ x ∈ f ⁻¹' {y}, g x :=
   continuous_ofDual.comp <| continuous_sSup_fiber hf hf' (continuous_toDual.comp hg)
 
---TODO: move
 lemma continuous_parametric_iSup [CompactSpace Y]
     {α : Type*} [CompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
     {f : X → Y → α} (hf : Continuous f.uncurry) :
@@ -181,7 +154,6 @@ lemma continuous_parametric_iSup [CompactSpace Y]
     le_antisymm (iSup₂_le fun ⟨x, y⟩ _ ↦ le_iSup_of_le y <| by grind)
       (iSup_le fun y ↦ le_iSup₂_of_le (x, y) rfl le_rfl)
 
---TODO: move
 lemma continuous_parametric_iInf [CompactSpace Y]
     {α : Type*} [CompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
     {f : X → Y → α} (hf : Continuous f.uncurry) :

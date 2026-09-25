@@ -596,6 +596,15 @@ theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCan
   rw [← finprod_mem_univ]
   apply one_lt_finprod_cond <;> simpa
 
+@[to_additive]
+lemma finprod_eq_one_iff {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+    {f : α → M} (hf : ∀ i, 1 ≤ f i) (hf' : HasFiniteMulSupport f) :
+    ∏ᶠ i, f i = 1 ↔ ∀ i, f i = 1 := by
+  refine ⟨fun h ↦ ?_, finprod_eq_one_of_forall_eq_one⟩
+  contrapose! h
+  obtain ⟨i, hi⟩ := h
+  exact (one_lt_finprod hf ⟨i, (hf i).lt_of_ne' hi⟩ hf').ne'
+
 /-- Monotonicity of `finprod`. See `finprod_le_finprod₀` for a variant where
 `M` is a `CommMonoidWithZero`. -/
 @[to_additive /-- Monotonicity of `finsum.` -/]
