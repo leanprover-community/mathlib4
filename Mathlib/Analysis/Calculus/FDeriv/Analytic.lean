@@ -336,7 +336,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_zero_right] using! hy)
   have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘L f' := by
     apply HasFDerivWithinAt.fderivWithin _ (hu _ h'y)
-    exact a.hasFDerivAt.comp_hasFDerivWithinAt (x + y) hf'
+    exact a.comp_hasFDerivWithinAt hf'
   rw [this] at Z
   convert! Z with n
   ext v
