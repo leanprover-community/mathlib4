@@ -10,11 +10,18 @@ public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 /-!
 # Peano Existence Theorem
 
-This files concerns ODE theory involving a continuous time-dependent vector field on a
-finite-dimensional real normed vector space. The assumptions are collected in `IsPeanoODE`.
+The aim is to prove Peano's existence theorem: for a continuous time-dependent vector field
+`f : ℝ → E → E` on a finite-dimensional real normed vector space, the initial value problem
+`α t₀ = x₀`, `α' t = f t (α t)` has a local solution. Unlike Picard–Lindelöf, this theorem does not
+require a Lipschitz condition on `f` in the space variable, and uniqueness can fail.
 
-This file constructs Tonelli approximations with a delayed input
-which prepares for Peano existence theorem.
+We work on a cylinder `Icc tmin tmax ×ˢ closedBall x₀ r`, where `f` is continuous and satisfies
+`‖f t x‖ ≤ L`. We assume that `t₀ ∈ Icc tmin tmax` and that
+`L * max (tmax - t₀) (t₀ - tmin) ≤ r`. These assumptions, collected in `IsPeanoODE`, give a solution
+on the whole interval `Icc tmin tmax` which stays in `closedBall x₀ r`.
+
+This file starts the proof by constructing Tonelli approximations, which satisfy an integral
+equation with a delayed input. The remaining steps are outlined below.
 
 ## Main definitions
 
@@ -26,29 +33,36 @@ which prepares for Peano existence theorem.
 
 ## Implementation notes
 
-This file contains the first step of the proof outlined below: the construction of Tonelli
-approximations satisfying a delayed integral equation.
+We first construct a solution on `Icc t₀ tmax` to the integral equation
+`α t = x₀ + ∫ s in t₀..t, f s (α s)`.
+Without a Lipschitz condition on `f` in the space variable, we cannot use the contraction estimates
+from the Picard–Lindelöf proof. Instead, we construct approximate solutions and use Arzelà–Ascoli to
+obtain a convergent subsequence.
 
-We first construct a solution on `Icc t₀ tmax` using Tonelli approximations.
+For the approximations, we evaluate the curve at a slightly earlier time in the integrand. This
+delay allows us to construct the curve step by step: on the first step the integrand is `f s x₀`,
+and on each later step it only uses values of the curve already determined on preceding steps. The
+construction stays in integral form, which is convenient for passing to the limit.
 
 * For `N > 0`, `IsPeanoODE.stepSize t₀ tmax N` divides the forward interval into `N` equal steps.
   The map `IsPeanoODE.delayedInput t₀ tmax N` subtracts one step from its argument, with a lower
   bound of `t₀`. It therefore maps the first `k + 1` steps into the first `k` steps.
 
 * We construct `IsPeanoODE.tonelliApproximation` by iteration using `IsPeanoODE.tonelliIterate`.
-  Each approximation `αₙ` satisfies the delayed integral equation
+  For a fixed number `N` of steps, consecutive iterates agree on the first `k` steps after `k`
+  iterations, so `N` iterations suffice. Taking `N = n + 1`, each approximation `αₙ` satisfies
   `αₙ t = x₀ + ∫ s in t₀..t, f s (αₙ (delayedInput t₀ tmax (n + 1) s))` for `t ∈ Icc t₀ tmax`.
 
 * Using the bounds in `IsPeanoODE`, we prove by induction that the iterates take values in
-  `closedBall x₀ r` and are Lipschitz with constant `L` on the forward interval. To apply
-  Arzelà–Ascoli, we restrict the approximations to `Icc t₀ tmax` and regard them as bounded
-  continuous functions. The common Lipschitz bound gives equicontinuity, and finite dimensionality
-  makes the closed ball compact. This gives a uniformly convergent subsequence.
+  `closedBall x₀ r` and are Lipschitz with constant `L` on the forward interval. We restrict the
+  approximations to `Icc t₀ tmax` and regard them as bounded continuous functions. The common
+  Lipschitz bound gives equicontinuity. Finite dimensionality makes the closed ball compact,
+  so Arzelà–Ascoli gives a uniformly convergent subsequence.
 
 * The step sizes tend to zero, so the delayed inputs tend to the identity. Uniform convergence of
   the subsequence and continuity of the limit imply that the corresponding delayed curves converge
-  pointwise to the same limit. We then use continuity of the vector field and dominated convergence,
-  with the constant bound `L`, to pass to the limit in the integral equation.
+  pointwise to the same limit. We then use continuity of `f` and dominated convergence, with the
+  constant bound `L`, to pass to the limit and obtain the original integral equation.
 
 * Applying the forward result to the vector field `fun t x ↦ -f (-t) x` gives a backward solution
   after reversing time. The two solutions agree at `t₀` and can be glued there. The fundamental
