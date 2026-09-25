@@ -98,7 +98,7 @@ equivalent to the initial value problem defined by `f`.
 section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
+  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ : ℝ}
 
 /-- The Picard iteration. It will be shown that if `α : ℝ → E` and `picard f t₀ x₀ α` agree on an
 interval containing `t₀`, then `α` is a solution to `f` with `α t₀ = x₀` on this interval. -/
@@ -123,7 +123,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
 lemma continuousOn_comp
     (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : MapsTo α s u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
-  contDiffOn_zero.mp <| (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
+  contDiffOn_zero.mp (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
 
 end
 

@@ -83,7 +83,6 @@ section ofPrime
 
 variable (A : Subring K) (P : Ideal A) [P.IsPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The localization of a subring at a prime, as a local subring.
 Also see `Localization.subalgebra.ofField` -/
 noncomputable

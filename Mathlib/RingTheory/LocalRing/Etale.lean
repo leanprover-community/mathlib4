@@ -49,7 +49,7 @@ future PRs:
 étale, monogenic, local ring, minimal polynomial, residue field
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalRing
 

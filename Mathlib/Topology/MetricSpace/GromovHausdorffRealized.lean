@@ -39,8 +39,10 @@ noncomputable section
 
 universe u v w
 
-open Topology NNReal Set Function TopologicalSpace Filter Metric Quotient BoundedContinuousFunction
+open NNReal Set Function TopologicalSpace Filter Metric Quotient BoundedContinuousFunction
 open Sum (inl inr)
+
+open scoped Topology
 
 attribute [local instance] metricSpaceSum
 
@@ -116,7 +118,7 @@ private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Non
       rw [isometry_inl.diam_range, isometry_inr.diam_range]
       rfl
     _ = 1 * diam (univ : Set X) + 1 + 1 * diam (univ : Set Y) := by simp
-    _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> norm_num
+    _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> simp
 
 set_option backward.privateInPublic true in
 private theorem candidates_symm (fA : f ∈ candidates X Y) : f (x, y) = f (y, x) :=

@@ -5,6 +5,7 @@ Authors: Brendan Murphy
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.Regular
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
@@ -43,7 +44,7 @@ lemma LinearEquiv.isSMulRegular_congr [AddCommMonoid N] [Module R N]
 
 end Congr
 
-variable {R S M M' M'' : Type*}
+variable {R M M' M'' : Type*}
 
 lemma IsSMulRegular.submodule [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (r : R) (h : IsSMulRegular M r) : IsSMulRegular N r :=
@@ -153,7 +154,7 @@ lemma IsSMulRegular.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul :
     IsSMulRegular M r → (IsSMulRegular (M ⧸ N) r ↔ r • ⊤ ⊓ N ≤ r • N) := by
   intro (h : Function.Injective (DistribSMul.toLinearMap R M r))
   rw [isSMulRegular_on_quot_iff_lsmul_comap_le, ← map_le_map_iff_of_injective h,
-    ← LinearMap.lsmul_eq_distribSMultoLinearMap,
+    ← LinearMap.lsmul_eq_distribSMulToLinearMap,
     map_comap_eq, LinearMap.range_eq_map]; rfl
 
 lemma isSMulRegular_of_ker_lsmul_eq_bot

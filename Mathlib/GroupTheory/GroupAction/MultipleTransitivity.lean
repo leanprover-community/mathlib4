@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.GroupAction.Primitive
 public import Mathlib.GroupTheory.SpecificGroups.Alternating
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.SetTheory.Cardinal.Embedding
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -33,7 +32,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
-## Results for `SubMulAction`.
+## Results for `SubMulAction`
 
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
   that for `a`, `b` and `g` such that `g • a = b`, the actions
@@ -95,8 +94,6 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   ext
   apply hf
   simp only [← hf.mulActionHom_embedding_apply, hxy]
-
-variable (hf' : Function.Bijective f)
 
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :
@@ -633,7 +630,7 @@ theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   rw [← is_one_pretransitive_iff]
   let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
-  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
+  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by simp) h)]
 
 /-- The action of the alternating group has trivial blocks.
 

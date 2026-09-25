@@ -250,6 +250,17 @@ noncomputable def quotientInfRingEquivPiQuotient (f : ι → Ideal R)
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 
+lemma quotientInfRingEquivPiQuotient_mk_eq {f : ι → Ideal R}
+    (hf : Pairwise (Function.onFun IsCoprime f)) (x : R) :
+    quotientInfRingEquivPiQuotient _ hf x = fun _ ↦ Ideal.Quotient.mk _ x :=
+  rfl
+
+@[simp]
+lemma quotientInfRingEquivPiQuotient_mk_apply {f : ι → Ideal R}
+    (hf : Pairwise (Function.onFun IsCoprime f)) (x : R) (i : ι) :
+    quotientInfRingEquivPiQuotient _ hf x i = Ideal.Quotient.mk _ x :=
+  rfl
+
 /-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
 commutative ring then the canonical map `R → ∏ (R ⧸ Iᵢ)` is surjective. -/
 lemma pi_quotient_surjective {I : ι → Ideal R}
@@ -319,27 +330,27 @@ noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
 @[simp]
 theorem quotientMulEquivQuotientProd_fst (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
     (quotientMulEquivQuotientProd I J coprime x).fst =
-      Ideal.Quotient.factor mul_le_right x :=
+      Ideal.Quotient.factor mul_le_left x :=
   Quot.inductionOn x fun _ => rfl
 
 @[simp]
 theorem quotientMulEquivQuotientProd_snd (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
     (quotientMulEquivQuotientProd I J coprime x).snd =
-      Ideal.Quotient.factor mul_le_left x :=
+      Ideal.Quotient.factor mul_le_right x :=
   Quot.inductionOn x fun _ => rfl
 
 @[simp]
 theorem fst_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     (RingHom.fst _ _).comp
         (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
-      Ideal.Quotient.factor mul_le_right := by
+      Ideal.Quotient.factor mul_le_left := by
   apply Quotient.ringHom_ext; ext; rfl
 
 @[simp]
 theorem snd_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     (RingHom.snd _ _).comp
         (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
-      Ideal.Quotient.factor mul_le_left := by
+      Ideal.Quotient.factor mul_le_right := by
   apply Quotient.ringHom_ext; ext; rfl
 
 end ChineseRemainder

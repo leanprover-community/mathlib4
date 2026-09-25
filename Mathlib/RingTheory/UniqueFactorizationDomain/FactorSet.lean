@@ -86,7 +86,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
     rw [this, prod_top]
   | a, ⊤, _ => show a.prod ≤ (⊤ : FactorSet α).prod by simp
   | WithTop.some _, WithTop.some _, h =>
-    prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 <| h
+    prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 h
 
 theorem FactorSet.prod_eq_zero_iff [IsCancelMulZero α] [Nontrivial α] (p : FactorSet α) :
     p.prod = 0 ↔ p = ⊤ := by
@@ -118,13 +118,13 @@ def count (p : Associates α) : FactorSet α → ℕ :=
 @[simp]
 theorem count_some (hp : Irreducible p) (s : Multiset _) :
     count p (WithTop.some s) = s.count ⟨p, hp⟩ := by
-  simp only [count, dif_pos hp, bcount]
+  simp only [count, dite_eq_left hp, bcount]
 
 @[simp]
 theorem count_zero (hp : Irreducible p) : count p (0 : FactorSet α) = 0 := by
-  simp only [count, dif_pos hp, bcount, Multiset.count_zero]
+  simp only [count, dite_eq_left hp, bcount, Multiset.count_zero]
 
-theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dif_neg hp
+theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dite_eq_right hp
 
 end count
 
@@ -160,7 +160,7 @@ theorem mem_factorSet_some {p : Associates α} {hp : Irreducible p}
 
 theorem reducible_notMem_factorSet {p : Associates α} (hp : ¬Irreducible p) (s : FactorSet α) :
     p ∉ s := fun h ↦ by
-  rwa [← factorSetMem_eq_mem, FactorSetMem, dif_neg hp] at h
+  rwa [← factorSetMem_eq_mem, FactorSetMem, dite_eq_right hp] at h
 
 theorem irreducible_of_mem_factorSet {p : Associates α} {s : FactorSet α} (h : p ∈ s) :
     Irreducible p :=
@@ -206,7 +206,7 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
     map_subtype_coe_factors', ← rel_associated_iff_map_eq_map]
   exact
     factors_unique irreducible_of_factor irreducible_of_factor
-      ((factors_prod ha).trans <| h.trans <| (factors_prod hb).symm)
+      ((factors_prod ha).trans <| h.trans (factors_prod hb).symm)
 
 /-- This returns the multiset of irreducible factors of an associate as a `FactorSet`,
   a multiset of irreducible associates `WithTop`. -/
@@ -221,12 +221,12 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
 
 @[simp]
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
-  apply dif_neg
+  apply dite_eq_right
   apply mt mk_eq_zero.1 h
 
 @[simp]
@@ -327,9 +327,9 @@ noncomputable instance : Lattice (Associates α) :=
     inf := (· ⊓ ·)
     sup_le := fun _ _ c hac hbc =>
       factors_prod c ▸ prod_mono (sup_le (factors_mono hac) (factors_mono hbc))
-    le_sup_left := fun a _ => le_trans (le_of_eq (factors_prod a).symm) <| prod_mono <| le_sup_left
+    le_sup_left := fun a _ => le_trans (le_of_eq (factors_prod a).symm) <| prod_mono le_sup_left
     le_sup_right := fun _ b =>
-      le_trans (le_of_eq (factors_prod b).symm) <| prod_mono <| le_sup_right
+      le_trans (le_of_eq (factors_prod b).symm) <| prod_mono le_sup_right
     le_inf := fun a _ _ hac hbc =>
       factors_prod a ▸ prod_mono (le_inf (factors_mono hac) (factors_mono hbc))
     inf_le_left := fun a _ => le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
@@ -458,7 +458,7 @@ variable [DecidableEq (Associates α)] [∀ p : Associates α, Decidable (Irredu
 
 theorem prime_pow_dvd_iff_le {m p : Associates α} (h₁ : m ≠ 0) (h₂ : Irreducible p) {k : ℕ} :
     p ^ k ≤ m ↔ k ≤ count p m.factors := by
-  rw [count, dif_pos h₂, prime_pow_le_iff_le_bcount h₁]
+  rw [count, dite_eq_left h₂, prime_pow_le_iff_le_bcount h₁]
 
 theorem le_of_count_ne_zero {m p : Associates α} (h0 : m ≠ 0) (hp : Irreducible p) :
     count p m.factors ≠ 0 → p ≤ m := by

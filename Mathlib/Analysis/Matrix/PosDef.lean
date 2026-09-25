@@ -22,7 +22,7 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
 
 @[expose] public section
 
-open WithLp Matrix Unitary
+open Matrix Unitary
 open scoped ComplexOrder
 
 namespace Matrix
@@ -45,6 +45,9 @@ lemma eigenvalues_nonneg [DecidableEq n] (hA : A.PosSemidef) (i : n) : 0 ≤ hA.
 lemma re_dotProduct_nonneg (hA : A.PosSemidef) (x : n → 𝕜) : 0 ≤ RCLike.re (star x ⬝ᵥ (A *ᵥ x)) :=
   RCLike.nonneg_iff.mp (hA.dotProduct_mulVec_nonneg _) |>.1
 
+-- TODO generalise this lemma. Similarly to `Matrix.PosDef.det_pos`, it requires just the following
+-- assumptions on the scalars `R`:
+-- `[CommRing R] [PartialOrder R] [StarRing R] [Nontrivial R] [IsOrderedRing R] [PosMulReflectLE R]`
 lemma det_nonneg [DecidableEq n] (hA : A.PosSemidef) : 0 ≤ A.det := by
   rw [hA.isHermitian.det_eq_prod_eigenvalues]
   exact Finset.prod_nonneg fun i _ ↦ by simpa using hA.eigenvalues_nonneg i
@@ -81,12 +84,6 @@ lemma re_dotProduct_pos (hA : A.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
 /-- The eigenvalues of a positive definite matrix are positive. -/
 lemma eigenvalues_pos [DecidableEq n] (hA : A.PosDef) (i : n) : 0 < hA.1.eigenvalues i :=
   hA.isHermitian.posDef_iff_eigenvalues_pos.mp hA i
-
-lemma det_pos [DecidableEq n] (hA : A.PosDef) : 0 < det A := by
-  rw [hA.isHermitian.det_eq_prod_eigenvalues]
-  apply Finset.prod_pos
-  intro i _
-  simpa using hA.eigenvalues_pos i
 
 end PosDef
 
