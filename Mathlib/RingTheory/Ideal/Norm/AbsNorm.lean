@@ -447,6 +447,7 @@ The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertial
 See `Ideal.absNorm_pow_inertiaDeg`. -/
 lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
     ∃ p n, 0 < n ∧ ↑p ∈ P ∧ p.Prime ∧ P.absNorm = p ^ n := by
+  have : IsAddTorsionFree S := .of_isTorsionFree ℤ _
   have := CharZero.of_isAddTorsionFree S S
   have : Finite (S ⧸ P) := Submodule.finiteQuotientOfFreeOfRankEq (P.restrictScalars ℤ)
     (Ideal.finrank_eq_finrank (Module.Free.chooseBasis _ _) _
@@ -463,6 +464,7 @@ lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
 lemma exists_isMaximal_dvd_of_dvd_absNorm
     {p : ℤ} (hp : Prime p) (I : Ideal S) (hI : p ∣ I.absNorm) :
     ∃ P : Ideal S, P.IsMaximal ∧ P.under ℤ = .span {p} ∧ P ∣ I := by
+  have : IsAddTorsionFree S := .of_isTorsionFree ℤ _
   have := CharZero.of_isAddTorsionFree S S
   have hpMax : (Ideal.span {p}).IsMaximal :=
     ((Ideal.span_singleton_prime hp.ne_zero).mpr hp).isMaximal (by simpa using hp.ne_zero)

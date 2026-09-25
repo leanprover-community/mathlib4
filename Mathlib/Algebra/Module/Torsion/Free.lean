@@ -143,8 +143,6 @@ variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M]
 instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
   isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
 
-instance [IsTorsionFree ℤ M] : IsAddTorsionFree M := .of_isTorsionFree ℤ M
-
 @[simp]
 lemma Module.isTorsionFree_int_iff_isAddTorsionFree : IsTorsionFree ℤ M ↔ IsAddTorsionFree M where
   mp _ := .of_isTorsionFree ℤ _
