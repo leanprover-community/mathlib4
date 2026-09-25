@@ -80,7 +80,7 @@ namespace LeftHomologyData
 
 /-- The canonical `LeftHomologyData` of a short complex `S` in an abelian category, for
 which the `H` field is `Abelian.coimage (kernel.ι S.g ≫ cokernel.π S.f)`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofAbelian : S.LeftHomologyData := by
   let γ := kernel.ι S.g ≫ cokernel.π S.f
   let f' := kernel.lift S.g S.f S.zero
@@ -149,7 +149,7 @@ namespace RightHomologyData
 
 /-- The canonical `RightHomologyData` of a short complex `S` in an abelian category, for
 which the `H` field is `Abelian.image (kernel.ι S.g ≫ cokernel.π S.f)`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofAbelian : S.RightHomologyData := by
   let γ := kernel.ι S.g ≫ cokernel.π S.f
   let g' := cokernel.desc S.f S.g S.zero
@@ -182,7 +182,6 @@ noncomputable def ofAbelian : S.RightHomologyData := by
 
 end RightHomologyData
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical `HomologyData` of a short complex `S` in an abelian category. -/
 noncomputable def HomologyData.ofAbelian : S.HomologyData where
   left := LeftHomologyData.ofAbelian S
@@ -291,13 +290,11 @@ lemma isoHomology_inv_homologyι :
   rw [← cancel_mono (S.isoOpcyclesOfIsColimit hcc).inv, assoc, assoc, Iso.hom_inv_id,
     comp_id, ← isoHomology_hom_comp_ι S hkf hcc fac, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.
 This is the left homology data expressing `H` as the homology of `S`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def leftHomologyData : S.LeftHomologyData where
   K := kf.pt
   H := H
@@ -305,24 +302,18 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
   π := π
   wi := KernelFork.condition kf
   hi := IsLimit.ofIsoLimit hkf (Fork.ext (Iso.refl _) (by simp))
-  wπ := by
-    dsimp
-    rw [← cancel_mono (isoHomology S hkf hcc fac).hom, assoc, assoc, id_comp,
-      π_comp_isoHomology_hom, zero_comp, f'_eq,
-      assoc, Iso.inv_hom_id_assoc, toCycles_comp_homologyπ]
+  wπ := by simp [← cancel_mono (isoHomology S hkf hcc fac).hom, f'_eq]
   hπ := by
     refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsCokernel
     · exact parallelPair.ext (Iso.refl _) (S.isoCyclesOfIsLimit hkf)
-    · exact Cofork.ext (isoHomology S hkf hcc fac) (by simp [Cofork.π])
+    · exact Cofork.ext (isoHomology S hkf hcc fac) (by simp [Cofork.π, parallelPair.ext])
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] g'_eq in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.
 This is the right homology data expressing `H` as the homology of `S`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def rightHomologyData : S.RightHomologyData where
   Q := cc.pt
   H := H
@@ -330,18 +321,14 @@ noncomputable def rightHomologyData : S.RightHomologyData where
   ι := ι
   wp := CokernelCofork.condition cc
   hp := IsColimit.ofIsoColimit hcc (Cofork.ext (Iso.refl _) (by simp))
-  wι := by
-    dsimp
-    rw [id_comp, g'_eq, ← cancel_epi (isoHomology S hkf hcc fac).inv, comp_zero,
-      isoHomology_hom_comp_ι_assoc, Iso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
+  wι := by simp [← cancel_epi (isoHomology S hkf hcc fac).inv]
   hι := by
     refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsKernel
     · exact parallelPair.ext (S.isoOpcyclesOfIsColimit hcc) (Iso.refl _)
-    · exact Fork.ext (isoHomology S hkf hcc fac) (by simp [Fork.ι])
+    · exact Fork.ext (isoHomology S hkf hcc fac) (by simp [Fork.ι, parallelPair.ext])
 
 end ofEpiMonoFactorisation
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.

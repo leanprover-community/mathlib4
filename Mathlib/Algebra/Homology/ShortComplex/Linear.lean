@@ -193,6 +193,7 @@ lemma homologyMap_smul [S₁.HasHomology] [S₂.HasHomology] :
 
 instance homologyFunctor_linear [CategoryWithHomology C] :
     Functor.Linear R (homologyFunctor C) where
+  map_smul := by simp
 
 end Homology
 
