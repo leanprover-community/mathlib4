@@ -47,7 +47,8 @@ def zariskiPretopology : Pretopology Scheme.{u} :=
   pretopology @IsOpenImmersion
 
 /-- The Zariski topology on the category of schemes. -/
-abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
+@[reducible]
+def zariskiTopology : GrothendieckTopology Scheme.{u} :=
   grothendieckTopology IsOpenImmersion
 
 lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck :=

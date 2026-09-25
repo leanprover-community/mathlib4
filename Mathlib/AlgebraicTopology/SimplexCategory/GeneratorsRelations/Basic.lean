@@ -41,11 +41,13 @@ instance quiv : Quiver FreeSimplexQuiver where
   Hom := FreeSimplexQuiver.Hom
 
 /-- `FreeSimplexQuiver.δ i` represents the `i`-th face map `.mk n ⟶ .mk (n + 1)`. -/
-abbrev δ {n : ℕ} (i : Fin (n + 2)) : FreeSimplexQuiver.mk n ⟶ .mk (n + 1) :=
+@[reducible]
+def δ {n : ℕ} (i : Fin (n + 2)) : FreeSimplexQuiver.mk n ⟶ .mk (n + 1) :=
   FreeSimplexQuiver.Hom.δ i
 
 /-- `FreeSimplexQuiver.σ i` represents `i`-th degeneracy map `.mk (n + 1) ⟶ .mk n`. -/
-abbrev σ {n : ℕ} (i : Fin (n + 1)) : FreeSimplexQuiver.mk (n + 1) ⟶ .mk n :=
+@[reducible]
+def σ {n : ℕ} (i : Fin (n + 1)) : FreeSimplexQuiver.mk (n + 1) ⟶ .mk n :=
   FreeSimplexQuiver.Hom.σ i
 
 /-- `FreeSimplexQuiver.homRel` is the relation on morphisms freely generated on the
@@ -82,11 +84,13 @@ def SimplexCategoryGenRel.mk (n : ℕ) : SimplexCategoryGenRel where
 namespace SimplexCategoryGenRel
 
 /-- `SimplexCategoryGenRel.δ i` is the `i`-th face map `.mk n ⟶ .mk (n + 1)`. -/
-abbrev δ {n : ℕ} (i : Fin (n + 2)) : mk n ⟶ mk (n + 1) :=
+@[reducible]
+def δ {n : ℕ} (i : Fin (n + 2)) : mk n ⟶ mk (n + 1) :=
   (Quotient.functor FreeSimplexQuiver.homRel).map <| (Paths.of FreeSimplexQuiver).map (.δ i)
 
 /-- `SimplexCategoryGenRel.σ i` is the `i`-th degeneracy map `.mk (n + 1) ⟶ .mk n`. -/
-abbrev σ {n : ℕ} (i : Fin (n + 1)) : mk (n + 1) ⟶ mk n :=
+@[reducible]
+def σ {n : ℕ} (i : Fin (n + 1)) : mk (n + 1) ⟶ mk n :=
   (Quotient.functor FreeSimplexQuiver.homRel).map <| (Paths.of FreeSimplexQuiver).map (.σ i)
 
 /-- The length of an object of `SimplexCategoryGenRel`. -/
@@ -106,7 +110,8 @@ inductive degeneracies : MorphismProperty SimplexCategoryGenRel
   | σ {n : ℕ} (i : Fin (n + 1)) : degeneracies (σ i)
 
 /-- A morphism is a generator if it is either a face or a degeneracy. -/
-abbrev generators := faces ⊔ degeneracies
+@[reducible]
+def generators := faces ⊔ degeneracies
 
 namespace generators
 

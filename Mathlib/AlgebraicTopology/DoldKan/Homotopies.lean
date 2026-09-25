@@ -76,7 +76,8 @@ variable {X : SimplicialObject C}
 
 /-- As we are using chain complexes indexed by `ℕ`, we shall need the relation
 `c` such `c m n` if and only if `n+1=m`. -/
-abbrev c :=
+@[reducible]
+def c :=
   ComplexShape.down ℕ
 
 /-- Helper when we need some `c.rel i j` (i.e. `ComplexShape.down ℕ`),

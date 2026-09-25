@@ -73,7 +73,8 @@ variable (R) in
 `(f, g₁, ..., gₙ)` such that `s = ⋃ (f, g₁, ..., gₙ), V(g₁, ..., gₙ) \ V(f)`.
 
 To obtain `s` from its data, use `PrimeSpectrum.ConstructibleSetData.toSet`. -/
-abbrev ConstructibleSetData := Finset (BasicConstructibleSetData R)
+@[reducible]
+def ConstructibleSetData := Finset (BasicConstructibleSetData R)
 
 namespace ConstructibleSetData
 

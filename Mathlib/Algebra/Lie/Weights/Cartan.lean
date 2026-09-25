@@ -43,7 +43,8 @@ open TensorProduct.LieModule LieModule
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L`, the root space of a map `χ : H → R` is the weight
 space of `L` regarded as a module of `H` via the adjoint action. -/
-abbrev rootSpace (χ : H → R) : LieSubmodule R H L :=
+@[reducible]
+def rootSpace (χ : H → R) : LieSubmodule R H L :=
   genWeightSpace L χ
 
 theorem zero_rootSpace_eq_top_of_nilpotent [LieRing.IsNilpotent L] :

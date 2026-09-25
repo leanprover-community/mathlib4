@@ -107,7 +107,8 @@ def sourceAffineLocally : AffineTargetMorphismProperty := fun X _ f _ =>
 /-- For `P` a property of ring homomorphisms, `affineLocally P` holds for `f : X ⟶ Y` if for each
 affine open `U = Spec A ⊆ Y` and `V = Spec B ⊆ f ⁻¹' U`, the ring hom `A ⟶ B` satisfies `P`.
 Also see `affineLocally_iff_affineOpens_le`. -/
-abbrev affineLocally : MorphismProperty Scheme.{u} :=
+@[reducible]
+def affineLocally : MorphismProperty Scheme.{u} :=
   targetAffineLocally (sourceAffineLocally P)
 
 set_option backward.isDefEq.respectTransparency.types false in

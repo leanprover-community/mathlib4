@@ -555,8 +555,8 @@ end DistribLattice
 
 -- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
-@[to_dual existing mk]
-abbrev DistribLattice.ofInfSupLe
+@[reducible, to_dual existing mk]
+def DistribLattice.ofInfSupLe
     [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α where
   le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ { (inferInstance : Lattice αᵒᵈ) with
       le_sup_inf := inf_sup_le }).le_sup_inf
@@ -619,7 +619,8 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [@Std.Total α (�
 /-- A lattice with total order is a linear order.
 
 See note [reducible non-instances]. -/
-abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
+@[reducible]
+def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] : LinearOrder α where
   toDecidableLE := ‹_›
   toDecidableEq := ‹_›

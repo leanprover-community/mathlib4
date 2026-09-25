@@ -29,7 +29,8 @@ noncomputable section
 namespace TopCat
 
 /-- The projection from the product as a bundled continuous map. -/
-abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : ↧(∀ i, α i) ⟶ α i :=
+@[reducible]
+def piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : ↧(∀ i, α i) ⟶ α i :=
   ofHom ⟨fun f => f i, continuous_apply i⟩
 
 /-- The explicit fan of a family of topological spaces given by the pi type. -/
@@ -70,7 +71,8 @@ theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
     (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := rfl
 
 /-- The inclusion to the coproduct as a bundled continuous map. -/
-abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ ↧(Σ i, α i) := by
+@[reducible]
+def sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ ↧(Σ i, α i) := by
   refine ofHom (ContinuousMap.mk ?_ ?_)
   · apply Sigma.mk i
   · continuity
@@ -116,11 +118,13 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i 
 section Prod
 
 /-- The first projection from the product. -/
-abbrev prodFst {X Y : TopCat.{u}} : ↧(X × Y) ⟶ X :=
+@[reducible]
+def prodFst {X Y : TopCat.{u}} : ↧(X × Y) ⟶ X :=
   ofHom { toFun := Prod.fst }
 
 /-- The second projection from the product. -/
-abbrev prodSnd {X Y : TopCat.{u}} : ↧(X × Y) ⟶ Y :=
+@[reducible]
+def prodSnd {X Y : TopCat.{u}} : ↧(X × Y) ⟶ Y :=
   ofHom { toFun := Prod.snd }
 
 /-- The explicit binary cofan of `X, Y` given by `X × Y`. -/

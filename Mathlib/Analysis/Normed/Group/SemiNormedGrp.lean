@@ -57,11 +57,13 @@ instance : ConcreteCategory SemiNormedGrp (NormedAddGroupHom · ·) where
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `SemiNormedGrp` back into a `NormedAddGroupHom`. -/
-abbrev Hom.hom {M N : SemiNormedGrp.{u}} (f : Hom M N) :=
+@[reducible]
+def Hom.hom {M N : SemiNormedGrp.{u}} (f : Hom M N) :=
   ConcreteCategory.hom (C := SemiNormedGrp) f
 
 /-- Typecheck a `NormedAddGroupHom` as a morphism in `SemiNormedGrp`. -/
-abbrev ofHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+@[reducible]
+def ofHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) : of M ⟶ of N :=
   ConcreteCategory.ofHom (C := SemiNormedGrp) f
 
@@ -253,11 +255,13 @@ instance (X Y : SemiNormedGrp₁) :
   map_zero f := map_zero f.1
 
 /-- Turn a morphism in `SemiNormedGrp₁` back into a norm-nonincreasing `NormedAddGroupHom`. -/
-abbrev Hom.hom {M N : SemiNormedGrp₁.{u}} (f : Hom M N) :=
+@[reducible]
+def Hom.hom {M N : SemiNormedGrp₁.{u}} (f : Hom M N) :=
   ConcreteCategory.hom (C := SemiNormedGrp₁) f
 
 /-- Promote a `NormedAddGroupHom` to a morphism in `SemiNormedGrp₁`. -/
-abbrev mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+@[reducible]
+def mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (i : f.NormNoninc) :
     SemiNormedGrp₁.of M ⟶ SemiNormedGrp₁.of N :=
   ConcreteCategory.ofHom ⟨f, i⟩

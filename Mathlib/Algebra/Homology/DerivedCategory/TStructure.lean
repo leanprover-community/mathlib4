@@ -81,11 +81,13 @@ noncomputable def TStructure.t : TStructure (DerivedCategory C) where
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
 that `X` is `≤ n` for the canonical t-structure. -/
-abbrev IsLE (X : DerivedCategory C) (n : ℤ) : Prop := TStructure.t.IsLE X n
+@[reducible]
+def IsLE (X : DerivedCategory C) (n : ℤ) : Prop := TStructure.t.IsLE X n
 
 /-- Given `X : DerivedCategory C` and `n : ℤ`, this property means
 that `X` is `≥ n` for the canonical t-structure. -/
-abbrev IsGE (X : DerivedCategory C) (n : ℤ) : Prop := TStructure.t.IsGE X n
+@[reducible]
+def IsGE (X : DerivedCategory C) (n : ℤ) : Prop := TStructure.t.IsGE X n
 
 lemma isGE_iff (X : DerivedCategory C) (n : ℤ) :
     X.IsGE n ↔ ∀ (i : ℤ) (_ : i < n), IsZero ((homologyFunctor C i).obj X) := by
@@ -198,13 +200,16 @@ open DerivedCategory.TStructure
 variable (C)
 
 /-- The bounded above derived category of an abelian category. -/
-abbrev Minus : Type max u v := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+@[reducible]
+def Minus : Type max u v := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
 
 /-- The bounded below derived category of an abelian category. -/
-abbrev Plus : Type max u v := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+@[reducible]
+def Plus : Type max u v := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
 
 /-- The bounded derived category of an abelian category. -/
-abbrev Bounded : Type max u v := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
+@[reducible]
+def Bounded : Type max u v := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
 
 variable {C}
 

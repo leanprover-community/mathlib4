@@ -97,19 +97,22 @@ variable {ι : Type*} [Preorder ι]
     (i₀ i₁ i₂ i₃ : ι) (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃)
 
 /-- Variant of `threeδ₃Toδ₂` for preorders. -/
-abbrev threeδ₃Toδ₂' :
+@[reducible]
+def threeδ₃Toδ₂' :
     mk₂ (homOfLE hi₀₁) (homOfLE hi₁₂) ⟶
       mk₂ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) :=
   threeδ₃Toδ₂ _ _ (homOfLE hi₂₃) _ rfl
 
 /-- Variant of `threeδ₂Toδ₁` for preorders. -/
-abbrev threeδ₂Toδ₁' :
+@[reducible]
+def threeδ₂Toδ₁' :
     mk₂ (homOfLE hi₀₁) (homOfLE (hi₁₂.trans hi₂₃)) ⟶
       mk₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) :=
   threeδ₂Toδ₁ _ (homOfLE hi₁₂) _ _ _ rfl rfl
 
 /-- Variant of `threeδ₁Toδ₀` for preorders. -/
-abbrev threeδ₁Toδ₀' :
+@[reducible]
+def threeδ₁Toδ₀' :
     mk₂ (homOfLE (hi₀₁.trans hi₁₂)) (homOfLE hi₂₃) ⟶
       mk₂ (homOfLE hi₁₂) (homOfLE hi₂₃) :=
   threeδ₁Toδ₀ (homOfLE hi₀₁) _ _ _ rfl

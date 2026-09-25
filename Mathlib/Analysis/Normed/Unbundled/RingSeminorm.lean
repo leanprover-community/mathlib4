@@ -152,7 +152,8 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 
 /-- The `SeminormedRing` structure on a ring `R` determined by a `RingSeminorm`. -/
-abbrev toSeminormedRing : SeminormedRing R where
+@[reducible]
+def toSeminormedRing : SeminormedRing R where
   __ := ‹Ring R›
   __ := p.toAddGroupSeminorm.toSeminormedAddCommGroup
   norm_mul_le := map_mul_le_mul p
@@ -270,7 +271,8 @@ end NonUnitalRing
 
 /-- The `NormedRing` structure on a ring `R` determined by a `RingNorm`. -/
 -- See note |reducible non-instances]
-abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
+@[reducible]
+def toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›
   __ := f.toAddGroupNorm.toNormedAddCommGroup
   norm_mul_le := map_mul_le_mul f

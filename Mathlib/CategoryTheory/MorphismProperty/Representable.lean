@@ -327,7 +327,8 @@ category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 
 This is implemented as a special case of the more general notion of `P.relative`, to the case when
 the functor `F` is `yoneda`. -/
-abbrev presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
+@[reducible]
+def presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v₁) := P.relative yoneda
 
 variable {P} {F}
 

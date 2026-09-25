@@ -190,8 +190,8 @@ namespace Order.Coframe
 
 This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
 -- See note [reducible non-instances]
-@[to_dual existing]
-abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Coframe α where
+@[reducible, to_dual existing]
+def ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Coframe α where
   hnot a := sInf {c | ⊤ ≤ a ⊔ c}
   sdiff a b := sInf {c | a ≤ b ⊔ c}
   sdiff_le_iff a b _ :=

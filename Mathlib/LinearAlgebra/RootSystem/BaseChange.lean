@@ -123,13 +123,15 @@ set_option backward.isDefEq.respectTransparency.types false in
 end SubfieldValued
 
 /-- Restriction of scalars for a crystallographic root pairing. -/
-abbrev restrictScalars [P.IsCrystallographic] :
+@[reducible]
+def restrictScalars [P.IsCrystallographic] :
     RootPairing ι K (span K (range P.root)) (span K (range P.coroot)) :=
   have := IsValuedIn.trans P K ℤ
   P.restrictScalars' K
 
 /-- Restriction of scalars to `ℚ` for a crystallographic root pairing in characteristic zero. -/
-abbrev restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=
+@[reducible]
+def restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := Module.compHom N (algebraMap ℚ L)
   P.restrictScalars ℚ

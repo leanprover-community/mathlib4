@@ -127,7 +127,8 @@ section mapLe
 variable {G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v)
 
 /-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
-abbrev mapLe : G'.Walk u v :=
+@[reducible]
+def mapLe : G'.Walk u v :=
   p.map (.ofLE h)
 
 theorem length_mapLe : (p.mapLe h).length = p.length := by
@@ -253,7 +254,8 @@ lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) 
 
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
 with those edges deleted. -/
-abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
+@[reducible]
+def toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
     (hp : ∀ e, e ∈ p.edges → e ∉ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
     simp only [edgeSet_deleteEdges, Set.mem_sdiff]
@@ -272,7 +274,8 @@ theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G
 
 /-- Given a walk that avoids an edge, create a walk in the subgraph with that edge deleted.
 This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
-abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
+@[reducible]
+def toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
     (G.deleteEdges {e}).Walk v w :=
   p.toDeleteEdges {e} (fun _ ↦ by contrapose; simp +contextual [hp])
 

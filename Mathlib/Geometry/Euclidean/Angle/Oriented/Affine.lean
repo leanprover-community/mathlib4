@@ -36,7 +36,8 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 /-- A fixed choice of positive orientation of Euclidean space `ℝ²` -/
-abbrev o := @Module.Oriented.positiveOrientation
+@[reducible]
+def o := @Module.Oriented.positiveOrientation
 
 /-- The oriented angle at `p₂` between the line segments to `p₁` and `p₃`, modulo `2 * π`. If
 either of those points equals `p₂`, this is 0. See `EuclideanGeometry.angle` for the

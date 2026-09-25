@@ -98,7 +98,8 @@ def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
   map_rel_iff' := Iff.rfl
 
 /-- Additive submonoids of an additive monoid `Additive M` are isomorphic to submonoids of `M`. -/
-abbrev AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
+@[reducible]
+def AddSubmonoid.toSubmonoid' : AddSubmonoid (Additive M) ≃o Submonoid M :=
   Submonoid.toAddSubmonoid.symm
 
 theorem Submonoid.toAddSubmonoid_closure (S : Set M) :
@@ -140,7 +141,8 @@ def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A) 
   map_rel_iff' := Iff.rfl
 
 /-- Submonoids of a monoid `Multiplicative A` are isomorphic to additive submonoids of `A`. -/
-abbrev Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoid A :=
+@[reducible]
+def Submonoid.toAddSubmonoid' : Submonoid (Multiplicative A) ≃o AddSubmonoid A :=
   AddSubmonoid.toSubmonoid.symm
 
 theorem AddSubmonoid.toSubmonoid_closure (S : Set A) :

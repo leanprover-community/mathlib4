@@ -235,7 +235,8 @@ In this version, intended for topological purposes, the compact spaces are taken
 in the same universe as `X`. See `UCompactlyGeneratedSpace` for a version with an explicit
 universe parameter, intended for categorical purposes.
 -/
-abbrev CompactlyGeneratedSpace (X : Type u) [TopologicalSpace X] : Prop :=
+@[reducible]
+def CompactlyGeneratedSpace (X : Type u) [TopologicalSpace X] : Prop :=
   UCompactlyGeneratedSpace.{u} X
 
 /-- If `X` is compactly generated, to prove that `f : X → Y` is continuous it is enough to show

@@ -315,7 +315,8 @@ theorem convexBodySumFun_continuous :
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
-abbrev convexBodySum : Set (mixedSpace K) := { x | convexBodySumFun x ≤ B }
+@[reducible]
+def convexBodySum : Set (mixedSpace K) := { x | convexBodySumFun x ≤ B }
 
 open scoped Classical in
 theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :

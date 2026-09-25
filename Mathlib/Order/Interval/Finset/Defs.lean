@@ -125,8 +125,9 @@ class LocallyFiniteOrder (α : Type*) [Preorder α] where
 
 /-- `LocallyFiniteOrder.mk'` is the dual of `LocallyFiniteOrder.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
+@[reducible,
+to_dual existing mk]
+def LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
     (finsetIcc finsetIco finsetIoc finsetIoo : α → α → Finset α)
     (finset_mem_Icc : ∀ (a b x : α), x ∈ finsetIcc a b ↔ x ≤ a ∧ b ≤ x)
     (finset_mem_Ico : ∀ (a b x : α), x ∈ finsetIco a b ↔ x ≤ a ∧ b < x)
@@ -567,7 +568,8 @@ noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b
 This is not an instance as it would not be defeq to better instances such as
 `Fin.locallyFiniteOrder`.
 -/
-abbrev Fintype.toLocallyFiniteOrder [Fintype α] [DecidableLT α] [DecidableLE α] :
+@[reducible]
+def Fintype.toLocallyFiniteOrder [Fintype α] [DecidableLT α] [DecidableLE α] :
     LocallyFiniteOrder α where
   finsetIcc a b := (Set.Icc a b).toFinset
   finsetIco a b := (Set.Ico a b).toFinset
@@ -897,7 +899,8 @@ variable [Preorder α] [Preorder β]
 
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrder` across an `OrderIso`. -/
-abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
+@[reducible]
+def locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFiniteOrder α where
   finsetIcc a b := (Icc (f a) (f b)).map f.symm.toEquiv.toEmbedding
   finsetIco a b := (Ico (f a) (f b)).map f.symm.toEquiv.toEmbedding
   finsetIoc a b := (Ioc (f a) (f b)).map f.symm.toEquiv.toEmbedding
@@ -909,8 +912,9 @@ abbrev locallyFiniteOrder [LocallyFiniteOrder β] (f : α ≃o β) : LocallyFini
 
 -- See note [reducible non-instances]
 /-- Transfer `LocallyFiniteOrderTop` across an `OrderIso`. -/
-@[to_dual /-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/]
-abbrev locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
+@[to_dual (attr := reducible)
+/-- Transfer `LocallyFiniteOrderBot` across an `OrderIso`. -/]
+def locallyFiniteOrderTop [LocallyFiniteOrderTop β] (f : α ≃o β) : LocallyFiniteOrderTop α where
   finsetIci a := (Ici (f a)).map f.symm.toEquiv.toEmbedding
   finsetIoi a := (Ioi (f a)).map f.symm.toEquiv.toEmbedding
   finset_mem_Ici := by simp
@@ -1123,7 +1127,8 @@ end Set
 
 /-- A `LocallyFiniteOrder` can be transferred across an order isomorphism. -/
 -- See note [reducible non-instances]
-abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N]
+@[reducible]
+def LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N]
     [EquivLike F M N] [OrderIsoClass F M N] (f : F) [LocallyFiniteOrder N] :
     LocallyFiniteOrder M where
   finsetIcc x y := (finsetIcc (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩

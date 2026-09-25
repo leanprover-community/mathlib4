@@ -244,8 +244,8 @@ section
 variable {ι : Type*} [Finite ι] (U : ι → OpenSubgroup G)
 
 /-- The intersection of a finite family of open subgroups. -/
-@[to_additive]
-abbrev iInfOfFinite : OpenSubgroup G :=
+@[to_additive (attr := reducible)]
+def iInfOfFinite : OpenSubgroup G :=
   ⟨⨅ i, U i, by
     convert isOpen_iInter_of_finite (fun i ↦ (U i).isOpen)
     aesop⟩

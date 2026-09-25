@@ -217,7 +217,8 @@ theorem Indep.ssubset_ground [h : RankPos M✶] (hI : M.Indep I) : I ⊂ M.E := 
 
 /-- A coindependent set of `M` is an independent set of the dual of `M✶`. we give it a separate
   definition to enable dot notation. Which spelling is better depends on context. -/
-abbrev Coindep (M : Matroid α) (I : Set α) : Prop := M✶.Indep I
+@[reducible]
+def Coindep (M : Matroid α) (I : Set α) : Prop := M✶.Indep I
 
 theorem coindep_def : M.Coindep X ↔ M✶.Indep X := Iff.rfl
 

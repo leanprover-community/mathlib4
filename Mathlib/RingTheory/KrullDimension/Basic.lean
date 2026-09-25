@@ -30,7 +30,8 @@ noncomputable def ringKrullDim (R : Type*) [CommSemiring R] : WithBot ℕ∞ :=
   krullDim (PrimeSpectrum R)
 
 /-- Type class for rings with krull dimension at most `n`. -/
-abbrev Ring.KrullDimLE (n : ℕ) (R : Type*) [CommSemiring R] : Prop :=
+@[reducible]
+def Ring.KrullDimLE (n : ℕ) (R : Type*) [CommSemiring R] : Prop :=
   Order.KrullDimLE n (PrimeSpectrum R)
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S]
@@ -77,7 +78,8 @@ alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 
 /-- A ring has finite Krull dimension if its `PrimeSpectrum` is
 finite-dimensional (and non-empty). -/
-abbrev FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
+@[reducible]
+def FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
   FiniteDimensionalOrder (PrimeSpectrum R)
 
 lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :

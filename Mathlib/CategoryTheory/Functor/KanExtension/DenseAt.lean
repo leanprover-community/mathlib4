@@ -46,7 +46,8 @@ namespace Functor
 /-- A functor `F : C ⥤ D` is dense at `Y : D` if the obvious natural transformation
 `F ⟶ F ⋙ 𝟭 D` makes `𝟭 D` a pointwise left Kan extension of `F` along itself at `Y`,
 i.e. `Y` identifies to the colimit of the obvious functor `CostructuredArrow F Y ⥤ D`. -/
-abbrev DenseAt (Y : D) : Type max u₁ u₂ v₂ :=
+@[reducible]
+def DenseAt (Y : D) : Type max u₁ u₂ v₂ :=
   (Functor.LeftExtension.mk (𝟭 D) F.rightUnitor.inv).IsPointwiseLeftKanExtensionAt Y
 
 /-- `F` is dense at `Y` if `Y` identifies to the colimit of the obvious functor

@@ -34,17 +34,20 @@ universe u
 open CategoryTheory
 
 /-- The category of delta-generated topological spaces. -/
-abbrev DeltaGenerated := GeneratedByTopCat.{u} (fun n ↦ Fin n → ℝ)
+@[reducible]
+def DeltaGenerated := GeneratedByTopCat.{u} (fun n ↦ Fin n → ℝ)
 
 /-- The faithful (but not full) functor taking each topological space to its delta-generated
   coreflection. -/
-abbrev TopCat.toDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} :=
+@[reducible]
+def TopCat.toDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} :=
   TopCat.toGeneratedByTopCat
 
 namespace DeltaGenerated
 
 /-- Constructor for objects of the category `DeltaGenerated` -/
-abbrev of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} :=
+@[reducible]
+def of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} :=
   ↧X
 
 open Lean.PrettyPrinter.Delaborator in
@@ -53,17 +56,20 @@ open Lean.PrettyPrinter.Delaborator in
 meta def delabOf : Delab := CategoryTheory.delabOf
 
 /-- The forgetful functor `DeltaGenerated ⥤ TopCat` -/
-abbrev deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
+@[reducible]
+def deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
   GeneratedByTopCat.toTopCat
 
 /-- `deltaGeneratedToTop` is fully faithful. -/
-abbrev fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
+@[reducible]
+def fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
   GeneratedByTopCat.fullyFaithfulToTopCat _
 
 @[deprecated (since := "2026-04-23")] alias topToDeltaGenerated := TopCat.toDeltaGenerated
 
 /-- The adjunction between the forgetful functor `DeltaGenerated ⥤ TopCat` and its coreflector. -/
-abbrev coreflectorAdjunction : deltaGeneratedToTop ⊣ TopCat.toDeltaGenerated :=
+@[reducible]
+def coreflectorAdjunction : deltaGeneratedToTop ⊣ TopCat.toDeltaGenerated :=
   GeneratedByTopCat.adj
 
 end DeltaGenerated

@@ -442,7 +442,8 @@ open ExternalProduct CategoryTheory.Functor
 
 /-- A shorthand for the natural transformation of functors out of PUnit defined by
 the canonical morphism `𝟙_ V ⟶ U.obj (𝟙_ C)` when `U` is a unit for Day convolution. -/
-abbrev φ : Functor.fromPUnit.{0} (𝟙_ V) ⟶ Functor.fromPUnit.{0} (𝟙_ C) ⋙ U where
+@[reducible]
+def φ : Functor.fromPUnit.{0} (𝟙_ V) ⟶ Functor.fromPUnit.{0} (𝟙_ C) ⋙ U where
   app _ := can
 
 /-- Since a convolution unit is a pointwise left Kan extension, maps out of it at
@@ -1153,7 +1154,8 @@ suitable isomorphisms
 `ι.obj (tensorObj d d') ≅ ι.obj (tensorObj d) ⊛ ι.obj (tensorObj d')`
 that behave in a lawful way with respect to the chosen Day convolutions, we can
 construct a `MonoidalCategoryStruct` on `D`. -/
-abbrev mkMonoidalCategoryStruct : MonoidalCategoryStruct D where
+@[reducible]
+def mkMonoidalCategoryStruct : MonoidalCategoryStruct D where
   tensorObj := tensorObj C V
   tensorHom := tensorHom
   tensorUnit := tensorUnit C V D

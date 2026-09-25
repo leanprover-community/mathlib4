@@ -318,22 +318,22 @@ An abbreviation for `npowRec` with an additional typeclass assumption on associa
 so that we can use `@[csimp]` to replace it with an implementation by repeated squaring
 in compiled code.
 -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- An abbreviation for `nsmulRec` with an additional typeclass assumptions on associativity
 so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
 code as an automatic parameter. -/]
-abbrev npowRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
+def npowRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
   npowRec k m
 
 /--
 An abbreviation for `npowBinRec` with an additional typeclass assumption on associativity
 so that we can use it in `@[csimp]` for more performant code generation.
 -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- An abbreviation for `nsmulBinRec` with an additional typeclass assumption on associativity
 so that we can use it in `@[csimp]` for more performant code generation
 as an automatic parameter. -/]
-abbrev npowBinRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
+def npowBinRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
   npowBinRec k m
 
 @[to_additive (attr := csimp)]

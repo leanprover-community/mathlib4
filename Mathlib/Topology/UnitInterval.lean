@@ -29,7 +29,8 @@ open Set Int Set.Icc
 
 
 /-- The unit interval `[0,1]` in ℝ. -/
-abbrev unitInterval : Set ℝ :=
+@[reducible]
+def unitInterval : Set ℝ :=
   Set.Icc 0 1
 
 @[inherit_doc]
@@ -364,7 +365,8 @@ theorem continuous_convexComb_prod {a b : ℝ} :
 Helper definition for `convexComb_assoc`, giving one of the coefficients appearing
 when we reassociate a convex combination.
 -/
-abbrev convexComb_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
+@[reducible]
+def convexComb_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
   ⟨s * (1 - t) / (1 - s * t),
     by
       apply div_nonneg
@@ -379,7 +381,8 @@ abbrev convexComb_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
 Helper definition for `convexComb_assoc`, giving one of the coefficients appearing
 when we reassociate a convex combination.
 -/
-abbrev convexComb_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
+@[reducible]
+def convexComb_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
 
 theorem convexComb_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     convexComb x (convexComb y z t) s =
@@ -406,14 +409,16 @@ theorem convexComb_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
 Helper definition for `convexComb_assoc'`, giving one of the coefficients appearing
 when we reassociate a convex combination in the reverse direction.
 -/
-abbrev convexComb_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
+@[reducible]
+def convexComb_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
   unitInterval.symm (convexComb_assoc_coeff₂ (unitInterval.symm t) (unitInterval.symm s))
 
 /--
 Helper definition for `convexComb_assoc'`, giving one of the coefficients appearing
 when we reassociate a convex combination in the reverse direction.
 -/
-abbrev convexComb_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
+@[reducible]
+def convexComb_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
   unitInterval.symm (convexComb_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
 
 theorem convexComb_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :

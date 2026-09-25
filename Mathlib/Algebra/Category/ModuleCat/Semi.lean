@@ -70,7 +70,8 @@ attribute [coe] SemimoduleCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
-abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
+@[reducible]
+def of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
   ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -107,11 +108,13 @@ section
 variable {R}
 
 /-- Turn a morphism in `SemimoduleCat` back into a `LinearMap`. -/
-abbrev Hom.hom {A B : SemimoduleCat.{v} R} (f : Hom A B) :=
+@[reducible]
+def Hom.hom {A B : SemimoduleCat.{v} R} (f : Hom A B) :=
   ConcreteCategory.hom (C := SemimoduleCat R) f
 
 /-- Typecheck a `LinearMap` as a morphism in `SemimoduleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y] [Module R Y]
+@[reducible]
+def ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := SemimoduleCat R) f
 

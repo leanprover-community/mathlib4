@@ -33,7 +33,8 @@ local infixl:50 " ~ᵤ " => Associated
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
 -/
-abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
+@[reducible]
+def WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
   @WellFounded α DvdNotUnit
 
 theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :

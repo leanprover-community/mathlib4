@@ -136,7 +136,8 @@ variable (s : X.N) {d : ℕ} (hd : s.dim = d)
 
 /-- When `s : X.N` is such that `s.dim = d`, this is a term
 that is equal to `s`, but whose dimension if definitionally equal to `d`. -/
-abbrev cast : X.N where
+@[reducible]
+def cast : X.N where
   toS := s.toS.cast hd
   nonDegenerate := by
     subst hd

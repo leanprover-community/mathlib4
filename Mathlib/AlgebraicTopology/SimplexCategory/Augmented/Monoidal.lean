@@ -47,7 +47,8 @@ lemma eqToHom_toOrderHom {x y : SimplexCategory} (h : WithInitial.of x = WithIni
 -- (Impl. note): This definition could easily be inlined in
 -- the definition of `tensorObjOf` below, but having it type check directly as an element
 -- of `SimplexCategory` avoids having to sprinkle `WithInitial.down` everywhere.
-abbrev tensorObjOf (m n : SimplexCategory) : SimplexCategory := .mk (m.len + n.len + 1)
+@[reducible]
+def tensorObjOf (m n : SimplexCategory) : SimplexCategory := .mk (m.len + n.len + 1)
 
 /-- The tensor product of two objects of `AugmentedSimplexCategory`. -/
 def tensorObj (m n : AugmentedSimplexCategory) : AugmentedSimplexCategory :=
@@ -91,7 +92,8 @@ def tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory} (f₁ : x₁ ⟶ 
   | .star, _, .star, _, _, _ => WithInitial.starInitial.to _
 
 /-- The unit for the monoidal structure on `AugmentedSimplexCategory` is the initial object. -/
-abbrev tensorUnit : AugmentedSimplexCategory := WithInitial.star
+@[reducible]
+def tensorUnit : AugmentedSimplexCategory := WithInitial.star
 
 /-- The associator isomorphism for the monoidal structure on `AugmentedSimplexCategory` -/
 def associator (x y z : AugmentedSimplexCategory) :
@@ -164,11 +166,13 @@ def inr (x y : AugmentedSimplexCategory) : y ⟶ x ⊗ y :=
 
 /-- To ease type checking, we also provide a version of inl that lives in
 `SimplexCategory`. -/
-abbrev inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down <| inl (.of x) (.of y)
+@[reducible]
+def inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down <| inl (.of x) (.of y)
 
 /-- To ease type checking, we also provide a version of inr that lives in
 `SimplexCategory`. -/
-abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
+@[reducible]
+def inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by

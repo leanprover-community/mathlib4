@@ -177,7 +177,8 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 then `Bialgebra.ofAlgHom` consumes the counit and comultiplication
 as algebra homomorphisms that satisfy the coalgebra axioms to define
 a bialgebra structure on `A`. -/
-abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
+@[reducible]
+def ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
     (h_coassoc : (Algebra.TensorProduct.assoc R R R A A A).toAlgHom.comp
       ((Algebra.TensorProduct.map comul (.id R A)).comp comul)
       = (Algebra.TensorProduct.map (.id R A) comul).comp comul)

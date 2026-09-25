@@ -94,13 +94,15 @@ variable (P Q S)
 
 /-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
 of `S`-schemes. -/
-abbrev overPretopology : Pretopology (Over S) :=
+@[reducible]
+def overPretopology : Pretopology (Over S) :=
   ((Scheme.precoverage P).over S).toPretopology
 
 /-- The topology on `Over S` induced from the topology on `Scheme` defined by `P`.
 This agrees with the topology induced by `S.overPretopology P`, see
 `AlgebraicGeometry.Scheme.overGrothendieckTopology_eq_toGrothendieck_overPretopology`. -/
-abbrev overGrothendieckTopology : GrothendieckTopology (Over S) :=
+@[reducible]
+def overGrothendieckTopology : GrothendieckTopology (Over S) :=
   (Scheme.grothendieckTopology P).over S
 
 lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
@@ -135,7 +137,8 @@ instance : (MorphismProperty.Over.forget P ⊤ S).LocallyCoverDense (overGrothen
 variable (S) {Q} in
 /-- If `P` and `Q` are morphism properties with `P ≤ Q`, this is the Grothendieck topology
 induced via the forgetful functor `Q.Over ⊤ S ⥤ Over S` by the topology defined by `P`. -/
-abbrev smallGrothendieckTopology : GrothendieckTopology (Q.Over ⊤ S) :=
+@[reducible]
+def smallGrothendieckTopology : GrothendieckTopology (Q.Over ⊤ S) :=
   (MorphismProperty.Over.forget Q ⊤ S).restrictedTopology (S.overGrothendieckTopology P)
 
 @[deprecated (since := "2026-05-28")]
@@ -147,7 +150,8 @@ variable [Q.IsStableUnderBaseChange] [Q.HasOfPostcompProperty Q]
 are given by `P`-coverings in `S`-schemes satisfying `Q`.
 The most common case is `P = Q`. In this case, this is simply surjective families
 in `S`-schemes with `P`. -/
-abbrev smallPretopology : Pretopology (Q.Over ⊤ S) :=
+@[reducible]
+def smallPretopology : Pretopology (Q.Over ⊤ S) :=
   (((precoverage P).over S).comap (MorphismProperty.Over.forget Q ⊤ S)).toPretopology
 
 variable (S) {P Q} in

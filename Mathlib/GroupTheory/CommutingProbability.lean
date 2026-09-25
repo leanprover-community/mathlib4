@@ -170,7 +170,8 @@ lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
     ite_eq_right (Nat.not_even_iff_odd.2 h2)]
 
 /-- A finite product of Dihedral groups. -/
-abbrev Product (l : List ℕ) : Type :=
+@[reducible]
+def Product (l : List ℕ) : Type :=
   ∀ i : Fin l.length, DihedralGroup l[i]
 
 lemma commProb_nil : commProb (Product []) = 1 := by

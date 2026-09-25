@@ -639,7 +639,8 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
 end Jacobian
 
 /-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
-abbrev Affine.Point.toJacobian [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
+@[reducible]
+def Affine.Point.toJacobian [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
   Jacobian.Point.fromAffine P
 
 end WeierstrassCurve

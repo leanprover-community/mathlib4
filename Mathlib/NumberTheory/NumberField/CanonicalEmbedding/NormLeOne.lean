@@ -229,7 +229,8 @@ def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
 /--
 The derivative of `expMap_single`, see `hasDerivAt_expMap_single`.
 -/
-abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
+@[reducible]
+def deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
   (expMap_single w x) * (w.mult : ℝ)⁻¹
 
 theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
@@ -311,7 +312,8 @@ theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
 /--
 The derivative of `expMap`, see `hasFDerivAt_expMap`.
 -/
-abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
+@[reducible]
+def fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   .pi fun w ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (deriv_expMap_single w (x w))).comp
     (.proj w)
 
@@ -576,7 +578,8 @@ variable (K)
 /--
 The derivative of `expMapBasis`, see `hasFDerivAt_expMapBasis`.
 -/
-abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
+@[reducible]
+def fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
   (fderiv_expMap ((completeBasis K).equivFun.symm x)).comp
     (completeBasis K).equivFunL.symm.toContinuousLinearMap
 

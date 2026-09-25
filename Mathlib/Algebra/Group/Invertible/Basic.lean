@@ -83,7 +83,8 @@ section Monoid
 variable [Monoid α]
 
 /-- This is the `Invertible` version of `Units.isUnit_units_mul` -/
-abbrev invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b where
+@[reducible]
+def invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] : Invertible b where
   invOf := ⅟(a * b) * a
   invOf_mul_self := by rw [mul_assoc, invOf_mul_self]
   mul_invOf_self := by
@@ -91,7 +92,8 @@ abbrev invertibleOfInvertibleMul (a b : α) [Invertible a] [Invertible (a * b)] 
       one_mul]
 
 /-- This is the `Invertible` version of `Units.isUnit_mul_units` -/
-abbrev invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a where
+@[reducible]
+def invertibleOfMulInvertible (a b : α) [Invertible (a * b)] [Invertible b] : Invertible a where
   invOf := b * ⅟(a * b)
   invOf_mul_self := by
     rw [← (isUnit_of_invertible b).mul_left_inj, mul_assoc, mul_assoc, invOf_mul_self, mul_one,

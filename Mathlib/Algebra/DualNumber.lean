@@ -43,7 +43,8 @@ variable {R A B : Type*}
 
 /-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.
 `R[ε]` is notation for `DualNumber R`. -/
-abbrev DualNumber (R : Type*) : Type _ :=
+@[reducible]
+def DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 
 /-- The unit element $ε$ that squares to zero, with notation `ε`. -/

@@ -67,7 +67,8 @@ end PrimeSpectrum
 namespace MaximalSpectrum
 
 /-- The product of localizations at all maximal ideals of a commutative semiring. -/
-abbrev PiLocalization : Type _ := Π I : MaximalSpectrum R, Localization.AtPrime I.1
+@[reducible]
+def PiLocalization : Type _ := Π I : MaximalSpectrum R, Localization.AtPrime I.1
 
 /-- The canonical ring homomorphism from a commutative semiring to the product of its
 localizations at all maximal ideals. It is always injective. -/
@@ -163,7 +164,8 @@ end MaximalSpectrum
 namespace PrimeSpectrum
 
 /-- The product of localizations at all prime ideals of a commutative semiring. -/
-abbrev PiLocalization : Type _ := Π p : PrimeSpectrum R, Localization p.asIdeal.primeCompl
+@[reducible]
+def PiLocalization : Type _ := Π p : PrimeSpectrum R, Localization p.asIdeal.primeCompl
 
 /-- The canonical ring homomorphism from a commutative semiring to the product of its
 localizations at all prime ideals. It is always injective. -/

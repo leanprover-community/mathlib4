@@ -68,7 +68,8 @@ variable {K}
 A family of units is of maximal rank if its image by `logEmbedding` is linearly independent
 over `ℝ`.
 -/
-abbrev IsMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
+@[reducible]
+def IsMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
   LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
 
 open scoped Classical in

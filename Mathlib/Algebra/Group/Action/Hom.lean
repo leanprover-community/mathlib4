@@ -28,9 +28,9 @@ variable [Monoid M] [MulAction M α]
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`. -/]
-abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
+def Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
@@ -44,8 +44,8 @@ variable (α)
 a multiplicative action of `N` on `α`.
 
 See note [reducible non-instances]. -/
-@[to_additive]
-abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
+@[to_additive (attr := reducible)]
+def compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
   one_smul _ := by simpa [(· • ·)] using one_smul ..
   mul_smul _ _ _ := by simpa [(· • ·)] using mul_smul ..

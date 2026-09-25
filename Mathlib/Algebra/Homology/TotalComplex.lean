@@ -42,7 +42,8 @@ variable {C : Type*} [Category* C] [Preadditive C]
 
 /-- A bicomplex has a total bicomplex if for any `i₁₂ : I₁₂`, the coproduct
 of the objects `(K.X i₁).X i₂` such that `ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂` exists. -/
-abbrev HasTotal := K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₁₂)
+@[reducible]
+def HasTotal := K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₁₂)
 
 include e in
 variable {K L} in

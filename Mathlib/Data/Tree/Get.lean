@@ -39,8 +39,8 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : BinaryTree α
     | Ordering.gt => PosNum.bit1 <$> indexOf lt x t₂
 
 /-- **Alias** of `BinaryTree.indexOf`. -/
-@[deprecated BinaryTree.indexOf (since := "2026-06-07")]
-abbrev _root_.Tree.indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → Option PosNum :=
+@[reducible, deprecated BinaryTree.indexOf (since := "2026-06-07")]
+def _root_.Tree.indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → Option PosNum :=
   BinaryTree.indexOf lt x
 
 /-- Retrieves an element uniquely determined by a `PosNum` from the tree,
@@ -55,8 +55,8 @@ def get : PosNum → BinaryTree α → Option α
   | PosNum.bit1 n, node _a _t₁ t₂ => t₂.get n
 
 /-- **Alias** of `BinaryTree.get`. -/
-@[deprecated BinaryTree.get (since := "2026-06-07")]
-abbrev _root_.Tree.get (n : PosNum) (t : Tree α) : Option α :=
+@[reducible, deprecated BinaryTree.get (since := "2026-06-07")]
+def _root_.Tree.get (n : PosNum) (t : Tree α) : Option α :=
   BinaryTree.get n t
 
 /-- Retrieves an element from the tree, or the provided default value
@@ -65,8 +65,8 @@ def getOrElse (n : PosNum) (t : BinaryTree α) (v : α) : α :=
   (t.get n).getD v
 
 /-- **Alias** of `BinaryTree.getOrElse`. -/
-@[deprecated BinaryTree.getOrElse (since := "2026-06-07")]
-abbrev _root_.Tree.getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
+@[reducible, deprecated BinaryTree.getOrElse (since := "2026-06-07")]
+def _root_.Tree.getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
   BinaryTree.getOrElse n t v
 
 end BinaryTree

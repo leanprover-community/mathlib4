@@ -173,7 +173,8 @@ An open embedding `f : X ⟶ Y` induces a functor `OpenNhds x ⥤ OpenNhds (f x)
 We define `IsOpenEmbedding.functorNhds` as `IsOpenEmbedding.isOpenMap.functorNds`, so it won't
 default to `IsInducing.functorNhds` (which is equal but not defeq).
 -/
-abbrev Topology.IsOpenEmbedding.functorNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
+@[reducible]
+def Topology.IsOpenEmbedding.functorNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
     h.isOpenMap.functorNhds x
 
 /--
@@ -181,7 +182,8 @@ An open embedding `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `
 We define `IsOpenEmbedding.adjunctionNhds` as `IsOpenEmbedding.isOpenMap.adjunctionNds`, so it
 won't default to `IsInducing.adjunctionNhds`, which is an adjunction in the other direction.
 -/
-abbrev Topology.IsOpenEmbedding.adjunctionNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
+@[reducible]
+def Topology.IsOpenEmbedding.adjunctionNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
   h.isOpenMap.adjunctionNhds x
 
 end

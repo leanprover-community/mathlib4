@@ -142,7 +142,8 @@ theorem fixedSubmodule_transvection_mul {f : Dual K V} {v : V}
 
 /-- A linear equivalence `u : V ≃ₗ[K] V` is exceptional if
 it is a nontrivial homothety modulo `u.fixedSubmodule`. -/
-abbrev IsExceptional (e : V ≃ₗ[K] V) : Prop :=
+@[reducible]
+def IsExceptional (e : V ≃ₗ[K] V) : Prop :=
   1 < finrank K (V ⧸ e.fixedSubmodule) ∧
     e.fixedReduce ≠ 1 ∧ ∃ a : K, ∀ x, fixedReduce e x = a • x
 

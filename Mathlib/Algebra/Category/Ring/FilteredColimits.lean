@@ -58,7 +58,8 @@ variable [IsFiltered J]
 /-- The colimit of `F ⋙ forget₂ SemiRingCat MonCat` in the category `MonCat`.
 In the following, we will show that this has the structure of a semiring.
 -/
-abbrev R : MonCat.{max v u} :=
+@[reducible]
+def R : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ SemiRingCat.{max v u} MonCat)
 
 instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
@@ -202,7 +203,8 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommSemiRingCa
 /-- The colimit of `F ⋙ forget₂ CommSemiRingCat SemiRingCat` in the category `SemiRingCat`.
 In the following, we will show that this has the structure of a _commutative_ semiring.
 -/
-abbrev R : SemiRingCat.{max v u} :=
+@[reducible]
+def R : SemiRingCat.{max v u} :=
   SemiRingCat.FilteredColimits.colimit (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})
 
 instance colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
@@ -260,7 +262,8 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ RingCat.{max v
 /-- The colimit of `F ⋙ forget₂ RingCat SemiRingCat` in the category `SemiRingCat`.
 In the following, we will show that this has the structure of a ring.
 -/
-abbrev R : SemiRingCat.{max v u} :=
+@[reducible]
+def R : SemiRingCat.{max v u} :=
   SemiRingCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ RingCat SemiRingCat.{max v u})
 
 instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
@@ -323,7 +326,8 @@ variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{m
 /-- The colimit of `F ⋙ forget₂ CommRingCat RingCat` in the category `RingCat`.
 In the following, we will show that this has the structure of a _commutative_ ring.
 -/
-abbrev R : RingCat.{max v u} :=
+@[reducible]
+def R : RingCat.{max v u} :=
   RingCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{max v u})
 
 instance colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=

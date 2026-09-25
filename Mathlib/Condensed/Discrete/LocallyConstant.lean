@@ -109,7 +109,8 @@ section
 variable {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : Fiber r)
 
 /-- A fiber of a locally constant map as a `CompHausLike P`. -/
-abbrev fiber : CompHausLike.{u} P := ↧a.val
+@[reducible]
+def fiber : CompHausLike.{u} P := ↧a.val
 
 /-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
 def sigmaIncl : fiber r a ⟶ Q := ofHom _ (TopologicalSpace.Fiber.sigmaIncl _ a)
@@ -370,7 +371,8 @@ open Condensed CompHausLike
 namespace CondensedSet.LocallyConstant
 
 /-- The functor from sets to condensed sets given by locally constant maps into the set. -/
-abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
+@[reducible]
+def functor : Type (u + 1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u + 1} (P := fun _ ↦ True)
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
 
@@ -398,7 +400,8 @@ end CondensedSet.LocallyConstant
 namespace LightCondSet.LocallyConstant
 
 /-- The functor from sets to light condensed sets given by locally constant maps into the set. -/
-abbrev functor : Type u ⥤ LightCondSet.{u} :=
+@[reducible]
+def functor : Type u ⥤ LightCondSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u}
     (P := fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)
     (hs := fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)

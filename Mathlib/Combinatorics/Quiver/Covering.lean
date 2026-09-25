@@ -56,7 +56,8 @@ variable {U : Type _} [Quiver.{u} U] {V : Type _} [Quiver.{v} V] (φ : U ⥤q V)
 
 /-- The `Quiver.Star` at a vertex is the collection of arrows whose source is the vertex.
 The type `Quiver.Star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/
-abbrev Quiver.Star (u : U) :=
+@[reducible]
+def Quiver.Star (u : U) :=
   Σ v : U, u ⟶ v
 
 /-- Constructor for `Quiver.Star`. Defined to be `Sigma.mk`. -/
@@ -65,7 +66,8 @@ protected abbrev Quiver.Star.mk {u v : U} (f : u ⟶ v) : Quiver.Star u :=
 
 /-- The `Quiver.Costar` at a vertex is the collection of arrows whose target is the vertex.
 The type `Quiver.Costar v` is defined to be `Σ (u : U), (u ⟶ v)`. -/
-abbrev Quiver.Costar (v : U) :=
+@[reducible]
+def Quiver.Costar (v : U) :=
   Σ u : U, u ⟶ v
 
 /-- Constructor for `Quiver.Costar`. Defined to be `Sigma.mk`. -/
@@ -170,7 +172,8 @@ protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
 The type `Quiver.PathStar u` is defined to be `Σ v : U, Path u v`. -/
-abbrev Quiver.PathStar (u : U) :=
+@[reducible]
+def Quiver.PathStar (u : U) :=
   Σ v : U, Path u v
 
 /-- Constructor for `Quiver.PathStar`. Defined to be `Sigma.mk`. -/

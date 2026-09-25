@@ -232,20 +232,20 @@ def FinEncoding.toEncoding {α : Type u} {Γ : Type v} [Fintype Γ]
     (e : Encoding α Γ) : Encoding α Γ := e
 
 /-- Deprecated alias for `encodingNatBool`. -/
-@[deprecated encodingNatBool (since := "2026-05-07")]
-abbrev finEncodingNatBool := encodingNatBool
+@[reducible, deprecated encodingNatBool (since := "2026-05-07")]
+def finEncodingNatBool := encodingNatBool
 
 /-- Deprecated alias for `encodingNatΓ'`. -/
-@[deprecated encodingNatΓ' (since := "2026-05-07")]
-abbrev finEncodingNatΓ' := encodingNatΓ'
+@[reducible, deprecated encodingNatΓ' (since := "2026-05-07")]
+def finEncodingNatΓ' := encodingNatΓ'
 
 /-- Deprecated alias for `unaryEncodingNat`. -/
-@[deprecated unaryEncodingNat (since := "2026-05-07")]
-abbrev unaryFinEncodingNat := unaryEncodingNat
+@[reducible, deprecated unaryEncodingNat (since := "2026-05-07")]
+def unaryFinEncodingNat := unaryEncodingNat
 
 /-- Deprecated alias for `encodingBoolBool`. -/
-@[deprecated encodingBoolBool (since := "2026-05-07")]
-abbrev finEncodingBoolBool := encodingBoolBool
+@[reducible, deprecated encodingBoolBool (since := "2026-05-07")]
+def finEncodingBoolBool := encodingBoolBool
 
 /-- Deprecated alias for `encodingList`. -/
 @[reducible, nolint unusedArguments,

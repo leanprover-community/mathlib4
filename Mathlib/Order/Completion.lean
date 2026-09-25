@@ -49,7 +49,8 @@ For `A : DedekindCut α`, the sets `A.left` and `A.right` are related by
 
 The theorem `DedekindCut.principalEmbedding_trans_factorEmbedding` proves that if `α` is a partial
 order and `β` is a complete lattice, any embedding `α ↪o β` factors through `DedekindCut α`. -/
-abbrev DedekindCut [Preorder α] := Concept α α (· ≤ ·)
+@[reducible]
+def DedekindCut [Preorder α] := Concept α α (· ≤ ·)
 
 namespace DedekindCut
 
@@ -57,10 +58,12 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 /-- The left set of a Dedekind cut. This is an alias for `Concept.extent`. -/
-abbrev left (A : DedekindCut α) : Set α := A.extent
+@[reducible]
+def left (A : DedekindCut α) : Set α := A.extent
 
 /-- The right set of a Dedekind cut. This is an alias for `Concept.intent`. -/
-abbrev right (A : DedekindCut α) : Set α := A.intent
+@[reducible]
+def right (A : DedekindCut α) : Set α := A.intent
 
 /-- See `DedekindCut.ext'` for a version using the right set instead. -/
 @[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h

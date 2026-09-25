@@ -219,7 +219,8 @@ variable [ConcreteCategory C FC] [HasShift C S]
 /--
 The type of `C`-morphisms that can be lifted back to morphisms in the category `DifferentialObject`.
 -/
-abbrev HomSubtype (X Y : DifferentialObject S C) :=
+@[reducible]
+def HomSubtype (X Y : DifferentialObject S C) :=
   { f : FC X.obj Y.obj // X.d ≫ (ConcreteCategory.ofHom f)⟦1⟧' = (ConcreteCategory.ofHom f) ≫ Y.d }
 
 @[macro_inline]

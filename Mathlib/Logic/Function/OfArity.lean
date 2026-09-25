@@ -28,7 +28,8 @@ namespace Function
 
 Note that this is not universe polymorphic, as this would require that when `n=0` we produce either
 `Unit → β` or `ULift β`. -/
-abbrev OfArity (α β : Type u) (n : ℕ) : Type u := FromTypes (fun (_ : Fin n) => α) β
+@[reducible]
+def OfArity (α β : Type u) (n : ℕ) : Type u := FromTypes (fun (_ : Fin n) => α) β
 
 @[simp]
 theorem ofArity_zero (α β : Type u) : OfArity α β 0 = β := fromTypes_zero _ _

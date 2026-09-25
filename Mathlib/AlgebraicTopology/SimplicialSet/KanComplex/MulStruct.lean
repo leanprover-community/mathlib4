@@ -32,7 +32,8 @@ variable (X : SSet.{u})
 
 /-- Given a simplicial set `X`, `n : ℕ` and `x : X _⦋0⦌`, this is the type
 of morphisms `Δ[n] ⟶ X` which are constant with value `x` on the boundary. -/
-abbrev PtSimplex (n : ℕ) (x : X _⦋0⦌) : Type u :=
+@[reducible]
+def PtSimplex (n : ℕ) (x : X _⦋0⦌) : Type u :=
   RelativeMorphism (boundary n) (Subcomplex.ofSimplex x)
     (const ⟨x, Subcomplex.mem_ofSimplex_obj x⟩)
 
@@ -97,12 +98,14 @@ def opEquiv : X.op.PtSimplex n (opObjEquiv.symm x) ≃ X.PtSimplex n x where
 
 /-- Given a `n`-simplex of `X` that is constant on the boundary, this
 is the corresponding `n`-simplex of `X.op`. -/
-abbrev op (f : X.PtSimplex n x) : X.op.PtSimplex n (opObjEquiv.symm x) :=
+@[reducible]
+def op (f : X.PtSimplex n x) : X.op.PtSimplex n (opObjEquiv.symm x) :=
   opEquiv.symm f
 
 /-- Given a `n`-simplex of `X.op` that is constant on the boundary, this
 is the corresponding `n`-simplex of `X`. -/
-abbrev unop (f : X.op.PtSimplex n (opObjEquiv.symm x)) : X.PtSimplex n x :=
+@[reducible]
+def unop (f : X.op.PtSimplex n (opObjEquiv.symm x)) : X.PtSimplex n x :=
   opEquiv f
 
 /-- For each `i : Fin (n + 1)`, this is a variant of the homotopy relation on
@@ -167,7 +170,8 @@ end RelStruct
 constant on the boundary. Simplices `f` and `g` are related
 if they appear respectively as the zeroth and first faces of a
 `n + 1`-simplex such that all the other faces are constant. -/
-abbrev RelStruct₀ (f g : X.PtSimplex n x) := RelStruct f g 0
+@[reducible]
+def RelStruct₀ (f g : X.PtSimplex n x) := RelStruct f g 0
 
 namespace RelStruct₀
 

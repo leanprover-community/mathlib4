@@ -170,7 +170,8 @@ def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
   map {_ _} F := { hom := F.hom, w := fun _ => F.wπ _ }
 
 /-- A shorthand for `toConeFunctor.obj` -/
-abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
+@[reducible]
+def toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
 
 -- TODO Consider changing this API to `toFan (B : Bicone F) : Fan F`.
 
@@ -189,7 +190,8 @@ def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   map {_ _} F := { hom := F.hom, w := fun _ => F.wι _ }
 
 /-- A shorthand for `toCoconeFunctor.obj` -/
-abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
+@[reducible]
+def toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
 
 @[simp] theorem toCocone_pt (B : Bicone F) : B.toCocone.pt = B.pt := rfl
 
@@ -416,16 +418,19 @@ variable {J : Type w} {K : Type*}
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
 /-- `biproduct f` computes the biproduct of a family of elements `f`. (It is defined as an
-abbreviation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
+@[reducible]
+defiation for `limit (Discrete.functor f)`, so for most facts about `biproduct f`, you will
 just use general facts about limits and colimits.) -/
-abbrev biproduct (f : J → C) [HasBiproduct f] : C :=
+@[reducible]
+def biproduct (f : J → C) [HasBiproduct f] : C :=
   (biproduct.bicone f).pt
 
 @[inherit_doc biproduct]
 notation "⨁ " f:20 => biproduct f
 
 /-- The projection onto a summand of a biproduct. -/
-abbrev biproduct.π (f : J → C) [HasBiproduct f] (b : J) : ⨁ f ⟶ f b :=
+@[reducible]
+def biproduct.π (f : J → C) [HasBiproduct f] (b : J) : ⨁ f ⟶ f b :=
   (biproduct.bicone f).π b
 
 @[simp]
@@ -433,7 +438,8 @@ theorem biproduct.bicone_π (f : J → C) [HasBiproduct f] (b : J) :
     (biproduct.bicone f).π b = biproduct.π f b := rfl
 
 /-- The inclusion into a summand of a biproduct. -/
-abbrev biproduct.ι (f : J → C) [HasBiproduct f] (b : J) : f b ⟶ ⨁ f :=
+@[reducible]
+def biproduct.ι (f : J → C) [HasBiproduct f] (b : J) : f b ⟶ ⨁ f :=
   (biproduct.bicone f).ι b
 
 @[simp]
@@ -469,11 +475,13 @@ theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w :
   simp [*]
 
 /-- Given a collection of maps into the summands, we obtain a map into the biproduct. -/
-abbrev biproduct.lift {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ⨁ f :=
+@[reducible]
+def biproduct.lift {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ⨁ f :=
   (biproduct.isLimit f).lift (Fan.mk P p)
 
 /-- Given a collection of maps out of the summands, we obtain a map out of the biproduct. -/
-abbrev biproduct.desc {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ⨁ f ⟶ P :=
+@[reducible]
+def biproduct.desc {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ⨁ f ⟶ P :=
   (biproduct.isColimit f).desc (Cofan.mk P p)
 
 @[reassoc (attr := simp)]
@@ -486,14 +494,16 @@ theorem biproduct.ι_desc {f : J → C} [HasBiproduct f] {P : C} (p : ∀ b, f b
 
 /-- Given a collection of maps between corresponding summands of a pair of biproducts
 indexed by the same type, we obtain a map between the biproducts. -/
-abbrev biproduct.map {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
+@[reducible]
+def biproduct.map {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     ⨁ f ⟶ ⨁ g :=
   IsLimit.map (biproduct.bicone f).toCone (biproduct.isLimit g)
     (Discrete.natTrans (fun j => p j.as))
 
 /-- An alternative to `biproduct.map` constructed via colimits.
 This construction only exists in order to show it is equal to `biproduct.map`. -/
-abbrev biproduct.map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
+@[reducible]
+def biproduct.map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     ⨁ f ⟶ ⨁ g :=
   IsColimit.map (biproduct.isColimit f) (biproduct.bicone g).toCocone
     (Discrete.natTrans fun j => p j.as)

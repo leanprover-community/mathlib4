@@ -56,7 +56,8 @@ variable (D : Aux P b)
 
 /-- `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` where the `bᵢ` are lifts of the basis elements
 of `I/I²` in `I`. -/
-abbrev T :=
+@[reducible]
+def T :=
   MvPolynomial ι R ⧸ (Ideal.span <| Set.range <| Subtype.val ∘ D.f ∘ b)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -82,7 +83,8 @@ instance : IsScalarTower P.Ring D.T S := by
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The image of `g : R[X₁, ..., Xₙ]` in `T`. -/
-abbrev gbar : D.T := D.g
+@[reducible]
+def gbar : D.T := D.g
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `S` is the localization of `T` away from `S`. -/

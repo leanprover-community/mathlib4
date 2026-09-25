@@ -65,10 +65,12 @@ instance : ConcreteCategory (CommHopfAlgCat.{v} R) (· →ₐc[R] ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `CommHopfAlgCat` back into a `BialgHom`. -/
-abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommHopfAlgCat R) f
+@[expose, reducible]
+def Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommHopfAlgCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `CommHopfAlgCat R`. -/
-abbrev ofHom {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X} {_ : HopfAlgebra R Y}
+@[expose, reducible]
+def ofHom {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X} {_ : HopfAlgebra R Y}
     (f : X →ₐc[R] Y) : of R X ⟶ of R Y := ConcreteCategory.ofHom (C := CommHopfAlgCat R) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/

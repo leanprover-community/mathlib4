@@ -47,7 +47,8 @@ local instance underlyingTopologicalSpace :
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `LightCondSet ⥤ TopCat` -/
-abbrev toTopCat : TopCat.{u} := ↧(X.obj.obj ⟨↧PUnit⟩)
+@[reducible]
+def toTopCat : TopCat.{u} := ↧(X.obj.obj ⟨↧PUnit⟩)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

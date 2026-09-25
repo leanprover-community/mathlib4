@@ -85,11 +85,13 @@ instance concreteCategory : ConcreteCategory (BialgCat.{v} R) (· →ₐc[R] ·)
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `BialgCat` back into a `BialgHom`. -/
-abbrev Hom.toBialgHom {X Y : BialgCat R} (f : Hom X Y) :=
+@[reducible]
+def Hom.toBialgHom {X Y : BialgCat R} (f : Hom X Y) :=
   ConcreteCategory.hom (C := BialgCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `BialgCat R`. -/
-abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
+@[reducible]
+def ofHom {X Y : Type v} [Ring X] [Ring Y]
     [Bialgebra R X] [Bialgebra R Y] (f : X →ₐc[R] Y) :
     of R X ⟶ of R Y :=
   ConcreteCategory.ofHom f

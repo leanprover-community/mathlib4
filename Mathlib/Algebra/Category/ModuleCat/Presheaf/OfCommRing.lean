@@ -22,7 +22,8 @@ universe v v₁ v₂ u₁ u₂ u
 open CategoryTheory Functor Limits
 
 /-- The category of presheaves of modules over a presheaf of commutative rings. -/
-abbrev PresheafOfModulesOfCommRing {C : Type u₁} [Category.{v₁} C]
+@[reducible]
+def PresheafOfModulesOfCommRing {C : Type u₁} [Category.{v₁} C]
     (R : Cᵒᵖ ⥤ CommRingCat.{u}) :=
   PresheafOfModules.{v} (R ⋙ forget₂ _ _)
 
@@ -33,7 +34,8 @@ section Basic
 variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 
 /-- Construct a presheaf of modules over a presheaf of commutative rings. -/
-abbrev mk (obj : ∀ (X : Cᵒᵖ), ModuleCat.{v} (R.obj X)) (map : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y),
+@[reducible]
+def mk (obj : ∀ (X : Cᵒᵖ), ModuleCat.{v} (R.obj X)) (map : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y),
       obj X ⟶ (ModuleCat.restrictScalars (R.map f).hom).obj (obj Y))
     (map_id : ∀ (X : Cᵒᵖ), map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)).hom
       (congrArg CommRingCat.Hom.hom (R.map_id X))).inv.app _ := by cat_disch)
@@ -48,16 +50,19 @@ abbrev mk (obj : ∀ (X : Cᵒᵖ), ModuleCat.{v} (R.obj X)) (map : ∀ {X Y : C
   map_comp := map_comp
 
 /-- Evaluate a presheaf of modules over a presheaf of commutative rings at an object. -/
-abbrev obj (F : PresheafOfModulesOfCommRing.{v} R) (X : Cᵒᵖ) : ModuleCat.{v} (R.obj X) :=
+@[reducible]
+def obj (F : PresheafOfModulesOfCommRing.{v} R) (X : Cᵒᵖ) : ModuleCat.{v} (R.obj X) :=
   PresheafOfModules.obj F X
 
 /-- The restriction map of a presheaf of modules over a presheaf of commutative rings. -/
-abbrev map (F : PresheafOfModulesOfCommRing.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+@[reducible]
+def map (F : PresheafOfModulesOfCommRing.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     F.obj X ⟶ (ModuleCat.restrictScalars (R.map f).hom).obj (F.obj Y) :=
   PresheafOfModules.map _ _
 
 /-- Construct a morphism of presheaves of modules over a presheaf of commutative rings. -/
-abbrev homMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
+@[reducible]
+def homMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
     (app : ∀ (X : Cᵒᵖ), M₁.obj X ⟶ M₂.obj X)
     (naturality : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y),
       M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y) =
@@ -66,7 +71,8 @@ abbrev homMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
   naturality := naturality
 
 /-- Construct an isomorphism of presheaves of modules over a presheaf of commutative rings. -/
-abbrev isoMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
+@[reducible]
+def isoMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
     (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
     (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
       M₁.map f ≫ (ModuleCat.restrictScalars (R.map f).hom).map (app Y).hom =
@@ -74,7 +80,8 @@ abbrev isoMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
   PresheafOfModules.isoMk app naturality
 
 /-- a family of linear maps `M₁.obj X ⟶ M₂.obj X` for all `X`. -/
-abbrev _root_.PresheafOfModules.Hom.app' {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
+@[reducible]
+def _root_.PresheafOfModules.Hom.app' {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
     (f : M₁ ⟶ M₂) (X : Cᵒᵖ) : M₁.obj X ⟶ M₂.obj X := f.app X
 
 /-- The free presheaf of modules of rank one over a presheaf of commutative rings. -/
@@ -99,7 +106,8 @@ section PushforwardPullback
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- The pushforward functor along `F` for modules over a presheaf of commutative rings. -/
-abbrev pushforward₀ (F : C ⥤ D) (R : Dᵒᵖ ⥤ CommRingCat.{u}) :
+@[reducible]
+def pushforward₀ (F : C ⥤ D) (R : Dᵒᵖ ⥤ CommRingCat.{u}) :
     PresheafOfModulesOfCommRing.{v} R ⥤
       PresheafOfModulesOfCommRing.{v} (F.op ⋙ R) :=
   PresheafOfModules.pushforward₀ F (R ⋙ forget₂ _ _)

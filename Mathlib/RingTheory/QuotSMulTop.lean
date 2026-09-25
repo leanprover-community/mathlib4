@@ -33,7 +33,8 @@ variable {R} [CommRing R] (r : R) (M : Type*) {M' M''}
 
 /-- An abbreviation for `M⧸rM` that keeps us from having to write
 `(⊤ : Submodule R M)` over and over to satisfy the typechecker. -/
-abbrev QuotSMulTop := M ⧸ r • (⊤ : Submodule R M)
+@[reducible]
+def QuotSMulTop := M ⧸ r • (⊤ : Submodule R M)
 
 namespace QuotSMulTop
 

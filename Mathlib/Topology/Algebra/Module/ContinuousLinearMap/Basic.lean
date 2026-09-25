@@ -85,7 +85,8 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
 `ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
-abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
+@[reducible]
+def ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
@@ -93,7 +94,8 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
 /-- The *strong dual* of a topological vector space `M` over a ring `R`. This is the space of
 continuous linear functionals and is equipped with the topology of uniform convergence
 on bounded subsets. `StrongDual R M` is an abbreviation for `M →L[R] R`. -/
-abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
+@[reducible]
+def StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R
 
 namespace ContinuousLinearMap

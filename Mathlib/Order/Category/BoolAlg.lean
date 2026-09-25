@@ -64,11 +64,13 @@ instance : ConcreteCategory BoolAlg (BoundedLatticeHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BoolAlg` back into a `BoundedLatticeHom`. -/
-abbrev Hom.hom {X Y : BoolAlg.{u}} (f : Hom X Y) :=
+@[reducible]
+def Hom.hom {X Y : BoolAlg.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := BoolAlg) f
 
 /-- Typecheck a `BoundedLatticeHom` as a morphism in `BoolAlg`. -/
-abbrev ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
+@[reducible]
+def ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := BoolAlg) f
 

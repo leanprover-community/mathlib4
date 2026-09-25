@@ -79,7 +79,8 @@ class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : 
 /-- A morphism of SheafedSpaces is an open immersion if it is an open immersion as a morphism
 of PresheafedSpaces
 -/
-abbrev SheafedSpace.IsOpenImmersion {X Y : SheafedSpace C} (f : X ⟶ Y) : Prop :=
+@[reducible]
+def SheafedSpace.IsOpenImmersion {X Y : SheafedSpace C} (f : X ⟶ Y) : Prop :=
   PresheafedSpace.IsOpenImmersion f.hom
 
 lemma SheafedSpace.isOpenImmersion_iff_hom {X Y : SheafedSpace C} (f : X ⟶ Y) :
@@ -88,7 +89,8 @@ lemma SheafedSpace.isOpenImmersion_iff_hom {X Y : SheafedSpace C} (f : X ⟶ Y) 
 /-- A morphism of LocallyRingedSpaces is an open immersion if it is an open immersion as a morphism
 of SheafedSpaces
 -/
-abbrev LocallyRingedSpace.IsOpenImmersion {X Y : LocallyRingedSpace} (f : X ⟶ Y) : Prop :=
+@[reducible]
+def LocallyRingedSpace.IsOpenImmersion {X Y : LocallyRingedSpace} (f : X ⟶ Y) : Prop :=
   SheafedSpace.IsOpenImmersion f.toShHom
 
 instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) [LocallyRingedSpace.IsOpenImmersion f] :
@@ -105,7 +107,8 @@ section
 variable {X Y : PresheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-abbrev opensFunctor :=
+@[reducible]
+def opensFunctor :=
   H.base_open.functor
 
 set_option backward.defeqAttrib.useBackward true in
@@ -779,7 +782,8 @@ section
 variable {X Y : SheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-abbrev opensFunctor : Opens X ⥤ Opens Y :=
+@[reducible]
+def opensFunctor : Opens X ⥤ Opens Y :=
   H.base_open.functor
 
 #adaptation_note
@@ -1183,7 +1187,8 @@ noncomputable def isoRestrict {X Y : LocallyRingedSpace} (f : X ⟶ Y)
       (PresheafedSpace.IsOpenImmersion.isoRestrict f.1)
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
-abbrev opensFunctor {X Y : LocallyRingedSpace} (f : X ⟶ Y)
+@[reducible]
+def opensFunctor {X Y : LocallyRingedSpace} (f : X ⟶ Y)
     [H : LocallyRingedSpace.IsOpenImmersion f] : Opens X ⥤ Opens Y :=
   H.base_open.functor
 

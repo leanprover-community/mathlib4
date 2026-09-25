@@ -145,9 +145,10 @@ theorem isMulCommutative_closure {k : Set G} (hcomm : k.Pairwise Commute) :
 
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
-@[to_additive (attr := deprecated isMulCommutative_closure +typeChanged (since := "2026-03-10"))
+@[to_additive (attr := reducible)
+(attr := deprecated isMulCommutative_closure +typeChanged (since := "2026-03-10"))
 /-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
-abbrev closureCommGroupOfComm {k : Set G} (hcomm : k.Pairwise Commute) :
+def closureCommGroupOfComm {k : Set G} (hcomm : k.Pairwise Commute) :
     CommGroup (closure k) :=
   have := isMulCommutative_closure hcomm
   inferInstance

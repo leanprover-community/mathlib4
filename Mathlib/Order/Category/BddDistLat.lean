@@ -42,7 +42,8 @@ instance (X : BddDistLat) : DistribLattice X :=
 attribute [instance] BddDistLat.isBoundedOrder
 
 /-- Construct a bundled `BddDistLat` from a `BoundedOrder` `DistribLattice`. -/
-abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
+@[reducible]
+def of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
   carrier := α
 
 open Lean.PrettyPrinter.Delaborator in
@@ -70,11 +71,13 @@ instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddDistLat` back into a `BoundedLatticeHom`. -/
-abbrev Hom.hom {X Y : BddDistLat.{u}} (f : Hom X Y) :=
+@[reducible]
+def Hom.hom {X Y : BddDistLat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := BddDistLat) f
 
 /-- Typecheck a `BoundedLatticeHom` as a morphism in `BddDistLat`. -/
-abbrev ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y] [BoundedOrder Y]
+@[reducible]
+def ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y] [BoundedOrder Y]
     (f : BoundedLatticeHom X Y) :
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := BddDistLat) f

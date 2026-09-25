@@ -28,7 +28,8 @@ universe u
 open TopologicalSpace TopCat CategoryTheory MonoidalCategory
 
 /-- A pair of topological spaces consists of an embedding `f : A ⟶ X` in `TopCat`. -/
-abbrev TopPair :=
+@[reducible]
+def TopPair :=
   MorphismProperty.Arrow TopCat.isEmbedding ⊤ ⊤
 
 namespace TopPair
@@ -36,39 +37,48 @@ namespace TopPair
 variable {X Y : TopPair.{u}}
 
 /-- The first space of the pair -/
-abbrev fst : TopCat.{u} := X.right
+@[reducible]
+def fst : TopCat.{u} := X.right
 
 /-- The second space of the pair -/
-abbrev snd : TopCat.{u} := X.left
+@[reducible]
+def snd : TopCat.{u} := X.left
 
 /-- The embedding of the second into the first space -/
-abbrev map : X.snd ⟶ X.fst := X.hom
+@[reducible]
+def map : X.snd ⟶ X.fst := X.hom
 
 lemma isEmbedding_map (X : TopPair.{u}) : Topology.IsEmbedding X.map := X.prop
 
 /-- Construct a topological pair from its components. -/
-abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair.{u} :=
+@[reducible]
+def of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair.{u} :=
   MorphismProperty.Arrow.mk (P := TopCat.isEmbedding) f h
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
-abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := ↧A)
+@[reducible]
+def ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := ↧A)
   (X := X) (TopCat.ofHom { toFun := Subtype.val }) Topology.IsEmbedding.subtypeVal
 
 /-- Constructs the topological pair `(X, ∅)` from `X : TopCat`. -/
-abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
+@[reducible]
+def ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
   TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
 
 /-- Construct a morphism in `TopPair` from its components. -/
-abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
+@[reducible]
+def ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
   MorphismProperty.Arrow.homMk g f w
 
 variable {X Y Z : TopPair.{u}}
 
 /-- The map between the first spaces -/
-abbrev Hom.fst (f : X ⟶ Y) : X.fst ⟶ Y.fst := f.hom.right
+@[reducible]
+def Hom.fst (f : X ⟶ Y) : X.fst ⟶ Y.fst := f.hom.right
 
 /-- The map between the second spaces -/
-abbrev Hom.snd (f : X ⟶ Y) : X.snd ⟶ Y.snd := f.hom.left
+@[reducible]
+def Hom.snd (f : X ⟶ Y) : X.snd ⟶ Y.snd := f.hom.left
 
 @[reassoc, elementwise]
 lemma Hom.w {X Y : TopPair.{u}} (f : X ⟶ Y) :
@@ -79,12 +89,14 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
+@[reducible]
+def proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
+@[reducible]
+def proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
@@ -96,7 +108,8 @@ def incl : TopCat.{u} ⥤ TopPair.{u} where
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
-abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
+@[reducible]
+def diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
@@ -117,7 +130,8 @@ def proj₁AdjDiag : proj₁ ⊣ diag where
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The unique morphism (X, ∅) ⟶ (X, A) that is the identity on X. -/
-abbrev j (X : TopPair.{u}) : TopPair.incl.obj X.fst ⟶ X :=
+@[reducible]
+def j (X : TopPair.{u}) : TopPair.incl.obj X.fst ⟶ X :=
   TopPair.ofHom (𝟙 _) (TopCat.isInitialPEmpty.to _)
 
 /-- A homotopy of maps between topological pairs is a homotopy on the first space and a homotopy on

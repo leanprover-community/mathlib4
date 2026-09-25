@@ -48,8 +48,9 @@ def EssFiniteType.finset [h : EssFiniteType R S] : Finset S := h.cond.choose
 
 /-- A choice of a subalgebra of finite type in an essentially of finite type algebra, such that
 its localization is the whole ring. -/
+@[reducible]
 noncomputable
-abbrev EssFiniteType.subalgebra [EssFiniteType R S] : Subalgebra R S :=
+def EssFiniteType.subalgebra [EssFiniteType R S] : Subalgebra R S :=
   Algebra.adjoin R (finset R S : Set S)
 
 lemma EssFiniteType.adjoin_mem_finset [EssFiniteType R S] :

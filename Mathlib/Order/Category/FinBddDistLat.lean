@@ -41,7 +41,8 @@ instance (X : FinBddDistLat) : BoundedOrder X :=
 attribute [instance] FinBddDistLat.isFintype
 
 /-- Construct a bundled `FinBddDistLat` from a `Fintype` `BoundedOrder` `DistribLattice`. -/
-abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
+@[reducible]
+def of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
   carrier := α
 
 open Lean.PrettyPrinter.Delaborator in
@@ -50,7 +51,8 @@ open Lean.PrettyPrinter.Delaborator in
 meta def delabOf : Delab := CategoryTheory.delabOf
 
 /-- Construct a bundled `FinBddDistLat` from a `Nonempty` `Fintype` `DistribLattice`. -/
-abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
+@[reducible]
+def of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
   carrier := α
   isBoundedOrder := Fintype.toBoundedOrder α
 
@@ -71,11 +73,13 @@ instance : ConcreteCategory FinBddDistLat (BoundedLatticeHom · ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `FinBddDistLat` back into a `BoundedLatticeHom`. -/
-abbrev Hom.hom {X Y : FinBddDistLat.{u}} (f : Hom X Y) :=
+@[reducible]
+def Hom.hom {X Y : FinBddDistLat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := FinBddDistLat) f
 
 /-- Typecheck a `BoundedLatticeHom` as a morphism in `FinBddDistLat`. -/
-abbrev ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
+@[reducible]
+def ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
     [BoundedOrder Y] [Fintype Y]
     (f : BoundedLatticeHom X Y) :
     of X ⟶ of Y :=

@@ -50,15 +50,18 @@ theorem isLocalRing_eqLocus [IsLocalRing R] (f g : R →+* T) : IsLocalRing (f.e
 
 /-- The subring of pairs `(r, s) : R × S` such that `f r = g s`, i.e.,
   the pullback of `f : R →+* T` and `g : S →+* T` as a subring of `R × S`. -/
-abbrev pullback (f : R →+* T) (g : S →+* T) : Subring (R × S) :=
+@[expose, reducible]
+def pullback (f : R →+* T) (g : S →+* T) : Subring (R × S) :=
   (f.comp (RingHom.fst R S)).eqLocus <| g.comp (RingHom.snd R S)
 
 /-- The first projection from the pullback of `f : R →+* T` and `g : S →+* T` to `R`. -/
-abbrev pullbackFst (f : R →+* T) (g : S →+* T) : f.pullback g →+* R :=
+@[expose, reducible]
+def pullbackFst (f : R →+* T) (g : S →+* T) : f.pullback g →+* R :=
   (RingHom.fst R S).comp (RingHom.pullback f g).subtype
 
 /-- The second projection from the pullback of `f : R →+* T` and `g : S →+* T` to `S`. -/
-abbrev pullbackSnd (f : R →+* T) (g : S →+* T) : f.pullback g →+* S :=
+@[expose, reducible]
+def pullbackSnd (f : R →+* T) (g : S →+* T) : f.pullback g →+* S :=
   (RingHom.snd R S).comp (f.pullback g).subtype
 
 theorem pullback_comm_sq (f : R →+* T) (g : S →+* T) :
@@ -113,15 +116,18 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 /-- The subalgebra of pairs `(a, b) : A × B` such that `f a = g b`, i.e.,
   the pullback of f and g as a subalgebra of A × B. -/
-abbrev pullback (f : A →ₐ[R] C) (g : B →ₐ[R] C) : Subalgebra R (A × B) := equalizer
+@[reducible]
+def pullback (f : A →ₐ[R] C) (g : B →ₐ[R] C) : Subalgebra R (A × B) := equalizer
   (f.comp (fst R A B)) (g.comp (snd R A B))
 
 /-- The first projection from the pullback of `f` and `g` to `A`. -/
-abbrev pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] A :=
+@[reducible]
+def pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] A :=
   (fst R A B).comp (pullback f g).val
 
 /-- The second projection from the pullback of `f` and `g` to `B`. -/
-abbrev pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
+@[reducible]
+def pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
   (snd R A B).comp (pullback f g).val
 
 theorem pullback_comm_sq (f : A →ₐ[R] C) (g : B →ₐ[R] C) :

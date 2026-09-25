@@ -45,12 +45,14 @@ universe u v u' v' u'' v''
 variable {V : Type u} [Quiver.{v} V]
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
-abbrev Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
+@[reducible]
+def Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom X Y :=
   f.toPos.toPath
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
-abbrev Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
+@[reducible]
+def Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom Y X :=
   f.toNeg.toPath
 

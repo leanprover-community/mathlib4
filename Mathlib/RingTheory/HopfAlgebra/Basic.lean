@@ -153,7 +153,8 @@ variable {R A : Type*}
 open Coalgebra WithConv LinearMap
 
 /-- Upgrade a bialgebra to a Hopf algebra by specifying a convolution inverse of the identity. -/
-abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
+@[expose, reducible]
+def ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
     (antipode : A →ₗ[R] A)
     (antipode_convMul_id : toConv antipode * toConv LinearMap.id = 1)
     (id_convMul_antipode : toConv LinearMap.id * toConv antipode = 1) :
@@ -164,7 +165,8 @@ abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 /-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
 with appropriate conditions. -/
-abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
+@[expose, reducible]
+def ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
     (antipode : A →ₐ[R] A)
     (mul_antipode_rTensor_comul :
       ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ Commute.all _).comp

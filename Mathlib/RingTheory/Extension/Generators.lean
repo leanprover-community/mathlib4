@@ -80,9 +80,9 @@ variable (P : Generators R S ι)
 
 set_option linter.unusedVariables false in
 /-- The polynomial ring w.r.t. a family of generators. -/
-@[nolint unusedArguments]
+@[reducible, nolint unusedArguments]
 protected
-abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
+def Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 
 instance : Algebra P.Ring S := P.algebra
 

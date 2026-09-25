@@ -18,7 +18,8 @@ namespace Set
 variable {α : Type*} {s t u : Set α}
 
 /-- `inclusion` is the "identity" function between two subsets `s` and `t`, where `s ⊆ t` -/
-abbrev inclusion (h : s ⊆ t) : s → t := fun x ↦ ⟨x, h x.prop⟩
+@[expose, reducible]
+def inclusion (h : s ⊆ t) : s → t := fun x ↦ ⟨x, h x.prop⟩
 
 theorem inclusion_self (x : s) : inclusion Subset.rfl x = x :=
   rfl

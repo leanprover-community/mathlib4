@@ -45,11 +45,13 @@ end AddCircle
 section UnitAddCircle
 
 /-- The unit circle `ℝ ⧸ ℤ`. -/
-abbrev UnitAddCircle :=
+@[reducible]
+def UnitAddCircle :=
   AddCircle (1 : ℝ)
 
 /-- The product indexed by `d` of copies of the unit circle. -/
-abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
+@[reducible]
+def UnitAddTorus (d : Type*) := d → UnitAddCircle
 
 end UnitAddCircle
 

@@ -72,7 +72,8 @@ $$x_i = \sum_j a_{ij} y_j$$
 and for all $j$,
 $$\sum_i f_i a_{ij} = 0.$$
 By `Module.sum_smul_eq_zero_of_isTrivialRelation`, this condition implies $\sum_i f_i x_i = 0$. -/
-abbrev IsTrivialRelation : Prop :=
+@[expose, reducible]
+def IsTrivialRelation : Prop :=
   ∃ (k : ℕ) (a : ι → Fin k → R) (y : Fin k → M),
     (∀ i, x i = ∑ j, a i j • y j) ∧ ∀ j, ∑ i, f i * a i j = 0
 

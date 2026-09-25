@@ -146,8 +146,8 @@ class IsDirected (α : Sort*) (r : α → α → Prop) : Prop where
   directed (a b : α) : ∃ c, r a c ∧ r b c
 
 /-- A class for an `IsDirected` relation `≤`. -/
-@[to_dual /-- A class for an `IsDirected` relation `≥`. -/]
-abbrev IsDirectedOrder (α : Type*) [LE α] : Prop := IsDirected α (· ≤ ·)
+@[to_dual (attr := reducible) /-- A class for an `IsDirected` relation `≥`. -/]
+def IsDirectedOrder (α : Type*) [LE α] : Prop := IsDirected α (· ≤ ·)
 
 theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
   IsDirected.directed _ _

@@ -255,8 +255,9 @@ Dirichlet's Theorem. On `re s > 1`, it agrees with the L-series of the von Mango
 function restricted to the residue class `a : ZMod q` minus the principal part
 `(q.totient)⁻¹/(s-1)` of the pole at `s = 1`;
 see `ArithmeticFunction.vonMangoldt.eqOn_LFunctionResidueClassAux`. -/
+@[reducible]
 noncomputable
-abbrev LFunctionResidueClassAux (s : ℂ) : ℂ :=
+def LFunctionResidueClassAux (s : ℂ) : ℂ :=
   (q.totient : ℂ)⁻¹ * (-deriv (LFunctionTrivChar₁ q) s / LFunctionTrivChar₁ q s -
     ∑ χ ∈ ({1}ᶜ : Finset (DirichletCharacter ℂ q)), χ a⁻¹ * deriv (LFunction χ) s / LFunction χ s)
 

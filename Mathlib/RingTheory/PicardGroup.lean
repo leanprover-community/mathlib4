@@ -441,7 +441,8 @@ namespace CommRing.Pic
 
 variable {R} in
 /-- A representative of an element in the Picard group. -/
-abbrev AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
+@[reducible]
+def AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
 
 noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 

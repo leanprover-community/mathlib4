@@ -49,8 +49,9 @@ variable {R : Type*} [Semiring R] (v : R → ℝ) (c : ℝ) (f : PowerSeries R)
 
 /-- Given a power series `f` in, a function `v : R → ℝ` and a real number `c`, the Gauss norm is
   defined as the supremum of the set of all values of `v (coeff t f) * c ^ t` for all `t : ℕ`. -/
+@[expose, reducible]
 noncomputable
-abbrev gaussNorm : ℝ := MvPowerSeries.gaussNorm v (fun _ => c) f
+def gaussNorm : ℝ := MvPowerSeries.gaussNorm v (fun _ => c) f
 
 lemma gaussNorm_eq : gaussNorm v c f = ⨆ i : ℕ, v (f.coeff i) * c ^ i := by
   refine Equiv.iSup_congr (Finsupp.uniqueEquiv ()) ?_
@@ -60,7 +61,8 @@ lemma gaussNorm_eq : gaussNorm v c f = ⨆ i : ℕ, v (f.coeff i) * c ^ i := by
 
 /-- We say `f` HasGaussNorm if the values `v (coeff t f) * c ^ t` is bounded above, that is
   `gaussNormC f` is finite. -/
-abbrev HasGaussNorm := BddAbove (Set.range (fun (t : ℕ) ↦ (v (coeff t f) * c ^ t)))
+@[expose, reducible]
+def HasGaussNorm := BddAbove (Set.range (fun (t : ℕ) ↦ (v (coeff t f) * c ^ t)))
 
 lemma HasGaussNorm.hasMvGaussNorm (h : HasGaussNorm v c f) :
     MvPowerSeries.HasGaussNorm v (fun _ ↦ c) f := by

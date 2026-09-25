@@ -112,14 +112,16 @@ variable (S)
 
 /-- The short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
+@[reducible]
+def sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
     ShortComplex C :=
   ShortComplex.mk (S.map' i j) (S.map' j k) (hS.zero' i j k)
 
 /-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
 when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+@[reducible]
+def sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
     ShortComplex C :=
   S.sc' hS i (i + 1) (i + 2)
 
@@ -138,14 +140,16 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
 
 /-- The (exact) short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` is exact. -/
-abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by lia)
+@[reducible]
+def Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by lia)
     (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
     ShortComplex C :=
   S.sc' hS.toIsComplex i j k
 
 /-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
 when we know that `S : ComposableArrows C n` is exact. -/
-abbrev Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by lia) :
+@[reducible]
+def Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by lia) :
     ShortComplex C :=
   S.sc' hS.toIsComplex i (i + 1) (i + 2)
 

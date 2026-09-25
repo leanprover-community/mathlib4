@@ -71,12 +71,12 @@ namespace Walk
 variable {G}
 
 /-- Pattern to get `Walk.nil` with the vertex as an explicit argument. -/
-@[match_pattern]
-abbrev nil' (u : V) : G.Walk u u := Walk.nil
+@[reducible, match_pattern]
+def nil' (u : V) : G.Walk u u := Walk.nil
 
 /-- Pattern to get `Walk.cons` with the vertices as explicit arguments. -/
-@[match_pattern]
-abbrev cons' (u v w : V) (h : G.Adj u v) (p : G.Walk v w) : G.Walk u w := Walk.cons h p
+@[reducible, match_pattern]
+def cons' (u v w : V) (h : G.Adj u v) (p : G.Walk v w) : G.Walk u w := Walk.cons h p
 
 theorem exists_eq_cons_of_ne {u v : V} (hne : u ≠ v) :
     ∀ (p : G.Walk u v), ∃ (w : V) (h : G.Adj u w) (p' : G.Walk w v), p = cons h p'

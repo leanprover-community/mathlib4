@@ -724,7 +724,8 @@ variable {R}
 /-- A version of `Set.SeparatesPoints` for subalgebras of the continuous functions,
 used for stating the Stone-Weierstrass theorem.
 -/
-abbrev Subalgebra.SeparatesPoints (s : Subalgebra R C(α, A)) : Prop :=
+@[reducible]
+def Subalgebra.SeparatesPoints (s : Subalgebra R C(α, A)) : Prop :=
   Set.SeparatesPoints ((fun f : C(α, A) => (f : α → A)) '' (s : Set C(α, A)))
 
 theorem Subalgebra.separatesPoints_monotone :

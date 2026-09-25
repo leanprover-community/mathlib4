@@ -237,7 +237,8 @@ The type of monic polynomials of degree `n`.
 The implementation is slightly different because it is useful to still contain `X ^ n` when
 `R` is trivial. See `MonicDegreeEq.mk` for the usual constructor.
 -/
-abbrev MonicDegreeEq : Type _ := { p : R[X] // p.coeff n = 1 ∧ ∀ i > n, p.coeff i = 0 }
+@[reducible]
+def MonicDegreeEq : Type _ := { p : R[X] // p.coeff n = 1 ∧ ∀ i > n, p.coeff i = 0 }
 
 @[simp]
 lemma MonicDegreeEq.natDegree [Nontrivial R] (p : MonicDegreeEq R n) :

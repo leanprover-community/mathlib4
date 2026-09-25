@@ -93,7 +93,8 @@ lemma ici_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (Ici x) wh
     exact le_trans (hc hy) (le_cSup _ _ hy)
 
 /-- The bottom admissible set with base point `x` and inflationary function `f` -/
-abbrev bot (x : α) (f : α → α) : Set α := ⋂₀ {s | IsAdmissible x f s}
+@[reducible]
+def bot (x : α) (f : α → α) : Set α := ⋂₀ {s | IsAdmissible x f s}
 
 lemma bot_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (bot x f) where
   base_isLeast := by

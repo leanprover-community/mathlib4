@@ -119,7 +119,8 @@ theorem ball_infty_of_pos {r : ENNReal} (hr : 0 < r) :
 
 /-- If `some : α → Option α` is an open embedding and `α` is has a weak pseudo extended metric
 structure, the structure extends naturally to `Option α`. -/
-abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
+@[reducible]
+def WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakPseudoEMetricSpace α] [inst : EDist (Option α)]
     (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakPseudoEMetricSpace (Option α) where
@@ -164,7 +165,8 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
 
 /-- If `some : α → Option α` is an open embedding and `α` is has a weak pseudo extended metric
 structure, the structure extends naturally to `Option α`. -/
-abbrev WeakEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
+@[reducible]
+def WeakEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSpace α]
     [TopologicalSpace (Option α)] [m : WeakEMetricSpace α] [inst : EDist (Option α)]
     (h_edist : inst = Option.toEDist) (h : IsOpenEmbedding (some (α := α))) :
     WeakEMetricSpace (Option α) :=

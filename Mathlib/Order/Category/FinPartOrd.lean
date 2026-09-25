@@ -44,7 +44,8 @@ instance (X : FinPartOrd) : PartialOrder X :=
 attribute [instance] FinPartOrd.isFintype
 
 /-- Construct a bundled `FinPartOrd` from `PartialOrder` + `Fintype`. -/
-abbrev of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd where
+@[reducible]
+def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd where
   carrier := α
 
 open Lean.PrettyPrinter.Delaborator in
@@ -69,7 +70,8 @@ instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
   forget₂.map f := FintypeCat.homMk f.hom
 
 /-- Typecheck a `OrderHom` as a morphism in `FinPartOrd`. -/
-abbrev ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y] (f : X →o Y) :
+@[reducible]
+def ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y] (f : X →o Y) :
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := FinPartOrd) f
 

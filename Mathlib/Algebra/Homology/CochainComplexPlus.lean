@@ -39,7 +39,8 @@ instance [HasZeroMorphisms C] : (CochainComplex.plus C).IsClosedUnderIsomorphism
     exact ⟨n, isStrictlyGE_of_iso e n⟩
 
 /-- The full subcategory of `CochainComplex C ℤ` consisting of bounded below complexes. -/
-abbrev Plus [HasZeroMorphisms C] :=
+@[reducible]
+def Plus [HasZeroMorphisms C] :=
   (CochainComplex.plus C).FullSubcategory
 
 namespace Plus
@@ -49,7 +50,8 @@ section
 variable [HasZeroMorphisms C]
 
 /-- The inclusion of the full subcategory of bounded below cochain complexes. -/
-abbrev ι : Plus C ⥤ CochainComplex C ℤ := ObjectProperty.ι _
+@[reducible]
+def ι : Plus C ⥤ CochainComplex C ℤ := ObjectProperty.ι _
 
 /-- The inclusion of the full subcategory of bounded below cochain complexes
 is fully faithful. -/

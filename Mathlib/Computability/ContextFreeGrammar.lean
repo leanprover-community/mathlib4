@@ -125,7 +125,8 @@ def Produces (g : ContextFreeGrammar T) (u v : List (Symbol T g.NT)) : Prop :=
 
 /-- Given a context-free grammar `g` and strings `u` and `v`
 `g.Derives u v` means that `g` can transform `u` to `v` in some number of rewriting steps. -/
-abbrev Derives (g : ContextFreeGrammar T) :
+@[reducible]
+def Derives (g : ContextFreeGrammar T) :
     List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
   Relation.ReflTransGen g.Produces
 

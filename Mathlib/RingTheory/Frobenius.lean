@@ -180,7 +180,8 @@ variable (R) in
 Suppose `S` is an `R` algebra, `M` is a monoid acting on `S` whose action is trivial on `R`
 `σ : M` is an (arithmetic) Frobenius at an ideal `Q` of `S` if `σ • x ≡ x ^ q (mod Q)` for all `x`.
 -/
-abbrev IsArithFrobAt {M : Type*} [Monoid M] [MulSemiringAction M S] [SMulCommClass M R S]
+@[reducible]
+def IsArithFrobAt {M : Type*} [Monoid M] [MulSemiringAction M S] [SMulCommClass M R S]
     (σ : M) (Q : Ideal S) : Prop :=
   (MulSemiringAction.toAlgHom R S σ).IsArithFrobAt Q
 

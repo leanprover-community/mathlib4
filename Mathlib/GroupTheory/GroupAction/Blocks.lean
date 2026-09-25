@@ -592,9 +592,9 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
       exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
 
 /-- The type of blocks for a group action containing a given element -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- The type of blocks for an additive group action containing a given element -/]
-abbrev BlockMem (a : X) : Type _ := {B : Set X // a ∈ B ∧ IsBlock G B}
+def BlockMem (a : X) : Type _ := {B : Set X // a ∈ B ∧ IsBlock G B}
 
 namespace BlockMem
 

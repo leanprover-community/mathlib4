@@ -51,7 +51,8 @@ variable {A : Type*} [CommRing A] (K : Type*)
 -- TODO: this was recently generalized from `CommRing` to `CommSemiring`, but all lemmas below are
 -- still stated for `CommRing`. Generalize these lemmas where it is appropriate.
 /-- `IsFractionRing R K` states `K` is the ring of fractions of a commutative ring `R`. -/
-abbrev IsFractionRing (R : Type*) [CommSemiring R] (K : Type*) [CommSemiring K] [Algebra R K] :=
+@[reducible]
+def IsFractionRing (R : Type*) [CommSemiring R] (K : Type*) [CommSemiring K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 
 instance {R : Type*} [Field R] : IsFractionRing R R :=
@@ -728,7 +729,8 @@ commutative ring `R` is an integral domain only when this is needed for proving.
 
 In this generality, this construction is also known as the *total fraction ring* of `R`.
 -/
-abbrev FractionRing :=
+@[reducible]
+def FractionRing :=
   Localization (nonZeroDivisors R)
 
 namespace FractionRing

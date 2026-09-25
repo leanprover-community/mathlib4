@@ -48,7 +48,8 @@ variable {A B X Y : CochainComplex C ℤ}
   (hK : IsLimit (KernelFork.ofι _ hι))
 
 /-- The `0`-cochain from `B` to `X` given by the degreewise liftings. -/
-abbrev cochain₀ : Cochain B X 0 := Cochain.ofHoms (fun n ↦ (hsq n).l)
+@[reducible]
+def cochain₀ : Cochain B X 0 := Cochain.ofHoms (fun n ↦ (hsq n).l)
 
 /-- A `1`-cocycle from `B` to `X` obtained as the boundary of
 the `0`-cochain `cochain₀ sq hsq` consisting of the degreewise liftings.

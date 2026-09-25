@@ -211,7 +211,8 @@ def ForgetEnrichment.equiv {D : Type u''} [Category.{v''} D] [EnrichedOrdinaryCa
     (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V X)) (by simp)
 
 /-- enriched coyoneda functor `(X ⟶[V] _) : C ⥤ V`. -/
-abbrev eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
+@[reducible]
+def eCoyoneda (X : C) := (eHomFunctor V C).obj (op X)
 
 section TransportEnrichment
 

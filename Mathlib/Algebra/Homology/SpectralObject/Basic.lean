@@ -138,7 +138,8 @@ lemma exact₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
 /-- The (exact) sequence
 `H^n₀(f) ⟶ H^n₀(fg) ⟶ H^n₀(g) ⟶ H^n₁(f) ⟶ H^n₁(fg) ⟶ H^n₁(g)`
 of a spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
-abbrev composableArrows₅ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
+@[reducible]
+def composableArrows₅ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ComposableArrows C 5 :=
   mk₅ ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ((X.H n₀).map (twoδ₁Toδ₀ f g fg h))
     (X.δ f g n₀ n₁ hn₁) ((X.H n₁).map (twoδ₂Toδ₁ f g fg h))

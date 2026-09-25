@@ -53,7 +53,8 @@ attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
 /-- Two finite-dimensional central simple algebras `A` and `B` are Brauer equivalent
   if there exist `n, m ∈ ℕ+` such that `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
-abbrev IsBrauerEquivalent (A B : CSA K) : Prop :=
+@[reducible]
+def IsBrauerEquivalent (A B : CSA K) : Prop :=
   ∃ n m : ℕ, n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <| Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
 
 namespace IsBrauerEquivalent
@@ -96,4 +97,5 @@ def Brauer.CSA_Setoid : Setoid (CSA K) where
 
 /-- `BrauerGroup` is the set of all finite-dimensional central simple algebras quotient
   by Brauer Equivalence. -/
-abbrev BrauerGroup := Quotient (Brauer.CSA_Setoid K)
+@[reducible]
+def BrauerGroup := Quotient (Brauer.CSA_Setoid K)

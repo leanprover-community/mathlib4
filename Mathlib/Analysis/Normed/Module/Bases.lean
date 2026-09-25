@@ -118,7 +118,8 @@ variable {β : Type*}
 variable {L : SummationFilter β}
 
 /-- A classical Schauder basis indexed by `ℕ` with conditional convergence. -/
-abbrev SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
+@[reducible]
+def SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis ℕ 𝕜 X (SummationFilter.conditional ℕ)
 
@@ -134,7 +135,8 @@ set, convergence is necessarily unconditional.
 This structure generalizes the classical Schauder basis by replacing sequential
 convergence with summability over the directed set of finite subsets.
 -/
-abbrev UnconditionalSchauderBasis (β : Type*)
+@[reducible]
+def UnconditionalSchauderBasis (β : Type*)
     (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis β 𝕜 X (SummationFilter.unconditional β)
 

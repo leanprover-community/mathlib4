@@ -50,7 +50,8 @@ instance : ConcreteCategory.{u} Sequential.{u} (C(·, ·)) :=
 variable (X : Type u) [TopologicalSpace X] [SequentialSpace X]
 
 /-- Constructor for objects of the category `Sequential`. -/
-abbrev of : Sequential.{u} where
+@[reducible]
+def of : Sequential.{u} where
   toTop := ↧X
   is_sequential := ‹_›
 

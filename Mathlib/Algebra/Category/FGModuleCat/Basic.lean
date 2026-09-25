@@ -54,7 +54,8 @@ lemma ModuleCat.isFG_iff (V : ModuleCat.{v} R) :
     isFG R V ↔ Module.Finite R V := Iff.rfl
 
 /-- The category of finitely generated modules. -/
-abbrev FGModuleCat := (ModuleCat.isFG.{v} R).FullSubcategory
+@[reducible]
+def FGModuleCat := (ModuleCat.isFG.{v} R).FullSubcategory
 
 variable {R}
 
@@ -89,7 +90,8 @@ instance : Inhabited (FGModuleCat.{v} R) :=
   ⟨⟨↧PUnit, by unfold ModuleCat.isFG; infer_instance⟩⟩
 
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
-abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
+@[reducible]
+def of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModuleCat R :=
   ⟨↧V, inferInstanceAs <| Module.Finite R V⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -103,7 +105,8 @@ lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] 
 
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
-abbrev ofHom {V W : Type v} [AddCommGroup V] [Module R V] [Module.Finite R V]
+@[reducible]
+def ofHom {V W : Type v} [AddCommGroup V] [Module R V] [Module.Finite R V]
     [AddCommGroup W] [Module R W] [Module.Finite R W]
     (f : V →ₗ[R] W) : of R V ⟶ of R W :=
   ConcreteCategory.ofHom f

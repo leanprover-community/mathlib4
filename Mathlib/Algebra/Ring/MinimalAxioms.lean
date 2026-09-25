@@ -30,7 +30,8 @@ universe u
 /-- Define a `Ring` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
 See note [reducible non-instances]. -/
-abbrev Ring.ofMinimalAxioms {R : Type u}
+@[expose, reducible]
+def Ring.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))
     (zero_add : ∀ a : R, 0 + a = a)
@@ -74,7 +75,8 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
 /-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
 See note [reducible non-instances]. -/
-abbrev CommRing.ofMinimalAxioms {R : Type u}
+@[expose, reducible]
+def CommRing.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))
     (zero_add : ∀ a : R, 0 + a = a)

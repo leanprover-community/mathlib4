@@ -42,7 +42,8 @@ variable (R)
 
 See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
 -/
-abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+@[reducible]
+def Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
@@ -54,7 +55,8 @@ variable {R} (M)
 /-- Compose a `Module` with a `RingHom`, with action `f s • m`.
 
 See note [reducible non-instances]. -/
-abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
+@[reducible]
+def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
   { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
     -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
@@ -67,7 +69,8 @@ end AddCommMonoid
 
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
 See note [reducible non-instances]. -/
-abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
+@[reducible]
+def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 
 lemma RingHom.toModule_smul [Semiring R] [Semiring S] (f : R →+* S) (x : R) (y : S) :

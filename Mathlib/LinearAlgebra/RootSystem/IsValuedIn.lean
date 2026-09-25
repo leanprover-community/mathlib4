@@ -57,7 +57,8 @@ protected alias exists_value := IsValuedIn.exists_value
 
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
-abbrev IsCrystallographic := P.IsValuedIn ℤ
+@[reducible]
+def IsCrystallographic := P.IsValuedIn ℤ
 
 instance : P.IsValuedIn R where
   exists_value i j := by simp
@@ -163,10 +164,12 @@ lemma root'_apply_apply_mem_of_mem_span [Module S N] [IsScalarTower S R N] [P.Is
   P.flip.coroot'_apply_apply_mem_of_mem_span S hx i
 
 /-- The `S`-span of roots. -/
-abbrev rootSpan [Module S M] := span S (range P.root)
+@[reducible]
+def rootSpan [Module S M] := span S (range P.root)
 
 /-- The `S`-span of coroots. -/
-abbrev corootSpan [Module S N] := span S (range P.coroot)
+@[reducible]
+def corootSpan [Module S N] := span S (range P.coroot)
 
 instance [Module S M] [Finite ι] :
     Module.Finite S <| P.rootSpan S :=
@@ -177,11 +180,13 @@ instance [Module S N] [Finite ι] :
   Finite.span_of_finite S <| finite_range _
 
 /-- A root, seen as an element of the span of roots. -/
-abbrev rootSpanMem [Module S M] (i : ι) : P.rootSpan S :=
+@[reducible]
+def rootSpanMem [Module S M] (i : ι) : P.rootSpan S :=
   ⟨P.root i, Submodule.subset_span (mem_range_self i)⟩
 
 /-- A coroot, seen as an element of the span of coroots. -/
-abbrev corootSpanMem [Module S N] (i : ι) : P.corootSpan S :=
+@[reducible]
+def corootSpanMem [Module S N] (i : ι) : P.corootSpan S :=
   ⟨P.coroot i, Submodule.subset_span (mem_range_self i)⟩
 
 omit [Algebra S R] in

@@ -125,7 +125,8 @@ class HasDifferentials : Prop where
 
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ R`,
 this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/
-abbrev Derivation' : Type _ := M.Derivation (F := 𝟭 D) φ'
+@[reducible]
+def Derivation' : Type _ := M.Derivation (F := 𝟭 D) φ'
 
 namespace Derivation'
 

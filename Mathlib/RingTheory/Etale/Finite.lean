@@ -43,19 +43,23 @@ variable (R : Type u) [CommRing R] (k : Type u) [Field k]
 section
 
 /-- The object property of finite `R`-algebras. -/
-abbrev finite : ObjectProperty (CommAlgCat.{v} R) :=
+@[expose, reducible]
+def finite : ObjectProperty (CommAlgCat.{v} R) :=
   fun S ↦ Module.Finite R S
 
 /-- The object property of étale `R`-algebras. -/
-abbrev etale : ObjectProperty (CommAlgCat.{v} R) :=
+@[expose, reducible]
+def etale : ObjectProperty (CommAlgCat.{v} R) :=
   fun S ↦ Algebra.Etale R S
 
 /-- The object property of finite étale `R`-algebras. -/
-abbrev finiteEtale : ObjectProperty (CommAlgCat.{v} R) :=
+@[expose, reducible]
+def finiteEtale : ObjectProperty (CommAlgCat.{v} R) :=
   finite R ⊓ etale R
 
 /-- The category of finite étale `R`-algebras. -/
-abbrev FiniteEtale (R : Type u) [CommRing R] : Type _ :=
+@[expose, reducible]
+def FiniteEtale (R : Type u) [CommRing R] : Type _ :=
   (finiteEtale.{v} R).FullSubcategory
 
 instance : CoeSort (FiniteEtale.{v} R) (Type v) := ⟨fun R ↦ R.obj⟩
@@ -67,8 +71,8 @@ instance (S : FiniteEtale.{v} R) : Module.Finite R S :=
   S.property.left
 
 /-- Construct a term of `FiniteEtale R` from a finite étale `R`-algebra. -/
-@[simps obj]
-abbrev FiniteEtale.of (S : Type v) [CommRing S] [Algebra R S]
+@[expose, reducible, simps obj]
+def FiniteEtale.of (S : Type v) [CommRing S] [Algebra R S]
     [Module.Finite R S] [Algebra.Etale R S] :
     FiniteEtale.{v} R where
   obj := ↧S
@@ -77,15 +81,16 @@ abbrev FiniteEtale.of (S : Type v) [CommRing S] [Algebra R S]
 variable {R}
 
 /-- Construct a morphism in `FiniteEtale R` from an algebra map. -/
-@[simps]
-abbrev FiniteEtale.ofHom {S T : Type v} [CommRing S] [CommRing T]
+@[expose, reducible, simps]
+def FiniteEtale.ofHom {S T : Type v} [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Module.Finite R S] [Algebra.Etale R S] [Module.Finite R T]
     [Algebra.Etale R T] (f : S →ₐ[R] T) :
     FiniteEtale.of R S ⟶ FiniteEtale.of R T where
   hom := CommAlgCat.ofHom f
 
 /-- Construct an isomorphism in `FiniteEtale R` from an algebra equivalence. -/
-abbrev FiniteEtale.isoMk {S T : FiniteEtale R} (e : S.obj ≃ₐ[R] T.obj) :
+@[expose, reducible]
+def FiniteEtale.isoMk {S T : FiniteEtale R} (e : S.obj ≃ₐ[R] T.obj) :
     S ≅ T :=
   ObjectProperty.isoMk _ (CommAlgCat.isoMk e)
 

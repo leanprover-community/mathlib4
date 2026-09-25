@@ -58,7 +58,8 @@ variable (R E) in
 /-- A proper cone is a pointed cone `C` that is closed. Proper cones have the nice property that
 they are equal to their double dual, see `ProperCone.dual_dual`.
 This makes them useful for defining cone programs and proving duality theorems. -/
-abbrev ProperCone := ClosedSubmodule R≥0 E
+@[reducible]
+def ProperCone := ClosedSubmodule R≥0 E
 
 namespace ProperCone
 section Module
@@ -107,7 +108,8 @@ end T1Space
 
 /-- The closure of image of a proper cone under an `R`-linear map is a proper cone. We
 use continuous maps here so that the comap of f is also a map between proper cones. -/
-abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
+@[reducible]
+def comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
   ClosedSubmodule.comap (f.restrictScalars R≥0) C
 
 @[simp] lemma comap_id (C : ProperCone R F) : C.comap (.id _ _) = C := rfl
@@ -124,7 +126,8 @@ variable [ContinuousAdd F] [ContinuousConstSMul R F]
 /-- The closure of image of a proper cone under a linear map is a proper cone.
 
 We use continuous maps here to match `ProperCone.comap`. -/
-abbrev map (f : E →L[R] F) (C : ProperCone R E) : ProperCone R F :=
+@[reducible]
+def map (f : E →L[R] F) (C : ProperCone R E) : ProperCone R F :=
   ClosedSubmodule.map (f.restrictScalars R≥0) C
 
 @[simp] lemma map_id (C : ProperCone R F) : C.map (.id _ _) = C := ClosedSubmodule.map_id _

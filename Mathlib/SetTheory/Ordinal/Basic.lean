@@ -631,7 +631,8 @@ Ordinal.ToType.mk : Iio o → o.ToType
 Ordinal.ToType.toOrd : o.ToType → Iio o
 ```
 -/
-abbrev ToType (o : Ordinal.{u}) : Type u :=
+@[reducible]
+def ToType (o : Ordinal.{u}) : Type u :=
   Shrink (Iio o)
 
 instance _root_.hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=

@@ -186,7 +186,8 @@ theorem continuousAt_toIocMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIocMod
 end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ ℤ ∙ p`. See also `Circle` and `Real.Angle`. -/
-abbrev AddCircle [AddCommGroup 𝕜] (p : 𝕜) :=
+@[reducible]
+def AddCircle [AddCommGroup 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 
 namespace AddCircle

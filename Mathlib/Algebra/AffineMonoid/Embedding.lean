@@ -33,7 +33,8 @@ namespace AffineAddMonoid
 
 variable (M) in
 /-- The dimension of an affine monoid `M`, namely the minimum `n` for which `M` embeds into `ℤⁿ`. -/
-noncomputable abbrev dim := Module.finrank ℤ <| GrothendieckAddGroup M
+@[expose, reducible]
+noncomputable def dim := Module.finrank ℤ <| GrothendieckAddGroup M
 
 variable (M) in
 /-- An arbitrary embedding of an affine monoid `M` into `ℤ ^ dim M`. -/

@@ -328,11 +328,12 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
-@[wikidata Q45715]
-abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
+@[reducible, wikidata Q45715]
+def completeGraph (V : Type u) : SimpleGraph V := ⊤
 
 /-- The graph with no edges on a given vertex type `V`. -/
-abbrev emptyGraph (V : Type u) : SimpleGraph V := ⊥
+@[reducible]
+def emptyGraph (V : Type u) : SimpleGraph V := ⊥
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -480,7 +481,8 @@ def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
 
 /-- `G.edgeSet` is the edge set for `G`.
 This is an abbreviation for `edgeSetEmbedding G` that permits dot notation. -/
-abbrev edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
+@[reducible]
+def edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
 
 @[simp]
 theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=

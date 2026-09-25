@@ -535,7 +535,8 @@ theorem toLinearEquiv_injective : Function.Injective (toLinearEquiv : _ → A₁
   fun _ _ h => ext <| LinearEquiv.congr_fun h
 
 /-- Interpret an algebra equivalence as a linear map. -/
-abbrev toLinearMap : A₁ →ₗ[R] A₂ :=
+@[reducible]
+def toLinearMap : A₁ →ₗ[R] A₂ :=
   e.toLinearEquiv
 
 @[simp]

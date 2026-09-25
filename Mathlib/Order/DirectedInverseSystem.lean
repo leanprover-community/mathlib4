@@ -110,7 +110,8 @@ theorem r_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) : (setoid f).r x ⟨i, 
 
 variable (F) in
 /-- The direct limit of a directed system. -/
-abbrev _root_.DirectLimit : Type _ := Quotient (setoid f)
+@[reducible]
+def _root_.DirectLimit : Type _ := Quotient (setoid f)
 
 variable {f} in
 theorem eq_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) :
@@ -275,10 +276,12 @@ def limit (i : ι) : Set (∀ l : Iio i, F l) :=
 
 /-- For a family of types `X` indexed by a preorder `ι` and an element `i : ι`,
 `piLT X i` is the product of all the types indexed by elements below `i`. -/
-abbrev piLT (X : ι → Type*) (i : ι) := ∀ l : Iio i, X l
+@[reducible]
+def piLT (X : ι → Type*) (i : ι) := ∀ l : Iio i, X l
 
 /-- The projection from a Pi type to the Pi type over an initial segment of its indexing type. -/
-abbrev piLTProj (f : piLT X j) : piLT X i := fun l ↦ f ⟨l, l.2.trans_le h⟩
+@[reducible]
+def piLTProj (f : piLT X j) : piLT X i := fun l ↦ f ⟨l, l.2.trans_le h⟩
 
 theorem piLTProj_intro {l : Iio j} {f : piLT X j} (hl : l < i) :
     f l = piLTProj h f ⟨l, hl⟩ := rfl

@@ -108,7 +108,8 @@ end GeneralLinearGroup
 section RowEquivalent
 
 /-- Row-equivalence via the left action of `GL m R` on `Matrix m n R`. -/
-abbrev RowEquivalent (A B : Matrix m n R) : Prop :=
+@[reducible]
+def RowEquivalent (A B : Matrix m n R) : Prop :=
   B ∈ MulAction.orbit (GL m R) A
 
 lemma rowEquivalent_iff_associated_op_op {A B : Matrix m m R} :

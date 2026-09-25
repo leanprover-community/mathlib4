@@ -40,19 +40,22 @@ def cofibrantObjects : ObjectProperty C := IsCofibrant
 
 variable (C) in
 /-- The full subcategory of cofibrant objects. -/
-abbrev CofibrantObject : Type u := (cofibrantObjects C).FullSubcategory
+@[reducible]
+def CofibrantObject : Type u := (cofibrantObjects C).FullSubcategory
 
 namespace CofibrantObject
 
 /-- Constructor for `CofibrantObject C`. -/
-abbrev mk (X : C) [IsCofibrant X] : CofibrantObject C :=
+@[reducible]
+def mk (X : C) [IsCofibrant X] : CofibrantObject C :=
   ⟨X, by assumption⟩
 
 lemma mk_surjective (X : CofibrantObject C) :
     ∃ (Y : C) (_ : IsCofibrant Y), X = mk Y := ⟨X.obj, X.property, rfl⟩
 
 /-- Constructor for morphisms in `CofibrantObject C`. -/
-abbrev homMk {X Y : C} [IsCofibrant X] [IsCofibrant Y] (f : X ⟶ Y) :
+@[reducible]
+def homMk {X Y : C} [IsCofibrant X] [IsCofibrant Y] (f : X ⟶ Y) :
     mk X ⟶ mk Y := ObjectProperty.homMk f
 
 lemma homMk_surjective {X Y : C} [IsCofibrant X] [IsCofibrant Y]
@@ -75,7 +78,8 @@ lemma homMk_homMk {X Y Z : C} [IsCofibrant X] [IsCofibrant Y] [IsCofibrant Z]
     homMk f ≫ homMk g = homMk (f ≫ g) := rfl
 
 /-- The inclusion functor `CofibrantObject C ⥤ C`. -/
-abbrev ι : CofibrantObject C ⥤ C := (cofibrantObjects C).ι
+@[reducible]
+def ι : CofibrantObject C ⥤ C := (cofibrantObjects C).ι
 
 instance (X : CofibrantObject C) : IsCofibrant X.1 := X.2
 instance (X : CofibrantObject C) : IsCofibrant (CofibrantObject.ι.obj X) := X.2
@@ -97,19 +101,22 @@ def fibrantObjects : ObjectProperty C := fun X ↦ IsFibrant X
 
 variable (C) in
 /-- The full subcategory of fibrant objects. -/
-abbrev FibrantObject : Type u := (fibrantObjects C).FullSubcategory
+@[reducible]
+def FibrantObject : Type u := (fibrantObjects C).FullSubcategory
 
 namespace FibrantObject
 
 /-- Constructor for `FibrantObject C`. -/
-abbrev mk (X : C) [IsFibrant X] : FibrantObject C :=
+@[reducible]
+def mk (X : C) [IsFibrant X] : FibrantObject C :=
   ⟨X, by assumption⟩
 
 lemma mk_surjective (X : FibrantObject C) :
     ∃ (Y : C) (_ : IsFibrant Y), X = mk Y := ⟨X.obj, X.property, rfl⟩
 
 /-- Constructor for morphisms in `FibrantObject C`. -/
-abbrev homMk {X Y : C} [IsFibrant X] [IsFibrant Y] (f : X ⟶ Y) :
+@[reducible]
+def homMk {X Y : C} [IsFibrant X] [IsFibrant Y] (f : X ⟶ Y) :
     mk X ⟶ mk Y := ObjectProperty.homMk f
 
 lemma homMk_surjective {X Y : C} [IsFibrant X] [IsFibrant Y]
@@ -132,7 +139,8 @@ lemma homMk_homMk {X Y Z : C} [IsFibrant X] [IsFibrant Y] [IsFibrant Z]
     homMk f ≫ homMk g = homMk (f ≫ g) := rfl
 
 /-- The inclusion functor `FibrantObject C ⥤ C`. -/
-abbrev ι : FibrantObject C ⥤ C := (fibrantObjects C).ι
+@[reducible]
+def ι : FibrantObject C ⥤ C := (fibrantObjects C).ι
 
 instance (X : FibrantObject C) : IsFibrant X.1 := X.2
 instance (X : FibrantObject C) : IsFibrant (FibrantObject.ι.obj X) := X.2
@@ -167,12 +175,14 @@ lemma bifibrantObjects_le_fibrantObject :
 
 variable (C) in
 /-- The full subcategory of bifibrant objects. -/
-abbrev BifibrantObject : Type u := (bifibrantObjects C).FullSubcategory
+@[reducible]
+def BifibrantObject : Type u := (bifibrantObjects C).FullSubcategory
 
 namespace BifibrantObject
 
 /-- Constructor for `BifibrantObject C`. -/
-abbrev mk (X : C) [IsCofibrant X] [IsFibrant X] :
+@[reducible]
+def mk (X : C) [IsCofibrant X] [IsFibrant X] :
     BifibrantObject C :=
   ⟨X, by assumption, by assumption⟩
 
@@ -181,7 +191,8 @@ lemma mk_surjective (X : BifibrantObject C) :
   ⟨X.obj, X.property.1, X.property.2, rfl⟩
 
 /-- Constructor for morphisms in `BifibrantObject C`. -/
-abbrev homMk {X Y : C} [IsCofibrant X] [IsCofibrant Y]
+@[reducible]
+def homMk {X Y : C} [IsCofibrant X] [IsCofibrant Y]
     [IsFibrant X] [IsFibrant Y] (f : X ⟶ Y) :
     mk X ⟶ mk Y := ObjectProperty.homMk f
 
@@ -208,7 +219,8 @@ lemma homMk_homMk {X Y Z : C} [IsCofibrant X] [IsCofibrant Y] [IsCofibrant Z]
     homMk f ≫ homMk g = homMk (f ≫ g) := rfl
 
 /-- The inclusion functor `BifibrantObject C ⥤ C`. -/
-abbrev ι : BifibrantObject C ⥤ C := (bifibrantObjects C).ι
+@[reducible]
+def ι : BifibrantObject C ⥤ C := (bifibrantObjects C).ι
 
 instance (X : BifibrantObject C) : IsCofibrant X.obj := X.property.1
 instance (X : BifibrantObject C) : IsFibrant X.obj := X.property.2
@@ -216,11 +228,13 @@ instance (X : BifibrantObject C) : IsCofibrant (BifibrantObject.ι.obj X) := X.p
 instance (X : BifibrantObject C) : IsFibrant (BifibrantObject.ι.obj X) := X.property.2
 
 /-- The inclusion `BifibrantObject C ⥤ CofibrantObject C`. -/
-abbrev ιCofibrantObject : BifibrantObject C ⥤ CofibrantObject C :=
+@[reducible]
+def ιCofibrantObject : BifibrantObject C ⥤ CofibrantObject C :=
   ObjectProperty.ιOfLE (bifibrantObjects_le_cofibrantObject C)
 
 /-- The inclusion functor `BifibrantObject C ⥤ FibrantObject C`. -/
-abbrev ιFibrantObject : BifibrantObject C ⥤ FibrantObject C :=
+@[reducible]
+def ιFibrantObject : BifibrantObject C ⥤ FibrantObject C :=
   ObjectProperty.ιOfLE (bifibrantObjects_le_fibrantObject C)
 
 instance (X : BifibrantObject C) : IsCofibrant (ιFibrantObject.obj X).obj := X.property.1

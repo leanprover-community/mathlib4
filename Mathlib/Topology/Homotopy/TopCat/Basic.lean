@@ -28,7 +28,8 @@ variable {X Y Z : TopCat.{u}}
 
 /-- A homotopy between morphisms in `TopCat` is a homotopy between
 the corresponding continuous maps. -/
-abbrev Homotopy (f g : X ⟶ Y) := ContinuousMap.Homotopy f.hom g.hom
+@[reducible]
+def Homotopy (f g : X ⟶ Y) := ContinuousMap.Homotopy f.hom g.hom
 
 namespace Homotopy
 
@@ -53,13 +54,15 @@ lemma ι₁_h : ι₁ ≫ F.h = f₁ := by
   exact F.map_one_left x
 
 /-- The identity homotopy of a morphism `f : X ⟶ Y` in `TopCat`. -/
-abbrev refl (f : X ⟶ Y) := ContinuousMap.Homotopy.refl f.hom
+@[reducible]
+def refl (f : X ⟶ Y) := ContinuousMap.Homotopy.refl f.hom
 
 @[simp]
 lemma h_refl : h (refl f₀) = fst _ _ ≫ f₀ := rfl
 
 /-- The reverse of a homotopy `F` in `TopCat`. -/
-abbrev symm := ContinuousMap.Homotopy.symm F
+@[reducible]
+def symm := ContinuousMap.Homotopy.symm F
 
 @[simp]
 lemma h_symm : h F.symm = (X ◁ I.symm) ≫ F.h := rfl
@@ -68,8 +71,8 @@ lemma h_symm : h F.symm = (X ◁ I.symm) ≫ F.h := rfl
 noncomputable abbrev trans := ContinuousMap.Homotopy.trans F G
 
 /-- The homotopy between compositions of morphisms in `TopCat`. -/
-@[simps!]
-abbrev comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
+@[reducible, simps!]
+def comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
     Homotopy (f₀ ≫ g₀) (f₁ ≫ g₁) := ContinuousMap.Homotopy.comp G F
 
 attribute [nolint simpNF] comp_apply

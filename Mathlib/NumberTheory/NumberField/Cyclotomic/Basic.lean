@@ -182,7 +182,8 @@ noncomputable def integralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^ k} �
     hζ.adjoinEquivRingOfIntegersOfPrimePow
 
 /-- Abbreviation to see a primitive root of unity as a member of the ring of integers. -/
-abbrev toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : 𝓞 K :=
+@[reducible]
+def toInteger {k : ℕ} [NeZero k] (hζ : IsPrimitiveRoot ζ k) : 𝓞 K :=
   ⟨ζ, hζ.isIntegral (NeZero.pos _)⟩
 
 end CharZero

@@ -262,8 +262,9 @@ instance : Module.Free S (Generators.localizationAway S r).toExtension.Cotangent
 variable (S) in
 /-- The image of `g * X - 1` in `I/I²` if `I` is the kernel of the canonical presentation
 of the localization of `S` away from `g`. -/
+@[reducible]
 noncomputable
-abbrev Generators.cMulXSubOneCotangent : (Generators.localizationAway S r).toExtension.Cotangent :=
+def Generators.cMulXSubOneCotangent : (Generators.localizationAway S r).toExtension.Cotangent :=
   Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩
 
 lemma Generators.cMulXSubOneCotangent_eq :

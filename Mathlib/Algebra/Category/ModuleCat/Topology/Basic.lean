@@ -51,7 +51,8 @@ noncomputable instance : CoeSort (TopModuleCat.{v} R) (Type v) := ⟨fun M ↦ M
 attribute [instance] topologicalSpace isTopologicalAddGroup continuousSMul
 
 /-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
-abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
+@[reducible]
+def of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : TopModuleCat R :=
   have : ContinuousNeg M := ⟨by convert! continuous_const_smul (-1 : R) (T := M); ext; simp⟩
   have : IsTopologicalAddGroup M := ⟨⟩
@@ -89,12 +90,14 @@ instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
 
 variable {R} in
 /-- Cast a hom in `TopModuleCat` into a continuous linear map. -/
-abbrev Hom.hom {X Y : TopModuleCat R} (f : X.Hom Y) : X →L[R] Y :=
+@[reducible]
+def Hom.hom {X Y : TopModuleCat R} (f : X.Hom Y) : X →L[R] Y :=
   ConcreteCategory.hom (C := TopModuleCat R) f
 
 variable {R} in
 /-- Construct a hom in `TopModuleCat` from a continuous linear map. -/
-abbrev ofHom {X Y : Type v}
+@[reducible]
+def ofHom {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]
     (f : X →L[R] Y) : of R X ⟶ of R Y :=

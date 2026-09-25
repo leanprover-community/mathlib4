@@ -31,7 +31,8 @@ namespace exteriorPower
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (k l : ℕ)
 
 /-- The wedge product as an operation on exterior powers. -/
-abbrev wedge :
+@[reducible]
+def wedge :
     ⋀[R]^k M →ₗ[R] ⋀[R]^l M →ₗ[R] ⋀[R]^(k + l) M :=
   DirectSum.gMulLHom R <| fun d ↦ ⋀[R]^d M
 
@@ -39,7 +40,8 @@ variable {R M k l} (vol : ⋀[R]^(finrank R M) M ≃ₗ[R] R) (hkl : k + l = fin
 
 /-- The wedge product in complementary degrees as a scalar-valued bilinear map (for a choice of
 trivialisation of the top exterior power). -/
-abbrev wedgePairing :
+@[reducible]
+def wedgePairing :
     ⋀[R]^k M →ₗ[R] ⋀[R]^l M →ₗ[R] R :=
   (wedge R M k l).compr₂ (hkl ▸ vol)
 

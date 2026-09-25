@@ -365,7 +365,8 @@ theorem isAdjoinRoot_root_eq_root : (AdjoinRoot.isAdjoinRoot f).root = AdjoinRoo
 end AdjoinRoot
 
 /-- If `S` is `R`-isomorphic to `R[X]/(f)`, then `S` is given by adjoining a root of `f`. -/
-abbrev IsAdjoinRoot.ofAdjoinRootEquiv (e : AdjoinRoot f ≃ₐ[R] S) : IsAdjoinRoot S f :=
+@[reducible]
+def IsAdjoinRoot.ofAdjoinRootEquiv (e : AdjoinRoot f ≃ₐ[R] S) : IsAdjoinRoot S f :=
   ofAlgEquiv (AdjoinRoot.isAdjoinRoot f) e
 
 namespace IsAdjoinRootMonic
@@ -605,7 +606,8 @@ def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
     simpa [Ideal.mem_span_singleton] using minpoly.isIntegrallyClosed_dvd_iff hα _
 
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
-abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
+@[reducible]
+def _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
   monic := minpoly.monic hα
 
@@ -716,12 +718,14 @@ theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)
 
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
-abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
+@[reducible]
+def mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
     IsAdjoinRoot E (minpoly F α) :=
   mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα.isAlgebraic hα₂)
 
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
-abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
+@[reducible]
+def _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
     {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : IsAdjoinRootMonic E (minpoly F α) where
   __ := IsAdjoinRoot.mkOfPrimitiveElement hα hα₂
   monic := minpoly.monic hα

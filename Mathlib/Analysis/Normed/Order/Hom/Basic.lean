@@ -18,15 +18,16 @@ See `Mathlib/Analysis/Normed/Order/Hom/Ultra.lean` for further upgrades to nonar
 groups.
 -/
 
-public section
+@[expose] public section
 
 variable {F α : Type*} [FunLike F α ℝ]
 
 /-- Constructs a `SeminormedGroup` structure from a `GroupSeminormClass` on a `Group`. -/
 -- See note [reducible non-instances]
-@[to_additive /-- Constructs a `SeminormedAddGroup` structure from an `AddGroupSeminormClass` on an
+@[to_additive (attr := reducible)
+/-- Constructs a `SeminormedAddGroup` structure from an `AddGroupSeminormClass` on an
 `AddGroup`. -/]
-abbrev GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α ℝ]
+def GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α ℝ]
     (f : F) : SeminormedGroup α where
   norm := f
   dist x y := f (x⁻¹ * y)
@@ -41,9 +42,10 @@ lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClas
 
 /-- Constructs a `SeminormedCommGroup` structure from a `GroupSeminormClass` on a `CommGroup`. -/
 -- See note [reducible non-instances]
-@[to_additive /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
+@[to_additive (attr := reducible)
+/-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
 on an `AddCommGroup`. -/]
-abbrev GroupSeminormClass.toSeminormedCommGroup [CommGroup α] [GroupSeminormClass F α ℝ]
+def GroupSeminormClass.toSeminormedCommGroup [CommGroup α] [GroupSeminormClass F α ℝ]
     (f : F) : SeminormedCommGroup α where
   __ := GroupSeminormClass.toSeminormedGroup f
   __ : CommGroup α := inferInstance
@@ -54,9 +56,10 @@ lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [CommGroup α] [GroupSemi
 
 /-- Constructs a `NormedGroup` structure from a `GroupNormClass` on a `Group`. -/
 -- See note [reducible non-instances]
-@[to_additive /-- Constructs a `NormedAddGroup` structure from an `AddGroupNormClass` on an
+@[to_additive (attr := reducible)
+/-- Constructs a `NormedAddGroup` structure from an `AddGroupNormClass` on an
 `AddGroup`. -/]
-abbrev GroupNormClass.toNormedGroup [Group α] [GroupNormClass F α ℝ]
+def GroupNormClass.toNormedGroup [Group α] [GroupNormClass F α ℝ]
     (f : F) : NormedGroup α where
   __ := GroupSeminormClass.toSeminormedGroup f
   eq_of_dist_eq_zero h := inv_mul_eq_one.mp (eq_one_of_map_eq_zero f h)
@@ -67,9 +70,10 @@ lemma GroupNormClass.toNormedGroup_norm_eq [Group α] [GroupNormClass F α ℝ]
 
 /-- Constructs a `NormedCommGroup` structure from a `GroupNormClass` on a `CommGroup`. -/
 -- See note [reducible non-instances]
-@[to_additive /-- Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
+@[to_additive (attr := reducible)
+/-- Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
 `AddCommGroup`. -/]
-abbrev GroupNormClass.toNormedCommGroup [CommGroup α] [GroupNormClass F α ℝ]
+def GroupNormClass.toNormedCommGroup [CommGroup α] [GroupNormClass F α ℝ]
     (f : F) : NormedCommGroup α where
   __ := GroupNormClass.toNormedGroup f
   __ : CommGroup α := inferInstance

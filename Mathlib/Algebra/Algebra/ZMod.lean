@@ -29,7 +29,8 @@ variable {n : ℕ} (m : ℕ) [CharP R m]
 
 /-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n`.
 See note [reducible non-instances]. -/
-abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R where
+@[reducible]
+def algebra' (h : m ∣ n) : Algebra (ZMod n) R where
   algebraMap := ZMod.castHom h R
   smul := fun a r => cast a * r
   commutes' := fun a r =>
@@ -44,7 +45,8 @@ end
 /-- The `ZMod p`-algebra structure on a ring of characteristic `p`. This is not an
 instance since it creates a diamond with `Algebra.id`.
 See note [reducible non-instances]. -/
-abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
+@[reducible]
+def algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
 
 set_option backward.isDefEq.respectTransparency false in

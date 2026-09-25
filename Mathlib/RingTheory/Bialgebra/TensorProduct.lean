@@ -184,11 +184,13 @@ variable {R A B C : Type*} [CommRing R] [Ring A] [Ring B] [Ring C]
 variable (A)
 
 /-- `lTensor A f : A ⊗ B →ₐc A ⊗ C` is the natural bialgebra morphism induced by `f : B →ₐc C`. -/
-abbrev lTensor (f : B →ₐc[R] C) : A ⊗[R] B →ₐc[R] A ⊗[R] C :=
+@[expose, reducible]
+def lTensor (f : B →ₐc[R] C) : A ⊗[R] B →ₐc[R] A ⊗[R] C :=
   Bialgebra.TensorProduct.map (BialgHom.id R A) f
 
 /-- `rTensor A f : B ⊗ A →ₐc C ⊗ A` is the natural bialgebra morphism induced by `f : B →ₐc C`. -/
-abbrev rTensor (f : B →ₐc[R] C) : B ⊗[R] A →ₐc[R] C ⊗[R] A :=
+@[expose, reducible]
+def rTensor (f : B →ₐc[R] C) : B ⊗[R] A →ₐc[R] C ⊗[R] A :=
   Bialgebra.TensorProduct.map f (BialgHom.id R A)
 
 end BialgHom

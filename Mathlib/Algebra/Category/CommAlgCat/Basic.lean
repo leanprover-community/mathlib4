@@ -49,7 +49,8 @@ attribute [coe] carrier
 variable (R) in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `CommAlgCat R`. -/
-abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
+@[reducible]
+def of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
 
 open Lean.PrettyPrinter.Delaborator in
 /-- This prints `CommAlgCat.of R X` as `↧X`. -/
@@ -76,10 +77,12 @@ instance : ConcreteCategory (CommAlgCat.{v} R) (· →ₐ[R] ·) where
   ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommAlgCat` back into an `AlgHom`. -/
-abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommAlgCat R) f
+@[reducible]
+def Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommAlgCat R) f
 
 /-- Typecheck an `AlgHom` as a morphism in `CommAlgCat`. -/
-abbrev ofHom (f : X →ₐ[R] Y) : of R X ⟶ of R Y := ConcreteCategory.ofHom (C := CommAlgCat R) f
+@[reducible]
+def ofHom (f : X →ₐ[R] Y) : of R X ⟶ of R Y := ConcreteCategory.ofHom (C := CommAlgCat R) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (A B : CommAlgCat.{v} R) (f : Hom A B) := f.hom

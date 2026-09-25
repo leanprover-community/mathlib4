@@ -49,7 +49,8 @@ variable (C : Type u) [Category.{v} C]
 
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
-abbrev SimplicialObject :=
+@[reducible]
+def SimplicialObject :=
   SimplexCategoryᵒᵖ ⥤ C
 
 namespace SimplicialObject
@@ -217,7 +218,8 @@ variable {D : Type*} [Category* D]
 
 variable (D) in
 /-- Functor composition induces a functor on simplicial objects. -/
-abbrev whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+@[reducible]
+def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
@@ -233,7 +235,8 @@ lemma whiskering_obj_obj_σ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i 
 end
 
 /-- Truncated simplicial objects. -/
-abbrev Truncated (n : ℕ) := (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
+@[reducible]
+def Truncated (n : ℕ) := (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 
 variable {C}
 
@@ -241,7 +244,8 @@ namespace Truncated
 
 variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
-abbrev whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+@[reducible]
+def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in
@@ -298,12 +302,14 @@ protected abbrev Truncated.cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n
   ran (SimplexCategory.Truncated.inclusion n).op
 
 /-- The n-skeleton as an endofunctor on `SimplicialObject C`. -/
-abbrev sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+@[reducible]
+def sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasLeftKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.sk n
 
 /-- The n-coskeleton as an endofunctor on `SimplicialObject C`. -/
-abbrev cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+@[reducible]
+def cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.cosk n
 
@@ -387,7 +393,8 @@ end adjunctions
 variable (C)
 
 /-- The constant simplicial object is the constant functor. -/
-abbrev const : C ⥤ SimplicialObject C :=
+@[reducible]
+def const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 
 /-- The category of augmented simplicial objects, defined as a comma category. -/
@@ -528,7 +535,8 @@ def augmentOfIsTerminal (X : SimplicialObject C) {T : C} (hT : IsTerminal T) :
 end SimplicialObject
 
 /-- Cosimplicial objects. -/
-abbrev CosimplicialObject :=
+@[reducible]
+def CosimplicialObject :=
   SimplexCategory ⥤ C
 
 namespace CosimplicialObject
@@ -682,7 +690,8 @@ theorem σ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i 
 variable (C)
 
 /-- Functor composition induces a functor on cosimplicial objects. -/
-abbrev whiskering (D : Type*) [Category* D] :
+@[reducible]
+def whiskering (D : Type*) [Category* D] :
     (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 
@@ -715,7 +724,8 @@ instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
 
 variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
-abbrev whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+@[reducible]
+def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in
@@ -757,7 +767,8 @@ end Truncation
 variable (C)
 
 /-- The constant cosimplicial object. -/
-abbrev const : C ⥤ CosimplicialObject C :=
+@[reducible]
+def const : C ⥤ CosimplicialObject C :=
   CategoryTheory.Functor.const _
 
 /-- Augmented cosimplicial objects. -/

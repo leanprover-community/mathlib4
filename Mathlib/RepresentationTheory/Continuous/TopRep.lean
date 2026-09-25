@@ -61,7 +61,8 @@ attribute [coe] V
 variable (ρ) in
 /-- The object in the category of topological representations associated to a type equipped with a
 continuous representation. This is the preferred way to construct a term of `TopRep k G`. -/
-abbrev of : TopRep k G := ⟨X, ρ⟩
+@[reducible]
+def of : TopRep k G := ⟨X, ρ⟩
 
 variable (X ρ) in
 lemma of_V : (of ρ).V = X := by with_reducible rfl
@@ -89,11 +90,13 @@ instance : ConcreteCategory (TopRep.{w} k G) (fun A B ↦ A.ρ →ⁱL B.ρ) whe
 
 variable {A B} in
 /-- Turn a morphism in `TopRep` back into an `IntertwiningMap`. -/
-abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := TopRep k G) f
+@[reducible]
+def Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := TopRep k G) f
 
 variable {A B} in
 /-- Typecheck an `IntertwiningMap` as a morphism in `TopRep`. -/
-abbrev ofHom (f : ρ →ⁱL σ) : of ρ ⟶ of σ :=
+@[reducible]
+def ofHom (f : ρ →ⁱL σ) : of ρ ⟶ of σ :=
   ConcreteCategory.ofHom (C := TopRep.{w} k G) f
 
 @[simp] lemma hom_ofHom (f : ρ →ⁱL σ) : (ofHom f).hom = f := rfl
@@ -102,7 +105,8 @@ abbrev ofHom (f : ρ →ⁱL σ) : of ρ ⟶ of σ :=
 
 variable {A B} in
 /-- The morphism of topological modules underlying a morphism in `TopRep k G`. -/
-abbrev Hom.toTopModuleCatHom (f : Hom A B) :
+@[reducible]
+def Hom.toTopModuleCatHom (f : Hom A B) :
     TopModuleCat.of k A ⟶ TopModuleCat.of k B :=
   TopModuleCat.ofHom f.hom.toContinuousLinearMap
 
@@ -227,11 +231,13 @@ end equivAction
 variable {G : Type v} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-- The `G`-invariant topologicalsubmodule of a topological representation. -/
-abbrev invariants (X : TopRep k G) : TopModuleCat k := .of k X.ρ.invariants
+@[reducible]
+def invariants (X : TopRep k G) : TopModuleCat k := .of k X.ρ.invariants
 
 variable (k G) in
 /-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
-abbrev invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
+@[reducible]
+def invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
   obj A := .of k A.ρ.invariants
   map f := TopModuleCat.ofHom f.hom.mapInvariants
 
@@ -240,12 +246,14 @@ instance : (invariantsFunctor k G).Additive where
 instance {k : Type u} [CommRing k] [TopologicalSpace k] : (invariantsFunctor k G).Linear k where
 
 /-- The top rep induced by the coinduced representation. -/
-abbrev coind₁ (A : TopRep k G) : TopRep k G := of A.ρ.coind₁
+@[reducible]
+def coind₁ (A : TopRep k G) : TopRep k G := of A.ρ.coind₁
 
 variable (k G) in
 /-- The functor taking a representation `rep` to the representation `C(G, rep)`.
 The `G` action is defined by `g • f := x ↦ g • f (g⁻¹ * x)`. -/
-abbrev coind₁Functor : TopRep k G ⥤ TopRep k G where
+@[reducible]
+def coind₁Functor : TopRep k G ⥤ TopRep k G where
   obj := coind₁
   map φ := ofHom <| ContRepresentation.coind₁Map φ.hom
 
@@ -259,11 +267,13 @@ def coind₁ι : 𝟭 (TopRep k G) ⟶ coind₁Functor k G where
   app rep := ofHom rep.ρ.coind₁ι
 
 /-- The restriction of a topological representation along a monoid homomorphism. -/
-abbrev res {H : Type*} [Monoid H] (φ : H →* G) (A : TopRep k G) : TopRep k H := of (A.ρ.restrict φ)
+@[reducible]
+def res {H : Type*} [Monoid H] (φ : H →* G) (A : TopRep k G) : TopRep k H := of (A.ρ.restrict φ)
 
 /-- The functor taking a topological `G`-representation to a topological `H`-representation
 along a monoid homomorphism `φ : H →* G`. -/
-abbrev resFunctor {H : Type*} [Monoid H] (φ : H →* G) :
+@[reducible]
+def resFunctor {H : Type*} [Monoid H] (φ : H →* G) :
     TopRep k G ⥤ TopRep k H where
   obj := res φ
   map f := ofHom <| f.hom.restrict φ

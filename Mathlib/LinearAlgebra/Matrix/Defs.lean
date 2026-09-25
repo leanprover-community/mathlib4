@@ -565,38 +565,46 @@ theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) 
   rfl
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
-abbrev subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
+@[reducible]
+def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 
 /-- The right `n × r` part of an `n × (l+r)` matrix. -/
-abbrev subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
+@[reducible]
+def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
 
 /-- The top `u × n` part of a `(u+d) × n` matrix. -/
-abbrev subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
+@[reducible]
+def subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
   submatrix A (Fin.castAdd d) id
 
 /-- The bottom `d × n` part of a `(u+d) × n` matrix. -/
-abbrev subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
+@[reducible]
+def subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
   submatrix A (Fin.natAdd u) id
 
 /-- The top-right `u × r` part of a `(u+d) × (l+r)` matrix. -/
-abbrev subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+@[reducible]
+def subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin r) α :=
   subUp (subRight A)
 
 /-- The bottom-right `d × r` part of a `(u+d) × (l+r)` matrix. -/
-abbrev subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+@[reducible]
+def subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin r) α :=
   subDown (subRight A)
 
 /-- The top-left `u × l` part of a `(u+d) × (l+r)` matrix. -/
-abbrev subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+@[reducible]
+def subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin l) α :=
   subUp (subLeft A)
 
 /-- The bottom-left `d × l` part of a `(u+d) × (l+r)` matrix. -/
-abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+@[reducible]
+def subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
 

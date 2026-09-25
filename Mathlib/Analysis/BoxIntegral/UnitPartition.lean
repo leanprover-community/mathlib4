@@ -125,7 +125,8 @@ theorem mem_box_iff' [NeZero n] {ν : ι → ℤ} {x : ι → ℝ} :
   simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h, ← div_lt_iff₀' h]
 
 /-- The tag of (the index of) a `unitPartition.box`. -/
-abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
+@[reducible]
+def tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
 
 @[simp]
 theorem tag_apply (ν : ι → ℤ) (i : ι) : tag n ν i = (ν i + 1) / n := rfl

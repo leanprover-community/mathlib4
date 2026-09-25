@@ -61,7 +61,8 @@ instance [Unique K] : Unique (EdgeLabeling G K) :=
 /--
 An edge labeling of the complete graph on `V` with labels in type `K`.
 -/
-abbrev TopEdgeLabeling (V K : Type*) :=
+@[reducible]
+def TopEdgeLabeling (V K : Type*) :=
   EdgeLabeling (⊤ : SimpleGraph V) K
 
 theorem card_topEdgeLabeling [DecidableEq V] [Fintype V] [Fintype K] :
@@ -173,7 +174,8 @@ namespace TopEdgeLabeling
 /-- Compose an edge-labeling, by an injection into the vertex type. This must be an injection, else
 we don't know how to color `x ~ y` in the case `f x = f y`.
 -/
-abbrev pullback (C : TopEdgeLabeling V K) (f : V' ↪ V) : TopEdgeLabeling V' K :=
+@[reducible]
+def pullback (C : TopEdgeLabeling V K) (f : V' ↪ V) : TopEdgeLabeling V' K :=
   EdgeLabeling.pullback C ⟨f, by simp⟩
 
 @[simp]

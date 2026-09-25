@@ -69,11 +69,13 @@ instance : ConcreteCategory BoolRing (· →+* ·) where
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `BoolRing` back into a `RingHom`. -/
-abbrev Hom.hom {X Y : BoolRing} (f : Hom X Y) :=
+@[reducible]
+def Hom.hom {X Y : BoolRing} (f : Hom X Y) :=
   ConcreteCategory.hom (C := BoolRing) f
 
 /-- Typecheck a `RingHom` as a morphism in `BoolRing`. -/
-abbrev ofHom {R S : Type u} [BooleanRing R] [BooleanRing S] (f : R →+* S) : of R ⟶ of S :=
+@[reducible]
+def ofHom {R S : Type u} [BooleanRing R] [BooleanRing S] (f : R →+* S) : of R ⟶ of S :=
   ConcreteCategory.ofHom f
 
 @[ext]

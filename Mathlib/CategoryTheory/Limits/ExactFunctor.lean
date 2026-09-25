@@ -48,17 +48,20 @@ instance : (leftExactFunctor C D).IsClosedUnderIsomorphisms where
     exact preservesFiniteLimits_of_natIso e
 
 /-- Bundled left-exact functors. -/
-abbrev LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
+@[reducible]
+def LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
 
 /-- `C ⥤ₗ D` denotes left exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₗ " => LeftExactFunctor
 
 /-- A left exact functor is in particular a functor. -/
-abbrev LeftExactFunctor.forget : (C ⥤ₗ D) ⥤ C ⥤ D :=
+@[reducible]
+def LeftExactFunctor.forget : (C ⥤ₗ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
 /-- The inclusion of left exact functors into functors is fully faithful. -/
-abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaithful :=
+@[reducible]
+def LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
 /-- Right-exactness, as a property of objects in `C ⥤ D`. -/
@@ -76,17 +79,20 @@ instance : (rightExactFunctor C D).IsClosedUnderIsomorphisms where
     exact preservesFiniteColimits_of_natIso e
 
 /-- Bundled right-exact functors. -/
-abbrev RightExactFunctor := (rightExactFunctor C D).FullSubcategory
+@[reducible]
+def RightExactFunctor := (rightExactFunctor C D).FullSubcategory
 
 /-- `C ⥤ᵣ D` denotes right exact functors `C ⥤ D` -/
 infixr:26 " ⥤ᵣ " => RightExactFunctor
 
 /-- A right exact functor is in particular a functor. -/
-abbrev RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
+@[reducible]
+def RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
 /-- The inclusion of right exact functors into functors is fully faithful. -/
-abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
+@[reducible]
+def RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
 /-- Exactness, as a property of objects in `C ⥤ D`. -/
@@ -103,13 +109,15 @@ instance : (exactFunctor C D).IsClosedUnderIsomorphisms := by
   infer_instance
 
 /-- Bundled exact functors. -/
-abbrev ExactFunctor := (exactFunctor C D).FullSubcategory
+@[reducible]
+def ExactFunctor := (exactFunctor C D).FullSubcategory
 
 /-- `C ⥤ₑ D` denotes exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₑ " => ExactFunctor
 
 /-- An exact functor is in particular a functor. -/
-abbrev ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
+@[reducible]
+def ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
 lemma exactFunctor_le_leftExactFunctor :
@@ -121,11 +129,13 @@ lemma exactFunctor_le_rightExactFunctor :
   fun _ h ↦ h.2
 
 /-- Turn an exact functor into a left exact functor. -/
-abbrev LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
+@[reducible]
+def LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_leftExactFunctor C D)
 
 /-- Turn an exact functor into a left exact functor. -/
-abbrev RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
+@[reducible]
+def RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_rightExactFunctor C D)
 
 variable {C D}

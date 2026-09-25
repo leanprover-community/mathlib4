@@ -49,7 +49,8 @@ def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   map f := FintypeCat.homMk (DiscreteQuotient.ofLE f.le)
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
-abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
+@[reducible]
+def diagram : DiscreteQuotient X ⥤ Profinite :=
   X.fintypeDiagram ⋙ FintypeCat.toProfinite
 
 /-- A cone over `X.diagram` whose cone point is `X`. -/

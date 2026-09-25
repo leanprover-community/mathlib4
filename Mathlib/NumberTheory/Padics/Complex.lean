@@ -51,7 +51,8 @@ open scoped NNReal
 variable (p : ℕ) [hp : Fact (Nat.Prime p)]
 
 /-- `PadicAlgCl p` is a fixed algebraic closure of `ℚ_[p]`. -/
-abbrev PadicAlgCl := AlgebraicClosure ℚ_[p]
+@[reducible]
+def PadicAlgCl := AlgebraicClosure ℚ_[p]
 
 namespace PadicAlgCl
 
@@ -134,7 +135,8 @@ end PadicAlgCl
 
 /-- `ℂ_[p]` is the field of `p`-adic complex numbers, that is, the completion of `PadicAlgCl p` with
 respect to the `p`-adic norm. -/
-abbrev PadicComplex := UniformSpace.Completion (PadicAlgCl p)
+@[reducible]
+def PadicComplex := UniformSpace.Completion (PadicAlgCl p)
 
 /-- `ℂ_[p]` is the field of `p`-adic complex numbers. -/
 notation "ℂ_[" p "]" => PadicComplex p

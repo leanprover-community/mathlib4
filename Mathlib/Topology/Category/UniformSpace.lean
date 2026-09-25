@@ -67,11 +67,13 @@ instance : ConcreteCategory UniformSpaceCat ({ f : · → · // UniformContinuou
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `UniformSpaceCat` back into a function which is `UniformContinuous`. -/
-abbrev Hom.hom {X Y : UniformSpaceCat} (f : Hom X Y) :=
+@[reducible]
+def Hom.hom {X Y : UniformSpaceCat} (f : Hom X Y) :=
   ConcreteCategory.hom (C := UniformSpaceCat) f
 
 /-- Typecheck a function which is `UniformContinuous` as a morphism in `UniformSpaceCat`. -/
-abbrev ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
+@[reducible]
+def ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
     (f : { f : X → Y // UniformContinuous f }) : of X ⟶ of Y :=
   ConcreteCategory.ofHom f
 

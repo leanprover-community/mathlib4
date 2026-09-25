@@ -515,7 +515,8 @@ namespace Ideal
 variable (R) [Semiring R]
 
 /-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
-abbrev nonPrincipals := { I : Ideal R | ¬I.IsPrincipal }
+@[reducible]
+def nonPrincipals := { I : Ideal R | ¬I.IsPrincipal }
 
 variable {R}
 

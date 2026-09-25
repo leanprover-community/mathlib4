@@ -55,7 +55,8 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 
 See note [reducible non-instances].
 -/
-abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
+@[reducible]
+def List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
 
 attribute [local instance] Vector.Perm.isSetoid
@@ -86,8 +87,8 @@ theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
-@[match_pattern]
-abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
+@[reducible, match_pattern]
+def mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 
 /-- The unique element in `Sym α 0`. -/

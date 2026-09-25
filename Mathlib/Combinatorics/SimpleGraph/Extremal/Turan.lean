@@ -327,7 +327,8 @@ theorem card_edgeFinset_eq_extremalNumber_top_iff_nonempty_iso_turanGraph :
 /-! ### Number of edges in the Turán graph -/
 
 /-- The number of edges in `turanGraph n r`. -/
-abbrev turanNumber (n r : ℕ) : ℕ := #(turanGraph n r).edgeFinset
+@[reducible]
+def turanNumber (n r : ℕ) : ℕ := #(turanGraph n r).edgeFinset
 
 private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     ∑ w ∈ range r, (if c % r ≠ (n + w) % r then 1 else 0) = r - 1 := by

@@ -481,7 +481,8 @@ open TopologicalSpace
 
 /-- A sheaf `M` of `R-modules` is localizing if for all `f` in `R`, the restriction map
 from `M(⊤)` to `M(D(f))` is localization with respect to `f`. -/
-abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
+@[reducible]
+def IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
   ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
 
 set_option backward.isDefEq.respectTransparency.types false in

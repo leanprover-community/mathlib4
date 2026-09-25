@@ -628,8 +628,9 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive /-- The group of additive automorphisms. -/]
-abbrev MulAut (M : Type*) [Mul M] :=
+@[to_additive (attr := reducible)
+/-- The group of additive automorphisms. -/]
+def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 
 namespace MulAut

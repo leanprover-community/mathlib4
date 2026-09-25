@@ -23,7 +23,8 @@ open scoped NNReal
 variable {α β : Type*} [PseudoMetricSpace α]
 
 /-- Pseudometric space structure pulled back by a function. -/
-abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β) :
+@[reducible]
+def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β) :
     PseudoMetricSpace α where
   dist x y := dist (f x) (f y)
   dist_self _ := dist_self _
@@ -34,8 +35,9 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
-  cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
+  cobounded_sets := Set.ext fun s => mem_comap_iff_compl (s := s).trans <| by
     simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_ofPred]
+
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`

@@ -157,12 +157,14 @@ theorem IsPrecomplete.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
 variable (I M)
 
 /-- The Hausdorffification of a module with respect to an ideal. -/
-abbrev Hausdorffification : Type _ :=
+@[reducible]
+def Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 
 /-- The canonical linear map `M ⧸ (I ^ n • ⊤) →ₗ[R] M ⧸ (I ^ m • ⊤)` for `m ≤ n` used
 to define `AdicCompletion`. -/
-abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
+@[reducible]
+def AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
 /-- The completion of a module with respect to an ideal.
 

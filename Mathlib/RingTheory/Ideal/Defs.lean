@@ -37,7 +37,8 @@ open scoped Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
 `a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. -/
-abbrev Ideal (R : Type u) [Semiring R] :=
+@[reducible]
+def Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 
 section Semiring
@@ -151,7 +152,8 @@ section inertia
 variable (G : Type*) [Group G] [MulAction G α] (I : Ideal α)
 
 /-- The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`. -/
-abbrev inertia : Subgroup G := I.toAddSubgroup.inertia G
+@[reducible]
+def inertia : Subgroup G := I.toAddSubgroup.inertia G
 
 variable {I G} in
 theorem mem_inertia {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I :=

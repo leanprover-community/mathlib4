@@ -30,13 +30,15 @@ section Pullback
 variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
-abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ X :=
+@[reducible]
+def pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ X :=
   ofHom ⟨Prod.fst ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
-abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ Y :=
+@[reducible]
+def pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : ↧{ p : X × Y // f p.1 = g p.2 } ⟶ Y :=
   ofHom ⟨Prod.snd ∘ Subtype.val, by fun_prop⟩
 
 lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl

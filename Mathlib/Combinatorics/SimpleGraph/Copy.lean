@@ -87,13 +87,16 @@ structure Copy (H : SimpleGraph W) (G : SimpleGraph V) where
   injective' : Injective toHom
 
 /-- An injective homomorphism gives rise to a copy. -/
-abbrev Hom.toCopy (f : H →g G) (h : Injective f) : Copy H G := .mk f h
+@[reducible]
+def Hom.toCopy (f : H →g G) (h : Injective f) : Copy H G := .mk f h
 
 /-- An embedding gives rise to a copy. -/
-abbrev Embedding.toCopy (f : H ↪g G) : Copy H G := f.toHom.toCopy f.injective
+@[reducible]
+def Embedding.toCopy (f : H ↪g G) : Copy H G := f.toHom.toCopy f.injective
 
 /-- An isomorphism gives rise to a copy. -/
-abbrev Iso.toCopy (f : H ≃g G) : Copy H G := f.toEmbedding.toCopy
+@[reducible]
+def Iso.toCopy (f : H ≃g G) : Copy H G := f.toEmbedding.toCopy
 
 namespace Copy
 
@@ -172,7 +175,8 @@ noncomputable def isoSubgraphMap (f : Copy H G) (A' : H.Subgraph) :
     Relation.map_apply, f.injective.eq_iff, exists_eq_right_right, exists_eq_right, forall_true_iff]
 
 /-- The subgraph of `G` corresponding to a copy of `H` inside `G`. -/
-abbrev toSubgraph (f : Copy H G) : G.Subgraph := .map f.toHom ⊤
+@[reducible]
+def toSubgraph (f : Copy H G) : G.Subgraph := .map f.toHom ⊤
 
 /-- The isomorphism from `H` to its copy under `f : Copy H G`. -/
 noncomputable def isoToSubgraph (f : Copy H G) : H ≃g f.toSubgraph.coe :=
@@ -236,7 +240,8 @@ section IsContained
 /-- The relation `IsContained H G`, `H ⊑ G` says that `G` contains a copy of `H`.
 
 This is equivalent to the existence of an isomorphism from `H` to a subgraph of `G`. -/
-abbrev IsContained (H : SimpleGraph W) (G : SimpleGraph V) := Nonempty (Copy H G)
+@[reducible]
+def IsContained (H : SimpleGraph W) (G : SimpleGraph V) := Nonempty (Copy H G)
 
 @[inherit_doc] scoped infixl:50 " ⊑ " => SimpleGraph.IsContained
 
@@ -369,7 +374,8 @@ end IsContained
 section Free
 
 /-- `H.Free G` means that `G` does not contain a copy of `H`. -/
-abbrev Free (H : SimpleGraph W) (G : SimpleGraph V) := ¬H ⊑ G
+@[reducible]
+def Free (H : SimpleGraph W) (G : SimpleGraph V) := ¬H ⊑ G
 
 lemma not_free : ¬H.Free G ↔ H ⊑ G := not_not
 

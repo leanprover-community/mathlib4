@@ -215,7 +215,8 @@ variable (L) (M)
 
 /-- The elementary diagram of an `L`-structure is the set of all sentences with parameters it
   satisfies. -/
-abbrev elementaryDiagram : L[[M]].Theory :=
+@[reducible]
+def elementaryDiagram : L[[M]].Theory :=
   L[[M]].completeTheory M
 
 set_option backward.isDefEq.respectTransparency false in

@@ -471,7 +471,8 @@ open WithVal
 variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 /-- The completion of a field with respect to a valuation. -/
-abbrev Completion := UniformSpace.Completion (WithVal v)
+@[reducible]
+def Completion := UniformSpace.Completion (WithVal v)
 
 -- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
 instance (priority := 99) : Coe R v.Completion where

@@ -343,8 +343,9 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback an `OrderTop`. -/
-@[to_dual (reorder := map_le (a b)) /-- Pullback an `OrderBot`. -/]
-abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
+@[to_dual (attr := reducible)
+(reorder := map_le (a b)) /-- Pullback an `OrderBot`. -/]
+def OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) : OrderTop α :=
   ⟨fun a =>
     map_le _ _ <| by
@@ -353,8 +354,9 @@ abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
 
 -- See note [reducible non-instances]
 /-- Pullback a `BoundedOrder`. -/
-@[to_dual self (reorder := 4 5, map_le (a b), map_top map_bot)]
-abbrev BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
+@[reducible,
+to_dual self (reorder := 4 5, map_le (a b), map_top map_bot)]
+def BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
     BoundedOrder α where
   __ := OrderTop.lift f map_le map_top

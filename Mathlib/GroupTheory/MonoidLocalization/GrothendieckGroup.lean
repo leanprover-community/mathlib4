@@ -31,20 +31,20 @@ variable {M G : Type*} [CommMonoid M] [CommGroup G]
 
 variable (M) in
 /-- The Grothendieck group of a monoid `M` is the localization at its top submonoid. -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- The Grothendieck group of an additive monoid `M` is the localization at its top submonoid. -/]
-abbrev GrothendieckGroup : Type _ := Localization (⊤ : Submonoid M)
+def GrothendieckGroup : Type _ := Localization (⊤ : Submonoid M)
 
 namespace GrothendieckGroup
 
 /-- The inclusion from a commutative monoid `M` to its Grothendieck group.
 
 Note that this is only injective if `M` is cancellative. -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- The inclusion from an additive commutative monoid `M` to its Grothendieck group.
 
 Note that this is only injective if `M` is cancellative. -/]
-abbrev of : M →* GrothendieckGroup M := (monoidOf ⊤).toMonoidHom
+def of : M →* GrothendieckGroup M := (monoidOf ⊤).toMonoidHom
 
 @[to_additive]
 lemma of_injective [IsCancelMul M] : Injective (of (M := M)) :=

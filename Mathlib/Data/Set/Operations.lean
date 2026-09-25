@@ -324,7 +324,8 @@ def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop := MapsTo f s t ∧ I
 def LeftInvOn (g : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → g (f x) = x
 
 /-- `g` is a right inverse to `f` on `t` if `f (g x) = x` for all `x ∈ t`. -/
-abbrev RightInvOn (g : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f g t
+@[reducible]
+def RightInvOn (g : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f g t
 
 /-- `g` is an inverse to `f` viewed as a map from `s` to `t` -/
 def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=

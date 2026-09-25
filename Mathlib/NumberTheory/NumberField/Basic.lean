@@ -137,8 +137,8 @@ example : instAlgebra (L := K) (K := K) = instAlgebra_1 (K := K) := by
 variable {K}
 
 /-- The canonical coercion from `𝓞 K` to `K`. -/
-@[coe]
-abbrev val (x : 𝓞 K) : K := algebraMap _ _ x
+@[reducible, coe]
+def val (x : 𝓞 K) : K := algebraMap _ _ x
 
 /-- This instance has to be `CoeHead` because we only want to apply it from `𝓞 K` to `K`. -/
 instance : CoeHead (𝓞 K) K := ⟨val⟩

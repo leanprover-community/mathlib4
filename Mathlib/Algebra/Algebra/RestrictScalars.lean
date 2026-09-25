@@ -108,7 +108,8 @@ module structure over `R`. Not an instance because `S` cannot be inferred.
 
 The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
 -/
-abbrev Module.restrictScalars [Module S M] : Module R M :=
+@[reducible]
+def Module.restrictScalars [Module S M] : Module R M :=
   Module.compHom M (algebraMap R S)
 
 /-- When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
@@ -217,7 +218,8 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
   rfl
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg`. Not an instance because `S` cannot be inferred. -/
-abbrev Algebra.restrictScalars : Algebra R A :=
+@[reducible]
+def Algebra.restrictScalars : Algebra R A :=
   Algebra.compHom A (algebraMap R S)
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/

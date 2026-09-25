@@ -161,7 +161,8 @@ section QuadraticForm
 variable (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A quadratic form on a module. -/
-abbrev QuadraticForm : Type _ := QuadraticMap R M R
+@[reducible]
+def QuadraticForm : Type _ := QuadraticMap R M R
 
 end QuadraticForm
 
@@ -926,7 +927,8 @@ theorem associated_rightInverse :
 
 /-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form. -/
-abbrev associated' : QuadraticMap R M N →ₗ[ℤ] BilinMap R M N :=
+@[reducible]
+def associated' : QuadraticMap R M N →ₗ[ℤ] BilinMap R M N :=
   associatedHom ℤ
 
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
@@ -963,7 +965,8 @@ variable [Invertible (2 : Module.End R N)]
 
 /-- `associated` is the linear map that sends a quadratic map over a commutative ring to its
 associated symmetric bilinear map. -/
-abbrev associated : QuadraticMap R M N →ₗ[R] BilinMap R M N :=
+@[reducible]
+def associated : QuadraticMap R M N →ₗ[R] BilinMap R M N :=
   associatedHom R
 
 variable (S) in

@@ -68,7 +68,8 @@ def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a ≃ gammaSet 1
   Set.equivOfEq (gammaSet_one_const r a a')
 
 /-- The map from `Fin 2 → ℤ` sending `![a,b]` to `a.gcd b`. -/
-abbrev finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
+@[reducible]
+def finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
 
 lemma finGcdMap_div {r : ℕ} [NeZero r] (v : Fin 2 → ℤ) (hv : finGcdMap v = r) :
     IsCoprime ((v / r) 0) ((v / r) 1) := by
@@ -82,7 +83,8 @@ lemma finGcdMap_smul {r : ℕ} (a : ℤ) {v : Fin 2 → ℤ} (hv : finGcdMap v =
   simp [finGcdMap, Int.gcd_mul_left, hv]
 
 /-- An abbreviation of the map which divides an integer vector by an integer. -/
-abbrev divIntMap (r : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := v / r
+@[reducible]
+def divIntMap (r : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := v / r
 
 lemma mem_gammaSet_one (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by
   rw [gammaSet_one_mem_iff, Int.isCoprime_iff_gcd_eq_one]

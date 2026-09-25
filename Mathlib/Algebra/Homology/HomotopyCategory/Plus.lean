@@ -134,17 +134,20 @@ instance [HasZeroObject C] [HasBinaryBiproducts C] : (plus C).IsTriangulated whe
   toIsTriangulatedClosed₂ := .of_isTriangulatedClosed₃
 
 /-- The homotopy category of bounded below cochain complexes. -/
-abbrev Plus := (plus C).FullSubcategory
+@[reducible]
+def Plus := (plus C).FullSubcategory
 
 namespace Plus
 
 /-- The inclusion of the homotopy category of bounded below cochain complexes
 in the homotopy category category of all cochain complexes. -/
-abbrev ι : Plus C ⥤ HomotopyCategory C (.up ℤ) := (plus C).ι
+@[reducible]
+def ι : Plus C ⥤ HomotopyCategory C (.up ℤ) := (plus C).ι
 
 /-- The inclusion functor
 `HomotopyCategory.ι C : HomotopyCategory.Plus C ⥤ HomotopyCategory C (.up ℤ)` is fully faithful. -/
-abbrev fullyFaithfulι : (ι C).FullyFaithful := ObjectProperty.fullyFaithfulι _
+@[reducible]
+def fullyFaithfulι : (ι C).FullyFaithful := ObjectProperty.fullyFaithfulι _
 
 /-- The class of quasi-isomorphisms in the homotopy category of bounded below cochain
 complexes. -/

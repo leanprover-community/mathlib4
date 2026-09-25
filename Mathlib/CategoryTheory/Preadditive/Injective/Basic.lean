@@ -36,7 +36,8 @@ attribute [inherit_doc Injective] Injective.factors
 
 variable (C) in
 /-- The `ObjectProperty C` corresponding to the notion of injective objects in `C`. -/
-abbrev isInjective : ObjectProperty C := Injective
+@[reducible]
+def isInjective : ObjectProperty C := Injective
 
 lemma Limits.IsZero.injective {X : C} (h : IsZero X) : Injective X where
   factors _ _ _ := ⟨h.from_ _, h.eq_of_tgt _ _⟩
@@ -250,7 +251,8 @@ deriving Injective
 
 (When `C` is abelian, we have `exact f (injective.d f)`.)
 -/
-abbrev d : Y ⟶ syzygies f :=
+@[reducible]
+def d : Y ⟶ syzygies f :=
   cokernel.π f ≫ ι (cokernel f)
 
 end

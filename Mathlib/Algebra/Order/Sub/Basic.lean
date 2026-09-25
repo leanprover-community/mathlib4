@@ -96,7 +96,8 @@ variable (α)
 cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
-abbrev CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
+@[expose, reducible]
+def CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
       simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }

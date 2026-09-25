@@ -123,8 +123,8 @@ corresponding locally discrete bicategories.
 
 This is just an abbreviation of `Functor.toPseudofunctor.toOplax`.
 -/
-@[simps! -isSimp map]
-abbrev Functor.toOplaxFunctor : LocallyDiscrete C ⥤ᵒᵖᴸ (LocallyDiscrete D) :=
+@[reducible, simps! -isSimp map]
+def Functor.toOplaxFunctor : LocallyDiscrete C ⥤ᵒᵖᴸ (LocallyDiscrete D) :=
   F.toPseudofunctor.toOplax
 
 end
@@ -151,8 +151,8 @@ def Functor.toPseudofunctor' : LocallyDiscrete I ⥤ᵖ B :=
 If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
 be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
-@[simps! -isSimp map]
-abbrev Functor.toOplaxFunctor' : LocallyDiscrete I ⥤ᵒᵖᴸ B :=
+@[reducible, simps! -isSimp map]
+def Functor.toOplaxFunctor' : LocallyDiscrete I ⥤ᵒᵖᴸ B :=
   F.toPseudofunctor'.toOplax
 
 end

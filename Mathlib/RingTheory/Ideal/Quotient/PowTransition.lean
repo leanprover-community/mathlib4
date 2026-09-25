@@ -117,12 +117,14 @@ To future contributors: Before adding lemmas related to `Submodule.factorPow`, p
 check whether it can be generalized to `Submodule.factor` and whether the
 corresponding (more general) lemma for `Submodule.factor` already exists.
 -/
-abbrev factorPow {m n : ℕ} (le : m ≤ n) :
+@[reducible]
+def factorPow {m n : ℕ} (le : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
   factor (smul_mono_left (Ideal.pow_le_pow_right le))
 
 /-- `factorPow` for `n = m + 1` -/
-abbrev factorPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
+@[reducible]
+def factorPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
     M ⧸ (I ^ m • ⊤ : Submodule R M) := factorPow I M (Nat.le_succ m)
 
 end Submodule
@@ -143,11 +145,13 @@ To future contributors: Before adding lemmas related to `Ideal.factorPow`, pleas
 check whether it can be generalized to `Ideal.factor` and whether the corresponding
 (more general) lemma for `Ideal.factor` already exists.
 -/
-abbrev factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
+@[reducible]
+def factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
   factor (pow_le_pow_right le)
 
 /-- `factorPow` for `m = n + 1` -/
-abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
+@[reducible]
+def factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
   factorPow I (Nat.le_succ n)
 
 end Quotient

@@ -146,7 +146,8 @@ def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
 
 /-- The property of morphisms in `SimplexCategory.Truncated 2` for
 which `liftOfStrictSegal.app` is natural. -/
-abbrev naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
+@[reducible]
+def naturalityProperty : MorphismProperty (SimplexCategory.Truncated 2) :=
   (MorphismProperty.naturalityProperty (app f₀ f₁ hδ₁ hδ₀ hY)).unop
 
 include H hσ in

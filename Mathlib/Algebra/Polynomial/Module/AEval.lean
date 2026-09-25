@@ -20,7 +20,8 @@ action of a polynomial `f` given by `f • m = Polynomial.aeval a f • m`.
 In particular `X • m = a • m`.
 
 In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the module `Module.AEval R M a` is
-abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
+@[reducible]
+defiated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 
 @[expose] public section
@@ -191,12 +192,14 @@ and the action of `f` is `f • (of φ m) = of φ ((aeval φ f) • m)`.
 `Module.AEval'` is defined as a special case of `Module.AEval` in which the `R`-algebra is
 `M →ₗ[R] M`. Lemmas involving `Module.AEval` may be applied to `Module.AEval'`.
 -/
-abbrev AEval' := AEval R M φ
+@[reducible]
+def AEval' := AEval R M φ
 /--
 The canonical linear equivalence between `M` and `Module.AEval' φ` as an `R`-module,
 where `φ : M →ₗ[R] M`.
 -/
-abbrev AEval'.of : M ≃ₗ[R] AEval' φ := AEval.of R M φ
+@[reducible]
+def AEval'.of : M ≃ₗ[R] AEval' φ := AEval.of R M φ
 
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
 

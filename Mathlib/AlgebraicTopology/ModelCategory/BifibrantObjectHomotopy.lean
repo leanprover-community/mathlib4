@@ -62,7 +62,8 @@ instance : Congruence (homRel C) where
 
 variable (C) in
 /-- The homotopy category of bifibrant objects. -/
-abbrev HoCat := Quotient (BifibrantObject.homRel C)
+@[reducible]
+def HoCat := Quotient (BifibrantObject.homRel C)
 
 /-- The quotient functor from the category of bifibrant objects to its
 homotopy category. -/

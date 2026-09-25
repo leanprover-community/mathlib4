@@ -58,8 +58,8 @@ variable (R M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
-@[wikidata Q752487]
-abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
+@[reducible, wikidata Q752487]
+def Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/

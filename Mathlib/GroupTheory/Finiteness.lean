@@ -392,9 +392,10 @@ section Submonoid
 variable [Monoid N] {P : Submonoid M} {Q : Submonoid N}
 
 /-- A submonoid of `M` is finitely generated if it is the closure of a finite subset of `M`. -/
-@[to_additive /-- An additive submonoid of `N` is finitely generated if it is the closure of a
+@[to_additive (attr := reducible)
+/-- An additive submonoid of `N` is finitely generated if it is the closure of a
 finite subset of `M`. -/]
-abbrev Submonoid.FG (P : Submonoid M) : Prop :=
+def Submonoid.FG (P : Submonoid M) : Prop :=
   IsMulFG P
 
 /-- An equivalent expression of `Submonoid.FG` in terms of `Set.Finite` instead of `Finset`. -/
@@ -479,9 +480,10 @@ section Monoid
 
 variable (M) in
 /-- A monoid is finitely generated if it is finitely generated as a submonoid of itself. -/
-@[to_additive /-- An additive monoid is finitely generated if it is finitely generated as an
+@[to_additive (attr := reducible)
+/-- An additive monoid is finitely generated if it is finitely generated as an
 additive submonoid of itself. -/]
-abbrev Monoid.FG : Prop := IsMulFG M
+def Monoid.FG : Prop := IsMulFG M
 
 @[to_additive]
 theorem Monoid.fg_def : Monoid.FG M ↔ (⊤ : Submonoid M).FG :=
@@ -605,8 +607,8 @@ variable {G H : Type*} [Group G] [AddGroup H]
 section Subgroup
 
 /-- A subgroup of `G` is finitely generated if it is the closure of a finite subset of `G`. -/
-@[to_additive]
-abbrev Subgroup.FG (P : Subgroup G) : Prop :=
+@[to_additive (attr := reducible)]
+def Subgroup.FG (P : Subgroup G) : Prop :=
   IsMulFG P
 
 /-- An additive subgroup of `H` is finitely generated if it is the closure of a finite subset of
@@ -688,9 +690,10 @@ section Group
 variable (G H)
 
 /-- A group is finitely generated if it is finitely generated as a subgroup of itself. -/
-@[to_additive /-- An additive group is finitely generated if it is finitely generated as an additive
+@[to_additive (attr := reducible)
+/-- An additive group is finitely generated if it is finitely generated as an additive
 subgroup of itself. -/]
-abbrev Group.FG : Prop :=
+def Group.FG : Prop :=
   IsMulFG G
 
 variable {G H}

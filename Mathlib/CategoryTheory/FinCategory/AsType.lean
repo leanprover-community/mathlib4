@@ -26,7 +26,8 @@ variable (α : Type*) [Fintype α] [SmallCategory α] [FinCategory α]
 
 /-- A FinCategory `α` is equivalent to a category with objects in `Type`. -/
 --@[nolint unused_arguments]
-abbrev ObjAsType : Type :=
+@[reducible]
+def ObjAsType : Type :=
   InducedCategory α (Fintype.equivFin α).symm
 
 instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
@@ -38,7 +39,8 @@ noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
 
 /-- A FinCategory `α` is equivalent to a FinCategory in `Type`. -/
 --@[nolint unused_arguments]
-abbrev AsType : Type :=
+@[reducible]
+def AsType : Type :=
   Fin (Fintype.card α)
 
 @[simps -isSimp id comp]

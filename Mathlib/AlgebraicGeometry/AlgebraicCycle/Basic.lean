@@ -40,8 +40,8 @@ with locally finite support (see the module docstring for more details).
 Note: currently this is an abbrev to save some effort in duplicating API. This seems fine for now,
 but be aware of this if there is ever an instance clash involving algebraic cycles.
 -/
-@[stacks 02QR]
-abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
+@[reducible, stacks 02QR]
+def AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
   Function.locallyFinsupp X R
 
 variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
