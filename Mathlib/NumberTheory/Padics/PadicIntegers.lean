@@ -69,6 +69,7 @@ def PadicInt.subring : Subring ℚ_[p] where
 
 /-- The `p`-adic integers `ℤ_[p]` are the `p`-adic numbers with norm `≤ 1`. -/
 def PadicInt : Type := PadicInt.subring p
+deriving CommRing
 
 /-- The ring of `p`-adic integers. -/
 notation "ℤ_[" p "]" => PadicInt p
@@ -88,6 +89,7 @@ theorem ext {x y : ℤ_[p]} : (x : ℚ_[p]) = y → x = y :=
 theorem coe_inj {x y : ℤ_[p]} : (x : ℚ_[p]) = y ↔ x = y :=
   Subtype.coe_inj
 
+/-- When a p-adic number `x` has norm `≤ 1`, it is a p-adic integer. -/
 def _root_.Padic.lift (x : ℚ_[p]) (hx : ‖x‖ ≤ 1) : ℤ_[p] := ⟨x, hx⟩
 
 @[simp]
@@ -105,8 +107,6 @@ variable (p)
 theorem mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff.rfl
 
 variable {p}
-
-instance instCommRing : CommRing ℤ_[p] := inferInstanceAs <| CommRing (subring p)
 
 instance : Inhabited ℤ_[p] := ⟨0⟩
 
