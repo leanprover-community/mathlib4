@@ -184,7 +184,7 @@ theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
 def prodLexAssoc (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
   toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
-      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) <| toLex
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) toLex
   map_rel_iff' := by
     simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
       Equiv.prodAssoc_apply]

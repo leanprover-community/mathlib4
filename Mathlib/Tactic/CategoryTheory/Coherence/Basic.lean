@@ -46,7 +46,7 @@ def normalForm (ρ : Type) [Context ρ]
   mvarId.withContext do
     let e ← instantiateMVars <| ← mvarId.getType
     withTraceNode nm (fun _ => return m!"normalize: {e}") do
-      let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars <| e).eq?
+      let some (_, e₁, e₂) := (← whnfR <| ← instantiateMVars e).eq?
         | throwError "{nm}_nf requires an equality goal"
       let ctx : ρ ← mkContext e₁
       CoherenceM.run (ctx := ctx) do

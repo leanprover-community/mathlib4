@@ -375,7 +375,7 @@ theorem le_cons_of_notMem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
   rcases append_of_mem m₂ with ⟨r₁, r₂, rfl⟩
   exact
     perm_middle.subperm_left.2
-      ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
+      ((subperm_cons _).2 ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
 
 theorem cons_le_of_notMem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s ≤ t := by
   apply Iff.intro (fun h ↦ ⟨subset_of_le h (mem_cons_self a s), le_trans (le_cons_self s a) h⟩)

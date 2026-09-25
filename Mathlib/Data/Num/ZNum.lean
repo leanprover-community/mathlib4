@@ -430,11 +430,8 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
 
 -- The next theorems are declared outside of the instance to prevent timeouts.
 
-set_option backward.privateInPublic true in
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul_assoc a b c := by transfer
@@ -448,7 +445,7 @@ instance commRing : CommRing ZNum :=
     right_distrib := by
       transfer
       simp [mul_add, _root_.mul_comm]
-    mul_comm := mul_comm }
+    mul_comm := private mul_comm }
 
 instance nontrivial : Nontrivial ZNum :=
   { exists_pair_ne := ⟨0, 1, by decide⟩ }

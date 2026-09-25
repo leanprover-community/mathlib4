@@ -377,10 +377,10 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
     fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
-        ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
+        ⟨⟨b, by simpa only [← ZFSet.sound hb]⟩, hb⟩,
         fun ⟨b, pb⟩ =>
         let ⟨a, ha⟩ := βα b
-        ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩
+        ⟨⟨a, by simpa only [ZFSet.sound ha]⟩, ha⟩⟩
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
 instance : Sep ZFSet ZFSet :=
@@ -609,7 +609,7 @@ def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
         (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).trans <|
           Iff.trans
               ⟨fun ⟨w, h1, h2⟩ => ⟨w, (Mem.congr_right e).1 h1, h2⟩, fun ⟨w, h1, h2⟩ =>
-                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩ <|
+                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩
             (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).symm
 
 theorem image.mk (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] (x) {y} : y ∈ x → f y ∈ image f x :=

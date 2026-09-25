@@ -274,7 +274,7 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i 
   exact tsub_le_tsub_left (iInf_le (a - f ·) i) _
 
 lemma iInf_add : iInf f + a = ⨅ i, f i + a :=
-  le_antisymm (le_iInf fun _ ↦ add_le_add (iInf_le _ _) le_rfl) <|
+  le_antisymm (le_iInf fun _ ↦ add_le_add (iInf_le _ _) le_rfl)
     (tsub_le_iff_right.1 <| le_iInf fun _ ↦ tsub_le_iff_right.2 <| iInf_le _ _)
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by

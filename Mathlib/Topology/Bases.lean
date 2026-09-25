@@ -858,7 +858,7 @@ variable (α)
 -- see Note [lower instance priority]
 instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
-  ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
+  ⟨fun _ => HasCountableBasis.isCountablyGenerated
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
         (countable_countableBasis α).mono inter_subset_left⟩⟩
 
