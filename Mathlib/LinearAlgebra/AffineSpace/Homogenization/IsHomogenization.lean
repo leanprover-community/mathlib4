@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Range
-public import Mathlib.LinearAlgebra.AffineSpace.Homogenization.Homogenization
+public import Mathlib.LinearAlgebra.AffineSpace.Homogenization.Basic
 
 import Mathlib.Algebra.Module.Submodule.EqLocus
 

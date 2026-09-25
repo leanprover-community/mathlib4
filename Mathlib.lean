@@ -5109,7 +5109,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Dimension
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-public import Mathlib.LinearAlgebra.AffineSpace.Homogenization.Homogenization
+public import Mathlib.LinearAlgebra.AffineSpace.Homogenization.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Homogenization.IsHomogenization
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Matrix
