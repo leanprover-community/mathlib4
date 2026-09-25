@@ -12,7 +12,7 @@ public import Mathlib.Topology.MetricSpace.UniformConvergence
 /-!
 # Peano Existence Theorem
 
-The aim is to prove Peano's existence theorem: for a continuous time-dependent vector field
+We prove Peano's existence theorem: for a continuous time-dependent vector field
 `f : ℝ → E → E` on a finite-dimensional real normed vector space, the initial value problem
 `α t₀ = x₀`, `α' t = f t (α t)` has a local solution. Unlike Picard–Lindelöf, this theorem does not
 require a Lipschitz condition on `f` in the space variable, and uniqueness can fail.
@@ -22,9 +22,8 @@ We work on a cylinder `Icc tmin tmax ×ˢ closedBall x₀ r`, where `f` is conti
 `L * max (tmax - t₀) (t₀ - tmin) ≤ r`. These assumptions, collected in `IsPeanoODE`, give a solution
 on the whole interval `Icc tmin tmax` which stays in `closedBall x₀ r`.
 
-This file constructs and bounds Tonelli approximations, extracts a uniformly convergent subsequence,
-and passes to the limit to obtain a solution of the integral equation on `Icc t₀ tmax`.
-The remaining steps are outlined below.
+This file proves the integral and differential forms of Peano's theorem on `Icc tmin tmax`.
+The proof is outlined below.
 
 ## Main definitions
 
