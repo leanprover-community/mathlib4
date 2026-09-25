@@ -490,8 +490,8 @@ theorem commutator_eq_bot_iff : commutator G = ⊥ ↔ IsMulCommutative G := by
   rw [commutator_eq_bot_iff_center_eq_top, center_eq_top_iff]
 
 @[to_additive]
-theorem commutator_eq_bot [hG : IsMulCommutative G] : commutator G = ⊥ :=
-  (commutator_eq_bot_iff G).mpr hG
+theorem commutator_eq_bot {G : Type*} [CommGroup G] : commutator G = ⊥ :=
+  (commutator_eq_bot_iff G).mpr CommMagma.to_isCommutative
 
 @[to_additive]
 lemma commutator_centralizer_commutator_le_center :
@@ -573,9 +573,11 @@ theorem Subgroup.Normal.quotient_commutative_iff_commutator_le {N : Subgroup G} 
     rw [commutator_eq_closure]
     exact Subgroup.subset_closure (commutator_mem_commutatorSet x y)
 
-open IsMulCommutative in
-instance : IsMulCommutative (G ⧸ _root_.commutator G) :=
-  Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr le_rfl
+instance : CommGroup (G ⧸ _root_.commutator G) where
+  mul_comm a b :=
+    have : IsMulCommutative (G ⧸ _root_.commutator G) :=
+      Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr le_rfl
+    mul_comm' a b
 
 /-- If `N` is a normal subgroup of `G` and `H` a commutative subgroup such that `H ⊔ N = ⊤`,
   then `N` contains `commutator G`. -/

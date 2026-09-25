@@ -67,7 +67,7 @@ section lift
 -- So far we have built Gᵃᵇ and proved it's an abelian group.
 -- Furthermore we defined the canonical projection `of : G → Gᵃᵇ`
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
-variable {A : Type v} [Group A] [IsMulCommutative A] (f : G →* A)
+variable {A : Type v} [CommGroup A] (f : G →* A)
 
 theorem commutator_subset_ker : commutator G ≤ f.ker := by
   rw [commutator_eq_closure, Subgroup.closure_le]

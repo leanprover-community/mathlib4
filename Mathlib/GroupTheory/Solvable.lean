@@ -116,7 +116,7 @@ alias _root_.IsSolvable := Group.IsSolvable
 @[deprecated (since := "2026-07-17")]
 alias _root_.isSolvable_def := Group.isSolvable_def
 
-instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] : IsSolvable G :=
+instance (priority := 100) {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :

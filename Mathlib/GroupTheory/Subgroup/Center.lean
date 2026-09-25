@@ -39,8 +39,8 @@ theorem coe_center : ↑(center G) = Set.center G :=
 theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 
-instance center.isMulCommutative : IsMulCommutative (center G) :=
-  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
+instance center.isMulCommutative : CommGroup (center G) where
+  mul_comm a b := Subtype.ext (b.2.comm a).symm
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
@@ -98,8 +98,8 @@ theorem center_eq_top_iff : center G = ⊤ ↔ IsMulCommutative G := by
   simp [eq_top_iff', isMulCommutative_iff, mem_center_iff, eq_comm]
 
 @[to_additive]
-theorem center_eq_top [hG : IsMulCommutative G] : center G = ⊤ :=
-    center_eq_top_iff.mpr hG
+theorem center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ :=
+  CommGroup.center_eq_top
 
 /-- A group is commutative if the center is the whole group. -/
 @[to_additive /-- An additive group is commutative if the center is the whole group. -/,
