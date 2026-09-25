@@ -50,9 +50,6 @@ variable (R) in
 V-definition of a convex polytope. -/
 def IsPolytope (s : Set X) : Prop := ∃ t : Finset X, s = convexHull R t
 
-lemma isPolytope_def {P : Set X} :
-    IsPolytope R P ↔ ∃ t : Finset X, P = convexHull R t := by rfl
-
 end Semiring
 
 namespace IsPolytope
