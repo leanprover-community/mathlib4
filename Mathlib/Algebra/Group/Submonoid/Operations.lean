@@ -210,13 +210,16 @@ def map (f : M →* N) (S : Submonoid M) :
 theorem coe_map (f : M →* N) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 
-@[to_additive (attr := deprecated "This lemma becomes a tautology, since
+@[to_additive (attr := deprecated rfl "This lemma becomes a tautology, since
 `Submonoid.map` now takes `MonoidHom` as input." +typeChanged (since := "2026-09-25"))]
-alias map_coe_toMonoidHom := rfl
+theorem map_coe_toMonoidHom (f : M →* N) (S : Submonoid M) : S.map f = S.map f :=
+  rfl
 
-@[to_additive (attr := deprecated "This lemma is no longer needed, since
-`Submonoid.map` takes `MonoidHom` as input." +typeChanged (since := "2026-09-25"))]
-alias map_coe_toMulEquiv := MulEquiv.toMonoidHom_eq_coe
+@[to_additive (attr := deprecated MulEquiv.toMonoidHom_eq_coe "This lemma is no longer needed,
+since `Submonoid.map` takes `MonoidHom` as input." +typeChanged (since := "2026-09-25"))]
+theorem map_coe_toMulEquiv {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) (S : Submonoid M) :
+    S.map (f : M ≃* N) = S.map (f : M →* N) :=
+  rfl
 
 @[to_additive (attr := simp)]
 theorem mem_map {f : M →* N} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
