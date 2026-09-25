@@ -31,7 +31,7 @@ subgroups of a group is again nilpotent.
 
 namespace Subgroup
 
-variable {G : Type*} [Group G] {H K : Subgroup G}
+variable {G : Type*} [Group G] (H K : Subgroup G)
 
 /-- For normal `H` and `K`, the lower central series of `H ⊔ K` decays as fast as the two lower
 central series together: the `(m + n)`-th term lies in `H.lowerCentralSeries m ⊔
@@ -59,16 +59,17 @@ public theorem lowerCentralSeries_sup_add_le [H.Normal] [K.Normal] (m n : ℕ) :
         rw [← add_assoc, add_left_inj] at hmn
         grw [hk hmn, commutator_sup_right, commutator_le_left, lowerCentralSeries_succ]
 
+variable {H K} in
 /-- If the lower central series of normal `H` and `K` reach `⊥` by steps `m` and `n`, then that
 of `H ⊔ K` reaches `⊥` by step `m + n`. -/
 public theorem lowerCentralSeries_sup_eq_bot [H.Normal] [K.Normal] {m n : ℕ}
     (hH : H.lowerCentralSeries m = ⊥) (hK : K.lowerCentralSeries n = ⊥) :
     (H ⊔ K).lowerCentralSeries (m + n) = ⊥ :=
-  le_bot_iff.mp <| (lowerCentralSeries_sup_add_le m n).trans <| sup_le hH.le hK.le
+  le_bot_iff.mp <| (lowerCentralSeries_sup_add_le H K m n).trans <| sup_le hH.le hK.le
 
 /-- **Fitting's theorem.** The join of two normal nilpotent subgroups of a group is
 nilpotent. -/
-public instance isNilpotent_sup_of_normal (H K : Subgroup G) [H.Normal] [K.Normal]
+public instance isNilpotent_sup_of_normal [H.Normal] [K.Normal]
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
     Group.IsNilpotent (H ⊔ K :) :=
   isNilpotent_of_lowerCentralSeries_eq_bot <| lowerCentralSeries_sup_eq_bot
@@ -77,7 +78,7 @@ public instance isNilpotent_sup_of_normal (H K : Subgroup G) [H.Normal] [K.Norma
 
 /-- The nilpotency class of the join of two normal nilpotent subgroups is at most the sum of
 their nilpotency classes. -/
-public theorem nilpotencyClass_sup_le (H K : Subgroup G) [H.Normal] [K.Normal]
+public theorem nilpotencyClass_sup_le [H.Normal] [K.Normal]
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
     Group.nilpotencyClass (H ⊔ K :) ≤
       Group.nilpotencyClass H + Group.nilpotencyClass K :=
