@@ -58,7 +58,7 @@ section
 compact support.
 
 You should also extend this typeclass when you extend `CompactlySupportedContinuousMap`. -/
-class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam <| Type*)
+class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam Type*)
     [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop
     extends ContinuousMapClass F α β where
   /-- Each member of the class has compact support. -/
@@ -72,6 +72,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β]
 
+@[macro_inline]
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
   coe_injective f g h := by

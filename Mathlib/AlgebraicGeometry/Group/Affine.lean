@@ -279,7 +279,7 @@ def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bi
     simpa [-comp_over] using! f.w⟩
   left_inv f := by
     apply WithConv.ofConv_injective
-    apply AlgHom.coe_ringHom_injective
+    apply AlgHom.toRingHom_injective
     simp
   right_inv f := by ext1; simp
   map_mul' f g := by
@@ -299,7 +299,7 @@ def Spec.mapMulEquiv {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Bi
 /-- The adjunction between `Spec` and `Γ` as functors between commutative `R`-algebras and
 schemes over `Spec R`. -/
 def algΓAlgSpecAdjunction (R : CommRingCat.{u}) : algΓ R ⊣ algSpec R := by
-  have overAdjunction := Over.postAdjunctionRight (Y := .op <| R) ΓSpec.adjunction
+  have overAdjunction := Over.postAdjunctionRight (Y := .op R) ΓSpec.adjunction
   have overEquivAlg := ((Over.opEquivOpUnder R).trans (commAlgCatEquivUnder R).op.symm).toAdjunction
   simpa using! overAdjunction.comp overEquivAlg
 

@@ -153,16 +153,28 @@ instance : HasRingHomProperty (@SmoothOfRelativeDimension n)
     grind [Scheme.affineOpens]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma smoothOfRelativeDimension_isStableUnderBaseChange :
+instance smoothOfRelativeDimension_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange (@SmoothOfRelativeDimension n) :=
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
     (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n g] :
+    SmoothOfRelativeDimension n (pullback.fst f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_fst f g inferInstance
+
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n f] :
+    SmoothOfRelativeDimension n (pullback.snd f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_snd f g inferInstance
+
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
-    (locally_holdsForLocalizationAway <|
+    (locally_holdsForLocalizationAway
       isStandardSmoothOfRelativeDimension_holdsForLocalizationAway).containsIdentities
 
 /-- Open immersions are smooth. -/

@@ -223,6 +223,9 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
 instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
 
+lemma ρ_apply_eq_smul {G : Type*} [Monoid G] (X : Action V G) (g : G) (v : ToType X.V) :
+    ConcreteCategory.hom (X.ρ g) v = g • v := rfl
+
 end ToMulAction
 
 end Action
