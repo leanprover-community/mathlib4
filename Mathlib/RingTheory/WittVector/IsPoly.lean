@@ -114,25 +114,35 @@ noncomputable section
 -/
 
 
-theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
-    (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
+theorem poly_eq_of_wittPolynomial_aeval_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
+    (h : ∀ n, aeval f (wittPolynomial p ℤ n) = aeval g (wittPolynomial p ℤ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
-  simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
-    bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
+    congr_arg (fun fam => aeval (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+  simpa only [Function.comp_def, map_aeval_eq_aeval_map_map, map_wittPolynomial, ← comp_aeval_apply,
+    aeval_wittPolynomial_xInTermsOfW, aeval_X] using h
 
-theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
-    (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
+@[deprecated poly_eq_of_wittPolynomial_aeval_eq' (since := "2026-09-09")]
+theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
+    (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g :=
+  poly_eq_of_wittPolynomial_aeval_eq' p f g h
+
+theorem poly_eq_of_wittPolynomial_aeval_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
+    (h : ∀ n, aeval f (wittPolynomial p ℤ n) = aeval g (wittPolynomial p ℤ n)) : f = g := by
   ext1 n
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
-  simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
-    bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
+    congr_arg (fun fam => aeval (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+  simpa only [Function.comp_def, map_aeval_eq_aeval_map_map, map_wittPolynomial, ← comp_aeval_apply,
+    aeval_wittPolynomial_xInTermsOfW, aeval_X] using h
+
+@[deprecated poly_eq_of_wittPolynomial_aeval_eq (since := "2026-09-09")]
+theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
+    (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g :=
+  poly_eq_of_wittPolynomial_aeval_eq p f g h
 
 -- Ideally, we would generalise this to n-ary functions
 -- But we don't have a good theory of n-ary compositions in mathlib
@@ -175,11 +185,11 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   obtain ⟨ψ, hg⟩ := hg
   intros
   ext n
-  rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq p φ ψ]
+  rw [hf, hg, poly_eq_of_wittPolynomial_aeval_eq p φ ψ]
   intro k
   apply MvPolynomial.funext
   intro x
-  simp only [hom_bind₁]
+  simp only [map_aeval]
   specialize h (ULift ℤ) (mk p fun i => ⟨x i⟩) k
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
@@ -197,9 +207,9 @@ instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
-  use fun n => bind₁ φ (ψ n)
+  use fun n => aeval φ (ψ n)
   intros
-  simp only [aeval_bind₁, Function.comp, hg, hf]
+  simp only [comp_aeval_apply, Function.comp, hg, hf]
 
 end IsPoly
 
@@ -227,12 +237,12 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
-  refine ⟨⟨fun n ↦ bind₁ (uncurry <|
+  refine ⟨⟨fun n ↦ aeval (uncurry <|
     ![fun k ↦ rename (Prod.mk (0 : Fin 2)) (φ k),
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), ?_⟩⟩
   intros
   funext n
-  simp +unfoldPartialApp only [peval, aeval_bind₁, hh, hf, hg,
+  simp +unfoldPartialApp only [peval, comp_aeval_apply, hh, hf, hg,
     uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
@@ -243,16 +253,16 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
-  use fun n => bind₁ φ (ψ n)
+  use fun n => aeval φ (ψ n)
   intros
-  simp only [peval, aeval_bind₁, hg, hf]
+  simp only [peval, comp_aeval_apply, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
-  refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
+  refine ⟨⟨fun n => aeval (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
-  simp +unfoldPartialApp only [hf, peval, uncurry, aeval_bind₁]
+  simp +unfoldPartialApp only [hf, peval, uncurry, comp_aeval_apply]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp
@@ -273,24 +283,33 @@ we model them as constant unary functions. -/
 instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
 
-@[simp]
+theorem aeval_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
+    aeval (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
+  simp
+
+@[deprecated aeval_zero_wittPolynomial (since := "2026-09-09")]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
-    bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
-  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, map_zero]
+    bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 :=
+  aeval_zero_wittPolynomial n
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if n = 0 then 1 else 0
 
 @[simp]
-theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
-    bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
+theorem aeval_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
+    aeval onePoly (wittPolynomial p ℤ n) = 1 := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
-  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, ite_true]
+  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, aeval_X, ite_true]
   · intro i _hi hi0
     simp only [onePoly, ite_eq_right hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
-      bind₁_X_right, map_mul]
+      aeval_X, map_mul]
   · simp
+
+@[deprecated aeval_onePoly_wittPolynomial (since := "2026-09-09")]
+theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
+    bind₁ onePoly (wittPolynomial p ℤ n) = 1 :=
+  aeval_onePoly_wittPolynomial n
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
@@ -335,11 +354,11 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   obtain ⟨ψ, hg⟩ := hg
   intros
   ext n
-  rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq' p φ ψ]
+  rw [hf, hg, poly_eq_of_wittPolynomial_aeval_eq' p φ ψ]
   intro k
   apply MvPolynomial.funext
   intro x
-  simp only [hom_bind₁]
+  simp only [map_aeval]
   specialize h (ULift ℤ) (mk p fun i => ⟨x (0, i)⟩) (mk p fun i => ⟨x (1, i)⟩) k
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective

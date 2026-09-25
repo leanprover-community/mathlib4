@@ -209,14 +209,13 @@ section WittStructureSimplifications
 @[simp]
 theorem wittZero_eq_zero (n : ℕ) : wittZero p n = 0 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [wittZero, wittStructureRat, bind₁, aeval_zero', constantCoeff_xInTermsOfW, map_zero,
+  simp only [wittZero, wittStructureRat, aeval_zero', constantCoeff_xInTermsOfW, map_zero,
     map_wittStructureInt]
 
 @[simp]
 theorem wittOne_zero_eq_one : wittOne p 0 = 1 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [wittOne, wittStructureRat, xInTermsOfW_zero, map_one, bind₁_X_right,
-    map_wittStructureInt]
+  simp only [wittOne, wittStructureRat, xInTermsOfW_zero, map_one, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
@@ -224,12 +223,10 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   simp only [wittOne, wittStructureRat, map_zero, map_one, map_wittStructureInt]
   induction n using Nat.strong_induction_on with | h n IH => ?_
   rw [xInTermsOfW_eq]
-  simp only [map_mul, map_sub, map_sum, map_pow, bind₁_X_right,
-    bind₁_C_right]
+  simp only [map_mul, map_sub, map_sum, map_pow, aeval_X, aeval_C, algebraMap_eq]
   rw [sub_mul, one_mul]
   rw [Finset.sum_eq_single 0]
-  · simp only [one_mul, pow_zero]
-    simp only [one_pow, one_mul, xInTermsOfW_zero, sub_self, bind₁_X_right]
+  · simp
   · intro i hin hi0
     rw [Finset.mem_range] at hin
     rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero]
@@ -239,25 +236,25 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
 theorem wittAdd_zero : wittAdd p 0 = X (0, 0) + X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittAdd, wittStructureRat, map_add, rename_X, xInTermsOfW_zero, map_X,
-    wittPolynomial_zero, bind₁_X_right, map_wittStructureInt]
+    wittPolynomial_zero, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittSub_zero : wittSub p 0 = X (0, 0) - X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittSub, wittStructureRat, map_sub, rename_X, xInTermsOfW_zero, map_X,
-    wittPolynomial_zero, bind₁_X_right, map_wittStructureInt]
+    wittPolynomial_zero, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittMul_zero : wittMul p 0 = X (0, 0) * X (1, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittMul, wittStructureRat, rename_X, xInTermsOfW_zero, map_X, wittPolynomial_zero,
-    map_mul, bind₁_X_right, map_wittStructureInt]
+    map_mul, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem wittNeg_zero : wittNeg p 0 = -X (0, 0) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [wittNeg, wittStructureRat, rename_X, xInTermsOfW_zero, map_X, wittPolynomial_zero,
-    map_neg, bind₁_X_right, map_wittStructureInt]
+    map_neg, aeval_X, map_wittStructureInt]
 
 @[simp]
 theorem constantCoeff_wittAdd (n : ℕ) : constantCoeff (wittAdd p n) = 0 := by
