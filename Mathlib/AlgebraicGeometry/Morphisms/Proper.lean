@@ -196,7 +196,7 @@ theorem isField_of_universallyClosed (f : X ⟶ Spec ↧K)
 
 /-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
 then `Γ(X, ⊤)` is a finite field extension over `K`. -/
-theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
+theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec ↧K)
     [IsReduced X] [ConnectedSpace X] [UniversallyClosed f] [LocallyOfFiniteType f] :
     f.appTop.hom.Finite := by
   have x : X := Nonempty.some inferInstance
