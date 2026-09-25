@@ -227,7 +227,7 @@ section Reindex
 variable (R) {m o : Type u} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
 /-- The `MulEquiv` induced by an `Equiv` over the index -/
-@[simps!]
+@[simps! apply symm_apply]
 def reindexMulEquiv (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
 
 @[simp]
