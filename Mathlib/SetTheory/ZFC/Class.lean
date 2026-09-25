@@ -47,7 +47,7 @@ recommended_spelling "notCMem" for "ᶜ∉" in [«term_ᶜ∉_»]
 
 @[simp, norm_cast] lemma coe_cmem : x ᶜ∈ A ↔ x ∈ A := by simp [ZFClass.CMem]
 
-@[simp] lemma not_cmem_empty : A ᶜ∉ ∅ := by simp [ZFClass.CMem]
+@[simp] lemma notCMem_empty : A ᶜ∉ ∅ := by simp [ZFClass.CMem]
 
 @[simp] lemma cmem_univ : A ᶜ∈ .univ ↔ ∃ x : ZFSet.{u}, ↑x = A := by simp [ZFClass.CMem]
 
@@ -186,31 +186,31 @@ end ZFClass
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
-@[deprecated ZFClass (since := "2026-09-05"), pp_with_univ, use_set_notation_for_order]
+@[deprecated ZFClass (since := "2026-09-25"), pp_with_univ, use_set_notation_for_order]
 def Class :=
   Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
-set_option linter.deprecated false in
+@[deprecated Set.insert +typeChanged (since := "2026-09-25")]
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
 
 namespace Class
 
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
-@[deprecated Sep.sep +typeChanged (since := "2026-09-05")]
+@[deprecated Sep.sep +typeChanged (since := "2026-09-25")]
 protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
   {y | A y ∧ p y}
 
-@[ext, deprecated Set.ext +typeChanged (since := "2026-09-05")]
+@[ext, deprecated Set.ext +typeChanged (since := "2026-09-25")]
 theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=
   Set.ext
 
 /-- Coerce a ZFC set into a class -/
-@[coe, deprecated SetLike.coe +typeChanged (since := "2026-09-05")]
+@[coe, deprecated SetLike.coe +typeChanged (since := "2026-09-25")]
 def coe (x : ZFSet.{u}) : Class.{u} :=
   { y | y ∈ x }
 
-@[deprecated inferInstance +typeChanged (since := "2026-09-05")]
+@[deprecated inferInstance +typeChanged (since := "2026-09-25")]
 instance : Coe ZFSet Class :=
   ⟨coe⟩
 
@@ -218,57 +218,57 @@ instance : Coe ZFSet Class :=
 set_option linter.deprecatedCoercions false
 
 /-- The universal class -/
-@[deprecated Set.univ +typeChanged (since := "2026-09-05")]
+@[deprecated Set.univ +typeChanged (since := "2026-09-25")]
 def univ : Class :=
   Set.univ
 
-@[deprecated inferInstance +typeChanged (since := "2026-09-05")]
+@[deprecated inferInstance +typeChanged (since := "2026-09-25")]
 instance : Top Class := ⟨univ⟩
 
 deriving instance CompleteLattice for Class
 
 /-- Assert that `A` is a ZFC set satisfying `B` -/
-@[deprecated ZFClass.CMem +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.CMem +typeChanged (since := "2026-09-25")]
 def ToSet (B : Class.{u}) (A : Class.{u}) : Prop :=
   ∃ x : ZFSet, ↑x = A ∧ B x
 
 /-- `A ∈ B` if `A` is a ZFC set which satisfies `B` -/
-@[deprecated ZFClass.CMem +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.CMem +typeChanged (since := "2026-09-25")]
 protected def Mem (B A : Class.{u}) : Prop :=
   ToSet.{u} B A
 
-@[deprecated inferInstance +typeChanged (since := "2026-09-05")]
+@[deprecated inferInstance +typeChanged (since := "2026-09-25")]
 instance : Membership Class Class :=
   ⟨Class.Mem⟩
 
-@[deprecated ZFClass.CMem +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.CMem +typeChanged (since := "2026-09-25")]
 theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x :=
   Iff.rfl
 
-@[simp, deprecated ZFClass.not_cmem_empty +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.notCMem_empty +typeChanged (since := "2026-09-25")]
 theorem notMem_empty (x : Class.{u}) : x ∉ (∅ : Class.{u}) := fun ⟨_, _, h⟩ => h
 
-@[simp, deprecated Set.notMem_empty +typeChanged (since := "2026-09-05")]
+@[simp, deprecated Set.notMem_empty +typeChanged (since := "2026-09-25")]
 theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
   id
 
-@[simp, deprecated ZFClass.cmem_univ +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.cmem_univ +typeChanged (since := "2026-09-25")]
 theorem mem_univ {A : Class.{u}} : A ∈ univ.{u} ↔ ∃ x : ZFSet.{u}, ↑x = A :=
   exists_congr fun _ => iff_of_eq (and_true _)
 
-@[simp, deprecated Set.mem_univ +typeChanged (since := "2026-09-05")]
+@[simp, deprecated Set.mem_univ +typeChanged (since := "2026-09-25")]
 theorem mem_univ_hom (x : ZFSet.{u}) : univ.{u} x :=
   trivial
 
-@[deprecated Set.eq_univ_iff_forall +typeChanged (since := "2026-09-05")]
+@[deprecated Set.eq_univ_iff_forall +typeChanged (since := "2026-09-25")]
 theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A x :=
   Set.eq_univ_iff_forall
 
-@[deprecated Set.eq_univ_of_forall +typeChanged (since := "2026-09-05")]
+@[deprecated Set.eq_univ_of_forall +typeChanged (since := "2026-09-25")]
 theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
   Set.eq_univ_of_forall
 
-@[deprecated inferInstance +typeChanged (since := "2026-09-05")]
+@[deprecated inferInstance +typeChanged (since := "2026-09-25")]
 instance mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
     have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x := by
@@ -279,51 +279,51 @@ instance mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
     rintro B ⟨x, rfl, _⟩
     exact H x⟩
 
-set_option linter.deprecated false in
+@[deprecated ZFClass.instWellFoundedRelation +typeChanged (since := "2026-09-25")]
 instance : WellFoundedRelation Class :=
   ⟨_, mem_wf⟩
 
-@[deprecated ZFClass.cmem_asymm +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.cmem_asymm +typeChanged (since := "2026-09-25")]
 theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=
   asymm_of (· ∈ ·)
 
-@[deprecated ZFClass.cmem_irrefl +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.cmem_irrefl +typeChanged (since := "2026-09-25")]
 theorem mem_irrefl (x : Class) : x ∉ x :=
   irrefl_of (· ∈ ·) x
 
 /-- **There is no universal set.**
 This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) is proper (does not
 belong to the class of all sets). -/
-@[deprecated ZFClass.univ_notCMem_univ +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.univ_notCMem_univ +typeChanged (since := "2026-09-25")]
 theorem univ_notMem_univ : univ ∉ univ :=
   mem_irrefl _
 
 /-- Convert a conglomerate (a collection of classes) into a class -/
-@[deprecated ZFClass.congToClass +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.congToClass +typeChanged (since := "2026-09-25")]
 def congToClass (x : Set Class.{u}) : Class.{u} :=
   { y | ↑y ∈ x }
 
-@[simp, deprecated ZFClass.congToClass_empty +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.congToClass_empty +typeChanged (since := "2026-09-25")]
 theorem congToClass_empty : congToClass ∅ = ∅ := by
   rfl
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
-@[deprecated ZFClass.classToCong +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.classToCong +typeChanged (since := "2026-09-25")]
 def classToCong (x : Class.{u}) : Set Class.{u} :=
   { y | y ∈ x }
 
-@[simp, deprecated ZFClass.classToCong_empty +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.classToCong_empty +typeChanged (since := "2026-09-25")]
 theorem classToCong_empty : classToCong ∅ = ∅ := by
   simp [classToCong]
 
 /-- The power class of a class is the class of all subclasses that are ZFC sets -/
-@[deprecated ZFClass.powerset +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.powerset +typeChanged (since := "2026-09-25")]
 def powerset (x : Class) : Class :=
   congToClass (Set.powerset x)
 
 /-- The union of a class is the class of all members of ZFC sets in the class. Uses `⋃₀` notation,
 scoped under the `Class` namespace. -/
-@[deprecated ZFClass.sUnion +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.sUnion +typeChanged (since := "2026-09-25")]
 def sUnion (x : Class) : Class :=
   sSup (classToCong x)
 
@@ -332,72 +332,72 @@ scoped prefix:110 "⋃₀ " => Class.sUnion
 
 /-- The intersection of a class is the class of all members of ZFC sets in the class .
 Uses `⋂₀` notation, scoped under the `Class` namespace. -/
-@[deprecated ZFClass.sInter +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.sInter +typeChanged (since := "2026-09-25")]
 def sInter (x : Class) : Class :=
   sInf (classToCong x)
 
 @[inherit_doc]
 scoped prefix:110 "⋂₀ " => Class.sInter
 
-@[deprecated SetLike.coe_injective +typeChanged (since := "2026-09-05")]
+@[deprecated SetLike.coe_injective +typeChanged (since := "2026-09-25")]
 theorem coe.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
   ZFSet.ext fun z => by
     change (x : Class.{u}) z ↔ (y : Class.{u}) z
     rw [h]
 
-@[simp, deprecated ZFClass.coe_cmem +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.coe_cmem +typeChanged (since := "2026-09-25")]
 theorem toSet_of_ZFSet (A : Class.{u}) (x : ZFSet.{u}) : ToSet A x ↔ A x :=
   ⟨fun ⟨y, yx, py⟩ => by rwa [coe.inj yx] at py, fun px => ⟨x, rfl, px⟩⟩
 
-@[simp, norm_cast, deprecated SetLike.mem_coe +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated SetLike.mem_coe +typeChanged (since := "2026-09-25")]
 theorem coe_mem {x : ZFSet.{u}} {A : Class.{u}} : ↑x ∈ A ↔ A x :=
   toSet_of_ZFSet _ _
 
-@[simp, deprecated SetLike.mem_coe +typeChanged (since := "2026-09-05")]
+@[simp, deprecated SetLike.mem_coe +typeChanged (since := "2026-09-25")]
 theorem coe_apply {x y : ZFSet.{u}} : (y : Class.{u}) x ↔ x ∈ y :=
   Iff.rfl
 
-@[simp, norm_cast, deprecated ZFClass.coe_subset +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_subset +typeChanged (since := "2026-09-25")]
 theorem coe_subset (x y : ZFSet.{u}) : (x : Class.{u}) ⊆ y ↔ x ⊆ y :=
   Iff.rfl
 
-@[simp, norm_cast, deprecated ZFClass.coe_sep +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_sep +typeChanged (since := "2026-09-25")]
 theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
     (ZFSet.sep p x : Class) = { y ∈ x | p y } :=
   ext fun _ => ZFSet.mem_sep
 
-@[simp, norm_cast, deprecated ZFClass.coe_empty +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_empty +typeChanged (since := "2026-09-25")]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
   ext fun y => iff_false _ ▸ ZFSet.notMem_empty y
 
-@[simp, norm_cast, deprecated ZFClass.coe_insert +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_insert +typeChanged (since := "2026-09-25")]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=
   ext fun _ => ZFSet.mem_insert_iff
 
-@[simp, norm_cast, deprecated ZFClass.coe_union +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_union +typeChanged (since := "2026-09-25")]
 theorem coe_union (x y : ZFSet.{u}) : ↑(x ∪ y) = (x : Class.{u}) ∪ y :=
   ext fun _ => ZFSet.mem_union
 
-@[simp, norm_cast, deprecated ZFClass.coe_inter +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_inter +typeChanged (since := "2026-09-25")]
 theorem coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (x : Class.{u}) ∩ y :=
   ext fun _ => ZFSet.mem_inter
 
-@[simp, norm_cast, deprecated ZFClass.coe_sdiff +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_sdiff +typeChanged (since := "2026-09-25")]
 theorem coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
   ext fun _ => ZFSet.mem_sdiff
 
 set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-06-03")] alias coe_diff := coe_sdiff
 
-@[simp, norm_cast, deprecated ZFClass.coe_powerset +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_powerset +typeChanged (since := "2026-09-25")]
 theorem coe_powerset (x : ZFSet.{u}) : ↑x.powerset = powerset.{u} x :=
   ext fun _ => ZFSet.mem_powerset
 
-@[simp, deprecated ZFClass.mem_powerset +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.mem_powerset +typeChanged (since := "2026-09-25")]
 theorem powerset_apply {A : Class.{u}} {x : ZFSet.{u}} : powerset A x ↔ ↑x ⊆ A :=
   Iff.rfl
 
-@[simp, deprecated ZFClass.mem_sUnion +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.mem_sUnion +typeChanged (since := "2026-09-25")]
 theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x z ∧ y ∈ z := by
   constructor
   · rintro ⟨-, ⟨z, rfl, hxz⟩, hyz⟩
@@ -405,12 +405,12 @@ theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x
   · exact fun ⟨z, hxz, hyz⟩ => ⟨_, coe_mem.2 hxz, hyz⟩
 
 open scoped ZFSet in
-@[simp, norm_cast, deprecated ZFClass.coe_sUnion +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_sUnion +typeChanged (since := "2026-09-25")]
 theorem coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : Class.{u}) :=
   ext fun y =>
     ZFSet.mem_sUnion.trans (sUnion_apply.trans <| by rfl).symm
 
-@[simp, deprecated ZFClass.cmem_sUnion +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.cmem_sUnion +typeChanged (since := "2026-09-25")]
 theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y ∈ z := by
   constructor
   · rintro ⟨w, rfl, z, hzx, hwz⟩
@@ -418,23 +418,23 @@ theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y �
   · rintro ⟨w, hwx, z, rfl, hwz⟩
     exact ⟨z, rfl, w, hwx, hwz⟩
 
-@[deprecated ZFClass.mem_sInter +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.mem_sInter +typeChanged (since := "2026-09-25")]
 theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
   refine ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, ?_⟩
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
 
 open scoped ZFSet in
-@[simp, norm_cast, deprecated ZFClass.coe_sInter +typeChanged (since := "2026-09-05")]
+@[simp, norm_cast, deprecated ZFClass.coe_sInter +typeChanged (since := "2026-09-25")]
 theorem coe_sInter {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
   Set.ext fun _ => (ZFSet.mem_sInter h).trans sInter_apply.symm
 
-@[deprecated ZFClass.cmem_of_cmem_sInter +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.cmem_of_cmem_sInter +typeChanged (since := "2026-09-25")]
 theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   obtain ⟨w, rfl, hw⟩ := hy
   exact coe_mem.2 (hw z hz)
 
-@[deprecated ZFClass.cmem_sInter +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.cmem_sInter +typeChanged (since := "2026-09-25")]
 theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z := by
   refine ⟨fun hy z => mem_of_mem_sInter hy, fun H => ?_⟩
   simp_rw [mem_def, sInter_apply]
@@ -443,18 +443,18 @@ theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z
   refine ⟨y, rfl, fun w hxw => ?_⟩
   simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
 
-@[simp, deprecated ZFClass.sUnion_empty +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.sUnion_empty +typeChanged (since := "2026-09-25")]
 theorem sUnion_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) := by
   ext
   simp
 
-@[simp, deprecated ZFClass.sInter_empty +typeChanged (since := "2026-09-05")]
+@[simp, deprecated ZFClass.sInter_empty +typeChanged (since := "2026-09-25")]
 theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
   simp [sInter, Top.top]
 
 /-- An induction principle for sets. If every subset of a class is a member, then the class is
   universal. -/
-@[deprecated ZFClass.eq_univ_of_powerset_subset +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.eq_univ_of_powerset_subset +typeChanged (since := "2026-09-25")]
 theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = univ :=
   eq_univ_of_forall
     (by
@@ -466,11 +466,11 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
               WellFounded.not_lt_min ZFSet.mem_wf _ hB <| coe_apply.1 hx))
 
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
-@[deprecated ZFClass.iota +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.iota +typeChanged (since := "2026-09-25")]
 def iota (A : Class) : Class :=
   ⋃₀ ({ x | ∀ y, A y ↔ y = x } : Class)
 
-@[deprecated ZFClass.iota_val +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.iota_val +typeChanged (since := "2026-09-25")]
 theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A y ↔ y = x) : iota A = ↑x :=
   ext fun y =>
     ⟨fun ⟨_, ⟨x', rfl, h⟩, yx'⟩ => by rwa [← (H x').1 <| (h x').2 rfl], fun yx =>
@@ -479,7 +479,7 @@ theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A y ↔ y = x) : iota A = �
 /-- Unlike the other set constructors, the `iota` definite descriptor
   is a set for any set input, but not constructively so, so there is no
   associated `Class → Set` function. -/
-@[deprecated ZFClass.iota_ex +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.iota_ex +typeChanged (since := "2026-09-25")]
 theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
   mem_univ.2 <|
     Or.elim (Classical.em <| ∃ x, ∀ y, A y ↔ y = x) (fun ⟨x, h⟩ => ⟨x, Eq.symm <| iota_val A x h⟩)
@@ -487,11 +487,11 @@ theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
       ⟨∅, ext fun _ => coe_empty.symm ▸ ⟨False.rec, fun ⟨_, ⟨x, rfl, H⟩, _⟩ => hn ⟨x, H⟩⟩⟩
 
 /-- Function value -/
-@[deprecated ZFClass.fval +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.fval +typeChanged (since := "2026-09-25")]
 def fval (F A : Class.{u}) : Class.{u} :=
   iota fun y => ToSet (fun x => F (ZFSet.pair x y)) A
 
-@[deprecated ZFClass.fval_ex +typeChanged (since := "2026-09-05")]
+@[deprecated ZFClass.fval_ex +typeChanged (since := "2026-09-25")]
 theorem fval_ex (F A : Class.{u}) : F.fval A ∈ univ.{u} :=
   iota_ex _
 
