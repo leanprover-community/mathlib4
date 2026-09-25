@@ -118,6 +118,8 @@ info: Message: 'error: a PR's scope must not contain backslashes; use forward sl
 #guard_msgs in
 #check_title "doc(README.md): fix typo"
 
+#guard_msgs in
+#check_title "feat({100,1000}.yaml,scripts/*.py,Algebra/*): foobar"
 
 end scope
 
