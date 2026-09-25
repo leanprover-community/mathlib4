@@ -242,7 +242,7 @@ theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
       ← mul_assoc, mul_comm _ (Finset.prod _ _)]
   congr 3
   · rw [cpow_add _ _ (Nat.cast_ne_zero.mpr hn), cpow_one, mul_comm]
-  · refine Finset.prod_congr (by rfl) fun x _ => ?_
+  · refine Finset.prod_congr rfl fun x _ => ?_
     push_cast; ring
   · abel
 
@@ -444,6 +444,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A
     exact A.1
 
+@[grind =]
 theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
   constructor
   · contrapose!; exact Gamma_ne_zero
@@ -454,6 +455,18 @@ theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
   refine Gamma_ne_zero fun m => ?_
   contrapose! hs
   simpa only [hs, neg_re, ← ofReal_natCast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
+
+/-- The ascending Pochhammer symbol is given by the ratio of `Γ` functions. -/
+theorem Gamma_add_nat_div_Gamma_eq {n : ℕ} (z : ℂ) (hz : ∀ k : ℕ, z ≠ -k) :
+    Gamma (z + n) / Gamma z = (ascPochhammer ℂ n).eval z := by
+  induction n generalizing z with
+  | zero =>
+    simp
+    grind
+  | succ n ih =>
+    suffices h : Gamma (z + n + 1) = Gamma (z + n) * (z + n) by
+      simp [ascPochhammer_succ_right, ← ih z hz, div_mul_eq_mul_div, h, ← add_assoc]
+    grind
 
 end Complex
 

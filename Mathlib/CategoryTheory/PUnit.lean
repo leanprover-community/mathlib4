@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`
@@ -81,10 +80,9 @@ theorem equiv_punit_iff_unique :
     rw [this a, this b]
     simp only [Functor.comp_map]
     congr 3
-    apply ULift.ext
     simp [eq_iff_true_of_subsingleton]
   · rintro ⟨⟨p⟩, h⟩
-    haveI := fun x y => (h x y).some
+    have := fun x y => (h x y).some
     refine
       Nonempty.intro
         (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩)

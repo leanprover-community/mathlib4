@@ -24,7 +24,7 @@ case.
 * `SimpleGraph.deleteIncidenceSet G v` is the simple graph `G` with the incidence set of `v`
   removed from the edge set.
 
-* `SimpleGraph.deleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
+* `SimpleGraph.DeleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
   `p`, that is, at least `r` edges must be deleted to satisfy `p`.
 -/
 
@@ -168,8 +168,8 @@ theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel
   apply card_edgeFinset_induce_of_support_subset
   trans G.support \ {x}
   · exact support_deleteIncidenceSet_subset G x
-  · rw [Set.compl_eq_univ_diff]
-    exact Set.diff_subset_diff_left (Set.subset_univ G.support)
+  · rw [Set.compl_eq_univ_sdiff]
+    exact Set.sdiff_subset_sdiff_left (Set.subset_univ G.support)
 
 /-- The finite edge set of `G.deleteIncidenceSet x` is the finite edge set of the simple graph `G`
 set difference the finite incidence set of the vertex `x`. -/
@@ -194,7 +194,7 @@ theorem edgeFinset_deleteIncidenceSet_eq_filter (G : SimpleGraph V) [DecidableRe
   apply filter_congr
   intro _ h
   rw [incidenceFinset, Set.mem_toFinset, incidenceSet,
-    Set.mem_setOf_eq, not_and, Classical.imp_iff_right_iff]
+    Set.mem_ofPred_eq, not_and, Classical.imp_iff_right_iff]
   left
   rwa [mem_edgeFinset] at h
 
@@ -205,7 +205,7 @@ theorem card_support_deleteIncidenceSet
     card (G.deleteIncidenceSet x).support ≤ card G.support - 1 := by
   rw [← Set.singleton_subset_iff, ← Set.toFinset_subset_toFinset] at hx
   simp_rw [← Set.card_singleton x, ← Set.toFinset_card, ← card_sdiff_of_subset hx,
-    ← Set.toFinset_diff]
+    ← Set.toFinset_sdiff]
   apply card_le_card
   rw [Set.toFinset_subset_toFinset]
   exact G.support_deleteIncidenceSet_subset x

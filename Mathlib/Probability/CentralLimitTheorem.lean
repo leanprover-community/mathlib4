@@ -64,7 +64,7 @@ lemma tendsto_charFun_inv_sqrt_mul_pow {X : Ω → ℝ}
     convert! this using 4 with n <;> norm_cast <;> simp [field]
   have : Tendsto (fun (n : ℕ) ↦ (√n)⁻¹ * t) atTop (𝓝 0) := by
     rw [← zero_mul t]
-    exact .mul_const t (tendsto_inv_atTop_zero.comp <| Real.tendsto_sqrt_atTop.comp <|
+    exact .mul_const t (tendsto_inv_atTop_zero.comp <| Real.tendsto_sqrt_atTop.comp
       tendsto_natCast_atTop_atTop)
   convert! (taylor_charFun_two hX h0 h1).comp_tendsto this using 2
   simp
@@ -103,7 +103,7 @@ private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
   have mX0 := (hident 0).aemeasurable_fst
   have intX0 : Integrable (X 0) P := memLp_one_iff_integrable.1 <|
     (memLp_two_of_variance_ne_zero mX0.aestronglyMeasurable hX).mono_exponent (by simp)
-  have this (n : ℕ) ω : (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]) =
+  have (n : ℕ) ω : (√(n * Var[X 0; P]))⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * P[X 0]) =
       (√n)⁻¹ * ∑ k ∈ Finset.range n, (X k ω - P[X 0]) / √Var[X 0; P] := by
     rw [← Finset.sum_div, Finset.sum_sub_distrib]
     simp [field]
@@ -120,6 +120,7 @@ private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
 independent, identically distributed with mean `μ` and variance `v`, and a random variable
 `Y : Ω' → ℝ` following `gaussianReal 0 v`, the sequence
 `n ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
+@[wikidata Q190391]
 theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
     (hY : HasLaw Y (gaussianReal 0 Var[X 0; P].toNNReal) P')
     (hX : MemLp (X 0) 2 P) (hindep : iIndepFun X P)

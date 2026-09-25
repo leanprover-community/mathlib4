@@ -28,7 +28,7 @@ public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 @[expose] public section
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
+variable {R : Type*} {α : Type*} {β : Type*}
 
 open Matrix
 
@@ -327,7 +327,7 @@ the diagonal and zero elsewhere.
 See also `Matrix.blockDiagonal'` if the matrices may not have the same size everywhere.
 -/
 def blockDiagonal (M : o → Matrix m n α) : Matrix (m × o) (n × o) α :=
-  of <| (fun ⟨i, k⟩ ⟨j, k'⟩ => if k = k' then M k i j else 0 : m × o → n × o → α)
+  of (fun ⟨i, k⟩ ⟨j, k'⟩ => if k = k' then M k i j else 0 : m × o → n × o → α)
 
 -- TODO: set as an equation lemma for `blockDiagonal`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
@@ -340,11 +340,11 @@ theorem blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
 @[simp]
 theorem blockDiagonal_apply_eq (M : o → Matrix m n α) (i j k) :
     blockDiagonal M (i, k) (j, k) = M k i j :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem blockDiagonal_apply_ne (M : o → Matrix m n α) (i j) {k k'} (h : k ≠ k') :
     blockDiagonal M (i, k) (j, k') = 0 :=
-  if_neg h
+  ite_eq_right h
 
 theorem blockDiagonal_map (M : o → Matrix m n α) (f : α → β) (hf : f 0 = 0) :
     (blockDiagonal M).map f = blockDiagonal fun k => (M k).map f := by
@@ -568,7 +568,7 @@ and zero elsewhere.
 
 This is the dependently-typed version of `Matrix.blockDiagonal`. -/
 def blockDiagonal' (M : ∀ i, Matrix (m' i) (n' i) α) : Matrix (Σ i, m' i) (Σ i, n' i) α :=
-  of <|
+  of
     (fun ⟨k, i⟩ ⟨k', j⟩ => if h : k = k' then M k i (cast (congr_arg n' h.symm) j) else 0 :
       (Σ i, m' i) → (Σ i, n' i) → α)
 
@@ -594,11 +594,11 @@ theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
 @[simp]
 theorem blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :
     blockDiagonal' M ⟨k, i⟩ ⟨k, j⟩ = M k i j :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem blockDiagonal'_apply_ne (M : ∀ i, Matrix (m' i) (n' i) α) {k k'} (i j) (h : k ≠ k') :
     blockDiagonal' M ⟨k, i⟩ ⟨k', j⟩ = 0 :=
-  dif_neg h
+  dite_eq_right h
 
 theorem blockDiagonal'_map (M : ∀ i, Matrix (m' i) (n' i) α) (f : α → β) (hf : f 0 = 0) :
     (blockDiagonal' M).map f = blockDiagonal' fun k => (M k).map f := by
@@ -679,10 +679,10 @@ theorem blockDiagonal'_mul [NonUnitalNonAssocSemiring α] [∀ i, Fintype (n' i)
   ext ⟨k, i⟩ ⟨k', j⟩
   simp only [blockDiagonal'_apply, mul_apply, ← Finset.univ_sigma_univ, Finset.sum_sigma]
   rw [Fintype.sum_eq_single k]
-  · simp only [dif_pos]
+  · simp only [dite_eq_left]
     split_ifs <;> simp
   · intro j' hj'
-    exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, zero_mul]
+    exact Finset.sum_eq_zero fun _ _ => by rw [dite_eq_right hj'.symm, zero_mul]
 
 section
 
@@ -831,10 +831,9 @@ theorem toBlock_mul_eq_mul {m n k : Type*} [Fintype n] (p : m → Prop) (q : k �
 theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n → Prop)
     [DecidablePred q] (r : k → Prop) (A : Matrix m n R) (B : Matrix n k R) : (A * B).toBlock p r =
     A.toBlock p q * B.toBlock q r + (A.toBlock p fun i => ¬q i) * B.toBlock (fun i => ¬q i) r := by
-  classical
-    ext i k
-    simp only [toBlock_apply, mul_apply]
-    exact (Fintype.sum_subtype_add_sum_subtype q fun x => A (↑i) x * B x ↑k).symm
+  ext i k
+  simp only [toBlock_apply, mul_apply]
+  exact (Fintype.sum_subtype_add_sum_subtype q fun x => A (↑i) x * B x ↑k).symm
 
 end
 

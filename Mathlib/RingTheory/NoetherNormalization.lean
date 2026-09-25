@@ -10,6 +10,7 @@ public import Mathlib.Data.List.Indexes
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether normalization lemma
+
 This file contains a proof by Nagata of the Noether normalization lemma.
 
 ## Main Results
@@ -99,8 +100,9 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     ∑ i : Fin (n + 1), (r i) * v i := by
   rw [← natDegree_finSuccEquiv, monomial_eq, Finsupp.prod_pow v fun a ↦ X a]
   simp only [Fin.prod_univ_succ, Fin.sum_univ_succ, map_mul, map_prod, map_pow,
-    AlgEquiv.ofAlgHom_apply, MvPolynomial.aeval_C, MvPolynomial.aeval_X, if_pos, Fin.succ_ne_zero,
-    ite_false, one_smul, map_add, finSuccEquiv_X_zero, finSuccEquiv_X_succ, algebraMap_eq]
+    AlgEquiv.ofAlgHom_apply, MvPolynomial.aeval_C, MvPolynomial.aeval_X, ite_eq_left,
+    Fin.succ_ne_zero, ite_false, one_smul, map_add, finSuccEquiv_X_zero, finSuccEquiv_X_succ,
+    algebraMap_eq]
   have h (i : Fin n) :
       (Polynomial.C (X (R := k) i) + Polynomial.X ^ r i.succ) ^ v i.succ ≠ 0 :=
     pow_ne_zero (v i.succ) (leadingCoeff_ne_zero.mp <| by simp [add_comm, leadingCoeff_X_pow_add_C])
@@ -113,16 +115,16 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
 
 /-- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
 private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
-    (T f <| monomial v <| coeff v f).degreeOf 0 ≠
-    (T f <| monomial w <| coeff w f).degreeOf 0 := by
+    (T f <| monomial v <| f.coeff v).degreeOf 0 ≠
+    (T f <| monomial w <| f.coeff w).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
   refine sum_r_mul_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by lia)
 
 private lemma leadingCoeff_finSuccEquiv_t :
-    (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
-    algebraMap k _ (coeff v f) := by
+    (finSuccEquiv k n <| T f <| monomial v <| f.coeff v).leadingCoeff =
+    algebraMap k _ (f.coeff v) := by
   rw [monomial_eq, Finsupp.prod_fintype]
   · simp only [map_mul, map_prod, leadingCoeff_mul, leadingCoeff_prod]
     rw [AlgEquiv.ofAlgHom_apply, algHom_C, algebraMap_eq, finSuccEquiv_apply,
@@ -132,7 +134,7 @@ private lemma leadingCoeff_finSuccEquiv_t :
     have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := fun j ↦ by
       by_cases h : j = 0
       · simp [h, finSuccEquiv_apply]
-      · simp only [aeval_eq_bind₁, bind₁_X_right, if_neg h, one_smul, map_add, map_pow]
+      · simp only [aeval_eq_bind₁, bind₁_X_right, ite_eq_right h, one_smul, map_add, map_pow]
         obtain ⟨i, rfl⟩ := Fin.exists_succ_eq.mpr h
         simp [finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
@@ -142,8 +144,8 @@ private lemma leadingCoeff_finSuccEquiv_t :
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
-    (fun v ↦ (T f ((monomial v) (coeff v f))).degreeOf 0) (support_nonempty.mpr fne)
-  set h := fun w ↦ (MvPolynomial.monomial w) (coeff w f)
+    (fun v ↦ (T f <| monomial v <| f.coeff v).degreeOf 0) (support_nonempty.mpr fne)
+  set h := fun w ↦ MvPolynomial.monomial w (f.coeff w)
   simp only [← natDegree_finSuccEquiv] at vs
   replace vs : ∀ x ∈ f.support \ {v}, (finSuccEquiv k n ((T f) (h x))).degree <
       (finSuccEquiv k n ((T f) (h v))).degree := by
@@ -162,7 +164,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
       by simpa only [map_eq_zero_iff _ (AlgEquiv.injective _)] using eq
     exact (Finset.sup_lt_iff <| Ne.bot_lt (fun x ↦ h2 <| degree_eq_bot.mp x)).mpr vs
   nth_rw 2 [← f.support_sum_monomial_coeff]
-  rw [Finset.sum_eq_add_sum_diff_singleton_of_mem vin h]
+  rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem vin h]
   rw [leadingCoeff_finSuccEquiv_t] at coeff
   simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
 
@@ -243,7 +245,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
     by_contra ne
     have eq := eq_C_of_isEmpty (a - b)
-    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
+    have ne : (a - b).coeff 0 ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
     obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
       rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]
@@ -257,11 +259,8 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       set ϕ := kerLiftAlg <| hom2 f I
       have := Quotient.nontrivial_iff.mpr hi
       obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
-      have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
-        AlgHom.ext fun a ↦ by
-          simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
-      exact ⟨s, by lia, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
-        intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
+      exact ⟨s, by lia, ϕ.comp g, (ϕ.coe_comp g) ▸ (kerLiftAlg_injective _).comp injg,
+        intg.trans g.toRingHom ϕ.toRingHom (hom2_isIntegral f I fne fi).kerLift⟩
 
 variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
   [fin : Algebra.FiniteType k R]
@@ -278,7 +277,7 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
-  simp only [AlgHom.coe_comp, AlgEquiv.coe_algHom, EmbeddingLike.comp_injective,
+  simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
     AlgHom.toRingHom_eq_coe]
   exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 

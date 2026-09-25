@@ -118,8 +118,8 @@ instance LiftRel.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl (LiftRel 
     rw [← h]
     apply Computation.LiftRel.refl _ |>.refl
 
-theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
-  fun s1 s2 (h : Function.swap (LiftRel R) s2 s1) => by rwa [LiftRel.swap, H.swap_eq] at h
+instance LiftRel.symm (R : α → α → Prop) [Std.Symm R] : Std.Symm (LiftRel R) where
+  symm s1 s2 (h : Function.swap (LiftRel R) s2 s1) := by rwa [LiftRel.swap, Std.Symm.swap_eq] at h
 
 instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (LiftRel R) := by
   refine ⟨fun s t u h1 h2 ↦ ?_⟩
@@ -154,7 +154,7 @@ instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (Lift
 
 theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) where
   refl := @LiftRel.refl α R H.stdRefl |>.refl
-  symm := @LiftRel.symm α R H.symmetric
+  symm := @LiftRel.symm α R H.stdSymm |>.symm _ _
   trans := @LiftRel.trans α R H.isTrans |>.trans _ _ _
 
 /-- If two sequences are equivalent, then they have the same values and
@@ -162,21 +162,21 @@ theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence
   the other), although they may differ in the number of `think`s needed to
   arrive at the answer. -/
 def Equiv : WSeq α → WSeq α → Prop :=
-  LiftRel (· = ·)
+  LiftRel Eq
 
 @[inherit_doc] infixl:50 " ~ʷ " => Equiv
 
 @[refl]
 theorem Equiv.refl : ∀ s : WSeq α, s ~ʷ s :=
-  LiftRel.refl (· = ·) |>.refl
+  LiftRel.refl Eq |>.refl
 
 @[symm]
 theorem Equiv.symm : ∀ {s t : WSeq α}, s ~ʷ t → t ~ʷ s :=
-  @(LiftRel.symm (· = ·) (@Eq.symm _))
+  LiftRel.symm Eq |>.symm _ _
 
 @[trans]
 theorem Equiv.trans : ∀ {s t u : WSeq α}, s ~ʷ t → t ~ʷ u → s ~ʷ u :=
-  LiftRel.trans (· = ·) |>.trans _ _ _
+  LiftRel.trans Eq |>.trans _ _ _
 
 theorem Equiv.equivalence : Equivalence (@Equiv α) :=
   ⟨@Equiv.refl _, @Equiv.symm _, @Equiv.trans _⟩

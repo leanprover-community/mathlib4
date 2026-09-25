@@ -10,10 +10,11 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Basic properties of group actions
@@ -32,7 +33,6 @@ of `•` belong elsewhere.
 -/
 
 @[expose] public section
-
 
 universe u v
 
@@ -345,6 +345,21 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
 
+@[to_additive (attr := simp)]
+theorem stabilizer_subgroupOf (H : Subgroup G) (a : α) :
+    (stabilizer G a).subgroupOf H = stabilizer H a := by
+  simp [Subgroup.ext_iff, Subgroup.mem_subgroupOf, subgroup_smul_def]
+
+@[to_additive (attr := simp)]
+theorem stabilizer_comap_conj_eq_centralizer_singleton (g : G) :
+    (stabilizer (MulAut G) g).comap MulAut.conj = Subgroup.centralizer {g} := by
+  simp [Subgroup.ext_iff, Subgroup.mem_centralizer_singleton_iff, mul_inv_eq_iff_eq_mul]
+
+@[to_additive]
+theorem orbit_range_conj_eq_conjugatesOf (g : G) :
+    orbit (MulAut.conj (G := G)).range g = conjugatesOf g := by
+  simp [Set.ext_iff, conjugatesOf, mem_orbit_iff, subgroup_smul_def]
+
 end MulAction
 
 section
@@ -359,3 +374,11 @@ lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
   rw [← sub_eq_zero, ← smul_eq_zero_iff_left hx, Units.val_one, sub_smul, hg, one_smul, sub_self]
 
 end
+
+@[simp] lemma Multiplicative.mulAction_orbit {α β : Type*} [VAdd α β] (b : β) :
+    MulAction.orbit (Multiplicative α) b = AddAction.orbit α b :=
+  rfl
+
+@[simp] lemma Additive.mulAction_orbit {α β : Type*} [SMul α β] (b : β) :
+    AddAction.orbit (Additive α) b = MulAction.orbit α b :=
+  rfl

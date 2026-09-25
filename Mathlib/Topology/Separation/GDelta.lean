@@ -96,7 +96,7 @@ theorem Disjoint.hasSeparatingCover_closed_gdelta_right {s t : Set X} [NormalSpa
   · refine fun n ↦ ⟨isOpen_compl_iff.mpr isClosed_closure, ?_⟩
     simp only [closure_compl, disjoint_compl_left_iff_subset]
     rw [← closure_eq_iff_isClosed.mpr t_cl] at clt_sub_g'
-    exact subset_closure.trans <| (clt_sub_g' n).trans <| (g'_open n).subset_interior_closure
+    exact subset_closure.trans <| (clt_sub_g' n).trans (g'_open n).subset_interior_closure
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
@@ -112,7 +112,7 @@ theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : 
   PerfectlyNormalSpace.closed_gdelta hs
 
 instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
-  specializes_symmetric x y hxy := by
+  specializes_symm.symm x y hxy := by
     rw [specializes_iff_forall_closed]
     intro K hK hyK
     apply IsClosed.isGδ at hK

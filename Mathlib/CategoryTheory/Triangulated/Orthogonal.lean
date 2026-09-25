@@ -71,7 +71,6 @@ example [P.IsTriangulated] : P.rightOrthogonal.IsTriangulated := inferInstance
 
 example [P.IsTriangulated] : P.leftOrthogonal.IsTriangulated := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_trW [P.IsTriangulated] :
     P.trW.isLocal = P.rightOrthogonal := by
   ext Y
@@ -86,7 +85,6 @@ lemma isLocal_trW [P.IsTriangulated] :
       α (hY _ (P.le_shift _ _ hX₃))
     exact ⟨β, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isColocal_trW [P.IsTriangulated] :
     P.trW.isColocal = P.leftOrthogonal := by
   ext X

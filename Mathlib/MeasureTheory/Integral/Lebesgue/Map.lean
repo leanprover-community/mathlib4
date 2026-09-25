@@ -46,14 +46,12 @@ theorem lintegral_map' {f : β → ℝ≥0∞} {g : α → β}
     _ = ∫⁻ a, hf.mk f (g a) ∂μ := lintegral_congr_ae <| hg.ae_eq_mk.symm.fun_comp _
     _ = ∫⁻ a, f (g a) ∂μ := lintegral_congr_ae (ae_eq_comp hg hf.ae_eq_mk.symm)
 
-theorem lintegral_map_le (f : β → ℝ≥0∞) (g : α → β) :
+theorem lintegral_map_le (f : β → ℝ≥0∞) {g : α → β} (hg : AEMeasurable g μ) :
     ∫⁻ a, f a ∂Measure.map g μ ≤ ∫⁻ a, f (g a) ∂μ := by
-  by_cases hg : AEMeasurable g μ
-  · rw [← iSup_lintegral_measurable_le_eq_lintegral]
-    refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
-    rw [lintegral_map' hi.aemeasurable hg]
-    exact lintegral_mono fun _ ↦ h'i _
-  · simp [map_of_not_aemeasurable hg]
+  rw [← iSup_lintegral_measurable_le_eq_lintegral]
+  refine iSup₂_le fun i hi => iSup_le fun h'i => ?_
+  rw [lintegral_map' hi.aemeasurable hg]
+  exact lintegral_mono fun _ ↦ h'i _
 
 theorem lintegral_comp {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂map g μ :=
@@ -84,7 +82,7 @@ theorem _root_.MeasurableEmbedding.lintegral_map {g : α → β}
   refine le_antisymm (iSup₂_le fun f₀ hf₀ => ?_) (iSup₂_le fun f₀ hf₀ => ?_)
   · rw [SimpleFunc.lintegral_map _ hg.measurable]
     have : (f₀.comp g hg.measurable : α → ℝ≥0∞) ≤ f ∘ g := fun x => hf₀ (g x)
-    exact le_iSup_of_le (comp f₀ g hg.measurable) (by exact le_iSup (α := ℝ≥0∞) _ this)
+    exact le_iSup_of_le (comp f₀ g hg.measurable) (by grw [← le_iSup _ this])
   · rw [← f₀.extend_comp_eq hg (const _ 0), ← SimpleFunc.lintegral_map, ←
       SimpleFunc.lintegral_eq_lintegral, ← lintegral]
     refine lintegral_mono_ae (hg.ae_map_iff.2 <| Eventually.of_forall fun x => ?_)

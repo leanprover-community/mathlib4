@@ -49,10 +49,6 @@ variable {P : Cᵒᵖ ⥤ Type w} {X : C} (J : GrothendieckTopology C)
 
 namespace Sheaf
 
-@[deprecated (since := "2026-02-06")] alias isSheafFor_bind := Presieve.isSheafFor_bind
-
-@[deprecated (since := "2026-02-06")] alias isSheafFor_trans := Presieve.isSheafFor_trans
-
 /-- Construct the finest (largest) Grothendieck topology for which the given presheaf is a sheaf. -/
 @[stacks 00Z9 "This is a special case of the Stacks entry, but following a different
 proof (see the Stacks comments)."]
@@ -164,7 +160,7 @@ variable (J : GrothendieckTopology C)
 If `J` is subcanonical, we obtain a "Yoneda" functor from the defining site
 into the sheaf category.
 -/
-@[simps! obj_obj map_hom]
+@[simps! obj_obj map_hom, implicit_reducible]
 def yoneda [J.Subcanonical] : C ⥤ Sheaf J (Type v) :=
   ObjectProperty.lift _ CategoryTheory.yoneda <| fun X ↦ by
     rw [isSheaf_iff_isSheaf_of_type]
@@ -176,6 +172,9 @@ for the category of types. -/
 def uliftYoneda [J.Subcanonical] : C ⥤ Sheaf J (Type (max v w)) :=
   J.yoneda ⋙ sheafCompose J uliftFunctor.{w}
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `C` is a category with `[Category.{max w v} C]`, this is the isomorphism
 `uliftYoneda.{w} (C := C) ≅ yoneda`. -/
 @[simps!]
@@ -195,6 +194,9 @@ def yonedaCompSheafToPresheaf :
     J.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
   Iso.refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `yonedaCompSheafToPresheaf` with a raise in the universe level. -/
 @[simps! +dsimpLhs]
 def uliftYonedaCompSheafToPresheaf :

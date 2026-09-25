@@ -13,6 +13,7 @@ import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Interior and boundary of a manifold
+
 Define the interior and boundary of a manifold.
 
 ## Main definitions
@@ -116,8 +117,8 @@ lemma isBoundaryPoint_iff {x : M} : I.IsBoundaryPoint x ↔ extChartAt I x x ∈
 
 /-- Every point is either an interior or a boundary point. -/
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
-  rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_diff_interior,
-    I.isClosed_range.closure_eq, mem_diff]
+  rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_sdiff_interior,
+    I.isClosed_range.closure_eq, mem_sdiff]
   exact fun h ↦ ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
@@ -174,10 +175,7 @@ variable [I.Boundaryless]
 /-- Boundaryless `ModelWithCorners` implies boundaryless manifold. -/
 instance : BoundarylessManifold I M where
   isInteriorPoint' x := by
-    let r := ((chartAt H x).isOpen_extend_target (I := I)).interior_eq
-    have : extChartAt I x = (chartAt H x).extend I := rfl
-    rw [← this] at r
-    rw [isInteriorPoint_iff, r]
+    rw [isInteriorPoint_iff, extChartAt, (chartAt H x).isOpen_extend_target.interior_eq]
     exact PartialEquiv.map_source _ (mem_extChartAt_source _)
 
 end Boundaryless
@@ -283,7 +281,7 @@ lemma mem_interior_range_of_mem_interior_range_of_mem_atlas (hn : n ≠ 0)
     exact e.extend_preimage_mem_nhds hex <| e'.open_source.mem_nhds hex'
   rw [← ContinuousLinearMap.coe_restrictScalars' (R := ℝ),
     (hφ.differentiableOn hn _ (by simp [φ, hex, hex'])).restrictScalars_fderivWithin (𝕜 := ℝ)
-      (uniqueDiffWithinAt_of_mem_nhds hφx), fderivWithin_of_mem_nhds <| hφx] at hφx'
+      (uniqueDiffWithinAt_of_mem_nhds hφx), fderivWithin_of_mem_nhds hφx] at hφx'
   rw [show e'.extend I x = φ (e.extend I x) by simp [φ, hex]]
   replace hφ := ((hφ.restrict_scalars ℝ).differentiableOn hn).differentiableAt hφx
   exact hφ.mem_interior_convex_of_surjective_fderiv hφx I.convex_range I.isClosed_range
@@ -361,7 +359,7 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ E' := NormedSpace.restrictScalars ℝ 𝕜 E'
   -- Write everything in terms of extended charts around `x` and `f x`.
-  simp only [mfderiv, hf, ite_true] at hf'
+  simp only [mfderiv, hf] at hf'
   have hf'' := hf.differentiableWithinAt_writtenInExtChartAt.differentiableAt <| by
     simpa [← mem_interior_iff_mem_nhds] using! hx
   rw [fderivWithin_eq_fderiv (I.uniqueDiffOn _ <| by simp) hf''] at hf'
@@ -389,7 +387,7 @@ lemma IsLocalDiffeomorphAt.isInteriorPoint_iff (hn : n ≠ 0) {f : M → N} {x :
   · refine (hf.mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
     exact (hf.mfderivToContinuousLinearEquiv hn).surjective
   · rw [← hf.localInverse_left_inv hf.localInverse_mem_target]
-    refine (hf.localInverse_mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
+    refine (hf.mdifferentiableAt_localInverse hn).isInteriorPoint_of_surjective_mfderiv ?_ h
     exact (hf.mfderivToContinuousLinearEquiv hn).symm.surjective
 
 lemma IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x : M}
@@ -488,9 +486,8 @@ variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
+  {J : ModelWithCorners 𝕜 E' H'}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
@@ -545,7 +542,7 @@ end prod
 /-! Interior and boundary of the disjoint union of two manifolds. -/
 section disjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 open Topology
 

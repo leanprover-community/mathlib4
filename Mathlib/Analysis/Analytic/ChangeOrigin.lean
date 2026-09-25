@@ -133,7 +133,7 @@ def changeOriginIndexEquiv :
   invFun s :=
     ⟨s.1 - s.2.card, s.2.card,
       ⟨s.2.map
-        (finCongr <| (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEmbedding,
+        (finCongr (tsub_add_cancel_of_le <| card_finset_fin_le s.2).symm).toEmbedding,
         Finset.card_map _⟩⟩
   left_inv := by
     rintro ⟨k, l, ⟨s : Finset (Fin <| k + l), hs : s.card = l⟩⟩
@@ -279,7 +279,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
       have := (p.hasFPowerSeriesOnBall_changeOrigin k h.pos).hasSum x_mem_ball
       rw [zero_add] at this
       refine HasSum.sigma_of_hasSum this (fun l => ?_) ?_
-      · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
+      · simp only [changeOriginSeries, sum_apply]
         apply hasSum_fintype
       · refine .of_nnnorm_bounded
           (p.changeOriginSeries_summable_aux₂ (mem_eball_zero_iff.1 x_mem_ball) k)

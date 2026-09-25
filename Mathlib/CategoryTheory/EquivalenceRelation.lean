@@ -177,10 +177,10 @@ def ReflexiveRelation.ofRefl {X : Type w} {φ : X → X → Prop} (hφ : Std.Ref
 
 /-- Standard symmetric relations on types are internal symmetric relations in the category of
 types. -/
-def SymmetricRelation.ofSymmetric {X : Type w} {φ : X → X → Prop} (hφ : Symmetric φ) :
+def SymmetricRelation.ofSymmetric {X : Type w} {φ : X → X → Prop} [Std.Symm φ] :
     SymmetricRelation (p₁OfRel φ) (p₂OfRel φ) where
   __ := jointlyMono₂ φ
-  s := ↾(fun ⟨⟨x₁, x₂⟩, h⟩ => ⟨⟨x₂, x₁⟩, hφ h⟩)
+  s := ↾(fun ⟨⟨x₁, x₂⟩, h⟩ => ⟨⟨x₂, x₁⟩, symm h⟩)
 
 /-- Standard transitive relations on types are internal transitive relations in the category of
 types. -/
@@ -199,7 +199,7 @@ types. -/
 def EquivalenceRelation.ofEquivalence {X : Type w} {φ : X → X → Prop} (hφ : Equivalence φ) :
     EquivalenceRelation (p₁OfRel φ) (p₂OfRel φ) where
   __ := ReflexiveRelation.ofRefl hφ.stdRefl
-  __ := SymmetricRelation.ofSymmetric hφ.symmetric
+  __ := let := hφ.stdSymm; SymmetricRelation.ofSymmetric
   __ := TransitiveRelation.ofIsTrans hφ.isTrans
 
 variable {R : Type w} (p₁ p₂ : R ⟶ X)
@@ -217,10 +217,11 @@ lemma refl_of_reflexiveRelation (e : ReflexiveRelation p₁ p₂) :
 
 /-- An internal symmetric relation in the category of types gives rise to a standard symmetric
 relation. -/
-lemma symmetric_of_symmetricRelation (e : SymmetricRelation p₁ p₂) :
-    Symmetric (Rel.ofPair p₁ p₂) := by
-  refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_, ?_⟩
-  all_goals simpa
+lemma symm_of_symmetricRelation (e : SymmetricRelation p₁ p₂) : Std.Symm (Rel.ofPair p₁ p₂) where
+  symm x₁ x₂ := fun ⟨r, hr₁, hr₂⟩ ↦ ⟨e.s r, by simpa, by simpa⟩
+
+@[deprecated (since := "2026-06-10")]
+alias symmetric_of_symmetricRelation := symm_of_symmetricRelation
 
 /-- An internal transitive relation in the category of types gives rise to a standard transitive
 relation. -/
@@ -237,7 +238,7 @@ relation. -/
 lemma equivalence_of_equivalenceRelation (e : EquivalenceRelation p₁ p₂) :
     Equivalence (Rel.ofPair p₁ p₂) where
   refl := (refl_of_reflexiveRelation e.toReflexiveRelation).refl
-  symm h := symmetric_of_symmetricRelation e.toSymmetricRelation h
+  symm := symm_of_symmetricRelation e.toSymmetricRelation |>.symm _ _
   trans := (isTrans_of_transitiveRelation e.toTransitiveRelation).trans _ _ _
 
 end TypeCat

@@ -74,6 +74,9 @@ theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
+theorem norm_qParam_lt_one (hh : 0 < h) {z : ℂ} (hz : 0 < im z) : ‖𝕢 h z‖ < 1 := by
+  simpa using (norm_qParam_lt_iff hh 0 z).mpr hz
+
 lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
   simp [qParam, exp_ne_zero]
 
@@ -115,6 +118,12 @@ variable (h : ℝ) (f : ℂ → ℂ)
 /-- The function `q ↦ f (invQParam h q)`, extended by a non-canonical choice of limit at 0. -/
 def cuspFunction : ℂ → ℂ :=
   update (f ∘ invQParam h) 0 (limUnder (𝓝[≠] 0) (f ∘ invQParam h))
+
+@[simp]
+theorem cuspFunction_zero : cuspFunction h (0 : ℂ → ℂ) = 0 := by
+  simp only [cuspFunction, Function.comp_def, Pi.zero_apply]
+  rw [tendsto_const_nhds.limUnder_eq]
+  exact update_eq_self _ _
 
 theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
     cuspFunction h f q = f (invQParam h q) :=
@@ -210,7 +219,7 @@ theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     fun x hx ↦ (hS1 x hx.1 hx.2).1.differentiableWithinAt
   have hF_bd : BddAbove (norm ∘ cuspFunction h f '' (S \ {0})) := by
     use c
-    simp only [mem_upperBounds, Set.mem_image, Set.mem_diff, forall_exists_index, and_imp]
+    simp only [mem_upperBounds, Set.mem_image, Set.mem_sdiff, forall_exists_index, and_imp]
     intro y q hq hq2 hy
     simpa only [← hy, norm_one, mul_one] using! (hS1 q hq hq2).2
   have := differentiableOn_update_limUnder_of_bddAbove (IsOpen.mem_nhds hS2 hS3) h_diff hF_bd

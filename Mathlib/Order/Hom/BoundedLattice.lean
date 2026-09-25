@@ -198,10 +198,10 @@ section Sup
 
 variable [Max β] [Bot β] [Max γ] [Bot γ] [Max δ] [Bot δ]
 
-@[to_dual]
+@[to_dual (attr := macro_inline)]
 instance : FunLike (SupBotHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -362,9 +362,10 @@ variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ] [BoundedOrder α] [
 def toBoundedOrderHom (f : BoundedLatticeHom α β) : BoundedOrderHom α β :=
   { f, (f.toLatticeHom : α →o β) with }
 
+@[macro_inline]
 instance instFunLike : FunLike (BoundedLatticeHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
 instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom α β) α β where
   map_sup f := f.map_sup'

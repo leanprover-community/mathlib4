@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.Defs
 This file defines ideal quotients as a special case of submodule quotients and proves some basic
 results about these quotients.
 
-See `Algebra.RingQuot` for quotients of non-commutative rings.
+See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 ## Main definitions
 
@@ -97,7 +97,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
-  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h :)
+  RingHom.ext fun x => Quotient.inductionOn' x (RingHom.congr_fun h :)
 
 instance : Nonempty (R ⧸ I) :=
   ⟨mk I 37⟩

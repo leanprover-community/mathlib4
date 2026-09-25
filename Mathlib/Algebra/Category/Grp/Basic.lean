@@ -60,37 +60,46 @@ abbrev of (M : Type u) [Group M] : GrpCat := ⟨M⟩
 
 end GrpCat
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddGrpCat.of X` as `↧X`. -/
+@[app_delab AddGrpCat.of]
+meta def AddGrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `GrpCat.of X` as `↧X`. -/
+@[app_delab GrpCat.of]
+meta def GrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 /-- The type of morphisms in `AddGrpCat R`. -/
 @[ext]
 structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
 structure GrpCat.Hom (A B : GrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
 namespace GrpCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category GrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `GrpCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddGrpCat` back into an `AddMonoidHom`. -/]
@@ -119,8 +128,6 @@ lemma coe_id {X : GrpCat} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : GrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : GrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -184,11 +191,11 @@ lemma hom_inv_apply {X Y : GrpCat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s :
 
 @[to_additive]
 instance : Inhabited GrpCat :=
-  ⟨GrpCat.of PUnit⟩
+  ⟨↧PUnit⟩
 
 @[to_additive hasForgetToAddMonCat]
 instance hasForgetToMonCat : HasForget₂ GrpCat MonCat where
-  forget₂.obj X := MonCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := MonCat.ofHom f.hom
 
 @[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [Group X] [Group Y]
@@ -234,7 +241,7 @@ example {R S : GrpCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h
 @[to_additive (attr := simps obj map)
   /-- Universe lift functor for additive groups. -/]
 def uliftFunctor : GrpCat.{v} ⥤ GrpCat.{max v u} where
-  obj X := GrpCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := GrpCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -260,7 +267,7 @@ attribute [instance] AddCommGrpCat.str CommGrpCat.str
 initialize_simps_projections AddCommGrpCat (carrier → coe, -str)
 initialize_simps_projections CommGrpCat (carrier → coe, -str)
 
-/-- `Ab` is an abbreviation for `AddCommGroup`, for the sake of mathematicians' sanity. -/
+/-- `Ab` is an abbreviation for `AddCommGrpCat`, for the sake of mathematicians' sanity. -/
 abbrev Ab := AddCommGrpCat
 
 namespace CommGrpCat
@@ -277,37 +284,46 @@ abbrev of (M : Type u) [CommGroup M] : CommGrpCat := ⟨M⟩
 
 end CommGrpCat
 
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `AddCommGrpCat.of X` as `↧X`. -/
+@[app_delab AddCommGrpCat.of]
+meta def AddCommGrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+/-- This prints `CommGrpCat.of X` as `↧X`. -/
+@[app_delab CommGrpCat.of]
+meta def CommGrpCat.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
 /-- The type of morphisms in `AddCommGrpCat R`. -/
 @[ext]
 structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommGrpCat R`. -/
 @[to_additive, ext]
 structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
 namespace CommGrpCat
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category CommGrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory CommGrpCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommGrpCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddCommGrpCat` back into an `AddMonoidHom`. -/]
@@ -337,15 +353,13 @@ lemma coe_id {X : CommGrpCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
-
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommGrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   ConcreteCategory.hom_ext _ _ w
 
 @[to_additive]
 instance : Inhabited CommGrpCat :=
-  ⟨CommGrpCat.of PUnit⟩
+  ⟨↧PUnit⟩
 
 @[to_additive]
 -- This is not `simp` to avoid rewriting in types of terms.
@@ -405,7 +419,7 @@ lemma hom_inv_apply {X Y : CommGrpCat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) =
 
 @[to_additive]
 instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
-  forget₂.obj X := GrpCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := GrpCat.ofHom f.hom
 
 @[to_additive (attr := simp)] lemma forget₂_grp_map_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y]
@@ -430,7 +444,7 @@ instance : (forget₂ CommGrpCat.{u} GrpCat).Full :=
 
 @[to_additive hasForgetToAddCommMonCat]
 instance hasForgetToCommMonCat : HasForget₂ CommGrpCat CommMonCat where
-  forget₂.obj X := CommMonCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := CommMonCat.ofHom f.hom
 
 @[to_additive (attr := simp)] lemma forget₂_commMonCat_map_ofHom {X Y : Type u}
@@ -463,7 +477,7 @@ example {R S : CommGrpCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by sim
 @[to_additive (attr := simps obj map)
   /-- Universe lift functor for additive commutative groups. -/]
 def uliftFunctor : CommGrpCat.{v} ⥤ CommGrpCat.{max v u} where
-  obj X := CommGrpCat.of (ULift.{u, v} X)
+  obj X := ↧(ULift.{u, v} X)
   map {_ _} f := CommGrpCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.hom.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -473,20 +487,20 @@ end CommGrpCat
 
 namespace AddCommGrpCat
 
--- Note that because `ℤ : Type 0`, this forces `G : AddCommGroup.{0}`,
+-- Note that because `ℤ : Type 0`, this forces `G : AddCommGrpCat.{0}`,
 -- so we write this explicitly to be clear.
 -- TODO generalize this, requiring a `ULiftInstances.lean` file
 /-- Any element of an abelian group gives a unique morphism from `ℤ` sending
 `1` to that element. -/
 @[simps!]
-def asHom {G : AddCommGrpCat.{0}} (g : G) : AddCommGrpCat.of ℤ ⟶ G :=
+def asHom {G : AddCommGrpCat.{0}} (g : G) : ↧ℤ ⟶ G :=
   ofHom (zmultiplesHom G g)
 
 theorem asHom_injective {G : AddCommGrpCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
   simpa using CategoryTheory.congr_fun w 1
 
 @[ext]
-theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : AddCommGrpCat.of ℤ ⟶ G)
+theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : ↧ℤ ⟶ G)
     (w : f (1 : ℤ) = g (1 : ℤ)) : f = g :=
   hom_ext (AddMonoidHom.ext_int w)
 
@@ -506,7 +520,7 @@ def MulEquiv.toGrpIso {X Y : GrpCat} (e : X ≃* Y) : X ≅ Y where
   hom := GrpCat.ofHom e.toMonoidHom
   inv := GrpCat.ofHom e.symm.toMonoidHom
 
-/-- Build an isomorphism in the category `AddGroup` from an `AddEquiv` between `AddGroup`s. -/
+/-- Build an isomorphism in the category `AddGrpCat` from an `AddEquiv` between `AddGroup`s. -/
 add_decl_doc AddEquiv.toAddGrpIso
 
 /-- Build an isomorphism in the category `CommGrpCat` from a `MulEquiv`
@@ -527,15 +541,15 @@ namespace CategoryTheory.Iso
 def groupIsoToMulEquiv {X Y : GrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
-/-- Build an `addEquiv` from an isomorphism in the category `AddGroup` -/
+/-- Build an `addEquiv` from an isomorphism in the category `AddGrpCat` -/
 add_decl_doc addGroupIsoToAddEquiv
 
-/-- Build a `MulEquiv` from an isomorphism in the category `CommGroup`. -/
+/-- Build a `MulEquiv` from an isomorphism in the category `CommGrpCat`. -/
 @[to_additive (attr := simps!)]
 def commGroupIsoToMulEquiv {X Y : CommGrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
-/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGroup`. -/
+/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGrpCat`. -/
 add_decl_doc addCommGroupIsoToAddEquiv
 
 end CategoryTheory.Iso
@@ -600,19 +614,22 @@ instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomo
 -- note: in the following definitions, there is a problem with `@[to_additive]`
 -- as the `Category` instance is not found on the additive variant
 -- this variant is then renamed with an `Aux` suffix
-
+set_option linter.checkUnivs false in
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs) GrpMaxAux
+@[to_additive GrpMaxAux
   /-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/]
 abbrev GrpMax.{u1, u2} := GrpCat.{max u1 u2}
+
+set_option linter.checkUnivs false in
 /-- An alias for `AddGrpCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
 abbrev AddGrpMax.{u1, u2} := AddGrpCat.{max u1 u2}
 
+set_option linter.checkUnivs false in
 /-- An alias for `CommGrpCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs) AddCommGrpMaxAux
+@[to_additive AddCommGrpMaxAux
   /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/]
 abbrev CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
+
+set_option linter.checkUnivs false in
 /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
 abbrev AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}
