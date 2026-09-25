@@ -220,9 +220,8 @@ def test_getBaseURLFrom : IO Unit := do
 
 /-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
 `azureURL`, under whichever base the environment selects. Without a base-URL
-override, both positions of the legacy switch are pinned: the endpoint by
-default, and under legacy `azureURL` for `master` and the endpoint for the
-other containers. -/
+override, both positions of the legacy switch are pinned for `master`: the
+endpoint by default, `azureURL` under legacy. -/
 def test_Container_getURL : IO Unit := do
   IO.println "Container.getURL:"
   assertEq "master read URL" s!"{← getBaseURL .master}/mathlib4-master"
@@ -238,8 +237,6 @@ def test_Container_getURL : IO Unit := do
     useLegacy.set true
     assertEq "legacy read URL matches azureURL"
       Container.master.azureURL (← Container.master.getURL)
-    assertEq "legacy leaves forks on the endpoint"
-      s!"{publicCacheEndpoint}/mathlib4-forks" (← Container.forks.getURL)
     useLegacy.set ambient
 
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
@@ -608,8 +605,7 @@ def test_markerURL : IO Unit := do
 
 /-- Marker probes read through the container's read base; marker writes follow
 the resolved upload destination (`StagedUploadDest.markerURL`). Without a
-base-URL override, both positions of the legacy switch are pinned: probes of
-`forks` address the endpoint either way. -/
+base-URL override, probes address the public endpoint. -/
 def test_markerReadURL : IO Unit := do
   IO.println "markerReadURL:"
   let base ← getBaseURL .forks
@@ -620,16 +616,9 @@ def test_markerReadURL : IO Unit := do
     s!"{base}/mathlib4-forks/m/alice/mathlib4/abc123"
     (← markerReadURL .forks "Alice/Mathlib4" "abc123")
   if (normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_BASE_URL")).isNone then
-    let ambient ← useLegacy.get
-    useLegacy.set false
     assertEq "default probe URL is on the endpoint"
       s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
       (← markerReadURL .forks "alice/mathlib4" "abc123")
-    useLegacy.set true
-    assertEq "legacy leaves the forks probe on the endpoint"
-      s!"{publicCacheEndpoint}/mathlib4-forks/m/alice/mathlib4/abc123"
-      (← markerReadURL .forks "alice/mathlib4" "abc123")
-    useLegacy.set ambient
 
 end Marker
 
