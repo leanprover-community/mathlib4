@@ -733,6 +733,7 @@ variable (F)
 
 /-- The `Functor.CoreMonoidal` structure given by a lax monoidal functor such
 that `ε` and `μ` are isomorphisms. -/
+@[implicit_reducible]
 noncomputable def ofLaxMonoidal [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (μ F X Y)] :
     F.CoreMonoidal where
   εIso := asIso (ε F)
@@ -740,7 +741,7 @@ noncomputable def ofLaxMonoidal [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (
 
 /-- The `Functor.CoreMonoidal` structure given by an oplax monoidal functor such
 that `η` and `δ` are isomorphisms. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ofOplaxMonoidal [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :
     F.CoreMonoidal where
   εIso := (asIso (η F)).symm

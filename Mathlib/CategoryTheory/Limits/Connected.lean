@@ -176,9 +176,6 @@ instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutSh
     · exact hp
     · rwa [← t (WidePushoutShape.Hom.init _)]
 
-instance parallelPairInhabited : Inhabited WalkingParallelPair :=
-  ⟨WalkingParallelPair.one⟩
-
 instance parallel_pair_connected : IsConnected WalkingParallelPair := by
   apply IsConnected.of_induct
   · introv _ t
