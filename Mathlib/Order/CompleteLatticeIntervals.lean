@@ -112,6 +112,20 @@ end InfSet
 
 section OrdConnected
 
+@[to_dual]
+theorem WithTop.ordConnected_image_coe [Preorder α] {s : Set α} (hs : s.OrdConnected) :
+    (((↑) : α → WithTop α) '' s).OrdConnected := by
+  constructor
+  rintro x ⟨a, ha, rfl⟩ y ⟨b, hb, rfl⟩ z hz
+  match z with
+  | ⊤ => simp at hz
+  | (c : α) => use c, hs.out' ha hb ⟨mod_cast hz.left, mod_cast hz.right⟩
+
+@[to_dual]
+theorem WithTop.ordConnected_range_coe [Preorder α] :
+    (Set.range ((↑) : α → WithTop α)).OrdConnected := by
+  simpa [← image_univ] using ordConnected_image_coe ordConnected_univ
+
 variable [ConditionallyCompleteLinearOrder α]
 
 attribute [local instance] subsetSupSet
