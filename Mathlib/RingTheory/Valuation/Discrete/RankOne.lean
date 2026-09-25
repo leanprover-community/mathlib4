@@ -5,9 +5,11 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
+public import Mathlib.Algebra.Group.Int.TypeTags
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Data.Int.WithZero
+public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 /-!
 # Discrete valuations have rank one
@@ -70,6 +72,11 @@ noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
   strictMono' := (toNNReal_strictMono he).comp (valueGroup₀_equiv_withZeroMulInt_strictMono v)
   exists_val_nontrivial := IsNontrivial.exists_val_nontrivial
 
+lemma rankOne_hom_eq {e : ℝ≥0} (he : 1 < e) :
+    (hv.rankOne v he).hom =
+      (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp (valueGroup₀_equiv_withZeroMulInt v) :=
+  rfl
+
 end LinearOrderedCommGroupWithZero
 
 section WithZeroMulInt
@@ -90,8 +97,38 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
     simp [generator', generator_eq_exp_neg_one_of_surjective hsurj, toAdd_unzero_eq_log h0,
       exp_log h0]
 
+lemma valueGroup₀_equiv_withZeroMulInt_restrict_zpow_eq {v : Valuation R ℤᵐ⁰}
+    [hv : IsRankOneDiscrete v] (hv0 : ∀ x ≠ 0, v x ≠ 0) (x : R) :
+    ((hv.valueGroup₀_equiv_withZeroMulInt v) (v.restrict x)) ^ (- logEquiv hv.generator) = v x := by
+  by_cases hx : x = 0
+  · simp only [hx, map_zero, logEquiv_apply, zpow_neg, inv_eq_zero]
+    rw [zero_zpow]
+    simp [ne_eq, ← exp_inj (y := (0 : ℤ)), (IsRankOneDiscrete.generator_lt_one v).ne]
+  obtain ⟨c, hc⟩ : ∃ c : ℤ, (hv.generator' : ValueGroup₀ (v : R →*₀ ℤᵐ⁰))⁻¹ ^ c = v.restrict x := by
+    rw [restrict_def, ValueGroup₀.restrict₀_of_ne_zero (by simp [hv0, hx])]
+    simp [← coe_inv, ← WithZero.coe_zpow, WithZero.coe_inj,-inv_zpow', ← Subgroup.mem_zpowers_iff,
+       hv.generator'_zpowers_eq_top, Subgroup.mem_top]
+  have hc' : hv.generator ^ (- c) = v x := by
+    simp [← v.embedding_restrict, ← hc, hv.embedding_generator']
+  rw [restrict_def, ValueGroup₀.restrict₀_of_ne_zero (by simp [hv0, hx])] at hc ⊢
+  simp only [← coe_inv, ← WithZero.coe_zpow, WithZero.coe_inj] at hc
+  rw [IsRankOneDiscrete.valueGroup₀_equiv_withZeroMulInt_apply, map'_coe, MonoidHom.coe_ofClass]
+  have hg' : Subgroup.zpowers (hv.generator' v)⁻¹ = ⊤ := by
+    simp [Subgroup.zpowers_inv, IsRankOneDiscrete.generator'_zpowers_eq_top v]
+  rw [← hc, mulintEquivOfZPowersEqTop_symm_apply_zpow hg' c]
+  simp only [logEquiv_apply, ← hc', zpow_neg]
+  nth_rw 2 [← exp_log (hv.generator_ne_zero v)]
+  simp [exp, ← WithZero.coe_zpow, ← Int.ofAdd_mul, mul_comm c]
+
 end WithZeroMulInt
 
 end Ring
+
+/-- Absolute value corresponding to a discrete valuation. -/
+@[simps!]
+noncomputable def absoluteValue {K : Type*} [DivisionRing K] {v : Valuation K Γ}
+    [v.IsRankOneDiscrete] {e : ℝ≥0} (he : 1 < e) : AbsoluteValue K ℝ :=
+  let : v.RankOne := IsRankOneDiscrete.rankOne v he
+  v.absoluteValue
 
 end Valuation.IsRankOneDiscrete
