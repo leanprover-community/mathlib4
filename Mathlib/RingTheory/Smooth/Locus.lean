@@ -66,7 +66,6 @@ lemma smoothLocus_eq_compl_support_inter [EssFiniteType R A] :
   · trans Module.Free (Localization.AtPrime p.asIdeal) Ω[Localization.AtPrime p.asIdeal⁄R]
     · have : EssFiniteType A (Localization.AtPrime p.asIdeal) :=
         .of_isLocalization _ p.asIdeal.primeCompl
-      have : EssFiniteType R (Localization.AtPrime p.asIdeal) := .comp _ A _
       exact ⟨fun _ ↦ Module.free_of_flat_of_isLocalRing, fun _ ↦ inferInstance⟩
     · have := IsLocalizedModule.iso p.asIdeal.primeCompl
         (KaehlerDifferential.map R R A (Localization.AtPrime p.asIdeal))
@@ -93,7 +92,6 @@ lemma basicOpen_subset_smoothLocus_iff [FinitePresentation R A] {f : A} :
 lemma basicOpen_subset_smoothLocus_iff_smooth [FinitePresentation R A] {f : A} :
     ↑(PrimeSpectrum.basicOpen f) ⊆ smoothLocus R A ↔
       Algebra.Smooth R (Localization.Away f) := by
-  have : FinitePresentation A (Localization.Away f) := IsLocalization.Away.finitePresentation f
   rw [basicOpen_subset_smoothLocus_iff]
   exact ⟨fun H ↦ ⟨H, .trans _ A _⟩, fun H ↦ H.1⟩
 
@@ -129,10 +127,6 @@ lemma isOpen_smoothLocus [FinitePresentation R A] : IsOpen (smoothLocus R A) := 
     (smoothLocus_eq_compl_support_inter.le hx).2 Module.isOpen_freeLocus
   rw [Module.basicOpen_subset_freeLocus_iff] at hf
   let Af := Localization.Away f
-  have : Algebra.FinitePresentation A (Localization.Away f) :=
-    IsLocalization.Away.finitePresentation f
-  have : Algebra.FinitePresentation R (Localization.Away f) :=
-    .trans _ A _
   have : IsOpen (smoothLocus R Af) := by
     have := IsLocalizedModule.iso (.powers f)
       (KaehlerDifferential.map R R A (Localization.Away f))

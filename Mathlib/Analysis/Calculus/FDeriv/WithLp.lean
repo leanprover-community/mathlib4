@@ -81,17 +81,14 @@ nonrec theorem hasStrictFDerivAt_apply (f : PiLp p E) (i : ι) :
 
 theorem hasFDerivAt_ofLp (f : PiLp p E) :
     HasFDerivAt ofLp (continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
-  have := Fintype.ofFinite ι
   (hasStrictFDerivAt_ofLp p f).hasFDerivAt
 
 theorem hasFDerivAt_toLp (f : ∀ i, E i) :
     HasFDerivAt (toLp p) (continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
-  have := Fintype.ofFinite ι
   (hasStrictFDerivAt_toLp p f).hasFDerivAt
 
 nonrec theorem hasFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
-  have := Fintype.ofFinite ι
   (hasStrictFDerivAt_apply p f i).hasFDerivAt
 
 end PiLp

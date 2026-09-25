@@ -337,7 +337,6 @@ lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
     mulHeight (c • x) = mulHeight x := by
   rcases eq_or_ne x 0 with rfl | hx
   · rw [smul_zero]
-  have : Nonempty ι := (ne_iff.mp hx).nonempty
   have hcx : c • x ≠ 0 := by simp [hc, hx]
   simp only [mulHeight_eq hx, mulHeight_eq hcx, Pi.smul_apply, smul_eq_mul, map_mul,
     ← mul_iSup_of_nonneg <| AbsoluteValue.nonneg .., Multiset.prod_map_mul]
@@ -436,7 +435,6 @@ lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι �
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
-  have : Nonempty ι := .intro i
   rw [← mulHeight_smul_eq_mulHeight x (inv_ne_zero hi)]
   convert! mulHeight_one
   ext1 j

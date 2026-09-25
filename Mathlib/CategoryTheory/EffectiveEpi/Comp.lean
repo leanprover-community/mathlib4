@@ -96,7 +96,6 @@ lemma effectiveEpiFamily_of_effectiveEpi_epi_comp {α : Type*} {B : C} {X Y : α
 
 lemma effectiveEpi_of_effectiveEpi_epi_comp {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X)
     [Epi g] [EffectiveEpi (g ≫ f)] : EffectiveEpi f :=
-  have := (effectiveEpi_iff_effectiveEpiFamily (g ≫ f)).mp inferInstance
   have := effectiveEpiFamily_of_effectiveEpi_epi_comp
     (X := fun () ↦ X) (Y := fun () ↦ Y) (fun () ↦ f) (fun () ↦ g)
   inferInstance

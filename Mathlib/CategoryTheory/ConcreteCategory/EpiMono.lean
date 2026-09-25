@@ -101,7 +101,6 @@ lemma surjective_eq_epimorphisms_iff :
   · intro
     apply le_antisymm (surjective_le_epimorphisms C)
     intro _ _ f hf
-    have : Epi f := hf
     change Function.Surjective ((forget C).map f)
     rw [← epi_iff_surjective]
     infer_instance
@@ -118,7 +117,6 @@ lemma injective_eq_monomorphisms_iff :
   · intro
     apply le_antisymm (injective_le_monomorphisms C)
     intro _ _ f hf
-    have : Mono f := hf
     change Function.Injective ((forget C).map f)
     rw [← mono_iff_injective]
     infer_instance
@@ -187,7 +185,6 @@ theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f := by
   rw [bijective_iff_isIso_ofHom]
   refine ⟨fun _ ↦ inferInstance, fun h ↦ ?_⟩
-  have : IsIso ((forget C).map f) := h
   exact isIso_of_reflects_iso f (forget C)
 
 end

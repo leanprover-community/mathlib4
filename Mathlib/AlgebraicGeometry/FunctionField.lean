@@ -188,7 +188,6 @@ lemma exists_isUnit_germ_eq [IsIntegral X] (f : X.functionField) (hf : f ≠ 0) 
   obtain ⟨U, hU, g, hg⟩ := X.presheaf.exists_germ_eq f
   obtain ⟨_, ⟨A, hA, rfl⟩, hxA, hAU⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hU U.isOpen
-  have : Nonempty A := ⟨_, hxA⟩
   let gA : Γ(X, A) := X.presheaf.map (homOfLE hAU).op g
   have h_germ_gA : X.presheaf.germ A (genericPoint X) hxA gA = f := by
     simp only [← hg, ← X.presheaf.germ_res_apply (homOfLE hAU) (genericPoint X) hxA g, gA]

@@ -378,7 +378,6 @@ lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
       (tensorKaehlerQuotKerSqEquiv _ _ _).symm.toLinearMap by
     rw [this]; exact (tensorKaehlerQuotKerSqEquiv _ _ _).symm.bijective
   let : Algebra P.Ring P.infinitesimal.Ring := inferInstanceAs (Algebra P.Ring (P.Ring ⧸ _))
-  have : IsScalarTower P.Ring P.infinitesimal.Ring S := .of_algebraMap_eq' rfl
   apply LinearMap.restrictScalars_injective P.Ring
   ext x a
   dsimp

@@ -311,10 +311,6 @@ lemma mono_of_isPushout_of_isPullback {k : X₄ ⟶ X₅} (h₁ : IsPushout t l 
       b' x₃ = b' y₃ → x₃ = y₃) :
     Mono k := by
   subst facr facb
-  have : Function.Injective l :=
-    fun x₁ y₁ h ↦ ext_of_isPullback h₂ ((mono_iff_injective _).1 hr'
-      ((ConcreteCategory.congr_hom h₂.w x₁).trans (Eq.trans (by simp [h])
-      (ConcreteCategory.congr_hom h₂.w.symm y₁)))) h
   rw [mono_iff_injective] at hr' ⊢
   have w := ConcreteCategory.congr_hom h₁.w
   simp only [comp_apply] at w

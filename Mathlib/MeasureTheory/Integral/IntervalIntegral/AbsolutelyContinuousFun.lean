@@ -63,7 +63,6 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     · simp [isClosed_Icc]
     · intro x hx
       apply Eventually.frequently
-      have := hasDerivAt_iff_tendsto_slope.mp hx.right
       obtain ⟨δ, hδ₁, hδ₂⟩ := (Metric.tendsto_nhdsWithin_nhds).mp
         (hasDerivAt_iff_tendsto_slope.mp hx.right) η hη
       have evn_bound {α : ℝ} (hα : 0 < α) : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, ε < α := by

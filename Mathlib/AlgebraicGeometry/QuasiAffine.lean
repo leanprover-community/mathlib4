@@ -114,7 +114,6 @@ set_option backward.isDefEq.respectTransparency false in
   `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
 lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffine] :
     IsPullback f X.toSpecΓ Y.toSpecΓ (Spec.map f.appTop) := by
-  have := QuasiCompact.compactSpace_of_compactSpace f
   have := Scheme.IsQuasiAffine.of_isAffineHom f
   have (r : Γ(Y, ⊤)) :
       IsPushout f.appTop (Y.presheaf.map (homOfLE le_top).op)

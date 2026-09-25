@@ -73,7 +73,6 @@ variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
 theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
     let z := x - y
-    have := IntermediateField.adjoin.finiteDimensional yint
     have : IsUltrametricDist L := IsUltrametricDist.of_normedAlgebra K
     let y' : K⟮y⟯ := IntermediateField.AdjoinSimple.gen K y
     have zsep : IsSeparable K⟮y⟯ z :=

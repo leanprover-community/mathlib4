@@ -34,7 +34,6 @@ include hx hxp
 theorem isPrincipal_of_isPrincipal_isLocalizationAway_of_prime
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S]
     (hp : (map (algebraMap R S) p).IsPrincipal) : p.IsPrincipal := by
-  have := (disjoint_powers_iff_notMem_of_isPrime x).mpr hxp
   by_cases hpbot : p = ⊥
   · simp [hpbot, bot_isPrincipal]
   · have hi := IsLocalization.injective S (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)

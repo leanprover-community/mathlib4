@@ -98,7 +98,6 @@ instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 :
   exact p_mem_span_zeta_sub_one p k hζ
 
 theorem inertiaDeg_span_zeta_sub_one : inertiaDeg (span {hζ.toInteger - 1}) ℤ = 1 := by
-  have : IsMaximal (span {hζ.toInteger - 1}) := .of_liesOver_isMaximal _ 𝒑
   rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg,
     absNorm_span_zeta_sub_one]
 
@@ -138,7 +137,6 @@ theorem ncard_primesOver_of_prime_pow :
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
   have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝒑 (𝓞 K) Gal(K/ℚ)
   have hζ := hK.zeta_spec
-  have := liesOver_span_zeta_sub_one p k hζ
   rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) Gal(K/ℚ),
     inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) Gal(K/ℚ),
     inertiaDeg_span_zeta_sub_one,
@@ -300,7 +298,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
     (map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  have : P.IsMaximal := .of_liesOver_isMaximal P 𝒑
   rw [h₃, natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
   · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
   · refine dvd_trans h₂.2.2 ?_

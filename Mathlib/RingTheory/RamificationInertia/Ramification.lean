@@ -250,7 +250,6 @@ theorem ramificationIdx_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     [IsScalarTower S (Localization.AtPrime q) (Localization.AtPrime r)]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     r.ramificationIdx R = q.ramificationIdx R * r.ramificationIdx S := by
-  have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
   let f := (Ideal.quotientEquivAlgOfEq (Localization.AtPrime r)
     (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
       (Algebra.TensorProduct.quotIdealMapEquivTensorQuot (Localization.AtPrime r)
