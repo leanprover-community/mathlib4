@@ -20,9 +20,11 @@ general theory of Lie algebra cohomology.
 * `LieAlgebra.d₁₂`: The coboundary map taking 1-cochains to 2-cochains.
 * `LieAlgebra.d₂₃`: A coboundary map taking 2-cochains to a space containing 3-cochains.
 * `LieAlgebra.twoCocycle`: The submodule of 2-cocycles.
+* `LieAlgebra.twoCoboundary`: The submodule of 2-coboundaries.
+* `LieAlgebra.secondCohomology`: The second cohomology `H²(L, M)`, that is, 2-cocycles modulo
+  2-coboundaries.
 
 ## TODO
-* coboundaries, cohomology
 * comparison to the Chevalley-Eilenberg complex.
 * construction and classification of central extensions
 
@@ -174,5 +176,73 @@ lemma mem_twoCocycle_iff_of_trivial [LieModule.IsTrivial L M] (a : twoCochain R 
     simp only [d₂₃_apply, trivial_lie_zero, sub_self, add_zero, zero_sub, LinearMap.zero_apply]
     rw [← twoCochain_skew a x, ← twoCochain_skew a y, h x y z]
     abel
+
+/-- Lie algebra 2-coboundaries over `L` with coefficients in `M`: the image of the coboundary
+operator `d₁₂`. -/
+def twoCoboundary : Submodule R (twoCochain R L M) := LinearMap.range (d₁₂ R L M)
+
+variable {R L M}
+
+lemma mem_twoCoboundary_iff (a : twoCochain R L M) :
+    a ∈ twoCoboundary R L M ↔
+      ∃ f : oneCochain R L M, ∀ x y : L, a x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := by
+  constructor
+  · rintro ⟨f, rfl⟩
+    exact ⟨f, fun x y ↦ (d₁₂_apply_apply R L M f x y).symm⟩
+  · rintro ⟨f, hf⟩
+    refine ⟨f, ?_⟩
+    ext x y
+    rw [d₁₂_apply_coe_apply_apply]
+    exact (hf x y).symm
+
+lemma mem_twoCoboundary_iff_of_trivial [LieModule.IsTrivial L M] (a : twoCochain R L M) :
+    a ∈ twoCoboundary R L M ↔ ∃ f : oneCochain R L M, ∀ x y : L, a x y = - f ⁅x, y⁆ := by
+  simp only [mem_twoCoboundary_iff, trivial_lie_zero, zero_sub, sub_zero]
+
+lemma twoCoboundary_le_twoCocycle : twoCoboundary R L M ≤ twoCocycle R L M := by
+  rintro _ ⟨f, rfl⟩
+  rw [mem_twoCocycle_iff, ← LinearMap.comp_apply, d₂₃_comp_d₁₂, LinearMap.zero_apply]
+
+variable (R L M)
+
+/-- The 2-coboundaries, viewed as a submodule of the 2-cocycles. -/
+def twoCoboundaryIn : Submodule R (twoCocycle R L M) :=
+  (twoCoboundary R L M).comap (twoCocycle R L M).subtype
+
+variable {R L M}
+
+@[simp]
+lemma mem_twoCoboundaryIn_iff (a : twoCocycle R L M) :
+    a ∈ twoCoboundaryIn R L M ↔ (a : twoCochain R L M) ∈ twoCoboundary R L M := Iff.rfl
+
+variable (R L M)
+
+/-- Lie algebra cohomology in degree two, `H²(L, M)`: the 2-cocycles modulo the 2-coboundaries.
+For a trivial module `M` this classifies the central extensions of `L` by `M`. -/
+abbrev secondCohomology := twoCocycle R L M ⧸ twoCoboundaryIn R L M
+
+variable {R L M}
+
+lemma secondCohomology_mk_eq_zero_iff (a : twoCocycle R L M) :
+    (Submodule.Quotient.mk a : secondCohomology R L M) = 0 ↔
+      ∃ f : oneCochain R L M,
+        ∀ x y : L, (a : twoCochain R L M) x y = ⁅x, f y⁆ - ⁅y, f x⁆ - f ⁅x, y⁆ := by
+  rw [Submodule.Quotient.mk_eq_zero, mem_twoCoboundaryIn_iff, mem_twoCoboundary_iff]
+
+lemma secondCohomology_mk_eq_zero_iff_of_trivial [LieModule.IsTrivial L M]
+    (a : twoCocycle R L M) :
+    (Submodule.Quotient.mk a : secondCohomology R L M) = 0 ↔
+      ∃ f : oneCochain R L M, ∀ x y : L, (a : twoCochain R L M) x y = - f ⁅x, y⁆ := by
+  rw [Submodule.Quotient.mk_eq_zero, mem_twoCoboundaryIn_iff, mem_twoCoboundary_iff_of_trivial]
+
+lemma secondCohomology_mk_surjective :
+    Function.Surjective (Submodule.Quotient.mk : twoCocycle R L M → secondCohomology R L M) :=
+  Quotient.mk_surjective
+
+/-- If every 2-cocycle is a 2-coboundary then the second cohomology vanishes. -/
+lemma subsingleton_secondCohomology_of_le (h : twoCocycle R L M ≤ twoCoboundary R L M) :
+    Subsingleton (secondCohomology R L M) := by
+  rw [Submodule.Quotient.subsingleton_iff]
+  exact eq_top_iff.mpr fun a _ ↦ h a.2
 
 end LieModule.Cohomology
