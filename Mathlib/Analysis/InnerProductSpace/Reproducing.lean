@@ -109,6 +109,8 @@ variable (H) [CompleteSpace H] [CompleteSpace V]
 the point evaluation. -/
 def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
 
+lemma kerFun_def (x : X) : kerFun H x = (.proj x ∘L coeCLM 𝕜).adjoint := by rfl
+
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
 kernel functions. -/
 def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
@@ -370,6 +372,17 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
+scoped instance : Fact (Matrix.PosSemidef (0 : Matrix X X (V →L[𝕜] V))) := by
+  simp [fact_iff, Matrix.PosSemidef.zero]
+
+instance (priority := low) : Subsingleton (OfKernel (0 : Matrix X X (V →L[𝕜] V))) where
+  allEq := by
+    intro f g
+    refine UniformSpace.Completion.induction_on₂ f g (isClosed_eq continuous_fst continuous_snd)
+      fun _ _ ↦ ?_
+    refine UniformSpace.Completion.denseRange_coe.eq_of_inner_left 𝕜 fun h ↦ ?_
+    simp [inner_H₀_def]
+
 section Equiv
 
 variable {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [CompleteSpace H']
@@ -527,6 +540,7 @@ theorem posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
   have hp : (‖f‖ ^ 2 : 𝕜) ≠ 0 := by simpa
   rw [← smul_inv_smul₀ hp (outerKernel 𝕜 f), ← smul_sub]
   refine Matrix.PosSemidef.smul ?_ (by simp)
+  have : CompleteSpace (𝕜 ∙ f) := complete_of_proper
   simpa [kernel_span_singleton, kernel_orthogonal] using posSemidef_kernel (𝕜 ∙ f)ᗮ
 
 end outerKernel

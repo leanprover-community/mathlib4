@@ -15,26 +15,40 @@ This file implements the maps that show how RKHSs created from kernels formed by
 to a set of kernels relate to the RKHSs of the constituant kernels.
 
 ## main definitions
+
+The definitions are sorted by operation.
+
+#### Add
+
  - `generator`: the operator `(f, g) ↦ ⇑f + ⇑g` inducing the RKHS `H + H'`.
  - `OfKernelAddEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
     quotient space over `OfKernel K × OfKernel K'`.
  - `projection`: isometry yielding the elements of `H × H'` achieving the norm of `H + H'`.
+
+#### SMul
+ - `smulSpace`: the RKHS `c • H` which is a type copy of `(⊥ : Submodule 𝕜 H)` and otherwise
+   `(⊤ : Submodule 𝕜 H)`.
+ - `equiv`: for `c ≠ 0` the space `c • H` is continuously linearly equivalent to `H`
+ - `OfKernelSmulEquiv`: isometric equivalence between the RKHS `OfKernel ((‖c‖ : 𝕜) ^ 2 • K)` and
+    the RKHS `c • OfKernel K`.
+
 -/
 
 public noncomputable section
 
-open InnerProductSpace Submodule RKHS
-
 namespace RKHS
 
-namespace Add'
+open InnerProductSpace Submodule
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*}
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
 variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
-variable (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H']
-variable [RKHS 𝕜 H X V] [RKHS 𝕜 H' X V]
+variable [RKHS 𝕜 H X V]
+
+namespace Add'
+
+variable (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [RKHS 𝕜 H' X V]
 
 /-- The operator `(f, g) ↦ ⇑f + ⇑g`, where addition is in `X → V`. -/
 def generator : WithLp 2 (H × H') →L[𝕜] (X → V) :=
@@ -169,5 +183,78 @@ theorem norm_sq_le (f : H + H') (f₁ : H) (f₂ : H') (h : ⇑f = f₁ + f₂) 
     _ = ‖f₁‖ ^ 2 + ‖f₂‖ ^ 2 := WithLp.prod_norm_sq_eq_of_L2 _
 
 end Add'
+
+namespace SMul
+
+variable (c : 𝕜)
+
+/-- Helper space for `c • H` that equals the full space for `c ≠ 0` and otherwise `⊥`. -/
+abbrev auxSmulSpace : Submodule 𝕜 H := if c = 0 then ⊥ else ⊤
+
+/-- The RKHS `c • H`. -/
+def smulSpace : Type _ := auxSmulSpace H c
+deriving NormedAddCommGroup, InnerProductSpace 𝕜
+
+variable {c} in
+/-- When `c ≠ 0`, the RKHS `c • H` is linearly isometrically equivalent to the space `H`. -/
+def equiv (h : c ≠ 0) : smulSpace H c ≃ₗᵢ[𝕜] H :=
+  LinearIsometryEquiv.ofTop H (auxSmulSpace H c) (by simp [h])
+
+instance : Subsingleton (smulSpace H (0 : 𝕜)) where
+  allEq := by simp [smulSpace, auxSmulSpace]
+
+instance : RKHS 𝕜 (smulSpace H c) X V where
+  coeCLM := if h : c = 0 then 0 else (c : 𝕜) • (coeCLM (H:=H) 𝕜 ∘L equiv H h)
+  coeCLM_injective := fun f g hfg => by
+    by_cases h : c = 0
+    · subst h
+      exact Subsingleton.elim f g
+    · simp_all
+
+variable [CompleteSpace H] [CompleteSpace V]
+
+instance : CompleteSpace (smulSpace H c) := if h : c = 0 then (by rw [h]; infer_instance)
+  else (equiv H h).toIsometryEquiv.completeSpace
+
+theorem kerFun_eq (x : X) (v : V) :
+    kerFun (smulSpace H c) x v = if h : c = 0 then 0 else
+      (equiv H h).symm (starRingEnd 𝕜 c • kerFun H x v) := by
+  refine ext_inner_right 𝕜 fun v ↦ ?_
+  simp_rw [kerFun_def, coeCLM]
+  by_cases h : c = 0
+  · simp [h]
+  · simp [h, ContinuousLinearMap.adjoint_inner_left, inner_smul_left, inner_smul_right,
+      LinearIsometryEquiv.inner_map_eq_flip]
+
+theorem kernel_smul_eq_norm_sq_smul_kernel :
+    kernel (smulSpace H c) = (‖(c : 𝕜)‖ : 𝕜) ^ 2 • kernel H := by
+  ext
+  refine ext_inner_right 𝕜 fun v ↦ ?_
+  simp_rw [kernel_inner, kerFun_eq]
+  by_cases h : c = 0
+  · simp [h]
+  · simp [h, LinearIsometryEquiv.inner_map_map, inner_smul_right, inner_smul_left, ← mul_assoc,
+      RCLike.conj_mul (c : 𝕜)]
+
+section OfKernel
+
+variable (K : Matrix X X (V →L[𝕜] V))
+variable [Fact K.PosSemidef]
+
+open ComplexOrder in
+instance (c : ℝ) : Fact ((c : 𝕜) ^ 2 • K).PosSemidef := by
+  rw [fact_iff]
+  apply Matrix.PosSemidef.smul (Fact.out : K.PosSemidef)
+  rw [← RCLike.ofReal_pow, RCLike.ofReal_nonneg]
+  exact sq_nonneg c
+
+/-- The RKHSS constructed from a scaled kernel is linearly isometrically equivalent to the scaled
+space of the original kernel. -/
+def OfKernelSmulEquiv : OfKernel ((‖c‖ : 𝕜) ^ 2 • K) ≃ₗᵢ[𝕜] smulSpace (OfKernel K) c :=
+  RKHS.equiv (by simp [OfKernel.kernel_ofKernel, kernel_smul_eq_norm_sq_smul_kernel])
+
+end OfKernel
+
+end SMul
 
 end RKHS
