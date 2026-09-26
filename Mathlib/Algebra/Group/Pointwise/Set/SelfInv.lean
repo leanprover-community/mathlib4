@@ -17,6 +17,11 @@ This file specialises `IsSelfInv` to sets equipped with the pointwise inversion.
 
 public section
 
+/- Ensure that `@[to_additive]` uses the right namespace. -/
+insert_to_additive_translation Set.IsSelfInv Set.IsSelfNeg
+
+namespace Set
+
 open Set
 open scoped Pointwise
 
@@ -66,7 +71,7 @@ protected lemma IsSelfInv.sInter {S : Set (Set α)} (h : ∀ s ∈ S, IsSelfInv 
     IsSelfInv (⋂₀ S) :=
   sInter_eq_iInter ▸ .iInter fun s ↦ h s s.2
 
-@[to_additive]
+@[to_additive Set.IsSelfNeg.prod]
 protected lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t) :
     IsSelfInv (s ×ˢ t) := by
   rw [isSelfInv_iff, inv_prod, hs, ht]
@@ -116,3 +121,5 @@ protected lemma IsSelfInv.diff (hs : IsSelfInv s) (ht : IsSelfInv t) : IsSelfInv
   simpa only [sdiff_eq] using hs.inter ht.compl
 
 end InvolutiveInv
+
+end Set
