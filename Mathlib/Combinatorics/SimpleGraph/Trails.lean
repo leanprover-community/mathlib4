@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 
 /-!
 # Trails and Eulerian trails
@@ -120,6 +121,9 @@ theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
     have hb : b ∈ p.support := hp.mem_support_of_not_isIsolated <| hG b
     ⟨p.takeUntil a ha |>.reverse.append <| p.takeUntil b hb⟩
   nonempty := ⟨u⟩
+
+theorem IsEulerian.isChordless {u v : V} {p : G.Walk u v} (hp : p.IsEulerian) : p.IsChordless :=
+  fun _ ⟨hadj, hnmem, _⟩ ↦ hnmem <| hp.mem_edges_iff.mpr hadj
 
 theorem IsEulerian.even_degree_iff (ht : p.IsEulerian) [Fintype V] [DecidableRel G.Adj] :
     Even (G.degree w) ↔ u ≠ v → w ≠ u ∧ w ≠ v := by
