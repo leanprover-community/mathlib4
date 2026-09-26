@@ -6,9 +6,11 @@ Authors: Kenny Lau, Anne Baanen, Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
+public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
@@ -965,6 +967,12 @@ lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
   simp only [this, Matrix.det_fin_three, Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_zero,
     Matrix.cons_val_fin_one, Matrix.cons_val_one, Matrix.cons_val, hf]
   ring_nf
+
+/-- The `discrim` of `a`, `b`, `c` is the discriminant of the polynomial `a * X ^ 2 + b * X + c`. -/
+theorem discrim_eq_discr (a b c : R) (ha : a ≠ 0) :
+    discrim a b c = (C a * X ^ 2 + C b * X + C c).discr := by
+  rw [discr_of_degree_eq_two (by compute_degree!), discrim]
+  simp [mul_right_comm]
 
 /-- Relation between the resultant and the discriminant.
 

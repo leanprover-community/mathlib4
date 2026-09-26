@@ -160,6 +160,16 @@ which the tabled typeclass synthesis algorithm can deal with.
 -/
 instance [IsDomain A] [IsDedekindRing A] : IsDedekindDomain A where
 
+/-- A ring isomorphic to a Dedekind domain is a Dedekind domain. -/
+theorem IsDedekindDomain.of_ringEquiv {R A : Type*} [CommRing R] [CommRing A] [IsDedekindDomain A]
+    (e : R ≃+* A) : IsDedekindDomain R := by
+  have : IsDomain R := e.toMulEquiv.isDomain A
+  have : IsNoetherianRing R := isNoetherianRing_of_ringEquiv A e.symm
+  have : Ring.DimensionLEOne R := .of_ringEquiv e
+  have : IsIntegrallyClosed R := .of_equiv e.symm
+  have : IsDedekindRing R := ⟨⟩
+  exact ⟨⟩
+
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
