@@ -80,25 +80,11 @@ public theorem semilocallySimplyConnectedAt_iff_range_eq_bot {x : X} :
     SemilocallySimplyConnectedAt x ↔
       ∃ U ∈ 𝓝 x, ∀ hx : x ∈ U,
         (FundamentalGroup.map (ContinuousMap.subtypeVal U) ⟨x, hx⟩).range = ⊥ := by
-  constructor
-  · rintro ⟨U, hU, hU_loops⟩
-    refine ⟨U, hU, fun hx ↦ ?_⟩
-    rw [MonoidHom.range_eq_bot_iff]
-    ext p
-    obtain ⟨γ, rfl⟩ := Quotient.exists_rep (FundamentalGroup.toPath p)
-    have hγ : range (γ.map continuous_subtype_val) ⊆ U := by
-      rintro _ ⟨t, rfl⟩
-      exact (γ t).property
-    rw [FundamentalGroup.map_fromPath, Quotient.sound (hU_loops _ hγ)]
-    rfl
-  · rintro ⟨U, hU, hU_loops⟩
-    refine ⟨U, hU, fun γ hγ ↦ ?_⟩
-    let γU : Path (⟨x, mem_of_mem_nhds hU⟩ : U) ⟨x, mem_of_mem_nhds hU⟩ :=
-      γ.codRestrict (fun t ↦ hγ (mem_range_self t))
-    have h := DFunLike.congr_fun (MonoidHom.range_eq_bot_iff.mp (hU_loops _))
-      (FundamentalGroup.fromPath ⟦γU⟧)
-    rw [ContinuousMap.subtypeVal, FundamentalGroup.map_fromPath, Path.map_codRestrict] at h
-    exact Quotient.eq.mp h
+  simp only [SemilocallySimplyConnectedAt, FundamentalGroup.map_range_eq_bot_iff]
+  refine exists_congr fun U ↦ and_congr_right fun hU ↦ ⟨fun h _ γ ↦ h _ ?_, fun h γ hγ ↦ ?_⟩
+  · rintro _ ⟨t, rfl⟩
+    exact (γ t).property
+  · exact h (mem_of_mem_nhds hU) (γ.codRestrict fun t ↦ hγ (mem_range_self t))
 
 /-- A space is semilocally simply connected at `x` iff `x` has an open neighborhood `U` such that
 any two paths in `U` from `x` to a common endpoint are homotopic. -/
