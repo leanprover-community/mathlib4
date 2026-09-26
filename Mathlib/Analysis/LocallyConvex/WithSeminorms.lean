@@ -9,9 +9,10 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Topology.Algebra.Equicontinuity
-public import Mathlib.Topology.MetricSpace.Equicontinuity
 public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.MetricSpace.Equicontinuity
 
 /-!
 # Topology induced by a family of seminorms
@@ -24,6 +25,8 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
   bounded by a finite number of seminorms in `E`.
 * `WithSeminorms p`, when `p` is a family of seminorms on `E`, is a proposition expressing that the
   (existing) topology on `E` is induced by the seminorms `p`.
+* `IsNormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
+  by *some* `𝕜`-seminorm
 * `PolynormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
   by *some* family of `𝕜`-seminorms. If `𝕜` is `RCLike`, this is equivalent to
   `LocallyConvexSpace 𝕜 E`.
@@ -58,7 +61,6 @@ seminorm, locally convex
 -/
 
 @[expose] public section
-
 
 open NormedField Set Seminorm TopologicalSpace Filter List Bornology
 
@@ -285,6 +287,18 @@ structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [topology : TopologicalSp
   topology_eq_withSeminorms : topology = p.moduleFilterBasis.topology
 
 variable (𝕜 E) in
+/-- A topological vector space `E` is **normable** over `𝕜` if its topology is induced by
+*some* `𝕜`-seminorm. Note that this does not imply that the space is Hausdorff.
+To endow such a space with a normed space structure with the same topology, use:
+```
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := IsNormableSpace.toNormedSpace 𝕜 E
+```
+-/
+class IsNormableSpace [topology : TopologicalSpace E] where
+  withSeminorms' : ∃ (p : Seminorm 𝕜 E), WithSeminorms (fun (_ : Unit) ↦ p)
+
+variable (𝕜 E) in
 /-- A topological vector space `E` is **polynormable** over `𝕜` if its topology is induced by
 *some* family of `𝕜`-seminorms. Equivalently, its topology is induced by *all* its continuous
 seminorm.
@@ -487,6 +501,14 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [IsTopological
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 
+/-- The topology induced by a family of seminorms is exactly the infimum of the ones induced by
+each seminorm individually. We express this as a characterization of `WithSeminorms p`. -/
+theorem WithSeminorms.topologicalSpace_eq_iInf
+    {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
+    t = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
+  have : IsTopologicalAddGroup E := WithSeminorms.isTopologicalAddGroup hp
+  exact p.withSeminorms_iff_topologicalSpace_eq_iInf.1 hp
+
 theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p)
     (i : ι) : Continuous (p i) := by
   have := hp.isTopologicalAddGroup
@@ -506,6 +528,10 @@ theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : W
     · simp_rw [hp, le_iInf_iff]
       intro i
       exact iInf_le (ι := {p : Seminorm 𝕜 E // Continuous p}) _ ⟨p i, hp' i⟩
+
+instance [h : IsNormableSpace 𝕜 E] : PolynormableSpace 𝕜 E := by
+  rcases h.withSeminorms' with ⟨q, hq⟩
+  exact hq.toPolynormableSpace
 
 end TopologicalSpace
 
@@ -531,10 +557,60 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
 
-/-- A (semi-)normed space is polynormable. -/
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
-    PolynormableSpace 𝕜 E :=
-  norm_withSeminorms 𝕜 E |>.toPolynormableSpace
+/-- A (semi-)normed space is normable. -/
+instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] : IsNormableSpace 𝕜 E :=
+  ⟨⟨normSeminorm 𝕜 E, norm_withSeminorms 𝕜 E⟩⟩
+
+variable [NormedField 𝕜] [ha : AddCommGroup E] [hm : Module 𝕜 E]
+  [t : TopologicalSpace E] [hn : IsNormableSpace 𝕜 E]
+
+variable (𝕜 E)
+
+/-- A seminorm defining the topology in a normable space. -/
+noncomputable def IsNormableSpace.seminorm : Seminorm 𝕜 E := hn.withSeminorms'.choose
+
+lemma IsNormableSpace.withSeminorms_seminorm : WithSeminorms (fun (_ : Unit) ↦ hn.seminorm 𝕜 E) :=
+  hn.withSeminorms'.choose_spec
+
+/-- A normable space can be endowed with a seminorm defining the same topology. -/
+noncomputable abbrev IsNormableSpace.toSeminormedAddCommGroup : SeminormedAddCommGroup E := by
+  let : Norm E := ⟨IsNormableSpace.seminorm 𝕜 E⟩
+  let c : SeminormedSpace.Core 𝕜 E :=
+  { norm_nonneg x := apply_nonneg _ x
+    norm_smul c x := map_smul_eq_mul _ c x
+    norm_triangle x y := map_add_le_add _ x y }
+  refine SeminormedAddCommGroup.ofCoreReplaceTopology c ?_
+  rw [hn.withSeminorms_seminorm.topologicalSpace_eq_iInf, ciInf_unique]
+
+/-- A normable space can be endowed with a normed space structure. -/
+noncomputable abbrev IsNormableSpace.toNormedSpace :
+    letI : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+    NormedSpace 𝕜 E :=
+  letI : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  { norm_smul_le c x := (map_smul_eq_mul (IsNormableSpace.seminorm 𝕜 E) c x).le }
+
+instance [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsNormableSpace 𝕜 F] :
+    IsNormableSpace 𝕜 (E × F) := by
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  let : NormedSpace 𝕜 E := IsNormableSpace.toNormedSpace 𝕜 E
+  let : SeminormedAddCommGroup F := IsNormableSpace.toSeminormedAddCommGroup 𝕜 F
+  let : NormedSpace 𝕜 F := IsNormableSpace.toNormedSpace 𝕜 F
+  infer_instance
+
+instance {E : ι → Type*} [Finite ι] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+    [∀ i, TopologicalSpace (E i)] [∀ i, IsNormableSpace 𝕜 (E i)] :
+    IsNormableSpace 𝕜 (Π i, E i) := by
+  let A i : SeminormedAddCommGroup (E i) := IsNormableSpace.toSeminormedAddCommGroup 𝕜 (E i)
+  let B i : NormedSpace 𝕜 (E i) := IsNormableSpace.toNormedSpace 𝕜 (E i)
+  let : Fintype ι := Fintype.ofFinite ι
+  infer_instance
+
+include 𝕜 in
+/-- A normable space is metrizable. Not an instance as the field of scalars can not be guessed
+by typeclass inference. -/
+theorem IsNormableSpace.toPseudoMetrizableSpace : PseudoMetrizableSpace E := by
+  let : SeminormedAddCommGroup E := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E
+  infer_instance
 
 end NormedSpace
 
@@ -1084,14 +1160,36 @@ lemma Topology.IsInducing.withSeminorms {q : SeminormFamily 𝕜₂ F ι}
   rw [hf.eq_induced]
   exact f.withSeminorms_induced hq
 
+theorem Topology.IsInducing.isNormableSpace [h : IsNormableSpace 𝕜₂ F]
+    [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
+    IsNormableSpace 𝕜 E := by
+  rcases h.withSeminorms' with ⟨p, hp⟩
+  exact ⟨p.comp f, hf.withSeminorms hp⟩
+
 theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
     [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
     PolynormableSpace 𝕜 E :=
   hf.withSeminorms (PolynormableSpace.withSeminorms 𝕜₂ F) |>.toPolynormableSpace
 
+instance [IsNormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
+    IsNormableSpace 𝕜₂ S :=
+  IsInducing.isNormableSpace (f := S.subtype) .subtypeVal
+
 instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
     PolynormableSpace 𝕜₂ S :=
   IsInducing.polynormableSpace (f := S.subtype) .subtypeVal
+
+theorem ContinuousLinearEquiv.isNormableSpace {σ₂₁ : 𝕜₂ →+* 𝕜}
+    [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [IsNormableSpace 𝕜₂ F]
+    [TopologicalSpace E] (f : E ≃SL[σ₁₂] F) :
+    IsNormableSpace 𝕜 E :=
+  f.toHomeomorph.isInducing.isNormableSpace
+
+theorem ContinuousLinearEquiv.PolynormableSpace {σ₂₁ : 𝕜₂ →+* 𝕜}
+    [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [PolynormableSpace 𝕜₂ F]
+    [TopologicalSpace E] (f : E ≃SL[σ₁₂] F) :
+    PolynormableSpace 𝕜 E :=
+  f.toHomeomorph.isInducing.polynormableSpace
 
 section NontriviallyNormedField
 
