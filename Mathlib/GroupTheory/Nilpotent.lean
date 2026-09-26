@@ -193,7 +193,7 @@ instance (n : ℕ) : Characteristic (upperCentralSeries G n) :=
 @[to_additive (attr := simp)]
 theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 
-@[to_additive upperCentralSeries_one]
+@[to_additive (attr := simp) AddSubgroup.upperCentralSeries_one]
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
