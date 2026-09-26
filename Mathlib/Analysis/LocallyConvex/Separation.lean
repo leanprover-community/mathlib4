@@ -36,6 +36,9 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_point_closed`, `geometric_hahn_banach_closed_point`: One set is closed, the
   other one is a singleton. Strict separation.
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
+
+As an application, `Submodule.dense_iff_forall_dual_eq_zero` characterizes dense real submodules
+by the vanishing of their continuous dual annihilators.
 -/
 
 public section
@@ -252,6 +255,40 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).not_ge le_rfl
+
+namespace Submodule
+
+variable (s : Submodule ℝ E)
+
+/-- A real submodule of a locally convex space is dense if and only if every continuous linear
+functional vanishing on it is zero. -/
+theorem dense_iff_forall_dual_eq_zero :
+    Dense (s : Set E) ↔ ∀ f : StrongDual ℝ E, (∀ x ∈ s, f x = 0) → f = 0 := by
+  constructor
+  · intro hs f hf
+    exact ContinuousLinearMap.ext_on (by simpa using hs) hf
+  · intro h
+    rw [Submodule.dense_iff_topologicalClosure_eq_top]
+    apply top_unique
+    intro x _
+    by_contra hxc
+    obtain ⟨f, u, hfc, hfx⟩ := geometric_hahn_banach_closed_point s.topologicalClosure.convex
+      s.isClosed_topologicalClosure hxc
+    have hrestr : f.toLinearMap.comp s.subtype = 0 := by
+      by_contra hf
+      obtain ⟨y, hy⟩ := (f.toLinearMap.comp s.subtype).surjective hf u
+      exact (hfc y (s.le_topologicalClosure y.property)).ne hy
+    have hf : f = 0 := h f fun y hy ↦ DFunLike.congr_fun hrestr ⟨y, hy⟩
+    simpa [hf] using (hfc 0 s.topologicalClosure.zero_mem).trans hfx
+
+/-- A nondense real submodule of a locally convex space admits a nonzero continuous linear
+functional vanishing on it. -/
+theorem exists_dual_annihilator_of_not_dense (hs : ¬ Dense (s : Set E)) :
+    ∃ f : StrongDual ℝ E, f ≠ 0 ∧ ∀ x ∈ s, f x = 0 := by
+  simpa only [dense_iff_forall_dual_eq_zero, not_forall, exists_prop, and_comm] using hs
+
+end Submodule
+
 end
 
 namespace RCLike
