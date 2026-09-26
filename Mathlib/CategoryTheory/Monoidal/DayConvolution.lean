@@ -1053,7 +1053,7 @@ class InducedLawfulDayConvolutionMonoidalCategoryStructCore
   /-- A functor that interprets elements of `D` as functors `C ⥤ V`. -/
   ι (C V D) : D ⥤ C ⥤ V
   /-- The functor `ι` is fully faithful. -/
-  fullyFaithulι : ι.FullyFaithful
+  fullyFaithfulι : ι.FullyFaithful
   /-- Candidate function for the tensor product of objects. -/
   tensorObj (C) (V) : D → D → D
   /-- First candidate Day convolutions between objects.
@@ -1084,7 +1084,7 @@ class InducedLawfulDayConvolutionMonoidalCategoryStructCore
   tensorHom :
       ∀ {d₁ d₂ : D} {d₁' d₂' : D},
         (d₁ ⟶ d₂) → (d₁' ⟶ d₂') → (tensorObj d₁ d₁' ⟶ tensorObj d₂ d₂') :=
-    fun {d₁ d₂} {d₁' d₂' : D} f f' => fullyFaithulι.preimage <|
+    fun {d₁ d₂} {d₁' d₂' : D} f f' => fullyFaithfulι.preimage <|
       (tensorObjIsoConvolution d₁ d₁').hom ≫
         (DayConvolution.map (ι.map f) (ι.map f')) ≫ (tensorObjIsoConvolution d₂ d₂').inv
   /-- Lawfulness of `tensorHom`. -/
@@ -1102,6 +1102,9 @@ class InducedLawfulDayConvolutionMonoidalCategoryStructCore
 namespace InducedLawfulDayConvolutionMonoidalCategoryStructCore
 
 attribute [instance_reducible, local instance] tensorUnitConvolutionUnit
+
+@[deprecated (since := "2026-09-17")]
+alias fullyFaithulι := fullyFaithfulι
 
 section
 
@@ -1165,17 +1168,17 @@ abbrev mkMonoidalCategoryStruct : MonoidalCategoryStruct D where
       convolutions C V _ _
     letI : DayConvolution ((ι C V D |>.obj x) ⊛ (ι C V D |>.obj y)) (ι C V D |>.obj z) :=
       convolutions C V _ _
-    fullyFaithulι.preimageIso <|
+    fullyFaithfulι.preimageIso <|
       DayConvolution.associator (ι C V D |>.obj x) (ι C V D |>.obj y) (ι C V D |>.obj z)
   leftUnitor x :=
     letI : DayConvolution (ι C V D |>.obj <| tensorUnit C V D) (ι C V D |>.obj x) :=
       convolutions C V _ _
-    fullyFaithulι.preimageIso <|
+    fullyFaithfulι.preimageIso <|
       DayConvolutionUnit.leftUnitor (ι C V D |>.obj <| tensorUnit C V D) (ι C V D |>.obj x)
   rightUnitor x :=
     letI : DayConvolution (ι C V D |>.obj x) (ι C V D |>.obj <| tensorUnit C V D) :=
       convolutions C V _ _
-    fullyFaithulι.preimageIso <|
+    fullyFaithfulι.preimageIso <|
       DayConvolutionUnit.rightUnitor (ι C V D |>.obj <| tensorUnit C V D) (ι C V D |>.obj x)
 
 lemma id_tensorHom (x : D) {y y' : D} (f : y ⟶ y') :
@@ -1209,7 +1212,7 @@ def mkLawfulDayConvolutionMonoidalCategoryStruct :
     LawfulDayConvolutionMonoidalCategoryStruct C V D :=
   letI : MonoidalCategoryStruct D := mkMonoidalCategoryStruct C V D
   { ι := ι C V D
-    faithful_ι := fullyFaithulι.faithful
+    faithful_ι := fullyFaithfulι.faithful
     convolutionExtensionUnit d d' :=
       (convolutions C V d d').unit
     isPointwiseLeftKanExtensionConvolutionExtensionUnit d d' :=
@@ -1268,7 +1271,7 @@ noncomputable def ofHasDayConvolutions
           (Functor.fromPUnit.{0} <| 𝟙_ V)) :
     InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D where
   ι := ι
-  fullyFaithulι := ffι
+  fullyFaithfulι := ffι
   tensorObj := fun d d' ↦ essImageDayConvolution d d' |>.witness
   convolutions' := fun d d' ↦
     { convolution := (tensor C).pointwiseLeftKanExtension (ι.obj d ⊠ ι.obj d')

@@ -96,7 +96,7 @@ def List.splitEvenOdd {α : Type u} : List α → List α × List α
 /-- The core function for `monoidal` and `bicategory` tactics. -/
 def main (ρ : Type) [Context ρ] [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
     [MonadNormalExpr (CoherenceM ρ)] [MkEval (CoherenceM ρ)] [MkMor₂ (CoherenceM ρ)]
-    [MonadMor₂ (CoherenceM ρ)] [MonadCoherehnceHom (CoherenceM ρ)]
+    [MonadMor₂ (CoherenceM ρ)] [MonadCoherenceHom (CoherenceM ρ)]
     [MonadNormalizeNaturality (CoherenceM ρ)] [MkEqOfNaturality (CoherenceM ρ)]
     (nm : Name) (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do
