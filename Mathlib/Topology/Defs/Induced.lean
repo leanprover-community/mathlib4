@@ -108,6 +108,13 @@ protected def equiv (X : Type*) (t : TopologicalSpace X) : WithTopology X t ≃ 
   left_inv _ := rfl
   right_inv _ := rfl
 
+/--
+Induced map `lift f : WithTopology X → WithTopology Y` by a map `f : X → Y`.
+-/
+def map {X Y : Type*} (s : TopologicalSpace X) (t : TopologicalSpace Y) (f : X → Y) :
+    WithTopology X s → WithTopology Y t :=
+  (WithTopology.equiv Y t).symm ∘ f ∘ WithTopology.equiv X s
+
 end WithTopology
 
 namespace Topology
