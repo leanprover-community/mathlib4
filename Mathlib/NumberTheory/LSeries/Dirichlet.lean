@@ -23,7 +23,7 @@ on `re s > 1`; see `LSeries_vonMangoldt_eq_deriv_riemannZeta_div`.
 
 We also prove some general results on L-series associated to Dirichlet characters
 (i.e., Dirichlet L-series). For example, we show that the abscissa of absolute convergence
-equals `1` (see `DirichletCharacter.absicssaOfAbsConv_eq_one`) and that the L-series does not
+equals `1` (see `DirichletCharacter.abscissaOfAbsConv_eq_one`) and that the L-series does not
 vanish on the open half-plane `re s > 1` (see `DirichletCharacter.LSeries_ne_zero_of_one_lt_re`).
 
 We deduce results on the Riemann zeta function (which is `L 1` or `L ↗ζ` on `re s > 1`)
@@ -168,7 +168,7 @@ lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter 
   rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
 
 lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
-  congr_arg L modOne_eq_one
+  congr(L $modOne_eq_one)
 
 /-- The L-series of a Dirichlet character mod `N > 0` does not converge absolutely at `s = 1`. -/
 lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) :
@@ -197,10 +197,12 @@ lemma LSeriesSummable_iff {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ 
 
 /-- The abscissa of absolute convergence of the L-series of a Dirichlet character mod `N > 0`
 is `1`. -/
-lemma absicssaOfAbsConv_eq_one {N : ℕ} (hn : N ≠ 0) (χ : DirichletCharacter ℂ N) :
+lemma abscissaOfAbsConv_eq_one {N : ℕ} (hn : N ≠ 0) (χ : DirichletCharacter ℂ N) :
     abscissaOfAbsConv ↗χ = 1 := by
   simpa [abscissaOfAbsConv, LSeriesSummable_iff hn χ, Set.Ioi_def, EReal.image_coe_Ioi]
     using csInf_Ioo <| EReal.coe_lt_top 1
+
+@[deprecated (since := "2026-09-17")] alias absicssaOfAbsConv_eq_one := abscissaOfAbsConv_eq_one
 
 /-- The L-series of the twist of `f` by a Dirichlet character converges at `s` if the L-series
 of `f` does. -/
@@ -246,7 +248,7 @@ open LSeries Nat Complex DirichletCharacter
 
 /-- The abscissa of (absolute) convergence of the constant sequence `1` is `1`. -/
 lemma LSeries.abscissaOfAbsConv_one : abscissaOfAbsConv 1 = 1 :=
-  modOne_eq_one (χ := χ₁) ▸ absicssaOfAbsConv_eq_one one_ne_zero χ₁
+  modOne_eq_one (χ := χ₁) ▸ abscissaOfAbsConv_eq_one one_ne_zero χ₁
 
 /-- The `LSeries` of the constant sequence `1` converges at `s` if and only if `re s > 1`. -/
 theorem LSeriesSummable_one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re :=
@@ -267,7 +269,7 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
-  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
+  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans LSeriesSummable_one_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by
@@ -370,7 +372,7 @@ to an equality of complex sequences. -/
 lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   ext n
   simpa [apply_ite, LSeries.convolution_def, -vonMangoldt_mul_zeta]
-    using congr_arg (ofReal <| · n) vonMangoldt_mul_zeta
+    using congr(ofReal <| $vonMangoldt_mul_zeta n)
 
 lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
   (convolution_one_eq_convolution_zeta _).trans convolution_vonMangoldt_zeta
@@ -411,7 +413,7 @@ lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
   -- now `N ≠ 0`
   have hχ : LSeriesSummable ↗χ s := (LSeriesSummable_iff hN χ).mpr hs
   have hs' : abscissaOfAbsConv ↗χ < s.re := by
-    rwa [absicssaOfAbsConv_eq_one hN, ← EReal.coe_one, EReal.coe_lt_coe_iff]
+    rwa [abscissaOfAbsConv_eq_one hN, ← EReal.coe_one, EReal.coe_lt_coe_iff]
   have hΛ : LSeriesSummable (↗χ * ↗Λ) s := LSeriesSummable_twist_vonMangoldt χ hs
   rw [eq_div_iff <| LSeries_ne_zero_of_one_lt_re χ hs, ← LSeries_convolution' hΛ hχ,
     convolution_twist_vonMangoldt, LSeries_deriv hs', neg_neg]

@@ -82,7 +82,7 @@ theorem apply_lt_nfpFamily_iff [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal
     (∀ i, f i b < nfpFamily f a) ↔ b < nfpFamily f a := by
   refine ⟨fun h ↦ ?_, apply_lt_nfpFamily H⟩
   let ⟨l, hl⟩ := lt_nfpFamily_iff.1 (h (Classical.arbitrary ι))
-  exact lt_nfpFamily_iff.2 <| ⟨l, (H _).strictMono.le_apply.trans_lt hl⟩
+  exact lt_nfpFamily_iff.2 ⟨l, (H _).strictMono.le_apply.trans_lt hl⟩
 
 theorem nfpFamily_le_apply [Nonempty ι] [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a b} :
     (∃ i, nfpFamily f a ≤ f i b) ↔ nfpFamily f a ≤ b := by

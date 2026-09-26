@@ -43,8 +43,8 @@ namespace LinearMap
 /-- The intrinsic star operation on linear maps `E →ₗ F` defined by
 `(star f) x = star (f (star x))`. -/
 instance intrinsicStar : Star (WithConv (E →ₗ[R] F)) where
-  star f := toConv <|
-  { toFun x := star (f (star x))
+  star f := toConv {
+    toFun x := star (f (star x))
     map_add' := by simp
     map_smul' := by simp }
 

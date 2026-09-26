@@ -204,7 +204,7 @@ theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
 theorem starProjection_orthogonal_val (u : E) :
     Kᗮ.starProjection u = u - K.starProjection u :=
   eq_starProjection_of_mem_orthogonal' (sub_starProjection_mem_orthogonal _)
-    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) <| (sub_add_cancel _ _).symm
+    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) (sub_add_cancel _ _).symm
 
 theorem orthogonalProjectionOnto_orthogonal (u : E) :
     Kᗮ.orthogonalProjectionOnto u =
@@ -509,7 +509,7 @@ theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜
     [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 ↔ U ⟂ V := by
   refine ⟨fun h u hu v hv ↦ ?_, Submodule.IsOrtho.orthogonalProjectionOnto_comp_subtypeL⟩
   convert starProjection_inner_eq_zero v u hu
-  have : U.orthogonalProjectionOnto v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
+  have : U.orthogonalProjectionOnto v = 0 := congr($h ⟨_, hv⟩)
   rw [starProjection_apply, this, Submodule.coe_zero, sub_zero]
 
 @[deprecated (since := "2026-05-05")]

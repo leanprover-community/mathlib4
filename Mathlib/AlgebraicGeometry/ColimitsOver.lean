@@ -87,7 +87,7 @@ lemma cocone_ι_transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) (a : J) :
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma transitionMap_id (i : 𝒰.I₀) :
-    d.transitionMap (𝟙 i) = ((Over.mapId _ _ _).hom.app <| (d.cocone i).pt) := by
+    d.transitionMap (𝟙 i) = ((Over.mapId _ _ _).hom.app (d.cocone i).pt) := by
   apply (isColimitOfPreserves (Over.map ⊤ (d.prop_trans <| 𝟙 i)) (d.isColimit i)).hom_ext
   intro
   ext

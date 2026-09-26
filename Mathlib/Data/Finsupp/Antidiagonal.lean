@@ -62,10 +62,10 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
     Function.Embedding.coeFn_mk, Prod.map_apply, Prod.mk.injEq, Prod.exists]
   constructor
   · intro h
-    refine ⟨x a, y a, DFunLike.congr_fun h a |>.trans single_eq_same, ?_⟩
+    refine ⟨x a, y a, congr($h a) |>.trans single_eq_same, ?_⟩
     simp_rw [DFunLike.ext_iff, ← forall_and]
     intro i
-    replace h := DFunLike.congr_fun h i
+    replace h := congr($h i)
     simp_rw [single_apply, Finsupp.add_apply] at h ⊢
     obtain rfl | hai := Decidable.eq_or_ne a i
     · exact ⟨ite_eq_left rfl, ite_eq_left rfl⟩

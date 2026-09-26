@@ -702,7 +702,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] : f =o[𝕜; l] (1 : α → 𝕜)
       _ ≤ ε := mod_cast hcε.le
       _ ≤ ε * egauge 𝕜 (ball (0 : 𝕜) 1) 1 := by
         apply le_mul_of_one_le_right'
-        simpa using! le_egauge_ball_one 𝕜 (1 : 𝕜)
+        simpa using! le_egauge_unitBall 𝕜 (1 : 𝕜)
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E}
     (h : g =o[𝕜; l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
@@ -784,7 +784,7 @@ lemma isLittleOTVS_iff_isLittleO : f =o[𝕜; l] g ↔ f =o[l] g := by
         simp only [div_eq_mul_inv, ENNReal.coe_inv hc₀.ne', ENNReal.coe_mul]; ring
       _ ≤ 1 * 1 * δ * ‖g x‖₊ := by gcongr <;> exact ENNReal.div_self_le_one
       _ = δ * ‖g x‖₊ := by simp
-      _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_ball_one
+      _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_unitBall
 
 alias ⟨isLittleOTVS.isLittleO, IsLittleO.isLittleOTVS⟩ := isLittleOTVS_iff_isLittleO
 
@@ -801,7 +801,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
       simp only [enorm_eq_nnnorm, ← coe_nnnorm] at this ⊢
       exact mod_cast this
     calc
-      ‖f x‖ₑ ≤ egauge 𝕜 (ball 0 1) (f x) := le_egauge_ball_one ..
+      ‖f x‖ₑ ≤ egauge 𝕜 (ball 0 1) (f x) := le_egauge_unitBall ..
       _ ≤ egauge 𝕜 (ball 0 r) (g x) := hx
       _ ≤ ‖c‖ₑ * ‖g x‖ₑ / ↑r :=
         egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'

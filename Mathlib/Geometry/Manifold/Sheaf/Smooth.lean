@@ -244,7 +244,7 @@ groups `A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from
 `smoothSheafAddCommGroup IM I M A` to `smoothSheafAddCommGroup IM I' M A'`. -/]
 noncomputable def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : CMDiff ∞ φ) :
     smoothSheafCommGroup IM I M A ⟶ smoothSheafCommGroup IM I' M A' :=
-  CategoryTheory.ObjectProperty.homMk <|
+  CategoryTheory.ObjectProperty.homMk
   { app := fun _ ↦ CommGrpCat.ofHom <| ContMDiffMap.compLeftMonoidHom _ _ φ hφ
     naturality := fun _ _ _ ↦ rfl }
 
@@ -383,7 +383,7 @@ set_option backward.isDefEq.respectTransparency false in
   change (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
   rw [smoothSheafCommRing.ι_forgetStalk_inv_assoc, smoothSheaf.ι_evalHom]
   ext x
-  exact CategoryTheory.congr_fun (smoothSheafCommRing.ι_evalHom ..) x
+  congrm $(smoothSheafCommRing.ι_evalHom ..) x
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_hom_comp_evalHom
     (x : TopCat.of M) :

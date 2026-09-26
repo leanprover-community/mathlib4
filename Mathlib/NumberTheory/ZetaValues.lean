@@ -135,7 +135,7 @@ end Calculus
 theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
     bernoulliFun k (1 - x) = (-1) ^ k * bernoulliFun k x := by
   simpa [bernoulliFun, Polynomial.aeval_comp]
-    using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
+    using congr($(Polynomial.bernoulli_comp_one_sub_X k).aeval x)
 
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
 theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
@@ -466,7 +466,7 @@ theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π
 -/
 theorem hasSum_L_function_mod_four_eval_three :
     HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 3 * Real.sin (π * n / 2)) (π ^ 3 / 32) := by
-  apply (congr_arg₂ HasSum ?_ ?_).to_iff.mp <|
+  apply congr(HasSum $(?_) $(?_)).to_iff.mp <|
     hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   · ext1 n
     ring_nf
