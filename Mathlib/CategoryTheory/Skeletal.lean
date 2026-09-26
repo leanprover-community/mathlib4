@@ -34,12 +34,13 @@ definitionally on the nose which is convenient in practice.
   skeleton.
 * `Functor.mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D`: the functor induced by `F` on
   skeletons.
-* `Functor.isEquivalence_iff_mapSkeletonIsIso`: `F` is an equivalence if and only if the induced
+* `Functor.isEquivalence_iff_isIso_mapSkeleton`: `F` is an equivalence if and only if the induced
   functor on skeletons is an isomorphism.
 * `Equivalence.skeletonIsoCat (e : C ≌ D) : IsoCat (Skeleton C) (Skeleton D)`: the isomorphism
   between skeletons induced by an equivalence.
-* `ThinSkeleton C`: the thin skeleton of a category, defined by quotienting objects by
-  isomorphism and equipped with a preorder structure.
+* `ThinSkeleton C`: the thin skeleton of a category `C`, defined by quotienting objects by
+  isomorphism and equipping the quotient with a preorder structure. When `C` is thin, this is
+  (up to equivalence) a skeleton of `C`.
 * `toThinSkeleton : C ⥤ ThinSkeleton C`: the canonical functor to the thin skeleton.
 * `ThinSkeleton.map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D`: the functor induced by `F`
   on thin skeletons.
@@ -251,7 +252,7 @@ instance mapSkeleton_isIso_of_isEquivalence [F.IsEquivalence] : F.mapSkeleton.Is
 
 /-- A functor is an equivalence if and only if its induced functor on skeletons is an isomorphism.
 -/
-theorem isEquivalence_iff_mapSkeletonIsIso :
+theorem isEquivalence_iff_isIso_mapSkeleton :
     F.IsEquivalence ↔ F.mapSkeleton.IsIso :=
   ⟨fun _ ↦ inferInstance, fun _ ↦
     have : (F ⋙ toSkeletonFunctor D).IsEquivalence :=
