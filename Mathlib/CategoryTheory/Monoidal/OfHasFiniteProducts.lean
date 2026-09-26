@@ -47,14 +47,14 @@ the four fields starting from `id_tensorHom_id` were provided by the auto_param 
 @[instance_reducible]
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
-    tensorObj := fun X Y ↦ X ⨿ Y
-    whiskerLeft := fun _ _ _ g ↦ Limits.coprod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f _ ↦ Limits.coprod.map f (𝟙 _)
-    tensorHom := fun f g ↦ Limits.coprod.map f g
+    tensorObj X Y := X ⨿ Y
+    whiskerLeft _ _ _ g := Limits.coprod.map (𝟙 _) g
+    whiskerRight {_ _} f _ := Limits.coprod.map f (𝟙 _)
+    tensorHom := Limits.coprod.map
     tensorUnit := ⊥_ C
     associator := coprod.associator
-    leftUnitor := coprod.leftUnitor
-    rightUnitor := coprod.rightUnitor
+    leftUnitor X := coprod.leftUnitor X
+    rightUnitor X := coprod.rightUnitor X
   }
   .ofTensorHom
     (pentagon := coprod.pentagon)
@@ -62,8 +62,8 @@ def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : Monoi
     (associator_naturality := @coprod.associator_naturality _ _ _)
     (id_tensorHom_id := fun _ _ => coprod.map_id_id)
     (tensorHom_comp_tensorHom := coprod.map_map)
-    (leftUnitor_naturality := coprod.leftUnitor_naturality)
-    (rightUnitor_naturality := coprod.rightUnitor_naturality)
+    (leftUnitor_naturality := coprod.leftUnitor_hom_naturality)
+    (rightUnitor_naturality := coprod.rightUnitor_hom_naturality)
 
 end
 

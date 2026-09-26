@@ -180,7 +180,7 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
 -- We take the right-hand side here to be simp normal form, as this way composition lemmas for
 -- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `map_fst` and `map_snd` can still work just
 -- as well.
-@[to_dual (attr := reassoc (attr := simp))]
+@[to_dual (attr := reassoc (attr := simp)) (reorder := f h, g k)]
 theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ B₁] [HasBinaryProduct A₂ B₂]
     [HasBinaryProduct A₃ B₃] (f : A₁ ⟶ A₂) (g : B₁ ⟶ B₂) (h : A₂ ⟶ A₃) (k : B₂ ⟶ B₃) :
     prod.map f g ≫ prod.map h k = prod.map (f ≫ h) (g ≫ k) := by ext <;> simp
@@ -344,6 +344,8 @@ theorem prod.leftUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
 
 @[deprecated (since := "2026-09-26")]
 alias coprod.leftUnitor_naturality := coprod.leftUnitor_hom_naturality
+@[deprecated (since := "2026-09-26")]
+alias coprod.leftUnitor_naturality_assoc := coprod.leftUnitor_hom_naturality_assoc
 
 @[to_dual (attr := reassoc) rightUnitor_inv_naturality]
 theorem prod.rightUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
@@ -357,9 +359,13 @@ theorem prod.rightUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
 
 @[deprecated (since := "2026-09-26")]
 alias coprod.rightUnitor_naturality := coprod.rightUnitor_hom_naturality
+@[deprecated (since := "2026-09-26")]
+alias coprod.rightUnitor_naturality_assoc := coprod.rightUnitor_hom_naturality_assoc
 
 @[deprecated (since := "2026-09-26")]
 alias prod_rightUnitor_inv_naturality := prod.rightUnitor_inv_naturality
+@[deprecated (since := "2026-09-26")]
+alias prod_rightUnitor_inv_naturality_assoc := prod.rightUnitor_inv_naturality_assoc
 
 theorem prod.triangle [HasBinaryProducts C] (X Y : C) :
     (prod.associator X (⊤_ C) Y).hom ≫ prod.map (𝟙 X) (prod.leftUnitor Y).hom =
