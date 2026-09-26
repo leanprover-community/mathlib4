@@ -67,10 +67,10 @@ theorem proj_smul (g : FundamentalGroup X x₀) (p : UniversalCover x₀) :
 instance instMulAction : MulAction (FundamentalGroup X x₀) (UniversalCover x₀) where
   one_smul p := by
     rcases p with ⟨x, q⟩
-    rw [smul_mk, inv_one, FundamentalGroup.toPath_one, Path.Homotopic.Quotient.refl_trans]
+    rw [smul_mk, inv_one, FundamentalGroup.one_def, Path.Homotopic.Quotient.refl_trans]
   mul_smul g h p := by
     rcases p with ⟨x, q⟩
-    rw [smul_mk, smul_mk, smul_mk, mul_inv_rev, FundamentalGroup.toPath_mul,
+    rw [smul_mk, smul_mk, smul_mk, mul_inv_rev, FundamentalGroup.mul_def,
       Path.Homotopic.Quotient.trans_assoc]
 
 instance : FaithfulSMul (FundamentalGroup X x₀) (UniversalCover x₀) where
