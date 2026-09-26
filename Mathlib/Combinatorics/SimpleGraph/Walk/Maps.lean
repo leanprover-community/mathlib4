@@ -239,7 +239,7 @@ protected def induce {u v : V} :
   | .cons (v := u') hu w, hw => by simp [support_induce]
 
 @[simp] lemma map_induce {u v : V} :
-    ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
+    ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Hom.induce s G) = w
   | .nil, hw => rfl
   | .cons huu' w, hw => congrArg (cons huu') (map_induce w _)
 

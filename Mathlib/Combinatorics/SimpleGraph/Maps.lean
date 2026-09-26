@@ -413,6 +413,22 @@ protected def comap (f : V → W) (G : SimpleGraph W) : G.comap f →g G where
   toFun := f
   map_rel' := by simp
 
+/-- The homomorphism from an induced subgraph into the original graph.
+See `SimpleGraph.Embedding.induce` for the embedding. -/
+protected def induce (s : Set V) (G : SimpleGraph V) : G.induce s →g G :=
+  .comap (Function.Embedding.subtype _) G
+
+@[simp] theorem coe_induce (s : Set V) (G : SimpleGraph V) :
+    ⇑(Hom.induce s G) = Subtype.val := rfl
+
+/-- The homomorphism from a graph on a set of vertices into its `spanningCoe`.
+See `SimpleGraph.Embedding.spanningCoe` for the embedding. -/
+protected def spanningCoe {s : Set V} (G : SimpleGraph s) : G →g G.spanningCoe :=
+  .map (Function.Embedding.subtype _) G fun h ↦ Subtype.val_injective.ne h.ne
+
+@[simp] theorem coe_spanningCoe {s : Set V} (G : SimpleGraph s) :
+    ⇑(Hom.spanningCoe G) = Subtype.val := rfl
+
 theorem le_comap (f : H →g G) : H ≤ G.comap f :=
   fun _ _ ↦ f.map_adj
 
@@ -547,12 +563,25 @@ theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) : Embedding.map f G 
 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
 complete graph. -/
-protected abbrev induce (s : Set V) : G.induce s ↪g G :=
+protected def induce (s : Set V) : G.induce s ↪g G :=
   .comap (.subtype _) G
 
+@[simp] theorem coe_induce (s : Set V) : ⇑(Embedding.induce s (G := G)) = Subtype.val := rfl
+@[simp] theorem toHom_induce (s : Set V) :
+    (Embedding.induce s (G := G)).toHom = Hom.induce s G := rfl
+@[simp] theorem toEmbedding_induce (s : Set V) :
+    (Embedding.induce s (G := G)).toEmbedding = .subtype _ := rfl
+
 /-- Graphs on a set of vertices embed in their `spanningCoe`. -/
-protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
+protected def spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
   .map (.subtype _) G
+
+@[simp] theorem coe_spanningCoe {s : Set V} (G : SimpleGraph s) :
+    ⇑(Embedding.spanningCoe G) = Subtype.val := rfl
+@[simp] theorem toHom_spanningCoe {s : Set V} (G : SimpleGraph s) :
+    (Embedding.spanningCoe G).toHom = Hom.spanningCoe G := rfl
+@[simp] theorem toEmbedding_spanningCoe {s : Set V} (G : SimpleGraph s) :
+    (Embedding.spanningCoe G).toEmbedding = .subtype _ := rfl
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
 protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β where
