@@ -304,7 +304,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
   set f := disjointed fun j => (J.equivFin.symm j).1
   have h1 : ∀ j, f j ∈ supClosure C :=
     hC.isSetRing_supClosure.disjointed_mem fun j =>
-      subset_supClosure <| h_ss <| (J.equivFin.symm j).2
+      subset_supClosure <| h_ss (J.equivFin.symm j).2
   have h2 : Pairwise (Disjoint on f) := disjoint_disjointed _
   have h3 : ⋃ i, f i ∈ supClosure C :=
     supClosed_supClosure.iSup_mem (subset_supClosure hC.empty_mem) h1

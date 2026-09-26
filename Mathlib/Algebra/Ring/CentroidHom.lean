@@ -135,7 +135,7 @@ theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddM
 /-- Copy of a `CentroidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : CentroidHom α :=
-  { f.toAddMonoidHom.copy f' <| h with
+  { f.toAddMonoidHom.copy f' h with
     toFun := f'
     map_mul_left' := fun a b ↦ by simp_rw [h, map_mul_left]
     map_mul_right' := fun a b ↦ by simp_rw [h, map_mul_right] }
