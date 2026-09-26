@@ -493,3 +493,10 @@ run_meta
   let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``GE.ge | failure
   -- `WithBot` gets `(relevant_arg := α)` because `WithBot` is a type
   let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``WithBot | failure
+
+-- `to_dual_for` does not introduce unnamed variables
+def toDualForTest (n : Nat) : Prop := n = 37
+def toDualForTest' : Nat → Prop := (· = 37)
+
+to_dual_for toDualForTest := n = 42
+to_dual_for toDualForTest' := (· = 42)
