@@ -210,9 +210,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
 
 theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     support (formPerm l) = l.toFinset := by
-  rw [← Finset.coe_inj]
-  convert! support_formPerm_of_nodup' _ h h'
-  simp [Set.ext_iff]
+  rw [← Finset.coe_inj, coe_support_eq_set_support, support_formPerm_of_nodup' _ h h']
 
 theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by
   have h' : Nodup (l.rotate 1) := by simpa using h

@@ -537,11 +537,12 @@ theorem continuous_toCloseds [T2Space α] : Continuous (toCloseds (α := α)) :=
 theorem isClosedEmbedding_toCloseds [T2Space α] [CompleteSpace α] :
     IsClosedEmbedding (toCloseds (α := α)) where
   __ := isEmbedding_toCloseds
-  isClosed_range := by
-    convert! Closeds.isClosed_setOfPred_totallyBounded
-    exact subset_antisymm
-      (Set.range_subset_iff.mpr fun K => K.isCompact.totallyBounded)
-      (fun K hK => ⟨⟨K, hK.isCompact_of_isClosed K.isClosed⟩, rfl⟩)
+  isClosed_range :=
+    (show Set.range (toCloseds (α := α)) = {s : Closeds α | TotallyBounded (s : Set α)} from
+      subset_antisymm
+        (Set.range_subset_iff.mpr fun K => K.isCompact.totallyBounded)
+        (fun K hK => ⟨⟨K, hK.isCompact_of_isClosed K.isClosed⟩, rfl⟩)) ▸
+      Closeds.isClosed_setOfPred_totallyBounded
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
     TotallyBounded {K : Compacts α | ↑K ⊆ t} :=

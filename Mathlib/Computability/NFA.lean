@@ -224,7 +224,7 @@ private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
   | cons a x ih =>
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
       ext s; simp only [stepSet, mem_ofPred_eq, mem_iUnion, exists_prop]; tauto
-    simp [h, ih]
+    simp [*]
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of

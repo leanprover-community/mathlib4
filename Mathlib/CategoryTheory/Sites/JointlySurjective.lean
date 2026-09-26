@@ -73,7 +73,7 @@ instance : jointlySurjectivePrecoverage.IsStableUnderComposition where
     simp
 
 instance : jointlySurjectivePrecoverage.IsStableUnderSup where
-  sup_mem_coverings {X} R S hR _ x := by
+  sup_mem_coverings {X R S} hR _ x := by
     obtain ⟨Y, f, hf, hx⟩ := hR x
     use Y, f, .inl hf
 

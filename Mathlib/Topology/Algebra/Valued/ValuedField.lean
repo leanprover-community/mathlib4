@@ -202,9 +202,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
         exact zero_ne_one.symm
-      convert! Valued.locally_const this
-      ext x
-      rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_ofPred_eq]
+      simpa [Set.preimage] using Valued.locally_const this
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
       rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
@@ -332,13 +330,17 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
           ValueGroup₀.embedding a = ValueGroup₀.embedding b ↔ a = b := by
         rw [embedding_strictMono.injective.eq_iff]
       simp_rw [← hr, ← Valuation.restrict_def, h]
-      convert! valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
-      simp_rw [eq_comm (a := extension _)]
       #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
       (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
       goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
-      the new canonicalizer; a minimization would help. The original proof was: `grind` -/
-      ext; simp
+      the new canonicalizer; a minimization would help. The original proof was:
+      ```
+      convert! valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
+      simp_rw [eq_comm (a := extension _)]
+      grind
+      ``` -/
+      simpa [← hr, ← Valuation.restrict_def, h,eq_comm, Set.preimage]
+        using valuation_isClosedMap.isClosed_range.preimage continuous_extension
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :

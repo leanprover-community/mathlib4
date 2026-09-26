@@ -211,7 +211,8 @@ lemma hasDerivAt_iteratedDeriv_complexMGF (hz : z.re ∈ interior (integrableExp
     have : deriv (iteratedDeriv n (complexMGF X μ))
         =ᶠ[𝓝 z] fun z ↦ μ[fun ω ↦ X ω ^ (n + 1) * cexp (z * X ω)] := by
       have h_mem : ∀ᶠ y in 𝓝 z, y.re ∈ interior (integrableExpSet X μ) := by
-        refine IsOpen.eventually_mem ?_ hz
+        refine IsOpen.eventually_mem (s := Complex.re ⁻¹' interior (integrableExpSet X μ))
+          ?_ hz
         exact isOpen_interior.preimage Complex.continuous_re
       filter_upwards [h_mem] with y hy using HasDerivAt.deriv (hn hy)
     rw [EventuallyEq.hasDerivAt_iff this]
