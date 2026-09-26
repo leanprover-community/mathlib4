@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
+# `Spec R[X] → Spec R` is an open map
+
 The morphism `Spec R[x] --> Spec R` induced by the natural inclusion `R --> R[x]` is an open map.
 
 The main result is the first part of the statement of Lemma 00FB in the Stacks Project.
