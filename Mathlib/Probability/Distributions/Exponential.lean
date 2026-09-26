@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.Variance
+public import Mathlib.Probability.Moments.IntegrableExpMul
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-! # Exponential distributions over ℝ
@@ -24,6 +29,13 @@ Define the Exponential measure over the reals.
 ## Main results
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
+* `integral_id_expMeasure`: the mean of the exponential distribution is `r⁻¹`.
+* `variance_id_expMeasure`: the variance of the exponential distribution is `r⁻¹ ^ 2`.
+* `mgf_id_expMeasure`: the moment-generating function is `r / (r - t)` for `t < r`.
+* `integrable_exp_mul_expMeasure`: integrability of `exp (t * ·)` under `expMeasure r`.
+* `memLp_id_expMeasure`: the identity function is in `ℒp` for all `p` under `expMeasure r`.
+* `memoryless_expMeasure`: the memoryless property
+  `P(X > s + t) / P(X > s) = P(X > t)`.
 -/
 
 @[expose] public section
@@ -172,5 +184,192 @@ lemma cdf_expMeasure_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
   · exact le_rfl
 
 end ExponentialCDF
+
+section ExponentialMGF
+
+variable {r t : ℝ}
+
+/-- Rewrite integrals against `expMeasure r` as Lebesgue integrals weighted by
+`exponentialPDF r`. -/
+private lemma integral_expMeasure_eq_integral_density (r : ℝ) (f : ℝ → ℝ) :
+    ∫ x, f x ∂(expMeasure r) = ∫ x, (exponentialPDF r x).toReal * f x := by
+  have h_meas : Measurable (gammaPDF 1 r) :=
+    (measurable_gammaPDFReal 1 r).ennreal_ofReal
+  simpa [expMeasure, gammaMeasure, gammaPDF, exponentialPDF, exponentialPDFReal,
+    smul_eq_mul] using
+    integral_withDensity_eq_integral_toReal_smul (μ := volume) (f := gammaPDF 1 r) (g := f)
+      h_meas (ae_of_all _ fun _ => ENNReal.ofReal_lt_top)
+
+/-- The integral of `exp (t * x)` against `expMeasure r` equals `r / (r - t)` when `t < r`. -/
+lemma integral_exp_mul_expMeasure (hr : 0 < r) (ht : t < r) :
+    ∫ x, exp (t * x) ∂(expMeasure r) = r / (r - t) := by
+  rw [integral_expMeasure_eq_integral_density]
+  have hIci0 :
+      ∫ x, (exponentialPDF r x).toReal * exp (t * x) =
+        ∫ x in Ici 0, (exponentialPDF r x).toReal * exp (t * x) := by
+    symm
+    refine setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx => ?_
+    simp [exponentialPDF_of_neg (by simpa [mem_Ici] using hx)]
+  have hIci :
+      ∫ x in Ici 0, (exponentialPDF r x).toReal * exp (t * x) =
+        ∫ x in Ici 0, r * exp ((t - r) * x) := by
+    refine setIntegral_congr_fun measurableSet_Ici fun x hx => ?_
+    rw [exponentialPDF_of_nonneg hx, ENNReal.toReal_ofReal (by positivity),
+      mul_assoc, mul_comm _ (exp (t * x)), ← Real.exp_add]
+    congr 2; ring
+  rw [hIci0, hIci, integral_Ici_eq_integral_Ioi, integral_const_mul]
+  have htr : t - r < 0 := by linarith
+  rw [integral_exp_mul_Ioi htr 0]
+  simp only [mul_zero, exp_zero, neg_div, ← div_neg, neg_sub, mul_one_div]
+
+/-- The function `x ↦ exp (t * x)` is integrable against `expMeasure r` when `t < r`. -/
+lemma integrable_exp_mul_expMeasure (hr : 0 < r) (ht : t < r) :
+    Integrable (fun x => exp (t * x)) (expMeasure r) := by
+  by_contra h
+  have h0 := integral_undef h
+  linarith [integral_exp_mul_expMeasure hr ht, div_pos hr (sub_pos.mpr ht)]
+
+/-- The moment-generating function of `id` under the exponential distribution with rate `r > 0`
+is `r / (r - t)` for `t < r`. -/
+lemma mgf_id_expMeasure (hr : 0 < r) (ht : t < r) :
+    mgf id (expMeasure r) t = r / (r - t) := by
+  simpa [mgf, id_eq] using integral_exp_mul_expMeasure hr ht
+
+/-- The integrable exponential set of `id` under `expMeasure r` contains `Iio r`. -/
+lemma Iio_subset_integrableExpSet_id_expMeasure (hr : 0 < r) :
+    Iio r ⊆ integrableExpSet id (expMeasure r) := by
+  intro t ht
+  simp only [integrableExpSet, mem_ofPred_eq, id]
+  exact integrable_exp_mul_expMeasure hr ht
+
+/-- `0` belongs to the interior of the integrable exponential set of `id` under
+`expMeasure r`. -/
+lemma zero_mem_interior_integrableExpSet_id_expMeasure (hr : 0 < r) :
+    0 ∈ interior (integrableExpSet id (expMeasure r)) :=
+  mem_interior.mpr
+    ⟨Iio r, Iio_subset_integrableExpSet_id_expMeasure hr, isOpen_Iio, hr⟩
+
+/-- The identity function belongs to `ℒp` for all `p` under `expMeasure r`. -/
+lemma memLp_id_expMeasure (hr : 0 < r) (p : ℝ≥0) :
+    MemLp id p (expMeasure r) :=
+  memLp_of_mem_interior_integrableExpSet
+    (zero_mem_interior_integrableExpSet_id_expMeasure hr) p
+
+end ExponentialMGF
+
+section ExponentialMoments
+
+variable {r : ℝ}
+
+/-- The mean of the exponential distribution with rate `r > 0` is `r⁻¹`. -/
+@[simp]
+lemma integral_id_expMeasure (hr : 0 < r) : ∫ x, x ∂(expMeasure r) = r⁻¹ := by
+  rw [integral_expMeasure_eq_integral_density]
+  have hIci0 :
+      ∫ x, (exponentialPDF r x).toReal * x =
+        ∫ x in Ici 0, (exponentialPDF r x).toReal * x := by
+    symm
+    refine setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx => ?_
+    simp [exponentialPDF_of_neg (by simpa [mem_Ici] using hx)]
+  have hIci :
+      ∫ x in Ici 0, (exponentialPDF r x).toReal * x =
+        ∫ x in Ici 0, r * (x * exp (-(r * x))) := by
+    refine setIntegral_congr_fun measurableSet_Ici fun x hx => ?_
+    rw [exponentialPDF_of_nonneg hx, ENNReal.toReal_ofReal (by positivity)]
+    ring
+  rw [hIci0, hIci, integral_Ici_eq_integral_Ioi, integral_const_mul]
+  have hpow :
+      ∫ x in Ioi 0, x * exp (-(r * x)) =
+        ∫ x in Ioi 0, x ^ (2 - 1 : ℝ) * exp (-(r * x)) := by
+    refine setIntegral_congr_fun measurableSet_Ioi fun x _ => ?_
+    rw [show (2 - 1 : ℝ) = 1 by norm_num, Real.rpow_one]
+  rw [hpow, Real.integral_rpow_mul_exp_neg_mul_Ioi (by positivity) hr]
+  norm_num [Real.Gamma_nat_eq_factorial]
+  field_simp [hr.ne']
+
+/-- The second raw moment of the exponential distribution with rate `r > 0` is `2 * r⁻¹ ^ 2`. -/
+private lemma integral_sq_expMeasure (hr : 0 < r) :
+    ∫ x, x ^ 2 ∂(expMeasure r) = 2 * r⁻¹ ^ 2 := by
+  rw [integral_expMeasure_eq_integral_density]
+  have hIci0 :
+      ∫ x, (exponentialPDF r x).toReal * x ^ 2 =
+        ∫ x in Ici 0, (exponentialPDF r x).toReal * x ^ 2 := by
+    symm
+    refine setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx => ?_
+    simp [exponentialPDF_of_neg (by simpa [mem_Ici] using hx)]
+  have hIci :
+      ∫ x in Ici 0, (exponentialPDF r x).toReal * x ^ 2 =
+        ∫ x in Ici 0, r * (x ^ 2 * exp (-(r * x))) := by
+    refine setIntegral_congr_fun measurableSet_Ici fun x hx => ?_
+    rw [exponentialPDF_of_nonneg hx, ENNReal.toReal_ofReal (by positivity)]
+    ring
+  rw [hIci0, hIci, integral_Ici_eq_integral_Ioi, integral_const_mul]
+  have hpow :
+      ∫ x in Ioi 0, x ^ 2 * exp (-(r * x)) =
+        ∫ x in Ioi 0, x ^ (3 - 1 : ℝ) * exp (-(r * x)) := by
+    refine setIntegral_congr_fun measurableSet_Ioi fun x _ => ?_
+    norm_num
+  rw [hpow, Real.integral_rpow_mul_exp_neg_mul_Ioi (by positivity) hr]
+  norm_num [Real.Gamma_nat_eq_factorial]
+  field_simp [hr.ne']
+
+/-- The variance of `id` under the exponential distribution with rate `r > 0` is `r⁻¹ ^ 2`. -/
+@[simp]
+lemma variance_id_expMeasure (hr : 0 < r) : Var[id; expMeasure r] = r⁻¹ ^ 2 := by
+  let μ : Measure ℝ := expMeasure r
+  have : IsProbabilityMeasure μ := by simpa [μ] using isProbabilityMeasure_expMeasure hr
+  rw [variance_eq_sub (memLp_id_expMeasure hr 2)]
+  have hsq : ∫ x, (id ^ 2) x ∂μ = 2 * r⁻¹ ^ 2 := by
+    simpa [id, μ] using integral_sq_expMeasure hr
+  have hid : ∫ x, id x ∂μ = r⁻¹ := by
+    simpa [id, μ] using integral_id_expMeasure hr
+  rw [hsq, hid]; ring_nf
+
+/-- The centered second moment `∫ (x - r⁻¹)² d(expMeasure r)` equals `r⁻¹ ^ 2`. -/
+lemma variance_integral_expMeasure (hr : 0 < r) :
+    ∫ x, (x - r⁻¹) ^ 2 ∂(expMeasure r) = r⁻¹ ^ 2 := by
+  calc ∫ x, (x - r⁻¹) ^ 2 ∂(expMeasure r)
+      = ∫ x, (x - ∫ y, y ∂(expMeasure r)) ^ 2 ∂(expMeasure r) := by
+        simp [integral_id_expMeasure hr]
+    _ = Var[id; expMeasure r] := (variance_eq_integral measurable_id'.aemeasurable).symm
+    _ = r⁻¹ ^ 2 := variance_id_expMeasure hr
+
+end ExponentialMoments
+
+section ExponentialTail
+
+variable {r : ℝ}
+
+/-- The tail probability `P(X > x)` for the exponential distribution equals `exp (-(r * x))`
+when `x ≥ 0`. -/
+lemma measure_Ioi_expMeasure (hr : 0 < r) {x : ℝ} (hx : 0 ≤ x) :
+    (expMeasure r) (Ioi x) = ENNReal.ofReal (exp (-(r * x))) := by
+  have : IsProbabilityMeasure (expMeasure r) := isProbabilityMeasure_expMeasure hr
+  calc (expMeasure r) (Ioi x)
+      = (cdf (expMeasure r)).measure (Ioi x) := by simp [measure_cdf]
+    _ = ENNReal.ofReal (1 - cdf (expMeasure r) x) := by
+        simpa using StieltjesFunction.measure_Ioi
+          (f := cdf (expMeasure r))
+          (ProbabilityTheory.tendsto_cdf_atTop (μ := expMeasure r)) x
+    _ = ENNReal.ofReal (exp (-(r * x))) := by
+        rw [cdf_expMeasure_eq hr x, ite_eq_left hx]; ring_nf
+
+/-- The memoryless property of the exponential distribution: `P(X > s + t | X > s) = P(X > t)`. -/
+lemma memoryless_expMeasure (hr : 0 < r) {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) :
+    expMeasure r (Ioi (s + t)) * (expMeasure r (Ioi s))⁻¹ = expMeasure r (Ioi t) := by
+  rw [measure_Ioi_expMeasure hr (add_nonneg hs ht),
+    measure_Ioi_expMeasure hr hs,
+    measure_Ioi_expMeasure hr ht,
+    ← ENNReal.ofReal_inv_of_pos (exp_pos _),
+    ← ENNReal.ofReal_mul (by positivity)]
+  congr 1
+  have hsne : exp (-(r * s)) ≠ 0 := exp_ne_zero _
+  apply mul_right_cancel₀ hsne
+  calc (exp (-(r * (s + t))) * (exp (-(r * s)))⁻¹) * exp (-(r * s))
+      = exp (-(r * (s + t))) := by field_simp [hsne]
+    _ = exp (-(r * t)) * exp (-(r * s)) := by
+        rw [← Real.exp_add]; congr 1; ring_nf
+
+end ExponentialTail
 
 end ProbabilityTheory
