@@ -5,24 +5,178 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Monoidal.Functor
 /-!
 
-# Constructing monoidal functors from natural transformations between multifunctors
+# Constructing monoidal categories and monoidal functors from multifunctors
 
-This file provides alternative constructors for (op/lax) monoidal functors, given tensorators
-`μ : F - ⊗ F - ⟶  F (- ⊗ -)` / `δ : F (- ⊗ -) ⟶ F - ⊗ F -` as natural transformations between
-bifunctors. The associativity conditions are phrased as equalities of natural transformations
-between trifunctors `(F - ⊗ F -) ⊗ F - ⟶ F (- ⊗ (- ⊗ -))` / `F ((- ⊗ -) ⊗ -) ⟶ F - ⊗ (F - ⊗ F -)`,
-and the unitality conditions are phrased as equalities of natural transformation between functors.
+This file first constructs monoidal category structures from a tensor bifunctor, associator and
+unitor natural isomorphisms, and pentagon and triangle identities expressed as equalities of
+natural transformations between quadrifunctors and bifunctors.
 
-Once we have more API for quadrifunctors, we can add constructors for monoidal category structures
-by phrasing the pentagon axiom as an equality of natural transformations between quadrifunctors.
+It then provides alternative constructors for (op/lax) monoidal functors, given tensorators
+`μ : F - ⊗ F - ⟶ F (- ⊗ -)` / `δ : F (- ⊗ -) ⟶ F - ⊗ F -` as natural transformations between
+bifunctors. The associativity conditions are equalities of natural transformations between
+trifunctors `(F - ⊗ F -) ⊗ F - ⟶ F (- ⊗ (- ⊗ -))` / `F ((- ⊗ -) ⊗ -) ⟶ F - ⊗ (F - ⊗ F -)`,
+and the unitality conditions are equalities of natural transformations between functors.
 -/
 
 @[expose] public section
 
 namespace CategoryTheory
+
+namespace MonoidalCategory
+
+open CategoryTheory.Functor
+
+namespace ofBifunctor
+
+variable {C : Type*} [Category* C] (tensor : C ⥤ C ⥤ C)
+
+namespace Pentagon
+
+/-- The source quadrifunctor of the two paths around the monoidal pentagon. -/
+abbrev source : C ⥤ C ⥤ C ⥤ C ⥤ C :=
+  (Functor.postcompose₃.obj tensor).obj (bifunctorComp₁₂ tensor tensor)
+
+/-- The target quadrifunctor of the two paths around the monoidal pentagon. -/
+abbrev target : C ⥤ C ⥤ C ⥤ C ⥤ C :=
+  trifunctorComp₂₃₄ tensor (bifunctorComp₂₃ tensor tensor)
+
+/-- The three-associator path along the top and right of the monoidal pentagon.
+
+```
+((X₁ ⊗ X₂) ⊗ X₃) ⊗ X₄  ---->  (X₁ ⊗ (X₂ ⊗ X₃)) ⊗ X₄
+              |                              |
+              v                              v
+   (X₁ ⊗ X₂) ⊗ (X₃ ⊗ X₄)       X₁ ⊗ ((X₂ ⊗ X₃) ⊗ X₄)
+              \                              |
+               \                             v
+                ------> X₁ ⊗ (X₂ ⊗ (X₃ ⊗ X₄))
+```
+-/
+@[simps!, implicit_reducible]
+def firstMap
+    (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
+    source tensor ⟶ target tensor :=
+  (Functor.postcompose₃.obj tensor).map associator.hom ≫
+    (bifunctorComp₂₃Functor.map associator.hom).app tensor ≫
+      (trifunctorComp₂₃₄Functor.obj tensor).map associator.hom
+
+/-- The two-associator path along the left and bottom of the monoidal pentagon displayed in
+`Pentagon.firstMap`. -/
+@[simps!, implicit_reducible]
+def secondMap
+    (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
+    source tensor ⟶ target tensor :=
+  (bifunctorComp₁₂Functor.obj tensor).map associator.hom ≫
+    (trifunctorComp₃₄Functor.map associator.hom).app tensor
+
+end Pentagon
+
+namespace Triangle
+
+/-- The source bifunctor of the two paths around the monoidal triangle. -/
+abbrev source (unit : C) : C ⥤ C ⥤ C := tensor.flip.obj unit ⋙ tensor
+
+/-- The intermediate bifunctor `X Y ↦ X ⊗ (𝟙 ⊗ Y)` in the monoidal triangle. -/
+abbrev middle (unit : C) : C ⥤ C ⥤ C :=
+  tensor ⋙ (Functor.whiskeringRight C C C).flip.obj (tensor.obj unit)
+
+/-- The associator edge of the monoidal triangle. -/
+@[implicit_reducible, simps!]
+def associatorMap (unit : C)
+    (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
+    source tensor unit ⟶ middle tensor unit where
+  app X := (associator.hom.app X).app unit
+  naturality _ _ f := NatTrans.congr_app (associator.hom.naturality f) unit
+
+/-- The left-unitor edge of the monoidal triangle. -/
+@[implicit_reducible, simps!]
+def leftUnitorMap (unit : C) (leftUnitor : tensor.obj unit ≅ 𝟭 C) :
+    middle tensor unit ⟶ tensor where
+  app X := { app Y := (tensor.obj X).map (leftUnitor.hom.app Y) }
+
+/-- The path around the top and right of the monoidal triangle through the associator and left
+unitor.
+
+```
+(X₁ ⊗ 𝟙) ⊗ X₂  ---->  X₁ ⊗ (𝟙 ⊗ X₂)
+        \                       |
+         \                      v
+          ----------> X₁ ⊗ X₂
+```
+-/
+@[implicit_reducible, simps!]
+def firstMap (unit : C)
+    (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
+    (leftUnitor : tensor.obj unit ≅ 𝟭 C) : source tensor unit ⟶ tensor :=
+  associatorMap tensor unit associator ≫ leftUnitorMap tensor unit leftUnitor
+
+/-- The diagonal path in the monoidal triangle displayed in `Triangle.firstMap`, given by the
+right unitor. -/
+@[implicit_reducible, simps!]
+def secondMap (unit : C) (rightUnitor : tensor.flip.obj unit ≅ 𝟭 C) :
+    source tensor unit ⟶ tensor where
+  app X := { app Y := (tensor.map (rightUnitor.hom.app X)).app Y }
+  naturality X₁ Y₁ f := by
+    ext Z
+    simpa using NatTrans.congr_app (congrArg tensor.map (rightUnitor.hom.naturality f)) Z
+
+end Triangle
+
+end ofBifunctor
+
+open ofBifunctor
+
+/-- Construct a monoidal category from a tensor bifunctor, associator and unitor natural
+isomorphisms, and pentagon and triangle identities between multifunctor transformations. -/
+@[instance_reducible]
+def ofBifunctor {C : Type*} [Category* C] (tensor : C ⥤ C ⥤ C) (unit : C)
+    (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
+    (leftUnitor : tensor.obj unit ≅ 𝟭 C) (rightUnitor : tensor.flip.obj unit ≅ 𝟭 C)
+    (pentagon : Pentagon.firstMap tensor associator = Pentagon.secondMap tensor associator)
+    (triangle : Triangle.firstMap tensor unit associator leftUnitor =
+      Triangle.secondMap tensor unit rightUnitor) : MonoidalCategory C where
+  tensorObj X Y := (tensor.obj X).obj Y
+  whiskerLeft := fun X {_ _} f ↦ (tensor.obj X).map f
+  whiskerRight := fun {_ _} f Y ↦ (tensor.map f).app Y
+  tensorHom := fun {X₁ Y₁ X₂ Y₂} f g ↦
+    (tensor.map f).app X₂ ≫ (tensor.obj Y₁).map g
+  tensorUnit := unit
+  associator X Y Z := ((associator.app X).app Y).app Z
+  leftUnitor X := leftUnitor.app X
+  rightUnitor X := rightUnitor.app X
+  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by
+    dsimp
+    simp only [Functor.map_comp, NatTrans.comp_app, Category.assoc]
+    have h₃ : (tensor.obj ((tensor.obj Y₁).obj Y₂)).map f₃ ≫
+          ((associator.hom.app Y₁).app Y₂).app Y₃ =
+        ((associator.hom.app Y₁).app Y₂).app X₃ ≫
+          (tensor.obj Y₁).map ((tensor.obj Y₂).map f₃) :=
+      ((associator.hom.app Y₁).app Y₂).naturality f₃
+    slice_lhs 3 4 => rw [h₃]
+    have h₂ : (tensor.map ((tensor.obj Y₁).map f₂)).app X₃ ≫
+          ((associator.hom.app Y₁).app Y₂).app X₃ =
+        ((associator.hom.app Y₁).app X₂).app X₃ ≫
+          (tensor.obj Y₁).map ((tensor.map f₂).app X₃) :=
+      NatTrans.congr_app ((associator.hom.app Y₁).naturality f₂) X₃
+    slice_lhs 2 3 => rw [h₂]
+    have h₁ : (tensor.map ((tensor.map f₁).app X₂)).app X₃ ≫
+          ((associator.hom.app Y₁).app X₂).app X₃ =
+        ((associator.hom.app X₁).app X₂).app X₃ ≫
+          (tensor.map f₁).app ((tensor.obj X₂).obj X₃) :=
+      NatTrans.congr_app (NatTrans.congr_app (associator.hom.naturality f₁) X₂) X₃
+    slice_lhs 1 2 => rw [h₁]
+    simp only [Category.assoc]
+  rightUnitor_naturality f := rightUnitor.hom.naturality f
+  pentagon W X Y Z :=
+    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app
+      (NatTrans.congr_app pentagon W) X) Y) Z
+  triangle X Y := NatTrans.congr_app (NatTrans.congr_app triangle X) Y
+
+end MonoidalCategory
 
 variable {C : Type*} [Category* C] [MonoidalCategory C]
   {D : Type*} [Category* D] [MonoidalCategory D]
