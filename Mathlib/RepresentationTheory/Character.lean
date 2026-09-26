@@ -46,29 +46,33 @@ namespace Representation
 
 section Monoid
 
-variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+variable {G k V W : Type*} [Monoid G] [Field k]
+  [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
   (ρ : Representation k G V) (σ : Representation k G W)
+  [FiniteDimensional k ρ.asModule] [FiniteDimensional k σ.asModule]
 
 /-- The character of a representation `ρ : Representation k G V` is the function associating to
 `g : G` the trace of the linear map `ρ g`. -/
 def character (g : G) :=
   LinearMap.trace k V (ρ g)
 
-omit [FiniteDimensional k V] in
+omit [FiniteDimensional k ρ.asModule] in
 theorem char_mul_comm (g : G) (h : G) :
     ρ.character (h * g) = ρ.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 
 @[simp]
-theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k V := by
+theorem char_one : ρ.character 1 = Module.finrank k V := by
+  have := ρ.asModuleEquiv.finiteDimensional
   simp only [character, map_one, trace_one]
 
 /-- The character is multiplicative under the tensor product. -/
 @[simp]
 theorem char_tensor : (tprod ρ σ).character = ρ.character * σ.character := by
+  have := ρ.asModuleEquiv.finiteDimensional
+  have := σ.asModuleEquiv.finiteDimensional
   ext g; convert! trace_tensorProduct' (ρ g) (σ g)
 
-omit [FiniteDimensional k V] [FiniteDimensional k W] in
+omit [FiniteDimensional k ρ.asModule] [FiniteDimensional k σ.asModule] in
 variable {ρ σ} in
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso (φ : Equiv ρ σ) : ρ.character = σ.character := by
@@ -79,11 +83,12 @@ end Monoid
 
 section Group
 
-variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+variable {G k V W : Type*} [Group G] [Field k]
+  [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
   (ρ : Representation k G V) (σ : Representation k G W)
+  [FiniteDimensional k ρ.asModule] [FiniteDimensional k σ.asModule]
 
-omit [FiniteDimensional k V] in
+omit [FiniteDimensional k ρ.asModule] in
 /-- The character of a representation is constant on conjugacy classes. -/
 @[simp]
 theorem char_conj (g : G) (h : G) : ρ.character (h * g * h⁻¹) = ρ.character g := by
@@ -91,14 +96,17 @@ theorem char_conj (g : G) (h : G) : ρ.character (h * g * h⁻¹) = ρ.character
 
 @[simp]
 theorem char_dual (g : G) : ρ.dual.character g = ρ.character g⁻¹ :=
+  have := ρ.asModuleEquiv.finiteDimensional
   trace_transpose' (ρ g⁻¹)
 
 @[simp]
 theorem char_linHom (g : G) :
     (linHom ρ σ).character g = ρ.character g⁻¹ * σ.character g := by
+  have := ρ.asModuleEquiv.finiteDimensional
   rw [← char_iso (Equiv.dualTensorHom ρ σ), char_tensor, Pi.mul_apply, char_dual]
 
 theorem isIntegral_character [Finite G] (g : G) : IsIntegral ℤ (ρ.character g) := by
+  have := ρ.asModuleEquiv.finiteDimensional
   rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure k), character, ← trace_baseChange,
     End.trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits _)]
   refine IsIntegral.multiset_sum fun x hx ↦ ?_
@@ -112,6 +120,7 @@ variable [Fintype G] [Invertible (Nat.card G : k)]
 
 theorem card_inv_mul_sum_char_eq_finrank :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
+  have := ρ.asModuleEquiv.finiteDimensional
   have : Invertible (Fintype.card G : k) := by rwa [Fintype.card_eq_nat_card]
   rw [← (isProj_averageMap ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
@@ -124,6 +133,8 @@ equivariant maps from `V` to `W`.
 theorem card_inv_mul_sum_char_mul_char_eq_finrank :
     (Nat.card G : k)⁻¹ * ∑ g : G, σ.character g * ρ.character g⁻¹ =
       finrank k (IntertwiningMap ρ σ) := by
+  have := ρ.asModuleEquiv.finiteDimensional
+  have := σ.asModuleEquiv.finiteDimensional
   simp_rw [mul_comm, ← char_linHom, card_inv_mul_sum_char_eq_finrank,
     (invariantsEquivIntertwiningMap ρ σ).finrank_eq]
 
@@ -131,8 +142,8 @@ end Group
 
 section Orthogonality
 
-variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+variable {G k V W : Type*} [Group G] [Field k]
+  [AddCommGroup V] [Module k V] [AddCommGroup W] [Module k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 variable [Fintype G] [Invertible (Nat.card G : k)] [IsAlgClosed k]
