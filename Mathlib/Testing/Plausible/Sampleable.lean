@@ -15,6 +15,8 @@ public import Plausible.Random
 public meta import Plausible.Sampleable
 
 /-!
+# Shrinkable and sampleable instances for Plausible
+
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib
 types.
 -/

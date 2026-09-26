@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Tactic.Positivity
 
 /-!
+# Harmonic numbers are not integers
 
 The nth Harmonic number is not an integer. We formalize the proof using
 2-adic valuations. This proof is due to Kürschák.

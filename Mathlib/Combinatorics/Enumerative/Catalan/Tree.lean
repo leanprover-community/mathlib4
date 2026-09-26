@@ -14,7 +14,10 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 
 /-!
+# Counting binary trees with Catalan numbers
+
 ## Main results
+
 * `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
 

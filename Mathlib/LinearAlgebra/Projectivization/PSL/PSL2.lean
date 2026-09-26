@@ -10,6 +10,7 @@ public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 
 /-!
+# The projective special linear group of degree two
 -/
 
 public section
