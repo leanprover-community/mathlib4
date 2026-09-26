@@ -57,27 +57,20 @@ number of ways to choose `card α` vertices from `card V` vertices `card β - 1`
 This is an auxiliary lemma for the **Kővári-Sós-Turán theorem**. -/
 lemma card_filter_le [Nonempty β] (h : (completeBipartiteGraph α β).Free G) :
     #(filter G (card α)) ≤ ((card V).choose (card α) * (card β - 1) : ℝ) := by
-  have hcard_univ_map_inl : #(univ.map .inl : Finset (V ⊕ W)) = card V := by
-    rw [card_map, card_univ]
-  simp_rw [card_filter, sum_product, ← card_filter, ← hcard_univ_map_inl, ← card_powersetCard,
-    ← nsmul_eq_mul, ← sum_const, ← Nat.cast_pred card_pos, ← Nat.cast_sum, Nat.cast_le]
+  simp_rw [card_filter, sum_product, ← card_filter, ← card_univ (α := V),
+    ← card_map (.inl : V ↪ V ⊕ W), ← card_powersetCard, ← nsmul_eq_mul, ← sum_const,
+    ← Nat.cast_pred card_pos, ← Nat.cast_sum, Nat.cast_le]
   refine sum_le_sum fun t ht_card ↦ ?_
   contrapose! h
   obtain ⟨_, ht_card⟩ := mem_powersetCard.mp ht_card
-  have ⟨t', ht'_sub, ht'_card⟩ := exists_subset_card_eq h
-  rw [← Nat.pred_eq_sub_one, Nat.succ_pred_eq_of_pos card_pos] at ht'_card
-  rw [completeBipartiteGraph_isContained_iff]
-  refine ⟨t, t', ht_card, ht'_card, fun v hv w hw ↦ ?_⟩
-  apply ht'_sub at hw
-  rw [mem_filter] at hw
-  apply hw.2 at hv
-  rw [mem_neighborFinset] at hv
-  exact hv.symm
+  obtain ⟨t', ht'_sub, ht'_card⟩ := exists_subset_card_eq (Nat.le_of_pred_lt h)
+  exact completeBipartiteGraph_isContained_iff.mpr ⟨t, t', ht_card, ht'_card,
+    fun v hv w hw ↦ ((mem_neighborFinset ..).mp <| (mem_filter.mp <| ht'_sub hw).right hv).symm⟩
 
 open Classical in
 /-- If the average degree of vertices in the left part of `G : SimpleGraph V ⊕ W` is at
 least `card α - 1`, then it follows from a special case of *Jensen's inequality* for `Nat.choose`
-that `#KovariSosTuran.filter` is at least `card α` times the desending pochhammer function
+that `#KovariSosTuran.filter` is at least `card α` times the descending Pochhammer function
 evaluated at the average divided by `(card α).factorial`.
 
 This is an auxiliary lemma for the **Kővári-Sós-Turán theorem**. -/
@@ -87,23 +80,25 @@ lemma le_card_filter [Nonempty W] [Nonempty α]
     (card W * ((descPochhammer ℝ (card α)).eval
         ((∑ w : W, G.degree (.inr w) : ℝ) / card W) / (card α).factorial) : ℝ)
       ≤ #(filter G (card α)) := by
-  have h_card_filter_subset_eq (x) (hx : x ∈ univ.map .inr) :
-      #{x ∈ {y ∈ (univ.map .inl).powerset | y ∈ (G.neighborFinset x).powerset} | #x = card α}
-        = #{x ∈ (G.neighborFinset x).powerset | #x = card α} := by
-    simp_rw [filter_mem_eq_inter]
-    congr
-    rw [inter_eq_right, powerset_mono, neighborFinset_eq_filter, subset_iff]
-    simp_rw [mem_filter, mem_map, Function.Embedding.inl_apply]
-    intro _ hadj
-    grind [h_le hadj.right, Function.Embedding.inr_apply]
-  simp_rw [card_filter, sum_product_right, ← card_filter, powersetCard_eq_filter,
-    filter_comm, ← mem_powerset, sum_congr rfl h_card_filter_subset_eq, ← powersetCard_eq_filter,
-    card_powersetCard, card_neighborFinset_eq_degree, Nat.cast_sum,
-    ← le_inv_mul_iff₀ (mod_cast card_pos : 0 < (card W : ℝ)), mul_sum,
-    div_eq_mul_inv _ (card W : ℝ), mul_comm _ (card W : ℝ)⁻¹, mul_sum, sum_map]
+  -- neighborhoods of right vertices lie in the left part
+  have h_nbhd (w : W) : G.neighborFinset (.inr w) ⊆ univ.map .inl := fun v hv ↦ by
+    replace hv : v.isLeft := by simpa using h_le <| (mem_neighborFinset ..).mp hv
+    simp [eq_comm, Sum.isLeft_iff.mp hv]
+  -- `KovariSosTuran.filter` counts the `card α`-subsets of the neighborhoods
+  have hcard_filter : #(filter G (card α)) = ∑ w : W, (G.degree (.inr w)).choose (card α) := by
+    simp_rw [card_filter, sum_product_right, ← card_filter, sum_map,
+      ← card_neighborFinset_eq_degree, ← card_powersetCard]
+    refine sum_congr rfl fun w _ ↦ congrArg card <| Finset.ext fun _ ↦ ?_
+    rw [mem_filter, mem_powersetCard, mem_powersetCard]
+    exact ⟨fun ⟨⟨_, hcard⟩, hsubet⟩ ↦ ⟨hsubet, hcard⟩,
+      fun ⟨hsubset, hcard⟩ ↦ ⟨⟨hsubset.trans (h_nbhd w), hcard⟩, hsubset⟩⟩
   rw [div_eq_inv_mul, mul_sum] at h_avg
-  exact descPochhammer_eval_div_factorial_le_sum_choose
-    (by positivity) _ _ (by simp) (by simp) h_avg
+  have h_jensen := descPochhammer_eval_div_factorial_le_sum_choose
+    (by positivity) (fun w : W ↦ G.degree (.inr w)) _ (fun _ _ ↦ by positivity) (by simp) h_avg
+  rw [← mul_sum, ← div_eq_inv_mul] at h_jensen
+  rw [hcard_filter, Nat.cast_sum]
+  apply (mul_le_mul_of_nonneg_left h_jensen (by positivity)).trans_eq
+  rw [← mul_sum, mul_inv_cancel_left₀ <| Nat.cast_ne_zero.mpr card_pos.ne']
 
 /-- An upper bound on the number of edges in `completeBipartiteGraph α β`-free bipartite graphs.
 
@@ -112,28 +107,16 @@ lemma card_edgeFinset_le_bound_of_completeBipartiteGraph_free [Nonempty α] [Non
     (h_le : G ≤ completeBipartiteGraph V W) (h_free : (completeBipartiteGraph α β).Free G) :
     #G.edgeFinset ≤ bound (card V) (card W) (card α) (card β) := by
   cases isEmpty_or_nonempty W
-  · have h_bot : completeBipartiteGraph V W = ⊥ := by
-      simp_rw [SimpleGraph.ext_iff, funext_iff, eq_iff_iff, completeBipartiteGraph_adj,
-      ← Sum.isRight_eq_false, bot_adj, iff_false, not_or, not_and_or, Bool.not_eq_false,
-      Sum.isRight_iff, IsEmpty.exists_iff, not_false_eq_true, true_or, and_true, or_true,
-      implies_true]
-    simp_rw [h_bot, le_iff_adj, bot_adj, imp_false, ← eq_bot_iff_forall_not_adj] at h_le
-    simp_rw [edgeFinset_card, h_le, edgeSet_bot, ← Set.toFinset_card,
-      Set.toFinset_empty, Finset.card_empty, Nat.cast_zero]
+  · rw [Finset.card_eq_zero.mpr <| edgeFinset_eq_empty.mpr <| le_bot_iff.mp <|
+      h_le.trans_eq completeBipartiteGraph_eq_bot_of_isEmpty_right, Nat.cast_zero]
     exact bound_nonneg (card V) (card W)
       (Nat.one_le_cast.mpr card_pos) (Nat.one_le_cast.mpr card_pos)
   · have h_isBipartiteWith : G.IsBipartiteWith
         (univ.map .inl : Finset (V ⊕ W)) (univ.map .inr : Finset (V ⊕ W)) := by
-      refine ⟨?_, fun v w hadj ↦ ?_⟩
-      · simp [Set.disjoint_iff_forall_ne]
-      · simp_rw [coe_map, Function.Embedding.inl_apply, Function.Embedding.inr_apply,
-          coe_univ, Set.image_univ, Set.mem_range, eq_comm, ← Sum.isLeft_iff, ← Sum.isRight_iff]
-        exact h_le hadj
+      simpa using (IsBipartiteWith.completeBipartiteGraph V W).anti h_le
     have h_sum_degrees_eq_card_edges : ∑ w : W, ↑(G.degree (Sum.inr w)) = #G.edgeFinset := by
-      rw [← isBipartiteWith_sum_degrees_eq_card_edges' h_isBipartiteWith, Finset.sum_map]
-      conv =>
-        enter [2, 2, x]
-        rw [Function.Embedding.inr_apply]
+      rw [← isBipartiteWith_sum_degrees_eq_card_edges' h_isBipartiteWith, sum_map]
+      rfl
     rcases lt_or_ge (∑ w : W, G.degree (.inr w) : ℝ) ((card α - 1) * (card W) : ℝ)
         with h_sum_lt | h_avg
     -- if avg degree less than `card a - 1`
@@ -142,39 +125,48 @@ lemma card_edgeFinset_le_bound_of_completeBipartiteGraph_free [Nonempty α] [Non
       positivity [(mod_cast card_pos : (1 : ℝ) ≤ Fintype.card β)]
     -- if avg degree at least `card α - 1`
     · rw [← le_div_iff₀ (mod_cast card_pos)] at h_avg
-      suffices h : card W * (#G.edgeFinset / card W - card α + 1) ^ card α / (card α).factorial
-          ≤ ((card V ^ card α / (card α).factorial) * (card β - 1) : ℝ) by
-        have hcard_sub_one_nonneg : 0 ≤ (card β - 1 : ℝ) :=
-          sub_nonneg_of_le (Nat.one_le_cast.mpr card_pos)
-        have h_avg' : 0 ≤ (#G.edgeFinset / card W - card α + 1 : ℝ) := by
-          rwa [← Nat.cast_sum, h_sum_degrees_eq_card_edges, ← sub_nonneg, ← sub_add] at h_avg
-        -- rearrange expression for `bound`
-        rwa [mul_comm _ (card β - 1 : ℝ), mul_div, div_le_div_iff_of_pos_right (by positivity),
-          ← Real.rpow_le_rpow_iff (by positivity) (by positivity)
-            (by positivity : 0 < (card α : ℝ)⁻¹), Real.mul_rpow (by positivity) (by positivity),
-          Real.mul_rpow (by positivity) (by positivity), ← Real.rpow_natCast,
-          ← Real.rpow_natCast, Real.rpow_rpow_inv (by positivity) (by positivity),
-          Real.rpow_rpow_inv (by positivity) (by positivity), sub_add, mul_sub, sub_le_iff_le_add,
-          mul_div, div_le_iff₀ (by positivity), ← le_div_iff₀' (by positivity), add_mul, add_div,
-          div_eq_mul_inv _ (_ ^ (card α : ℝ)⁻¹: ℝ), ← Real.rpow_neg_one (_ ^ (card α : ℝ)⁻¹ : ℝ),
-          ← Real.rpow_mul (by positivity), mul_neg_one, mul_assoc, mul_comm (card W : ℝ) _,
-          ← Real.rpow_add_one (by positivity), neg_add_eq_sub,
-          div_eq_mul_inv _ (_ ^ (card α : ℝ)⁻¹ : ℝ), ← Real.rpow_neg_one (_ ^ (card α : ℝ)⁻¹ : ℝ),
-          ← Real.rpow_mul (by positivity), mul_neg_one, mul_rotate _ (card α - 1 : ℝ),
-          mul_assoc (card α - 1 : ℝ), mul_assoc (card α - 1 : ℝ), mul_assoc (card W : ℝ),
-          ← Real.rpow_add (by positivity), add_neg_cancel, Real.rpow_zero, mul_one] at h
       -- double-counting `(t, v) ↦ t ⊆ G.neighborSet v`
-      classical trans (#(filter G (card α)) : ℝ)
-      -- counting `t`
-      · trans (card W) * ((descPochhammer ℝ (card α)).eval
-          ((∑ w : W, G.degree (.inr w) : ℝ) / card W) / (card α).factorial)
-        · rw [← h_sum_degrees_eq_card_edges, Nat.cast_sum, mul_div,
-            div_le_div_iff_of_pos_right (by positivity), mul_le_mul_iff_right₀ (by positivity)]
-          exact pow_le_descPochhammer_eval h_avg
-        · exact le_card_filter h_le h_avg
-      -- counting `v`
-      · grw [card_filter_le h_free, mul_le_mul_of_nonneg_right (Nat.choose_le_pow_div ..) ?_]
-        exact sub_nonneg_of_le <| mod_cast Nat.succ_le_of_lt card_pos
+      have h : (card W * (#G.edgeFinset / card W - card α + 1) ^ card α / (card α).factorial : ℝ) ≤
+          (card V ^ card α / (card α).factorial) * (card β - 1) := by
+        classical
+        trans (#(filter G (card α)) : ℝ)
+        -- counting `t`
+        · trans (card W) * ((descPochhammer ℝ (card α)).eval
+            ((∑ w : W, G.degree (.inr w) : ℝ) / card W) / (card α).factorial)
+          · rw [← h_sum_degrees_eq_card_edges, Nat.cast_sum, mul_div,
+              div_le_div_iff_of_pos_right (by positivity), mul_le_mul_iff_right₀ (by positivity)]
+            exact pow_le_descPochhammer_eval h_avg
+          · exact le_card_filter h_le h_avg
+        -- counting `v`
+        · grw [card_filter_le h_free, mul_le_mul_of_nonneg_right (Nat.choose_le_pow_div ..)
+            (sub_nonneg_of_le (Nat.one_le_cast.mpr card_pos))]
+      -- take `card α`-th roots in `h`
+      rw [div_mul_eq_mul_div, div_le_div_iff_of_pos_right (by positivity)] at h
+      have h_root : (#G.edgeFinset / card W - card α + 1 : ℝ) ≤
+          (card β - 1) ^ (card α : ℝ)⁻¹ * card V / card W ^ (card α : ℝ)⁻¹ := by
+        have hlhs_pos : 0 ≤ (#G.edgeFinset / card W - card α + 1 : ℝ) := by
+          rwa [← Nat.cast_sum, h_sum_degrees_eq_card_edges, ← sub_nonneg, ← sub_add] at h_avg
+        calc (#G.edgeFinset / card W - card α + 1 : ℝ)
+          _ = ((#G.edgeFinset / card W - card α + 1 : ℝ) ^ card α) ^ (card α : ℝ)⁻¹ :=
+              (Real.pow_rpow_inv_natCast hlhs_pos card_pos.ne').symm
+          _ ≤ ((card β - 1) * card V ^ card α / card W) ^ (card α : ℝ)⁻¹ := by
+              refine Real.rpow_le_rpow (by positivity) ?_ (by positivity)
+              rw [le_div_iff₀ (mod_cast card_pos), mul_comm]
+              exact h.trans_eq (mul_comm ..)
+          _ = (card β - 1) ^ (card α : ℝ)⁻¹ * card V / card W ^ (card α : ℝ)⁻¹ := by
+              have hβ : (0 : ℝ) ≤ card β - 1 := sub_nonneg_of_le (Nat.one_le_cast.mpr card_pos)
+              rw [Real.div_rpow (by positivity) (by positivity), Real.mul_rpow hβ (by positivity),
+                Real.pow_rpow_inv_natCast (by positivity) card_pos.ne']
+      -- rearrange into `bound`
+      calc (#G.edgeFinset : ℝ)
+        _ = card W * (#G.edgeFinset / card W - card α + 1) + (card α - 1) * card W := by
+            rw [mul_comm, sub_add, sub_mul, div_mul_cancel₀ _ (by positivity), sub_add_cancel]
+        _ ≤ card W * ((card β - 1) ^ (card α : ℝ)⁻¹ * card V / card W ^ (card α : ℝ)⁻¹)
+              + (card α - 1) * card W :=
+            add_le_add_left (mul_le_mul_of_nonneg_left h_root (Nat.cast_nonneg _)) _
+        _ = bound (card V) (card W) (card α) (card β) := by
+            rw [bound, Real.rpow_sub (mod_cast card_pos), Real.rpow_one, mul_div_assoc',
+              mul_comm (card W : ℝ), mul_div_assoc]
 
 end KovariSosTuran
 
