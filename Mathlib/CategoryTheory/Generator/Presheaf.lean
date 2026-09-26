@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 /-!
 # Generators in the category of presheaves
@@ -32,12 +33,24 @@ variable {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
 
 /-- Given `X : C` and `M : A`, this is the presheaf `Cᵒᵖ ⥤ A` which sends
 `Y : Cᵒᵖ` to the coproduct of copies of `M` indexed by `Y.unop ⟶ X`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def freeYoneda (X : C) (M : A) : Cᵒᵖ ⥤ A where
   obj Y := ∐ (fun (i : (yoneda.obj X).obj Y) ↦ M)
   map f := Sigma.map' ((yoneda.obj X).map f) (fun _ ↦ 𝟙 M)
 
-set_option backward.isDefEq.respectTransparency false in
+/-- The morphism between free presheaves induced by a morphism in the category. -/
+@[simps]
+noncomputable def freeYonedaMap {X Y : C} (f : X ⟶ Y) (M : A) :
+    freeYoneda X M ⟶ freeYoneda Y M where
+  app Z := Sigma.map' (fun g : Z.unop ⟶ X ↦ g ≫ f) (fun _ ↦ 𝟙 M)
+
+instance {X Y : C} (f : X ⟶ Y) (M : A) [MonoCoprod A] [Mono f] :
+    Mono (freeYonedaMap f M) := by
+  have (Z : Cᵒᵖ) : Mono ((freeYonedaMap f M).app Z) :=
+    MonoCoprod.mono_map'_of_injective (fun _ : Z.unop ⟶ Y ↦ M)
+      (fun g : Z.unop ⟶ X ↦ g ≫ f) (fun _ _ h ↦ (cancel_mono f).1 h)
+  exact NatTrans.mono_of_mono_app _
+
 /-- The bijection `(Presheaf.freeYoneda X M ⟶ F) ≃ (M ⟶ F.obj (op X))`. -/
 noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     (freeYoneda X M ⟶ F) ≃ (M ⟶ F.obj (op X)) where
@@ -51,8 +64,14 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     simpa using (Sigma.ι _ (𝟙 _) ≫= f.naturality φ.op).symm
   right_inv g := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
+@[reassoc]
+lemma freeYonedaHomEquiv_naturality {X Y : C} {M : A} {F : Cᵒᵖ ⥤ A}
+    (f : X ⟶ Y) (α : freeYoneda Y M ⟶ F) :
+    freeYonedaHomEquiv (freeYonedaMap f M ≫ α) =
+      freeYonedaHomEquiv α ≫ F.map f.op := by
+  obtain ⟨β, rfl⟩ := freeYonedaHomEquiv.symm.surjective α
+  simp [freeYonedaHomEquiv, freeYonedaMap]
+
 @[reassoc]
 lemma freeYonedaHomEquiv_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A}
     (α : freeYoneda X M ⟶ F) (f : F ⟶ G) :
