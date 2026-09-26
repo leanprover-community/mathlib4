@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.Order.CountableSupClosed
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -24,6 +25,8 @@ This file defines compact systems of sets.
   gives a compact system.
 * `isCompactSystem_isCompact_isClosed`: The set of closed and compact sets is a compact system.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
+* `IsCompactSystem.countableInfClosure`: If `S` is a compact system, then the set of countable
+  intersections of sets in `S` is a compact system.
 -/
 
 @[expose] public section
@@ -181,3 +184,17 @@ theorem isCompactSystem_insert_univ_isCompact_isClosed (α : Type*) [Topological
   (isCompactSystem_isCompact_isClosed α).insert_univ
 
 end IsCompactIsClosed
+
+/-- If `S` is a compact system, then the set of countable intersections of sets in `S` is also a
+compact system. -/
+protected theorem IsCompactSystem.countableInfClosure (hS : IsCompactSystem S) :
+    IsCompactSystem (countableInfClosure S) := by
+  intro D hD hD_empty
+  simp only [mem_countableInfClosure_iff_iInf, iInf_eq_iInter] at hD
+  choose t ht hDt using hD
+  obtain rfl : D = fun i ↦ ⋂ n, t i n := funext fun i ↦ (hDt i).symm
+  obtain ⟨n, hn⟩ := hS (fun k ↦ t k.unpair.1 k.unpair.2) (fun k ↦ ht _ _)
+    (by rwa [iInter_unpair])
+  refine ⟨n, subset_eq_empty (fun x hx ↦ ?_) hn⟩
+  simp only [mem_dissipate, mem_iInter] at hx ⊢
+  exact fun k hk ↦ hx _ ((unpair_left_le k).trans hk) _
