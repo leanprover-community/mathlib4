@@ -194,7 +194,7 @@ theorem Multiset.toFinset_card_le : #m.toFinset ≤ Multiset.card m :=
 
 theorem Multiset.toFinset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
     #m.toFinset = Multiset.card m :=
-  congr_arg card <| Multiset.dedup_eq_self.mpr h
+  congr(card $(Multiset.dedup_eq_self.mpr h))
 
 theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
     card m.dedup = card m ↔ m.Nodup :=
@@ -940,7 +940,7 @@ theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
 theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
-  Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
+  Subrelation.wf H <| InvImage.wf _ (Nat.lt_wfRel).2
 
 /--
 To prove a proposition for an arbitrary `Finset α`,

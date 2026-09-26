@@ -229,11 +229,11 @@ theorem coe_to_mulHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₙ* B) = f :=
 theorem to_distribMulActionHom_injective {f g : A →ₛₙₐ[φ] B}
     (h : (f : A →ₑ+[φ] B) = (g : A →ₑ+[φ] B)) : f = g := by
   ext a
-  exact DistribMulActionHom.congr_fun h a
+  congrm $h a
 
 theorem to_mulHom_injective {f g : A →ₛₙₐ[φ] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
-  exact DFunLike.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
@@ -319,7 +319,6 @@ theorem coe_inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A) (h₁ : Function.
     (h₂ : Function.RightInverse g f) : (inverse f g h₁ h₂ : B₁ → A) = g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
     (k : Function.RightInverse φ' φ)

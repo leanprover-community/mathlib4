@@ -94,7 +94,7 @@ theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
-  norm_num [transReflReparamAux]
+  simp [transReflReparamAux]
 
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
   norm_num [transReflReparamAux]
@@ -139,7 +139,7 @@ theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   split_ifs <;> constructor <;> linarith [unitInterval.le_one t, unitInterval.nonneg t]
 
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
-  norm_num [transAssocReparamAux]
+  simp [transAssocReparamAux]
 
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
   norm_num [transAssocReparamAux]
@@ -304,7 +304,7 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
   obj x := ⟨f x.as⟩
   map p := p.map f
   map_id _ := rfl
-  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.continuous)
+  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; congrm Quotient.mk'' $(p.map_trans q f.continuous)
 
 @[simp]
 protected theorem map_id : map (.id X) = 𝟭 _ := by

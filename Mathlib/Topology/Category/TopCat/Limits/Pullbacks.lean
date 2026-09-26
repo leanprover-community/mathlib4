@@ -58,7 +58,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       constructor; swap
       · exact ofHom
           { toFun := fun x =>
-              ⟨⟨S.fst x, S.snd x⟩, by simpa using! ConcreteCategory.congr_hom S.condition x⟩
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using! congr($S.condition x)⟩
             continuous_toFun := by fun_prop }
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
@@ -72,8 +72,8 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`.
         apply Subtype.ext
         apply Prod.ext
-        · simpa using! ConcreteCategory.congr_hom h₁ x
-        · simpa using! ConcreteCategory.congr_hom h₂ x)
+        · simpa using! congr($h₁ x)
+        · simpa using! congr($h₂ x))
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
 def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -89,7 +89,7 @@ theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
 theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     pullback.fst f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
-  ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_fst f g) x
+  congr($(pullbackIsoProdSubtype_inv_fst f g) x)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -100,7 +100,7 @@ theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
 theorem pullbackIsoProdSubtype_inv_snd_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
     pullback.snd f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).snd :=
-  ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_snd f g) x
+  congr($(pullbackIsoProdSubtype_inv_snd f g) x)
 
 theorem pullbackIsoProdSubtype_hom_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullbackIsoProdSubtype f g).hom ≫ pullbackFst f g = pullback.fst _ _ := by
@@ -172,7 +172,6 @@ theorem isEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y �
     IsEmbedding <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨isInducing_pullback_to_prod f g, (TopCat.mono_iff_injective _).mp inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the map `S ⟶ T` is mono, then there is a description of the image of `W ×ₛ X ⟶ Y ×ₜ Z`. -/
 theorem range_pullback_map {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X ⟶ S) (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
@@ -222,7 +221,6 @@ theorem pullback_snd_range {X Y S : TopCat.{u}} (f : X ⟶ S) (g : Y ⟶ S) :
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
     rw [pullbackIsoProdSubtype_inv_snd_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are embeddings,
 then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an embedding.
 
@@ -274,7 +272,6 @@ theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     · exact H₂.isOpen_range
 
 
-set_option backward.isDefEq.respectTransparency false in
 lemma snd_isEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsEmbedding f) (g : Y ⟶ S) :
     IsEmbedding <| ⇑(pullback.snd f g) := by
   convert!
@@ -283,7 +280,6 @@ lemma snd_isEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsEmbeddin
         (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fst_isEmbedding_of_right {X Y S : TopCat.{u}} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsEmbedding g) : IsEmbedding <| ⇑(pullback.fst f g) := by
   convert!
@@ -298,7 +294,6 @@ theorem isEmbedding_of_pullback {X Y S : TopCat.{u}} {f : X ⟶ S} {g : Y ⟶ S}
   rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem snd_isOpenEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsOpenEmbedding f)
     (g : Y ⟶ S) : IsOpenEmbedding <| ⇑(pullback.snd f g) := by
   convert!
@@ -307,7 +302,6 @@ theorem snd_isOpenEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsOp
         (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fst_isOpenEmbedding_of_right {X Y S : TopCat.{u}} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
   convert!

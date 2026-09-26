@@ -37,7 +37,7 @@ def exprToHtml (e : Expr) : MetaM Html :=
 /-- Turn a constant into an HTML with hover info.
 This avoids the `@` that may appear when using `exprToHtml`. -/
 def constToHtml (n : Name) : MetaM Html := do
-  let delab := withOptionAtCurrPos `pp.tagAppFns true <| delabConst
+  let delab := withOptionAtCurrPos `pp.tagAppFns true delabConst
   let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos (delab := delab) (← mkConstWithLevelParams n)
   let tt := TaggedText.prettyTagged fmt
   let ctx := {

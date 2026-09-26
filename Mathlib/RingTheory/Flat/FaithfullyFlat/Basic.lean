@@ -471,9 +471,10 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.rTensor M f = 0 :=
   zero_iff_lTensor_zero R M f |>.trans
-  ⟨fun h => by ext n m; exact (TensorProduct.comm R N' M).injective <|
-    (by simpa using congr($h (m ⊗ₜ n))), fun h => by
-    ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
+    ⟨fun h => by
+      ext n m; exact (TensorProduct.comm R N' M).injective (by simpa using congr($h (m ⊗ₜ n))),
+    fun h => by
+      ext m n; exact (TensorProduct.comm R M N').injective (by simpa using congr($h (n ⊗ₜ m)))⟩
 
 /-- If `A` is a faithfully flat `R`-algebra, and `m` is a term of an `R`-module `M`,
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
@@ -484,7 +485,7 @@ theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat 
   · rintro rfl; rw [tmul_zero]
   intro h
   let f : R →ₗ[R] M := (LinearMap.lsmul R M).flip m
-  suffices f = 0 by simpa [f] using DFunLike.congr_fun this 1
+  suffices f = 0 by simpa [f] using congr($this 1)
   rw [Module.FaithfullyFlat.zero_iff_lTensor_zero R A]
   ext a
   apply_fun (a • ·) at h

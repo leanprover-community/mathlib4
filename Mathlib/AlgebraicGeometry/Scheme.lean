@@ -556,7 +556,7 @@ theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
     {i : W ⟶ X} {j : W ⟶ Y} (h : CommSq i j f g)
     (H : Disjoint (Set.range f) (Set.range g)) : IsEmpty W :=
   ⟨fun x ↦ (Set.disjoint_iff_inter_eq_empty.mp H).le
-    ⟨⟨i x, congr($(h.w) x)⟩, ⟨j x, rfl⟩⟩⟩
+    ⟨⟨i x, congr($h.w x)⟩, ⟨j x, rfl⟩⟩⟩
 
 /-- The empty scheme. -/
 @[simps]
@@ -930,7 +930,7 @@ lemma stalkSpecializes_stalkMap (x x' : X)
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
     f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y)
 
 @[reassoc]
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
@@ -959,7 +959,7 @@ lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
     e.inv.stalkMap y (e.hom.stalkMap (e.inv y) z) =
       (Y.presheaf.stalkCongr (.of_eq (by simp))).hom z :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z)
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
@@ -971,7 +971,7 @@ lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
     e.hom.stalkMap x (e.inv.stalkMap (e.hom x) y) =
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom y :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y)
 
 @[reassoc (attr := simp)]
 lemma germ_stalkMap (U : Y.Opens) (x : X) (hx : f x ∈ U) :

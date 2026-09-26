@@ -250,6 +250,17 @@ noncomputable def quotientInfRingEquivPiQuotient (f : ι → Ideal R)
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 
+lemma quotientInfRingEquivPiQuotient_mk_eq {f : ι → Ideal R}
+    (hf : Pairwise (Function.onFun IsCoprime f)) (x : R) :
+    quotientInfRingEquivPiQuotient _ hf x = fun _ ↦ Ideal.Quotient.mk _ x :=
+  rfl
+
+@[simp]
+lemma quotientInfRingEquivPiQuotient_mk_apply {f : ι → Ideal R}
+    (hf : Pairwise (Function.onFun IsCoprime f)) (x : R) (i : ι) :
+    quotientInfRingEquivPiQuotient _ hf x i = Ideal.Quotient.mk _ x :=
+  rfl
+
 /-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
 commutative ring then the canonical map `R → ∏ (R ⧸ Iᵢ)` is surjective. -/
 lemma pi_quotient_surjective {I : ι → Ideal R}
@@ -356,7 +367,7 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
   smul_def' := fun _ x =>
     Quotient.inductionOn' x fun _ =>
       ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (map_mul _ _ _)
-  commutes' := by rintro r ⟨x⟩; exact congr_arg (⟦·⟧) (Algebra.commutes r x)
+  commutes' := by rintro r ⟨x⟩; congrm ⟦$(Algebra.commutes r x)⟧
 
 instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
 
@@ -743,8 +754,8 @@ abbrev Quotient.algebraQuotientOfLEComap {R} [CommRing R] [Algebra R A] {p : Ide
     rw [mem_comap, map_sub] at this
     simpa only [Algebra.smul_def] using P.quotientRel_def.mpr
       (P.mul_sub_mul_mem this <| P.quotientRel_def.mp ha)
-  smul_def' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.smul_def _ _)
-  commutes' := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (⟦·⟧) (Algebra.commutes _ _)
+  smul_def' := by rintro ⟨_⟩ ⟨_⟩; congrm ⟦$(Algebra.smul_def ..)⟧
+  commutes' := by rintro ⟨_⟩ ⟨_⟩; congrm ⟦$(Algebra.commutes ..)⟧
 
 instance (priority := 100) quotientAlgebra {R} [CommRing R] {I : Ideal A} [I.IsTwoSided]
     [Algebra R A] : Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=

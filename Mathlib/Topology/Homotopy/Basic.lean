@@ -162,15 +162,15 @@ def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
 theorem extend_apply_of_le_zero (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ≤ 0) (x : X) :
     F.extend t x = f₀ x := by
   rw [← F.apply_zero]
-  exact ContinuousMap.congr_fun (Set.IccExtend_of_le_left (zero_le_one' ℝ) F.curry ht) x
+  congrm $(Set.IccExtend_of_le_left (zero_le_one' ℝ) F.curry ht) x
 
 theorem extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t) (x : X) :
     F.extend t x = f₁ x := by
   rw [← F.apply_one]
-  exact ContinuousMap.congr_fun (Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x
+  congrm $(Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x
 
 theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
-  ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
+  congr($(Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x)
 
 @[simp]
 theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
@@ -211,7 +211,7 @@ reversing the homotopy.
 def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
   toFun x := F (σ x.1, x.2)
   map_zero_left := by simp
-  map_one_left := by norm_num
+  map_one_left := by simp
 
 @[simp]
 theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm = F := by
@@ -232,8 +232,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
   continuous_toFun :=
     continuous_if_le (by fun_prop) continuous_const
       (F.continuous.comp (by fun_prop)).continuousOn
-      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by norm_num [hx])
-  map_zero_left x := by norm_num
+      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by simp [hx])
+  map_zero_left x := by simp
   map_one_left x := by norm_num
 
 theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) (x : I × X) :
@@ -620,7 +620,7 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f
 @[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
     (g.comp f₀).HomotopyRel (g.comp f₁) S where
   toHomotopy := .comp (.refl g) F.toHomotopy
-  prop' t x hx := congr_arg g (F.prop t x hx)
+  prop' t x hx := congr(g $(F.prop t x hx))
 
 end HomotopyRel
 

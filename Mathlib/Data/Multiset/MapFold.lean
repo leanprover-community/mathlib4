@@ -283,7 +283,7 @@ theorem coe_foldl (f : β → α → β) [RightCommutative f] (b : β) (l : List
 
 theorem coe_foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (l : List α) :
     foldr f b l = l.foldl (fun x y => f y x) b :=
-  (congr_arg (foldr f b) (coe_reverse l)).symm.trans foldr_reverse
+  congr(foldr f b $(coe_reverse l)).symm.trans foldr_reverse
 
 theorem foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) :
     foldr f b s = foldl (fun x y => f y x) b s :=
@@ -346,8 +346,8 @@ theorem attach_cons (a : α) (m : Multiset α) :
       ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.1, mem_cons_of_mem p.2⟩ :=
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
-      congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
+      congr(List.cons _ $(by
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl))
 
 section
 
