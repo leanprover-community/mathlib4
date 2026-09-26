@@ -245,6 +245,50 @@ lemma add_iInf_le_iInf_add : (⨅ x, u x) + ⨅ x, v x ≤ ⨅ x, (u + v) x :=
 lemma iSup_add_le_add_iSup : ⨆ x, (u + v) x ≤ (⨆ x, u x) + ⨆ x, v x :=
   iSup_le fun i ↦ add_le_add (le_iSup u i) (le_iSup v i)
 
+/-- Translation by a real number is an order isomorphism of `EReal`. -/
+@[simps! toEquiv apply symm_apply]
+def addCoeLeftOrderIso (a : ℝ) : EReal ≃o EReal where
+  toFun x := a + x
+  invFun x := -a + x
+  left_inv e := by
+    dsimp only
+    cases e <;> norm_cast
+    simp
+  right_inv e := by
+    dsimp only
+    cases e <;> norm_cast
+    simp
+  map_rel_iff' := (EReal.addLECancellable_coe _).add_le_add_iff_left
+
+/-- Translation by a real number is an order isomorphism of `EReal`. -/
+@[simps! toEquiv apply symm_apply]
+def addCoeRightOrderIso (a : ℝ) : EReal ≃o EReal where
+  toFun x := x + a
+  invFun x := x - a
+  left_inv e := by
+    dsimp only
+    cases e <;> norm_cast
+    simp
+  right_inv e := by
+    dsimp only
+    cases e <;> norm_cast
+    simp
+  map_rel_iff' := by
+    simp_rw [add_comm (b := (a : EReal))]
+    exact addCoeLeftOrderIso a |>.map_rel_iff
+
+lemma coe_add_iSup (a : ℝ) : a + ⨆ i, u i = ⨆ i, a + u i :=
+  addCoeLeftOrderIso _ |>.map_iSup _
+
+lemma coe_add_iInf (a : ℝ) : a + ⨅ i, u i = ⨅ i, a + u i :=
+  addCoeLeftOrderIso _ |>.map_iInf _
+
+lemma iSup_add_coe (a : ℝ) : (⨆ i, u i) + a = ⨆ i, u i + a :=
+  addCoeRightOrderIso _ |>.map_iSup _
+
+lemma iInf_add_coe (a : ℝ) : (⨅ i, u i) + a = ⨅ i, u i + a :=
+  addCoeRightOrderIso _ |>.map_iInf _
+
 /-! ### Liminfs and Limsups -/
 
 section LimInfSup
