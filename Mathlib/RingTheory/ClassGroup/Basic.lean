@@ -482,18 +482,4 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
         ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
       rfl
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
-/-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
-@[simps!]
-noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :
-    ClassGroup R ≃* ClassGroup R' :=
-  (ClassGroup.equiv (R := R) (FractionRing R)).trans
-    ((QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range
-        (toPrincipalIdeal R' (FractionRing R')).range
-        (Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv (FractionRing R) (FractionRing R') g))
-        (FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal g)).trans
-      (ClassGroup.equiv (FractionRing R')).symm)
-
 end MulEquiv
