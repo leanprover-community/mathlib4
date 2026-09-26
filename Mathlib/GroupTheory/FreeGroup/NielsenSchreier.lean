@@ -194,15 +194,16 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Any hom in `G` can be made into a loop, by conjugating with `treeHom`s. -/
 def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
-  treeHom T a ≫ p ≫ inv (treeHom T b)
+  .of (treeHom T a ≫ p ≫ inv (treeHom T b))
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
-    loopOfHom T (of e) = 𝟙 (root' T) := by
-  rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
+    loopOfHom T (of e) = 1 := by
+  ext : 1
+  rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, End.one_asHom, Category.id_comp]
   rcases H with H | H
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
     rfl
@@ -221,11 +222,13 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
   map_id := by
     intro a
     dsimp only [loopOfHom]
-    rw [Category.id_comp, IsIso.hom_inv_id, ← End.one_def, f.map_one, id_as_one]
+    rw [Category.id_comp, IsIso.hom_inv_id, ← End.one_asHom, f.map_one, id_as_one]
   map_comp := by
     intros
     rw [comp_as_mul, ← f.map_mul]
-    simp only [IsIso.inv_hom_id_assoc, loopOfHom, End.mul_def, Category.assoc]
+    congr 1
+    ext : 1
+    simp [loopOfHom]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
@@ -242,11 +245,14 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       let f' : Labelling (Generators G) X := fun a b e =>
         if h : e ∈ wideSubquiverSymmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
       rcases unique_lift f' with ⟨F', hF', uF'⟩
-      refine ⟨F'.mapEnd _, ?_, ?_⟩
-      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
+      refine ⟨(SingleObj.toEnd X).symm.toMonoidHom.comp (F'.mapEnd _), ?_, ?_⟩
+      · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q).asHom = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          simp only [Functor.mapEnd, DFunLike.coe, this, hF']
-          exact dite_eq_right h
+          dsimp
+          rw [toEnd_symm_apply]
+          erw [F'.mapEnd_apply_asHom]
+          rw [this, hF']
+          apply dite_eq_right h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
@@ -263,7 +269,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
             exact dite_eq_left (Or.inr eT)
       · intro E hE
         ext x
-        suffices (functorOfMonoidHom T E).map x = F'.map x by
+        suffices (functorOfMonoidHom T E).map x.asHom = F'.map x.asHom by
           simpa only [loopOfHom, functorOfMonoidHom, IsIso.inv_id, treeHom_root,
             Category.id_comp, Category.comp_id] using! this
         congr
@@ -271,7 +277,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
         intro a b e
         change E (loopOfHom T _) = dite _ _ _
         split_ifs with h
-        · rw [loopOfHom_eq_id T e h, ← End.one_def, E.map_one]
+        · simp [loopOfHom_eq_id T e h]
         · exact hE ⟨⟨a, b, e⟩, h⟩)
 
 end SpanningTree

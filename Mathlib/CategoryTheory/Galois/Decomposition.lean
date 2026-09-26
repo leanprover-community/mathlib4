@@ -284,7 +284,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
   · refine (isGalois_iff_pretransitive F A).mpr ⟨fun x y ↦ ?_⟩
     obtain ⟨fi1, hfi1⟩ := subobj_selfProd_trans h1 x
     obtain ⟨fi2, hfi2⟩ := subobj_selfProd_trans h1 y
-    use fi1 ≪≫ fi2.symm
+    use .of (fi1 ≪≫ fi2.symm)
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]

@@ -484,8 +484,8 @@ continuous `R`-linear endomorphisms of `M`. -/
 @[simps]
 def endRingEquiv (M : TopModuleCat R) :
     End M ≃+* (M →L[R] M) where
-  toFun := TopModuleCat.Hom.hom
-  invFun := TopModuleCat.ofHom
+  toFun f := TopModuleCat.Hom.hom f.asHom
+  invFun f := .of (TopModuleCat.ofHom f)
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 

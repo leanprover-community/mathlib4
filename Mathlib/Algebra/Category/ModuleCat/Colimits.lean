@@ -40,22 +40,18 @@ namespace HasColimit
 
 variable [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The induced scalar multiplication on
 `colimit (F ⋙ forget₂ _ AddCommGrpCat)`. -/
 @[simps]
 noncomputable def coconePointSMul :
     R →+* End (colimit (F ⋙ forget₂ _ AddCommGrpCat)) where
-  toFun r := colimMap
-    { app := fun j => (F.obj j).smul r
-      naturality := fun _ _ _ => smul_naturality _ _ }
-  map_zero' := colimit.hom_ext (by simp +instances)
-  map_one' := colimit.hom_ext (by simp +instances)
-  map_add' r s := colimit.hom_ext (fun j => by
-    simp +instances only [Functor.comp_obj, forget₂_obj, map_add, ι_colimMap]
-    rw [Preadditive.add_comp, Preadditive.comp_add]
-    simp only [ι_colimMap, Functor.comp_obj, forget₂_obj])
-  map_mul' r s := colimit.hom_ext (fun j => by simp +instances)
+  toFun r := .of (colimMap
+    { app j := ((F.obj j).smul r).asHom
+      naturality _ _ _ := smul_naturality _ _ })
+  map_zero' := by ext : 1; exact colimit.hom_ext (by simp)
+  map_one' := by ext : 1; exact colimit.hom_ext (by simp)
+  map_add' _ _ := by ext : 1; exact colimit.hom_ext (by simp)
+  map_mul' _ _ := by ext : 1; exact colimit.hom_ext (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone for `F` constructed from the colimit of

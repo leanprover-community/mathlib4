@@ -41,14 +41,14 @@ instance : HasForget₂ (Action V G) TopCat :=
   HasForget₂.trans (Action V G) V TopCat
 
 instance (X : Action V G) : MulAction G ((CategoryTheory.forget₂ _ TopCat).obj X) where
-  smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
+  smul g x := ((CategoryTheory.forget₂ _ TopCat).map (X.ρ g).asHom) x
   one_smul x := by
-    change ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1)) x = x
+    change ((CategoryTheory.forget₂ _ TopCat).map (X.ρ 1).asHom) x = x
     simp
   mul_smul g h x := by
-    change (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)) x =
-      ((CategoryTheory.forget₂ _ TopCat).map (X.ρ h) ≫
-        (CategoryTheory.forget₂ _ TopCat).map (X.ρ g)) x
+    change (CategoryTheory.forget₂ _ TopCat).map (X.ρ (g * h)).asHom x =
+      ((CategoryTheory.forget₂ _ TopCat).map (X.ρ h).asHom ≫
+        (CategoryTheory.forget₂ _ TopCat).map (X.ρ g).asHom) x
     rw [← Functor.map_comp, map_mul]
     rfl
 
@@ -61,7 +61,7 @@ abbrev IsContinuous (X : Action V G) : Prop :=
 
 lemma isContinuous_def (X : Action V G) :
     X.IsContinuous ↔ Continuous (fun p : G × (forget₂ _ TopCat).obj X ↦
-      (forget₂ _ TopCat).map (X.ρ p.1) p.2) :=
+      (forget₂ _ TopCat).map (X.ρ p.1).asHom p.2) :=
   ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 end Action
@@ -106,7 +106,7 @@ def res (f : G →ₜ* H) : ContAction V H ⥤ ContAction V G :=
     let v : G × (forget₂ _ TopCat).obj X → H × (forget₂ _ TopCat).obj X := fun p ↦ (f p.1, p.2)
     have : Continuous v := by fun_prop
     let u : H × (forget₂ _ TopCat).obj X → (forget₂ _ TopCat).obj X :=
-      fun p ↦ (forget₂ _ TopCat).map (X.obj.ρ p.1) p.2
+      fun p ↦ (forget₂ _ TopCat).map (X.obj.ρ p.1).asHom p.2
     have : Continuous u := X.2.1
     change Continuous (u ∘ v)
     fun_prop

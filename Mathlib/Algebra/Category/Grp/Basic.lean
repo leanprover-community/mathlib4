@@ -582,11 +582,11 @@ namespace CategoryTheory.Aut
 of permutations. -/
 def isoPerm {α : Type u} : GrpCat.of (Aut α) ≅ GrpCat.of (Equiv.Perm α) where
   hom := GrpCat.ofHom
-    { toFun := fun g => g.toEquiv
+    { toFun g := g.asIso.toEquiv
       map_one' := by aesop
       map_mul' := by aesop }
   inv := GrpCat.ofHom
-    { toFun := fun g => g.toIso
+    { toFun g := .of g.toIso
       map_one' := by aesop
       map_mul' := by aesop }
 
