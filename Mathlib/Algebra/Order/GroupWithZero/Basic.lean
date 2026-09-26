@@ -11,9 +11,9 @@ public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Data.Int.Order.Basic
 
 import Mathlib.Data.Set.Function
-public import Mathlib.Data.Int.Order.Basic
 
 /-!
 # Lemmas on the monotone multiplication typeclasses

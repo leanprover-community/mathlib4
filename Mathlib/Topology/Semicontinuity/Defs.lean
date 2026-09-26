@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Defs.Induced
 public import Mathlib.Topology.Constructions.SumProd
+
 import Mathlib.Topology.ContinuousOn
 
 /-!

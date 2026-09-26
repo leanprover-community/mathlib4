@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
+
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!

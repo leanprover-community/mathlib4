@@ -6,9 +6,10 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Monoid.Defs
+
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Topological properties of the set of convex/concave functions

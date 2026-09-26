@@ -13,6 +13,7 @@ public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.NhdsSet
+
 import Mathlib.Topology.WithTopology
 
 /-!
