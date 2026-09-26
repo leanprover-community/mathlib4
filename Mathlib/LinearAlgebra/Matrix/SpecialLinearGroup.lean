@@ -556,6 +556,20 @@ lemma transvection_mem_center_iff {i j : ι} (hij : i ≠ j) (b : F) :
       add_zero, diagonal_eq_one]
     exact ⟨1, one_pow _, rfl⟩
 
+open scoped commutatorElement in
+/-- The commutator of `transvection hij a` and `transvection hjk b` is
+`transvection hik (a * b)`. -/
+lemma commutator_transvection {i j k : ι} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k) (a b : F) :
+    ⁅transvection hij a, transvection hjk b⁆ = transvection hik (a * b) := by
+  simp only [commutatorElement_def, transvection_inv]
+  exact Subtype.ext
+    (transvection_mul_transvection_mul_transvection_neg_mul_transvection_neg i j k hij hik hjk a b)
+
+@[simp]
+lemma map_transvection {S : Type*} [CommRing S] (f : F →+* S) {i j : ι} (hij : i ≠ j) (b : F) :
+    map f (transvection hij b) = transvection hij (f b) :=
+  Subtype.ext (Matrix.map_transvection i j f b)
+
 end SpecialLinearGroup
 
 namespace TransvectionStruct
@@ -576,6 +590,11 @@ lemma toSpecialLinearGroup_coe (t : TransvectionStruct ι F) :
 lemma toSpecialLinearGroup_mk {i j : ι} (hij : i ≠ j) (c : F) :
     (TransvectionStruct.mk i j hij c).toSpecialLinearGroup =
       SpecialLinearGroup.transvection hij c := rfl
+
+@[simp]
+lemma map_toSpecialLinearGroup {S : Type*} [CommRing S] (f : F →+* S) (t : TransvectionStruct ι F) :
+    SpecialLinearGroup.map f t.toSpecialLinearGroup = (t.map f).toSpecialLinearGroup :=
+  SpecialLinearGroup.map_transvection f t.hij t.c
 
 end TransvectionStruct
 

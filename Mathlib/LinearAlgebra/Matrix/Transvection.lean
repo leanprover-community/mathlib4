@@ -135,6 +135,22 @@ theorem mul_transvection_apply_of_ne {m : Type*} (a : m) (b : n) (hb : b ≠ j) 
 theorem det_transvection_of_ne (h : i ≠ j) (c : R) : det (transvection i j c) = 1 := by
   rw [← updateRow_eq_transvection i j, det_updateRow_add_smul_self _ h, det_one]
 
+/-- The commutator identity satisfied by the transvections. -/
+theorem transvection_mul_transvection_mul_transvection_neg_mul_transvection_neg
+    (k : n) (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k) (a b : R) :
+    transvection i j a * transvection j k b * transvection i j (-a) * transvection j k (-b) =
+      transvection i k (a * b) := by
+  simp [transvection, mul_add, add_mul, single_mul_single_of_ne, hij.symm, hik.symm, hjk.symm,
+    ← single_neg]
+  grind
+
+omit [Fintype n] in
+@[simp]
+lemma map_transvection {S : Type*} [CommRing S] (f : R →+* S) (c : R) :
+    map (transvection i j c) f = transvection i j (f c) := by
+  ext a b
+  simp [transvection, one_apply, single_apply, apply_ite f]
+
 end
 
 variable (R n)
@@ -305,6 +321,25 @@ theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n
   induction L with
   | nil => simp
   | cons t L IH => simp [toMatrix_reindexEquiv, IH]
+
+section map
+
+variable {S : Type*} [CommRing S] (f : R →+* S)
+
+/-- Given `f : R →+* S` we have an induced map on `TransvectionStruct`. -/
+@[simps]
+def map (t : TransvectionStruct n R) : TransvectionStruct n S where
+  i := t.i
+  j := t.j
+  hij := t.hij
+  c := f t.c
+
+omit [Fintype n] in
+@[simp]
+lemma map_toMatrix (t : TransvectionStruct n R) :
+    Matrix.map t.toMatrix f = (t.map f).toMatrix := by simp [toMatrix, map]
+
+end map
 
 end TransvectionStruct
 
