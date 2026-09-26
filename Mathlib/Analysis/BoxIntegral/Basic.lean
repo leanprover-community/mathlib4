@@ -167,6 +167,7 @@ def HasIntegral (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : �
 
 /-- A function is integrable if there exists a vector that satisfies the `HasIntegral`
 predicate. -/
+@[fun_prop]
 def Integrable (I : Box ι) (l : IntegrationParams) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) :=
   ∃ y, HasIntegral I l f vol y
 

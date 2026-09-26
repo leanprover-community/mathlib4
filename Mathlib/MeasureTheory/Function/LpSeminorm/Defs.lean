@@ -146,6 +146,7 @@ theorem eLpNormEssSup_le_eLpNorm_top [TopologicalSpace ε] {f : α → ε} :
 
 /-- The property that `f : α → E` is a.e. strongly measurable and `(∫ ‖f a‖ ^ p ∂μ) ^ (1/p)`
 is finite if `p < ∞`, or `essSup ‖f‖ < ∞` if `p = ∞`. -/
+@[fun_prop]
 def MemLp [TopologicalSpace ε] (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : Prop :=
   eLpNorm f p μ < ∞
 

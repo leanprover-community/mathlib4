@@ -57,19 +57,23 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {s t : Se
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y`
 we have `dist (f x) (f y) ≤ K * dist x y`. -/
+@[fun_prop]
 def LipschitzWith (K : ℝ≥0) (f : α → β) := ∀ x y, edist (f x) (f y) ≤ K * edist x y
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` **on `s`** if
 for all `x, y` in `s` we have `dist (f x) (f y) ≤ K * dist x y`. -/
+@[fun_prop]
 def LipschitzOnWith (K : ℝ≥0) (f : α → β) (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
 
 /-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
 has a neighbourhood on which `f` is Lipschitz. -/
+@[fun_prop]
 def LocallyLipschitz (f : α → β) : Prop := ∀ x, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
 
 /-- `f : α → β` is called **locally Lipschitz continuous** on `s` iff every point `x` of `s`
 has a neighbourhood within `s` on which `f` is Lipschitz. -/
+@[fun_prop]
 def LocallyLipschitzOn (s : Set α) (f : α → β) : Prop :=
   ∀ ⦃x⦄, x ∈ s → ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t
 

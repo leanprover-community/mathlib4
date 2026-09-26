@@ -29,6 +29,7 @@ set_option linter.unusedVariables false
 -- define function propositions --
 ----------------------------------
 
+opaque Con' {α β} (f : α → β) : Prop
 @[fun_prop] opaque Con {α β} (f : α → β) : Prop
 @[fun_prop] opaque Lin {α β} (f : α → β) : Prop
 
@@ -399,10 +400,9 @@ end MultipleLambdaTheorems
 #guard_msgs in
 #check_failure ((by fun_prop) : ?m)
 
-/-- error: `Injective Nat.succ` is not a `fun_prop` goal!
-Consider marking `Function.Injective` with `@[fun_prop]`. -/
+/-- error: `Con' Nat.succ` is not a `fun_prop` goal! Consider marking `Con'` with `@[fun_prop]`. -/
 #guard_msgs in
-example : Nat.succ.Injective := by fun_prop
+example : Con' Nat.succ := by fun_prop
 
 -- todo: warning should not have mvar id in it
 -- /-- warning: `?m.71721` is not a `fun_prop` goal! -/
