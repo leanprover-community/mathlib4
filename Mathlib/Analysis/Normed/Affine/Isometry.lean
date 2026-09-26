@@ -129,7 +129,7 @@ theorem map_vadd (p : P) (v : V) : f (v +ᵥ p) = f.linearIsometry v +ᵥ f p :=
 
 @[simp]
 theorem map_vsub (p1 p2 : P) : f.linearIsometry (p1 -ᵥ p2) = f p1 -ᵥ f p2 :=
-  f.toAffineMap.linearMap_vsub p1 p2
+  f.toAffineMap.linear_apply_vsub p1 p2
 
 @[simp]
 theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by

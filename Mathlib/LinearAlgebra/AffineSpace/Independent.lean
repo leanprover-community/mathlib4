@@ -558,7 +558,7 @@ theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : A
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i]
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
-    f.linearMap_vsub] at hai
+    f.linear_apply_vsub] at hai
   exact LinearIndependent.of_comp f.linear hai
 
 /-- If the image of a set of points in affine space under an affine transformation is affine-
@@ -576,7 +576,7 @@ theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f :
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i] at hai
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
-    f.linearMap_vsub]
+    f.linear_apply_vsub]
   have hf' : LinearMap.ker f.linear = ⊥ := by rwa [LinearMap.ker_eq_bot, f.linear_injective_iff]
   exact LinearIndependent.map' hai f.linear hf'
 
