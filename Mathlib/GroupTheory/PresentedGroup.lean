@@ -172,6 +172,14 @@ end ToGroup
 instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
   ⟨1⟩
 
+/-- A presented group with no generators is trivial. -/
+instance instUniqueOfIsEmpty [IsEmpty α] (rels : Set (FreeGroup α)) :
+    Unique (PresentedGroup rels) where
+  default := 1
+  uniq x := by
+    induction x using PresentedGroup.induction_on with
+    | _ z => exact congrArg _ (Unique.eq_default z)
+
 section Coprod
 
 variable (rels₁ : Set (FreeGroup α)) (rels₂ : Set (FreeGroup β))
