@@ -57,13 +57,12 @@ There's a nice proof of both bounds in this setting at
 https://en.wikipedia.org/wiki/Tsirelson%27s_bound
 The proof given here is purely algebraic.
 
-## Future work
+## Tightness
 
-One can show that Tsirelson's inequality is tight.
-In the \*-ring of n-by-n complex matrices, if `A ≤ λ I` for some `λ : ℝ`,
-then every eigenvalue has absolute value at most `λ`.
-There is a CHSH tuple in 4-by-4 matrices such that
-`A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁` has `2√2` as an eigenvalue.
+Tsirelson's inequality is tight: `Mathlib/Analysis/Matrix/CHSH.lean` constructs
+an explicit CHSH tuple in the 4-by-4 real matrices whose CHSH operator has
+`√2 ^ 3` as an eigenvalue, and shows that `√2 ^ 3` is the least constant
+bounding that operator in the Loewner order.
 
 ## References
 
