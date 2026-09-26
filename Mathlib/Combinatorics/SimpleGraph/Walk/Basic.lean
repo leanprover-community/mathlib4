@@ -268,6 +268,10 @@ theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := b
 @[simp, grind =]
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
 
+theorem edge_mem_edges_of_mem_darts {d : G.Dart} {p : G.Walk v w} (hd : d ∈ p.darts) :
+    d.edge ∈ p.edges :=
+  List.mem_map_of_mem hd
+
 /-- Use `edge_getElem_darts` to rewrite in the reverse direction. -/
 theorem getElem_edges_eq_edge_getElem_darts {p : G.Walk u v} {i : ℕ} (h : i < p.edges.length) :
     p.edges[i] = (p.darts[i]'(by grind)).edge :=

@@ -808,6 +808,9 @@ theorem getVert_dropLast {n} {p : G.Walk u v} (h : n < p.length) :
     p.dropLast.getVert n = p.getVert n := by
   grind [getVert_eq_support_getElem, length_dropLast, support_dropLast]
 
+lemma snd_dropLast_eq_snd {p : G.Walk u v} (h : p.length ≠ 1) : p.dropLast.snd = p.snd := by
+  match p with | nil | cons _ nil | cons _ (cons ..) => simp_all
+
 @[simp]
 theorem reverse_tail (p : G.Walk u v) :
     p.tail.reverse = p.reverse.dropLast.copy rfl p.penultimate_reverse := by
