@@ -30,12 +30,11 @@ variable {R R₂ R₃ R' : Type*}
 variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R']
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {A M N P Q S : Type*}
-variable {P₂ P₃ : Type*}
+variable {M₂ P₂ P₃ : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P₂]
-variable [AddCommMonoid P₃]
+variable [AddCommMonoid M₂] [AddCommMonoid P₂] [AddCommMonoid P₃]
 variable [DistribMulAction R' M]
-variable [Module R M] [Module R N] [Module R S]
+variable [Module R M] [Module R N] [Module R S] [Module R₂ M₂]
 variable [Module R₂ P₂]
 variable [Module R₃ P₃]
 
@@ -130,10 +129,27 @@ theorem lift.tmul (x y) : lift f' (x ⊗ₜ y) = f' x y :=
 theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
   rfl
 
-theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
-  LinearMap.ext fun z =>
-    TensorProduct.inductionOn z H fun x y ihx ihy => by
-      rw [g.map_add, h.map_add, ihx, ihy]
+theorem ext' {F} [FunLike F (M ⊗[R] N) P₂] [AddHomClass F (M ⊗[R] N) P₂]
+    {g h : F} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
+  DFunLike.ext _ _ fun z ↦ z.inductionOn H fun x y ihx ihy ↦ by
+    rw [map_add, map_add, ihx, ihy]
+
+/-- The adjunction between tensor product over ℕ and internal hom in the category of
+`AddCommMonoid`s. -/
+def liftAddEquivNat : (M →+ N →+ P) ≃+ (M ⊗[ℕ] N →+ P) := .symm
+  { toFun := (LinearMap.toAddMonoidHom'.comp (TensorProduct.mk ℕ M N).toAddMonoidHom).compr₂
+    invFun f := liftAddHom f fun _ _ _ ↦ by simp
+    map_add' _ _ := rfl
+    left_inv f := ext' fun _ _ ↦ rfl }
+
+/-- The adjunction between tensor product over ℤ and internal hom in the category of
+`AddCommGroup`s. -/
+def liftAddEquivInt {M N P : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] :
+    (M →+ N →+ P) ≃+ (M ⊗[ℤ] N →+ P) := .symm
+  { toFun := (LinearMap.toAddMonoidHom'.comp (TensorProduct.mk ℤ M N).toAddMonoidHom).compr₂
+    invFun f := liftAddHom f fun _ _ _ ↦ by simp
+    map_add' _ _ := rfl
+    left_inv f := ext' fun _ _ ↦ rfl }
 
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
   ext' fun m n => by rw [H, lift.tmul]
@@ -186,7 +202,7 @@ with the property that its composition with the canonical bilinear map `M → N 
 the given bilinear map `M → N → P`. -/
 def lift.equiv : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) ≃ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
   { uncurry σ₁₂ M N P₂ with
-    invFun := fun f => (mk R M N).compr₂ₛₗ f }
+    invFun := (mk R M N).compr₂ₛₗ }
 
 @[simp]
 theorem lift.equiv_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
@@ -223,15 +239,17 @@ theorem curry_injective :
     Function.Injective (curry : (M ⊗[R] N →ₛₗ[σ₁₂] P₂) → M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :=
   fun _ _ H => ext H
 
-theorem ext_threefold {g h : M ⊗[R] N ⊗[R] P →ₛₗ[σ₁₂] P₂}
-    (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h := by
-  ext x y z
-  exact H x y z
+theorem ext_threefold {F} [Module R₂ M] [SMulCommClass R R₂ M]
+    [FunLike F (M ⊗[R] N ⊗[R₂] M₂) P₃] [AddHomClass F (M ⊗[R] N ⊗[R₂] M₂) P₃]
+    {g h : F} (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h :=
+  ext' fun xy z ↦ xy.inductionOn (H · · z) fun x y ihx ihy ↦ by
+    simp_rw [add_tmul, map_add, ihx, ihy]
 
-theorem ext_threefold' {g h : M ⊗[R] (N ⊗[R] P) →ₛₗ[σ₁₂] P₂}
-    (H : ∀ x y z, g (x ⊗ₜ (y ⊗ₜ z)) = h (x ⊗ₜ (y ⊗ₜ z))) : g = h := by
-  ext x y z
-  exact H x y z
+theorem ext_threefold' {F} [Module R₂ N] [SMulCommClass R₂ R N]
+    [FunLike F (M ⊗[R] (N ⊗[R₂] M₂)) P₃] [AddHomClass F (M ⊗[R] (N ⊗[R₂] M₂)) P₃]
+    {g h : F} (H : ∀ x y z, g (x ⊗ₜ (y ⊗ₜ z)) = h (x ⊗ₜ (y ⊗ₜ z))) : g = h :=
+  ext' fun x yz ↦ yz.inductionOn (H x) fun y z ihy ihz ↦ by
+    simp_rw [tmul_add, map_add, ihy, ihz]
 
 -- We'll need this one for checking the pentagon identity!
 theorem ext_fourfold {g h : M ⊗[R] N ⊗[R] P ⊗[R] Q →ₛₗ[σ₁₂] P₂}
