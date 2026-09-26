@@ -292,6 +292,11 @@ instance : Zero (M ⟶ N) where
 
 @[simp] lemma hom_zero : (0 : M ⟶ N).hom = 0 := rfl
 
+instance : SMul ℕ+ (M ⟶ N) where
+  smul n f := ⟨n • f.hom⟩
+
+@[simp] lemma hom_psmul (n : ℕ+) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+
 instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
@@ -299,6 +304,7 @@ instance : SMul ℕ (M ⟶ N) where
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=

@@ -320,9 +320,18 @@ abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
   { SMulZeroClass.toZeroHom A x with toFun := (x • ·), map_add' := smul_add x }
 
+instance AddMonoid.pnat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A] :
+    SMulCommClass ℕ+ M A where
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_psmul n y).symm
+
 instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A] :
     SMulCommClass ℕ M A where
   smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul n y).symm
+
+-- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
+instance AddMonoid.pnat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
+    SMulCommClass M ℕ+ A :=
+  .symm _ _ _
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :

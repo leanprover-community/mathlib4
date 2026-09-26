@@ -95,7 +95,7 @@ protected theorem exists_continuousOn_pow_eq
   suffices ∀ x, ‖f x‖ < 1 by
     lift f to X → 𝔻 using this
     refine ⟨f, isEmbedding_coe.continuousOn_iff.mpr hfc, fun x ↦ ?_⟩
-    simpa only [← coe_pow, Function.comp_apply, coe_inj] using hf x
+    simpa only [← coe_ppow, Function.comp_apply, coe_inj] using hf x
   intro x
   rw [← pow_lt_one_iff_of_nonneg (norm_nonneg _) n.ne_zero, ← norm_pow, hf]
   exact (g x).norm_lt_one

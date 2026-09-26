@@ -288,7 +288,13 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
 instance instAdd : Add (VectorMeasure α M) :=
   ⟨add⟩
 
+instance instPSMul : SMul ℕ+ (VectorMeasure α M) :=
+  ⟨fun n v => ⟨n • v,
+    by simp, fun _ hi ↦ by simp [hi], fun _ hf₁ hf₂ ↦ HasSum.psmul (v.m_iUnion hf₁ hf₂) _⟩⟩
+
 instance : IsAddApply (VectorMeasure α M) (Set α) M where
+
+instance : IsSMulApply ℕ+ (VectorMeasure α M) (Set α) M where
 
 @[deprecated (since := "2026-06-10")] alias coe_add := FunLike.coe_add
 
