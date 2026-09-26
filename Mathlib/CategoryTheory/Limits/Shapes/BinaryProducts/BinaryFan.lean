@@ -174,7 +174,6 @@ theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
     Cone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
     Cocone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
@@ -397,7 +396,6 @@ def BinaryFan.isLimitMapConeEquiv {X Y : C} {s : BinaryFan X Y} :
   IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| ext (Iso.refl _)
     (by simp [fst]) (by simp [snd])
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `F.mapCocone s` being colimiting is the same as the induced binary cofan being colimiting. -/
 def BinaryCofan.isColimitMapConeEquiv {X Y : C} {s : BinaryCofan X Y} :
     IsColimit (F.mapCocone s) ≃ IsColimit (s.map F) :=
