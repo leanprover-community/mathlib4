@@ -1660,6 +1660,11 @@ Q1422083:
 
 Q1423818:
   title: Euler's theorem in geometry
+  decls:
+    - Affine.Triangle.dist_excenter_singleton_circumcenter_sq
+    - Affine.Triangle.dist_incenter_circumcenter_sq
+  authors: Weiyi Wang
+  date: 2026
 
 Q1424481:
   title: Frucht's theorem
