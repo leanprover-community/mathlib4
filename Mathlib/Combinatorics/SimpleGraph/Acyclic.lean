@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
+Authors: Kyle Miller, Snir Broshi
 -/
 module
 
@@ -66,6 +66,13 @@ structure IsTree : Prop extends
 @[deprecated (since := "2026-03-18")] alias IsTree.IsAcyclic := IsTree.isAcyclic
 
 variable {G G'}
+
+theorem isAcyclic_iff : G.IsAcyclic ↔ ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle :=
+  .rfl
+
+theorem not_isAcyclic_iff : ¬G.IsAcyclic ↔ ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
+  contrapose!
+  rfl
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
@@ -345,6 +352,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
+theorem IsTree.ncard_edgeSet_add_one [Finite V] (hG : G.IsTree) :
+    G.edgeSet.ncard + 1 = Nat.card V := by
+  have := Fintype.ofFinite V
+  have := Fintype.ofFinite G.edgeSet
+  simpa [edgeFinset] using hG.card_edgeFinset
+
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
@@ -483,14 +496,38 @@ lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   classical
-  refine ⟨fun h ↦ ⟨h.connected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
-    fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  refine ⟨fun h ↦ ⟨h.connected, h.ncard_edgeSet_add_one⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra (h₁.preconnected.connected_deleteEdges_of_not_isBridge ·
     |>.card_vert_le_card_edgeSet_add_one.not_gt ?_)
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
+
+/-- An acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges. -/
+theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :
+    G.edgeSet.ncard + Nat.card G.ConnectedComponent = Nat.card V := by
+  have := Fintype.ofFinite G.ConnectedComponent
+  rw [← sum_connectedComponent_ncard_edgeSet, ← G.sum_connectedComponent_ncard_supp,
+    ← Fintype.card_eq_nat_card, Fintype.card_eq_sum_ones, ← Finset.sum_add_distrib]
+  simp_rw [h.isTree_connectedComponent _ |>.ncard_edgeSet_add_one]
+  rfl
+
+/-- An acyclic graph on `n` vertices has at most `n - 1` edges. -/
+theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.IsAcyclic) :
+    G.edgeSet.ncard + 1 ≤ Nat.card V := by
+  grind [h.ncard_edgeSet_add_card_connectedComponent, Nat.card_pos]
+
+/-- A graph on `n` vertices with at least `n` edges has a cycle. -/
+theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
+    (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle :=
+  not_isAcyclic_iff.mp <| mt IsAcyclic.ncard_edgeSet_add_one_le_card <| by lia
+
+/-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges. -/
+theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
+    G.IsTree ↔ G.IsAcyclic ∧ G.edgeSet.ncard + 1 = Nat.card V := by
+  refine ⟨fun h ↦ ⟨h.isAcyclic, h.ncard_edgeSet_add_one⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
+  grind [connected_iff_card_connectedComponent_eq_one, h.ncard_edgeSet_add_card_connectedComponent]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
