@@ -106,7 +106,7 @@ instance (priority := 500) [Nontrivial L] (H : LieSubalgebra R L) [H.IsCartanSub
   refine (subsingleton_or_nontrivial H).elim (fun inst ↦ False.elim ?_) id
   apply ne_bot_of_isCartanSubalgebra H
   rw [eq_bot_iff]
-  exact fun x hx ↦ congr_arg Subtype.val (Subsingleton.elim (⟨x, hx⟩ : H) 0)
+  exact fun x hx ↦ congr($(Subsingleton.elim (⟨x, hx⟩ : H) 0).val)
 
 end LieSubalgebra
 

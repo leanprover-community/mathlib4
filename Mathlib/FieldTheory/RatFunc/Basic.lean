@@ -234,10 +234,8 @@ def toFractionRingRingEquiv : K⟮X⟯ ≃+* FractionRing K[X] where
 
 end Field
 
-section TacticInterlude
-
 /-- Solve equations for `K⟮X⟯` by working in `FractionRing K[X]`. -/
-macro "frac_tac" : tactic => `(tactic|
+local macro "frac_tac" : tactic => `(tactic|
   · repeat (rintro (⟨⟩ : _⟮X⟯))
     try simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
       ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
@@ -247,7 +245,7 @@ macro "frac_tac" : tactic => `(tactic|
       add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
 /-- Solve equations for `K⟮X⟯` by applying `RatFunc.induction_on`. -/
-macro "smul_tac" : tactic => `(tactic|
+local macro "smul_tac" : tactic => `(tactic|
     repeat
       (first
         | rintro (⟨⟩ : _⟮X⟯)
@@ -259,8 +257,6 @@ macro "smul_tac" : tactic => `(tactic|
       Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
-
-end TacticInterlude
 
 section CommRing
 
@@ -326,7 +322,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       simp only [Submonoid.mem_comap.mp (hφ hq), Submonoid.mem_comap.mp (hφ hq'),
         dite_eq_left, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
       refine Localization.r_of_eq ?_
-      simpa only [map_mul] using congr_arg φ h
+      simpa only [map_mul] using congr(φ $h)
   map_one' := by
     simp_rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk,
       OneMemClass.coe_one, map_one, OneMemClass.one_mem, dite_true, ofFractionRing.injEq,

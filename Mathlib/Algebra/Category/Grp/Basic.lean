@@ -497,7 +497,7 @@ def asHom {G : AddCommGrpCat.{0}} (g : G) : ↧ℤ ⟶ G :=
   ofHom (zmultiplesHom G g)
 
 theorem asHom_injective {G : AddCommGrpCat.{0}} : Function.Injective (@asHom G) := fun h k w => by
-  simpa using CategoryTheory.congr_fun w 1
+  simpa using congr($w 1)
 
 @[ext]
 theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : ↧ℤ ⟶ G)

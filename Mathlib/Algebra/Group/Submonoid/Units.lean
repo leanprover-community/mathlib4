@@ -114,11 +114,11 @@ lemma inv_val_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
 
 @[to_additive]
 lemma coe_inv_val_mul_coe_val (S : Submonoid M) {x : Sˣ} :
-    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.inv_mul
+    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congr(S.subtype $x.inv_mul)
 
 @[to_additive]
 lemma coe_val_mul_coe_inv_val (S : Submonoid M) {x : Sˣ} :
-    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.mul_inv
+    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congr(S.subtype $x.mul_inv)
 
 @[to_additive]
 lemma mk_inv_mul_mk_eq_one (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :

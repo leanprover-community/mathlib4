@@ -282,7 +282,7 @@ def prodEquivLeft :
     have := (prod_lt_top eι b₁ b₂ hA).ne
     contrapose this
     have hI₁ : (I₁ : Set L₂) = p₂ '' p₁.ker :=
-      congr_arg SetLike.coe <| p₁.ker.coe_map_of_surjective (surjective_snd_prod eι b₁ b₂)
+      congr(SetLike.coe $(p₁.ker.coe_map_of_surjective (surjective_snd_prod eι b₁ b₂)))
     have hL₂ (x₂ : L₂) : (0, x₂) ∈ L := by
       replace this : x₂ ∈ (I₁ : Set L₂) := by simp [this]
       simpa [p₂, p₁, hI₁] using this

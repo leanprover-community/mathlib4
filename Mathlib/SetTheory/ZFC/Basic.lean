@@ -177,7 +177,7 @@ private lemma ext_aux : (∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) →
 
 instance : SetLike ZFSet.{u} ZFSet.{u} where
   coe := toSet
-  coe_injective x y hxy := by apply ext_aux; intro z; exact congr(z ∈ $hxy)
+  coe_injective x y hxy := by apply ext_aux; intro z; congrm z ∈ $hxy
 
 /-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
 @[deprecated "use `∈` notation" (since := "2026-03-16")]
@@ -377,10 +377,10 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
     fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
-        ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
+        ⟨⟨b, by simpa only [← ZFSet.sound hb]⟩, hb⟩,
         fun ⟨b, pb⟩ =>
         let ⟨a, ha⟩ := βα b
-        ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩
+        ⟨⟨a, by simpa only [ZFSet.sound ha]⟩, ha⟩⟩
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
 instance : Sep ZFSet ZFSet :=
@@ -509,7 +509,7 @@ lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe
   simp [mem_sInter h]
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
-  let := congr_arg sUnion H
+  let := congr(sUnion $H)
   rwa [sUnion_singleton, sUnion_singleton] at this
 
 @[simp]

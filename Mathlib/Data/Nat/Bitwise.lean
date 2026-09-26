@@ -253,7 +253,7 @@ lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
-macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
+local macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction n using Nat.binaryRec generalizing m k with | zero => simp | bit b n hn => ?_
   induction m using Nat.binaryRec with | zero => simp | bit b' m hm => ?_
   induction k using Nat.binaryRec <;>

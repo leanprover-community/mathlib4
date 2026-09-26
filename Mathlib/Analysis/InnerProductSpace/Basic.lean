@@ -669,11 +669,11 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) =
         √(‖(R / ‖x‖) ^ 2 • x - (R / ‖y‖) ^ 2 • y‖ ^ 2) := by
       rw [dist_eq_norm, sqrt_sq (norm_nonneg _)]
-    _ = √((R ^ 2 / (‖x‖ * ‖y‖)) ^ 2 * ‖x - y‖ ^ 2) :=
-      congr_arg (√·) <| by
-        simp [field, sq, norm_sub_mul_self_real, norm_smul, real_inner_smul_left, inner_smul_right,
-          Real.norm_of_nonneg (mul_self_nonneg _), -mul_eq_mul_left_iff]
-        ring
+    _ = √((R ^ 2 / (‖x‖ * ‖y‖)) ^ 2 * ‖x - y‖ ^ 2) := by
+      congr
+      simp [field, sq, norm_sub_mul_self_real, norm_smul, real_inner_smul_left, inner_smul_right,
+        Real.norm_of_nonneg (mul_self_nonneg _), -mul_eq_mul_left_iff]
+      ring
     _ = R ^ 2 / (‖x‖ * ‖y‖) * dist x y := by
       rw [sqrt_mul, sqrt_sq, sqrt_sq, dist_eq_norm] <;> positivity
 

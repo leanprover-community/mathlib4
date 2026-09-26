@@ -172,7 +172,8 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
     apply Function.support_subset_iff'.2 fun x hx ↦ hf x ?_
     contrapose hx
     exact subset_toMeasurable μ s hx
-  rw [← this, memLp_indicator_iff_restrict (measurableSet_toMeasurable μ s)] at hfq ⊢
+  rw [← this, memLp_indicator_iff_restrict (measurableSet_toMeasurable μ s).nullMeasurableSet]
+    at hfq ⊢
   have : Fact (μ (toMeasurable μ s) < ∞) := ⟨by simpa [lt_top_iff_ne_top] using hs⟩
   exact hfq.mono_exponent hpq
 
@@ -382,7 +383,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm
   obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
   obtain ⟨hq₁, hq₂⟩ := ENNReal.toReal_pos_iff.mp hq
   have hpqr' : 1 / r.toReal = 1 / p.toReal + 1 / q.toReal := by
-    have := congr(ENNReal.toReal $(hpqr))
+    have := congr($(hpqr).toReal)
     rw [ENNReal.toReal_add (by simpa using hp₁.ne') (by simpa using hq₁.ne')] at this
     simpa
   have hr : 0 < r.toReal := one_div_pos.mp <| by rw [hpqr']; positivity
