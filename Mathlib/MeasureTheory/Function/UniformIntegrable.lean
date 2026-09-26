@@ -28,6 +28,11 @@ formulate the martingale convergence theorem.
   In particular, a sequence of measurable functions `f` is uniformly integrable in the
   probability theory sense if it is uniformly integrable in the measure theory sense and
   has uniformly bounded Lp-norm.
+* `MeasureTheory.UnifTail`: A family of functions `(f i)` has uniform tails if the measure of the
+  set `{ x | M ≤ ‖f i x‖ₑ }` vanishes when `M` goes to infinity, uniformly in `i`.
+* `MeasureTheory.UnifLpTail`: A family of functions `(f i)` has uniform Lp tails if the
+  `eLpNorm` of `f i` carried by the sets `{ x | M ≤ ‖f i x‖ₑ }` vanishes when `M` goes to infinity,
+  uniformly in `i`.
 
 ## Main results
 
@@ -66,24 +71,23 @@ some `δ > 0` such that for all sets `s` with measure less than `δ`, the Lp-nor
 restricted to `s` is less than `ε`.
 
 Uniform integrability is also known as uniformly absolutely continuous integrals. -/
-def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
+def UnifIntegrable (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   Tendsto (fun ε ↦ ⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (f i) p (μ.restrict s)) (𝓝 0) (𝓝 0)
 
 /-- In probability theory, a family of measurable functions is uniformly integrable if it is
 uniformly integrable in the measure theory sense and is uniformly bounded. -/
-structure UniformIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
-  Prop where
+structure UniformIntegrable (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop where
   protected unifIntegrable : UnifIntegrable f p μ
   protected bdd : ⨆ i, eLpNorm (f i) p μ < ∞
 
 /-- A family of functions has `UnifTail` if the measure of the tail subsets `{ x | M ≤ ‖f i x‖ₑ }`
 decays uniformly to `0`. -/
-def UnifTail {_ : MeasurableSpace α} (f : ι → α → β) (μ : Measure α) : Prop :=
+def UnifTail (f : ι → α → β) (μ : Measure α) : Prop :=
   Tendsto (fun M ↦ ⨆ (i : ι), μ { x | M ≤ ‖f i x‖ₑ }) (𝓝 ∞) (𝓝 0)
 
 /-- A family of functions has `UnifLpTail` if the `eLpNorm` carried by the tail subsets
 `{ x | M ≤ ‖f i x‖ₑ }` decays uniformly to `0`. -/
-def UnifLpTail {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
+def UnifLpTail (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   Tendsto (fun M ↦ ⨆ (i : ι), eLpNorm (f i) p (μ.restrict { x | M ≤ ‖f i x‖ₑ })) (𝓝 ∞) (𝓝 0)
 
 /-! ### Basic properties -/
@@ -96,7 +100,8 @@ theorem unifIntegrable_mk_iff :
   rw [UnifIntegrable, iff_iff_eq]
   congrm Tendsto (fun ε ↦ ⨆ i, ?_) _ _
   refine le_antisymm (iSup₂_le fun s hsμ ↦ ?_) (iSup₂_le_iSup _ _)
-  obtain ⟨t, hst, ht, hμt⟩ := exists_measurable_superset μ s
+  obtain ⟨t, hst, ht, hμt⟩ : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s :=
+    exists_measurable_superset μ s
   grw [← le_iSup₂ t ht, ← le_iSup _ (hμt ▸ hsμ), eLpNorm_mono_measure _ (μ.restrict_mono_set hst)]
 
 @[deprecated (since := "2026-08-21")] alias UnifIntegrable.mk_iff := unifIntegrable_mk_iff
@@ -170,12 +175,12 @@ protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] 
   exact eLpNorm_congr_ae ((hfg i).filter_mono ae_restrict_le)
 
 /-- Uniform integrability is preserved by restriction of the functions to a set. -/
-protected theorem indicator (hf : UnifIntegrable f p μ) (s : Set α) (hs : MeasurableSet s) :
+protected theorem indicator (hf : UnifIntegrable f p μ) (s : Set α) (hs : NullMeasurableSet s μ) :
     UnifIntegrable (fun i ↦ s.indicator (f i)) p μ := by
   refine tendsto_nhds_bot_mono hf (Eventually.of_forall fun ε ↦ ?_)
   simp only
   gcongr
-  exact eLpNorm_indicator_le _ hs
+  exact eLpNorm_indicator_le _ (hs.mono μ.restrict_le_self)
 
 /-- Uniform integrability is preserved by restriction of the measure to a set. -/
 protected theorem restrict (hf : UnifIntegrable f p μ) (s : Set α) :
@@ -197,12 +202,11 @@ end UnifIntegrable
 
 theorem unifIntegrable_congr_ae (hfg : ∀ i, f i =ᵐ[μ] g i) :
     UnifIntegrable f p μ ↔ UnifIntegrable g p μ :=
-  ⟨fun hf => hf.ae_eq hfg, fun hg => hg.ae_eq fun n => (hfg n).symm⟩
+  ⟨fun hf ↦ hf.ae_eq hfg, fun hg ↦ hg.ae_eq fun n ↦ (hfg n).symm⟩
 
 theorem unifIntegrable_of_isEmpty [IsEmpty ι] : UnifIntegrable f p μ := by simp [UnifIntegrable]
 
-theorem unifIntegrable_zero_meas [MeasurableSpace α] :
-    UnifIntegrable f p (0 : Measure α) := by
+theorem unifIntegrable_zero_meas [MeasurableSpace α] : UnifIntegrable f p (0 : Measure α) := by
   simp [UnifIntegrable]
 
 @[simp]
@@ -211,34 +215,36 @@ theorem unifTail_of_isEmpty [IsEmpty ι] : UnifTail f μ := by simp [UnifTail]
 @[simp]
 theorem unifTail_zero_meas : UnifTail f (0 : Measure α) := by simp [UnifTail]
 
-protected theorem UnifTail.ae_mono (hg : UnifTail g μ) (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
+namespace UnifTail
+
+protected theorem ae_mono (hg : UnifTail g μ) (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
     UnifTail f μ := by
   refine tendsto_nhds_bot_mono hg (Eventually.of_forall fun M ↦ ?_)
   refine iSup_mono fun i ↦ measure_mono_ae ?_
   filter_upwards [hfg i] with x hx hxF
   exact hxF.trans hx
 
-protected theorem UnifTail.ae_eq (hf : UnifTail f μ) (hfg : ∀ i, f i =ᵐ[μ] g i) : UnifTail g μ :=
+protected theorem ae_eq (hf : UnifTail f μ) (hfg : ∀ i, f i =ᵐ[μ] g i) : UnifTail g μ :=
   hf.ae_mono fun i ↦ ((hfg i).symm.fun_comp _).le
 
-theorem unifTail_congr_ae (hfg : ∀ i, f i =ᵐ[μ] g i) : UnifTail f μ ↔ UnifTail g μ :=
-  ⟨fun hf ↦ hf.ae_eq hfg, fun hg ↦ hg.ae_eq fun n ↦ (hfg n).symm⟩
-
-protected theorem UnifTail.mono_measure {ν : Measure α} (hf : UnifTail f μ) (h : ν ≤ μ) :
+protected theorem mono_measure {ν : Measure α} (hf : UnifTail f μ) (h : ν ≤ μ) :
     UnifTail f ν :=
   tendsto_nhds_bot_mono hf (Eventually.of_forall fun _ ↦ iSup_mono fun _ ↦ ν.measure_mono_left h _)
 
-protected theorem UnifTail.restrict (h : UnifTail f μ) (s : Set α) : UnifTail f (μ.restrict s) :=
+protected theorem restrict (h : UnifTail f μ) (s : Set α) : UnifTail f (μ.restrict s) :=
   h.mono_measure μ.restrict_le_self
 
-protected theorem UnifTail.add (hf : UnifTail f μ) (hg : UnifTail g μ) : UnifTail (f + g) μ := by
+protected theorem add (hf : UnifTail f μ) (hg : UnifTail g μ) : UnifTail (f + g) μ := by
   -- If `c ≤ f i + g i`, then either `c / 2 ≤ f i` or `c / 2 ≤ g i`.
   -- By this observation, `{ c ≤ f i + g i } ⊆ { c / 2 ≤ f i } ∪ { c / 2 ≤ g i }`,
   -- and we can control the measure of the latter set.
   rw [UnifTail, ENNReal.tendsto_nhds_zero] at hf hg ⊢
   intro ε hε
-  obtain ⟨a, ha, haμ⟩ := _root_.nhds_top_basis.eventually_iff.1 (hf (ε / 2) (ε.half_pos hε.ne'))
-  obtain ⟨b, hb, hbμ⟩ := _root_.nhds_top_basis.eventually_iff.1 (hg (ε / 2) (ε.half_pos hε.ne'))
+  have := _root_.nhds_top_basis.eventually_iff.1 (hg (ε / 2) (ε.half_pos hε.ne'))
+  obtain ⟨a, ha, haμ⟩ : ∃ a < ∞, ∀ {c}, c ∈ Ioi a → ⨆ i, μ { x | c ≤ ‖f i x‖ₑ } ≤ ε / 2 :=
+    _root_.nhds_top_basis.eventually_iff.1 (hf (ε / 2) (ε.half_pos hε.ne'))
+  obtain ⟨b, hb, hbμ⟩ : ∃ b < ∞, ∀ {c}, c ∈ Ioi b → ⨆ i, μ { x | c ≤ ‖g i x‖ₑ } ≤ ε / 2 :=
+    _root_.nhds_top_basis.eventually_iff.1 (hg (ε / 2) (ε.half_pos hε.ne'))
   refine _root_.nhds_top_basis.eventually_iff.2 ⟨max (2 * a) (2 * b), by finiteness, fun c hc ↦ ?_⟩
   simp only [mem_Ioi, sup_lt_iff, iSup_le_iff, Pi.add_apply] at hc haμ hbμ ⊢
   intro i
@@ -252,6 +258,47 @@ protected theorem UnifTail.add (hf : UnifTail f μ) (hg : UnifTail g μ) : UnifT
       mul_comm 2 _, ← ENNReal.lt_div_iff_mul_lt (.inl two_ne_zero) (.inl ofNat_ne_top)] at hc
     grw [measure_union_le _ _, add_le_add (haμ hc.1 i) (hbμ hc.2 i), ε.add_halves]
 
+end UnifTail
+
+theorem unifTail_congr_ae (hfg : ∀ i, f i =ᵐ[μ] g i) : UnifTail f μ ↔ UnifTail g μ :=
+  ⟨fun hf ↦ hf.ae_eq hfg, fun hg ↦ hg.ae_eq fun n ↦ (hfg n).symm⟩
+
+namespace UnifLpTail
+
+protected theorem ae_mono (hf : ∀ i, AEStronglyMeasurable (f i) μ) (hg : UnifLpTail g p μ)
+    (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
+    UnifLpTail f p μ := by
+  refine tendsto_nhds_bot_mono hg (Eventually.of_forall fun M ↦ iSup_mono fun i ↦ ?_)
+  apply (eLpNorm_mono_enorm_ae (hf i).restrict (ae_restrict_of_ae (hfg i))).trans
+  apply eLpNorm_mono_measure
+  apply μ.restrict_mono_ae
+  filter_upwards [hfg i] with x hx
+  simp only [le_Prop_eq]
+  exact hx.trans'
+
+protected theorem ae_eq (hf : UnifLpTail f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) : UnifLpTail g p μ := by
+  refine hf.congr fun M ↦ iSup_congr fun i ↦ ?_
+  rw [eLpNorm_congr_ae ((hfg i).filter_mono ae_restrict_le)]
+  congr 1
+  apply μ.restrict_congr_set
+  filter_upwards [hfg i] with x hx
+  rw [hx]
+
+protected theorem mono_measure {ν : Measure α} (hf : UnifLpTail f p μ) (h : ν ≤ μ) :
+    UnifLpTail f p ν := by
+  refine tendsto_nhds_bot_mono hf (Eventually.of_forall fun M ↦ iSup_mono fun i ↦ ?_)
+  apply eLpNorm_mono_measure
+  exact (ν.restrict_mono_measure h _)
+
+protected theorem restrict (h : UnifLpTail f p μ) (s : Set α) : UnifLpTail f p (μ.restrict s) :=
+  h.mono_measure μ.restrict_le_self
+
+end UnifLpTail
+
+theorem unifLpTail_congr_ae (hfg : ∀ i, f i =ᵐ[μ] g i) :
+    UnifLpTail f p μ ↔ UnifLpTail g p μ :=
+  ⟨fun hf ↦ hf.ae_eq hfg, fun hg ↦ hg.ae_eq fun n ↦ (hfg n).symm⟩
+
 @[simp]
 theorem unifLpTail_of_isEmpty [IsEmpty ι] : UnifLpTail f p μ := by simp [UnifLpTail]
 
@@ -263,47 +310,15 @@ theorem unifLpTail_zero_exponent (hf : ∀ i, AEStronglyMeasurable (f i) μ) : U
   refine (bot_unique <| iSup_le_iff.2 fun i ↦ le_bot_iff.2 ?_).symm
   rw [bot_eq_zero, eLpNorm_exponent_zero (hf i).restrict]
 
-protected theorem UnifLpTail.ae_mono (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (hg : UnifLpTail g p μ) (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
-    UnifLpTail f p μ := by
-  refine tendsto_nhds_bot_mono hg (Eventually.of_forall fun M ↦ iSup_mono fun i ↦ ?_)
-  apply (eLpNorm_mono_enorm_ae (hf i).restrict (ae_restrict_of_ae (hfg i))).trans
-  apply eLpNorm_mono_measure
-  apply μ.restrict_mono_ae
-  filter_upwards [hfg i] with x hx
-  simp only [le_Prop_eq]
-  exact hx.trans'
-
-protected theorem UnifLpTail.ae_eq (hf : UnifLpTail f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) :
-    UnifLpTail g p μ := by
-  refine hf.congr fun M ↦ iSup_congr fun i ↦ ?_
-  rw [eLpNorm_congr_ae ((hfg i).filter_mono ae_restrict_le)]
-  congr 1
-  apply μ.restrict_congr_set
-  filter_upwards [hfg i] with x hx
-  rw [hx]
-
-theorem unifLpTail_congr_ae (hfg : ∀ i, f i =ᵐ[μ] g i) :
-    UnifLpTail f p μ ↔ UnifLpTail g p μ :=
-  ⟨fun hf ↦ hf.ae_eq hfg, fun hg ↦ hg.ae_eq fun n ↦ (hfg n).symm⟩
-
-protected theorem UnifLpTail.mono_measure {ν : Measure α} (hf : UnifLpTail f p μ) (h : ν ≤ μ) :
-    UnifLpTail f p ν := by
-  refine tendsto_nhds_bot_mono hf (Eventually.of_forall fun M ↦ iSup_mono fun i ↦ ?_)
-  apply eLpNorm_mono_measure
-  exact (ν.restrict_mono_measure h _)
-
-protected theorem UnifLpTail.restrict (h : UnifLpTail f p μ) (s : Set α) :
-    UnifLpTail f p (μ.restrict s) :=
-  h.mono_measure μ.restrict_le_self
-
-theorem unifLpTail_top_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) :
+theorem unifLpTail_top_exponent_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) :
     UnifLpTail f ∞ μ ↔ ⨆ i, eLpNormEssSup (f i) μ < ∞ := by
   constructor <;> intro h
   · -- Direct implication: if `eLpNormEssSup (f i) (μ.restrict { x | M ≤ ‖f i x‖ₑ })` converges to
     -- `0`, then is smaller than `1` at some point. But then, `f i` is
     -- bounded by `1` on  `{ x | M ≤ ‖f i x‖ₑ }`, and by `M` on `{ x | M ≤ ‖f i x‖ₑ }ᶜ`.
-    obtain ⟨M, hM, hMf⟩ := (nhds_top_basis_Ici.tendsto_iff nhds_zero_basis_Iic).1 h 1 zero_lt_one
+    obtain ⟨M, hM, hMf⟩ :
+      ∃ M < ∞, ∀ c ∈ Ici M, ⨆ i, eLpNorm (f i) ∞ (μ.restrict { x | c ≤ ‖f i x‖ₑ }) ∈ Iic 1 :=
+        (nhds_top_basis_Ici.tendsto_iff nhds_zero_basis_Iic).1 h 1 zero_lt_one
     apply iSup_lt_iff.2 ⟨max M 1, by finiteness, fun i ↦ eLpNormEssSup_le_of_ae_enorm_bound ?_⟩
     simp only [mem_Ici, mem_Iic, iSup_le_iff] at hMf
     specialize hMf M le_rfl i
@@ -327,13 +342,25 @@ theorem unifLpTail_top_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) :
     filter_upwards [ae_le_eLpNormEssSup (f := f i)] with x hx hxm
     grind [le_iSup (fun j ↦ eLpNormEssSup (f j) μ) i]
 
-protected theorem UniformIntegrable.memLp (hf : UniformIntegrable f p μ) (i : ι) :
-    MemLp (f i) p μ :=
+namespace UniformIntegrable
+
+protected theorem memLp (hf : UniformIntegrable f p μ) (i : ι) : MemLp (f i) p μ :=
   (le_iSup _ i).trans_lt hf.bdd
 
-protected theorem UniformIntegrable.aestronglyMeasurable (hf : UniformIntegrable f p μ) (i : ι) :
+protected theorem aestronglyMeasurable (hf : UniformIntegrable f p μ) (i : ι) :
     AEStronglyMeasurable (f i) μ :=
   (hf.memLp i).aestronglyMeasurable
+
+protected theorem ae_eq (hf : UniformIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) :
+    UniformIntegrable g p μ :=
+  ⟨(unifIntegrable_congr_ae hfg).1 hf.unifIntegrable,
+    hf.bdd.trans_eq' (iSup_congr fun i ↦ eLpNorm_congr_ae (hfg i))⟩
+
+end UniformIntegrable
+
+theorem uniformIntegrable_congr_ae (hfg : ∀ i, f i =ᵐ[μ] g i) :
+    UniformIntegrable f p μ ↔ UniformIntegrable g p μ :=
+  ⟨fun h ↦ h.ae_eq hfg, fun h ↦ h.ae_eq fun i ↦ (hfg i).symm⟩
 
 @[simp]
 theorem uniformIntegrable_of_isEmpty [IsEmpty ι] : UniformIntegrable f p μ :=
@@ -342,15 +369,6 @@ theorem uniformIntegrable_of_isEmpty [IsEmpty ι] : UniformIntegrable f p μ :=
 @[simp]
 theorem uniformIntegrable_zero_meas [MeasurableSpace α] : UniformIntegrable f p (0 : Measure α) :=
   ⟨unifIntegrable_zero_meas, by simp⟩
-
-protected theorem UniformIntegrable.ae_eq (hf : UniformIntegrable f p μ)
-    (hfg : ∀ i, f i =ᵐ[μ] g i) : UniformIntegrable g p μ :=
-  ⟨(unifIntegrable_congr_ae hfg).1 hf.unifIntegrable,
-    hf.bdd.trans_eq' (iSup_congr fun i ↦ eLpNorm_congr_ae (hfg i))⟩
-
-theorem uniformIntegrable_congr_ae (hfg : ∀ i, f i =ᵐ[μ] g i) :
-    UniformIntegrable f p μ ↔ UniformIntegrable g p μ :=
-  ⟨fun h ↦ h.ae_eq hfg, fun h ↦ h.ae_eq fun i ↦ (hfg i).symm⟩
 
 end
 
@@ -365,8 +383,8 @@ theorem tendsto_indicator_ge (f : α → β) (x : α) :
   refine tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (‖f x‖₊ : ℝ) + 1) fun n hn => ?_
   rw [Set.indicator_of_notMem]
   simp only [not_le, Set.mem_ofPred_eq]
-  refine lt_of_le_of_lt (Nat.le_ceil _) ?_
-  refine lt_of_lt_of_le (lt_add_one _) ?_
+  refine (Nat.le_ceil _).trans_lt ?_
+  refine (lt_add_one _).trans_le ?_
   norm_cast
 
 section
@@ -391,7 +409,9 @@ theorem MemLp.integral_indicator_norm_ge_le (hf : MemLp f 1 μ) {ε : ℝ≥0∞
     refine tendsto_lintegral_norm_of_dominated_convergence hmeas hbound ?_ htendsto
     exact fun n => univ_mem' (id fun x ↦ norm_indicator_le_norm_self f x)
   rw [ENNReal.tendsto_atTop_zero] at this
-  obtain ⟨M, hM⟩ := this ε hε
+  obtain ⟨M, hM⟩ :
+    ∃ N : ℕ, ∀ n ≥ N, ∫⁻ a, ENNReal.ofReal ‖{ x | n ≤ ‖f x‖₊ }.indicator f a - 0‖ ∂μ ≤ ε :=
+      this ε hε
   simp only [sub_zero] at hM
   refine ⟨M, ?_⟩
   convert! hM M le_rfl
@@ -446,14 +466,17 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
       exact nullMeasurableSet_le aemeasurable_const hf.aestronglyMeasurable.nnnorm.aemeasurable
     exact ⟨1, (eLpNorm_exponent_zero hfi).trans_le bot_le⟩
   rcases eq_or_ne p ∞ with rfl | hp_ne_top
-  · obtain ⟨M, hM⟩ := hf.eLpNormEssSup_indicator_norm_ge_eq_zero
+  · have := hf.eLpNormEssSup_indicator_norm_ge_eq_zero
+    obtain ⟨M, hM⟩ : ∃ M : ℝ, eLpNormEssSup ({ x | M ≤ ‖f x‖₊ }.indicator f) μ = 0 :=
+      hf.eLpNormEssSup_indicator_norm_ge_eq_zero
     refine ⟨M, ?_⟩
     have hfi : AEStronglyMeasurable ({ x | M ≤ ‖f x‖₊ }.indicator f) μ := by
       refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
       exact hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_real
     simp only [eLpNorm_exponent_top hfi, hM, zero_le]
-  obtain ⟨M, hM', hM⟩ := MemLp.integral_indicator_norm_ge_nonneg_le
-    (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε toReal_nonneg)
+  obtain ⟨M, hM', hM⟩ : ∃ M : ℝ, 0 ≤ M ∧ ∫⁻ x, ‖{ y | M ≤ ‖‖f y‖ ^ p.toReal‖₊ }.indicator
+    (‖f ·‖ ^ p.toReal) x‖ₑ ∂μ ≤ ε ^ p.toReal := MemLp.integral_indicator_norm_ge_nonneg_le
+    (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε p.toReal_nonneg)
   refine ⟨M ^ (1 / p.toReal), ?_⟩
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top _, ← rpow_one ε]; swap
   · refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
@@ -479,7 +502,8 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
 /-- This lemma implies that a single function is uniformly integrable (in the probability sense). -/
 theorem MemLp.eLpNorm_indicator_norm_ge_pos_le (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ M : ℝ, 0 < M ∧ eLpNorm ({ x | M ≤ ‖f x‖₊ }.indicator f) p μ ≤ ε := by
-  obtain ⟨M, hM⟩ := hf.eLpNorm_indicator_norm_ge_le hε
+  obtain ⟨M, hM⟩ : ∃ M : ℝ, eLpNorm ({ x | M ≤ ‖f x‖₊ }.indicator f) p μ ≤ ε :=
+    hf.eLpNorm_indicator_norm_ge_le hε
   refine ⟨max M 1, by positivity, hM.trans' ?_⟩
   refine eLpNorm_mono ?_ (fun x ↦ ?_)
   · refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
@@ -522,8 +546,10 @@ variable {f : α → β}
 private theorem MemLp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ)
     {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ δ > 0, ∀ s, NullMeasurableSet s μ → μ s ≤ δ → eLpNorm (s.indicator f) p μ ≤ 2 * ε := by
-  obtain ⟨M, hMpos, hM⟩ := hf.eLpNorm_indicator_norm_ge_pos_le hε
-  obtain ⟨δ, hδpos, hδ⟩ := by
+  obtain ⟨M, hMpos, hM⟩ : ∃ M : ℝ, 0 < M ∧ eLpNorm ({ x | M ≤ ‖f x‖₊ }.indicator f) p μ ≤ ε :=
+    hf.eLpNorm_indicator_norm_ge_pos_le hε
+  obtain ⟨δ, hδpos, hδ⟩ : ∃ δ > 0, ∀ s : Set α, NullMeasurableSet s μ → μ s ≤ δ →
+    eLpNorm (s.indicator ({ x | ‖f x‖ < M }.indicator f)) p μ ≤ ε := by
     apply eLpNorm_indicator_le_of_bound (f := { x | ‖f x‖ < M }.indicator f) (μ := μ) (M := M)
       hp_top hε
     · apply hf.aestronglyMeasurable.indicator₀
@@ -549,7 +575,9 @@ private theorem MemLp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ �
 theorem MemLp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ) {ε : ℝ≥0∞}
     (hε : 0 < ε) :
     ∃ δ > 0, ∀ s, NullMeasurableSet s μ → μ s ≤ δ → eLpNorm (s.indicator f) p μ ≤ ε := by
-  obtain ⟨δ, hδpos, hδ⟩ := hf.eLpNorm_indicator_le' hp_one hp_top (ε.half_pos hε.ne')
+  obtain ⟨δ, hδpos, hδ⟩ : ∃ δ > 0, ∀ s : Set α, NullMeasurableSet s μ → μ s ≤ δ →
+    eLpNorm (s.indicator f) p μ ≤ 2 * (ε / 2) :=
+      hf.eLpNorm_indicator_le' hp_one hp_top (ε.half_pos hε.ne')
   refine ⟨δ, hδpos, fun s hs hμs ↦ (hδ s hs hμs).trans_eq ?_⟩
   exact ENNReal.mul_div_cancel two_ne_zero ofNat_ne_top
 
@@ -563,10 +591,12 @@ theorem MemLp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ �
 theorem MemLp.tendsto_eLpNorm_restrict_zero (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ) :
     Tendsto (fun ε ↦ ⨆ (s : Set α) (_ : μ s ≤ ε), eLpNorm f p (μ.restrict s)) (𝓝 0) (𝓝 0) := by
   refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ nhds_zero_basis.eventually_iff.2 ?_
-  obtain ⟨δ, hδ, hδf⟩ := hf.eLpNorm_indicator_le hp_one hp_top hε
+  obtain ⟨δ, hδ, hδf⟩ : ∃ δ > 0, ∀ s : Set α, NullMeasurableSet s μ → μ s ≤ δ →
+    eLpNorm (s.indicator f) p μ ≤ ε := hf.eLpNorm_indicator_le hp_one hp_top hε
   simp only [mem_Iio, iSup_le_iff]
   refine ⟨δ, hδ, fun γ hγ s hμs ↦ ?_⟩
-  obtain ⟨t, hst, ht, hμt⟩ := exists_measurable_superset μ s
+  obtain ⟨t, hst, ht, hμt⟩ : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s :=
+    exists_measurable_superset μ s
   grw [← hδf t ht.nullMeasurableSet ((hμt ▸ hμs).trans hγ.le),
     eLpNorm_indicator_eq_eLpNorm_restrict ht.nullMeasurableSet,
     eLpNorm_mono_measure f (μ.restrict_mono_set hst)]
@@ -817,7 +847,7 @@ lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter
   rw [← eLpNorm_indicator_eq_eLpNorm_restrict ht.nullMeasurableSet]
   apply eLpNorm_le_of_tendstoInMeasure _ (hs.indicator t) (fun n ↦ (hfn (s n)).indicator ht)
   apply Eventually.of_forall fun n ↦ ?_
-  rw [eLpNorm_indicator_eq_eLpNorm_restrict ht, Function.comp_apply]
+  rw [eLpNorm_indicator_eq_eLpNorm_restrict ht.nullMeasurableSet, Function.comp_apply]
   exact hδ' (s n) t ht'
 
 /-- If `fn` is `UnifIntegrable`, then the family of a.e. limits of sequences of `fn` is
@@ -898,10 +928,10 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
         simp_rw [nnnorm_indicator_eq_indicator_nnnorm]
         exact Set.indicator_le fun x (hx : _ < _) => hx.le
       refine add_le_add ?_ (ENNReal.ofReal_one ▸ hC i)
-      refine (eLpNorm_le_of_ae_bound ((hf i).indicator ((hf i).nnnorm.measurableSet_lt
-        stronglyMeasurable_const)).aestronglyMeasurable this).trans ?_
-      simp_rw [NNReal.val_eq_coe, ofReal_coe_nnreal, mul_comm]
-      exact le_rfl
+      refine (eLpNorm_le_of_ae_bound ?_ this).trans_eq ?_
+      · apply (hf i).indicator₀
+        exact nullMeasurableSet_lt (hf i).nnnorm.aemeasurable aemeasurable_const
+      · simp_rw [NNReal.val_eq_coe, ENNReal.ofReal_coe_nnreal, mul_comm]
 
 @[deprecated "This lemma is superseded by `uniformIntegrable_of` which only requires
 `AEStronglyMeasurable`." (since := "2026-09-14")]
@@ -916,13 +946,11 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
     {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε := by
   have hf := hfu.aestronglyMeasurable
-  obtain ⟨hfu, M, hM⟩ := hfu
-  obtain ⟨δ, hδpos, hδ⟩ := (unifIntegrable_iff.1 hfu) ε hε
+  obtain ⟨δ, hδpos, hδ⟩ := (unifIntegrable_iff.1 hfu.unifIntegrable) ε hε
   obtain ⟨C, hC⟩ : ∃ C : ℝ≥0, ∀ i, μ { x | C ≤ ‖f i x‖₊ } ≤ δ := by
     by_contra! hcon
     choose ℐ hℐ using hcon
-    have : ∀ C : ℝ≥0, (ofNNReal C) * δ ^ (1 / p.toReal) ≤ eLpNorm (f (ℐ C)) p μ := by
-      intro C
+    have (C : ℝ≥0) : C * δ ^ (1 / p.toReal) ≤ eLpNorm (f (ℐ C)) p μ := by
       calc
         C • δ ^ (1 / p.toReal) ≤ C • μ { x | C ≤ ‖f (ℐ C) x‖₊ } ^ (1 / p.toReal) := by
           gcongr
@@ -932,16 +960,15 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
           rwa [nnnorm_indicator_eq_indicator_nnnorm, indicator_of_mem hx]
         _ ≤ eLpNorm (f (ℐ C)) p μ := eLpNorm_indicator_le _
             (nullMeasurableSet_le aemeasurable_const (hf _).nnnorm.aemeasurable)
-    specialize this (2 * max M 1 * δ⁻¹ ^ (1 / p.toReal)).toNNReal
-    replace this := this.trans (hM _)
-    rw [toNNReal_mul, toNNReal_mul, coe_mul, coe_mul, toNNReal_coe (max M 1),
-      coe_toNNReal ofNat_ne_top, coe_toNNReal _] at this; swap
-    · exact rpow_ne_top_of_nonneg (by positivity) (by finiteness)
-    rw [mul_assoc, ← mul_rpow_of_nonneg δ⁻¹ δ (by positivity),
-      ENNReal.inv_mul_cancel hδpos.ne' (ne_top_of_lt (hℐ 0)), one_rpow, mul_one,
-      ← coe_two, ← coe_mul, coe_le_coe, two_mul] at this
-    replace this := (add_le_add (le_max_left M 1) (le_max_right M 1)).trans this
-    exact not_lt_of_ge this (lt_add_one M)
+    specialize this (2 * max (⨆ i, eLpNorm (f i) p μ) 1 * δ⁻¹ ^ (1 / p.toReal)).toNNReal
+    replace this := this.trans (le_iSup (fun i ↦ eLpNorm (f i) p μ) _)
+    rw [toNNReal_mul, toNNReal_mul, coe_mul, coe_mul, coe_toNNReal ofNat_ne_top,
+      coe_toNNReal (by simp [hfu.bdd.ne]),
+      coe_toNNReal (rpow_ne_top_of_nonneg (by positivity) (by finiteness)), mul_assoc,
+      ← mul_rpow_of_nonneg δ⁻¹ δ (by positivity),
+      ENNReal.inv_mul_cancel hδpos.ne' (ne_top_of_lt (hℐ 0)), one_rpow, mul_one, two_mul] at this
+    replace this := (add_le_add (le_max_left _ 1) (le_max_right _ 1)).trans this
+    exact not_lt_of_ge this (lt_add_right hfu.bdd.ne one_ne_zero)
   refine ⟨C, fun i ↦ (hδ i { x | C ≤ ‖f i x‖₊ } (hC i)).trans_eq' ?_⟩
   apply (eLpNorm_indicator_eq_eLpNorm_restrict _).symm
   exact (nullMeasurableSet_le aemeasurable_const (hf i).nnnorm.aemeasurable)
