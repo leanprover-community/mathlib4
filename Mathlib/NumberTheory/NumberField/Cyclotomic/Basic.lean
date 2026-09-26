@@ -128,16 +128,13 @@ theorem isIntegralClosure_adjoin_singleton_of_prime [hcycl : IsCyclotomicExtensi
   rw [← pow_one p] at hζ hcycl
   exact isIntegralClosure_adjoin_singleton_of_prime_pow hζ
 
-attribute [local instance high] CyclotomicField.instAlgebra in
 /-- The integral closure of `ℤ` inside `CyclotomicField (p ^ k) ℚ` is
 `CyclotomicRing (p ^ k) ℤ ℚ`. -/
 theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
     IsIntegralClosure (CyclotomicRing (p ^ k) ℤ ℚ) ℤ (CyclotomicField (p ^ k) ℚ) := by
   have hζ := zeta_spec (p ^ k) ℚ (CyclotomicField (p ^ k) ℚ)
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
-  · obtain ⟨y, rfl⟩ := isIntegralClosure_adjoin_singleton_of_prime_pow (hcycl :=
-      CyclotomicField.instIsCyclotomicExtensionSingletonNatSetOfCharZero (p ^ k) ℚ)
-      hζ |>.isIntegral_iff.1 h
+  · obtain ⟨y, rfl⟩ := isIntegralClosure_adjoin_singleton_of_prime_pow hζ |>.isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
     simp only [Set.singleton_subset_iff, Set.mem_ofPred_eq]
     exact hζ.pow_eq_one
