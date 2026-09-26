@@ -563,7 +563,7 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
   · use x, hx
     simp
   · replace hpq : 0 < p + q :=
-      (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff_of_nonneg hp hq).1 hpq)
+      (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff_of_nonneg_left hp hq).1 hpq)
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
     match_scalars <;> field
 
