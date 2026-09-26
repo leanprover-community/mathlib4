@@ -571,7 +571,9 @@ def renameBinderNames (data : GuessName.GuessNameData) (rename : NameMap Name)
     (src : Expr) : Expr :=
   src.mapForallBinderNames fun n => (rename.get? n).getD <|
     match n with
-    | .str p s => .str p <|
+    | .str p s =>
+      -- Only translate binder names starting with a letter from the alphabet, so not `ι` or `π`.
+      if !s.head.isAlpha then n else .str p <|
       let s' := GuessName.guessName data s
       if s' != s then s' else
       -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.

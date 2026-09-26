@@ -182,7 +182,7 @@ def limit (F : J ⥤ C) [HasLimit F] :=
   (limit.cone F).pt
 
 /-- The projection from the limit object to a value of the functor. -/
-@[to_dual (attr := implicit_reducible) ι
+@[to_dual (attr := implicit_reducible)
 /-- The coprojection from a value of the functor to the colimit object. -/]
 def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
@@ -202,7 +202,7 @@ theorem colimit.eqToHom_comp_ι (F : J ⥤ C) [HasColimit F] {j j' : J} (hj : j 
 theorem limit.cone_x {F : J ⥤ C} [HasLimit F] : (limit.cone F).pt = limit F :=
   rfl
 
-@[to_dual (attr := simp) cocone_ι]
+@[to_dual (attr := simp)]
 theorem limit.cone_π {F : J ⥤ C} [HasLimit F] : (limit.cone F).π.app = limit.π _ :=
   rfl
 
@@ -557,7 +557,7 @@ def lim : (J ⥤ C) ⥤ C where
   map α := limMap α
 
 /-- The natural transformation induced by `limit.π`. -/
-@[to_dual (attr := simps) ι /-- The natural transformation induced by `colimit.ι`. -/]
+@[to_dual (attr := simps) /-- The natural transformation induced by `colimit.ι`. -/]
 def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
   app F := limit.π F j
 
