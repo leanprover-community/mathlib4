@@ -4789,6 +4789,7 @@ public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Geometry.Euclidean.Triangle
 public import Mathlib.Geometry.Euclidean.Volume.Basic
 public import Mathlib.Geometry.Euclidean.Volume.Def
+public import Mathlib.Geometry.Euclidean.Volume.Incenter
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
