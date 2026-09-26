@@ -127,7 +127,21 @@ lemma hom_ext {R R' : Φ.RightResolution X₂} {φ₁ φ₂ : R ⟶ R'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+/-- The external product of two right resolutions, as a right resolution
+for the external product of two localizer morphisms. -/
+@[simps, implicit_reducible]
+def prod {Φ' : LocalizerMorphism W₁' W₂'} {X₂' : D₂}
+    (R : Φ.RightResolution X₂) (R' : Φ'.RightResolution X₂') :
+    (Φ.prod Φ').RightResolution (X₂, X₂') where
+  X₁ := ⟨R.X₁, R'.X₁⟩
+  w := ⟨R.w, R'.w⟩
+  hw := ⟨R.hw, R'.hw⟩
+
 end RightResolution
+
+instance (Φ' : LocalizerMorphism W₁' W₂') [Φ.HasRightResolutions] [Φ'.HasRightResolutions] :
+    (Φ.prod Φ').HasRightResolutions :=
+  fun _ ↦ ⟨RightResolution.prod (Classical.arbitrary _) (Classical.arbitrary _)⟩
 
 namespace LeftResolution
 
@@ -171,7 +185,21 @@ lemma hom_ext {L L' : Φ.LeftResolution X₂} {φ₁ φ₂ : L ⟶ L'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+/-- The external product of two left resolutions, as a left resolution
+for the external product of two localizer morphisms. -/
+@[simps, implicit_reducible]
+def prod {Φ' : LocalizerMorphism W₁' W₂'} {X₂' : D₂}
+    (R : Φ.LeftResolution X₂) (R' : Φ'.LeftResolution X₂') :
+    (Φ.prod Φ').LeftResolution (X₂, X₂') where
+  X₁ := ⟨R.X₁, R'.X₁⟩
+  w := ⟨R.w, R'.w⟩
+  hw := ⟨R.hw, R'.hw⟩
+
 end LeftResolution
+
+instance (Φ' : LocalizerMorphism W₁' W₂') [Φ.HasLeftResolutions] [Φ'.HasLeftResolutions] :
+    (Φ.prod Φ').HasLeftResolutions :=
+  fun _ ↦ ⟨LeftResolution.prod (Classical.arbitrary _) (Classical.arbitrary _)⟩
 
 variable {Φ}
 
