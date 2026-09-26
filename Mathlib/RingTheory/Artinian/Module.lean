@@ -73,7 +73,7 @@ theorem LinearMap.isArtinian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid 
 
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
     IsArtinian R M :=
-  Subrelation.wf (fun hAB ↦ Submodule.map_strictMono_of_injective h hAB) inferInstance
+  wellFounded_lt.onFun.anti fun _ _ hAB ↦ Submodule.map_strictMono_of_injective h hAB
 
 instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
   isArtinian_of_injective N.subtype Subtype.val_injective
@@ -84,7 +84,7 @@ theorem isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : 
 variable (M) in
 theorem isArtinian_of_surjective (f : M →ₗ[R] P) (h : Function.Surjective f) [IsArtinian R M] :
     IsArtinian R P :=
-  Subrelation.wf (fun hAB ↦ Submodule.comap_strictMono_of_surjective h hAB) inferInstance
+  wellFounded_lt.onFun.anti fun _ _ hAB ↦ Submodule.comap_strictMono_of_surjective h hAB
 
 /--
 If `M` is an Artinian `R` module, and `S` is an `R`-algebra with a surjective
