@@ -124,12 +124,11 @@ theorem asAlgebraHom_def : asAlgebraHom ρ = lift k _ G ρ := rfl
 @[simp]
 theorem asAlgebraHom_single (g : G) (r : k) :
     asAlgebraHom ρ (MonoidAlgebra.single g r) = r • ρ g := by
-  simp only [asAlgebraHom_def, MonoidAlgebra.lift_single]
+  simp [asAlgebraHom_def]
 
 theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (MonoidAlgebra.single g 1) = ρ g := by simp
 
-theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by
-  simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul]
+theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by simp
 
 section
 
@@ -164,21 +163,43 @@ end
 noncomputable instance : Module k[G] ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 
+instance : IsScalarTower k k[G] ρ.asModule where
+  smul_assoc x y := DFunLike.congr_fun (map_smul ρ.asAlgebraHom x y)
+
 @[simp]
-theorem asModuleEquiv_map_smul (r : k[G]) (x : ρ.asModule) :
+theorem asModuleEquiv_apply_smul (r : k[G]) (x : ρ.asModule) :
     ρ.asModuleEquiv (r • x) = ρ.asAlgebraHom r (ρ.asModuleEquiv x) :=
   rfl
 
+@[deprecated (since := "2026-09-20")]
+alias asModuleEquiv_map_smul := asModuleEquiv_apply_smul
+
+@[deprecated map_smul +typeChanged (since := "2026-09-20")]
 theorem asModuleEquiv_symm_map_smul (r : k) (x : V) :
     ρ.asModuleEquiv.symm (r • x) = algebraMap k k[G] r • ρ.asModuleEquiv.symm x := by
+  rw [algebraMap_smul, map_smul]
+
+theorem asModuleEquiv_symm_apply_apply (g : G) (x : V) :
+    ρ.asModuleEquiv.symm (ρ g x) = MonoidAlgebra.single g (1 : k) • ρ.asModuleEquiv.symm x := by
   rw [LinearEquiv.symm_apply_eq]
   simp
 
-@[simp]
-theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
-    ρ.asModuleEquiv.symm (ρ g x) = MonoidAlgebra.of k G g • ρ.asModuleEquiv.symm x := by
-  rw [LinearEquiv.symm_apply_eq]
+@[deprecated (since := "2026-09-20")]
+alias asModuleEquiv_symm_map_rho := asModuleEquiv_symm_apply_apply
+
+lemma asModuleEquiv_apply_single_smul (t : k) (g : G) (v : ρ.asModule) :
+    ρ.asModuleEquiv (single g t • v) = t • ρ g (ρ.asModuleEquiv v) := by
   simp
+
+@[simp]
+lemma single_smul_asModuleEquiv_symm_apply (t : k) (g : G) (v : V) :
+    single g t • ρ.asModuleEquiv.symm v = t • ρ.asModuleEquiv.symm (ρ g v) := by
+  rw [← map_smul ρ.asModuleEquiv.symm, ρ.asModuleEquiv.eq_symm_apply,
+    asModuleEquiv_apply_single_smul, LinearEquiv.apply_symm_apply]
+
+theorem single_smul (t : k) (g : G) (v : ρ.asModule) :
+    single g t • v = t • ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv v)) :=
+  ρ.single_smul_asModuleEquiv_symm_apply t g (ρ.asModuleEquiv v)
 
 /-- Build a `Representation k G M` from a `[Module k[G] M]`.
 
@@ -244,7 +265,7 @@ theorem ofModule_asModule_act (g : G) (x : RestrictScalars k k[G] ρ.asModule) :
       (RestrictScalars.addEquiv _ _ _).symm
         (ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv (RestrictScalars.addEquiv _ _ _ x)))) := by
   dsimp [ofModule, RestrictScalars.lsmul_apply_apply]
-  simp
+  simp [single_smul]
 
 theorem smul_ofModule_asModule (r : k[G]) (m : (ofModule M).asModule) :
     (RestrictScalars.addEquiv k _ _) ((ofModule M).asModuleEquiv (r • m)) =
@@ -253,24 +274,6 @@ theorem smul_ofModule_asModule (r : k[G]) (m : (ofModule M).asModule) :
   simp only [AddEquiv.apply_symm_apply, ofModule_asAlgebraHom_apply_apply]
 
 end
-
-@[simp]
-lemma single_smul (t : k) (g : G) (v : ρ.asModule) :
-    MonoidAlgebra.single (g : G) t • v = t • ρ g (ρ.asModuleEquiv v) := by
-  rw [← LinearMap.smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
-instance : IsScalarTower k k[G] ρ.asModule where
-  smul_assoc t x v := by
-    revert t
-    apply x.induction_on
-    · simp
-    · intro y z hy hz
-      simp [add_smul, hy, hz]
-    · intro s y hy t
-      rw [← smul_assoc, smul_eq_mul, hy (t * s), ← smul_eq_mul, smul_assoc]
-      aesop
 
 end MonoidAlgebra
 
@@ -733,7 +736,7 @@ noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (fre
   toAddEquiv := (asModuleEquiv _).symm.toAddEquiv
   map_smul' x y := by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply,
-      (free k G α).asModuleEquiv.symm_apply_eq, asModuleEquiv_map_smul,
+      (free k G α).asModuleEquiv.symm_apply_eq, asModuleEquiv_apply_smul,
       LinearEquiv.apply_symm_apply]
     induction x using MonoidAlgebra.induction_linear with
     | zero => simp
