@@ -107,10 +107,9 @@ lemma IndV.mk_map_inv_eq (g : G) (a : A) : IndV.mk φ ρ (φ g)⁻¹ a = IndV.mk
 noncomputable def IndV.lift (f : H → A →ₗ[k] B)
     (hf : ∀ (g : G) (h : H) (a : A), f (φ g * h) a = f h (ρ g⁻¹ a)) :
     IndV φ ρ →ₗ[k] B :=
-  Coinvariants.lift _ (TensorProduct.lift <| (Finsupp.lift _ _ _ fun h => f h) ∘ₗ
-    (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) fun g =>
-      TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
-        LinearMap.ext_ring <| LinearMap.ext fun a => by simp [hf]
+  Coinvariants.lift _ (TensorProduct.lift <| (Finsupp.lift _ _ _ f) ∘ₗ
+    (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) fun _ => TensorProduct.ext <|
+      MonoidAlgebra.lhom_ext' fun _ => LinearMap.ext_ring <| LinearMap.ext (by simp [hf])
 
 @[simp]
 lemma IndV.lift_apply_mk (f : H → A →ₗ[k] B) (h : H) (a : A)
@@ -169,8 +168,9 @@ lemma ind.hom_ext {f g : (ind φ ρ).IntertwiningMap σ}
   ext h a
   simpa [← IntertwiningMap.isIntertwining] using congrArg (fun f => σ h⁻¹ (f a)) hfg
 
-/-- The universal property of induction, without bundled representation objects. -/
-noncomputable def indResHomEquiv (ρ : Representation k G A) (σ : Representation k H B) :
+/-- The universal property of induced representations. -/
+@[simps]
+noncomputable def indResHomEquiv :
     (ind φ ρ).IntertwiningMap σ ≃ₗ[k] ρ.IntertwiningMap (σ.comp φ) where
   toFun := ind.evalOne φ
   invFun := ind.lift φ
@@ -179,16 +179,8 @@ noncomputable def indResHomEquiv (ρ : Representation k G A) (σ : Representatio
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[simp]
-lemma indResHomEquiv_apply (f : (ind φ ρ).IntertwiningMap σ) (a : A) :
-    indResHomEquiv φ ρ σ f a = f (IndV.mk φ ρ 1 a) := rfl
-
-@[simp]
-lemma indResHomEquiv_symm_apply_mk (f : ρ.IntertwiningMap (σ.comp φ)) (h : H) (a : A) :
-    (indResHomEquiv φ ρ σ).symm f (IndV.mk φ ρ h a) = σ h⁻¹ (f a) :=
-  ind.lift_apply_mk φ f h a
-
-/-- indMap -/
+/-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
+  natural intertwining map `ind φ σ ⟶ ind φ ρ` given by composition by `f`. -/
 noncomputable def indMap (f : IntertwiningMap ρ τ) : (ind φ ρ).IntertwiningMap (ind φ τ) :=
   ind.lift φ ((ind.unit φ τ).comp f)
 
@@ -201,10 +193,10 @@ variable (ρ : Representation k G A) (σ : Representation k H B)
 /-- Move an induced generator across a tensor of coinvariants. -/
 noncomputable def coinvariantsTensorIndHom :
     Coinvariants ((ind φ ρ).tprod σ) →ₗ[k] Coinvariants (ρ.tprod (σ.comp φ)) :=
-  Coinvariants.lift ((ind φ ρ).tprod σ) (TensorProduct.lift <| IndV.lift φ ρ
-      (fun h => ((TensorProduct.mk k A B).compl₂ (σ h)).compr₂
-        (Coinvariants.mk (ρ.tprod (σ.comp φ)))) (fun g h a => by ext; simp))
-    (fun _ => by ext; simp)
+  Coinvariants.lift ((ind φ ρ).tprod σ) (TensorProduct.lift <| IndV.lift φ ρ (fun h =>
+      ((TensorProduct.mk k A B).compl₂ (σ h)).compr₂ (Coinvariants.mk (ρ.tprod (σ.comp φ))))
+      fun g h a => by ext; simp)
+    fun _ => by ext; simp
 
 @[simp]
 lemma coinvariantsTensorIndHom_apply_mk (h : H) (x : A) (y : B) :
@@ -233,8 +225,8 @@ lemma coinvariantsTensorIndHom_inv (x : Coinvariants (ρ.tprod (σ.comp φ))) :
 @[simp]
 lemma coinvariantsTensorIndInv_hom (x : Coinvariants ((ind φ ρ).tprod σ)) :
     coinvariantsTensorIndInv φ ρ σ (coinvariantsTensorIndHom φ ρ σ x) = x :=
-  LinearMap.congr_fun (show (ρ.coinvariantsTensorIndInv φ σ ∘ₗ coinvariantsTensorIndHom φ ρ σ
-    = LinearMap.id) by ext; simp [← Coinvariants.mk_inv_tmul]) x
+  LinearMap.congr_fun (show (ρ.coinvariantsTensorIndInv φ σ ∘ₗ _ = LinearMap.id) by
+    ext; simp [← Coinvariants.mk_inv_tmul]) x
 
 /-- Move induction across tensor coinvariants by restriction, sending `⟦h ⊗ a⟧ ⊗ b` to
 `⟦a ⊗ σ(h)b⟧`. The inverse sends `⟦a ⊗ b⟧` to `⟦1 ⊗ a⟧ ⊗ b`. -/
@@ -273,7 +265,7 @@ noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
 obtained by bundling `Representation.indResHomEquiv`. -/
 noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) :=
-  (homLinearEquiv _ B).trans <| (A.ρ.indResHomEquiv φ B.ρ).trans (homLinearEquiv A (res φ B)).symm
+  (homLinearEquiv _ B).trans <| (A.ρ.indResHomEquiv φ).trans (homLinearEquiv A (res φ B)).symm
 
 @[simp]
 lemma indResHomEquiv_apply_hom (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H)
@@ -325,7 +317,6 @@ noncomputable abbrev coinvariantsTensorIndIso :
 @[simps (rhsMd := .default) hom_app inv_app]
 noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=
-  -- Naturality of the inverse is a computation on pure tensors.
   (NatIso.ofComponents (fun B => (coinvariantsTensorIndIso φ A B).symm) fun {X Y} f => by
     dsimp only [Functor.comp_obj]; ext; rfl).symm
 
