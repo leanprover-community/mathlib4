@@ -43,6 +43,8 @@ public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.MinImports
 -- This import makes the binder plicity code action available globally
 public import Mathlib.Util.CodeActions
+-- This import makes the custom syntax used in Mathlib's Verso docstrings available globally.
+public import Mathlib.Util.VersoRoles
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
