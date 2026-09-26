@@ -226,12 +226,13 @@ lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
     fun h' ↦ isClique_sup_edge_of_ne_sdiff h h'.1 h'.2⟩
 
 /-- The vertices in a copy of `⊤` are a clique. -/
-theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
-    G.IsClique (Set.range f) := by
+theorem isClique_range_of_top_hom (f : (⊤ : SimpleGraph β) →g G) : G.IsClique (Set.range f) := by
   intro _ ⟨_, h⟩ _ ⟨_, h'⟩ nh
-  rw [← h, ← Copy.topEmbedding_apply, ← h', ← Copy.topEmbedding_apply] at nh ⊢
+  rw [← h, ← h', ← f.coe_topEmbedding] at nh ⊢
   rwa [← f.topEmbedding.coe_toEmbedding, (f.topEmbedding.apply_eq_iff_eq _ _).ne,
     ← top_adj, ← f.topEmbedding.map_adj_iff] at nh
+
+@[deprecated (since := "2026-09-14")] alias isClique_range_copy_top := isClique_range_of_top_hom
 
 end Clique
 
@@ -357,10 +358,12 @@ lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset
   card_eq  := by rw [card_erase_of_mem hx, hc.2]
 
 /-- The vertices in a copy of `⊤ : SimpleGraph β` are a `card β`-clique. -/
-theorem isNClique_map_copy_top [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) :
-    G.IsNClique (card β) (univ.map f.toEmbedding) := by
+theorem isNClique_map_of_top_hom [Fintype β] (f : (⊤ : SimpleGraph β) →g G) :
+    G.IsNClique (card β) (univ.map ⟨f, f.injective_of_top_hom⟩) := by
   rw [isNClique_iff, card_map, card_univ, coe_map, coe_univ, Set.image_univ]
-  exact ⟨isClique_range_copy_top f, rfl⟩
+  exact ⟨isClique_range_of_top_hom f, rfl⟩
+
+@[deprecated (since := "2026-09-14")] alias isNClique_map_copy_top := isNClique_map_of_top_hom
 
 theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
     (G.induce s).IsNClique n t ↔ G.IsNClique n (t.map (.subtype _)) := by
@@ -385,7 +388,7 @@ theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG
 
 theorem IsContained.not_cliqueFree {n : ℕ} (h : completeGraph (Fin n) ⊑ G) : ¬G.CliqueFree n := by
-  have := isNClique_map_copy_top h.some
+  have := isNClique_map_of_top_hom h.some.toHom
   rw [Fintype.card_fin] at this
   exact (· _ this)
 
@@ -475,7 +478,7 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   rw [cliqueFree_iff_free_top_fin]
   intro ⟨f⟩
   obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
-  rw [← top_adj, ← f.topEmbedding.map_adj_iff, comap_adj, top_adj] at hn
+  rw [← top_adj, ← f.toHom.topEmbedding.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
 
 namespace completeMultipartiteGraph

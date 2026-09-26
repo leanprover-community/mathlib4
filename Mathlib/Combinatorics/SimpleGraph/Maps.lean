@@ -397,6 +397,15 @@ theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Inje
   contrapose! h
   exact G'.ne_of_adj (map_adj _ ((top_adj _ _).mpr h))
 
+theorem eq_bot (f : G →g (⊥ : SimpleGraph W)) : G = ⊥ :=
+  eq_bot_iff_forall_not_adj.mpr fun _ _ ↦ f.map_adj
+
+theorem eq_top_of_surjective {f : (⊤ : SimpleGraph W) →g G} (h : Surjective f) : G = ⊤ := by
+  refine eq_top_iff_forall_ne_adj.mpr fun u v hne ↦ ?_
+  rcases h u with ⟨u, rfl⟩
+  rcases h v with ⟨v, rfl⟩
+  exact f.map_adj <| mt (congrArg f) hne
+
 /-- A function `f` that is injective on adjacent vertices in a graph `G`
 (equivalently `f` is a valid `W`-coloring of `G`, or `G ≤ comap ⊤ f`)
 is a homomorphism from `G` to the mapped graph. -/
@@ -500,6 +509,33 @@ noncomputable def isoInduceRange : G ≃g G'.induce (Set.range f) where
   __ := Equiv.ofInjective f f.injective
   map_rel_iff' := by simp
 
+theorem eq_bot_of_surjective {f : (⊥ : SimpleGraph W) ↪g G} (h : Surjective f) : G = ⊥ := by
+  refine eq_bot_iff_forall_not_adj.mpr fun u v ↦ ?_
+  rcases h u with ⟨u, rfl⟩
+  rcases h v with ⟨v, rfl⟩
+  exact f.map_rel_iff.mp
+
+theorem eq_top (f : G ↪g (⊤ : SimpleGraph W)) : G = ⊤ :=
+  eq_top_iff_forall_ne_adj.mpr fun _ _ hne ↦ f.map_rel_iff.mp <| f.injective.ne hne
+
+/-- A homomorphism from `⊤` gives rise to an embedding of `⊤`. -/
+@[simps toEmbedding]
+def _root_.SimpleGraph.Hom.topEmbedding (f : (⊤ : SimpleGraph W) →g G) :
+    (⊤ : SimpleGraph W) ↪g G where
+  __ := f
+  inj' _ _ hadj := by_contra (f.map_adj · |>.ne hadj)
+  map_rel_iff' := ⟨(mt (congrArg f) ·.ne), f.map_adj⟩
+
+@[simp]
+theorem _root_.SimpleGraph.Hom.coe_topEmbedding (f : (⊤ : SimpleGraph W) →g G) :
+    ⇑f.topEmbedding = f :=
+  rfl
+
+@[simp]
+theorem _root_.SimpleGraph.Hom.toHom_topEmbedding (f : (⊤ : SimpleGraph W) →g G) :
+    f.topEmbedding.toHom = f :=
+  rfl
+
 /-- Given an injective function, there is an embedding from the comapped graph into the original
 graph. -/
 -- Porting note: `@[simps]` does not work here since `f` is not a constructor application.
@@ -539,11 +575,22 @@ protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanning
   .map (.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
+@[simps toEmbedding]
 protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β where
   __ := f
   map_rel_iff' := by simp
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
+
+/-- Embeddings of types induce embeddings of empty graphs on those types. -/
+@[simps toEmbedding]
+protected def emptyGraph {α β : Type*} (f : α ↪ β) : emptyGraph α ↪g emptyGraph β where
+  __ := f
+  map_rel_iff' := by simp
+
+@[simp]
+theorem coe_emptyGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.emptyGraph f) = f :=
+  rfl
 
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
@@ -727,12 +774,33 @@ lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
     (Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β where
+@[simps toEquiv]
+protected def completeGraph (f : V ≃ W) : completeGraph V ≃g completeGraph W where
   __ := f
   map_rel_iff' := by simp
 
-theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
+@[simp]
+theorem coe_completeGraph (f : V ≃ W) : ⇑(Iso.completeGraph f) = f :=
+  rfl
+
+@[simp]
+theorem toEmbedding_completeGraph (f : V ≃ W) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
+  rfl
+
+/-- Equivalences of types induce isomorphisms of empty graphs on those types. -/
+@[simps toEquiv]
+protected def emptyGraph (f : V ≃ W) : emptyGraph V ≃g emptyGraph W where
+  __ := f
+  map_rel_iff' := by simp
+
+@[simp]
+theorem coe_emptyGraph (f : V ≃ W) : ⇑(Iso.emptyGraph f) = f :=
+  rfl
+
+@[simp]
+theorem toEmbedding_emptyGraph (f : V ≃ W) :
+    (Iso.emptyGraph f).toEmbedding = Embedding.emptyGraph f.toEmbedding :=
   rfl
 
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
