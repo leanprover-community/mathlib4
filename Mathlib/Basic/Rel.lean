@@ -588,16 +588,8 @@ theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = SetRel.in
 
 lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
     (∃! f, Function.graph f = R) ↔ ∀ a, ∃! b, a ~[R] b := by
-  constructor
-  · rintro ⟨f, rfl, _⟩ x
-    simp
-  intro h
-  choose f hf using fun x ↦ (h x).exists
-  refine ⟨f, ?_, by grind⟩
-  ext ⟨a, b⟩
-  constructor
-  · grind
-  · exact (h _).unique (hf _)
+  rw [Function.graph_injective.existsUnique_iff_exists, forall_existsUnique_iff]
+  simp only [Set.ext_iff, Prod.forall, Function.mem_graph, iff_comm]
 
 namespace Set
 

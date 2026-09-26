@@ -49,14 +49,9 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b : G} (ha : a ≠ 1) :
     b ∈ closure {a} ↔ ∃! k : ℤ, a ^ k = b := by
   rw [mem_closure_singleton]
-  constructor
-  · suffices Function.Injective (a ^ · : ℤ → G) by
-      rintro ⟨m, rfl⟩
-      exact ⟨m, rfl, fun k hk ↦ this hk⟩
-    rcases ha.lt_or_gt with ha | ha
-    · exact (zpow_right_strictAnti ha).injective
-    · exact (zpow_right_strictMono ha).injective
-  · exact fun h ↦ h.exists
+  rcases ha.lt_or_gt with ha | ha
+  · exact (zpow_right_strictAnti ha).injective.existsUnique_iff_exists.symm
+  · exact (zpow_right_strictMono ha).injective.existsUnique_iff_exists.symm
 
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
   suffices e 1 = 1 ∨ -e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
