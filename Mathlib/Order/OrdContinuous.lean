@@ -142,6 +142,15 @@ theorem map_iSup (hf : LeftOrdContinuous f) [Nonempty ι] (g : ι → α) :
   simp only [iSup, hf.map_sSup' (range_nonempty g), ← range_comp]
   rfl
 
+@[to_dual]
+lemma gc_sSup_preimage_Iic (hf : LeftOrdContinuous f) (hbot : f ⊥ = ⊥) :
+    GaloisConnection f (fun b ↦ sSup (f ⁻¹' Iic b)) := fun _a b ↦ by
+  refine ⟨fun h ↦ le_sSup h, fun h ↦ ?_⟩
+  rcases (f ⁻¹' Iic b).eq_empty_or_nonempty with hb | hb
+  · simp_all
+  · grw [hf.mono h, hf.map_sSup' hb]
+    exact sSup_le fun _ ⟨_c, hc, heq⟩ ↦ heq ▸ hc
+
 end CompleteLattice
 
 section ConditionallyCompleteLattice
