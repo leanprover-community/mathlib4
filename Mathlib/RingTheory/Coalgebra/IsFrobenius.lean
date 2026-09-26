@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
 This file defines `Coalgebra.IsFrobenius` and shows some elementary results.
 
-A coalgebra with an algebra structure is said to be Frobenius when the Frobenius equation
+A coalgebra with an algebra structure is said to be **Frobenius** when the Frobenius equation
 is satisfied:
 `(id ⊗ mul') ∘ assoc ∘ (comul ⊗ id) = (mul' ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 which in diagrams looks like
@@ -55,8 +55,8 @@ In texts, this is what the Frobenius equations are usually referred to as.
 * `Coalgebra.IsFrobenius.instFinite`: a coalgebra satisfying the Frobenius equations is finite
 * `Coalgebra.IsFrobenius.instProjective`: a coalgebra satisfying the Frobenius equations is
   projective
-* `Bialgebra.nonempty_algEquiv_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the Frobenius
-  equations, `R` is isomorphic to `A`
+* `Bialgebra.algebraOfId_bijective_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the
+  Frobenius equations, `R` is isomorphic to `A`
 
 ## TODO
 
