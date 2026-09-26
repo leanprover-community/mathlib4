@@ -516,6 +516,81 @@ jobs:
       #   run: |
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
+      # Decide what `lint mathlib` covers. On pull requests, local linters (`Linter.isLocal`: only a
+      # declaration's own module can make them report it) run on just the modules the PR changes;
+      # the others, such as `simpNF`, still run on everything. The merge
+      # queue (bors `staging`/`trying`), `master`, the nightly-testing repository, and any branch
+      # without an open PR lint everything, as do PRs labelled `full-lint` and PRs that change
+      # linters, pins or the nolints file. This step only reads the PR's file list and file
+      # contents; it runs none of the PR's code. It communicates with the lint step through
+      # `pr-branch/.lake/lint-modules.txt`, because that step runs under landrun, which does not
+      # pass environment variables through.
+      - name: decide lint scope
+        if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
+        id: lint_scope
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ inputs.pr_branch_ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          list=pr-branch/.lake/lint-modules.txt
+          rm -f "$list"
+          full() { echo "Linting all of Mathlib: $1"; echo "scope=full" >> "$GITHUB_OUTPUT"; exit 0; }
+          [ "$REPO" = leanprover-community/mathlib4 ] || full "not the main repository"
+          if [ -z "$EVENT_PR" ]; then
+            case "$REF_NAME" in master|staging|trying) full "$REF_NAME" ;; esac
+            [ "$EVENT_NAME" = push ] || full "not a push or pull request"
+            # Branch names are data: compare them inside jq via $ENV, never splice them into the program.
+            # shellcheck disable=SC2016 # the jq program is single-quoted on purpose
+            EVENT_PR=$(gh api "repos/$REPO/commits/$HEAD_SHA/pulls" \
+              --jq '[.[] | select(.state == "open" and .head.ref == $ENV.REF_NAME
+                and .head.repo.full_name == $ENV.REPO and .head.sha == $ENV.HEAD_SHA)][0].number // empty')
+            [ -n "$EVENT_PR" ] || full "no open pull request for $REF_NAME"
+          fi
+          # The file list below describes the PR's current head; if that moved since this run's
+          # checkout (a force-push while queued, or a rerun of an old run), lint everything.
+          pr_head=$(gh api "repos/$REPO/pulls/$EVENT_PR" --jq .head.sha)
+          [ "$pr_head" = "$HEAD_SHA" ] || full "#$EVENT_PR's head moved to $pr_head since this run's checkout"
+          labels=$(gh api --paginate "repos/$REPO/issues/$EVENT_PR/labels?per_page=100" --jq '.[].name')
+          if grep -qx 'full-lint' <<<"$labels"; then full "#$EVENT_PR is labelled full-lint"; fi
+          if ! grep -q -- '--only-modules=' pr-branch/.lake/packages/batteries/scripts/runLinter.lean \
+              || ! grep -q 'isLocal' pr-branch/.lake/packages/batteries/Batteries/Tactic/Lint/Basic.lean; then
+            full "this branch's Batteries predates local linters and runLinter --only-modules"
+          fi
+          files=$(gh api --paginate "repos/$REPO/pulls/$EVENT_PR/files?per_page=100" \
+            --jq '.[] | [.status, .filename, (.previous_filename // "")] | @tsv')
+          count=$(grep -c . <<<"$files" || true)
+          [ "$count" -lt 1000 ] || full "#$EVENT_PR changes $count files"
+          modules=()
+          while IFS=$'\t' read -r status file previous; do
+            # Both paths of a rename count: renaming a trigger file away must still trigger.
+            for path in "$file" "$previous"; do
+              case "$path" in
+                lakefile.lean|lake-manifest.json|lean-toolchain|scripts/nolints.json|Mathlib/Tactic/Linter/*)
+                  full "#$EVENT_PR changes $path" ;;
+              esac
+            done
+            [ "$status" = removed ] && continue
+            if [[ "$file" == *.lean ]] && [ -f "pr-branch/$file" ] \
+                && grep -q 'env_linter' "pr-branch/$file"; then
+              full "#$EVENT_PR changes $file, which defines or configures environment linters"
+            fi
+            if [[ "$file" =~ ^Mathlib/.*\.lean$ ]]; then
+              module=${file%.lean}
+              modules+=("${module//\//.}")
+            fi
+          done <<<"$files"
+          : > "$list"
+          if [ "${#modules[@]}" -gt 0 ]; then printf '%s\n' "${modules[@]}" > "$list"; fi
+          echo "Local linters lint the ${#modules[@]} Mathlib modules #$EVENT_PR changes; the others lint everything:"
+          cat "$list"
+          echo "scope=modified" >> "$GITHUB_OUTPUT"
+
       - name: lint mathlib
         if: ${{ always() && (needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') }}
         id: lint
@@ -526,8 +601,13 @@ jobs:
           # If lint fails because the PR predates lake-lint configuration or the
           # old --trace argument-parsing behavior, ask the author to merge master.
           # We use .lake/ for the output file because landrun restricts /tmp access
+          # Written by the `decide lint scope` step when only the PR's modules need the local linters.
+          scope_args=()
+          if [ -f .lake/lint-modules.txt ]; then
+            scope_args=(--only-modules=.lake/lint-modules.txt)
+          fi
           for attempt in 1 2; do
-            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake lint -- --trace "${scope_args[@]}" 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}
