@@ -39,7 +39,7 @@ theorem count_lt_length_iff {a : α} : l.count a < l.length ↔ ∃ b ∈ l, b �
 
 lemma countP_erase (p : α → Bool) (l : List α) (a : α) :
     countP p (l.erase a) = countP p l - if a ∈ l ∧ p a then 1 else 0 := by
-  grind [countP_eq_length_filter]
+  grind [= countP_eq_length_filter]
 
 lemma count_diff (a : α) (l₁ : List α) :
     ∀ l₂, count a (l₁.diff l₂) = count a l₁ - count a l₂
