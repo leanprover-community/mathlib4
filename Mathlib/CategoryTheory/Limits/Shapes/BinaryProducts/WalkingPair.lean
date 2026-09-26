@@ -29,7 +29,6 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 /-- The type of objects for the diagram indexing a binary (co)product. -/
-@[to_dual_do_translate]
 inductive WalkingPair : Type
   | left
   | right
@@ -130,17 +129,18 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 
 /-- The natural transformation between two functors out of the
 walking pair, specified by its components. -/
+@[to_dual self]
 def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
   naturality := fun ⟨X⟩ ⟨Y⟩ ⟨u⟩ => by cat_disch
 
-@[simp]
+@[simp, to_dual self]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=
   rfl
 
-@[simp]
+@[simp, to_dual self]
 theorem mapPair_right : (mapPair f g).app ⟨right⟩ = g :=
   rfl
 

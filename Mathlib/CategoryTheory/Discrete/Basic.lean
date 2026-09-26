@@ -57,6 +57,8 @@ structure Discrete (α : Type u₁) where
   with the only morphisms being equalities. -/
   as : α
 
+attribute [to_dual_ignore_args 0] Discrete
+
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X :=
   rfl
@@ -77,7 +79,7 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
 
 set_option linter.translate.warnInvalid false in
 /-- The only morphisms in `Discrete α` are the identity morphisms. -/
-@[nolint structureInType, to_dual self (reorder := a b)]
+@[nolint structureInType, to_dual self (reorder := a b) (relevant_arg := _)]
 structure Discrete.Hom {α : Type u₁} (a b : α) : Type u₁ where
   eq : a = b
 

@@ -231,6 +231,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coproduct", ["Product"]),
   ("products", ["Coproducts"]),
   ("coproducts", ["Products"]),
+  ("diag", ["Codiag"]),
+  ("codiag", ["Diag"]),
   ("pushout", ["Pullback"]),
   ("pullback", ["Pushout"]),
   ("pushouts", ["Pullbacks"]),
