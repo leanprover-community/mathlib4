@@ -351,8 +351,7 @@ lemma exists_induce_minDegree_ge_and_card_edgeFinset_ge {V : Type*} [Fintype V]
         - c * (card G.support - #G.support.toFinset) / 2 by
       convert hcard_edges
       all_goals exact G.support.coe_toFinset
-    rw [card_edgeFinset_induce_support, ← G.support.toFinset_card,
-      sub_self, mul_zero,  zero_div, sub_zero, sub_self, mul_zero, zero_div, sub_zero]
+    simp [card_edgeFinset_induce_support, G.support.toFinset_card]
   -- if `minDegree` is less than `c * card G.support`
   · replace hδ : (G.induce G.support).minDegree < c * (card G.support) := by
       rw [G.support.toFinset_card] at hδ
@@ -380,26 +379,20 @@ lemma exists_induce_minDegree_ge_and_card_edgeFinset_ge {V : Type*} [Fintype V]
         using ih_card_edges'
     -- use the `s` found at the end of the process
     refine ⟨s, hs, ihδ, ?_⟩
-    calc (#(G.induce s).edgeFinset : ℝ)
-      _ ≥ #G'.edgeFinset - (c * (card G'.support ^ 2 - #s ^ 2) / 2
-        + c * (card G'.support - #s) / 2) := by rwa [sub_sub] at ih_card_edges
-      _ ≥ (#G.edgeFinset - c * card G.support) - (c * ((card G.support - 1) ^ 2 - #s ^ 2) / 2
-        + c * (card G.support - 1 - #s) / 2) := by
-          apply sub_le_sub
-          -- exactly `G.minDegree` edges are deleted from the edge set
-          · rw [G.card_edgeFinset_deleteIncidenceSet ↑x,
-              Nat.cast_sub (G.degree_le_card_edgeFinset x), ← degree_induce_support, ← hδ_eq_degx]
-            exact sub_le_sub_left hδ.le #G.edgeFinset
-          -- at least one vertex is deleted from the support
-          · rw [← add_div, ← add_div, div_le_div_iff_of_pos_right zero_lt_two,
-              ← Nat.cast_pred card_pos, ← mul_add, sub_add_sub_comm, ← mul_add, sub_add_sub_comm,
-              ← Nat.cast_pow (card G'.support) 2, ← Nat.cast_pow (card G.support - 1) 2]
-            apply mul_le_mul_of_nonneg_left _ hc_nonneg
-            apply sub_le_sub (add_le_add _ _) le_rfl
-            · exact_mod_cast Nat.pow_le_pow_left (G.card_support_deleteIncidenceSet x.prop) 2
-            · exact_mod_cast G.card_support_deleteIncidenceSet x.prop
-      _ ≥ #G.edgeFinset - c * (card G.support ^ 2 - #s ^ 2) / 2
-        - c * (card G.support - #s) / 2 := by linarith
+    -- exactly `G.minDegree` edges are deleted from the edge set
+    have h_edges : (#G'.edgeFinset : ℝ) = #G.edgeFinset - G.degree ↑x := by
+      rw [G.card_edgeFinset_deleteIncidenceSet ↑x,
+        Nat.cast_sub (G.degree_le_card_edgeFinset x)]
+    have h_deg : (G.degree ↑x : ℝ) ≤ c * card G.support := by
+      rw [← degree_induce_support, ← hδ_eq_degx]
+      exact hδ.le
+    -- at least one vertex is deleted from the support
+    have h_supp : (card G'.support : ℝ) ≤ card G.support - 1 := by
+      rw [← Nat.cast_pred hcard_support_pos]
+      exact_mod_cast G.card_support_deleteIncidenceSet x.prop
+    linarith [ih_card_edges, mul_nonneg hc_nonneg <| sub_nonneg.mpr h_supp,
+      mul_nonneg hc_nonneg <| sub_nonneg.mpr <|
+        pow_le_pow_left₀ (card G'.support).cast_nonneg h_supp 2]
 termination_by card G.support
 decreasing_by classical
   exact (G.card_support_deleteIncidenceSet x.prop).trans_lt (Nat.pred_lt_of_lt hcard_support_pos)
@@ -412,32 +405,13 @@ lemma exists_induce_minDegree_ge_and_card_sq_ge {V : Type*} [Fintype V]
     {c : ℝ} (hc_nonneg : 0 ≤ c) {ε : ℝ} {G : SimpleGraph V} [DecidableRel G.Adj]
     (h : #G.edgeFinset ≥ (c + ε) * card V ^ 2 / 2) :
     ∃ s : Finset V, c * #s ≤ (G.induce s).minDegree ∧ ε * card V ^ 2 - c * card V ≤ #s ^ 2 := by
-  rcases isEmpty_or_nonempty V
-  · exact ⟨∅, by simp⟩
-  · classical have ⟨s, _, hδ, hs⟩ := exists_induce_minDegree_ge_and_card_edgeFinset_ge hc_nonneg G
-    rw [ge_iff_le, sub_sub, sub_le_iff_le_add] at hs
-    refine ⟨s, hδ, ?_⟩
-    rw [← div_le_div_iff_of_pos_right zero_lt_two, sub_div]
-    -- use `#G.edgeFinset ≥ (c + ε) * card V ^ 2 / 2` to bound `#s ^ 2`
-    calc ε * card V ^ 2 / 2 - c * card V / 2
-      _ = (c + ε) * card V ^ 2 / 2 - (c * card V ^ 2 / 2 + c * card V / 2) := by ring_nf
-      _ ≤ #s * (#s - 1) / 2 + (c * (card G.support ^ 2 - #s ^ 2) / 2
-        + c * (card G.support - #s) / 2) - (c * card V ^ 2 / 2 + c * card V / 2) := by
-          apply sub_le_sub_right
-          apply (h.trans hs).trans
-          apply add_le_add_left
-          rw [← Nat.cast_choose_two, ← card_coe s]
-          exact_mod_cast card_edgeFinset_le_card_choose_two
-      _ = #s ^ 2 / 2 - (c * (card V ^ 2 - card G.support ^ 2) / 2
-        + c * (card V - card G.support) / 2 + c * #s ^ 2 / 2 + c * #s / 2 + #s / 2) := by ring_nf
-      _ ≤ #s ^ 2 / 2 := by
-          apply sub_le_self
-          repeat apply add_nonneg
-          any_goals apply div_nonneg _ zero_le_two
-          any_goals apply mul_nonneg hc_nonneg
-          any_goals apply sub_nonneg_of_le
-          any_goals apply pow_le_pow_left₀
-          all_goals first | positivity | exact_mod_cast set_fintype_card_le_univ G.support
+  obtain ⟨s, -, hδ, hs⟩ := exists_induce_minDegree_ge_and_card_edgeFinset_ge hc_nonneg G
+  refine ⟨s, hδ, ?_⟩
+  have hcard_verts : (card G.support : ℝ) ≤ card V := mod_cast set_fintype_card_le_univ G.support
+  have hcard_edges : (#(G.induce s).edgeFinset : ℝ) ≤ #s * (#s - 1) / 2 := by
+    rw [← Nat.cast_choose_two, ← card_coe s]
+    exact_mod_cast card_edgeFinset_le_card_choose_two
+  nlinarith [hcard_edges, pow_le_pow_left₀ (card G.support).cast_nonneg hcard_verts 2]
 
 /-- If `G` has at least `(1 - 1 / r + o(1)) * n ^ 2 / 2` many edges, then `G` contains a
 copy of a `completeEquipartiteGraph (r + 1) t`.
@@ -459,8 +433,7 @@ theorem eventually_completeEquipartiteGraph_isContained_of_card_edgeFinset
   refine eventually_atTop.mpr ⟨⌈c / ε' + N' / √ε'⌉₊, fun n hn {G} _ h ↦ ?_⟩
   rw [Nat.ceil_le] at hn
   -- find `s` such that `G.induce s` has appropriate minimal-degree
-  conv_rhs at h =>
-    rw [← add_halves ε, ← add_assoc, ← Fintype.card_fin n]
+  conv_rhs at h => rw [← add_halves ε, ← add_assoc, ← Fintype.card_fin n]
   obtain ⟨s, hδ, hcards_sq⟩ := exists_induce_minDegree_ge_and_card_sq_ge hc.le h
   rw [Fintype.card_fin n] at hcards_sq
   -- assume `#s` is sufficiently large
@@ -473,40 +446,31 @@ theorem eventually_completeEquipartiteGraph_isContained_of_card_edgeFinset
     exact (ih (Fintype.card s) hcards_sq hδ).trans
       ⟨(Copy.induce G s).comp ((G.induce s).overFinIso rfl).symm.toCopy⟩
   -- `x ↦ ε' * x ^ 2 - c * x` is strictly monotonic on `[c / (2 * ε'), ∞)`
-  have hMonoOn : MonotoneOn (fun x ↦ ε' * x ^ 2 - c * x) (Set.Ici (c / (2 * ε'))) := by
-    refine monotoneOn_of_deriv_nonneg (convex_Ici _) ?_ ?_ (fun x hx ↦ ?_)
-    · exact Continuous.continuousOn <|
-        (continuous_const.mul (continuous_id'.pow 2)).sub (continuous_const_mul c)
-    · exact Differentiable.differentiableOn <|
-        ((differentiable_const ε').mul <| differentiable_id.pow 2).sub
-          (differentiable_id.const_mul c)
-    · rw [deriv_fun_sub ((differentiableAt_fun_id.fun_pow 2).const_mul ε')
-        (differentiableAt_fun_id.const_mul c), deriv_const_mul c differentiableAt_fun_id,
-        deriv_fun_mul (differentiableAt_const ε') (differentiableAt_fun_id.fun_pow 2),
-        deriv_const', zero_mul, deriv_fun_pow differentiableAt_fun_id, Nat.cast_ofNat,
-        Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, mul_one, zero_add, sub_nonneg,
-        ← mul_assoc, mul_comm ε' 2, ← div_le_iff₀' (mul_pos two_pos hε')]
-      rw [interior_Ici, Set.mem_Ioi] at hx
-      exact hx.le
+  have hmono : MonotoneOn (fun x ↦ ε' * x ^ 2 - c * x) (Set.Ici (c / (2 * ε'))) := by
+    refine monotoneOn_of_deriv_nonneg (convex_Ici _) (by fun_prop) (by fun_prop) fun x hx ↦ ?_
+    have hd : HasDerivAt (fun x : ℝ ↦ ε' * x ^ 2 - c * x) (2 * ε' * x - c) x := by
+      refine HasDerivAt.sub ?_ ?_
+      · simpa [← mul_assoc, mul_comm ε' 2] using (hasDerivAt_pow 2 x).const_mul ε'
+      · simpa using (hasDerivAt_id x).const_mul c
+    rw [hd.deriv, sub_nonneg, ← div_le_iff₀' (by positivity)]
+    rw [interior_Ici] at hx
+    exact hx.le
   -- prove `#s` is sufficiently large
   calc (#s ^ 2 : ℝ)
     _ ≥ ε'* n ^ 2 - c * n := hcards_sq
     _ ≥ ε' * (c / ε' + N' / √ε') ^ 2 - c * (c / ε' + N' / √ε') := by
-        have hle : c / (2 * ε') ≤ c / ε' + N' / √ε' := by
-          trans c / ε'
-          · rw [mul_comm, ← div_div, half_le_self_iff]
-            exact div_nonneg hc.le hε'.le
-          · rw [le_add_iff_nonneg_right]
-            exact div_nonneg N'.cast_nonneg (sqrt_nonneg ε')
-        exact hMonoOn hle (hle.trans hn) hn
+        have hle : c / (2 * ε') ≤ c / ε' + N' / √ε' :=
+          le_add_of_le_of_nonneg (div_le_div_of_nonneg_left hc.le hε' (by linarith)) (by positivity)
+        exact hmono hle (hle.trans hn) hn
     _ = N' ^ 2 + N' * c / sqrt ε' := by
-        rw [add_pow_two, mul_add ε', div_pow _ √ε', sq_sqrt hε'.le,
-          mul_div_cancel₀ _ hε'.ne', add_comm _ (N' ^ 2 : ℝ), add_sub_assoc, add_right_inj,
-          mul_add ε' _ _, mul_add c _ _, add_sub_add_comm, div_pow c ε' 2, pow_two ε',
-          ← mul_div_assoc ε' _ _, mul_div_mul_left _ _ hε'.ne', ← mul_div_assoc c c ε',
-          ← pow_two c, sub_self, zero_add, mul_comm ε' _, mul_assoc _ _ ε', mul_mul_mul_comm,
-          div_mul_cancel₀ _ hε'.ne', mul_assoc 2 _ c, ← mul_div_right_comm _ c √ε',
-          ← mul_div_assoc c _ √ε', mul_comm c _, two_mul, add_sub_assoc, sub_self, add_zero]
+        have h1 : ε' * (c / ε' + N' / √ε') = c + N' * √ε' := by
+          rw [mul_add, mul_comm ε' (c / ε'), div_mul_cancel₀ c hε'.ne', mul_div_assoc',
+            mul_comm ε' (N' : ℝ), mul_div_assoc, Real.div_sqrt]
+        have h2 : √ε' * (c / ε' + N' / √ε') = c / √ε' + N' := by
+          rw [mul_add, mul_comm √ε' (N' / √ε'), div_mul_cancel₀ (N' : ℝ) (sqrt_ne_zero'.mpr hε'),
+            show c / ε' = c / √ε' / √ε' by rw [div_div, Real.mul_self_sqrt hε'.le],
+            mul_comm √ε' (c / √ε' / √ε'), div_mul_cancel₀ (c / √ε') (sqrt_ne_zero'.mpr hε')]
+        linear_combination (c / ε' + N' / √ε') * h1 + (N' : ℝ) * h2
     _ ≥ N' ^ 2 := le_add_of_nonneg_right (by positivity)
 
 omit [Fintype W] in
@@ -520,14 +484,12 @@ theorem eventually_isContained_of_card_edgeFinset_of_colorable [Finite W]
       #G.edgeFinset ≥ (1 - 1 / r + ε) * n ^ 2 / 2 → H ⊑ G := by
   have : Fintype W := Fintype.ofFinite W
   obtain ⟨C⟩ := hc
-  let f := fun c ↦ card (C.colorClass c)
-  have hH : H ⊑ completeEquipartiteGraph (r + 1) (univ.sup f) := by
-    refine isContained_completeEquipartiteGraph_of_colorable C (univ.sup f) (fun c ↦ ?_)
-    rw [show card (C.colorClass c) = f c from rfl]
-    exact le_sup (mem_univ c)
   have ⟨N, ih⟩ := eventually_atTop.mp <|
-    eventually_completeEquipartiteGraph_isContained_of_card_edgeFinset hε_pos r (univ.sup f)
-  exact eventually_atTop.mpr ⟨N, fun n hn {G} _ h ↦ hH.trans (ih n hn h)⟩
+    eventually_completeEquipartiteGraph_isContained_of_card_edgeFinset hε_pos r
+      (univ.sup fun c ↦ card (C.colorClass c))
+  exact eventually_atTop.mpr ⟨N, fun n hn {G} _ h ↦
+    (isContained_completeEquipartiteGraph_of_colorable C _ fun c ↦
+      le_sup (f := fun c ↦ card (C.colorClass c)) (mem_univ c)).trans (ih n hn h)⟩
 
 end ErdosStone
 
