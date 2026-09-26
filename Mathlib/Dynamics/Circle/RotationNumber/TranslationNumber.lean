@@ -254,7 +254,7 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 /-- The map `y ↦ x + y` as a `CircleDeg1Lift`. More precisely, we define a homomorphism from
 `Multiplicative ℝ` to `CircleDeg1Liftˣ`, so the translation by `x` is
 `translation (Multiplicative.ofAdd x)`. -/
-def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits <|
+def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits
   { toFun x := ⟨⟨fun y => x.toAdd + y, add_right_mono⟩, fun _ => (add_assoc ..).symm⟩
     map_one' := ext zero_add
     map_mul' _ _ := ext <| add_assoc _ _ }

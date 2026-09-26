@@ -89,8 +89,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
       simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
-      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
-        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by cat_disch)
+      simp)) (by cat_disch)
 
 attribute [simps!] mapTriangleCommShiftIso
 

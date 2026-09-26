@@ -227,9 +227,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
-- `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
-  style linters, written in Python and Lean. Run via `lake exe lint-style`.
-  Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
+- `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
 - `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
