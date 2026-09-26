@@ -78,7 +78,7 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
-macro "map_fun_tac" : tactic => `(tactic| (
+local macro "map_fun_tac" : tactic => `(tactic| (
   -- TODO: the Lean 3 version of this tactic was more functional
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,

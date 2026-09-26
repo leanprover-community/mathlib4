@@ -81,10 +81,10 @@ def tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory} (f₁ : x₁ ⟶ 
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of _, .of _, .of _, .of _, f₁, f₂ => tensorHomOf f₁ f₂
   | .of _, .of y₁, .star, .of y₂, f₁, _ =>
-    f₁ ≫ ((SimplexCategory.mkHom <| (Fin.castAddOrderEmb (y₂.len + 1)).toOrderHom) ≫
+    f₁ ≫ ((SimplexCategory.mkHom (Fin.castAddOrderEmb (y₂.len + 1)).toOrderHom) ≫
       eqToHom (congrArg _ (Nat.succ_add _ _)) : ⦋y₁.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
   | .star, .of y₁, .of _, .of y₂, _, f₂ =>
-    f₂ ≫ ((SimplexCategory.mkHom <| (Fin.natAddOrderEmb (y₁.len + 1)).toOrderHom) ≫
+    f₂ ≫ ((SimplexCategory.mkHom (Fin.natAddOrderEmb (y₁.len + 1)).toOrderHom) ≫
       eqToHom (congrArg _ (Nat.succ_add _ _)) : ⦋y₂.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
   | .star, .star, .of _, .of _, _, f₂ => f₂
   | .of _, .of _, .star, .star, f₁, _ => f₁

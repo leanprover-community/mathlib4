@@ -943,7 +943,6 @@ def CosimplicialObject.Augmented.leftOpRightOpIso (X : CosimplicialObject.Augmen
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functorial version of `SimplicialObject.Augmented.rightOp`. -/
 @[simps]
@@ -955,9 +954,6 @@ def simplicialToCosimplicialAugmented :
       right := NatTrans.rightOp f.unop.left
       w := by
         ext x
-        dsimp
-        simp_rw [← op_comp]
-        congr 1
         exact (congr_app f.unop.w (op x)).symm }
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -968,7 +964,7 @@ def cosimplicialToSimplicialAugmented :
     CosimplicialObject.Augmented Cᵒᵖ ⥤ (SimplicialObject.Augmented C)ᵒᵖ where
   obj X := Opposite.op X.leftOp
   map f :=
-    Quiver.Hom.op <|
+    Quiver.Hom.op
       { left := NatTrans.leftOp f.right
         right := f.left.unop
         w := by

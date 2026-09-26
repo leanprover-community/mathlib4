@@ -267,7 +267,8 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (image_eq_one_of_notMem_mulTSupport hx)
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
-@[to_additive contMDiffAt_of_notMem]
+@[to_additive contMDiffAt_of_notMem /-- `f` is continuously differentiable at each point outside of
+its `tsupport`. -/]
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : ℕ∞ω) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ
@@ -411,7 +412,6 @@ section
 
 variable {e : M → H} (h : IsOpenEmbedding e) {n : ℕ∞ω}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
@@ -426,9 +426,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
   rw [h.toOpenPartialHomeomorph_right_inv]
-  · rw [I.right_inv]
-    apply mem_of_subset_of_mem _ hz.1
-    exact letI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
+  · simp_all [I.right_inv]
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
     rw [extChartAt_target] at this

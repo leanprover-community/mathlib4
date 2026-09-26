@@ -297,7 +297,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
 
 /-- The underlying topology of `Proj` is the projective spectrum of graded ring `A`. -/
 def top : TopCat :=
-  TopCat.of (ProjectiveSpectrum 𝒜)
+  ↧(ProjectiveSpectrum 𝒜)
 
 theorem isOpen_iff (U : Set (ProjectiveSpectrum 𝒜)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus 𝒜 s := by
   simp only [@eq_comm _ Uᶜ]; rfl
@@ -331,7 +331,7 @@ section BasicOpen
 /-- `basicOpen r` is the open subset containing all prime ideals not containing `r`. -/
 def basicOpen (r : A) : TopologicalSpace.Opens (ProjectiveSpectrum 𝒜) where
   carrier := { x | r ∉ x.asHomogeneousIdeal }
-  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans <| Classical.not_not.symm⟩
+  is_open' := ⟨{r}, Set.ext fun _ => Set.singleton_subset_iff.trans Classical.not_not.symm⟩
 
 @[simp]
 theorem mem_basicOpen (f : A) (x : ProjectiveSpectrum 𝒜) :

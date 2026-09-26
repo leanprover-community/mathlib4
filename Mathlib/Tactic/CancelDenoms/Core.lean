@@ -230,13 +230,14 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e = {e}"
   let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
-  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) false eSimp.expr
+  let eSimpNormNum ←
+    Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) (useSimp := false) (e := eSimp.expr)
   trace[CancelDenoms] "e norm_num'd = {eSimpNormNum.expr}"
   let (n, t) := findCancelFactor eSimpNormNum.expr
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
   let stp : Q(Field $tp) ← synthInstanceQ q(Field $tp)
   try
-    have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit <| n).1
+    have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit n).1
     let r ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType r.pf}"
     let pf' ←
