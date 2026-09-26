@@ -178,20 +178,20 @@ theorem rpow_eq_nhds_of_pos {p : ℝ × ℝ} (hp_fst : 0 < p.fst) :
       rw [rpow_def_of_pos hx]
   exact IsOpen.eventually_mem (isOpen_lt continuous_const continuous_fst) hp_fst
 
+attribute [fun_prop] continuousAt_log
+
 theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
   rw [ne_iff_lt_or_gt] at hp
   cases hp with
   | inl hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_neg hp)]
-    refine ContinuousAt.mul ?_ (by fun_prop)
-    · refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
-      exact (continuousAt_log hp.ne).comp continuous_fst.continuousAt
+    have := hp.ne
+    fun_prop
   | inr hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_pos hp)]
-    refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
-    refine (continuousAt_log ?_).comp continuous_fst.continuousAt
-    exact hp.ne'
+    have := hp.ne'
+    fun_prop
 
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
