@@ -73,6 +73,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.isDiffImmersionAt` and `IsImmersion.mfderiv_injective`: if `f` is an immersion,
   it is an immersion (in the sense of differentials) at every point of the domain.
   In particular, the differential at each point is injective.
+* `Diffeomorph.isImmersion`: a diffeomorphism (between the same model with corners) is an immersion
 
 ## Implementation notes
 
@@ -103,7 +104,6 @@ This shortens the overall argument, as the definition of submersions has the sam
   implies `f` is an immersion at `x`.
 * `IsLocalDiffeomorphAt.isImmersionAt` and `IsLocalDiffeomorph.isImmersion`:
   a local diffeomorphism (at `x`) is an immersion (at `x`)
-* `Diffeomorph.isImmersion`: in particular, a diffeomorphism is an immersion
 
 ## References
 
@@ -862,6 +862,16 @@ protected lemma id [IsManifold I n M] : IsImmersionOfComplement PUnit I I n (@id
     rw [(chartAt H x).right_inv (by simp_all), I.right_inv (by simp_all)]
   simpa
 
+/-- A diffeomorphism for the same model with corners is an immersion (with trivial complement). -/
+-- This also holds for local diffeomorphisms (with a more cumbersome proof),
+-- and for arbitrary diffeomorphisms under mild additional hypotheses.
+lemma _root_.Diffeomorph.isImmersionOfComplement
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    (Φ : Diffeomorph J J N N' n) :
+    IsImmersionOfComplement Unit J J n Φ := by
+  suffices IsImmersionOfComplement Unit J J n (Φ ∘ id) from this.congr (by simp)
+  exact fun x ↦ IsImmersionAtOfComplement.comp_diffeomorph (IsImmersionOfComplement.id x) _
+
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
@@ -1007,6 +1017,14 @@ lemma comp_diffeomorph {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [I
     IsImmersion I J n (Φ ∘ f) := by
   use h.complement, by infer_instance, by infer_instance
   exact h.isImmersionOfComplement_complement.comp_diffeomorph Φ
+
+/-- A diffeomorphism for the same model with corners is an immersion. -/
+-- This also holds for local diffeomorphisms (with a more cumbersome proof),
+-- and for arbitrary diffeomorphisms under mild additional hypotheses.
+lemma _root_.Diffeomorph.isImmersion
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    (Φ : Diffeomorph J J N N' n) : IsImmersion J J n Φ :=
+    Φ.isImmersionOfComplement.isImmersion
 
 /-- If `f` is an immersion, each differential `mfderiv f x` has a continuous left inverse. -/
 lemma isDiffImmersionAt (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :

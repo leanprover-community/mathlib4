@@ -26,6 +26,8 @@ This will be useful to define embedded submanifolds.
   `Sum.inl : M → M ⊕ N` and `Sum.inr : N → M ⊕ N` are `C^n` embeddings
 * `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`
   in the sense of `ContMDiff`.
+* `Diffeomorph.isSmoothEmbedding`: a diffeomorphism for the same model with corners is a smooth
+  embedding
 
 ## Implementation notes
 
@@ -39,8 +41,9 @@ This will be useful to define embedded submanifolds.
 ## TODO
 * `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
   is a smooth embedding
-* `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
-  a local diffeomorphism (and in particular, a diffeomorphism) is a smooth embedding
+* generalize `Diffeomorph.isSmoothEmbedding` to different models,
+  under good conditions (so we can use `IsDiffImmersionAt`)
+* `IsLocalDiffeomorph.isSmoothEmbedding`: an injective local diffeomorphism is a smooth embedding
 
 -/
 
@@ -113,6 +116,14 @@ lemma sumInr {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 lemma contMDiff (hf : IsSmoothEmbedding I J n f) :
     ContMDiff I J n f :=
   hf.isImmersion.contMDiff
+
+/-- A diffeomorphism for the same model with corners is a smooth embedding. -/
+-- This also holds for injective local diffeomorphisms (with a more cumbersome proof),
+-- and for arbitrary diffeomorphisms under mild additional hypotheses.
+lemma _root_.Diffeomorph.isSmoothEmbedding
+    {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N] [IsManifold J n N']
+    (Φ : Diffeomorph J J N N' n) : IsSmoothEmbedding J J n Φ :=
+  ⟨Φ.isImmersion, Φ.toHomeomorph.isEmbedding⟩
 
 end IsSmoothEmbedding
 
