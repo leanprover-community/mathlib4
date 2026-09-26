@@ -33,7 +33,7 @@ variable {C : Type*} [Category* C] {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
 
 -- the class' field and constructor need the manual translations supplied below
 set_option linter.translate.warnInvalid false in
-/-- `i` has the at most one lift against `p` if every
+/-- `i` has at most one lift against `p` if every
 commutative square from `i` to `p` has at most one filler, i.e. its type of lifts is a
 subsingleton. -/
 @[to_dual self (reorder := A Y, B X, i p)]
@@ -73,10 +73,10 @@ noncomputable def CommSq.uniqueLiftStruct {f : A ⟶ X} {g : B ⟶ Y}
 provided `i` has at most one lift against `p`. -/
 @[to_dual self (reorder := A Y, B X, i p, f g, h₁ h₁', h₂ h₂')]
 theorem CommSq.lift_eq_of_hasAtMostOneLiftingProperty
-    {f : A ⟶ X} {g : B ⟶ Y} {sq : CommSq f i p g}
-    [HasAtMostOneLiftingProperty i p] {l₁ l₂ : B ⟶ X}
+    {f : A ⟶ X} {g : B ⟶ Y} [HasAtMostOneLiftingProperty i p] {l₁ l₂ : B ⟶ X}
     (h₁ : i ≫ l₁ = f) (h₁' : l₁ ≫ p = g)
     (h₂ : i ≫ l₂ = f) (h₂' : l₂ ≫ p = g) : l₁ = l₂ := by
+  have sq : CommSq f i p g := ⟨by rw [← h₁, ← h₁', assoc]⟩
   have : (⟨l₁, h₁, h₁'⟩ : sq.LiftStruct) = ⟨l₂, h₂, h₂'⟩ := Subsingleton.elim _ _
   exact congrArg CommSq.LiftStruct.l this
 
@@ -131,10 +131,9 @@ instance of_comp_left {A B B' X Y : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ 
     have hl : ∀ l : sq.LiftStruct, i ≫ i' ≫ l.l = f := fun l => by rw [← assoc, l.fac_left]
     have hr : ∀ l : sq.LiftStruct, (i' ≫ l.l) ≫ p = i' ≫ g := fun l => by simp [l.fac_right]
     have step : i' ≫ l₁.l = i' ≫ l₂.l :=
-      CommSq.lift_eq_of_hasAtMostOneLiftingProperty i p (sq := ⟨by simp [sq.w]⟩)
-        (hl l₁) (hr l₁) (hl l₂) (hr l₂)
+      CommSq.lift_eq_of_hasAtMostOneLiftingProperty i p (hl l₁) (hr l₁) (hl l₂) (hr l₂)
     exact CommSq.LiftStruct.ext (CommSq.lift_eq_of_hasAtMostOneLiftingProperty i' p
-      (sq := ⟨hr l₁⟩) rfl l₁.fac_right step.symm l₂.fac_right)⟩
+      rfl l₁.fac_right step.symm l₂.fac_right)⟩
 
 /-- If `i` has at most one lift against `p ≫ q`, then it has at most one lift against `p`.
 No hypothesis on the cancelled factor `q` is needed: a lift of a square against `p` is
@@ -144,7 +143,6 @@ theorem of_comp_right_cancel {A B X Y Z : C} (i : A ⟶ B) (p : X ⟶ Y) (q : Y 
     [HasAtMostOneLiftingProperty i (p ≫ q)] : HasAtMostOneLiftingProperty i p where
   subsingleton_liftStruct {f g} sq := ⟨fun l₁ l₂ =>
     CommSq.LiftStruct.ext (CommSq.lift_eq_of_hasAtMostOneLiftingProperty i (p ≫ q)
-      (sq := ⟨by rw [← assoc, sq.w, assoc]⟩)
       l₁.fac_left (by rw [← assoc, l₁.fac_right])
       l₂.fac_left (by rw [← assoc, l₂.fac_right]))⟩
 
@@ -249,20 +247,19 @@ theorem of_comp_right_cancel {A B X Y Z : C} (i : A ⟶ B) (p : X ⟶ Y) (q : Y 
     have sq' : CommSq u i (p ≫ q) (v ≫ q) := ⟨by rw [← assoc, sq.w, assoc]⟩
     have key : sq'.lift ≫ p = v :=
       CommSq.lift_eq_of_hasAtMostOneLiftingProperty i q
-        (sq := ⟨by rw [sq.w, assoc]⟩)
         (by rw [← assoc, sq'.fac_left]) (by rw [assoc, sq'.fac_right])
         sq.w.symm rfl
     exact CommSq.HasLift.mk' { l := sq'.lift, fac_left := sq'.fac_left, fac_right := key }⟩
   exact { hlift, hamo with }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique lifting property against a given map `p` is stable under isomorphism of arrows. -/
 @[to_dual (reorder := i i' e p) of_arrow_iso_right]
 theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
     (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) [HasUniqueLiftingProperty i p] :
     HasUniqueLiftingProperty i' p :=
-    { HasLiftingProperty.of_arrow_iso_left e p,
-        HasAtMostOneLiftingProperty.of_arrow_iso_left e p with }
+  have := HasLiftingProperty.of_arrow_iso_left e p
+  have := HasAtMostOneLiftingProperty.of_arrow_iso_left e p
+  mk' i' p
 
 /-- The `Iff` version of `HasUniqueLiftingProperty.of_arrow_iso_left`. -/
 @[to_dual (reorder := i i' e p) iff_of_arrow_iso_right]
@@ -293,7 +290,7 @@ theorem hasUniqueLiftingProperty_iff (i : A ⟶ B) (p : X ⟶ Y) :
   constructor
   · intro h t b sq
     exact ⟨sq.lift, ⟨sq.fac_left, sq.fac_right⟩, fun l hl =>
-      CommSq.lift_eq_of_hasAtMostOneLiftingProperty i p (sq := sq) hl.1 hl.2
+      CommSq.lift_eq_of_hasAtMostOneLiftingProperty i p hl.1 hl.2
         sq.fac_left sq.fac_right⟩
   · intro H
     have hlp : HasLiftingProperty i p :=
