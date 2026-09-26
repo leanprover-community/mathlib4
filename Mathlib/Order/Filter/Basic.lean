@@ -1119,6 +1119,9 @@ lemma union (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s ∪ s' =
 @[gcongr]
 lemma compl (h : s =ᶠ[l] t) : sᶜ =ᶠ[l] tᶜ := h.fun_comp Not
 
+lemma compl_eventuallyEq_iff {s t : Set α} {l : Filter α} : sᶜ =ᶠ[l] tᶜ ↔ s =ᶠ[l] t :=
+  ⟨fun h ↦ by simpa using h.compl, fun _ ↦ by gcongr⟩
+
 @[gcongr]
 lemma diff (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s \ s' =ᶠ[l] t \ t' :=
   h.inter h'.compl
