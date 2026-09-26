@@ -136,7 +136,7 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
 
 /-- A weak upper bound on `n.factorization p` -/
 theorem mul_factorization_le {n p : ℕ} : p * n.factorization p ≤ n := by
-  grw [factorization_le_padicValNat, mul_padicValNat_le]
+  grw [factorization_le_multiplicity, mul_multiplicity_le]
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
@@ -459,8 +459,8 @@ theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : Coprime a b)
   exact factorization_eq_of_coprime_left (coprime_comm.mp hab) hpb
 
 /-- Two positive naturals are equal if their prime padic valuations are equal -/
-theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
-    a = b ↔ ∀ p : ℕ, p.Prime → padicValNat p a = padicValNat p b := by
+theorem eq_iff_prime_multiplicity_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
+    a = b ↔ ∀ p : ℕ, p.Prime → multiplicity p a = multiplicity p b := by
   constructor
   · rintro rfl
     simp
@@ -470,8 +470,11 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     · simp [factorization_def, pp, h p pp]
     · simp [factorization_eq_zero_of_not_prime, pp]
 
-theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
-    ∏ p ∈ range m with p.Prime, p ^ padicValNat p n = n := by
+@[deprecated (since := "2026-09-11")] alias eq_iff_prime_padicValNat_eq :=
+  eq_iff_prime_multiplicity_eq
+
+theorem prod_pow_prime_multiplicity (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
+    ∏ p ∈ range m with p.Prime, p ^ multiplicity p n = n := by
   nth_rw 2 [← prod_factorization_pow_eq_self hn]
   rw [eq_comm]
   apply Finset.prod_subset_one_on_sdiff
@@ -483,6 +486,9 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
     simp [Finsupp.notMem_support_iff.mp hp2]
   · intro p hp
     simp [factorization_def n (prime_of_mem_primeFactors hp)]
+
+@[deprecated (since := "2026-09-11")] alias prod_pow_prime_padicValNat :=
+  prod_pow_prime_multiplicity
 
 theorem prod_primeFactors_pow_factorization (hn : n ≠ 0) :
     n = ∏ p ∈ n.primeFactors, p ^ n.factorization p :=
@@ -507,7 +513,7 @@ theorem dvd_prod_primeFactors_pow_self {n : ℕ} (hn : n ≠ 0) :
     n ∣ (∏ p ∈ n.primeFactors, p) ^ n := by
   nth_rw 1 [← Finset.prod_pow, prod_primeFactors_pow_factorization hn]
   refine prod_dvd_prod_of_dvd _ _ fun i hi ↦ pow_dvd_pow i ?_
-  grw [n.factorization_def <| prime_of_mem_primeFactors hi, padicValNat_le_self]
+  grw [n.factorization_def <| prime_of_mem_primeFactors hi, multiplicity_le_self]
 
 theorem dvd_pow_self_iff {n k : ℕ} (hn : n ≠ 0) (hk : k ≠ 0) :
     n ∣ k ^ n ↔ n.primeFactors ⊆ k.primeFactors := by

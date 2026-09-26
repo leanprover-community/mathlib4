@@ -110,7 +110,7 @@ Every bounded absolute value on `ℚ` is equivalent to a `p`-adic absolute value
 -/
 
 /-- The real-valued `AbsoluteValue` corresponding to the p-adic norm on `ℚ`. -/
-def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
+noncomputable def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
   toFun x := (padicNorm p x : ℝ)
   map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
   nonneg' x := cast_nonneg.mpr <| padicNorm.nonneg x
