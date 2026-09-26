@@ -662,6 +662,16 @@ lemma add_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℝ≥0�
 lemma biSup_add {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℝ≥0∞) :
     (⨆ i ∈ s, f i) + a = ⨆ i ∈ s, f i + a := biSup_add' hs _
 
+lemma biSup_biSup_add {ι : Type*} {s : Set ι} {P : ι → Prop} (h : ∃ i ∈ s, P i) (f : ι → ℝ≥0∞) :
+    (⨆ i ∈ s, ⨆ (_ : P i), f i) + a = ⨆ i ∈ s, ⨆ (_ : P i), f i + a := by
+  obtain ⟨j, js, hj⟩ := h
+  rw [← iSup_subtype'', ← iSup_subtype'']
+  exact ENNReal.biSup_add ⟨⟨j, js⟩, hj⟩ _
+
+lemma biSup_univ_biSup_add {ι : Type*} {P : ι → Prop} (h : ∃ i, P i) (f : ι → ℝ≥0∞) :
+    (⨆ i, ⨆ (_ : P i), f i) + a = ⨆ i, ⨆ (_ : P i), f i + a :=
+  ENNReal.biSup_add h f
+
 lemma add_sSup (hs : s.Nonempty) : a + sSup s = ⨆ b ∈ s, a + b := by
   rw [sSup_eq_iSup, add_biSup hs]
 
