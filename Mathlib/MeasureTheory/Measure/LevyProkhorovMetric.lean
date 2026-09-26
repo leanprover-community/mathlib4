@@ -558,9 +558,8 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
     apply (diam_mono (disjointed_subset Bs n) isBounded_ball).trans
     convert! diam_ball half_ε_pos.le
     ring
-  · have aux : ⋃ n, Bs n = univ := by
-      convert! DenseRange.iUnion_uniformity_ball xs_dense <| Metric.dist_mem_uniformity half_ε_pos
-      exact (ball_eq_ball' _ _).symm
+  · have aux : ⋃ n, Bs n = univ :=
+      xs_dense.iUnion_uniformity_ball <| Metric.dist_mem_uniformity half_ε_pos
     simpa only [← aux] using iUnion_disjointed
   · exact disjoint_disjointed Bs
 
