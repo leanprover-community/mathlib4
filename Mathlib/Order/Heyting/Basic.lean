@@ -50,7 +50,7 @@ use of `to_dual none`.
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

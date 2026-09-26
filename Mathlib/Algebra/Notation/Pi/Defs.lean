@@ -18,7 +18,7 @@ See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances
 an instance of the `Star` notation typeclass, but no default notation is included.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Set.range Monoid Preorder
 
