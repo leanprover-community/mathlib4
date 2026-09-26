@@ -1,6 +1,9 @@
 module
 import Mathlib.Tactic.PNatToNat
 
+-- This file deliberately exercises the deprecated `pnat_to_nat`.
+set_option linter.deprecated false
+
 example (a b : PNat) (h : a < b) : 1 < b := by
   pnat_to_nat
   lia
