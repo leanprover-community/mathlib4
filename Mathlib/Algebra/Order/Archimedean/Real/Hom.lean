@@ -38,10 +38,10 @@ theorem ringHom_monotone {R S : Type*} [Ring R] [PartialOrder R] [IsOrderedAddMo
 /-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
 instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
   default := RingHom.id ℝ
-  uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
-      ⟨f, ringHom_monotone (fun _ ↦ Real.isSquare_iff.mpr) f⟩ default)
+  uniq f := congr(OrderRingHom.toRingHom $(@Subsingleton.elim (ℝ →+*o ℝ) _
+      ⟨f, ringHom_monotone (fun _ ↦ Real.isSquare_iff.mpr) f⟩ default))
 
 @[simp]
 theorem Real.ringHom_apply {F : Type*} [FunLike F ℝ ℝ] [RingHomClass F ℝ ℝ] (f : F) (r : ℝ) :
     f r = r :=
-  DFunLike.congr_fun (Unique.eq_default (RingHomClass.toRingHom f)) r
+  congr($(Unique.eq_default (RingHomClass.toRingHom f)) r)

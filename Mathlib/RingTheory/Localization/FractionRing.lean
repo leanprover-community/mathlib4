@@ -363,7 +363,7 @@ theorem ringHom_ext {f1 f2 : K →+* L}
 
 theorem injective_comp_algebraMap :
     Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
-  fun _ _ h => ringHom_ext (fun x => RingHom.congr_fun h x)
+  fun _ _ h => ringHom_ext (fun x => congr($h x))
 
 section liftAlgHom
 

@@ -88,7 +88,7 @@ theorem unique [LT m] {l' : m → WithTop n}
     cases hc : l i with
     | top =>
       rw [hl.eq_top_iff] at hc
-      exact absurd (congrFun hc c') (hl'.isLeadingEntry hc').2
+      exact absurd congr($hc c') (hl'.isLeadingEntry hc').2
     | coe c => exact_mod_cast (hl.isLeadingEntry hc).unique (hl'.isLeadingEntry hc')
 
 theorem strictMonoOn [Preorder m] (hA : A.IsPivotedBy l) :

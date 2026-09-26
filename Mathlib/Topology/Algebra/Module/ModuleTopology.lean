@@ -5,7 +5,8 @@ Authors: Kevin Buzzard, Will Sawin
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Group.Basic

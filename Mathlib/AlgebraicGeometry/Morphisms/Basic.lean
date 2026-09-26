@@ -240,13 +240,13 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     IsZariskiLocalAtSource P := by
   refine .mk_of_iff_of_zeroHypercover fun {X Y} f 𝒰 ↦ ⟨fun hf i ↦ ?_, fun hf ↦ ?_⟩
   · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.f i) (Scheme.Opens.ι _)
-      (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
+      congr($((𝒰.f i).opensRange.opensRange_ι.symm).carrier), Category.assoc,
       P.cancel_left_of_respectsIso]
     exact restrict _ _ hf
   · refine of_sSup_eq_top f _ (Scheme.OpenCover.iSup_opensRange <| .ulift 𝒰) fun i ↦ ?_
     dsimp
     rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f _) (Scheme.Opens.ι _)
-      (congr_arg Opens.carrier (𝒰.f _).opensRange.opensRange_ι.symm), Category.assoc,
+      congr($((𝒰.f _).opensRange.opensRange_ι.symm).carrier), Category.assoc,
       P.cancel_left_of_respectsIso]
     exact hf _
 
@@ -276,7 +276,7 @@ theorem iff_of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤) :
 lemma of_openCover (H : ∀ i, P (𝒰.f i ≫ f)) : P f := by
   refine of_iSup_eq_top (fun i ↦ (𝒰.f i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
   rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f i) (Scheme.Opens.ι _)
-    (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
+    congr($((𝒰.f i).opensRange.opensRange_ι.symm).carrier), Category.assoc,
     P.cancel_left_of_respectsIso]
   exact H i
 

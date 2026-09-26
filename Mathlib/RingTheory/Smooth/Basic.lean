@@ -138,7 +138,7 @@ theorem exists_lift
         commutes' := fun x => rfl }
     obtain ⟨g', e⟩ := h₂ (this.symm.toAlgHom.comp g)
     obtain ⟨g', rfl⟩ := h₁ g'
-    replace e := congr_arg this.toAlgHom.comp e
+    replace e := congr(this.toAlgHom.comp $e)
     conv_rhs at e =>
       rw [← AlgHom.comp_assoc, AlgEquiv.comp_symm, AlgHom.id_comp]
     exact ⟨g', e⟩
@@ -157,7 +157,7 @@ theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
 @[simp]
 theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
-  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g :) x
+  congr($(FormallySmooth.comp_lift I hI g) x)
 
 variable {C : Type*} [CommRing C] [Algebra R C]
 
