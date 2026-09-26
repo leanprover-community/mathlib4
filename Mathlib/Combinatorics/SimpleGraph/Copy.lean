@@ -160,11 +160,10 @@ theorem ofLE_comp (h₁₂ : G₁ ≤ G₂) (h₂₃ : G₂ ≤ G₃) :
 def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.induce s).toCopy
 
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
-protected def bot (f : W ↪ V) : Copy (⊥ : SimpleGraph W) G := ⟨⟨f, False.elim⟩, f.injective⟩
+protected def bot (f : W ↪ V) : Copy (⊥ : SimpleGraph W) G := ⟨Hom.bot f, f.injective⟩
 
 /-- The copy of any simple graph in `⊤` that can embed its vertices. -/
-protected def top (f : W ↪ V) : Copy H (⊤ : SimpleGraph V) :=
-  ⟨⟨f, fun h ↦ f.injective.ne h.ne⟩, f.injective⟩
+protected def top (f : W ↪ V) : Copy H (⊤ : SimpleGraph V) := ⟨Hom.top f, f.injective⟩
 
 /-- The copy of `H` in `H.map ·`. -/
 protected abbrev map (f : W ↪ V) : Copy H (H.map f) := (Embedding.map f H).toCopy

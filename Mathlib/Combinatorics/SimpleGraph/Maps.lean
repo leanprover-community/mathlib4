@@ -446,6 +446,10 @@ theorem id_comp (f : G →g G') : .comp .id f = f := rfl
 theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
   rfl
 
+protected def bot (f : W → V) : (⊥ : SimpleGraph W) →g G := ⟨f, False.elim⟩
+
+protected def top (f : W ↪ V) : H →g (⊤ : SimpleGraph V) := ⟨f, fun h ↦ f.injective.ne h.ne⟩
+
 end Hom
 
 namespace Embedding
