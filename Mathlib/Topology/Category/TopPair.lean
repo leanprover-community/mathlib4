@@ -79,24 +79,27 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
+@[implicit_reducible, simps!]
+def proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
+@[implicit_reducible, simps!]
+def proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
-@[simps]
+@[implicit_reducible, simps]
 def incl : TopCat.{u} ⥤ TopPair.{u} where
   obj X := ofTopCat X
   map f := TopPair.ofHom f (𝟙 _) <| by ext x; induction x
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
-abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
+@[implicit_reducible]
+def diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
@@ -214,5 +217,25 @@ theorem equivalence : Equivalence (Homotopic (X := X) (Y := Y)) :=
   ⟨fun f ↦ ⟨Homotopy.refl f⟩, fun h ↦ h.map Homotopy.symm, fun h₀ h₁ ↦ h₀.map2 Homotopy.trans h₁⟩
 
 end Homotopic
+
+section Embedding
+
+/-- A morphism `f : X ⟶ Y` in `TopPair` is an embedding if its first and second component are
+embeddings. -/
+structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y)where
+  fst : Topology.IsEmbedding (Hom.fst f)
+  snd : Topology.IsEmbedding (Hom.snd f)
+
+end Embedding
+
+/-- A morphism `g : (V, C) ⟶ (X, A)` in `TopPair` is excisive if it is an embedding,
+`g(C) = g(V) ∩ C`, and `cl(g(V)ᶜ) ⊆ int(A)`. -/
+class IsExcisive ⦃V X : TopPair.{u}⦄ (g : V ⟶ X) : Prop where
+  isEmbedding_fst : Topology.IsEmbedding (Hom.fst g)
+  range_fst_map : Set.range (Hom.fst g ∘ V.map) = Set.range (Hom.fst g) ∩ Set.range X.map
+  closure_range_fst_compl : closure (Set.range (Hom.fst g))ᶜ ⊆ interior (Set.range X.map)
+
+/-- A `MorphismProperty` for `IsExcisive`. -/
+abbrev isExcisive : MorphismProperty TopPair.{u} := IsExcisive
 
 end TopPair
