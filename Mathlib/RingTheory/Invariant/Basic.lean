@@ -79,7 +79,7 @@ instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
     Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G ⧸ H) where
   isInvariant x hx := by
     obtain ⟨y, hy⟩ := Algebra.IsInvariant.isInvariant (A := A) (G := G) x.1
-      (fun g ↦ congr_arg Subtype.val (hx g))
+      (fun g ↦ congr($(hx g).val))
     exact ⟨y, Subtype.ext hy⟩
 
 end Quotient
@@ -419,7 +419,7 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
   suffices (σ.comp f).range ≤ f.range by
     let e := (AlgEquiv.ofInjective f hf)
     exact ⟨(e.symm.toAlgHom.comp (Subalgebra.inclusion this)).comp (σ.comp f).rangeRestrict,
-      fun x ↦ congr_arg Subtype.val (e.apply_symm_apply ⟨_, _⟩)⟩
+      fun x ↦ congr($(e.apply_symm_apply ⟨_, _⟩).val)⟩
   rintro _ ⟨x, rfl⟩
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   cases nonempty_fintype G
@@ -434,7 +434,7 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
     rw [Polynomial.aeval_def, ← Polynomial.eval_map,
       ← Polynomial.coe_mapRingHom (R := A), hp, MulSemiringAction.eval_charpoly]
   have : Polynomial.aeval (σ (algebraMap (B ⧸ Q) k (mk _ x))) P = 0 := by
-    refine (DFunLike.congr_fun (Polynomial.aeval_algHom ((σ.restrictScalars A).comp
+    refine congr($(Polynomial.aeval_algHom ((σ.restrictScalars A).comp
       (IsScalarTower.toAlgHom A (B ⧸ Q) k)) _) P).trans ?_
     rw [AlgHom.comp_apply, ← algebraMap_eq, Polynomial.aeval_algebraMap_apply, this,
       map_zero, map_zero]

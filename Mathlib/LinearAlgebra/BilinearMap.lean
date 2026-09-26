@@ -100,7 +100,7 @@ theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m 
   LinearMap.ext fun m => LinearMap.ext fun n => H m n
 
 theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
-  LinearMap.congr_fun (LinearMap.congr_fun h x) y
+  congr($h x y)
 
 theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
   ⟨congr_fun₂, ext₂⟩
@@ -365,7 +365,7 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     ext x y
     obtain ⟨x', rfl⟩ := hₗ x
     obtain ⟨y', rfl⟩ := hᵣ y
-    convert! LinearMap.congr_fun₂ h x' y' using 0
+    convert! congr($h x' y') using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
@@ -510,8 +510,11 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 
 variable {R}
 
-lemma lsmul_eq_distribSMultoLinearMap (r : R) :
+lemma lsmul_eq_distribSMulToLinearMap (r : R) :
     lsmul R M r = DistribSMul.toLinearMap R M r := rfl
+
+@[deprecated (since := "2026-09-17")]
+alias lsmul_eq_distribSMultoLinearMap := lsmul_eq_distribSMulToLinearMap
 
 variable {M}
 

@@ -118,7 +118,7 @@ lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
   ac_rfl
 
 @[simp] lemma odd_one : Odd (1 : α) :=
-  ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
+  ⟨0, (zero_add _).symm.trans congr($((mul_zero _).symm) + (1 : α))⟩
 
 @[simp] lemma Even.add_one (h : Even a) : Odd (a + 1) := h.add_odd odd_one
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one

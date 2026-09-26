@@ -125,7 +125,7 @@ theorem linearIndepOn_biUnion_of_directed {η} {s : Set η} {t : η → Set ι}
     (hs : DirectedOn (t ⁻¹'o (· ⊆ ·)) s) (h : ∀ a ∈ s, LinearIndepOn R v (t a)) :
     LinearIndepOn R v (⋃ a ∈ s, t a) := by
   rw [biUnion_eq_iUnion]
-  exact linearIndepOn_iUnion_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
+  exact linearIndepOn_iUnion_of_directed (directed_comp.2 hs.directed_val) (by simpa using h)
 
 end Indexed
 
@@ -533,7 +533,7 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
     LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
   have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
-  simpa [s.sum_eq_single i aux (by lia), h2 i] using congr_arg (f i) hrel
+  simpa [s.sum_eq_single i aux (by lia), h2 i] using congr(f i $hrel)
 
 end Module
 
@@ -555,7 +555,7 @@ lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [M
     linearCombination_single_index, smul_add, smul_sub, smul_zero, smul_comm r (l' i) m,
     hg, ← LinearMap.map_smul, smul_smul, ← linearCombination_single, ← map_sub, ← map_add] at hl'
   replace hl' : ∀ j, (r * l' j - (single i (r * l' i)) j) + l' i * l j = 0 :=
-    fun j ↦ DFunLike.congr_fun (hf _ hl') j
+    fun j ↦ congr($(hf _ hl') j)
   grind [mem_nonZeroDivisors_iff]
 
 /-!

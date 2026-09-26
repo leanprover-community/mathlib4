@@ -77,8 +77,8 @@ theorem FractionRing.isSeparable_of_isLocalization (hM : M ≤ R⁰) :
   ext
   simp only [RingHom.coe_comp,
       RingHom.coe_coe, Function.comp_apply, ← algebraMap_apply]
-  rw [algebraMap_apply R Rₘ (FractionRing R), AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
-    algebraMap_apply R S L, algebraMap_apply S Sₘ L, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
+  rw [algebraMap_apply R Rₘ (FractionRing R), AlgEquiv.coe_toRingEquiv, AlgEquiv.commutes,
+    algebraMap_apply R S L, algebraMap_apply S Sₘ L, AlgEquiv.coe_toRingEquiv, AlgEquiv.commutes]
   simp only [← algebraMap_apply]
   rw [algebraMap_apply R Rₘ (FractionRing Rₘ), ← algebraMap_apply Rₘ, ← algebraMap_apply]
 
@@ -197,14 +197,14 @@ instance [IsTorsionFree S T] : IsTorsionFree Sₚ Tₚ :=
     Ideal.primeCompl_le_nonZeroDivisors P
 
 instance [Algebra.IsIntegral R S] : Algebra.IsIntegral Rₚ Sₚ :=
-  Algebra.isIntegral_def.mpr <| (algebraMap_eq_map_map_submonoid P.primeCompl S Rₚ Sₚ ▸
+  Algebra.isIntegral_def.mpr (algebraMap_eq_map_map_submonoid P.primeCompl S Rₚ Sₚ ▸
     isIntegral_localization : (algebraMap Rₚ Sₚ).IsIntegral)
 
 variable [IsTorsionFree R T]
 
 instance : IsScalarTower Rₚ Sₚ Tₚ := by
   refine ⟨fun a b c ↦ a.ind fun ⟨a₁, a₂⟩ ↦ ?_⟩
-  have : a₂.val ≠ 0 := nonZeroDivisors.ne_zero <| Ideal.primeCompl_le_nonZeroDivisors P <| a₂.prop
+  have : a₂.val ≠ 0 := nonZeroDivisors.ne_zero <| Ideal.primeCompl_le_nonZeroDivisors P a₂.prop
   rw [← smul_right_inj this, ← _root_.smul_assoc (M := R) (N := Sₚ), ← _root_.smul_assoc (M := R)
     (α := Sₚ), ← _root_.smul_assoc (M := R) (α := Tₚ), Localization.smul_mk, smul_eq_mul,
     Localization.mk_eq_mk', IsLocalization.mk'_mul_cancel_left, algebraMap_smul, algebraMap_smul,

@@ -44,7 +44,7 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   invFun c :=
     { pt := c.pt
       ι j := c.ι.app j
-      ι_naturality f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x }
+      ι_naturality f := by ext x; congrm $(c.w f) x }
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -60,10 +60,10 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
      ⟨{ desc s := ↾fun x => hc.desc (F.coconeTypesEquiv.symm s) x
         fac s j := by
           ext x
-          exact congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) x
+          congrm $(hc.fac (F.coconeTypesEquiv.symm s) j) x
         uniq s m hm := by
           ext x
-          exact congr_fun (hc.funext fun j ↦ funext fun y ↦ by simp [← hm j]) x }⟩
+          congrm $(hc.funext fun j ↦ funext fun y ↦ by simp [← hm j]) x }⟩
   · rintro ⟨hc⟩
     classical
     refine ⟨⟨fun x y h ↦ ?_, fun x ↦ ?_⟩⟩
@@ -218,7 +218,7 @@ theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
       Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨j', x'⟩ := by
   apply Quot.eq.1
-  simpa using! congr_arg (colimitEquivColimitType F) w
+  simpa using! congr(colimitEquivColimitType F $w)
 
 set_option backward.defeqAttrib.useBackward true in
 theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : IsColimit t)
@@ -234,7 +234,7 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : I
       TypeCat.Fun.coe_mk, ne_eq, true_iff]
     exact hx j y
   · intro he
-    have := ConcreteCategory.congr_hom he x
+    have := congr($he x)
     dsimp at this
     exact of_eq_true (congrArg ULift.down this).symm rfl
 

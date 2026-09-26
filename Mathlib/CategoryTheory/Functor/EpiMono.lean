@@ -145,7 +145,7 @@ theorem preservesEpimorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F
     PreservesEpimorphisms F where
   preserves {X Y} f hf := ⟨by
     intro Z g h H
-    replace H := congr_arg (adj.homEquiv X Z) H
+    replace H := congr(adj.homEquiv X Z $H)
     rwa [adj.homEquiv_naturality_left, adj.homEquiv_naturality_left, cancel_epi,
       Equiv.apply_eq_iff_eq] at H⟩
 

@@ -516,7 +516,7 @@ private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f
     (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
   simp only [mulSupport_subset_iff, ne_eq, mem_support]
   intro
-  contrapose!
+  contrapose
   simp +contextual
 
 /--

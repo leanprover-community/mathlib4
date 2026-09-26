@@ -102,7 +102,7 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).Faithful where
   map_injective h := by
     ext x
-    simpa only using! DFunLike.congr_fun (ModuleCat.hom_ext_iff.mp h) x
+    simpa only using! congr($(ModuleCat.hom_ext_iff.mp h) x)
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
@@ -154,7 +154,7 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     (M →ₛₗ[f] N) ≃+ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N) <|
+  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N)
     { toFun := g
       map_add' := by simp
       map_smul' := by simp }
@@ -334,7 +334,7 @@ namespace Algebra
 
 instance {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
     (f : R →ₐ[R₀] S) : (restrictScalars f.toRingHom).Linear R₀ where
-  map_smul {M N} g r₀ := by ext m; exact congr_arg (· • g.hom m) (f.commutes r₀).symm
+  map_smul {M N} g r₀ := by ext m; congrm $((f.commutes r₀).symm) • g.hom m
 
 instance restrictScalarsEquivalenceOfRingEquiv_linear
     {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
@@ -567,7 +567,7 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
     (g : (restrictScalars f).obj Y ⟶ X) : Y ⟶ (coextendScalars f).obj X :=
   ofHom
   { toFun := fun y : Y => (CoextendScalars.equiv _ _).symm
-      { toFun := fun s : S => g <| (s • y : Y)
+      { toFun := fun s : S => g (s • y : Y)
         map_add' := fun s1 s2 : S => by simp [add_smul]
         map_smul' := fun r (s : S) => by
           rw [← g.hom.map_smul]

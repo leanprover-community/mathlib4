@@ -115,7 +115,7 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
   · rw [Γ₀.Obj.Termwise.mapMono_eq_zero _ i _ hi, zero_comp]
     swap
     · by_contra h'
-      exact h (congr_arg SimplexCategory.len h'.symm)
+      exact h congr($(h'.symm).len)
     rw [PInfty_comp_map_mono_eq_zero]
     · exact h
     · assumption
