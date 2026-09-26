@@ -91,6 +91,7 @@ instance : Sub (WithVal v) where sub x y := toVal _ (x.ofVal - y.ofVal)
 instance : Neg (WithVal v) where neg x := toVal _ (-x.ofVal)
 instance : Mul (WithVal v) where mul x y := toVal _ (x.ofVal * y.ofVal)
 instance {S} [SMul S R] : SMul S (WithVal v) where smul s x := toVal _ (s • x.ofVal)
+instance : Pow (WithVal v) ℕ+ where pow x n := toVal _ (x.ofVal ^ n)
 instance : Pow (WithVal v) ℕ where pow x n := toVal _ (x.ofVal ^ n)
 instance : NatCast (WithVal v) where natCast n := toVal _ n
 instance : IntCast (WithVal v) where intCast z := toVal _ z
@@ -119,6 +120,10 @@ instance : IntCast (WithVal v) where intCast z := toVal _ z
 
 @[simp] lemma ofVal_neg (x : WithVal v) : ofVal (-x) = -ofVal x := rfl
 
+@[simp] lemma toVal_ppow (x : R) (n : ℕ+) : toVal v (x ^ n) = (toVal v x) ^ n := rfl
+
+@[simp] lemma ofVal_ppow (x : WithVal v) (n : ℕ+) : ofVal (x ^ n) = (ofVal x) ^ n := rfl
+
 @[simp] lemma toVal_pow (x : R) (n : ℕ) : toVal v (x ^ n) = (toVal v x) ^ n := rfl
 
 @[simp] lemma ofVal_pow (x : WithVal v) (n : ℕ) : ofVal (x ^ n) = (ofVal x) ^ n := rfl
@@ -138,7 +143,8 @@ instance : IntCast (WithVal v) where intCast z := toVal _ z
 
 instance : Ring (WithVal v) := fast_instance% ofVal_injective v |>.ring _
   (ofVal_zero _) (ofVal_one _) (ofVal_add _) (ofVal_mul _) (ofVal_neg _) (ofVal_sub _)
-  (ofVal_smul _) (ofVal_smul _) (ofVal_pow _) (ofVal_natCast _) (ofVal_intCast _)
+  (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_ppow _) (ofVal_pow _) (ofVal_natCast _)
+  (ofVal_intCast _)
 
 instance : Inhabited (WithVal v) := ⟨0⟩
 instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
@@ -386,8 +392,9 @@ variable [Field R] (v : Valuation R Γ₀)
 instance : Field (WithVal v) := fast_instance% ofVal_injective v |>.field _
   (ofVal_zero _) (ofVal_one _) (ofVal_add _) (ofVal_mul _) (ofVal_neg _) (ofVal_sub _)
   (ofVal_inv _) (ofVal_div _)
-  (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_pow _) (ofVal_zpow _)
-  (ofVal_natCast _) (ofVal_intCast _) (ofVal_nnratCast _) (ofVal_ratCast _)
+  (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_ppow _)
+  (ofVal_pow _) (ofVal_zpow _) (ofVal_natCast _) (ofVal_intCast _) (ofVal_nnratCast _)
+  (ofVal_ratCast _)
 
 instance [NumberField R] : NumberField (WithVal v) where
 

@@ -30,7 +30,7 @@ open CategoryTheory.Limits Preadditive
 
 /-- The category of algebras over an additive endofunctor on a preadditive category is preadditive.
 -/
-@[simps]
+@[simps (dsimpLhs := true)]
 instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) where
   homGroup A₁ A₂ :=
     { add α β :=
@@ -39,6 +39,9 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, zero_comp, comp_zero] }
+      psmul n α :=
+        { f := n • α.f
+          h := by rw [comp_psmul, Functor.map_psmul, psmul_comp, Endofunctor.Algebra.Hom.h] }
       nsmul n α :=
         { f := n • α.f
           h := by rw [comp_nsmul, Functor.map_nsmul, nsmul_comp, Endofunctor.Algebra.Hom.h] }
@@ -54,6 +57,8 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
       add_assoc _ _ _ := Algebra.Hom.ext <| add_assoc _ _ _
       zero_add _ := Algebra.Hom.ext <| zero_add _
       add_zero _ := Algebra.Hom.ext <| add_zero _
+      psmul_one _ := Algebra.Hom.ext <| one_psmul _
+      psmul_succ _ _ := Algebra.Hom.ext <| succ_psmul _ _
       nsmul_zero _ := Algebra.Hom.ext <| zero_nsmul _
       nsmul_succ _ _ := Algebra.Hom.ext <| succ_nsmul _ _
       sub_eq_add_neg _ _ := Algebra.Hom.ext <| sub_eq_add_neg _ _
@@ -67,7 +72,7 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
 
 instance Algebra.forget_additive : (Endofunctor.Algebra.forget F).Additive where
 
-@[simps]
+@[simps (dsimpLhs := true)]
 instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F) where
   homGroup A₁ A₂ :=
     { add α β :=
@@ -76,6 +81,9 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
       zero :=
         { f := 0
           h := by simp only [Functor.map_zero, zero_comp, comp_zero] }
+      psmul n α :=
+        { f := n • α.f
+          h := by rw [Functor.map_psmul, comp_psmul, Endofunctor.Coalgebra.Hom.h, psmul_comp] }
       nsmul n α :=
         { f := n • α.f
           h := by rw [Functor.map_nsmul, comp_nsmul, Endofunctor.Coalgebra.Hom.h, nsmul_comp] }
@@ -91,6 +99,8 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
       add_assoc _ _ _ := Coalgebra.Hom.ext <| add_assoc _ _ _
       zero_add _ := Coalgebra.Hom.ext <| zero_add _
       add_zero _ := Coalgebra.Hom.ext <| add_zero _
+      psmul_one _ := Coalgebra.Hom.ext <| one_psmul _
+      psmul_succ _ _ := Coalgebra.Hom.ext <| succ_psmul _ _
       nsmul_zero _ := Coalgebra.Hom.ext <| zero_nsmul _
       nsmul_succ _ _ := Coalgebra.Hom.ext <| succ_nsmul _ _
       sub_eq_add_neg _ _ := Coalgebra.Hom.ext <| sub_eq_add_neg _ _
