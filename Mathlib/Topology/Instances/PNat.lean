@@ -10,7 +10,8 @@ public import Mathlib.Topology.Instances.Nat
 /-!
 # Topology on the positive natural numbers
 
-The structure of a metric space on `ℕ+` is introduced in this file, induced from `ℝ`.
+The topological structure and metric space on `ℕ+` is introduced in this file,
+shown to be equal to induced from `ℕ`.
 -/
 
 public section
@@ -21,16 +22,29 @@ open Metric
 
 namespace PNat
 
-instance : MetricSpace ℕ+ := inferInstanceAs (MetricSpace { n : ℕ // 0 < n })
+-- after #43876, move these to `Mathlib/Topology/Order.lean`
+instance : TopologicalSpace ℕ+ := ⊥
+instance : DiscreteTopology ℕ+ := ⟨rfl⟩
+
+instance : MetricSpace ℕ+ :=
+  MetricSpace.replaceTopology (inferInstanceAs (MetricSpace { n : ℕ // 0 < n })) <| by
+    ext s
+    simp only [isOpen_discrete, true_iff]
+    rw [isOpen_mk]
+    refine ⟨val '' s, ?_⟩
+    simp only [val, isOpen_discrete, true_and]
+    exact Set.preimage_image_eq s Subtype.val_injective
 
 theorem dist_eq (x y : ℕ+) : dist x y = |(↑x : ℝ) - ↑y| := rfl
 
 @[simp, norm_cast]
 theorem dist_coe (x y : ℕ+) : dist (↑x : ℕ) (↑y : ℕ) = dist x y := rfl
 
-theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : ℕ+ → ℕ) := isUniformEmbedding_subtype_val
-
-instance : DiscreteTopology ℕ+ := inferInstanceAs (DiscreteTopology { n : ℕ // 0 < n })
+theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : ℕ+ → ℕ) := by
+  convert isUniformEmbedding_subtype_val (p := (fun n => 0 < n))
+  · rfl
+  · exact heq_of_eq (UniformSpace.ext rfl)
+  · rfl
 
 instance : ProperSpace ℕ+ where
   isCompact_closedBall n r := by
