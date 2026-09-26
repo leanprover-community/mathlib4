@@ -1347,3 +1347,49 @@ universe v u in
 def ULift.orderIso {α : Type u} [Preorder α] :
     ULift.{v} α ≃o α :=
   Equiv.ulift.toOrderIso (fun _ _ ↦ id) (fun _ _ ↦ id)
+
+namespace Relation
+
+/-- For injective functions `f : α → γ` and `g : β → δ`, `Relation.Map · f g` is an order embedding
+from `α`-`β`-relations into `γ`-`δ`-relations. -/
+@[simps]
+def mapOrderEmbedding (f : α → γ) (hf : f.Injective) (g : β → δ) (hg : g.Injective) :
+    (α → β → Prop) ↪o (γ → δ → Prop) where
+  toFun r := Relation.Map r f g
+  inj' r s h := by
+    dsimp at h
+    rw [← Relation.bicompl_map_eq_of_injective r hf hg,
+      ← Relation.bicompl_map_eq_of_injective s hf hg, h]
+  map_rel_iff' {r s} := by
+    refine ⟨fun hle a b hr ↦ ?_, Relation.map_mono⟩
+    have ⟨a', b', hs, ha, hb⟩ := hle _ _ ⟨a, b, hr, rfl, rfl⟩
+    rwa [← hf ha, ← hg hb]
+
+/-- For surjective functions `f : α → γ` and `g : β → δ`, `Function.bicompl · f g` is an order
+embedding from `γ`-`δ`-relations into `α`-`β`-relations. -/
+@[simps]
+def bicomplOrderEmbedding (f : α → γ) (hf : f.Surjective) (g : β → δ) (hg : g.Surjective) :
+    (γ → δ → Prop) ↪o (α → β → Prop) where
+  toFun r := r.bicompl f g
+  inj' r s h := by
+    dsimp at h
+    rw [← Relation.map_bicompl_eq_of_surjective r hf hg,
+      ← Relation.map_bicompl_eq_of_surjective s hf hg, h]
+  map_rel_iff' {r s} := by
+    refine ⟨fun hle a b hr ↦ ?_, fun hle a b hr ↦ hle _ _ hr⟩
+    obtain ⟨a, rfl⟩ := hf a
+    obtain ⟨b, rfl⟩ := hg b
+    exact hle a b hr
+
+/-- For bijective functions `f : α → γ` and `g : β → δ`, `Relation.Map · f g` and
+`Function.bicompl · f g` form an order isomorphism between `α`-`β`-relations into `γ`-`δ`-relations.
+-/
+@[simps]
+def mapBicomplOrderIso (f : α → γ) (hf : f.Bijective) (g : β → δ) (hg : g.Bijective) :
+    (α → β → Prop) ≃o (γ → δ → Prop) where
+  __ := Relation.mapOrderEmbedding f hf.injective g hg.injective
+  invFun r := r.bicompl f g
+  left_inv r := Relation.bicompl_map_eq_of_injective r hf.injective hg.injective
+  right_inv r := Relation.map_bicompl_eq_of_surjective r hf.surjective hg.surjective
+
+end Relation
