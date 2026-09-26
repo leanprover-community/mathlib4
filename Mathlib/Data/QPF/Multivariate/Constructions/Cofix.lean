@@ -63,15 +63,15 @@ def corecF {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) : β �
   M.corec _ fun x => repr (g x)
 
 theorem corecF_eq {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
-    M.dest q.P (corecF g x) = appendFun id (corecF g) <$$> repr (g x) := by
+    M.dest q.P (corecF g x) = MvPFunctor.map _ (appendFun id (corecF g)) (repr (g x)) := by
   rw [corecF, M.dest_corec]
 
 /-- Characterization of desirable equivalence relations on M-types -/
 def IsPrecongr {α : TypeVec n} (r : q.P.M α → q.P.M α → Prop) : Prop :=
   ∀ ⦃x y⦄,
     r x y →
-      abs (appendFun id (Quot.mk r) <$$> M.dest q.P x) =
-        abs (appendFun id (Quot.mk r) <$$> M.dest q.P y)
+      abs (MvPFunctor.map _ (appendFun id (Quot.mk r)) (M.dest q.P x)) =
+        abs (MvPFunctor.map _ (appendFun id (Quot.mk r)) (M.dest q.P y))
 
 /-- Equivalence relation on M-types representing a value of type `Cofix F` -/
 def Mcongr {α : TypeVec n} (x y : q.P.M α) : Prop :=
@@ -95,28 +95,32 @@ instance {α : TypeVec n} [Inhabited q.P.A] [∀ i : Fin2 n, Inhabited (α i)] :
 def mRepr {α : TypeVec n} : q.P.M α → q.P.M α :=
   corecF (abs ∘ M.dest q.P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- the map function for the functor `Cofix F` -/
 def Cofix.map {α β : TypeVec n} (g : α ⟹ β) : Cofix F α → Cofix F β :=
-  Quot.lift (fun x : q.P.M α => Quot.mk Mcongr (g <$$> x))
+  Quot.lift (fun x : q.P.M α => Quot.mk Mcongr (MvPFunctor.map _ g x))
     (by
       rintro aa₁ aa₂ ⟨r, pr, ra₁a₂⟩; apply Quot.sound
-      let r' b₁ b₂ := ∃ a₁ a₂ : q.P.M α, r a₁ a₂ ∧ b₁ = g <$$> a₁ ∧ b₂ = g <$$> a₂
+      let r' b₁ b₂ := ∃ a₁ a₂ : q.P.M α, r a₁ a₂ ∧
+        b₁ = MvPFunctor.map _ g a₁ ∧ b₂ = MvPFunctor.map _ g a₂
       use r'; constructor
       · show IsPrecongr r'
         rintro b₁ b₂ ⟨a₁, a₂, ra₁a₂, b₁eq, b₂eq⟩
         let u : Quot r → Quot r' :=
-          Quot.lift (fun x : q.P.M α => Quot.mk r' (g <$$> x))
+          Quot.lift (fun x : q.P.M α => Quot.mk r' (MvPFunctor.map _ g x))
             (by
               intro a₁ a₂ ra₁a₂
               apply Quot.sound
               exact ⟨a₁, a₂, ra₁a₂, rfl, rfl⟩)
-        have hu : (Quot.mk r' ∘ fun x : q.P.M α => g <$$> x) = u ∘ Quot.mk r := by
+        have hu : (Quot.mk r' ∘ fun x : q.P.M α => MvPFunctor.map _ g x) = u ∘ Quot.mk r := by
           ext x
           rfl
         rw [b₁eq, b₂eq, M.dest_map, M.dest_map, ← q.P.comp_map, ← q.P.comp_map]
-        rw [← appendFun_comp, id_comp, hu, ← comp_id g, appendFun_comp]
+        rw [← appendFun_comp, id_comp]
+        erw [hu]
+        rw [← comp_id g, appendFun_comp]
         rw [q.P.comp_map, q.P.comp_map, abs_map, pr ra₁a₂, ← abs_map]
-      show r' (g <$$> aa₁) (g <$$> aa₂); exact ⟨aa₁, aa₂, ra₁a₂, rfl, rfl⟩)
+      exact ⟨aa₁, aa₂, ra₁a₂, rfl, rfl⟩)
 
 instance Cofix.mvfunctor : MvFunctor (Cofix F) where map := @Cofix.map _ _ _
 
