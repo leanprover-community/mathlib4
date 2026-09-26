@@ -84,7 +84,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
   refine Tendsto.mul (Real.tendsto_one_add_pow_exp_of_tendsto ?_) ?_
   · simpa using hr.neg
   refine Tendsto.inv₀ (.pow ?_ k) (by simp)
-  · simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
+  simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
 
 /--
 Another version of Poisson Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
