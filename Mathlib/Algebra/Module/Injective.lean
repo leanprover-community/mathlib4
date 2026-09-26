@@ -428,7 +428,7 @@ lemma Module.injective_of_ulift_injective
     Module.Injective R M where
   out _ _ _ _ _ _ f hf g :=
     have ⟨g', hg'⟩ := inj.out f hf (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g)
-    ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun x ↦ by congrm ULift.down $(hg' ⟨x⟩)⟩
+    ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun x ↦ by congrm ULift.down $(hg' x)⟩
 
 variable (M)
 
