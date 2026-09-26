@@ -601,4 +601,92 @@ def overFunctorEquiv {X : Scheme.{u}} (U : X.Opens) :
   simp only [CategoryTheory.Functor.map_id, Opposite.op_unop, Opens.ι_appIso, Iso.refl_inv]
   rfl
 
+section GlobalAction
+
+variable (F : X.Modules)
+
+/-- Multiplication by a global section `r : Γ(X, ⊤)`, as an endomorphism of the abelian presheaf
+underlying an `𝒪ₓ`-module `F`: over `U` it is multiplication by the restriction of `r` to `U`. -/
+noncomputable def smulNatTrans (r : Γ(X, ⊤)) :
+    ((SheafOfModules.toSheaf X.ringCatSheaf).obj F).obj ⟶
+      ((SheafOfModules.toSheaf X.ringCatSheaf).obj F).obj where
+  app U := F.smul (X.presheaf.map U.unop.leTop.op r)
+  naturality U V g := by
+    have h := F.map_comp_smul g.unop (X.presheaf.map U.unop.leTop.op r)
+    rw [← ConcreteCategory.comp_apply, ← X.presheaf.map_comp] at h
+    exact h.symm
+
+@[simp] lemma smulNatTrans_app (r : Γ(X, ⊤)) (U : (Opens X)ᵒᵖ) :
+    (smulNatTrans F r).app U = F.smul (X.presheaf.map U.unop.leTop.op r) := rfl
+
+@[simp] private lemma homEquiv_symm_smulNatTrans_app (r : Γ(X, ⊤)) (U : (Opens X)ᵒᵖ) :
+    (Sheaf.homEquiv.symm (smulNatTrans F r)).hom.app U =
+      F.smul (X.presheaf.map U.unop.leTop.op r) := rfl
+
+/-- Multiplication by a global section `r : Γ(X, ⊤)` as an endomorphism of the
+underlying abelian sheaf of the `𝒪ₓ`-module `F`. -/
+noncomputable def smulEnd :
+    Γ(X, ⊤) →+* CategoryTheory.End ((SheafOfModules.toSheaf _).obj F) where
+  toFun r := Sheaf.homEquiv.symm (smulNatTrans F r)
+  map_one' := Sheaf.hom_ext (NatTrans.ext (funext fun U => by
+    simp only [homEquiv_symm_smulNatTrans_app, Opposite.op_unop, map_one, End.one_def,
+      ObjectProperty.FullSubcategory.id_hom, NatTrans.id_app]
+    rfl))
+  map_mul' r s := Sheaf.hom_ext (NatTrans.ext (funext fun U => by
+    simp only [homEquiv_symm_smulNatTrans_app, Opposite.op_unop, map_mul, End.mul_def,
+      ObjectProperty.FullSubcategory.comp_hom, NatTrans.comp_app]
+    rfl))
+  map_zero' := Sheaf.hom_ext (NatTrans.ext (funext fun U => by
+    simp only [homEquiv_symm_smulNatTrans_app, Opposite.op_unop, map_zero,
+      ObjectProperty.zero_hom, zero_app]
+    rfl))
+  map_add' r s := Sheaf.hom_ext (NatTrans.ext (funext fun U => by
+    simp only [homEquiv_symm_smulNatTrans_app, Opposite.op_unop, map_add]
+    rfl))
+
+lemma smulEnd_apply (r : Γ(X, ⊤)) :
+    smulEnd F r = Sheaf.homEquiv.symm (smulNatTrans F r) := rfl
+
+@[simp] lemma smulEnd_hom_app (r : Γ(X, ⊤)) (U : (Opens X)ᵒᵖ) :
+    (smulEnd F r).hom.app U = F.smul (X.presheaf.map U.unop.leTop.op r) := rfl
+
+/-- On global sections, multiplication by `r : Γ(X, ⊤)` is the `Γ(X, ⊤)`-action on `Γ(F, ⊤)`:
+the restriction map along `⊤ ⟶ ⊤` is the identity. -/
+lemma smulEnd_hom_app_top (r : Γ(X, ⊤)) (x : Γ(F, ⊤)) :
+    (smulEnd F r).hom.app (Opposite.op ⊤) x = r • x := by
+  have hr : X.presheaf.map (Opens.leTop (⊤ : X.Opens)).op r = r := by
+    rw [Subsingleton.elim (Opens.leTop (⊤ : X.Opens)) (𝟙 _)]; simp
+  rw [smulEnd_hom_app, hr]
+  exact smul_apply r x
+
+/-- A morphism of `𝒪ₓ`-modules commutes with multiplication by a global section: it is
+`𝒪ₓ`-linear, which on sections over `U` is `Scheme.Modules.Hom.app_smul`. -/
+@[reassoc (attr := simp)]
+lemma toSheaf_map_comp_smulEnd {F G : X.Modules} (φ : F ⟶ G) (r : Γ(X, ⊤)) :
+    (SheafOfModules.toSheaf _).map φ ≫ smulEnd G r
+      = smulEnd F r ≫ (SheafOfModules.toSheaf _).map φ :=
+  Sheaf.hom_ext (NatTrans.ext (funext fun U => by
+    change φ.app U.unop ≫ G.smul (X.presheaf.map U.unop.leTop.op r)
+      = F.smul (X.presheaf.map U.unop.leTop.op r) ≫ φ.app U.unop
+    ext x
+    exact (Hom.app_smul φ _ x).symm))
+
+end GlobalAction
+
+section Base
+
+variable {R : CommRingCat} (f : X ⟶ Spec R)
+
+/-- For `X` a scheme over `R` via `f : X ⟶ Spec R`, any `Γ(X, ⊤)`-module is an `R`-module by
+restriction of scalars along the ring homomorphism `R →+* Γ(X, ⊤)` underlying `f`. -/
+@[instance_reducible]
+noncomputable def moduleOfBase (M : Type*) [AddCommGroup M] [Module Γ(X, ⊤) M] : Module R M :=
+  Module.compHom M ((Scheme.ΓSpecIso R).inv ≫ f.appTop).hom
+
+lemma moduleOfBase_smul (M : Type*) [AddCommGroup M] [Module Γ(X, ⊤) M] (r : R) (x : M) :
+    letI := moduleOfBase f M
+    r • x = ((Scheme.ΓSpecIso R).inv ≫ f.appTop) r • x := rfl
+
+end Base
+
 end AlgebraicGeometry.Scheme.Modules
