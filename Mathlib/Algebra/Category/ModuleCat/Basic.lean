@@ -214,7 +214,7 @@ end
 definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-02")]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom +typeChanged (since := "2026-03-02")]
 lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     (forget (ModuleCat.{v} R)).map f = (f : _ → _) :=
   rfl
@@ -554,7 +554,7 @@ with the scalar multiplication. -/
 def homMk : M ⟶ N where
   hom'.toFun := φ
   hom'.map_add' _ _ := φ.hom.map_add _ _
-  hom'.map_smul' r x := (ConcreteCategory.congr_hom (hφ r) x).symm
+  hom'.map_smul' r x := congr($(hφ r) x).symm
 
 lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGrpCat).map (homMk φ hφ) = φ := rfl

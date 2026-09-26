@@ -65,7 +65,7 @@ lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
   simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum]
 
-@[deprecated Matrix.GeneralLinearGroup.fin_two_smul (since := "2026-04-19")]
+@[deprecated Matrix.GeneralLinearGroup.fin_two_smul +typeChanged (since := "2026-04-19")]
 lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
     (g : GL (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
@@ -133,7 +133,7 @@ lemma equivProjectivization_smul {g : GL (Fin 2) K} (x : OnePoint K) :
 set_option backward.isDefEq.respectTransparency.types false in
 lemma smul_infty_def {g : GL (Fin 2) K} :
     g • ∞ = (equivProjectivization K).symm (.mk K ![g 0 0, g 1 0] (fun h ↦ by
-      simpa [det_fin_two, show g 0 0 = 0 from congr_fun h 0, show g 1 0 = 0 from congr_fun h 1]
+      simpa [det_fin_two, show g 0 0 = 0 from congr($h 0), show g 1 0 = 0 from congr($h 1)]
         using g.det_ne_zero)) := by
   simp [Equiv.smul_def, mulVec_eq_sum, Units.smul_def]
 

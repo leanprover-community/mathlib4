@@ -50,7 +50,7 @@ abbrev forget : C ⥤ Type w where
   map f := ↾f
 
 instance : (forget C).Faithful where
-  map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ ConcreteCategory.congr_hom h x
+  map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ congr($h x)
 
 variable {C}
 
@@ -68,7 +68,7 @@ theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 when `h : f = g` is an equality between morphisms in a concrete category.
 -/
 protected theorem congr_fun {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : ToType X) : f x = g x :=
-  congrFun (congrArg (fun k : X ⟶ Y => (k : ToType X → ToType Y)) h) x
+  congr($h x)
 
 /-- Analogue of `congr_arg f h`,
 when `h : x = x'` is an equality between elements of objects in a concrete category.

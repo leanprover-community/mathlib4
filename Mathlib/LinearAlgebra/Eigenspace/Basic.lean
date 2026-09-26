@@ -293,7 +293,7 @@ lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
 meaningful. -/
 noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
-  monotonicSequenceLimitIndex <| (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
+  monotonicSequenceLimitIndex <| (f.genEigenspace μ).comp WithTop.coeOrderHom.toOrderHom
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
@@ -301,7 +301,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M) (μ : R) :
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
-    (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
+    (f.genEigenspace μ).comp WithTop.coeOrderHom.toOrderHom
   convert! this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
@@ -714,7 +714,7 @@ theorem independent_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M)
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.mp hx'; clear hx'
   let g := f - μ₂ • 1
   simp_rw [mem_genEigenspace, ← exists_prop] at hy ⊢
-  peel hy with l hlk hl
+  gconvert hy with l hlk hl
   simp only [LinearMap.mem_ker] at hl
   have hyz : (g ^ l) (y + z) ∈
       (f.genEigenspace μ₁ k) ⊓ s.sup fun μ ↦ f.genEigenspace μ k := by
@@ -802,7 +802,7 @@ theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp
     (μ : R) : (eigenspace (f.restrict hfp) μ).map p.subtype ≤ f.eigenspace μ := by
   rintro a ⟨x, hx, rfl⟩
   simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢
-  exact congr_arg Subtype.val hx
+  congrm $(hx).val
 
 /-- Generalized eigenrange and generalized eigenspace for exponent `finrank K V` are disjoint. -/
 theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End K V) (μ : K) :
@@ -857,7 +857,7 @@ lemma genEigenspace_le_smul (f : Module.End R M) (μ t : R) (k : ℕ∞) :
     (f.genEigenspace μ k) ≤ (t • f).genEigenspace (t * μ) k := by
   intro m hm
   simp_rw [mem_genEigenspace, ← exists_prop, LinearMap.mem_ker] at hm ⊢
-  peel hm with l hlk hl
+  gconvert hm using 2 with l hlk hl
   rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hl, smul_zero]
 
 lemma genEigenspace_inf_le_add

@@ -48,6 +48,7 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
+@[macro_inline]
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective _ _ h := Subtype.ext h
@@ -73,7 +74,7 @@ theorem tsum_coe_indicator_ne_top (p : PMF α) (s : Set α) : ∑' a, s.indicato
 
 @[simp]
 theorem coe_ne_zero (p : PMF α) : ⇑p ≠ 0 := fun hp =>
-  zero_ne_one ((tsum_zero.symm.trans (tsum_congr fun x => symm (congr_fun hp x))).trans p.tsum_coe)
+  zero_ne_one ((tsum_zero.symm.trans (tsum_congr fun x => symm congr($hp x))).trans p.tsum_coe)
 
 /-- The support of a `PMF` is the set where it is nonzero. -/
 def support (p : PMF α) : Set α :=

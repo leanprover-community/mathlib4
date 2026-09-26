@@ -277,7 +277,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   -- It suffices to consider the edge-maximal case
   obtain ⟨Gmax, hSubgraph, hMatchingFree, hMaximal⟩ := exists_maximal_isMatchingFree h
   refine ⟨Gmax.universalVerts, .mono hSubgraph ?_⟩
-  by_contra! hc
+  by_contra hc
   simp only [IsTutteViolator, Set.ncard_eq_toFinset_card', Set.toFinset_card] at hc
   by_cases! h' : ∀ (K : ConnectedComponent Gmax.deleteUniversalVerts.coe),
       Gmax.deleteUniversalVerts.coe.IsClique K.supp

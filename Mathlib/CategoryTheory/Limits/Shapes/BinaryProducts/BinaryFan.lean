@@ -6,6 +6,8 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Binary fans and cofans

@@ -46,8 +46,8 @@ lemma comul_eq_algHom_toLinearMap :
   rfl
 
 noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra S (A ⊗[R] B) := by
-  have hcounit := congr(DFunLike.coe $(counit_eq_algHom_toLinearMap R S A B))
-  have hcomul := congr(DFunLike.coe $(comul_eq_algHom_toLinearMap R S A B))
+  have hcounit := congr($(counit_eq_algHom_toLinearMap R S A B))
+  have hcomul := congr($(comul_eq_algHom_toLinearMap R S A B))
   refine Bialgebra.mk' S (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
   simp_all only [AlgHom.toLinearMap_apply] <;>
   simp only [map_one, map_mul]
@@ -141,10 +141,7 @@ variable (R S A) in
 bialgebra equivalence. -/
 @[expose] protected def rid : A ⊗[R] R ≃ₐc[S] A where
   toCoalgEquiv := Coalgebra.TensorProduct.rid R S A
-  map_mul' x y := by
-    simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
-      LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
-      coalgebra_rid_eq_algebra_rid_apply, map_mul]
+  map_mul' x y := by simp [coalgebra_rid_eq_algebra_rid_apply]
 
 @[simp]
 theorem rid_toCoalgEquiv :

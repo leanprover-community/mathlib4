@@ -81,7 +81,6 @@ section Fintype
 
 variable {J : Type*} [Fintype J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a preadditive category, we can construct a biproduct for `f : J → C` from
 any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.X`.
 

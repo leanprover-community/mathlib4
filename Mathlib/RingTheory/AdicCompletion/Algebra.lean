@@ -402,9 +402,9 @@ def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
     (hf : ∀ {m n : ℕ} (hle : m ≤ n),
       (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m) :
     A →ₐ[R] AdicCompletion I S where
-  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; exact congr($(hf hle) x)
+  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; congrm $(hf hle) x
   commutes' r := ext_evalₐ fun n ↦ by
-    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; exact congr($(hf hle) x)]
+    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; congrm $(hf hle) x]
 
 variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n),
@@ -413,7 +413,7 @@ variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
 @[simp]
 lemma evalₐ_liftAlgHom (n : ℕ) (x : A) :
     evalₐ I n (liftAlgHom I f hf x) = f n x :=
-  evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; exact congr($(hf hle) x)) _ _
+  evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; congrm $(hf hle) x) _ _
 
 @[simp]
 lemma evalOneₐ_liftAlgHom (x : A) :

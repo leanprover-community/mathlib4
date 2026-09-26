@@ -10,13 +10,13 @@ public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.Order.Ring.Finset
 
 /-!
-## Expand multivariate polynomials
+# Expand multivariate polynomials
 
 Given a multivariate polynomial `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some natural number `n`.
 This operation is called `MvPolynomial.expand` and it is an algebra homomorphism.
 
-### Main declaration
+## Main declaration
 
 * `MvPolynomial.expand`: expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
@@ -75,7 +75,7 @@ theorem expand_mul_eq_comp (q : ℕ) :
   simp [pow_mul]
 
 theorem expand_mul (q : ℕ) (φ : MvPolynomial σ R) : φ.expand (p * q) = (φ.expand q).expand p :=
-  DFunLike.congr_fun (expand_mul_eq_comp p q) φ
+  congr($(expand_mul_eq_comp p q) φ)
 
 @[simp]
 lemma coeff_expand_smul (hp : p ≠ 0) (φ : MvPolynomial σ R) (m : σ →₀ ℕ) :
@@ -132,7 +132,7 @@ theorem rename_comp_expand (f : σ → τ) :
 @[simp]
 theorem rename_expand (f : σ → τ) (φ : MvPolynomial σ R) :
     rename f (expand p φ) = expand p (rename f φ) :=
-  DFunLike.congr_fun (rename_comp_expand p f) φ
+  congr($(rename_comp_expand p f) φ)
 
 lemma eval₂Hom_comp_expand (f : R →+* S) (g : σ → S) :
     (eval₂Hom f g).comp (expand p (σ := σ) (R := R) : MvPolynomial σ R →+* MvPolynomial σ R) =
@@ -142,7 +142,7 @@ lemma eval₂Hom_comp_expand (f : R →+* S) (g : σ → S) :
 @[simp]
 lemma eval₂_expand (f : R →+* S) (g : σ → S) (φ : MvPolynomial σ R) :
     eval₂ f g (expand p φ) = eval₂ f (g ^ p) φ :=
-  DFunLike.congr_fun (eval₂Hom_comp_expand p f g) φ
+  congr($(eval₂Hom_comp_expand p f g) φ)
 
 @[simp]
 lemma aeval_comp_expand {A : Type*} [CommSemiring A] [Algebra R A] (f : σ → A) :

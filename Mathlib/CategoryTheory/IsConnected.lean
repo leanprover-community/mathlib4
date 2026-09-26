@@ -88,7 +88,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
   map {j _} f := have := Nonempty.intro j
-    ⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩
+    ⟨congr(Function.invFun F.obj $(Discrete.ext (Discrete.eq_of_hom (F.map f))))⟩
 
 set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
@@ -199,7 +199,7 @@ The converse is given in `IsConnected.of_induct`.
 -/
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
-  let aux (j₁ j₂ : J) (f : j₁ ⟶ j₂) := congrArg ULift.up <| (h1 f).eq
+  let aux (j₁ j₂ : J) (f : j₁ ⟶ j₂) := congrArg ULift.up (h1 f).eq
   injection constant_of_preserves_morphisms (fun k => ULift.up.{u₁} (k ∈ p)) aux j j₀ with i
   rwa [i]
 

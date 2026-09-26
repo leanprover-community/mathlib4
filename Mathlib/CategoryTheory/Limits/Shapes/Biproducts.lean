@@ -153,7 +153,7 @@ instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
+    BiconeMorphism.ext f g <| G.map_injective congr(BiconeMorphism.hom $h)
 
 end Bicones
 
@@ -184,6 +184,7 @@ theorem toCone_π_app_mk (B : Bicone F) (j : J) : B.toCone.π.app ⟨j⟩ = B.π
 @[simp] theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 
 /-- Extract the cocone from a bicone. -/
+@[implicit_reducible]
 @[implicit_reducible]
 def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
@@ -262,7 +263,7 @@ section Whisker
 variable {K : Type w'}
 
 /-- Whisker a bicone with an equivalence between the indexing types. -/
-@[simps]
+@[implicit_reducible, simps]
 def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
   pt := c.pt
   π k := c.π (g k)
@@ -271,7 +272,6 @@ def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
     simp only [c.ι_π]
     split_ifs with h h' h' <;> simp [Equiv.apply_eq_iff_eq g] at h h' <;> tauto
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Taking the cone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cone and postcomposing with a suitable isomorphism. -/
 def whiskerToCone {f : J → C} (c : Bicone f) (g : K ≃ J) :
@@ -541,7 +541,6 @@ theorem biproduct.isoCoproduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).hom = biproduct.desc (Sigma.ι f) :=
   biproduct.hom_ext' _ _ fun j => by simp [← Iso.eq_comp_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a category has biproducts of a shape `J`, its `colim` and `lim` functor on diagrams over `J`
 are isomorphic. -/
 @[simps!]
@@ -727,7 +726,6 @@ type. -/
 def biproduct.toSubtype : ⨁ f ⟶ ⨁ Subtype.restrict p f :=
   biproduct.lift fun _ => biproduct.π _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
     biproduct.fromSubtype f p ≫ biproduct.π f j =
@@ -738,7 +736,7 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
   · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
 
 theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
@@ -746,7 +744,6 @@ theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
       biproduct.lift fun j => if h : p j then biproduct.π (Subtype.restrict p f) ⟨j, h⟩ else 0 :=
   biproduct.hom_ext _ _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc] -- Not `@[simp]` because `simp` can prove this
 theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
     biproduct.fromSubtype f p ≫ biproduct.π f j = biproduct.π (Subtype.restrict p f) j := by
@@ -754,14 +751,13 @@ theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
   ext
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
 
 @[reassoc (attr := simp)]
 theorem biproduct.toSubtype_π (j : Subtype p) :
     biproduct.toSubtype f p ≫ biproduct.π (Subtype.restrict p f) j = biproduct.π f j :=
   biproduct.lift_π _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
     biproduct.ι f j ≫ biproduct.toSubtype f p =
@@ -772,7 +768,7 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   by_cases h : p j
   · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
-    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+    exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
   · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
 
 theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
@@ -780,7 +776,6 @@ theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
       biproduct.desc fun j => if h : p j then biproduct.ι (Subtype.restrict p f) ⟨j, h⟩ else 0 :=
   biproduct.hom_ext' _ _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem biproduct.ι_toSubtype_subtype (j : Subtype p) :
     biproduct.ι f j ≫ biproduct.toSubtype f p = biproduct.ι (Subtype.restrict p f) j := by
@@ -788,21 +783,19 @@ theorem biproduct.ι_toSubtype_subtype (j : Subtype p) :
   ext
   rw [biproduct.toSubtype, Category.assoc, biproduct.lift_π, biproduct.ι_π, biproduct.ι_π]
   split_ifs with h₁ h₂ h₂
-  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
+  exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ congr($(h₂).val)), rfl]
 
 @[reassoc (attr := simp)]
 theorem biproduct.ι_fromSubtype (j : Subtype p) :
     biproduct.ι (Subtype.restrict p f) j ≫ biproduct.fromSubtype f p = biproduct.ι f j :=
   biproduct.ι_desc _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.fromSubtype_toSubtype :
     biproduct.fromSubtype f p ≫ biproduct.toSubtype f p = 𝟙 (⨁ Subtype.restrict p f) := by
   refine biproduct.hom_ext _ _ fun j => ?_
   rw [Category.assoc, biproduct.toSubtype_π, biproduct.fromSubtype_π_subtype, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.toSubtype_fromSubtype [DecidablePred p] :
     biproduct.toSubtype f p ≫ biproduct.fromSubtype f p =
@@ -876,7 +869,6 @@ section
 -- Per https://github.com/leanprover-community/mathlib3/pull/15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
 @[simps]
@@ -914,7 +906,6 @@ def kernelBiproductToSubtypeIso (p : K → Prop) :
     kernel (biproduct.toSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
   limit.isoLimitCone (kernelForkBiproductToSubtype f p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone exhibiting `⨁ Subtype.restrict pᶜ f` as the cokernel of
 `biproduct.fromSubtype f p` -/
 @[simps]

@@ -191,3 +191,21 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
   simp [vsub_self]
 
 end AddTorsor
+
+section
+
+open AddTorsor Convexity
+
+variable {V₁ V₂ P₁ P₂ : Type*}
+  [AddCommGroup V₁] [Module R V₁]
+  [AddCommGroup V₂] [Module R V₂]
+  [ConvexSpace R P₁] [AffineSpace V₁ P₁] [IsAffineConvexSpace R V₁ P₁]
+  [ConvexSpace R P₂] [AffineSpace V₂ P₂] [IsAffineConvexSpace R V₂ P₂]
+
+lemma AffineMap.isAffineMap (f : P₁ →ᵃ[R] P₂) : IsAffineMap R f  where
+  map_sConvexComb s := by
+     rw [sConvexComb_eq_affineCombination,
+       Finset.map_affineCombination s.weights.support _root_.id s.weights s.total,
+       ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
+
+end

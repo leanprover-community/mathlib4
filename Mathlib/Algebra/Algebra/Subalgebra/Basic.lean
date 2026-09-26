@@ -46,7 +46,7 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
+instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A)
 
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
@@ -478,7 +478,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_zero' := Subtype.ext <| by simp
     map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
-  smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
+  smul_def' r x := Subtype.ext (algebraMap_smul A r (x : A)).symm
 
 @[simp, norm_cast]
 lemma coe_algebraMap (r : R) : (algebraMap R s r : A) = algebraMap R A r := rfl
@@ -574,7 +574,7 @@ theorem coe_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f 
 
 theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
     Function.Injective (f.codRestrict S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H congr($(hxy).val)⟩
 
 /-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
@@ -736,7 +736,7 @@ variable (S)
 This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Set.equivOfEq`. -/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
-  __ := LinearEquiv.ofEq _ _ (congr_arg toSubmodule h)
+  __ := LinearEquiv.ofEq S.toSubmodule T.toSubmodule congr(toSubmodule $h)
   toFun x := ⟨x, h ▸ x.2⟩
   invFun x := ⟨x, h.symm ▸ x.2⟩
   map_mul' _ _ := rfl
@@ -1044,7 +1044,7 @@ theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ �
 
 theorem equalizer_toSubmodule {φ ψ : A →ₐ[R] B} :
     Subalgebra.toSubmodule (equalizer φ ψ) = LinearMap.eqLocus
-      (LinearMap.ofClass φ) (LinearMap.ofClass ψ) := rfl
+      φ.toLinearMap ψ.toLinearMap := rfl
 
 theorem le_equalizer {φ ψ : A →ₐ[R] B} {S : Subalgebra R A} :
     S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl

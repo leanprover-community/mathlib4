@@ -183,20 +183,19 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
   calc
     φ (p ^ (n + 1)) = #{a ∈ range (p ^ (n + 1)) | (p ^ (n + 1)).Coprime a} :=
       totient_eq_card_coprime _
-    _ = #(range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)) :=
-      congr_arg card
-        (by
-          rw [sdiff_eq_filter]
-          apply filter_congr
-          simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
-            hp.coprime_iff_not_dvd]
-          intro a ha
-          constructor
-          · intro hap b h; rcases h with ⟨_, rfl⟩
-            exact hap (dvd_mul_left _ _)
-          · rintro h ⟨b, rfl⟩
-            rw [pow_succ'] at ha
-            exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩)
+    _ = #(range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)) := by
+      congr
+      rw [sdiff_eq_filter]
+      apply filter_congr
+      simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
+        hp.coprime_iff_not_dvd]
+      intro a ha
+      constructor
+      · intro hap b h; rcases h with ⟨_, rfl⟩
+        exact hap (dvd_mul_left ..)
+      · rintro h ⟨b, rfl⟩
+        rw [pow_succ'] at ha
+        exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩
     _ = _ := by
       have h1 : Function.Injective (· * p) := mul_left_injective₀ hp.ne_zero
       have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by
@@ -263,7 +262,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
     exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
-  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
+  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> simp
 
 theorem odd_totient_iff_eq_one {n : ℕ} :
     Odd (φ n) ↔ φ n = 1 := by
@@ -425,7 +424,7 @@ theorem prime_pow_pow_totient_ediv_prod {p k : ℕ} (hp : p.Prime) (hk : 0 < k) 
   have h : p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
     rw [mul_left_comm]
     refine le_mul_of_one_le_right (Nat.zero_le _) ?_
-    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt <| hp.one_lt
+    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt hp.one_lt
   simp_rw [Nat.totient_prime_pow hp hk, Nat.primeFactors_prime_pow hk.ne' hp, Finset.prod_singleton,
     Nat.mul_div_left _ (Nat.sub_pos_of_lt hp.one_lt), ← pow_mul]
   rw [Nat.pow_div h hp.pos]
