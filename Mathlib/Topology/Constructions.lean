@@ -11,6 +11,7 @@ public import Mathlib.Data.Finset.Piecewise
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.WithTopology
@@ -63,6 +64,7 @@ instance instTopologicalSpaceSigma {ι : Type*} {X : ι → Type v} [t₂ : ∀ 
     TopologicalSpace (Sigma X) :=
   ⨆ i, coinduced (Sigma.mk i) (t₂ i)
 
+@[wikidata Q1070472]
 instance Pi.topologicalSpace {ι : Type*} {Y : ι → Type v} [t₂ : (i : ι) → TopologicalSpace (Y i)] :
     TopologicalSpace ((i : ι) → Y i) :=
   ⨅ i, induced (fun f => f i) (t₂ i)
