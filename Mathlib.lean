@@ -7476,6 +7476,7 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 public import Mathlib.Tactic.CategoryTheory.CancelIso
+public import Mathlib.Tactic.CategoryTheory.CatLemmas
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 public import Mathlib.Tactic.CategoryTheory.Coherence
@@ -7484,6 +7485,7 @@ public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.Tactic.CategoryTheory.HomTransform
 public import Mathlib.Tactic.CategoryTheory.IsoReassoc
 public import Mathlib.Tactic.CategoryTheory.Map
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
@@ -7491,8 +7493,10 @@ public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
+public import Mathlib.Tactic.CategoryTheory.Op
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.Tactic.CategoryTheory.SpecializeMap
 public import Mathlib.Tactic.CategoryTheory.ToApp
 public import Mathlib.Tactic.Change
 public import Mathlib.Tactic.Check
@@ -8568,6 +8572,7 @@ public import Mathlib.Util.Superscript
 public import Mathlib.Util.SynthesizeUsing
 public import Mathlib.Util.Tactic
 public import Mathlib.Util.TermReduce
+public import Mathlib.Util.TheoremTransform
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace

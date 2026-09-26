@@ -5,10 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Basic
-public import Mathlib.Lean.Meta.Simp
-public import Mathlib.Util.AddRelatedDecl
-public import Qq
+public import Mathlib.Tactic.CategoryTheory.HomTransform
 
 /-!
 # The `map` attribute
@@ -33,55 +30,74 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.Map
 
+open TheoremTransform
+
 /-- `simp only` with `Functor.map_comp` and `Functor.map_id` on a single expression
 (used on each side via `simpEq`). -/
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
-/-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
-def mapExprHom (type : Q(Prop)) (e : Q($type)) (uLev vLev : Level) : Term.TermElabM Expr := do
-  let u ← mkFreshLevelMVar
-  let v ← mkFreshLevelMVar
-  let C ← mkFreshExprMVarQ q(Type u)
-  let instC ← mkFreshExprMVarQ q(Category.{v} $C) .synthetic
-  let X ← mkFreshExprMVarQ q($C)
-  let Y ← mkFreshExprMVarQ q($C)
-  let f ← mkFreshExprMVarQ q($X ⟶ $Y)
-  let g ← mkFreshExprMVarQ q($X ⟶ $Y)
-  let eqType : Q(Prop) := q($f = $g)
-  unless ← isDefEq type eqType do
-    throwError "`@[map]` expects an equality of morphisms"
-  let _ : $type =Q $eqType := ⟨⟩
-  let mappedType : Q(Prop) := q(∀ {D : Type uLev} [_instD : Category.{vLev} D] (F : $C ⥤ D),
-    F.map $f = F.map $g)
-  let mappedProof : Q($mappedType) := q(fun {D : Type uLev} [_instD : Category.{vLev} D]
-    (F : $C ⥤ D) => F.congr_map $e)
-  -- As in `reassoc_of%`, let simplification use the instance even if synthesis is still pending.
-  let inst := instC.mvarId!
-  let (pf, ()) ← withEnsuringLocalInstance inst do
-    let (_, pf) ← simpEq mapCompSimp mappedType mappedProof
-    return (pf, ())
-  -- Rewriting can determine the source category after this elaborator returns.
-  unless ← Term.synthesizeInstMVarCore inst do
-    Term.registerSyntheticMVarWithCurrRef inst (.typeClass none)
-  return pf
+/-- Build and normalize a mapping proof at the given target-category universes. -/
+def mapHomProof (p : Proof) (uLev vLev : Level) (attrName : Name := `map) :
+    Term.TermElabM (Except MessageData Proof) := do
+  match ← matchHomEquality p attrName with
+  | .error reason => return .error reason
+  | .ok ⟨u, v, C, instC, _X, _Y, f, g⟩ => do
+    let e : Q($f = $g) := p.value
+    let type : Q(Prop) := q(∀ {D : Type uLev} [_instD : Category.{vLev} D] (F : $C ⥤ D),
+      F.map $f = F.map $g)
+    let value : Q($type) := q(fun {D : Type uLev} [_instD : Category.{vLev} D]
+      (F : $C ⥤ D) => F.congr_map $e)
+    return .ok (← normalizeHomProof instC ⟨type, value⟩ mapCompSimp)
 
-/--
-Given a proof `pf` of `∀ .., f = g` with `f g` morphisms in a category, produce a proof of the
-`map` lemma, quantifying over every target category `D` and every functor `F : C ⥤ D`.
-The target category uses fresh universe metavariables, which the attribute generalizes to
-parameters and `map_of%` leaves for the surrounding elaboration to determine.
--/
-def mapExpr (pf : Expr) : Term.TermElabM Expr := do
+/-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
+def mapExprHom (type : Q(Prop)) (e : Q($type)) (uLev vLev : Level)
+    (attrName : Name := `map) : Term.TermElabM Expr := do
+  match ← mapHomProof ⟨type, e⟩ uLev vLev attrName with
+  | .ok p => p.toExpr
+  | .error reason => throwError reason
+
+/-- Map beneath the source telescope. After its original binders, the result has exactly three
+binders: an implicit target category, its instance, and an explicit functor. `instantiateMap`
+exposes those parameters as structured data for specialization clients. -/
+def mapProof (p : Proof) (attrName : Name := `map) :
+    Term.TermElabM (Except MessageData Proof) := do
   let uLev ← mkFreshLevelMVar
   let vLev ← mkFreshLevelMVar
-  forallTelescopeReducing (← inferType pf) (whnfType := true) fun xs type => do
-    let type := (← instantiateMVars type).consumeMData
-    let some _ := type.eq? | throwError "`@[map]` expects an equality"
-    let type : Q(Prop) := type
-    let pfApp := mkAppN pf xs
-    let inner ← mapExprHom type pfApp uLev vLev
-    mkLambdaFVars xs inner
+  underForall p (mapHomProof · uLev vLev attrName)
+
+/-- Produce a mapping proof without emitting a declaration. Target universes remain metavariables
+until declaration finalization or surrounding term elaboration determines them. -/
+def mapExpr (pf : Expr) (attrName : Name := `map) : Term.TermElabM Expr := do
+  match ← mapProof (← Proof.ofExpr pf) attrName with
+  | .ok p => p.toExpr
+  | .error reason => throwError reason
+
+/-- A mapping proof applied to metavariables, with source parameters kept separate from the
+new functor. Its target category and instance are determined by specializing `functor`. -/
+structure MapApplication where
+  /-- Metavariables instantiating the original source telescope. -/
+  sourceArgs : Array Expr
+  /-- Original binder information, in the same order as `sourceArgs`. -/
+  sourceInfos : Array BinderInfo
+  /-- Functor metavariable; unify its type with the template's type before assigning it. -/
+  functor : Expr
+  /-- Mapping proof applied to its source and target parameters. -/
+  value : Expr
+
+/-- Instantiate the three appended binders specified by `mapProof`'s contract. This isolates the
+mapping telescope's layout from parameter-specialization clients. No named map lemma is needed. -/
+def instantiateMap (p : Proof) (attrName : Name := `map) :
+    Term.TermElabM (Except MessageData MapApplication) := do
+  match ← mapProof p attrName with
+  | .error reason => return .error reason
+  | .ok mapped => do
+    let (args, infos, _) ← forallMetaTelescopeReducing mapped.type
+    let sourceSize := args.size - 3
+    return .ok { sourceArgs := args.extract 0 sourceSize
+                 sourceInfos := infos.extract 0 sourceSize
+                 functor := args.back!
+                 value := mkAppN mapped.value args }
 
 /-- Collect the universe parameters used for morphisms and objects in category-theoretic types.
 Traversing the levels also handles expressions such as `max u v` and `u + 1`.
@@ -112,7 +128,7 @@ private partial def collectCategoryUniverses (type : Expr) :
 /-- Order universe parameters by their roles in the generated declaration's type.
 Shared parameters belong to the morphism group; unrelated parameters are placed last.
 Within each group, retain source order and put new target parameters after source parameters. -/
-private def orderMapUniverses (type : Expr) (source target : List Name) : MetaM (List Name) := do
+def orderMapUniverses (type : Expr) (source target : List Name) : MetaM (List Name) := do
   let (_, (hom, obj)) ← (collectCategoryUniverses type).run ({}, {})
   let (hom, obj) := (hom.params, obj.params)
   let isHom := hom.contains
@@ -135,23 +151,33 @@ lemmas can be registered as `simp` lemmas with `@[map (attr := reassoc (attr := 
 -/
 syntax (name := mapStx) "map" optAttrArg : attr
 
-initialize registerBuiltinAttribute {
-  name := `mapStx
-  descr := ""
-  applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
+/-- Finalize category universes using the established morphism-before-object ordering. -/
+def finalizeMap (p : Proof) (levels : List Name) : Term.TermElabM (Expr × List Name) := do
+  let (value, allLevels) ← generalize p levels
+  let ordered ← orderMapUniverses (← inferType value) levels (allLevels.drop levels.length)
+  return (value, ordered)
+
+initialize TheoremTransform.register `map {
+  suffix := "_map"
+  apply := fun request p => do
+    unless request.args.isEmpty do throwError "`map` takes no transformation arguments"
+    mapProof p
+  finalize := finalizeMap }
+
+private def mapImpl (src : Name) (ref : Syntax) (kind : AttributeKind) : AttrM Name :=
+  match ref with
   | `(attr| map $optAttr) => MetaM.run' do
-    if (kind != AttributeKind.global) then
-      throwError "`map` can only be used as a global attribute"
-    let tgt := src.appendAfter "_map"
-    addRelatedDecl src tgt ref optAttr fun value levels => do
-      Term.TermElabM.run' <| Term.withSynthesize do
-        let pf ← mapExpr value
-        let r := (← getMCtx).levelMVarToParam levels.contains (fun _ => false) pf
-        setMCtx r.mctx
-        let ordered ← orderMapUniverses (← inferType r.expr) levels r.newParamNames.toList
-        pure (r.expr, ordered)
-  | _ => throwUnsupportedSyntax }
+    unless kind == .global do throwError "`map` can only be used as a global attribute"
+    TheoremTransform.addDecl { transformation := `map } src ref optAttr
+  | _ => throwUnsupportedSyntax
+
+initialize
+  registerGeneratingAttr `mapStx ((#[·]) <$> mapImpl · · ·)
+  registerBuiltinAttribute {
+    name := `mapStx
+    descr := ""
+    applicationTime := .afterCompilation
+    add := fun src ref kind => discard <| mapImpl src ref kind }
 
 /--
 `map_of% t`, where `t` is an equality `f = g` between morphisms (possibly under `∀` binders),
@@ -159,7 +185,6 @@ produces the corresponding statement with a functor applied and
 `simp only [Functor.map_comp, Functor.map_id]` on each side.
 -/
 elab "map_of% " t:term : term => do
-  let e ← Term.withSynthesizeLight <| Term.elabTerm t none
-  mapExpr e
+  TheoremTransform.elabTerm { transformation := `map } t
 
 end Mathlib.Tactic.CategoryTheory.Map
