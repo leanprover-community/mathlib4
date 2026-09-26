@@ -174,8 +174,8 @@ include h₀ hA hY in
 omit [PartialOrder X] in
 /-- By iterating `φ` to the power `j : κ₁.ord.ToType` and evaluating
 on `A`, we get a subset that is of cardinality `< κ₂`. -/
-lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
-    HasCardinalLT (transfiniteIterate (φ Y m) j A :) κ₂ := by
+lemma hasCardinalLT_supTransfiniteIterate_φ (j : κ₁.ord.ToType) :
+    HasCardinalLT (supTransfiniteIterate (φ Y m) j A :) κ₂ := by
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
     have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
@@ -183,7 +183,7 @@ lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
     simpa [hj.eq_bot]
   | succ j hj hj' =>
     have hκ₂ : κ₂.IsRegular := Fact.out
-    rw [transfiniteIterate_succ _ _ _ hj, φ_eq _ _ _ hj']
+    rw [supTransfiniteIterate_succ_of_not_isMax _ _ hj, φ_eq _ _ _ hj']
     refine hasCardinalLT_iUnion _ (hY _ _)
       (fun ⟨C, hC⟩ ↦ hasCardinalLT_union hκ₂.aleph0_le ?_
         (hasCardinalLT_of_finite _ _ hκ₂.aleph0_le))
@@ -193,48 +193,52 @@ lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
       exact ⟨⟨c, hc.choose⟩, hc.choose_spec⟩
     · simpa only [Subtype.ext_iff] using hc
   | isSuccLimit j hj hj' =>
-    rw [transfiniteIterate_limit _ _ _ hj, Set.iSup_eq_iUnion]
+    rw [supTransfiniteIterate_limit _ _ hj, Set.iSup_eq_iUnion]
     refine hasCardinalLT_iUnion _
       (HasCardinalLT.of_injective ?_ _ Subtype.val_injective) (fun ⟨k, hk⟩ ↦ hj' _ hk)
     simpa [hasCardinalLT_iff_cardinal_mk_lt]
 
+@[deprecated (since := "2026-09-15")]
+alias hasCardinalLT_transfiniteIterate_φ := hasCardinalLT_supTransfiniteIterate_φ
+
 include hY' in
 omit [Fact κ₂.IsRegular] [PartialOrder X] in
-lemma monotone_transfiniteIterate_φ :
-    Monotone (fun (j : κ₁.ord.ToType) ↦ transfiniteIterate (φ Y m) j A) :=
-  have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
-  letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
-  monotone_transfiniteIterate _ _ (le_φ _ hY' _)
+lemma supTransfiniteIterate_φ_monotone :
+    Monotone (fun j : κ₁.ord.ToType ↦ supTransfiniteIterate (φ Y m) j A) :=
+  supTransfiniteIterate_monotone _ (le_φ _ hY' _)
+
+@[deprecated (since := "2026-09-15")]
+alias monotone_transfiniteIterate_φ := supTransfiniteIterate_φ_monotone
 
 omit [PartialOrder X] [Fact κ₂.IsRegular] in
-lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A := by
+lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), supTransfiniteIterate (φ Y m) j A := by
   have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
   let := WellFoundedLT.toOrderBot κ₁.ord.ToType
   exact subset_trans (by simp) (Set.subset_iUnion _ ⊥)
 
 include h₀ hY hY' hm hA in
 lemma isCardinalFiltered_iUnion :
-    IsCardinalFiltered (⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A) κ₁ := by
-  suffices ∀ ⦃K : Type w⦄ (j : κ₁.ord.ToType) (f : K → (transfiniteIterate (φ Y m) j A : Set _))
+    IsCardinalFiltered (⋃ j : κ₁.ord.ToType, supTransfiniteIterate (φ Y m) j A) κ₁ := by
+  suffices ∀ ⦃K : Type w⦄ (j : κ₁.ord.ToType) (f : K → (supTransfiniteIterate (φ Y m) j A : Set _))
       (hK : HasCardinalLT K κ₁),
-      ∃ (x : (transfiniteIterate (φ Y m) (Order.succ j) A : Set _)),
+      ∃ (x : (supTransfiniteIterate (φ Y m) (Order.succ j) A : Set _)),
           ∀ (k : K), (f k).val ≤ x.val by
     refine isCardinalFiltered_preorder _ _ (fun K f hK ↦ ?_)
     rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
-    have (k : K) : ∃ (j : κ₁.ord.ToType), (f k).val ∈ transfiniteIterate (φ Y m) j A := by
+    have (k : K) : ∃ (j : κ₁.ord.ToType), (f k).val ∈ supTransfiniteIterate (φ Y m) j A := by
       simpa only [Set.mem_iUnion] using (f k).prop
     choose a ha using this
     obtain ⟨⟨z, hz⟩, hz'⟩ := this (IsCardinalFiltered.max a hK) (fun k ↦
-      ⟨(f k).val, monotone_transfiniteIterate_φ Y hY' m A
+      ⟨(f k).val, supTransfiniteIterate_φ_monotone Y hY' m A
           (leOfHom (IsCardinalFiltered.toMax a hK k)) (ha k)⟩) hK
     exact ⟨⟨z, Set.subset_iUnion _ _ hz⟩, hz'⟩
   intro K j f hK
   obtain ⟨⟨x, hx⟩, hx'⟩ := hφ₀ Y hY' m hm _
-    (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _) f hK
+    (hasCardinalLT_supTransfiniteIterate_φ h₀ Y hY m A hA _) f hK
   refine ⟨⟨x, ?_⟩, hx'⟩
   have : NoMaxOrder κ₁.ord.ToType := noMaxOrder (IsRegular.aleph0_le Fact.out)
-  rwa [transfiniteIterate_succ _ _ _ (not_isMax j),
-    φ_eq _ _ _ (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA _)]
+  rwa [supTransfiniteIterate_succ,
+    φ_eq _ _ _ (hasCardinalLT_supTransfiniteIterate_φ h₀ Y hY m A hA _)]
 
 end existsIsCardinalFilteredSetOfExistsCofinal
 
@@ -258,10 +262,10 @@ public lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ�
   -- The expected subset `B` is obtained as the union over
   -- all `j : κ₁.ord.ToType` of the transfinite iterations
   -- of the map `φ`
-  exact ⟨⋃ j, transfiniteIterate (φ Y m) j A, subset_iUnion Y m A,
+  exact ⟨⋃ j, supTransfiniteIterate (φ Y m) j A, subset_iUnion Y m A,
     isCardinalFiltered_iUnion h₀ Y hY hY' m hm A hA,
     hasCardinalLT_iUnion _ (by simpa [hasCardinalLT_iff_cardinal_mk_lt])
-      (hasCardinalLT_transfiniteIterate_φ h₀ Y hY m A hA)⟩
+      (hasCardinalLT_supTransfiniteIterate_φ h₀ Y hY m A hA)⟩
 
 end
 
