@@ -573,7 +573,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
   intro p
   have foo (p) (hp : p ∈ factors.support) : Prime p :=
     prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
-  rw [factorization_pow, hc, prod_pow_factorization_eq_self foo]
+  rw [factorization_pow, hc, factorization_prod_pow_eq_self foo]
   suffices n ∣ a.factorization p by
     simp [factors, Nat.mul_div_cancel' this]
   refine hmn.symm.dvd_of_dvd_mul_left ⟨b.factorization p, ?_⟩
