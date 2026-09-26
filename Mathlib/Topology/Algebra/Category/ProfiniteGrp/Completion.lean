@@ -182,7 +182,7 @@ lemma lift_unique (f g : completion G ⟶ P)
   apply congrFun
   refine (denseRange (G := G)).equalizer f.hom.continuous_toFun g.hom.continuous_toFun ?_
   funext y
-  simpa [GrpCat.comp_apply] using! (ConcreteCategory.congr_hom h y)
+  simpa [GrpCat.comp_apply] using! congr($h y)
 
 end ProfiniteCompletion
 

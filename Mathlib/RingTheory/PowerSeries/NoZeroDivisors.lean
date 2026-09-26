@@ -62,7 +62,7 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
   rw [← Ideal.span_singleton_prime]
   · exact span_X_isPrime
   · intro h
-    simpa [map_zero (coeff 1)] using congr_arg (coeff 1) h
+    simpa [map_zero (coeff 1)] using congr(coeff 1 $h)
 
 /-- The variable of the power series ring over an integral domain is irreducible. -/
 theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible

@@ -206,7 +206,7 @@ protected def neg : EReal → EReal
 instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
-  neg_zero := congr_arg Real.toEReal neg_zero
+  neg_zero := congr(Real.toEReal $neg_zero)
   zsmul := zsmulRec
 
 @[simp]
@@ -230,7 +230,7 @@ instance : InvolutiveNeg EReal where
     match a with
     | ⊥ => rfl
     | ⊤ => rfl
-    | (a : ℝ) => congr_arg Real.toEReal (neg_neg a)
+    | (a : ℝ) => congr($(neg_neg a).toEReal)
 
 @[simp]
 theorem toReal_neg_eq : ∀ {a : EReal}, toReal (-a) = -toReal a

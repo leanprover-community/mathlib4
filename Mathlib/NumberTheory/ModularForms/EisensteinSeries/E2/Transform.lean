@@ -236,7 +236,7 @@ lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
 
 /-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
 lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
-  simpa [denom_apply, SL_slash_apply] using congrFun E2_T_transform z
+  simpa [denom_apply, SL_slash_apply] using congr($E2_T_transform z)
 
 /-- `E2 ∘ ofComplex` has period `1`. -/
 lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 :=

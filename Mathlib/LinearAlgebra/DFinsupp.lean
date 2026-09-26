@@ -97,7 +97,7 @@ theorem lapply_apply (i : ι) (f : Π₀ i, M i) : (lapply i : (Π₀ i, M i) �
   rfl
 
 theorem injective_pi_lapply : Function.Injective (LinearMap.pi (R := R) <| lapply (M := M)) :=
-  fun _ _ h ↦ ext fun _ ↦ congr_fun h _
+  fun _ _ h ↦ ext fun _ ↦ congr($h _)
 
 @[simp]
 theorem lapply_comp_lsingle_same [DecidableEq ι] (i : ι) :

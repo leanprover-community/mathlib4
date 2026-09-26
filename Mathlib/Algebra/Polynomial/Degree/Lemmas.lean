@@ -44,7 +44,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
     WithBot.coe_le_coe.1 <|
       calc
         ↑(natDegree (p.comp q)) = degree (p.comp q) := (degree_eq_natDegree h0).symm
-        _ = _ := congr_arg degree comp_eq_sum_left
+        _ = _ := congr(degree $comp_eq_sum_left)
         _ ≤ _ := degree_sum_le _ _
         _ ≤ _ :=
           Finset.sup_le fun n hn =>
