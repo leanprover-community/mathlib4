@@ -66,6 +66,15 @@ section PowerBasis
 
 open Algebra
 
+/-- Cayley–Hamilton: an algebra element is a root of the characteristic polynomial of its
+matrix of left multiplication in any basis. -/
+theorem Algebra.aeval_leftMulMatrix_charpoly {S : Type*} [Semiring S] [Algebra R S] {ι : Type*}
+    [Fintype ι] [DecidableEq ι] (b : Basis ι R S) (a : S) :
+    aeval a (leftMulMatrix b a).charpoly = 0 := by
+  apply leftMulMatrix_injective b
+  rw [map_zero, ← aeval_algHom_apply]
+  exact aeval_self_charpoly _
+
 /-- The characteristic polynomial of the map `fun x => a * x` is the minimal polynomial of `a`.
 
 In combination with `det_eq_sign_charpoly_coeff` or `trace_eq_neg_charpoly_coeff`
