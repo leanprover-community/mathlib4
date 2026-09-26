@@ -343,11 +343,13 @@ lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero]
       exact fun hf ↦ h0 (hfg (quasispectrum.zero_mem R a) ▸ hf)
 
-/-- A version of `cfcₙ_congr` suitable for `@[congr]`. -/
+/-- A version of `cfcₙ_congr` suitable for `@[congr]`. The `a = b` argument is necessary to ensure
+that `norm_cast` visits both the function and the element. -/
 @[congr]
-lemma cfcₙ_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ σₙ R a, f x = g x) :
-    cfcₙ f a = cfcₙ g a :=
-  cfcₙ_congr hfg
+lemma cfcₙ_congr' {f g : R → R} {a b : A} (hab : a = b) (hfg : ∀ x ∈ σₙ R b, f x = g x) :
+    cfcₙ f a = cfcₙ g b := by
+  subst hab
+  exact cfcₙ_congr hfg
 
 lemma eqOn_of_cfcₙ_eq_cfcₙ {f g : R → R} {a : A} (h : cfcₙ f a = cfcₙ g a) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
@@ -747,7 +749,7 @@ noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R
     haveI : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
     C(s, R)₀ →⋆ₙₐ[R] A :=
   have : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
-  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
+  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R
     ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
 
 lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
@@ -782,7 +784,7 @@ lemma cfcₙHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R
     [StarRing A] [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [instCFC : NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p]
     {a : A} (ha : p a) :
-    IsClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
+    IsClosedEmbedding (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   NonUnitalClosedEmbeddingContinuousFunctionalCalculus.isClosedEmbedding a ha
 
 end IsClosedEmbedding
@@ -810,8 +812,7 @@ noncomputable def cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : 
   let f : C(spectrum R a, quasispectrum R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
   let ψ := ContinuousMap.compStarAlgHom' R R f
-  (cfcHom ha (R := R) : C(spectrum R a, R) →⋆ₙₐ[R] A).comp <|
-    (ψ : C(σₙ R a, R) →⋆ₙₐ[R] C(spectrum R a, R)).comp e
+  (cfcHom ha (R := R)).toNonUnitalStarAlgHom.comp <| ψ.toNonUnitalStarAlgHom.comp e
 
 lemma continuous_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : A} (ha : p a) :
     Continuous (cfcₙHom_of_cfcHom R ha) :=
@@ -832,7 +833,7 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum [ContinuousFunctionalCalculus R A p]
   intro f
   simp only [cfcₙHom_of_cfcHom]
   rw [quasispectrum_eq_spectrum_union_zero]
-  simp only [NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_coe]
+  simp only [NonUnitalStarAlgHom.comp_apply, StarAlgHom.coe_toNonUnitalStarAlgHom]
   rw [cfcHom_map_spectrum ha]
   ext x
   constructor
@@ -856,7 +857,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
     IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
-  refine (cfcHom_isClosedEmbedding ha).comp <|
+  refine (cfcHom_isClosedEmbedding ha).comp
     (IsUniformInducing.isUniformEmbedding ⟨?_⟩).isClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
@@ -903,7 +904,8 @@ lemma cfcₙ_eq_cfc [ContinuousFunctionalCalculus R A p] [ContinuousMapZero.Uniq
   · have hf' := hf.mono <| spectrum_subset_quasispectrum R a
     rw [cfc_apply f a ha hf', cfcₙ_apply f a hf, cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
     dsimp only [NonUnitalStarAlgHom.comp_apply,
-      NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
+      NonUnitalStarAlgHom.coe_ofClass, compStarAlgHom'_apply,
+      StarAlgHom.coe_toNonUnitalStarAlgHom]
     congr
   · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]
 

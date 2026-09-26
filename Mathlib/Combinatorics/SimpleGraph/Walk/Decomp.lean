@@ -360,7 +360,7 @@ theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.ed
 theorem nil_rotate {c : G.Walk v v} (h) : (c.rotate u h).Nil ↔ c.Nil := by
   simp [← length_eq_zero_iff]
 
-@[deprecated nil_rotate (since := "2026-05-11")]
+@[deprecated nil_rotate +typeChanged (since := "2026-05-11")]
 lemma rotate_eq_nil {c : G.Walk v v} (h) : c.rotate u h = nil ↔ c = nil := by simp
 
 end WalkDecomp

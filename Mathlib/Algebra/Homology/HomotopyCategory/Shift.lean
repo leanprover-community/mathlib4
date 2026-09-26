@@ -294,8 +294,6 @@ instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n)
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _)
 
-attribute [local implicit_reducible] HomotopyCategory.quotient
-
 instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where
   map_smul := by
