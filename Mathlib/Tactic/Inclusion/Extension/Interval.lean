@@ -5,10 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Tactic.Inclusion.Core.ToSet
@@ -55,6 +54,13 @@ theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
 /-- Apply a function to the finite endpoints of an interval. -/
 def Interval.map (I : Interval α) (f : α → β) : Interval β :=
   ⟨WithBot.map f I.lb, WithTop.map f I.ub⟩
+
+theorem Interval.map_map {γ : Type*} (I : Interval α) (f : α → β) (g : β → γ) :
+    (I.map f).map g = I.map (g ∘ f) := by
+  simp [Interval.map, WithBot.map_map, WithTop.map_map]
+
+theorem Interval.map_comp {γ : Type*} (I : Interval α) (f : α → β) (g : β → γ) :
+    I.map (g ∘ f) = (I.map f).map g := (I.map_map f g).symm
 
 @[grind =]
 theorem Interval.mem_map_iff [Preorder β] (f : α → β) {x : β} {I : Interval α} :
@@ -356,6 +362,60 @@ theorem Interval.mul_mem [Mul α] [Zero α] [LinearOrder α] [Ring β] [LinearOr
       apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonneg']
     · apply (f.monotone.withTop_map (le_max_left _ _)).trans'
       apply Interval.le_map_mulBound <;> grind [mul_le_mul_of_nonpos_of_nonpos]
+
+/-- Raise an interval to a natural-number power. -/
+def Interval.pow [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
+    (I : Interval α) (n : ℕ) : Interval α :=
+  if n = 0 then
+    Interval.singleton 1
+  else if n % 2 = 1 || 0 ≤ I.lb then
+    I.map (· ^ n)
+  else if I.ub ≤ 0 then
+    let lb := match I.ub with | some ub => some (ub ^ n) | ⊤ => ⊥
+    let ub := match I.lb with | some lb => some (lb ^ n) | ⊥ => ⊤
+    ⟨lb, ub⟩
+  else
+    let ub := match I.lb, I.ub with
+      | some lb, some ub => some (max (-lb) ub ^ n)
+      | _, _ => ⊤
+    ⟨0, ub⟩
+
+theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder α]
+    [Ring β] [LinearOrder β] [IsStrictOrderedRing β] (f : α ↪o β)
+    (map_zero : f 0 = 0) (map_one : f 1 = 1) (map_neg : ∀ a, f (-a) = -f a)
+    (map_pow : ∀ a n, f (a ^ n) = f a ^ n) (n : ℕ) {x : β} {I : Interval α}
+    (hx : x ∈ I.map f) : x ^ n ∈ (I.pow n).map f := by
+  have ⟨hl, hu⟩ := (Interval.mem_map_iff f).mp hx
+  unfold Interval.pow
+  split_ifs with h0 hsign hneg
+  · simp [h0, Interval.singleton, Interval.map, map_one]
+  · simp only [Interval.map_map, Interval.mem_map_iff, Function.comp_apply, map_pow]
+    obtain hn | hpos : Odd n ∨ 0 ≤ I.lb := by simpa [Nat.odd_iff] using hsign
+    · simpa [hn.pow_le_pow] using And.intro hl hu
+    · have hx0 : 0 ≤ x := by simpa [map_zero] using (f.monotone.withBot_map hpos).trans hx.1
+      constructor <;> intro a ha
+      · apply pow_le_pow_left₀ _ (hl _ ha) n
+        simpa [ha, map_zero] using f.monotone.withBot_map hpos
+      · exact pow_le_pow_left₀ hx0 (hu _ ha) n
+  all_goals obtain ⟨hn, _⟩ : Even n ∧ ¬0 ≤ I.lb := by grind
+  · obtain ⟨ub, hub, hub0⟩ := WithTop.le_coe_iff.mp hneg
+    have hub0 : f ub ≤ 0 := by simpa [map_zero] using f.monotone hub0
+    constructor
+    · simpa [hub, Interval.map, WithBot.some_eq_coe, map_pow] using
+        hn.pow_le_pow_of_nonpos hub0 (hu _ hub)
+    · cases h : I.lb with
+      | bot => exact le_top
+      | coe lb =>
+        simpa [Interval.map, WithTop.some_eq_coe, map_pow] using
+          hn.pow_le_pow_of_nonpos ((hu _ hub).trans hub0) (hl _ h)
+  · constructor
+    · simpa [Interval.map, map_zero] using hn.pow_nonneg x
+    · rcases I with ⟨_ | lb, _ | ub⟩ <;> try exact le_top
+      apply WithTop.coe_le_coe.mpr
+      rw [map_pow, f.monotone.map_max, map_neg, ← hn.pow_abs x]
+      apply pow_le_pow_left₀ (abs_nonneg x)
+      rw [abs_le']
+      simp [le_max_iff, hl _ rfl, hu _ rfl]
 
 /-- Check if `r x y` is false is implied by `x ∈ I` and `y ∈ J` -/
 def Interval.orderRelFalse (r : α → α → Prop) [DecidableRel r]
