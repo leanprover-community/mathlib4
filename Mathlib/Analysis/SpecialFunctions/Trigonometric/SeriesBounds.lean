@@ -186,25 +186,25 @@ private theorem Real.sin_cos_bound_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
 
 /-- For `x > 0`, the partial sum of the Taylor series of `sin` over `Finset.range (2 * n + 2)`
 is a strict lower bound for `sin x`. -/
-theorem Real.sum_lt_sin_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
+theorem Real.sum_lt_sin_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     ∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < x.sin :=
   (Real.sin_cos_bound_of_pos x hx n).1
 
 /-- For `x > 0`, the partial sum of the Taylor series of `sin` over `Finset.range (2 * n + 1)`
 is a strict upper bound for `sin x`. -/
-theorem Real.sin_lt_sum_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
+theorem Real.sin_lt_sum_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     x.sin < ∑ i ∈ .range (2 * n + 1), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! :=
   (Real.sin_cos_bound_of_pos x hx n).2.1
 
 /-- For `x > 0`, the partial sum of the Taylor series of `cos` over `Finset.range (2 * n + 2)`
 is a strict lower bound for `cos x`. -/
-theorem Real.sum_lt_cos_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
+theorem Real.sum_lt_cos_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     ∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i) / (2 * i)! < x.cos :=
   (Real.sin_cos_bound_of_pos x hx n).2.2.1
 
 /-- For `x > 0`, the partial sum of the Taylor series of `cos` over `Finset.range (2 * n + 3)`
 is a strict upper bound for `cos x`. -/
-theorem Real.cos_lt_sum_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
+theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     x.cos < ∑ i ∈ .range (2 * n + 3), (-1) ^ i * x ^ (2 * i) / (2 * i)! :=
   (Real.sin_cos_bound_of_pos x hx n).2.2.2
 
@@ -222,7 +222,7 @@ The upper half of the bracket whose lower half is `one_sub_sq_div_two_lt_cos`; t
 `x ≠ 0` matches that lemma's, since both sides here are even. -/
 theorem cos_lt_one_sub_sq_div_two_add_pow_four {x : ℝ} (hx : x ≠ 0) :
     cos x < 1 - x ^ 2 / 2 + x ^ 4 / 24 := by
-  have h := cos_lt_sum_of_pos |x| (abs_pos.2 hx) 0
+  have h := cos_lt_sum_of_pos (abs_pos.2 hx) 0
   norm_num [Finset.sum_range_succ, Even.pow_abs] at h
   linarith
 
@@ -241,7 +241,7 @@ is one-sided: both sides are odd, so the inequality reverses for `x < 0` — see
 `sub_cube_add_pow_five_lt_sin`. -/
 theorem sin_lt_sub_cube_add_pow_five {x : ℝ} (hx : 0 < x) :
     sin x < x - x ^ 3 / 6 + x ^ 5 / 120 := by
-  have h := sin_lt_sum_of_pos x hx 1
+  have h := sin_lt_sum_of_pos hx 1
   norm_num [Finset.sum_range_succ] at h
   linarith
 
