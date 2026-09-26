@@ -202,7 +202,7 @@ instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
 
 @[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
-    eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
+    eqToHom congr(($h : C)) ≫ Y.arrow = X.arrow := by
   induction h
   simp
 
@@ -292,7 +292,7 @@ lemma mk_surjective {X : C} (S : Subobject X) :
 -- (`h` will just display as `_`, because it is in `Prop`).
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
 def ofLE {B : C} (X Y : Subobject B) (h : X ≤ Y) : (X : C) ⟶ (Y : C) :=
-  underlying.map <| h.hom
+  underlying.map h.hom
 
 @[reassoc (attr := simp)]
 theorem ofLE_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLE X Y h ≫ Y.arrow = X.arrow :=
@@ -590,7 +590,6 @@ theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
   ((equivMonoOver Y).inverse.mapIso
     (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (pullback f).obj x = mk (pullback.snd x.arrow f) := by
   obtain ⟨Z, i, _, rfl⟩ := mk_surjective x

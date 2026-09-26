@@ -350,7 +350,7 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
-    cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
+    cs.lift ⟨f, hf⟩ (s i) = f i := congr($(cs.lift.left_inv ⟨f, hf⟩).val i)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`

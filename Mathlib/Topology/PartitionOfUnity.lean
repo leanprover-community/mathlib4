@@ -506,7 +506,7 @@ theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x 
   rw [toPOUFun, h, zero_mul]
 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=
-  fun _ => mt <| f.toPOUFun_zero_of_zero
+  fun _ => mt f.toPOUFun_zero_of_zero
 
 open scoped Classical in
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)

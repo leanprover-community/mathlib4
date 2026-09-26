@@ -314,7 +314,6 @@ lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < �
   simpa [← Int.sub_one_lt_iff, ← log_one] using
     lt_log_of_exp_lt (Valued.toNormedField.one_lt_norm_iff.1 h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
     ‖embedding v (algebraMap _ K x)‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_embedding, adicAbv_def,
@@ -495,7 +494,6 @@ lemma equivHeightOneSpectrum_symm_apply_algebraMap
   simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply,
     FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
   rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
-    Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot,
     WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
     ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
   simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]

@@ -63,8 +63,7 @@ noncomputable abbrev nnrpow (a : ℝ≥0) (b : ℝ≥0) : ℝ≥0 := a ^ (b : �
 @[simp] lemma nnrpow_def (a b : ℝ≥0) : nnrpow a b = a ^ (b : ℝ) := rfl
 
 @[fun_prop]
-lemma continuous_nnrpow_const (y : ℝ≥0) : Continuous (nnrpow · y) :=
-  continuous_rpow_const zero_le_coe
+lemma continuous_nnrpow_const (y : ℝ≥0) : Continuous (nnrpow · y) := by fun_prop
 
 /- This is a "redeclaration" of the attribute to speed up the proofs in this file. -/
 attribute [fun_prop] continuousOn_rpow_const
@@ -171,8 +170,8 @@ lemma nnrpow_inv_nnrpow (a : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by
 
 lemma nnrpow_inv_eq (a b : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by cfc_tac)
     (hb : 0 ≤ b := by cfc_tac) : a ^ x⁻¹ = b ↔ b ^ x = a :=
-  ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($(h) ^ x).symm,
-    fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($(h) ^ x⁻¹).symm⟩
+  ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($h ^ x).symm,
+    fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($h ^ x⁻¹).symm⟩
 
 section prod
 

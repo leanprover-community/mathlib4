@@ -577,7 +577,7 @@ the `I`-adic completion of `M`. -/
 def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m) :
     M →ₗ[R] AdicCompletion I N where
-  toFun := fun x ↦ ⟨fun n ↦ f n x, fun hkl ↦ LinearMap.congr_fun (h hkl) x⟩
+  toFun := fun x ↦ ⟨fun n ↦ f n x, fun hkl ↦ congr($(h hkl) x)⟩
   map_add' x y := by
     simp only [map_add]
     rfl
@@ -626,7 +626,7 @@ theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
     simp only [LinearMap.mem_ker, Submodule.mem_bot]
     refine ⟨fun hx ↦ h.haus x fun n ↦ ?_, fun hx ↦ by simp [hx]⟩
     rw [Subtype.ext_iff] at hx
-    simpa [SModEq.zero] using congrFun hx n
+    simpa [SModEq.zero] using congr($hx n)
 
 variable (I M) in
 theorem of_injective [IsHausdorff I M] : Function.Injective (of I M) :=

@@ -258,7 +258,7 @@ theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
 private irreducible_def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
     (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
-      propext <|
+      propext
         ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
@@ -286,7 +286,7 @@ theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauc
 @[simp]
 theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
   rw [← mk_zero, mk_lt]
-  exact iff_of_eq (congr_arg Pos (sub_zero f))
+  exact iff_of_eq congr(Pos $(sub_zero f))
 
 lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 
@@ -448,7 +448,7 @@ instance : DistribLattice ℝ where
     induction c using Real.ind_mk
     apply Eq.le
     simp only [← mk_sup, ← mk_inf]
-    exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm
+    congrm mk $((CauSeq.sup_inf_distrib_left ..).symm)
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=
@@ -552,7 +552,7 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
         simp [mul_add, add_assoc, add_left_comm]
       _ ≤ (a + 1) ^ b * a + (a + 1) ^ b := by
         gcongr
-        · norm_num
+        · simp
         · exact hb ha'
       _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
