@@ -264,7 +264,7 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 
-@[to_dual isIso_ι_app_of_isTerminal]
+@[to_dual]
 lemma IsLimit.isIso_π_app_of_isInitial {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
     (X : J) (hX : IsInitial X) :
     IsIso (c.π.app X) := by

@@ -578,7 +578,7 @@ section PiIota
 variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [HasProduct f]
 
 /-- In the presence of 0-morphism we can define an inclusion morphism into any product. -/
-@[to_dual π
+@[to_dual
 /-- In the presence of 0-morphisms we can define a projection morphism from any coproduct. -/]
 def Pi.ι (b : β) : f b ⟶ ∏ᶜ f :=
   Pi.lift (Function.update (fun _ ↦ 0) b (𝟙 _))

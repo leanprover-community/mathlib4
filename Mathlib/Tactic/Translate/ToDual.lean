@@ -241,6 +241,14 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cokernel", ["Kernel"]),
   ("kernels", ["Cokernels"]),
   ("cokernels", ["Kernels"]),
+  ("fork", ["Cofork"]),
+  ("cofork", ["Fork"]),
+  ("equalizer", ["Coequalizer"]),
+  ("coequalizer", ["Equalizer"]),
+  ("equalizers", ["Coequalizers"]),
+  ("coequalizers", ["Equalizers"]),
+  ("equalizes", ["Coequalizes"]),
+  ("coequalizes", ["Equalizes"]),
   ("unit", ["Counit"]),
   ("counit", ["Unit"]),
   ("monad", ["Comonad"]),
@@ -249,6 +257,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"]),
   ("section", ["Retraction"]),
   ("retraction", ["Section"]),
+  ("π", ["ι"]),
+  ("ι", ["π"]),
+  ("ofπ", ["Ofι"]),
+  ("ofι", ["Ofπ"]),
   ("functorπ", ["Functorι"]),
   ("functorι", ["Functorπ"]),
 ]
@@ -283,6 +295,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("decidableSucc", "DecidablePred"),
   ("ofSucc", "OfPred"),
   ("maximalAxioms", "MinimalAxioms"),
+  ("unitIso", "CounitIso"),
+  ("counitIso", "UnitIso"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]

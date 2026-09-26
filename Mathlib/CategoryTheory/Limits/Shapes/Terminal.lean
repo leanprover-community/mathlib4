@@ -243,22 +243,22 @@ abbrev limitOfTerminal (F : J ⥤ C) [HasTerminal J] [∀ (i j : J) (f : i ⟶ j
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramTerminal terminalIsTerminal F)
 
 /-- If `j` is initial in the index category, then the map `limit.π F j` is an isomorphism. -/
-@[to_dual isIso_ι_of_isTerminal
+@[to_dual
 /-- If `j` is terminal in the index category, then the map `colimit.ι F j` is an isomorphism. -/]
 theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit F] :
     IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramInitial I F), ⟨by ext; simp, by simp⟩⟩⟩
 
-@[to_dual isIso_ι_terminal]
+@[to_dual]
 instance isIso_π_initial [HasInitial J] (F : J ⥤ C) : IsIso (limit.π F (⊥_ J)) :=
   isIso_π_of_isInitial initialIsInitial F
 
-@[to_dual isIso_ι_of_isInitial]
+@[to_dual]
 theorem isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasLimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramTerminal I F), by ext; simp, by simp⟩⟩
 
-@[to_dual isIso_ι_initial]
+@[to_dual]
 instance isIso_π_terminal [HasTerminal J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
     IsIso (limit.π F (⊤_ J)) :=
   isIso_π_of_isTerminal terminalIsTerminal F
