@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Data.List.Indexes
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.KrullDimension.Integral
+public import Mathlib.RingTheory.KrullDimension.Polynomial
+
 /-!
 # Noether normalization lemma
 
@@ -45,11 +48,11 @@ Otherwise, `hom2` induces a map `φ` by quotient kernel.
 We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
 Composing `φ` and `g` we get the desired map since both `φ` and `g` are injective and integral.
 
+It is also proven that the natural number `s` is the Krull dimension of `A`,
+using the fact that injective integral extensions preserve Krull dimension.
+
 ## Reference
 * <https://stacks.math.columbia.edu/tag/00OW>
-
-## TODO
-* In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
 
 public section
@@ -267,30 +270,31 @@ variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]
 
 /-- **Noether normalization lemma**
 For a finitely generated algebra `A` over a field `k`,
-there exists a natural number `s` and an injective homomorphism
+there exists a natural number `s` (the Krull dimension of `A`) and an injective homomorphism
 from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X_1, ..., X_(s-1)]`.
 -/
 @[stacks 00OW]
-theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
-    Function.Injective g ∧ g.IsIntegral := by
+theorem exists_integral_inj_algHom_of_fg : ∃ s : ℕ, s = ringKrullDim R ∧
+    ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R, Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
-  use s, ϕ.toAlgHom.comp g
-  simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
-    AlgHom.toRingHom_eq_coe]
-  exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
+  refine ⟨s, ?_, ϕ.toAlgHom.comp g, ?_⟩
+  · simpa using (intg.ringKrullDim_eq_of_injective injg).trans ϕ.toRingEquiv.ringKrullDim
+  · simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
+      AlgHom.toRingHom_eq_coe]
+    exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 
 /-- For a finitely generated algebra `A` over a field `k`,
-there exists a natural number `s` and an injective homomorphism
+there exists a natural number `s` (the Krull dimension of `A`) and an injective homomorphism
 from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is finite over `k[X_0, X_1, ..., X_(s-1)]`. -/
-theorem exists_finite_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R,
-    Function.Injective g ∧ g.Finite := by
-  obtain ⟨s, g, ⟨inj, int⟩⟩ := exists_integral_inj_algHom_of_fg k R
+theorem exists_finite_inj_algHom_of_fg : ∃ s : ℕ, s = ringKrullDim R ∧
+    ∃ g : (MvPolynomial (Fin s) k) →ₐ[k] R, Function.Injective g ∧ g.Finite := by
+  obtain ⟨s, hdim, g, ⟨inj, int⟩⟩ := exists_integral_inj_algHom_of_fg k R
   have h : algebraMap k R = g.toRingHom.comp (algebraMap k (MvPolynomial (Fin s) k)) := by
     algebraize [g.toRingHom]
     rw [IsScalarTower.algebraMap_eq k (MvPolynomial (Fin s) k), algebraMap_toAlgebra']
-  exact ⟨s, g, inj, int.to_finite
+  exact ⟨s, hdim, g, inj, int.to_finite
     (h ▸ RingHom.finiteType_algebraMap.mpr fin).of_comp_finiteType⟩
 
 end mainthm
