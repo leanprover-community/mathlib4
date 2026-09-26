@@ -41,7 +41,11 @@ variable [CommMonoid M] [CommMonoid N] [Preorder N]
 submultiplicative on `{x | p x}`, i.e., `p x → p y → f (x * y) ≤ f x * f y`. Let `g i`, `i ∈ s`, be
 a nonempty finite family of elements of `M` such that `∀ i ∈ s, p (g i)`. Then
 `f (∏ x ∈ s, g x) ≤ ∏ x ∈ s, f (g x)`. -/
-@[to_additive le_sum_nonempty_of_subadditive_on_pred]
+@[to_additive le_sum_nonempty_of_subadditive_on_pred
+/-- Let `{x | p x}` be an additive subsemigroup of an additive commutative monoid `M`. Let
+`f : M → N` be a map subadditive on `{x | p x}`, i.e., `p x → p y → f (x + y) ≤ f x + f y`. Let
+`g i`, `i ∈ s`, be a nonempty finite family of elements of `M` such that `∀ i ∈ s, p (g i)`. Then
+`f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/]
 theorem le_prod_nonempty_of_submultiplicative_on_pred [IsOrderedMonoid N] (f : M → N) (p : M → Prop)
     (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y) (hp_mul : ∀ x y, p x → p y → p (x * y))
     (g : ι → M) (s : Finset ι) (hs_nonempty : s.Nonempty) (hs : ∀ i ∈ s, p (g i)) :
@@ -52,24 +56,16 @@ theorem le_prod_nonempty_of_submultiplicative_on_pred [IsOrderedMonoid N] (f : M
   · exact Multiset.forall_mem_map_iff.mpr hs
   simp
 
-/-- Let `{x | p x}` be an additive subsemigroup of an additive commutative monoid `M`. Let
-`f : M → N` be a map subadditive on `{x | p x}`, i.e., `p x → p y → f (x + y) ≤ f x + f y`. Let
-`g i`, `i ∈ s`, be a nonempty finite family of elements of `M` such that `∀ i ∈ s, p (g i)`. Then
-`f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
-add_decl_doc le_sum_nonempty_of_subadditive_on_pred
-
 /-- If `f : M → N` is a submultiplicative function, `f (x * y) ≤ f x * f y` and `g i`, `i ∈ s`, is a
 nonempty finite family of elements of `M`, then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
-@[to_additive le_sum_nonempty_of_subadditive]
+@[to_additive le_sum_nonempty_of_subadditive
+/-- If `f : M → N` is a subadditive function, `f (x + y) ≤ f x + f y` and `g i`, `i ∈ s`, is a
+nonempty finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/]
 theorem le_prod_nonempty_of_submultiplicative [IsOrderedMonoid N] (f : M → N)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) {s : Finset ι} (hs : s.Nonempty) (g : ι → M) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
   le_prod_nonempty_of_submultiplicative_on_pred f (fun _ ↦ True) (fun x y _ _ ↦ h_mul x y)
     (fun _ _ _ _ ↦ trivial) g s hs fun _ _ ↦ trivial
-
-/-- If `f : M → N` is a subadditive function, `f (x + y) ≤ f x + f y` and `g i`, `i ∈ s`, is a
-nonempty finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
-add_decl_doc le_sum_nonempty_of_subadditive
 
 /-- Let `{x | p x}` be a subsemigroup of a commutative monoid `M`. Let `f : M → N` be a map
 such that `f 1 = 1` and `f` is submultiplicative on `{x | p x}`, i.e.,

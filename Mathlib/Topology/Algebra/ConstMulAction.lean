@@ -263,17 +263,15 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
 
 /-- The homeomorphism given by scalar multiplication by a given element of a group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- The homeomorphism given by affine addition by an element of an additive group `Γ` acting on
+`T` is a homeomorphism from `T` to itself. -/]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
 
 @[to_additive]
 lemma Homeomorph.smul_symm {g : G} : (Homeomorph.smul (α := α) g).symm = Homeomorph.smul g⁻¹ :=
   Homeomorph.ext_iff.mpr <| smul_symm_apply g
-
-/-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
-  `T` is a homeomorphism from `T` to itself. -/
-add_decl_doc Homeomorph.vadd
 
 @[to_additive]
 theorem isHomeomorph_smul (c : G) : IsHomeomorph fun x : α ↦ c • x :=
