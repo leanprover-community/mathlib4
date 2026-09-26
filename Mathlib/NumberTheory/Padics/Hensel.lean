@@ -44,7 +44,7 @@ open scoped Topology
 theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
     (F : Polynomial R) (x y : ℤ_[p]) :
     ‖F.aeval x - F.aeval y‖ ≤ ‖x - y‖ := by
-  let ⟨z, hz⟩ := (F.map (algebraMap R ℤ_[p])).evalSubFactor x y
+  obtain ⟨z, hz⟩ := (F.map (algebraMap R ℤ_[p])).evalSubFactor x y
   simp only [Polynomial.eval_map_algebraMap] at hz
   calc
     ‖F.aeval x - F.aeval y‖ = ‖z‖ * ‖x - y‖ := by simp [hz]
@@ -105,7 +105,7 @@ private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemir
     [Algebra R ℤ_[p]] {F : Polynomial R} {a : ℤ_[p]} (ha : F.aeval a = 0) (z' : ℤ_[p])
     (hz' : F.aeval z' = 0) (hnormz' : ‖z' - a‖ < ‖F.derivative.aeval a‖) : z' = a := by
   let h := z' - a
-  let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion a h
+  obtain ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion a h
   simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
   have : (F.derivative.aeval a + q * h) * h = 0 := by calc
     _ = F.aeval (a + h) := by rw [hq, ha, zero_add, sq, right_distrib, mul_assoc]
@@ -207,9 +207,9 @@ private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
       (T_pow' hnorm _)
 
 set_option backward.isDefEq.respectTransparency false in
-private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n z)
+private theorem calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n z)
     (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = Padic.lift _ h1) :
-    { q : ℤ_[p] // F.aeval z' = q * z1 ^ 2 } := by
+    ∃ q : ℤ_[p], F.aeval z' = q * z1 ^ 2 := by
   have hdzne : F.derivative.aeval z ≠ 0 :=
     mt norm_eq_zero.2 (by rw [hz.1]; apply deriv_norm_ne_zero; assumption)
   have hdzne' : (↑(F.derivative.aeval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff.2 h)
