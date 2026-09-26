@@ -526,6 +526,11 @@ theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s
   rw [injOn_iff_invFunOn_image_image_eq_self]
   exact hs.eq_of_subset_of_encard_le' (f.invFunOn_image_image_subset s) h.symm.le
 
+variable (t) in
+theorem _root_.Function.Injective.encard_preimage_le (hf : f.Injective) :
+    (f ⁻¹' t).encard ≤ t.encard := by
+  grw [← hf.encard_image, image_preimage_eq_inter_range, Set.encard_mono inter_subset_left]
+
 theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆ range f) :
     (f ⁻¹' t).encard = t.encard := by
   rw [← hf.encard_image, image_preimage_eq_inter_range, inter_eq_self_of_subset_left ht]
