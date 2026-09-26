@@ -175,7 +175,7 @@ theorem ClassGroup.induction {P : ClassGroup R → Prop}
     have : I = (Units.mapEquiv (canonicalEquiv R⁰ K (FractionRing R)).toMulEquiv)
       (Units.mapEquiv (canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv I) := by
       simp [← Units.val_inj]
-    rw [congr_arg (QuotientGroup.mk (s := (toPrincipalIdeal R (FractionRing R)).range)) this]
+    rw [congr(QuotientGroup.mk (s := (toPrincipalIdeal R (FractionRing R)).range) $this)]
     exact h _
 
 /-- The definition of the class group does not depend on the choice of field of fractions. -/

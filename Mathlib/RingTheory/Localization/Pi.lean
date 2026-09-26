@@ -47,7 +47,7 @@ instance (M : Π i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
     choose rm h using fun i ↦ surj (M := M i) (z i)
     exact ⟨(fun i ↦ (rm i).1, ⟨_, fun i _ ↦ (rm i).2.2⟩), funext h⟩
   exists_of_eq {x y} eq := by
-    choose c hc using fun i ↦ exists_of_eq (M := M i) (congr_fun eq i)
+    choose c hc using fun i ↦ exists_of_eq (M := M i) congr($eq i)
     exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
 
 variable (S' : Type*) [CommSemiring S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))

@@ -175,13 +175,7 @@ lemma HasPeriod.drop_of_hasPeriod_add {q k : ℕ} {w : List α}
     (per_q : HasPeriod w q) (per_plus : HasPeriod w (k + q)) :
     HasPeriod (drop q w) k := by
   rw [hasPeriod_iff_getElem?] at per_plus per_q ⊢
-  simp only [length_drop, getElem?_drop]
-  intro i i_lt
-  calc
-     w[q + i]? = w[i + q]? := congrArg (getElem? w) (add_comm q i)
-     _ = w[i]? := (per_q i (by lia)).symm
-     _ = w[i + (k + q)]? := per_plus i (by lia)
-     _ = w[q + (i + k)]? := congr_arg (getElem? w) (by lia)
+  grind
 
 /-- The **Periodicity Lemma**, also known as the **Fine and Wilf theorem**, shows that
 if word `w` of length at least `p + q - gcd p q` has two periods `p` and `q`,
