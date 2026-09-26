@@ -3681,6 +3681,7 @@ public import Mathlib.Combinatorics.Derangements.Finite
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.Digraph.Orientation
 public import Mathlib.Combinatorics.Enumerative.Bell
+public import Mathlib.Combinatorics.Enumerative.Catalan.Asymptotics
 public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 public import Mathlib.Combinatorics.Enumerative.Composition
