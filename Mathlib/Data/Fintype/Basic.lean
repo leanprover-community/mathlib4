@@ -207,6 +207,16 @@ def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc
 def truncOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Trunc α :=
   truncOfMultisetExistsMem Finset.univ.val (by simp)
 
+/-- A duplicate-free list of all the elements of a fintype.
+
+Since the order of the elements depends on the actual implementation of the `Fintype` instance, the
+list is wrapped in `Trunc` to preserve computability. -/
+def Fintype.truncList (α) [Fintype α] : Trunc {l : List α // l.Nodup ∧ ∀ a, a ∈ l} :=
+  Quotient.recOnSubsingleton
+    (motive := fun s : Multiset α ↦
+      s.Nodup → (∀ a, a ∈ s) → Trunc {l : List α // l.Nodup ∧ ∀ a, a ∈ l})
+    Finset.univ.val (fun l hl hl' ↦ Trunc.mk ⟨l, hl, hl'⟩) Finset.univ.nodup Finset.mem_univ_val
+
 /-- By iterating over the elements of a fintype, we can lift an existential statement `∃ a, P a`
 to `Trunc (Σ' a, P a)`, containing data.
 -/
