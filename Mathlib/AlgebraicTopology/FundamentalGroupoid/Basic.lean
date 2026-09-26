@@ -285,7 +285,7 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
 
 /-- If `trans γ (symm γ') = refl`, then `γ = γ'`.
 This is the quotient analogue of `a * b⁻¹ = 1 → a = b`. -/
-theorem of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
+theorem eq_of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
     (h : trans γ (symm γ') = refl x₀) : γ = γ' := by
   induction γ using Quotient.ind with | mk γ =>
   induction γ' using Quotient.ind with | mk γ' =>
