@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.CategoryTheory.Abelian.Projective.Ext
 public import Mathlib.RepresentationTheory.Homological.Resolution
 public import Mathlib.Tactic.CategoryTheory.Slice
 
@@ -203,9 +204,10 @@ theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
-    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
+    groupCohomology A n ≅ ModuleCat.of k (Abelian.Ext (Rep.trivial k G k) A n) :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
-    (Rep.barResolution.extIso k G A n).symm
+    ChainComplex.linearYonedaObjHomologyIso .. ≪≫
+    (Rep.barResolution k G).extLinearEquivCohomologyClass.{u}.symm.toModuleIso
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hⁿ(Hom(P, A))`, where `P` is any projective resolution of `k` as a trivial `k`-linear
@@ -213,9 +215,17 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
 def groupCohomologyIso [Group G] (A : Rep k G) (n : ℕ)
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     groupCohomology A n ≅ (P.complex.linearYonedaObj k A).homology n :=
-  groupCohomologyIsoExt A n ≪≫ P.isoExt _ _
+  groupCohomologyIsoExt A n ≪≫ P.extIsoHomologyLinearYonedaObj _ _
 
 lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
-    Limits.IsZero (groupCohomology A (n + 1)) :=
-  (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
+    Limits.IsZero (groupCohomology A (n + 1)) := by
+  refine Limits.IsZero.of_iso ?_ (groupCohomologyIsoExt A (n + 1))
+  rw [ModuleCat.isZero_iff_subsingleton]
+  apply Abelian.Ext.subsingleton_of_projective
+
+lemma isZero_groupCohomology_of_neZero_of_subsingleton
+    [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) [NeZero n] :
+    Limits.IsZero (groupCohomology A n) := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  apply isZero_groupCohomology_succ_of_subsingleton

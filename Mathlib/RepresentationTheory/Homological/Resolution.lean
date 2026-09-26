@@ -6,6 +6,9 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Homology.LinearYonedaObj
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Abelian.Ext
 public import Mathlib.RepresentationTheory.Rep.Iso
@@ -324,13 +327,19 @@ def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := standardComplex k G
   π := εToSingle₀ k G
 
+@[deprecated (since := "2025-06-06")]
+alias groupCohomology.projectiveResolution := Rep.standardResolution
+
+instance {k G : Type u} [CommRing k] [Monoid G] : HasExt.{u} (Rep.{u} k G) :=
+  hasExt_of_enoughProjectives _
+
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `standardComplex k G`. -/
 def standardResolution.extIso (V : Rep k G) (n : ℕ) :
-    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
+    ModuleCat.of k (Abelian.Ext (Rep.trivial k G k) V n) ≅
       ((standardComplex k G).linearYonedaObj k V).homology n :=
-  (standardResolution k G).isoExt n V
+  (standardResolution k G).extIsoHomologyLinearYonedaObj V n
 
 namespace barComplex
 
@@ -430,13 +439,5 @@ def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := barComplex k G
   projective n := (inferInstance : Projective (free k G (Fin n → G)))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
-
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
-`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-bar resolution of `k`. -/
-def barResolution.extIso (V : Rep k G) (n : ℕ) :
-    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      ((barComplex k G).linearYonedaObj k V).homology n :=
-  (barResolution k G).isoExt n V
 
 end Rep

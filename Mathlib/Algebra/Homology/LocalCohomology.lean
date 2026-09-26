@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Basic
@@ -72,7 +73,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
 abbrev diagram (I : D ⥤ Ideal R) (i : ℕ) : Dᵒᵖ ⥤ ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
-  (ringModIdeals I).op ⋙ Ext R (ModuleCat.{u} R) i
+  (ringModIdeals I).op ⋙ Abelian.linearExtFunctor R (ModuleCat.{u} R) i
 
 end
 section
@@ -118,9 +119,9 @@ variable {E : Type u₂} [Category.{v₂} E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
   -- Iso.refl _ could work but would be very slow.
   calc diagram (I' ⋙ I) i
-    _ ≅ (I' ⋙ ringModIdeals I).op ⋙ Ext R (ModuleCat.{u} R) i :=
+    _ ≅ (I' ⋙ ringModIdeals I).op ⋙ Abelian.linearExtFunctor R (ModuleCat.{u} R) i :=
       Functor.isoWhiskerRight (NatIso.op (ringModIdealComp I' I)) _
-    _ ≅ (I'.op ⋙ (ringModIdeals I).op) ⋙ Ext R (ModuleCat.{u} R) i :=
+    _ ≅ (I'.op ⋙ (ringModIdeals I).op) ⋙ Abelian.linearExtFunctor R (ModuleCat.{u} R) i :=
       Functor.isoWhiskerRight (Functor.opComp ..) _
     _ ≅ I'.op ⋙ diagram I i := Functor.associator _ _ _
 
