@@ -608,6 +608,71 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
   convert! sum_const_zero
   norm_num
 
+theorem inner_vsub_circumcenter_vsub_circumcenter {n : ℕ} (s : Simplex ℝ P n) (i j : Fin (n + 1)) :
+    ⟪s.points i -ᵥ s.circumcenter, s.points j -ᵥ s.circumcenter⟫ =
+      s.circumradius ^ 2 - dist (s.points i) (s.points j) ^ 2 / 2 := by
+  rw [real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
+  simp_rw [vsub_sub_vsub_cancel_right, ← sq, ← dist_eq_norm_vsub, dist_circumcenter_eq_circumradius]
+  ring
+
+/-- This calculates the distance from a vertex to an arbitrary point on the Euler line in terms of
+circumradius and edge lengths. -/
+theorem dist_lineMap_circumcenter_centroid_sq {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1))
+    (x : ℝ) :
+    dist (s.points i) (AffineMap.lineMap s.circumcenter s.centroid x) ^ 2 =
+      (1 - x) ^ 2 * s.circumradius ^ 2 +
+        (1 - x / (n + 1)) * (x / (n + 1)) * ∑ j ∈ {i}ᶜ, dist (s.points i) (s.points j) ^ 2 -
+          (x / (n + 1)) ^ 2 / 2 * ∑ j ∈ {i}ᶜ, ∑ k ∈ {i}ᶜ, dist (s.points j) (s.points k) ^ 2 := calc
+  _ = ‖s.points i -ᵥ AffineMap.lineMap s.circumcenter s.centroid x‖ ^ 2 := by
+    rw [dist_eq_norm_vsub]
+  _ = ‖(1 - x) • (s.points i -ᵥ s.circumcenter) + x • (s.points i -ᵥ s.centroid)‖ ^ 2 := by
+    rw [AffineMap.vsub_lineMap, AffineMap.lineMap_apply_module]
+  _ = ‖(1 - x) • (s.points i -ᵥ s.circumcenter) +
+      (x / (n + 1)) • ∑ j ∈ {i}ᶜ, (s.points i -ᵥ s.points j)‖ ^ 2 := by
+    rw [vsub_centroid_eq, smul_smul, ← sum_eq_of_subset (subset_univ {i}ᶜ) _ (by simp),
+      ← div_eq_mul_inv]
+  _ = ‖(1 - x) • (s.points i -ᵥ s.circumcenter) +
+      (x / (n + 1)) •
+      ∑ j ∈ {i}ᶜ, ((s.points i -ᵥ s.circumcenter) - (s.points j -ᵥ s.circumcenter))‖ ^ 2 := by
+      simp
+  _ = ‖(1 - x + x / (n + 1) * n) • (s.points i -ᵥ s.circumcenter) -
+      (x / (n + 1)) • ∑ j ∈ {i}ᶜ, (s.points j -ᵥ s.circumcenter)‖ ^ 2 := by
+      congrm ‖?_‖ ^ 2
+      rw [sum_sub_distrib, sum_const, card_compl, Fintype.card_fin, card_singleton,
+        add_tsub_cancel_right]
+      module
+  _ = ‖(1 - x / (n + 1)) • (s.points i -ᵥ s.circumcenter) -
+      (x / (n + 1)) • ∑ j ∈ {i}ᶜ, (s.points j -ᵥ s.circumcenter)‖ ^ 2 :=
+      congr(‖$(by field) • _ - _‖ ^ 2)
+  _ = ‖(1 - x / (n + 1)) • (s.points i -ᵥ s.circumcenter)‖ ^ 2 -
+      2 * ⟪((1 - x / (n + 1)) • (s.points i -ᵥ s.circumcenter)),
+        (x / (n + 1)) • ∑ j ∈ {i}ᶜ, (s.points j -ᵥ s.circumcenter)⟫ +
+      ‖(x / (n + 1)) • ∑ j ∈ {i}ᶜ, (s.points j -ᵥ s.circumcenter)‖ ^ 2 := by
+      rw [norm_sub_sq_real]
+  _ = (1 - x / (n + 1)) ^ 2 * s.circumradius ^ 2 -
+      2 * (1 - x / (n + 1)) * (x / (n + 1)) *
+        ∑ j ∈ {i}ᶜ, ⟪s.points i -ᵥ s.circumcenter, s.points j -ᵥ s.circumcenter⟫ +
+      (x / (n + 1)) ^ 2 * ∑ j ∈ {i}ᶜ, ∑ k ∈ {i}ᶜ, ⟪s.points j -ᵥ s.circumcenter,
+        s.points k -ᵥ s.circumcenter⟫ := by
+    congrm ?_ - ?_ + ?_
+    · rw [norm_smul, mul_pow, Real.norm_eq_abs, sq_abs, ← dist_eq_norm_vsub,
+        dist_circumcenter_eq_circumradius]
+    · rw [real_inner_smul_left, real_inner_smul_right, inner_sum]
+      ring
+    · rw [norm_smul, mul_pow, Real.norm_eq_abs, sq_abs, ← real_inner_self_eq_norm_sq, sum_inner]
+      simp_rw [inner_sum]
+  _ = (1 - x / (n + 1)) ^ 2 * s.circumradius ^ 2 -
+      2 * (1 - x / (n + 1)) * (x / (n + 1)) *
+        ∑ j ∈ {i}ᶜ, (s.circumradius ^ 2 - dist (s.points i) (s.points j) ^ 2 / 2) +
+      (x / (n + 1)) ^ 2 * ∑ j ∈ {i}ᶜ, ∑ k ∈ {i}ᶜ,
+        (s.circumradius ^ 2 - dist (s.points j) (s.points k) ^ 2 / 2) := by
+    simp_rw [inner_vsub_circumcenter_vsub_circumcenter]
+  _ = _ := by
+    simp_rw [sum_sub_distrib, sum_const, card_compl, Fintype.card_fin, card_singleton,
+      add_tsub_cancel_right, ← sum_div, nsmul_eq_mul]
+    rw [← sub_eq_zero]
+    field
+
 end Simplex
 
 end Affine
