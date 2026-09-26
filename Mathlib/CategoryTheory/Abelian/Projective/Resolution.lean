@@ -106,12 +106,12 @@ theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
 lemma lift_commutes_zero {Y Z : C} (f : Y ⟶ Z)
     (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     (lift f P Q).f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f :=
-  (HomologicalComplex.congr_hom (lift_commutes f P Q) 0).trans (by simp)
+  congr($(lift_commutes f P Q).f 0).trans (by simp)
 
 /-- An auxiliary definition for `liftHomotopyZero`. -/
 def liftHomotopyZeroZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : P.complex.X 0 ⟶ Q.complex.X 1 :=
-  Q.exact₀.liftFromProjective (f.f 0) (congr_fun (congr_arg HomologicalComplex.Hom.f comm) 0)
+  Q.exact₀.liftFromProjective (f.f 0) congr($(comm).f 0)
 
 @[reassoc (attr := simp)]
 lemma liftHomotopyZeroZero_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}

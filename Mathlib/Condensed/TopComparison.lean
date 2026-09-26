@@ -43,7 +43,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
   intro x y hxy
   let xy : G.obj (pullback π π) := (PreservesPullback.iso G π π).inv <|
     (TopCat.pullbackIsoProdSubtype (G.map π) (G.map π)).inv ⟨(x, y), hxy⟩
-  have ha' := congr_fun ha xy
+  have ha' := congr($ha xy)
   dsimp at ha'
   have h₁ : ∀ y, G.map (pullback.fst _ _) ((PreservesPullback.iso G π π).inv y) =
       pullback.fst (G.map π) (G.map π) y := by
@@ -75,7 +75,7 @@ theorem equalizerCondition_yonedaPresheaf
     ext x
     obtain ⟨y, hy⟩ := (hq Z B π).surjective x
     rw [← hy]
-    exact congr_fun h y
+    congrm $h y
   · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.coe_mk, mk.injEq, Set.mem_ofPred_eq] at ha
     simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,

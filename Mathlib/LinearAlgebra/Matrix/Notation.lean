@@ -40,7 +40,7 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 
@@ -415,7 +415,7 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
 @[simp]
 theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
     (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
-  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) :)
+  ext fun r s => congr($((updateRow_ne (Fin.succAbove_ne i r) : _ = A _)) (f s))
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]

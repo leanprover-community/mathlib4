@@ -11,6 +11,7 @@ public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Tactic.Order
 
@@ -1307,6 +1308,11 @@ theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
 @[deprecated (since := "2026-04-16")]
 alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
 
+/-- Every ideal has multiplicity `0` in `⊤`, the unit ideal. -/
+@[simp]
+theorem multiplicity_top_right (I : Ideal R) : multiplicity I ⊤ = 0 := by
+  rw [← one_eq_top, multiplicity_one_right]
+
 end Dvd
 
 end MulAndRadical
@@ -1457,7 +1463,7 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
 /-- `Submonoid.map` as an `AlgHom`, when applied to an `AlgHom`. -/
 @[simps!] def mapAlgHom (f : A →ₐ[R] B) : Submodule R A →ₐ[Ideal R] Submodule R B where
   __ := mapHom f
-  commutes' I := (map_comp _ _ I).symm.trans (congr_arg (map · I) <| LinearMap.ext f.commutes)
+  commutes' I := (map_comp _ _ I).symm.trans congr(map $(LinearMap.ext f.commutes) I)
 
 /-- `Submonoid.map` as an `AlgEquiv`, when applied to an `AlgEquiv`. -/
 -- TODO: when A, B noncommutative, still has `MulEquiv`.
@@ -1465,9 +1471,9 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
   __ := mapAlgHom f
   invFun := mapAlgHom f.symm
   left_inv I := (map_comp _ _ I).symm.trans <|
-    (congr_arg (map · I) <| LinearMap.ext (f.left_inv ·)).trans (map_id I)
+    (congr(map $(LinearMap.ext (f.left_inv ·)) I)).trans (map_id I)
   right_inv I := (map_comp _ _ I).symm.trans <|
-    (congr_arg (map · I) <| LinearMap.ext (f.right_inv ·)).trans (map_id I)
+    (congr(map $(LinearMap.ext (f.right_inv ·)) I)).trans (map_id I)
 
 end
 

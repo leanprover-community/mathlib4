@@ -44,7 +44,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
     WithBot.coe_le_coe.1 <|
       calc
         ↑(natDegree (p.comp q)) = degree (p.comp q) := (degree_eq_natDegree h0).symm
-        _ = _ := congr_arg degree comp_eq_sum_left
+        _ = _ := congr(degree $comp_eq_sum_left)
         _ ≤ _ := degree_sum_le _ _
         _ ≤ _ :=
           Finset.sup_le fun n hn =>
@@ -166,7 +166,7 @@ theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
 
 theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coeff n :=
   (coeff_add _ _ _).trans <|
-    (congr_arg _ <| coeff_eq_zero_of_natDegree_lt <| qn).trans <| add_zero _
+    (congr_arg _ <| coeff_eq_zero_of_natDegree_lt qn).trans <| add_zero _
 
 theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.coeff n := by
   rw [add_comm]
