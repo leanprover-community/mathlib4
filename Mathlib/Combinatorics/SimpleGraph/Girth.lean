@@ -97,6 +97,26 @@ lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.
   have h2 : (w.length : ℕ∞) ≤ 2 * (w.length / 2 :) + 1 := by norm_cast; lia
   grw [hwl, h2, half_g_le_edist, natCast_dist_le_edist, edist_le_ediam]
 
+lemma Walk.three_le_length_of_length_eq_egirth {a} {w : G.Walk a a} (hwg : w.length = G.egirth) :
+    3 ≤ w.length := by
+  simpa [← hwg] using G.three_le_egirth
+
+lemma Walk.not_nil_of_length_eq_egirth {a} {w : G.Walk a a} (hwg : w.length = G.egirth) :
+    ¬ w.Nil := by
+  grind [three_le_length_of_length_eq_egirth]
+
+lemma Walk.IsCircuit.isCycle_of_length_le_egirth {a} {w : G.Walk a a} (hw : w.IsCircuit)
+    (hwg : w.length ≤ G.egirth) : w.IsCycle := by
+  classical
+  refine hw.cycleBypass_eq_self_iff_isCycle_or_nil.mp ?_ |>.resolve_right hw.not_nil
+  rw [w.cycleBypass_eq_self_iff_length_le.mpr]
+  simpa using hwg.trans hw.isCycle_cycleBypass.egirth_le_length
+
+lemma Walk.IsTrail.isCycle_of_length_eq_egirth {a} {w : G.Walk a a} (hw : w.IsTrail)
+    (hwg : w.length = G.egirth) : w.IsCycle :=
+  have hw' : w.IsCircuit := ⟨hw, eq_nil_iff_nil.not.mpr (not_nil_of_length_eq_egirth hwg)⟩
+  hw'.isCycle_of_length_le_egirth hwg.le
+
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
   by_cases hacyc : G.IsAcyclic
@@ -164,6 +184,12 @@ lemma girth_le_two_mul_diam_add_one (h : G.ediam ≠ ⊤) : G.girth ≤ 2 * G.di
 
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
+
+lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
+    (hwg : w.length = G.girth) : w.IsCycle :=
+  have hw0 : w.length ≠ 0 := length_eq_zero_iff.not.mpr hw.not_nil
+  have hwg' : w.length = G.egirth := ((ENat.toNat_eq_iff hw0).mp hwg.symm).symm
+  hw.isTrail.isCycle_of_length_eq_egirth hwg'
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
