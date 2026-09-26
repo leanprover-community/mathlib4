@@ -35,11 +35,10 @@ variable (ι : Type v) (β : ι → Type w)
 /-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
 
-set_option backward.inferInstanceAs.wrap.data false in
 deriving instance CoeFun for DirectSum
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
