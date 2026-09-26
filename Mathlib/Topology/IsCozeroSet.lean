@@ -3,10 +3,13 @@ Copyright (c) 2026 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
+module
+
+public import Mathlib.Topology.ContinuousMap.Lattice
+public import Mathlib.Topology.Separation.PerfectlyNormal
+public import Mathlib.Topology.UnitInterval
+
 import Mathlib.Topology.Algebra.Indicator
-import Mathlib.Topology.ContinuousMap.Lattice
-import Mathlib.Topology.Separation.PerfectlyNormal
-import Mathlib.Topology.UnitInterval
 
 /-! # Cozero sets
 In this file we define cozero sets as sets that are the support of a continuous function to `ℝ`. In
@@ -21,6 +24,8 @@ general it is a stronger property.
 * Preimages of cozero sets under continuous maps are cozero sets.
 * Images and coimages of cozero sets under open proper maps are cozero sets.
 -/
+
+@[expose] public section
 
 open Set Function
 
