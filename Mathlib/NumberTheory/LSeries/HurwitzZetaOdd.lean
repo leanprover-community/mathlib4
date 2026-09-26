@@ -266,26 +266,26 @@ section asymp
 lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (oddKernel a) (fun x ↦ Real.exp (-p * x)) := by
   induction a using QuotientAddGroup.induction_on with | H b =>
-  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_one b
+  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_FZ_one b
   refine ⟨p, hp, (Eventually.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
-  simpa [← (hasSum_int_oddKernel b ht).tsum_eq, HurwitzKernelBounds.F_int,
-    HurwitzKernelBounds.f_int, abs_of_nonneg (exp_pos _).le] using
+  simpa [← (hasSum_int_oddKernel b ht).tsum_eq, HurwitzKernelBounds.FZ,
+    HurwitzKernelBounds.fZ, abs_of_nonneg (exp_pos _).le] using
     norm_tsum_le_tsum_norm (hasSum_int_oddKernel b ht).summable.norm
 
 /-- The function `sinKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_sinKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (sinKernel a) (fun x ↦ Real.exp (-p * x)) := by
   induction a using QuotientAddGroup.induction_on with | H a =>
-  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_one (le_refl 0)
+  obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_one (le_refl 0)
   refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
-  rw [HurwitzKernelBounds.F_nat, ← (hasSum_nat_sinKernel a ht).tsum_eq]
-  apply tsum_of_norm_bounded (g := fun n ↦ 2 * HurwitzKernelBounds.f_nat 1 0 t n)
-  · exact (HurwitzKernelBounds.summable_f_nat 1 0 ht).hasSum.mul_left _
+  rw [HurwitzKernelBounds.F, ← (hasSum_nat_sinKernel a ht).tsum_eq]
+  apply tsum_of_norm_bounded (g := fun n ↦ 2 * HurwitzKernelBounds.f 1 0 t n)
+  · exact (HurwitzKernelBounds.summable_f 1 0 ht).hasSum.mul_left _
   · intro n
     rw [norm_mul, norm_mul, norm_mul, norm_two, mul_assoc, mul_assoc,
-      mul_le_mul_iff_of_pos_left two_pos, HurwitzKernelBounds.f_nat, pow_one, add_zero,
+      mul_le_mul_iff_of_pos_left two_pos, HurwitzKernelBounds.f, pow_one, add_zero,
       norm_of_nonneg (exp_pos _).le, Real.norm_eq_abs, Nat.abs_cast, ← mul_assoc,
       mul_le_mul_iff_of_pos_right (exp_pos _)]
     exact mul_le_of_le_one_right (Nat.cast_nonneg _) (abs_sin_le_one _)
