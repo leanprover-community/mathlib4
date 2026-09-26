@@ -1309,3 +1309,24 @@ set_option backward.defeqAttrib.useBackward true in
 end HasCokernels
 
 end CategoryTheory.Limits
+
+section
+
+open CategoryTheory Limits
+
+namespace CategoryTheory.Limits
+
+/-- Maps out of a cokernel are maps out of the numerator that kill the denominator. -/
+noncomputable def cokernelHomEquiv {C : Type*} [Category C] [HasZeroMorphisms C]
+    {A B X : C} (f : A ⟶ B) [HasCokernel f] :
+    (cokernel f ⟶ X) ≃ {g : B ⟶ X // f ≫ g = 0} where
+  toFun k := ⟨cokernel.π f ≫ k, by simp⟩
+  invFun g := cokernel.desc f g.1 g.2
+  left_inv k := by ext; simp
+  right_inv g := by
+    ext
+    simp
+
+end CategoryTheory.Limits
+
+end
