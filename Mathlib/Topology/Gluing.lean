@@ -206,10 +206,10 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
   rcases (D.ι_eq_iff_rel _ _ _ _).mp h with ⟨_, e₁, e₂⟩
-  · dsimp only at *
-    -- Porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
-    rw [← e₁, ← e₂]
-    simp
+  dsimp only at *
+  -- Porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
+  rw [← e₁, ← e₂]
+  simp
 
 instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
   (TopCat.mono_iff_injective _).mpr (D.ι_injective _)
@@ -220,8 +220,8 @@ theorem image_inter (i j : D.J) :
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
-    · subst eq₁
-      exact ⟨y, by simp [e₁]⟩
+    subst eq₁
+    exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
     rw [D.glue_condition_apply]
@@ -300,7 +300,7 @@ structure MkCore where
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
-    · convert! Subtype.ext this
+    convert! Subtype.ext this
   rw [h.V_id]
   trivial
 

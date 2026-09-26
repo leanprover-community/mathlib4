@@ -275,7 +275,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     have H : (X.presheaf.map (homOfLE _).op) x = 0 := H
     convert! congr_arg (X.presheaf.map (homOfLE _).op).hom H
     · simp only [← CommRingCat.comp_apply, ← Functor.map_comp]
-      · rfl
+      rfl
     · rw [map_zero]
     · simp only [Scheme.basicOpen_res, inf_le_right]
   choose n hn using H'

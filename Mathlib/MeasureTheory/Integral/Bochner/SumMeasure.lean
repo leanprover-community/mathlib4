@@ -57,11 +57,11 @@ lemma integrable_sum_measure
     (hf : ∀ i, Integrable f (μ i)) (h : Summable (fun i ↦ ∫ x, ‖f x‖ ∂μ i)) :
     Integrable f (Measure.sum μ) := by
   refine ⟨aestronglyMeasurable_sum_measure_iff.mpr fun i ↦ (hf i).aestronglyMeasurable, ?_⟩
-  · rw [HasFiniteIntegral, lintegral_sum_measure]
-    convert! h.tsum_ofReal_lt_top with i
-    rw [ofReal_integral_eq_lintegral_ofReal (hf i).norm]
-    · simp_rw [ofReal_norm]
-    · exact ae_of_all _ fun _ ↦ by positivity
+  rw [HasFiniteIntegral, lintegral_sum_measure]
+  convert! h.tsum_ofReal_lt_top with i
+  rw [ofReal_integral_eq_lintegral_ofReal (hf i).norm]
+  · simp_rw [ofReal_norm]
+  · exact ae_of_all _ fun _ ↦ by positivity
 
 omit [Countable ι] in
 lemma Integrable.summable_integral (hf : Integrable f (Measure.sum μ)) :
