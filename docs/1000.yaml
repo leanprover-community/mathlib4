@@ -61,6 +61,10 @@ Q137164:
 
 Q154210:
   title: CPCTC
+  decls:
+    - EuclideanGeometry.triangle_congruent_iff_dist_eq
+    - EuclideanGeometry.angle_eq_of_congruent
+  authors: Jovan Gerbscheid, Chu Zheng
 
 Q164262:
   title: Lebesgue covering dimension
@@ -1847,6 +1851,9 @@ Q1724049:
 
 Q1727461:
   title: Intersecting secants theorem
+  decl: EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero
+  authors: Manuel Candales
+  date: 2021
 
 Q1739994:
   title: Brauer–Suzuki theorem
@@ -2122,6 +2129,9 @@ Q2253746:
 
 Q2266397:
   title: Intersecting chords theorem
+  decl: EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi
+  authors: Manuel Candales
+  date: 2021
 
 Q2267175:
   title: Tangent-secant theorem
