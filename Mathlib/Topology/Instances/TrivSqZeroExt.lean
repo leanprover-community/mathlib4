@@ -9,6 +9,7 @@ public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -41,11 +42,11 @@ section Topology
 
 variable [TopologicalSpace R] [TopologicalSpace M]
 
-instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
-  TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
+instance : TopologicalSpace (tsze R M) :=
+  TopologicalSpace.induced (·.fst) ‹_› ⊓ TopologicalSpace.induced (·.snd) ‹_›
 
 instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
-  Prod.t2Space
+  inferInstanceAs <| T2Space (R × M)
 
 theorem nhds_def (x : tsze R M) : 𝓝 x = 𝓝 x.fst ×ˢ 𝓝 x.snd := nhds_prod_eq
 
@@ -55,10 +56,10 @@ theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = 𝓝 x ×ˢ 𝓝 0
 theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = 𝓝 0 ×ˢ 𝓝 m :=
   nhds_def _
 
-nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
+nonrec theorem continuous_fst : Continuous ((·.fst) : tsze R M → R) :=
   continuous_fst
 
-nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
+nonrec theorem continuous_snd : Continuous ((·.snd) : tsze R M → M) :=
   continuous_snd
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
@@ -139,28 +140,30 @@ theorem hasSum_inr [AddCommMonoid R] [AddCommMonoid M] {f : α → M} {a : M} (h
   h.map (⟨⟨inr, inr_zero _⟩, inr_add _⟩ : M →+ tsze R M) continuous_inr
 
 theorem hasSum_fst [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
-    (h : HasSum f a) : HasSum (fun x ↦ fst (f x)) (fst a) :=
-  h.map (⟨⟨fst, fst_zero⟩, fst_add⟩ : tsze R M →+ R) continuous_fst
+    (h : HasSum f a) : HasSum (fun x ↦ (f x).fst) a.fst :=
+  h.map (⟨⟨(·.fst), fst_zero⟩, fst_add⟩ : tsze R M →+ R) continuous_fst
 
 theorem hasSum_snd [AddCommMonoid R] [AddCommMonoid M] {f : α → tsze R M} {a : tsze R M}
-    (h : HasSum f a) : HasSum (fun x ↦ snd (f x)) (snd a) :=
-  h.map (⟨⟨snd, snd_zero⟩, snd_add⟩ : tsze R M →+ M) continuous_snd
+    (h : HasSum f a) : HasSum (fun x ↦ (f x).snd) a.snd :=
+  h.map (⟨⟨(·.snd), snd_zero⟩, snd_add⟩ : tsze R M →+ M) continuous_snd
 
 end Topology
 
 section Uniformity
 variable [UniformSpace R] [UniformSpace M]
 
-instance instUniformSpace : UniformSpace (tsze R M) where
-  toTopologicalSpace := instTopologicalSpace
-  __ := instUniformSpaceProd
+instance : UniformSpace (tsze R M) := instUniformSpaceProd.comap equiv
+
+/-- The natural equivalence between `TrivSqZeroExt R M` and `R × M` as a uniform equivalence. -/
+def uniformEquivProd : tsze R M ≃ᵤ R × M :=
+  equiv.toUniformEquivOfIsUniformInducing ⟨rfl⟩
 
 instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
-  inferInstanceAs <| CompleteSpace (R × M)
+  uniformEquivProd.completeSpace_iff.2 .prod
 
 instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
     IsUniformAddGroup (tsze R M) :=
-  inferInstanceAs <| IsUniformAddGroup (R × M)
+  Prod.instIsUniformAddGroup.comap (addEquiv ..)
 
 open scoped Uniformity
 
@@ -169,17 +172,17 @@ theorem uniformity_def :
       ((𝓤 R).comap fun p => (p.1.fst, p.2.fst)) ⊓ ((𝓤 M).comap fun p => (p.1.snd, p.2.snd)) :=
   rfl
 
-nonrec theorem uniformContinuous_fst : UniformContinuous (fst : tsze R M → R) :=
-  uniformContinuous_fst
+nonrec theorem uniformContinuous_fst : UniformContinuous ((·.fst) : tsze R M → R) :=
+  uniformContinuous_fst.comp uniformEquivProd.uniformContinuous
 
-nonrec theorem uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) :=
-  uniformContinuous_snd
+nonrec theorem uniformContinuous_snd : UniformContinuous ((·.snd) : tsze R M → M) :=
+  uniformContinuous_snd.comp uniformEquivProd.uniformContinuous
 
 theorem uniformContinuous_inl [Zero M] : UniformContinuous (inl : R → tsze R M) :=
-  uniformContinuous_id.prodMk uniformContinuous_const
+  uniformEquivProd.symm.uniformContinuous.comp (uniformContinuous_id.prodMk uniformContinuous_const)
 
 theorem uniformContinuous_inr [Zero R] : UniformContinuous (inr : M → tsze R M) :=
-  uniformContinuous_const.prodMk uniformContinuous_id
+  uniformEquivProd.symm.uniformContinuous.comp (uniformContinuous_const.prodMk uniformContinuous_id)
 
 end Uniformity
 

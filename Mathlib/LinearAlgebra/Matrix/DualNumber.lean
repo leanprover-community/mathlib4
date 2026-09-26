@@ -22,19 +22,18 @@ variable {R n : Type} [CommSemiring R] [Fintype n] [DecidableEq n]
 
 open Matrix TrivSqZeroExt
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Matrices over dual numbers and dual numbers over matrices are isomorphic. -/
 @[simps]
 def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Matrix n n R) where
-  toFun A := ⟨of fun i j => (A i j).fst, of fun i j => (A i j).snd⟩
-  invFun d := of fun i j => (d.fst i j, d.snd i j)
+  toFun A := ⟨of fun i j ↦ (A i j).fst, of fun i j => (A i j).snd⟩
+  invFun d := of fun i j ↦ ⟨d.fst i j, d.snd i j⟩
   map_mul' A B := by
     ext
     · dsimp [mul_apply]
       simp_rw [fst_sum]
       rfl
     · simp_rw [snd_mul, smul_eq_mul, op_smul_eq_mul]
-      simp only [mul_apply, snd_sum, DualNumber.snd_mul, snd_mk, of_apply, fst_mk, add_apply]
+      simp only [mul_apply, snd_sum, DualNumber.snd_mul, of_apply, add_apply]
       rw [← Finset.sum_add_distrib]
   map_add' _ _ := TrivSqZeroExt.ext rfl rfl
   commutes' r := by
