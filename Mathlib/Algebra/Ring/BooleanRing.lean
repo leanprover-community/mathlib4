@@ -57,12 +57,14 @@ namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
 
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
@@ -72,6 +74,7 @@ theorem add_self : a + a = 0 := by
       _ = a + a + (a + a) := by rw [mul_self]
   rwa [right_eq_add] at this
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem neg_eq : -a = a :=
   calc
@@ -94,6 +97,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a + b + (a * b + b * a) := by abel
   rwa [left_eq_add] at this
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 

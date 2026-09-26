@@ -355,7 +355,7 @@ theorem stieltjesIntegral.integral_symm :
     ∫ˢ x in b..a, f x ∂[B; g] = -∫ˢ x in a..b, f x ∂[B; g] := by
   by_cases h_integ : StieltjesIntegrable a b B f g
   · exact (h_integ.hasStieltjesIntegral.symm.unique h_integ.symm.hasStieltjesIntegral).symm
-  have h_integ_symm : ¬ StieltjesIntegrable b a B f g := by contrapose! h_integ; exact h_integ.symm
+  have h_integ_symm : ¬ StieltjesIntegrable b a B f g := by contrapose h_integ; exact h_integ.symm
   simp [stieltjesIntegral, h_integ, h_integ_symm]
 
 theorem hasStieltjesIntegral'_congr (hab : a < b) (hBB' : B = B')
