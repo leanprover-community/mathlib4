@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.Topology.Bornology.Basic
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Absorption of sets
@@ -116,6 +117,14 @@ lemma _root_.absorbs_biUnion_finset {ι : Type*} {t : ι → Set α} {I : Finset
   I.finite_toSet.absorbs_biUnion
 
 protected alias ⟨_, biUnion_finset⟩ := absorbs_biUnion_finset
+
+protected theorem image {β F : Type*} [SMul M β] [FunLike F α β] [MulActionHomClass F M α β]
+    {f : F} (h : Absorbs M s t) :
+    Absorbs M (f '' s) (f '' t) := by
+  refine h.eventually.mono fun a (ha : t ⊆ a • s) => ?_
+  rintro _ ⟨y, hy, rfl⟩
+  obtain ⟨x, hx, rfl⟩ := ha hy
+  exact ⟨f x, ⟨x, hx, rfl⟩, (map_smul ..).symm⟩
 
 end SMul
 
@@ -227,6 +236,13 @@ protected theorem absorbs (hs : Absorbent M s) {x : α} : Absorbs M s {x} := hs 
 theorem absorbs_finite (hs : Absorbent M s) (ht : t.Finite) : Absorbs M s t := by
   rw [← Set.biUnion_of_singleton t]
   exact .biUnion ht fun _ _ => hs.absorbs
+
+theorem image_of_surjective {β F : Type*} [SMul M β] [FunLike F α β] [MulActionHomClass F M α β]
+    {f : F} (hf : Function.Surjective f) (hs : Absorbent M s) :
+    Absorbent M (f '' s) := by
+  intro y
+  obtain ⟨x, rfl⟩ := hf y
+  simpa using (hs x).image
 
 end SMul
 
