@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Johannes Hölzl
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Order.WithBotTop
 
 /-!
 # Order continuity
@@ -86,6 +86,47 @@ protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
   match n with
   | 0 => LeftOrdContinuous.id α
   | (n + 1) => (LeftOrdContinuous.iterate hf n).comp hf
+
+/-- An `OrderEmbedding` function with `OrdConnected` range is `LeftOrdContinuous`. -/
+@[to_dual
+/-- An `OrderEmbedding` function with `OrdConnected` range is `RightOrdContinuous`. -/]
+theorem _root_.OrderEmbedding.leftOrdContinuous_of_ordConnected_range
+    {α β : Type*} [Preorder α] [LinearOrder β]
+    {f : α ↪o β} (hf : (Set.range f).OrdConnected) : LeftOrdContinuous f := by
+  rintro s a₀ ⟨b₀, hb₀⟩ ha₀
+  refine ⟨f.monotone.mem_upperBounds_image ha₀.left, fun b hb => ?_⟩
+  rcases le_total (f a₀) b with h | h
+  · exact h
+  · obtain ⟨_, rfl⟩ : ∃ a, f a = b :=
+      hf.out' (Set.mem_range_self b₀) (Set.mem_range_self a₀) ⟨hb ⟨b₀, hb₀, rfl⟩, h⟩
+    exact f.monotone <| ha₀.right fun a ha => f.le_iff_le.mp (hb ⟨a, ha, rfl⟩)
+
+-- Avoid `OrderEmbedding.leftOrdContinuous_of_ordConnected_range` here,
+-- since it requires `[LinearOrder β]`.
+@[to_dual]
+theorem _root_.WithTop.leftOrdContinuous_coe :
+    LeftOrdContinuous ((↑) : α → WithTop α) := by
+  rintro s a₀ ⟨b, hb⟩ ha₀
+  refine ⟨fun x ⟨a', ha', hx⟩ => hx ▸ WithTop.coe_le_coe.mpr (ha₀.1 ha'), fun x hx => ?_⟩
+  match x with
+  | ⊤ => exact le_top
+  | (_ : α) => exact_mod_cast ha₀.right fun a ha => mod_cast hx ⟨a, ha, rfl⟩
+
+-- Same above.
+@[to_dual]
+theorem _root_.WithTop.rightOrdContinuous_coe :
+    RightOrdContinuous ((↑) : α → WithTop α) := by
+  rintro s a₀ ⟨b, hb⟩ ha₀
+  refine ⟨fun x ⟨a', ha', hx⟩ => hx ▸ WithTop.coe_le_coe.mpr (ha₀.1 ha'), fun x hx => ?_⟩
+  match x with
+  | ⊤ => simp_all [lowerBounds]
+  | (_ : α) => exact_mod_cast ha₀.right fun a ha => mod_cast hx ⟨a, ha, rfl⟩
+
+theorem _root_.WithBotTop.leftOrdContinuous_coe : LeftOrdContinuous (WithBotTop.coe : α → _) :=
+  WithBot.leftOrdContinuous_coe.comp WithTop.leftOrdContinuous_coe
+
+theorem _root_.WithBotTop.rightOrdContinuous_coe : RightOrdContinuous (WithBotTop.coe : α → _) :=
+  WithBot.rightOrdContinuous_coe.comp WithTop.rightOrdContinuous_coe
 
 end Preorder
 

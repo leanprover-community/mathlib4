@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
+public import Mathlib.Order.OrdContinuous
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -867,6 +868,26 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
   | succ n ih =>
     rw [succ_nsmul, ih, Nat.cast_succ]
     convert! (EReal.right_distrib_of_nonneg _ _).symm <;> simp
+
+@[norm_cast]
+lemma coe_csSup {s : Set ℝ} (hs : s.Nonempty) (hs' : BddAbove s) :
+    (↑(sSup s) : EReal) = sSup ((↑) '' s) :=
+  WithBotTop.leftOrdContinuous_coe.map_csSup hs hs'
+
+@[norm_cast]
+lemma coe_csInf {s : Set ℝ} (hs : s.Nonempty) (hs' : BddBelow s) :
+    (↑(sInf s) : EReal) = sInf ((↑) '' s) :=
+  WithBotTop.rightOrdContinuous_coe.map_csInf hs hs'
+
+@[norm_cast]
+lemma coe_ciSup {ι : Type*} [Nonempty ι] {f : ι -> ℝ} (hf : BddAbove (Set.range f)) :
+    (↑(⨆ x, f x) : EReal) = ⨆ x, ↑(f x) :=
+  WithBotTop.leftOrdContinuous_coe.map_ciSup hf
+
+@[norm_cast]
+lemma coe_ciInf {ι : Type*} [Nonempty ι] {f : ι -> ℝ} (hf : BddBelow (Set.range f)):
+    (↑(⨅ x, f x) : EReal) = ⨅ x, ↑(f x) :=
+  WithBotTop.rightOrdContinuous_coe.map_ciInf hf
 
 end EReal
 
