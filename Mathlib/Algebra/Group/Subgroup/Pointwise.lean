@@ -39,6 +39,34 @@ open scoped Pointwise
 
 variable {α G A S : Type*}
 
+open scoped Pointwise in
+/--
+If `H` and `K` are disjoint subgroups of `G` then `(h, k) ↦ h * k` gives a bijection between
+`H ×ˢ K` and `H * K`
+-/
+theorem bijOn_product_mul_of_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
+    BijOn (fun hk => hk.1 * hk.2) (H ×ˢ K) (H * K : Set G) := by
+  rw [← image2_mul, ← image_prod]
+  apply Set.InjOn.bijOn_image
+  intro ⟨h1, k1⟩ H1 ⟨h2, k2⟩ H2 HH
+  suffices ((⟨h1, H1.1⟩, ⟨k1, H1.2⟩) : H × K) = (⟨h2, H2.1⟩, ⟨k2, H2.2⟩) by grind
+  exact Subgroup.mul_injective_of_disjoint hHK (by grind)
+
+open scoped Pointwise in
+/--
+If `H` and `K` are disjoint subgroups of `G`, gives an equivalence
+between the point-wise product `H.carrier * K.carrier` and cartesian product `H ×ˢ K`.
+-/
+noncomputable def equivMulDisjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
+    ((H : Set G) * (K : Set G) : Set G) ≃ (H : Set G) ×ˢ (K : Set G) :=
+  (Set.BijOn.equiv (fun (h, k) => h * k) (bijOn_product_mul_of_disjoint H K hHK)).symm
+
+theorem equivMulDisjoint_def [Group G] (H K : Subgroup G) (hHK : Disjoint H K) : ∀ p : (H : Set G) ×ˢ (K : Set G),
+  ((equivMulDisjoint H K hHK).symm p).val = p.1.1 * p.1.2 := by
+  simp only [equivMulDisjoint, BijOn.equiv, Equiv.symm_symm, Equiv.ofBijective_apply,
+    MapsTo.val_restrict_apply, implies_true]
+
+
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
   Set.ext fun _ => inv_mem_iff
