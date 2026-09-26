@@ -32,43 +32,53 @@ namespace MonoidalCategory
 open CategoryTheory.Functor
 
 /-- The bifunctor `(F -) ⊗ -`. -/
-abbrev curriedTensorInsertFunctor₁ (F : C ⥤ D) : C ⥤ D ⥤ D :=
+@[reducible]
+def curriedTensorInsertFunctor₁ (F : C ⥤ D) : C ⥤ D ⥤ D :=
   (((whiskeringLeft₂ _).obj F).obj (𝟭 D)).obj (curriedTensor D)
 
 /-- The bifunctor `- ⊗ (F -)`. -/
-abbrev curriedTensorInsertFunctor₂ (F : C ⥤ D) : D ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorInsertFunctor₂ (F : C ⥤ D) : D ⥤ C ⥤ D :=
   (((whiskeringLeft₂ _).obj (𝟭 D)).obj F).obj (curriedTensor D)
 
 /-- The bifunctor `F - ⊗ F -`. -/
-abbrev curriedTensorPre (F : C ⥤ D) : C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPre (F : C ⥤ D) : C ⥤ C ⥤ D :=
   (whiskeringLeft₂ _).obj F |>.obj F |>.obj (curriedTensor D)
 
 /-- The bifunctor `F (- ⊗ -)`. -/
-abbrev curriedTensorPost (F : C ⥤ D) : C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPost (F : C ⥤ D) : C ⥤ C ⥤ D :=
   (Functor.postcompose₂.obj F).obj (curriedTensor C)
 
 /-- The trifunctor `(F - ⊗ F -) ⊗ F -`. -/
-abbrev curriedTensorPrePre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPrePre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₁₂ (curriedTensorPre F) (curriedTensorInsertFunctor₂ F)
 
 /-- The trifunctor `F - ⊗ (F - ⊗ F -)`. -/
-abbrev curriedTensorPrePre' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPrePre' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorInsertFunctor₁ F) (curriedTensorPre F)
 
 /-- The trifunctor `F (- ⊗ -) ⊗ F -`. -/
-abbrev curriedTensorPostPre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPostPre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₁₂ (curriedTensor C) (curriedTensorPre F)
 
 /-- The trifunctor `F - ⊗ F (- ⊗ -)`. -/
-abbrev curriedTensorPrePost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPrePost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorPre F) (curriedTensor C)
 
 /-- The trifunctor `F ((- ⊗ -) ⊗ -)` -/
-abbrev curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₁₂ (curriedTensor C) (curriedTensorPost F)
 
 /-- The trifunctor `F (- ⊗ (- ⊗ -))` -/
-abbrev curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -92,7 +102,8 @@ def curriedTensorPreFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D where
         simp [← tensorHom_id] }
 
 /-- The functor which associates to a functor `F` the bifunctor `F (- ⊗ -)`. -/
-abbrev curriedTensorPostFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D :=
+@[reducible]
+def curriedTensorPostFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D :=
   Functor.postcompose₂.flip.obj (curriedTensor C)
 
 end MonoidalCategory

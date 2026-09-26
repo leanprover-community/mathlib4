@@ -139,7 +139,8 @@ class HasSplitEqualizer : Prop where
 The pair `f,g` is a `G`-cosplit pair if there is an `h : W ⟶ G X` so that `G f, G g, h` forms a
 split equalizer in `D`.
 -/
-abbrev Functor.IsCosplitPair : Prop :=
+@[reducible]
+def Functor.IsCosplitPair : Prop :=
   HasSplitEqualizer (G.map f) (G.map g)
 
 /-- Get the equalizer object from the typeclass `IsCosplitPair`. -/

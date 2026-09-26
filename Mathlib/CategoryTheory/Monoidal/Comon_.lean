@@ -151,7 +151,8 @@ attribute [instance] Hom.isComonHom_hom
 
 /-- Construct a morphism `M ⟶ N` of `Comon C` from a map `f : M ⟶ N` and a `IsComonHom f`
 instance. -/
-abbrev Hom.mk' {M N : Comon C} (f : M.X ⟶ N.X)
+@[reducible]
+def Hom.mk' {M N : Comon C} (f : M.X ⟶ N.X)
     (f_counit : f ≫ ε[N.X] = ε[M.X] := by cat_disch)
     (f_comul : f ≫ Δ[N.X] = Δ[M.X] ≫ (f ⊗ₘ f) := by cat_disch) :
     Hom M N :=
@@ -244,7 +245,8 @@ instance : HasTerminal (Comon C) :=
 open Opposite
 
 /-- Auxiliary definition for `ComonToMonOpOpObj`. -/
-abbrev ComonToMonOpOpObjMon (A : Comon C) : MonObj (op A.X) where
+@[reducible]
+def ComonToMonOpOpObjMon (A : Comon C) : MonObj (op A.X) where
   one := ε[A.X].op
   mul := Δ[A.X].op
   one_mul := by
@@ -278,7 +280,8 @@ The contravariant functor turning comonoid objects into monoid objects in the op
       isMonHom_hom.mul_hom := by apply Quiver.Hom.unop_inj; simp }
 
 /-- Auxiliary definition for `MonOpOpToComonObj`. -/
-abbrev MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
+@[reducible]
+def MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
   counit := η[A.X].unop
   comul := μ[A.X].unop
   counit_comul := by rw [← unop_whiskerRight, ← unop_comp, MonObj.one_mul]; rfl
@@ -400,7 +403,8 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 open OplaxMonoidal ComonObj IsComonHom
 
 /-- The image of a comonoid object under an oplax monoidal functor is a comonoid object. -/
-abbrev obj.instComonObj (A : C) [ComonObj A] (F : C ⥤ D) [F.OplaxMonoidal] :
+@[reducible]
+def obj.instComonObj (A : C) [ComonObj A] (F : C ⥤ D) [F.OplaxMonoidal] :
     ComonObj (F.obj A) where
   counit := F.map ε[A] ≫ η F
   comul := F.map Δ[A] ≫ δ F _ _

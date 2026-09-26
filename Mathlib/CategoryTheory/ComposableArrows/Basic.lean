@@ -63,7 +63,8 @@ open Category
 variable (C : Type*) [Category* C]
 
 /-- `ComposableArrows C n` is the type of functors `Fin (n + 1) ⥤ C`. -/
-abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
+@[reducible]
+def ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 
 namespace ComposableArrows
 
@@ -76,13 +77,13 @@ macro "valid" : tactic =>
   `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | omega)
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
-@[simp]
-abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by lia⟩
+@[reducible, simp]
+def obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by lia⟩
 
 /-- The map `F.obj' i ⟶ F.obj' j` when `F : ComposableArrows C n`, and `i` and `j`
 are natural numbers such that `i ≤ j ≤ n`. -/
-@[simp]
-abbrev map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
+@[reducible, simp]
+def map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
     F.obj ⟨i, by lia⟩ ⟶ F.obj ⟨j, by lia⟩ :=
   F.map (homOfLE (by simp only [Fin.mk_le_mk]; valid))
 
@@ -94,20 +95,23 @@ lemma map'_comp (i j k : ℕ) (hij : i ≤ j := by valid)
   F.map_comp _ _
 
 /-- The leftmost object of `F : ComposableArrows C n`. -/
-abbrev left := obj' F 0
+@[reducible]
+def left := obj' F 0
 
 /-- The rightmost object of `F : ComposableArrows C n`. -/
-abbrev right := obj' F n
+@[reducible]
+def right := obj' F n
 
 /-- The canonical map `F.left ⟶ F.right` for `F : ComposableArrows C n`. -/
-abbrev hom : F.left ⟶ F.right := map' F 0 n
+@[reducible]
+def hom : F.left ⟶ F.right := map' F 0 n
 
 variable {F G}
 
 /-- The map `F.obj' i ⟶ G.obj' i` induced on `i`th objects by a morphism `F ⟶ G`
 in `ComposableArrows C n` when `i` is a natural number such that `i ≤ n`. -/
-@[simp]
-abbrev app' (φ : F ⟶ G) (i : ℕ) (hi : i ≤ n := by valid) :
+@[reducible, simp]
+def app' (φ : F ⟶ G) (i : ℕ) (hi : i ≤ n := by valid) :
     F.obj' i ⟶ G.obj' i := φ.app _
 
 @[reassoc]
@@ -459,20 +463,24 @@ def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
   map_comp g g' := Precomp.map_comp F f (leOfHom g) (leOfHom g')
 
 /-- Constructor for `ComposableArrows C 2`. -/
-abbrev mk₂ {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : ComposableArrows C 2 :=
+@[reducible]
+def mk₂ {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : ComposableArrows C 2 :=
   (mk₁ g).precomp f
 
 /-- Constructor for `ComposableArrows C 3`. -/
-abbrev mk₃ {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : ComposableArrows C 3 :=
+@[reducible]
+def mk₃ {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : ComposableArrows C 3 :=
   (mk₂ g h).precomp f
 
 /-- Constructor for `ComposableArrows C 4`. -/
-abbrev mk₄ {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) :
+@[reducible]
+def mk₄ {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) :
     ComposableArrows C 4 :=
   (mk₃ g h i).precomp f
 
 /-- Constructor for `ComposableArrows C 5`. -/
-abbrev mk₅ {X₀ X₁ X₂ X₃ X₄ X₅ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃)
+@[reducible]
+def mk₅ {X₀ X₁ X₂ X₃ X₄ X₅ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃)
     (i : X₃ ⟶ X₄) (j : X₄ ⟶ X₅) :
     ComposableArrows C 5 :=
   (mk₄ g h i j).precomp f
@@ -550,7 +558,8 @@ def δ₀Functor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.succFunctor (n + 1))
 
 /-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
-abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
+@[reducible]
+def δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
 
 @[simp]
 lemma precomp_δ₀ {X : C} (f : X ⟶ F.left) : (F.precomp f).δ₀ = F := rfl
@@ -568,7 +577,8 @@ def δlastFunctor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.castSuccFunctor (n + 1))
 
 /-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
-abbrev δlast (F : ComposableArrows C (n + 1)) := δlastFunctor.obj F
+@[reducible]
+def δlast (F : ComposableArrows C (n + 1)) := δlastFunctor.obj F
 
 section
 

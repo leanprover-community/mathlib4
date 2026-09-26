@@ -132,8 +132,9 @@ namespace Arrow
 /-- Given a morphism `φ : f ⟶ g` in the category `Arrow C`, this is an
 abbreviation for the `CommSq.LiftStruct` structure for
 the square corresponding to `φ`. -/
-@[to_dual self]
-abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
+@[reducible,
+to_dual self]
+def LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
 
 @[to_dual self]
 lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :

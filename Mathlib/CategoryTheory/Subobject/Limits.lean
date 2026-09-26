@@ -58,7 +58,8 @@ section Equalizer
 variable (f g : X ⟶ Y) [HasEqualizer f g]
 
 /-- The equalizer of morphisms `f g : X ⟶ Y` as a `Subobject X`. -/
-abbrev equalizerSubobject : Subobject X :=
+@[reducible]
+def equalizerSubobject : Subobject X :=
   Subobject.mk (equalizer.ι f g)
 
 /-- The underlying object of `equalizerSubobject f g` is (up to isomorphism!)
@@ -117,7 +118,8 @@ section Kernel
 variable [HasZeroMorphisms C] (f : X ⟶ Y) [HasKernel f]
 
 /-- The kernel of a morphism `f : X ⟶ Y` as a `Subobject X`. -/
-abbrev kernelSubobject : Subobject X :=
+@[reducible]
+def kernelSubobject : Subobject X :=
   Subobject.mk (kernel.ι f)
 
 lemma _root_.CategoryTheory.Subobject.pullback_kernelSubobject {W : C} (h : W ⟶ X)
@@ -315,7 +317,8 @@ section Image
 variable (f : X ⟶ Y) [HasImage f]
 
 /-- The image of a morphism `f g : X ⟶ Y` as a `Subobject Y`. -/
-abbrev imageSubobject : Subobject Y :=
+@[reducible]
+def imageSubobject : Subobject Y :=
   Subobject.mk (image.ι f)
 
 /-- The underlying object of `imageSubobject f` is (up to isomorphism!)

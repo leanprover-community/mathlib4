@@ -163,7 +163,8 @@ structure Hom (X Y : P.Comma L R Q W) extends CommaMorphism X.toComma Y.toComma 
   prop_hom_right : W toCommaMorphism.right
 
 /-- The underlying morphism of objects in `Comma L R`. -/
-abbrev Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toComma :=
+@[reducible]
+def Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toComma :=
   f.toCommaMorphism
 
 @[simp]
@@ -579,7 +580,8 @@ variable {P' Q' W' : MorphismProperty T} [Q'.IsMultiplicative] [W'.IsMultiplicat
     (hPP' : P ≤ P') (hQQ' : Q ≤ Q')
 
 /-- The natural inclusion induced by implications of morphism properties. -/
-abbrev Arrow.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') :
+@[reducible]
+def Arrow.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') :
     P.Arrow Q W ⥤ P'.Arrow Q' W' :=
   Comma.changeProp _ _ hPP' hQQ' hWW'
 
@@ -672,7 +674,8 @@ variable {P' Q' : MorphismProperty T} [Q'.IsMultiplicative] (hPP' : P ≤ P') (h
 
 variable (X) in
 /-- The natural inclusion induced by implications of morphism properties. -/
-abbrev Over.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') :
+@[reducible]
+def Over.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') :
     P.Over Q X ⥤ P'.Over Q' X :=
   Comma.changeProp _ _ hPP' hQQ' le_rfl
 

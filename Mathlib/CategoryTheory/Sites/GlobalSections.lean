@@ -57,7 +57,8 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
 /-- Typeclass stating that the constant sheaf functor has a right adjoint. This right adjoint will
 then be called the global sections functor and written `Sheaf.Γ`. -/
-abbrev HasGlobalSectionsFunctor := (constantSheaf J A).IsLeftAdjoint
+@[reducible]
+def HasGlobalSectionsFunctor := (constantSheaf J A).IsLeftAdjoint
 
 /-- We define the global sections functor as the right-adjoint of the constant sheaf functor
 whenever it exists. -/

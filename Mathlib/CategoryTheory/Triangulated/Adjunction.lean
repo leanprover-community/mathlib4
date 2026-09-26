@@ -186,7 +186,8 @@ variable (E : C ≌ D) [E.functor.CommShift ℤ] [E.inverse.CommShift ℤ] [E.Co
 We say that an equivalence of categories `E` is triangulated if both `E.functor` and
 `E.inverse` are triangulated functors.
 -/
-abbrev IsTriangulated : Prop := E.toAdjunction.IsTriangulated
+@[expose, reducible]
+def IsTriangulated : Prop := E.toAdjunction.IsTriangulated
 
 namespace IsTriangulated
 

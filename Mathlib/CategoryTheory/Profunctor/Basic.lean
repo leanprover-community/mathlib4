@@ -49,13 +49,14 @@ structure ProfunctorCore where
 attribute [simp] ProfunctorCore.map_id ProfunctorCore.map_comp
 
 /-- A profunctor from C to D (`Profunctor.{w} C D`) is a bifunctor `C ⥤ Dᵒᵖ ⥤ Type w`. -/
-@[pp_with_univ]
-abbrev Profunctor := C ⥤ Dᵒᵖ ⥤ Type w
+@[reducible, pp_with_univ]
+def Profunctor := C ⥤ Dᵒᵖ ⥤ Type w
 
 variable {C D}
 
 /-- Typecheck a bifunctor `C ⥤ Dᵒᵖ ⥤ Type w` as a profunctor. -/
-abbrev Functor.profunctor (F : C ⥤ Dᵒᵖ ⥤ Type w) : Profunctor.{w} C D := F
+@[reducible]
+def Functor.profunctor (F : C ⥤ Dᵒᵖ ⥤ Type w) : Profunctor.{w} C D := F
 
 namespace ProfunctorCore
 
@@ -133,7 +134,8 @@ def ulift (P : Profunctor.{w} C D) : Profunctor.{max w' w} C D :=
 
 /-- Increase the universe level of a profunctor by one. This enables dot notation `P.ulift1`,
 which is not possible with `Profunctor.ulift`. -/
-abbrev ulift1 (P : Profunctor.{w} C D) : Profunctor.{w + 1} C D :=
+@[reducible]
+def ulift1 (P : Profunctor.{w} C D) : Profunctor.{w + 1} C D :=
   Profunctor.ulift.{w + 1} P
 
 end Profunctor

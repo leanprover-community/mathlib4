@@ -30,7 +30,8 @@ open CategoryTheory.Functor Limits CartesianMonoidalCategory
 variable {C : Type*} [Category* C] [HasPullbacks C]
 
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
-abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
+@[expose, reducible]
+def cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
   .ofChosenFiniteProducts
     ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
@@ -40,7 +41,8 @@ abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
 attribute [local instance] cartesianMonoidalCategory
 
 /-- `Over X` is braided w.r.t. the Cartesian monoidal structure given by `Limits.pullback`. -/
-abbrev braidedCategory (X : C) : BraidedCategory (Over X) :=
+@[expose, reducible]
+def braidedCategory (X : C) : BraidedCategory (Over X) :=
   .ofCartesianMonoidalCategory
 
 attribute [local instance] braidedCategory

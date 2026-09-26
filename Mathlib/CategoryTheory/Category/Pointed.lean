@@ -39,7 +39,8 @@ instance : CoeSort Pointed Type* :=
   ⟨Pointed.X⟩
 
 /-- Turns a point into a pointed type. -/
-abbrev of {X : Type*} (point : X) : Pointed :=
+@[reducible]
+def of {X : Type*} (point : X) : Pointed :=
   ⟨X, point⟩
 
 theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=

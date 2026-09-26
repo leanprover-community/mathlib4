@@ -57,7 +57,8 @@ a －－－－－－ ▸ a
         b －－－－－－ ▸ b
 ```
 -/
-abbrev leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
+@[reducible]
+def leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   η ▷ f ⊗≫ f ◁ ε
 
 /-- The 2-morphism defined by the following pasting diagram:
@@ -69,7 +70,8 @@ abbrev leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
 b －－－－－－ ▸ b
 ```
 -/
-abbrev rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
+@[reducible]
+def rightZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   g ◁ η ⊗≫ ε ▷ g
 
 theorem rightZigzag_idempotent_of_left_triangle
@@ -175,11 +177,13 @@ noncomputable section
 variable (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b)
 
 /-- The isomorphism version of `leftZigzag`. -/
-abbrev leftZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
+@[reducible]
+def leftZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
   whiskerRightIso η f ≪⊗≫ whiskerLeftIso f ε
 
 /-- The isomorphism version of `rightZigzag`. -/
-abbrev rightZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
+@[reducible]
+def rightZigzagIso (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) :=
   whiskerLeftIso g η ≪⊗≫ whiskerRightIso ε g
 
 @[simp]

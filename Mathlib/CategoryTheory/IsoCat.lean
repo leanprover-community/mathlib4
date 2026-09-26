@@ -216,7 +216,8 @@ def isoCat : IsoCat (InducedCategory C e) C where
 
 /-- The equivalence of categories between `InducedCategory C e` and `C` when
 `e : D ≃ C` is a bijection. -/
-abbrev equivalence : InducedCategory C e ≌ C :=
+@[reducible]
+def equivalence : InducedCategory C e ≌ C :=
   (isoCat e).toEquivalence
 
 end InducedCategory

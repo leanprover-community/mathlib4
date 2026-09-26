@@ -204,9 +204,9 @@ def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _)
     simp
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- If `M` is an additive monoid object, then `Hom(X, M)` has an additive monoid structure. -/]
-abbrev Hom.monoid : Monoid (X ⟶ M) where
+def Hom.monoid : Monoid (X ⟶ M) where
   mul f₁ f₂ := lift f₁ f₂ ≫ μ
   mul_assoc f₁ f₂ f₃ := by
     change lift (lift f₁ f₂ ≫ μ) f₃ ≫ μ = lift f₁ (lift f₂ f₃ ≫ μ) ≫ μ
@@ -270,10 +270,10 @@ section BraidedCategory
 variable [BraidedCategory C]
 
 /-- If `M` is a commutative monoid object, then `Hom(X, M)` has a commutative monoid structure. -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- If `M` is a commutative additive monoid object, then `Hom(X, M)` has a commutative additive
 monoid structure. -/]
-abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
+def Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
   mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using! lift g f ≫= IsCommMonObj.mul_comm M
 
 namespace Mon.Hom
