@@ -290,7 +290,7 @@ noncomputable def intermediateFieldEquivSubgroup [Finite G] :
     IntermediateField K L ≃o (Subgroup G)ᵒᵈ :=
   have := isGalois G K L
   have := finiteDimensional G K L
-  IsGalois.intermediateFieldEquivSubgroup.trans <| (mulEquivAlgEquiv G K L).comapSubgroup.dual
+  IsGalois.intermediateFieldEquivSubgroup.trans (mulEquivAlgEquiv G K L).comapSubgroup.dual
 
 @[simp] theorem intermediateFieldEquivSubgroup_apply [Finite G] {F} :
     intermediateFieldEquivSubgroup G K L F = .toDual (fixingSubgroup G (F : Set L)) := rfl
@@ -524,7 +524,7 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
       obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant (algebraMap F L x) (by
         rintro ⟨g, hg⟩
         rw [MulAction.subgroup_smul_def, ← algebraMap.smul']
-        exact congr_arg (algebraMap F L) <| h ⟨g, ⟨g, hg, rfl⟩⟩)
+        congrm algebraMap F L $(h ⟨g, ⟨g, hg, rfl⟩⟩))
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }
 

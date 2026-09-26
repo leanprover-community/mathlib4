@@ -237,7 +237,7 @@ def homToNerveMk (F : X.HomotopyCategory ⥤ C) : X ⟶ (truncation 2).obj (nerv
           ComposableArrows.mk₁ (F.map (homMk (Edge.mk' e.edge))) =
             ComposableArrows.mk₁ (F.map (homMk e)) :=
         ComposableArrows.arrowEquiv.injective
-          (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
+          congr(F.mapArrow.obj $(congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
       obtain ⟨x₀, x₁, x₂, e₀₁, e₁₂, e₀₂, h, rfl⟩ := Edge.CompStruct.exists_of_simplex x
       dsimp at h₀ h₂ ⊢
       have : ComposableArrows.mk₂ (F.map (homMk e₀₁)) (F.map (homMk e₁₂)) = y := by
@@ -275,7 +275,7 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
       ComposableArrows.mk₁ (F.map (homMk e)) := by
   rw [homToNerveMk_app_one]
   exact ComposableArrows.arrowEquiv.injective
-    (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
+    congr(F.mapArrow.obj $(congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

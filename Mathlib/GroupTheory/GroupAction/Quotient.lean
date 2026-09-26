@@ -84,8 +84,8 @@ instance quotient [QuotientAction X H] : MulAction X (G ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-  one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul X a)
-  mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
+  one_smul q := Quotient.inductionOn' q fun a => congr(Quotient.mk'' $(one_smul X a))
+  mul_smul b b' q := Quotient.inductionOn' q fun a => congr(Quotient.mk'' $(mul_smul b b' a))
 
 variable {X}
 
@@ -170,7 +170,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 noncomputable def orbitEquivQuotientStabilizer (b : X) : orbit G b ≃ G ⧸ stabilizer G b :=
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer G b g, ofQuotientStabilizer_mem_orbit G b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer G b (by convert! congr_arg Subtype.val hxy),
+      ⟨fun x y hxy => injective_ofQuotientStabilizer G b (by convert! congr($(hxy).val)),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
@@ -427,16 +427,18 @@ namespace Subgroup
 variable {G : Type*} [Group G] (H : Subgroup G)
 
 theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
-  apply le_antisymm
-  · intro g hg
-    apply Equiv.Perm.ext
-    refine fun q ↦ QuotientGroup.induction_on q ?_
-    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
-    rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
-    exact H.normalCore.inv_mem hg g'⁻¹
-  · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
-    rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
-    exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
+  ext g
+  rw [MonoidHom.mem_ker, MulAction.toPermHom_apply, Equiv.Perm.ext_iff, QuotientGroup.forall_mk]
+  apply Equiv.inv G |>.forall_congr
+  simp [QuotientGroup.eq, eq_comm, mul_assoc]
+
+theorem _root_.AddSubgroup.normalCore_eq_ker {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    H.normalCore = (AddAction.toPermHom G (G ⧸ H)).ker := by
+  ext g
+  rw [AddMonoidHom.mem_ker, AddAction.toPermHom_apply, ofMul_eq_zero, Equiv.Perm.ext_iff,
+    QuotientAddGroup.forall_mk]
+  apply Equiv.neg G |>.forall_congr
+  simp [QuotientAddGroup.eq, eq_comm, add_assoc]
 
 open QuotientGroup
 

@@ -39,10 +39,13 @@ lemma preservesColimit_of_braided_and_preservesColimit_tensor_right
     PreservesColimit F (tensorLeft c) :=
   preservesColimit_of_natIso F (BraidedCategory.tensorLeftIsoTensorRight c).symm
 
-lemma preservesCoLimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
+lemma preservesColimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
     PreservesColimit F (curriedTensor C) :=
   preservesColimit_of_evaluation _ _
     (fun c ↦ inferInstanceAs (PreservesColimit F (tensorRight c)))
+
+@[deprecated (since := "2026-09-17")]
+alias preservesCoLimit_curriedTensor := preservesColimit_curriedTensor
 
 end Colimits
 
