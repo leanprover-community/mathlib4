@@ -5,6 +5,7 @@ Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
@@ -552,7 +553,7 @@ variable {G : Type*} [TopologicalSpace G]
 `T + W ⊆ W`. -/
 structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
   nhds : T ∈ 𝓝 0
-  neg : -T = T
+  isSelfNeg : IsSelfNeg T
   isOpen : IsOpen T
   add : W + T ⊆ W
 
@@ -561,9 +562,12 @@ structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Pr
 @[to_additive]
 structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhds : T ∈ 𝓝 1
-  inv : T⁻¹ = T
+  isSelfInv : IsSelfInv T
   isOpen : IsOpen T
   mul : W * T ⊆ W
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias IsTopologicalGroup.mulInvClosureNhd.inv := IsTopologicalGroup.mulInvClosureNhd.isSelfInv
 
 namespace IsTopologicalGroup
 
@@ -596,7 +600,7 @@ lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
   use U ∩ U⁻¹
   constructor
   · simp [Uopen.mem_nhds onememU, inv_mem_nhds_one]
-  · simp [inter_comm]
+  · exact isSelfInv_inter_inv
   · exact Uopen.inter Uopen.inv
   · exact fun a ha ↦ mulclose (mul_subset_mul_left UsubS (mul_subset_mul_left inter_subset_left ha))
 
@@ -618,12 +622,7 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
       apply mem_iUnion.mpr
       use 0
       simp [mem_of_mem_nhds hV.nhds]
-    inv_mem' := fun ha ↦ by
-      rcases mem_iUnion.mp ha with ⟨k, hk⟩
-      apply mem_iUnion.mpr
-      use k
-      rw [← hV.inv]
-      simpa only [inv_pow, Set.mem_inv, inv_inv] using hk }
+    inv_mem' := (IsSelfInv.iUnion fun n ↦ hV.isSelfInv.pow (n + 1)).inv_mem }
   have : IsOpen (⋃ n, V ^ (n + 1)) := by
     refine isOpen_iUnion (fun n ↦ ?_)
     rw [pow_succ]

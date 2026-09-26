@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.SelfInv
 
 /-!
 # Growth in the quotient and intersection with a subgroup
@@ -59,7 +60,7 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
       exact mul_mem_mul (hφA <| Set.mem_image_of_mem _ <| mod_cast ha) hb
 
 @[to_additive]
-lemma le_card_quotient_mul_sq_inter_subgroup (hAsymm : A⁻¹ = A) :
+lemma le_card_quotient_mul_sq_inter_subgroup (hAsymm : IsSelfInv A) :
     #A ≤ #(A.image <| QuotientGroup.mk' H) * #{x ∈ A ^ 2 | x ∈ H} := by
   set π := QuotientGroup.mk' H
   rw [card_eq_sum_card_image π]
@@ -74,6 +75,6 @@ lemma le_card_quotient_mul_sq_inter_subgroup (hAsymm : A⁻¹ = A) :
       rintro x hx hxa y hy hya
       refine ⟨mul_mem_mul (by simpa) hy, (QuotientGroup.eq_one_iff _).1 (?_ : π _ = _)⟩
       simp [hya, ← hxa]
-    _ = #{x ∈ A ^ 2 | x ∈ H} := by simp [hAsymm, sq]
+    _ = #{x ∈ A ^ 2 | x ∈ H} := by simp [hAsymm.inv_eq, sq]
 
 end Finset

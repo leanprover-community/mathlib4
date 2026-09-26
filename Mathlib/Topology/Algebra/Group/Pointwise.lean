@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.Topology.Algebra.Group.ContinuousDiv
 public import Mathlib.Topology.Algebra.Group.Subgroup
 public import Mathlib.Topology.Maps.Proper.Basic
@@ -149,36 +150,52 @@ section SeparatelyContinuousMul
 variable [TopologicalSpace G] [Group G] [SeparatelyContinuousMul G]
 
 @[to_additive]
-theorem closure_subset_mul_left_of_mem_nhds_one_of_inv {s : Set G} (s' : Set G)
-    (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) :
+theorem closure_subset_mul_left_of_mem_nhds_one_of_isSelfInv {s : Set G} (s' : Set G)
+    (hs₀ : s ∈ 𝓝 1) (h_symm : IsSelfInv s) :
     closure s' ⊆ s * s' := by
   intro y hy
   obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
     mem_closure_iff_nhds.mp hy ((· * y) '' s)
       (by simpa using (isOpenMap_mul_right y).image_mem_nhds hs₀)
-  simpa using Set.mul_mem_mul (h_symm b hb) hc
+  simpa using Set.mul_mem_mul (h_symm.inv_mem hb) hc
 
 @[to_additive]
-theorem closure_subset_mul_right_of_mem_nhds_one_of_inv (s : Set G) {s' : Set G}
-    (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') :
+theorem closure_subset_mul_right_of_mem_nhds_one_of_isSelfInv (s : Set G) {s' : Set G}
+    (hs'₀ : s' ∈ 𝓝 1) (h_symm : IsSelfInv s') :
     closure s ⊆ s * s' := by
   intro y hy
   obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
     mem_closure_iff_nhds.mp hy ((y * ·) '' s')
       (by simpa using (isOpenMap_mul_left y).image_mem_nhds hs'₀)
-  simpa using Set.mul_mem_mul hc (h_symm b hb)
+  simpa using Set.mul_mem_mul hc (h_symm.inv_mem hb)
 
 @[to_additive]
-theorem closure_subset_of_mem_nhds_one_of_inv_mul_left_subset {s s' t : Set G}
-    (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) (hs : s * s' ⊆ t) :
+theorem closure_subset_of_mem_nhds_one_of_isSelfInv_mul_left_subset {s s' t : Set G}
+    (hs₀ : s ∈ 𝓝 1) (h_symm : IsSelfInv s) (hs : s * s' ⊆ t) :
     closure s' ⊆ t :=
-  closure_subset_mul_left_of_mem_nhds_one_of_inv s' hs₀ h_symm |>.trans hs
+  closure_subset_mul_left_of_mem_nhds_one_of_isSelfInv s' hs₀ h_symm |>.trans hs
 
 @[to_additive]
-theorem closure_subset_of_mem_nhds_one_of_inv_mul_right_subset {s s' t : Set G}
-    (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') (hs : s * s' ⊆ t) :
+theorem closure_subset_of_mem_nhds_one_of_isSelfInv_mul_right_subset {s s' t : Set G}
+    (hs'₀ : s' ∈ 𝓝 1) (h_symm : IsSelfInv s') (hs : s * s' ⊆ t) :
     closure s ⊆ t :=
-  closure_subset_mul_right_of_mem_nhds_one_of_inv s hs'₀ h_symm |>.trans hs
+  closure_subset_mul_right_of_mem_nhds_one_of_isSelfInv s hs'₀ h_symm |>.trans hs
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_mul_left_of_mem_nhds_one_of_inv :=
+  closure_subset_mul_left_of_mem_nhds_one_of_isSelfInv
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_mul_right_of_mem_nhds_one_of_inv :=
+  closure_subset_mul_right_of_mem_nhds_one_of_isSelfInv
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_of_mem_nhds_one_of_inv_mul_left_subset :=
+  closure_subset_of_mem_nhds_one_of_isSelfInv_mul_left_subset
+
+@[to_additive, deprecated (since := "2026-09-14")]
+alias closure_subset_of_mem_nhds_one_of_inv_mul_right_subset :=
+  closure_subset_of_mem_nhds_one_of_isSelfInv_mul_right_subset
 
 end SeparatelyContinuousMul
 
@@ -294,17 +311,15 @@ lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
 @[to_additive]
 theorem closure_subset_mul_right_of_mem_nhds_one {V : Set G} (U : Set G) (hV : V ∈ 𝓝 1) :
     closure U ⊆ U * V := by
-  apply closure_subset_mul_right_of_mem_nhds_one_of_inv U
-    (Filter.inter_mem hV (inv_mem_nhds_one _ hV))
-    (fun x ⟨hx, hx'⟩ ↦ ⟨Set.mem_inv.mp hx', Set.inv_mem_inv.mpr hx⟩) |>.trans
+  apply closure_subset_mul_right_of_mem_nhds_one_of_isSelfInv U
+    (Filter.inter_mem hV (inv_mem_nhds_one _ hV)) isSelfInv_inter_inv |>.trans
   gcongr; simp
 
 @[to_additive]
 theorem closure_subset_mul_left_of_mem_nhds_one {U : Set G} (V : Set G) (hU : U ∈ 𝓝 1) :
     closure V ⊆ U * V := by
-  apply closure_subset_mul_left_of_mem_nhds_one_of_inv V
-    (Filter.inter_mem hU (inv_mem_nhds_one _ hU))
-    (fun x ⟨hx, hx'⟩ ↦ ⟨Set.mem_inv.mp hx', Set.inv_mem_inv.mpr hx⟩) |>.trans
+  apply closure_subset_mul_left_of_mem_nhds_one_of_isSelfInv V
+    (Filter.inter_mem hU (inv_mem_nhds_one _ hU)) isSelfInv_inter_inv |>.trans
   gcongr; simp
 
 @[to_additive]
@@ -419,35 +434,38 @@ theorem IsTopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U 
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/
 @[to_additive /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
 identity which is closed, symmetric, and satisfies `V + V ⊆ U`. -/]
-theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
-    ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
+theorem exists_closed_nhds_one_isSelfInv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
+    ∃ V ∈ 𝓝 1, IsClosed V ∧ IsSelfInv V ∧ V * V ⊆ U := by
   rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
   rcases exists_mem_nhds_isClosed_subset (V_open.mem_nhds V_mem) with ⟨W, W_mem, W_closed, hW⟩
   refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
-    by simp [inter_comm], ?_⟩
+    isSelfInv_inter_inv, ?_⟩
   calc
   W ∩ W⁻¹ * (W ∩ W⁻¹)
     ⊆ W * W := mul_subset_mul inter_subset_left inter_subset_left
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
 
+@[to_additive, deprecated (since := "2026-09-14")]
+alias exists_closed_nhds_one_inv_eq_mul_subset := exists_closed_nhds_one_isSelfInv_eq_mul_subset
+
 @[to_additive] lemma IsDiscrete.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
     (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
-    ∃ U ∈ 𝓝 (1 : G), U⁻¹ = U ∧ ∀ g ∈ S, ((g * ·) '' U ∩ U).Nonempty → g = 1 := by
+    ∃ U ∈ 𝓝 (1 : G), IsSelfInv U ∧ ∀ g ∈ S, ((g * ·) '' U ∩ U).Nonempty → g = 1 := by
   obtain ⟨V, hV⟩ := nhds_inter_eq_singleton_of_mem_discrete hS S.one_mem
-  obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_inv_eq_mul_subset hV.1
+  obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_isSelfInv_eq_mul_subset hV.1
   refine ⟨U, hU, hUinv, fun g hgS ↦ ?_⟩
   rintro ⟨_, ⟨x, hx, rfl⟩, hgx⟩
   refine hV.2.subset ⟨hUV ?_, hgS⟩
-  rw [← hUinv] at hx
+  rw [← hUinv.inv_eq] at hx
   exact ⟨_, hgx, _, hx, by simp⟩
 
 @[to_additive] lemma IsDiscrete.exists_nhds_eq_one_of_image_mulRight_inter_nonempty
     (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
-    ∃ U ∈ 𝓝 (1 : G), U⁻¹ = U ∧ ∀ g ∈ S, ((· * g) '' U ∩ U).Nonempty → g = 1 := by
+    ∃ U ∈ 𝓝 (1 : G), IsSelfInv U ∧ ∀ g ∈ S, ((· * g) '' U ∩ U).Nonempty → g = 1 := by
   have ⟨U, hU, hUinv, h⟩ := hS.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
   refine ⟨U, hU, hUinv, fun g hgS hgU ↦ inv_eq_one.mp (h _ (S.inv_mem hgS) ?_)⟩
-  rwa [Set.nonempty_image_mulLeft_inv_inter_iff, hUinv]
+  rwa [Set.nonempty_image_mulLeft_inv_inter_iff, hUinv.inv_eq]
 
 end
 
