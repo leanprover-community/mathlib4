@@ -76,6 +76,9 @@ def lfpApprox (a : Ordinal.{u}) : α :=
   x ⊔ ⨆ b < a, f (lfpApprox b)
 termination_by a
 
+theorem lfpApprox_def (a : Ordinal.{u}) : lfpApprox f x a = x ⊔ ⨆ b < a, f (lfpApprox f x b) := by
+  rw [lfpApprox]
+
 theorem lfpApprox_mono_right : Monotone (lfpApprox f x) := by
   intro a b h
   rw [lfpApprox, lfpApprox]
@@ -259,6 +262,9 @@ termination_by a
 -- By unsealing these recursive definitions we can relate them
 -- by definitional equality
 unseal gfpApprox lfpApprox
+
+theorem gfpApprox_def (a : Ordinal.{u}) : gfpApprox f x a = x ⊓ ⨅ b < a, f (gfpApprox f x b) := by
+  rw [gfpApprox]
 
 theorem gfpApprox_zero : gfpApprox f x 0 = x := by
   exact lfpApprox_zero f.dual
