@@ -503,12 +503,30 @@ end Manifold
 lemma mvfderivWithin_const (c : F) {x : M} : d[s] (fun _ : M ↦ c) x = 0 := by
   simp [mvfderivWithin, mfderivWithin_const]
 
+lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
+  simp [mvfderiv, mfderiv_const]
+
+@[simp]
+lemma mvfderivWithin_zero {s : Set M} : d[s] (0 : M → F) x = 0 :=
+  mvfderivWithin_const 0
+
+@[simp]
+lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 :=  mvfderiv_const 0
+@[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
+
 @[simp, to_fun mvfderivWithin_fun_add]
 lemma mvfderivWithin_add {g g' : M → F} {x : M}
     (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffAt[s] x) :
     d[s](g + g') x = d[s]g x + d[s]g' x := by
   simp [mvfderivWithin, mfderivWithin_add hg hg' hs]
   rfl
+
+@[simp, to_fun mvfderiv_fun_add]
+lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    d% (g + g') x = d% g x + d% g' x := by
+  simp [mvfderiv, mfderiv_add hg hg']
+  rfl
+@[deprecated (since := "2026-05-17")] alias extDerivFun_add := mvfderiv_add
 
 @[simp, to_fun mvfderivWithin_fun_sub]
 lemma mvfderivWithin_sub {g g' : M → F} {x : M}
@@ -517,10 +535,22 @@ lemma mvfderivWithin_sub {g g' : M → F} {x : M}
   simp [mvfderivWithin, mfderivWithin_sub hg hg' hs]
   rfl
 
+@[simp, to_fun mvfderiv_fun_sub]
+lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    d% (g - g') x = d% g x - d% g' x := by
+  simp [mvfderiv, mfderiv_sub hg hg']
+  rfl
+
 @[simp, to_fun mvfderivWithin_fun_neg]
 lemma mvfderivWithin_neg {g : M → F} {x : M} (hs : UniqueMDiffAt[s] x) :
     d[s](-g) x = -d[s]g x := by
   simp [mvfderivWithin, mfderivWithin_neg hs]
+  rfl
+
+@[simp, to_fun mvfderiv_fun_neg]
+lemma mvfderiv_neg {g : M → F} {x : M} :
+    d% (-g) x = -d% g x := by
+  simp [mvfderiv, mfderiv_neg]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_smul]
@@ -533,6 +563,12 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
   simp
   rfl
 
+@[simp, to_fun mvfderiv_fun_smul]
+lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
+    d% (a • g) x = a x • d% g x + (d% a x).smulRight (g x) := by
+  ext v
+  simp [mvfderiv, -Pi.smul_apply', fromTangentSpace_mfderiv_smul_apply ha hg]
+
 @[simp, to_fun mvfderivWithin_fun_mul]
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffAt[s] x) :
@@ -541,47 +577,12 @@ lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : 
   ext v
   simp [mul_comm]
 
-@[simp]
-lemma mvfderivWithin_zero {s : Set M} : d[s] (0 : M → F) x = 0 := mvfderivWithin_const 0
-
-lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
-  simp [mvfderiv, mfderiv_const]
-
-@[simp, to_fun mvfderiv_fun_add]
-lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    d% (g + g') x = d% g x + d% g' x := by
-  simp [mvfderiv, mfderiv_add hg hg']
-  rfl
-@[deprecated (since := "2026-05-17")] alias extDerivFun_add := mvfderiv_add
-
-@[simp, to_fun mvfderiv_fun_sub]
-lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    d% (g - g') x = d% g x - d% g' x := by
-  simp [mvfderiv, mfderiv_sub hg hg']
-  rfl
-
-@[simp, to_fun mvfderiv_fun_neg]
-lemma mvfderiv_neg {g : M → F} {x : M} :
-    d% (-g) x = -d% g x := by
-  simp [mvfderiv, mfderiv_neg]
-  rfl
-
-@[simp, to_fun mvfderiv_fun_smul]
-lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
-    d% (a • g) x = a x • d% g x + (d% a x).smulRight (g x) := by
-  ext v
-  simp [mvfderiv, -Pi.smul_apply', fromTangentSpace_mfderiv_smul_apply ha hg]
-
 @[simp, to_fun mvfderiv_fun_mul]
 lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     d% (f * g) x = f x • d% g x + (g x) • (d% f x) := by
   ext v
   simp only [mvfderiv, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
-
-@[simp]
-lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := mvfderiv_const 0
-@[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
 
 -- TODO: the next two lemmas are more type correct than their `mvfderiv` cousins, but not entirely:
 -- the right hand side should be of the form `fderiv ∘SL TangentSpaceCastModel`.
