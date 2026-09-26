@@ -166,11 +166,11 @@ theorem snd_comp_inr [Zero R] : (·.snd) ∘ (inr : M → tsze R M) = id :=
 
 end
 
-@[deprecated toProd_surjective (since := "2026-08-31")]
+@[deprecated toProd_surjective +typeChanged (since := "2026-08-31")]
 theorem fst_surjective [Nonempty M] : Function.Surjective ((·.fst) : tsze R M → R) :=
   Prod.fst_surjective.comp (Function.RightInverse.surjective toProd_mk)
 
-@[deprecated toProd_surjective (since := "2026-08-31")]
+@[deprecated toProd_surjective +typeChanged (since := "2026-08-31")]
 theorem snd_surjective [Nonempty R] : Function.Surjective ((·.snd) : tsze R M → M) :=
   Prod.snd_surjective.comp (Function.RightInverse.surjective toProd_mk)
 
@@ -761,7 +761,7 @@ abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   let := invertibleOfInvertibleFst x
-  convert! congr(TrivSqZeroExt.snd (R := R) (M := M) $((_ : _ = ⅟x)))
+  convert! congr_arg (·.snd) (_ : _ = ⅟x)
   convert! rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
