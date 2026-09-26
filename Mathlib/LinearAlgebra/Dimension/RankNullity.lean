@@ -256,6 +256,16 @@ lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul 
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
 
+/-- The preimage under `N.mkQ` of a submodule `P` of `M ⧸ N` has `finrank` the sum of the
+`finrank`s of `P` and `N`. -/
+lemma Submodule.finrank_comap_mkQ [Module.Finite R M] (N : Submodule R M)
+    (P : Submodule R (M ⧸ N)) :
+    finrank R (P.comap N.mkQ) = finrank R P + finrank R N := by
+  have e := quotientQuotientEquivQuotient N _ (N.le_comap_mkQ P)
+  rw [map_comap_eq_of_surjective N.mkQ_surjective] at e
+  grind [e.finrank_eq, P.finrank_quotient_add_finrank, N.finrank_quotient_add_finrank,
+    (P.comap N.mkQ).finrank_quotient_add_finrank]
+
 lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N : Type*}
     [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R L ≤ finrank R (L.map f)) :
@@ -287,5 +297,16 @@ lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finr
   have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)
   rwa [Finsupp.linearCombination_single, Finsupp.single_eq_zero, ← map_smul,
     Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at this
+
+/-- Any submodule `N` can be enlarged to a submodule of any prescribed finrank `k` between
+`finrank R N` and `finrank R M`. -/
+lemma Submodule.exists_le_finrank_eq (N : Submodule R M) {k : ℕ}
+    (h₁ : finrank R N ≤ k) (h₂ : k ≤ finrank R M) :
+    ∃ W : Submodule R M, N ≤ W ∧ finrank R W = k := by
+  have := nontrivial_of_invariantBasisNumber R
+  obtain ⟨f, hf⟩ := exists_linearIndependent_of_le_finrank (R := R) (M := M ⧸ N)
+    (n := k - finrank R N) (by grind [N.finrank_quotient_add_finrank])
+  exact ⟨_, N.le_comap_mkQ (span R (Set.range f)), by
+    grind [N.finrank_comap_mkQ (span R (Set.range f)), finrank_span_eq_card hf, Fintype.card_fin]⟩
 
 end
