@@ -211,9 +211,7 @@ theorem Real.sum_lt_cos_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Even n) (h
 
 /-- For `x > 0` and odd `n > 1`, the partial sum of the Taylor series of `cos` over
 `Finset.range n` is a strict upper bound for `cos x`.
-
-The hypothesis `1 < n` is needed only for the strict inequality: see `Real.cos_le_sum_of_pos`,
-which holds for every odd `n`. -/
+See `Real.cos_le_sum_of_pos` for a non-strict version valid for every odd `n`. -/
 theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) (hn1 : 1 < n) :
     x.cos < ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
   obtain ⟨m, rfl⟩ := hn
@@ -222,10 +220,7 @@ theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) (hn
   exact (sin_cos_bound_of_pos hx k).2.2.2
 
 /-- For `x > 0` and odd `n`, the partial sum of the Taylor series of `cos` over `Finset.range n`
-is an upper bound for `cos x`.
-
-Unlike `Real.cos_lt_sum_of_pos` this needs no lower bound on `n`: at `n = 1` it degenerates to
-`Real.cos_le_one`. -/
+is an upper bound for `cos x`. -/
 theorem Real.cos_le_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) :
     x.cos ≤ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
   obtain ⟨m, rfl⟩ := hn
