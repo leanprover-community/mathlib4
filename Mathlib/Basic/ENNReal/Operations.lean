@@ -251,12 +251,14 @@ section Cancel
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
-theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
+theorem addLECancellable_iff_ne_top {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
   WithTop.addLECancellable_iff_ne_top
+
+@[deprecated (since := "2026-09-25")] alias addLECancellable_iff_ne := addLECancellable_iff_ne_top
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
-  addLECancellable_iff_ne.mpr h
+  addLECancellable_iff_ne_top.mpr h
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_lt {a : ℝ≥0∞} (h : a < ∞) : AddLECancellable a :=
