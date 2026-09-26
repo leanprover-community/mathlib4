@@ -303,7 +303,11 @@ protected lemma Copy.isContained (f : Copy H G) : H ⊑ G := ⟨f⟩
 
 protected lemma Embedding.isContained (f : H ↪g G) : H ⊑ G := f.toCopy.isContained
 
+/-- If `H` is isomorphic to `G`, then `H` is contained in `G`. -/
 protected lemma Iso.isContained (e : H ≃g G) : H ⊑ G := e.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
+protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty W] : H ⊑ G :=
