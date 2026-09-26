@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Tactic.NormNum
 
 /-!
@@ -28,6 +29,8 @@ abbreviated as `K.sc i`.
 
 open CategoryTheory Category Limits
 
+universe w₁ w₂
+
 namespace HomologicalComplex
 
 variable (C : Type*) [Category* C] [HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι)
@@ -42,11 +45,43 @@ def shortComplexFunctor' (i j k : ι) : HomologicalComplex C c ⥤ ShortComplex 
       τ₂ := f.f j
       τ₃ := f.f k }
 
+instance (J : Type*) [Category* J] [HasColimitsOfShape J C] (i j k : ι) :
+    PreservesColimitsOfShape J (shortComplexFunctor' C c i j k) where
+  preservesColimit {F} := ⟨fun h ↦ ⟨by
+    apply ShortComplex.isColimitOfIsColimitπ
+    all_goals exact isColimitOfPreserves (HomologicalComplex.eval C _ _) h⟩⟩
+
+instance (J : Type*) [Category* J] [HasLimitsOfShape J C] (i j k : ι) :
+    PreservesLimitsOfShape J (shortComplexFunctor' C c i j k) where
+  preservesLimit {F} := ⟨fun h ↦ ⟨by
+    apply ShortComplex.isLimitOfIsLimitπ
+    all_goals exact isLimitOfPreserves (HomologicalComplex.eval C _ _) h⟩⟩
+
+instance [HasColimitsOfSize.{w₁, w₂} C] (i j k : ι) :
+    PreservesColimitsOfSize.{w₁, w₂} (shortComplexFunctor' C c i j k) where
+
+instance [HasLimitsOfSize.{w₁, w₂} C] (i j k : ι) :
+    PreservesLimitsOfSize.{w₁, w₂} (shortComplexFunctor' C c i j k) where
+
 /-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. -/
 @[simps!]
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
+
+instance (J : Type*) [Category* J] [HasColimitsOfShape J C] (i : ι) :
+    PreservesColimitsOfShape J (shortComplexFunctor C c i) :=
+  inferInstanceAs (PreservesColimitsOfShape J (shortComplexFunctor' C c _ i _))
+
+instance (J : Type*) [Category* J] [HasLimitsOfShape J C] (i : ι) :
+    PreservesLimitsOfShape J (shortComplexFunctor C c i) :=
+  inferInstanceAs (PreservesLimitsOfShape J (shortComplexFunctor' C c _ i _))
+
+instance [HasColimitsOfSize.{w₁, w₂} C] (i : ι) :
+    PreservesColimitsOfSize.{w₁, w₂} (shortComplexFunctor C c i) where
+
+instance [HasLimitsOfSize.{w₁, w₂} C] (i : ι) :
+    PreservesLimitsOfSize.{w₁, w₂} (shortComplexFunctor C c i) where
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
