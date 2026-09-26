@@ -496,6 +496,9 @@ theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
 theorem card_le_card {o₁ o₂ : Ordinal} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
   inductionOn o₁ fun _ _ _ => inductionOn o₂ fun _ _ _ ⟨⟨⟨f, _⟩, _⟩⟩ => ⟨f⟩
 
+theorem card_monotone : Monotone card :=
+  fun _ _ ↦ card_le_card
+
 @[simp]
 theorem card_zero : card 0 = 0 := mk_eq_zero _
 
@@ -508,6 +511,22 @@ mex (minimum excluded value). See `not_lt_enum_ord_mk_min_compl` for the `α` ve
 theorem card_typein_min_le_mk [h : IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
     (typein r <| WellFounded.min h.wf sᶜ hs).card ≤ #s :=
   WellFounded.cardinalMk_subtype_lt_min_compl_le _ hs
+
+/-- If `α` can be embedded in a well-order such that any initial segment has cardinal less than `c`,
+then `α` has cardinal at most `c`. -/
+theorem mk_le_of_forall_mk_setOfPred_lt {α β : Type u} {c : Cardinal}
+    [LinearOrder β] [WellFoundedLT β] (f : α → β) (hf : Function.Injective f)
+    (H : ∀ x, #{y | f y < f x} < c) : #α ≤ c := by
+  induction c using Cardinal.inductionOn with | mk γ
+  obtain ⟨_, _⟩ := exists_wellFoundedLT γ
+  let : LinearOrder α := LinearOrder.lift' f hf
+  have := OrderEmbedding.wellFoundedLT ⟨⟨f, hf⟩, .rfl⟩
+  have hi (x) : #(Iio x) ≤ #(Iio (f x)) :=
+    Embedding.cardinal_le ⟨fun y ↦ ⟨f y, y.2⟩, fun _ ↦ by grind⟩
+  rw [← card_type (· < ·), ← card_type (· < ·)]
+  refine Ordinal.card_le_card <| le_of_forall_lt fun d hd ↦ ?_
+  obtain ⟨a, rfl⟩ := typein_surj (· < ·) hd
+  exact Ordinal.card_monotone.reflect_lt (H a)
 
 /-! ### Lifting ordinals to a higher universe -/
 
