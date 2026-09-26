@@ -54,9 +54,9 @@ lemma Complex.sin_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) (n : ℕ) :
   have e : z * ∑ k ∈ Finset.range n, (-1) ^ k * z ^ (2 * k) / (2 * k + 1).factorial =
       (∑ k ∈ Finset.range (2 * n + 1), (-z * I) ^ k / k.factorial -
        ∑ k ∈ Finset.range (2 * n + 1), (z * I) ^ k / k.factorial) * I / 2 := by
-    simp_rw [← Finset.sum_sub_distrib, ← sub_div, Finset.sum_range_even n, Finset.mul_sum,
-      Finset.sum_mul, Finset.sum_div, Finset.sum_range_succ', pow_zero, sub_self, zero_div,
-      zero_mul, zero_div, add_zero]
+    simp_rw [← Finset.sum_sub_distrib, ← sub_div, ← Finset.sum_range_two_mul_ite_even n,
+      Finset.mul_sum, Finset.sum_mul, Finset.sum_div, Finset.sum_range_succ', pow_zero, sub_self,
+      zero_div, zero_mul, zero_div, add_zero]
     refine Finset.sum_congr rfl fun k _ ↦ ?_
     rcases k.even_or_odd' with ⟨a, e | e⟩
     · simp only [e, even_two, Even.mul_right, ↓reduceIte, ne_eq, OfNat.ofNat_ne_zero,
@@ -81,7 +81,7 @@ lemma Complex.cos_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) {n : ℕ} (n0 : 0 
   have e : ∑ k ∈ Finset.range n, (-1) ^ k * z ^ (2 * k) / (2 * k).factorial =
       (∑ k ∈ Finset.range (2 * n), (z * I) ^ k / k.factorial +
        ∑ k ∈ Finset.range (2 * n), (-z * I) ^ k / k.factorial) / 2 := by
-    simp only [← Finset.sum_add_distrib, Finset.sum_range_even n, Finset.sum_div]
+    simp only [← Finset.sum_add_distrib, ← Finset.sum_range_two_mul_ite_even n, Finset.sum_div]
     refine Finset.sum_congr rfl fun k _ ↦ ?_
     rcases k.even_or_odd' with ⟨a, e | e⟩
     · simp only [e, even_two, Even.mul_right, ↓reduceIte, ne_eq, OfNat.ofNat_ne_zero,
