@@ -225,15 +225,16 @@ namespace IsSimpleGroup
 
 section CommSimpleGroup
 
-variable [CommGroup α] [IsSimpleGroup α]
-
 @[to_additive]
-instance (priority := 100) isCyclic : IsCyclic α := by
+instance (priority := 100) isCyclic [Group α] [IsMulCommutative α] [IsSimpleGroup α] :
+    IsCyclic α := by
   nontriviality α
   obtain ⟨g, hg⟩ := exists_ne (1 : α)
   have : Subgroup.zpowers g = ⊤ :=
-    (eq_bot_or_eq_top (Subgroup.zpowers g)).resolve_left (Subgroup.zpowers_ne_bot.2 hg)
+    (eq_bot_or_eq_top_of_normal (Subgroup.zpowers g)).resolve_left (Subgroup.zpowers_ne_bot.2 hg)
   exact ⟨⟨g, (Subgroup.eq_top_iff' _).1 this⟩⟩
+
+variable [CommGroup α] [IsSimpleGroup α]
 
 @[to_additive]
 theorem prime_card : (Nat.card α).Prime := by
