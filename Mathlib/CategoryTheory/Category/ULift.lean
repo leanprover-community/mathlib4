@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.Data.ULift
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Basic API for ULift

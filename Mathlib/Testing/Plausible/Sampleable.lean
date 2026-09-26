@@ -13,6 +13,7 @@ public import Plausible.Arbitrary
 public import Plausible.Gen
 public import Plausible.Random
 public meta import Plausible.Sampleable
+public import Mathlib.Tactic.Basic
 
 /-!
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib

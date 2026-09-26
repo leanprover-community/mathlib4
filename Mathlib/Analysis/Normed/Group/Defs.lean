@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Tactic.Group
 public import Mathlib.Topology.MetricSpace.Defs
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: definitions

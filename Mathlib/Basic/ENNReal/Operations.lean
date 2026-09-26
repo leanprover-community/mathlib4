@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Basic.ENNReal.Real
 public import Mathlib.Tactic.Finiteness
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers

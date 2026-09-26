@@ -5,8 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Inclusion
 public meta import Lean.Meta.Native
+public import Mathlib.Tactic.Inclusion.Core.Inclusion
+public meta import Mathlib.Tactic.Inclusion.Core.ToSet
 
 /-!
 # Core implementation of the `inclusion` tactic

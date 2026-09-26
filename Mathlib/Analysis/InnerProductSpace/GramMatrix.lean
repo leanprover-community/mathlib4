@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.Analysis.Matrix.Order
+import Mathlib.Analysis.SpecialFunctions.Bernstein
 
 /-! # Gram Matrices
 
