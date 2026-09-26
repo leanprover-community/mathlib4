@@ -73,8 +73,6 @@ variable {φ} in
 lemma mem_coindV {f : H → A} : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
 
-abbrev coindV.evalOne : coindV φ σ →ₗ[k] A := LinearMap.proj 1 ∘ₗ (coindV φ σ).subtype
-
 variable (ρ) in
 /--
 If `ρ : Representation k G A` and `φ : G →* H` then `coind φ ρ` is the representation
@@ -108,7 +106,8 @@ lemma coind.coe_lift_apply (f : IntertwiningMap (τ.comp φ) ρ) (a : A) (h : H)
 /-- tbd -/
 def coind.evalOne (f : τ.IntertwiningMap (coind φ ρ)) :
     IntertwiningMap (τ.comp φ) ρ :=
-  ⟨coindV.evalOne φ ∘ₗ f.toLinearMap, fun g => by ext x; simpa [f.isIntertwining] using (f x).2 g 1⟩
+  ⟨LinearMap.proj 1 ∘ₗ (coindV φ ρ).subtype ∘ₗ f.toLinearMap, fun g => by
+    ext x; simpa [f.isIntertwining] using (f x).2 g 1⟩
 
 @[simp]
 lemma coind.evalOne_apply (f : τ.IntertwiningMap (coind φ ρ)) (a : A) :
@@ -138,6 +137,7 @@ lemma coe_coindMap_apply_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) (h
 
 variable {k : Type*} [CommSemiring k] [Module k A] [Module k B]
 
+/-- tbd -/
 @[simps]
 def resCoindHomEquiv {ρ : Representation k G B} {τ : Representation k H A} :
     IntertwiningMap (τ.comp φ) ρ ≃ₗ[k] τ.IntertwiningMap (coind φ ρ) where
