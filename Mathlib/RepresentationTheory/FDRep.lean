@@ -164,7 +164,7 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
 def forget₂HomLinearEquiv (X Y : FDRep R G) :
     ((forget₂ (FDRep R G) (Rep R G)).obj X ⟶
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
-  toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom <| f.hom.toLinearMap), fun g ↦ by
+  toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom f.hom.toLinearMap), fun g ↦ by
     ext1
     simp only [FGModuleCat.obj_carrier]
     exact f.hom.2 g⟩
@@ -172,7 +172,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by
     ext x
-    exact ConcreteCategory.congr_hom ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
+    congrm $((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
 
 instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
   dsimp [forget₂, HasForget₂.forget₂]

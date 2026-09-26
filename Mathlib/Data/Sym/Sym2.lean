@@ -122,7 +122,7 @@ protected theorem eq {a b c d : α} : s(a, b) = s(c, d) ↔ Rel α (a, b) (c, d)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=
-  Quot.ind <| Prod.rec <| h
+  Quot.ind <| Prod.rec h
 
 @[elab_as_elim]
 protected theorem inductionOn {f : Sym2 α → Prop} (i : Sym2 α) (hf : ∀ x y, f s(x, y)) : f i :=
@@ -202,7 +202,7 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
-  invFun F := ⟨fun a b ↦ F s(a, b), fun _ _ => congr_arg F eq_swap⟩
+  invFun F := ⟨fun a b ↦ F s(a, b), fun _ _ => congr(F $eq_swap)⟩
   right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
@@ -229,7 +229,7 @@ def lift₂ :
   invFun F :=
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
-      exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
+      exacts [congr(F $eq_swap _), congr(F _ $eq_swap)]⟩
   right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]
@@ -328,7 +328,7 @@ instance : SetLike (Sym2 α) α where
     simp only [mem_iff'] at hx hy hx' hy'
     aesop
 
-instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α) α
+instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α)
 
 @[simp]
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
@@ -1038,7 +1038,7 @@ lemma sym2_image {f : α → β} {s : Set α} : (f '' s).sym2 = Sym2.map f '' s.
   simp_rw [sym2_eq_mk_image, prod_image_image_eq, image_image, uncurry, Sym2.map_mk]
 
 lemma sym2_inter (s t : Set α) : (s ∩ t).sym2 = s.sym2 ∩ t.sym2 :=
-  preimage_injective.mpr Sym2.mk_surjective <| Set.prod_inter_prod.symm
+  preimage_injective.mpr Sym2.mk_surjective Set.prod_inter_prod.symm
 
 lemma sym2_iInter {ι : Type*} (f : ι → Set α) : (⋂ i, f i).sym2 = ⋂ i, (f i).sym2 := by
   ext ⟨x, y⟩; simp [forall_and]

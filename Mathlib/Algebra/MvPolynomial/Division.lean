@@ -236,7 +236,7 @@ instance [IsLeftCancelAdd R] :
     AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _
   refine { add_left_cancel := fun f g h H ↦ ?_ }
   ext d
-  simpa using congr_arg ((·.coeff d)) H
+  simpa using congr($(H).coeff d)
 
 theorem eq_modMonomial_single [IsLeftCancelAdd R]
     {σ : Type*} {i : σ} {p q r : MvPolynomial σ R}

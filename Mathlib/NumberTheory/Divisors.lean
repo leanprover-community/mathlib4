@@ -161,11 +161,11 @@ lemma pairwise_divisorsAntidiagonalList_snd {n : ℕ} :
 
 lemma sortedLT_map_fst_divisorsAntidiagonalList {n : ℕ} :
     (n.divisorsAntidiagonalList.map Prod.fst).SortedLT :=
-  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_fst).sortedLT
+  (List.pairwise_map.mpr pairwise_divisorsAntidiagonalList_fst).sortedLT
 
 lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
     (n.divisorsAntidiagonalList.map Prod.snd).SortedGT :=
-  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
+  (List.pairwise_map.mpr pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
   have : @Std.Irrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩

@@ -164,9 +164,9 @@ theorem asq_pos : 0 < a * a :=
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem dz_val : ↑(d a1) = az a * az a - 1 :=
+theorem dz_val : ↑(d a1) = az a * az a - 1 := by
   have : 1 ≤ a * a := asq_pos a1
-  by rw [Pell.d, Int.ofNat_sub this]; rfl
+  rw [Pell.d, Int.ofNat_sub this]; rfl
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -360,11 +360,11 @@ set_option backward.privateInPublic.warn false in
 theorem xz_sub {m n} (h : n ≤ m) :
     xz a1 (m - n) = xz a1 m * xz a1 n - d a1 * yz a1 m * yz a1 n := by
   rw [sub_eq_add_neg, ← mul_neg]
-  exact congr_arg Zsqrtd.re (pellZd_sub a1 h)
+  congrm $(pellZd_sub a1 h).re
 
 theorem yz_sub {m n} (h : n ≤ m) : yz a1 (m - n) = xz a1 n * yz a1 m - xz a1 m * yz a1 n := by
   rw [sub_eq_add_neg, ← mul_neg, mul_comm, add_comm]
-  exact congr_arg Zsqrtd.im (pellZd_sub a1 h)
+  congrm $(pellZd_sub a1 h).im
 
 theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
   Nat.coprime_of_dvd' fun k _ kx ky => by
@@ -738,7 +738,7 @@ theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
       (jj.add_right _).trans <| by
         rw [ji]
         exact dvd_rfl.modEq_zero_nat)
-    (eq_of_xn_modEq' a1 ipos hin jl.le <|
+    (eq_of_xn_modEq' a1 ipos hin jl.le
       (h.symm.trans <| by
           rw [← Nat.mod_add_div j (4 * n)]
           exact this j' _).symm)

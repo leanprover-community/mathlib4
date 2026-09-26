@@ -152,7 +152,7 @@ structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddComm
 @[instance_reducible]
 def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
   @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
-    _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
+    _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _
     (toEuclideanLin.trans toContinuousLinearMap).injective
 
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
@@ -234,7 +234,7 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
     |>.opNorm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
   convert! this
   ext1 x
-  exact congr(toLp 2 ($(Matrix.toLin'_mul A B) x))
+  congrm toLp 2 ($(Matrix.toLin'_mul A B) x)
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B

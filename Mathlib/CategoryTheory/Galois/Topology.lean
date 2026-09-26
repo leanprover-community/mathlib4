@@ -97,7 +97,7 @@ lemma autEmbedding_range :
   simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨.of (NatIso.ofComponents (fun _ ↦ (a _).asIso) (fun {X Y} f ↦ by
-    ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _)), rfl⟩
+    ext; simpa using congr($(h ⟨X, Y, f⟩) _))), rfl⟩
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by

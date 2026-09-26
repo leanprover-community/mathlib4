@@ -55,11 +55,11 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 
 attribute [to_dual existing app_inv] app_hom
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[map (attr := reassoc +to_dual (attr := simp)), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) := by cat_disch
 
-@[reassoc +to_dual (attr := simp), grind =]
+@[map (attr := reassoc +to_dual (attr := simp)), grind =]
 theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) := by cat_disch
 
@@ -183,7 +183,7 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
   inv :=
     { app := fun X => (app X).inv,
       naturality := fun X Y f => by
-        have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
+        have h := congr((app X).inv ≫ $((naturality f).symm) ≫ (app Y).inv)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 

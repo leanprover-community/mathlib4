@@ -29,11 +29,16 @@ field, for `QuadraticAlgebra K a b` to be a field.
 * `QuadraticAlgebra.nonempty_algEquiv_iff_of_invertible_two` and
   `QuadraticAlgebra.nonempty_algEquiv_int_iff`: the discriminant classifies quadratic algebras
   up to isomorphism, modulo squares of units when `2` is invertible and exactly over `ℤ`.
+* `QuadraticAlgebra.algEquivEdivEmod`: over `ℤ`, a quadratic algebra of discriminant `D` is
+  isomorphic to `QuadraticAlgebra ℤ (D / 4) (D % 4)`.
+* `QuadraticAlgebra.nonempty_algEquiv_int_iff_discr_eq`: for `D ≡ 0, 1 mod 4`, a quadratic
+  algebra over `ℤ` is isomorphic to `QuadraticAlgebra ℤ (D / 4) (D % 4)` iff its discriminant
+  is `D`, so these algebras are canonical representatives.
 * `QuadraticAlgebra.isField_iff_not_isSquare_discr`: over a field with `2 ≠ 0`,
   `QuadraticAlgebra K a b` is a field iff `discr a b` is not a square.
 -/
 
-@[expose] public section
+public section
 
 namespace QuadraticAlgebra
 
@@ -45,7 +50,7 @@ section discr
 discriminant `b ^ 2 + 4 * a` of the polynomial `X ^ 2 - b * X - a`. -/
 def discr [CommSemiring R] (a b : R) : R := b ^ 2 + 4 * a
 
-theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := rfl
+theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := by rfl
 
 /-- `z.im ^ 2` times the discriminant of the algebra equals `trace z ^ 2 - 4 * norm z`. -/
 theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
@@ -148,6 +153,8 @@ theorem nonempty_algEquiv_iff_of_invertible_two [Invertible (2 : R)] :
   rw [nonempty_algEquiv_iff (isUnit_of_invertible (2 : R)).isRegular]
   simp [(isUnit_of_invertible (2 : R)).dvd]
 
+section Int
+
 /-- Over `ℤ` the discriminant is a complete invariant of quadratic algebras up to
 isomorphism. -/
 theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
@@ -161,6 +168,47 @@ theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
     grind [discr]
   · exact ⟨-1, by simpa, by simpa⟩
   · exact ⟨1, by simpa, by simpa⟩
+
+/-- For `D ≡ 0, 1 mod 4`, the canonical representative `QuadraticAlgebra ℤ (D / 4) (D % 4)` has
+discriminant `D`. -/
+theorem discr_ediv_emod {D : ℤ} (hD : D % 4 = 0 ∨ D % 4 = 1) :
+    discr (D / 4) (D % 4) = D := by
+  grind [discr_def]
+
+private theorem algEquivEdivEmod_aux {a b : ℤ} :
+    a = discr a b / 4 - discr a b % 4 * (b / 2) - (b / 2) ^ 2 := by
+  rw [discr_def]
+  have : (b % 2) * (b / 2) = b ^ 2 / 4 - (b / 2) ^ 2 := by
+    obtain ⟨k, rfl | rfl⟩ := b.even_or_odd'
+    · rw [Int.mul_emod_right, zero_mul]
+      grind
+    · rw [Int.mul_add_emod_self_left, Int.one_emod_two, one_mul]
+      grind
+  grind [Units.val_one, Int.mul_ediv_cancel_left _ (NeZero.ne 4), Int.add_mul_emod_self_left,
+    Int.sq_emod_four]
+
+/-- Every quadratic algebra over `ℤ` is isomorphic to the canonical representative of its
+discriminant, obtained by translating `ω` by the integer `⌊b / 2⌋`. -/
+@[simps!]
+def algEquivEdivEmod (a b : ℤ) :
+    QuadraticAlgebra ℤ a b ≃ₐ[ℤ] QuadraticAlgebra ℤ (discr a b / 4) (discr a b % 4) :=
+  changeGeneratorEquiv (discr a b / 4) (discr a b % 4) 1 (b / 2)
+    (by simpa using algEquivEdivEmod_aux)
+    (by simpa [discr_def, Int.sq_emod_four, add_comm] using (Int.mul_ediv_add_emod b 2).symm)
+
+@[simp]
+theorem algEquivEdivEmod_omega (a b : ℤ) :
+    algEquivEdivEmod a b ω = (b / 2) • 1 + ω := by
+  ext <;> simp
+
+/-- For `D ≡ 0, 1 mod 4`, a quadratic algebra over `ℤ` is isomorphic to the canonical
+representative `QuadraticAlgebra ℤ (D / 4) (D % 4)` iff its discriminant is `D`. -/
+theorem nonempty_algEquiv_int_iff_discr_eq {a b D : ℤ} (hD : D % 4 = 0 ∨ D % 4 = 1) :
+    Nonempty (QuadraticAlgebra ℤ a b ≃ₐ[ℤ] QuadraticAlgebra ℤ (D / 4) (D % 4)) ↔
+      discr a b = D := by
+  rw [nonempty_algEquiv_int_iff, discr_ediv_emod hD]
+
+end Int
 
 end classification
 

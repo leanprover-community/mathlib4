@@ -241,7 +241,7 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
     Measure.dirac x = Measure.dirac y ↔ ∀ A, MeasurableSet A → (x ∈ A ↔ y ∈ A) := by
   constructor
   · intro h A A_mble
-    have obs := congr_arg (fun μ ↦ μ A) h
+    have obs := congr($h A)
     simp only [Measure.dirac_apply' _ A_mble] at obs
     by_cases x_in_A : x ∈ A
     · simpa only [x_in_A, indicator_of_mem, Pi.one_apply, true_iff, Eq.comm (a := (1 : ℝ≥0∞)),
