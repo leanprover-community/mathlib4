@@ -508,10 +508,6 @@ theorem parallelogram_law_with_nnnorm (x y : E) :
   simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
 
 include 𝕜 in
-/-- An identity symmetric in `x`, `y` and `z`. It is the case `n = 3` of the following identity
-for `n ≥ 2` vectors `v i`: the sum of `‖v i + v j‖ ^ 2` over the pairs `i < j` is
-`(n - 2) * ∑ i, ‖v i‖ ^ 2 + ‖∑ i, v i‖ ^ 2`. The case `z = -y` gives
-`parallelogram_law_with_norm`. -/
 theorem norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq (x y z : E) :
     ‖x‖ ^ 2 + ‖y‖ ^ 2 + ‖z‖ ^ 2 + ‖x + y + z‖ ^ 2
       = ‖x + y‖ ^ 2 + ‖y + z‖ ^ 2 + ‖x + z‖ ^ 2 := by
