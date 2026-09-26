@@ -105,6 +105,9 @@ instance : Div (SpecialLinearGroup R V) :=
 instance : One (SpecialLinearGroup R V) :=
   ⟨⟨1, by simp⟩⟩
 
+instance : Pow (SpecialLinearGroup R V) ℕ+ where
+  pow x n := ⟨x ^ n, by simp [map_ppow, x.prop]⟩
+
 instance : Pow (SpecialLinearGroup R V) ℕ where
   pow x n := ⟨x ^ n, by simp [x.prop]⟩
 
@@ -154,6 +157,10 @@ theorem det_coe : LinearEquiv.det (A : V ≃ₗ[R] V) = 1 :=
   A.prop
 
 @[simp]
+theorem coe_ppow (m : ℕ+) : (A ^ m : SpecialLinearGroup R V) = (A : V ≃ₗ[R] V) ^ m :=
+  rfl
+
+@[simp]
 theorem coe_pow (m : ℕ) : (A ^ m : SpecialLinearGroup R V) = (A : V ≃ₗ[R] V) ^ m :=
   rfl
 
@@ -171,7 +178,8 @@ end CoeLemmas
 
 /-- The special linear group of a module is a group. -/
 instance : Group (SpecialLinearGroup R V) := fast_instance%
-  Function.Injective.group _ Subtype.coe_injective coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+  Function.Injective.group _ Subtype.coe_injective coe_one coe_mul coe_inv coe_div coe_ppow coe_pow
+    coe_zpow
 
 /-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
 def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where

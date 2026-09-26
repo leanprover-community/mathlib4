@@ -112,6 +112,21 @@ instance : Add (ConvexBody V) where
     ⟨K + L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
 
+@[simp, norm_cast]
+theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
+  rfl
+
+instance : SMul ℕ+ (ConvexBody V) where
+  smul n x := psmulRec n x
+
+@[simp, norm_cast]
+theorem coe_psmul (n : ℕ+) (K : ConvexBody V) : ↑(n • K) = n • (K : Set V) := by
+  induction n using AddSemigroup.psmul_induction (K : Set V) with
+  | h1 => rfl
+  | hsucc n IH =>
+    rw [← IH, ← coe_add]
+    exact congr_arg _ (psmulRec_succ _ _)
+
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
@@ -121,14 +136,12 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
 
 noncomputable instance : AddMonoid (ConvexBody V) :=
-  SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
-
-@[simp, norm_cast]
-theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
-  rfl
+  SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ coe_psmul _ _)
+    fun _ _ ↦ coe_nsmul _ _
 
 noncomputable instance : AddCommMonoid (ConvexBody V) :=
-  SetLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
+  SetLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ coe_psmul _ _)
+    fun _ _ ↦ coe_nsmul _ _
 
 end ContinuousAdd
 

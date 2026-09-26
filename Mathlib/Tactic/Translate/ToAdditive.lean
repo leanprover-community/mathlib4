@@ -301,6 +301,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("tprod", ["TSum"]),
   ("pow", ["NSMul"]),
   ("npow", ["NSMul"]),
+  ("ppow", ["PSMul"]),
   ("zpow", ["ZSMul"]),
   ("mabs", ["Abs"]),
   ("monoid", ["Add", "Monoid"]),
