@@ -117,7 +117,7 @@ theorem norm_eq_zero (v : Valuation L Γ₀) [RankLeOne v] {x : L} (hx : v.norm 
   simpa [norm_def] using hx
 
 theorem norm_pos_iff_valuation_pos {x : R} : 0 < v.norm x ↔ (0 : Γ₀) < v x := by
-  simpa [norm_def] using (RankLeOne.strictMono' (v := v)).lt_iff_lt (a := 0) (b := (v.restrict x))
+  simp [norm_def]
 
 /-- Absolute value corresponding to a valuation of rank at most one. -/
 @[simps]
