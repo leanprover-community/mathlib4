@@ -15,7 +15,7 @@ meta import Lean.Elab.ConfigEval.DeriveEvalExpr
 meta import Lean.Elab.ConfigEval.DeriveEvalTerm
 meta import Lean.Elab.ConfigEval.MetaInstances
 
-/-! ## Dependent rewrite tactic -/
+/-! # Dependent rewrite tactic -/
 
 public meta section
 
