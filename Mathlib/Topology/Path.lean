@@ -642,12 +642,12 @@ theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b) :
     initialSegmentFamily γ t s = γ.extend (min (s : ℝ) t) := by
   simp [initialSegmentFamily, Path.truncate, max_eq_left s.2.1]
 
-theorem initialSegmentFamily_zero {a b : X} (γ : Path a b) :
+@[simp] theorem initialSegmentFamily_zero {a b : X} (γ : Path a b) :
     initialSegmentFamily γ 0 = (Path.refl a).cast rfl (by simp) := by
   ext s
   simp [initialSegmentFamily_apply, γ.extend_zero, Path.refl_apply, min_eq_right s.2.1]
 
-theorem initialSegmentFamily_one {a b : X} (γ : Path a b) :
+@[simp] theorem initialSegmentFamily_one {a b : X} (γ : Path a b) :
     initialSegmentFamily γ 1 = γ.cast rfl (by simp) := by
   ext s
   simp [initialSegmentFamily_apply, min_eq_left s.2.2, γ.extend_apply s.2]
@@ -703,11 +703,11 @@ theorem exists_partition_in_cover
     {x y : X} (γ : Path x y) (hU_cover : ∀ s : unitInterval, ∃ i, γ s ∈ U i) :
     ∃ (n : ℕ) (part : unitInterval.Partition n),
       ∀ i : Fin n, ∃ j : ι, MapsTo γ (Icc (part.t i.castSucc) (part.t i.succ)) (U j) := by
-  obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
-    exists_monotone_partition_unitInterval
-      (fun i ↦ (hU_open i).preimage γ.continuous)
-      (fun s _ ↦ mem_iUnion.mpr (hU_cover s))
-  exact ⟨n, ⟨t, ht_mono, ht0, htn⟩, ht_cover⟩
+  obtain ⟨t, ht0, ht_mono, ⟨n, hn⟩, ht_cover⟩ :=
+    exists_monotone_Icc_subset_open_cover_unitInterval
+      (fun i ↦ (hU_open i).preimage γ.continuous) (fun s _ ↦ mem_iUnion.mpr (hU_cover s))
+  exact ⟨n, ⟨fun k ↦ t k, fun _ _ h ↦ ht_mono h, by simpa using ht0, by simpa using hn n le_rfl⟩,
+    fun i ↦ ht_cover i⟩
 
 /-- If every point on a path has an open neighborhood satisfying `P`, then there is a partition
 `0 = t₀ ≤ ⋯ ≤ tₙ = 1` such that each segment `γ [tᵢ, tᵢ₊₁]` lies in an open set satisfying
