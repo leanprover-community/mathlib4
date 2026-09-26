@@ -109,6 +109,11 @@ theorem pi_proj : pi proj = LinearMap.id (R := R) (M := ∀ i, φ i) := rfl
 @[simp]
 theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = f := rfl
 
+@[simp]
+theorem proj_comp_funLeft {ι' : Type*} (f : ι' → ι) (i : ι') :
+    proj i ∘ₗ funLeft R M₂ f = proj (f i) :=
+  rfl
+
 theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
   surjective_eval i
 
