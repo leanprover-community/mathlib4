@@ -9,6 +9,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Card
+public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
@@ -645,6 +646,18 @@ lemma degree_lt_card_sub_one [DecidableRel G.Adj] (v : V) :
   grind [degree_eq_card_sub_one, Nat.le_sub_one_of_lt <| G.degree_lt_card_verts v]
 
 end Finite
+
+/-- `G ≤ H` is decidable when adjacency is decidable on both sides. -/
+instance [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj] : Decidable (G ≤ H) :=
+  inferInstanceAs <| Decidable <| ∀ v w, G.Adj v w → H.Adj v w
+
+/-- For nontrivial `V`, no computable `LocallyFiniteOrder (SimpleGraph V)` instance exists,
+since one would decide all propositions. We therefore provide a noncomputable instance requiring
+only `Finite V`, which enables `Finset.sum` notation such as `∑ H ≤ G, H.edgeSet.ncard`. -/
+noncomputable instance [Finite V] : LocallyFiniteOrder (SimpleGraph V) :=
+  open scoped Classical in
+  letI := Fintype.ofFinite (SimpleGraph V)
+  Fintype.toLocallyFiniteOrder
 
 namespace Iso
 
