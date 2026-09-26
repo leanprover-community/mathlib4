@@ -69,7 +69,7 @@ universe u v
 open Set
 
 /-- A topology on `X`. -/
-@[to_dual_dont_translate]
+@[wikidata Q179899, to_dual_dont_translate]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
@@ -109,6 +109,7 @@ class IsClosed (s : Set X) : Prop where
   isOpen_compl : IsOpen sᶜ
 
 /-- A set is clopen if it is both closed and open. -/
+@[wikidata Q320369]
 def IsClopen (s : Set X) : Prop :=
   IsClosed s ∧ IsOpen s
 
@@ -119,14 +120,17 @@ Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClo
 def IsLocallyClosed (s : Set X) : Prop := ∃ (U Z : Set X), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
 
 /-- The interior of a set `s` is the largest open subset of `s`. -/
+@[wikidata Q862761]
 def interior (s : Set X) : Set X :=
   ⋃₀ { t | IsOpen t ∧ t ⊆ s }
 
 /-- The closure of `s` is the smallest closed set containing `s`. -/
+@[wikidata Q320346]
 def closure (s : Set X) : Set X :=
   ⋂₀ { t | IsClosed t ∧ s ⊆ t }
 
 /-- The frontier of a set is the set of points between the closure and interior. -/
+@[wikidata Q875399]
 def frontier (s : Set X) : Set X :=
   closure s \ interior s
 
@@ -143,6 +147,7 @@ def coborder (s : Set X) : Set X :=
   (closure s \ s)ᶜ
 
 /-- A set is dense in a topological space if every point belongs to its closure. -/
+@[wikidata Q673444]
 def Dense (s : Set X) : Prop :=
   ∀ x, x ∈ closure s
 
@@ -159,10 +164,12 @@ structure Continuous (f : X → Y) : Prop where
 
 /-- A map `f : X → Y` is said to be an *open map*,
 if the image of any open `U : Set X` is open in `Y`. -/
+@[wikidata Q56653513]
 def IsOpenMap (f : X → Y) : Prop := ∀ U : Set X, IsOpen U → IsOpen (f '' U)
 
 /-- A map `f : X → Y` is said to be a *closed map*,
 if the image of any closed `U : Set X` is closed in `Y`. -/
+@[wikidata Q3754530]
 def IsClosedMap (f : X → Y) : Prop := ∀ U : Set X, IsClosed U → IsClosed (f '' U)
 
 /-- An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
@@ -236,6 +243,7 @@ end Topology
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ.
 Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
+@[wikidata Q1150180, pibase topology P000064]
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 
