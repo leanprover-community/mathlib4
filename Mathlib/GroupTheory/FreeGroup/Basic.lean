@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.FreeMonoid.Basic
 
 /-!
 # Free groups
@@ -923,6 +924,17 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
   (prod : FreeGroup (Multiplicative α) →* Multiplicative α).map_inv _
 
 end Sum
+
+section OfFreeMonoid
+
+variable {α : Type*}
+
+/-- The canonical monoid homomorphism from the free monoid on `α` to the free group on `α`. -/
+@[to_additive /-- The canonical additive monoid homomorphism from the free additive monoid on
+`α` to the free additive group on `α`. -/]
+abbrev ofFreeMonoid : FreeMonoid α →* FreeGroup α := FreeMonoid.lift of
+
+end OfFreeMonoid
 
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
