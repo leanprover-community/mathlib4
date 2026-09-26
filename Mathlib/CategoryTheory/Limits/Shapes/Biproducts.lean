@@ -185,7 +185,6 @@ theorem toCone_π_app_mk (B : Bicone F) (j : J) : B.toCone.π.app ⟨j⟩ = B.π
 
 /-- Extract the cocone from a bicone. -/
 @[implicit_reducible]
-@[implicit_reducible]
 def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
   map {_ _} F := { hom := F.hom, w := fun _ => F.wι _ }
