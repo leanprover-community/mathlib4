@@ -163,6 +163,8 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
     exact ⟨this.unit, rfl⟩
   le_total := ValuationRing.le_total _ _
   toDecidableLE := Classical.decRel _
+  toDecidableEq := Classical.decRel _
+  toDecidableLT := Classical.decRel _
 
 instance commGroupWithZero :
     CommGroupWithZero (ValueGroup A K) :=
