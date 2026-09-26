@@ -165,11 +165,9 @@ private theorem Polynomial.flt_catalan_aux
   · generalize eq_d : a.natDegree = d
     -- set up infinite descent
     -- strong induct on `d := a.natDegree`
-    induction d
-      using Nat.case_strong_induction_on
-      generalizing a b c ha hb hc hab heq with
-    | hz => rfl
-    | hi d ih_d => -- have derivatives of `a, b, c` zero
+    induction d using Nat.case_strong_induction_on generalizing a b c ha hb hc hab heq with
+    | zero => rfl
+    | succ d ih_d => -- have derivatives of `a, b, c` zero
       obtain ⟨ad, bd, cd⟩ := flt_catalan_deriv
         hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
       -- find contracts `ca, cb, cc` so that `a(k) = ca(k^ch)`
