@@ -49,8 +49,6 @@ In a field extension `K/k`
 * `InfiniteGalois.ProfiniteGalGrp` : `Gal(K/k)` as a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above.
 
-* `InfiniteGalois.restrictNormalHomContinuous` : Any `restrictNormalHom` is continuous.
-
 -/
 
 @[expose] public section
@@ -145,31 +143,16 @@ noncomputable def algEquivToLimit : Gal(K/k) →* limit (asProfiniteGaloisGroupF
     simp only [map_mul]
     rfl
 
+@[deprecated AlgEquiv.restrictNormalHom_continuous (since := "2026-09-08")]
 theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
-    Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
-  apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
-  intro N hN
-  rw [map_one, krullTopology_mem_nhds_one_iff] at hN
-  obtain ⟨L', _, hO⟩ := hN
-  have := Module.Finite.equiv <| AlgEquiv.toLinearEquiv <| IntermediateField.liftAlgEquiv L'
-  apply mem_nhds_iff.mpr
-  use (IntermediateField.lift L').fixingSubgroup
-  constructor
-  · intro x hx
-    apply hO
-    simp only [SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff] at hx ⊢
-    intro y hy
-    have := AlgEquiv.restrictNormal_commutes x L y
-    dsimp at this
-    rw [hx y.1 ((IntermediateField.mem_lift y).mpr hy)] at this
-    exact SetLike.coe_eq_coe.mp this
-  · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L'), congrFun rfl⟩
+    Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) :=
+  AlgEquiv.restrictNormalHom_continuous L
 
 set_option backward.isDefEq.respectTransparency false in
 lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   rw [continuous_induced_rng]
   refine continuous_pi (fun L ↦ ?_)
-  convert! restrictNormalHom_continuous L.unop.1
+  convert! AlgEquiv.restrictNormalHom_continuous L.unop.1
   exact (DiscreteTopology.eq_bot (α := L.unop ≃ₐ[k] L.unop)).symm
 
 /-- The projection map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/
