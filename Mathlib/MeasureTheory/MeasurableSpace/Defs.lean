@@ -46,7 +46,7 @@ open Set Function
 variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
-@[class] structure MeasurableSpace (α : Type*) where
+@[class, wikidata Q3058218] structure MeasurableSpace (α : Type*) where
   /-- Predicate saying that a given set is measurable. Use `MeasurableSet` in the root namespace
   instead. -/
   MeasurableSet' : Set α → Prop
@@ -61,6 +61,7 @@ variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 
 /-- `MeasurableSet s` means that `s` is measurable (in the ambient measure space on `α`) -/
+@[wikidata Q3054889]
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
