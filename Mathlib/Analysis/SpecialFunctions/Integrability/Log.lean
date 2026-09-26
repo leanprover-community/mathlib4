@@ -181,6 +181,7 @@ theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : �
 /--
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
+@[fun_prop]
 lemma circleIntegrable_log_norm_sub_const {a : ℂ} (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
   MeromorphicOn.circleIntegrable_log_norm (fun _ _ ↦ by fun_prop)
 
