@@ -197,6 +197,7 @@ def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
   | var (Sum.inl c) => Constants.term (Sum.inr c)
   | func f ts => func (Sum.inl f) fun i => (ts i).varsToConstants
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bijection between terms with constants and terms with extra variables. -/
 @[simps]
 def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
@@ -897,7 +898,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]
-    refine congr(_ '' ($(?_) ∩ _))
+    congrm _ '' (?_ ∩ _)
     ext ⟨i, j⟩
     simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right]

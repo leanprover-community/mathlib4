@@ -16,7 +16,7 @@ public import Mathlib.Data.Nat.Digits.Defs
 /-!
 # Digits of a natural number
 
-This provides lemma about the digits of natural numbers.
+This provides lemmas about the digits of natural numbers.
 -/
 
 public section
@@ -182,8 +182,8 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length := List.length_pos_iff.mpr h'
-        rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
-            ← this, sum_Ico_consecutive _ h₁ <| (le_add_right tl.length 1),
+        rw [← sum_range_add_sum_Ico _ h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
+            ← this, sum_Ico_consecutive _ h₁ (le_add_right tl.length 1),
             ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
@@ -201,7 +201,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
     · convert!
-      sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
+      sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn)
         (fun l a ↦ digits_lt_base h a)
       · refine (length_digits p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
@@ -214,6 +214,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 
 
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
+  simp only [Bool.cond_eq_ite]
   induction n using Nat.binaryRecFromOne with
   | zero => simp
   | one => simp
@@ -350,7 +351,7 @@ theorem lt_of_mem_digitsAppend {b : ℕ} (hb : 1 < b) (l i : ℕ)
 
 theorem mapsTo_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.MapsTo (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
-  fun _ h ↦ Set.mem_setOf.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
+  fun _ h ↦ Set.mem_ofPred.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
 
 theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.MapsTo (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=

@@ -61,9 +61,7 @@ theorem cast_to_int [AddGroupWithOne α] (n : PosNum) : ((n : ℤ) : α) = n := 
 theorem succ_to_nat : ∀ n, (succ n : ℕ) = n + 1
   | 1 => rfl
   | bit0 _ => rfl
-  | bit1 p =>
-    (congr_arg (fun n ↦ n + n) (succ_to_nat p)).trans <|
-      show ↑p + 1 + ↑p + 1 = ↑p + ↑p + 1 + 1 by simp [add_left_comm]
+  | bit1 p => by simp [succ, succ_to_nat]; lia
 
 theorem one_add (n : PosNum) : 1 + n = succ n := by cases n <;> rfl
 
@@ -73,12 +71,12 @@ theorem add_one (n : PosNum) : n + 1 = succ n := by cases n <;> rfl
 theorem add_to_nat : ∀ m n, ((m + n : PosNum) : ℕ) = m + n
   | 1, b => by rw [one_add b, succ_to_nat, add_comm, cast_one]
   | a, 1 => by rw [add_one a, succ_to_nat, cast_one]
-  | bit0 a, bit0 b => (congr_arg (fun n ↦ n + n) (add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
+  | bit0 a, bit0 b => congr((fun n ↦ n + n) $(add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
   | bit0 a, bit1 b =>
-    (congr_arg (fun n ↦ (n + n) + 1) (add_to_nat a b)).trans <|
+    congr((fun n ↦ (n + n) + 1) $(add_to_nat a b)).trans <|
       show (a + b + (a + b) + 1 : ℕ) = a + a + (b + b + 1) by simp [add_left_comm]
   | bit1 a, bit0 b =>
-    (congr_arg (fun n ↦ (n + n) + 1) (add_to_nat a b)).trans <|
+    congr((fun n ↦ (n + n) + 1) $(add_to_nat a b)).trans <|
       show (a + b + (a + b) + 1 : ℕ) = a + a + 1 + (b + b) by simp [add_comm, add_left_comm]
   | bit1 a, bit1 b =>
     show (succ (a + b) + succ (a + b) : ℕ) = a + a + 1 + (b + b + 1) by
@@ -86,16 +84,16 @@ theorem add_to_nat : ∀ m n, ((m + n : PosNum) : ℕ) = m + n
 
 theorem add_succ : ∀ m n : PosNum, m + succ n = succ (m + n)
   | 1, b => by simp [one_add]
-  | bit0 a, 1 => congr_arg bit0 (add_one a)
-  | bit1 a, 1 => congr_arg bit1 (add_one a)
+  | bit0 a, 1 => congr(bit0 $(add_one a))
+  | bit1 a, 1 => congr(bit1 $(add_one a))
   | bit0 _, bit0 _ => rfl
-  | bit0 a, bit1 b => congr_arg bit0 (add_succ a b)
+  | bit0 a, bit1 b => congr(bit0 $(add_succ a b))
   | bit1 _, bit0 _ => rfl
-  | bit1 a, bit1 b => congr_arg bit1 (add_succ a b)
+  | bit1 a, bit1 b => congr(bit1 $(add_succ a b))
 
 theorem bit0_of_bit0 : ∀ n, n + n = bit0 n
   | 1 => rfl
-  | bit0 p => congr_arg bit0 (bit0_of_bit0 p)
+  | bit0 p => congr(bit0 $(bit0_of_bit0 p))
   | bit1 p => show bit0 (succ (p + p)) = _ by rw [bit0_of_bit0 p, succ]
 
 theorem bit1_of_bit1 (n : PosNum) : (n + n) + 1 = bit1 n :=
@@ -193,15 +191,15 @@ theorem add_one : ∀ n : Num, n + 1 = succ n
 theorem add_succ : ∀ m n : Num, m + succ n = succ (m + n)
   | 0, n => by simp [zero_add]
   | pos p, 0 => show pos (p + 1) = succ (pos p + 0) by rw [PosNum.add_one, add_zero, succ, succ']
-  | pos _, pos _ => congr_arg pos (PosNum.add_succ _ _)
+  | pos _, pos _ => congr(pos $(PosNum.add_succ ..))
 
 theorem bit0_of_bit0 : ∀ n : Num, n + n = n.bit0
   | 0 => rfl
-  | pos p => congr_arg pos p.bit0_of_bit0
+  | pos p => congr(pos $p.bit0_of_bit0)
 
 theorem bit1_of_bit1 : ∀ n : Num, (n + n) + 1 = n.bit1
   | 0 => rfl
-  | pos p => congr_arg pos p.bit1_of_bit1
+  | pos p => congr(pos $p.bit1_of_bit1)
 
 @[simp]
 theorem ofNat'_zero : Num.ofNat' 0 = 0 := by simp [Num.ofNat']
@@ -303,9 +301,11 @@ theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
       simp only [cast_one, Num.ofNat'_one]
       norm_cast
   | bit0 p => by
-      simpa only [Nat.bit_false, cond_false, two_mul, of_to_nat' p] using! Num.ofNat'_bit false p
+      simpa only [Nat.bit_false, Bool.cond_false, two_mul, of_to_nat' p] using!
+        Num.ofNat'_bit false p
   | bit1 p => by
-      simpa only [Nat.bit_true, cond_true, two_mul, of_to_nat' p] using! Num.ofNat'_bit true p
+      simpa only [Nat.bit_true, Bool.cond_true, two_mul, of_to_nat' p] using!
+        Num.ofNat'_bit true p
 
 end PosNum
 
@@ -335,13 +335,13 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 
 /--
 This tactic tries to prove (in)equalities about `Num`s by transferring them to the `Nat` world and
-then trying to call `simp`.
+then trying to call `grind`.
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
-    (intros; transfer_rw; try simp))
+    ((repeat intro (_ : Num)); transfer_rw; try grind))
 
 instance addMonoid : AddMonoid Num where
   zero_add := zero_add
@@ -359,31 +359,28 @@ instance commSemiring : CommSemiring Num where
   __ := Num.addMonoid
   __ := Num.addMonoidWithOne
   npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
-  mul_zero _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, mul_zero]
-  zero_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, zero_mul]
-  mul_one _ := by rw [← to_nat_inj, mul_to_nat, cast_one, mul_one]
-  one_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_one, one_mul]
-  add_comm _ _ := by simp_rw [← to_nat_inj, add_to_nat, add_comm]
-  mul_comm _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_comm]
-  mul_assoc _ _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_assoc]
-  left_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, mul_add]
-  right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
+  mul_zero := by transfer
+  zero_mul := by transfer
+  mul_one := by transfer
+  one_mul := by transfer
+  add_comm := by transfer
+  mul_comm := by transfer
+  mul_assoc := by transfer
+  left_distrib := by transfer
+  right_distrib := by transfer
 
 instance partialOrder : PartialOrder Num where
-  lt_iff_le_not_ge a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_ge]
+  lt_iff_le_not_ge := by transfer
   le_refl := by transfer
-  le_trans a b c := by transfer_rw; apply le_trans
-  le_antisymm a b := by transfer_rw; apply le_antisymm
+  le_trans := by transfer
+  le_antisymm := by transfer
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
-  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
-  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
+  add_le_add_left a b h c := by revert h; transfer
+  le_of_add_le_add_left a b c := by transfer
 
 instance linearOrder : LinearOrder Num :=
-  { le_total := by
-      intro a b
-      transfer_rw
-      apply le_total
+  { le_total a b := by transfer
     toDecidableLT := Num.decidableLT
     toDecidableLE := Num.decidableLE
     -- This is relying on an automatically generated instance name,
@@ -515,13 +512,13 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 
 /--
 This tactic tries to prove (in)equalities about `PosNum`s by transferring them to the `Nat` world
-and then trying to call `simp`.
+and then trying to call `grind`.
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
-    (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
+    ((repeat intro (_ : PosNum)); transfer_rw; try grind))
 
 instance addCommSemigroup : AddCommSemigroup PosNum where
   add_assoc := by transfer
@@ -535,27 +532,15 @@ instance commMonoid : CommMonoid PosNum where
   mul_comm := by transfer
 
 instance distrib : Distrib PosNum where
-  left_distrib := by transfer; simp [mul_add]
-  right_distrib := by transfer; simp [mul_add, mul_comm]
+  left_distrib := by transfer
+  right_distrib := by transfer
 
 instance linearOrder : LinearOrder PosNum where
-  lt_iff_le_not_ge := by
-    intro a b
-    transfer_rw
-    apply lt_iff_le_not_ge
+  lt_iff_le_not_ge := by transfer
   le_refl := by transfer
-  le_trans := by
-    intro a b c
-    transfer_rw
-    apply le_trans
-  le_antisymm := by
-    intro a b
-    transfer_rw
-    apply le_antisymm
-  le_total := by
-    intro a b
-    transfer_rw
-    apply le_total
+  le_trans := by transfer
+  le_antisymm := by transfer
+  le_total := by transfer
   toDecidableLT := by infer_instance
   toDecidableLE := by infer_instance
   toDecidableEq := by infer_instance

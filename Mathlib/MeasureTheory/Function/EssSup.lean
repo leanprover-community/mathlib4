@@ -302,6 +302,9 @@ theorem essInf_const_top : essInf (fun _ : α => (⊤ : β)) μ = (⊤ : β) :=
 lemma essSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essSup f μ = ⨆ i, f i := by
   rw [essSup, ae_eq_top.2 hμ, limsup_top_eq_iSup]
 
+lemma essSup_le_iSup {f : α → β} : essSup f μ ≤ ⨆ i, f i :=
+  essSup_le_of_ae_le _ (ae_of_all _ (le_iSup f))
+
 lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ = ⨅ i, f i := by
   rw [essInf, ae_eq_top.2 hμ, liminf_top_eq_iInf]
 
@@ -313,15 +316,31 @@ lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ =
 
 end CompleteLattice
 
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder β]
+
+lemma iSup_eq_essSup {f : α → β} (h : ∀ ⦃x a⦄, a < f x → μ {y | a < f y} ≠ 0) :
+    ⨆ x, f x = essSup f μ := by
+  apply le_antisymm (iSup_le _) essSup_le_iSup
+  intro i
+  rw [essSup_eq_sInf]
+  apply le_sInf
+  intro b hb
+  exact not_lt.mp fun a ↦ h a hb
+
+end CompleteLinearOrder
+
 namespace ENNReal
 
 variable {f : α → ℝ≥0∞}
 
-lemma essSup_piecewise {s : Set α} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s) :
+lemma essSup_piecewise {s : Set α} [DecidablePred (· ∈ s)] {g} (hs : NullMeasurableSet s μ) :
     essSup (s.piecewise f g) μ = max (essSup f (μ.restrict s)) (essSup g (μ.restrict sᶜ)) := by
-  simp only [essSup, limsup_piecewise, blimsup_eq_limsup, ae_restrict_eq, hs, hs.compl]; rfl
+  simp only [essSup, limsup_piecewise, blimsup_eq_limsup, ae_restrict_eq₀, hs, hs.compl]; rfl
 
-theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞} (hs : MeasurableSet s) :
+theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞}
+    (hs : NullMeasurableSet s μ) :
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   classical
   simp only [← piecewise_eq_indicator, essSup_piecewise hs, max_eq_left_iff]
@@ -351,7 +370,7 @@ theorem essSup_liminf_le {ι} [Countable ι] [Preorder ι] (f : ι → α → �
 
 theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ) f) :
     ((essSup f μ : ℝ≥0) : ℝ≥0∞) = essSup (fun x => (f x : ℝ≥0∞)) μ :=
-  (ENNReal.coe_sInf <| hf).trans <|
+  (ENNReal.coe_sInf hf).trans <|
     eq_of_forall_le_iff fun r => by
       simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
 

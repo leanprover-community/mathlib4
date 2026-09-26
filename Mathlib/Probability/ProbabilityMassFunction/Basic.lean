@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Devon Tuma
 module
 
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
 # Probability mass functions
@@ -48,6 +48,7 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
+@[macro_inline]
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective _ _ h := Subtype.ext h
@@ -73,7 +74,7 @@ theorem tsum_coe_indicator_ne_top (p : PMF α) (s : Set α) : ∑' a, s.indicato
 
 @[simp]
 theorem coe_ne_zero (p : PMF α) : ⇑p ≠ 0 := fun hp =>
-  zero_ne_one ((tsum_zero.symm.trans (tsum_congr fun x => symm (congr_fun hp x))).trans p.tsum_coe)
+  zero_ne_one ((tsum_zero.symm.trans (tsum_congr fun x => symm congr($hp x))).trans p.tsum_coe)
 
 /-- The support of a `PMF` is the set where it is nonzero. -/
 def support (p : PMF α) : Set α :=
@@ -110,10 +111,10 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
     1 = 1 + 0 := (add_zero 1).symm
     _ < p a + ∑' b, ite (b = a) 0 (p b) :=
       (ENNReal.add_lt_add_of_le_of_lt ENNReal.one_ne_top (le_of_eq h.symm) this)
-    _ = ite (a = a) (p a) 0 + ∑' b, ite (b = a) 0 (p b) := by rw [eq_self_iff_true, if_true]
+    _ = ite (a = a) (p a) 0 + ∑' b, ite (b = a) 0 (p b) := by rw [eq_self_iff_true, ite_true]
     _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) := by
       congr
-      exact symm (tsum_eq_single a fun b hb => if_neg hb)
+      exact symm (tsum_eq_single a fun b hb => ite_eq_right hb)
     _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := ENNReal.tsum_add.symm
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero]
 

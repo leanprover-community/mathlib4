@@ -89,7 +89,7 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
     have eq : Arrow.mk (homOfLE (e.monotone (Order.le_succ j))) =
       Arrow.mk (homOfLE (Order.le_succ (e j))) :=
         Arrow.ext rfl (e.map_succ j) rfl
-    replace eq := congr_arg h.F.mapArrow.obj eq
+    replace eq := congr(h.F.mapArrow.obj $eq)
     convert! this using 1
 
 /-- If `f` is a transfinite composition of shape `J` of morphisms
@@ -118,7 +118,7 @@ noncomputable def iic (j : J) :
     have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
       Arrow.mk (homOfLE (Order.le_succ i.1)) :=
         Arrow.ext rfl (Set.Iic.coe_succ_of_not_isMax hi) rfl
-    replace eq := congr_arg h.F.mapArrow.obj eq
+    replace eq := congr(h.F.mapArrow.obj $eq)
     convert! this using 1
 
 /-- A transfinite composition of shape `J` of morphisms in `W` induces a transfinite
@@ -132,7 +132,7 @@ noncomputable def ici (j : J) :
     have eq : Arrow.mk ((Subtype.mono_coe _).functor.map (homOfLE (Order.le_succ i))) =
       Arrow.mk (homOfLE (Order.le_succ i.1)) :=
         Arrow.ext rfl (coe_succ_of_mem (i.2.trans (Order.le_succ _))) rfl
-    replace eq := congr_arg h.F.mapArrow.obj eq
+    replace eq := congr(h.F.mapArrow.obj $eq)
     convert! this using 1
 
 end
@@ -152,7 +152,7 @@ def ofComposableArrows {n : ℕ} (F : ComposableArrows C n)
       have eq : Arrow.mk (homOfLE (Order.le_succ j.castSucc)) =
         Arrow.mk (homOfLE j.castSucc_le_succ) :=
           Arrow.ext rfl j.orderSucc_castSucc rfl
-      replace eq := congr_arg F.mapArrow.obj eq
+      replace eq := congr(F.mapArrow.obj $eq)
       convert! hF using 1
     · rw [isMax_iff_eq_top] at hj
       exact (hj rfl).elim
@@ -257,13 +257,12 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
     rw [← homOfLE_comp bot_le (Order.le_succ j), hf.F.map_comp]
     exact W.comp_mem _ _ hj' (hf.map_mem j hj)
   | isSuccLimit j hj hj' =>
-    letI : OrderBot (Set.Iio j) :=
+    let : OrderBot (Set.Iio j) :=
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
         bot_le j := bot_le }
     exact MorphismProperty.colimitsOfShape_le _
       (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
 
-set_option backward.isDefEq.respectTransparency false in
 include hf hJ in
 lemma mem [W.RespectsIso] : W f :=
   (MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk hf.isoBot.symm (Iso.refl _))).2

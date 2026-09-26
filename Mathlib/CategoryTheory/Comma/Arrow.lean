@@ -72,7 +72,7 @@ theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).left = f.left ≫ g.left := rfl
 
 /-- An object in the arrow category is simply a morphism in `T`. -/
-@[simps, to_dual self]
+@[simps, to_dual self, implicit_reducible]
 def mk {X Y : T} (f : X ⟶ Y) : Arrow T where
   left := X
   right := Y
@@ -136,7 +136,7 @@ lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
       ∃ (hX : X = X') (hY : Y = Y'), f = eqToHom hX ≫ f' ≫ eqToHom hY.symm := by
   constructor
   · intro h
-    refine ⟨congr_arg Arrow.left h, congr_arg Arrow.right h, ?_⟩
+    refine ⟨congr($(h).left), congr($(h).right), ?_⟩
     simpa [eqToHom_left, eqToHom_right] using! iso_w (eqToIso h.symm)
   · rintro ⟨rfl, rfl, h⟩
     simp only [eqToHom_refl, Category.comp_id, Category.id_comp] at h
@@ -161,7 +161,7 @@ lemma arrow_mk_eqToHom_comp {X' X Y : T} (f : X ⟶ Y) (h : X' = X) :
 
 /-- A morphism in the arrow category is a commutative square connecting two objects of the arrow
     category. -/
-@[simps]
+@[simps, implicit_reducible]
 def homMk {f g : Arrow T} (u : f.left ⟶ g.left) (v : f.right ⟶ g.right)
     (w : u ≫ g.hom = f.hom ≫ v := by cat_disch) : f ⟶ g where
   left := u
@@ -286,6 +286,7 @@ theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.h
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
   simp only [w, IsIso.inv_comp_eq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[to_dual epi_right]
 instance mono_left [Mono sq] : Mono sq.left where
@@ -322,7 +323,7 @@ theorem square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ A
 in terms of the inverse of `i`. -/
 theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow.mk i.hom ⟶ p) :
     i.inv ≫ sq.left ≫ p.hom = sq.right := by
-  simp [Arrow.w_mk_left]
+  simp
 
 variable {C : Type u} [Category.{v} C]
 
@@ -343,10 +344,12 @@ def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i �
   Arrow.homMk (sq.left ≫ f) (sq.right) (by simp [w_mk sq])
 
 /-- The functor sending an arrow to its source. -/
-@[to_dual (attr := simps!) /-- The functor sending an arrow to its target. -/]
-def leftFunc : Arrow C ⥤ C :=
-  Comma.fst _ _
+@[to_dual (attr := implicit_reducible, simps!) /-- The functor sending an arrow to its target. -/]
+def leftFunc : Arrow C ⥤ C where
+  obj := Arrow.left
+  map := Arrow.Hom.left
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]
@@ -360,9 +363,8 @@ universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor `C ⥤ D` induces a functor between the corresponding arrow categories. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
   obj a := Arrow.mk (F.map a.hom)
   map {X Y} f := Arrow.homMk (F.map f.left) (F.map f.right) (by simp [← Functor.map_comp])
@@ -371,10 +373,9 @@ attribute [to_dual self (reorder := X Y)] mapArrow_map
 
 variable (C D)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
 a functor `F : C ⥤ D` to `F.mapArrow`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
   obj F := F.mapArrow
   map {X Y} τ := { app f := Arrow.homMk (τ.app _) (τ.app _) }
@@ -383,7 +384,7 @@ attribute [to_dual self (reorder := X Y)] mapArrowFunctor_map_app
 
 variable {C D}
 
-set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
 @[simps]
 def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
@@ -439,7 +440,7 @@ that the induced maps `Arrow C → Arrow D` coincide. -/
 lemma Arrow.functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     F.mapArrow.obj (Arrow.mk f) = G.mapArrow.obj (Arrow.mk f)) :
     F = G :=
-  Functor.ext (fun X ↦ congr_arg Comma.left (h (𝟙 X))) (fun X Y f ↦ by
+  Functor.ext (fun X ↦ congr($(h (𝟙 X)).left)) (fun X Y f ↦ by
     have := h f
     simp only [Functor.mapArrow_obj, mk_eq_mk_iff] at this
     tauto)

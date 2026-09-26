@@ -307,7 +307,7 @@ lemma span_weight_isNonZero_eq_top :
     insert 0 ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) by
     simpa only [Submodule.span_insert_zero] using Submodule.span_mono this
   rintro - ⟨α, rfl⟩
-  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_setOf_eq]
+  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_ofPred_eq]
   tauto
 
 @[simp]
@@ -546,7 +546,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
       rwa [hyp]
     have : α.ker = β.ker := by
       rw [← orthogonal_span_coroot_eq_ker α, hyp, orthogonal_span_coroot_eq_ker]
-    suffices (α : H →ₗ[K] K) = β by ext x; simpa using LinearMap.congr_fun this x
+    suffices (α : H →ₗ[K] K) = β by ext x; simpa using congr($this x)
     apply Module.Dual.eq_of_ker_eq_of_apply_eq (coroot α) this
     · rw [Weight.toLinear_apply, root_apply_coroot hα, hyp, Weight.toLinear_apply,
         root_apply_coroot hβ]
@@ -592,7 +592,7 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     exact smul_left_injective K ht.e_ne_zero this.symm
   suffices ∃ s : K, s • h = coroot α by
     obtain ⟨s, hs⟩ := this
-    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using congr_arg α hs
+    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using congr(α $hs)
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
   have h_eq : h = killingForm K L e f • α' := by
@@ -628,6 +628,19 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
       lie_e := by rw [← lie_skew, hy, neg_zero] }
   obtain ⟨n, hn⟩ := P.exists_nat
   assumption_mod_cast
+
+lemma toSubmodule_rootSpace_eq_span (α : Weight K H L) (hα : α.IsNonZero) (x : L)
+    (hx₀ : x ≠ 0) (hx : x ∈ rootSpace H α) :
+    (rootSpace H α).toSubmodule = K ∙ x := by
+  have := (finrank_eq_one_iff_of_nonzero' ⟨x, hx⟩ (by simpa)).mp (finrank_rootSpace_eq_one α hα)
+  ext y
+  rw [Submodule.mem_span_singleton]
+  refine ⟨fun hy ↦ ?_, ?_⟩
+  · obtain ⟨t, ht⟩ := this ⟨y, hy⟩
+    use t
+    aesop
+  · rintro ⟨t, rfl⟩
+    exact SMulMemClass.smul_mem t hx
 
 /-- The embedded `sl₂` associated to a root. -/
 noncomputable def sl2SubalgebraOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
@@ -693,6 +706,7 @@ lemma coe_coroot_mem_corootSubmodule (α : Weight K H L) :
   (LieSubmodule.mem_map _).mpr
     ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     sl2SubmoduleOfRoot hα = genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := by
@@ -732,6 +746,16 @@ lemma sl2SubmoduleOfRoot_ne_bot (α : Weight K H L) (hα : α.IsNonZero) :
 
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
+instance : InvolutiveNeg H.root where
+  neg i := ⟨-i, by aesop⟩
+  neg_neg i := by aesop
+
+omit [CharZero K] in
+lemma neg_root_eq {i : H.root} : -i = ⟨-i, by aesop⟩ := rfl
+
+omit [CharZero K] in
+@[simp] lemma val_neg_root {i : H.root} : (-i).val = -i.val := rfl
 
 omit [IsKilling K L] [IsTriangularizable K H L] [CharZero K] in
 @[simp]

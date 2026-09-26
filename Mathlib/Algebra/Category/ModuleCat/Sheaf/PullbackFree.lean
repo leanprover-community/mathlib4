@@ -63,11 +63,12 @@ noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj
     exact ((φ.hom.app X).hom.map_mul _ _).symm)
   val.naturality f := by
     ext
-    exact ConcreteCategory.congr_hom (φ.hom.naturality f) _
+    congrm $(φ.hom.naturality f) _
 
 lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.obj.obj X) :
     (unitToPushforwardObjUnit φ).val.app X a = φ.hom.app X a := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma pushforwardSections_unitHomEquiv
     {M : SheafOfModules.{u} R} (f : unit R ⟶ M) :
     pushforwardSections φ (M.unitHomEquiv f) =
@@ -75,8 +76,7 @@ lemma pushforwardSections_unitHomEquiv
         (unitToPushforwardObjUnit φ ≫ (pushforward φ).map f) := by
   ext X
   have := unitToPushforwardObjUnit_val_app_apply φ (X := X) 1
-  dsimp at this ⊢
-  simp +instances [this, map_one]
+  simp [this, map_one]
   rfl
 
 variable [(pushforward.{u} φ).IsRightAdjoint]
@@ -133,7 +133,7 @@ lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
     (pullback φ).map (freeMap f) ≫ (pullbackObjFreeIso φ J).hom =
       (pullbackObjFreeIso φ I).hom ≫ freeMap f :=
   Cofan.IsColimit.hom_ext (isColimitCofanMkObjOfIsColimit (pullback φ) _ _
-    (isColimitFreeCofan (R := S) I)) _ _ (fun i ↦ by simp [← Functor.map_comp_assoc])
+    (isColimitFreeCofan (R := S) I)) _ _ (fun i ↦ by simp)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `freeFunctor ⋙ pullback φ ≅ freeFunctor` for a

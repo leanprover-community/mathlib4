@@ -118,7 +118,7 @@ lemma toQuotient_map : relations.toQuotient.comp relations.map = 0 := by aesop
 @[simp]
 lemma toQuotient_map_apply (x : relations.R →₀ A) :
     relations.toQuotient (relations.map x) = 0 :=
-  DFunLike.congr_fun relations.toQuotient_map x
+  congr($relations.toQuotient_map x)
 
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
@@ -237,7 +237,7 @@ of a composition of linear maps. -/
 @[simps! -isSimp]
 def ofπ' : relations.Solution M :=
   ofπ π (fun r ↦ by
-    simpa using DFunLike.congr_fun hπ (Finsupp.single r 1))
+    simpa using congr($hπ (.single r 1)))
 
 @[simp]
 lemma ofπ'_π : (ofπ' π hπ).π = π := by simp [ofπ']
@@ -333,7 +333,7 @@ lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.
 @[simp]
 lemma π_desc_apply (s : relations.Solution N) (x : relations.G →₀ A) :
     h.desc s (solution.π x) = s.π x :=
-  DFunLike.congr_fun (h.desc_comp_π s) x
+  congr($(h.desc_comp_π s) x)
 
 @[simp]
 lemma postcomp_desc (s : relations.Solution N) :
@@ -344,7 +344,7 @@ lemma postcomp_injective {f f' : M →ₗ[A] N}
   suffices f.comp solution.fromQuotient = f'.comp solution.fromQuotient by
     ext x
     obtain ⟨y, rfl⟩ := h.bijective.2 x
-    exact DFunLike.congr_fun this y
+    congrm $this y
   ext g
   simpa using congr_var h' g
 
@@ -364,7 +364,7 @@ variable {solution' : relations.Solution N} (h' : solution'.IsPresentation)
 
 /-- Uniqueness (up to a unique linear equivalence) of the module defined
 by generators and relations. -/
-def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinear
+def uniq : M ≃ₗ[A] N := LinearEquiv.ofLinearMap
   (h.desc solution') (h'.desc solution)
     (h'.postcomp_injective (by simp))
     (h.postcomp_injective (by simp))
@@ -452,14 +452,14 @@ def down (h : IsPresentationCore.{max w' w''} solution) :
     ext x
     have := congr_postcomp h' ULift.moduleEquiv.{_, _, w'}.symm.toLinearMap
     simp only [← postcomp_comp] at this
-    simpa using! DFunLike.congr_fun (h.postcomp_injective this) x
+    simpa using! congr($(h.postcomp_injective this) x)
 
 lemma isPresentation {solution : relations.Solution M}
     (h : IsPresentationCore.{max u v w₀} solution) :
     solution.IsPresentation where
   bijective := by
     let e : relations.Quotient ≃ₗ[A] M :=
-      LinearEquiv.ofLinear solution.fromQuotient
+      LinearEquiv.ofLinearMap solution.fromQuotient
       ((down.{v} h).desc (ofQuotient relations))
       ((down.{max u w₀} h).postcomp_injective (by aesop)) (by aesop)
     exact e.bijective
@@ -473,7 +473,7 @@ lemma isPresentation_iff :
       Submodule.span A (Set.range solution.var) = ⊤ ∧
       LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation) := by
   rw [← injective_fromQuotient_iff_ker_π_eq_span,
-    ← surjective_π_iff_span_eq_top, ← surjective_fromQuotient_iff_surjective_π, ]
+    ← surjective_π_iff_span_eq_top, ← surjective_fromQuotient_iff_surjective_π]
   exact ⟨fun h ↦ ⟨h.bijective.2, h.bijective.1⟩, fun h ↦ ⟨⟨h.2, h.1⟩⟩⟩
 
 lemma isPresentation_mk

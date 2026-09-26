@@ -46,10 +46,10 @@ where `P : ProfiniteGrp`. -/
 @[to_additive /-- The functor from `OpenNormalAddSubgroup P` to `FiniteAddGrp` sending `U` to
 `P ⧸ U`, where `P : ProfiniteAddGrp`. -/]
 def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp where
-  obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
+  obj := fun H => ↧(P ⧸ H.toSubgroup)
   map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
   map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
-  map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
+  map_comp f g := ConcreteCategory.ext (QuotientGroup.map_comp_map
     _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
 /-- The diagram of finite quotients of `P` viewed in `ProfiniteGrp`. -/
@@ -73,7 +73,7 @@ lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) :
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
   dsimp only [Functor.comp_obj, CompHausLike.coe_of, Functor.comp_map,
-    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq,
+    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_ofPred_eq,
     toLimitFun, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
   apply Continuous.mk
   intro s _
@@ -131,7 +131,7 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
   by_contra xne1
   rcases exist_openNormalSubgroup_sub_open_nhds_of_one (isOpen_compl_singleton)
     (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
-  exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
+  exact hH ((QuotientGroup.eq_one_iff x).mp congr($(Subtype.val_inj.mpr h) H)) rfl
 
 /-- The topological group isomorphism between a profinite group and the projective limit of
 its quotients by open normal subgroups -/
@@ -152,6 +152,7 @@ noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≅ (limit <| diagram P) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivLimittoFiniteQuotientFunctor P)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The projection from `P` to the quotient by an open normal subgroup. -/
 @[to_additive /-- The projection from `P` to the quotient by an open normal subgroup. -/]
 def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).obj U :=

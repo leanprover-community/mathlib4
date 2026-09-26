@@ -47,7 +47,7 @@ variable [Algebra R A] [Algebra R B]
 def pushoutCocone : Limits.PushoutCocone
     (CommRingCat.ofHom (algebraMap R A)) (CommRingCat.ofHom (algebraMap R B)) := by
   fapply Limits.PushoutCocone.mk
-  · exact CommRingCat.of (A ⊗[R] B)
+  · exact ↧(A ⊗[R] B)
   · exact ofHom <| Algebra.TensorProduct.includeLeftRingHom (A := A)
   · exact ofHom <| Algebra.TensorProduct.includeRight.toRingHom (A := B)
   · ext r
@@ -67,7 +67,7 @@ theorem pushoutCocone_inr :
 
 @[simp]
 theorem pushoutCocone_pt :
-    (pushoutCocone R A B).pt = CommRingCat.of (A ⊗[R] B) :=
+    (pushoutCocone R A B).pt = ↧(A ⊗[R] B) :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -116,8 +116,8 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
 lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
     [Algebra R A] [Algebra R B] :
     IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
-      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeLeftRingHom)
-      (ofHom (S := A ⊗[R] B) <| Algebra.TensorProduct.includeRight.toRingHom) where
+      (ofHom (S := A ⊗[R] B) Algebra.TensorProduct.includeLeftRingHom)
+      (ofHom (S := A ⊗[R] B) Algebra.TensorProduct.includeRight.toRingHom) where
   w := by
     ext
     simp
@@ -145,7 +145,7 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
   have h2 (r : R') : (CommRingCat.isPushout_tensorProduct R R' S).isoPushout.hom
       (r ⊗ₜ 1) = (pushout.inl (ofHom _) (ofHom _)) r :=
     congr($((CommRingCat.isPushout_tensorProduct R R' S).inl_isoPushout_hom).hom r)
-  have h3 (x : R') := congr($(h.inl_isoPushout_inv) x)
+  have h3 (x : R') := congr($h.inl_isoPushout_inv x)
   dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h3
   let e' : R' ⊗[R] S ≃ₐ[R'] S' := {
     __ := e
@@ -155,7 +155,7 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
   have h1 : (CommRingCat.isPushout_tensorProduct R R' S).isoPushout.hom
       (algebraMap S (R' ⊗[R] S) s) = (pushout.inr (ofHom _) (ofHom _)) s :=
     congr($((CommRingCat.isPushout_tensorProduct R R' S).inr_isoPushout_hom).hom s)
-  have h4 (x : S) := congr($(h.inr_isoPushout_inv) x)
+  have h4 (x : S) := congr($h.inr_isoPushout_inv x)
   dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h4
   simp [Iso.commRingCatIsoToRingEquiv, h1, e', e, h4]
 
@@ -236,21 +236,21 @@ end BinaryCoproduct
 section Terminal
 
 instance (X : CommRingCat.{u}) : Unique (X ⟶ CommRingCat.of.{u} PUnit) :=
-  ⟨⟨ofHom <| ⟨1, rfl, by simp⟩⟩, fun f ↦ by ext⟩
+  ⟨⟨ofHom ⟨1, rfl, by simp⟩⟩, fun f ↦ by ext⟩
 
 /-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) :=
   IsTerminal.ofUnique _
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
-  apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
+  apply hasStrictTerminalObjects_of_terminal_is_strict ↧PUnit
   intro X f
   refine ⟨ofHom ⟨1, rfl, by simp⟩, ?_, ?_⟩
   · ext
   · ext x
     have e : (0 : X) = 1 := by
       rw [← f.hom.map_one, ← f.hom.map_zero]
-    replace e : 0 * x = 1 * x := congr_arg (· * x) e
+    replace e : 0 * x = 1 * x := congr($e * x)
     rw [one_mul, zero_mul, ← f.hom.map_zero] at e
     exact e
 
@@ -296,9 +296,9 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
     have eq1 : (m ≫ (A.prodFan B).fst) x = (BinaryFan.fst s) x :=
-      ConcreteCategory.congr_hom (h ⟨WalkingPair.left⟩) x
+      congr($(h ⟨WalkingPair.left⟩) x)
     have eq2 : (m ≫ (A.prodFan B).snd) x = (BinaryFan.snd s) x :=
-      ConcreteCategory.congr_hom (h ⟨WalkingPair.right⟩) x
+      congr($(h ⟨WalkingPair.right⟩) x)
     rw [← eq1, ← eq2]
     simp [prodFan]
 
@@ -313,7 +313,7 @@ The categorical product of rings is the Cartesian product of rings. This is its 
 -/
 @[simps! pt]
 def piFan : Fan R :=
-  Fan.mk (CommRingCat.of ((i : ι) → R i)) (fun i ↦ ofHom <| Pi.evalRingHom _ i)
+  Fan.mk ↧((i : ι) → R i) (fun i ↦ ofHom <| Pi.evalRingHom _ i)
 
 /--
 The categorical product of rings is the Cartesian product of rings.
@@ -322,19 +322,19 @@ def piFanIsLimit : IsLimit (piFan R) where
   lift s := ofHom <| RingHom.pi fun i ↦ (s.π.1 ⟨i⟩).hom
   fac s i := by rfl
   uniq _ _ h := hom_ext <| DFunLike.ext _ _ fun x ↦ funext fun i ↦
-    DFunLike.congr_fun (congrArg Hom.hom <| h ⟨i⟩) x
+    congr($(h ⟨i⟩).hom x)
 
 /--
 The categorical product and the usual product agree
 -/
-noncomputable def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
+noncomputable def piIsoPi : ∏ᶜ R ≅ ↧((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
 The categorical product and the usual product agree
 -/
 noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
-    (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+    (∏ᶜ (fun i : ι ↦ ↧(R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 
 end Pi
@@ -343,7 +343,6 @@ namespace Limits
 
 variable {J : Type u'} [SmallCategory J] (F : J ⥤ CommRingCat.{u}) {c : Cone F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_iff_forall_isUnit (hc : IsLimit c) (r : c.pt) : IsUnit r ↔
     ∀ (j : J), IsUnit (c.π.app j r) := by
   refine ⟨fun h _ ↦ h.map _, fun h ↦ ?_⟩
@@ -352,11 +351,11 @@ theorem isUnit_iff_forall_isUnit (hc : IsLimit c) (r : c.pt) : IsUnit r ↔
   have map_inv {j k : J} (f : j ⟶ k) : F.map f (inv j) = inv k := by
     have h := congr(F.map f $(h_inv j))
     have : F.map f (c.π.app j r) = c.π.app k r :=
-      DFunLike.congr_fun (congr(Hom.hom $(c.w f))) r
+      congr($(c.w f).hom r)
     rw [map_mul, map_one, this] at h
     rw [← mul_one (F.map f (inv j)), ← h_inv k, ← mul_assoc]
     nth_rw 2 [mul_comm]; rw [h, one_mul]
-  let inv_r : Cone F := .mk (CommRingCat.of (FreeCommRing PUnit)) {
+  let inv_r : Cone F := .mk ↧(FreeCommRing PUnit) {
     app j := ConcreteCategory.ofHom (FreeCommRing.lift (fun _ ↦ inv j))
     naturality j k f := by
       ext1; change FreeCommRing.lift (fun _ => inv k) = _
@@ -400,13 +399,13 @@ def equalizerFork : Fork f g :=
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  use ofHom <| s.ι.hom.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x :)
+  use ofHom <| s.ι.hom.codRestrict _ fun x => congr($s.condition x)
   constructor
   · ext
     rfl
   · intro m hm
     ext x
-    exact Subtype.ext <| RingHom.congr_fun (congrArg Hom.hom hm) x
+    exact Subtype.ext congr($(hm).hom x)
 
 instance : IsLocalHom (equalizerFork f g).ι.hom :=
   inferInstanceAs <| IsLocalHom (f.hom.eqLocus g.hom).subtype
@@ -464,7 +463,7 @@ def pullbackConeIsLimit (f : A ⟶ C) (g : B ⟶ C) :
   · intro s
     refine ofHom ((s.fst.hom.prod s.snd.hom).codRestrict _ ?_)
     intro x
-    exact congr_arg (fun f : s.pt →+* C => f x) (congrArg Hom.hom s.condition)
+    congrm $(s.condition).hom x
   · intro s
     ext x
     rfl
@@ -485,10 +484,10 @@ instance pullbackFst_isLocalHom (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] :
     IsLocalHom (pullback.fst f g).hom := by
   refine Limits.π_isLocalHom _ (limit.isLimit _) left fun x hx i ↦ ?_
   rcases i with _ | _ | _
-  · exact ⟨one, 𝟙 _, Hom.inl, inferInstance, by simp; rfl⟩
+  · exact ⟨one, 𝟙 _, Hom.inl, inferInstance, by simp⟩
   · exact ⟨left, 𝟙 _, 𝟙 _, inferInstance, by simp⟩
   · refine ⟨one, Hom.inr, Hom.inl, ‹_›, ?_⟩
-    exact DFunLike.congr_fun (congr(Hom.hom $(pullback.condition (f := f) (g := g)))) x |>.symm
+    exact congr($(pullback.condition (f := f) (g := g)).hom x) |>.symm
 
 theorem pullback_isLocalRing (f : A ⟶ C) (g : B ⟶ C) [IsLocalHom g.hom] [IsLocalRing A] :
     IsLocalRing ↑(pullback f g) :=

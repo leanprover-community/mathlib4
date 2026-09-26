@@ -189,7 +189,7 @@ maps from each component, which is the universal property of coproducts. -/
 /-- `cofan 𝒜 f` is a coproduct of `f`. -/
 @[simps!] def isColimitCofan : IsColimit (cofan 𝒜 f) :=
   Cofan.IsColimit.mk (cofan 𝒜 f) (fun t ↦ (cofanHomEquiv _ _ _).symm t.inj)
-    (fun t i ↦ congrFun ((cofanHomEquiv _ _ _).right_inv t.inj) i)
+    (fun t i ↦ congr($((cofanHomEquiv ..).right_inv t.inj) i))
     (fun _ _ h ↦ (Equiv.eq_symm_apply _).2 (funext h))
 
 instance : HasCoproducts.{w} (FormalCoproduct.{w} C) :=
@@ -232,6 +232,7 @@ lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :
     ∐ X.toFun ≅ X :=
   coproductIsoCofanPt _ _ ≪≫ cofanPtIsoSelf X
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)] lemma ι_comp_coproductIsoSelf_hom (i : X.I) :
     Sigma.ι _ i ≫ (coproductIsoSelf X).hom = .fromIncl i (𝟙 (X.obj i)) := by
   simp [coproductIsoSelf]
@@ -319,7 +320,7 @@ universal property of pullbacks. -/
 @[simps!] def homPullbackEquiv : (T ⟶ (pullbackCone f g pb).pt) ≃
     { p : (T ⟶ X) × (T ⟶ Y) // p.1 ≫ f = p.2 ≫ g } where
   toFun m := ⟨⟨m ≫ (pullbackCone f g pb).fst, m ≫ (pullbackCone f g pb).snd⟩, by simp⟩
-  invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congrFun (congrArg Hom.f s.2) i⟩,
+  invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congr($(s.2).f i)⟩,
     fun i ↦ (hpb _).lift (PullbackCone.mk (s.1.1.φ i) (s.1.2.φ i)
       (by simpa using ((hom_ext_iff _ _).1 s.2).2 i))⟩
   left_inv m := hom_ext rfl (fun i ↦ by
@@ -365,14 +366,13 @@ noncomputable section HasCoproducts
 variable [HasCoproducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : C ⥤ A)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A copresheaf valued in a category `A` with arbitrary coproducts, can be extended to the category
 of formal coproducts. -/
 @[simps!] def eval : (C ⥤ A) ⥤ (FormalCoproduct.{w} C ⥤ A) where
   obj F :=
     { obj X := ∐ fun (i : X.I) ↦ F.obj (X.obj i)
       map {X Y} f := Sigma.desc fun i ↦ F.map (f.φ i) ≫ Sigma.ι (F.obj ∘ Y.obj) (f.f i)
-      map_comp _ _ := Sigma.hom_ext _ _ (fun _ ↦ by simp [Sigma.ι_desc]) }
+      map_comp _ _ := Sigma.hom_ext _ _ (fun _ ↦ by simp [Sigma.ι_comp_desc]) }
   map α := { app f := Sigma.map fun i ↦ α.app (f.obj i) }
 
 set_option backward.defeqAttrib.useBackward true in
@@ -382,7 +382,7 @@ set_option backward.isDefEq.respectTransparency false in
     eval C A ⋙ (whiskeringLeft _ _ A).obj (incl C) ≅ Functor.id (C ⥤ A) :=
   NatIso.ofComponents fun F ↦ NatIso.ofComponents
     (fun x ↦ ⟨Sigma.desc fun _ ↦ 𝟙 _, Sigma.ι (fun _ ↦ F.obj x) PUnit.unit, by aesop, by simp⟩)
-    (fun f ↦ Sigma.hom_ext _ _ (by simp [Sigma.ι_desc]))
+    (fun f ↦ Sigma.hom_ext _ _ (by simp [Sigma.ι_comp_desc]))
 
 variable {C A}
 
@@ -423,7 +423,6 @@ noncomputable section HasProducts
 variable [HasProducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : Cᵒᵖ ⥤ A)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A presheaf valued in a category `A` with arbitrary products can be extended to the category of
 formal coproducts. -/
 @[simps!] def evalOp : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct.{w} C)ᵒᵖ ⥤ A) where

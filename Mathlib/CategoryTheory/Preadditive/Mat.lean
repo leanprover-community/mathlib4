@@ -86,7 +86,7 @@ namespace Hom
 
 open scoped Classical in
 /-- The identity matrix consists of identity morphisms on the diagonal, and zeros elsewhere. -/
-def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0
+def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom congr(M.X $h) else 0
 
 /-- Composition of matrices using matrix multiplication. -/
 def comp {M N K : Mat_ C} (f : Hom M N) (g : Hom N K) : Hom M K := fun i k =>
@@ -98,6 +98,7 @@ section
 
 attribute [local simp] Hom.id Hom.comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
@@ -197,7 +198,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
                 eqToHom_trans]
               rw [← Finset.univ_sigma_univ, Finset.sum_sigma]
               dsimp +instances
-              simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
+              simp only [ite_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
               · subst h h'
@@ -215,12 +216,12 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
             · intro b _ hb
               apply Finset.sum_eq_zero
               intro x _
-              rw [dif_neg hb.symm, zero_comp]
+              rw [dite_eq_right hb.symm, zero_comp]
             · intro hi
               simp at hi
             rw [Finset.sum_eq_single j]; rotate_left
             · intro b _ hb
-              rw [dif_pos rfl, dif_neg, zero_comp]
+              rw [dite_eq_left rfl, dite_eq_right, zero_comp]
               simp only
               tauto
             · intro hj
@@ -229,13 +230,13 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               Sigma.mk.inj_iff, id_def]
             by_cases h : i' = i
             · subst h
-              rw [dif_pos rfl]
+              rw [dite_eq_left rfl]
               simp only [heq_eq_eq, true_and]
               by_cases h : j' = j
               · subst h
                 simp
-              · rw [dif_neg h, dif_neg (Ne.symm h)]
-            · rw [dif_neg h, dif_neg]
+              · rw [dite_eq_right h, dite_eq_right (Ne.symm h)]
+            · rw [dite_eq_right h, dite_eq_right]
               tauto) }
 
 end Mat_
@@ -280,6 +281,7 @@ end Functor
 
 namespace Mat_
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding of `C` into `Mat_ C` as one-by-one matrices.
 (We index the summands by `PUnit`.) -/
 @[simps]
@@ -292,7 +294,7 @@ def embedding : C ⥤ Mat_ C where
 namespace Embedding
 
 instance : (embedding C).Faithful where
-  map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
+  map_injective h := congr($h PUnit.unit PUnit.unit)
 
 instance : (embedding C).Full where map_surjective f := ⟨f PUnit.unit PUnit.unit, rfl⟩
 
@@ -323,7 +325,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
-      rw [Fintype.univ_ofSubsingleton, Finset.sum_singleton, dif_neg hb.symm, zero_comp]
+      rw [Fintype.univ_ofSubsingleton, Finset.sum_singleton, dite_eq_right hb.symm, zero_comp]
     · intro h
       simp at h
     simp
@@ -355,6 +357,7 @@ def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C)
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
   F.mapIso (isoBiproductEmbedding M) ≪≫ F.mapBiproduct _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
@@ -421,6 +424,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
 @[simps!]
@@ -430,8 +434,8 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `Mat_.lift F` is the unique additive functor `L : Mat_ C ⥤ D` such that `F ≅ embedding C ⋙ L`.
 -/
 def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Additive L]
@@ -512,6 +516,7 @@ instance (R : Type u) : CoeSort (Mat R) (Type u) :=
 
 open Matrix
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 open scoped Classical in
 instance (R : Type u) [Semiring R] : Category (Mat R) where
@@ -547,11 +552,13 @@ theorem id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := b
 theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
   simp [id_apply, h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 theorem comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N, f i j * g j k :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
@@ -565,12 +572,11 @@ end
 
 variable (R : Type) [Ring R]
 
-open Opposite
-
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `CategoryTheory.Mat.equivalenceSingleObj`. -/
 @[simps]
 def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
-  obj X := FintypeCat.of X.ι
+  obj X := ↧X.ι
   map f i j := MulOpposite.unop (f i j)
   map_id X := by
     ext
@@ -586,11 +592,12 @@ instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
-    exact congr_fun (congr_fun w _) _
+    congrm $w _ _
 
 instance : (equivalenceSingleObjInverse R).Full where
   map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] FintypeCat.fintype in
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=

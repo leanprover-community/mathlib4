@@ -201,6 +201,7 @@ def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn 
     (FaithfulSMul.algebraMap_injective S R) (P.root' i)
     (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.2 i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma algebraMap_root'In_apply [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
     [P.IsValuedIn S] (i : ι) (x : P.corootSpan S) :

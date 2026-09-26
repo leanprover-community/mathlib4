@@ -199,7 +199,7 @@ theorem bind₂_comp_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPoly
 
 theorem bind₂_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomial σ T)
     (φ : MvPolynomial σ R) : (bind₂ g) (bind₂ f φ) = bind₂ ((bind₂ g).comp f) φ :=
-  RingHom.congr_fun (bind₂_comp_bind₂ f g) φ
+  congr($(bind₂_comp_bind₂ f g) φ)
 
 theorem rename_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) :
     (rename g).comp (bind₁ f) = bind₁ fun i => rename g <| f i := by
@@ -208,7 +208,7 @@ theorem rename_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ 
 
 theorem rename_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
     rename g (bind₁ f φ) = bind₁ (fun i => rename g <| f i) φ :=
-  AlgHom.congr_fun (rename_comp_bind₁ f g) φ
+  congr($(rename_comp_bind₁ f g) φ)
 
 theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPolynomial σ R) :
     map g (bind₂ f φ) = bind₂ ((map g).comp f) φ := by
@@ -223,7 +223,7 @@ theorem bind₁_comp_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ 
 
 theorem bind₁_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
     bind₁ f (rename g φ) = bind₁ (f ∘ g) φ :=
-  AlgHom.congr_fun (bind₁_comp_rename f g) φ
+  congr($(bind₁_comp_rename f g) φ)
 
 theorem bind₂_map (f : S →+* MvPolynomial σ T) (g : R →+* S) (φ : MvPolynomial σ R) :
     bind₂ f (map g φ) = bind₂ (f.comp g) φ := by simp [bind₂]
@@ -266,7 +266,7 @@ theorem eval₂Hom_comp_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPo
 
 theorem eval₂Hom_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPolynomial σ S)
     (φ : MvPolynomial σ R) : eval₂Hom f g (bind₂ h φ) = eval₂Hom ((eval₂Hom f g).comp h) g φ :=
-  RingHom.congr_fun (eval₂Hom_comp_bind₂ f g h) φ
+  congr($(eval₂Hom_comp_bind₂ f g h) φ)
 
 theorem aeval_bind₂ [Algebra S T] (f : σ → T) (g : R →+* MvPolynomial σ S) (φ : MvPolynomial σ R) :
     aeval f (bind₂ g φ) = eval₂Hom ((↑(aeval f : _ →ₐ[S] _) : _ →+* _).comp g) f φ :=
@@ -293,11 +293,11 @@ section
 theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
   calc (bind₁ f φ).vars
-    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars := by
+    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (φ.coeff x))).vars := by
       rw [← map_sum, ← φ.as_sum]
-    _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
+    _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (φ.coeff i))).vars :=
       (vars_sum_subset _ _)
-    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) := by
+    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (φ.coeff d) * ∏ i ∈ d.support, f i ^ d i) := by
       simp only [bind₁_monomial]
     _ ≤ φ.support.biUnion fun d : σ →₀ ℕ => d.support.biUnion fun i => vars (f i) := ?_
     -- proof below
@@ -306,11 +306,11 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · apply Finset.biUnion_mono
     intro d _hd
     calc
-      vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) ≤
-          (C (coeff d φ)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
+      vars (C (φ.coeff d) * ∏ i ∈ d.support, f i ^ d i) ≤
+          (C (φ.coeff d)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
         vars_mul _ _
       _ ≤ (∏ i ∈ d.support, f i ^ d i).vars := by
-        simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
+        simp only [Finset.empty_union, vars_C, Finset.Subset.refl]
       _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := vars_prod _
       _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_
     apply Finset.biUnion_mono
@@ -341,14 +341,16 @@ instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
 instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R where
   pure_bind := by intros; simp [pure, bind]
   bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
-  seqLeft_eq := by intros; simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; rfl
+  seqLeft_eq _ _ := by
+    simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; simp [rename_eq_aeval]; rfl
   seqRight_eq := by intros; simp [SeqRight.seqRight, Seq.seq, (· <$> ·), bind₁_rename]; rfl
   pure_seq := by intros; simp [(· <$> ·), pure, Seq.seq]
-  bind_pure_comp := by aesop
+  bind_pure_comp _ _ := congr(⇑$((rename_eq_aeval ..).symm) _)
   bind_map := by aesop
 
 /-
 Possible TODO for the future:
+
 Enable the following definitions, and write a lot of supporting lemmas.
 
 def bind (f : R →+* mv_polynomial τ S) (g : σ → mv_polynomial τ S) :

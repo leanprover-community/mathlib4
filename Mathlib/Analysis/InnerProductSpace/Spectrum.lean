@@ -140,7 +140,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot (hT : T.IsSymmetric) :
   have hT' : IsSymmetric _ :=
     hT.restrict_invariant hT.orthogonalComplement_iSup_eigenspaces_invariant
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
-  haveI :=
+  have :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
   exact Submodule.eq_bot_of_subsingleton
 
@@ -195,7 +195,7 @@ theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eige
     ∀ w : PiLp 2 fun μ : Eigenvalues T => eigenspace T μ,
       T (hT.diagonalization.symm w) = hT.diagonalization.symm (toLp 2 fun μ => (μ : 𝕜) • w μ) by
     simpa only [LinearIsometryEquiv.symm_apply_apply, LinearIsometryEquiv.apply_symm_apply] using
-      congr_arg (fun w => hT.diagonalization w μ) (this (hT.diagonalization v))
+      congr(hT.diagonalization $(this (hT.diagonalization v)) μ)
   intro w
   have hwT : ∀ μ, T (w μ) = (μ : 𝕜) • w μ := fun μ => mem_eigenspace_iff.1 (w μ).2
   simp only [diagonalization_symm_apply, map_sum, hwT, SetLike.val_smul]
@@ -211,7 +211,7 @@ set_option backward.privateInPublic true in
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : ℝ :=
-  @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+  @RCLike.re 𝕜 _ (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 
 private theorem hasEigenvalue_unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
@@ -338,8 +338,7 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
       T ((hT.eigenvectorBasis hn).repr.symm w) =
         (hT.eigenvectorBasis hn).repr.symm (toLp 2 fun i ↦ hT.eigenvalues hn i * w i) by
     simpa [OrthonormalBasis.sum_repr_symm] using
-      congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
-        (this ((hT.eigenvectorBasis hn).repr v))
+      congr((hT.eigenvectorBasis hn).repr $(this ((hT.eigenvectorBasis hn).repr v)) i)
   intro w
   simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]
   apply Fintype.sum_congr
@@ -407,22 +406,22 @@ theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] 
   simp only [h, inner_smul_right, inner_self_eq_norm_sq_to_K]
 
 theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
-    (hnn : ∀ x : E, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
+    (hnn : ∀ x, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
   obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
-  have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv₂
+  have hpos : 0 < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv₂
   simp only [mem_genEigenspace_one] at hv₁
   have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
     mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv₁)
   exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
-    (hnn : ∀ x : E, 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
+    (hnn : ∀ x, x ≠ 0 → 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
   obtain ⟨v, hv₁, hv₂⟩ := hμ.exists_hasEigenvector
-  have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv₂
+  have hpos : 0 < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv₂
   simp only [mem_genEigenspace_one] at hv₁
   have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 :=
     mod_cast congr_arg RCLike.re (inner_product_apply_eigenvector hv₁)
-  exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
+  exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v hv₂)
 
 end Nonneg
 
@@ -433,7 +432,7 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
   rw [← nnnorm_eq_zero, ← ENNReal.coe_eq_zero, ← T.spectralRadius_eq_nnnorm hT'.isSelfAdjoint,
-    spectralRadius, ← not_iff_not, ENNReal.iSup_eq_zero]
+    spectralRadius_eq_of_unital, ← not_iff_not, ENNReal.iSup_eq_zero]
   push Not
   apply exists_congr
   simp +contextual [hT.hasEigenvalue_iff_mem_spectrum]

@@ -58,7 +58,7 @@ lemma sqrt_le_sqrt : sqrt x ≤ sqrt y ↔ x ≤ y := sqrt.le_iff_le
 
 lemma sqrt_lt_sqrt : sqrt x < sqrt y ↔ x < y := sqrt.lt_iff_lt
 
-lemma sqrt_eq_iff_eq_sq : sqrt x = y ↔ x = y ^ 2 := sqrt.toEquiv.apply_eq_iff_eq_symm_apply
+lemma sqrt_eq_iff_eq_sq : sqrt x = y ↔ x = y ^ 2 := sqrt.toEquiv.eq_symm_apply.symm
 
 lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnection _ _
 
@@ -319,7 +319,7 @@ end Real
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
@@ -445,7 +445,7 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
 
 theorem sqrt_prod {ι : Type*} (s : Finset ι) {x : ι → ℝ} (hx : ∀ i ∈ s, 0 ≤ x i) :
     √(∏ i ∈ s, x i) = ∏ i ∈ s, √(x i) := by
-  convert! congr_arg NNReal.toReal <| map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s <;>
+  convert! congr($(map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s).toReal) <;>
     simp +contextual [-map_prod, NNReal.sqrtHom, hx]
 
 end Real

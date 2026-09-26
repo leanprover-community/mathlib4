@@ -28,7 +28,7 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   rw [Rat.mk_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
     c.dvd_of_dvd_mul_right ?_
-  have := congr_arg Int.natAbs e
+  have := congr($(e).natAbs)
   simp only [Int.natAbs_mul, Int.natAbs_natCast] at this; simp [this]
 
 theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
@@ -55,14 +55,6 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
   · refine Int.eq_mul_div_of_mul_eq_mul_of_dvd_left ?_ hqdn this
     rw [qdf]
     exact Rat.num_ne_zero.2 ((divInt_ne_zero hd).mpr hn)
-
-@[deprecated Rat.num_divInt (since := "2025-12-27")]
-theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d :=
-  Int.gcd_comm .. ▸ Rat.num_divInt ..
-
-@[deprecated Rat.den_divInt (since := "2025-12-27")]
-theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d :=
-  Int.gcd_comm .. ▸ Rat.den_divInt ..
 
 theorem add_den_dvd_lcm (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q₂.den := by
   rw [add_def, normalize_eq, Nat.div_dvd_iff_dvd_mul (Nat.gcd_dvd_right _ _)
@@ -228,10 +220,12 @@ theorem add_num_den' (q r : ℚ) :
   apply Rat.eq_iff_mul_eq_mul.mp
   rw [← divInt_eq_div]
 
-theorem substr_num_den' (q r : ℚ) :
+theorem sub_num_den' (q r : ℚ) :
     (q - r).num * q.den * r.den = (q.num * r.den - r.num * q.den) * (q - r).den := by
   rw [sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← num_neg_eq_neg_num, ← den_neg_eq_den r,
     add_num_den' q (-r)]
+
+@[deprecated (since := "2026-09-17")] alias substr_num_den' := sub_num_den'
 
 end Casts
 
@@ -313,6 +307,7 @@ theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :
   change 0 < (a : ℤ)
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by simp
 
 theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by simp

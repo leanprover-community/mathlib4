@@ -141,11 +141,11 @@ variable {C : Type*} [SetLike C A] [SubringClass C A] {S : C}
 protected theorem isIntegrallyClosedIn_iff :
     IsIntegrallyClosedIn S A ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
   rw [isIntegrallyClosedIn_iff, and_iff_right (FaithfulSMul.algebraMap_injective _ _)]
-  exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+  congrm ∀ _ _, _ ∈ $Subtype.range_val
 
 protected theorem isIntegrallyClosed_iff [IsFractionRing S A] :
     IsIntegrallyClosed S ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
-  rw [isIntegrallyClosed_iff A]; exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+  rw [isIntegrallyClosed_iff A]; congrm ∀ _ _, _ ∈ $Subtype.range_val
 
 theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
     (integralClosure R A).toSubring ≤ T ↔ ∀ r, algebraMap R A r ∈ T where
@@ -157,7 +157,7 @@ theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
 
 theorem integralClosure_subring_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
     (integralClosure S A).toSubring ≤ T ↔ .ofClass S ≤ T := by
-  rw [integralClosure_le_iff, Subtype.forall, SetLike.le_def]; rfl
+  rw [integralClosure_le_iff, Subtype.forall, IsConcreteLE.le_iff]; rfl
 
 end Subring
 
@@ -297,7 +297,8 @@ lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn
   · intro x
     refine ⟨fun h ↦ ?_, ?_⟩
     · obtain ⟨x, rfl⟩ := (IsIntegralClosure.isIntegral_iff (R := T) (A := T)).mp h.tower_top
-      rw [isIntegral_algebraMap_iff (IsIntegralClosure.algebraMap_injective T T U)] at h
+      have := IsIntegralClosure.faithfulSMul T T U
+      rw [isIntegral_algebraMap_iff] at h
       obtain ⟨x, rfl⟩ := (IsIntegralClosure.isIntegral_iff (R := R) (A := S)).mp h
       exact ⟨x, IsScalarTower.algebraMap_apply ..⟩
     · rintro ⟨x, rfl⟩
@@ -331,7 +332,7 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   have hy : IsIntegral R y := by
     refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, ?_⟩
     simp only [y, eval₂_sub, eval₂_X_pow, div_pow, eval₂_C]
-    replace hx := congr_arg (algebraMap R K) hx
+    replace hx := congr(algebraMap R K $hx)
     rw [map_pow] at hx
     simp [hx, ha]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
@@ -375,11 +376,12 @@ section localization
 
 variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
     (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
   let K := FractionRing R
   let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
-  letI := g.toAlgebra
+  let := g.toAlgebra
   have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
   have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K

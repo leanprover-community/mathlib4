@@ -135,7 +135,7 @@ def localization (P : Extension.{w} R S) : Extension R S' where
       (g := (algebraMap S S').comp (algebraMap P.Ring S))
       (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
   isScalarTower := by
-    letI : Algebra (Localization (M.comap (algebraMap P.Ring S))) S' :=
+    let : Algebra (Localization (M.comap (algebraMap P.Ring S))) S' :=
       (IsLocalization.lift (M := (M.comap (algebraMap P.Ring S)))
         (g := (algebraMap S S').comp (algebraMap P.Ring S))
         (by simpa using fun x hx ↦ IsLocalization.map_units S' ⟨_, hx⟩)).toAlgebra
@@ -293,6 +293,7 @@ noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
 
 end
 
+@[macro_inline]
 instance {P P' : Extension R S} : FunLike (P.Hom P') P.Ring P'.Ring where
   coe f := f.toRingHom
   coe_injective _ _ h := Extension.Hom.ext (DFunLike.coe_fn_eq.mp h)
@@ -363,6 +364,7 @@ lemma Cotangent.smul_eq_zero_of_mem (p : P.Ring) (hp : p ∈ P.ker) (m : P.ker.C
 
 attribute [local simp] RingHom.mem_ker
 
+set_option backward.isDefEq.respectTransparency.types false in
 noncomputable
 instance Cotangent.module : Module S P.Cotangent where
   smul := fun r s ↦ .of (P.σ r • s.val)
@@ -461,7 +463,7 @@ variable [Algebra R S'] [IsScalarTower R R' S']
 noncomputable
 def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
   toFun x := .of (Ideal.mapCotangent (R := R) _ _ f.toAlgHom
-    (fun x hx ↦ by simpa using RingHom.congr_arg (algebraMap S S') hx) x.val)
+    (fun x hx ↦ by simpa using congr(algebraMap S S' $hx)) x.val)
   map_add' x y := ext (map_add _ x.val y.val)
   map_smul' r x := by
     ext
@@ -478,7 +480,7 @@ def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
 @[simp]
 lemma Cotangent.map_mk (f : Hom P P') (x) :
     Cotangent.map f (.mk x) =
-      .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using RingHom.congr_arg (algebraMap S S') x.2⟩ :=
+      .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using congr(algebraMap S S' $(x.2))⟩ :=
   rfl
 
 @[simp]
@@ -547,7 +549,7 @@ noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := 
     simp only [mk_apply, LinearMap.liftBaseChange_tmul, one_smul, Cotangent.mk_eq_zero_iff,
       pow_two] at hx ⊢
     refine Submodule.smul_induction_on' (p := fun x (hx : x ∈ P.ker * P.ker) ↦
-      (1 : S) ⊗ₜ[P.Ring] (⟨x, Ideal.mul_le_right hx⟩ : P.ker) = 0) (hx := hx) ?_ ?_
+      (1 : S) ⊗ₜ[P.Ring] (⟨x, Ideal.mul_le_left hx⟩ : P.ker) = 0) (hx := hx) ?_ ?_
     · intro r hr s hs
       trans (r • 1) ⊗ₜ[P.Ring] ⟨s, hs⟩
       · rw [smul_tmul]; rfl

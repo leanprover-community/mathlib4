@@ -219,7 +219,7 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
-    haveI : G.Full := Quotient.full_functor _
+    have : G.Full := Quotient.full_functor _
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
@@ -252,8 +252,8 @@ variable {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂)
 `τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂`, we shall define a natural transformation `F₁ ⟶ F₂`.
 This is the `app` field of this natural transformation. -/
 def app (X : W.Localization) : F₁.obj X ⟶ F₂.obj X :=
-  eqToHom (congr_arg F₁.obj ((objEquiv W).right_inv X).symm) ≫
-    τ.app ((objEquiv W).invFun X) ≫ eqToHom (congr_arg F₂.obj ((objEquiv W).right_inv X))
+  eqToHom congr(F₁.obj $(((objEquiv W).right_inv X).symm)) ≫
+    τ.app ((objEquiv W).invFun X) ≫ eqToHom congr(F₂.obj $((objEquiv W).right_inv X))
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -329,6 +329,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
           natTransExtension_app, NatTransExtension.app_eq]
         rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit isomorphism of the equivalence of categories `whiskeringLeftEquivalence W D`. -/
 @[simps!]
 def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
@@ -361,7 +362,6 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
 
 end WhiskeringLeftEquivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `(W.Localization ⥤ D) ≌ (W.FunctorsInverting D)`
 induced by the composition with `W.Q : C ⥤ W.Localization`. -/
 def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where

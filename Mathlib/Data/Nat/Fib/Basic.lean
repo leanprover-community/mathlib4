@@ -186,8 +186,6 @@ theorem fastFibAux_bit_false (n : ℕ) :
   · rfl
   · simp
 
-@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_ff := fastFibAux_bit_false
-
 theorem fastFibAux_bit_true (n : ℕ) :
     fastFibAux (bit true n) =
       let p := fastFibAux n
@@ -196,21 +194,15 @@ theorem fastFibAux_bit_true (n : ℕ) :
   · rfl
   · simp
 
-@[deprecated (since := "2026-02-04")] alias fast_fib_aux_bit_tt := fastFibAux_bit_true
-
 theorem fastFibAux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
   refine Nat.binaryRec ?_ ?_ n
   · simp [fastFibAux]
   · rintro (_ | _) n' ih <;>
-      simp only [fastFibAux_bit_false, fastFibAux_bit_true, congr_arg Prod.fst ih,
-        congr_arg Prod.snd ih, Prod.mk_inj] <;>
+      simp only [fastFibAux_bit_false, fastFibAux_bit_true, congr($(ih).fst),
+        congr($(ih).snd), Prod.mk_inj] <;>
       simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 
-@[deprecated (since := "2026-02-04")] alias fast_fib_aux_eq := fastFibAux_eq
-
 theorem fastFib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fastFibAux_eq]
-
-@[deprecated (since := "2026-02-04")] alias fast_fib_eq := fastFib_eq
 
 @[csimp]
 theorem fib_eq_fastFib : fib = fastFib := by ext; rw [fastFib_eq]

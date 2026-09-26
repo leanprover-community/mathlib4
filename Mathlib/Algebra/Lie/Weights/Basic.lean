@@ -87,8 +87,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
-  refine t.induction_on ?_ ?_ ?_
-  · use 0; simp only [map_zero]
+  refine t.inductionOn ?_ ?_
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
     simp only [map_add, Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
@@ -212,6 +211,7 @@ structure Weight where
 
 namespace Weight
 
+@[macro_inline]
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
   coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
@@ -238,10 +238,11 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
-@[simp]
-lemma coe_zero [Nontrivial (genWeightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
+instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) L R where
 
-lemma zero_apply [Nontrivial (genWeightSpace M (0 : L → R))] (x) : (0 : Weight R L M) x = 0 := rfl
+@[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
 /-- The proposition that a weight of a Lie module is zero.
 
@@ -268,11 +269,13 @@ noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) :=
 
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
-def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
+def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.1, w.2⟩
   invFun w := ⟨w.1, w.2⟩
   left_inv w := by simp
   right_inv w := by simp
+
+@[deprecated (since := "2026-07-09")] alias equivSetOf := equivSetOfPred
 
 lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
     genWeightSpaceOf M (χ x) x ≠ ⊥ := by
@@ -475,8 +478,8 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
   suffices (toEnd R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
     LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m)
       by simpa [Submodule.Quotient.quot_mk_eq_mk, this]
-  have := LinearMap.congr_fun (Module.End.commute_pow_left_of_commute
-    (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m
+  have := congr($(Module.End.commute_pow_left_of_commute
+    (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m)
   simpa using this
 
 @[simp] lemma posFittingComp_eq_bot_of_isNilpotent
@@ -512,7 +515,7 @@ lemma map_genWeightSpace_le :
     ext; simp
   obtain ⟨k, h⟩ := (mem_genWeightSpace _ _ _).mp hm x
   refine ⟨k, ?_⟩
-  simpa [h] using LinearMap.congr_fun (Module.End.commute_pow_left_of_commute this k) m
+  simpa [h] using congr($(Module.End.commute_pow_left_of_commute this k) m)
 
 variable {f}
 
@@ -528,7 +531,7 @@ lemma comap_genWeightSpace_eq_of_injective (hf : Injective f) :
     use k
     suffices f (((toEnd R L M x - χ x • ↑1) ^ k) m) = 0 by
       rw [← map_zero f] at this; exact hf this
-    simpa [hk] using (LinearMap.congr_fun (Module.End.commute_pow_left_of_commute h k) m).symm
+    simpa [hk] using congr($(Module.End.commute_pow_left_of_commute h k) m).symm
   · rw [← LieSubmodule.map_le_iff_le_comap]
     exact map_genWeightSpace_le f
 
@@ -672,7 +675,7 @@ lemma iSupIndep_genWeightSpace : iSupIndep fun χ : L → R ↦ genWeightSpace M
 
 lemma iSupIndep_genWeightSpace' : iSupIndep fun χ : Weight R L M ↦ genWeightSpace M χ :=
   (iSupIndep_genWeightSpace R L M).comp <|
-    Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
+    Subtype.val_injective.comp (Weight.equivSetOfPred R L M).injective
 
 lemma iSupIndep_genWeightSpaceOf (x : L) : iSupIndep fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [← LieSubmodule.iSupIndep_toSubmodule]
@@ -689,7 +692,7 @@ lemma finite_genWeightSpace_ne_bot [IsNoetherian R M] :
 
 instance Weight.instFinite [IsNoetherian R M] : Finite (Weight R L M) := by
   have : Finite {χ : L → R | genWeightSpace M χ ≠ ⊥} := finite_genWeightSpace_ne_bot R L M
-  exact Finite.of_injective (equivSetOf R L M) (equivSetOf R L M).injective
+  exact Finite.of_injective (equivSetOfPred R L M) (equivSetOfPred R L M).injective
 
 noncomputable instance Weight.instFintype [IsNoetherian R M] : Fintype (Weight R L M) := .ofFinite _
 
@@ -772,7 +775,7 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by
   have := iSup_genWeightSpace_eq_top K L M
-  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
+  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOfPred K L M).iSup_comp] at this
   exact this
 
 lemma eq_iSup_inf_genWeightSpace [IsTriangularizable K L M] (N : LieSubmodule K L M) :

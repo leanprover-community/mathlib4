@@ -119,6 +119,7 @@ variable (F : V ⥤ W) [F.LaxMonoidal]
 
 open Functor.LaxMonoidal
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : EnrichedCategory W (TransportEnrichment F C) where
   Hom := fun X Y : C => F.obj (X ⟶[V] Y)
   id := fun X : C => ε F ≫ F.map (eId V X)
@@ -160,14 +161,14 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   Hom X Y := 𝒞.Hom X Y
   id X := eId (Type v) X PUnit.unit
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
-  id_comp f := ConcreteCategory.congr_hom (e_id_comp (Type v) _ _) f
-  comp_id f := ConcreteCategory.congr_hom (e_comp_id (Type v) _ _) f
-  assoc f g h := ConcreteCategory.congr_hom (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩
+  id_comp f := congr($(e_id_comp (Type v) _ _) f)
+  comp_id f := congr($(e_comp_id (Type v) _ _) f)
+  assoc f g h := congr($(e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩)
 
 attribute [local simp] types_tensorObj_def in
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom X Y := 𝒞.Hom X Y
@@ -176,6 +177,7 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
+@[implicit_reducible]
 def enrichedCategoryTypeEquivCategory (C : Type u₁) :
     EnrichedCategory (Type v) C ≃ Category.{v} C where
   toFun _ := categoryOfEnrichedCategoryType C
@@ -210,10 +212,12 @@ def ForgetEnrichment (W : Type v) [Category.{w} W] [MonoidalCategory W] (C : Typ
 variable (W)
 
 /-- Typecheck an object of `C` as an object of `ForgetEnrichment W C`. -/
+@[implicit_reducible]
 def ForgetEnrichment.of (X : C) : ForgetEnrichment W C :=
   X
 
 /-- Typecheck an object of `ForgetEnrichment W C` as an object of `C`. -/
+@[implicit_reducible]
 def ForgetEnrichment.to (X : ForgetEnrichment W C) : C :=
   X
 
@@ -337,11 +341,10 @@ variable {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
   {D : Type u₂} [EnrichedCategory W D]
   {E : Type u₃} [EnrichedCategory W E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An enriched functor induces an honest functor of the underlying categories,
 by mapping the `(𝟙_ W)`-shaped morphisms.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def forget (F : EnrichedFunctor W C D) :
     ForgetEnrichment W C ⥤ ForgetEnrichment W D where
   obj X := ForgetEnrichment.of W (F.obj (ForgetEnrichment.to W X))
@@ -349,7 +352,6 @@ def forget (F : EnrichedFunctor W C D) :
     ForgetEnrichment.homOf W
       (ForgetEnrichment.homTo W f ≫ F.map (ForgetEnrichment.to W _) (ForgetEnrichment.to W _))
   map_comp f g := by
-    dsimp
     apply_fun ForgetEnrichment.homTo W
     · simp only [Iso.cancel_iso_inv_left, Category.assoc, ← tensorHom_comp_tensorHom,
         ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, ForgetEnrichment.homTo_comp]
@@ -478,6 +480,7 @@ variable [BraidedCategory V]
 
 open BraidedCategory
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A presheaf isomorphic to the Yoneda embedding of
 the `V`-object of natural transformations from `F` to `G`.
@@ -512,8 +515,8 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
   toFun F :=
     { obj := fun X => F.obj X
       map := fun f => F.map _ _ f
-      map_id := fun X => ConcreteCategory.congr_hom (F.map_id X) PUnit.unit
-      map_comp := fun f g => ConcreteCategory.congr_hom (F.map_comp _ _ _) ⟨f, g⟩ }
+      map_id := fun X => congr($(F.map_id X) PUnit.unit)
+      map_comp := fun f g => congr($(F.map_comp _ _ _) ⟨f, g⟩) }
   invFun F :=
     { obj := fun X => F.obj X
       map := fun _ _ => ↾fun f => F.map f
@@ -533,7 +536,7 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
     (fun α =>
       { hom := ↾fun σ ↦ ↾fun x =>
           { app X := σ.app X x
-            naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }
+            naturality X Y f := congr($(σ.naturality X Y) ⟨x, f⟩) }
         inv := ↾fun σ ↦
           { app X := ↾fun x => (σ.hom x).app X
             naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f } })

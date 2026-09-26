@@ -80,6 +80,7 @@ instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
     (trivialization B F).symmL 𝕜 x = ContinuousLinearMap.id 𝕜 F := by
   ext; simp [trivialization_symm_apply B F]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma continuousLinearEquivAt_trivialization (x : B) :
     (trivialization B F).continuousLinearEquivAt 𝕜 x (mem_univ _) =
       ContinuousLinearEquiv.refl 𝕜 F := by
@@ -170,7 +171,7 @@ theorem Bundle.Trivialization.continuousLinearEquivAt_prod {e₁ : Trivializatio
   ext v : 2
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
-  exact (congr_arg Prod.snd (prod_apply' 𝕜 hx.1 hx.2 v₁ v₂) :)
+  congrm $(prod_apply' 𝕜 hx.1 hx.2 v₁ v₂).snd
 
 end
 
@@ -179,6 +180,11 @@ end
 section
 
 variable (R 𝕜 : Type*) {B : Type*} (F : Type*) (E : B → Type*) {B' : Type*} (f : B' → B)
+
+-- This instance exists to avoid an nsmul diamond.
+instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
+    SMul R ((f *ᵖ E) x) :=
+  inferInstanceAs <| SMul R (E (f x))
 
 instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) :=
   inferInstanceAs <| AddCommMonoid (E (f x))

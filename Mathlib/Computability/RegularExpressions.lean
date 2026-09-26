@@ -26,7 +26,7 @@ See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regul
 
 open List Set
 
-open Computability
+open scoped Computability
 
 universe u
 
@@ -122,8 +122,7 @@ theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches
 theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
   | 0 => matches'_epsilon
   | n + 1 => (matches'_mul _ _).trans <| Eq.trans
-      (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
-      (pow_succ _ n).symm
+      congr($(matches'_pow P n) * (matches' P)) (pow_succ _ n).symm
 
 theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
@@ -160,11 +159,11 @@ theorem deriv_one (a : α) : deriv 1 a = 0 :=
 
 @[simp]
 theorem deriv_char_self (a : α) : deriv (char a) a = 1 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 @[simp]
 theorem deriv_char_of_ne (h : a ≠ b) : deriv (char a) b = 0 :=
-  if_neg h
+  ite_eq_right h
 
 @[simp]
 theorem deriv_add (P Q : RegularExpression α) (a : α) : deriv (P + Q) a = deriv P a + deriv Q a :=
@@ -335,7 +334,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by unfold map; rfl
-  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) :)
+  | n + 1 => congr($(RegularExpression.map_pow f P n) * map f P)
 
 @[simp]
 theorem map_id : ∀ P : RegularExpression α, P.map id = P

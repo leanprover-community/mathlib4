@@ -247,25 +247,48 @@ theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R 
     (f.restrictScalars R).toLinearEquiv = f.toLinearEquiv.restrictScalars R := rfl
 
 @[simp]
-theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
+theorem toRingEquiv_restrictScalars (f : A ≃ₐ[S] B) : (f.restrictScalars R : A ≃+* B) = f := rfl
 
 @[simp]
-theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+theorem coe_restrictScalars (f : A ≃ₐ[S] B) : (restrictScalars R f : A → B) = f := rfl
+
+@[deprecated (since := "2026-07-06")] alias coe_restrictScalars' := coe_restrictScalars
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
   AlgEquiv.ext (AlgEquiv.congr_fun h :)
 
+@[simp]
+lemma symm_restrictScalars (f : A ≃ₐ[S] B) :
+    (f.restrictScalars R).symm = f.symm.restrictScalars R :=
+  rfl
+
+@[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
 lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
-    (f.restrictScalars R).symm x = f.symm x := rfl
+    (f.restrictScalars R).symm x = f.symm x := by
+  simp
 
-@[simp]
+@[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
 lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
-    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
+    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := by
+  simp
+
+@[deprecated "Use `symm_restrictScalars` instead." (since := "2026-07-06")]
+lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
+    ((restrictScalars R f).symm : B → A) = f.symm := by
+  simp
+
+/-- `AlgEquiv.restrictScalars` as a homomorphism. -/
+def restrictScalarsHom : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A) :=
+  MulSemiringAction.toAlgAut (A ≃ₐ[S] A) R A
 
 @[simp]
-lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
-    ((restrictScalars R f).symm : B → A) = f.symm := rfl
+theorem restrictScalarsHom_apply (f : A ≃ₐ[S] A) : f.restrictScalarsHom R = f.restrictScalars R :=
+  rfl
+
+theorem restrictScalarsHom_injective :
+    Function.Injective (restrictScalarsHom R : (A ≃ₐ[S] A) →* (A ≃ₐ[R] A)) :=
+  restrictScalars_injective R
 
 section
 
@@ -300,6 +323,11 @@ def extendScalarsHomOfSurjective (h : Function.Surjective ⇑(algebraMap R S)) :
   __ := extendScalarsOfSurjective h
   map_mul' _ _ := rfl
 
+@[simp]
+lemma toMonoidHom_symm_extendScalarsHomOfSurjective (h : Function.Surjective (algebraMap R S)) :
+    (extendScalarsHomOfSurjective h (A := A).symm : (A ≃ₐ[S] A) →* _) = restrictScalarsHom R :=
+  rfl
+
 end
 
 end AlgEquiv
@@ -323,7 +351,7 @@ theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : 
 
 theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)) (s : Set M) :
     (Submodule.span A s : Set M) = Submodule.span R s :=
-  congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
+  congr($(Submodule.restrictScalars_span R A h s))
 
 /--
 Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower

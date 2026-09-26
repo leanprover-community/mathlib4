@@ -91,7 +91,6 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
   refine le_iInf fun f ↦ le_iInf fun hf ↦ le_iInf fun hf_subset ↦ ?_
   let A : ℕ → Finset (Set α) := fun i ↦ hC.disjointOfDiff (hf i) (hC.inter_mem _ (hf i) _ hs)
   have h_diff_eq_sUnion i : f i \ s = ⋃₀ A i := by simp [A, IsSetSemiring.sUnion_disjointOfDiff]
-  classical
   have h_m_eq i : m (f i) = m (f i ∩ s) + ∑ u ∈ A i, m u :=
     eq_add_disjointOfDiff_of_subset hC (hC.inter_mem (f i) (hf i) s hs) (hf i) inter_subset_left
   simp_rw [h_m_eq]
@@ -167,6 +166,7 @@ noncomputable def measure [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ 
   (m.measureCaratheodory hC m_sigma_subadd).trim <|
     fun s a ↦ isCaratheodory_inducedOuterMeasure hC m s (hC_gen s a)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The measure defined through a sigma-subadditive
   content on a semiring coincides with the content on the semiring. -/
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ C) (hC : IsSetSemiring C)

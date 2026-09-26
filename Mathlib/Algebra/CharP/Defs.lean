@@ -9,7 +9,7 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Order.Lattice
+public import Mathlib.Data.Int.Order.Basic
 
 /-!
 # Characteristic of semirings
@@ -156,7 +156,7 @@ namespace ringChar
 variable [NonAssocSemiring R]
 
 lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
+  let : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
   exact CharP.cast_eq_zero_iff R (ringChar R)
 
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
@@ -299,7 +299,7 @@ end CharP
 
 namespace NeZero
 
-variable [AddMonoidWithOne R] {r : R} {n p : ℕ}
+variable [AddMonoidWithOne R] {n p : ℕ}
 
 lemma of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩
@@ -325,12 +325,20 @@ section AddMonoidWithOne
 variable [AddMonoidWithOne R]
 
 /-- The definition of the exponential characteristic of a semiring. -/
+@[mk_iff]
 class inductive ExpChar : ℕ → Prop
   | zero [CharZero R] : ExpChar 1
   | prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar q
 
 instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
 instance expChar_one [CharZero R] : ExpChar R 1 := ExpChar.zero
+
+@[simp]
+lemma expChar_one_iff : ExpChar R 1 ↔ CharZero R := by simp [expChar_iff, Nat.not_prime_one]
+
+@[simp]
+lemma expChar_prime_iff {p} (hp : p.Prime) : ExpChar R p ↔ CharP R p := by
+  simp [expChar_iff, hp.ne_one, hp]
 
 lemma expChar_ne_zero (p : ℕ) [hR : ExpChar R p] : p ≠ 0 := by
   cases hR
@@ -378,6 +386,25 @@ lemma expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
 lemma expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
   Nat.pow_pos (expChar_pos R q)
 
+-- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
+/-- The characteristic is zero if the exponential characteristic is one. -/
+lemma charZero_of_expChar_one' [ExpChar R 1] : CharZero R :=
+  (expChar_one_iff _).mp ‹_›
+
+/-- The exponential characteristic is one if the characteristic is zero. -/
+lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
+  cases hq
+  · exact CharP.eq R hp (.ofCharZero R)
+  · exact False.elim (Nat.not_prime_one ‹_›)
+
+/-- The exponential characteristic is one iff the characteristic is zero. -/
+lemma expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 := by
+  constructor
+  · rintro rfl
+    exact char_zero_of_expChar_one R p
+  · rintro rfl
+    exact expChar_one_of_char_zero R q
+
 end AddMonoidWithOne
 
 section NonAssocSemiring
@@ -388,7 +415,7 @@ noncomputable def ringExpChar : ℕ := max (ringChar R) 1
 
 lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
   rcases h with _ | h
-  · haveI := CharP.ofCharZero R
+  · have := CharP.ofCharZero R
     rw [ringExpChar, ringChar.eq R 0]; rfl
   rw [ringExpChar, ringChar.eq R q]
   exact Nat.max_eq_left h.one_lt.le
@@ -396,31 +423,6 @@ lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
 @[simp] lemma ringExpChar.eq_one [CharZero R] : ringExpChar R = 1 := by
   rw [ringExpChar, ringChar.eq_zero, max_eq_right (Nat.zero_le _)]
 
-section Nontrivial
-variable [Nontrivial R]
-
-/-- The exponential characteristic is one if the characteristic is zero. -/
-lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
-  cases hq
-  · exact CharP.eq R hp (.ofCharZero R)
-  · exact False.elim (CharP.char_ne_one R 1 rfl)
-
--- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
-/-- The characteristic is zero if the exponential characteristic is one. -/
-lemma charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
-  cases hq
-  · assumption
-  · exact False.elim (CharP.char_ne_one R 1 rfl)
-
-/-- The exponential characteristic is one iff the characteristic is zero. -/
-lemma expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 := by
-  constructor
-  · rintro rfl
-    exact char_zero_of_expChar_one R p
-  · rintro rfl
-    exact expChar_one_of_char_zero R q
-
-end Nontrivial
 end NonAssocSemiring
 
 lemma ExpChar.exists [Ring R] [IsDomain R] : ∃ q, ExpChar R q := by

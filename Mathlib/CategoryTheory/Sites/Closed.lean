@@ -180,7 +180,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
     dsimp only [Subtype.coe_mk]
     rw [← J₁.covers_iff_mem_of_isClosed hM, ← J₁.covers_iff_mem_of_isClosed hN]
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
-      fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
+      fun Z g hg => congr($((hM₂ g hg).trans (hN₂ g hg).symm).val)
     have MSNS : M ⊓ S = N ⊓ S := by
       ext
       grind [Sieve.inter_apply, Sieve.mem_iff_pullback_eq_top]
@@ -203,9 +203,9 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
       apply le_antisymm
       · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').1.1 _, c⟩
         rw [Sieve.mem_iff_pullback_eq_top,
-          ← show (x (u ≫ f) _).1 = (x f hf).1.pullback u from congr_arg Subtype.val (hx f u hf)]
+          ← show (x (u ≫ f) _).1 = (x f hf).1.pullback u from congr($(hx f u hf).val)]
         conv_lhs => congr; congr; rw [← c] -- Porting note: Originally `simp_rw [← c]`
-        rw [show (x (g ≫ f') _).1 = _ from congr_arg Subtype.val (hx f' g hf')]
+        rw [show (x (g ≫ f') _).1 = _ from congr($(hx f' g hf').val)]
         apply Sieve.pullback_eq_top_of_mem _ hg
       · apply Sieve.le_pullback_bind S fun Y f hf => (x f hf).1
     refine ⟨⟨_, J₁.close_isClosed M⟩, ?_⟩
@@ -232,7 +232,7 @@ lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
     rw [Subtype.ext_iff] at this
     exact this
   refine H.isSeparatedFor.ext fun Y f hf ↦ ?_
-  simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_setOf]
+  simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_ofPred]
   ext1
   dsimp
   rw [Sieve.pullback_top, ← J.pullback_close, S.pullback_eq_top_of_mem hf,
@@ -276,11 +276,11 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
   sieves X := { S | c X S = ⊤ }
   top_mem' X := top_unique ((c X).le_closure _)
   pullback_stable' X Y S f hS := by
-    rw [Set.mem_setOf_eq] at hS
-    rw [Set.mem_setOf_eq, hc, hS, Sieve.pullback_top]
+    rw [Set.mem_ofPred_eq] at hS
+    rw [Set.mem_ofPred_eq, hc, hS, Sieve.pullback_top]
   transitive' X S hS R hR := by
-    rw [Set.mem_setOf_eq] at hS
-    rw [Set.mem_setOf_eq, ← (c X).idempotent, eq_top_iff, ← hS]
+    rw [Set.mem_ofPred_eq] at hS
+    rw [Set.mem_ofPred_eq, ← (c X).idempotent, eq_top_iff, ← hS]
     apply (c X).monotone fun Y f hf => _
     intro Y f hf
     rw [Sieve.mem_iff_pullback_eq_top, ← hc]

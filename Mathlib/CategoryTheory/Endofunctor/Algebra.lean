@@ -159,12 +159,14 @@ def functorOfNatTrans {F G : C ⥤ C} (α : G ⟶ F) : Algebra F ⥤ Algebra G w
       str := α.app _ ≫ A.str }
   map f := { f := f.1 }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The identity transformation induces the identity endofunctor on the category of algebras. -/
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
 @[simps!]
@@ -172,6 +174,7 @@ def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : 
     functorOfNatTrans (α ≫ β) ≅ functorOfNatTrans β ⋙ functorOfNatTrans α :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `α` and `β` are two equal natural transformations, then the functors of algebras induced by them
 are isomorphic.
@@ -209,7 +212,7 @@ theorem left_inv' :
   Limits.IsInitial.hom_ext h _ (𝟙 A)
 
 theorem left_inv : strInv h ≫ A.str = 𝟙 _ :=
-  congr_arg Hom.f (left_inv' h)
+  congr($(left_inv' h).f)
 
 theorem right_inv : A.str ≫ strInv h = 𝟙 _ := by
   rw [strInv, ← (h.to ⟨F.obj A.1, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
@@ -354,12 +357,14 @@ def functorOfNatTrans {F G : C ⥤ C} (α : F ⟶ G) : Coalgebra F ⥤ Coalgebra
     { f := f.1
       h := by rw [Category.assoc, ← α.naturality, ← Category.assoc, f.h, Category.assoc] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The identity transformation induces the identity endofunctor on the category of coalgebras. -/
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
 @[simps!]
@@ -367,6 +372,7 @@ def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : 
     functorOfNatTrans (α ≫ β) ≅ functorOfNatTrans α ⋙ functorOfNatTrans β :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `α` and `β` are two equal natural transformations, then the functors of coalgebras induced by
 them are isomorphic.
 We define it like this as opposed to using `eq_to_iso` so that the components are nicer to prove
@@ -404,7 +410,7 @@ theorem right_inv' :
   Limits.IsTerminal.hom_ext h _ (𝟙 A)
 
 theorem right_inv : A.str ≫ strInv h = 𝟙 _ :=
-  congr_arg Hom.f (right_inv' h)
+  congr($(right_inv' h).f)
 
 theorem left_inv : strInv h ≫ A.str = 𝟙 _ := by
   rw [strInv, ← (h.from ⟨F.obj A.V, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]

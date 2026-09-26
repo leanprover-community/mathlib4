@@ -112,7 +112,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   apply p.congr (Composition.ones_blocksFun _ _)
   intro j hjn hj1
   obtain rfl : j = 0 := by lia
-  refine congr_arg v ?_
+  congrm v ?_
   rw [Fin.ext_iff, Fin.val_castLE, Composition.ones_embedding, Fin.val_mk]
 
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
@@ -382,7 +382,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     apply p.congr (Composition.ones_length n)
     intros
     rw [applyComposition_ones]
-    refine congr_arg v ?_
+    congrm v ?_
     rw [Fin.ext_iff, Fin.val_castLE, Fin.val_mk]
   · change
     ∀ b : Composition n,
@@ -401,6 +401,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     rw [id_apply_of_one_lt _ _ _ A, _root_.zero_apply]
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
     (id 𝕜 F (p 0 v0)).comp p = p := by
@@ -416,7 +417,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
       ext v
       rw [compAlongComposition_apply, id_apply_one' _ _ _ (Composition.single_length n_pos)]
       dsimp [applyComposition]
-      refine p.congr rfl fun i him hin => congr_arg v <| ?_
+      refine p.congr rfl fun i him hin => congr(v $(?_))
       ext; simp
     · change
       ∀ b : Composition n, b ∈ Finset.univ → b ≠ Composition.single n n_pos →
@@ -474,7 +475,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     have B := calc
       (∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n = ∏ i, ‖p (c.blocksFun i)‖₊ * rp ^ c.blocksFun i := by
         simp only [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, c.sum_blocksFun]
-      _ ≤ ∏ _i : Fin c.length, Cp := Finset.prod_le_prod' fun i _ => hCp _
+      _ ≤ ∏ _i : Fin c.length, Cp := by gcongr with i; exact hCp _
       _ = Cp ^ c.length := by simp
       _ ≤ Cp ^ n := pow_right_mono₀ hCp1 c.length_le
     calc
@@ -582,7 +583,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     ∃ (j : _) (hj : j ∈ compPartialSumSource m M N), compChangeOfVariables m M N j hj = i := by
   rcases i with ⟨n, c⟩
   refine ⟨⟨c.length, c.blocksFun⟩, ?_, ?_⟩
-  · simp only [compPartialSumTargetSet, Set.mem_setOf_eq] at hi
+  · simp only [compPartialSumTargetSet, Set.mem_ofPred_eq] at hi
     simp only [mem_compPartialSumSource_iff, hi.left, hi.right, true_and, and_true]
     exact fun a => c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
@@ -860,8 +861,6 @@ theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt �
   rw [← analyticWithinAt_univ] at hg hf ⊢
   apply hg.comp hf (by simp)
 
-@[deprecated (since := "2026-01-24")] alias AnalyticAt.comp' := AnalyticAt.fun_comp
-
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
 @[to_fun]
 theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
@@ -888,6 +887,7 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
     (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (g ∘ f) s :=
   fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
 
+@[to_fun]
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
@@ -1058,7 +1058,7 @@ theorem sigma_pi_composition_eq_iff
   · simp only [heq_eq_eq, ofFn_inj] at H ⊢
     ext1 i
     ext1
-    exact congrFun H i
+    congrm $H i
 
 /-- When `a` is a composition of `n` and `b` is a composition of `a.length`, `a.gather b` is the
 composition of `n` obtained by gathering all the blocks of `a` corresponding to a block of `b`.
@@ -1083,6 +1083,7 @@ theorem length_gather (a : Composition n) (b : Composition a.length) :
   show (map List.sum (a.blocks.splitWrtComposition b)).length = b.blocks.length by
     rw [length_map, length_splitWrtComposition]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary function used in the definition of `sigmaEquivSigmaPi` below, associating to
 two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by the length of
 `a.gather b`, the subcomposition of `a` made of those blocks belonging to the `i`-th block of
@@ -1280,7 +1281,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   intro k hk1 hk2
   -- finally, check that the coordinates of `v` one is using are the same. Based on
   -- `sizeUpTo_sizeUpTo_add`.
-  refine congr_arg v (Fin.ext ?_)
+  congrm v $(Fin.ext ?_)
   dsimp [Composition.embedding]
   rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
 

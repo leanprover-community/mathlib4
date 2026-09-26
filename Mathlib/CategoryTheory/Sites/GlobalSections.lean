@@ -138,6 +138,7 @@ noncomputable def Sheaf.coneΓ [HasGlobalSectionsFunctor J A] (F : Sheaf J A) : 
   pt := (Γ J A).obj F
   π := ΓHomEquiv.symm (𝟙 _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The global sections cone `Sheaf.coneΓ` is limiting - that is, global sections are limits even
 when not all limits of shape `Cᵒᵖ` exist in `A`. -/
 noncomputable def Sheaf.isLimitConeΓ [HasGlobalSectionsFunctor J A] (F : Sheaf J A) :
@@ -199,7 +200,7 @@ lemma Sheaf.ΓObjEquivSections_naturality_symm [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G)
     (x : F.obj.sections) : (ΓObjEquivSections J G).symm ((Functor.sectionsFunctor _).map f.hom x) =
       (Γ J _).map f ((ΓObjEquivSections J F).symm x) :=
-  ConcreteCategory.congr_hom (ΓHomEquiv_naturality_right (F.obj.sectionsEquivHom _ x) f) _
+  congr($(ΓHomEquiv_naturality_right (F.obj.sectionsEquivHom _ x) f) _)
 
 /-- For sheaves of types, the global sections functor is isomorphic to the sections functor
 on presheaves. -/
@@ -228,7 +229,7 @@ lemma Sheaf.ΓObjEquivHom_naturality_symm [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] {X : Type w} [Unique X]
     {F G : Sheaf J (Type w)} (f : F ⟶ G) (x : (constantSheaf J _).obj X ⟶ F) :
     (ΓObjEquivHom J G X).symm (x ≫ f) = (Γ J _).map f ((ΓObjEquivHom J F X).symm x) :=
-  ConcreteCategory.congr_hom ((constantSheafΓAdj J _).homEquiv_naturality_right x f) default
+  congr($((constantSheafΓAdj J _).homEquiv_naturality_right x f) default)
 
 /-- For sheaves of types, the global sections functor is isomorphic to the covariant hom
 functor of the terminal sheaf. -/

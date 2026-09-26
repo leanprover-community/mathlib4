@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Subset
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.Compactness.Compact
@@ -27,7 +27,7 @@ to clopen sets.
 
 @[expose] public section
 
-open Set Function Topology TopologicalSpace Relation
+open Set Function Topology TopologicalSpace
 
 universe u v
 
@@ -276,7 +276,6 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
       ∀ U : Finset (Set α), (∀ u v : Set α, u ∈ U → v ∈ U → (s ∩ (u ∩ v)).Nonempty → u = v) →
         (∀ u ∈ U, IsOpen u) → (s ⊆ ⋃₀ ↑U) → ∃ u ∈ U, s ⊆ u := by
   rw [IsConnected, isPreconnected_iff_subset_of_disjoint]
-  classical
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
@@ -382,7 +381,7 @@ components of `v` in `X` which intersect `u`. -/
 lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u v : Set X}
     (hu : IsClopen (v ↓∩ u)) (huv₁ : u ⊆ v) :
     u = ⋃ x ∈ u, connectedComponentIn v x := by
-  have := congr(((↑) : Set v → Set X) $(hu.biUnion_connectedComponent_eq.symm))
+  have := congr(((↑) : Set v → Set X) $hu.biUnion_connectedComponent_eq.symm)
   simp only [Subtype.image_preimage_coe, mem_preimage, iUnion_coe_set, image_val_iUnion,
     inter_eq_right.mpr huv₁] at this
   nth_rw 1 [this]
@@ -476,7 +475,8 @@ theorem Topology.IsCoinducing.isConnected_preimage_of_isClosed
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 
-@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed (since := "2026-04-01")]
+@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed +typeChanged
+  (since := "2026-04-01")]
 theorem preimage_connectedComponent_connected (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
     (hcl : IsCoinducing f) (t : β) :
     IsConnected (f ⁻¹' connectedComponent t) := by
@@ -502,7 +502,7 @@ end Preconnected
 
 section connectedComponentSetoid
 /-- The setoid of connected components of a topological space -/
-@[implicit_reducible]
+@[instance_reducible]
 def connectedComponentSetoid (α : Type*) [TopologicalSpace α] : Setoid α :=
   ⟨fun x y => connectedComponent x = connectedComponent y,
     ⟨fun x => by trivial, fun h1 => h1.symm, fun h1 h2 => h1.trans h2⟩⟩
@@ -563,7 +563,7 @@ instance subsingleton [PreconnectedSpace α] : Subsingleton (ConnectedComponents
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨x, rfl⟩ := surjective_coe x
   obtain ⟨y, rfl⟩ := surjective_coe y
-  simp_rw [coe_eq_coe, PreconnectedSpace.connectedComponent_eq_univ, ]
+  simp_rw [coe_eq_coe, PreconnectedSpace.connectedComponent_eq_univ]
 
 section
 

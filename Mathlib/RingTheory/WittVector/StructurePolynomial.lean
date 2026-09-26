@@ -89,7 +89,7 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
 @[expose] public section
 
 
-open MvPolynomial Set
+open MvPolynomial
 
 open Finset (range)
 
@@ -167,7 +167,7 @@ theorem wittStructureRat_rec_aux (Φ : MvPolynomial idx ℚ) (n : ℕ) :
       bind₁ (fun b => rename (fun i => (b, i)) (W_ ℚ n)) Φ -
         ∑ i ∈ range n, C ((p : ℚ) ^ i) * wittStructureRat p Φ i ^ p ^ (n - i) := by
   have := xInTermsOfW_aux p ℚ n
-  replace := congr_arg (bind₁ fun k : ℕ => bind₁ (fun i => rename (Prod.mk i) (W_ ℚ k)) Φ) this
+  replace := congr((bind₁ fun k : ℕ => bind₁ (fun i => rename (Prod.mk i) (W_ ℚ k)) Φ) $this)
   rw [map_mul, bind₁_C_right] at this
   rw [wittStructureRat, this]; clear this
   conv_lhs => simp only [map_sub, bind₁_X_right]
@@ -200,7 +200,8 @@ See `wittStructureInt_prop` for this property,
 and `wittStructureInt_existsUnique` for the fact that `wittStructureInt`
 gives the unique family of polynomials with this property. -/
 noncomputable def wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) : MvPolynomial (idx × ℕ) ℤ :=
-  Finsupp.mapRange Rat.num (Rat.num_intCast 0) (wittStructureRat p (map (Int.castRingHom ℚ) Φ) n)
+  .ofCoeff <| .mapRange Rat.num (Rat.num_intCast 0) <| AddMonoidAlgebra.coeff <|
+    wittStructureRat p (map (Int.castRingHom ℚ) Φ) n
 
 variable {p}
 
@@ -322,7 +323,7 @@ theorem wittStructureInt_existsUnique (Φ : MvPolynomial idx ℤ) :
 theorem witt_structure_prop (Φ : MvPolynomial idx ℤ) (n) :
     aeval (fun i => map (Int.castRingHom R) (wittStructureInt p Φ i)) (wittPolynomial p ℤ n) =
       aeval (fun i => rename (Prod.mk i) (W n)) Φ := by
-  convert! congr_arg (map (Int.castRingHom R)) (wittStructureInt_prop p Φ n) using 1 <;>
+  convert! congr(map (Int.castRingHom R) $(wittStructureInt_prop p Φ n)) using 1 <;>
       rw [hom_bind₁] <;>
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   · rfl

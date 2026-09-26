@@ -138,7 +138,6 @@ lemma jointly_reflect_isLocallySurjective
 end
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma jointly_reflect_ofArrows_mem
     [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints)
@@ -155,10 +154,9 @@ lemma jointly_reflect_ofArrows_mem
     obtain ⟨i, y, rfl⟩ := hf Φ x
     refine ⟨Φ.obj.presheafFiber.map (Sigma.ι (fun i ↦ shrinkYoneda.{w}.obj (U i)) i)
       (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.app _ y), ?_⟩
-    have := ConcreteCategory.congr_hom
-      (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
+    have := congr($(Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y)
     dsimp at this ⊢
-    rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
+    rw [this, ← Sigma.ι_comp_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
 
 lemma jointly_reflect_ofArrows_mem_of_small
@@ -180,7 +178,6 @@ lemma jointly_reflect_ofArrows_mem_of_small
       exact fun Φ x ↦ ⟨_, _, hy ⟨Φ, x⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 private lemma mk'.isLocallySurjective
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
@@ -203,8 +200,7 @@ private lemma mk'.isLocallySurjective
       (Presheaf.imageSieve_mem J f' (shrinkYonedaObjObjEquiv.symm (𝟙 U)))
     rintro V g ⟨v, hv⟩
     refine ⟨(pullback.fst f (shrinkYonedaEquiv.{w}.symm s)).app _ v, ?_⟩
-    refine (ConcreteCategory.congr_hom (NatTrans.congr_app
-      (pullback.condition (f := f)) (op V)) _).trans ?_
+    refine congr($(pullback.condition (f := f)).app (op V) _).trans ?_
     dsimp at hv ⊢
     refine (congr_arg _ hv).trans ?_
     refine (congr_arg _ (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op (𝟙 _))).trans ?_

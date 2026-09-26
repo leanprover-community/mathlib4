@@ -5,10 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Products in `Type`
@@ -22,7 +21,7 @@ and the terminal object.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace CategoryTheory.Limits.Types
 
@@ -40,7 +39,7 @@ instance : HasProducts.{v} (Type v) := inferInstance
 theorem pi_lift_π_apply {β : Type v} [Small.{u} β] (f : β → Type u) {P : Type u}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
-  ConcreteCategory.congr_hom (limit.lift_π (Fan.mk P s) ⟨b⟩) x
+  congr($(limit.lift_π (Fan.mk P s) ⟨b⟩) x)
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`,
 with specialized universes. -/
@@ -69,8 +68,6 @@ def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
 
 @[simp]
 lemma isTerminalPUnit_from_apply {X : Type u} (x : X) : isTerminalPUnit.from X x = .unit := rfl
-
-@[deprecated (since := "2026-02-08")] alias isTerminalPunit := isTerminalPUnit
 
 /-- The category of types has `PUnit` as a terminal object. -/
 def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) := ⟨_, isTerminalPUnit⟩
@@ -121,7 +118,7 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
   uniq _ _ w := by
     ext x
     apply Prod.ext
-    exacts [ConcreteCategory.congr_hom (w ⟨left⟩) x, ConcreteCategory.congr_hom (w ⟨right⟩) x]
+    exacts [congr($(w ⟨left⟩) x), congr($(w ⟨right⟩) x)]
 
 /-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.
@@ -190,7 +187,7 @@ def productLimitCone {J : Type v} (F : J → Type (max v u)) :
     { lift := fun s => ↾fun x j => s.π.app ⟨j⟩ x
       uniq := fun _ _ w => by
         ext x j
-        exact ConcreteCategory.congr_hom (w ⟨j⟩) x }
+        congrm $(w ⟨j⟩) x }
 
 /-- The categorical product in `Type max v u` is the type-theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → Type (max v u)) :
@@ -228,10 +225,9 @@ noncomputable def productLimitCone :
       π := Discrete.natTrans (fun ⟨j⟩ =>
         ↾fun f => (equivShrink (∀ j, F j)).symm f j) }
   isLimit :=
-    have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s => ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
-        simpa using! ConcreteCategory.congr_hom (w ⟨j⟩) x) }
+        simpa using! congr($(w ⟨j⟩) x)) }
 
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/

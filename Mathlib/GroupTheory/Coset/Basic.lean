@@ -144,11 +144,11 @@ variable [Group α] {s : Set α} {x : α}
 
 @[to_additive mem_leftAddCoset_iff]
 theorem mem_leftCoset_iff (a : α) : x ∈ a • s ↔ a⁻¹ * x ∈ s :=
-  Iff.intro (fun ⟨b, hb, Eq⟩ => by simp [Eq.symm, hb]) fun h => ⟨a⁻¹ * x, h, by simp⟩
+  Iff.intro (fun ⟨b, hb, h⟩ => by simp [h.symm, hb]) fun h => ⟨a⁻¹ * x, h, by simp⟩
 
 @[to_additive mem_rightAddCoset_iff]
 theorem mem_rightCoset_iff (a : α) : x ∈ op a • s ↔ x * a⁻¹ ∈ s :=
-  Iff.intro (fun ⟨b, hb, Eq⟩ => by simp [Eq.symm, hb]) fun h => ⟨x * a⁻¹, h, by simp⟩
+  Iff.intro (fun ⟨b, hb, h⟩ => by simp [h.symm, hb]) fun h => ⟨x * a⁻¹, h, by simp⟩
 
 end CosetGroup
 
@@ -294,7 +294,7 @@ variable {s} {a b : α}
 theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
     { x : α | (x : α ⧸ s) = g } = g • s :=
   Set.ext fun z => by
-    rw [mem_leftCoset_iff, Set.mem_setOf_eq, eq_comm, QuotientGroup.eq, SetLike.mem_coe]
+    rw [mem_leftCoset_iff, Set.mem_ofPred_eq, eq_comm, QuotientGroup.eq, SetLike.mem_coe]
 
 open MulAction in
 @[to_additive]
@@ -361,7 +361,7 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
         rw [leftRel_apply]
         change ((f b)⁻¹ * b)⁻¹ * ((f c)⁻¹ * c) ∈ s
         have key : f b = f c :=
-          congr_arg f (Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h))))
+          congr(f $(Quotient.sound' (leftRel_apply.mpr (h_le (leftRel_apply.mp h)))))
         rwa [key, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left, ← leftRel_apply]⟩
   invFun a := by
     refine a.2.map' (fun (b : { x // x ∈ t}) => f a.1 * b) fun b c h => by
@@ -473,7 +473,7 @@ variable [Group α] {H : Type*} [Group H]
 /-- An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel. -/]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
   .trans
-    (Equiv.setCongr <| Set.ext fun _ => by
+    (Set.equivOfEq <| Set.ext fun _ => by
       rw [mem_preimage, mem_singleton_iff, mem_smul_set_iff_inv_smul_mem, SetLike.mem_coe, mem_ker,
         smul_eq_mul, map_mul, map_inv, inv_mul_eq_one, eq_comm])
     (Subgroup.leftCosetEquivSubgroup a)

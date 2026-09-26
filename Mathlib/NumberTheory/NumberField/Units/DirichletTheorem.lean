@@ -119,8 +119,8 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
         rw [neg_mul, neg_eq_zero, ← hw] at this
         exact mult_log_place_eq_zero.mp this
       rw [← sum_logEmbedding_component, sum_eq_zero]
-      exact fun w _ ↦ congrFun h w
-    · exact mult_log_place_eq_zero.mp (congrFun h ⟨w, hw⟩)
+      exact fun w _ ↦ congr($h w)
+    · exact mult_log_place_eq_zero.mp congr($h ⟨w, hw⟩)
   · ext w
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
 
@@ -140,6 +140,7 @@ theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
   simp_rw [Pi.norm_def, NNReal.coe_le_coe, Finset.sup_le_iff, ← NNReal.coe_le_coe] at h
   exact h w (mem_univ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     (h : ‖logEmbedding K (Additive.ofMul x)‖ ≤ r) (w : InfinitePlace K) :
@@ -149,7 +150,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
     refine mul_le_mul ?_ le_rfl hx ?_
     all_goals { rw [mult]; split_ifs <;> norm_num }
   by_cases hw : w = w₀
-  · have hyp := congr_arg (‖·‖) (sum_logEmbedding_component x).symm
+  · have hyp := congr(‖$((sum_logEmbedding_component x).symm)‖)
     replace hyp := (le_of_eq hyp).trans (norm_sum_le _ _)
     simp_rw [norm_mul, norm_neg, Real.norm_eq_abs, Nat.abs_cast] at hyp
     refine (le_trans ?_ hyp).trans ?_
@@ -228,7 +229,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
-      (by rw [convexBodyLT_volume]; convert! hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
+      (by rw [convexBodyLT_volume]; convert! hB; congrm $h_gprod)
     refine ⟨y, h_ynz, fun w hw ↦ (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
@@ -237,7 +238,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by gcongr with w; exact (h_yle w).le
         _ ≤ (B : ℝ) := by
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
-          exact le_of_eq (congr_arg toReal h_gprod)
+          exact le_of_eq congr(toReal $h_gprod)
     · refine div_lt_self ?_ (by simp)
       exact pos_iff.mpr hx'
   intro _ _
@@ -301,7 +302,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
     refine ⟨hu.choose, fun w hw ↦ Real.log_neg (pos_at_place hu.choose w) ?_⟩
     calc
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
-        rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
+        rw [← congr(algebraMap (𝓞 K) K $hu.choose_spec), mul_comm, map_mul (algebraMap _ _),
           ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
       _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
         map_mul _ _ _
@@ -309,10 +310,11 @@ theorem exists_unit (w₁ : InfinitePlace K) :
         rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
         exact seq_decreasing K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem (t := {I : Ideal (𝓞 K) | Ideal.absNorm I ≤ B})
-    (fun n ↦ ?_) (Ideal.finite_setOf_absNorm_le B)
-  rw [Set.mem_setOf_eq, Ideal.absNorm_span_singleton]
+    (fun n ↦ ?_) (Ideal.finite_setOfPred_absNorm_le B)
+  rw [Set.mem_ofPred_eq, Ideal.absNorm_span_singleton]
   exact seq_norm_le K w₁ hB n
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem unitLattice_span_eq_top :
     Submodule.span ℝ (unitLattice K : Set (logSpace K)) = ⊤ := by
   classical
@@ -408,6 +410,7 @@ theorem logEmbeddingQuot_injective :
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :
@@ -445,7 +448,7 @@ instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
       QuotientGroup.ker_mk', Submodule.fg_iff_addSubgroup_fg,
       AddSubgroup.toIntSubmodule_toAddSubgroup, ← AddGroup.fg_iff_addSubgroup_fg]
     have : Finite (Subgroup.toAddSubgroup (torsion K)) := (inferInstance : Finite (torsion K))
-    exact AddGroup.fg_of_finite
+    infer_instance
 
 instance : Monoid.FG (𝓞 K)ˣ := by
   rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
@@ -476,7 +479,7 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
 
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
-  simp_rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
+  simp_rw [fundSystem, ← Equiv.eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
 
 theorem logEmbedding_fundSystem (i : Fin (rank K)) :
     logEmbedding K (Additive.ofMul (fundSystem K i)) = basisUnitLattice K i := by

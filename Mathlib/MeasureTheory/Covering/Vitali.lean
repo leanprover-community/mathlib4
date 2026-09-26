@@ -81,7 +81,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
     refine zorn_subset _ fun U UT hU => ?_
     refine ⟨⋃₀ U, ?_, fun s hs => subset_sUnion_of_mem hs⟩
     simp only [T, Set.sUnion_subset_iff, and_imp, forall_exists_index, mem_sUnion,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
     refine
       ⟨fun u hu => (UT hu).1, (pairwiseDisjoint_sUnion hU.directedOn).2 fun u hu => (UT hu).2.1,
         fun a hat b u uU hbu hab => ?_⟩
@@ -260,7 +260,6 @@ theorem exists_disjoint_covering_ae
   use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
   the family is assumed to be fine at every point of `s`).
   -/
-  classical
   -- choose around each `x` a small ball on which the measure is finite
   have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := fun x ↦ by
     refine ((eventually_le_nhds one_pos).and ?_).exists_gt
@@ -414,7 +413,7 @@ theorem exists_disjoint_covering_ae
     exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
   -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
   -- in `ball x (r x)` not covered by `u`.
-  haveI : Countable v := (u_count.mono vu).to_subtype
+  have : Countable v := (u_count.mono vu).to_subtype
   calc
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
       measure_mono M

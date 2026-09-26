@@ -182,7 +182,7 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
     map_mul' := star_mul' }
 
 variable (R) in
-@[simp]
+@[simp, grind =]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
 
@@ -256,7 +256,7 @@ theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
   rfl
 
 variable (R) in
-@[simp]
+@[simp, grind =]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
 
@@ -293,6 +293,8 @@ class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R wher
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
 
+attribute [grind =] star_add
+
 instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R] [StarRing R] :
     StarAddMonoid R where
   star_add := StarRing.star_add
@@ -305,7 +307,7 @@ def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒ�
 
 @[simp, norm_cast]
 theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
-  (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
+  congr(unop $(map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
@@ -316,7 +318,7 @@ section
 
 @[simp, norm_cast]
 theorem star_intCast [NonAssocRing R] [StarRing R] (z : ℤ) : star (z : R) = z :=
-  (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
+  congr(unop $(map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z)).trans (unop_intCast _)
 
 end
 
@@ -421,7 +423,7 @@ class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop w
 
 export StarModule (star_smul)
 
-attribute [simp] star_smul
+attribute [simp, grind =] star_smul
 
 /-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
@@ -464,8 +466,8 @@ instance : StarMul Rˣ where
   star u :=
     { val := star u
       inv := star ↑u⁻¹
-      val_inv := (star_mul _ _).symm.trans <| (congr_arg star u.inv_val).trans <| star_one _
-      inv_val := (star_mul _ _).symm.trans <| (congr_arg star u.val_inv).trans <| star_one _ }
+      val_inv := (star_mul _ _).symm.trans <| congr(star $u.inv_val).trans <| star_one _
+      inv_val := (star_mul _ _).symm.trans <| congr(star $u.val_inv).trans <| star_one _ }
   star_involutive _ := Units.ext (star_involutive _)
   star_mul _ _ := Units.ext (star_mul _ _)
 
@@ -513,11 +515,11 @@ section Regular
 
 protected theorem IsLeftRegular.star [Mul R] [StarMul R] {x : R} (hx : IsLeftRegular x) :
     IsRightRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h => star_injective <| hx <| by simpa using congr(star $h)
 
 protected theorem IsRightRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRightRegular x) :
     IsLeftRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h => star_injective <| hx <| by simpa using congr(star $h)
 
 protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) :
     IsRegular (star x) :=

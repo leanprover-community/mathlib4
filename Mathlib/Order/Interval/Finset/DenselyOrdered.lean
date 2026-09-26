@@ -32,6 +32,7 @@ lemma denselyOrdered_set_iff_subsingleton {s : Set X} :
   classical
   simp [LocallyFiniteOrder.denselyOrdered_iff_subsingleton]
 
+@[to_dual]
 lemma WithBot.denselyOrdered_set_iff_subsingleton {s : Set (WithBot X)} :
     DenselyOrdered s ↔ s.Subsingleton := by
   refine ⟨fun H ↦ ?_, fun h ↦ h.denselyOrdered⟩
@@ -58,10 +59,3 @@ lemma WithBot.denselyOrdered_set_iff_subsingleton {s : Set (WithBot X)} :
     simp [hz.trans_le]
   · rw [← WithBot.coe_lt_coe]
     simp [hz'.trans_le']
-
-lemma WithTop.denselyOrdered_set_iff_subsingleton {s : Set (WithTop X)} :
-    DenselyOrdered s ↔ s.Subsingleton := by
-  have he : StrictAnti (WithTop.toDual.image s) :=
-    WithTop.toDual.image_strictAnti _ (fun ⦃a b⦄ a ↦ a)
-  rw [denselyOrdered_iff_of_strictAnti _ he, WithBot.denselyOrdered_set_iff_subsingleton,
-    WithTop.toDual.injective.subsingleton_image_iff]

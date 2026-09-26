@@ -22,9 +22,9 @@ noncomputable section
 
 universe u
 
-open Function Set Submodule Finsupp
+open Function Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 

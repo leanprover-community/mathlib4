@@ -16,7 +16,7 @@ This file constructs the infinity norm on finite products of normed groups and p
 for type synonyms.
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 
@@ -256,11 +256,12 @@ instance Prod.seminormedGroup : SeminormedGroup (E × F) where
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
 Earlier, this name was used for the additive version. -/
-@[to_additive Prod.nnnorm_def]
+@[to_additive Prod.nnnorm_def /-- Additive version of `Prod.nnnorm_def'`.
+Earlier, this name was used for the multiplicative version. -/]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
 /-- Multiplicative version of `Prod.nnnorm_mk`. -/
-@[to_additive (attr := simp) Prod.nnnorm_mk]
+@[to_additive (attr := simp) Prod.nnnorm_mk /-- Additive version of `Prod.nnnorm_mk'`. -/]
 lemma Prod.nnnorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
 
 end SeminormedGroup
@@ -302,9 +303,8 @@ variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x 
 instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
-    congr_arg (toReal : ℝ≥0 → ℝ) <|
-      congr_arg (Finset.sup Finset.univ) <| funext fun a =>
-        show nndist (x a) (y a) = ‖(x a)⁻¹ * y a‖₊ from nndist_eq_nnnorm_inv_mul (x a) (y a)
+    congr((Finset.univ.sup $(funext fun a => show nndist (x a) (y a) = ‖(x a)⁻¹ * y a‖₊
+      from nndist_eq_nnnorm_inv_mul (x a) (y a))).toReal)
 
 @[to_additive Pi.norm_def]
 lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
@@ -437,7 +437,7 @@ lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι
 
 theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖ = ‖y‖ :=
-  congr_arg Subtype.val <| Pi.nnnorm_single y
+  congr($(Pi.nnnorm_single y).val)
 
 end Pi
 

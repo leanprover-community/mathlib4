@@ -19,7 +19,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n o : Type*}
-variable {R S α β γ : Type*}
+variable {R S α β : Type*}
 
 namespace Matrix
 
@@ -39,7 +39,7 @@ variable (i : m) (j : n) (c : α) (i' : m) (j' : n)
 
 @[simp]
 theorem single_apply_same : single i j c i j = c :=
-  if_pos (And.intro rfl rfl)
+  ite_eq_left (And.intro rfl rfl)
 
 @[simp]
 theorem single_apply_of_ne (h : ¬(i = i' ∧ j = j')) : single i j c i' j' = 0 := by
@@ -67,7 +67,7 @@ theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
 @[simp]
 theorem of_symm_single (i : m) (j : n) (a : α) :
     of.symm (single i j a) = Pi.single i (Pi.single j a) :=
-  congr_arg of.symm <| single_eq_of_single_single i j a
+  congr(of.symm $(single_eq_of_single_single i j a))
 
 @[simp]
 theorem smul_single [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
@@ -235,7 +235,7 @@ theorem ext_addMonoidHom
   rw [matrix_eq_sum_single x]
   simp_rw [map_sum]
   congr! 2
-  exact DFunLike.congr_fun (h _ _) _
+  congrm $(h _ _) _
 
 /-- Linear maps from finite matrices are equal if they agree on the standard basis.
 
@@ -267,6 +267,7 @@ theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
   simp [liftLinear, map_sum, LinearEquiv.congrLeft]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
@@ -293,7 +294,7 @@ variable [Zero α] (i j : n) (c : α)
 -- This simp lemma should take priority over `diag_apply`
 @[simp 1050]
 theorem diag_single_of_ne (h : i ≠ j) : diag (single i j c) = 0 :=
-  funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
+  funext fun _ => ite_eq_right fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
 
 -- This simp lemma should take priority over `diag_apply`
 @[simp 1050]

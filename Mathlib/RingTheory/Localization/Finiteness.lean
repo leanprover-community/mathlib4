@@ -33,7 +33,7 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 
@@ -41,10 +41,11 @@ section
 
 open scoped Pointwise
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R) (f : R →+* S)
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R)
 variable (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S']
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,
@@ -68,7 +69,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   have : algebraMap R S y' • (s : Set S') = y' • (s : Set S') := by
     simp_rw [Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
   rw [← e, this] at hx₁
-  replace hx₁ := congr_arg (Submodule.span R) hx₁
+  replace hx₁ := congr(Submodule.span R $hx₁)
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
   rw [hx₁, ← g_apply, ← map_smul g, g_apply, ← Algebra.linearMap_apply, ← AlgHom.coe_toLinearMap,
@@ -137,6 +138,7 @@ variable {M : Type w} [AddCommMonoid M] [Module R M]
 variable {Mₚ : Type t} [AddCommMonoid Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
 variable (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R] [CommSemiring S]
     [CommSemiring Rₚ] [CommSemiring Sₚ] [Algebra R S] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
     [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] (M : Submonoid R)

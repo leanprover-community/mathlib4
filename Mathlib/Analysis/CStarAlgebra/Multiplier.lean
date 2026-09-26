@@ -57,7 +57,7 @@ separately.
 @[expose] public section
 
 
-open NNReal ENNReal ContinuousLinearMap MulOpposite
+open NNReal ContinuousLinearMap MulOpposite
 
 universe u v
 
@@ -74,7 +74,7 @@ structure DoubleCentralizer (𝕜 : Type u) (A : Type v) [NontriviallyNormedFiel
 @[inherit_doc]
 scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 𝕜 A
 
-open MultiplierAlgebra
+open scoped MultiplierAlgebra
 
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
@@ -395,7 +395,7 @@ instance instStar : Star 𝓜(𝕜, A) where
           ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
       central := fun x y => by
         simpa only [star_mul, star_star]
-          using! (congr_arg star (a.central (star y) (star x))).symm }
+          using! congr(star $(a.central (star y) (star x))).symm }
 
 @[simp]
 theorem star_fst (a : 𝓜(𝕜, A)) (b : A) : (star a).fst b = star (a.snd (star b)) :=
@@ -522,7 +522,7 @@ theorem isUniformEmbedding_toProdMulOpposite :
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
-  simp only [range_toProdMulOpposite, Set.setOf_forall]
+  simp only [range_toProdMulOpposite, Set.ofPred_forall]
   exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq (by fun_prop) (by fun_prop)
 
 variable [StarRing A] [CStarRing A]

@@ -70,7 +70,7 @@ theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _ in l, a = b) ↔ a 
   @const_eventuallyEq' _ _ _ _ a b
 
 /-- Setoid used to define the space of germs. -/
-@[implicit_reducible]
+@[instance_reducible]
 def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
   r := EventuallyEq l
   iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
@@ -81,7 +81,7 @@ def Germ (l : Filter α) (β : Type*) : Type _ :=
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `Filter.germSetoid`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
@@ -190,7 +190,7 @@ alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
 def map (op : β → γ) : Germ l β → Germ l γ :=
-  map' (op ∘ ·) fun _ _ H => H.mono fun _ H => congr_arg op H
+  map' (op ∘ ·) fun _ _ H => H.mono fun _ H => congr(op $H)
 
 @[simp]
 theorem map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op ∘ f :=
@@ -486,7 +486,7 @@ instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) 
 
 @[to_additive]
 instance instInvOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
-  ⟨congr_arg ofFun inv_one⟩
+  ⟨congr(ofFun $inv_one)⟩
 
 @[to_additive subNegMonoid]
 instance instDivInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) where
@@ -502,7 +502,7 @@ instance instDivInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) where
 @[to_additive]
 instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
   inv_inv := inv_inv
-  mul_inv_rev x y := inductionOn₂ x y fun _ _ ↦ congr_arg ofFun <| mul_inv_rev _ _
+  mul_inv_rev x y := inductionOn₂ x y fun _ _ ↦ congr(ofFun $(mul_inv_rev ..))
   inv_eq_of_mul x y := inductionOn₂ x y fun _ _ h ↦ coe_eq.2 <| (coe_eq.1 h).mono fun _ ↦
     DivisionMonoid.inv_eq_of_mul _ _
 
@@ -758,7 +758,7 @@ instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (
     choose c hc using fun x (hx : f x ≤ g x) ↦ exists_mul_of_le hx
     refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
     filter_upwards [h] with x hx
-    rw [dif_pos hx, hc]
+    rw [dite_eq_left hx, hc]
 
 end Germ
 

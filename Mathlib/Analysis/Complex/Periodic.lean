@@ -74,6 +74,9 @@ theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
+theorem norm_qParam_lt_one (hh : 0 < h) {z : ℂ} (hz : 0 < im z) : ‖𝕢 h z‖ < 1 := by
+  simpa using (norm_qParam_lt_iff hh 0 z).mpr hz
+
 lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
   simp [qParam, exp_ne_zero]
 
@@ -116,6 +119,12 @@ variable (h : ℝ) (f : ℂ → ℂ)
 def cuspFunction : ℂ → ℂ :=
   update (f ∘ invQParam h) 0 (limUnder (𝓝[≠] 0) (f ∘ invQParam h))
 
+@[simp]
+theorem cuspFunction_zero : cuspFunction h (0 : ℂ → ℂ) = 0 := by
+  simp only [cuspFunction, Function.comp_def, Pi.zero_apply]
+  rw [tendsto_const_nhds.limUnder_eq]
+  exact update_eq_self _ _
+
 theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
     cuspFunction h f q = f (invQParam h q) :=
   update_of_ne hq ..
@@ -123,7 +132,7 @@ theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
 theorem cuspFunction_zero_eq_limUnder_nhds_ne :
     cuspFunction h f 0 = limUnder (𝓝[≠] 0) (cuspFunction h f) := by
   conv_lhs => simp only [cuspFunction, update_self]
-  refine congr_arg lim (Filter.map_congr <| eventuallyEq_nhdsWithin_of_eqOn fun r hr ↦ ?_)
+  congrm lim $(Filter.map_congr <| eventuallyEq_nhdsWithin_of_eqOn fun r hr ↦ ?_)
   rw [cuspFunction, update_of_ne hr]
 
 variable {f h}
