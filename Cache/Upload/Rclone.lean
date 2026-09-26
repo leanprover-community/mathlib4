@@ -4,16 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Upload.Dest
+import Cache.Requests
 
 /-!
 # The rclone upload tool
 
 An opt-in transfer tool: a system [rclone](https://rclone.org) against the
-resolved destination (`StagedUploadDest`), addressed through rclone's `:s3:`
-remote syntax. `Cache/Upload/S3.lean` assembles the child environment that
-carries the credentials and endpoint, splits the bucket path out of the
-destination base, and calls the tool's entry point, `putStagedViaRclone`.
+resolved location (`Location`), addressed through rclone's `:s3:` remote
+syntax. `Cache/Upload/S3.lean` assembles the child environment that carries
+the credentials and endpoint, splits the bucket path out of the location's
+root, and calls the tool's entry point, `putStagedViaRclone`.
 -/
 
 namespace Cache.Requests
@@ -40,9 +40,9 @@ caller names are uploaded. A non-overwrite put passes
 matches the curl tool's `If-None-Match: *`. Artifact names are content
 hashes, so a skipped re-put loses nothing.
 -/
-def rcloneFilesArgs (bucketPath : String) (dest : StagedUploadDest)
+def rcloneFilesArgs (bucketPath : String) (dest : Location)
     (srcDir filesFrom : FilePath) (overwrite : Bool) : Array String :=
-  #["copy", srcDir.toString, s!":s3:{bucketPath}/{dest.filesPrefix}",
+  #["copy", srcDir.toString, s!":s3:{bucketPath}/{dest.filesDir}",
     "--files-from", filesFrom.toString, "--transfers", "16"] ++
     (if overwrite then #[] else #["--ignore-existing"]) ++ rcloneCommonFlags
 
@@ -52,9 +52,9 @@ marker path. A marker's content is the SHA that names it, so an overwrite is
 safe and the copy omits `--ignore-existing`, like the curl tool's marker
 put.
 -/
-def rcloneMarkerArgs (bucketPath : String) (dest : StagedUploadDest)
+def rcloneMarkerArgs (bucketPath : String) (dest : Location)
     (markerFile : FilePath) (sha : String) : Array String :=
-  #["copyto", markerFile.toString, s!":s3:{bucketPath}/{dest.markerPrefix}/{sha}"] ++
+  #["copyto", markerFile.toString, s!":s3:{bucketPath}/{dest.markerDir}/{sha}"] ++
     rcloneCommonFlags
 
 /--
@@ -68,9 +68,8 @@ files failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
 The `rclone` parameter names the binary and exists for the tests; production
 callers use the default.
 -/
-def putStagedViaRclone (dest : StagedUploadDest) (env : Array (String × Option String))
-    (bucketPath : String) (markerSha? : Option String)
-    (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
+def putStagedViaRclone (dest : Location) (env : Array (String × Option String))
+    (bucketPath : String) (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool)
     (rclone : String := "rclone") : IO Unit := do
   let run (args : Array String) : IO UInt32 := do
     let child ← IO.Process.spawn { cmd := rclone, args, env }
@@ -79,7 +78,7 @@ def putStagedViaRclone (dest : StagedUploadDest) (env : Array (String × Option 
     IO.println "No files to upload"
   else
     IO.println s!"Uploading {fileNames.size} file(s) via rclone to \
-      {dest.base}/{dest.filesPrefix}"
+      {dest.root}/{dest.filesDir}"
     let dir ← IO.FS.createTempDir
     let code ← try
       let filesFrom := dir / "files-from.txt"
@@ -90,7 +89,7 @@ def putStagedViaRclone (dest : StagedUploadDest) (env : Array (String × Option 
     if code != 0 then
       IO.eprintln s!"rclone upload failed with exit code {code}"
       IO.Process.exit 1
-  if let some sha := markerSha? then
+  if let some sha := dest.scope? then
     uploadMarkerWith (dest.markerURL sha) sha fun file => do
       let code ← run (rcloneMarkerArgs bucketPath dest file sha)
       unless code == 0 do

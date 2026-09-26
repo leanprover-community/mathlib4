@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
 
-import Cache.Requests
+import Cache.Infra
 
 /-!
 # Per-SHA cache markers
@@ -15,9 +15,9 @@ upload step, and `cache query` probes it to discover cached commits with a
 cheap HEAD request instead of a blob listing.
 
 This module holds everything about the marker except the transfer itself: the
-path contract (`markerDirPath`, `markerPath`), the read-side URL
-(`markerReadURL`), and the write mechanics and failure policy the upload
-tools share (`uploadMarkerWith`).
+path contract (`markerDirPath`, `markerPath`) and the write mechanics and
+failure policy the upload tools share (`uploadMarkerWith`). A marker's URL is
+`Location.markerURL`, on reads and on uploads alike.
 -/
 
 namespace Cache.Requests
@@ -36,14 +36,6 @@ def markerDirPath (repo : String) : String :=
 /-- Blob path of the per-SHA marker: `m/{repo}/{sha}` (see `markerDirPath`). -/
 def markerPath (repo sha : String) : String :=
   s!"{markerDirPath repo}/{sha}"
-
-/--
-Read-side URL for the per-SHA marker blob: probes follow the read base
-(`Container.getURL`), unlike marker writes, which follow the resolved
-upload destination (`StagedUploadDest.markerURL`).
--/
-def markerReadURL (container : Container) (repo sha : String) : IO String := do
-  return s!"{← container.getURL}/{markerPath repo sha}"
 
 /--
 Write the marker file for `sha` and hand it to `transfer`, which moves it to
