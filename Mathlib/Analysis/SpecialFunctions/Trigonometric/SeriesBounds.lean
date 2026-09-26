@@ -115,7 +115,7 @@ lemma Real.cos_series_bound {x : ℝ} (x1 : |x| ≤ 1) {n : ℕ} (n0 : 0 < n) :
 
 /-- All four strict bounds at once, for `x > 0`. The four projections below are the intended
 interface. -/
-private theorem Real.sin_cos_bound_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
+private theorem Real.sin_cos_bound_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     (∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < x.sin) ∧
     (x.sin < ∑ i ∈ .range (2 * n + 1), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)!) ∧
     (∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i) / (2 * i)! < x.cos) ∧
@@ -125,8 +125,8 @@ private theorem Real.sin_cos_bound_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
         (∑ i ∈ .range n, (-1) ^ i * k i * x ^ (k i - 1) / (k i)!) x := by
     refine HasDerivAt.fun_sum fun i hi ↦ ?_
     simpa only [mul_assoc] using ((hasDerivAt_pow (k i) x).const_mul _).div_const _
-  set cosSeries := fun (n : ℕ) (x : ℝ) ↦ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)!
-  set sinSeries := fun (n : ℕ) (x : ℝ) ↦ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)!
+  let cosSeries := fun (n : ℕ) (x : ℝ) ↦ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)!
+  let sinSeries := fun (n : ℕ) (x : ℝ) ↦ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)!
   have Hcos₀ (n) : cosSeries (n + 1) 0 = 1 := by simp [cosSeries, Finset.sum_range_succ']
   have Hsin₀ (n) : sinSeries n 0 = 0 := by simp [sinSeries]
   have HsinDeriv (x : ℝ) (n : ℕ) : HasDerivAt (sin - sinSeries n) (cos x - cosSeries n x) x := by
@@ -156,28 +156,26 @@ private theorem Real.sin_cos_bound_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
     simpa [(HcosDeriv _ _).deriv] using ih
   have Hstep_cos_sin (n : ℕ) (ih : ∀ x > 0, cos x < cosSeries n x) (x : ℝ) (hx : 0 < x) :
       sin x < sinSeries n x := by
-    suffices StrictAntiOn (sin - sinSeries n) (Set.Ici 0) by
+    suffices StrictAntiOn (sin - sinSeries n) (.Ici 0) by
       simpa [Hsin₀] using this Set.self_mem_Ici hx.le hx
     apply strictAntiOn_of_deriv_neg (convex_Ici 0) (by fun_prop)
     simpa [(HsinDeriv _ _).deriv] using ih
   have Hstep_cos_sin' (n : ℕ) (ih : ∀ x > 0, cosSeries n x < cos x) (x : ℝ) (hx : 0 < x) :
       sinSeries n x < sin x := by
-    suffices StrictMonoOn (sin - sinSeries n) (Set.Ici 0) by
+    suffices StrictMonoOn (sin - sinSeries n) (.Ici 0) by
       simpa [Hsin₀] using this Set.self_mem_Ici hx.le hx
     apply strictMonoOn_of_deriv_pos (convex_Ici 0) (by fun_prop)
     simpa [(HsinDeriv _ _).deriv] using ih
   induction n generalizing x with
   | zero =>
-    have Hsin_lt : ∀ x > 0, sin x < sinSeries 1 x := by
-      intro x hx
-      simpa [sinSeries] using sin_lt hx
+    have Hsin_lt : ∀ x > 0, sin x < sinSeries 1 x := fun _ ↦ by simpa [sinSeries] using sin_lt
     have Hlt_cos : ∀ x > 0, cosSeries 2 x < cos x := Hstep_sin_cos 1 Hsin_lt
     have Hlt_sin : ∀ x > 0, sinSeries 2 x < sin x := Hstep_cos_sin' 2 Hlt_cos
     have Hcos_lt : ∀ x > 0, cos x < cosSeries 3 x := Hstep_sin_cos' 2 Hlt_sin
     exact ⟨Hlt_sin _ hx, Hsin_lt _ hx, Hlt_cos _ hx, Hcos_lt _ hx⟩
   | succ n ihn =>
-    have Hsin_lt : ∀ x > 0, sin x < sinSeries (2 * n + 3) x := Hstep_cos_sin _ fun x hx ↦
-      (ihn x hx).2.2.2
+    have Hsin_lt : ∀ x > 0, sin x < sinSeries (2 * n + 3) x :=
+      Hstep_cos_sin _ fun _ ↦ (ihn · |>.2.2.2)
     have Hlt_cos : ∀ x > 0, cosSeries (2 * n + 4) x < cos x := Hstep_sin_cos _ Hsin_lt
     have Hlt_sin : ∀ x > 0, sinSeries (2 * n + 4) x < sin x := Hstep_cos_sin' _ Hlt_cos
     have Hcos_lt : ∀ x > 0, cos x < cosSeries (2 * n + 5) x := Hstep_sin_cos' _ Hlt_sin
@@ -188,25 +186,25 @@ private theorem Real.sin_cos_bound_of_pos (x : ℝ) (hx : 0 < x) (n : ℕ) :
 is a strict lower bound for `sin x`. -/
 theorem Real.sum_lt_sin_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     ∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < x.sin :=
-  (Real.sin_cos_bound_of_pos x hx n).1
+  (Real.sin_cos_bound_of_pos hx n).1
 
 /-- For `x > 0`, the partial sum of the Taylor series of `sin` over `Finset.range (2 * n + 1)`
 is a strict upper bound for `sin x`. -/
 theorem Real.sin_lt_sum_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     x.sin < ∑ i ∈ .range (2 * n + 1), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! :=
-  (Real.sin_cos_bound_of_pos x hx n).2.1
+  (Real.sin_cos_bound_of_pos hx n).2.1
 
 /-- For `x > 0`, the partial sum of the Taylor series of `cos` over `Finset.range (2 * n + 2)`
 is a strict lower bound for `cos x`. -/
 theorem Real.sum_lt_cos_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     ∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i) / (2 * i)! < x.cos :=
-  (Real.sin_cos_bound_of_pos x hx n).2.2.1
+  (Real.sin_cos_bound_of_pos hx n).2.2.1
 
 /-- For `x > 0`, the partial sum of the Taylor series of `cos` over `Finset.range (2 * n + 3)`
 is a strict upper bound for `cos x`. -/
 theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     x.cos < ∑ i ∈ .range (2 * n + 3), (-1) ^ i * x ^ (2 * i) / (2 * i)! :=
-  (Real.sin_cos_bound_of_pos x hx n).2.2.2
+  (Real.sin_cos_bound_of_pos hx n).2.2.2
 
 /-! ### Low-order corollaries
 
