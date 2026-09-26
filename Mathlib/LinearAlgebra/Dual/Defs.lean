@@ -63,7 +63,7 @@ abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
-@[deprecated LinearMap.id (since := "2026-04-02")]
+@[deprecated LinearMap.id +typeChanged (since := "2026-04-02")]
 def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
     Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
@@ -261,8 +261,10 @@ lemma dualMap_dualMap_eq_iff_of_injective
   dualMap_dualMap_eq_iff_of_injective _ _ (bijective_dual_eval R M').injective
 
 /-- The dual of a reflexive module is reflexive. -/
-instance Dual.instIsReflecive : IsReflexive R (Dual R M) :=
+instance : IsReflexive R (Dual R M) :=
   ⟨by simpa only [← symm_dualMap_evalEquiv] using! (evalEquiv R M).dualMap.symm.bijective⟩
+
+@[deprecated (since := "2026-09-17")] alias Dual.instIsReflecive := instIsReflexiveDual
 
 variable {R M N} in
 /-- A direct summand of a reflexive module is reflexive. -/

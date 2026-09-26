@@ -144,7 +144,7 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
   predicate_zero := .zero
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
-    have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp <|
+    have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp
         (continuousFunctionalCalculus a).toStarAlgHom) :=
       isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
@@ -163,7 +163,7 @@ lemma cfcHom_eq_of_isStarNormal (a : A) [ha : IsStarNormal a] :
     cfcHom ha =
       (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a).toStarAlgHom := by
   refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
-  · exact continuous_subtype_val.comp <|
+  · exact continuous_subtype_val.comp
       (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
   · simp [continuousFunctionalCalculus_map_id a]
 

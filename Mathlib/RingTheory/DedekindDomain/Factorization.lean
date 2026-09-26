@@ -289,8 +289,8 @@ open Classical in
 theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R⁰ K} (hI : I ≠ 0)
     (k : K) (hk : I = spanSingleton R⁰ k) :
     ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
-      ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {choose
-          (exists_mk'_eq R⁰ k)} : Ideal R)).factors -
+      ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span
+          {choose (exists_mk'_eq R⁰ k)} : Ideal R)).factors -
         (Associates.mk v.asIdeal).count (Associates.mk ((Ideal.span {(↑(choose
           (choose_spec (exists_mk'_eq R⁰ k)) : ↥R⁰) : R)}) : Ideal R)).factors : ℤ) = I := by
   set n : R := choose (exists_mk'_eq R⁰ k)

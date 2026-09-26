@@ -199,7 +199,7 @@ theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f
     _ = b * a := by group
 
 @[to_additive (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
-  (since := "2026-05-26"))]
+  +typeChanged (since := "2026-05-26"))]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b
@@ -975,6 +975,13 @@ theorem IsCyclic.subgroup_le_iff_card_dvd [h : Finite H] :
       infer_instance
     rw [subgroup_le_iff_index_dvd, H.index_eq_card_div, K.index_eq_card_div,
       Nat.div_dvd_div_iff_left Nat.card_pos K.card_subgroup_dvd_card H.card_subgroup_dvd_card]
+
+/-- In a cyclic group, `H = K` iff `H.index = K.index`. -/
+@[to_additive /-- In an additive cyclic group, `H = K` iff `H.index = K.index`. -/]
+theorem IsCyclic.subgroup_eq_iff_index_eq :
+    H = K ↔ H.index = K.index := by
+  rw [le_antisymm_iff, IsCyclic.subgroup_le_iff_index_dvd, IsCyclic.subgroup_le_iff_index_dvd,
+    and_comm, Nat.dvd_antisymm_iff]
 
 /-- In a cyclic group, if `H` and `K` are finite then `H = K` iff `Nat.card H = Nat.card K`. -/
 @[to_additive

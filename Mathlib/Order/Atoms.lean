@@ -500,17 +500,17 @@ theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → 
     IsStronglyAtomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
   (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
@@ -1016,7 +1016,7 @@ theorem isAtom_iff [OrderBot α] [IsAtomic α] [OrderBot β] {l : α → β} {u 
   obtain ⟨a', ha', hab'⟩ :=
     (eq_bot_or_exists_atom_le (u (l a))).resolve_left (hbot ▸ fun h => hla.1 (gi.u_injective h))
   have :=
-    (hla.le_iff.mp <| (gi.l_u_eq (l a) ▸ gi.gc.monotone_l hab' : l a' ≤ l a)).resolve_left fun h =>
+    (hla.le_iff.mp (gi.l_u_eq (l a) ▸ gi.gc.monotone_l hab' : l a' ≤ l a)).resolve_left fun h =>
       ha'.1 (hbot ▸ h_atom a' ha' ▸ congr_arg u h)
   have haa' : a = a' :=
     (ha'.le_iff.mp <|
@@ -1194,7 +1194,7 @@ theorem ComplementedLattice.isStronglyAtomic [IsAtomic α] : IsStronglyAtomic α
 /-- A complemented modular coatomic lattice is strongly coatomic.
 Not an instance to prevent loops. -/
 theorem ComplementedLattice.isStronglyCoatomic [IsCoatomic α] : IsStronglyCoatomic α :=
-  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| ComplementedLattice.isStronglyAtomic
+  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 ComplementedLattice.isStronglyAtomic
 
 /-- A complemented modular atomic lattice is strongly coatomic.
 Not an instance to prevent loops. -/

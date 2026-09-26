@@ -204,7 +204,7 @@ theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
 theorem starProjection_orthogonal_val (u : E) :
     Kᗮ.starProjection u = u - K.starProjection u :=
   eq_starProjection_of_mem_orthogonal' (sub_starProjection_mem_orthogonal _)
-    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) <| (sub_add_cancel _ _).symm
+    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) (sub_add_cancel _ _).symm
 
 theorem orthogonalProjectionOnto_orthogonal (u : E) :
     Kᗮ.orthogonalProjectionOnto u =
@@ -704,7 +704,7 @@ lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
     ← mul_sub_one, show (2 : ℝ) - 1 = 1 by norm_num, mul_one, sub_eq_iff_eq_add', norm_sub_rev]
   simpa [sq, add_comm] using K.norm_sq_eq_add_norm_sq_starProjection v
 
-@[deprecated norm_sq_eq_add_norm_sq_starProjection (since := "2026-06-10")]
+@[deprecated norm_sq_eq_add_norm_sq_starProjection +typeChanged (since := "2026-06-10")]
 theorem orthogonalProjectionFn_norm_sq [K.HasOrthogonalProjection] (v : E) :
     ‖v‖ * ‖v‖ = ‖v - K.orthogonalProjectionFn v‖ * ‖v - K.orthogonalProjectionFn v‖ +
       ‖K.orthogonalProjectionFn v‖ * ‖K.orthogonalProjectionFn v‖ := by

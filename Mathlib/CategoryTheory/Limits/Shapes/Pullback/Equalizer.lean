@@ -53,7 +53,6 @@ section
 
 variable [HasEqualizers C] [HasPullbacks C] {X Y S T : C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `eq(f ×[S] T, g ×[S] T) ≅ eq(f, g) ×[S] T`. -/
 noncomputable def equalizerPullbackMapIso {f g : X ⟶ Y} {s : X ⟶ S} {t : Y ⟶ S}
     (hf : f ≫ t = s) (hg : g ≫ t = s) (v : T ⟶ S) :
@@ -82,28 +81,24 @@ noncomputable def equalizerPullbackMapIso {f g : X ⟶ Y} {s : X ⟶ S} {t : Y �
 
 variable {f g : X ⟶ Y} {s : X ⟶ S} {t : Y ⟶ S} (hf : f ≫ t = s) (hg : g ≫ t = s) (v : T ⟶ S)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma equalizerPullbackMapIso_hom_fst :
     (equalizerPullbackMapIso hf hg v).hom ≫ pullback.fst _ _ ≫ equalizer.ι _ _ =
       equalizer.ι _ _ ≫ pullback.fst _ _ := by
   simp [equalizerPullbackMapIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma equalizerPullbackMapIso_hom_snd :
     (equalizerPullbackMapIso hf hg v).hom ≫ pullback.snd _ _ =
       equalizer.ι _ _ := by
   ext <;> simp [equalizerPullbackMapIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma equalizerPullbackMapIso_inv_ι_fst :
     (equalizerPullbackMapIso hf hg v).inv ≫ equalizer.ι _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ equalizer.ι _ _ := by
   simp [equalizerPullbackMapIso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma equalizerPullbackMapIso_inv_ι_snd :
     (equalizerPullbackMapIso hf hg v).inv ≫ equalizer.ι _ _ ≫ pullback.snd _ _ =
