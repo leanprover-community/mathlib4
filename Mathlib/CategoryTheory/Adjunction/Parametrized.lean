@@ -98,7 +98,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma homEquiv_naturality_one (f₁ : X₁ ⟶ Y₁) (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
     adj₂.homEquiv ((F.map f₁).app X₂ ≫ g) =
       adj₂.homEquiv g ≫ (G.map f₁.op).app X₃ := by
-  have := NatTrans.congr_app (adj₂.unit_whiskerRight_map f₁) X₂
+  have := congr($(adj₂.unit_whiskerRight_map f₁).app X₂)
   dsimp at this
   simp only [homEquiv_eq, Adjunction.homEquiv_unit, Functor.comp_obj, Functor.map_comp,
     Category.assoc, NatTrans.naturality, reassoc_of% this]

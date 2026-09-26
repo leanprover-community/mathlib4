@@ -36,10 +36,10 @@ namespace Polynomial
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
 theorem eventually_atTop_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
-  atTop_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
+  atTop_le_cofinite (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 theorem eventually_atBot_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
-  atBot_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
+  atBot_le_cofinite (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 variable [OrderTopology 𝕜]
 
@@ -91,8 +91,8 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
 theorem isBoundedUnder_abs_atTop_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
   refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
-    (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
-    (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
+    (forall_imp (fun _ => le_of_eq) fun x => congr(abs $(_root_.trans (congr_arg (eval x)
+    (eq_C_of_degree_le_zero h)) eval_C))))⟩⟩
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
 
@@ -131,8 +131,8 @@ theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot at
 theorem isBoundedUnder_abs_atBot_iff :
     (IsBoundedUnder (· ≤ ·) atBot (|P.eval ·|)) ↔ P.degree ≤ 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
-    (forall_imp (fun _ ↦ le_of_eq) fun x ↦ congr_arg abs <| _root_.trans (congr_arg (eval x)
-    (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
+    (forall_imp (fun _ ↦ le_of_eq) fun x ↦ congr(abs $(_root_.trans (congr_arg (eval x)
+    (eq_C_of_degree_le_zero h)) eval_C))))⟩⟩
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atBot P h)
 

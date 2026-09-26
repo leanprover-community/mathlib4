@@ -126,7 +126,7 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p)
     contrapose hp'
     ext m
     apply hc.1
-    simpa using congr_arg ((·.coeff m)) hp'
+    simpa using congr($(hp').coeff m)
 
 end nonZeroDivisors
 

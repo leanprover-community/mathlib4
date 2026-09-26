@@ -71,9 +71,9 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
-  · norm_num at hn
+  · simp at hn
   induction l generalizing x with
-  | nil => norm_num at hn
+  | nil => simp at hn
   | cons y l =>
     use x
     constructor
@@ -210,7 +210,7 @@ theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by s
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
-  simpa [card_support_ne_one] using congr_arg length H
+  simpa [card_support_ne_one] using congr(length $H)
 
 theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
     2 ≤ length (toList p x) ↔ x ∈ p.support := by simp

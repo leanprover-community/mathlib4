@@ -77,8 +77,8 @@ noncomputable def ι : 𝟭 C₁ ⟶ Φ.functor ⋙ ρ :=
 @[simp]
 lemma Φ_functor_map_ι_app (X₁ : C₁) :
     Φ.functor.map ((ι i).app X₁) = i.app (Φ.functor.obj X₁) :=
-  NatTrans.congr_app (((whiskeringRight C₁ C₁ C₂).obj Φ.functor).map_preimage
-    (X := 𝟭 C₁) (Y := Φ.functor ⋙ ρ) (whiskerLeft Φ.functor i)) X₁
+  congr($(((whiskeringRight C₁ C₁ C₂).obj Φ.functor).map_preimage
+    (X := 𝟭 C₁) (Y := Φ.functor ⋙ ρ) (whiskerLeft Φ.functor i)).app X₁)
 
 include hW₁ hi in
 lemma W₁_ι_app (X₁ : C₁) : W₁ ((ι i).app X₁) := by

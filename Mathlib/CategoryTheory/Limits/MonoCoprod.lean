@@ -60,7 +60,6 @@ instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : M
 
 namespace MonoCoprod
 
-set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsColimit c) :
     Mono c.inr := by
   have hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
@@ -92,7 +91,6 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (↾(Sum.inl : A → A ⊕ B))
@@ -106,8 +104,8 @@ instance monoCoprodType : MonoCoprod (Type u) :=
         (fun f₁ f₂ m h₁ h₂ => by
           ext x
           rcases x with x | x
-          · exact ConcreteCategory.congr_hom h₁ x
-          · exact ConcreteCategory.congr_hom h₂ x)
+          · congrm $h₁ x
+          · congrm $h₂ x)
     · rw [mono_iff_injective]
       intro a₁ a₂ h
       simpa using h
@@ -233,7 +231,6 @@ section Preservation
 
 variable {D : Type*} [Category* D] (F : C ⥤ D)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     [PreservesColimitsOfShape (Discrete WalkingPair) F]
     [ReflectsMonomorphisms F] : MonoCoprod C where

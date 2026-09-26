@@ -137,7 +137,8 @@ def splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (g : last α 
   | Fin2.fs i => f i
   | Fin2.fz => g
 
-/-- append an arrow and a function as well as their respective source and target types / typevecs -/
+/-- Append an arrow and a function as well as their respective source and target types /
+type vectors. -/
 def appendFun {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β → β') :
     append1 α β ⟹ append1 α' β' :=
   splitFun f g
@@ -168,11 +169,11 @@ theorem dropFun_splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (
 
 /-- turn an equality into an arrow -/
 def Arrow.mp {α β : TypeVec n} (h : α = β) : α ⟹ β
-  | _ => Eq.mp (congr_fun h _)
+  | _ => Eq.mp congr($h _)
 
 /-- turn an equality into an arrow, with reverse direction -/
 def Arrow.mpr {α β : TypeVec n} (h : α = β) : β ⟹ α
-  | _ => Eq.mpr (congr_fun h _)
+  | _ => Eq.mpr congr($h _)
 
 /-- decompose a vector into its prefix appended with its last element -/
 def toAppend1DropLast {α : TypeVec (n + 1)} : α ⟹ (drop α ::: last α) :=
@@ -408,7 +409,7 @@ def Curry (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n)
   F (β ::: α)
 
 instance Curry.inhabited (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n)
-    [I : Inhabited (F <| (β ::: α))] : Inhabited (Curry F α β) :=
+    [I : Inhabited (F (β ::: α))] : Inhabited (Curry F α β) :=
   I
 
 /-- arrow to remove one element of a `repeat` vector -/

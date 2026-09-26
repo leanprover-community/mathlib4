@@ -10,7 +10,7 @@ public import Mathlib.Data.Finsupp.Single
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`
 
-We interpret maps `Fin n →₀ M` as `n`-tuples of elements of `M`,
+We interpret maps `Fin n →₀ M` as `n`-tuples of elements of `M`.
 We define the following operations:
 * `Finsupp.tail` : the tail of a map `Fin (n + 1) →₀ M`, i.e., its last `n` entries;
 * `Finsupp.cons` : adding an element at the beginning of an `n`-tuple, to get an `n + 1`-tuple;
@@ -106,7 +106,7 @@ lemma cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fi
 /-- As a binary function, `Finsupp.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (cons (n := n) (M := M)) := by
   refine fun x₀ y₀ x y h ↦ ?_
-  have := DFunLike.congr_fun h 0
+  have := congr($h 0)
   simp only [cons_zero] at this
   exact ⟨this, cons_right_injective y₀ (this ▸ h)⟩
 

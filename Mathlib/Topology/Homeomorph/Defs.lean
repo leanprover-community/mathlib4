@@ -59,6 +59,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance : EquivLike (X ≃ₜ Y) X Y where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm
@@ -514,7 +515,7 @@ instance [HomeomorphClass F α β] : CoeOut F (α ≃ₜ β) :=
   ⟨HomeomorphClass.toHomeomorph⟩
 
 theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((↑) : F → α ≃ₜ β) :=
-  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
 
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
   map_continuous f := map_continuous f

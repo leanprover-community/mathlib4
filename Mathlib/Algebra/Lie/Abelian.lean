@@ -151,7 +151,7 @@ lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
     have := IsTrivial.trivial (⟨x, hx⟩ : I) y
     rw [LieIdeal.coe_bracket_of_module] at this
     simp [this]
-  · simpa using LinearMap.congr_fun (h hx) ⟨y, hy⟩
+  · simpa using congr($(h hx) ⟨y, hy⟩)
 
 lemma isFaithful_iff_ker_eq_bot : IsFaithful R L M ↔ LieModule.ker R L M = ⊥ := by
   rw [isFaithful_iff', LieSubmodule.ext_iff]
@@ -209,7 +209,7 @@ variable {R L M N}
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
-      (congr_arg f (m.property x)).trans (map_zero _)⟩
+      congr(f $(m.property x)).trans (map_zero _)⟩
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
   map_lie' {x m} := by simp [trivial_lie_zero]

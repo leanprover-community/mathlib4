@@ -53,7 +53,7 @@ lemma cocycles₀IsoAux' (x : X) (h : ContinuousMap.const G x ∈ ((resolution' 
 
 /-- The isomorphism between the zeroth cocycles and the kernel of the zeroth differential. -/
 noncomputable abbrev cocycles₀Iso : cocycles X 0 ≅
-    TopModuleCat.of k ((homogeneousCochains X).d 0 1).hom.ker :=
+    ↧((homogeneousCochains X).d 0 1).hom.ker :=
   Limits.KernelFork.mapIsoOfIsLimit ((homogeneousCochains X).cyclesIsKernel 0 1 (by simp))
     (TopModuleCat.isLimitKer _) (Iso.refl _)
 
@@ -74,7 +74,7 @@ def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants
       sub_eq_zero, ContinuousMap.const_apply] at hx ⊢
     simpa using DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hx g) 1
   right_inv _ := rfl
-  continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp <|
+  continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp
     (continuous_subtype_val.comp continuous_subtype_val)
   continuous_invFun := continuous_induced_rng.2 <| continuous_induced_rng.2 <|
     ContinuousMap.continuous_const'.comp continuous_subtype_val
@@ -82,7 +82,7 @@ def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants
 /-- The isomorphism between the zeroth continuous cohomology group and
 the invariants of a representation. -/
 noncomputable def zeroIso (A : TopRep k G) :
-    continuousCohomology 0 A ≅ TopModuleCat.of k A.ρ.invariants :=
+    continuousCohomology 0 A ≅ ↧A.ρ.invariants :=
   (homogeneousCochains A).isoHomologyπ₀.symm ≪≫ cocycles₀Iso A ≪≫
     TopModuleCat.ofIso (d₀kerIso A)
 

@@ -410,7 +410,7 @@ theorem rank_sup (H : A.LinearDisjoint B) :
 /-- If `A` and `B` are linearly disjoint over `F`, then the `Module.finrank` of
 `A ⊔ B` is equal to the product of that of `A` and `B`. -/
 theorem finrank_sup (H : A.LinearDisjoint B) : finrank F ↥(A ⊔ B) = finrank F A * finrank F B := by
-  simpa only [map_mul] using! congr(Cardinal.toNat $(H.rank_sup))
+  simpa only [map_mul] using! congr($(H.rank_sup).toNat)
 
 /-- If `A` and `B` are finite extensions of `F`,
 such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
@@ -746,7 +746,7 @@ theorem trace_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h�
     Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
   rw [linearDisjoint_iff'] at h₁
   refine h₁.trace_algebraMap ?_ x
-  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg toSubalgebra h₂
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(toSubalgebra $h₂)
 
 /--
 If `A` and `B` are linearly disjoint, then `norm` and `algebraMap` commutes.
@@ -756,7 +756,7 @@ theorem norm_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h�
     Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
   rw [linearDisjoint_iff'] at h₁
   refine h₁.norm_algebraMap ?_ x
-  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg toSubalgebra h₂
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(toSubalgebra $h₂)
 
 end LinearDisjoint
 

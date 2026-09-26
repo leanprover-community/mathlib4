@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.Topology.Algebra.Affine
-public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets
@@ -345,7 +344,7 @@ variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 open Convexity in
-attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.ofModule in
+attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.of_module in
 /-- Convex hull of a finite set is compact. -/
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
@@ -434,7 +433,7 @@ lemma Convex.Ioo_subset_of_mem_closure {s : Set 𝕜} (hs : Convex 𝕜 s) {a b 
     simp only [nontrivial_coe_sort] at h'
     calc Ioo a b
     _ = interior (Ioo a b) := interior_Ioo.symm
-    _ ⊆ interior (openSegment 𝕜 a b) := interior_mono <| Ioo_subset_openSegment
+    _ ⊆ interior (openSegment 𝕜 a b) := interior_mono Ioo_subset_openSegment
     _ ⊆ interior (closure s) := interior_mono <| hs.closure.openSegment_subset has hbs
     _ = interior s := hs.interior_closure_eq_interior_of_nonempty_interior <|
       hs.nontrivial_iff_nonempty_interior.1 h'

@@ -92,7 +92,7 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
       rwa [tsub_lt_iff_tsub_lt hd hbj] at this
   have : j = b.natDegree - (natDegree b - j.succ).succ := by
     rw [← Nat.succ_sub hbj, Nat.succ_sub_succ, tsub_tsub_cancel_of_le hbj.le]
-  convert! congr_fun i_eq.symm ⟨natDegree b - j.succ, hj⟩
+  convert! congr($i_eq.symm ⟨natDegree b - j.succ, hj⟩)
 
 variable [Field Fq]
 
@@ -136,9 +136,9 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
   apply lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
   swap
-  · convert! deg_lt
+  · convert deg_lt
     rw [degree_eq_natDegree h']; rfl
-  rw [← sub_neg_eq_add, ← neg_div, Nat.cast_sub le_b.le]
+  rw [← sub_neg_eq_add, ← neg_div, Nat.cast_id, Nat.cast_sub le_b.le]
   grw [← Nat.le_ceil]
 
 /-- If `x` is close to `y` and `y` is close to `z`, then `x` and `z` are at least as close. -/

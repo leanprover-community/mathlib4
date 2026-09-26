@@ -111,7 +111,7 @@ lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
   suffices (DirectSum.component S ι₁ _ i) ∘ₗ (directSumLeft R S M₁ M₂').toLinearMap ∘ₗ
       ((AlgebraTensorModule.mk R S (⨁ i, M₁ i) M₂').flip n) =
         ((AlgebraTensorModule.mk R S (M₁ i) M₂').flip n) ∘ₗ (DirectSum.component S ι₁ M₁ i) by
-    simpa using! LinearMap.congr_fun this m
+    simpa using! congr($this m)
   ext j n
   by_cases hj : j = i
   · subst hj; simp
@@ -120,8 +120,7 @@ lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
 lemma directSumLeft_symm_of {i : ι₁} (x : (M₁ i) ⊗[R] M₂') :
     (directSumLeft R S M₁ M₂').symm ((of (fun i ↦ M₁ i ⊗[R] M₂') i) x) =
       rTensor M₂' (lof R ι₁ M₁ i) x := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | tmul x y => rw [← lof_eq_of S, directSumLeft_symm_lof_tmul, rTensor_tmul, lof_eq_of, lof_eq_of]
   | add x y h₁ h₂ => simp [h₁, h₂]
 
@@ -150,7 +149,7 @@ lemma directSumRight_tmul (m : M₁') (n : ⨁ i, M₂ i) (i : ι₂) :
       (directSumRight R S M₁' M₂).toLinearMap.restrictScalars R ∘ₗ
         (TensorProduct.mk R M₁' (⨁ i, M₂ i) m) =
           (TensorProduct.mk R M₁' (M₂ i) m) ∘ₗ (DirectSum.component R ι₂ M₂ i) by
-    simpa using! LinearMap.congr_fun this n
+    simpa using! congr($this n)
   ext j n
   by_cases hj : j = i
   · subst hj; simp
