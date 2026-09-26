@@ -198,11 +198,12 @@ theorem eq_zero_of_forall_notMem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 
 theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
   ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
 
-theorem exists_mem_of_ne_zero {s : Multiset α} : s ≠ 0 → ∃ a : α, a ∈ s :=
-  Quot.inductionOn s fun l hl =>
-    match l, hl with
-    | [], h => False.elim <| h rfl
-    | a :: l, _ => ⟨a, by simp⟩
+theorem ne_zero_iff_exists_mem {s : Multiset α} : s ≠ 0 ↔ ∃ a, a ∈ s := by
+  rw [← not_iff_not]
+  push Not
+  rw [eq_zero_iff_forall_notMem]
+
+alias ⟨exists_mem_of_ne_zero, _⟩ := ne_zero_iff_exists_mem
 
 theorem empty_or_exists_mem (s : Multiset α) : s = 0 ∨ ∃ a, a ∈ s :=
   or_iff_not_imp_left.mpr Multiset.exists_mem_of_ne_zero
