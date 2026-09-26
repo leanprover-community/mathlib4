@@ -254,6 +254,10 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
 
+theorem isClosed_compl_and_isNowhereDense_compl {s : Set X} :
+    IsClosed sᶜ ∧ IsNowhereDense sᶜ ↔ IsOpen s ∧ Dense s := by
+  rw [isClosed_isNowhereDense_iff_compl, compl_compl]
+
 /-- To check that `s` is nowhere dense, it suffices to check that no point of `s`
 is in the interior of `closure s`. -/
 lemma isNowhereDense_iff_disjoint {s : Set X} :

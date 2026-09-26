@@ -236,6 +236,7 @@ end Topology
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ.
 Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
+@[mk_iff]
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 
