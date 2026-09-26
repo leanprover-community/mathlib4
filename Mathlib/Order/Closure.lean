@@ -57,6 +57,7 @@ variable (α : Type*) {ι : Sort*} {κ : ι → Sort*}
 
 /-- A closure operator on the preorder `α` is a monotone function which is extensive (every `x`
 is less than its closure) and idempotent. -/
+@[wikidata Q10564851]
 structure ClosureOperator [Preorder α] extends α →o α where
   /-- An element is less than or equal its closure -/
   le_closure' : ∀ x, x ≤ toFun x

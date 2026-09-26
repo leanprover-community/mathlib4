@@ -44,6 +44,7 @@ section CompletePartialOrder
 /--
 Complete partial orders are partial orders where every directed set has a least upper bound.
 -/
+@[wikidata Q3082805]
 class CompletePartialOrder (α : Type*) extends PartialOrder α, SupSet α, OrderBot α where
   /-- For each directed set `d`, `sSup d` is the least upper bound of `d`. -/
   lubOfDirected : ∀ d, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)
