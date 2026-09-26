@@ -106,7 +106,7 @@ def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α �
 end Pointed
 
 /-- `Option` as a functor from types to pointed types. This is the free functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def typeToPointed : Type u ⥤ Pointed.{u} where
   obj X := ⟨Option X, none⟩
   map f := ⟨Option.map f, rfl⟩

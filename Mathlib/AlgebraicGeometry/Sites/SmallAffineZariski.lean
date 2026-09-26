@@ -81,7 +81,7 @@ lemma basicOpen_le (U : X.AffineZariskiSite) (f : Γ(X, U.toOpens)) : U.basicOpe
 
 variable (X) in
 /-- The inclusion functor from `X.AffineZariskiSite` to `X.Opens`. -/
-@[simps! obj]
+@[implicit_reducible, simps! obj]
 def toOpensFunctor : X.AffineZariskiSite ⥤ X.Opens := toOpens_mono.functor
 
 instance : (toOpensFunctor X).Faithful where
@@ -221,7 +221,6 @@ category instance on the indices. -/
       ((iSup_affineOpens_eq_top X).ge (Set.mem_univ x))
     exact ⟨U, ⟨x, hxU⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
   trans f := X.homOfLE (((Scheme.AffineZariskiSite.toOpensFunctor _).map f).le)
   directed {U V} x := by
@@ -266,7 +265,6 @@ variable (X) in
   ι.naturality {U V} f := by dsimp; rw [V.2.map_fromSpec U.2]; simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F} :
     α.Coequifibered ↔ ∀ (U : X.AffineZariskiSite) (f : Γ(X, U.1)),

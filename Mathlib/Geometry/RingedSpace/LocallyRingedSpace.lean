@@ -141,7 +141,7 @@ instance : Category LocallyRingedSpace.{u} where
   comp f g := comp f g
 
 /-- The forgetful functor from `LocallyRingedSpace` to `SheafedSpace CommRing`. -/
-@[simps]
+@[implicit_reducible, simps]
 def forgetToSheafedSpace : LocallyRingedSpace.{u} ⥤ SheafedSpace CommRingCat.{u} where
   obj X := X.toSheafedSpace
   map f := InducedCategory.homMk f.1
@@ -160,7 +160,7 @@ def homMk {X Y : LocallyRingedSpace.{u}} (f : X.toSheafedSpace ⟶ Y.toSheafedSp
   prop := by assumption
 
 /-- The forgetful functor from `LocallyRingedSpace` to `Top`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def forgetToTop : LocallyRingedSpace.{u} ⥤ TopCat.{u} :=
   forgetToSheafedSpace ⋙ SheafedSpace.forget _
 

@@ -151,7 +151,7 @@ end GrothendieckTopology
 variable (C) in
 /-- The presheaf sending each object to the type of sieves on it. This will turn out to be a
 subobject classifier for the category of presheaves. -/
-@[simps]
+@[implicit_reducible, simps]
 def Functor.sieves : Cᵒᵖ ⥤ Type max v u where
   obj X := Sieve X.unop
   map f := ↾fun S ↦ S.pullback f.unop

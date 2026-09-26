@@ -107,7 +107,7 @@ lemma transitionMap_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
   simp [← Functor.map_comp_assoc, cocone_ι_transitionMap, pullback.map_comp_assoc]
 
 /-- (Implementation): Underlying functor of associated relative gluing datum. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def functor : 𝒰.I₀ ⥤ Scheme where
   obj i := (d.cocone i).pt.left
   map {i j} hij := (d.transitionMap hij).left
@@ -145,7 +145,6 @@ lemma isPullback {i j : 𝒰.I₀} (hij : i ⟶ j) :
   · simpa [← cancel_epi iso2.hom] using! congr($(heq).left)
   · exact (Over.w iso1.inv).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The relative gluing datum associated to the family of the `colim Dᵢ`. -/
 @[simps natTrans_app, simps -isSimp functor]
 noncomputable

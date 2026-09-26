@@ -111,13 +111,12 @@ def intersectionOfLocallyDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompPr
       exact 𝒰.property_trans _
 
 /-- The canonical diagram induced by a locally directed cover. -/
-@[simps]
+@[implicit_reducible, simps]
 def functorOfLocallyDirected : 𝒰.I₀ ⥤ Scheme.{u} where
   obj := 𝒰.X
   map := 𝒰.trans
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected where
   cond {i j k} fi fj xi xj hxij := by
     simp only [Functor.comp_obj, functorOfLocallyDirected_obj, forget_obj, Functor.comp_map,

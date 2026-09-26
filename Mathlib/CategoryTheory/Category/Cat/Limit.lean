@@ -43,10 +43,9 @@ instance categoryObjects {F : J ⥤ Cat.{u, u}} {j} :
     SmallCategory ((F ⋙ Cat.objects.{u, u}).obj j) :=
   (F.obj j).str
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition:
 the diagram whose limit gives the morphism space between two objects of the limit category. -/
-@[simps]
+@[implicit_reducible, simps]
 def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
     J ⥤ Type v where
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
@@ -63,7 +62,6 @@ def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
     let : Category (objects.obj (F.obj Z)) := (inferInstance : Category (F.obj Z))
     simp [Functor.congr_hom congr($(F.map_comp f g).toFunctor) h, eqToHom_map]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects) :) where
   Hom X Y := limit (homDiagram X Y)
@@ -102,7 +100,6 @@ def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
 
 set_option backward.defeqAttrib.useBackward true in
 attribute [-simp] homDiagram_obj Functor.comp_obj in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
 @[simps! toFunctor]
 def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=

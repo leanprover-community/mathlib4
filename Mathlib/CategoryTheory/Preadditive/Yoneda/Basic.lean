@@ -68,7 +68,7 @@ def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrpCat.{v} where
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def preadditiveCoyonedaObj (X : C) : C ⥤ ModuleCat.{v} (End X)ᵐᵒᵖ where
   obj Y := ↧(X ⟶ Y)
   map f := ModuleCat.ofHom

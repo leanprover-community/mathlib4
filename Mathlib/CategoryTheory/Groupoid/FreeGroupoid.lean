@@ -131,6 +131,7 @@ instance instGroupoid : Groupoid (Quiver.FreeGroupoid V) where
   comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp
 
 /-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V` -/
+@[implicit_reducible]
 def of (V) [Quiver V] : V ⥤q Quiver.FreeGroupoid V where
   obj X := ⟨X⟩
   map f := Quot.mk _ f.toPosPath
@@ -170,6 +171,7 @@ section UniversalProperty
 variable {V' : Type u'} [Groupoid V']
 
 /-- The lift of a prefunctor to a groupoid, to a functor from `FreeGroupoid V` -/
+@[implicit_reducible]
 def lift (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ V' :=
   CategoryTheory.Quotient.lift _ (Paths.lift <| Quiver.Symmetrify.lift φ) <| by
     rintro _ _ _ _ ⟨X, Y, f⟩

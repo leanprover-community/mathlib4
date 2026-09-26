@@ -87,6 +87,7 @@ variable (C : Type u) [EnrichedCategory V C]
 
 /-- The functor going from the underlying category of the enriched category `Cᵒᵖ`
 to the opposite of the underlying category of the enriched category `C`. -/
+@[implicit_reducible]
 def forgetEnrichmentOppositeEquivalence.functor :
     ForgetEnrichment V Cᵒᵖ ⥤ (ForgetEnrichment V C)ᵒᵖ where
   obj x := x
@@ -100,6 +101,7 @@ def forgetEnrichmentOppositeEquivalence.functor :
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor going from the opposite of the underlying category of the enriched category `C`
 to the underlying category of the enriched category `Cᵒᵖ`. -/
+@[implicit_reducible]
 def forgetEnrichmentOppositeEquivalence.inverse :
     (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEnrichment V Cᵒᵖ where
   obj x := x
@@ -115,7 +117,6 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     rw [this, ← Category.assoc]
     congr 1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the underlying category of the enriched category `Cᵒᵖ` and
 the opposite of the underlying category of the enriched category `C`. -/
 @[simps]

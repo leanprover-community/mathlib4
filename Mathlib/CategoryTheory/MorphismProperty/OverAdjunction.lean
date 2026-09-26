@@ -38,7 +38,7 @@ variable {P} [P.IsStableUnderComposition]
 
 /-- If `P` is stable under composition and `f : X ⟶ Y` satisfies `P`,
 this is the functor `P.Over Q X ⥤ P.Over Q Y` given by composing with `f`. -/
-@[simps! obj_left obj_hom map_left]
+@[implicit_reducible, simps! obj_left obj_hom map_left]
 def Over.map {f : X ⟶ Y} (hPf : P f) : P.Over Q X ⥤ P.Over Q Y :=
   Comma.mapRight _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ X.prop hPf
 

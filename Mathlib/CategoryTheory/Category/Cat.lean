@@ -362,6 +362,7 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
+@[implicit_reducible]
 def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
   map F := ↾F.toFunctor.obj

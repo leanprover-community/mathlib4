@@ -47,6 +47,7 @@ instance fiberCategory : Category (Fiber p S) where
   comp φ ψ := ⟨φ.val ≫ ψ.val, by have := φ.2; have := ψ.2; infer_instance⟩
 
 /-- The functor including `Fiber p S` into `𝒳`. -/
+@[implicit_reducible]
 def fiberInclusion : Fiber p S ⥤ 𝒳 where
   obj a := a.1
   map φ := φ.1
@@ -112,6 +113,7 @@ variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F :
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
 we get an induced functor `C ⥤ Fiber p S` that `F` factors through. -/
+@[implicit_reducible]
 def inducedFunctor : C ⥤ Fiber p S where
   obj x := ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
   map φ := ⟨F.map φ, of_commsq _ _ _ (congr_obj hF _) (congr_obj hF _) <|

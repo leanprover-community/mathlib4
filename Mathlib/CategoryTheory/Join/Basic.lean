@@ -114,7 +114,7 @@ section Inclusions
 Terms of the form `(inclLeft C D).map f` should be treated as primitive when working with joins
 and one should avoid trying to reduce them. For this reason, there is no `inclLeft_map` simp
 lemma. -/
-@[simps! obj]
+@[implicit_reducible, simps! obj]
 def inclLeft : C ⥤ C ⋆ D where
   obj := left
   map := ULift.up
@@ -123,7 +123,7 @@ def inclLeft : C ⥤ C ⋆ D where
 Terms of the form `(inclRight C D).map f` should be treated as primitive when working with joins
 and one should avoid trying to reduce them. For this reason, there is no `inclRight_map` simp
 lemma. -/
-@[simps! obj]
+@[implicit_reducible, simps! obj]
 def inclRight : D ⥤ C ⋆ D where
   obj := right
   map := ULift.up
