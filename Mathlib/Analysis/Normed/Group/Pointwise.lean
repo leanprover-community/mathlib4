@@ -134,11 +134,11 @@ theorem ball_one_div_singleton : ball 1 δ / {x} = ball x⁻¹ δ := by
 
 @[to_additive]
 theorem smul_ball_one : x • ball (1 : E) δ = ball x δ := by
-  rw [smul_ball, smul_eq_mul, mul_one]
+  rw [Metric.smul_ball, smul_eq_mul, mul_one]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_mul_closedBall : {x} * closedBall y δ = closedBall (x * y) δ := by
-  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_closedBall]
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, Metric.smul_closedBall]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_div_closedBall : {x} / closedBall y δ = closedBall (x / y) δ := by
@@ -170,7 +170,7 @@ theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := b
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_mul_sphere : {x} * sphere y δ = sphere (x * y) δ := by
-  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_sphere]
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, Metric.smul_sphere]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_div_sphere : {x} / sphere y δ = sphere (x / y) δ := by
