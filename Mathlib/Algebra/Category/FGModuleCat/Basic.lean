@@ -234,7 +234,7 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 -/
 @[simp]
 theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
-    (FGModuleCatEvaluation K V).hom.hom (A := ↧(Dual K V) ⊗ V.obj) (B := 𝟙_ (ModuleCat K)) (f ⊗ₜ x)
+    (FGModuleCatEvaluation K V).hom.hom (X := ↧(Dual K V) ⊗ V.obj) (Y := 𝟙_ (ModuleCat K)) (f ⊗ₜ x)
       = f.toFun x :=
   contractLeft_apply f x
 

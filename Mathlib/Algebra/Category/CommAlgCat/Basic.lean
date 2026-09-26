@@ -59,51 +59,21 @@ meta def delabOf : Delab := CategoryTheory.delabOf
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Algebra R X] : (of R X : Type v) = X := rfl
 
-/-- The type of morphisms in `CommAlgCat R`. -/
-@[ext]
-structure Hom (A B : CommAlgCat.{v} R) where
-  _mkInternal ::
-  /-- The underlying algebra map. -/
-  hom' : A →ₐ[R] B
-
-instance : Category (CommAlgCat.{v} R) where
-  Hom A B := Hom A B
-  id A := ⟨AlgHom.id R A⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-instance : ConcreteCategory (CommAlgCat.{v} R) (· →ₐ[R] ·) where
-  hom := Hom.hom'
-  ofHom := Hom._mkInternal
-
-/-- Turn a morphism in `CommAlgCat` back into an `AlgHom`. -/
-abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommAlgCat R) f
-
-/-- Typecheck an `AlgHom` as a morphism in `CommAlgCat`. -/
-abbrev ofHom (f : X →ₐ[R] Y) : of R X ⟶ of R Y := ConcreteCategory.ofHom (C := CommAlgCat R) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : CommAlgCat.{v} R) (f : Hom A B) := f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category (CommAlgCat.{v} R) (· →ₐ[R] ·) (AlgHom.id R) AlgHom.comp
+  with_of_hom {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y]
+  hom_type (X →ₐ[R] Y) from (of R X) to (of R Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (A : CommAlgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
-
-@[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by simp
 
 @[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
-
-@[simp] lemma hom_ofHom (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
-@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
 @[simp] lemma ofHom_id : ofHom (.id R X) = 𝟙 (of R X) := rfl
 
