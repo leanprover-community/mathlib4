@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.Multiset.OrderedMonoid
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
@@ -101,6 +102,12 @@ theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : 
 /-- If `f : M → N` is a subadditive function, `f (x + y) ≤ f x + f y`, `f 0 = 0`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
 add_decl_doc le_sum_of_subadditive
+
+@[to_additive]
+theorem map_prod_le_prod [IsOrderedMonoid N] {F : Type*} [FunLike F M N] [OneHomClass F M N]
+    [SubmultiplicativeHomClass F M N] (f : F) (s : Finset ι) (g : ι → M) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_prod_of_submultiplicative f (map_one f).le (map_mul_le_mul f) s g
 
 variable {f g : ι → N} {s t : Finset ι}
 
