@@ -579,12 +579,12 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     that their images also belong to a common cylinder of length `n`. This is a case analysis:
     * if both `x, y ∈ s`, then this is clear.
     * if `x ∈ s` but `y ∉ s`, then the longest prefix `w` of `y` shared by an element of `s` is of
-    length at least `n` (because of `x`), and then `f y` starts with `w` and therefore stays in the
-    same length `n` cylinder.
+      length at least `n` (because of `x`), and then `f y` starts with `w` and therefore stays in
+      the same length `n` cylinder.
     * if `x ∉ s`, `y ∉ s`, let `w` be the longest prefix of `x` shared by an element of `s`. If its
-    length is `< n`, then it is also the longest prefix of `y`, and we get `f x = f y = z_w`.
-    Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
-    `f y` are again in the same `n`-cylinder, as desired. -/
+      length is `< n`, then it is also the longest prefix of `y`, and we get `f x = f y = z_w`.
+      Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x`
+      and `f y` are again in the same `n`-cylinder, as desired. -/
   classical
   set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
   have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
