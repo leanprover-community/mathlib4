@@ -764,7 +764,8 @@ lemma toZModPow_ofIntSeq_of_pow_dvd_sub
     by_contra! H
     have H' : ‖(p ^ n * e : ℚ_[p])‖ < ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ := by
       refine LE.le.trans_lt ?_ H
-      simpa using mul_le_mul_of_nonneg le_rfl e.2 (show 0 ≤ (↑p ^ n)⁻¹ by simp) zero_le_one
+      simpa using mul_le_mul_of_nonneg le_rfl (norm_le_one e)
+        (show 0 ≤ (↑p ^ n)⁻¹ by simp) zero_le_one
     rw [Padic.add_eq_max_of_ne H'.ne, sup_eq_right.mpr H'.le] at hN
     exact lt_asymm hN H
   rw [Padic.norm_int_le_pow_iff_dvd, ← Nat.cast_pow,

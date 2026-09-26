@@ -281,19 +281,32 @@ theorem lintegral_congr {f g : α → ℝ≥0∞} (h : ∀ a, f a = g a) : ∫�
 theorem setLIntegral_congr {f : α → ℝ≥0∞} {s t : Set α} (h : s =ᵐ[μ] t) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ := by rw [Measure.restrict_congr_set h]
 
-theorem setLIntegral_congr_fun_ae {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
+theorem setLIntegral_congr_fun_ae₀ {f g : α → ℝ≥0∞} {s : Set α} (hs : NullMeasurableSet s μ)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → f x = g x) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ := by
   rw [lintegral_congr_ae]
   rw [EventuallyEq]
-  rwa [ae_restrict_iff' hs]
+  rwa [ae_restrict_iff'₀ hs]
+
+theorem setLIntegral_congr_fun_ae {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
+    (hfg : ∀ᵐ x ∂μ, x ∈ s → f x = g x) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ :=
+  setLIntegral_congr_fun_ae₀ hs.nullMeasurableSet hfg
+
+theorem setLIntegral_congr_fun₀ {f g : α → ℝ≥0∞} {s : Set α} (hs : NullMeasurableSet s μ)
+    (hfg : EqOn f g s) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ :=
+  setLIntegral_congr_fun_ae₀ hs <| Eventually.of_forall hfg
 
 theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
     (hfg : EqOn f g s) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ :=
-  setLIntegral_congr_fun_ae hs <| Eventually.of_forall hfg
+  setLIntegral_congr_fun₀ hs.nullMeasurableSet hfg
+
+lemma setLIntegral_eq_zero₀ {f : α → ℝ≥0∞} {s : Set α} (hs : NullMeasurableSet s μ)
+    (h's : EqOn f 0 s) :
+    ∫⁻ x in s, f x ∂μ = 0 := by
+  simp [setLIntegral_congr_fun₀ hs h's]
 
 lemma setLIntegral_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s) (h's : EqOn f 0 s) :
-    ∫⁻ x in s, f x ∂μ = 0 := by
-  simp [setLIntegral_congr_fun hs h's]
+    ∫⁻ x in s, f x ∂μ = 0 :=
+  setLIntegral_eq_zero₀ hs.nullMeasurableSet h's
 
 section
 
@@ -502,10 +515,6 @@ theorem lintegral_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ�
   refine ⟨⟨φ.restrict s, fun x => ?_⟩, le_rfl⟩
   simp [hφ x, hs, indicator_le_indicator]
 
-lemma setLIntegral_indicator {s t : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
-    ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
-  rw [lintegral_indicator hs, Measure.restrict_restrict hs]
-
 theorem lintegral_indicator₀ {s : Set α} (hs : NullMeasurableSet s μ) (f : α → ℝ≥0∞) :
     ∫⁻ a, s.indicator f a ∂μ = ∫⁻ a in s, f a ∂μ := by
   rw [← lintegral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
@@ -516,6 +525,10 @@ lemma setLIntegral_indicator₀ (f : α → ℝ≥0∞) {s t : Set α}
     (hs : NullMeasurableSet s (μ.restrict t)) :
     ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ := by
   rw [lintegral_indicator₀ hs, Measure.restrict_restrict₀ hs]
+
+lemma setLIntegral_indicator {s t : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
+    ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ :=
+  setLIntegral_indicator₀ f hs.nullMeasurableSet
 
 theorem lintegral_indicator_const_le (s : Set α) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ ≤ c * μ s :=
@@ -539,12 +552,12 @@ lemma setLIntegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hs
   · rfl
   · exact Function.support_subset_iff'.1 hsf x h
 
-theorem setLIntegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : ℝ≥0∞) :
+theorem setLIntegral_eq_const {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (r : ℝ≥0∞) :
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
   have : ∀ x ∈ { x | f x = r }, f x = r := fun _ hx => hx
-  rw [setLIntegral_congr_fun _ this]
+  rw [setLIntegral_congr_fun₀ _ this]
   · rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
-  · exact hf (measurableSet_singleton r)
+  · exact hf.nullMeasurableSet_preimage (measurableSet_singleton r)
 
 @[to_fun lintegral_indicator_fun_one_le]
 theorem lintegral_indicator_one_le (s : Set α) : ∫⁻ a, s.indicator 1 a ∂μ ≤ μ s :=
@@ -627,21 +640,30 @@ theorem lintegral_inter_add_sdiff {B : Set α} (f : α → ℝ≥0∞) (A : Set 
 
 @[deprecated (since := "2026-06-03")] alias lintegral_inter_add_diff := lintegral_inter_add_sdiff
 
-theorem lintegral_add_compl (f : α → ℝ≥0∞) {A : Set α} (hA : MeasurableSet A) :
-    ∫⁻ x in A, f x ∂μ + ∫⁻ x in Aᶜ, f x ∂μ = ∫⁻ x, f x ∂μ := by
-  rw [← lintegral_add_measure, Measure.restrict_add_restrict_compl hA]
+theorem lintegral_add_compl₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
+    ∫⁻ x in s, f x ∂μ + ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ := by
+  rw [← lintegral_add_measure, Measure.restrict_add_restrict_compl₀ hs]
 
-lemma lintegral_piecewise (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ j, Decidable (j ∈ s)] :
+theorem lintegral_add_compl (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    ∫⁻ x in s, f x ∂μ + ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ :=
+  lintegral_add_compl₀ f hs.nullMeasurableSet
+
+lemma lintegral_piecewise (hs : NullMeasurableSet s μ) (f g : α → ℝ≥0∞) [∀ j, Decidable (j ∈ s)] :
     ∫⁻ a, s.piecewise f g a ∂μ = ∫⁻ a in s, f a ∂μ + ∫⁻ a in sᶜ, g a ∂μ := by
-  rw [← lintegral_add_compl _ hs]
+  rw [← lintegral_add_compl₀ _ hs]
   congr 1
-  · exact setLIntegral_congr_fun hs <| fun _ ↦ Set.piecewise_eq_of_mem _ _ _
-  · exact setLIntegral_congr_fun hs.compl <| fun _ ↦ Set.piecewise_eq_of_notMem _ _ _
+  · exact setLIntegral_congr_fun₀ hs <| fun _ ↦ piecewise_eq_of_mem _ _ _
+  · exact setLIntegral_congr_fun₀ hs.compl <| fun _ ↦ piecewise_eq_of_notMem _ _ _
+
+theorem setLIntegral_compl₀ {f : α → ℝ≥0∞} {s : Set α} (hsm : NullMeasurableSet s μ)
+    (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
+    ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
+  rw [← lintegral_add_compl₀ (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
 
 theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
-    ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
-  rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
+    ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ :=
+  setLIntegral_compl₀ hsm.nullMeasurableSet hfs
 
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
@@ -649,21 +671,24 @@ theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
   simp only [lintegral_def, iSup_comm (ι := ι),
     SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
 
-theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
+theorem lintegral_max {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     ∫⁻ x, max (f x) (g x) ∂μ =
       ∫⁻ x in { x | f x ≤ g x }, g x ∂μ + ∫⁻ x in { x | g x < f x }, f x ∂μ := by
-  have hm : MeasurableSet { x | f x ≤ g x } := measurableSet_le hf hg
-  rw [← lintegral_add_compl (fun x => max (f x) (g x)) hm]
+  have hm : NullMeasurableSet { x | f x ≤ g x } μ := (nullMeasurableSet_le hf hg)
+  rw [← lintegral_add_compl₀ (fun x ↦ max (f x) (g x)) hm]
   simp only [← compl_ofPred, ← not_le]
-  refine congr_arg₂ (· + ·) (setLIntegral_congr_fun hm ?_) (setLIntegral_congr_fun hm.compl ?_)
+  refine congr_arg₂ (· + ·) (setLIntegral_congr_fun₀ hm ?_) (setLIntegral_congr_fun₀ hm.compl ?_)
   exacts [fun x => max_eq_right (a := f x) (b := g x),
     fun x (hx : ¬ f x ≤ g x) => max_eq_left (not_le.1 hx).le]
 
-theorem setLIntegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) (s : Set α) :
+theorem setLIntegral_max {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (s : Set α) :
     ∫⁻ x in s, max (f x) (g x) ∂μ =
       ∫⁻ x in s ∩ { x | f x ≤ g x }, g x ∂μ + ∫⁻ x in s ∩ { x | g x < f x }, f x ∂μ := by
-  rw [lintegral_max hf hg, restrict_restrict, restrict_restrict, inter_comm s, inter_comm s]
-  exacts [measurableSet_lt hg hf, measurableSet_le hf hg]
+  have hf' := hf.mono_measure (restrict_le_self (s := s))
+  have hg' := hg.mono_measure (restrict_le_self (s := s))
+  rw [lintegral_max hf' hg', restrict_restrict₀, restrict_restrict₀, inter_comm s, inter_comm s]
+  exacts [nullMeasurableSet_lt hg' hf', nullMeasurableSet_le hf' hg']
 
 /-- Lebesgue integral of a bounded function over a set of finite measure is finite.
 Note that this lemma assumes no regularity of either `f` or `s`. -/

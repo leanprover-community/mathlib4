@@ -445,6 +445,13 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
   induction f₂ using Quotient.inductionOn'
   rfl
 
+theorem exists_pullback_eq_inf_of_mono [HasImages C] (f : X ⟶ Y) [Mono f] (Y' : Subobject Y) :
+    («exists» f).obj ((pullback f).obj Y') = Y' ⊓ mk f := by
+  rw [exists_iso_map]
+  change (map (MonoOver.mk f).arrow).obj ((pullback (MonoOver.mk f).arrow).obj Y') = _
+  rw [← inf_eq_map_pullback', inf_comm]
+  rfl
+
 theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
     (f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) := by
   convert! inf_eq_map_pullback' (representative.obj f₁) f₂
@@ -507,6 +514,31 @@ theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} 
 theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : Y.Factors f) :
     (X ⊔ Y).Factors f :=
   factors_of_le f le_sup_right P
+
+/-- If `C` has binary coproducts and `f g : Subobject A`, then `f ⨿ g ⟶ A` factors as
+  `f ⨿ g ⟶ f ⊔ g ⟶ A` -/
+@[simps, implicit_reducible]
+def supMonoFactorisation {A : C} (f g : Subobject A) :
+    MonoFactorisation (coprod.desc f.arrow g.arrow) where
+  I := underlying.obj (f ⊔ g)
+  m := (f ⊔ g).arrow
+  e := coprod.desc (f.ofLE (f ⊔ g) le_sup_left) (g.ofLE (f ⊔ g) le_sup_right)
+
+/-- If `C` has binary coproducts, then `f ⊔ g` is an image of `f ⨿ g ⟶ A`. -/
+def supIsImage {A : C} (f g : Subobject A) :
+    IsImage (supMonoFactorisation f g) where
+  lift F := by
+    refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
+    · refine le_mk_of_comm (coprod.inl ≫ F.e) ?_
+      simp only [assoc, MonoFactorisation.fac, coprod.inl_desc]
+    · refine le_mk_of_comm (coprod.inr ≫ F.e) ?_
+      simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
+
+/-- If `C` has binary coproducts, then `f ⊔ g ≅ image (f ⨿ g ⟶ A)`. -/
+@[simps!]
+def supIsoImage {A : C} (f g : Subobject A) :
+    underlying.obj (f ⊔ g) ≅ image (coprod.desc f.arrow g.arrow) :=
+  IsImage.isoExt (supIsImage ..) <| Image.isImage _
 
 variable [HasInitial C] [InitialMonoClass C]
 

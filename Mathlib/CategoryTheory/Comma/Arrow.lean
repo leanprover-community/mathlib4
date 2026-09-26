@@ -344,9 +344,10 @@ def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i �
   Arrow.homMk (sq.left ≫ f) (sq.right) (by simp [w_mk sq])
 
 /-- The functor sending an arrow to its source. -/
-@[to_dual (attr := simps!) /-- The functor sending an arrow to its target. -/]
-def leftFunc : Arrow C ⥤ C :=
-  Comma.fst _ _
+@[to_dual (attr := implicit_reducible, simps!) /-- The functor sending an arrow to its target. -/]
+def leftFunc : Arrow C ⥤ C where
+  obj := Arrow.left
+  map := Arrow.Hom.left
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
