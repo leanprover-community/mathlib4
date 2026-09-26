@@ -114,7 +114,7 @@ lemma neg_of_Z_eq_zero [NoZeroDivisors R] {P : R × R × R} (hP : W'.Equation P)
 
 lemma neg_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     W.neg P = P z • (P x / P z, W.toAffine.negY (P x / P z) (P y / P z), 1) := by
-  rw [neg, smul_eq, mul_div_cancel₀ _ hPz, ← negY_of_Z_ne_zero hPz, mul_div_cancel₀ _ hPz, mul_one]
+  rw [neg, smul_eq, mul_div_cancel₀ _ hPz, mul_comm <| P z, ← negY_of_Z_ne_zero hPz, mul_one]
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : F × F × F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
     W.Nonsingular (P x / P z, W.toAffine.negY (P x / P z) (P y / P z), 1) :=
@@ -225,24 +225,26 @@ lemma add_of_Z_eq_zero_right [NoZeroDivisors R] {P Q : R × R × R} (hQ : W'.Equ
 lemma add_of_Y_eq {P Q : F × F × F} (hP : W.Equation P) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z) (hy' : P y * Q z = W.negY Q * P z) :
     W.add P Q = W.dblU P • (0, 1, 0) := by
-  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx hy, dblXYZ_of_Y_eq hP hPz hQz hx hy hy']
+  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz.isUnit hQz.isUnit hx hy,
+    dblXYZ_of_Y_eq hP hPz hQz hx hy hy']
 
 lemma add_of_Y_ne {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ Q y * P z) :
     W.add P Q = addU P Q • (0, 1, 0) := by
   rw [add_of_not_equiv <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
 
-lemma add_of_Y_ne' [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+lemma add_of_Y_ne' {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.add P Q = W.dblZ P •
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1) := by
-  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy,
+  rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz.isUnit hQz.isUnit hx <|
+      Y_eq_of_Y_ne' hP hQ hPz.isUnit hQz.isUnit hx (sub_ne_zero.mpr hy).isUnit,
     dblXYZ_of_Z_ne_zero hP hQ hPz hQz hx hy]
 
-lemma add_of_X_ne [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+lemma add_of_X_ne {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.add P Q = W.addZ P Q •
       (W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -250,7 +252,7 @@ lemma add_of_X_ne [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : 
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1) := by
   rw [add_of_not_equiv <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
 
-private lemma nonsingular_add_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F}
+private lemma nonsingular_add_of_Z_ne_zero {P Q : F × F × F}
     (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) : W.Nonsingular
       (W.toAffine.addX (P x / P z) (Q x / Q z)
@@ -258,7 +260,8 @@ private lemma nonsingular_add_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F}
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1) :=
   (nonsingular_some ..).mpr <| Affine.nonsingular_add ((nonsingular_of_Z_ne_zero hPz).mp hP)
-    ((nonsingular_of_Z_ne_zero hQz).mp hQ) <| by rwa [← X_eq_iff hPz hQz, ← Y_eq_iff' hPz hQz]
+    ((nonsingular_of_Z_ne_zero hQz).mp hQ) <| not_and.mp <| by
+      rwa [← X_eq_iff_of_Z_ne_zero hPz hQz, ← Y_eq'_iff_of_Z_ne_zero hPz hQz]
 
 lemma nonsingular_add {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
     W.Nonsingular <| W.add P Q := by
@@ -276,14 +279,16 @@ lemma nonsingular_add {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsing
       · have := W.nonsingular_zero
         by_cases hy : P y * Q z = Q y * P z
         · rwa [add_of_Y_eq hP.left hPz hQz hxy.left hy hxy.right,
-            nonsingular_smul _ <| isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right]
+            nonsingular_smul _ <| isUnit_dblU_of_Y_eq_of_Y_eq' hP (Ne.isUnit hPz) (Ne.isUnit hQz)
+              hxy.left hy hxy.right]
         · rwa [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             nonsingular_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy]
       · classical
         have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
         by_cases hx : P x * Q z = Q x * P z
         · rwa [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx, nonsingular_smul _ <|
-              isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx]
+              isUnit_dblZ_of_Y_ne' hP.left hQ.left (Ne.isUnit hPz) (Ne.isUnit hQz) hx
+                (sub_ne_zero.mpr <| not_and.mp hxy hx).isUnit]
         · rwa [add_of_X_ne hP.left hQ.left hPz hQz hx,
             nonsingular_smul _ <| isUnit_addZ_of_X_ne hP.left hQ.left hx]
 
@@ -325,11 +330,11 @@ lemma addMap_of_Y_eq {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Equation
     W.addMap ⟦P⟧ ⟦Q⟧ = ⟦(0, 1, 0)⟧ := by
   by_cases hy : P y * Q z = Q y * P z
   · rw [addMap_eq, add_of_Y_eq hP.left hPz hQz hx hy hy',
-      mk_smul _ <| isUnit_dblU_of_Y_eq hP hPz hQz hx hy hy']
+      mk_smul _ <| isUnit_dblU_of_Y_eq_of_Y_eq' hP hPz.isUnit hQz.isUnit hx hy hy']
   · rw [addMap_eq, add_of_Y_ne hP.left hQ hPz hQz hx hy,
       mk_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy]
 
-lemma addMap_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
+lemma addMap_of_Z_ne_zero {P Q : F × F × F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) :
     W.addMap ⟦P⟧ ⟦Q⟧ =
       ⟦(W.toAffine.addX (P x / P z) (Q x / Q z)
@@ -338,7 +343,8 @@ lemma addMap_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F} (hP : W.Equation P
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1)⟧ := by
   by_cases hx : P x * Q z = Q x * P z
   · rw [addMap_eq, add_of_Y_ne' hP hQ hPz hQz hx <| not_and.mp hxy hx,
-      mk_smul _ <| isUnit_dblZ_of_Y_ne' hP hQ hPz hQz hx <| not_and.mp hxy hx]
+      mk_smul _ <| isUnit_dblZ_of_Y_ne' hP hQ hPz.isUnit hQz.isUnit hx
+        (sub_ne_zero.mpr <| not_and.mp hxy hx).isUnit]
   · rw [addMap_eq, add_of_X_ne hP hQ hPz hQz hx, mk_smul _ <| isUnit_addZ_of_X_ne hP hQ hx]
 
 lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
@@ -480,7 +486,8 @@ private lemma toAffine_add_of_Z_ne_zero [DecidableEq F] {P Q : F × F × F}
     toAffine W P + toAffine W Q := by
   rw [toAffine_some <| nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy, toAffine_of_Z_ne_zero hP hPz,
     toAffine_of_Z_ne_zero hQ hQz,
-    Affine.Point.add_some <| by rwa [← X_eq_iff hPz hQz, ← Y_eq_iff' hPz hQz]]
+    Affine.Point.add_some <| by
+      rwa [← X_eq_iff_of_Z_ne_zero hPz hQz, ← Y_eq'_iff_of_Z_ne_zero hPz hQz]]
 
 lemma toAffine_add [DecidableEq F] {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
     toAffine W (W.add P Q) = toAffine W P + toAffine W Q := by
@@ -497,16 +504,19 @@ lemma toAffine_add [DecidableEq F] {P Q : F × F × F} (hP : W.Nonsingular P) (h
         toAffine_of_Z_eq_zero hQz, add_zero]
     · by_cases hxy : P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z
       · rw [toAffine_of_Z_ne_zero hP hPz, toAffine_of_Z_ne_zero hQ hQz, Affine.Point.add_of_Y_eq
-            ((X_eq_iff hPz hQz).mp hxy.left) ((Y_eq_iff' hPz hQz).mp hxy.right)]
+            ((X_eq_iff_of_Z_ne_zero hPz hQz).mp hxy.left)
+            ((Y_eq'_iff_of_Z_ne_zero hPz hQz).mp hxy.right)]
         by_cases hy : P y * Q z = Q y * P z
         · rw [add_of_Y_eq hP.left hPz hQz hxy.left hy hxy.right,
-            toAffine_smul _ <| isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right, toAffine_zero]
+            toAffine_smul _ <| isUnit_dblU_of_Y_eq_of_Y_eq' hP (Ne.isUnit hPz) (Ne.isUnit hQz)
+              hxy.left hy hxy.right, toAffine_zero]
         · rw [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             toAffine_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy, toAffine_zero]
       · have := toAffine_add_of_Z_ne_zero hP hQ hPz hQz hxy
         by_cases hx : P x * Q z = Q x * P z
         · rwa [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx,
-            toAffine_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx]
+            toAffine_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left (Ne.isUnit hPz) (Ne.isUnit hQz)
+              hx (sub_ne_zero.mpr <| not_and.mp hxy hx).isUnit]
         · rwa [add_of_X_ne hP.left hQ.left hPz hQz hx,
             toAffine_smul _ <| isUnit_addZ_of_X_ne hP.left hQ.left hx]
 
@@ -600,8 +610,8 @@ protected lemma map_neg (f : R →+* S) (P : R × R × R) : (W'.map f).neg (f �
   simp_rw [neg, map_negY, map_eq]
 
 @[simp]
-protected lemma map_add (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) : (W.map f).add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+protected lemma map_add (f : F →+* K) (P Q : F × F × F) :
+    (W.map f).add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
   by_cases h : P ≈ Q
   · rw [add_of_equiv <| (map_equiv_map_of_field f P Q).mpr h, add_of_equiv h, map_dblXYZ]
   · rw [add_of_not_equiv <| h.comp (map_equiv_map_of_field f P Q).mp, add_of_not_equiv h,
@@ -613,10 +623,9 @@ lemma baseChange_neg [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R 
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_neg, map_baseChange]
 
 lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K]
-    [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K) {P Q : F × F × F}
-    (hP : (W'⁄F).Nonsingular P) (hQ : (W'⁄F).Nonsingular Q) :
+    [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K) (P Q : F × F × F) :
     (W'⁄K).add (f ∘ P) (f ∘ Q) = f ∘ (W'⁄F).add P Q := by
-  rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_add _ hP hQ, map_baseChange]
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_add, map_baseChange]
 
 end Projective
 
