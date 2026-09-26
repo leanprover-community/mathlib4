@@ -30,7 +30,7 @@ to the other, use `not_symmGen_iff` and `not_incompRel_iff_symmGen`.
 * `IncompRel`: The incomparability relation. `IncompRel r a b` means that `a` and `b` are related in
   neither direction by `r`.
 
-## Todo
+## TODO
 
 These definitions should be linked to `IsChain` and `IsAntichain`.
 -/
