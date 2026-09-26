@@ -59,6 +59,18 @@ theorem coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
   rfl
 
 @[to_additive]
+instance instPPow {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H' G]
+    [ContMDiffMul I' n G] :
+    Pow C^n⟮I, N; I', G⟯ ℕ+ where
+  pow f n := ⟨(f : N → G) ^ n, (contMDiff_ppow n).comp f.contMDiff⟩
+
+@[to_additive (attr := simp)]
+theorem coe_ppow {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H' G]
+    [ContMDiffMul I' n G] (f : C^n⟮I, N; I', G⟯) (n : ℕ+) :
+    ⇑(f ^ n) = (f : N → G) ^ n :=
+  rfl
+
+@[to_additive]
 instance instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] :
     Pow C^n⟮I, N; I', G⟯ ℕ where
@@ -82,12 +94,12 @@ under pointwise multiplication.
 @[to_additive]
 instance semigroup {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : Semigroup C^n⟮I, N; I', G⟯ :=
-  DFunLike.coe_injective.semigroup _ coe_mul
+  DFunLike.coe_injective.semigroup _ coe_mul coe_ppow
 
 @[to_additive]
 instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : Monoid C^n⟮I, N; I', G⟯ :=
-  DFunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
+  DFunLike.coe_injective.monoid _ coe_one coe_mul coe_ppow coe_pow
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion to a function as an `AddMonoidHom`.
@@ -131,7 +143,7 @@ variable {I I'}
 @[to_additive]
 instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : CommMonoid C^n⟮I, N; I', G⟯ :=
-  DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
+  DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_ppow coe_pow
 
 @[to_additive]
 instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' n G] :

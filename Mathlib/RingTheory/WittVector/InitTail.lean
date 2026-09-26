@@ -169,8 +169,10 @@ elab_rules : tactic
     ))
   if let some e := a then
     evalTactic <|← `(tactic|(
-      simp only [WittVector.add_coeff, WittVector.mul_coeff, WittVector.neg_coeff,
-        WittVector.sub_coeff, WittVector.nsmul_coeff, WittVector.zsmul_coeff, WittVector.pow_coeff]
+      simp only [
+        WittVector.add_coeff, WittVector.mul_coeff, WittVector.neg_coeff, WittVector.sub_coeff,
+        WittVector.psmul_coeff, WittVector.nsmul_coeff, WittVector.zsmul_coeff,
+        WittVector.ppow_coeff, WittVector.pow_coeff]
       apply MvPolynomial.eval₂Hom_congr' (RingHom.ext_int _ _) _ rfl
       rintro ⟨b, k⟩ h -
       replace h := $e:term p _ h
@@ -201,11 +203,17 @@ theorem init_neg (x : 𝕎 R) (n : ℕ) : init n (-x) = init n (-init n x) := by
 theorem init_sub (x y : 𝕎 R) (n : ℕ) : init n (x - y) = init n (init n x - init n y) := by
   init_ring using wittSub_vars
 
+theorem init_psmul (m : ℕ+) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
+  init_ring using fun p [Fact (Nat.Prime p)] n => wittPSMul_vars p m n
+
 theorem init_nsmul (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittNSMul_vars p m n
 
 theorem init_zsmul (m : ℤ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n (m • init n x) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittZSMul_vars p m n
+
+theorem init_ppow (m : ℕ+) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
+  init_ring using fun p [Fact (Nat.Prime p)] n => wittPPow_vars p m n
 
 theorem init_pow (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittPow_vars p m n
