@@ -206,6 +206,14 @@ end Ring
 
 variable {R K : Type*} [CommRing R] [Field K]
 
+/-- Conjugating a translation by an upper triangular matrix rescales its parameter. -/
+lemma upperRightHom_conj_of_upperTriangular (g : GL (Fin 2) K) (hg : g 1 0 = 0) (x : K) :
+    g * upperRightHom x * g⁻¹ = upperRightHom (g 0 0 / g 1 1 * x) := by
+  have hd : g 1 1 ≠ 0 := fun h ↦ g.det_ne_zero (by simp [Matrix.det_fin_two, hg, h])
+  simp only [mul_inv_eq_iff_eq_mul, Units.ext_iff, Units.val_mul]
+  rw [Matrix.eta_fin_two g.val]
+  simp [hg, field, add_comm]
+
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
 abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
 
