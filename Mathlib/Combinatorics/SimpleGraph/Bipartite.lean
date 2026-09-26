@@ -94,6 +94,11 @@ theorem IsBipartiteWith.symm (h : G.IsBipartiteWith s t) : G.IsBipartiteWith t s
 theorem isBipartiteWith_comm : G.IsBipartiteWith s t ↔ G.IsBipartiteWith t s :=
   ⟨IsBipartiteWith.symm, IsBipartiteWith.symm⟩
 
+/-- A subgraph of a graph that is bipartite with parts `s` and `t` is bipartite with the same
+parts. -/
+theorem IsBipartiteWith.anti {G' : SimpleGraph V} (h : G.IsBipartiteWith s t) (hle : G' ≤ G) :
+    G'.IsBipartiteWith s t := ⟨h.disjoint, fun _ _ hadj ↦ h.mem_of_adj (hle hadj)⟩
+
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then if `v` is adjacent to `w` in `G` then `w ∈ t`. -/
 theorem IsBipartiteWith.mem_of_mem_adj
     (h : G.IsBipartiteWith s t) (hv : v ∈ s) (hadj : G.Adj v w) : w ∈ t := by
@@ -508,6 +513,31 @@ def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     change (dite ..) = (dite ..) → _
     grind
+
+variable {V W : Type*}
+
+/-- A complete bipartite graph is empty iff one of its parts is empty. -/
+theorem completeBipartiteGraph_eq_bot_iff :
+    completeBipartiteGraph V W = ⊥ ↔ IsEmpty V ∨ IsEmpty W := by
+  simp [SimpleGraph.ext_iff, funext_iff, Sum.forall, isEmpty_iff,
+    (by tauto : ((V → W → False) ∧ (W → V → False)) ↔ ((V → False) ∨ (W → False)))]
+
+/-- A complete bipartite graph whose left part is empty is empty. -/
+theorem completeBipartiteGraph_eq_bot_of_isEmpty_left [IsEmpty V] :
+    completeBipartiteGraph V W = ⊥ := completeBipartiteGraph_eq_bot_iff.mpr (.inl ‹_›)
+
+/-- A complete bipartite graph whose right part is empty is empty. -/
+theorem completeBipartiteGraph_eq_bot_of_isEmpty_right [IsEmpty W] :
+    completeBipartiteGraph V W = ⊥ := completeBipartiteGraph_eq_bot_iff.mpr (.inr ‹_›)
+
+/-- A complete bipartite graph is complete iff both parts have at most one vertex. -/
+theorem completeBipartiteGraph_eq_top_iff :
+    completeBipartiteGraph V W = ⊤ ↔ Subsingleton V ∧ Subsingleton W := by
+  simp [SimpleGraph.ext_iff, funext_iff, Sum.forall, subsingleton_iff]
+
+/-- A complete bipartite graph whose parts have at most one vertex each is complete. -/
+theorem completeBipartiteGraph_eq_top_of_subsingleton [Subsingleton V] [Subsingleton W] :
+  completeBipartiteGraph V W = ⊤ := completeBipartiteGraph_eq_top_iff.mpr ⟨‹_›, ‹_›⟩
 
 end completeBipartiteGraph
 
