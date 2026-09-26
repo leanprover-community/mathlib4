@@ -164,6 +164,15 @@ theorem completeEquipartiteGraph_colorable :
 
 end CompleteEquipartiteGraph
 
+/-- Taking the remainder upon dividing by `r` produces an `r`-coloring of `turanGraph n r` for
+nonzero `r`. -/
+protected def Coloring.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Coloring (Fin r) :=
+  ⟨(.ofNat r ·), (Fin.ne_of_val_ne ·)⟩
+
+protected theorem Colorable.completeEquipartiteGraph (n r : ℕ) [NeZero r] :
+    (turanGraph n r).Colorable r :=
+  ⟨.turanGraph n r⟩
+
 open Walk
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
     G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
