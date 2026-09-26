@@ -60,25 +60,8 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff x.1 φ * coeff x.2 (inv.aux a φ) else 0 := by
   rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
-  simp only [Finsupp.single_eq_zero]
-  split_ifs; · rfl
-  congr 1
-  symm
-  apply Finset.sum_nbij' (fun (a, b) ↦ (single () a, single () b))
-    fun (f, g) ↦ (f (), g ())
-  · aesop
-  · aesop
-  · aesop
-  · aesop
-  · rintro ⟨i, j⟩ _hij
-    obtain H | H := le_or_gt n j
-    · aesop
-    rw [ite_eq_left H, ite_eq_left]
-    · rfl
-    refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
-    · rintro ⟨⟩
-      simpa [Finsupp.single_eq_same] using le_of_lt H
-    · simpa [Finsupp.single_eq_same] using hh ()
+  simp_rw [lt_iff_le_not_ge]
+  simp
 
 /-- A formal power series is invertible if the constant coefficient is invertible. -/
 def invOfUnit (φ : R⟦X⟧) (u : Rˣ) : R⟦X⟧ :=
