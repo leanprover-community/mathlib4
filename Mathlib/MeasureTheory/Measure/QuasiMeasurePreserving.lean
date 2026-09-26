@@ -20,7 +20,7 @@ absolutely continuous with respect to `μb`).
 
 ## Main definitions
 
-* `MeasureTheory.Measure.QuasiMeasurePreserving f μa μb`: `f` is quasi-measure-preserving with
+* `MeasureTheory.QuasiMeasurePreserving f μa μb`: `f` is quasi-measure-preserving with
   respect to `μa` and `μb`.
 
 -/
@@ -31,13 +31,11 @@ variable {α β γ δ : Type*}
 
 namespace MeasureTheory
 
-open Set Function ENNReal
+open Set Function ENNReal Measure
 open Filter hiding map
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {μ ν : Measure α} {s : Set α}
-
-namespace Measure
 
 /-- A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`. -/
@@ -235,8 +233,6 @@ theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G]
 
 end Pointwise
 
-end Measure
-
 open Measure
 
 theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
@@ -247,6 +243,95 @@ theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht
     (hf : QuasiMeasurePreserving f μ ν) : AEDisjoint μ (f ⁻¹' s) (f ⁻¹' t) :=
   hf.preimage_null ht
 
+/-! ### Deprecated aliases for the former `MeasureTheory.Measure` namespace -/
+
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving := MeasureTheory.QuasiMeasurePreserving
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.mk := MeasureTheory.QuasiMeasurePreserving.mk
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.measurable :=
+  MeasureTheory.QuasiMeasurePreserving.measurable
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.absolutelyContinuous :=
+  MeasureTheory.QuasiMeasurePreserving.absolutelyContinuous
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.id := MeasureTheory.QuasiMeasurePreserving.id
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.mono_left :=
+  MeasureTheory.QuasiMeasurePreserving.mono_left
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.mono_right :=
+  MeasureTheory.QuasiMeasurePreserving.mono_right
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.mono := MeasureTheory.QuasiMeasurePreserving.mono
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.comp := MeasureTheory.QuasiMeasurePreserving.comp
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.iterate :=
+  MeasureTheory.QuasiMeasurePreserving.iterate
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.aemeasurable :=
+  MeasureTheory.QuasiMeasurePreserving.aemeasurable
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.congr := MeasureTheory.QuasiMeasurePreserving.congr
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.smul_measure :=
+  MeasureTheory.QuasiMeasurePreserving.smul_measure
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.ae_map_le :=
+  MeasureTheory.QuasiMeasurePreserving.ae_map_le
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.tendsto_ae :=
+  MeasureTheory.QuasiMeasurePreserving.tendsto_ae
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.ae := MeasureTheory.QuasiMeasurePreserving.ae
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.ae_eq_comp :=
+  MeasureTheory.QuasiMeasurePreserving.ae_eq_comp
+@[deprecated (since := "2026-08-01")]
+protected alias Measure.QuasiMeasurePreserving.ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.ae_eq_comp
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.preimage_null :=
+  MeasureTheory.QuasiMeasurePreserving.preimage_null
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.preimage_mono_ae :=
+  MeasureTheory.QuasiMeasurePreserving.preimage_mono_ae
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.preimage_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.preimage_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.preimage_iterate_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.preimage_iterate_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.image_zpow_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.image_zpow_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.limsup_preimage_iterate_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.limsup_preimage_iterate_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.liminf_preimage_iterate_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.liminf_preimage_iterate_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae :=
+  MeasureTheory.QuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.restrict :=
+  MeasureTheory.QuasiMeasurePreserving.restrict
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.smul_ae_eq_of_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.smul_ae_eq_of_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.QuasiMeasurePreserving.vadd_ae_eq_of_ae_eq :=
+  MeasureTheory.QuasiMeasurePreserving.vadd_ae_eq_of_ae_eq
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.pairwise_aedisjoint_of_aedisjoint_forall_ne_one :=
+  MeasureTheory.pairwise_aedisjoint_of_aedisjoint_forall_ne_one
+@[deprecated (since := "2026-09-23")]
+protected alias Measure.pairwise_aedisjoint_of_aedisjoint_forall_ne_zero :=
+  MeasureTheory.pairwise_aedisjoint_of_aedisjoint_forall_ne_zero
+
 end MeasureTheory
 
 open MeasureTheory
@@ -256,7 +341,7 @@ namespace MeasurableEquiv
 variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α}
 
 theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
-    Measure.QuasiMeasurePreserving e.symm (μ.map e) μ :=
+    QuasiMeasurePreserving e.symm (μ.map e) μ :=
   ⟨e.symm.measurable, by rw [Measure.map_map, e.symm_comp_self, Measure.map_id] <;> measurability⟩
 
 end MeasurableEquiv
