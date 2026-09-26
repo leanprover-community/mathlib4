@@ -193,13 +193,13 @@ def ofCountableUnion (l : Set (Set α))
     (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
     (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
   refine .ofCountableInter {s | sᶜ ∈ l} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
-  · rw [mem_ofPred_eq, compl_sInter]
+  · rw [mem_ofPred, compl_sInter]
     apply hUnion (compl '' S) (hSc.image _)
     intro s hs
     rw [mem_image] at hs
     rcases hs with ⟨t, ht, rfl⟩
     apply hSp ht
-  · rw [mem_ofPred_eq]
+  · rw [mem_ofPred]
     rw [← compl_subset_compl] at hsub
     exact hmono sᶜ ht tᶜ hsub
 

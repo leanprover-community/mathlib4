@@ -543,7 +543,7 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
   by_contra! h
   have : i ∈ s.toFinset := by
     refine Set.mem_toFinset.mpr ?_
-    simp only [s, ne_eq, Set.mem_ofPred_eq]
+    simp only [s, ne_eq, Set.mem_ofPred]
     use y
     simp [h, hy]
   exact hi this

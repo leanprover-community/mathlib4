@@ -361,7 +361,7 @@ lemma finite_setOfPred_prod_infinitePlace_iSup_le {n : ℕ} (hn : n ≠ 0) (B : 
     this.finite_iff_finite.mpr (Embeddings.finite_of_norm_le K ℂ B') |>.subset
       fun _ _ ↦ by grind [infinitePlace_apply_le_of_prod_le hn B]
   refine .mk (fun x hx ↦ ?_) (fun _ _ _ _ ↦ RingOfIntegers.ext) fun a ha ↦ ?_ <;>
-    simp only [Set.mem_image, Set.mem_ofPred_eq] at *
+    simp only [Set.mem_image, Set.mem_ofPred] at *
   · exact ⟨x.isIntegral_coe, fun φ ↦ hx <| .mk φ⟩
   · rw [← mem_integralClosure_iff ℤ K] at ha
     exact ⟨⟨a, ha.1⟩, fun v ↦ v.norm_embedding_eq a ▸ ha.2 v.embedding, rfl⟩
@@ -396,11 +396,11 @@ private lemma finite_setOfPred_isIntegral_nat_mul_and_mulHeight₁_le {n : ℕ} 
       {x | IsIntegral ℤ (n * x) ∧ mulHeight₁ x ≤ B} from
     this.finite_iff_finite.mp <| finite_setOfPred_mulHeight_nat_le hn B
   refine .mk (fun a ha ↦ ?_) (fun a _ b _ h ↦ ?_) fun x ⟨hx₁, hx₂⟩ ↦ ?_
-  · simp only [Set.mem_ofPred_eq] at ha ⊢
+  · simp only [Set.mem_ofPred] at ha ⊢
     rw [mul_div_cancel₀ (a : K) hn', mulHeight₁_div_eq_mulHeight]
     exact ⟨a.isIntegral_coe, ha⟩
   · rwa [div_left_inj' hn', RingOfIntegers.eq_iff] at h
-  · simp only [Set.mem_ofPred_eq, Set.mem_image]
+  · simp only [Set.mem_ofPred, Set.mem_image]
     obtain ⟨a, ha⟩ : ∃ a : 𝓞 K, n * x = a := ⟨⟨_, hx₁⟩, rfl⟩
     refine ⟨a, ?_, (EuclideanDomain.eq_div_of_mul_eq_right hn' ha).symm⟩
     rwa [← ha, ← mulHeight₁_div_eq_mulHeight, mul_div_cancel_left₀ x hn']
@@ -413,7 +413,7 @@ theorem finite_setOfPred_mulHeight₁_le (B : ℝ) : {x : K | mulHeight₁ x ≤
       ⋃ n : Fin ⌊B⌋₊, {x : K | IsIntegral ℤ ((n + 1) * x) ∧ mulHeight₁ x ≤ B} := by
     ext x : 1
     obtain ⟨n, hn₀, hn₁, hn⟩ := exists_nat_le_mulHeight₁ x
-    simp only [Set.mem_ofPred_eq, Set.mem_iUnion, exists_and_right, iff_and_self]
+    simp only [Set.mem_ofPred, Set.mem_iUnion, exists_and_right, iff_and_self]
     refine fun h ↦ ⟨⟨n - 1, by grind [Nat.le_floor <| hn₁.trans h]⟩, ?_⟩
     rwa [← Nat.cast_add_one, Nat.sub_one_add_one hn₀]
   rw [H]

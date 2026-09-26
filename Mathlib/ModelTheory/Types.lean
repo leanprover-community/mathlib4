@@ -169,7 +169,7 @@ theorem iInter_setOfPred_subset {ι : Type*} (S : ι → L[[α]].Theory) :
     ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
       { p : T.CompleteType α | ⋃ i : ι, S i ⊆ p } := by
   ext
-  simp only [mem_iInter, mem_ofPred_eq, iUnion_subset_iff]
+  simp only [mem_iInter, mem_ofPred, iUnion_subset_iff]
 
 @[deprecated (since := "2026-07-09")] alias iInter_setOf_subset := iInter_setOfPred_subset
 

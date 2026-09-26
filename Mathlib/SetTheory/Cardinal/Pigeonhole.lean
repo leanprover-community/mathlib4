@@ -59,7 +59,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
       ha.trans
         (ge_of_eq <|
           Quotient.sound ⟨Equiv.trans ?_ (Equiv.subtypeSubtypeEquivSubtypeExists _ _).symm⟩)
-    simp only [coe_eq_subtype, mem_singleton_iff, mem_preimage, mem_ofPred_eq]
+    simp only [coe_eq_subtype, mem_singleton_iff, mem_preimage, mem_ofPred]
     rfl
   rintro x ⟨_, hx'⟩; exact hx'
 

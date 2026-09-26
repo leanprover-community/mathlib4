@@ -49,7 +49,7 @@ theorem Filter.HasBasis.tangentConeAt_eq_biInter_closure {ι} {p : ι → Prop} 
     (h : (𝓝 0).HasBasis p U) :
     tangentConeAt 𝕜 s x = ⋂ (i) (_ : p i), closure ((univ : Set 𝕜) • (U i ∩ (x + ·) ⁻¹' s)) := by
   ext y
-  simp only [tangentConeAt_def, mem_ofPred_eq, mem_iInter₂, ← map₂_smul, ← map_prod_eq_map₂,
+  simp only [tangentConeAt_def, mem_ofPred, mem_iInter₂, ← map₂_smul, ← map_prod_eq_map₂,
     ((nhdsWithin_hasBasis h _).top_prod.map _).clusterPt_iff_forall_mem_closure, image_prod,
     image2_smul]
 

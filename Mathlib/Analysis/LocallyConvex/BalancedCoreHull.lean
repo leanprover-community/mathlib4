@@ -103,7 +103,7 @@ theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
   eq_empty_of_subset_empty (balancedCore_subset _)
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
-  simp_rw [balancedCore, mem_sUnion, mem_ofPred_eq, and_assoc]
+  simp_rw [balancedCore, mem_sUnion, mem_ofPred, and_assoc]
 
 @[deprecated "Use mem_balancedCore_iff directly" (since := "2026-09-16")]
 theorem mem_balancedCoreAux_iff : x ∈ balancedCoreAux 𝕜 s ↔ ∀ r : 𝕜, 1 ≤ ‖r‖ → x ∈ r • s :=

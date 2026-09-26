@@ -311,7 +311,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
   refine ⟨C.toNNReal, fun i ↦ hC₂.trans_eq' ?_⟩
   have : {x | C.toNNReal ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
-    simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
+    simp_rw [Set.mem_ofPred, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
   rw [this, ← eLpNorm_norm _ <| (hmeas i).indicator₀
       (nullMeasurableSet_le aemeasurable_const (hmeas i).norm.aemeasurable),
     ← eLpNorm_norm (Set.indicator _ _) <| (hmeas j).indicator₀
@@ -323,7 +323,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
   have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
     intro k
     ext x
-    simp only [F, Set.indicator, Set.mem_ofPred_eq, Function.comp_apply,
+    simp only [F, Set.indicator, Set.mem_ofPred, Function.comp_apply,
       Real.toNNReal_le_iff_le_coe, coe_nnnorm]
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]

@@ -95,7 +95,7 @@ lemma ιMulti_span_fixedDegree_of_span_eq_top {s : Set M} (hs : span R s = ⊤) 
     rintro x hx
     obtain ⟨f, rfl⟩ := Set.mem_pow.mp hx
     refine mem_span_of_mem ⟨ExteriorAlgebra.ιInv ∘ Subtype.val ∘ f, ?_, ?_⟩
-    · rw [Set.mem_ofPred_eq, Set.range_comp, Set.image_subset_iff]
+    · rw [Set.mem_ofPred, Set.range_comp, Set.image_subset_iff]
       apply Subset.trans ?_ (s.image_subset_preimage_of_inverse ExteriorAlgebra.ι_leftInverse)
       grind
     · rw [ExteriorAlgebra.ιMulti_apply]

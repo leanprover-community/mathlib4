@@ -583,11 +583,11 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     intro v hv
     have hv_irred : Irreducible v.asIdeal := v.irreducible
     by_contra h_notMem
-    rw [mem_union, mem_ofPred_eq, mem_ofPred_eq] at h_notMem
+    rw [mem_union, mem_ofPred, mem_ofPred] at h_notMem
     push Not at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
       ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
-    rw [mem_ofPred_eq, h_notMem.1, h_notMem.2, sub_self] at hv
+    rw [mem_ofPred, h_notMem.1, h_notMem.2, sub_self] at hv
     exact hv (Eq.refl 0)
   exact Finite.subset (Finite.union (Ideal.finite_factors (ideal_factor_ne_zero hI haJ))
     (Ideal.finite_factors (constant_factor_ne_zero hI haJ))) h_subset

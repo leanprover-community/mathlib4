@@ -60,7 +60,7 @@ instance : IsValuativeTopology ℚ_[p] := by
     refine ⟨Units.mk0 (mulValuation.restrict (p ^ n)) ?_,
       fun z hz ↦ hball (mem_ball_zero_iff.mpr ?_)⟩
     · exact (ne_zero_iff _).mpr (pow_ne_zero _ (Nat.cast_ne_zero.mpr hp.out.ne_zero))
-    simp only [Set.mem_ofPred_eq, Units.val_mk0, restrict_lt_iff] at hz
+    simp only [Set.mem_ofPred, Units.val_mk0, restrict_lt_iff] at hz
     exact (norm_lt_norm_iff_mulValuation_lt.mpr hz).trans hnorm
   · -- Conversely, a valuation ball `v · < γ` is the metric ball of radius `p ^ log γ`.
     intro ⟨γ, hγ⟩
