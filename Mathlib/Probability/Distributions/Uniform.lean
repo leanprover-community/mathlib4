@@ -320,8 +320,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
           = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, (s.count b : ℝ≥0∞) := by
             simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
         _ = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑ b ∈ s.toFinset, (s.count b : ℝ≥0∞) :=
-          (congr_arg (fun x => (Multiset.card s : ℝ≥0∞)⁻¹ * x)
-            (tsum_eq_sum fun a ha =>
+          congr((Multiset.card s : ℝ≥0∞)⁻¹ * $(tsum_eq_sum fun a ha =>
               Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset]))
         _ = 1 := by
           rw [← Nat.cast_sum, Multiset.toFinset_sum_count_eq s,

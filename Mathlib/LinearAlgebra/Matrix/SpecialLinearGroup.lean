@@ -244,7 +244,7 @@ theorem scalar_eq_self_of_mem_center
     scalar n (A i i) = A := by
   obtain ⟨r : R, hr : scalar n r = A⟩ := mem_range_scalar_of_commute_transvectionStruct fun t ↦
     Subtype.ext_iff.mp <| Subgroup.mem_center_iff.mp hA ⟨t.toMatrix, by simp⟩
-  simp [← congr_fun₂ hr i i, ← hr]
+  simp [← congr($hr i i), ← hr]
 
 theorem scalar_eq_coe_self_center
     (A : center (SpecialLinearGroup n R)) (i : n) :

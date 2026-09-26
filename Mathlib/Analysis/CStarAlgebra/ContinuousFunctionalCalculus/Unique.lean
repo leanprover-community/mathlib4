@@ -167,7 +167,7 @@ lemma realContinuousMapOfNNReal_injective :
     Function.Injective (realContinuousMapOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
   ext f
-  simpa using congr($(h) ((ContinuousMap.mk toReal continuous_coe).comp f))
+  simpa using congr($h ((ContinuousMap.mk toReal continuous_coe).comp f))
 
 end StarAlgHom
 
@@ -345,7 +345,7 @@ lemma realContinuousMapZeroOfNNReal_injective :
     Function.Injective (realContinuousMapZeroOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
   ext f
-  simpa using congr($(h) ((ContinuousMapZero.mk ⟨toReal, continuous_coe⟩ rfl).comp f))
+  simpa using congr($h ((ContinuousMapZero.mk ⟨toReal, continuous_coe⟩ rfl).comp f))
 
 end NonUnitalStarAlgHom
 
