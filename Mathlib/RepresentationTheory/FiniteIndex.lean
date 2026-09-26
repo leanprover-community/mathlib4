@@ -105,8 +105,7 @@ noncomputable def coindToInd : (coind S.subtype ρ).IntertwiningMap (ind S.subty
     simpa using Fintype.sum_equiv (MulAction.toPerm g⁻¹) _ _ fun c => c.inductionOn (by simp)
 
 lemma coindToInd_apply (f : coindV S.subtype ρ) :
-    ρ.coindToInd f = ∑ c : G ⧸ S, coindToIndAux ρ c f :=
-  LinearMap.sum_apply _ _ _
+    ρ.coindToInd f = ∑ c : G ⧸ S, coindToIndAux ρ c f := LinearMap.sum_apply _ _ _
 
 @[simp]
 lemma indToCoind_coindToInd (f : coindV S.subtype ρ) :
@@ -184,7 +183,7 @@ lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res.{u} S.subtype B ⟶ A) :
     (resIndAdjunction.{w} k S).homEquiv B A f =
       resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv := by
-  rw [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
+  simp only [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
   simp
 
 lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
