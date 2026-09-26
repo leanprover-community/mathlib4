@@ -11,6 +11,7 @@ public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Tactic.Order
 
@@ -1306,6 +1307,11 @@ theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
 
 @[deprecated (since := "2026-04-16")]
 alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
+
+/-- Every ideal has multiplicity `0` in `⊤`, the unit ideal. -/
+@[simp]
+theorem multiplicity_top_right (I : Ideal R) : multiplicity I ⊤ = 0 := by
+  rw [← one_eq_top, multiplicity_one_right]
 
 end Dvd
 
