@@ -7,8 +7,11 @@ module
 
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.Northcott
+public import Mathlib.NumberTheory.NumberField.Completion.Ramification
 public import Mathlib.NumberTheory.NumberField.ProductFormula
+public import Mathlib.NumberTheory.RamificationInertia.Valuation
 public import Mathlib.RingTheory.Algebraic.Denominator
+public import Mathlib.RingTheory.RamificationInertia.Basic
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice
@@ -131,6 +134,128 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
   simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight_eq hx,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ ⨆ i, v (x i)]
 
+section extension
+
+variable (L : Type*) [Field L] [NumberField L] [Algebra K L]
+
+attribute [mk_iff] AbsoluteValue.LiesOver
+
+theorem _root_.NumberField.InfinitePlace.liesOver_iff_comap_eq {K L : Type*} [Field K] [Field L]
+    [NumberField K] [NumberField L] [Algebra K L] {v : InfinitePlace K} {w : InfinitePlace L} :
+    w.1.LiesOver v.1 ↔ w.comap (algebraMap K L) = v := by
+  rw [AbsoluteValue.liesOver_iff, AbsoluteValue.ext_iff, InfinitePlace.ext_iff]
+  rfl
+
+theorem foo {ι κ M : Type*} [CommMonoid M] [DecidableEq κ]
+    [Fintype κ] (s : Finset ι) (g : ι → κ) (f : ι → M) :
+    ∏ᶠ j, ∏ᶠ i : g ⁻¹' {j}, f i = ∏ᶠ i, f i := by
+  have := finprod_fibe
+  sorry
+
+variable {L} in
+open IsDedekindDomain in
+-- @[to_additive]
+theorem foobar_mul (f : HeightOneSpectrum (𝓞 L) → ℝ) (hf : f.HasFiniteMulSupport) :
+    ∏ᶠ w : HeightOneSpectrum (𝓞 L), f w =
+      ∏ᶠ v : HeightOneSpectrum (𝓞 K), ∏ w : v.1.primesOver (𝓞 L),
+        f ((HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot).symm w) := by
+  classical
+  let g : HeightOneSpectrum (𝓞 L) → HeightOneSpectrum (𝓞 K) := HeightOneSpectrum.under (𝓞 K)
+  let s : Finset (HeightOneSpectrum (𝓞 K)) := hf.toFinset.image g
+  rw [finprod_eq_prod f hf, finprod_eq_prod_of_mulSupport_subset (s := s)]
+  · rw [← Finset.prod_fiberwise_of_maps_to (fun w ↦ Finset.mem_image_of_mem g)]
+    apply Finset.prod_congr rfl
+    intro v hv
+    let e := HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot
+    have := Fintype.ofEquiv _ e.symm
+    rw [e.symm.prod_comp (f ·)]
+    sorry
+  · intro v
+    let e := HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot
+    rw [Function.mem_mulSupport, Finset.mem_coe, Finset.mem_image]
+    contrapose!
+    intro hv
+    apply Finset.prod_eq_one
+    intro w hw
+    contrapose! hv
+    refine ⟨e.symm w, hf.mem_toFinset.mpr hv, ?_⟩
+    have := (e.symm w).2
+    rw [← Ideal.liesOver_iff_dvd_map (e.symm w).1.2.ne_top, Ideal.liesOver_iff] at this
+    exact HeightOneSpectrum.asIdeal_injective this.symm
+
+open scoped NumberField.LiesOver
+
+open IsDedekindDomain FinitePlace InfinitePlace in
+private theorem mulHeight_pow_finrank_of_nonempty {ι : Type*} [Nonempty ι] [Finite ι]
+    (x : ι → K) (hx : ∀ i, x i ≠ 0) :
+    mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
+  classical
+  by_cases hx' : x = 0
+  · simp [hx']
+  rw [mulHeight_eq hx', mulHeight_eq (by simpa [funext_iff] using hx'), mul_pow]
+  congr
+  · simp_rw [← Finset.prod_pow, ← pow_mul, Function.comp_apply, ← comap_apply,
+      ← Finset.univ.prod_fiberwise fun v : InfinitePlace L ↦ v.comap (algebraMap K L)]
+    apply Finset.prod_congr rfl fun v _ ↦ ?_
+    rw [← v.sum_inertiaDeg_eq_finrank K L, Finset.mul_sum, ← Finset.prod_pow_eq_pow_sum]
+    refine Finset.prod_congr ?_ fun w hw ↦ ?_
+    · ext
+      rw [Set.mem_toFinset]
+      simp [InfinitePlace.placesOver, liesOver_iff_comap_eq]
+    rw [Finset.mem_filter_univ, ← liesOver_iff_comap_eq] at hw
+    rw [LiesOver.comap_eq w v, inertiaDeg_eq_finrank, mult_mul_finrank]
+  · let eK := (equivHeightOneSpectrum (K := K)).symm
+    let eL := (equivHeightOneSpectrum (K := L)).symm
+    simp_rw [Function.comp_apply, ← finprod_comp_equiv eK, ← finprod_comp_equiv eL]
+    rw [foobar_mul (K := K) (L := L), finprod_pow]
+    · refine finprod_congr fun v ↦ ?_
+      let e := (HeightOneSpectrum.equivPrimesOver (𝓞 L) v.ne_bot).symm
+      have key (w : v.asIdeal.primesOver (𝓞 L)) x :
+          eL (e w) (algebraMap K L x) =
+          eK v x ^ (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+        have : (e w).1.asIdeal.LiesOver v.asIdeal := by
+          rw [Ideal.liesOver_iff_dvd_map]
+          · exact (e w).2
+          · exact (e w).1.2.ne_top
+        have : w.1 = (e w).1 := by
+          rw [← e.symm_apply_apply w, e.apply_symm_apply]
+          rfl
+        convert FinitePlace.equivHeightOneSpectrum_symm_apply_algebraMap v (e w).1 x
+      simp only [e] at key
+      simp only [key]
+      have pos i : 0 ≤ eK v (x i) := by positivity
+      simp_rw [← Real.iSup_pow pos, Finset.prod_pow_eq_pow_sum,
+        Ideal.sum_ramification_inertia_eq_finrank v.1 (𝓞 L),
+        IsFractionRing.finrank_eq (𝓞 K) K (𝓞 L) L]
+    · exact Function.HasFiniteMulSupport.iSup fun i ↦
+        (FinitePlace.hasFiniteMulSupport (hx i)).comp_of_injective eK.injective
+    · exact Function.HasFiniteMulSupport.iSup fun i ↦
+        ((FinitePlace.hasFiniteMulSupport (by simp [hx]))).comp_of_injective eL.injective
+
+theorem mulHeight_pow_finrank {ι : Type*} (x : ι → K) [Finite ι] :
+    mulHeight x ^ Module.finrank K L = mulHeight (algebraMap K L ∘ x) := by
+  by_cases hx : x = 0
+  · simp [hx]
+  have : Nonempty (Function.support x) := by
+    rwa [Set.nonempty_coe_sort, Function.support_nonempty_iff]
+  conv_rhs => rw [mulHeight_eq_mulHeight_restrict_support]
+  rw [mulHeight_eq_mulHeight_restrict_support, Function.support_comp_eq _ (by simp)]
+  apply mulHeight_pow_finrank_of_nonempty
+  simp
+
+theorem mulHeight₁_pow_finrank (x : K) :
+    mulHeight₁ x ^ Module.finrank K L = mulHeight₁ (algebraMap K L x) := by
+  rw [mulHeight₁_eq_mulHeight, mulHeight₁_eq_mulHeight, mulHeight_pow_finrank]
+  congr; ext i; fin_cases i <;> simp
+
+theorem finrank_nsmul_logHeight {ι : Type*} [Finite ι] (x : ι → K) :
+    Module.finrank K L • logHeight x = logHeight (algebraMap K L ∘ x) := by
+  simp [logHeight_eq_log_mulHeight, ← mulHeight_pow_finrank]
+
+theorem finrank_nsmul_logHeight₁ (x : K) :
+    Module.finrank K L • logHeight₁ x = logHeight₁ (algebraMap K L x) := by
+  simp [logHeight₁_eq_log_mulHeight₁, ← mulHeight₁_pow_finrank]
+
 open Classical IntermediateField in
 /-- The absolute multiplicative height of an algebraic number. This is defined for elements of any
 field of characteristic zero, with a junk value of `0` if the element is not algebraic. -/
@@ -141,10 +266,22 @@ noncomputable def absMulHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : �
     (Height.mulHeight₁ (AdjoinSimple.gen ℚ x)) ^ (Module.finrank ℚ ℚ⟮x⟯ : ℝ)⁻¹
   else 1
 
+
 /-- The absolute logarithmic height of an algebraic number. This is defined for elements of any
 field of characteristic zero, with a junk value of `0` if the element is not algebraic. -/
 noncomputable def absLogHeight₁ {K : Type*} [Field K] [CharZero K] (x : K) : ℝ :=
   (absMulHeight₁ x).log
+
+open IntermediateField in
+theorem absMulHeight₁_eq {K : Type*} [Field K] [NumberField K] (x : K) :
+    absMulHeight₁ x = Height.mulHeight₁ x ^ (Module.finrank ℚ K : ℝ)⁻¹ := by
+  rw [absMulHeight₁, dite_eq_left (Algebra.IsIntegral.isIntegral x),
+    ← AdjoinSimple.algebraMap_gen ℚ x,
+    ← mulHeight₁_pow_finrank, AdjoinSimple.algebraMap_gen, ← Real.rpow_natCast,
+    ← Real.rpow_mul (by positivity), ← Module.finrank_mul_finrank ℚ ℚ⟮x⟯ K, Nat.cast_mul,
+    mul_inv_rev, mul_inv_cancel_left₀ (by simpa using Module.finrank_pos.ne')]
+
+end extension
 
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
