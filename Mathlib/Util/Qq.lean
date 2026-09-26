@@ -96,7 +96,7 @@ def mkListLitQ {u : Level} {α : Q(Type u)} : List Q($α) → Q(List $α)
 
 This is a `Qq` version of `Lean.instantiateLevelMVars`. -/
 -- The `u'` binder is used in the return type, but the linter cannot see through `=QL`
-def instantiateLevelMVarsQ (u : Level) : MetaM ((_u' : Level) ×' (u =QL _u')) :=
+def instantiateLevelMVarsQ (u : Level) : MetaM ((_u' : Level) ×' (_u' =QL u)) :=
   return ⟨← instantiateLevelMVars u, ⟨⟩⟩
 
 /-- Instantiate the metavariables in `e`, remembering that the result is defeq to `e`.
@@ -104,7 +104,7 @@ def instantiateLevelMVarsQ (u : Level) : MetaM ((_u' : Level) ×' (u =QL _u')) :
 This is a variant of `Qq.instantiateMVarsQ` which returns the Qq-fact that the new expression is
 equal to the previous one. -/
 def instantiateMVarsQ' {u : Level} {α : Q(Sort u)} (e : Q($α)) :
-    MetaM ((e' : Q($α)) ×' $e =Q $e') :=
+    MetaM ((e' : Q($α)) ×' $e' =Q $e) :=
   return ⟨← instantiateMVarsQ e, ⟨⟩⟩
 
 end Qq

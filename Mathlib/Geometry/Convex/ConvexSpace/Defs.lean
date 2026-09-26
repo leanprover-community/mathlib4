@@ -809,17 +809,20 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Convexity
 
 /-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative
-(in the sense ),
+(in the sense of `0 ≤ w.weights`),
 and even positive (in the sense of `0 < w.weights`, not `∀ i, 0 < w.weights i`) when `R` is
-nontrivial. -/
+nontrivial.
+
+This handles `w.weights`; see `evalStdSimplexWeightsApply` for the applied `w.weights i`. -/
 @[positivity StdSimplex.weights _]
 meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
+  -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
   match pα? with | none => pure .none | some _ => do
   let some ⟨_uX, _uR, _X, R, _instZero, _hu, _hα⟩ ← matchFinsupp α | throwError "not a `Finsupp`"
   let _semiringR ← synthInstanceQ q(Semiring $R)
   let _partialOrderR ← synthInstanceQ q(PartialOrder $R)
   assertInstancesCommute
-  let ~q(StdSimplex.weights $w) := q($e) | throwError "Not a match"
+  let ~q(StdSimplex.weights $w) := q($e) | throwError "not `StdSimplex.weights`"
   assumeInstancesCommute
   -- `StdSimplex.weights_pos` needs `Nontrivial R`, so fall back to nonnegativity without it.
   match ← trySynthInstanceQ q(Nontrivial $R) with
@@ -831,18 +834,14 @@ meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
 This handles `w.weights i`; see `evalStdSimplexWeights` for the unapplied `w.weights`. -/
 @[positivity StdSimplex.weights _ _]
 meta def evalStdSimplexWeightsApply : PositivityExt where eval {_u α} _zα pα? e :=
+  -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
   match pα? with | none => pure .none | some _ => do
   let _instPartialOrder ← synthInstanceQ q(PartialOrder $α)
   let _instSemiring ← synthInstanceQ q(Semiring $α)
-  let uX ← mkFreshLevelMVar
-  let X ← mkFreshExprMVarQ q(Type uX)
-  let w' ← mkFreshExprMVarQ q(StdSimplex $α $X)
-  let i' ← mkFreshExprMVarQ q($X)
   assumeInstancesCommute
-  let .defEq _ ← isDefEqQ e q(($w').weights $i') | throwError "not `StdSimplex.weights`"
-  let ⟨w, _⟩ ← instantiateMVarsQ' w'
-  let ⟨i, _⟩ ← instantiateMVarsQ' i'
-  pure (.nonnegative q(StdSimplex.weights_nonneg (w := $w) $i))
+  match e with
+  | ~q(StdSimplex.weights $w $i) => pure (.nonnegative q($(w).weights_nonneg $i))
+  | _ => throwError "not `StdSimplex.weights`"
 
 end Mathlib.Meta.Positivity
 
