@@ -33,7 +33,7 @@ namespace FintypeCat
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
   haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
-  exact FintypeCat.of (↑(Set.range f)ᶜ)
+  exact ↧(↑(Set.range f)ᶜ)
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
 noncomputable def imageComplementIncl {X Y : FintypeCat.{u}}
@@ -115,7 +115,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     have : Fintype T := Fintype.ofFinite T
     let : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G
       ↑(MulAction.orbit G x)
-    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
+    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G ↧T
     let i : T' ⟶ X := ⟨FintypeCat.homMk Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
@@ -165,7 +165,7 @@ noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
   haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
   let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
     (Equiv.Set.univ X.V).symm.trans <|
-      (Equiv.Set.congr ((MulAction.orbit_eq_univ G x).symm)).trans <|
+      (Set.equivOfEq ((MulAction.orbit_eq_univ G x).symm)).trans <|
       MulAction.orbitEquivQuotientStabilizer G x
   Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
     ext (a : G ⧸ MulAction.stabilizer G x)

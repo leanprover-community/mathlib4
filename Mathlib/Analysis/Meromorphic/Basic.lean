@@ -298,7 +298,7 @@ lemma inv {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp
-    · replace hfg := congr_arg (·⁻¹) hfg
+    · replace hfg := congr($hfg⁻¹)
       simp only [smul_inv₀] at hfg
       rw [inv_smul_eq_iff₀ (pow_ne_zero m (sub_ne_zero.mpr hz_ne)), smul_comm,
         eq_inv_smul_iff₀ (pow_ne_zero n (sub_ne_zero.mpr hz_ne))] at hfg
@@ -417,6 +417,16 @@ lemma meromorphicAt_smul_iff_of_ne_zero {f : 𝕜 → E} (hg : AnalyticAt 𝕜 g
 lemma meromorphicAt_mul_iff_of_ne_zero {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : g x ≠ 0) :
     MeromorphicAt (g * f) x ↔ MeromorphicAt f x :=
   meromorphicAt_smul_iff_of_ne_zero hg hg'
+
+/-- `MeromorphicAt` is invariant under scaling. -/
+@[to_fun (attr := simp) meromorphicAt_fun_const_smul_iff_meromorphicAt]
+theorem meromorphicAt_const_smul_iff_meromorphicAt {f : 𝕜 → E} {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicAt (s • f) x ↔ MeromorphicAt f x := by
+  constructor
+  <;> intro hf
+  · rw [((eq_inv_smul_iff₀ hs).mpr rfl : f = s⁻¹ • s • f)]
+    fun_prop
+  · fun_prop
 
 end smul_iff
 
@@ -575,6 +585,13 @@ include hf in
 @[to_fun (attr := fun_prop)]
 lemma const_smul [SMulCommClass 𝕜 R E] (c : R) : MeromorphicOn (c • f) U :=
   fun x hx ↦ (hf x hx).const_smul c
+
+/-- MeromorphicOn is invariant under scaling. -/
+@[to_fun (attr := simp) meromorphicOn_fun_const_smul_iff_meromorphicOn]
+theorem meromorphicOn_const_smul_iff_meromorphicOn {s : 𝕜} (hs : s ≠ 0) :
+    MeromorphicOn (s • f) U ↔ MeromorphicOn f U :=
+  ⟨fun hf x hx ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mp (hf x hx),
+    fun hf x hx ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mpr (hf x hx)⟩
 
 include hs ht in
 @[to_fun (attr := fun_prop)]
@@ -809,6 +826,13 @@ lemma smul [NormedAlgebra 𝕜 R] [IsScalarTower 𝕜 R E] {f : 𝕜 → R} (hf 
 @[to_fun (attr := fun_prop)]
 lemma const_smul [SMulCommClass 𝕜 R E] (hf : Meromorphic f) (c : R) :
     Meromorphic (c • f) := fun x ↦ (hf x).const_smul c
+
+/-- Meromorphic is invariant under scaling. -/
+@[to_fun (attr := simp) _root_.meromorphic_fun_const_smul_iff_meromorphic]
+theorem _root_.meromorphic_const_smul_iff_meromorphic {s : 𝕜} (hs : s ≠ 0) :
+    Meromorphic (s • f) ↔ Meromorphic f :=
+  ⟨fun hf x ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mp (hf x),
+    fun hf x ↦ (meromorphicAt_const_smul_iff_meromorphicAt hs).mpr (hf x)⟩
 
 @[to_fun (attr := fun_prop)]
 lemma mul {f g : 𝕜 → 𝕜'} (hf : Meromorphic f) (hg : Meromorphic g) :

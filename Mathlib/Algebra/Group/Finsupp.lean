@@ -71,7 +71,7 @@ instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel congr($h x)
 
 /-- When ι is finite and M is an AddMonoid,
   then Finsupp.equivFunOnFinite gives an AddEquiv -/
@@ -93,13 +93,13 @@ noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+
 
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
-@[simps!, deprecated uniqueAddEquiv (since := "2026-05-06")]
+@[simps!, deprecated uniqueAddEquiv +typeChanged (since := "2026-05-06")]
 noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
   toEquiv := .finsuppUnique
   map_add' _ _ := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel congr($h x)
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (ι →₀ M) where
 
@@ -178,7 +178,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   exact subset_trans Finsupp.support_single_subset (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated uniqueAddEquiv_symm_apply (since := "2026-05-06")]
+@[deprecated uniqueAddEquiv_symm_apply +typeChanged (since := "2026-05-06")]
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
@@ -464,7 +464,7 @@ instance instAddGroup : AddGroup (ι →₀ G) :=
 lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
   Finset.Subset.antisymm support_mapRange
     (calc
-      support f = support (- -f) := congr_arg support (neg_neg _).symm
+      support f = support (- -f) := congr(support $((neg_neg _).symm))
       _ ⊆ support (-f) := support_mapRange)
 
 lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ support f ∪ support g := by

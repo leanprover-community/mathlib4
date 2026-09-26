@@ -162,16 +162,16 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
     Pseudofunctor Cat.{v₂, u₂} Cat.{max v₁ v₂, max u₁ u₂} where
-  obj D := Cat.of (C ⋆ D)
+  obj D := ↧(C ⋆ D)
   map F := (mapPair (𝟭 C) F.toFunctor).toCatHom
   map₂ f := (mapWhiskerLeft (𝟭 C) f.toNatTrans).toCatHom₂
   mapId D := Cat.Hom.isoMk mapPairId
   mapComp F G := Cat.Hom.isoMk <| mapCompRight C F.toFunctor G.toFunctor
-  map₂_whisker_left := by intros; exact congr($(mapWhiskerLeft_whiskerLeft C _ _).toCatHom₂)
-  map₂_whisker_right := by intros; exact congr($(mapWhiskerLeft_whiskerRight C _ _).toCatHom₂)
-  map₂_associator := by intros; exact congr($(mapWhiskerLeft_associator_hom C _ _ _).toCatHom₂)
-  map₂_left_unitor := by intros; exact congr($(mapWhiskerLeft_leftUnitor_hom C _).toCatHom₂)
-  map₂_right_unitor := by intros; exact congr($(mapWhiskerLeft_rightUnitor_hom C _).toCatHom₂)
+  map₂_whisker_left := by intros; congrm $(mapWhiskerLeft_whiskerLeft C _ _).toCatHom₂
+  map₂_whisker_right := by intros; congrm $(mapWhiskerLeft_whiskerRight C _ _).toCatHom₂
+  map₂_associator := by intros; congrm $(mapWhiskerLeft_associator_hom C _ _ _).toCatHom₂
+  map₂_left_unitor := by intros; congrm $(mapWhiskerLeft_leftUnitor_hom C _).toCatHom₂
+  map₂_right_unitor := by intros; congrm $(mapWhiskerLeft_rightUnitor_hom C _).toCatHom₂
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -180,15 +180,15 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :
     Pseudofunctor Cat.{v₁, u₁} Cat.{max v₁ v₂, max u₁ u₂} where
-  obj C := Cat.of (C ⋆ D)
+  obj C := ↧(C ⋆ D)
   map F := (mapPair F.toFunctor (𝟭 D)).toCatHom
   map₂ := (mapWhiskerRight ·.toNatTrans _ |>.toCatHom₂)
-  mapId D := Cat.Hom.isoMk <| mapPairId
+  mapId D := Cat.Hom.isoMk mapPairId
   mapComp _ _ := Cat.Hom.isoMk <| mapCompLeft D _ _
-  map₂_whisker_left := by intros; exact congr($(mapWhiskerRight_whiskerLeft D _ _).toCatHom₂)
-  map₂_whisker_right := by intros; exact congr($(mapWhiskerRight_whiskerRight D _ _).toCatHom₂)
-  map₂_associator := by intros; exact congr($(mapWhiskerRight_associator_hom D _ _ _).toCatHom₂)
-  map₂_left_unitor := by intros; exact congr($(mapWhiskerRight_leftUnitor_hom D _).toCatHom₂)
-  map₂_right_unitor := by intros; exact congr($(mapWhiskerRight_rightUnitor_hom D _).toCatHom₂)
+  map₂_whisker_left := by intros; congrm $(mapWhiskerRight_whiskerLeft D _ _).toCatHom₂
+  map₂_whisker_right := by intros; congrm $(mapWhiskerRight_whiskerRight D _ _).toCatHom₂
+  map₂_associator := by intros; congrm $(mapWhiskerRight_associator_hom D _ _ _).toCatHom₂
+  map₂_left_unitor := by intros; congrm $(mapWhiskerRight_leftUnitor_hom D _).toCatHom₂
+  map₂_right_unitor := by intros; congrm $(mapWhiskerRight_rightUnitor_hom D _).toCatHom₂
 
 end CategoryTheory.Join

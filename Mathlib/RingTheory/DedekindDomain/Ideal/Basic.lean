@@ -65,7 +65,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit (x : K)
     apply coeToSubmodule_injective
     simp only [coe_mul, adjoinIntegral_coe, I]
     rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
-  convert! congr_arg (· * I⁻¹) mul_self <;>
+  convert! congr($mul_self * I⁻¹) <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
 theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I ≠ ⊥) :
@@ -140,7 +140,7 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
   -- such that removing element `M` from the product is not contained in `J`.
   obtain ⟨Z, hle, hnle⟩ := PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le hNF hJ0 hJI
   -- Choose an element `b` of the product that is not in `J`.
-  obtain ⟨b, hbZ, hbJ⟩ := SetLike.not_le_iff_exists.mp hnle
+  obtain ⟨b, hbZ, hbJ⟩ := IsConcreteLE.not_le_iff_exists.mp hnle
   have hnz_fa : algebraMap A K a ≠ 0 :=
     mt ((injective_iff_map_eq_zero _).mp (IsFractionRing.injective A K) a) ha0
   -- Then `b a⁻¹ : K` is in `M⁻¹` but not in `1`.
@@ -303,7 +303,7 @@ theorem dimensionLEOne : DimensionLEOne A := by
     rw [← inv_mul_cancel₀ M'_ne]; gcongr
   obtain ⟨y, _hy, rfl⟩ := (mem_coeIdeal _).mp (le_one hx)
   -- Since `M` is strictly greater than `P`, let `z ∈ M \ P`.
-  obtain ⟨z, hzM, hzp⟩ := SetLike.exists_of_lt hM
+  obtain ⟨z, hzM, hzp⟩ := IsConcreteLE.exists_of_lt hM
   -- We have `z * y ∈ M * (M⁻¹ * P) = P`.
   have zy_mem := mul_mem_mul (mem_coeIdeal_of_mem A⁰ hzM) hx
   rw [← map_mul, ← mul_assoc, mul_inv_cancel₀ M'_ne, one_mul] at zy_mem
@@ -423,11 +423,15 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
     dvdNotUnit_of_dvd_of_not_dvd (Ideal.dvd_iff_le.mpr (le_of_lt h))
       (mt Ideal.dvd_iff_le.mp (not_le_of_gt h))⟩
 
-instance : WfDvdMonoid (Ideal A) where
-  wf := by
-    have : WellFoundedGT (Ideal A) := inferInstance
-    convert! this.wf using 3
-    exact Ideal.dvdNotUnit_iff_lt
+instance : WfDvdMonoid (Ideal A) := by
+  unfold WfDvdMonoid
+  eta_expand; simp_rw [Ideal.dvdNotUnit_iff_lt]
+  infer_instance
+
+/-- In a Dedekind domain, the multiplicity of a proper ideal in a nonzero ideal is finite. -/
+theorem Ideal.finiteMultiplicity {I J : Ideal A} (hI : I ≠ ⊤) (hJ : J ≠ ⊥) :
+    FiniteMultiplicity I J :=
+  FiniteMultiplicity.of_not_isUnit (by rwa [Ideal.isUnit_iff]) hJ
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
@@ -438,8 +442,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
           intro J hJ
           obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
           exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
-        rw [Ideal.dvd_iff_le, Ideal.dvd_iff_le, Ideal.dvd_iff_le, SetLike.le_def, SetLike.le_def,
-          SetLike.le_def]
+        simp_rw [Ideal.dvd_iff_le, IsConcreteLE.le_iff]
         contrapose!
         rintro ⟨⟨x, x_mem, x_notMem⟩, ⟨y, y_mem, y_notMem⟩⟩
         exact

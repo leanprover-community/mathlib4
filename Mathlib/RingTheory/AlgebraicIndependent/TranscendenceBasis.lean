@@ -92,7 +92,7 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff [Nontrivial R]
     use i
     intro w i' h
     specialize p w ((↑) : w → A) i' (fun i => ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
-    have q := congr_arg (fun s => ((↑) : w → A) '' s) p.range_eq
+    have q := congr(((↑) : w → A) '' $p.range_eq)
     rw [← image_univ, image_image] at q
     simpa using q
 
@@ -578,7 +578,7 @@ lemma of_isAlgebraic_adjoin_insert_sdiff (hj : j ∈ insert i s)
       H₁.comp_equiv <|
         .symm <|
           ((Equiv.swap j i).image s).trans <|
-            Equiv.Set.congr <| Equiv.image_swap_of_mem_of_notMem hj hi with
+            Set.equivOfEq <| Equiv.image_swap_of_mem_of_notMem hj hi with
       ⟨x, rfl | hxi, hxj⟩
     · simp [eq]
     · simp [Equiv.swap_apply_of_ne_of_ne hxj (ne_of_mem_of_not_mem hxi hi)]

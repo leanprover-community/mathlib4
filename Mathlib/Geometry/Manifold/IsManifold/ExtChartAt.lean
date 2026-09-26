@@ -221,7 +221,7 @@ theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
   set e := f.extend I
   calc
     map e (𝓝[s] y) = map e (𝓝[e.source ∩ s] y) :=
-      congr_arg (map e) (nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f hy)).symm
+      congr(map e $((nhdsWithin_inter_of_mem (extend_source_mem_nhdsWithin f hy)).symm))
     _ = 𝓝[e '' (e.source ∩ s)] e y :=
       ((f.extend I).leftInvOn.mono inter_subset_left).map_nhdsWithin_eq
         ((f.extend I).left_inv <| by rwa [f.extend_source])
@@ -425,30 +425,6 @@ lemma isInvertible_fderivWithin_extendCoordChange (hn : n ≠ 0)
     · exact I.uniqueDiffOn_extendCoordChange_source _ hx
 
 end ModelWithCorners
-
-namespace OpenPartialHomeomorph
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source := ModelWithCorners.extendCoordChange_source
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source_mem_nhdsWithin :=
-  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin
-
-@[deprecated (since := "2026-02-16")]
-alias extend_coord_change_source_mem_nhdsWithin' :=
-  ModelWithCorners.extendCoordChange_source_mem_nhdsWithin'
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffOn_extend_coord_change := ModelWithCorners.contDiffOn_extendCoordChange
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffWithinAt_extend_coord_change := ModelWithCorners.contDiffWithinAt_extendCoordChange
-
-@[deprecated (since := "2026-02-16")]
-alias contDiffWithinAt_extend_coord_change' := ModelWithCorners.contDiffWithinAt_extendCoordChange'
-
-end OpenPartialHomeomorph
 
 open OpenPartialHomeomorph
 
@@ -822,21 +798,18 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
-    writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
+    writtenInExtChartAt I I x (chartAt H x) y = y := by
+  simp_all [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
@@ -862,8 +835,6 @@ lemma writtenInExtChartAt_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
   ext p <;>
   simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
 
-@[deprecated (since := "2026-02-18")] alias writtenInExtChart_prod := writtenInExtChartAt_prod
-
 end
 
 variable (𝕜)
@@ -874,7 +845,6 @@ theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
 theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by

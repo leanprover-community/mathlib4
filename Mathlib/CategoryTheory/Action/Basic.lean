@@ -76,7 +76,7 @@ instance inhabited' : Inhabited (Action Type* G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 instance : Inhabited (Action AddCommGrpCat G) :=
-  ⟨trivial G <| AddCommGrpCat.of PUnit⟩
+  ⟨trivial G ↧PUnit⟩
 
 end
 
@@ -247,7 +247,7 @@ variable (V G)
 Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
 rather than using this directly.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def forget : Action V G ⥤ V where
   obj M := M.V
   map f := f.hom
@@ -260,6 +260,7 @@ abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike 
   { f : FV M.V N.V // ∀ g : G,
       f ∘ ConcreteCategory.hom (M.ρ g) = ConcreteCategory.hom (N.ρ g) ∘ f }
 
+@[macro_inline]
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :
     FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where
@@ -270,9 +271,9 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
     [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
   hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g => by
     ext
-    simpa using CategoryTheory.congr_fun (f.2 g) _⟩
+    simpa using congr($(f.2 g) _)⟩
   ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g => ConcreteCategory.ext_apply fun x => by
-    simpa [ConcreteCategory.hom_ofHom] using congr_fun (f.2 g) x⟩
+    simpa [ConcreteCategory.hom_ofHom] using congr($(f.2 g) x)⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := V)
@@ -298,13 +299,11 @@ noncomputable instance preservesColimits_forget [HasColimits V] :
 -- TODO construct categorical images?
 end Forget
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
 def actionPUnitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
@@ -317,8 +316,6 @@ def actionPUnitEquivalence : Action V PUnit ≌ V where
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
-
-@[deprecated (since := "2026-02-08")] alias actionPunitEquivalence := actionPUnitEquivalence
 
 variable (V)
 

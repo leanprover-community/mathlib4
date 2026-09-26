@@ -144,12 +144,12 @@ instance dual_free [Free R M] : Free R (Dual R M) :=
 
 instance dual_projective [Projective R M] : Projective R (Dual R M) :=
   have ⟨_, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
-  .of_split f.dualMap g.dualMap (congr_arg dualMap hfg)
+  .of_split f.dualMap g.dualMap congr(dualMap $hfg)
 
 instance dual_finite [Projective R M] : Module.Finite R (Dual R M) :=
   have ⟨n, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   have := Finite.of_basis (Free.chooseBasis R <| Fin n → R).dualBasis
-  .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap <| congr_arg dualMap hfg)
+  .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap congr(dualMap $hfg))
 
 end Module
 
@@ -305,6 +305,44 @@ end IsReflexive
 
 end Module
 
+namespace LinearMap
+
+section Projective
+
+variable {R : Type*} [CommSemiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [Projective R M]
+
+/-- The identity pairing is right-separating. -/
+protected theorem SeparatingRight.id : SeparatingRight (M₁ := M →ₗ[R] R) .id :=
+  fun x ↦ (forall_dual_apply_eq_zero_iff R x).mp
+
+alias id_separatingRight := SeparatingRight.id
+
+/-- The identity pairing is non-degenerate. -/
+protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :=
+  ⟨.id, .id⟩
+
+alias id_nondegenerate := Nondegenerate.id
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+/-- The pairing `Dual.eval` is left-separating. -/
+protected theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
+  id_separatingRight
+
+alias eval_separatingLeft := SeparatingLeft.eval
+
+/-- The pairing `Dual.eval` is non-degenerate. -/
+protected theorem Nondegenerate.eval : (Dual.eval R M).Nondegenerate :=
+  ⟨.eval, .eval⟩
+
+alias eval_nondegenerate := Nondegenerate.eval
+
+end Projective
+
+end LinearMap
+
 namespace Submodule
 
 open Module
@@ -385,7 +423,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
   ext x
-  convert! LinearMap.congr_fun hK' (p.mkQ x)
+  convert! congr($hK' (p.mkQ x))
   simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
@@ -449,7 +487,7 @@ variable {W : Subspace K V}
 
 @[simp]
 theorem dualLift_of_subtype {φ : Module.Dual K W} (w : W) : W.dualLift φ (w : V) = φ w :=
-  congr_arg φ <| LinearMap.leftInverse_apply_of_inj W.ker_subtype _
+  congr(φ $(LinearMap.leftInverse_apply_of_inj W.ker_subtype _))
 
 theorem dualLift_of_mem {φ : Module.Dual K W} {w : V} (hw : w ∈ W) : W.dualLift φ w = φ ⟨w, hw⟩ :=
   dualLift_of_subtype ⟨w, hw⟩
@@ -460,7 +498,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
   simp
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
-    Function.LeftInverse W.dualRestrict W.dualLift := fun x => by
+    Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
   rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
@@ -575,6 +613,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
     ext ⟨φ, hφ⟩
     exact (mem_dualAnnihilator φ).mp hφ w hw)
 
+@[macro_inline]
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
   coe_injective φ ψ h := by
@@ -621,7 +660,7 @@ The inverse of this is `Submodule.dualCopairing`. -/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
   LinearEquiv.ofLinearMap
-    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
+    (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ ↦
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 
@@ -782,29 +821,6 @@ end
 
 namespace LinearMap
 
-variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
-
-theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
-  separatingLeft_iff_ker_eq_bot.mpr ker_id
-
-theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
-
-variable [Module.Projective K V]
-
-theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
-  fun x => (forall_dual_apply_eq_zero_iff K x).mp
-
-theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
-
-theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
-  ⟨id_separatingLeft, id_separatingRight⟩
-
-@[deprecated (since := "2026-04-02")]
-alias dualPairing_nondegenerate := id_nondegenerate
-
-theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
-  ⟨eval_separatingLeft, eval_separatingRight⟩
-
 variable {K V₁ V₂ : Type*} [Field K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
@@ -920,7 +936,7 @@ namespace LinearMap
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
-  rw [congr_arg dualMap (show f = (range f).subtype.comp f.rangeRestrict by rfl),
+  rw [congr(dualMap $(show f = (range f).subtype.comp f.rangeRestrict by rfl)),
     ← dualMap_comp_dualMap, range_comp,
     range_eq_top.mpr (dualMap_surjective_of_injective (range f).injective_subtype),
     Submodule.map_top, finrank_range_of_inj, Subspace.dual_finrank_eq]
@@ -997,6 +1013,22 @@ theorem finiteDimensional_quot_dualCoannihilator_iff {W : Submodule K (Dual K V)
     FiniteDimensional K (V ⧸ W.dualCoannihilator) ↔ FiniteDimensional K W :=
   ⟨fun _ ↦ FiniteDimensional.of_injective _ W.flip_quotDualCoannihilatorToDual_injective,
     fun _ ↦ FiniteDimensional.of_injective _ W.quotDualCoannihilatorToDual_injective⟩
+
+theorem dualCoannihilator_inf (W W' : Subspace K (Dual K V))
+    [FiniteDimensional K W] [FiniteDimensional K W'] :
+    (W ⊓ W').dualCoannihilator = W.dualCoannihilator ⊔ W'.dualCoannihilator := by
+  rw [← dualAnnihilator_inj, dualAnnihilator_sup_eq]
+  repeat rw [dualCoannihilator_dualAnnihilator_eq]
+
+theorem dualCoannihilator_iInf {ι : Type*} (W : ι → Subspace K (Module.Dual K V))
+    [∀ i, FiniteDimensional K (W i)] :
+    (⨅ i, W i).dualCoannihilator = ⨆ i, (W i).dualCoannihilator := by
+  cases isEmpty_or_nonempty ι
+  · simp [iInf_of_isEmpty, iSup_of_empty']
+  have := Module.Finite.iff_fg.mpr <|
+    FG.of_le (Module.Finite.iff_fg.mp inferInstance) (iInf_le W <| Classical.arbitrary ι)
+  rw [← dualAnnihilator_inj, dualCoannihilator_dualAnnihilator_eq, dualAnnihilator_iSup_eq]
+  simp only [dualCoannihilator_dualAnnihilator_eq]
 
 open OrderDual in
 /-- For any vector space, `dualAnnihilator` and `dualCoannihilator` gives an antitone order

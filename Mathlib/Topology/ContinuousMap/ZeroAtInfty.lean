@@ -76,6 +76,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β] [FunLike F α β] [ZeroAtInftyContinuousMapClass F α β]
 
+@[macro_inline]
 instance instFunLike : FunLike C₀(α, β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -392,7 +393,7 @@ variable (α) (β)
 
 theorem toBCF_injective : Function.Injective (toBCF : C₀(α, β) → α →ᵇ β) := fun f g h => by
   ext x
-  simpa only using! DFunLike.congr_fun h x
+  simpa only using! congr($h x)
 
 end
 

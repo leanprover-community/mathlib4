@@ -41,7 +41,7 @@ variable [DecidableEq n]
 /-- `diagonal d` is the square matrix such that `(diagonal d) i i = d i` and `(diagonal d) i j = 0`
 if `i ≠ j`.
 
-Note that bundled versions exist as:
+This is available in bundled forms as:
 * `Matrix.diagonalAddMonoidHom`
 * `Matrix.diagonalLinearMap`
 * `Matrix.diagonalRingHom`
@@ -68,7 +68,7 @@ theorem diagonal_apply_ne' [Zero α] (d : n → α) {i j : n} (h : j ≠ i) : (d
 @[simp]
 theorem diagonal_eq_diagonal_iff [Zero α] {d₁ d₂ : n → α} :
     diagonal d₁ = diagonal d₂ ↔ ∀ i, d₁ i = d₂ i :=
-  ⟨fun h i => by simpa using congr_arg (fun m : Matrix n n α => m i i) h, fun h => by
+  ⟨fun h i => by simpa using congr($h i i), fun h => by
     rw [show d₁ = d₂ from funext h]⟩
 
 theorem diagonal_injective [Zero α] : Function.Injective (diagonal : (n → α) → Matrix n n α) :=
@@ -285,7 +285,12 @@ end Diagonal
 
 section Diag
 
-/-- The diagonal of a square matrix. -/
+/-- The diagonal of a square matrix.
+
+This is available in bundled forms as:
+* `Matrix.diagAddMonoidHom`
+* `Matrix.diagLinearMap`
+-/
 def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 

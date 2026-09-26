@@ -116,7 +116,7 @@ def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
 
 @[simp]
 theorem coeff_mk (n : ℕ) (f : ℕ → R) : coeff n (mk f) = f n :=
-  congr_arg f Finsupp.single_eq_same
+  congr(f $Finsupp.single_eq_same)
 
 theorem coeff_monomial (m n : ℕ) (a : R) : coeff m (monomial n a) = if m = n then a else 0 :=
   calc
@@ -227,7 +227,7 @@ theorem coeff_one_X : coeff 1 (X : R⟦X⟧) = 1 := by rw [coeff_X, ite_eq_left 
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
-  simpa only [coeff_one_X, one_ne_zero, map_zero] using congr_arg (coeff 1) H
+  simpa only [coeff_one_X, one_ne_zero, map_zero] using congr(coeff 1 $H)
 
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial n 1 :=
   MvPowerSeries.X_pow_eq _ n
@@ -260,6 +260,26 @@ theorem coeff_mul_C (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff n (φ * C a) = coe
 @[simp]
 theorem coeff_C_mul (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff n (C a * φ) = a * coeff n φ :=
   MvPowerSeries.coeff_C_mul _ φ a
+
+@[simp] lemma coeff_mul_natCast {φ : R⟦X⟧} {a n : ℕ} :
+    coeff n (φ * (a : R⟦X⟧)) = coeff n φ * a := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_natCast_mul {φ : R⟦X⟧} {a n : ℕ} :
+    coeff n ((a : R⟦X⟧) * φ) = a * coeff n φ := coeff_C_mul _ _ _
+
+@[simp] lemma coeff_mul_ofNat {φ : R⟦X⟧} {a n : ℕ} [Nat.AtLeastTwo a] :
+    coeff n (φ * ofNat(a)) = coeff n φ * ofNat(a) := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_ofNat_mul {φ : R⟦X⟧} {a n : ℕ} [Nat.AtLeastTwo a] :
+    coeff n (ofNat(a) * φ) = ofNat(a) * coeff n φ := coeff_C_mul _ _ _
+
+@[simp] lemma coeff_mul_intCast {R : Type*} [Ring R] {φ : R⟦X⟧} {a : ℤ} {n : ℕ} :
+    coeff n (φ * (a : R⟦X⟧)) = coeff n φ * a := by
+  simpa using coeff_mul_C n φ a
+
+@[simp] lemma coeff_intCast_mul {R : Type*} [Ring R] {φ : R⟦X⟧} {a : ℤ} {n : ℕ} :
+    coeff n ((a : R⟦X⟧) * φ) = a * coeff n φ := by
+  simpa using coeff_C_mul n φ a
 
 @[simp]
 theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSeries S) (a : R) :
@@ -667,7 +687,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
           rw [h'] at h''
           simp only [pow_zero, one_mul, coeff_one, one_ne_zero, ↓reduceIte, zero_mul, add_zero,
             mul_one] at h''
-          norm_num at h''
+          simp at h''
         · rw [ih]
           · conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
             move_mul [← constantCoeff φ ^ (n' - 1)]
@@ -761,9 +781,9 @@ instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
 theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
   rfl
 
-@[simp, norm_cast]
+@[simp]
 theorem coeff_coe (n) : PowerSeries.coeff n φ = coeff φ n :=
-  congr_arg (coeff φ) Finsupp.single_eq_same
+  congr(coeff φ $Finsupp.single_eq_same)
 
 @[simp, norm_cast]
 theorem coe_monomial (n : ℕ) (a : R) :

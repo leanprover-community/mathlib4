@@ -160,19 +160,17 @@ def tensorCotangentInvFun
     clear x hx
     rintro a ha b -
     obtain ⟨x, hx⟩ := e.surjective ⟨a, ha⟩
-    obtain rfl : (e x).1 = a := congr_arg Subtype.val hx
+    obtain rfl : (e x).1 = a := congr($(hx).val)
     obtain ⟨y, rfl⟩ := e.surjective b
-    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_coe, map_smul,
+    simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_ofClass, map_smul,
       LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       LinearEquiv.symm_apply_apply, f']
     clear hx ha
     induction x with
-    | zero => simp only [map_zero, ZeroMemClass.coe_zero, zero_smul]
     | add x y _ _ =>
       simp only [map_add, Submodule.coe_add, add_smul, zero_add, *]
     | tmul a b =>
       induction y with
-      | zero => simp only [map_zero, smul_zero]
       | add x y hx hy => simp only [LinearMap.map_add, smul_add, hx, hy, zero_add]
       | tmul c d =>
         simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
@@ -210,7 +208,6 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       induction x with
-      | zero => simp only [map_zero]
       | add x y _ _ => simp only [map_add, *]
       | tmul a b =>
         obtain ⟨b, rfl⟩ := Cotangent.mk_surjective b
@@ -224,7 +221,6 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
       obtain ⟨x, rfl⟩ := H.surjective x
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       induction x with
-      | zero => simp only [map_zero]
       | add x y _ _ => simp only [map_add, *]
       | tmul a b =>
         simp only [LinearMap.liftBaseChange_tmul, map_smul]
@@ -263,7 +259,7 @@ def tensorH1CotangentOfFormallyEtale [alg : Algebra P.Ring Q.Ring]
         ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
         simp only [CotangentSpace.map_tmul,
           map_one, Hom.toAlgHom_apply, one_smul, cotangentComplex_mk]
-      exact (DFunLike.congr_fun this _).trans (DFunLike.congr_arg Q.cotangentComplex
+      exact congr($this _).trans (DFunLike.congr_arg Q.cotangentComplex
         ((tensorCotangent f halg H₂).apply_symm_apply x.1)))
     refine ⟨a, Subtype.ext (.trans ?_ ((LinearEquiv.eq_symm_apply _).mp ha))⟩
     change (h1Cotangentι ∘ₗ (H1Cotangent.map f).liftBaseChange T) _ =

@@ -84,7 +84,7 @@ public lemma faithful_pullFunctor :
         Functor.comp_obj, Cat.Hom.hom_inv_id_toNatTrans_app_assoc, ← reassoc_of% this,
         D₂.hom_self _ _ rfl, F.mapComp'_id_comp_inv_app, ← Functor.map_comp,
         F.mapComp'_id_comp_hom_app_assoc]
-    replace hφ := congr_fun (congr_arg DescentData.Hom.hom hφ) j
+    replace hφ := congr($(hφ).hom j)
     dsimp at hφ
     simp only [this, hφ]
 
