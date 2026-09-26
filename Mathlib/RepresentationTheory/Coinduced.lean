@@ -193,9 +193,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
     let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
     · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
-    · simp only [coindFunctor_obj, coindFunctor_map, hom_ofHom,
-        Representation.coe_coindMap_apply_apply, hom_comm_apply, x]
-      simp_all [← y.2 (γ g), γ]
+    · simp [x, hom_comm_apply, hs, ← y.2 (γ g), γ]
 
 end Coind
 section Coind'
