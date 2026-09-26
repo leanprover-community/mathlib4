@@ -560,6 +560,12 @@ theorem epsilon_le_veblen_of_ne_zero (ha : a ≠ 0) : ε_ b ≤ veblen a b :=
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
   rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
 
+/-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
+theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :
+    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
+  rw [isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq, mem_range_veblen one_ne_zero]
+  simp
+
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
   rw [epsilon_zero_eq_nfp, lt_nfp_iff]
@@ -573,6 +579,10 @@ theorem iterate_omega0_opow_lt_epsilon_zero (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0
 theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
   apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone zero_le
   simpa using iterate_omega0_opow_lt_epsilon_zero 2
+
+/-- Epsilon numbers are exponentially principal. -/
+theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
+  (isPrincipal_opow_iff_omega0_opow_eq (omega0_lt_epsilon o)).2 (omega0_opow_epsilon o)
 
 theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (natCast_lt_omega0 n).trans <| omega0_lt_epsilon o

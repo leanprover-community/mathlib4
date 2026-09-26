@@ -29,10 +29,6 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
   `0`, `1`, `2`, and the ordinals `ω ^ ω ^ x`.
 
-## TODO
-
-* Prove that the exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
-
 ## Tags
 
 additively indecomposable, multiplicatively indecomposable
@@ -508,7 +504,40 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : IsPrincipal (· * ·) b) (hb�
     simpa [succ_eq_add_one] using lt_opow_succ_log_self hb₁ _
   · grw [succ_eq_add_one, opow_add_one, opow_log_le_self b ha]
 
-/-! #### Exponential principal ordinals -/
+/-! ### Exponential principal ordinals -/
+
+theorem isPrincipal_opow_two : IsPrincipal (· ^ ·) 2 := by
+  intro a b ha _
+  simpa [lt_two_iff] using opow_le_opow_left b (lt_two_iff.1 ha)
+
+theorem isPrincipal_mul_of_isPrincipal_opow (ho : IsPrincipal (· ^ ·) o) :
+    IsPrincipal (· * ·) o := by
+  rcases le_or_gt o 2 with ho₂ | ho₂
+  · exact isPrincipal_mul_of_le_two ho₂
+  · intro a b ha hb
+    have hm := ho (max_lt ha hb) ho₂
+    exact (mul_le_mul' (le_max_left a b) (le_max_right a b)).trans_lt
+      (by simpa [← one_add_one_eq_two, opow_add_one] using hm)
+
+theorem isSuccLimit_of_isPrincipal_opow (ho₂ : 2 < o) (ho : IsPrincipal (· ^ ·) o) :
+    IsSuccLimit o :=
+  isSuccLimit_of_isPrincipal_mul ho₂ (isPrincipal_mul_of_isPrincipal_opow ho)
+
+/-- Above `ω`, closure under exponentiation is equivalent to being a fixed point of `ω ^ ·`. -/
+theorem isPrincipal_opow_iff_omega0_opow_eq (hoω : ω < o) :
+    IsPrincipal (· ^ ·) o ↔ ω ^ o = o := by
+  refine ⟨fun ho ↦ ?_, fun ho ↦ ?_⟩
+  · exact op_eq_self_of_isPrincipal hoω (isNormal_opow one_lt_omega0) ho
+      (isSuccLimit_of_isPrincipal_opow ((natCast_lt_omega0 2).trans hoω) ho)
+  · have hom : IsPrincipal (· * ·) o := by
+      simpa [ho] using isPrincipal_mul_omega0_opow_opow o
+    have hol := isSuccLimit_of_isPrincipal_mul ((natCast_lt_omega0 2).trans hoω) hom
+    intro a b ha hb
+    rw [← ho] at ha
+    obtain ⟨c, hc, hac⟩ := (lt_opow_of_isSuccLimit omega0_ne_zero hol).1 ha
+    refine (opow_le_opow_left b hac.le).trans_lt ?_
+    rw [← opow_mul, ← ho, opow_lt_opow_iff_right one_lt_omega0]
+    exact hom hc hb
 
 theorem isPrincipal_opow_omega0 : IsPrincipal (· ^ ·) ω := fun a b ha hb =>
   match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
@@ -516,6 +545,27 @@ theorem isPrincipal_opow_omega0 : IsPrincipal (· ^ ·) ω := fun a b ha hb =>
 
 @[deprecated (since := "2026-03-17")]
 alias principal_opow_omega0 := isPrincipal_opow_omega0
+
+/-- The exponential principal ordinals are `0`, `2`, `ω`, and the fixed points of `ω ^ ·`.
+The ordinal `1` is excluded because `0 ^ 0 = 1`. -/
+theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq :
+    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ ω ^ o = o := by
+  refine ⟨fun ho ↦ ?_, ?_⟩
+  · simp only [or_iff_not_imp_left]
+    refine fun ho₀ ho₂ hoω ↦ ?_
+    rcases gt_or_lt_of_ne ho₂ with h₂ | h₂
+    · have hoω' := omega0_le_of_isSuccLimit (isSuccLimit_of_isPrincipal_opow h₂ ho)
+      exact (isPrincipal_opow_iff_omega0_opow_eq (hoω'.lt_of_ne' hoω)).1 ho
+    · rw [lt_two_iff, le_one_iff] at h₂
+      simp_all
+  · rintro (rfl | rfl | rfl | ho)
+    · exact isPrincipal_zero
+    · exact isPrincipal_opow_two
+    · exact isPrincipal_opow_omega0
+    · rcases le_or_gt o 1 with ho₁ | ho₁
+      · rcases le_one_iff.1 ho₁ with (rfl | rfl) <;> simp [one_lt_omega0.ne'] at ho
+      · refine (isPrincipal_opow_iff_omega0_opow_eq ?_).2 ho
+        simpa [ho] using left_lt_opow one_lt_omega0 ho₁
 
 theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
   ((opow_le_of_isSuccLimit (one_le_iff_ne_zero.1 <| le_of_lt a1) isSuccLimit_omega0).2 fun _ hb =>
