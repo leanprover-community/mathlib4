@@ -393,6 +393,55 @@ lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
 theorem fract_lt_one (a : R) : fract a < 1 :=
   sub_lt_comm.1 <| sub_one_lt_floor _
 
+/-- Decomposition of the floor of a sum: `⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + ⌊fract a + fract b⌋`. -/
+theorem floor_add_eq (a b : R) : ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + ⌊fract a + fract b⌋ := by
+  conv_lhs => rw [← floor_add_fract a, ← floor_add_fract b]
+  rw [add_add_add_comm, ← Int.cast_add, floor_intCast_add]
+
+/-- The floors add exactly when the fractional parts sum to less than one. -/
+theorem floor_add_eq_add_iff : ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ ↔ fract a + fract b < 1 := by
+  rw [floor_add_eq, add_eq_left, floor_eq_zero_iff, mem_Ico, and_iff_right_iff_imp]
+  exact fun _ ↦ add_nonneg (fract_nonneg a) (fract_nonneg b)
+
+/-- The floor of a sum overshoots by one exactly when the fractional parts sum to at least one. -/
+theorem floor_add_eq_add_add_one_iff :
+    ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + 1 ↔ 1 ≤ fract a + fract b := by
+  rw [floor_add_eq, add_right_inj, floor_eq_iff, cast_one, and_iff_left_iff_imp]
+  exact fun _ ↦ add_lt_add_of_lt_of_lt (fract_lt_one a) (fract_lt_one b)
+
+/-- **Floor-additivity dichotomy**: `⌊a + b⌋` is either `⌊a⌋ + ⌊b⌋` or `⌊a⌋ + ⌊b⌋ + 1`. -/
+theorem floor_add_eq_or (a b : R) :
+    ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ ∨ ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + 1 := by
+  grind [floor_add_eq_add_iff, floor_add_eq_add_add_one_iff]
+
+/-- Decomposition of the fractional part of a sum:
+`fract (a + b) = fract a + fract b - ⌊fract a + fract b⌋`. -/
+theorem fract_add_eq (a b : R) :
+    fract (a + b) = fract a + fract b - ⌊fract a + fract b⌋ := by
+  simp only [fract, floor_add_eq a b]
+  push_cast
+  abel
+
+/-- The fractional parts add exactly when they sum to less than one. -/
+theorem fract_add_eq_add_iff : fract (a + b) = fract a + fract b ↔ fract a + fract b < 1 := by
+  rw [fract_add_eq, sub_eq_self, Int.cast_eq_zero, floor_eq_zero_iff, mem_Ico,
+    and_iff_right_iff_imp]
+  exact fun _ ↦ add_nonneg (fract_nonneg a) (fract_nonneg b)
+
+/-- The fractional part of a sum drops by one exactly when the fractional parts
+sum to at least one. -/
+theorem fract_add_eq_add_sub_one_iff :
+    fract (a + b) = fract a + fract b - 1 ↔ 1 ≤ fract a + fract b := by
+  rw [fract_add_eq, sub_right_inj, Int.cast_eq_one, floor_eq_iff, cast_one,
+    and_iff_left_iff_imp]
+  exact fun _ ↦ add_lt_add_of_lt_of_lt (fract_lt_one a) (fract_lt_one b)
+
+/-- **Fractional-part dichotomy**: `fract (a + b)` is either `fract a + fract b`
+or `fract a + fract b - 1`. -/
+theorem fract_add_eq_or (a b : R) :
+    fract (a + b) = fract a + fract b ∨ fract (a + b) = fract a + fract b - 1 := by
+  grind [fract_add_eq_add_iff, fract_add_eq_add_sub_one_iff]
+
 @[simp]
 theorem fract_zero : fract (0 : R) = 0 := by rw [fract, floor_zero, cast_zero, sub_self]
 
