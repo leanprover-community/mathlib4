@@ -64,6 +64,9 @@ instance [FormallyUnramified R S] :
     Algebra.IsSeparable (ResidueField R) (ResidueField S) :=
   FormallyUnramified.isSeparable _ _
 
+-- This option can be removed once https://github.com/leanprover/lean4/issues/13408 is fixed:
+-- the expected types of the `inferInstanceAs` below mention the local `let mR`, and without the
+-- option the auxiliary definitions created for them are rejected by the kernel.
 set_option backward.inferInstanceAs.wrap.data false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
