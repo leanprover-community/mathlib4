@@ -14,7 +14,7 @@ This file shows that affine maps between two convex spaces `X` and `Y` themselve
 space under pointwise convex combinations.
 -/
 
-@[expose] public section
+public section
 
 namespace Convexity
 variable {R S X Y Z I : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Semiring S]

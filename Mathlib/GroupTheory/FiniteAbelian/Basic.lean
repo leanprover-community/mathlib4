@@ -21,7 +21,7 @@ public import Mathlib.Data.ZMod.QuotientRing
 * `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
 -/
 
-@[expose] public section
+public section
 
 open scoped DirectSum
 

@@ -16,7 +16,7 @@ In this file, we show that if `X : SSet` is a quasicategory, then
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

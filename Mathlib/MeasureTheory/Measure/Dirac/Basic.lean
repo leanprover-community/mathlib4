@@ -19,7 +19,7 @@ In this file we prove some basic facts about the Dirac measure `MeasureTheory.Me
 defined in the `Dirac.Def` file.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 open scoped ENNReal NNReal

@@ -50,7 +50,7 @@ distributive lattice.
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

@@ -17,7 +17,7 @@ sums, strong measurability for parameterized families, and continuity results fo
 dominated by an integrable function.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

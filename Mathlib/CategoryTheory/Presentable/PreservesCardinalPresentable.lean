@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe w
 

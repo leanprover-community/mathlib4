@@ -16,7 +16,7 @@ filters.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 

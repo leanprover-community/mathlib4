@@ -16,7 +16,7 @@ This file initializes the `interval_dyadic_real` inclusion family and defines th
 `Univ` and `Coarsen` instances it uses in the `inclusion` tactic.
 -/
 
-@[expose] public section
+public section
 
 namespace Inclusion
 

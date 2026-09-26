@@ -16,7 +16,7 @@ public import Mathlib.Data.Vector.Basic
 
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Set Filter

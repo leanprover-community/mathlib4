@@ -27,7 +27,7 @@ Later, these results are applied to the case where `K` is a number field and `R`
 adele ring, number field
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField
 

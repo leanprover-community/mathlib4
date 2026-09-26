@@ -44,7 +44,7 @@ Upgrade `Equiv.sigma_congr_left`, `Equiv.sigma_congr`, `Equiv.sigma_assoc`,
 `Equiv.sigma_prod_of_equiv`, `Equiv.sigma_equiv_prod`, ... to order isomorphisms.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Sigma

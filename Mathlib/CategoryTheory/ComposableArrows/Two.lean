@@ -20,7 +20,7 @@ and its faces (numbered from `0` to `2`) are respectively `mk₁ g`,
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

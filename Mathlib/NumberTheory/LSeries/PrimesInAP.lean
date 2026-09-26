@@ -67,7 +67,7 @@ We give two versions of **Dirichlet's Theorem**:
 prime number, arithmetic progression, residue class, Dirichlet's Theorem
 -/
 
-@[expose] public section
+public section
 
 /-!
 ### The L-series of the von Mangoldt function restricted to a residue class
