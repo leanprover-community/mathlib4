@@ -105,8 +105,8 @@ theorem _root_.Bornology.IsBounded.subset_closedBall (h : IsBounded s) (c : α) 
 theorem _root_.Bornology.IsBounded.subset_ball_lt (h : IsBounded s) (a : ℝ) (c : α) :
     ∃ r, a < r ∧ s ⊆ ball c r :=
   let ⟨r, hr⟩ := h.subset_closedBall c
-  ⟨max r a + 1, (le_max_right _ _).trans_lt (lt_add_one _), hr.trans <| closedBall_subset_ball <|
-    (le_max_left _ _).trans_lt (lt_add_one _)⟩
+  ⟨max r a + 1, (le_max_right _ _).trans_lt (lt_add_one _), by
+    grw [← lt_add_one, ← le_max_left, ← hr]⟩
 
 theorem _root_.Bornology.IsBounded.subset_ball (h : IsBounded s) (c : α) : ∃ r, s ⊆ ball c r :=
   (h.subset_ball_lt 0 c).imp fun _ ↦ And.right

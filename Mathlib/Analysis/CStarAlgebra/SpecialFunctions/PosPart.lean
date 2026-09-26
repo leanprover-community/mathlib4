@@ -41,8 +41,7 @@ lemma span_nonneg_inter_closedBall {r : ℝ} (hr : 0 < r) :
 lemma span_nonneg_inter_ball {r : ℝ} (hr : 0 < r) :
     span ℂ ({x : A | 0 ≤ x} ∩ Metric.ball 0 r) = ⊤ := by
   rw [eq_top_iff, ← span_nonneg_inter_closedBall (half_pos hr)]
-  gcongr
-  exact Metric.closedBall_subset_ball <| half_lt_self hr
+  grw [half_lt_self hr]
 
 /-- A C⋆-algebra is spanned by nonnegative contractions. -/
 lemma span_nonneg_inter_unitClosedBall :
