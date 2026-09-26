@@ -154,3 +154,75 @@ lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
   | succ n ih =>
     rw [Function.iterate_succ_apply', pow_succ, mul_smul,
       sub_smul_dslope_of_zero (hf n n.lt_succ_self), ih (by grind)]
+
+section analytic
+
+variable {z : 𝕜}
+
+/--
+If `f` has power series `p` at `z₀`, then `dslope f z₀` has power series `p.fslope` at `z₀`.
+-/
+theorem HasFPowerSeriesAt.has_fpower_series_dslope_fslope {p : FormalMultilinearSeries 𝕜 𝕜 E}
+    {z₀ : 𝕜} (hp : HasFPowerSeriesAt f p z₀) : HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
+  have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
+  have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
+  simp only [hasFPowerSeriesAt_iff, FormalMultilinearSeries.coeff_fslope] at hp ⊢
+  refine hp.mono fun x hx => ?_
+  by_cases h : x = 0
+  · convert! hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
+  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, pow_succ]
+    suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
+      simpa [dslope, slope, h, smul_smul, hxx] using this
+    simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
+
+/--
+Away from the base point `a`, the function `dslope f a` is analytic within `s` at `z` as soon as `f`
+is.
+-/
+theorem AnalyticWithinAt.dslope_of_ne (hf : AnalyticWithinAt 𝕜 f s z) (hz : z ≠ a) :
+    AnalyticWithinAt 𝕜 (dslope f a) s z := by
+  have h : AnalyticWithinAt 𝕜 (fun w ↦ (w - a)⁻¹ • (f w - f a)) s z :=
+    ((analyticWithinAt_id.sub analyticWithinAt_const).inv (sub_ne_zero.2 hz)).smul
+      (hf.sub analyticWithinAt_const)
+  refine h.congr_of_eventuallyEq_insert ?_
+  filter_upwards [nhdsWithin_le_nhds (dslope_eventuallyEq_slope_of_ne f hz)] with w hw
+  rw [hw, slope_def_module]
+
+/-- If `f` is analytic at `z`, then so is `dslope f a`, for any base point `a`. -/
+@[fun_prop] protected theorem AnalyticAt.dslope (hf : AnalyticAt 𝕜 f z) (a : 𝕜) :
+    AnalyticAt 𝕜 (dslope f a) z := by
+  rcases eq_or_ne z a with rfl | hz
+  · obtain ⟨p, hp⟩ := hf
+    exact hp.has_fpower_series_dslope_fslope.analyticAt
+  · exact analyticWithinAt_univ.1 (hf.analyticWithinAt.dslope_of_ne hz)
+
+/--
+If `f` is analytic on `s` and the base point `a` does not lie in `s`, then `dslope f a` is analytic
+on `s`.
+-/
+theorem AnalyticOn.dslope_of_notMem (hf : AnalyticOn 𝕜 f s) (ha : a ∉ s) :
+    AnalyticOn 𝕜 (dslope f a) s :=
+  fun z hz ↦ (hf z hz).dslope_of_ne (ne_of_mem_of_not_mem hz ha)
+
+/--
+If `f` is analytic on a set `s` that is a neighbourhood of the base point `a`, then `dslope f a` is
+analytic on `s`.
+-/
+protected theorem AnalyticOn.dslope (hf : AnalyticOn 𝕜 f s) (ha : s ∈ 𝓝 a) :
+    AnalyticOn 𝕜 (dslope f a) s := by
+  intro z hz
+  rcases eq_or_ne z a with hz' | hz'
+  · have hfa : AnalyticAt 𝕜 f a :=
+      analyticWithinAt_univ.1 ((hf a (mem_of_mem_nhds ha)).mono_of_mem_nhdsWithin
+        (mem_nhdsWithin_of_mem_nhds ha))
+    exact hz' ▸ (hfa.dslope a).analyticWithinAt
+  · exact (hf z hz).dslope_of_ne hz'
+
+/--
+If `f` is analytic on a neighbourhood of `s`, then so is `dslope f a`, for any base point `a`.
+-/
+@[fun_prop] protected theorem AnalyticOnNhd.dslope (hf : AnalyticOnNhd 𝕜 f s) (a : 𝕜) :
+    AnalyticOnNhd 𝕜 (dslope f a) s :=
+  fun z hz ↦ (hf z hz).dslope a
+
+end analytic
