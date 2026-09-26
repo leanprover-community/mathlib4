@@ -50,6 +50,12 @@ theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
 instance : Inhabited Locale :=
   ⟨of PUnit⟩
 
+/-- An explicit equivalence between locale and frame homomorphisms. -/
+def homEquivFrameHom (α β : Type u) [Order.Frame α] [Order.Frame β] :
+    ((↧α : Locale) ⟶ ↧β) ≃ FrameHom β α where
+  toFun f := ConcreteCategory.hom f.unop
+  invFun f := (Frm.ofHom f).op
+
 end Locale
 
 /-- The forgetful functor from `Top` to `Locale` which forgets that the space has "enough points".
