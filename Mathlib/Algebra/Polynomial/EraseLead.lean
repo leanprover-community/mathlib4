@@ -37,7 +37,7 @@ variable {R : Type*} [Semiring R] {f : R[X]}
 /-- `eraseLead f` for a polynomial `f` is the polynomial obtained by
 subtracting from `f` the leading term of `f`. -/
 def eraseLead (f : R[X]) : R[X] :=
-  Polynomial.erase f.natDegree f
+  f.erase f.natDegree
 
 section EraseLead
 
@@ -55,7 +55,8 @@ theorem eraseLead_coeff_of_ne (i : ℕ) (hi : i ≠ f.natDegree) : f.eraseLead.c
   simp [eraseLead_coeff, hi]
 
 @[simp]
-theorem eraseLead_zero : eraseLead (0 : R[X]) = 0 := by simp only [eraseLead, erase_zero]
+theorem eraseLead_zero : eraseLead (0 : R[X]) = 0 := by
+  simp only [eraseLead, AddMonoidAlgebra.erase_zero]
 
 @[simp]
 theorem eraseLead_add_monomial_natDegree_leadingCoeff (f : R[X]) :
@@ -301,7 +302,7 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
       sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
     rcases hn₂ : n
-    · simpa [coeff_monomial, hp] using! fun _ ↦ by lia
+    · simp [hdP]
     · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, ite_eq_right (by lia),
         ite_eq_right (by lia), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.

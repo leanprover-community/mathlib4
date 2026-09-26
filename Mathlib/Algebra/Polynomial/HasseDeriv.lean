@@ -136,8 +136,8 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   | succ k ih => ?_
   ext f n : 2
   rw [iterate_succ_apply', ← ih]
-  simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
-    hasseDeriv_coeff, ← @choose_symm_add _ k]
+  simp only [LinearMap.smul_apply, AddMonoidAlgebra.coeff_smul_apply, LinearMap.map_smul_of_tower,
+    coeff_derivative, hasseDeriv_coeff, ← @choose_symm_add _ k]
   simp only [nsmul_eq_mul, factorial_succ, mul_assoc, succ_eq_add_one, ← add_assoc,
     add_right_comm n 1 k, ← cast_succ]
   rw [← (cast_commute (n + 1) (f.coeff (n + k + 1))).eq]
