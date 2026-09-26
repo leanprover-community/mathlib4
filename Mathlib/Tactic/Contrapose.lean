@@ -127,7 +127,7 @@ syntax (name := contrapose!)
 
 local elab "try_push_neg" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
-    (ifUnchanged := .silent)
+    (ifUnchanged := .warning)
 
 macro_rules
   | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try_push_neg $cfg))
