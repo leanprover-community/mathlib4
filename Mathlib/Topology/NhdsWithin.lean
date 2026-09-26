@@ -420,6 +420,16 @@ theorem DenseRange.nhdsWithin_neBot {ι : Type*} {f : ι → α} (h : DenseRange
     NeBot (𝓝[range f] x) :=
   mem_closure_iff_clusterPt.1 (h x)
 
+lemma Dense.nhdsWithin_inter_neBot {d s : Set α} (hd : Dense d) {x : α}
+    [hi : (𝓝[s] x).NeBot] (hs : IsOpen s) :
+    (𝓝[d ∩ s] x).NeBot := by
+  rw [← mem_closure_iff_nhdsWithin_neBot, mem_closure_iff]
+  intro o ho hio
+  have h1 : (o ∩ s).Nonempty := hi.nonempty_of_mem
+    (inter_mem (mem_nhdsWithin_of_mem_nhds (ho.mem_nhds hio)) self_mem_nhdsWithin)
+  obtain ⟨w, hwo, hwd⟩ := hd.inter_open_nonempty _ (ho.inter hs) h1
+  exact ⟨w, hwo.1, hwd, hwo.2⟩
+
 theorem mem_closure_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {I : Set ι}
     {s : ∀ i, Set (α i)} {x : ∀ i, α i} : x ∈ closure (pi I s) ↔ ∀ i ∈ I, x i ∈ closure (s i) := by
   simp only [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_pi_neBot]

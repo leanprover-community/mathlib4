@@ -277,6 +277,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("isLeftContinuous", "IsRightContinuous"),
   ("isCadlag", "IsCaglad"),
   ("isCaglad", "IsCadlag"),
+  ("leftColim", "RightLim"),
+  ("rightColim", "LeftLim"),
+  ("colimUnder", "LimUnder"),
 
   -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
