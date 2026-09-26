@@ -231,7 +231,7 @@
   title  : The Hermite-Lindemann Transcendence Theorem
 57:
   title  : Heron’s Formula
-  decl   : Theorems100.heron
+  decl   : Affine.Triangle.volume_eq_sqrt_mul_sub_mul_sub_mul_sub
   authors: Matt Kempster
 58:
   title  : Formula for the Number of Combinations
