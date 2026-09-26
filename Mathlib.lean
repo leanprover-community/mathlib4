@@ -5948,6 +5948,7 @@ public import Mathlib.NumberTheory.FLT.Three
 public import Mathlib.NumberTheory.FactorisationProperties
 public import Mathlib.NumberTheory.Fermat
 public import Mathlib.NumberTheory.FermatPsp
+public import Mathlib.NumberTheory.Fibonacci
 public import Mathlib.NumberTheory.FrobeniusNumber
 public import Mathlib.NumberTheory.FunctionField
 public import Mathlib.NumberTheory.FundamentalDiscriminant
