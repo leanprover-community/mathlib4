@@ -88,7 +88,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     suffices Tendsto v atTop atTop by rwa [tendsto_add_atTop_iff_nat] at this
     have hv₀ : 0 < v 0 := by
       calc
-        0 ≤ 2 * ϕ (u 0) := by specialize nonneg x; positivity
+        0 ≤ 2 * ϕ (u 0) := by specialize nonneg (u 0); positivity
         _ < ϕ (u (0 + 1)) := key₂ 0
     apply tendsto_atTop_of_geom_le hv₀ one_lt_two
     exact fun n => (key₂ (n + 1)).le
