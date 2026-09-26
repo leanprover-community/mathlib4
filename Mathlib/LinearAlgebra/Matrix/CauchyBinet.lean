@@ -117,7 +117,7 @@ theorem det_mul_eq_sum_det_submatrix (_hmn : m ≤ n) (A : Matrix (Fin m) (Fin n
         else 0) := by
     intro S hS_mem
     have hS : S.card = m := (Finset.mem_powersetCard.mp hS_mem).2
-    rw [dif_pos hS]
+    rw [dite_eq_left hS]
     set coeσ : Fin m → Fin n := fun i => (S.orderIsoOfFin hS i : Fin n) with hcoeσ
     have hcoeσ_inj : Function.Injective coeσ := by
       intro i j hij
