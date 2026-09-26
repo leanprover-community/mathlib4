@@ -14,7 +14,9 @@ public import Mathlib.Tactic.AdaptationNote
 This file proves Stirling's formula for the factorial.
 It states that $n!$ grows asymptotically like $\sqrt{2\pi n}(\frac{n}{e})^n$.
 
-Also some _global_ bounds on the factorial function and the Stirling sequence are proved.
+Also some _global_ bounds on the factorial function and the Stirling sequence are proved. Finally,
+Stirling's formula is used to derive the asymptotics of the central binomial coefficient,
+`n.centralBinom ~ 4 ^ n / √(π * n)`.
 
 ## Proof outline
 
@@ -298,5 +300,42 @@ theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :
       rw [log_mul (x := √_), log_sqrt, log_mul (x := 2 * π), log_pow, log_div, log_exp] <;>
       positivity
     _ ≤ _ := log_le_log (by positivity) (le_factorial_stirling n)
+
+/-! ### The central binomial coefficient -/
+
+/-- `n.centralBinom = (2 * n).choose n` is asymptotically equivalent to `4 ^ n / √(π * n)`. -/
+theorem isEquivalent_centralBinom :
+    (fun n ↦ n.centralBinom : ℕ → ℝ) ~[atTop] fun n ↦ 4 ^ n / √(π * n) := by
+  have h := factorial_isEquivalent_stirling
+  refine (((h.comp_tendsto (tendsto_id.const_mul_atTop' zero_lt_two)).div (h.mul h)).congr_left
+    ?_).congr_right ?_
+  · filter_upwards with n
+    simp [centralBinom_eq_two_mul_choose, two_mul, cast_add_choose]
+  · filter_upwards [eventually_gt_atTop 0] with n hn
+    have hn' : (0 : ℝ) < n := by exact_mod_cast hn
+    have hsqrt : √(2 * (2 * n) * π) = 2 * √(π * n) := by
+      rw [← sqrt_sq (by positivity : (0 : ℝ) ≤ 2 * √(π * n)), mul_pow, sq_sqrt (by positivity)]
+      ring_nf
+    have hs : √(π * n) ≠ 0 := by positivity
+    dsimp only [Function.comp, Pi.div_apply, Pi.mul_apply, id]
+    push_cast
+    rw [hsqrt, ← sq, mul_pow, sq_sqrt (by positivity), pow_mul, div_pow, mul_pow]
+    field_simp
+    rw [sq_sqrt (by positivity)]
+    ring
+
+/-- The ratio of the central binomial coefficient `n.centralBinom` to `4 ^ n` tends to `0`. -/
+theorem tendsto_centralBinom_div_four_pow :
+    Tendsto (fun n : ℕ ↦ (n.centralBinom : ℝ) / 4 ^ n) atTop (𝓝 0) := by
+  refine (isEquivalent_centralBinom.div .refl).symm.tendsto_nhds ?_
+  refine ((tendsto_sqrt_atTop.comp
+    (tendsto_natCast_atTop_atTop.const_mul_atTop pi_pos)).inv_tendsto_atTop).congr fun n ↦ ?_
+  simp [div_right_comm]
+
+/-- The central binomial coefficient `n.centralBinom` is negligible compared to `4 ^ n`. -/
+theorem isLittleO_centralBinom_four_pow :
+    (fun n : ℕ ↦ (n.centralBinom : ℝ)) =o[atTop] fun n ↦ (4 : ℝ) ^ n :=
+  (Asymptotics.isLittleO_iff_tendsto fun _ h ↦ absurd h (pow_ne_zero _ four_ne_zero)).2
+    tendsto_centralBinom_div_four_pow
 
 end Stirling
