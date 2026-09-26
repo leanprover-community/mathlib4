@@ -70,7 +70,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
       exact hy i
     · rintro hdvd
       refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
-      · exact hdvd i
+      exact hdvd i
   refine (Submodule.Quotient.equiv N N' b'.equivFun this).trans (re₂₃ := inferInstance)
     (re₃₂ := inferInstance) ?_
   classical

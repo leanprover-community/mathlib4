@@ -138,22 +138,22 @@ lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {
     · have hAB := det_succ_row ((fromRows A B).submatrix f g) i
       simp only [submatrix_apply, hfi, fromRows_apply_inr] at hAB
       obtain ⟨j', s, hj'⟩ := hB j
-      · simp only [hj'] at hAB
-        by_cases hj'' : ∃ x, g x = j'
-        · obtain ⟨x, rfl⟩ := hj''
-          rw [Fintype.sum_eq_single x fun y hxy => ?_, Pi.single_eq_same] at hAB
-          · rw [hAB]
-            change _ ∈ MonoidHom.mrange SignType.castHom.toMonoidHom
-            refine mul_mem (mul_mem ?_ (Set.mem_range_self s)) ?_
-            · apply pow_mem
-              exact ⟨-1, by simp⟩
-            · exact ih _ _
-                (hf.comp Fin.succAbove_right_injective)
-                (hg.comp Fin.succAbove_right_injective)
-          · simp [Pi.single_eq_of_ne, hg.ne_iff.mpr hxy]
-        · rw [not_exists] at hj''
-          use 0
-          simpa [hj''] using hAB.symm
+      simp only [hj'] at hAB
+      by_cases hj'' : ∃ x, g x = j'
+      · obtain ⟨x, rfl⟩ := hj''
+        rw [Fintype.sum_eq_single x fun y hxy => ?_, Pi.single_eq_same] at hAB
+        · rw [hAB]
+          change _ ∈ MonoidHom.mrange SignType.castHom.toMonoidHom
+          refine mul_mem (mul_mem ?_ (Set.mem_range_self s)) ?_
+          · apply pow_mem
+            exact ⟨-1, by simp⟩
+          · exact ih _ _
+              (hf.comp Fin.succAbove_right_injective)
+              (hg.comp Fin.succAbove_right_injective)
+        · simp [Pi.single_eq_of_ne, hg.ne_iff.mpr hxy]
+      · rw [not_exists] at hj''
+        use 0
+        simpa [hj''] using hAB.symm
     · rw [isTotallyUnimodular_iff] at hA
       apply hA
 

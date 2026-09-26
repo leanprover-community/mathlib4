@@ -57,6 +57,7 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
   exact isClosed_eq continuous_fst continuous_const
 
 -- Continuity of `fun x => a ^ x`: union of these two lemmas is optimal.
+@[fun_prop]
 theorem continuousAt_const_cpow {a b : ℂ} (ha : a ≠ 0) : ContinuousAt (fun x : ℂ => a ^ x) b := by
   have cpow_eq : (fun x : ℂ => a ^ x) = fun x => exp (log a * x) := by
     ext1 b
@@ -64,6 +65,7 @@ theorem continuousAt_const_cpow {a b : ℂ} (ha : a ≠ 0) : ContinuousAt (fun x
   rw [cpow_eq]
   exact continuous_exp.continuousAt.comp (ContinuousAt.mul continuousAt_const continuousAt_id)
 
+@[fun_prop]
 theorem continuousAt_const_cpow' {a b : ℂ} (h : b ≠ 0) : ContinuousAt (fun x : ℂ => a ^ x) b := by
   by_cases ha : a = 0
   · rw [ha, continuousAt_congr (zero_cpow_eq_nhds h)]
@@ -153,16 +155,12 @@ namespace Real
 theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0 := by positivity) :
     ContinuousAt (a ^ ·) b := by
   simp only [rpow_def]
-  refine Complex.continuous_re.continuousAt.comp ?_
-  refine (continuousAt_const_cpow ?_).comp Complex.continuous_ofReal.continuousAt
-  norm_cast
+  fun_prop (discharger := norm_cast)
 
 theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0 := by positivity) :
     ContinuousAt (a ^ ·) b := by
   simp only [rpow_def]
-  refine Complex.continuous_re.continuousAt.comp ?_
-  refine (continuousAt_const_cpow' ?_).comp Complex.continuous_ofReal.continuousAt
-  norm_cast
+  fun_prop (discharger := norm_cast)
 
 theorem rpow_eq_nhds_of_neg {p : ℝ × ℝ} (hp_fst : p.fst < 0) :
     (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) := by
@@ -170,7 +168,7 @@ theorem rpow_eq_nhds_of_neg {p : ℝ × ℝ} (hp_fst : p.fst < 0) :
     this.mono fun x hx ↦ by
       dsimp only
       rw [rpow_def_of_neg hx]
-  exact IsOpen.eventually_mem (isOpen_lt continuous_fst continuous_const) hp_fst
+  exact (isOpen_lt continuous_fst continuous_const).eventually_mem hp_fst
 
 theorem rpow_eq_nhds_of_pos {p : ℝ × ℝ} (hp_fst : 0 < p.fst) :
     (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
@@ -178,7 +176,7 @@ theorem rpow_eq_nhds_of_pos {p : ℝ × ℝ} (hp_fst : 0 < p.fst) :
     this.mono fun x hx ↦ by
       dsimp only
       rw [rpow_def_of_pos hx]
-  exact IsOpen.eventually_mem (isOpen_lt continuous_const continuous_fst) hp_fst
+  exact (isOpen_lt continuous_const continuous_fst).eventually_mem hp_fst
 
 theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
@@ -186,14 +184,12 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
   cases hp with
   | inl hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_neg hp)]
-    refine ContinuousAt.mul ?_ (by fun_prop)
-    · refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
-      exact (continuousAt_log hp.ne).comp continuous_fst.continuousAt
+    have := hp.ne
+    fun_prop
   | inr hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_pos hp)]
-    refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
-    refine (continuousAt_log ?_).comp continuous_fst.continuousAt
-    exact hp.ne'
+    have := hp.ne'
+    fun_prop
 
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by

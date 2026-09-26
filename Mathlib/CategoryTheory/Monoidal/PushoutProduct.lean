@@ -186,9 +186,9 @@ def associator
     · refine pushout.hom_ext ?_ (by simp)
       apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
   · apply pushout.hom_ext (by simp [← MonoidalCategory.whiskerLeft_comp])
-    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-      · simp [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.comp_whiskerRight_assoc]
-      · simp [← MonoidalCategory.comp_whiskerRight_assoc]
+    apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
+    · simp [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.comp_whiskerRight_assoc]
+    · simp [← MonoidalCategory.comp_whiskerRight_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The pushout-product is commutative: `X₁ □ X₂ ≅ X₂ □ X₁`. -/

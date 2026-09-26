@@ -245,7 +245,7 @@ attribute [simp] ENNReal.top_pow
 See also `ENNReal.orderIsoRpow`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0∞ ≃o ℝ≥0∞ :=
   (NNReal.powOrderIso n hn).withTopCongr.copy (· ^ n) _
-    (by cases n; (· cases hn rfl); · ext (_ | _) <;> rfl) rfl
+    (by cases n; (· cases hn rfl); ext (_ | _) <;> rfl) rfl
 
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0∞) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
   (powOrderIso n hn).map_iSup _

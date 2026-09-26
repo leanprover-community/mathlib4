@@ -315,10 +315,10 @@ theorem eval_section_surjective_of_surjective (i : J) :
   have := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
   refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using! h jk⟩, ?_⟩
-  · have := (sec i).prop
-    simp only [mem_iInter, mem_preimage] at this
-    have := this (𝟙 i)
-    rwa [map_id, id_apply] at this
+  have := (sec i).prop
+  simp only [mem_iInter, mem_preimage] at this
+  have := this (𝟙 i)
+  rwa [map_id, id_apply] at this
 
 theorem eventually_injective [Nonempty J] [Finite F.sections] :
     ∃ j, ∀ (i) (f : i ⟶ j), Function.Injective (F.map f) := by

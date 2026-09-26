@@ -90,11 +90,11 @@ instance : CompactSpace (T.CompleteType α) := by
       simp only [mem_ofPred_eq, typesWith_not]
       exact Ultrafilter.mem_or_compl_mem F (T.typesWith φ)
   · refine ⟨mem_univ _, ?_⟩
-    · rw [nhds_generateFrom]
-      apply le_iInf₂
-      rintro _ ⟨hφ, φ, rfl⟩
-      rw [Filter.le_principal_iff]
-      exact hφ
+    rw [nhds_generateFrom]
+    apply le_iInf₂
+    rintro _ ⟨hφ, φ, rfl⟩
+    rw [Filter.le_principal_iff]
+    exact hφ
 
 instance : BaireSpace (T.CompleteType α) := BaireSpace.of_t2Space_locallyCompactSpace
 

@@ -787,17 +787,17 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
   /- To show that the intersection we have in sight is in `ℱ`, we use that it contains a double
   intersection (an infinite and a finite one): by general properties of filters, we are reduced
   to show that both terms are in `ℱ`, which is easy in light of their definition. -/
-  · simp only [Set.mem_Iio, inter_mem_iff]
-    constructor
-    · have := (exists_lb_coeff_ne hℱ).choose_spec
-      rw [Filter.eventually_iff] at this
-      convert! this
-      ext
-      simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
-    · rw [biInter_mem (Set.finite_Icc ℓ N)]
-      intro i _
-      apply (coeff_tendsto hℱ _).eventually
-      simp
+  simp only [Set.mem_Iio, inter_mem_iff]
+  constructor
+  · have := (exists_lb_coeff_ne hℱ).choose_spec
+    rw [Filter.eventually_iff] at this
+    convert! this
+    ext
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq]; rfl
+  · rw [biInter_mem (Set.finite_Icc ℓ N)]
+    intro i _
+    apply (coeff_tendsto hℱ _).eventually
+    simp
 
 open scoped Topology
 open MonoidWithZeroHom.ValueGroup₀
@@ -951,17 +951,17 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
     set X := {f : K⸨X⸩ | Valued.v f < embedding d.1} with X_def
     refine ⟨(fun x : K⸨X⸩ × K⸨X⸩ ↦ x.snd - x.fst) ⁻¹' X, ⟨X, ?_⟩, ?_⟩
     · refine ⟨?_, Set.Subset.refl _⟩
-      · simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_embedding]
-        obtain ⟨x, hx⟩ := restrict₀_surjective _ d.1
-        use Units.mk0 (Valued.v.restrict (x : K⸨X⸩)) (by
-          simp only [ne_eq, map_eq_zero]
-          intro h
-          simp only [h, map_zero] at hx
-          exact Units.ne_zero _ hx.symm)
-        simp only [Units.val_mk0, ← Valuation.restrict_lt_iff_lt_embedding,
-          X_def, Set.ofPred_subset_ofPred, Valuation.restrict_lt_iff]
-        rw [← hx, embedding_restrict₀]
-        simp [v_def, valuation_coe_ratFunc]
+      simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_embedding]
+      obtain ⟨x, hx⟩ := restrict₀_surjective _ d.1
+      use Units.mk0 (Valued.v.restrict (x : K⸨X⸩)) (by
+        simp only [ne_eq, map_eq_zero]
+        intro h
+        simp only [h, map_zero] at hx
+        exact Units.ne_zero _ hx.symm)
+      simp only [Units.val_mk0, ← Valuation.restrict_lt_iff_lt_embedding,
+        X_def, Set.ofPred_subset_ofPred, Valuation.restrict_lt_iff]
+      rw [← hx, embedding_restrict₀]
+      simp [v_def, valuation_coe_ratFunc]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
       rwa [Set.mem_ofPred_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,

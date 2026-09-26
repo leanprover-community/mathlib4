@@ -207,8 +207,8 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     simp_rw [mul_sum, ← sum_filter]
     congr with n
     congr
-    · rw [← divisors_filter_dvd_of_dvd prodPrimes_ne_zero (Nat.gcd_dvd_left _ _)]
-      ext x; simp +contextual [dvd_gcd_iff]
+    rw [← divisors_filter_dvd_of_dvd prodPrimes_ne_zero (Nat.gcd_dvd_left _ _)]
+    ext x; simp +contextual [dvd_gcd_iff]
   case caseC =>
     rw [sum_comm]
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]

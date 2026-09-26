@@ -158,9 +158,9 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
       rw [hJ] at this
       replace : v.repr (v i) ∈ Finsupp.supported R R (⋃ j, S j) := this trivial
       rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single _ one_ne_zero] at this
-      · subst b
-        rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
-        exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
+      subst b
+      rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
+      exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
     refine le_of_not_gt fun IJ => ?_
     suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_gt this ⟨Set.embeddingOfSubset _ _ hs⟩
     refine lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk

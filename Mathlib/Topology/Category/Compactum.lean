@@ -321,14 +321,9 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
         exact claim4 Q hQ
     intro S hS
     apply finiteInterClosure_insert
-    · constructor
-      · use Set.univ
-        refine ⟨Filter.univ_sets _, ?_⟩
-        ext
-        refine ⟨?_, by tauto⟩
-        · intro
-          apply Filter.univ_sets
-      · exact claim3
+    · refine ⟨⟨Set.univ, Filter.univ_sets _, ?_⟩, claim3⟩
+      ext
+      exact ⟨fun _ ↦ Filter.univ_sets _, by tauto⟩
     · exact hS
   -- It suffices to show that the intersection of any finite subset of T1 is nonempty.
   suffices ∀ F : fsu, ↑F ⊆ T1 → (⋂₀ ι F).Nonempty by

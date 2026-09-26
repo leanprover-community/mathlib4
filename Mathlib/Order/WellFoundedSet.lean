@@ -896,9 +896,9 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
       simpa using! hf _
     use (g (g' 0)), (g (g' 1))
     suffices (f (g (g' 0))) ≤ (f (g (g' 1))) by simpa
-    · refine Prod.Lex.toLex_le_toLex.mpr <| .inr ⟨?_, ?_⟩
-      · exact (hhc (g' 0)).symm.trans (hhc (g' 1))
-      · exact hg' (Nat.zero_le 1)
+    refine Prod.Lex.toLex_le_toLex.mpr <| .inr ⟨?_, ?_⟩
+    · exact (hhc (g' 0)).symm.trans (hhc (g' 1))
+    · exact hg' (Nat.zero_le 1)
 
 theorem imageProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1) '' s).IsPWO :=

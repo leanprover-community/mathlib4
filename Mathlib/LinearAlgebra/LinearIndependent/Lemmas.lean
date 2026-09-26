@@ -331,15 +331,15 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
         = d • a • s := by rw [mul_comm, mul_smul]
       _ = -(d • c • t) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, h₁, smul_zero]
       _ = (b * c) • s := ?_
-    · rw [mul_comm, mul_smul, neg_eq_iff_add_eq_zero, add_comm, smul_comm d c, ← smul_add, h₂,
-        smul_zero]
+    rw [mul_comm, mul_smul, neg_eq_iff_add_eq_zero, add_comm, smul_comm d c, ← smul_add, h₂,
+      smul_zero]
   · suffices (a * d) • t = (b * c) • t by
       by_contra ht; exact h (_root_.smul_left_injective S ht ‹_›)
     calc (a * d) • t
         = a • d • t := by rw [mul_smul]
       _ = -(a • b • s) := by rw [eq_neg_iff_add_eq_zero, ← smul_add, add_comm, h₂, smul_zero]
       _ = (b * c) • t := ?_
-    · rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
+    rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
 
 @[simp] lemma LinearIndependent.pair_add_smul_add_smul_iff [Nontrivial R] :
     LinearIndependent R ![a • x + b • y, c • x + d • y] ↔
@@ -458,9 +458,9 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
     have hiJ : i ∈ J := by simp [J]
     have h := by
       refine mt hImaximal ?_
-      · intro h2
-        rw [h2] at hi
-        exact absurd hiJ hi
+      intro h2
+      rw [h2] at hi
+      exact absurd hiJ hi
     obtain ⟨f, supp_f, sum_f, f_ne⟩ := linearDepOn_iff.mp h
     have hfi : f i ≠ 0 := by
       contrapose hIlinind
@@ -774,10 +774,10 @@ theorem exists_linearIndepOn_extension {s t : Set ι} (hs : LinearIndepOn K v s)
     ∃ b ⊆ t, s ⊆ b ∧ v '' t ⊆ span K (v '' b) ∧ LinearIndepOn K v b := by
   obtain ⟨b, sb, h⟩ := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndepOn K v b} ?_ _ ⟨hst, hs⟩
-    · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
-      · exact sUnion_subset fun x xc => (hc xc).1
-      · exact linearIndepOn_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
-      · exact subset_sUnion_of_mem
+    refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
+    · exact sUnion_subset fun x xc => (hc xc).1
+    · exact linearIndepOn_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
+    · exact subset_sUnion_of_mem
   refine ⟨b, h.prop.1, sb, fun _ ⟨x, hx, hvx⟩ => by_contra fun hn ↦ hn ?_, h.prop.2⟩
   subst hvx
   exact subset_span <| mem_image_of_mem v <| h.mem_of_prop_insert
@@ -806,11 +806,11 @@ lemma exists_linearIndependent' (v : ι → V) :
   have hs {i : ι} (hi : i ∈ s) : v i ∈ t := by obtain ⟨a, rfl⟩ := hi; simp [hf]
   let f' (a : s) : t := ⟨v a.val, hs a.property⟩
   refine ⟨s, Subtype.val, Subtype.val_injective, hsp.symm ▸ by congr; aesop, ?_⟩
-  · rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp [f']]
-    apply hli.comp
-    rintro ⟨i, x, rfl⟩ ⟨j, y, rfl⟩ hij
-    simp only [Subtype.ext_iff, hf, f'] at hij
-    simp [hij]
+  rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp [f']]
+  apply hli.comp
+  rintro ⟨i, x, rfl⟩ ⟨j, y, rfl⟩ hij
+  simp only [Subtype.ext_iff, hf, f'] at hij
+  simp [hij]
 
 variable {K} {s t : Set ι}
 

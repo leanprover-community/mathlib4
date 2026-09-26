@@ -226,7 +226,7 @@ lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalDirectedPoset κ
     {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (hJ : HasCardinalLT J.obj κ') (h : κ ≤ κ') :
     IsCardinalPresentable J κ' where
   preservesColimitOfShape A _ _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
-  · have := isFiltered_of_isCardinalFiltered A κ'
+    have := isFiltered_of_isCardinalFiltered A κ'
     have := IsCardinalFiltered.of_le A h
     replace hc := isColimitOfPreserves (forget _) hc
     refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f g h ↦ ?_)
