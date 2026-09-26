@@ -38,6 +38,7 @@ jobs:
         sparse-checkout: .github/actions
         path: workflow-actions
     - name: Get mathlib-ci
+      id: mathlib-ci
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Configure Lean
@@ -75,16 +76,21 @@ jobs:
       id: build
       continue-on-error: true
       run: |
+        set -o pipefail
         # Use a temporary file to ensure we don't overflow max variable size.
         lean_outfile=$(mktemp)
         # Show the stdout in the GitHub build logs, while we process it from the file.
-        (lake build || true) | tee "${lean_outfile}"
+        success=true
+        lake build | tee "${lean_outfile}" || success=false
 
-        # Process output for posting to Zulip
-        SHA=${{ github.sha }} \
-        REPO=${{ github.repository }} \
-        RUN_ID=${{ github.run_id }} \
+        # Process output for posting to Zulip.
+        # The description links to the linter set, this workflow and the reporting script.
+        blob="https://github.com/${{ github.repository }}/blob/${{ github.sha }}"
+        SUCCESS="${success}" \
         INFO=true \
+        LOCATIONS_MAX_COUNT=2 \
+        MAX_ROWS=20 \
+        DESCRIPTION="\`lake build\` with [\`linter.weeklyLintSet\`](${blob}/Mathlib/Init.lean) enabled ([workflow](${blob}/.github/workflows/weekly-lints.yml), [reporting script](https://github.com/leanprover-community/mathlib-ci/blob/${{ steps.mathlib-ci.outputs.ref }}/scripts/reporting/zulip_build_report.sh))." \
           "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
