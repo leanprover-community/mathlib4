@@ -37,6 +37,8 @@ The theory will be expanded in future PRs.
 * `Distribution.mapCLM`: any continuous linear map `A : F →L[ℝ] G` induces a continuous linear
   map `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
   pointwise.
+* `Distribution.smulLeftCLM`: multiplication by a `C^n` function as a continuous linear map on
+  `𝓓'^{n}(Ω, F)`. On locally integrable functions, this corresponds to pointwise multiplication.
 * `Distribution.ofFun Ω f μ n`: the distribution induced by a function `f : E → F`,
   sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if
   `f` is not locally integrable on `Ω`.
@@ -288,6 +290,53 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
 
 end LineDerivCLM
 
+section Multiplication
+
+variable (Ω F n) in
+/-- Multiplication with a `C^n` function as a continuous linear map on `𝓓'^{n}(Ω, F)`. -/
+noncomputable def smulLeftCLM (n := ⊤) (g : E → ℝ) :
+    𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F) :=
+  (TestFunction.smulLeftCLM Ω ℝ n g).precompCompactConvergenceCLM _
+
+@[simp]
+theorem smulLeftCLM_apply_apply (g : E → ℝ) (T : 𝓓'^{n}(Ω, F)) (f : 𝓓^{n}(Ω, ℝ)) :
+    smulLeftCLM Ω F n g T f = T (TestFunction.smulLeftCLM Ω ℝ n g f) :=
+  rfl
+
+@[simp]
+theorem smulLeftCLM_const (c : ℝ) (T : 𝓓'^{n}(Ω, F)) :
+    smulLeftCLM Ω F n (fun _ : E ↦ c) T = c • T := by
+  ext1 f; simp
+
+@[simp]
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → ℝ} (hg₁ : ContDiff ℝ n g₁)
+    (hg₂ : ContDiff ℝ n g₂) (T : 𝓓'^{n}(Ω, F)) :
+    smulLeftCLM Ω F n g₂ (smulLeftCLM Ω F n g₁ T) = smulLeftCLM Ω F n (g₁ * g₂) T := by
+  ext f
+  simp [TestFunction.smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
+
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℝ} (hg₁ : ContDiff ℝ n g₁)
+    (hg₂ : ContDiff ℝ n g₂) :
+    smulLeftCLM Ω F n g₂ ∘L smulLeftCLM Ω F n g₁ = smulLeftCLM Ω F n (g₁ * g₂) := by
+  ext1 T
+  exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ T
+
+theorem smulLeftCLM_add {g₁ g₂ : E → ℝ} (hg₁ : ContDiff ℝ n g₁) (hg₂ : ContDiff ℝ n g₂) :
+    smulLeftCLM Ω F n (g₁ + g₂) = smulLeftCLM Ω F n g₁ + smulLeftCLM Ω F n g₂ := by
+  ext T f
+  simp [TestFunction.smulLeftCLM_add hg₁ hg₂]
+
+theorem smulLeftCLM_sub {g₁ g₂ : E → ℝ} (hg₁ : ContDiff ℝ n g₁) (hg₂ : ContDiff ℝ n g₂) :
+    smulLeftCLM Ω F n (g₁ - g₂) = smulLeftCLM Ω F n g₁ - smulLeftCLM Ω F n g₂ := by
+  ext T f
+  simp [TestFunction.smulLeftCLM_sub hg₁ hg₂]
+
+theorem smulLeftCLM_neg {g : E → ℝ} (hg : ContDiff ℝ n g) :
+    smulLeftCLM Ω F n (-g) = -smulLeftCLM Ω F n g := by
+  ext T f
+  simp [TestFunction.smulLeftCLM_neg hg]
+
+end Multiplication
 section ofFun
 
 open MeasureTheory
@@ -363,6 +412,16 @@ theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     simp [smul_comm c]
   · grind [zero_smul, locallyIntegrableOn_smul_iff, smul_zero]
 
+theorem smulLeftCLM_ofFun [LocallyCompactSpace E] {g : E → ℝ} (hg : ContDiff ℝ n g)
+    {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ) :
+    smulLeftCLM Ω F n g (ofFun Ω f μ n) = ofFun Ω (fun x ↦ g x • f x) μ n := by
+  have hgf : LocallyIntegrableOn (fun x ↦ g x • f x) Ω μ :=
+    hf.continuousOn_smul Ω.isOpen.isLocallyClosed hg.continuous.continuousOn
+  ext φ
+  rw [smulLeftCLM_apply_apply, ofFun_apply hf, ofFun_apply hgf]
+  refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
+  simp only [TestFunction.smulLeftCLM_apply_apply hg, smul_comm (φ x), smul_assoc]
+
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
 theorem ofFun_injective {f f' : E → F} {μ : Measure E}
@@ -382,5 +441,4 @@ theorem ofFun_injective {f f' : E → F} {μ : Measure E}
   congr
 
 end ofFun
-
 end Distribution
