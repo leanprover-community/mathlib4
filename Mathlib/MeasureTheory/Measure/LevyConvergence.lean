@@ -245,7 +245,7 @@ variables converge pointwise to the characteristic function of the pushforward m
 random variable. -/
 lemma TendstoInDistribution.tendsto_charFun (h : TendstoInDistribution X atTop X' P P') (t : E) :
     Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t)) := by
-  simpa only [ProbabilityMeasure.coe_mk] using
+  simpa only [ProbabilityMeasure.coe_mk, Measure.coe_toProbabilityMeasure] using
       ProbabilityMeasure.tendsto_iff_tendsto_charFun.mp h.tendsto t
 
 /-- The convergence in distribution of random variables is equivalent to the pointwise convergence
