@@ -626,6 +626,7 @@ theorem Cofork.π_comp_hom {s t : Cofork f g} (f : s ⟶ t) : s.π ≫ f.hom = t
   cases s; cases t; cases f; aesop
 
 @[deprecated (since := "2026-09-25")] alias Fork.π_comp_hom := Cofork.π_comp_hom
+@[deprecated (since := "2026-09-25")] alias Fork.π_comp_hom_assoc := Cofork.π_comp_hom_assoc
 
 /-- To construct an isomorphism between coforks,
 it suffices to give an isomorphism between the cocone points
