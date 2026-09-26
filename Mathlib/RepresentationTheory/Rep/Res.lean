@@ -26,26 +26,26 @@ open CategoryTheory
 
 namespace Rep
 
+/-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
+abbrev res (f : H →* G) (A : Rep k G) := of (A.ρ.comp f)
+
 /-- The map induced by a monoid homomorphism `f : H →* G` on morphisms between
 `G`-representations. -/
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
-    of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
-  ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.2 (f h)⟩
+    res f X ⟶ res f Y := ofHom ⟨p.hom, fun _ ↦ p.hom.2 _⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
-abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
-  obj A := of (X := A.V) (A.ρ.comp f)
+@[expose, implicit_reducible, simps obj map]
+def resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
+  obj A := res f A
   map f' := resMap f f'
-
-/-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
-abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 
 variable (f : H →* G) (M : Rep k G)
 
 lemma res_id : res (MonoidHom.id G) M = M := rfl
 
-@[simp] lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
+lemma res_obj_ρ : (res f M).ρ = M.ρ.comp f := rfl
 
 lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 
@@ -108,7 +108,7 @@ instance : Limits.PreservesColimits (resFunctor.{w} (k := k) f) :=
 /-- An object of `Rep k G` is zero iff its restriction to `H` is zero. -/
 lemma isZero_res_iff (M : Rep k G) :
     IsZero (res f M) ↔ IsZero M := by
-  rw [isZero_iff, isZero_iff, Rep.res_obj_V]
+  rw [isZero_iff, isZero_iff]
 
 /--
 The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
