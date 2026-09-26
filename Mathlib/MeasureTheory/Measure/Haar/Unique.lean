@@ -970,7 +970,7 @@ end Group
 
 section CommGroup
 
-variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+variable {G : Type*} [Group G] [IsMulCommutative G] [TopologicalSpace G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 /-- Any regular Haar measure is invariant under inversion in an abelian group. -/
@@ -1024,6 +1024,13 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
           K.isCompact.measure_lt_top.ne).1 this
   have : c = 1 := (ENNReal.pow_right_strictMono two_ne_zero).injective this
   rw [hc, this, one_smul]
+
+end CommGroup
+
+section CommGroup
+
+variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+  [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 @[to_additive]
 theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :

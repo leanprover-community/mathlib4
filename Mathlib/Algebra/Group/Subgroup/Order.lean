@@ -26,14 +26,14 @@ theorem mabs_mem_iff {S G} [Group G] [LinearOrder G] {_ : SetLike S G}
 
 section ModularLattice
 
-variable {C : Type*} [CommGroup C]
+variable {C : Type*} [Group C] [IsMulCommutative C]
 
 @[to_additive]
 instance : IsModularLattice (Subgroup C) :=
   ⟨fun {x} y z xz a ha => by
-    rw [mem_inf, mem_sup] at ha
+    rw [mem_inf, mem_sup_of_normal_right] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    rw [mem_sup]
+    rw [mem_sup_of_normal_right]
     exact ⟨b, hb, c, mem_inf.2 ⟨hc, (mul_mem_cancel_left (xz hb)).1 haz⟩, rfl⟩⟩
 
 end ModularLattice

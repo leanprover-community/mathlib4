@@ -67,7 +67,8 @@ protected lemma Subgroup.isSimpleGroup_iff {H : Subgroup G} :
 namespace IsSimpleGroup
 
 @[to_additive]
-instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
+instance {C : Type*} [Group C] [IsMulCommutative C] [IsSimpleGroup C] :
+    IsSimpleOrder (Subgroup C) :=
   ⟨fun H => H.normal_of_isMulCommutative.eq_bot_or_eq_top⟩
 
 /-- A group whose subgroups are only `⊥` and `⊤` is simple. -/
