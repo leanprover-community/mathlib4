@@ -161,7 +161,7 @@ lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z)
     rw [hasSum_symmetricIco_int_iff]
     apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
-    simpa using! linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
+    simpa using! linear_left_summable (ne_zero z) i (k := 2) (by simp)
   · apply HasSum.summable (a := -2 * π * I / z)
     rw [hasSum_symmetricIco_int_iff, ← tendsto_comp_val_Ioi_atTop]
     exact tendsto_tsum_one_div_linear_sub_succ_eq z
@@ -236,7 +236,7 @@ lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
 
 /-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
 lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
-  simpa [denom_apply, SL_slash_apply] using congrFun E2_T_transform z
+  simpa [denom_apply, SL_slash_apply] using congr($E2_T_transform z)
 
 /-- `E2 ∘ ofComplex` has period `1`. -/
 lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 :=

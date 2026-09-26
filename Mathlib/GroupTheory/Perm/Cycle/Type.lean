@@ -66,7 +66,6 @@ theorem cycleType_eq' {σ : Perm α} (s : Finset (Perm α)) (h1 : ∀ f : Perm �
   rw [cycleFactorsFinset_eq_finset]
   exact ⟨h1, h2, h0⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) :
     σ.cycleType = l.map (Finset.card ∘ support) := by
@@ -75,23 +74,20 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simp [List.dedup_eq_self.mpr hl, Function.comp_def]
   · simpa using h1
   · simpa [hl] using h2
-  · simp [hl, h0]
+  · rw [Finset.noncommProd_toFinset (hl := hl)]; simp [h0]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
     σ.cycleType.count n =
       Fintype.card {c : σ.cycleFactorsFinset // #(c : Perm α).support = n } := by
   -- work on the LHS
   rw [cycleType, Multiset.count_eq_card_filter_eq]
   -- rewrite the `Fintype.card` as a `Finset.card`
-  rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
-    Finset.card_map, Finset.card_attach]
-  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
-    Multiset.filter_map, Multiset.card_map]
+  simp_rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach', Finset.card_map,
+    Finset.card_attach, Multiset.filter_map, Multiset.card_map, Finset.card, Function.comp_apply,
+    Finset.card_val]
   congr 1
   apply Multiset.filter_congr
-  intro d h
-  simp only [eq_comm, Finset.mem_val.mp h, exists_const]
+  tauto
 
 @[simp]
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
@@ -116,7 +112,7 @@ theorem one_lt_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType
   two_le_of_mem_cycleType h
 
 theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = {#σ.support} :=
-  cycleType_eq [σ] (mul_one σ) (fun _τ hτ => (congr_arg IsCycle (List.mem_singleton.mp hτ)).mpr hσ)
+  cycleType_eq [σ] (mul_one σ) (fun _τ hτ => congr(IsCycle $(List.mem_singleton.mp hτ)).mpr hσ)
     (List.pairwise_singleton Disjoint σ)
 
 theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 ↔ σ.IsCycle := by
@@ -199,7 +195,7 @@ theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f 
     · simp [(isCycle_cycleOf _ hx).orderOf]
 
 theorem two_dvd_card_support {σ : Perm α} (hσ : σ ^ 2 = 1) : 2 ∣ #σ.support :=
-  (congr_arg (Dvd.dvd 2) σ.sum_cycleType).mp
+  congr(Dvd.dvd 2 $σ.sum_cycleType).mp
     (Multiset.dvd_sum fun n hn => by
       rw [_root_.le_antisymm
           (Nat.le_of_dvd zero_lt_two <|
@@ -413,7 +409,7 @@ theorem isCycle_of_prime_order' {σ : Perm α} (h1 : (orderOf σ).Prime)
 
 theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
     (h2 : orderOf σ = Fintype.card α) : σ.IsCycle :=
-  isCycle_of_prime_order' ((congr_arg Nat.Prime h2).mpr h1) <| by
+  isCycle_of_prime_order' (congr(Nat.Prime $h2).mpr h1) <| by
     rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_iff_left₀ (orderOf_pos σ)]
     exact one_lt_two
 
@@ -436,7 +432,7 @@ theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
 theorem one_eq : vectorsProdEqOne G 1 = {Vector.nil.cons 1} := by
   simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, List.Vector.toList_singleton,
     List.prod_singleton, List.Vector.head_cons, true_and]
-  exact fun v hv => v.cons_head_tail.symm.trans (congr_arg₂ Vector.cons hv v.tail.eq_nil)
+  exact fun v hv => v.cons_head_tail.symm.trans congr(Vector.cons $hv $v.tail.eq_nil)
 
 instance zeroUnique : Unique (vectorsProdEqOne G 0) := by
   rw [zero_eq]
@@ -457,9 +453,9 @@ def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
   right_inv v := Subtype.ext <|
     calc
       v.1.tail.toList.prod⁻¹ ::ᵥ v.1.tail = v.1.head ::ᵥ v.1.tail :=
-        congr_arg (· ::ᵥ v.1.tail) <| Eq.symm <| eq_inv_of_mul_eq_one_left <| by
+        congr((· ::ᵥ v.1.tail) $(Eq.symm <| eq_inv_of_mul_eq_one_left <| by
           rw [← List.prod_cons, ← Vector.toList_cons, v.1.cons_head_tail]
-          exact v.2
+          exact v.2))
       _ = v.1 := v.1.cons_head_tail
 
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
@@ -492,7 +488,6 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
@@ -525,8 +520,9 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
-  · rw [Subtype.ext_iff, Subtype.ext_iff, hg, hg', v.1.2]
-    simp only [v₀, List.Vector.replicate]
+  · change (v : List.Vector G p).toList = _ at hg
+    rw [Subtype.ext_iff, ← List.Vector.toList_injective.eq_iff, hg, hg', v.1.2]
+    rfl
 
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of

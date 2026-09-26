@@ -189,12 +189,12 @@ lemma nonDegenerate_ext₁ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
   ext
   apply objEquiv.injective
   ext i : 3
-  · exact DFunLike.congr_fun h i
+  · congrm $h i
   · have h₁ := z₁.2
     have h₂ := z₂.2
     rw [nonDegenerate_max_dim_iff] at h₁ h₂
     simpa only [orderHomOfSimplex_coe, h, Fin.ext_iff, add_right_inj]
-      using! DFunLike.congr_fun (h₁.trans h₂.symm) i
+      using! congr($(h₁.trans h₂.symm) i)
 
 lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
     (h : z₁.1.2 = z₂.1.2) (hn : p + q = n := by lia) :
@@ -255,6 +255,15 @@ lemma exists_nonDegenerate_max_dim {d : ℕ}
     obtain ⟨z, hz⟩ := hd' y (by lia)
     rw [← Subcomplex.ofSimplex_le_iff] at hz
     exact ⟨z, hz _ hy⟩
+
+lemma subcomplex_eq_top_iff (A : (Δ[p] ⊗ Δ[q] : SSet.{u}).Subcomplex)
+    {n : ℕ} (hn : p + q = n) :
+    A = ⊤ ↔ (Δ[p] ⊗ Δ[q]).nonDegenerate n ⊆ A.obj _ := by
+  refine ⟨by rintro rfl; tauto, fun hA ↦ ?_⟩
+  rw [Subcomplex.eq_top_iff_contains_nonDegenerate]
+  intro d x hx
+  obtain ⟨y, hy⟩ := exists_nonDegenerate_max_dim ⟨x, hx⟩ hn
+  exact (Subcomplex.ofSimplex_le_iff ..).mpr (hA y.prop) _ hy
 
 end prodStdSimplex
 

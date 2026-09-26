@@ -346,6 +346,12 @@ theorem Splits.of_splits_map_of_injective {S : Type*} [CommRing S] [IsDomain S] 
   conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
 
+omit [IsDomain R] in
+theorem Splits.of_splits_algebraMap [FaithfulSMul R A] (hf : Splits (f.map (algebraMap R A)))
+    (h : ∀ a ∈ f.rootSet A, a ∈ (algebraMap R A).range) : Splits f := by
+  apply hf.of_splits_map_of_injective (FaithfulSMul.algebraMap_injective R A) fun a ha ↦ h a ?_
+  rwa [mem_rootSet', ← eval_map_algebraMap, ← IsRoot.def, ← mem_roots']
+
 theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
     {S : Type*} [Ring S] (i : S →+* R) (hr : ∀ a ∈ f.roots, a ∈ i.range) :
     f ∈ Polynomial.lifts i := by
@@ -640,7 +646,7 @@ theorem Splits.eval_derivative_eq_eval_mul_sum (hf : Splits f) {x : R} (hx : f.e
     f.derivative.eval x = f.eval x * (f.roots.map fun z ↦ 1 / (x - z)).sum := by
   classical
   simp only [hf.eval_derivative, hf.eval_eq_prod_roots, ← Multiset.sum_map_mul_left, mul_assoc]
-  refine congr_arg Multiset.sum (Multiset.map_congr rfl fun z hz ↦ ?_)
+  congrm Multiset.sum $(Multiset.map_congr rfl fun z hz ↦ ?_)
   rw [← Multiset.prod_map_erase hz, mul_one_div, mul_div_cancel_left₀]
   aesop (add simp sub_eq_zero)
 

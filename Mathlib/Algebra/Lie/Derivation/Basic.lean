@@ -59,6 +59,7 @@ variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
+@[macro_inline]
 instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
   coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
@@ -95,7 +96,7 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : D1 = D2) (a : L) : D1 a = D2 a :=
-  DFunLike.congr_fun h a
+  congr($h a)
 
 @[simp]
 lemma apply_lie_eq_sub (D : LieDerivation R L M) (a b : L) :
@@ -418,7 +419,7 @@ lemma exp_apply (h : IsNilpotent D.toLinearMap) :
 
 lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
     exp D h l = IsNilpotent.exp D.toLinearMap l :=
-  DFunLike.congr_fun (exp_apply D h) l
+  congr($(exp_apply D h) l)
 
 end ExpNilpotent
 

@@ -72,7 +72,7 @@ theorem one_vecMulVec [MulOneClass R] (x : n → R) :
 theorem replicateCol_injective [Nonempty ι] :
     Function.Injective (replicateCol ι : (m → α) → Matrix m ι α) := by
   inhabit ι
-  exact fun _x _y h => funext fun i => congr_fun₂ h i default
+  exact fun _x _y h => funext fun i => congr($h i default)
 
 @[simp] theorem replicateCol_inj [Nonempty ι] {v w : m → α} :
     replicateCol ι v = replicateCol ι w ↔ v = w :=
@@ -99,7 +99,7 @@ theorem replicateCol_smul [SMul R α] (x : R) (v : m → α) :
 theorem replicateRow_injective [Nonempty ι] :
     Function.Injective (replicateRow ι : (n → α) → Matrix ι n α) := by
   inhabit ι
-  exact fun _x _y h => funext fun j => congr_fun₂ h default j
+  exact fun _x _y h => funext fun j => congr($h default j)
 
 @[simp] theorem replicateRow_inj [Nonempty ι] {v w : n → α} :
     replicateRow ι v = replicateRow ι w ↔ v = w :=
@@ -329,11 +329,11 @@ theorem updateRow_comm [DecidableEq m] (A : Matrix m n α) {i i' : m} (h : i ≠
 @[simp]
 theorem updateCol_idem [DecidableEq n] (A : Matrix m n α) (j : n) (x y : m → α) :
     (A.updateCol j x).updateCol j y = A.updateCol j y := by
-  simpa only [updateRow_transpose] using! congr_arg transpose <| updateRow_idem Aᵀ j x y
+  simpa only [updateRow_transpose] using! congr(transpose $(updateRow_idem Aᵀ j x y))
 
 theorem updateCol_comm [DecidableEq n] (A : Matrix m n α) {j j' : n} (h : j ≠ j') (x y : m → α) :
     (A.updateCol j x).updateCol j' y = (A.updateCol j' y).updateCol j x := by
-  simpa only [updateRow_transpose] using! congr_arg transpose <| updateRow_comm Aᵀ h x y
+  simpa only [updateRow_transpose] using! congr(transpose $(updateRow_comm Aᵀ h x y))
 
 /-! Updating rows and columns commutes in the obvious way with reindexing the matrix. -/
 
@@ -353,7 +353,7 @@ theorem updateCol_submatrix_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m 
     (c : l → α) (e : l ≃ m) (f : o ≃ n) : updateCol (A.submatrix e f) j c =
     (A.updateCol (f j) fun i => c (e.symm i)).submatrix e f := by
   simpa only [← transpose_submatrix, updateRow_transpose] using!
-    congr_arg transpose (updateRow_submatrix_equiv Aᵀ j c f e)
+    congr(transpose $(updateRow_submatrix_equiv Aᵀ j c f e))
 
 theorem submatrix_updateCol_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n)
     (c : m → α) (e : l ≃ m) (f : o ≃ n) : (A.updateCol j c).submatrix e f =

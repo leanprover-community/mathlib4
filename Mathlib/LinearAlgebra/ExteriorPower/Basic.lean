@@ -227,7 +227,7 @@ lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
 @[simp]
 lemma alternatingMapLinearEquiv_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a : Fin n → M) :
     alternatingMapLinearEquiv f (ιMulti R n a) = f a :=
-  DFunLike.congr_fun (alternatingMapLinearEquiv_comp_ιMulti f) a
+  congr($(alternatingMapLinearEquiv_comp_ιMulti f) a)
 
 @[simp]
 lemma alternatingMapLinearEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n → M) :
@@ -415,9 +415,11 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 end ιMulti_family
 
-lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     Subsingleton (⋀[R]^i M) := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+  let : LinearOrder ι := LinearOrder.lift' e e.injective
   replace hi : range (ιMulti_family R i g) = ∅ := by
     rw [range_eq_empty_iff, powersetCard.eq_empty_iff.mpr hi, isEmpty_coe_sort]
   suffices (⊥ : Submodule R (⋀[R]^i M)) = ⊤ by

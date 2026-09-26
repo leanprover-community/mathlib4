@@ -117,7 +117,7 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
-  rw [preimage_find_eq_disjointed (fun k => {x | p x k})]
+  rw [preimage_find_eq_disjointed_setOf]
   exact MeasurableSet.disjointed hm _
 
 end Nat
@@ -268,7 +268,7 @@ theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (h
     (h₁ : Measurable (s.domRestrict f)) (h₂ : Measurable (sᶜ.domRestrict f)) : Measurable f :=
   measurable_of_measurable_union_cover s sᶜ hs hs.compl (union_compl_self s).ge h₁ h₂
 
-theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
+protected theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
     {g : (sᶜ : Set α) → β} (hg : Measurable g) (hs : MeasurableSet s) :
     Measurable fun x => if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩ :=
   measurable_of_restrict_of_restrict_compl hs (by simpa) (by simpa)
@@ -689,13 +689,13 @@ theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (X) in
-theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg X h).mp := by
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable congr(X $h).mp := by
   cases h
   exact measurable_id
 
 variable (X) in
 theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → X i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg X h).mp (f x) :=
+    (hf : Measurable f) : Measurable fun x => congr(X $h).mp (f x) :=
   (measurable_eq_mp X h).comp hf
 
 @[fun_prop]
@@ -826,8 +826,8 @@ theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
 theorem measurable_fun_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
     (hr : Measurable (f ∘ Sum.inr)) : Measurable f :=
   Measurable.of_comap_le <|
-    le_inf (MeasurableSpace.comap_le_iff_le_map.2 <| hl)
-      (MeasurableSpace.comap_le_iff_le_map.2 <| hr)
+    le_inf (MeasurableSpace.comap_le_iff_le_map.2 hl)
+      (MeasurableSpace.comap_le_iff_le_map.2 hr)
 
 @[fun_prop]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)

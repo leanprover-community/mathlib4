@@ -78,11 +78,11 @@ namespace HasLimits
 -/
 @[to_additive /-- (Internal use only; use the limits API.) -/]
 noncomputable def limitCone : Cone F :=
-  { pt := MonCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
+  { pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
     { app j := ofHom (limitπMonoidHom F j)
       naturality := fun _ _ f => MonCat.ext fun x =>
-        ConcreteCategory.congr_hom ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x } }
+        congr($((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x) } }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -158,7 +158,7 @@ noncomputable instance forget_createsLimit :
   have : Small.{u} (Functor.sections (F ⋙ forget MonCat)) :=
     (Types.hasLimit_iff_small_sections _).mp (HasLimit.mk { cone := c, isLimit := t })
   refine LiftsToLimit.mk (LiftableCone.mk
-    { pt := MonCat.of (Types.Small.limitCone (F ⋙ forget MonCat)).pt,
+    { pt := ↧(Types.Small.limitCone (F ⋙ forget MonCat)).pt,
       π := NatTrans.mk
         (fun j => ofHom (limitπMonoidHom F j))
         (MonCat.HasLimits.limitCone F).π.naturality }
@@ -234,12 +234,11 @@ and then reuse the existing limit. -/]
 noncomputable instance forget₂CreatesLimit : CreatesLimit F (forget₂ CommMonCat MonCat.{u}) :=
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone :=
-        { pt := CommMonCat.of (Types.Small.limitCone (F ⋙ forget CommMonCat)).pt
+        { pt := ↧(Types.Small.limitCone (F ⋙ forget CommMonCat)).pt
           π :=
             { app j := ofHom (MonCat.limitπMonoidHom (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}) j)
-              naturality _ _ j := ext <| fun x => ConcreteCategory.congr_hom
-                ((MonCat.HasLimits.limitCone
-                  (F ⋙ forget₂ CommMonCat MonCat.{u})).π.naturality j) x } }
+              naturality _ _ j := ext <| fun x => congr($((MonCat.HasLimits.limitCone
+                  (F ⋙ forget₂ CommMonCat MonCat.{u})).π.naturality j) x) } }
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ CommMonCat MonCat.{u})
@@ -322,11 +321,7 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget CommMonCat.{u}) where
   preservesLimitsOfShape {_} _ := { }
 
-instance _root_.AddCommMonCat.forget_preservesLimits :
-    PreservesLimits (forget AddCommMonCat.{u}) :=
-  AddCommMonCat.forget_preservesLimitsOfSize.{u, u}
-
-@[to_additive existing]
+@[to_additive]
 instance forget_preservesLimits : PreservesLimits (forget CommMonCat.{u}) :=
   CommMonCat.forget_preservesLimitsOfSize.{u, u}
 

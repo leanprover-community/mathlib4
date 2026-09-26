@@ -100,6 +100,8 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
+attribute [grind ext] SimpleGraph.ext
+
 /-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -110,7 +112,7 @@ def SimpleGraph.mk' {V : Type u} :
     simp only [mk.injEq, Subtype.mk.injEq]
     intro h
     funext v w
-    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
+    simpa [Bool.coe_iff_coe] using congr($h v w)
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
@@ -154,6 +156,8 @@ Any bipartite graph may be regarded as a subgraph of one of these. -/
 def completeBipartiteGraph (V W : Type*) : SimpleGraph (V ⊕ W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
 
+attribute [grind =] completeBipartiteGraph_adj
+
 namespace SimpleGraph
 
 variable {ι : Sort*} {V : Type u} (G H : SimpleGraph V) {a b c u v w : V} {e : Sym2 V}
@@ -176,6 +180,7 @@ theorem ne_of_adj (h : G.Adj a b) : a ≠ b := by
   rintro rfl
   exact G.irrefl h
 
+@[grind .]
 protected theorem Adj.ne {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : a ≠ b :=
   G.ne_of_adj h
 
@@ -333,7 +338,7 @@ abbrev emptyGraph (V : Type u) : SimpleGraph V := ⊥
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem bot_adj (v w : V) : (⊥ : SimpleGraph V).Adj v w ↔ False :=
   Iff.rfl
 
@@ -433,7 +438,7 @@ theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support
 /-- The support of the empty graph is empty. -/
 @[simp]
 theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
-  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+  SetRel.dom_eq_empty_iff.mpr Set.empty_def.symm
 
 /-- Only the empty graph has empty support. -/
 @[simp]
@@ -783,7 +788,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
+  refine (G.incidenceSet_inter_incidenceSet_subset h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 
@@ -905,7 +910,7 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
 
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
-  grind [mem_neighborSet, bot_adj]
+  grind [mem_neighborSet]
 
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
@@ -1011,6 +1016,10 @@ theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween
   mpr h _ h₁ _ h₂ := (h h₂ h₁).symm
 
 alias ⟨IsCompleteBetween.symm, _⟩ := isCompleteBetween_comm
+
+theorem IsCompleteBetween.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsCompleteBetween (.range .inl) (.range .inr) := by
+  grind [IsCompleteBetween]
 
 end IsCompleteBetween
 
@@ -1120,7 +1129,7 @@ theorem IsUniversal.not_isIsolated [Nontrivial V] (h : G.IsUniversal v) (w : V) 
 
 theorem IsIsolated.not_isUniversal [Nontrivial V] (h : G.IsIsolated v) (w : V) :
     ¬G.IsUniversal w := by
-  contrapose! h
+  contrapose h
   exact h.not_isIsolated v
 
 @[simp]

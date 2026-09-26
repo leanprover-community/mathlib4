@@ -9,6 +9,7 @@ public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.Analysis.Normed.Lp.ProdLp
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
 /-!
 # `L^p` distance on finite products of metric spaces
@@ -288,7 +289,7 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp [edist_eq_card]
   · simp [edist_eq_iSup]
-  · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
+  · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
@@ -476,8 +477,7 @@ private theorem edist_apply_le_edist_aux (x y : PiLp p β) (i : ι) :
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
         simp [← ENNReal.rpow_mul, cancel, -one_div]
       _ ≤ (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
-        gcongr
-        exact Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)
+        grw [← Finset.single_le_sum (fun i _ => (bot_le : (0 : ℝ≥0∞) ≤ _)) (Finset.mem_univ i)]
 
 private lemma lipschitzWith_ofLp_aux : LipschitzWith 1 (@ofLp p (∀ i, β i)) :=
   .of_edist_le fun x y => by
@@ -741,7 +741,7 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 
 @[simp] lemma nnnorm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖₊ = ‖f‖₊ := (nnnorm_ofLp _).symm
 
-@[simp] lemma norm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖ = ‖f‖ := congr_arg NNReal.toReal <| nnnorm_ofLp f
+@[simp] lemma norm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖ = ‖f‖ := congr($(nnnorm_ofLp f).toReal)
 @[simp] lemma norm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖ = ‖f‖ := (norm_ofLp _).symm
 
 end Linfty
@@ -793,7 +793,7 @@ theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
 theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr(($this : ℝ))
   rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem dist_eq_of_L2 (x y : PiLp 2 β) :
@@ -1037,15 +1037,15 @@ theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ :
     intro j hij
     rw [toLp_apply, single_eq_of_ne _ hij, nnnorm_zero, NNReal.zero_rpow hp0]
 
-@[deprecated nnnorm_single (since := "2026-03-15")]
+@[deprecated nnnorm_single +typeChanged (since := "2026-03-15")]
 theorem nnnorm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ :=
   nnnorm_single p β i b
 
 @[simp]
 lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_single p β i b
+  congr($(nnnorm_single p β i b))
 
-@[deprecated norm_single (since := "2026-03-15")]
+@[deprecated norm_single +typeChanged (since := "2026-03-15")]
 lemma norm_toLp_single (i : ι) (b : β i) : ‖toLp p (Pi.single i b)‖ = ‖b‖ :=
   norm_single p β i b
 
@@ -1054,7 +1054,7 @@ lemma nndist_single_same (i : ι) (b₁ b₂ : β i) :
     nndist (single p i b₁) (single p i b₂) = nndist b₁ b₂ := by
   rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← single_sub, nnnorm_single]
 
-@[deprecated nndist_single_same (since := "2026-03-15")]
+@[deprecated nndist_single_same +typeChanged (since := "2026-03-15")]
 lemma nndist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
     nndist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = nndist b₁ b₂ :=
   nndist_single_same p β i b₁ b₂
@@ -1062,9 +1062,9 @@ lemma nndist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
 @[simp]
 lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
     dist (single p i b₁) (single p i b₂) = dist b₁ b₂ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nndist_single_same p β i b₁ b₂
+  congr($(nndist_single_same p β i b₁ b₂))
 
-@[deprecated dist_single_same (since := "2026-03-15")]
+@[deprecated dist_single_same +typeChanged (since := "2026-03-15")]
 lemma dist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
     dist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = dist b₁ b₂ :=
   dist_single_same p β i b₁ b₂
@@ -1074,7 +1074,7 @@ lemma edist_single_same (i : ι) (b₁ b₂ : β i) :
     edist (single p i b₁) (single p i b₂) = edist b₁ b₂ := by
   simp only [edist_nndist, nndist_single_same p β i b₁ b₂]
 
-@[deprecated edist_single_same (since := "2026-03-15")]
+@[deprecated edist_single_same +typeChanged (since := "2026-03-15")]
 lemma edist_toLp_single_same (i : ι) (b₁ b₂ : β i) :
     edist (toLp p (Pi.single i b₁)) (toLp p (Pi.single i b₂)) = edist b₁ b₂ :=
   edist_single_same p β i b₁ b₂
@@ -1083,7 +1083,7 @@ end Single
 
 /-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`PiLp.nnnorm_equiv_symm_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
+`PiLp.nnnorm_toLp_const'` for a version which exchanges the hypothesis `p ≠ ∞` for
 `Nonempty ι`. -/
 lemma nnnorm_toLp_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
     ‖toLp p (Function.const ι b)‖₊ =
@@ -1097,8 +1097,7 @@ lemma nnnorm_toLp_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : �
 
 /-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`PiLp.nnnorm_toLp_const` for a version which exchanges the hypothesis `Nonempty ι`.
-for `p ≠ ∞`. -/
+`PiLp.nnnorm_toLp_const` for a version which exchanges the hypothesis `Nonempty ι` for `p ≠ ∞`. -/
 lemma nnnorm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖toLp p (Function.const ι b)‖₊ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖₊ := by
@@ -1114,16 +1113,15 @@ the left-hand side simplifies to `0`, while the right-hand side simplifies to `�
 lemma norm_toLp_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : β) :
     ‖toLp p (Function.const ι b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_const hp b).trans <| by simp
+  congr(($(nnnorm_toLp_const hp b) : ℝ)).trans <| by simp
 
 /-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
-`PiLp.norm_equiv_symm_const` for a version which exchanges the hypothesis `Nonempty ι`.
-for `p ≠ ∞`. -/
+`PiLp.norm_toLp_const` for a version which exchanges the hypothesis `Nonempty ι` for `p ≠ ∞`. -/
 lemma norm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
     ‖toLp p (Function.const ι b)‖ =
       (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖b‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_toLp_const' b).trans <| by simp
+  congr(($(nnnorm_toLp_const' b) : ℝ)).trans <| by simp
 
 lemma nnnorm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖toLp p (1 : ι → β)‖₊ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=

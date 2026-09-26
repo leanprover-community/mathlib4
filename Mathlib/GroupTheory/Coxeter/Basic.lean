@@ -135,7 +135,7 @@ def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
     (by
       rw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
-        MonoidHom.coe_coe])
+        MonoidHom.coe_ofClass])
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
@@ -241,7 +241,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤ := by
   have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
   rw [this, Set.range_comp, ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
-    PresentedGroup.closure_range_of, ← MonoidHom.range_eq_map]
+    PresentedGroup.closure_range_of, Subgroup.map_top]
   exact MonoidHom.range_eq_top.2 (MulEquiv.surjective _)
 
 /-- The simple reflections of `W` generate `W` as a monoid. -/
@@ -350,7 +350,7 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
-    cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
+    cs.lift ⟨f, hf⟩ (s i) = f i := congr($(cs.lift.left_inv ⟨f, hf⟩).val i)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
