@@ -153,7 +153,7 @@ notation "∐ " f:60 => sigmaObj f
 insert_to_dual_translation CategoryTheory.Limits.Pi CategoryTheory.Limits.Sigma
 
 /-- The `b`-th projection from the pi object over `f` has the form `∏ᶜ f ⟶ f b`. -/
-@[to_dual ι
+@[to_dual
 /-- The `b`-th inclusion into the sigma object over `f` has the form `f b ⟶ ∐ f`. -/]
 abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
   limit.π (Discrete.functor f) (Discrete.mk b)
