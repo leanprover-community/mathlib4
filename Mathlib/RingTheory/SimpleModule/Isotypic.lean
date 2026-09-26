@@ -209,7 +209,7 @@ instance (c : isotypicComponents R M) : IsSemisimpleModule R c := by
 variable {S} in
 theorem LinearEquiv.isotypicComponent_eq (e : N ≃ₗ[R] S) :
     isotypicComponent R M N = isotypicComponent R M S :=
-  congr_arg sSup <| Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)
+  congr(sSup $(Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)))
 
 section SimpleSubmodule
 
@@ -336,7 +336,7 @@ def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
 
 theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
   simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
-    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using! forall_comm
+    |>.toEquiv) |>.forall_congr_right, IsConcreteLE.le_iff, I.isTwoSided_iff] using! forall_comm
 
 variable (R M) in
 /-- The fully invariant submodules of a module form a complete sublattice in the lattice of

@@ -80,7 +80,7 @@ lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
       logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.2)
       (differentiableAt_sqrt (mem_slitPlane z))
       (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2), logDeriv_apply sqrt]
-  have hE2 := congrFun (E2_slash_action ModularGroup.S) z
+  have hE2 := congr($(E2_slash_action ModularGroup.S) z)
   simp only [one_div, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
     D2, ModularGroup.denom_S, smul_eq_mul] at hE2
@@ -164,7 +164,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     refine this
       (by simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _)
       (fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg) ?_
-    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
+    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by simp : (0 : ℝ) < 1 / 2)] with q hq k
     exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
@@ -185,7 +185,7 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
 lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImInfty] Δ := by
   refine .of_bound 2 ?_
   have hprod := tendsto_atImInfty_tprod_one_sub_eta_q_pow.eventually
-    (Metric.ball_mem_nhds 1 (by norm_num : (0 : ℝ) < 1/2))
+    (Metric.ball_mem_nhds 1 (by simp : (0 : ℝ) < 1/2))
   filter_upwards [hprod] with τ hτ
   rw [discriminant_eq_q_prod, norm_mul, Real.norm_of_nonneg (Real.exp_pos _).le]
   have hq_norm : ‖𝕢 1 τ‖ = Real.exp (-2 * π * τ.im) := by simp [Periodic.qParam, Complex.norm_exp]

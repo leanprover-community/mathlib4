@@ -172,7 +172,7 @@ lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →�
 lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] N ⊗[R] P) :
     map f (map g h) (TensorProduct.assoc R M N P x) =
       TensorProduct.assoc R Q S T (map (map f g) h x) :=
-  DFunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
+  congr($(map_map_comp_assoc_eq _ _ _) _)
 
 /-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `M ⊗ (N ⊗ P)`
 with `(M ⊗ N) ⊗ P` and `Q ⊗ (S ⊗ T)` with `(Q ⊗ S) ⊗ T`, then this lemma states that
@@ -185,7 +185,7 @@ lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P 
 lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] (N ⊗[R] P)) :
     map (map f g) h ((TensorProduct.assoc R M N P).symm x) =
       (TensorProduct.assoc R Q S T).symm (map f (map g h) x) :=
-  DFunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
+  congr($(map_map_comp_assoc_symm_eq _ _ _) _)
 
 lemma assoc_tensor :
     TensorProduct.assoc R (M ⊗[R] N) Q S = .rTensor S (TensorProduct.assoc R M N Q) ≪≫ₗ
@@ -385,7 +385,6 @@ lemma tensorProductAssoc_def (eA : A ≃ₗ[R] A') (eB : B ≃ₗ[R] B') (eC : C
       (TensorProduct.assoc R A' B' C') <| congr eA.symm <| congr eB.symm (eC).symm) := by
   ext x
   induction x with
-  | zero => simp
   | add => simp [*]
   | tmul x a => induction x <;> simp [*, add_tmul]
 

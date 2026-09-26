@@ -152,7 +152,7 @@ theorem part_iff {n f} : @Partrec' n f ↔ Partrec f :=
 theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ Partrec f :=
   part_iff.trans
     ⟨fun h =>
-      (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
+      (h.comp (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
         simp only [id, head_ofFn],
       fun h => h.comp vector_head⟩
 

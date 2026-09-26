@@ -45,7 +45,7 @@ universe than `ModuleCat.{v} R`.
 
 universe u v
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 open CategoryTheory Abelian
 
@@ -76,8 +76,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
       Ext.mk₀_comp_mk₀] at hf'
     use (Ext.addEquiv₀ f').hom.comp (Shrink.linearEquiv R R).symm.toLinearMap
     intro x hx
-    have := ConcreteCategory.congr_hom ((Ext.mk₀_bijective _ _).1 hf')
-      ((Shrink.linearEquiv R I).symm ⟨x, hx⟩)
+    have := congr($((Ext.mk₀_bijective _ _).1 hf') ((Shrink.linearEquiv R I).symm ⟨x, hx⟩))
     simpa [S]
   · -- Conversely, extend the map represented by `e` and turn the extension back into `Ext⁰`.
     obtain ⟨g', hg'⟩ := h
@@ -127,8 +126,8 @@ lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
 private noncomputable def extQuotientBotZeroEquiv [Small.{v} R] (M : ModuleCat.{v} R) :
     (Ext ↧(Shrink.{v} (R ⧸ (⊥ : Ideal R))) M 0) ≃ M :=
   (Ext.homEquiv₀.trans ModuleCat.homEquiv).trans ((((Shrink.linearEquiv _ _).trans
-    (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M R).trans
-      (LinearMap.ringLmapEquivSelf R R M)).toEquiv
+    (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M ℕ).trans
+      (LinearMap.ringLmapEquivSelf R ℕ M)).toEquiv
 
 /-- If `Ext⁰(R ⧸ ⊥, M)` is a subsingleton, then `M` is a subsingleton. -/
 private lemma subsingleton_of_ext_quotient_bot_zero [Small.{v} R] (M : ModuleCat.{v} R)

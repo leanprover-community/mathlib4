@@ -76,6 +76,7 @@ structure Chain (α : Type u) [Preorder α] extends ℕ →o α
 namespace Chain
 variable [Preorder α] [Preorder β] [Preorder γ]
 
+@[macro_inline]
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
   coe_injective := by rintro ⟨f, hf⟩; congr!
@@ -400,7 +401,7 @@ instance [∀ a, OmegaCompletePartialOrder (β a)] :
     ωSup_le _ _ <| by
       rintro i
       apply hf
-  le_ωSup _ _ _ := le_ωSup_of_le _ <| le_rfl
+  le_ωSup _ _ _ := le_ωSup_of_le _ le_rfl
 
 namespace OmegaCompletePartialOrder
 
@@ -410,7 +411,7 @@ variable {f : γ → ∀ x, β x}
 
 lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottContinuous (f · a) :=
   ωScottContinuous.of_monotone_map_ωSup
-    ⟨fun _ _ h ↦ hf.monotone h a, fun c ↦ congr_fun (hf.map_ωSup c) a⟩
+    ⟨fun _ _ h ↦ hf.monotone h a, fun c ↦ congr($(hf.map_ωSup c) a)⟩
 
 @[fun_prop]
 lemma ωScottContinuous.apply (x : α) : ωScottContinuous (fun f : ∀ x, β x ↦ f x) :=
@@ -493,6 +494,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc] infixr:25 " →𝒄 " => ContinuousHom -- Input: \r\MIc
 
+@[macro_inline]
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
@@ -534,10 +536,10 @@ def ofFun (f : α → β) (hf : ωScottContinuous f := by fun_prop) : α →𝒄
   map_ωSup' := hf.map_ωSup
 
 protected theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f y :=
-  congr_arg f h
+  congr(f $h)
 
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'

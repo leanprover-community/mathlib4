@@ -22,6 +22,7 @@ then deduce `const_mul` and `mul_const` results as an immediate corollary.
 
 public section
 
+open scoped NNReal ENNReal
 
 variable {α β : Type*}
 
@@ -120,7 +121,7 @@ variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
 
 theorem NormSMulClass.of_nnnorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
     NormSMulClass α β where
-  norm_smul r b := congr_arg NNReal.toReal (h r b)
+  norm_smul r b := congr($(h r b).toReal)
 
 variable [NormSMulClass α β]
 
@@ -217,3 +218,9 @@ theorem Metric.smul_image_sphere {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
     smul_image_ball hs, smul_image_closedBall hs]
 
 end NormedDivisionRingModule
+
+instance : ENormSMulClass ℝ≥0∞ ℝ≥0∞ where
+  enorm_smul _ _ := rfl
+
+instance : ENormSMulClass ℝ≥0 ℝ≥0∞ where
+  enorm_smul _ _ := rfl

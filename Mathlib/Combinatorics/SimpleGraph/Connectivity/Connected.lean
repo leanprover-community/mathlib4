@@ -518,8 +518,8 @@ namespace Iso
 def connectedComponentEquiv (φ : G ≃g G') : G.ConnectedComponent ≃ G'.ConnectedComponent where
   toFun := ConnectedComponent.map φ
   invFun := ConnectedComponent.map φ.symm
-  left_inv C := C.ind (fun v => congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v))
-  right_inv C := C.ind (fun v => congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v))
+  left_inv C := C.ind fun v => congr(G.connectedComponentMk $(φ.left_inv v))
+  right_inv C := C.ind fun v => congr(G'.connectedComponentMk $(φ.right_inv v))
 
 @[simp]
 theorem connectedComponentEquiv_refl :
@@ -898,6 +898,7 @@ theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
     (G ⊔ edge u v).IsBridge s(u, v) := isBridge_sup_edge.mpr (of_not_reachable h)
 
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-03-18")]
 alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
 

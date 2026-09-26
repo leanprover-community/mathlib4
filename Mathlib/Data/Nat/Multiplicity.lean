@@ -60,21 +60,16 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
   calc
     emultiplicity m n = #(Ico 1 <| multiplicity m n + 1) := by
       simp [fin.emultiplicity_eq_multiplicity]
-    _ = #{i ∈ Ico 1 b | m ^ i ∣ n} :=
-      congr_arg _ <|
-        congr_arg card <|
-          Finset.ext fun i => by
-            simp only [mem_Ico, Nat.lt_succ_iff,
-              fin.pow_dvd_iff_le_multiplicity, mem_filter,
-              and_assoc, and_congr_right_iff, iff_and_self]
-            intro hi h
-            rw [← fin.pow_dvd_iff_le_multiplicity] at h
-            rcases m with - | m
-            · rw [zero_pow, zero_dvd_iff] at h
-              exacts [(hn.ne' h).elim, one_le_iff_ne_zero.1 hi]
-            refine LE.le.trans_lt ?_ hb
-            exact le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩)
-                (le_of_dvd hn h)
+    _ = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
+      congrm card $(Finset.ext fun i => ?_)
+      simp only [mem_Ico, Nat.lt_succ_iff, ← fin.pow_dvd_iff_le_multiplicity, mem_filter, and_assoc,
+        and_congr_right_iff, iff_and_self]
+      intro hi h
+      rcases m with - | m
+      · rw [zero_pow, zero_dvd_iff] at h
+        exacts [(hn.ne' h).elim, one_le_iff_ne_zero.1 hi]
+      refine LE.le.trans_lt ?_ hb
+      exact le_log_of_pow_le (one_lt_iff_ne_zero_and_ne_one.2 ⟨m.succ_ne_zero, hm⟩) (le_of_dvd hn h)
 
 namespace Prime
 

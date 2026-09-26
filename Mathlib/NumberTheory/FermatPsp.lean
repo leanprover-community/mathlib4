@@ -21,8 +21,8 @@ is a composite number that passes the Fermat primality test to base `b` and is c
 Fermat pseudoprimes can also be seen as composite numbers for which Fermat's little theorem holds
 true.
 
-Numbers which are Fermat pseudoprimes to all bases are known as Carmichael numbers (not yet defined
-in this file).
+Numbers which are Fermat pseudoprimes to all bases are known as Carmichael numbers
+(defined in `Mathlib/NumberTheory/CarmichaelNumber.lean`).
 
 ## Main Results
 
@@ -276,7 +276,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have ha₇ : A * B ∣ b ^ (2 * p) - 1 := by
     use b ^ 2 - 1
     have : A * B * (b ^ 2 - 1) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) * (b ^ 2 - 1) :=
-      congr_arg (fun x : ℕ => x * (b ^ 2 - 1)) AB_id
+      congr($AB_id * (b ^ 2 - 1))
     simpa only [add_comm, Nat.div_mul_cancel hd, Nat.sub_add_cancel hi_bpowtwop] using this.symm
   -- Since `2 * p ∣ A * B - 1`, there is a number `q` such that `2 * p * q = A * B - 1`.
   -- By `Nat.sub_dvd_pow_sub_pow`, we know that `b ^ (2 * p) - 1 ∣ b ^ (2 * p * q) - 1`.

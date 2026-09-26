@@ -181,7 +181,7 @@ instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   have hs' : (s : Set R) ⊆ J := hs ▸ Ideal.subset_span
   refine ⟨_, (s.attach.prod fun x ↦ f x (hs' x.2)).2, fun x y e hy ↦ ⟨1, ?_⟩⟩
   rw [pow_one, mul_comm, ← smul_eq_mul, ← Submodule.mem_annihilator_span_singleton]
-  refine SetLike.le_def.mp ?_ ((hJ x).mpr ⟨⟨y, hy⟩, e⟩)
+  refine mem_of_le_of_mem ?_ ((hJ x).mpr ⟨⟨y, hy⟩, e⟩)
   rw [← hs, Ideal.span_le]
   intro i hi
   rw [SetLike.mem_coe, Submodule.mem_annihilator_span_singleton, smul_eq_mul,
@@ -259,7 +259,7 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
   let := (φRX ≫ X.presheaf.germ U x hxU).hom.toAlgebra
   let := (φRX ≫ X.presheaf.map (homOfLE (inf_le_right (a := s.inf W))).op).hom.toAlgebra
   let φ' : A →ₐ[R] X.presheaf.stalk x :=
-    { φ.hom with commutes' := DFunLike.congr_fun (congr_arg CommRingCat.Hom.hom e) }
+    { φ.hom with commutes' := DFunLike.congr_fun congr($(e).hom) }
   let ψ : Γ(X, s.inf W ⊓ U) →ₐ[R] X.presheaf.stalk x :=
     { (X.presheaf.germ _ x H).hom with commutes' := fun x ↦ X.presheaf.germ_res_apply _ _ _ _ }
   change AlgHom.range φ' ≤ AlgHom.range ψ

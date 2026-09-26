@@ -6,6 +6,8 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Binary fans and cofans
@@ -381,7 +383,6 @@ protected def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColi
     (fun s m h₁ h₂ ↦ Quiver.Hom.unop_inj
       (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryCofan` is a colimit, then its opposite is a limit. -/
 protected def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit c.op :=
   BinaryFan.isLimitMk (fun s ↦ (hc.desc s.unop).op)
@@ -397,7 +398,6 @@ protected def BinaryFan.IsLimit.unop {c : BinaryFan (op X) (op Y)} (hc : IsLimit
     (fun s m h₁ h₂ ↦ Quiver.Hom.op_inj
       (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `BinaryCofan` in the opposite category is a colimit, then its `unop` is a limit. -/
 protected def BinaryCofan.IsColimit.unop {c : BinaryCofan (op X) (op Y)} (hc : IsColimit c) :
     IsLimit c.unop :=

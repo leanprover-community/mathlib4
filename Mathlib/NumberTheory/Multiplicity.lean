@@ -120,7 +120,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       · rw [Nat.cast_zero, mul_zero, mul_zero]
       · have : x.succ - 1 + (p - 1 - x.succ) = p - 2 := by
           rw [← Nat.add_sub_assoc (Nat.le_sub_one_of_lt (Finset.mem_range.mp hx))]
-          exact congr_arg Nat.pred (Nat.add_sub_cancel_left _ _)
+          congrm Nat.pred $(Nat.add_sub_cancel_left ..)
         rw [this]
         ring1
     _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
@@ -190,7 +190,7 @@ include hp hp1
 theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
     emultiplicity (↑p) (x ^ n - y ^ n) = emultiplicity (↑p) (x - y) + emultiplicity p n := by
   rcases n with - | n
-  · simp only [emultiplicity_zero, add_top, pow_zero, sub_self]
+  · simp only [emultiplicity_zero_right, add_top, pow_zero, sub_self]
   have h : FiniteMultiplicity _ _ := Nat.finiteMultiplicity_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases emultiplicity_eq_coe.mp h.emultiplicity_eq_multiplicity with ⟨⟨k, hk⟩, hpn⟩
@@ -222,7 +222,7 @@ theorem Nat.emultiplicity_pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p 
     rw [Int.natCast_sub hyx] at *
     push_cast at *
     exact Int.emultiplicity_pow_sub_pow hp hp1 hxy hx n
-  · simp only [Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_left hyx n), emultiplicity_zero,
+  · simp only [Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_left hyx n), emultiplicity_zero_right,
     Nat.sub_eq_zero_iff_le.mpr hyx, top_add]
 
 theorem Nat.emultiplicity_pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p ∣ x)
@@ -279,7 +279,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by decide) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
   rcases n with - | n
-  · simp only [pow_zero, sub_self, emultiplicity_zero, Int.ofNat_zero, add_top]
+  · simp only [pow_zero, sub_self, emultiplicity_zero_right, Int.ofNat_zero, add_top]
   have h : FiniteMultiplicity 2 n.succ := Nat.finiteMultiplicity_iff.mpr ⟨by simp, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases emultiplicity_eq_coe.mp h.emultiplicity_eq_multiplicity with ⟨⟨k, hk⟩, hpn⟩
@@ -336,7 +336,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
     rw [← Int.natCast_emultiplicity]
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
-      Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left' hyx n), emultiplicity_zero,
+      Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left' hyx n), emultiplicity_zero_right,
       top_add, add_top]
 
 namespace padicValNat

@@ -116,7 +116,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   | bit1 m hm =>
     rw [hm]
     exact ite_eq_right (encodePosNum_nonempty m)
-  | bit0 m hm => exact congr_arg PosNum.bit0 hm
+  | bit0 m hm => congrm PosNum.bit0 $hm
 
 @[simp] theorem decode_encodeNum (n) : decodeNum (encodeNum n) = n := by
   obtain - | n := n <;> unfold encodeNum decodeNum
@@ -127,7 +127,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
 
 @[simp] theorem decode_encodeNat (n) : decodeNat (encodeNat n) = n := by
   conv_rhs => rw [← Num.to_of_nat n]
-  exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
+  congrm $(decode_encodeNum n)
 
 /-- A binary `Encoding` of `ℕ` in `Bool`. -/
 def encodingNatBool : Encoding ℕ Bool where
@@ -151,7 +151,7 @@ def unaryDecodeNat : List Bool → Nat :=
   List.length
 
 @[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
-  Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
+  Nat.rec rfl (fun (_m : ℕ) hm => congr($(hm.symm).succ).symm) n
 
 /-- A unary `Encoding` of `ℕ` in `Bool`. -/
 def unaryEncodingNat : Encoding ℕ Bool where
@@ -249,18 +249,18 @@ abbrev finEncodingBoolBool := encodingBoolBool
 
 /-- Deprecated alias for `encodingList`. -/
 @[reducible, nolint unusedArguments,
-  deprecated encodingList (since := "2026-05-07")]
+  deprecated encodingList +typeChanged (since := "2026-05-07")]
 def finEncodingList (α : Type) [Fintype α] := encodingList α
 
 /-- Deprecated alias for `encodingProd`. -/
 @[reducible, nolint unusedArguments,
-  deprecated encodingProd (since := "2026-05-07")]
+  deprecated encodingProd +typeChanged (since := "2026-05-07")]
 def finEncodingPair {α β Γ₁ Γ₂ : Type*} [Fintype Γ₁] [Fintype Γ₂]
     (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :=
   encodingProd ea eb
 
 /-- Deprecated alias for `Encoding.card_le_aleph0`. -/
-@[deprecated Encoding.card_le_aleph0 (since := "2026-05-07")]
+@[deprecated Encoding.card_le_aleph0 +typeChanged (since := "2026-05-07")]
 theorem FinEncoding.card_le_aleph0 {α Γ} [Countable Γ] (e : Encoding α Γ) : #α ≤ ℵ₀ :=
   e.card_le_aleph0
 
