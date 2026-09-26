@@ -22,8 +22,6 @@ public import Mathlib.RingTheory.Finiteness.Prod
 
 public section
 
-noncomputable section
-
 open Module Free Polynomial Matrix
 
 universe u v w

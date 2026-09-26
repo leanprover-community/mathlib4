@@ -17,7 +17,6 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 -/
 
 public section
-noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
 

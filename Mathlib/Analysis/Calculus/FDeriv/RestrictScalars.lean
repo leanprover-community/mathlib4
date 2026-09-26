@@ -22,8 +22,6 @@ public section
 
 open Filter ContinuousLinearMap Set
 
-noncomputable section
-
 section RestrictScalars
 
 /-!

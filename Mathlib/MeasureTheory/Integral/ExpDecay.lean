@@ -23,9 +23,6 @@ for integrability:
 
 public section
 
-
-noncomputable section
-
 open Real intervalIntegral MeasureTheory Set Filter Asymptotics
 
 open scoped Topology

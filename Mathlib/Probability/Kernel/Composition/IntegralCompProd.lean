@@ -49,8 +49,6 @@ composition-product requires s-finiteness while the composition does not.
 public section
 
 
-noncomputable section
-
 open Set Function Real ENNReal MeasureTheory Filter ProbabilityTheory ProbabilityTheory.Kernel
 open scoped Topology ENNReal MeasureTheory
 

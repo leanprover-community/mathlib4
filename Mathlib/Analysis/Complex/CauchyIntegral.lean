@@ -165,8 +165,6 @@ open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
 open scoped Interval Real NNReal ENNReal Topology
 
-noncomputable section
-
 universe u
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E]

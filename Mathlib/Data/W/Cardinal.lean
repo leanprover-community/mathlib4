@@ -31,8 +31,6 @@ universe u v
 
 variable {α : Type u} {β : α → Type v}
 
-noncomputable section
-
 namespace WType
 
 open Cardinal
