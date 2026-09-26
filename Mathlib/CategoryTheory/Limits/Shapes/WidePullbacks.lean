@@ -218,7 +218,9 @@ noncomputable abbrev widePullback (B : C) (objs : J → C) (arrows : ∀ j : J, 
     [HasWidePullback B objs arrows] : C :=
   limit (WidePullbackShape.wideCospan B objs arrows)
 
-namespace widePullback
+insert_to_dual_translation CategoryTheory.Limits.WidePullback CategoryTheory.Limits.WidePushout
+
+namespace WidePullback
 
 variable {C : Type u} [Category.{v} C] {B : C} {objs : J → C} (arrows : ∀ j : J, objs j ⟶ B)
 variable [HasWidePullback B objs arrows]
@@ -280,28 +282,7 @@ theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
   · apply h2
   · apply h1
 
-end widePullback
-
-@[to_dual (attr := deprecated (since := "2026-08-15"))]
-alias WidePullback := widePullback
-@[to_dual (attr := deprecated (since := "2026-08-15")) ι]
-alias WidePullback.π := widePullback.π
-@[to_dual (attr := deprecated (since := "2026-08-15")) head]
-alias WidePullback.base := widePullback.base
-@[to_dual (attr := deprecated (since := "2026-08-15")) arrow_ι]
-alias WidePullback.π_arrow := widePullback.π_arrow
-@[to_dual (attr := deprecated (since := "2026-08-15")) desc]
-alias WidePullback.lift := widePullback.lift
-@[to_dual (attr := deprecated (since := "2026-08-15")) ι_desc]
-alias WidePullback.lift_π := widePullback.lift_π
-@[to_dual (attr := deprecated (since := "2026-08-15")) head_desc]
-alias WidePullback.lift_base := widePullback.lift_base
-@[to_dual (attr := deprecated (since := "2026-08-15")) eq_desc_of_comp_eq]
-alias WidePullback.eq_lift_of_comp_eq := widePullback.eq_lift_of_comp_eq
-@[to_dual (attr := deprecated (since := "2026-08-15")) hom_eq_desc]
-alias WidePullback.hom_eq_lift := widePullback.hom_eq_lift
-@[to_dual (attr := deprecated (since := "2026-08-15"))]
-alias WidePullback.hom_ext := widePullback.hom_ext
+end WidePullback
 
 /-- A wide pullback cone is a cone on the wide cospan formed by a family of morphisms. -/
 abbrev WidePullbackCone {ι : Type*} {X : C} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :=
