@@ -631,7 +631,7 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
       refine ((Set.Finite.pi fun _ => h).subset <| ?_).of_finite_image (?_ : Set.InjOn π _)
       · exact Set.image_subset_iff.2 fun f hf i _ => hf.2 i
       · refine fun x hx y hy hxy => (ext_iff_natDegree_le hx.1 hy.1).2 fun i hi => ?_
-        exact id congr_fun hxy ⟨i, Nat.lt_succ_of_le hi⟩)
+        exact id congr($hxy ⟨i, Nat.lt_succ_of_le hi⟩))
     fun _ _ => Finset.finite_toSet _
 
 /-- A version of `mem_rootSet` that requires the polynomial to be non-zero after mapping
@@ -849,7 +849,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
   · conv_rhs => rw [he]
     rw [(monic_multisetProd_X_sub_C p.roots).natDegree_mul' hq,
       natDegree_multiset_prod_X_sub_C_eq_card]
-  · replace he := congr_arg roots he.symm
+  · replace he := congr(roots $he.symm)
     rw [roots_mul, roots_multiset_prod_X_sub_C] at he
     exacts [add_eq_left.1 he, mul_ne_zero (monic_multisetProd_X_sub_C p.roots).ne_zero hq]
 
