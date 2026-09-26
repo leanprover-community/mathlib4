@@ -372,7 +372,7 @@ lemma coprodMk_inl (x : X) :
       Scheme.forgetToTop.map coprod.inl x
   congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
-  exact coprodComparison_inl Scheme.forgetToTop
+  exact inl_coprodComparison Scheme.forgetToTop _ _
 
 @[simp]
 lemma coprodMk_inr (x : Y) :
@@ -382,7 +382,7 @@ lemma coprodMk_inr (x : Y) :
       Scheme.forgetToTop.map coprod.inr x
   congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
-  exact coprodComparison_inr Scheme.forgetToTop
+  exact inr_coprodComparison Scheme.forgetToTop _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the coproduct of two schemes. -/
@@ -562,11 +562,11 @@ instance (R S : CommRingCat.{u}ᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S
     ((limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).inv ≫
       (opProdIsoCoprod R S).unop.inv)) = coprodSpec R S := by
     ext1
-    · rw [coprodComparison_inl_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
+    · rw [inl_coprodComparison_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
         ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inl,
         limit.isoLimitCone_inv_π]
       rfl
-    · rw [coprodComparison_inr_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
+    · rw [inr_coprodComparison_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
         ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inr,
         limit.isoLimitCone_inv_π]
       rfl

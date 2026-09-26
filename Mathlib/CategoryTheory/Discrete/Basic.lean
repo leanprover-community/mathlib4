@@ -57,6 +57,8 @@ structure Discrete (α : Type u₁) where
   with the only morphisms being equalities. -/
   as : α
 
+attribute [to_dual_ignore_args 0] Discrete
+
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X :=
   rfl
@@ -77,7 +79,7 @@ instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
 
 set_option linter.translate.warnInvalid false in
 /-- The only morphisms in `Discrete α` are the identity morphisms. -/
-@[nolint structureInType, to_dual self (reorder := a b)]
+@[nolint structureInType, to_dual self (reorder := a b) (relevant_arg := _)]
 structure Discrete.Hom {α : Type u₁} (a b : α) : Type u₁ where
   eq : a = b
 
@@ -91,6 +93,13 @@ theorem Discrete.Hom.eq' {α : Type u₁} {a b : α} (self : Discrete.Hom a b) :
 Please avoid using this directly. -/
 @[to_dual existing mk]
 abbrev Discrete.Hom.mk' {α : Type u₁} {a b : α} (eq : b = a) : Discrete.Hom a b := ⟨eq.symm⟩
+
+/-- `Discrete.Hom.casesOn'` is the dual of `Discrete.Hom.casesOn`, which is needed for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing casesOn]
+abbrev Discrete.Hom.casesOn' {α : Type u₁} {a b : α} {motive : Discrete.Hom a b → Sort*}
+    (t : Discrete.Hom a b) (mk : (eq : b = a) → motive (mk' eq)) : motive t :=
+  t.casesOn (mk ·.symm)
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
