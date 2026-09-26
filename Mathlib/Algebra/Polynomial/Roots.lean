@@ -118,11 +118,19 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
 
 theorem roots_eq_zero_iff_not_isRoot (hp0 : p ≠ 0) : p.roots = 0 ↔ ∀ x, ¬ p.IsRoot x := by
   rw [eq_zero_iff_forall_notMem, mem_roots hp0]
+
+@[deprecated (since := "2026-09-27") "Use `roots_eq_zero_iff_not_isRoot` instead."]
+theorem roots_eq_zero_iff_isRoot_eq_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ eq_zero_of_forall_notMem fun x hx ↦ h ▸ mem_roots hp0 |>.mp hx⟩
   ext a
   simp only [Pi.bot_apply, Prop.bot_eq_false, mem_roots hp0 |>.not.mp <| by simp [h]]
 
-theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ ∀ x, ¬ p.IsRoot x := by
+theorem roots_eq_zero_iff_eq_zero_or_not_isRoot : p.roots = 0 ↔ p = 0 ∨ ∀ x, ¬ p.IsRoot x := by
+  rcases eq_or_ne p 0 with rfl | hp0; · simp
+  simp [roots_eq_zero_iff_not_isRoot hp0, hp0]
+
+@[deprecated (since := "2026-09-27") "Use `roots_eq_zero_iff_eq_zero_or_not_isRoot` instead."]
+theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p.IsRoot = ⊥ := by
   rcases eq_or_ne p 0 with rfl | hp0; · simp
   simp [roots_eq_zero_iff_isRoot_eq_bot hp0, hp0]
 
