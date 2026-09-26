@@ -302,8 +302,9 @@ public theorem joinedIn_preimage_of_homotopic {y : X} {U : Set X} (hy : y ∈ U)
 
 /-- Appending a path inside `U` stays in the same path component of `endpoint ⁻¹' U`. -/
 public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x₀)
-    (hγ : endpoint γ ∈ U) (δ : Path (endpoint γ) z) (hδ : range δ ⊆ U) :
+    (δ : Path (endpoint γ) z) (hδ : range δ ⊆ U) :
     JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) γ (append γ δ) := by
+  have hγ : endpoint γ ∈ U := δ.source ▸ hδ (mem_range_self 0)
   -- Slide `γ` to `append γ (Path.refl _)`, then grow the appended path along `δ`.
   refine (joinedIn_preimage_of_homotopic hγ (Path.Homotopic.trans_refl γ.toPath)).symm.trans ?_
   refine ⟨⟨⟨fun t ↦ append γ (δ.initialSegmentFamily t), by fun_prop⟩, ?_, ?_⟩, fun t ↦ ?_⟩
@@ -369,7 +370,7 @@ public theorem exists_open_nhds_pathComponent_preimage
     change Function.update T.V (Fin.last n) W (Fin.last n) ⊆ U
     rw [Function.update_self]
     exact pathComponentIn_subset.trans inter_subset_right
-  exact (joinedIn_preimage_of_append α hα ρ hρU).trans
+  exact (joinedIn_preimage_of_append α ρ hρU).trans
     (joinedIn_preimage_of_homotopic (hρU ρ.target_mem_range) h)
 
 /-- In a semilocally simply connected, locally path-connected space, the path components of

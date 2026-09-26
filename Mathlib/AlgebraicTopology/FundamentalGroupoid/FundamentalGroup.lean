@@ -95,13 +95,14 @@ theorem map_fromPath (f : C(X, Y)) {x : X} (γ : Path x x) :
     map f x (fromPath ⟦γ⟧) = fromPath ⟦γ.map f.continuous⟧ :=
   rfl
 
-theorem toPath_one {x : X} : (1 : FundamentalGroup X x).toPath = .refl x := rfl
-
-/-- Multiplication in `End` reverses composition, so the order of `trans` is swapped. -/
-theorem toPath_mul {x : X} (g h : FundamentalGroup X x) :
-    (g * h).toPath = h.toPath.trans g.toPath := rfl
-
-@[simp]
-theorem toPath_inv {x : X} (g : FundamentalGroup X x) : g⁻¹.toPath = g.toPath.symm := rfl
+/-- The map on fundamental groups induced by `f` is trivial iff it sends every loop at the
+basepoint to a nullhomotopic loop. -/
+theorem map_range_eq_bot_iff (f : C(X, Y)) (x : X) :
+    (map f x).range = ⊥ ↔ ∀ γ : Path x x, (γ.map f.continuous).Homotopic (.refl (f x)) := by
+  rw [MonoidHom.range_eq_bot_iff]
+  refine ⟨fun h γ ↦ Quotient.exact congr($h (fromPath ⟦γ⟧)), fun h ↦ ?_⟩
+  ext p
+  induction p using Quotient.ind
+  exact Quotient.sound (h _)
 
 end FundamentalGroup
