@@ -62,7 +62,7 @@ def ρAut {G : Type*} [Group G] (A : Action V G) : G →* Aut A.V where
         inv := (A.ρ g⁻¹).asHom
         hom_inv_id := by simp [← End.mul_asHom, ← map_mul]
         inv_hom_id := by simp [← End.mul_asHom, ← map_mul] }
-  map_one' := by cat_disch--Aut.ext A.ρ.map_one
+  map_one' := by cat_disch
   map_mul' x y := by cat_disch
 
 variable (G : Type*) [Monoid G]
