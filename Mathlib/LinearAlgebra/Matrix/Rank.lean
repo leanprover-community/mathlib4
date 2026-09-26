@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Rank of matrices
@@ -572,6 +573,34 @@ theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
     {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+
+/-- `M.mulVec` is surjective iff `M` has full row rank. -/
+theorem mulVec_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
+    M.mulVec.Surjective ↔ M.rank = Fintype.card m := by
+  rw [← coe_mulVecLin, ← LinearMap.range_eq_top, rank, ← Module.finrank_pi R]
+  exact ⟨fun h ↦ by rw [h, finrank_top], Submodule.eq_top_of_finrank_eq⟩
+
+/-- A matrix over a semisimple ring with linearly independent rows has surjective `mulVec`. -/
+theorem _root_.LinearIndependent.mulVec_surjective [Ring R] [IsSemisimpleRing R]
+    {M : Matrix m n R} (h : LinearIndependent R M.row) : M.mulVec.Surjective := by
+  nontriviality R using M.mulVec.surjective_to_subsingleton
+  have := @Fintype.ofFinite m h.finite_of_isNoetherian
+  classical
+  have ⟨f, hf⟩ := IsSemisimpleModule.extension_property M.toLinearMapRight'
+    (vecMul_injective_iff.mpr h) .id
+  have : M * f.toMatrixRight' = 1 := toLinearMapRight'.injective <| by simpa using hf
+  exact fun v ↦ ⟨f.toMatrixRight' *ᵥ v, by simp [this]⟩
+
+/-- `M.vecMul` is surjective iff `M` has full column rank. -/
+theorem vecMul_surjective_iff_rank_eq_card [Field R] [Fintype m] {M : Matrix m n R} :
+    M.vecMul.Surjective ↔ M.rank = Fintype.card n := by
+  simp [← mulVec_transpose, mulVec_surjective_iff_rank_eq_card]
+
+omit [Fintype n] in
+/-- A matrix with linearly independent columns has surjective `vecMul`. -/
+theorem _root_.LinearIndependent.vecMul_surjective [CommRing R] [IsSemisimpleRing R]
+    [Fintype m] {M : Matrix m n R} (h : LinearIndependent R M.col) : M.vecMul.Surjective := by
+  simpa [← mulVec_transpose] using h.mulVec_surjective
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
     {A : Matrix l m R} {B : Matrix m n R} (hAB : A * B = 0) :
