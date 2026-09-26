@@ -8,7 +8,7 @@ module
 public meta import Lean.Meta.Tactic.Refl
 
 public import Mathlib.Basic.IsEmpty.Defs
-public import Lean.Meta.CongrTheorems
+public meta import Lean.Meta.CongrTheorems
 public meta import Mathlib.Basic.IsEmpty.Defs
 
 /-!

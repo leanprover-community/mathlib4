@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Data.Subtype
 public import Mathlib.Util.CompileInductive
 
