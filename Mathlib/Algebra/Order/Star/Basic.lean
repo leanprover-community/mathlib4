@@ -335,6 +335,12 @@ theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x
 theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * star x := by
   simpa using star_mul_self_pos hx.star
 
+@[simp] theorem star_mul_self_pos_iff [IsProperStar R] {x : R} : 0 < star x * x ↔ x ≠ 0 := by
+  simp [lt_iff_le_and_ne']
+
+@[simp] theorem mul_star_self_pos_iff [IsProperStar R] {x : R} : 0 < x * star x ↔ x ≠ 0 := by
+  simp [lt_iff_le_and_ne']
+
 end NonUnitalSemiring
 
 section NonUnitalRing

@@ -211,10 +211,9 @@ theorem _root_.Matrix.posDef_diagonal_iff
 theorem of_subsingleton (h : Subsingleton R) (M : Matrix n n R) : M.PosDef :=
   ⟨.of_subsingleton, fun _ hx ↦ (hx <| Subsingleton.elim ..).elim⟩
 
-protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :
-    PosDef (1 : Matrix n n R) := by
-  nontriviality R
-  exact .diagonal fun i ↦ zero_lt_one' R
+protected theorem one [StarOrderedRing R] [DecidableEq n] [IsProperStar R] :
+    PosDef (1 : Matrix n n R) :=
+  ⟨isHermitian_one, fun x hx ↦ Finsupp.sum_pos (by aesop (add simp one_apply)) hx⟩
 
 protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) (hd : d ≠ 0) :
@@ -353,7 +352,7 @@ lemma trace_nonneg [AddLeftMono R] {A : Matrix n n R} (hA : A.PosSemidef) : 0 �
   Fintype.sum_nonneg fun _ ↦ hA.diag_nonneg
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
-theorem dotProduct_mulVec_zero_iff [StarOrderedRing R'] [NoZeroDivisors R']
+theorem dotProduct_mulVec_zero_iff [StarOrderedRing R'] [IsProperStar R']
     {A : Matrix n n R'} (hA : A.PosSemidef) {x : n → R'} :
     star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
   refine ⟨fun hx ↦ ?_, fun hx ↦ by simp [hx]⟩
@@ -374,7 +373,7 @@ theorem dotProduct_mulVec_zero_iff [StarOrderedRing R'] [NoZeroDivisors R']
       ring
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
-theorem toLinearMap₂'_zero_iff [StarOrderedRing R'] [NoZeroDivisors R'] [DecidableEq n]
+theorem toLinearMap₂'_zero_iff [StarOrderedRing R'] [IsProperStar R'] [DecidableEq n]
     {A : Matrix n n R'} (hA : PosSemidef A) {x : n → R'} :
     Matrix.toLinearMap₂' R' A (star x) x = 0 ↔ A *ᵥ x = 0 := by
   simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff
@@ -400,7 +399,7 @@ section trace
 -- TODO: move these results to an earlier file
 
 variable {R : Type*} [PartialOrder R] [NonUnitalRing R]
-  [StarRing R] [StarOrderedRing R] [NoZeroDivisors R]
+  [StarRing R] [StarOrderedRing R] [IsProperStar R]
 
 theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} :
     (Aᴴ * A).trace = 0 ↔ A = 0 := by
@@ -486,13 +485,13 @@ lemma mul_mul_conjTranspose_same {A : Matrix n n R} {B : Matrix m n R} (hA : A.P
   simp_rw [Function.comp_def, star_vecMul, star_star] at hB
   simpa using hA.conjTranspose_mul_mul_same (B := Bᴴ) hB
 
-theorem conjTranspose_mul_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matrix m n R)
+theorem conjTranspose_mul_self [StarOrderedRing R] [IsProperStar R] (A : Matrix m n R)
     (hA : Function.Injective A.mulVec) :
     PosDef (Aᴴ * A) := by
   classical
   simpa using conjTranspose_mul_mul_same .one hA
 
-theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matrix m n R)
+theorem mul_conjTranspose_self [StarOrderedRing R] [IsProperStar R] (A : Matrix m n R)
     (hA : Function.Injective A.vecMul) :
     PosDef (A * Aᴴ) := by
   classical
@@ -503,7 +502,7 @@ lemma mulVec_injective {M : Matrix n n R} (hM : M.PosDef) : Function.Injective M
   simpa [mulVec_sub, hxy] using hM.dotProduct_mulVec_pos (sub_ne_zero_of_ne h)
 
 lemma _root_.Matrix.posDef_iff_posSemidef_and_mulVec_injective [StarOrderedRing R']
-    [NoZeroDivisors R'] {A : Matrix n n R'} :
+    [IsProperStar R'] {A : Matrix n n R'} :
     PosDef A ↔ A.PosSemidef ∧ Function.Injective A.mulVec := by
   refine ⟨fun hA ↦ ⟨hA.posSemidef, hA.mulVec_injective⟩, fun ⟨hA, hA'⟩ ↦ ?_⟩
   refine posDef_iff_dotProduct_mulVec.mpr ⟨hA.isHermitian, fun x hx ↦ lt_of_le_of_ne' ?_ ?_⟩
@@ -511,7 +510,7 @@ lemma _root_.Matrix.posDef_iff_posSemidef_and_mulVec_injective [StarOrderedRing 
   simpa [hA.dotProduct_mulVec_zero_iff, hx] using hA'.eq_iff (a := x) (b := 0)
 
 lemma _root_.Matrix.PosSemidef.posDef_iff_mulVec_injective [StarOrderedRing R']
-    [NoZeroDivisors R'] {A : Matrix n n R'} (hA : A.PosSemidef) :
+    [IsProperStar R'] {A : Matrix n n R'} (hA : A.PosSemidef) :
     PosDef A ↔ Function.Injective A.mulVec := by
   simp [posDef_iff_posSemidef_and_mulVec_injective, hA]
 
