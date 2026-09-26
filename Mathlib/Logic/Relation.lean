@@ -402,6 +402,7 @@ attribute [grind =] reflGen_iff
 
 /-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
   that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
+@[to_dual self (reorder := r (1 2), a b)]
 def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
   r a b ∨ r b a
 
