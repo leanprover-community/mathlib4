@@ -373,16 +373,16 @@ private theorem MemLp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ �
       exact (nullMeasurableSet_lt hf.aestronglyMeasurable.norm.aemeasurable aemeasurable_const)
     · intro x
       rw [norm_indicator_eq_indicator_norm, Set.indicator_apply]
-      · split_ifs with h
-        exacts [h, hMpos]
+      split_ifs with h
+      exacts [h, hMpos]
   refine ⟨δ, hδpos, fun s hs hμs ↦ ?_⟩
   rw [(_ : f = { x : α | M ≤ ‖f x‖₊ }.indicator f + { x : α | ‖f x‖ < M }.indicator f)]
   · rw [eLpNorm_indicator_eq_eLpNorm_restrict hs]
     refine le_trans (eLpNorm_add_le hp_one) ?_
-    · rw [two_mul]
-      refine add_le_add ((eLpNorm_mono_measure _ Measure.restrict_le_self).trans hM) ?_
-      rw [← eLpNorm_indicator_eq_eLpNorm_restrict hs]
-      exact hδ s hs hμs
+    rw [two_mul]
+    refine add_le_add ((eLpNorm_mono_measure _ Measure.restrict_le_self).trans hM) ?_
+    rw [← eLpNorm_indicator_eq_eLpNorm_restrict hs]
+    exact hδ s hs hμs
   · ext x
     by_cases hx : M ≤ ‖f x‖
     · rw [Pi.add_apply, Set.indicator_of_mem, Set.indicator_of_notMem, add_zero] <;> simpa

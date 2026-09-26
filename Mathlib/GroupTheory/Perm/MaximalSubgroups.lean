@@ -311,14 +311,14 @@ lemma compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     · -- `k ∈ G`
       apply hG
       exact MulAction.fixingSubgroup_le_stabilizer _ _ hk
-  · -- `∃ (k : fixingSubgroup (Perm α) s), k • b = x`
-    suffices h : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) by
-      obtain ⟨k, hk⟩ := h.exists_smul_eq (⟨b, hb'⟩ : ofFixingSubgroup M s) ⟨x, hx'⟩
-      rw [← Subtype.coe_inj, val_smul] at hk
-      exact ⟨k, hk⟩
-    -- Prove pretransitivity…
-    rw [← is_one_pretransitive_iff]
-    apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
+  -- `∃ (k : fixingSubgroup (Perm α) s), k • b = x`
+  suffices h : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s) by
+    obtain ⟨k, hk⟩ := h.exists_smul_eq (⟨b, hb'⟩ : ofFixingSubgroup M s) ⟨x, hx'⟩
+    rw [← Subtype.coe_inj, val_smul] at hk
+    exact ⟨k, hk⟩
+  -- Prove pretransitivity…
+  rw [← is_one_pretransitive_iff]
+  apply ofFixingSubgroup.isMultiplyPretransitive M s rfl
 
 end MulAction.IsBlock
 

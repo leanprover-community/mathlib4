@@ -261,7 +261,7 @@ theorem isMultiplyPreprimitive_of_le
     · apply hrec
         (isMultiplyPreprimitive_of_isMultiplyPretransitive_succ M α hα)
         (Nat.lt_succ_iff.mp hmn')
-      · refine le_trans ?_ hα; rw [ENat.natCast_le_natCast]; exact Nat.le_succ n
+      refine le_trans ?_ hα; rw [ENat.natCast_le_natCast]; exact Nat.le_succ n
 
 variable {M α}
 
